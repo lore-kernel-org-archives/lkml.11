@@ -2,96 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A488AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 10:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D1EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 10:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241981AbiDNKJw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 06:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38812 "EHLO
+        id S241989AbiDNKKf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 06:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbiDNKJr (ORCPT
+        with ESMTP id S229634AbiDNKKc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 06:09:47 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8FE770924;
-        Thu, 14 Apr 2022 03:07:22 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id r13so6186001wrr.9;
-        Thu, 14 Apr 2022 03:07:22 -0700 (PDT)
+        Thu, 14 Apr 2022 06:10:32 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE3CE716C5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 03:08:04 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id r13so9077585ejd.5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 03:08:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FFoJHVfLIsD3E+on3fTDKrttYh+nASwnL70uWLoYl9Q=;
-        b=VscGeHgYpmqeZ24KSQ/hrzLntZvcTorl7hNN8mWj2wVp30uAyGkYNMQKP5pAepk+Un
-         fNtFCRZwDfFHcKQwosalJ5McUw/MADo+ebT8PWfvovN8VSCSqBKMSOW1np+kXuePcXna
-         49NUH9NxDn2VbsWyBzOycnqrPo2Y0a9zlQiXlFizwLte3fS+claG54t0m4apRKQj0mvU
-         HKHvpLFJ9cAUuthpQNFjY5hSHW9txaW25djdd3mMjbfP6uHCzjJBZepwJHkGx8+jCYQK
-         tjzhX0TJwAJsW6jKFJDRL96bIHEmFXBsBZYcH0LunRq3Irg9Gh16yKiAEfWVar4GDwun
-         AQHw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=fxIhTmf4CWwgx4woI1aX8OoMYh4gMjGvc4MZCp2yYgw=;
+        b=YEKEdaK2CtEeQIFtsW5Q9Pc+PQj3VAR5YyF343GhApd9CcPVM5ZO9W4aORRt64cOKy
+         Ds/mV9HlUsuLDZTZ7K0DrdCW7osI8ZAk0VMdjMen+qb99ZJdTFxYrOr17AKRp/dOmhdM
+         vWhaHluFNt7+cnI1ZOz2ZjJ3OwjNMq2SM8qdQcdLda/y6/xSKElR5E0jlO6wittIJOKW
+         c2tg4tp4S1FIhuRxuSLb1udomqgKf6HFw6RkBYXF4Wj1+/IIhn+JnrUFYDXd8wybRFQx
+         imGIB2kxPw5hJ3i9nXJ2x3r20q/1cTLN7OjJGVuyboGvJF/fXZ4sULOMve5G1jjmkxSz
+         KZVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=FFoJHVfLIsD3E+on3fTDKrttYh+nASwnL70uWLoYl9Q=;
-        b=EGMFb1g9mPAi0hKxWrNfe7k3nvc8NawQ9JEO9qs59MLKi/POswVGz4FV++YhhPUO4i
-         EtPhSmJKUIlpaBAlYcIUuwZQB0MMfcj37IyEh4Kckxe5089tDJYp60fAo+sc3mGiMuAS
-         oat2yOsxnTcJyjXtgXqXXhKf712UTaLUFodq7fPW4JgOIwLypNv60sfdKAJa5Jlwt4CX
-         aOBriAi7FI8SmJ8+7GGDcT2A8mqzLknCdBh/2x7ZMiwomgObZzD0aHIkfszY/KWIu1Z8
-         wv1EvJLOlNsih8FQ0d1hDXcI7grxptEh4unbhEaGxrBCYsMEr02LGWKe7ZL/Yspivk7i
-         euyg==
-X-Gm-Message-State: AOAM532i3ozPVYiQnzkT4Izl0UnX09GmKxV+QM0tvWr0A6hUebMhP8XZ
-        Mls4mRHdo1HfdeaJXi2p3ws=
-X-Google-Smtp-Source: ABdhPJyH8xWu3hK9Rp5rWB/cER0XqvTzFgaHtKIxauOasle6toXEo+fVD2SGosOUt/9LjDccndSFHQ==
-X-Received: by 2002:a5d:4d02:0:b0:207:a6e8:ef4a with SMTP id z2-20020a5d4d02000000b00207a6e8ef4amr1501714wrt.245.1649930841574;
-        Thu, 14 Apr 2022 03:07:21 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id r7-20020a05600c2c4700b0038eb7d8df69sm1580412wmg.11.2022.04.14.03.07.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 03:07:21 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] KVM: VMX: make read-only const array vmx_uret_msrs_list static
-Date:   Thu, 14 Apr 2022 11:07:20 +0100
-Message-Id: <20220414100720.295502-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        bh=fxIhTmf4CWwgx4woI1aX8OoMYh4gMjGvc4MZCp2yYgw=;
+        b=QzPpti3yk6f7TIK2lMiarmWUi1oBhRwuRn84Nlb+1dBRk28ZtYENDKyywzrjFIH+Eb
+         qxAbn3c6+8pkYmiBwyE7Ye202v8ThUXf24lPEaiPb2EyFcPQFQ8oSBJih17u8wc6RrZ2
+         XI5+EIwQbVb+h8MbJZRLjF+YceSx7DXCoKlNEdtmrAHw2CMxHB54byCm5AzEuq0+2f9S
+         pCTna0YYdvmupXE63I2ai1Lh9OXnuK9qKoE7XVxMm/jaK96NeilN+88gxEJA70jQlvfG
+         4kzhFQsyydjVcoUkxMHI0eeDl72lXY/uzOvuRU16/gISw2rT5x2dPYTy+uwpZAilyPq5
+         3ttQ==
+X-Gm-Message-State: AOAM532sWzPVgA+5jTU1fqc5lh6s5Q7XHXPUZbEc7je1sxkGCd9uDmOu
+        hT7qUiMSvBH9UvloGz5vSl0=
+X-Google-Smtp-Source: ABdhPJzETc4xu/QQjnhJjmC9SJlm5H2LrT29xVTSDmNt4irFWyS6PjTXFtlJN0fbXqk6uljkSqfdBw==
+X-Received: by 2002:a17:907:3e90:b0:6e8:7fbb:a15c with SMTP id hs16-20020a1709073e9000b006e87fbba15cmr1614234ejc.411.1649930882723;
+        Thu, 14 Apr 2022 03:08:02 -0700 (PDT)
+Received: from [192.168.0.151] (ip5f5abb6b.dynamic.kabel-deutschland.de. [95.90.187.107])
+        by smtp.gmail.com with ESMTPSA id qb10-20020a1709077e8a00b006e892cf471asm471890ejc.84.2022.04.14.03.08.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 03:08:02 -0700 (PDT)
+Message-ID: <a40a2a1b-a8f1-e720-be92-48858d4f6678@gmail.com>
+Date:   Thu, 14 Apr 2022 12:08:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: staging: r8188eu: struct rt_firmware_header issues
+Content-Language: en-US
+To:     David Laight <David.Laight@ACULAB.COM>,
+        Larry Finger <Larry.Finger@lwfinger.net>
+Cc:     Phillip Potter <phil@philpotter.co.uk>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <94a72ecc-3acd-758b-15a4-a7d56bf03fbe@gmail.com>
+ <86a66ea4-45e3-cfa2-9130-f698ae212bfd@gmail.com>
+ <51e706400b914552bfda6353020da17e@AcuMS.aculab.com>
+From:   Michael Straube <straube.linux@gmail.com>
+In-Reply-To: <51e706400b914552bfda6353020da17e@AcuMS.aculab.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Don't populate the read-only array vmx_uret_msrs_list on the stack
-but instead make it static. Also makes the object code a little smaller.
+On 4/14/22 10:41, David Laight wrote:
+> From: Michael Straube
+>> Sent: 13 April 2022 20:42
+>>
+>> On 4/13/22 18:27, Michael Straube wrote:
+>>> Hi all,
+>>>
+>>> I think the rt_firmware_hdr structure in rtw_fw.c has some issues.
+>>>
+>>>
+>>> struct rt_firmware_hdr {
+>>>       /*  8-byte alinment required */
+> 
+> Probably need an __aligned(8) at the bottom then?
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- arch/x86/kvm/vmx/vmx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I don't see any reason why this is needed. Do I miss something?
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index c654c9d76e09..36429e2bb918 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7871,7 +7871,7 @@ static __init void vmx_setup_user_return_msrs(void)
- 	 * but is never loaded into hardware.  MSR_CSTAR is also never loaded
- 	 * into hardware and is here purely for emulation purposes.
- 	 */
--	const u32 vmx_uret_msrs_list[] = {
-+	static const u32 vmx_uret_msrs_list[] = {
- 	#ifdef CONFIG_X86_64
- 		MSR_SYSCALL_MASK, MSR_LSTAR, MSR_CSTAR,
- 	#endif
--- 
-2.35.1
+>>>       /*  LONG WORD 0 ---- */
+>>>       __le16        Signature;    /* 92C0: test chip; 92C,
+>>>                        * 88C0: test chip; 88C1: MP A-cut;
+>>>                        * 92C1: MP A-cut */
+>>>       u8        Category;    /*  AP/NIC and USB/PCI */
+>>>       u8        Function;    /*  Reserved for different FW function
+>>>                        *  indcation, for further use when
+>>>                        *  driver needs to download different
+>>>                        *  FW for different conditions */
+>>>       __le16        Version;    /*  FW Version */
+>>>       u8        Subversion;    /*  FW Subversion, default 0x00 */
+>>>       u16        Rsvd1;
+>>>
+>>>       /*  LONG WORD 1 ---- */
+>>>       u8        Month;    /*  Release time Month field */
+>>>       u8        Date;    /*  Release time Date field */
+>>>       u8        Hour;    /*  Release time Hour field */
+>>>       u8        Minute;    /*  Release time Minute field */
+>>>       __le16        RamCodeSize;    /*  The size of RAM code */
+>>>       u8        Foundry;
+>>>       u8        Rsvd2;
+>>>
+>>>       /*  LONG WORD 2 ---- */
+>>>       __le32        SvnIdx;    /*  The SVN entry index */
+>>>       u32        Rsvd3;
+>>>
+>>>       /*  LONG WORD 3 ---- */
+>>>       u32        Rsvd4;
+>>>       u32        Rsvd5;
+>>> };
+> ...
+>>
+>> Ok, I figured it out by looking at the hexdumps of firmware files. The
+>> field Rsvd1 should be u8 instead of u16. I'll prepare a patch for this.
+> 
+> I'd also add a compile-time assert on the size.
 
+I'll add a patch to the series I recently sent.
+
+thanks,
+Michael
