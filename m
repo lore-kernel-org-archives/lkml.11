@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3434FC4167E
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E13AAC4167D
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346484AbiDNPOt (ORCPT
+        id S1345625AbiDNPOQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45606 "EHLO
+        Thu, 14 Apr 2022 11:14:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347226AbiDNN6h (ORCPT
+        with ESMTP id S1347410AbiDNN6u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:58:37 -0400
+        Thu, 14 Apr 2022 09:58:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B7BB82E2;
-        Thu, 14 Apr 2022 06:49:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E917E37AA9;
+        Thu, 14 Apr 2022 06:49:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F18BAB828F4;
-        Thu, 14 Apr 2022 13:49:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DA6FC385A1;
-        Thu, 14 Apr 2022 13:49:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8CF42B82968;
+        Thu, 14 Apr 2022 13:49:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0EF1C385A5;
+        Thu, 14 Apr 2022 13:49:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944151;
-        bh=Sv+F4xpukFX5bchEpbGf4cv7MHzubjsajgK9G5MTDlw=;
+        s=korg; t=1649944176;
+        bh=n1ugNk4sX29CrzNqbc+kWmt3E85E04A3TR4DHsSH3v8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wKXtLbmliTgO2EAehKBoG6e9Gpto8zTkIYwXv03o9+98JUUYykdPJfH+f61vXWhfH
-         jDeG4F6Gr7LpoYN26/XHnWaxWqCoaqrlbntcHpiodg8YLXqXMU4KXxWDBPrLglv593
-         1r8Zx0gygVC8x3QazxxrILhWRpgaFP1poGO9BCuA=
+        b=f2jnHePpJ9KkTJG4KagRYLJXrXG+Jwe07awD2u3/GvV88QQSydZQfcgQ6Z64IVgNR
+         pioMAYQqBlQj9ezyhtCiRNRzr4sHsWf9HnZr9NdtDisbQDaAqEHm+0WprMTnngmbB7
+         wMI1yIN8agnXjYAgxpG0B5xLtOPto5V8LBBPpmZU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 412/475] clk: Enforce that disjoints limits are invalid
-Date:   Thu, 14 Apr 2022 15:13:17 +0200
-Message-Id: <20220414110906.594974640@linuxfoundation.org>
+Subject: [PATCH 5.4 420/475] parisc: Fix CPU affinity for Lasi, WAX and Dino chips
+Date:   Thu, 14 Apr 2022 15:13:25 +0200
+Message-Id: <20220414110906.814457674@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,101 +49,230 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit 10c46f2ea914202482d19cf80dcc9c321c9ff59b ]
+[ Upstream commit 939fc856676c266c3bc347c1c1661872a3725c0f ]
 
-If we were to have two users of the same clock, doing something like:
+Add the missing logic to allow Lasi, WAX and Dino to set the
+CPU affinity. This fixes IRQ migration to other CPUs when a
+CPU is shutdown which currently holds the IRQs for one of those
+chips.
 
-clk_set_rate_range(user1, 1000, 2000);
-clk_set_rate_range(user2, 3000, 4000);
-
-The second call would fail with -EINVAL, preventing from getting in a
-situation where we end up with impossible limits.
-
-However, this is never explicitly checked against and enforced, and
-works by relying on an undocumented behaviour of clk_set_rate().
-
-Indeed, on the first clk_set_rate_range will make sure the current clock
-rate is within the new range, so it will be between 1000 and 2000Hz. On
-the second clk_set_rate_range(), it will consider (rightfully), that our
-current clock is outside of the 3000-4000Hz range, and will call
-clk_core_set_rate_nolock() to set it to 3000Hz.
-
-clk_core_set_rate_nolock() will then call clk_calc_new_rates() that will
-eventually check that our rate 3000Hz rate is outside the min 3000Hz max
-2000Hz range, will bail out, the error will propagate and we'll
-eventually return -EINVAL.
-
-This solely relies on the fact that clk_calc_new_rates(), and in
-particular clk_core_determine_round_nolock(), won't modify the new rate
-allowing the error to be reported. That assumption won't be true for all
-drivers, and most importantly we'll break that assumption in a later
-patch.
-
-It can also be argued that we shouldn't even reach the point where we're
-calling clk_core_set_rate_nolock().
-
-Let's make an explicit check for disjoints range before we're doing
-anything.
-
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://lore.kernel.org/r/20220225143534.405820-4-maxime@cerno.tech
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/clk.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ drivers/parisc/dino.c | 41 +++++++++++++++++++++++++++++++++--------
+ drivers/parisc/gsc.c  | 31 +++++++++++++++++++++++++++++++
+ drivers/parisc/gsc.h  |  1 +
+ drivers/parisc/lasi.c |  7 +++----
+ drivers/parisc/wax.c  |  7 +++----
+ 5 files changed, 71 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index ccb26a513b29..13332f89e034 100644
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -637,6 +637,24 @@ static void clk_core_get_boundaries(struct clk_core *core,
- 		*max_rate = min(*max_rate, clk_user->max_rate);
+diff --git a/drivers/parisc/dino.c b/drivers/parisc/dino.c
+index 544287e9f449..f4de8be05c61 100644
+--- a/drivers/parisc/dino.c
++++ b/drivers/parisc/dino.c
+@@ -142,9 +142,8 @@ struct dino_device
+ {
+ 	struct pci_hba_data	hba;	/* 'C' inheritance - must be first */
+ 	spinlock_t		dinosaur_pen;
+-	unsigned long		txn_addr; /* EIR addr to generate interrupt */ 
+-	u32			txn_data; /* EIR data assign to each dino */ 
+ 	u32 			imr;	  /* IRQ's which are enabled */ 
++	struct gsc_irq		gsc_irq;
+ 	int			global_irq[DINO_LOCAL_IRQS]; /* map IMR bit to global irq */
+ #ifdef DINO_DEBUG
+ 	unsigned int		dino_irr0; /* save most recent IRQ line stat */
+@@ -339,14 +338,43 @@ static void dino_unmask_irq(struct irq_data *d)
+ 	if (tmp & DINO_MASK_IRQ(local_irq)) {
+ 		DBG(KERN_WARNING "%s(): IRQ asserted! (ILR 0x%x)\n",
+ 				__func__, tmp);
+-		gsc_writel(dino_dev->txn_data, dino_dev->txn_addr);
++		gsc_writel(dino_dev->gsc_irq.txn_data, dino_dev->gsc_irq.txn_addr);
+ 	}
  }
  
-+static bool clk_core_check_boundaries(struct clk_core *core,
-+				      unsigned long min_rate,
-+				      unsigned long max_rate)
++#ifdef CONFIG_SMP
++static int dino_set_affinity_irq(struct irq_data *d, const struct cpumask *dest,
++				bool force)
 +{
-+	struct clk *user;
++	struct dino_device *dino_dev = irq_data_get_irq_chip_data(d);
++	struct cpumask tmask;
++	int cpu_irq;
++	u32 eim;
 +
-+	lockdep_assert_held(&prepare_lock);
++	if (!cpumask_and(&tmask, dest, cpu_online_mask))
++		return -EINVAL;
 +
-+	if (min_rate > core->max_rate || max_rate < core->min_rate)
-+		return false;
++	cpu_irq = cpu_check_affinity(d, &tmask);
++	if (cpu_irq < 0)
++		return cpu_irq;
 +
-+	hlist_for_each_entry(user, &core->clks, clks_node)
-+		if (min_rate > user->max_rate || max_rate < user->min_rate)
-+			return false;
++	dino_dev->gsc_irq.txn_addr = txn_affinity_addr(d->irq, cpu_irq);
++	eim = ((u32) dino_dev->gsc_irq.txn_addr) | dino_dev->gsc_irq.txn_data;
++	__raw_writel(eim, dino_dev->hba.base_addr+DINO_IAR0);
 +
-+	return true;
++	irq_data_update_effective_affinity(d, &tmask);
++
++	return IRQ_SET_MASK_OK;
 +}
++#endif
 +
- void clk_hw_set_rate_range(struct clk_hw *hw, unsigned long min_rate,
- 			   unsigned long max_rate)
- {
-@@ -2306,6 +2324,11 @@ int clk_set_rate_range(struct clk *clk, unsigned long min, unsigned long max)
- 	clk->min_rate = min;
- 	clk->max_rate = max;
+ static struct irq_chip dino_interrupt_type = {
+ 	.name		= "GSC-PCI",
+ 	.irq_unmask	= dino_unmask_irq,
+ 	.irq_mask	= dino_mask_irq,
++#ifdef CONFIG_SMP
++	.irq_set_affinity = dino_set_affinity_irq,
++#endif
+ };
  
-+	if (!clk_core_check_boundaries(clk->core, min, max)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
+ 
+@@ -806,7 +834,6 @@ static int __init dino_common_init(struct parisc_device *dev,
+ {
+ 	int status;
+ 	u32 eim;
+-	struct gsc_irq gsc_irq;
+ 	struct resource *res;
+ 
+ 	pcibios_register_hba(&dino_dev->hba);
+@@ -821,10 +848,8 @@ static int __init dino_common_init(struct parisc_device *dev,
+ 	**   still only has 11 IRQ input lines - just map some of them
+ 	**   to a different processor.
+ 	*/
+-	dev->irq = gsc_alloc_irq(&gsc_irq);
+-	dino_dev->txn_addr = gsc_irq.txn_addr;
+-	dino_dev->txn_data = gsc_irq.txn_data;
+-	eim = ((u32) gsc_irq.txn_addr) | gsc_irq.txn_data;
++	dev->irq = gsc_alloc_irq(&dino_dev->gsc_irq);
++	eim = ((u32) dino_dev->gsc_irq.txn_addr) | dino_dev->gsc_irq.txn_data;
+ 
+ 	/* 
+ 	** Dino needs a PA "IRQ" to get a processor's attention.
+diff --git a/drivers/parisc/gsc.c b/drivers/parisc/gsc.c
+index ed9371acf37e..ec175ae99873 100644
+--- a/drivers/parisc/gsc.c
++++ b/drivers/parisc/gsc.c
+@@ -135,10 +135,41 @@ static void gsc_asic_unmask_irq(struct irq_data *d)
+ 	 */
+ }
+ 
++#ifdef CONFIG_SMP
++static int gsc_set_affinity_irq(struct irq_data *d, const struct cpumask *dest,
++				bool force)
++{
++	struct gsc_asic *gsc_dev = irq_data_get_irq_chip_data(d);
++	struct cpumask tmask;
++	int cpu_irq;
 +
- 	rate = clk_core_get_rate_nolock(clk->core);
- 	if (rate < min || rate > max) {
- 		/*
-@@ -2334,6 +2357,7 @@ int clk_set_rate_range(struct clk *clk, unsigned long min, unsigned long max)
- 		}
++	if (!cpumask_and(&tmask, dest, cpu_online_mask))
++		return -EINVAL;
++
++	cpu_irq = cpu_check_affinity(d, &tmask);
++	if (cpu_irq < 0)
++		return cpu_irq;
++
++	gsc_dev->gsc_irq.txn_addr = txn_affinity_addr(d->irq, cpu_irq);
++	gsc_dev->eim = ((u32) gsc_dev->gsc_irq.txn_addr) | gsc_dev->gsc_irq.txn_data;
++
++	/* switch IRQ's for devices below LASI/WAX to other CPU */
++	gsc_writel(gsc_dev->eim, gsc_dev->hpa + OFFSET_IAR);
++
++	irq_data_update_effective_affinity(d, &tmask);
++
++	return IRQ_SET_MASK_OK;
++}
++#endif
++
++
+ static struct irq_chip gsc_asic_interrupt_type = {
+ 	.name		=	"GSC-ASIC",
+ 	.irq_unmask	=	gsc_asic_unmask_irq,
+ 	.irq_mask	=	gsc_asic_mask_irq,
++#ifdef CONFIG_SMP
++	.irq_set_affinity =	gsc_set_affinity_irq,
++#endif
+ };
+ 
+ int gsc_assign_irq(struct irq_chip *type, void *data)
+diff --git a/drivers/parisc/gsc.h b/drivers/parisc/gsc.h
+index 86abad3fa215..73cbd0bb1975 100644
+--- a/drivers/parisc/gsc.h
++++ b/drivers/parisc/gsc.h
+@@ -31,6 +31,7 @@ struct gsc_asic {
+ 	int version;
+ 	int type;
+ 	int eim;
++	struct gsc_irq gsc_irq;
+ 	int global_irq[32];
+ };
+ 
+diff --git a/drivers/parisc/lasi.c b/drivers/parisc/lasi.c
+index 4e4fd12c2112..6ef621adb63a 100644
+--- a/drivers/parisc/lasi.c
++++ b/drivers/parisc/lasi.c
+@@ -163,7 +163,6 @@ static int __init lasi_init_chip(struct parisc_device *dev)
+ {
+ 	extern void (*chassis_power_off)(void);
+ 	struct gsc_asic *lasi;
+-	struct gsc_irq gsc_irq;
+ 	int ret;
+ 
+ 	lasi = kzalloc(sizeof(*lasi), GFP_KERNEL);
+@@ -185,7 +184,7 @@ static int __init lasi_init_chip(struct parisc_device *dev)
+ 	lasi_init_irq(lasi);
+ 
+ 	/* the IRQ lasi should use */
+-	dev->irq = gsc_alloc_irq(&gsc_irq);
++	dev->irq = gsc_alloc_irq(&lasi->gsc_irq);
+ 	if (dev->irq < 0) {
+ 		printk(KERN_ERR "%s(): cannot get GSC irq\n",
+ 				__func__);
+@@ -193,9 +192,9 @@ static int __init lasi_init_chip(struct parisc_device *dev)
+ 		return -EBUSY;
  	}
  
-+out:
- 	if (clk->exclusive_count)
- 		clk_core_rate_protect(clk->core);
+-	lasi->eim = ((u32) gsc_irq.txn_addr) | gsc_irq.txn_data;
++	lasi->eim = ((u32) lasi->gsc_irq.txn_addr) | lasi->gsc_irq.txn_data;
  
+-	ret = request_irq(gsc_irq.irq, gsc_asic_intr, 0, "lasi", lasi);
++	ret = request_irq(lasi->gsc_irq.irq, gsc_asic_intr, 0, "lasi", lasi);
+ 	if (ret < 0) {
+ 		kfree(lasi);
+ 		return ret;
+diff --git a/drivers/parisc/wax.c b/drivers/parisc/wax.c
+index 5b6df1516235..73a2b01f8d9c 100644
+--- a/drivers/parisc/wax.c
++++ b/drivers/parisc/wax.c
+@@ -68,7 +68,6 @@ static int __init wax_init_chip(struct parisc_device *dev)
+ {
+ 	struct gsc_asic *wax;
+ 	struct parisc_device *parent;
+-	struct gsc_irq gsc_irq;
+ 	int ret;
+ 
+ 	wax = kzalloc(sizeof(*wax), GFP_KERNEL);
+@@ -85,7 +84,7 @@ static int __init wax_init_chip(struct parisc_device *dev)
+ 	wax_init_irq(wax);
+ 
+ 	/* the IRQ wax should use */
+-	dev->irq = gsc_claim_irq(&gsc_irq, WAX_GSC_IRQ);
++	dev->irq = gsc_claim_irq(&wax->gsc_irq, WAX_GSC_IRQ);
+ 	if (dev->irq < 0) {
+ 		printk(KERN_ERR "%s(): cannot get GSC irq\n",
+ 				__func__);
+@@ -93,9 +92,9 @@ static int __init wax_init_chip(struct parisc_device *dev)
+ 		return -EBUSY;
+ 	}
+ 
+-	wax->eim = ((u32) gsc_irq.txn_addr) | gsc_irq.txn_data;
++	wax->eim = ((u32) wax->gsc_irq.txn_addr) | wax->gsc_irq.txn_data;
+ 
+-	ret = request_irq(gsc_irq.irq, gsc_asic_intr, 0, "wax", wax);
++	ret = request_irq(wax->gsc_irq.irq, gsc_asic_intr, 0, "wax", wax);
+ 	if (ret < 0) {
+ 		kfree(wax);
+ 		return ret;
 -- 
 2.35.1
 
