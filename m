@@ -2,87 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C54C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEBDCC46467
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:40:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346810AbiDNPj0 (ORCPT
+        id S1347904AbiDNPjt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:39:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52160 "EHLO
+        Thu, 14 Apr 2022 11:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352018AbiDNObq (ORCPT
+        with ESMTP id S1351618AbiDNObI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:31:46 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492F3C12F1
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:22:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649946170; x=1681482170;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=wcOZ08M12WSd63gaezIShH6Ul4Xo33/RqAiEoJUbfpM=;
-  b=BAuk0CLRAF68TyhSajEVm41chwDHij6U3D6swD+wNJQF2QLFHCcSiQrH
-   eYZy+66ZDjJ4eGVx3qx+t6Eku2HiPg+Wc1fz6PdfOz82UTz3fLicTmk0q
-   iWeE1zQkHN9MjXx3ObL3euDXerQpoROdmTMkPY85Di+LvT/CfqBRq7uYV
-   /149n+CcmE+xqToJFaquQfAGzXlOEDqydbl0bY6SYOlhiF2KaTuqx/JnM
-   WJN198PEVpp77XMqnNBe5qLY7nIzqRfHUoPwGkn0NVi2dx7DE74/8oLhC
-   bAMdEyiAzxyGR5n7rfFMYhwfbj+94Cz7z/fKX45jnmPh1IpY9DtmPO8W8
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="262383629"
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="262383629"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 07:22:50 -0700
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="573817803"
-Received: from nplaweck-mobl.ger.corp.intel.com (HELO localhost) ([10.249.149.236])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 07:22:47 -0700
-From:   Jani Nikula <jani.nikula@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Lucas De Marchi <lucas.demarchi@intel.com>
-Subject: Re: [PATCH 0/1] add support for enum module parameters
-In-Reply-To: <YlgfXxjefuxiXjtC@kroah.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220414123033.654198-1-jani.nikula@intel.com>
- <YlgfXxjefuxiXjtC@kroah.com>
-Date:   Thu, 14 Apr 2022 17:22:47 +0300
-Message-ID: <87a6cneoco.fsf@intel.com>
+        Thu, 14 Apr 2022 10:31:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B20517A996
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:21:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649946104;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lys9OvSbD/kPAhkzPWHuJKcH+xiG4FQId/LRShqL04Y=;
+        b=aAoiDUkKdLtsOnhFyAijZKhQpGPerT9pLQQuvDxNmYonz8x7occdS7pHLsi2fWn+DEIYBQ
+        Hp+Shmscb0JJKzkisvjELZa4Vgc+BqBTvo83xeA8OoFRpBu0ZWhKv8cipf54RQVHUOEa5j
+        ixTliWBzceX2VChclrfp4TCwiWHToLY=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-523-O6oDWlEEP7yCO_BwiLcvUw-1; Thu, 14 Apr 2022 10:21:43 -0400
+X-MC-Unique: O6oDWlEEP7yCO_BwiLcvUw-1
+Received: by mail-il1-f198.google.com with SMTP id q9-20020a056e02106900b002cbc8d479eeso3102132ilj.1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:21:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lys9OvSbD/kPAhkzPWHuJKcH+xiG4FQId/LRShqL04Y=;
+        b=c/hlcwENYPVHNV2v9nNfhk4uy6UmAUDxB7xKy2rAMrz0NoTPTJnwRjfu74JwbdnZVy
+         FLstQ+/BQyXKrCx8YBPTM7v9qfhTbzrLJYzsFn3VF/fvq7ONT/8ke6fShEwLZ7jRipRz
+         38vzGmZ8NOhvt02eL+ASs790KTW9INk9o57MuIR5OrGLdRLw3DvTcCsBNf2khY4YvpHU
+         yITdiQC98GneK3rbhh0sN3A91wk4q0EhDKe/oT7sr9go7PkgQlCjG9OPmNnepGwdcsUI
+         DdlKyQXEbfBOGS9zhq1T8zOdJSSIgqVasOtAL+Y6Y0bNgpcgwyk0IXqUbqotoKkgeUtt
+         yA4Q==
+X-Gm-Message-State: AOAM530gapDSRe2oMygPR8CSNup3pUNxviwXlx+c7gbpcTCI0zpWctA1
+        Krv847GXa0D0aDd6UwCDxUwRu/igJi9yYDcTyy6JbuXmt/qqYwwUHgxUnppqB/wb4ItAObTnGUW
+        WeKfRVdZWhn+2xb+8ZOY8xrHe
+X-Received: by 2002:a05:6e02:1a42:b0:2cb:eb85:4395 with SMTP id u2-20020a056e021a4200b002cbeb854395mr577694ilv.35.1649946102712;
+        Thu, 14 Apr 2022 07:21:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJySW9eFDl/20l+wYHt6KUUivHRwy3I3c9ZS4Vt8YHnsSsA7JdmygXiN3+pPwJ0aGkm91npruQ==
+X-Received: by 2002:a05:6e02:1a42:b0:2cb:eb85:4395 with SMTP id u2-20020a056e021a4200b002cbeb854395mr577685ilv.35.1649946102337;
+        Thu, 14 Apr 2022 07:21:42 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id y17-20020a92d0d1000000b002ca8027016bsm1105558ila.45.2022.04.14.07.21.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 07:21:42 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 10:21:41 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Alistair Popple <apopple@nvidia.com>
+Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH] mm: Remove stub for non_swap_entry()
+Message-ID: <Ylgt9aLU5T+e+Qju@xz-m1.local>
+References: <20220413191147.66645-1-peterx@redhat.com>
+ <87zgko9obm.fsf@nvdebian.thelocal>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87zgko9obm.fsf@nvdebian.thelocal>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> On Thu, Apr 14, 2022 at 03:30:32PM +0300, Jani Nikula wrote:
->> Hey, I've sent this before, ages ago, but haven't really followed
->> through with it. I still think it would be useful for many scenarios
->> where a plain number is a clumsy interface for a module param.
->> 
->> Thoughts?
->
-> We should not be adding new module parameters anyway (they operate on
-> code, not data/devices), so what would this be used for?
+On Thu, Apr 14, 2022 at 03:48:33PM +1000, Alistair Popple wrote:
+> Peter Xu <peterx@redhat.com> writes:
+> 
+> > The stub for non_swap_entry() may not help much, because MAX_SWAPFILES has
+> > already contained all the information to decide whether a swap entry is
+> > real swap entry of pesudo ones (migrations, ...).
+> >
+> > There can be some performance influences on non_swap_entry() with below
+> > conditions all met:
+> >
+> >   !CONFIG_MIGRATION && !CONFIG_MEMORY_FAILURE && !CONFIG_DEVICE_PRIVATE
+> >
+> > But that's definitely not the major config most machines will use, at the
+> > meantime it's already in a slow path of swap entry (being parsed from a
+> > swap pte), so IMHO it shouldn't be a major issue.  Also according to the
+> > analysis from Alistair, somehow the stub didn't do the job right [1].
+> 
+> I wasn't so much concerned about execution speed given it's on the slow path
+> anyway but overall code size, which is one reason all those config options might
+> be disabled. However in practice it made little to no difference as those config
+> options already remove most of the extra code so I agree we can drop the stub.
 
-I think it's just easier to use names than random values, and this also
-gives you range check on the input.
+I see, yeah that's a good point.
 
-I also keep telling people not to add new module parameters, but it's
-not like they're going away anytime soon.
+I'd wildly guess a minumum set of Linux build could still like that, but
+not strongly, as I'd first think about not having CONFIG_SWAP at all if so.
 
-If there's a solution to being able to pass device specific debug
-parameters at probe time, I'm all ears. At least i915 has a bunch of
-things which can't really be changed after probe, when debugfs for the
-device is around. Module parameters aren't ideal, but debugfs doesn't
-work for this.
+> 
+> Reviewed-by: Alistair Popple <apopple@nvidia.com>
 
-
-BR,
-Jani.
+Thanks!
 
 -- 
-Jani Nikula, Intel Open Source Graphics Center
+Peter Xu
+
