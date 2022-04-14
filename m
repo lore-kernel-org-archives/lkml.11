@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2339C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC21DC433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:49:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234903AbiDNNuq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:50:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
+        id S1344647AbiDNNul (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:50:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344053AbiDNNaR (ORCPT
+        with ESMTP id S1344047AbiDNNaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:30:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98EC613E2B;
-        Thu, 14 Apr 2022 06:27:09 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D4F62CE;
+        Thu, 14 Apr 2022 06:27:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36A8660C14;
-        Thu, 14 Apr 2022 13:27:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49AD1C385A5;
-        Thu, 14 Apr 2022 13:27:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1183460C14;
+        Thu, 14 Apr 2022 13:27:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23AF2C385A5;
+        Thu, 14 Apr 2022 13:26:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942828;
-        bh=ILdbK86CrJD9qF8d6CZPCGSNQBYL1rQm8mHJZv/+8cc=;
+        s=korg; t=1649942820;
+        bh=xI7yxAPVG8yEPrckyuoQy3QpP3/2Y7j45K3IEDsHzRw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VIfoDL2co/ObCzy9zHGgpK3QIp6tlUE0JZKfrHCgdz/S7uYyY1mz/PK/NXy1QclZG
-         QTon/dDqBborZmW+vU1LHN3q1Bg/3IA0ZMOoLC5SK0Neup6ejwGnABbXC3pCEIBeIK
-         dUIqLcBQ4cPsBnHIK6gNAyrVEd7xUe/dt2W7JmkI=
+        b=QKomvJ0b342f+IycWZaQvM6CUbVCU5CQ2N8a75nC93Tf5FsqvjZ9TRIHdvw4xh6CO
+         ndM3Utb0o5FXYPgBB6i4OBFSaxN1kKXP/Zo9L8y8MJ5YUkZTDwLU8NxUQQlIoQIH0l
+         H5SexR/16oI59MA/ZR7fQkZ/w/UKoN84XrTutEt0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jordy Zomer <jordy@pwning.systems>,
-        Mike Snitzer <snitzer@redhat.com>,
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Neal Liu <neal_liu@aspeedtech.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 275/338] dm ioctl: prevent potential spectre v1 gadget
-Date:   Thu, 14 Apr 2022 15:12:58 +0200
-Message-Id: <20220414110846.715017762@linuxfoundation.org>
+Subject: [PATCH 4.19 272/338] usb: ehci: add pci device support for Aspeed platforms
+Date:   Thu, 14 Apr 2022 15:12:55 +0200
+Message-Id: <20220414110846.629719603@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -49,42 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jordy Zomer <jordy@jordyzomer.github.io>
+From: Neal Liu <neal_liu@aspeedtech.com>
 
-[ Upstream commit cd9c88da171a62c4b0f1c70e50c75845969fbc18 ]
+[ Upstream commit c3c9cee592828528fd228b01d312c7526c584a42 ]
 
-It appears like cmd could be a Spectre v1 gadget as it's supplied by a
-user and used as an array index. Prevent the contents of kernel memory
-from being leaked to userspace via speculative execution by using
-array_index_nospec.
+Enable Aspeed quirks in commit 7f2d73788d90 ("usb: ehci:
+handshake CMD_RUN instead of STS_HALT") to support Aspeed
+ehci-pci device.
 
-Signed-off-by: Jordy Zomer <jordy@pwning.systems>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Link: https://lore.kernel.org/r/20220208101657.76459-1-neal_liu@aspeedtech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-ioctl.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/host/ehci-pci.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
-index 17cbad58834f..0aae4a46db66 100644
---- a/drivers/md/dm-ioctl.c
-+++ b/drivers/md/dm-ioctl.c
-@@ -17,6 +17,7 @@
- #include <linux/dm-ioctl.h>
- #include <linux/hdreg.h>
- #include <linux/compat.h>
-+#include <linux/nospec.h>
+diff --git a/drivers/usb/host/ehci-pci.c b/drivers/usb/host/ehci-pci.c
+index 56e6fd0f0482..42ace9f92ce9 100644
+--- a/drivers/usb/host/ehci-pci.c
++++ b/drivers/usb/host/ehci-pci.c
+@@ -21,6 +21,9 @@ static const char hcd_name[] = "ehci-pci";
+ /* defined here to avoid adding to pci_ids.h for single instance use */
+ #define PCI_DEVICE_ID_INTEL_CE4100_USB	0x2e70
  
- #include <linux/uaccess.h>
++#define PCI_VENDOR_ID_ASPEED		0x1a03
++#define PCI_DEVICE_ID_ASPEED_EHCI	0x2603
++
+ /*-------------------------------------------------------------------------*/
+ #define PCI_DEVICE_ID_INTEL_QUARK_X1000_SOC		0x0939
+ static inline bool is_intel_quark_x1000(struct pci_dev *pdev)
+@@ -223,6 +226,12 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
+ 			ehci->has_synopsys_hc_bug = 1;
+ 		}
+ 		break;
++	case PCI_VENDOR_ID_ASPEED:
++		if (pdev->device == PCI_DEVICE_ID_ASPEED_EHCI) {
++			ehci_info(ehci, "applying Aspeed HC workaround\n");
++			ehci->is_aspeed = 1;
++		}
++		break;
+ 	}
  
-@@ -1670,6 +1671,7 @@ static ioctl_fn lookup_ioctl(unsigned int cmd, int *ioctl_flags)
- 	if (unlikely(cmd >= ARRAY_SIZE(_ioctls)))
- 		return NULL;
- 
-+	cmd = array_index_nospec(cmd, ARRAY_SIZE(_ioctls));
- 	*ioctl_flags = _ioctls[cmd].flags;
- 	return _ioctls[cmd].fn;
- }
+ 	/* optional debug port, normally in the first BAR */
 -- 
 2.35.1
 
