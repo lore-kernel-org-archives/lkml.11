@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6E1C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 635D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349552AbiDNPQP (ORCPT
+        id S1350663AbiDNPQu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:16:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47114 "EHLO
+        Thu, 14 Apr 2022 11:16:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347606AbiDNN7W (ORCPT
+        with ESMTP id S1347710AbiDNN7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E061240AA;
-        Thu, 14 Apr 2022 06:50:29 -0700 (PDT)
+        Thu, 14 Apr 2022 09:59:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852B2BABA2;
+        Thu, 14 Apr 2022 06:51:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA32DB82985;
-        Thu, 14 Apr 2022 13:50:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D08FC385A5;
-        Thu, 14 Apr 2022 13:50:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A3EB61DA1;
+        Thu, 14 Apr 2022 13:51:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27953C385A1;
+        Thu, 14 Apr 2022 13:51:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944226;
-        bh=IodMgCOPlbHTjYstVwL1rgNsPbzgP2ff+Y5c15pjrSw=;
+        s=korg; t=1649944310;
+        bh=6+DL0H6P0Lz+kScFSwzG0fxxL3fhyTZhJbBHhSZ44pw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vbsi7uhO6/sL31yM6XAkPiQWZ5oiR81kPOo82TWpZqAf7mBN31+Mhov1/Z9VvijvQ
-         9pQv2xgq7jkrBF+Ph/8E5Lpfu4EOfF8+6OM/fFSI9sNMhYCTs3sv/MBr+uLdYEb4Mh
-         VWAc5KwlfsqqD3bGluRh1TYCEoKMiYnAWCt6xcSY=
+        b=ei3RDwaKJQB01QFJhJTufaX58zXUnFZNFYZ7tZMb3bdDzHr6UImGH3M6kDv2+6xcZ
+         usVVKqkgjOgq60q75E9feaSPCPd+Oj07R/tF3M688MBazy6SZJUvaFGqBQfy/XeY2W
+         dAKeRP+bqE1qk1Af9aGrnIEwRL+oJoqU4YO7AJgA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Colin Winegarden <colin.winegarden@broadcom.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 399/475] bnxt_en: Eliminate unintended link toggle during FW reset
-Date:   Thu, 14 Apr 2022 15:13:04 +0200
-Message-Id: <20220414110906.235158825@linuxfoundation.org>
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Tejun Heo <tj@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.4 468/475] cgroup: Use open-time credentials for process migraton perm checks
+Date:   Thu, 14 Apr 2022 15:14:13 +0200
+Message-Id: <20220414110908.152315792@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -53,47 +52,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
+From: Tejun Heo <tj@kernel.org>
 
-[ Upstream commit 7c492a2530c1f05441da541307c2534230dfd59b ]
+commit 1756d7994ad85c2479af6ae5a9750b92324685af upstream.
 
-If the flow control settings have been changed, a subsequent FW reset
-may cause the ethernet link to toggle unnecessarily.  This link toggle
-will increase the down time by a few seconds.
+cgroup process migration permission checks are performed at write time as
+whether a given operation is allowed or not is dependent on the content of
+the write - the PID. This currently uses current's credentials which is a
+potential security weakness as it may allow scenarios where a less
+privileged process tricks a more privileged one into writing into a fd that
+it created.
 
-The problem is caused by bnxt_update_phy_setting() detecting a false
-mismatch in the flow control settings between the stored software
-settings and the current FW settings after the FW reset.  This mismatch
-is caused by the AUTONEG bit added to link_info->req_flow_ctrl in an
-inconsistent way in bnxt_set_pauseparam() in autoneg mode.  The AUTONEG
-bit should not be added to link_info->req_flow_ctrl.
+This patch makes both cgroup2 and cgroup1 process migration interfaces to
+use the credentials saved at the time of open (file->f_cred) instead of
+current's.
 
-Reviewed-by: Colin Winegarden <colin.winegarden@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
+Fixes: 187fe84067bd ("cgroup: require write perm on common ancestor when moving processes on the default hierarchy")
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+[OP: backport to 5.4: apply original __cgroup_procs_write() changes to
+cgroup_threads_write() and cgroup_procs_write()]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ kernel/cgroup/cgroup-v1.c |    7 ++++---
+ kernel/cgroup/cgroup.c    |   17 ++++++++++++++++-
+ 2 files changed, 20 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 97aff84fd1d1..d74c6a34b936 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -1673,9 +1673,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
- 		}
+--- a/kernel/cgroup/cgroup-v1.c
++++ b/kernel/cgroup/cgroup-v1.c
+@@ -507,10 +507,11 @@ static ssize_t __cgroup1_procs_write(str
+ 		goto out_unlock;
  
- 		link_info->autoneg |= BNXT_AUTONEG_FLOW_CTRL;
--		if (bp->hwrm_spec_code >= 0x10201)
--			link_info->req_flow_ctrl =
--				PORT_PHY_CFG_REQ_AUTO_PAUSE_AUTONEG_PAUSE;
-+		link_info->req_flow_ctrl = 0;
- 	} else {
- 		/* when transition from auto pause to force pause,
- 		 * force a link change
--- 
-2.35.1
-
+ 	/*
+-	 * Even if we're attaching all tasks in the thread group, we only
+-	 * need to check permissions on one of them.
++	 * Even if we're attaching all tasks in the thread group, we only need
++	 * to check permissions on one of them. Check permissions using the
++	 * credentials from file open to protect against inherited fd attacks.
+ 	 */
+-	cred = current_cred();
++	cred = of->file->f_cred;
+ 	tcred = get_task_cred(task);
+ 	if (!uid_eq(cred->euid, GLOBAL_ROOT_UID) &&
+ 	    !uid_eq(cred->euid, tcred->uid) &&
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -4798,6 +4798,7 @@ static ssize_t cgroup_procs_write(struct
+ {
+ 	struct cgroup *src_cgrp, *dst_cgrp;
+ 	struct task_struct *task;
++	const struct cred *saved_cred;
+ 	ssize_t ret;
+ 
+ 	dst_cgrp = cgroup_kn_lock_live(of->kn, false);
+@@ -4814,8 +4815,15 @@ static ssize_t cgroup_procs_write(struct
+ 	src_cgrp = task_cgroup_from_root(task, &cgrp_dfl_root);
+ 	spin_unlock_irq(&css_set_lock);
+ 
++	/*
++	 * Process and thread migrations follow same delegation rule. Check
++	 * permissions using the credentials from file open to protect against
++	 * inherited fd attacks.
++	 */
++	saved_cred = override_creds(of->file->f_cred);
+ 	ret = cgroup_procs_write_permission(src_cgrp, dst_cgrp,
+ 					    of->file->f_path.dentry->d_sb);
++	revert_creds(saved_cred);
+ 	if (ret)
+ 		goto out_finish;
+ 
+@@ -4839,6 +4847,7 @@ static ssize_t cgroup_threads_write(stru
+ {
+ 	struct cgroup *src_cgrp, *dst_cgrp;
+ 	struct task_struct *task;
++	const struct cred *saved_cred;
+ 	ssize_t ret;
+ 
+ 	buf = strstrip(buf);
+@@ -4857,9 +4866,15 @@ static ssize_t cgroup_threads_write(stru
+ 	src_cgrp = task_cgroup_from_root(task, &cgrp_dfl_root);
+ 	spin_unlock_irq(&css_set_lock);
+ 
+-	/* thread migrations follow the cgroup.procs delegation rule */
++	/*
++	 * Process and thread migrations follow same delegation rule. Check
++	 * permissions using the credentials from file open to protect against
++	 * inherited fd attacks.
++	 */
++	saved_cred = override_creds(of->file->f_cred);
+ 	ret = cgroup_procs_write_permission(src_cgrp, dst_cgrp,
+ 					    of->file->f_path.dentry->d_sb);
++	revert_creds(saved_cred);
+ 	if (ret)
+ 		goto out_finish;
+ 
 
 
