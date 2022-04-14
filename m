@@ -2,133 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA5BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73909C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241148AbiDNRHU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54882 "EHLO
+        id S229878AbiDNRK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 13:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242707AbiDNRFa (ORCPT
+        with ESMTP id S1344180AbiDNRIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:05:30 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C903EFE430;
-        Thu, 14 Apr 2022 09:44:12 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 7CDCF1F747;
-        Thu, 14 Apr 2022 16:44:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649954651; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fAh1doWqdu+T5/UcndhANWk7kmOrXizHJ0CC+YKJ3Ek=;
-        b=ItvkKqTJave9fRovg0ydCzfpuP8dusozKz3WSWTw4xyCZGYtm401PRaOw3A7tKtn195ttV
-        70Iq3LASPYGaaQFBLo3dZiZFNeqlNkqtTdFBwMkiE/Frdb4DB0+Mp2kc/s0DQAGgLyu5/I
-        Vu6vxdwLlPRhTE1WJ+UxARYAK7bzTjw=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 30A0813A86;
-        Thu, 14 Apr 2022 16:44:11 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Rl0ZC1tPWGKBDgAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Thu, 14 Apr 2022 16:44:11 +0000
-Date:   Thu, 14 Apr 2022 18:44:09 +0200
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     Tadeusz Struk <tadeusz.struk@linaro.org>
-Cc:     cgroups@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com
-Subject: Re: [PATCH] cgroup: don't queue css_release_work if one already
- pending
-Message-ID: <20220414164409.GA5404@blackbody.suse.cz>
-References: <20220412192459.227740-1-tadeusz.struk@linaro.org>
+        Thu, 14 Apr 2022 13:08:18 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C096121BC
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:56:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649955368; x=1681491368;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=BewBPeek1Gi+1NgMiUqk9ZJ0zScM1pv+m92TWIcZW58=;
+  b=RLpgLq0hmAeR/+Bm4TswE5C/JJqeyg/UfxN42TMBXk7GJ4opBpUBd3ao
+   FdmQVTA5lWWLN2wfImEyH7J2jW2cbGMhGSMmj8MuHwtpivjZNNprqy0kp
+   +H9FolPK2bqSxri/LhG7x7BOv8WjrfPq8P77iaWMX9ym6dkcXrze2y9gk
+   AwN3PXXG801mMBWtDtvBpMIVGhNx/i45YBcUJn4Acp66j/eESI8MJh+5A
+   m9GU+hkTQvZEcVLt6Vdqs6E7/Qx66WtiURjkbzDbU12RZCUBpzDTdOeri
+   PFCGVvkUZLjvDqLzqs1/VVYsmvmWWH81YVbK66zLZGp8pFJqX9jHNJ2O5
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="262730828"
+X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
+   d="scan'208";a="262730828"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 09:56:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
+   d="scan'208";a="526985402"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 14 Apr 2022 09:56:06 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nf2lK-00019M-7T;
+        Thu, 14 Apr 2022 16:56:06 +0000
+Date:   Fri, 15 Apr 2022 00:55:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: fs/io_uring.c:7501:39: sparse: sparse: marked inline, but without a
+ definition
+Message-ID: <202204150040.wXruLrfu-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220412192459.227740-1-tadeusz.struk@linaro.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Tadeusz.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   a19944809fe9942e6a96292490717904d0690c21
+commit: 5106dd6e74ab6c94daac1c357094f11e6934b36f io_uring: propagate issue_flags state down to file assignment
+date:   7 days ago
+config: arm-randconfig-s031-20220414 (https://download.01.org/0day-ci/archive/20220415/202204150040.wXruLrfu-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=5106dd6e74ab6c94daac1c357094f11e6934b36f
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 5106dd6e74ab6c94daac1c357094f11e6934b36f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm SHELL=/bin/bash
 
-Thanks for analyzing this syzbot report. Let me provide my understanding
-of the test case and explanation why I think your patch fixes it but is
-not fully correct.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-On Tue, Apr 12, 2022 at 12:24:59PM -0700, Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
-> Syzbot found a corrupted list bug scenario that can be triggered from
-> cgroup css_create(). The reproduces writes to cgroup.subtree_control
-> file, which invokes cgroup_apply_control_enable(), css_create(), and
-> css_populate_dir(), which then randomly fails with a fault injected -ENOMEM.
 
-The reproducer code makes it hard for me to understand which function
-fails with ENOMEM.
-But I can see your patch fixes the reproducer and your additional debug
-patch which proves that css->destroy_work is re-queued.
+sparse warnings: (new ones prefixed by >>)
+   fs/io_uring.c: note: in included file (through include/trace/trace_events.h, include/trace/define_trace.h, include/trace/events/io_uring.h):
+   include/trace/events/io_uring.h:488:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] op_flags @@     got restricted __kernel_rwf_t const [usertype] rw_flags @@
+   include/trace/events/io_uring.h:488:1: sparse:     expected unsigned int [usertype] op_flags
+   include/trace/events/io_uring.h:488:1: sparse:     got restricted __kernel_rwf_t const [usertype] rw_flags
+   fs/io_uring.c: note: in included file (through include/trace/perf.h, include/trace/define_trace.h, include/trace/events/io_uring.h):
+   include/trace/events/io_uring.h:488:1: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] op_flags @@     got restricted __kernel_rwf_t const [usertype] rw_flags @@
+   include/trace/events/io_uring.h:488:1: sparse:     expected unsigned int [usertype] op_flags
+   include/trace/events/io_uring.h:488:1: sparse:     got restricted __kernel_rwf_t const [usertype] rw_flags
+   fs/io_uring.c:3210:23: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] flags @@     got restricted __kernel_rwf_t @@
+   fs/io_uring.c:3210:23: sparse:     expected unsigned int [usertype] flags
+   fs/io_uring.c:3210:23: sparse:     got restricted __kernel_rwf_t
+   fs/io_uring.c:3429:24: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected void [noderef] __user * @@     got struct io_buffer *[assigned] kbuf @@
+   fs/io_uring.c:3429:24: sparse:     expected void [noderef] __user *
+   fs/io_uring.c:3429:24: sparse:     got struct io_buffer *[assigned] kbuf
+   fs/io_uring.c:3816:48: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected restricted __kernel_rwf_t [usertype] flags @@     got unsigned int [usertype] flags @@
+   fs/io_uring.c:3816:48: sparse:     expected restricted __kernel_rwf_t [usertype] flags
+   fs/io_uring.c:3816:48: sparse:     got unsigned int [usertype] flags
+   fs/io_uring.c:5141:14: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct file *file @@     got struct file [noderef] __rcu * @@
+   fs/io_uring.c:5141:14: sparse:     expected struct file *file
+   fs/io_uring.c:5141:14: sparse:     got struct file [noderef] __rcu *
+   fs/io_uring.c:6009:68: sparse: sparse: incorrect type in initializer (different base types) @@     expected restricted __poll_t [usertype] _key @@     got unsigned int [usertype] cflags @@
+   fs/io_uring.c:6009:68: sparse:     expected restricted __poll_t [usertype] _key
+   fs/io_uring.c:6009:68: sparse:     got unsigned int [usertype] cflags
+   fs/io_uring.c:6011:47: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:6015:52: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:6016:71: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:6016:65: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected restricted __poll_t [usertype] val @@     got unsigned int @@
+   fs/io_uring.c:6016:65: sparse:     expected restricted __poll_t [usertype] val
+   fs/io_uring.c:6016:65: sparse:     got unsigned int
+   fs/io_uring.c:6016:52: sparse: sparse: incorrect type in initializer (different base types) @@     expected restricted __poll_t [usertype] mask @@     got unsigned short @@
+   fs/io_uring.c:6016:52: sparse:     expected restricted __poll_t [usertype] mask
+   fs/io_uring.c:6016:52: sparse:     got unsigned short
+   fs/io_uring.c:6020:71: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected signed int [usertype] res @@     got restricted __poll_t [usertype] mask @@
+   fs/io_uring.c:6020:71: sparse:     expected signed int [usertype] res
+   fs/io_uring.c:6020:71: sparse:     got restricted __poll_t [usertype] mask
+   fs/io_uring.c:6051:66: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:6051:55: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected restricted __poll_t [usertype] val @@     got unsigned int @@
+   fs/io_uring.c:6051:55: sparse:     expected restricted __poll_t [usertype] val
+   fs/io_uring.c:6051:55: sparse:     got unsigned int
+   fs/io_uring.c:6132:45: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected int events @@     got restricted __poll_t [usertype] events @@
+   fs/io_uring.c:6132:45: sparse:     expected int events
+   fs/io_uring.c:6132:45: sparse:     got restricted __poll_t [usertype] events
+   fs/io_uring.c:6167:40: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected int mask @@     got restricted __poll_t [usertype] mask @@
+   fs/io_uring.c:6167:40: sparse:     expected int mask
+   fs/io_uring.c:6167:40: sparse:     got restricted __poll_t [usertype] mask
+   fs/io_uring.c:6167:50: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected int events @@     got restricted __poll_t [usertype] events @@
+   fs/io_uring.c:6167:50: sparse:     expected int events
+   fs/io_uring.c:6167:50: sparse:     got restricted __poll_t [usertype] events
+   fs/io_uring.c:6258:24: sparse: sparse: incorrect type in return expression (different base types) @@     expected int @@     got restricted __poll_t [assigned] [usertype] mask @@
+   fs/io_uring.c:6258:24: sparse:     expected int
+   fs/io_uring.c:6258:24: sparse:     got restricted __poll_t [assigned] [usertype] mask
+   fs/io_uring.c:6275:40: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected int mask @@     got restricted __poll_t [assigned] [usertype] mask @@
+   fs/io_uring.c:6275:40: sparse:     expected int mask
+   fs/io_uring.c:6275:40: sparse:     got restricted __poll_t [assigned] [usertype] mask
+   fs/io_uring.c:6275:50: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected int events @@     got restricted __poll_t [usertype] events @@
+   fs/io_uring.c:6275:50: sparse:     expected int events
+   fs/io_uring.c:6275:50: sparse:     got restricted __poll_t [usertype] events
+   fs/io_uring.c:6286:47: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected int events @@     got restricted __poll_t [usertype] events @@
+   fs/io_uring.c:6286:47: sparse:     expected int events
+   fs/io_uring.c:6286:47: sparse:     got restricted __poll_t [usertype] events
+   fs/io_uring.c:6311:25: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:6311:48: sparse: sparse: incorrect type in initializer (different base types) @@     expected restricted __poll_t [usertype] mask @@     got unsigned int @@
+   fs/io_uring.c:6311:48: sparse:     expected restricted __poll_t [usertype] mask
+   fs/io_uring.c:6311:48: sparse:     got unsigned int
+   fs/io_uring.c:6320:22: sparse: sparse: invalid assignment: |=
+   fs/io_uring.c:6320:22: sparse:    left side has type restricted __poll_t
+   fs/io_uring.c:6320:22: sparse:    right side has type int
+   fs/io_uring.c:6325:30: sparse: sparse: invalid assignment: &=
+   fs/io_uring.c:6325:30: sparse:    left side has type restricted __poll_t
+   fs/io_uring.c:6325:30: sparse:    right side has type int
+   fs/io_uring.c:6327:22: sparse: sparse: invalid assignment: |=
+   fs/io_uring.c:6327:22: sparse:    left side has type restricted __poll_t
+   fs/io_uring.c:6327:22: sparse:    right side has type int
+   fs/io_uring.c:6353:33: sparse: sparse: incorrect type in argument 5 (different base types) @@     expected int mask @@     got restricted __poll_t [assigned] [usertype] mask @@
+   fs/io_uring.c:6353:33: sparse:     expected int mask
+   fs/io_uring.c:6353:33: sparse:     got restricted __poll_t [assigned] [usertype] mask
+   fs/io_uring.c:6353:50: sparse: sparse: incorrect type in argument 6 (different base types) @@     expected int events @@     got restricted __poll_t [usertype] events @@
+   fs/io_uring.c:6353:50: sparse:     expected int events
+   fs/io_uring.c:6353:50: sparse:     got restricted __poll_t [usertype] events
+   fs/io_uring.c:6435:24: sparse: sparse: invalid assignment: |=
+   fs/io_uring.c:6435:24: sparse:    left side has type unsigned int
+   fs/io_uring.c:6435:24: sparse:    right side has type restricted __poll_t
+   fs/io_uring.c:6436:65: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:6436:29: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:6436:38: sparse: sparse: incorrect type in return expression (different base types) @@     expected restricted __poll_t @@     got unsigned int @@
+   fs/io_uring.c:6436:38: sparse:     expected restricted __poll_t
+   fs/io_uring.c:6436:38: sparse:     got unsigned int
+   fs/io_uring.c:6488:21: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] cflags @@     got restricted __poll_t [usertype] events @@
+   fs/io_uring.c:6488:21: sparse:     expected unsigned int [usertype] cflags
+   fs/io_uring.c:6488:21: sparse:     got restricted __poll_t [usertype] events
+   fs/io_uring.c:6526:43: sparse: sparse: invalid assignment: &=
+   fs/io_uring.c:6526:43: sparse:    left side has type restricted __poll_t
+   fs/io_uring.c:6526:43: sparse:    right side has type int
+   fs/io_uring.c:6527:62: sparse: sparse: restricted __poll_t degrades to integer
+   fs/io_uring.c:6527:43: sparse: sparse: invalid assignment: |=
+   fs/io_uring.c:6527:43: sparse:    left side has type restricted __poll_t
+   fs/io_uring.c:6527:43: sparse:    right side has type unsigned int
+   fs/io_uring.c:2463:17: sparse: sparse: context imbalance in 'handle_prev_tw_list' - different lock contexts for basic block
+>> fs/io_uring.c:7501:39: sparse: sparse: marked inline, but without a definition
+>> fs/io_uring.c:7501:39: sparse: sparse: marked inline, but without a definition
 
-> In such scenario the css_create() error path rcu enqueues css_free_rwork_fn
-> work for an css->refcnt initialized with css_release() destructor,
+vim +7501 fs/io_uring.c
 
-Note that css_free_rwork_fn() utilizes css->destroy_*r*work.
-The error path in css_create() open codes relevant parts of
-css_release_work_fn() so that css_release() can be skipped and the
-refcnt is eventually just percpu_ref_exit()'d.
+  7500	
+> 7501	static struct file *io_file_get_normal(struct io_kiocb *req, int fd)
+  7502	{
+  7503		struct file *file = fget(fd);
+  7504	
+  7505		trace_io_uring_file_get(req->ctx, req, req->user_data, fd);
+  7506	
+  7507		/* we don't allow fixed io_uring files */
+  7508		if (file && unlikely(file->f_op == &io_uring_fops))
+  7509			io_req_track_inflight(req);
+  7510		return file;
+  7511	}
+  7512	
 
-> and there is a chance that the css_release() function will be invoked
-> for a cgroup_subsys_state, for which a destroy_work has already been
-> queued via css_create() error path.
-
-But I think the problem is css_populate_dir() failing in
-cgroup_apply_control_enable(). (Is this what you actually meant?
-css_create() error path is then irrelevant, no?)
-
-The already created csses should then be rolled back via 
-	cgroup_restore_control(cgrp);
-	cgroup_apply_control_disable(cgrp);
-	   ...
-	   kill_css(css)
-
-I suspect the double-queuing is a result of the fact that there exists
-only the single reference to the css->refcnt. I.e. it's
-percpu_ref_kill_and_confirm()'d and released both at the same time.
-
-(Normally (when not killing the last reference), css->destroy_work reuse
-is not a problem because of the sequenced chain
-css_killed_work_fn()->css_put()->css_release().)
-
-> This can be avoided by adding a check to css_release() that checks
-> if it has already been enqueued.
-
-If that's what's happening, then your patch omits the final
-css_release_work_fn() in favor of css_killed_work_fn() but both should
-be run during the rollback upon css_populate_dir() failure.
-
-So an alternative approach to tackle this situation would be to split
-css->destroy_work into two work work_structs (one for killing, one for
-releasing) at the cost of inflating cgroup_subsys_state.
-
-Take my hypothesis with a grain of salt maybe the assumption (last
-reference == initial reference) is not different from normal operation.
-
-Regards,
-Michal
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
