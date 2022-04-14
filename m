@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7F1FC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 803F2C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356186AbiDNPSm (ORCPT
+        id S1356313AbiDNPSv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:18:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
+        Thu, 14 Apr 2022 11:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346140AbiDNNzw (ORCPT
+        with ESMTP id S1347176AbiDNN6d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:55:52 -0400
+        Thu, 14 Apr 2022 09:58:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CBBB0A45;
-        Thu, 14 Apr 2022 06:45:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26BEB8207;
+        Thu, 14 Apr 2022 06:49:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B376661D93;
-        Thu, 14 Apr 2022 13:45:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEB1EC385A1;
-        Thu, 14 Apr 2022 13:45:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCD9561DE7;
+        Thu, 14 Apr 2022 13:49:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6CBFC385A1;
+        Thu, 14 Apr 2022 13:49:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943948;
-        bh=/z7MPAZvFmUkpDiauBrT9wCPj3216I7SkrRPEdHXi8w=;
+        s=korg; t=1649944146;
+        bh=6Gbe4J2EhR/VgiSxky4sq29L3flJuguxPUi/AjaeUlY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mgJuaedlZRScqlcp55mjNC/wqScP18nAoT2HNFsUUk9Dy0bZZWZRvYa+eajq1soXq
-         sQRZitbFX0MBpuj50AtjhFOTQJQIzz8ZLgl8WJpznA9dFOLB+Vuvd05gVs5AgGZsyb
-         lEIeS2IWybv3yWQJUqnr3nsCYq3rq2BqAuqy+xU4=
+        b=H1M4vpCm4NGdTHsglJ9H2wW5hBpFkf7rqP8MrSXcZtVjSMQCtYfB73yd2aUmu/Jus
+         x4UJnbZooOev1r3DlX3cGH5zszusABOOEyEoIWtUW9A3aiEEotYd9xsCu3z7F5pGO0
+         t/3BGuWkunc2WKFFJU6uCrwfPUpq+9EIPIuW/wsI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.4 338/475] can: mcba_usb: mcba_usb_start_xmit(): fix double dev_kfree_skb in error path
-Date:   Thu, 14 Apr 2022 15:12:03 +0200
-Message-Id: <20220414110904.543516670@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 410/475] NFSv4: Protect the state recovery thread against direct reclaim
+Date:   Thu, 14 Apr 2022 15:13:15 +0200
+Message-Id: <20220414110906.539053686@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,32 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 04c9b00ba83594a29813d6b1fb8fdc93a3915174 upstream.
+[ Upstream commit 3e17898aca293a24dae757a440a50aa63ca29671 ]
 
-There is no need to call dev_kfree_skb() when usb_submit_urb() fails
-because can_put_echo_skb() deletes original skb and
-can_free_echo_skb() deletes the cloned skb.
+If memory allocation triggers a direct reclaim from the state recovery
+thread, then we can deadlock. Use memalloc_nofs_save/restore to ensure
+that doesn't happen.
 
-Fixes: 51f3baad7de9 ("can: mcba_usb: Add support for Microchip CAN BUS Analyzer")
-Link: https://lore.kernel.org/all/20220311080208.45047-1-hbh25y@gmail.com
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/usb/mcba_usb.c |    1 -
- 1 file changed, 1 deletion(-)
+ fs/nfs/nfs4state.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- a/drivers/net/can/usb/mcba_usb.c
-+++ b/drivers/net/can/usb/mcba_usb.c
-@@ -368,7 +368,6 @@ static netdev_tx_t mcba_usb_start_xmit(s
- xmit_failed:
- 	can_free_echo_skb(priv->netdev, ctx->ndx);
- 	mcba_usb_free_ctx(ctx);
--	dev_kfree_skb(skb);
- 	stats->tx_dropped++;
+diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
+index aa2caba38a01..1d2b81a233bb 100644
+--- a/fs/nfs/nfs4state.c
++++ b/fs/nfs/nfs4state.c
+@@ -49,6 +49,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/bitops.h>
+ #include <linux/jiffies.h>
++#include <linux/sched/mm.h>
  
- 	return NETDEV_TX_OK;
+ #include <linux/sunrpc/clnt.h>
+ 
+@@ -2504,9 +2505,17 @@ static int nfs4_bind_conn_to_session(struct nfs_client *clp)
+ 
+ static void nfs4_state_manager(struct nfs_client *clp)
+ {
++	unsigned int memflags;
+ 	int status = 0;
+ 	const char *section = "", *section_sep = "";
+ 
++	/*
++	 * State recovery can deadlock if the direct reclaim code tries
++	 * start NFS writeback. So ensure memory allocations are all
++	 * GFP_NOFS.
++	 */
++	memflags = memalloc_nofs_save();
++
+ 	/* Ensure exclusive access to NFSv4 state */
+ 	do {
+ 		clear_bit(NFS4CLNT_RUN_MANAGER, &clp->cl_state);
+@@ -2600,6 +2609,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
+ 			clear_bit(NFS4CLNT_RECLAIM_NOGRACE, &clp->cl_state);
+ 		}
+ 
++		memalloc_nofs_restore(memflags);
+ 		nfs4_end_drain_session(clp);
+ 		nfs4_clear_state_manager_bit(clp);
+ 
+@@ -2616,6 +2626,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
+ 			return;
+ 		if (test_and_set_bit(NFS4CLNT_MANAGER_RUNNING, &clp->cl_state) != 0)
+ 			return;
++		memflags = memalloc_nofs_save();
+ 	} while (refcount_read(&clp->cl_count) > 1 && !signalled());
+ 	goto out_drain;
+ 
+@@ -2627,6 +2638,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
+ 			clp->cl_hostname, -status);
+ 	ssleep(1);
+ out_drain:
++	memalloc_nofs_restore(memflags);
+ 	nfs4_end_drain_session(clp);
+ 	nfs4_clear_state_manager_bit(clp);
+ }
+-- 
+2.35.1
+
 
 
