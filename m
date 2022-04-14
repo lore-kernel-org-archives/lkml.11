@@ -2,157 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 832F9C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9804EC47080
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359105AbiDNPmk (ORCPT
+        id S1359326AbiDNPmz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57558 "EHLO
+        Thu, 14 Apr 2022 11:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352594AbiDNPRk (ORCPT
+        with ESMTP id S1352691AbiDNPRm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:17:40 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FC9BC84F;
-        Thu, 14 Apr 2022 08:01:49 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 15:01:47 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649948508;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5TDdmE09S+E9/Bqk8y91Y/tlKrElwL0r7vtr9lMqW9U=;
-        b=InGj8ELY5RkNkL8kloc8CDlSZ1y2WANocZcFCND+1ssigyWALFB/ng6WkUbYbXJiXTBhSL
-        Y20HEGYHEaj+O77omc/5xrq2ww29MpLHuJSv28immg0A5mRJXC5Fl6d/IjNFR0Bsl1QTms
-        CzgoC2WaQNS8SmFj+ViWq40toUj9gm40qvR7r2NgfjLaF1DsF/wntdG0keZU1oRx85HgOn
-        JXKZ+Bx6zUKw3Y8be4BT64yNtaPbJIOCRp2qHvQkehR8PulBsI5mnTl1wYU4jQ5bQESC33
-        3EAlC9GRJWHGX9s+k+vDjjr7QnnndnCoNWvVwFy0JkWRM/JrB1ZXGVr+S7xhcQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649948508;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5TDdmE09S+E9/Bqk8y91Y/tlKrElwL0r7vtr9lMqW9U=;
-        b=3/uIJrS7WAhtmU1EGBcKtXPgShejbu9njwq0JTnjtLGRSPOWIF6NFxyVabVWlQBU5fWTgj
-        lIh/ULi630BYpkDA==
-From:   "tip-bot2 for Kurt Kanzenbach" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: timers/core] timekeeping: Introduce fast accessor to clock tai
-Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220414091805.89667-2-kurt@linutronix.de>
-References: <20220414091805.89667-2-kurt@linutronix.de>
+        Thu, 14 Apr 2022 11:17:42 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A737939C5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:02:56 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id bg9so4983297pgb.9
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:02:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lInCf2RXVE8npmwDZ5ywzUqr3+J9J75UOdSgNIfQucQ=;
+        b=ESc0xkssnLIOHkhvRBwXjbYo2Vr5ZFQ6yUEkHvB7G+mAmWpWZUp+lSxv+sKqSxOVEc
+         Y8tCyNyGi5DQ70bL22uaI2aoPmKa0ksCdthc7k7nPHdEsX2VcSjKC9vqQPUP+agkttcR
+         0ZtQ1/c/XHR6aEciVwOzcs4imdQJjfgPOpi2bwOVzO1rVqbcelXCXxUYOo32bfvfmDoe
+         DfMk12UuO7cSewKj6hzX1Svu7gt2GyFLXEu0rVxq2gO6HCowv8pxytEsjuYELBU6GUi4
+         72bbDYdJEn9w+vFv3tG8pnoKYOm/9ICN3WPEKtV3UcyhTEztZCFw6iXXl+bvSNCgb6sm
+         QxmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lInCf2RXVE8npmwDZ5ywzUqr3+J9J75UOdSgNIfQucQ=;
+        b=PKvJnkf4AcUwQCBdQnIOmF4o+KvSBywu5Y/BFbPVB8v3wOB8/qvpU40KSIMds/IHHA
+         NwuEF2mTsWB9ufsMvmm/hyTkCJalQtpju8NvddZNVF61LqNeULWH5XlNcP5uy+sXHsJM
+         o1o5dd9SpQvXXMK8UyHVm1ZWaSwpNth7zfshlXIYGPGG+2qmOZ41w3ZUeU2HmVe0bm9i
+         3m8W5EdcSDNbPDZ6qmbq+IKozqeVBG8mINWlG3s9rldD1BvoNQL1KdjO4+tD/ilM5Jlr
+         E3e8jY4yCWFBDS050FyBJyVI5IJjshC+3n00qPgF0Azr4fe4Y0sNVsBUlwmlrVnZL3JD
+         afhw==
+X-Gm-Message-State: AOAM5309LgMezD+vgmbAXhX2iPCLbln4DvqQYfxu00lxCb6RmxNoclCY
+        /OkSOAs4DFWpIa1aMp0OGNAiFA==
+X-Google-Smtp-Source: ABdhPJyLy/mivC4Rf6firn5yR6WditwvIF9BoAdRBNaA38H3pCk/k7GL4kOGa9MuTOemu5IXJDieDQ==
+X-Received: by 2002:a05:6a00:1da2:b0:508:29cc:a894 with SMTP id z34-20020a056a001da200b0050829cca894mr4019844pfw.43.1649948575382;
+        Thu, 14 Apr 2022 08:02:55 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id 123-20020a620681000000b004fa7c20d732sm214588pfg.133.2022.04.14.08.02.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 08:02:54 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 15:02:51 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH v3 00/22] https://www.spinics.net/lists/kvm/msg267878.html
+Message-ID: <Ylg3m4qZ23wO+5oo@google.com>
+References: <20220414074000.31438-1-pbonzini@redhat.com>
+ <2939c0cb-8e0c-7de4-7143-2df303bbb542@redhat.com>
 MIME-Version: 1.0
-Message-ID: <164994850704.4207.9058445142052855306.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2939c0cb-8e0c-7de4-7143-2df303bbb542@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the timers/core branch of tip:
+On Thu, Apr 14, 2022, Paolo Bonzini wrote:
+> Uh-oh, wrong subject.  Should be "KVM MMU refactoring part 2: role changes".
+> 
+> Supersedes: <20220221162243.683208-1-pbonzini@redhat.com>
 
-Commit-ID:     3dc6ffae2da201284cb24af66af77ee0bbb2efaa
-Gitweb:        https://git.kernel.org/tip/3dc6ffae2da201284cb24af66af77ee0bbb2efaa
-Author:        Kurt Kanzenbach <kurt@linutronix.de>
-AuthorDate:    Thu, 14 Apr 2022 11:18:03 +02:00
-Committer:     Thomas Gleixner <tglx@linutronix.de>
-CommitterDate: Thu, 14 Apr 2022 16:19:30 +02:00
+Still Spinics huh?  I thought you were using b4 these days? :-)
 
-timekeeping: Introduce fast accessor to clock tai
+KVM Forum 2019 - Reports of my Bloat Have Been Greatly Exaggerated - Paolo Bonzini, Red Hat, Inc.
 
-Introduce fast/NMI safe accessor to clock tai for tracing. The Linux kernel
-tracing infrastructure has support for using different clocks to generate
-timestamps for trace events. Especially in TSN networks it's useful to have TAI
-as trace clock, because the application scheduling is done in accordance to the
-network time, which is based on TAI. With a tai trace_clock in place, it becomes
-very convenient to correlate network activity with Linux kernel application
-traces.
-
-Use the same implementation as ktime_get_boot_fast_ns() does by reading the
-monotonic time and adding the TAI offset. The same limitations as for the fast
-boot implementation apply. The TAI offset may change at run time e.g., by
-setting the time or using adjtimex() with an offset. However, these kind of
-offset changes are rare events. Nevertheless, the user has to be aware and deal
-with it in post processing.
-
-An alternative approach would be to use the same implementation as
-ktime_get_real_fast_ns() does. However, this requires to add an additional u64
-member to the tk_read_base struct. This struct together with a seqcount is
-designed to fit into a single cache line on 64 bit architectures. Adding a new
-member would violate this constraint.
-
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Link: https://lore.kernel.org/r/20220414091805.89667-2-kurt@linutronix.de
-
----
- Documentation/core-api/timekeeping.rst |  1 +
- include/linux/timekeeping.h            |  1 +
- kernel/time/timekeeping.c              | 17 +++++++++++++++++
- 3 files changed, 19 insertions(+)
-
-diff --git a/Documentation/core-api/timekeeping.rst b/Documentation/core-api/timekeeping.rst
-index 729e248..22ec68f 100644
---- a/Documentation/core-api/timekeeping.rst
-+++ b/Documentation/core-api/timekeeping.rst
-@@ -132,6 +132,7 @@ Some additional variants exist for more specialized cases:
- .. c:function:: u64 ktime_get_mono_fast_ns( void )
- 		u64 ktime_get_raw_fast_ns( void )
- 		u64 ktime_get_boot_fast_ns( void )
-+		u64 ktime_get_tai_fast_ns( void )
- 		u64 ktime_get_real_fast_ns( void )
- 
- 	These variants are safe to call from any context, including from
-diff --git a/include/linux/timekeeping.h b/include/linux/timekeeping.h
-index 78a98bd..fe1e467 100644
---- a/include/linux/timekeeping.h
-+++ b/include/linux/timekeeping.h
-@@ -177,6 +177,7 @@ static inline u64 ktime_get_raw_ns(void)
- extern u64 ktime_get_mono_fast_ns(void);
- extern u64 ktime_get_raw_fast_ns(void);
- extern u64 ktime_get_boot_fast_ns(void);
-+extern u64 ktime_get_tai_fast_ns(void);
- extern u64 ktime_get_real_fast_ns(void);
- 
- /*
-diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
-index dcdcb85..2c22023 100644
---- a/kernel/time/timekeeping.c
-+++ b/kernel/time/timekeeping.c
-@@ -532,6 +532,23 @@ u64 notrace ktime_get_boot_fast_ns(void)
- }
- EXPORT_SYMBOL_GPL(ktime_get_boot_fast_ns);
- 
-+/**
-+ * ktime_get_tai_fast_ns - NMI safe and fast access to tai clock.
-+ *
-+ * The same limitations as described for ktime_get_boot_fast_ns() apply. The
-+ * mono time and the TAI offset are not read atomically which may yield wrong
-+ * readouts. However, an update of the TAI offset is an rare event e.g., caused
-+ * by settime or adjtimex with an offset. The user of this function has to deal
-+ * with the possibility of wrong timestamps in post processing.
-+ */
-+u64 notrace ktime_get_tai_fast_ns(void)
-+{
-+	struct timekeeper *tk = &tk_core.timekeeper;
-+
-+	return (ktime_get_mono_fast_ns() + ktime_to_ns(data_race(tk->offs_tai)));
-+}
-+EXPORT_SYMBOL_GPL(ktime_get_tai_fast_ns);
-+
- static __always_inline u64 __ktime_get_real_fast(struct tk_fast *tkf, u64 *mono)
- {
- 	struct tk_read_base *tkr;
+KVM Forum 2022 - Reports of my Fossilization Have Been Greatly Understated - Paolo Bonzini, Red Hat, Inc.
