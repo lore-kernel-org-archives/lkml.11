@@ -2,101 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 783C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 19:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A087EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 19:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345558AbiDNT2l (ORCPT
+        id S1345581AbiDNT3V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 15:28:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34510 "EHLO
+        Thu, 14 Apr 2022 15:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345477AbiDNT2W (ORCPT
+        with ESMTP id S238270AbiDNT3T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 15:28:22 -0400
-Received: from out28-75.mail.aliyun.com (out28-75.mail.aliyun.com [115.124.28.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75D1E33B5;
-        Thu, 14 Apr 2022 12:25:56 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1325045|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0344537-0.000618227-0.964928;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047199;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=18;RT=18;SR=0;TI=SMTPD_---.NQo2Nje_1649964351;
-Received: from zhouyanjie-virtual-machine.localdomain(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.NQo2Nje_1649964351)
-          by smtp.aliyun-inc.com(33.40.38.164);
-          Fri, 15 Apr 2022 03:25:52 +0800
-From:   =?UTF-8?q?=E5=91=A8=E7=90=B0=E6=9D=B0=20=28Zhou=20Yanjie=29?= 
-        <zhouyanjie@wanyeetech.com>
-To:     gregkh@linuxfoundation.org, hminas@synopsys.com,
-        robh+dt@kernel.org, krzk+dt@kernel.org, tsbogend@alpha.franken.de,
-        paul@crapouillou.net
-Cc:     linux-usb@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        dragancecavac@yahoo.com, hns@goldelico.com,
-        dongsheng.qiu@ingenic.com, aric.pzqi@ingenic.com,
-        rick.tyliu@ingenic.com, sernia.zhou@foxmail.com,
-        zhenwenjin@gmail.com, reimu@sudomaker.com
-Subject: [PATCH v3 3/3] MIPS: Ingenic: Refresh USB nodes to match driver changes.
-Date:   Fri, 15 Apr 2022 03:25:37 +0800
-Message-Id: <1649964337-114337-4-git-send-email-zhouyanjie@wanyeetech.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649964337-114337-1-git-send-email-zhouyanjie@wanyeetech.com>
-References: <1649964337-114337-1-git-send-email-zhouyanjie@wanyeetech.com>
+        Thu, 14 Apr 2022 15:29:19 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247A2E33BC
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 12:26:53 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id bx5so5969566pjb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 12:26:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wPa/6FlyvWIRPem5OetV4babaNSundzYasMD/hZ1m0k=;
+        b=02ENnJGbo0YcUr3+ZaJIhNjLH1/QL6hzraEv1kgPKdc3nb8JhG3nB/3tYerTEtVCzF
+         SMV5gBo2W7wLRQFSRq2zIhux6+ZoJ5dxerVN4rbwBwuCRcBorphOJm4nbSE/FjqCagqE
+         jKNXnvlmrbkpKn9YSIjSjWNSAHNgHKJA3JDWtT+V7oB2MS0lOdCPBypdnvrL2Iu335S+
+         sFcg2qV/iE3ubSv2a1NfJsTOQWYrmRnB76qrNdnxmmF6t0hsfkggPNYrjwnl5AnIYx9i
+         Q2Z4yCvROjVOD25Y1Jx2a/8t7JjCxu/dlhSpC+GBKzrtXW8YkuoAOOJCdJh2pppL93b5
+         QhjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wPa/6FlyvWIRPem5OetV4babaNSundzYasMD/hZ1m0k=;
+        b=A5AvVyl37QjlIq6hUNJZk3nDjJGY6f31ADHqprrcwi7ktRaI8zrtIL/PmUWpFz6QqV
+         D4Czm10rrV2fFshC6RGKOdrHxopYldLMKuz/be8jYlm6l+MlkdJ7ETvoZ77SwK7FcOvV
+         lIehfszzbLGr6jAyj+XGCrgBXSRtZgdY6oNIY364Su9KxKBMmRQ1hHqLKA/D6xzZ5M+H
+         q1DV3eyLnza/vEMUQqPBEVEBcKtKuuzdbp/3TWhV4OmUXyq2BvWj5sSaymOTBYY18lXb
+         0xUQLGQIKLzSYw1604f7hV5mo5TUzzJCttlT+DkYjmkjWsm7EXyfo9yn6eex66uY72eH
+         cFTg==
+X-Gm-Message-State: AOAM532Z4cTS7J97fDZN0VV3VkGBIo8BR7YlVf5OduH+lsH6IcXw5tQW
+        aJW47y8NPC5PRRzar2Tw0Yl5Ng==
+X-Google-Smtp-Source: ABdhPJz68+ja9Rk3m6NzdwebJgd6upA66XFcooeP3Is37+CGdm3mLdLvecugNkbiVEmq/aAKWSBM3w==
+X-Received: by 2002:a17:90b:3881:b0:1c7:c02b:bcf8 with SMTP id mu1-20020a17090b388100b001c7c02bbcf8mr111237pjb.131.1649964412677;
+        Thu, 14 Apr 2022 12:26:52 -0700 (PDT)
+Received: from x1.hsd1.or.comcast.net ([2601:1c2:1001:7090:5b60:6a76:138d:2646])
+        by smtp.gmail.com with ESMTPSA id p17-20020a056a0026d100b00505ff62176asm590060pfw.180.2022.04.14.12.26.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 12:26:52 -0700 (PDT)
+From:   Drew Fustini <dfustini@baylibre.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Nishanth Menon <nm@ti.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Dave Gerlach <d-gerlach@ti.com>,
+        Tony Lindgren <tony@atomide.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Drew Fustini <dfustini@baylibre.com>
+Subject: [PATCH v3 0/2] soc: ti: wkup_m3_ipc: Add support for IO Isolation
+Date:   Thu, 14 Apr 2022 12:27:22 -0700
+Message-Id: <20220414192722.2978837-1-dfustini@baylibre.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refresh USB nodes in the jz4780.dtsi, x1000.dtsi, and x1830.dtsi files.
+TI AM437x SoCs support isolation of the IOs so that control is taken
+from the peripheral they are connected to and overridden by values
+present in the control register for that pad. This series documents a
+new property 'ti,set-io-isolation' and updates the wkup_m3_ipc driver to
+inform the CM3 firmware when that property is set.
 
-Signed-off-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
----
+A prerequisite for this series is:
+[PATCH v2 0/2] soc: ti: wkup_m3_ipc: support vtt toggle
+https://lore.kernel.org/lkml/20220409211215.2529387-1-dfustini@baylibre.com/T/
 
-Notes:
-    v3:
-    New patch.
+Changes from v2:
+- correct indentation of the 'allOf:' block in binding patch
 
- arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 +-
- arch/mips/boot/dts/ingenic/x1000.dtsi  | 2 +-
- arch/mips/boot/dts/ingenic/x1830.dtsi  | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+Changes from v1:
+- correct typo of 'ti,set-io-isolation' property
+- make 'ti,set-io-isolation' only valid for 'ti,am4372-wkup-m3-ipc'
 
-diff --git a/arch/mips/boot/dts/ingenic/jz4780.dtsi b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-index b998301..c182a65 100644
---- a/arch/mips/boot/dts/ingenic/jz4780.dtsi
-+++ b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-@@ -577,7 +577,7 @@
- 	};
- 
- 	otg: usb@13500000 {
--		compatible = "ingenic,jz4780-otg", "snps,dwc2";
-+		compatible = "ingenic,jz4780-otg";
- 		reg = <0x13500000 0x40000>;
- 
- 		interrupt-parent = <&intc>;
-diff --git a/arch/mips/boot/dts/ingenic/x1000.dtsi b/arch/mips/boot/dts/ingenic/x1000.dtsi
-index 8bd27ede..343818a2 100644
---- a/arch/mips/boot/dts/ingenic/x1000.dtsi
-+++ b/arch/mips/boot/dts/ingenic/x1000.dtsi
-@@ -366,7 +366,7 @@
- 	};
- 
- 	otg: usb@13500000 {
--		compatible = "ingenic,x1000-otg", "snps,dwc2";
-+		compatible = "ingenic,x1000-otg";
- 		reg = <0x13500000 0x40000>;
- 
- 		interrupt-parent = <&intc>;
-diff --git a/arch/mips/boot/dts/ingenic/x1830.dtsi b/arch/mips/boot/dts/ingenic/x1830.dtsi
-index 2595df8..6aff19f 100644
---- a/arch/mips/boot/dts/ingenic/x1830.dtsi
-+++ b/arch/mips/boot/dts/ingenic/x1830.dtsi
-@@ -355,7 +355,7 @@
- 	};
- 
- 	otg: usb@13500000 {
--		compatible = "ingenic,x1830-otg", "snps,dwc2";
-+		compatible = "ingenic,x1830-otg";
- 		reg = <0x13500000 0x40000>;
- 
- 		interrupt-parent = <&intc>;
+Dave Gerlach (1):
+  soc: ti: wkup_m3_ipc: Add support for IO Isolation
+
+Drew Fustini (1):
+  dt-bindings: wkup-m3-ipc: Add ti,set-io-isolation property
+
+ .../bindings/soc/ti/wkup-m3-ipc.yaml          | 78 +++++++++++++++++--
+ drivers/soc/ti/wkup_m3_ipc.c                  | 14 +++-
+ include/linux/wkup_m3_ipc.h                   |  1 +
+ 3 files changed, 86 insertions(+), 7 deletions(-)
+
 -- 
-2.7.4
+2.32.0
 
