@@ -2,103 +2,328 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C263C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 11:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08344C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 11:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242863AbiDNL7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 07:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36022 "EHLO
+        id S242878AbiDNMA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 08:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232169AbiDNL7p (ORCPT
+        with ESMTP id S231937AbiDNMAu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 07:59:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7640F7DA9A;
-        Thu, 14 Apr 2022 04:57:20 -0700 (PDT)
+        Thu, 14 Apr 2022 08:00:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5451D7DA86;
+        Thu, 14 Apr 2022 04:58:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05C88B82930;
-        Thu, 14 Apr 2022 11:57:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58C5BC385A9;
-        Thu, 14 Apr 2022 11:57:17 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="DA3FZELa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649937431;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=P5/ULzB2dBV6wVJcVqNwMtw/WLd6F6dq7ksMxHzz5tA=;
-        b=DA3FZELaUNpOSYvN5LZg46a4BKQ2y+Ds4aokgH0c/AscA0yjtWDKAlopToI81Zx0gDnFKd
-        TNnyt4pavfAonj7xLVnay1D+NQ9kmjmZtZW1ABjaB7447fL2qIhnSvM0du/CfvkvtOHUPa
-        HeDydNmQb9rYBpps776+yfVJXvO7nz8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 79fb6ffd (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 14 Apr 2022 11:57:10 +0000 (UTC)
-Received: by mail-yb1-f181.google.com with SMTP id p65so8921323ybp.9;
-        Thu, 14 Apr 2022 04:57:08 -0700 (PDT)
-X-Gm-Message-State: AOAM5317LT+TX16N/elP9Kdo68aBNXUwvo9Zzpe0CDVZOONV612AyZSh
-        QGieUKMvwI2CawZk7kSAgjEbnCtrK2z2dLZcbwA=
-X-Google-Smtp-Source: ABdhPJyKcg613GF5x9fgeLFiZXh8/mhAmu2M+VzMPDTSDm44Qulp172KDH/PBSl3qtPO19ZfXo8qsw8aP1vhDQLRj1E=
-X-Received: by 2002:a25:fe0c:0:b0:641:2884:2c7e with SMTP id
- k12-20020a25fe0c000000b0064128842c7emr1344925ybe.382.1649937427424; Thu, 14
- Apr 2022 04:57:07 -0700 (PDT)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5C0861AA3;
+        Thu, 14 Apr 2022 11:58:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9B17C385A5;
+        Thu, 14 Apr 2022 11:58:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649937504;
+        bh=482+Wgg0EqTTSqxp8or40MlNuB0vvAxBGjTqx9z9sFM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OsCEgYCeWuxSKQCwDp/UZZeX4God3TJTwo+8dYfW0ZbqBTfdMZD+BBAoCqtv6AIqy
+         hVRJKn6KIlpWneqfoHdAB1VU7XRTMGm49gEpf8ZHVos7IHpjN0iklj2Dfw44PDq6u/
+         63jESVcUbwyNGHZepIkOw9+K0ZQw39jZHnoW7mpIXt8E35YkUs/ZTdWJnQufvyo6ef
+         p9YVIcjnkD79tRdHn7XCTN7YFu0fIOKIh/TyEpK/vcUrRAAYfIJDGEZf0fjvYp0a+b
+         QCESAXcfCnxQ9YlO2wRVr0P65SvV5dGJcQnLZZyB8dtigwRha3pAW6qKWOxxK1VYD+
+         9RWxmLtPzGeQw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 5BC1A40407; Thu, 14 Apr 2022 08:58:21 -0300 (-03)
+Date:   Thu, 14 Apr 2022 08:58:21 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     James Clark <james.clark@arm.com>,
+        linux-perf-users@vger.kernel.org, leo.yan@linaro.com,
+        German.Gomez@arm.com, Luke Dare <Luke.Dare@arm.com>,
+        Al Grant <al.grant@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] perf: docs: Add man page entry for Arm SPE
+Message-ID: <YlgMXZw82+4EwBxQ@kernel.org>
+References: <20220413084021.2556142-1-james.clark@arm.com>
+ <20220413093837.GE521036@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
-References: <20220413115411.21489-1-Jason@zx2c4.com> <20220413115411.21489-2-Jason@zx2c4.com>
- <Ylfzi1lNWTH1wjLA@shell.armlinux.org.uk>
-In-Reply-To: <Ylfzi1lNWTH1wjLA@shell.armlinux.org.uk>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 14 Apr 2022 13:56:56 +0200
-X-Gmail-Original-Message-ID: <CAHmME9q8R+uHNF_VBkJezfWn78kyw0RgGf-36JJKs6t3h3wQnA@mail.gmail.com>
-Message-ID: <CAHmME9q8R+uHNF_VBkJezfWn78kyw0RgGf-36JJKs6t3h3wQnA@mail.gmail.com>
-Subject: Re: [PATCH v4 01/11] timekeeping: add raw clock fallback for random_get_entropy()
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, "Theodore Ts'o" <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-um@lists.infradead.org, X86 ML <x86@kernel.org>,
-        linux-xtensa@linux-xtensa.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220413093837.GE521036@leoy-ThinkPad-X240s>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Russell,
+Em Wed, Apr 13, 2022 at 05:38:37PM +0800, Leo Yan escreveu:
+> On Wed, Apr 13, 2022 at 09:40:21AM +0100, James Clark wrote:
+> > The SPE integration in Perf has quite a few usability quirks that
+> > can't be found by just reading the reference manual. So document this
+> > and at the same time add a summary of the feature that is also hard to
+> > find elsewhere.
+> > 
+> > Co-authored-by: Luke Dare <Luke.Dare@arm.com>
+> > Co-authored-by: Al Grant <al.grant@arm.com>
+> > Signed-off-by: James Clark <james.clark@arm.com>
+> 
+> Reviewed-by: Leo Yan <leo.yan@linaro.org>
 
-On Thu, Apr 14, 2022 at 12:12 PM Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
-> I'm surprised this didn't trigger checkpatch to warn. From
-> coding-style:
->
-> 6.1) Function prototypes
-> Do not use the ``extern`` keyword with function declarations as this makes
-> lines longer and isn't strictly necessary.
+Thanks, applied.
 
-Okay, will do for v+1.
+- Arnaldo
 
-Jason
+ 
+> > ---
+> >  tools/perf/Documentation/perf-arm-spe.txt | 218 ++++++++++++++++++++++
+> >  tools/perf/Documentation/perf.txt         |   2 +-
+> >  2 files changed, 219 insertions(+), 1 deletion(-)
+> >  create mode 100644 tools/perf/Documentation/perf-arm-spe.txt
+> > 
+> > diff --git a/tools/perf/Documentation/perf-arm-spe.txt b/tools/perf/Documentation/perf-arm-spe.txt
+> > new file mode 100644
+> > index 000000000000..bf03222e9a68
+> > --- /dev/null
+> > +++ b/tools/perf/Documentation/perf-arm-spe.txt
+> > @@ -0,0 +1,218 @@
+> > +perf-arm-spe(1)
+> > +================
+> > +
+> > +NAME
+> > +----
+> > +perf-arm-spe - Support for Arm Statistical Profiling Extension within Perf tools
+> > +
+> > +SYNOPSIS
+> > +--------
+> > +[verse]
+> > +'perf record' -e arm_spe//
+> > +
+> > +DESCRIPTION
+> > +-----------
+> > +
+> > +The SPE (Statistical Profiling Extension) feature provides accurate attribution of latencies and
+> > + events down to individual instructions. Rather than being interrupt-driven, it picks an
+> > +instruction to sample and then captures data for it during execution. Data includes execution time
+> > +in cycles. For loads and stores it also includes data address, cache miss events, and data origin.
+> > +
+> > +The sampling has 5 stages:
+> > +
+> > +  1. Choose an operation
+> > +  2. Collect data about the operation
+> > +  3. Optionally discard the record based on a filter
+> > +  4. Write the record to memory
+> > +  5. Interrupt when the buffer is full
+> > +
+> > +Choose an operation
+> > +~~~~~~~~~~~~~~~~~~~
+> > +
+> > +This is chosen from a sample population, for SPE this is an IMPLEMENTATION DEFINED choice of all
+> > +architectural instructions or all micro-ops. Sampling happens at a programmable interval. The
+> > +architecture provides a mechanism for the SPE driver to infer the minimum interval at which it should
+> > +sample. This minimum interval is used by the driver if no interval is specified. A pseudo-random
+> > +perturbation is also added to the sampling interval by default.
+> > +
+> > +Collect data about the operation
+> > +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > +
+> > +Program counter, PMU events, timings and data addresses related to the operation are recorded.
+> > +Sampling ensures there is only one sampled operation is in flight.
+> > +
+> > +Optionally discard the record based on a filter
+> > +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > +
+> > +Based on programmable criteria, choose whether to keep the record or discard it. If the record is
+> > +discarded then the flow stops here for this sample.
+> > +
+> > +Write the record to memory
+> > +~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > +
+> > +The record is appended to a memory buffer
+> > +
+> > +Interrupt when the buffer is full
+> > +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > +
+> > +When the buffer fills, an interrupt is sent and the driver signals Perf to collect the records.
+> > +Perf saves the raw data in the perf.data file.
+> > +
+> > +Opening the file
+> > +----------------
+> > +
+> > +Up until this point no decoding of the SPE data was done by either the kernel or Perf. Only when the
+> > +recorded file is opened with 'perf report' or 'perf script' does the decoding happen. When decoding
+> > +the data, Perf generates "synthetic samples" as if these were generated at the time of the
+> > +recording. These samples are the same as if normal sampling was done by Perf without using SPE,
+> > +although they may have more attributes associated with them. For example a normal sample may have
+> > +just the instruction pointer, but an SPE sample can have data addresses and latency attributes.
+> > +
+> > +Why Sampling?
+> > +-------------
+> > +
+> > + - Sampling, rather than tracing, cuts down the profiling problem to something more manageable for
+> > + hardware. Only one sampled operation is in flight at a time.
+> > +
+> > + - Allows precise attribution data, including: Full PC of instruction, data virtual and physical
+> > + addresses.
+> > +
+> > + - Allows correlation between an instruction and events, such as TLB and cache miss. (Data source
+> > + indicates which particular cache was hit, but the meaning is implementation defined because
+> > + different implementations can have different cache configurations.)
+> > +
+> > +However, SPE does not provide any call-graph information, and relies on statistical methods.
+> > +
+> > +Collisions
+> > +----------
+> > +
+> > +When an operation is sampled while a previous sampled operation has not finished, a collision
+> > +occurs. The new sample is dropped. Collisions affect the integrity of the data, so the sample rate
+> > +should be set to avoid collisions.
+> > +
+> > +The 'sample_collision' PMU event can be used to determine the number of lost samples. Although this
+> > +count is based on collisions _before_ filtering occurs. Therefore this can not be used as an exact
+> > +number for samples dropped that would have made it through the filter, but can be a rough
+> > +guide.
+> > +
+> > +The effect of microarchitectural sampling
+> > +-----------------------------------------
+> > +
+> > +If an implementation samples micro-operations instead of instructions, the results of sampling must
+> > +be weighted accordingly.
+> > +
+> > +For example, if a given instruction A is always converted into two micro-operations, A0 and A1, it
+> > +becomes twice as likely to appear in the sample population.
+> > +
+> > +The coarse effect of conversions, and, if applicable, sampling of speculative operations, can be
+> > +estimated from the 'sample_pop' and 'inst_retired' PMU events.
+> > +
+> > +Kernel Requirements
+> > +-------------------
+> > +
+> > +The ARM_SPE_PMU config must be set to build as either a module or statically.
+> > +
+> > +Depending on CPU model, the kernel may need to be booted with page table isolation disabled
+> > +(kpti=off). If KPTI needs to be disabled, this will fail with a console message "profiling buffer
+> > +inaccessible. Try passing 'kpti=off' on the kernel command line".
+> > +
+> > +Capturing SPE with perf command-line tools
+> > +------------------------------------------
+> > +
+> > +You can record a session with SPE samples:
+> > +
+> > +  perf record -e arm_spe// -- ./mybench
+> > +
+> > +The sample period is set from the -c option, and because the minimum interval is used by default
+> > +it's recommended to set this to a higher value. The value is written to PMSIRR.INTERVAL.
+> > +
+> > +Config parameters
+> > +~~~~~~~~~~~~~~~~~
+> > +
+> > +These are placed between the // in the event and comma separated. For example '-e
+> > +arm_spe/load_filter=1,min_latency=10/'
+> > +
+> > +  branch_filter=1     - collect branches only (PMSFCR.B)
+> > +  event_filter=<mask> - filter on specific events (PMSEVFR) - see bitfield description below
+> > +  jitter=1            - use jitter to avoid resonance when sampling (PMSIRR.RND)
+> > +  load_filter=1       - collect loads only (PMSFCR.LD)
+> > +  min_latency=<n>     - collect only samples with this latency or higher* (PMSLATFR)
+> > +  pa_enable=1         - collect physical address (as well as VA) of loads/stores (PMSCR.PA) - requires privilege
+> > +  pct_enable=1        - collect physical timestamp instead of virtual timestamp (PMSCR.PCT) - requires privilege
+> > +  store_filter=1      - collect stores only (PMSFCR.ST)
+> > +  ts_enable=1         - enable timestamping with value of generic timer (PMSCR.TS)
+> > +
+> > ++++*+++ Latency is the total latency from the point at which sampling started on that instruction, rather
+> > +than only the execution latency.
+> > +
+> > +Only some events can be filtered on; these include:
+> > +
+> > +  bit 1     - instruction retired (i.e. omit speculative instructions)
+> > +  bit 3     - L1D refill
+> > +  bit 5     - TLB refill
+> > +  bit 7     - mispredict
+> > +  bit 11    - misaligned access
+> > +
+> > +So to sample just retired instructions:
+> > +
+> > +  perf record -e arm_spe/event_filter=2/ -- ./mybench
+> > +
+> > +or just mispredicted branches:
+> > +
+> > +  perf record -e arm_spe/event_filter=0x80/ -- ./mybench
+> > +
+> > +Viewing the data
+> > +~~~~~~~~~~~~~~~~~
+> > +
+> > +By default perf report and perf script will assign samples to separate groups depending on the
+> > +attributes/events of the SPE record. Because instructions can have multiple events associated with
+> > +them, the samples in these groups are not necessarily unique. For example perf report shows these
+> > +groups:
+> > +
+> > +  Available samples
+> > +  0 arm_spe//
+> > +  0 dummy:u
+> > +  21 l1d-miss
+> > +  897 l1d-access
+> > +  5 llc-miss
+> > +  7 llc-access
+> > +  2 tlb-miss
+> > +  1K tlb-access
+> > +  36 branch-miss
+> > +  0 remote-access
+> > +  900 memory
+> > +
+> > +The arm_spe// and dummy:u events are implementation details and are expected to be empty.
+> > +
+> > +To get a full list of unique samples that are not sorted into groups, set the itrace option to
+> > +generate 'instruction' samples. The period option is also taken into account, so set it to 1
+> > +instruction unless you want to further downsample the already sampled SPE data:
+> > +
+> > +  perf report --itrace=i1i
+> > +
+> > +Memory access details are also stored on the samples and this can be viewed with:
+> > +
+> > +  perf report --mem-mode
+> > +
+> > +Common errors
+> > +~~~~~~~~~~~~~
+> > +
+> > + - "Cannot find PMU `arm_spe'. Missing kernel support?"
+> > +
+> > +   Module not built or loaded, KPTI not disabled (see above), or running on a VM
+> > +
+> > + - "Arm SPE CONTEXT packets not found in the traces."
+> > +
+> > +   Root privilege is required to collect context packets. But these only increase the accuracy of
+> > +   assigning PIDs to kernel samples. For userspace sampling this can be ignored.
+> > +
+> > + - Excessively large perf.data file size
+> > +
+> > +   Increase sampling interval (see above)
+> > +
+> > +
+> > +SEE ALSO
+> > +--------
+> > +
+> > +linkperf:perf-record[1], linkperf:perf-script[1], linkperf:perf-report[1],
+> > +linkperf:perf-inject[1]
+> > diff --git a/tools/perf/Documentation/perf.txt b/tools/perf/Documentation/perf.txt
+> > index 71ebdf8125de..ba3df49c169d 100644
+> > --- a/tools/perf/Documentation/perf.txt
+> > +++ b/tools/perf/Documentation/perf.txt
+> > @@ -77,7 +77,7 @@ linkperf:perf-stat[1], linkperf:perf-top[1],
+> >  linkperf:perf-record[1], linkperf:perf-report[1],
+> >  linkperf:perf-list[1]
+> >  
+> > -linkperf:perf-annotate[1],linkperf:perf-archive[1],
+> > +linkperf:perf-annotate[1],linkperf:perf-archive[1],linkperf:perf-arm-spe[1],
+> >  linkperf:perf-bench[1], linkperf:perf-buildid-cache[1],
+> >  linkperf:perf-buildid-list[1], linkperf:perf-c2c[1],
+> >  linkperf:perf-config[1], linkperf:perf-data[1], linkperf:perf-diff[1],
+> > -- 
+> > 2.28.0
+> > 
+
+-- 
+
+- Arnaldo
