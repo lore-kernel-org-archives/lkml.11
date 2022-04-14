@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7874DC352A8
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6F0C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350897AbiDNOyJ (ORCPT
+        id S1351874AbiDNOyf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
+        Thu, 14 Apr 2022 10:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244542AbiDNNqX (ORCPT
+        with ESMTP id S1345427AbiDNNuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:46:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539A03E5CF;
-        Thu, 14 Apr 2022 06:43:44 -0700 (PDT)
+        Thu, 14 Apr 2022 09:50:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE05E38D80;
+        Thu, 14 Apr 2022 06:44:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB63AB828E6;
-        Thu, 14 Apr 2022 13:43:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 190C7C385A1;
-        Thu, 14 Apr 2022 13:43:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37FB761D93;
+        Thu, 14 Apr 2022 13:44:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E3F4C385A1;
+        Thu, 14 Apr 2022 13:44:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943821;
-        bh=4pm0G3USxRvKEi6HUBlG9gAVAVKFBCngUYORUfw9HaE=;
+        s=korg; t=1649943848;
+        bh=NjDs/hNJ5jIoUTekqUpGzHpgZgjOw+eFz6PtiTcPvs8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WLUDSvBwTn5tHEfnXvtShrN1+jkFccbKbXBDwf9lBcg7G3IwTtTrSx2H5gnl4pCWc
-         5RwZ9gdfgzDH1VPaZsvUFWBvUJL2N/ExOTpWT3nNo9L0wWPue9G/3hLAdLCl0SJpsh
-         CgHoWB1GaXW0X2K7iN5s22IQqcQcNQvY6ViBgnIs=
+        b=XhY57TYoCN/DlHcWOoROXx5xOoyMyfEzvqu7eKm1o69eG/FCws116L6xtg1IhpwRu
+         ieWXMJJ6SO3tlj70kJgU4OPygaryBfKwl0NWv7edbRwmZBze9H+KlnYW12mi4ihL9/
+         ITJXq27xg6ZpfxrubS7Z77eiF2G6NCHsr5QDIgS0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evgeny Novikov <novikov@ispras.ru>,
-        Kirill Shilimanov <kirill.shilimanov@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 292/475] video: fbdev: w100fb: Reset global state
-Date:   Thu, 14 Apr 2022 15:11:17 +0200
-Message-Id: <20220414110903.268074001@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 301/475] video: fbdev: udlfb: replace snprintf in show functions with sysfs_emit
+Date:   Thu, 14 Apr 2022 15:11:26 +0200
+Message-Id: <20220414110903.517270205@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,65 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgeny Novikov <novikov@ispras.ru>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 8738ddcac644964ae128ccd3d80d48773c8d528e ]
+[ Upstream commit 81a998288956d09d7a7a2303d47e4d60ad55c401 ]
 
-w100fb_probe() did not reset the global state to its initial state. This
-can result in invocation of iounmap() even when there was not the
-appropriate successful call of ioremap(). For instance, this may be the
-case if first probe fails after two successful ioremap() while second
-probe fails when first ioremap() fails. The similar issue is with
-w100fb_remove(). The patch fixes both bugs.
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-Found by Linux Driver Verification project (linuxtesting.org).
-
-Signed-off-by: Evgeny Novikov <novikov@ispras.ru>
-Co-developed-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
-Signed-off-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
 Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/w100fb.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/video/fbdev/udlfb.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/video/fbdev/w100fb.c b/drivers/video/fbdev/w100fb.c
-index e30f9427b335..52ec80bbfe5e 100644
---- a/drivers/video/fbdev/w100fb.c
-+++ b/drivers/video/fbdev/w100fb.c
-@@ -770,12 +770,18 @@ int w100fb_probe(struct platform_device *pdev)
- 		fb_dealloc_cmap(&info->cmap);
- 		kfree(info->pseudo_palette);
- 	}
--	if (remapped_fbuf != NULL)
-+	if (remapped_fbuf != NULL) {
- 		iounmap(remapped_fbuf);
--	if (remapped_regs != NULL)
-+		remapped_fbuf = NULL;
-+	}
-+	if (remapped_regs != NULL) {
- 		iounmap(remapped_regs);
--	if (remapped_base != NULL)
-+		remapped_regs = NULL;
-+	}
-+	if (remapped_base != NULL) {
- 		iounmap(remapped_base);
-+		remapped_base = NULL;
-+	}
- 	if (info)
- 		framebuffer_release(info);
- 	return err;
-@@ -795,8 +801,11 @@ static int w100fb_remove(struct platform_device *pdev)
- 	fb_dealloc_cmap(&info->cmap);
+diff --git a/drivers/video/fbdev/udlfb.c b/drivers/video/fbdev/udlfb.c
+index ecbfbbf1c1a7..e269b1391e14 100644
+--- a/drivers/video/fbdev/udlfb.c
++++ b/drivers/video/fbdev/udlfb.c
+@@ -1427,7 +1427,7 @@ static ssize_t metrics_bytes_rendered_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->bytes_rendered));
+ }
  
- 	iounmap(remapped_base);
-+	remapped_base = NULL;
- 	iounmap(remapped_regs);
-+	remapped_regs = NULL;
- 	iounmap(remapped_fbuf);
-+	remapped_fbuf = NULL;
+@@ -1435,7 +1435,7 @@ static ssize_t metrics_bytes_identical_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->bytes_identical));
+ }
  
- 	framebuffer_release(info);
+@@ -1443,7 +1443,7 @@ static ssize_t metrics_bytes_sent_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->bytes_sent));
+ }
+ 
+@@ -1451,7 +1451,7 @@ static ssize_t metrics_cpu_kcycles_used_show(struct device *fbdev,
+ 				   struct device_attribute *a, char *buf) {
+ 	struct fb_info *fb_info = dev_get_drvdata(fbdev);
+ 	struct dlfb_data *dlfb = fb_info->par;
+-	return snprintf(buf, PAGE_SIZE, "%u\n",
++	return sysfs_emit(buf, "%u\n",
+ 			atomic_read(&dlfb->cpu_kcycles_used));
+ }
  
 -- 
 2.34.1
