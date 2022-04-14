@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CBA8C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA951C35273
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353475AbiDNP2f (ORCPT
+        id S1356266AbiDNP2u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:28:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
+        Thu, 14 Apr 2022 11:28:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346569AbiDNN5l (ORCPT
+        with ESMTP id S1346525AbiDNN52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:57:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4614283005;
-        Thu, 14 Apr 2022 06:47:04 -0700 (PDT)
+        Thu, 14 Apr 2022 09:57:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C46C9BBAC;
+        Thu, 14 Apr 2022 06:47:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D642861DA5;
-        Thu, 14 Apr 2022 13:47:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E17BDC385A1;
-        Thu, 14 Apr 2022 13:47:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD841B8298A;
+        Thu, 14 Apr 2022 13:47:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1247CC385A1;
+        Thu, 14 Apr 2022 13:47:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944023;
-        bh=LuZ72yR3zA8xYuhPdNlrC+HdmP3HwSUgVvw+BOohrac=;
+        s=korg; t=1649944037;
+        bh=ITigphVQFmh5JxYzbL8+UnueKu6Qw9t5JBKsneFXQbc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=leAHj4BPtd1gi+NDSdw8y4rJfx4l2uZXG1252KnjCfy51OVgKOmXeu3YFNfwGAlqp
-         7yddvQkb2ZKLfp1pYktoLhE0bMGNr7lL56/vOCy6s3MzTAwDz42wnrPjQp2TRKAobo
-         X7yxZNm+HKD425AoBNn/zKHm5aia79N91eweai8E=
+        b=yyvMDR2zITE4fE/P5Ho4nVwQB9X8pUZIt2Bl61wFbY5pUEBwqibjHDCkNBRqzGLD8
+         aesrzvZ4eFjOqKBKd924aFV678CEUVza755QwFvluRfP4WWjPYDADai1ZQikuoCX14
+         84MyJbg4WvinX5PVIFPSwz6REi4xX3DiDu1Nunvk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vladimir Murzin <vladimir.murzin@arm.com>
-Subject: [PATCH 5.4 349/475] ARM: iop32x: offset IRQ numbers by 1
-Date:   Thu, 14 Apr 2022 15:12:14 +0200
-Message-Id: <20220414110904.846922295@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Ben Dooks <ben-linux@fluff.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, patches@armlinux.org.uk,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 371/475] ARM: 9187/1: JIVE: fix return value of __setup handler
+Date:   Thu, 14 Apr 2022 15:12:36 +0200
+Message-Id: <20220414110905.459586471@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,152 +55,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 9d67412f24cc3a2c05f35f7c856addb07a2960ce upstream.
+[ Upstream commit 8b2360c7157b462c4870d447d1e65d30ef31f9aa ]
 
-iop32x is one of the last platforms to use IRQ 0, and this has apparently
-stopped working in a 2014 cleanup without anyone noticing. This interrupt
-is used for the DMA engine, so most likely this has not actually worked
-in the past 7 years, but it's also not essential for using this board.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) argument or environment
+strings. Also, error return codes don't mean anything to
+obsolete_checksetup() -- only non-zero (usually 1) or zero.
+So return 1 from jive_mtdset().
 
-I'm splitting out this change from my GENERIC_IRQ_MULTI_HANDLER
-conversion so it can be backported if anyone cares.
-
-Fixes: a71b092a9c68 ("ARM: Convert handle_IRQ to use __handle_domain_irq")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-[ardb: take +1 offset into account in mask/unmask and init as well]
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Tested-by: Marc Zyngier <maz@kernel.org>
-Tested-by: Vladimir Murzin <vladimir.murzin@arm.com> # ARMv7M
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9db829f485c5 ("[ARM] JIVE: Initial machine support for Logitech Jive")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Ben Dooks <ben-linux@fluff.org>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Alim Akhtar <alim.akhtar@samsung.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-samsung-soc@vger.kernel.org
+Cc: patches@armlinux.org.uk
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-iop32x/include/mach/entry-macro.S |    2 
- arch/arm/mach-iop32x/include/mach/irqs.h        |    2 
- arch/arm/mach-iop32x/irq.c                      |    6 +-
- arch/arm/mach-iop32x/irqs.h                     |   60 ++++++++++++------------
- 4 files changed, 37 insertions(+), 33 deletions(-)
+ arch/arm/mach-s3c24xx/mach-jive.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/arch/arm/mach-iop32x/include/mach/entry-macro.S
-+++ b/arch/arm/mach-iop32x/include/mach/entry-macro.S
-@@ -20,7 +20,7 @@
- 	mrc     p6, 0, \irqstat, c8, c0, 0	@ Read IINTSRC
- 	cmp     \irqstat, #0
- 	clzne   \irqnr, \irqstat
--	rsbne   \irqnr, \irqnr, #31
-+	rsbne   \irqnr, \irqnr, #32
- 	.endm
+diff --git a/arch/arm/mach-s3c24xx/mach-jive.c b/arch/arm/mach-s3c24xx/mach-jive.c
+index 885e8f12e4b9..eedc9f8ed210 100644
+--- a/arch/arm/mach-s3c24xx/mach-jive.c
++++ b/arch/arm/mach-s3c24xx/mach-jive.c
+@@ -237,11 +237,11 @@ static int __init jive_mtdset(char *options)
+ 	unsigned long set;
  
- 	.macro arch_ret_to_user, tmp1, tmp2
---- a/arch/arm/mach-iop32x/include/mach/irqs.h
-+++ b/arch/arm/mach-iop32x/include/mach/irqs.h
-@@ -9,6 +9,6 @@
- #ifndef __IRQS_H
- #define __IRQS_H
+ 	if (options == NULL || options[0] == '\0')
+-		return 0;
++		return 1;
  
--#define NR_IRQS			32
-+#define NR_IRQS			33
- 
- #endif
---- a/arch/arm/mach-iop32x/irq.c
-+++ b/arch/arm/mach-iop32x/irq.c
-@@ -32,14 +32,14 @@ static void intstr_write(u32 val)
- static void
- iop32x_irq_mask(struct irq_data *d)
- {
--	iop32x_mask &= ~(1 << d->irq);
-+	iop32x_mask &= ~(1 << (d->irq - 1));
- 	intctl_write(iop32x_mask);
- }
- 
- static void
- iop32x_irq_unmask(struct irq_data *d)
- {
--	iop32x_mask |= 1 << d->irq;
-+	iop32x_mask |= 1 << (d->irq - 1);
- 	intctl_write(iop32x_mask);
- }
- 
-@@ -65,7 +65,7 @@ void __init iop32x_init_irq(void)
- 	    machine_is_em7210())
- 		*IOP3XX_PCIIRSR = 0x0f;
- 
--	for (i = 0; i < NR_IRQS; i++) {
-+	for (i = 1; i < NR_IRQS; i++) {
- 		irq_set_chip_and_handler(i, &ext_chip, handle_level_irq);
- 		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
+ 	if (kstrtoul(options, 10, &set)) {
+ 		printk(KERN_ERR "failed to parse mtdset=%s\n", options);
+-		return 0;
++		return 1;
  	}
---- a/arch/arm/mach-iop32x/irqs.h
-+++ b/arch/arm/mach-iop32x/irqs.h
-@@ -7,36 +7,40 @@
- #ifndef __IOP32X_IRQS_H
- #define __IOP32X_IRQS_H
  
-+/* Interrupts in Linux start at 1, hardware starts at 0 */
-+
-+#define IOP_IRQ(x) ((x) + 1)
-+
- /*
-  * IOP80321 chipset interrupts
-  */
--#define IRQ_IOP32X_DMA0_EOT	0
--#define IRQ_IOP32X_DMA0_EOC	1
--#define IRQ_IOP32X_DMA1_EOT	2
--#define IRQ_IOP32X_DMA1_EOC	3
--#define IRQ_IOP32X_AA_EOT	6
--#define IRQ_IOP32X_AA_EOC	7
--#define IRQ_IOP32X_CORE_PMON	8
--#define IRQ_IOP32X_TIMER0	9
--#define IRQ_IOP32X_TIMER1	10
--#define IRQ_IOP32X_I2C_0	11
--#define IRQ_IOP32X_I2C_1	12
--#define IRQ_IOP32X_MESSAGING	13
--#define IRQ_IOP32X_ATU_BIST	14
--#define IRQ_IOP32X_PERFMON	15
--#define IRQ_IOP32X_CORE_PMU	16
--#define IRQ_IOP32X_BIU_ERR	17
--#define IRQ_IOP32X_ATU_ERR	18
--#define IRQ_IOP32X_MCU_ERR	19
--#define IRQ_IOP32X_DMA0_ERR	20
--#define IRQ_IOP32X_DMA1_ERR	21
--#define IRQ_IOP32X_AA_ERR	23
--#define IRQ_IOP32X_MSG_ERR	24
--#define IRQ_IOP32X_SSP		25
--#define IRQ_IOP32X_XINT0	27
--#define IRQ_IOP32X_XINT1	28
--#define IRQ_IOP32X_XINT2	29
--#define IRQ_IOP32X_XINT3	30
--#define IRQ_IOP32X_HPI		31
-+#define IRQ_IOP32X_DMA0_EOT	IOP_IRQ(0)
-+#define IRQ_IOP32X_DMA0_EOC	IOP_IRQ(1)
-+#define IRQ_IOP32X_DMA1_EOT	IOP_IRQ(2)
-+#define IRQ_IOP32X_DMA1_EOC	IOP_IRQ(3)
-+#define IRQ_IOP32X_AA_EOT	IOP_IRQ(6)
-+#define IRQ_IOP32X_AA_EOC	IOP_IRQ(7)
-+#define IRQ_IOP32X_CORE_PMON	IOP_IRQ(8)
-+#define IRQ_IOP32X_TIMER0	IOP_IRQ(9)
-+#define IRQ_IOP32X_TIMER1	IOP_IRQ(10)
-+#define IRQ_IOP32X_I2C_0	IOP_IRQ(11)
-+#define IRQ_IOP32X_I2C_1	IOP_IRQ(12)
-+#define IRQ_IOP32X_MESSAGING	IOP_IRQ(13)
-+#define IRQ_IOP32X_ATU_BIST	IOP_IRQ(14)
-+#define IRQ_IOP32X_PERFMON	IOP_IRQ(15)
-+#define IRQ_IOP32X_CORE_PMU	IOP_IRQ(16)
-+#define IRQ_IOP32X_BIU_ERR	IOP_IRQ(17)
-+#define IRQ_IOP32X_ATU_ERR	IOP_IRQ(18)
-+#define IRQ_IOP32X_MCU_ERR	IOP_IRQ(19)
-+#define IRQ_IOP32X_DMA0_ERR	IOP_IRQ(20)
-+#define IRQ_IOP32X_DMA1_ERR	IOP_IRQ(21)
-+#define IRQ_IOP32X_AA_ERR	IOP_IRQ(23)
-+#define IRQ_IOP32X_MSG_ERR	IOP_IRQ(24)
-+#define IRQ_IOP32X_SSP		IOP_IRQ(25)
-+#define IRQ_IOP32X_XINT0	IOP_IRQ(27)
-+#define IRQ_IOP32X_XINT1	IOP_IRQ(28)
-+#define IRQ_IOP32X_XINT2	IOP_IRQ(29)
-+#define IRQ_IOP32X_XINT3	IOP_IRQ(30)
-+#define IRQ_IOP32X_HPI		IOP_IRQ(31)
+ 	switch (set) {
+@@ -256,7 +256,7 @@ static int __init jive_mtdset(char *options)
+ 		       "using default.", set);
+ 	}
  
- #endif
+-	return 0;
++	return 1;
+ }
+ 
+ /* parse the mtdset= option given to the kernel command line */
+-- 
+2.35.1
+
 
 
