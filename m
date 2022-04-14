@@ -2,115 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 191EBC3527C
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 182C2C35294
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344183AbiDNNkJ (ORCPT
+        id S1343719AbiDNNjT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:40:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
+        Thu, 14 Apr 2022 09:39:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244943AbiDNN2V (ORCPT
+        with ESMTP id S244838AbiDNN2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F4D29285F
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:21:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649942480;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VX8OTDg43Rju0T7Y0rVpxwd3AVpts23Te2SUGTg/OJE=;
-        b=PlNKQr96o+XCespIN+6pRmPWhrGaU1Q8JHVE6oUUxOchW279fSMdv8JNLvTJGsqjhPjgCf
-        aPoJg7lDRiTguW8tmS9gBxrojroLwJcJRvu8hckH7EVPDfI4V17f22MlpGdXOpoZZ+c3bP
-        Eg+a4T9XIECAAKK+SKLUWueNuzF2fxA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-656-URWf1vzZMxyAxyDsee5fcw-1; Thu, 14 Apr 2022 09:21:17 -0400
-X-MC-Unique: URWf1vzZMxyAxyDsee5fcw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 14 Apr 2022 09:28:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A832A66E9;
+        Thu, 14 Apr 2022 06:21:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 72F0D3817486;
-        Thu, 14 Apr 2022 13:21:16 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.195.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C3C9D7C55;
-        Thu, 14 Apr 2022 13:21:14 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 29/34] KVM: selftests: nSVM: Allocate Hyper-V partition assist and VP assist pages
-Date:   Thu, 14 Apr 2022 15:20:08 +0200
-Message-Id: <20220414132013.1588929-30-vkuznets@redhat.com>
-In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0402B60BAF;
+        Thu, 14 Apr 2022 13:21:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CABBC385A1;
+        Thu, 14 Apr 2022 13:20:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942460;
+        bh=MvGFGHf10UaTo/dDAlLScquc8H9US81ClnvCWNErcC4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wQN2oeM0g/NFRsaAQc4K1KyzgftMSv0VB8vDsoSIxf2+dBOI1Nl3uqOUpAgthAOve
+         LQ0HRI2C8C9SELzGtIHI9rWFBvx2LRNgT7hVddsokY+sJA+Q9juV1BfX6WO9XQIJ5G
+         4VgrWJDQvrAYjVYjMc6rUtTmfP8zwLHxKbAwR9Mk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 143/338] power: supply: wm8350-power: Handle error for wm8350_register_irq
+Date:   Thu, 14 Apr 2022 15:10:46 +0200
+Message-Id: <20220414110842.975546523@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation to testing Hyper-V L2 TLB flush hypercalls, allocate VP
-assist and Partition assist pages and link them to 'struct svm_test_data'.
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+[ Upstream commit b0b14b5ba11bec56fad344a4a0b2e16449cc8b94 ]
+
+As the potential failure of the wm8350_register_irq(),
+it should be better to check it and return error if fails.
+Also, use 'free_' in order to avoid same code.
+
+Fixes: 14431aa0c5a4 ("power_supply: Add support for WM8350 PMU")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/kvm/include/x86_64/svm_util.h | 10 ++++++++++
- tools/testing/selftests/kvm/lib/x86_64/svm.c          | 10 ++++++++++
- 2 files changed, 20 insertions(+)
+ drivers/power/supply/wm8350_power.c | 96 ++++++++++++++++++++++++-----
+ 1 file changed, 82 insertions(+), 14 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/svm_util.h b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-index a25aabd8f5e7..640859b58fd6 100644
---- a/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-@@ -34,6 +34,16 @@ struct svm_test_data {
- 	void *msr; /* gva */
- 	void *msr_hva;
- 	uint64_t msr_gpa;
-+
-+	/* Hyper-V VP assist page */
-+	void *vp_assist; /* gva */
-+	void *vp_assist_hva;
-+	uint64_t vp_assist_gpa;
-+
-+	/* Hyper-V Partition assist page */
-+	void *partition_assist; /* gva */
-+	void *partition_assist_hva;
-+	uint64_t partition_assist_gpa;
- };
+diff --git a/drivers/power/supply/wm8350_power.c b/drivers/power/supply/wm8350_power.c
+index 15c0ca15e2aa..33683b8477d2 100644
+--- a/drivers/power/supply/wm8350_power.c
++++ b/drivers/power/supply/wm8350_power.c
+@@ -411,44 +411,112 @@ static const struct power_supply_desc wm8350_usb_desc = {
+  *		Initialisation
+  *********************************************************************/
  
- struct svm_test_data *vcpu_alloc_svm(struct kvm_vm *vm, vm_vaddr_t *p_svm_gva);
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/svm.c b/tools/testing/selftests/kvm/lib/x86_64/svm.c
-index 736ee4a23df6..c284e8f87f5c 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/svm.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/svm.c
-@@ -48,6 +48,16 @@ vcpu_alloc_svm(struct kvm_vm *vm, vm_vaddr_t *p_svm_gva)
- 	svm->msr_gpa = addr_gva2gpa(vm, (uintptr_t)svm->msr);
- 	memset(svm->msr_hva, 0, getpagesize());
+-static void wm8350_init_charger(struct wm8350 *wm8350)
++static int wm8350_init_charger(struct wm8350 *wm8350)
+ {
++	int ret;
++
+ 	/* register our interest in charger events */
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_HOT,
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_HOT,
+ 			    wm8350_charger_handler, 0, "Battery hot", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_COLD,
++	if (ret)
++		goto err;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_COLD,
+ 			    wm8350_charger_handler, 0, "Battery cold", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_FAIL,
++	if (ret)
++		goto free_chg_bat_hot;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_FAIL,
+ 			    wm8350_charger_handler, 0, "Battery fail", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_TO,
++	if (ret)
++		goto free_chg_bat_cold;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_TO,
+ 			    wm8350_charger_handler, 0,
+ 			    "Charger timeout", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_END,
++	if (ret)
++		goto free_chg_bat_fail;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_END,
+ 			    wm8350_charger_handler, 0,
+ 			    "Charge end", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_START,
++	if (ret)
++		goto free_chg_to;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_START,
+ 			    wm8350_charger_handler, 0,
+ 			    "Charge start", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY,
++	if (ret)
++		goto free_chg_end;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY,
+ 			    wm8350_charger_handler, 0,
+ 			    "Fast charge ready", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9,
++	if (ret)
++		goto free_chg_start;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9,
+ 			    wm8350_charger_handler, 0,
+ 			    "Battery <3.9V", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1,
++	if (ret)
++		goto free_chg_fast_rdy;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1,
+ 			    wm8350_charger_handler, 0,
+ 			    "Battery <3.1V", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85,
++	if (ret)
++		goto free_chg_vbatt_lt_3p9;
++
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85,
+ 			    wm8350_charger_handler, 0,
+ 			    "Battery <2.85V", wm8350);
++	if (ret)
++		goto free_chg_vbatt_lt_3p1;
  
-+	svm->vp_assist = (void *)vm_vaddr_alloc_page(vm);
-+	svm->vp_assist_hva = addr_gva2hva(vm, (uintptr_t)svm->vp_assist);
-+	svm->vp_assist_gpa = addr_gva2gpa(vm, (uintptr_t)svm->vp_assist);
-+	memset(svm->vp_assist_hva, 0, getpagesize());
+ 	/* and supply change events */
+-	wm8350_register_irq(wm8350, WM8350_IRQ_EXT_USB_FB,
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_EXT_USB_FB,
+ 			    wm8350_charger_handler, 0, "USB", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_EXT_WALL_FB,
++	if (ret)
++		goto free_chg_vbatt_lt_2p85;
 +
-+	svm->partition_assist = (void *)vm_vaddr_alloc_page(vm);
-+	svm->partition_assist_hva = addr_gva2hva(vm, (uintptr_t)svm->partition_assist);
-+	svm->partition_assist_gpa = addr_gva2gpa(vm, (uintptr_t)svm->partition_assist);
-+	memset(svm->partition_assist_hva, 0, getpagesize());
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_EXT_WALL_FB,
+ 			    wm8350_charger_handler, 0, "Wall", wm8350);
+-	wm8350_register_irq(wm8350, WM8350_IRQ_EXT_BAT_FB,
++	if (ret)
++		goto free_ext_usb_fb;
 +
- 	*p_svm_gva = svm_gva;
- 	return svm;
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_EXT_BAT_FB,
+ 			    wm8350_charger_handler, 0, "Battery", wm8350);
++	if (ret)
++		goto free_ext_wall_fb;
++
++	return 0;
++
++free_ext_wall_fb:
++	wm8350_free_irq(wm8350, WM8350_IRQ_EXT_WALL_FB, wm8350);
++free_ext_usb_fb:
++	wm8350_free_irq(wm8350, WM8350_IRQ_EXT_USB_FB, wm8350);
++free_chg_vbatt_lt_2p85:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85, wm8350);
++free_chg_vbatt_lt_3p1:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1, wm8350);
++free_chg_vbatt_lt_3p9:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9, wm8350);
++free_chg_fast_rdy:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY, wm8350);
++free_chg_start:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_START, wm8350);
++free_chg_end:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_END, wm8350);
++free_chg_to:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_TO, wm8350);
++free_chg_bat_fail:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_BAT_FAIL, wm8350);
++free_chg_bat_cold:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_BAT_COLD, wm8350);
++free_chg_bat_hot:
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_BAT_HOT, wm8350);
++err:
++	return ret;
  }
+ 
+ static void free_charger_irq(struct wm8350 *wm8350)
 -- 
-2.35.1
+2.34.1
+
+
 
