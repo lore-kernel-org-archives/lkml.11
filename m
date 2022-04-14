@@ -2,136 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C4CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:59:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CAF1C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:59:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346340AbiDNQBe (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:01:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59238 "EHLO
+        id S232439AbiDNQBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359010AbiDNPmd (ORCPT
+        with ESMTP id S1358363AbiDNPlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:42:33 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3963AF211A;
-        Thu, 14 Apr 2022 08:26:01 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id bg10so10752416ejb.4;
-        Thu, 14 Apr 2022 08:26:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0EhNSpMEIQGwegy6XwubyizxkyeN0Yst2h+T5pwc7wQ=;
-        b=XSdI9SNB3jBQqpAUl2AkG4FTRNx/rdgEV/ie4LGU/cNA+rGhpI1sdCNLipuVapA0uo
-         JRw6MqoFe3lSaO9LY7dB8t7RMDFS9yyI44MU9veZ8hi9/HgRly2OP7Ax9KVEzxwehmMW
-         42QJpXyApV/qSQDgVxunEy/DsnNErAsOTkMzIW/94gU9eQTpQgaCeZZ9HwHYeAfojxEq
-         2mxP4lSaiteo310zBUdYGqnoFjef3Dt3PglOjgNzV+ajpubTaGw6KdHieGIgtrft6pw9
-         anQwFYnG43K9KulTzEPzYvHoXtYkldZczBhtINTfNMMhY3+RpPZUzpQvCoM0AoDQtVC1
-         bMXA==
+        Thu, 14 Apr 2022 11:41:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E9D9ECC7E
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:23:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649949838;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ymoHjSbTJfTWENDrZAMakMAu3NTQlX8fnQuTkXZ1c+0=;
+        b=NjM4/oM453w+Y3ZL2zQHem4spfK/U+l1r/IXAii8ukpXAHjIgsjwt7B96Ij/U1ddA9WkDw
+        YjMiEpHphTq1kHEwSdLXnoFf1eV6h9fICqLT1tBq97/Lcs9Gqy82FygLLTDhmLCLze0xPU
+        DCVy2ZRxsOosIxqGpm8VDVf0MRSWgY0=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-77-NFF5WRSIMtWYdd1dkAKzXw-1; Thu, 14 Apr 2022 11:23:57 -0400
+X-MC-Unique: NFF5WRSIMtWYdd1dkAKzXw-1
+Received: by mail-qv1-f72.google.com with SMTP id o1-20020a0c9001000000b00440e415a3a2so4621963qvo.13
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:23:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0EhNSpMEIQGwegy6XwubyizxkyeN0Yst2h+T5pwc7wQ=;
-        b=O9dLuhfTGVulnkb8OLtdWp8bGz0YHCYkrw2y4B4AErsNTVeld0dMmY9Jh5u0CqCy39
-         qgbo0sPcaO/AJ/EAP/xM64zQ2qV4HGERSvxQIhEQ75pyBVG9PdmnInN52UpPlNxwiI3z
-         Ram1EY3jE88wzdK74u+KnICj9kGipm5UYih2l9LTuu2MMeuQaTRGbO6pM/bIE8KDH+r/
-         Xy1KzQg9xNSLtHCUVDOnCIfv4BDqWsC0CNSNTe7ys3wYfp9R/S/Dqpbl9nwaBXuNFKQL
-         MMcp9z3Sal2JxNCQFl5wMGIvgP9ds6cX7v9vjE+hsYdIbZ+UTG21U7KHlI006mcYrDxe
-         f4dQ==
-X-Gm-Message-State: AOAM531lm4bE2WGn20VW/BdNYH77OvEmpvTc+g2ocQU4gXZ2psn8/KWQ
-        wU0If+cbQrD44luYmGW4KpCTvXcWL8wloV3F9+g=
-X-Google-Smtp-Source: ABdhPJzje0FYaro4GDs25WGq9DJiciPtbOYkFrF+6xfThZJOs30FaUMCXOrLnhtC+hG05TTiN9HH49esY1mMEsGnvdA=
-X-Received: by 2002:a17:906:1692:b0:6e8:d245:44a9 with SMTP id
- s18-20020a170906169200b006e8d24544a9mr2783204ejd.639.1649949959614; Thu, 14
- Apr 2022 08:25:59 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ymoHjSbTJfTWENDrZAMakMAu3NTQlX8fnQuTkXZ1c+0=;
+        b=vg9gG2Vv+c2fyP3V6WwWAr/+3I9KgEnE34eksK0RRzuqS1QUU4Jhx7cLCLufgjBVUA
+         sNoOxKgtF0xoltE9ZmXQAOEteq1oLCDV4UaK2LuRL3QjaPQHvJvuO316fzB3HIdzMcCx
+         COIlSYF3lV9aq8BVScqXp6+q+PkZaE6WcMYz1D3Yt5SlvM2rlSNjeJEgwtEUY5RyMryB
+         Uz115/m3h12BXfX7bZyenmhIjLd2H6lcKThptKYNtYEgOQIo7f6c6QPff8Jl2cJHItam
+         k+mLwFrxDOpXZurCB7HkmFyLYbn1VTSQ8nvu7106rLBHuADz1BCWSGXh5quatI2ggdmB
+         yznw==
+X-Gm-Message-State: AOAM5313jhigNVLrPfDoKV0fXCl861mJ69abTWTEJkwpIgOKdgYP0sqQ
+        xCBqBw7gjPvpYu4QQK4VtH5rHh9oC27TJFupiTu7RfNVQ1h7MfaatEhsc1TTnbRiBO5u0V96ub8
+        F9FGprlyUHD000gd7oNYKVNtw
+X-Received: by 2002:a05:622a:1793:b0:2e1:ba41:ed2 with SMTP id s19-20020a05622a179300b002e1ba410ed2mr2180116qtk.238.1649949836596;
+        Thu, 14 Apr 2022 08:23:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzs3AjMBWvnaeFFepMGw6xBfV7UrXSMsLV3Nf+VF6QIpa+RPOmd63l8E4yiuw2decacPo8cmQ==
+X-Received: by 2002:a05:622a:1793:b0:2e1:ba41:ed2 with SMTP id s19-20020a05622a179300b002e1ba410ed2mr2180095qtk.238.1649949836406;
+        Thu, 14 Apr 2022 08:23:56 -0700 (PDT)
+Received: from fedora.redhat.com (modemcable200.11-22-96.mc.videotron.ca. [96.22.11.200])
+        by smtp.gmail.com with ESMTPSA id p5-20020a378d05000000b0069beaffd5b3sm1166038qkd.4.2022.04.14.08.23.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 08:23:56 -0700 (PDT)
+From:   Adrien Thierry <athierry@redhat.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Maxime Ripard <mripard@kernel.org>,
+        Takashi Iwai <tiwai@suse.com>
+Cc:     linux-staging@lists.linux.dev,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Adrien Thierry <athierry@redhat.com>
+Subject: [PATCH 2/2] staging: bcm2835-audio: clean code style warnings
+Date:   Thu, 14 Apr 2022 11:23:40 -0400
+Message-Id: <20220414152340.68932-3-athierry@redhat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220414152340.68932-1-athierry@redhat.com>
+References: <20220414152340.68932-1-athierry@redhat.com>
 MIME-Version: 1.0
-References: <20220414025705.598-1-mario.limonciello@amd.com>
-In-Reply-To: <20220414025705.598-1-mario.limonciello@amd.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 14 Apr 2022 18:25:23 +0300
-Message-ID: <CAHp75Vcxw+4mqfkiaDid-n4_n=Bg49UzH8X-12H2MQwEcNXQoA@mail.gmail.com>
-Subject: Re: [PATCH] gpio: Request interrupts after IRQ is initialized
-To:     Mario Limonciello <mario.limonciello@amd.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Shreeya Patel <shreeya.patel@collabora.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Richard.Gong@amd.com, Stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 5:57 AM Mario Limonciello
-<mario.limonciello@amd.com> wrote:
->
-> commit 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members before
-> initialization") attempted to fix a race condition that lead to a NULL
-> pointer, but in the process caused a regression for _AEI/_EVT declared
-> GPIOs. This manifests in messages showing deferred probing while trying
-> to allocate IRQs like so:
->
-> [    0.688318] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0000 to IRQ, err -517
-> [    0.688337] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x002C to IRQ, err -517
-> [    0.688348] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003D to IRQ, err -517
-> [    0.688359] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003E to IRQ, err -517
-> [    0.688369] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003A to IRQ, err -517
-> [    0.688379] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x003B to IRQ, err -517
-> [    0.688389] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0002 to IRQ, err -517
-> [    0.688399] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0011 to IRQ, err -517
-> [    0.688410] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0012 to IRQ, err -517
-> [    0.688420] amd_gpio AMDI0030:00: Failed to translate GPIO pin 0x0007 to IRQ, err -517
->
-> The code for walking _AEI doesn't handle deferred probing and so this leads
-> to non-functional GPIO interrupts.
->
-> Fix this issue by moving the call to `acpi_gpiochip_request_interrupts` to
-> occur after gc->irc.initialized is set.
+Clean a few minor code style warnings.
 
-Good catch, Mario, and thanks for the prompt fix!
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reported by checkpatch:
 
-> Cc: Shreeya Patel <shreeya.patel@collabora.com>
-> Cc: stable@vger.kernel.org
-> Fixes: 5467801f1fcb ("gpio: Restrict usage of GPIO chip irq members before initialization")
-> Reported-by: Mario Limonciello <mario.limonciello@amd.com>
-> Link: https://lore.kernel.org/linux-gpio/BL1PR12MB51577A77F000A008AA694675E2EF9@BL1PR12MB5157.namprd12.prod.outlook.com/T/#u
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-> ---
->  drivers/gpio/gpiolib.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-> index 085348e08986..b7694171655c 100644
-> --- a/drivers/gpio/gpiolib.c
-> +++ b/drivers/gpio/gpiolib.c
-> @@ -1601,8 +1601,6 @@ static int gpiochip_add_irqchip(struct gpio_chip *gc,
->
->         gpiochip_set_irq_hooks(gc);
->
-> -       acpi_gpiochip_request_interrupts(gc);
-> -
->         /*
->          * Using barrier() here to prevent compiler from reordering
->          * gc->irq.initialized before initialization of above
-> @@ -1612,6 +1610,8 @@ static int gpiochip_add_irqchip(struct gpio_chip *gc,
->
->         gc->irq.initialized = true;
->
-> +       acpi_gpiochip_request_interrupts(gc);
-> +
->         return 0;
->  }
->
-> --
-> 2.34.1
->
+CHECK: Lines should not end with a '('
+FILE: drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c:85:
 
+CHECK: No space is necessary after a cast
+FILE: drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c:240:
 
+CHECK: struct mutex definition without comment
+FILE: drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c:14:
+
+CHECK: struct mutex definition without comment
+FILE: drivers/staging/vc04_services/bcm2835-audio/bcm2835.h:64:
+
+Signed-off-by: Adrien Thierry <athierry@redhat.com>
+---
+ drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c   | 5 ++---
+ drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c | 2 +-
+ drivers/staging/vc04_services/bcm2835-audio/bcm2835.h       | 2 +-
+ 3 files changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
+index f2ef1d641e70..68e8d491a7ec 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
+@@ -82,8 +82,7 @@ void bcm2835_playback_fifo(struct bcm2835_alsa_stream *alsa_stream,
+ }
+ 
+ /* open callback */
+-static int snd_bcm2835_playback_open_generic(
+-	struct snd_pcm_substream *substream, int spdif)
++static int snd_bcm2835_playback_open_generic(struct snd_pcm_substream *substream, int spdif)
+ {
+ 	struct bcm2835_chip *chip = snd_pcm_substream_chip(substream);
+ 	struct snd_pcm_runtime *runtime = substream->runtime;
+@@ -237,7 +236,7 @@ static void snd_bcm2835_pcm_transfer(struct snd_pcm_substream *substream,
+ {
+ 	struct snd_pcm_runtime *runtime = substream->runtime;
+ 	struct bcm2835_alsa_stream *alsa_stream = runtime->private_data;
+-	void *src = (void *) (substream->runtime->dma_area + rec->sw_data);
++	void *src = (void *)(substream->runtime->dma_area + rec->sw_data);
+ 
+ 	bcm2835_audio_write(alsa_stream, bytes, src);
+ }
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
+index d567a2e3f70c..e429b33b4d39 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
+@@ -11,7 +11,7 @@ struct bcm2835_audio_instance {
+ 	struct device *dev;
+ 	unsigned int service_handle;
+ 	struct completion msg_avail_comp;
+-	struct mutex vchi_mutex;
++	struct mutex vchi_mutex; /* Serialize vchiq access */
+ 	struct bcm2835_alsa_stream *alsa_stream;
+ 	int result;
+ 	unsigned int max_packet;
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h
+index 51066ac8eea5..38b7451d77b2 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h
+@@ -61,7 +61,7 @@ struct bcm2835_chip {
+ 
+ 	unsigned int opened;
+ 	unsigned int spdif_status;
+-	struct mutex audio_mutex;
++	struct mutex audio_mutex; /* Serialize chip data access */
+ 
+ 	struct bcm2835_vchi_ctx *vchi_ctx;
+ };
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.1
+
