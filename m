@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2919EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B1FFC4321E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245720AbiDNOs2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:48:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56448 "EHLO
+        id S1344212AbiDNOtU (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:49:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345116AbiDNNpJ (ORCPT
+        with ESMTP id S1345172AbiDNNpT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27103387B7;
-        Thu, 14 Apr 2022 06:42:31 -0700 (PDT)
+        Thu, 14 Apr 2022 09:45:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 447421CFF1;
+        Thu, 14 Apr 2022 06:42:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CACBEB828F4;
-        Thu, 14 Apr 2022 13:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26C86C385A1;
-        Thu, 14 Apr 2022 13:42:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3E7661D29;
+        Thu, 14 Apr 2022 13:42:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB548C385A5;
+        Thu, 14 Apr 2022 13:42:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943748;
-        bh=BkFxTUPxQZUHZd2JEHMvWObQJpPh8HtE3fB7ATuGBHs=;
+        s=korg; t=1649943774;
+        bh=2S2WN7lbSNG7gDajWPNwg0YM4+H6wviOd9QuIF14ciY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X5HhOMc8/yrKd4Yq7ZaljH9IxaVbgUvPr/3ECnLjLrc0m9SQxSlFBQJvcdawPlule
-         Qi+53Ej+hcPfpoQGrr+ORIH9mF18mg+0NlDSrc5ysiilVZv6K5A/7+r5XWWgcuBSwy
-         C28vnBa1K/p72WrmtOzntFSu0WWWIay1124LDcTo=
+        b=ysroe75ISHCrlHH3na1r3BNMvrYKcp5JVAg1pOjPq1vRhZpJoKvAkH8yeslxJlZdM
+         7SrvQTA1pXLrDKz6JbdY704nPSvyAbEsoAgP2fQVuKV8CZpaoy8MEC7+FwwJEMbYer
+         oleeyhpQ3nC/ncJZ7ur3t6twhlD/qOqKOL3U4dQU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 227/475] mxser: fix xmit_buf leak in activate when LSR == 0xff
-Date:   Thu, 14 Apr 2022 15:10:12 +0200
-Message-Id: <20220414110901.473537820@linuxfoundation.org>
+Subject: [PATCH 5.4 277/475] selinux: use correct type for context length
+Date:   Thu, 14 Apr 2022 15:11:02 +0200
+Message-Id: <20220414110902.854774521@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -48,74 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Christian Göttsche <cgzones@googlemail.com>
 
-[ Upstream commit cd3a4907ee334b40d7aa880c7ab310b154fd5cd4 ]
+[ Upstream commit b97df7c098c531010e445da88d02b7bf7bf59ef6 ]
 
-When LSR is 0xff in ->activate() (rather unlike), we return an error.
-Provided ->shutdown() is not called when ->activate() fails, nothing
-actually frees the buffer in this case.
+security_sid_to_context() expects a pointer to an u32 as the address
+where to store the length of the computed context.
 
-Fix this by properly freeing the buffer in a designated label. We jump
-there also from the "!info->type" if now too.
+Reported by sparse:
 
-Fixes: 6769140d3047 ("tty: mxser: use the tty_port_open method")
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20220124071430.14907-6-jslaby@suse.cz
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    security/selinux/xfrm.c:359:39: warning: incorrect type in arg 4
+                                    (different signedness)
+    security/selinux/xfrm.c:359:39:    expected unsigned int
+                                       [usertype] *scontext_len
+    security/selinux/xfrm.c:359:39:    got int *
+
+Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+[PM: wrapped commit description]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/mxser.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ security/selinux/xfrm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 9d00ff5ef961..085dc8dd1327 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -861,6 +861,7 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 	struct mxser_port *info = container_of(port, struct mxser_port, port);
- 	unsigned long page;
- 	unsigned long flags;
-+	int ret;
+diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
+index 7314196185d1..00e95f8bd7c7 100644
+--- a/security/selinux/xfrm.c
++++ b/security/selinux/xfrm.c
+@@ -346,7 +346,7 @@ int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
+ 	int rc;
+ 	struct xfrm_sec_ctx *ctx;
+ 	char *ctx_str = NULL;
+-	int str_len;
++	u32 str_len;
  
- 	page = __get_free_page(GFP_KERNEL);
- 	if (!page)
-@@ -870,9 +871,9 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 
- 	if (!info->ioaddr || !info->type) {
- 		set_bit(TTY_IO_ERROR, &tty->flags);
--		free_page(page);
- 		spin_unlock_irqrestore(&info->slock, flags);
--		return 0;
-+		ret = 0;
-+		goto err_free_xmit;
- 	}
- 	info->port.xmit_buf = (unsigned char *) page;
- 
-@@ -898,8 +899,10 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 		if (capable(CAP_SYS_ADMIN)) {
- 			set_bit(TTY_IO_ERROR, &tty->flags);
- 			return 0;
--		} else
--			return -ENODEV;
-+		}
-+
-+		ret = -ENODEV;
-+		goto err_free_xmit;
- 	}
- 
- 	/*
-@@ -944,6 +947,10 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
- 	spin_unlock_irqrestore(&info->slock, flags);
- 
- 	return 0;
-+err_free_xmit:
-+	free_page(page);
-+	info->port.xmit_buf = NULL;
-+	return ret;
- }
- 
- /*
+ 	if (!polsec)
+ 		return 0;
 -- 
 2.34.1
 
