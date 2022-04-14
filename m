@@ -2,73 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA00C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF1DFC433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241468AbiDNP1B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:27:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47176 "EHLO
+        id S1346465AbiDNP1g (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348147AbiDNOCT (ORCPT
+        with ESMTP id S1346648AbiDNN5s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:02:19 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0752663E4
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:59:21 -0700 (PDT)
-Received: from zn.tnic (p2e55d808.dip0.t-ipconnect.de [46.85.216.8])
+        Thu, 14 Apr 2022 09:57:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF1AB18AC;
+        Thu, 14 Apr 2022 06:47:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8F8BF1EC0528;
-        Thu, 14 Apr 2022 15:59:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649944755;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=i8SW726GJn4l9wyfwUlIuTGzZbbab4SGdiSCBm6wmTs=;
-        b=HKqTSvykELA/WQ9v7czQk/OhKV3ZglpPMR5mc0FM5XQOHfg/Gg3B8L7Kjzmbl7cNBG9sBH
-        Xk7CSx3KVxba22H9jpJG/Fq92ws5ZwNBw8QYnjyIJFUzIqhZFUGhnz6qmA/cspDacbh381
-        GI5VrKvnM8MoAEBbmD2Zpn5wKdhXD8s=
-Date:   Thu, 14 Apr 2022 15:59:19 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Eric DeVolder <eric.devolder@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, bhe@redhat.com, vgoyal@redhat.com,
-        tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
-Subject: Re: [PATCH v7 2/8] x86/crash: Introduce new options to support cpu
- and memory hotplug
-Message-ID: <Ylgot+LUDQl+G/5N@zn.tnic>
-References: <20220413164237.20845-1-eric.devolder@oracle.com>
- <20220413164237.20845-3-eric.devolder@oracle.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97EB4B82969;
+        Thu, 14 Apr 2022 13:47:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFDB0C385A1;
+        Thu, 14 Apr 2022 13:47:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649944073;
+        bh=jCcE1aVSClXko4fJTUA1kEQFE/YUaoZi6qSDkA8nXpI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=R1KTuv1mDrHeZA0pk4JNzA1w5kuwaPZ5c+6nc5N43JRrlMnpwM2vYfevAADtZeAJX
+         VL1vUgCrO3AscodSe48LvS9HGvIEQrqCAaFBx91rl14Oxzg1LFDRgUmkQAQfdKOiSG
+         RVUtdjC8bUJsyA6VhNOVin+sRbhjR2WXVQUsbt/4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Abdul haleem <abdhalee@linux.vnet.ibm.com>,
+        Sourabh Jain <sourabhjain@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 383/475] powerpc: Set crashkernel offset to mid of RMA region
+Date:   Thu, 14 Apr 2022 15:12:48 +0200
+Message-Id: <20220414110905.788850651@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220413164237.20845-3-eric.devolder@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 12:42:31PM -0400, Eric DeVolder wrote:
-> CRASH_HOTPLUG is to enable cpu and memory hotplug support of crash.
+From: Sourabh Jain <sourabhjain@linux.ibm.com>
 
-What for?
+[ Upstream commit 7c5ed82b800d8615cdda00729e7b62e5899f0b13 ]
 
-Why don't you put all that new code you're adding under an
-MEMORY_HOTPLUG ifdef? It seems you would need to do that when memory
-hotplug is enabled, anyway.
+On large config LPARs (having 192 and more cores), Linux fails to boot
+due to insufficient memory in the first memblock. It is due to the
+memory reservation for the crash kernel which starts at 128MB offset of
+the first memblock. This memory reservation for the crash kernel doesn't
+leave enough space in the first memblock to accommodate other essential
+system resources.
 
-Also, looking further into your patchset, you have ugly ifdeffery.
-Instead of that, pls add stubs for the !MEMORY_HOTPLUG case so that
-everything is abstracted away in the headers.
+The crash kernel start address was set to 128MB offset by default to
+ensure that the crash kernel get some memory below the RMA region which
+is used to be of size 256MB. But given that the RMA region size can be
+512MB or more, setting the crash kernel offset to mid of RMA size will
+leave enough space for the kernel to allocate memory for other system
+resources.
 
-Thx.
+Since the above crash kernel offset change is only applicable to the LPAR
+platform, the LPAR feature detection is pushed before the crash kernel
+reservation. The rest of LPAR specific initialization will still
+be done during pseries_probe_fw_features as usual.
 
+This patch is dependent on changes to paca allocation for boot CPU. It
+expect boot CPU to discover 1T segment support which is introduced by
+the patch posted here:
+https://lists.ozlabs.org/pipermail/linuxppc-dev/2022-January/239175.html
+
+Reported-by: Abdul haleem <abdhalee@linux.vnet.ibm.com>
+Signed-off-by: Sourabh Jain <sourabhjain@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220204085601.107257-1-sourabhjain@linux.ibm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/powerpc/kernel/machine_kexec.c | 15 +++++++++++----
+ arch/powerpc/kernel/rtas.c          |  6 ++++++
+ 2 files changed, 17 insertions(+), 4 deletions(-)
+
+diff --git a/arch/powerpc/kernel/machine_kexec.c b/arch/powerpc/kernel/machine_kexec.c
+index 7a1c11a7cba5..716f8bb17461 100644
+--- a/arch/powerpc/kernel/machine_kexec.c
++++ b/arch/powerpc/kernel/machine_kexec.c
+@@ -146,11 +146,18 @@ void __init reserve_crashkernel(void)
+ 	if (!crashk_res.start) {
+ #ifdef CONFIG_PPC64
+ 		/*
+-		 * On 64bit we split the RMO in half but cap it at half of
+-		 * a small SLB (128MB) since the crash kernel needs to place
+-		 * itself and some stacks to be in the first segment.
++		 * On the LPAR platform place the crash kernel to mid of
++		 * RMA size (512MB or more) to ensure the crash kernel
++		 * gets enough space to place itself and some stack to be
++		 * in the first segment. At the same time normal kernel
++		 * also get enough space to allocate memory for essential
++		 * system resource in the first segment. Keep the crash
++		 * kernel starts at 128MB offset on other platforms.
+ 		 */
+-		crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
++		if (firmware_has_feature(FW_FEATURE_LPAR))
++			crashk_res.start = ppc64_rma_size / 2;
++		else
++			crashk_res.start = min(0x8000000ULL, (ppc64_rma_size / 2));
+ #else
+ 		crashk_res.start = KDUMP_KERNELBASE;
+ #endif
+diff --git a/arch/powerpc/kernel/rtas.c b/arch/powerpc/kernel/rtas.c
+index c1e2e351ebff..9392661ac8a8 100644
+--- a/arch/powerpc/kernel/rtas.c
++++ b/arch/powerpc/kernel/rtas.c
+@@ -1244,6 +1244,12 @@ int __init early_init_dt_scan_rtas(unsigned long node,
+ 	entryp = of_get_flat_dt_prop(node, "linux,rtas-entry", NULL);
+ 	sizep  = of_get_flat_dt_prop(node, "rtas-size", NULL);
+ 
++#ifdef CONFIG_PPC64
++	/* need this feature to decide the crashkernel offset */
++	if (of_get_flat_dt_prop(node, "ibm,hypertas-functions", NULL))
++		powerpc_firmware_features |= FW_FEATURE_LPAR;
++#endif
++
+ 	if (basep && entryp && sizep) {
+ 		rtas.base = *basep;
+ 		rtas.entry = *entryp;
 -- 
-Regards/Gruss,
-    Boris.
+2.35.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
+
