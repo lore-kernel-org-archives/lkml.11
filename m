@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9952C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4295C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352356AbiDNOcO (ORCPT
+        id S1352553AbiDNOca (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:32:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47108 "EHLO
+        Thu, 14 Apr 2022 10:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344358AbiDNNlD (ORCPT
+        with ESMTP id S1344400AbiDNNlL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:41:03 -0400
+        Thu, 14 Apr 2022 09:41:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A737A1C6;
-        Thu, 14 Apr 2022 06:38:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8AB1C6;
+        Thu, 14 Apr 2022 06:38:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42BDE6190F;
-        Thu, 14 Apr 2022 13:38:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52ADAC385A1;
-        Thu, 14 Apr 2022 13:38:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 86CB061BA7;
+        Thu, 14 Apr 2022 13:38:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9258AC385A5;
+        Thu, 14 Apr 2022 13:38:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943517;
-        bh=DQsX0iJi8Sk6M89+l5SJ0quzTrX0YdX8TGzfV1Ep0OY=;
+        s=korg; t=1649943525;
+        bh=7Vx2WvST/3UetrRUM4JsvOUg6Uksvk+kePktchHbQIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WmyqFzKdqKNVrBJ9tAPKcxlUJf6oPXWpjQhbj0TVOpAcqCquv2kAnrfHFWdzAAQid
-         tq5iW0gK8tB9S8ZKpkaDeY1VpXQpxQvS/0kJl8qmKs/zkGCJHIJPa82AP1fln6rVYA
-         v/PGWSmIJveko4QYcHxeIC9XayhqkGBA/xZILKyM=
+        b=AuyWkrhWUr86pLx+zXh5Ct/km6ijQtV8CSpGNopkMnvGRs1h34C4m+SSyj49Il7/1
+         Qqv9i9P1fGMTcM37Oq+HQjgtCtg2zEJcNPCzjTyb0WHwec3E/+q1rPUeiQpwv+MIU2
+         TRuC6tAQwiWxLpnqjXiXLP81iMehpKaGZ7lg1PN0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        James Morris <jmorris@namei.org>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        tomoyo-dev-en@lists.osdn.me, "Serge E. Hallyn" <serge@hallyn.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 185/475] scsi: pm8001: Fix payload initialization in pm80xx_set_thermal_config()
-Date:   Thu, 14 Apr 2022 15:09:30 +0200
-Message-Id: <20220414110900.310131108@linuxfoundation.org>
+Subject: [PATCH 5.4 188/475] TOMOYO: fix __setup handlers return values
+Date:   Thu, 14 Apr 2022 15:09:33 +0200
+Message-Id: <20220414110900.392872889@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,48 +54,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit bb225b12dbcc82d53d637d10b8d70b64494f8c16 ]
+[ Upstream commit 39844b7e3084baecef52d1498b5fa81afa2cefa9 ]
 
-The fields of the set_ctrl_cfg_req structure have the __le32 type, so use
-cpu_to_le32() to assign them. This removes the sparse warnings:
+__setup() handlers should return 1 if the parameter is handled.
+Returning 0 causes the entire string to be added to init's
+environment strings (limited to 32 strings), unnecessarily polluting it.
 
-warning: incorrect type in assignment (different base types)
-    expected restricted __le32
-    got unsigned int
+Using the documented strings "TOMOYO_loader=string1" and
+"TOMOYO_trigger=string2" causes an Unknown parameter message:
+  Unknown kernel command line parameters
+    "BOOT_IMAGE=/boot/bzImage-517rc5 TOMOYO_loader=string1 \
+     TOMOYO_trigger=string2", will be passed to user space.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-8-damien.lemoal@opensource.wdc.com
-Fixes: 842784e0d15b ("pm80xx: Update For Thermal Page Code")
-Fixes: f5860992db55 ("[SCSI] pm80xx: Added SPCv/ve specific hardware functionalities and relevant changes in common files")
-Reviewed-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+and these strings are added to init's environment string space:
+  Run /sbin/init as init process
+    with arguments:
+     /sbin/init
+    with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     TOMOYO_loader=string1
+     TOMOYO_trigger=string2
+
+With this change, these __setup handlers act as expected,
+and init's environment is not polluted with these strings.
+
+Fixes: 0e4ae0e0dec63 ("TOMOYO: Make several options configurable.")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: James Morris <jmorris@namei.org>
+Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
+Cc: tomoyo-dev-en@lists.osdn.me
+Cc: "Serge E. Hallyn" <serge@hallyn.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ security/tomoyo/load_policy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 5bf897188f4f..564be9754859 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -881,9 +881,11 @@ pm80xx_set_thermal_config(struct pm8001_hba_info *pm8001_ha)
- 	else
- 		page_code = THERMAL_PAGE_CODE_8H;
+diff --git a/security/tomoyo/load_policy.c b/security/tomoyo/load_policy.c
+index 3445ae6fd479..363b65be87ab 100644
+--- a/security/tomoyo/load_policy.c
++++ b/security/tomoyo/load_policy.c
+@@ -24,7 +24,7 @@ static const char *tomoyo_loader;
+ static int __init tomoyo_loader_setup(char *str)
+ {
+ 	tomoyo_loader = str;
+-	return 0;
++	return 1;
+ }
  
--	payload.cfg_pg[0] = (THERMAL_LOG_ENABLE << 9) |
--				(THERMAL_ENABLE << 8) | page_code;
--	payload.cfg_pg[1] = (LTEMPHIL << 24) | (RTEMPHIL << 8);
-+	payload.cfg_pg[0] =
-+		cpu_to_le32((THERMAL_LOG_ENABLE << 9) |
-+			    (THERMAL_ENABLE << 8) | page_code);
-+	payload.cfg_pg[1] =
-+		cpu_to_le32((LTEMPHIL << 24) | (RTEMPHIL << 8));
+ __setup("TOMOYO_loader=", tomoyo_loader_setup);
+@@ -64,7 +64,7 @@ static const char *tomoyo_trigger;
+ static int __init tomoyo_trigger_setup(char *str)
+ {
+ 	tomoyo_trigger = str;
+-	return 0;
++	return 1;
+ }
  
- 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload, 0);
- 	if (rc)
+ __setup("TOMOYO_trigger=", tomoyo_trigger_setup);
 -- 
 2.34.1
 
