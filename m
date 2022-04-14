@@ -2,107 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE9F0C4707F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB6EC3527A
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:40:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352255AbiDNPkq (ORCPT
+        id S1348147AbiDNPkB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39430 "EHLO
+        Thu, 14 Apr 2022 11:40:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353649AbiDNOkp (ORCPT
+        with ESMTP id S1351590AbiDNObH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:40:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BE1B1AA3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:31:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1AC4AB829D8
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 14:31:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1C5AC385AC
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 14:31:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649946666;
-        bh=sYuRIOKotPt+JjyagaULCK/sP+wsew5Z8mm0QqMhM8U=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=CcENbH42U2QOdZU6S5pxfFHY6fuFidAEmlWORZn+hRWfPmnkWM0khYKDmhmWy6nKE
-         HcPJiYN36zT7FPyRqI0V7826IYn5fGdcB7FjOWRNIiZMsZ9NKVOz/Xb+18yc9jlnst
-         XPIZRI5MU8cY+8TVgowcOOCe0R40qmduwyuSmhygD6MMJD0zhSDGUeWlvPg3K7PDdD
-         joCzBvjrWmCk4tWQHRNgWUoTTqIXbJyUZYrMOqDAUB2YkBVCoN0Hp6UjATx0OPevoa
-         Rne1FmfRBU/dGNko5Na1Q47migtPTwlGzi/qTui+cfR93RIXZL5oCA7dIMc/73MwHs
-         eVqhUvvdEarLA==
-Received: by mail-oi1-f169.google.com with SMTP id k13so5592095oiw.1
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:31:06 -0700 (PDT)
-X-Gm-Message-State: AOAM533Yzb8K4hzTiiOIHcFuL3r946GJ4xl6q65XKiDi5GSr8LHyS5R6
-        gtgBkO+ThVrtdraSHPVsbsO+KTlFUrhIwSpqzKA=
-X-Google-Smtp-Source: ABdhPJz6vfhd6nZ73pd/JDo+zGftnuoYPNZ+DV4zOFApTEqq9RxSmi4R5LkRk1Vo1z8OpRtEUvrOSBaG3sSVs89sbYs=
-X-Received: by 2002:a05:6808:1596:b0:2f7:5d89:eec7 with SMTP id
- t22-20020a056808159600b002f75d89eec7mr1816562oiw.228.1649946665844; Thu, 14
- Apr 2022 07:31:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <Yk8RGvF6ik34C6BO@arm.com> <Yk+rKWEcc9rO+A25@gondor.apana.org.au>
- <Yk/6ts5sVDMDpKj3@arm.com> <Yk/8QExHlggU8KgC@gondor.apana.org.au>
- <YlVHSvkyUBXZPUr2@arm.com> <YlVJKjXkcHqkwyt4@gondor.apana.org.au>
- <YlVOTsaTVkBOxthG@arm.com> <YlVSBuEqMt2S1Gi6@gondor.apana.org.au>
- <YlVxGAHHD/j6lW3c@arm.com> <CAMj1kXGCR833rqKOetj8ykQ8XtDCWbszJYVtVKvLpDLWnM=B5w@mail.gmail.com>
- <YlaOIbSA7B/G9222@arm.com>
-In-Reply-To: <YlaOIbSA7B/G9222@arm.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Thu, 14 Apr 2022 16:30:54 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXFTV+YXVRfktnSgGt-gDAn3QBHZ16LOF++TbqkNu4Ay-Q@mail.gmail.com>
-Message-ID: <CAMj1kXFTV+YXVRfktnSgGt-gDAn3QBHZ16LOF++TbqkNu4Ay-Q@mail.gmail.com>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
+        Thu, 14 Apr 2022 10:31:07 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id B814E326C4
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:21:38 -0700 (PDT)
+Received: (qmail 447694 invoked by uid 1000); 14 Apr 2022 10:21:37 -0400
+Date:   Thu, 14 Apr 2022 10:21:37 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Mathias Nyman <mathias.nyman@linux.intel.com>
+Cc:     Evan Green <evgreen@chromium.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Rajat Jain <rajatja@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Youngjin Jang <yj84.jang@samsung.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-usb@vger.kernel.org
+Subject: Re: [PATCH] USB: hcd-pci: Fully suspend across freeze/thaw cycle
+Message-ID: <Ylgt8Y7Mz4nOAhtv@rowland.harvard.edu>
+References: <20220407115918.1.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid>
+ <YlBGvFFSp/R2CBmh@rowland.harvard.edu>
+ <CAE=gft7Zi9tpJ74Tf2iqPRbwJkmSLiKJt-WhwD+h-DxQh75D6g@mail.gmail.com>
+ <YlDoSY19HYNJGI50@rowland.harvard.edu>
+ <022a50ac-7866-2140-1b40-776255f3a036@linux.intel.com>
+ <YlRATrMxRWt9gVqt@rowland.harvard.edu>
+ <4353a956-9855-9c14-7dbf-bf16580abe32@linux.intel.com>
+ <YlWdfWRXYjkfHLIP@rowland.harvard.edu>
+ <b1df80e4-af6a-e84f-f49d-c74500bdec05@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b1df80e4-af6a-e84f-f49d-c74500bdec05@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Apr 2022 at 10:47, Catalin Marinas <catalin.marinas@arm.com> wrote:
-..
->
-> Let's go back to restating the crypto code alignment requirements, as I
-> understand them (please correct):
->
-> 1. Bus master accesses (DMA, CPUs that can't do efficient unaligned
->    accesses). That's what cra_alignmask is for. If there's a driver that
->    relies on an implicit kmalloc() alignment higher than cra_alignmask,
->    it is already broken on x86 and a few other architectures that don't
->    define ARCH_DMA_MINALIGN. But it won't be any worse with this series
->    since it only brings the arm64 kmalloc() alignment down from 128 to
->    64.
->
-> 2. Non-coherent DMA and cache invalidation. With my series, kmalloc'ed
->    buffers are DMA-safe for the CPU/SoC the kernel is running on.
->
-> 3. DMA into buffers embedded in TFM structures. Since the offset of
->    those buffers is decided at compile-time, we need a
->    CRYPTO_MINALIGN_ATTR that covers both bus master alignment
->    requirements and the highest cache line size (CWG) for a non-coherent
->    DMA SoC. Ard's series would simplify the latter but, before then,
->    CRYPTO_MINALIGN needs to stay as the larger ARCH_DMA_MINALIGN.
->
-> With my series, there is no change to the value of CRYPTO_MINALIGN for
-> arm64 or any other architecture, so point 3 is unaffected. The series
-> does change the kmalloc() alignment and that may be smaller than
-> CRYPTO_MINALIGN but neither of points 1 or 2 above are affected since
-> (a) we still have a sufficiently large ARCH_KMALLOC_MINALIGN of 64 and
-> (b) the kmalloc'ed buffers are safe for non-coherent DMA.
->
-> Herbert, Ard, if I missed anything please let me know but based on my
-> understanding, this series is safe for the crypto code.
->
+On Thu, Apr 14, 2022 at 05:00:12PM +0300, Mathias Nyman wrote:
+> On 12.4.2022 18.40, Alan Stern wrote:
+> > On Tue, Apr 12, 2022 at 05:56:42PM +0300, Mathias Nyman wrote:
+> >> On 11.4.2022 17.50, Alan Stern wrote:
+> >>> For example, what would happen if the user unplugs a device right in the 
+> >>> middle of the freeze transition, after the root hub has been frozen but 
+> >>> before the controller is frozen?  We don't want such an unplug event to 
+> >>> prevent the system from going into hibernation -- especially if the root 
+> >>> hub was not enabled for wakeup.
+> >>
+> >> We should be able to let system go to hibernate even if we get a disconnect
+> >> interrupt between roothub and host controller freeze.
+> >> Host is not yet suspended so no PME# wake is generated, only an interrupt.
+> >>
+> >> From Linux PM point of view it should be ok as well as the actual xhci
+> >> device that is generating the interrupt is hasnt completer freeze() 
+> >>
+> >> The xhci interrupt handler just needs to make sure that the disconnect
+> >> isn't propagated if roothub is suspended and wake on disconnect
+> >> is not set. And definitely make sure xhci doesn't start roothub polling. 
+> >>
+> >> When freeze() is called for the host we should prevent the host from 
+> >> generating interrupts.
+> > 
+> > I guess that means adding a new callback.  Or we could just suspend the 
+> > controller, like Evan proposed originally
+> 
+> Suspending the host in freeze should work.
+> It will do an extra xhci controller state save stage, but that should be harmless.
+> 
+> But is there really a need for the suggested noirq part?
+> 
+> +	.freeze_noirq	= hcd_pci_suspend_noirq, 
+> 
+> That will try to set the host to PCI D3 state.
+> It seems a bit unnecessary for freeze.
 
 Agreed.
+
+> >>> (If the root hub _is_ enabled for wakeup then it's questionable.  
+> >>> Unplugging a device would be a wakeup event, so you could easily argue 
+> >>> that it _should_ prevent the system from going into hibernation.  After 
+> >>> all, if the unplug happened a few milliseconds later, after the system 
+> >>> had fully gone into hibernation, then it would cause the system to wake 
+> >>> up.)
+> >>>
+> >>>> Would it make sense prevent xHCI interrupt generation in the host
+> >>>> freeze() stage, clearing the xHCI EINT bit in addition to calling 
+> >>>> check_roothub_suspend()?
+> >>>> Then enable it back in thaw()
+> >>>
+> >>> That won't fully eliminate the problem mentioned in the preceding 
+> >>> paragraphs, although I guess it would help somewhat.
+> >>
+> >> Would the following steps solve this?
+> >>
+> >> 1. Disable device initiated resume for connected usb devices in freeze()
+> >>
+> >> 2. Don't propagate connect or OC changes if roothub is suspended and port wake
+> >>    flags are disabled. I.E don't kick roothub polling in xhci interrupt
+> >>    handler here.
+> > 
+> > I guess you can't just halt the entire host controller when only one of 
+> > the root hubs is suspended with wakeup disabled.  That does complicate 
+> > things.  But you could halt it as soon as both of the root hubs are 
+> > frozen.  Wouldn't that prevent interrupt generation?
+> 
+> True, but probably easier to just suspend host in freeze() as you stated above.
+
+Okay.
+
+Evan, this discussion suggests that you rewrite your patch as a series 
+of three:
+
+     1. Change choose_wakeup() so that for PM_EVENT_FREEZE, wakeup is
+	always disabled.
+
+     2. Change the xhci-hcd interrupt handler so that port-status 
+	changes are ignored if the port's root hub is suspended with 
+	wakeup disabled.
+
+     3. As in the original patch, make the .freeze and .thaw callbacks 
+	in hcd-pci.c call the appropriate suspend and resume routines, 
+	but don't do anything for .freeze_noirq and .thaw_noirq.
+
+How does that sound?
+
+Alan Stern
