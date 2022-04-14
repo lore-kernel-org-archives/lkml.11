@@ -2,113 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E1AEC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E87FBC4707E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348339AbiDNOwd (ORCPT
+        id S1348873AbiDNOwt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54858 "EHLO
+        Thu, 14 Apr 2022 10:52:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344857AbiDNNoo (ORCPT
+        with ESMTP id S1345104AbiDNNpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:44 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1CBF38BCD
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:40:26 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7E8F9139F;
-        Thu, 14 Apr 2022 06:40:26 -0700 (PDT)
-Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2CA933F70D;
-        Thu, 14 Apr 2022 06:40:24 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 14:40:21 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     andrey.konovalov@linux.dev
-Cc:     Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: Re: [PATCH v3 0/3] kasan, arm64, scs: collect stack traces from
- Shadow Call Stack
-Message-ID: <YlgkRXkCLeQ5IcaD@lakrids>
-References: <cover.1649877511.git.andreyknvl@google.com>
- <YlgVa+AP0g4IYvzN@lakrids>
+        Thu, 14 Apr 2022 09:45:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB342CCA9;
+        Thu, 14 Apr 2022 06:42:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC35EB82968;
+        Thu, 14 Apr 2022 13:42:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0426FC385A1;
+        Thu, 14 Apr 2022 13:42:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649943720;
+        bh=QMtNxulyfx81R37POF0+7xpByUSFgPbFT4ZF2J9sYZQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WfrEXbpLzhO5omWfE9/cCK+LaYzw3FC76KOgDLqnlx9rG8h9MOLX4zJR4X3VM9+kO
+         nmlSdDlfJlYVVriBmuDQ3hAeY16AxX3Qg5YydvLfZzLrs7f5jGjNAZaxCyks4f7Ymc
+         xt/1GNW7Z2okHUUApAY711/LgoZ5VH3n8CBvJoC0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, He Zhe <zhe.he@windriver.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-serial@vger.kernel.org,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 256/475] kgdboc: fix return value of __setup handler
+Date:   Thu, 14 Apr 2022 15:10:41 +0200
+Message-Id: <20220414110902.274474002@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YlgVa+AP0g4IYvzN@lakrids>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 01:36:59PM +0100, Mark Rutland wrote:
-> As I suspected, you're hitting a known performance oddity with QEMU TCG
-> mode where pointer authentication is *incredibly* slow when using the
-> architected QARMA5 algorithm (enabled by default with `-cpu max`).
+From: Randy Dunlap <rdunlap@infradead.org>
 
-> This overhead has nothing to do with the *nature* of the unwinder, and
-> is an artifact of the *platform* and the *structure* of the code.
-> There's plenty that can be done to avoid that overhead
+[ Upstream commit ab818c7aa7544bf8d2dd4bdf68878b17a02eb332 ]
 
-FWIW, from a quick look, disabling KASAN instrumentation for the
-stacktrace object alone (with no other changes) has a significant impact
-(compounded by the TCG QARMA5 slowdown), and I note that x86 doesn't
-both instrumenting its stacktrace code anyway, so we could consider
-doing likewise.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) environment strings.
+So return 1 from kgdboc_option_setup().
 
-Atop that, replacing set_bit() with __set_bit() brings the regular
-unwinder *really* close to the earlier SCS unwinder figures. I know that
-the on_accessible_stack() calculations and checks could be ammortized
-with some refactoring (which I'd planned to do anyway), so I think it's
-plausible that with some changes to the existing unwinder we can bring
-the difference into the noise.
+Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
+  kgdboc=kbd kgdbts=", will be passed to user space.
 
-> generic kasan w/ `-cpu max`
-> ---------------------------
-> 
-> master-no-stack-traces: 12.66
-> master:                 18.39 (+45.2%)
-> master-no-stack-depot:  17.85 (+40.1%)
-> up-scs-stacks-v3:       13.54 (+7.0%)
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc7
+     kgdboc=kbd
+     kgdbts=
 
-master-noasan:            15.67 (+23.8%)
-master-noasan-__set_bit:  14.61 (+15.5%)
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: 1bd54d851f50 ("kgdboc: Passing ekgdboc to command line causes panic")
+Fixes: f2d937f3bf00 ("consoles: polling support, kgdboc")
+Cc: He Zhe <zhe.he@windriver.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: kgdb-bugreport@lists.sourceforge.net
+Cc: Jason Wessel <jason.wessel@windriver.com>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: linux-serial@vger.kernel.org
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220309033018.17936-1-rdunlap@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/kgdboc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> Generic KASAN w/ `-cpu max,pauth-impdef=true`
-> ---------------------------------------------
-> 
-> master-no-stack-traces: 2.69
-> master:                 3.35 (+24.5%)
-> master-no-stack-depot:  3.54 (+31.5%)
-> up-scs-stacks-v3:       2.80 (+4.1%)
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index f5608ad68ae1..6d4792ec9e5f 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -391,16 +391,16 @@ static int kgdboc_option_setup(char *opt)
+ {
+ 	if (!opt) {
+ 		pr_err("config string not provided\n");
+-		return -EINVAL;
++		return 1;
+ 	}
+ 
+ 	if (strlen(opt) >= MAX_CONFIG_LEN) {
+ 		pr_err("config string too long\n");
+-		return -ENOSPC;
++		return 1;
+ 	}
+ 	strcpy(config, opt);
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ __setup("kgdboc=", kgdboc_option_setup);
+-- 
+2.34.1
 
-master-noasan:            3.05 (+13.0%)
-master-noasan-__set_bit:  2.96 (+10.0%)
 
-> Generic KASAN w/ `-cpu max,pauth=false`
-> ---------------------------------------
-> 
-> master-no-stack-traces: 1.92
-> master:                 2.27  (+18.2%)
-> master-no-stack-depot:  2.22  (+15.6%)
-> up-scs-stacks-v3:       2.06  (+7.3%)
 
-master-noasan:             2.14 (+11.4%)
-master-noasan-__set_bit:   2.10 (+9.4%)
-
-Thanks,
-Mark.
