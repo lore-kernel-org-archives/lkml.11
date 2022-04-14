@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26409C4167D
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:57:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C7CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:57:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345672AbiDNNyA (ORCPT
+        id S1345640AbiDNNxz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
+        Thu, 14 Apr 2022 09:53:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344145AbiDNNai (ORCPT
+        with ESMTP id S245655AbiDNN3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:38 -0400
+        Thu, 14 Apr 2022 09:29:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E2824B;
-        Thu, 14 Apr 2022 06:28:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548D3AF1E9;
+        Thu, 14 Apr 2022 06:23:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0FD26190F;
-        Thu, 14 Apr 2022 13:28:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFD11C385A5;
-        Thu, 14 Apr 2022 13:28:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5A5261158;
+        Thu, 14 Apr 2022 13:23:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1BBEC385A1;
+        Thu, 14 Apr 2022 13:23:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942893;
-        bh=hWNi0okxJBiVY1ydDBwp+6/rD9N0//wsF3WBY0gGUEI=;
+        s=korg; t=1649942607;
+        bh=spp/pBvR0UT2dPXHmzefxhdVtTjFVL6s5suj8ISh1Ks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OfvHa/w3CeWIuHJQFFlhXGLPlzmNlQkgFMwkxzTkBtTDokR7QAB24FAdnXl/1UsLS
-         wTcSZ+YWa3B1uiq9PUWYN1IZ7b8QSSLQnoNGd7dSgJP0PXtpAbVHIaw+rLn8T9WhGW
-         FfWnvmTokWmlGHV8LlEEpBcD28GzYhwC18LQBd3I=
+        b=CW6mIOmF35ovOLBKBoG7WVzi9oR1wavHv11Z3mTKTOai7y5tgKptoAMqSEJWXXgAr
+         AjBPtkIER0E1NGTDQOxkAJs1Sa4CtfT/fURUI9fefImA6tvmbVQpw3u0uxkTBYnjaT
+         agcrxNmYP4yovWM5Zgck3AIbFknn90KKSc4kcfrE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Lobakin <alobakin@pm.me>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Andre Nash <alnash@fb.com>,
+        Neil Spring <ntspring@fb.com>, Wei Wang <weiwan@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 282/338] MIPS: fix fortify panic when copying asm exception handlers
-Date:   Thu, 14 Apr 2022 15:13:05 +0200
-Message-Id: <20220414110846.915806787@linuxfoundation.org>
+Subject: [PATCH 4.19 156/338] tcp: ensure PMTU updates are processed during fastopen
+Date:   Thu, 14 Apr 2022 15:10:59 +0200
+Message-Id: <20220414110843.341093176@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,99 +54,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alobakin@pm.me>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit d17b66417308996e7e64b270a3c7f3c1fbd4cfc8 ]
+[ Upstream commit ed0c99dc0f499ff8b6e75b5ae6092ab42be1ad39 ]
 
-With KCFLAGS="-O3", I was able to trigger a fortify-source
-memcpy() overflow panic on set_vi_srs_handler().
-Although O3 level is not supported in the mainline, under some
-conditions that may've happened with any optimization settings,
-it's just a matter of inlining luck. The panic itself is correct,
-more precisely, 50/50 false-positive and not at the same time.
->From the one side, no real overflow happens. Exception handler
-defined in asm just gets copied to some reserved places in the
-memory.
-But the reason behind is that C code refers to that exception
-handler declares it as `char`, i.e. something of 1 byte length.
-It's obvious that the asm function itself is way more than 1 byte,
-so fortify logics thought we are going to past the symbol declared.
-The standard way to refer to asm symbols from C code which is not
-supposed to be called from C is to declare them as
-`extern const u8[]`. This is fully correct from any point of view,
-as any code itself is just a bunch of bytes (including 0 as it is
-for syms like _stext/_etext/etc.), and the exact size is not known
-at the moment of compilation.
-Adjust the type of the except_vec_vi_*() and related variables.
-Make set_handler() take `const` as a second argument to avoid
-cast-away warnings and give a little more room for optimization.
+tp->rx_opt.mss_clamp is not populated, yet, during TFO send so we
+rise it to the local MSS. tp->mss_cache is not updated, however:
 
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+tcp_v6_connect():
+  tp->rx_opt.mss_clamp = IPV6_MIN_MTU - headers;
+  tcp_connect():
+     tcp_connect_init():
+       tp->mss_cache = min(mtu, tp->rx_opt.mss_clamp)
+     tcp_send_syn_data():
+       tp->rx_opt.mss_clamp = tp->advmss
+
+After recent fixes to ICMPv6 PTB handling we started dropping
+PMTU updates higher than tp->mss_cache. Because of the stale
+tp->mss_cache value PMTU updates during TFO are always dropped.
+
+Thanks to Wei for helping zero in on the problem and the fix!
+
+Fixes: c7bb4b89033b ("ipv6: tcp: drop silly ICMPv6 packet too big messages")
+Reported-by: Andre Nash <alnash@fb.com>
+Reported-by: Neil Spring <ntspring@fb.com>
+Reviewed-by: Wei Wang <weiwan@google.com>
+Acked-by: Yuchung Cheng <ycheng@google.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220321165957.1769954-1-kuba@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/include/asm/setup.h |  2 +-
- arch/mips/kernel/traps.c      | 22 +++++++++++-----------
- 2 files changed, 12 insertions(+), 12 deletions(-)
+ net/ipv4/tcp_output.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/mips/include/asm/setup.h b/arch/mips/include/asm/setup.h
-index bb36a400203d..8c56b862fd9c 100644
---- a/arch/mips/include/asm/setup.h
-+++ b/arch/mips/include/asm/setup.h
-@@ -16,7 +16,7 @@ static inline void setup_8250_early_printk_port(unsigned long base,
- 	unsigned int reg_shift, unsigned int timeout) {}
- #endif
- 
--extern void set_handler(unsigned long offset, void *addr, unsigned long len);
-+void set_handler(unsigned long offset, const void *addr, unsigned long len);
- extern void set_uncached_handler(unsigned long offset, void *addr, unsigned long len);
- 
- typedef void (*vi_handler_t)(void);
-diff --git a/arch/mips/kernel/traps.c b/arch/mips/kernel/traps.c
-index b9da2cefb564..0ca4185cc5e3 100644
---- a/arch/mips/kernel/traps.c
-+++ b/arch/mips/kernel/traps.c
-@@ -1978,19 +1978,19 @@ static void *set_vi_srs_handler(int n, vi_handler_t addr, int srs)
- 		 * If no shadow set is selected then use the default handler
- 		 * that does normal register saving and standard interrupt exit
- 		 */
--		extern char except_vec_vi, except_vec_vi_lui;
--		extern char except_vec_vi_ori, except_vec_vi_end;
--		extern char rollback_except_vec_vi;
--		char *vec_start = using_rollback_handler() ?
--			&rollback_except_vec_vi : &except_vec_vi;
-+		extern const u8 except_vec_vi[], except_vec_vi_lui[];
-+		extern const u8 except_vec_vi_ori[], except_vec_vi_end[];
-+		extern const u8 rollback_except_vec_vi[];
-+		const u8 *vec_start = using_rollback_handler() ?
-+				      rollback_except_vec_vi : except_vec_vi;
- #if defined(CONFIG_CPU_MICROMIPS) || defined(CONFIG_CPU_BIG_ENDIAN)
--		const int lui_offset = &except_vec_vi_lui - vec_start + 2;
--		const int ori_offset = &except_vec_vi_ori - vec_start + 2;
-+		const int lui_offset = except_vec_vi_lui - vec_start + 2;
-+		const int ori_offset = except_vec_vi_ori - vec_start + 2;
- #else
--		const int lui_offset = &except_vec_vi_lui - vec_start;
--		const int ori_offset = &except_vec_vi_ori - vec_start;
-+		const int lui_offset = except_vec_vi_lui - vec_start;
-+		const int ori_offset = except_vec_vi_ori - vec_start;
- #endif
--		const int handler_len = &except_vec_vi_end - vec_start;
-+		const int handler_len = except_vec_vi_end - vec_start;
- 
- 		if (handler_len > VECTORSPACING) {
- 			/*
-@@ -2210,7 +2210,7 @@ void per_cpu_trap_init(bool is_boot_cpu)
- }
- 
- /* Install CPU exception handler */
--void set_handler(unsigned long offset, void *addr, unsigned long size)
-+void set_handler(unsigned long offset, const void *addr, unsigned long size)
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index c97c027a8d77..97c3b616d594 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -3425,6 +3425,7 @@ static void tcp_connect_queue_skb(struct sock *sk, struct sk_buff *skb)
+  */
+ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
  {
- #ifdef CONFIG_CPU_MICROMIPS
- 	memcpy((void *)(ebase + offset), ((unsigned char *)addr - 1), size);
++	struct inet_connection_sock *icsk = inet_csk(sk);
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct tcp_fastopen_request *fo = tp->fastopen_req;
+ 	int space, err = 0;
+@@ -3439,8 +3440,10 @@ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
+ 	 * private TCP options. The cost is reduced data space in SYN :(
+ 	 */
+ 	tp->rx_opt.mss_clamp = tcp_mss_clamp(tp, tp->rx_opt.mss_clamp);
++	/* Sync mss_cache after updating the mss_clamp */
++	tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
+ 
+-	space = __tcp_mtu_to_mss(sk, inet_csk(sk)->icsk_pmtu_cookie) -
++	space = __tcp_mtu_to_mss(sk, icsk->icsk_pmtu_cookie) -
+ 		MAX_TCP_OPTION_SPACE;
+ 
+ 	space = min_t(size_t, space, fo->size);
 -- 
-2.35.1
+2.34.1
 
 
 
