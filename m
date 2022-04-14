@@ -2,47 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 696BAC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2919EC433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343946AbiDNOtD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58556 "EHLO
+        id S245720AbiDNOs2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:48:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345106AbiDNNpI (ORCPT
+        with ESMTP id S1345116AbiDNNpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BFAAA1471;
-        Thu, 14 Apr 2022 06:42:18 -0700 (PDT)
+        Thu, 14 Apr 2022 09:45:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27103387B7;
+        Thu, 14 Apr 2022 06:42:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC0B561D68;
-        Thu, 14 Apr 2022 13:42:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5D57C385A1;
-        Thu, 14 Apr 2022 13:42:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CACBEB828F4;
+        Thu, 14 Apr 2022 13:42:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26C86C385A1;
+        Thu, 14 Apr 2022 13:42:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943737;
-        bh=Uq+0cdcekQOR/pdnfRW63ql+oED0RlzyJiLVZwIRhOA=;
+        s=korg; t=1649943748;
+        bh=BkFxTUPxQZUHZd2JEHMvWObQJpPh8HtE3fB7ATuGBHs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tPF1lPJfiBpwr0NAyB5m/IvGMyPNa+c/PttNe06cUrd034QCXRMupgZrqWYuFW9+A
-         yNrjJeS1IfRDVhYOfCZWbu6xJnv8qhmtQnMXwjJ+L74zKKQdUvuQY4oY9IwJ72HD9P
-         KncxbkiJkIxLl0UQFA3FLgKln3RskeuR08LDupjM=
+        b=X5HhOMc8/yrKd4Yq7ZaljH9IxaVbgUvPr/3ECnLjLrc0m9SQxSlFBQJvcdawPlule
+         Qi+53Ej+hcPfpoQGrr+ORIH9mF18mg+0NlDSrc5ysiilVZv6K5A/7+r5XWWgcuBSwy
+         C28vnBa1K/p72WrmtOzntFSu0WWWIay1124LDcTo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Nash <alnash@fb.com>,
-        Neil Spring <ntspring@fb.com>, Wei Wang <weiwan@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
+        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 223/475] tcp: ensure PMTU updates are processed during fastopen
-Date:   Thu, 14 Apr 2022 15:10:08 +0200
-Message-Id: <20220414110901.362708534@linuxfoundation.org>
+Subject: [PATCH 5.4 227/475] mxser: fix xmit_buf leak in activate when LSR == 0xff
+Date:   Thu, 14 Apr 2022 15:10:12 +0200
+Message-Id: <20220414110901.473537820@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -54,66 +48,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Jiri Slaby <jslaby@suse.cz>
 
-[ Upstream commit ed0c99dc0f499ff8b6e75b5ae6092ab42be1ad39 ]
+[ Upstream commit cd3a4907ee334b40d7aa880c7ab310b154fd5cd4 ]
 
-tp->rx_opt.mss_clamp is not populated, yet, during TFO send so we
-rise it to the local MSS. tp->mss_cache is not updated, however:
+When LSR is 0xff in ->activate() (rather unlike), we return an error.
+Provided ->shutdown() is not called when ->activate() fails, nothing
+actually frees the buffer in this case.
 
-tcp_v6_connect():
-  tp->rx_opt.mss_clamp = IPV6_MIN_MTU - headers;
-  tcp_connect():
-     tcp_connect_init():
-       tp->mss_cache = min(mtu, tp->rx_opt.mss_clamp)
-     tcp_send_syn_data():
-       tp->rx_opt.mss_clamp = tp->advmss
+Fix this by properly freeing the buffer in a designated label. We jump
+there also from the "!info->type" if now too.
 
-After recent fixes to ICMPv6 PTB handling we started dropping
-PMTU updates higher than tp->mss_cache. Because of the stale
-tp->mss_cache value PMTU updates during TFO are always dropped.
-
-Thanks to Wei for helping zero in on the problem and the fix!
-
-Fixes: c7bb4b89033b ("ipv6: tcp: drop silly ICMPv6 packet too big messages")
-Reported-by: Andre Nash <alnash@fb.com>
-Reported-by: Neil Spring <ntspring@fb.com>
-Reviewed-by: Wei Wang <weiwan@google.com>
-Acked-by: Yuchung Cheng <ycheng@google.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220321165957.1769954-1-kuba@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6769140d3047 ("tty: mxser: use the tty_port_open method")
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20220124071430.14907-6-jslaby@suse.cz
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_output.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/tty/mxser.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 638d7b49ad71..139e962d1aef 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3492,6 +3492,7 @@ static void tcp_connect_queue_skb(struct sock *sk, struct sk_buff *skb)
-  */
- static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
- {
-+	struct inet_connection_sock *icsk = inet_csk(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct tcp_fastopen_request *fo = tp->fastopen_req;
- 	int space, err = 0;
-@@ -3506,8 +3507,10 @@ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
- 	 * private TCP options. The cost is reduced data space in SYN :(
- 	 */
- 	tp->rx_opt.mss_clamp = tcp_mss_clamp(tp, tp->rx_opt.mss_clamp);
-+	/* Sync mss_cache after updating the mss_clamp */
-+	tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
+diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+index 9d00ff5ef961..085dc8dd1327 100644
+--- a/drivers/tty/mxser.c
++++ b/drivers/tty/mxser.c
+@@ -861,6 +861,7 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
+ 	struct mxser_port *info = container_of(port, struct mxser_port, port);
+ 	unsigned long page;
+ 	unsigned long flags;
++	int ret;
  
--	space = __tcp_mtu_to_mss(sk, inet_csk(sk)->icsk_pmtu_cookie) -
-+	space = __tcp_mtu_to_mss(sk, icsk->icsk_pmtu_cookie) -
- 		MAX_TCP_OPTION_SPACE;
+ 	page = __get_free_page(GFP_KERNEL);
+ 	if (!page)
+@@ -870,9 +871,9 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
  
- 	space = min_t(size_t, space, fo->size);
+ 	if (!info->ioaddr || !info->type) {
+ 		set_bit(TTY_IO_ERROR, &tty->flags);
+-		free_page(page);
+ 		spin_unlock_irqrestore(&info->slock, flags);
+-		return 0;
++		ret = 0;
++		goto err_free_xmit;
+ 	}
+ 	info->port.xmit_buf = (unsigned char *) page;
+ 
+@@ -898,8 +899,10 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
+ 		if (capable(CAP_SYS_ADMIN)) {
+ 			set_bit(TTY_IO_ERROR, &tty->flags);
+ 			return 0;
+-		} else
+-			return -ENODEV;
++		}
++
++		ret = -ENODEV;
++		goto err_free_xmit;
+ 	}
+ 
+ 	/*
+@@ -944,6 +947,10 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
+ 	spin_unlock_irqrestore(&info->slock, flags);
+ 
+ 	return 0;
++err_free_xmit:
++	free_page(page);
++	info->port.xmit_buf = NULL;
++	return ret;
+ }
+ 
+ /*
 -- 
 2.34.1
 
