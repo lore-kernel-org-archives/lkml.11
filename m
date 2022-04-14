@@ -2,86 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD1D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2F7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:46:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242035AbiDNJr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:47:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40870 "EHLO
+        id S242045AbiDNJrd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241932AbiDNJqY (ORCPT
+        with ESMTP id S241930AbiDNJqX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:46:24 -0400
-X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:43:58 PDT
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77CB370CD9
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 02:43:58 -0700 (PDT)
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2022041409425028f005c46ec1be9227
-        for <linux-kernel@vger.kernel.org>;
-        Thu, 14 Apr 2022 11:42:56 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=gdfAGgzM4Vi58pSdh4MbItUru99n9GvLAnYuaYt30SY=;
- b=HsXV0ea2EUSzL0jX6rgpIyUY2i2lDk+uBDa2Dt0ZLcTmPYNJX6WR48GLN2EDDJpzxL09t5
- 1DN4+LVtAAAhWOSlsJgwp6Qlr8y00i+qSu9D5loiiqjT9BctaNFm1zjK2n/DzKYZNF2vv652
- AXddmWlaV9/5lc0VJcT2qfmw1fFeQ=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 15/20] tty: n_gsm: fix missing update of modem controls after DLCI open
-Date:   Thu, 14 Apr 2022 02:42:20 -0700
-Message-Id: <20220414094225.4527-15-daniel.starke@siemens.com>
-In-Reply-To: <20220414094225.4527-1-daniel.starke@siemens.com>
-References: <20220414094225.4527-1-daniel.starke@siemens.com>
+        Thu, 14 Apr 2022 05:46:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8429E70F62;
+        Thu, 14 Apr 2022 02:43:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43EC9B828FD;
+        Thu, 14 Apr 2022 09:43:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF48AC385A7;
+        Thu, 14 Apr 2022 09:43:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649929435;
+        bh=2VEUl2b/E+/ehMm5zJhVjkhVugGOJDikH5pjjHrToHc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YVanonr7eaz0DbDLIDgytLPSFW+4gUelB6wkSp6tl/Q2lEfJlNzAEVq8T3CtiJgEL
+         i20yCgxKDm5dNlLzOJgFB/WdN7o6JC9Oa9NspF1d6S7P/KujfiIplTOXTUaMxdGWcc
+         f7TXz6zYhHPXY3n19pjVqzNUac234T3kIEgVReRGOfZlBdHABfUGTYXn1iQm+f2Vhc
+         8WShPDrJyHLA9xNZjxvp4qCYFQKKiIub5jsRAXqibViDRCidHbRMR86CxW5Ddxviiz
+         izUwxvvt27n+PRb7gTrxoAlW1/dPmYRBLC4tSSrv3l1bHF5oCACxcgzF2ulQJuvxuV
+         4SpK+XHwj8G9Q==
+Date:   Thu, 14 Apr 2022 17:43:51 +0800
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     Fabio Baltieri <fabiobaltieri@chromium.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/4] pwm: pwm-cros-ec: add channel type support
+Message-ID: <Ylfs1yhYsFOUwKv4@google.com>
+References: <20220414092831.3717684-1-fabiobaltieri@chromium.org>
+ <20220414092831.3717684-3-fabiobaltieri@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414092831.3717684-3-fabiobaltieri@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On Thu, Apr 14, 2022 at 09:28:29AM +0000, Fabio Baltieri wrote:
+> Add support for EC_PWM_TYPE_DISPLAY_LIGHT and EC_PWM_TYPE_KB_LIGHT pwm
+> types to the PWM cros_ec_pwm driver. This allows specifying one of these
+> PWM channel by functionality, and let the EC firmware pick the correct
+> channel, thus abstracting the hardware implementation from the kernel
+> driver.
+> 
+> To use it, define the node with the "google,cros-ec-pwm-type"
+> compatible.
+> 
+> Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
 
-Currently the peer is not informed about the initial state of the modem
-control lines after a new DLCI has been opened.
-Fix this by sending the initial modem control line states after DLCI open.
-
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index f3fb66be8513..e9a7d9483c1f 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -369,7 +369,11 @@ static const u8 gsm_fcs8[256] = {
- #define INIT_FCS	0xFF
- #define GOOD_FCS	0xCF
- 
-+/*
-+ * Prototypes
-+ */
- static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len);
-+static int gsmtty_modem_update(struct gsm_dlci *dlci, u8 brk);
- 
- /**
-  *	gsm_fcs_add	-	update FCS
-@@ -1479,6 +1483,8 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
- 		pr_debug("DLCI %d goes open.\n", dlci->addr);
- 	/* Register gsmtty driver,report gsmtty dev add uevent for user */
- 	tty_register_device(gsm_tty_driver, dlci->addr, NULL);
-+	if (dlci->addr) /* Send current modem state */
-+		gsmtty_modem_update(dlci, 0);
- 	wake_up(&dlci->gsm->event);
- }
- 
--- 
-2.25.1
-
+Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
