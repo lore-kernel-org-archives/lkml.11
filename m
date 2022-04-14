@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F8CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 05:32:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B28CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 05:32:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239900AbiDNFeZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 01:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43990 "EHLO
+        id S239898AbiDNFeb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 01:34:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239862AbiDNFeK (ORCPT
+        with ESMTP id S239866AbiDNFeM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 01:34:10 -0400
+        Thu, 14 Apr 2022 01:34:12 -0400
 Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1807A3B3FC;
-        Wed, 13 Apr 2022 22:31:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9CFD83BA6F;
+        Wed, 13 Apr 2022 22:31:47 -0700 (PDT)
 Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app4 (Coremail) with SMTP id cS_KCgDHr_KqsVdi+oM1AQ--.59165S3;
-        Thu, 14 Apr 2022 13:31:32 +0800 (CST)
+        by mail-app4 (Coremail) with SMTP id cS_KCgDHr_KqsVdi+oM1AQ--.59165S5;
+        Thu, 14 Apr 2022 13:31:41 +0800 (CST)
 From:   Duoming Zhou <duoming@zju.edu.cn>
 To:     krzk@kernel.org, linux-kernel@vger.kernel.org
 Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
         alexander.deucher@amd.com, akpm@linux-foundation.org,
         broonie@kernel.org, netdev@vger.kernel.org, linma@zju.edu.cn,
         Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH V3 1/3] drivers: nfc: nfcmrvl: fix double free bugs caused by fw_dnld_over()
-Date:   Thu, 14 Apr 2022 13:31:20 +0800
-Message-Id: <1d34425a0ea8a553a66dcf4f22ca55cc920dbb42.1649913521.git.duoming@zju.edu.cn>
+Subject: [PATCH 3/3] drivers: nfc: nfcmrvl: fix use-after-free bug in nfcmrvl_fw_dnld_start()
+Date:   Thu, 14 Apr 2022 13:31:22 +0800
+Message-Id: <67e074f0c8e538caa2d2cd0eb49936e112249839.1649913521.git.duoming@zju.edu.cn>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <cover.1649913521.git.duoming@zju.edu.cn>
 References: <cover.1649913521.git.duoming@zju.edu.cn>
 In-Reply-To: <cover.1649913521.git.duoming@zju.edu.cn>
 References: <cover.1649913521.git.duoming@zju.edu.cn>
-X-CM-TRANSID: cS_KCgDHr_KqsVdi+oM1AQ--.59165S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxWr47uw4DAry7uw1DGFW5trb_yoWrAF17pF
-        45WFykJr1qkr4YgF98ta1DAF98Aw43CrWUGF98Ja4xZrn0yF1vyw1ktay5ZrsFgr4Dta13
-        GasxJa4UCFsYyr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+X-CM-TRANSID: cS_KCgDHr_KqsVdi+oM1AQ--.59165S5
+X-Coremail-Antispam: 1UD129KBjvJXoW7uw15Cw1xZr4Dtw15GrykKrg_yoW8Wr47pF
+        43AFyrAw4Yk3yYqFn5trnxGrs8Zw4xCFyUKF9F9FyfZF90vFW8Ar1kK34rZr1qgw4UXay5
+        CwnIy34UuF4vyF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
         9KBjDU0xBIdaVrnRJUUUvm1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
         w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
         IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
@@ -49,138 +49,54 @@ X-Coremail-Antispam: 1UD129KBjvJXoWxWr47uw4DAry7uw1DGFW5trb_yoWrAF17pF
         x0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2
         z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnU
         UI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgITAVZdtZLd3gAesj
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgITAVZdtZLd3gAisf
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are potential double free bugs in nfcmrvl usb driver among
-fw_dnld_rx_work(), fw_dnld_timeout() and nfcmrvl_nci_unregister_dev().
-All these three functions will call fw_dnld_over(). The fw_dnld_rx_work()
-is a work item, the fw_dnld_timeout() is a timer handler and the
-nfcmrvl_nci_unregister_dev() is called when nfcmrvl_nci device is
-detaching. So these three functions could execute concurrently.
-
-The race between fw_dnld_rx_work() and nfcmrvl_nci_unregister_dev()
+There are potential use-after-free bug in nfcmrvl_fw_dnld_start().
+The race between nfcmrvl_disconnect() and nfcmrvl_fw_dnld_start()
 can be shown as below:
 
-   (Thread 1)               |      (Thread 2)
-                            |       fw_dnld_rx_work
-                            |        fw_dnld_over
-                            |         release_firmware
-                            |          kfree(fw); //(1)
-nfcmrvl_disconnect          |
- nfcmrvl_nci_unregister_dev |
-  nfcmrvl_fw_dnld_abort     |
-   fw_dnld_over             |         ...
-    if (priv->fw_dnld.fw)   |
-    release_firmware        |
-     kfree(fw); //(2)       |
-     ...                    |         priv->fw_dnld.fw = NULL;
+   (USE)                      |      (FREE)
+                              | nfcmrvl_disconnect
+                              |  nfcmrvl_nci_unregister_dev
+                              |   nfcmrvl_fw_dnld_abort
+                              |    fw_dnld_over
+nfcmrvl_fw_dnld_start         |     release_firmware
+ ...                          |      kfree(fw) //(1)
+  priv->fw_dnld.fw->data //(2)|      ...
+   ...                        |
 
-When the fw_dnld_rx_work work item is executing, we detach the device.
-The release_firmware() will deallocate firmware in position (1),
-but firmware will be deallocated again in position (2), which
-leads to double free.
+The firmware is deallocate in position (1), but it is used in position
+(2), which leads to UAF bug.
 
-The race between fw_dnld_rx_work() and fw_dnld_timeout()
-can be shown as below:
-
-   (Thread 1)               |      (Thread 2)
-                            |       fw_dnld_rx_work
-                            |        fw_dnld_over
-                            |         release_firmware
-                            |          kfree(fw); //(1)
-fw_dnld_timeout             |
- fw_dnld_over               |         ...
-  if (priv->fw_dnld.fw)     |
-   release_firmware         |
-    kfree(fw); //(2)        |
-     ...                    |         priv->fw_dnld.fw = NULL;
-
-The release_firmware() will deallocate firmware in position (1),
-but firmware will be deallocated again in position (2), which
-leads to double free.
-
-The race between fw_dnld_timeout() and nfcmrvl_nci_unregister_dev()
-can be shown as below.
-
-   (Thread 1)               |      (Thread 2)
-                            |     nfcmrvl_disconnect
-                            |      nfcmrvl_nci_unregister_dev
-                            |       nfcmrvl_fw_dnld_abort
-                            |        fw_dnld_over
-                            |         release_firmware
-                            |          kfree(fw); //(1)
-fw_dnld_timeout             |
- fw_dnld_over               |         ...
-  if (priv->fw_dnld.fw)     |
-   release_firmware         |
-    kfree(fw); //(2)        |
-     ...                    |         priv->fw_dnld.fw = NULL;
-
-The release_firmware() will deallocate firmware in position (1),
-but firmware will be deallocated again in position (2), which
-leads to double free.
-
-This patch adds spin_lock_irq in fw_dnld_over() in order to synchronize
-among different threads that call fw_dnld_over(). The priv->fw_dnld.fw will
-be set to NULL after work item is finished and fw_dnld_over() called by
-other threads will check whether priv->fw_dnld.fw is NULL. So the double
-free bug could be prevented.
+This patch add spin_lock() and check in nfcmrvl_fw_dnld_start()
+in order to synchronize with other threads that could free firmware.
+Therefore, the UAF bug could be prevented.
 
 Fixes: 3194c6870158e3 ("NFC: nfcmrvl: add firmware download support")
 Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Lin Ma <linma@zju.edu.cn>
 ---
-Changes in V3:
-  - Make commit message more clearer.
-  - Use spin_lock_irq to synchronize.
-
- drivers/nfc/nfcmrvl/fw_dnld.c | 3 +++
- drivers/nfc/nfcmrvl/fw_dnld.h | 2 ++
- 2 files changed, 5 insertions(+)
+ drivers/nfc/nfcmrvl/fw_dnld.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/nfc/nfcmrvl/fw_dnld.c b/drivers/nfc/nfcmrvl/fw_dnld.c
-index e83f65596a8..c22a4556db5 100644
+index bb9e7e2bdec..910f6eaec65 100644
 --- a/drivers/nfc/nfcmrvl/fw_dnld.c
 +++ b/drivers/nfc/nfcmrvl/fw_dnld.c
-@@ -92,12 +92,14 @@ static struct sk_buff *alloc_lc_skb(struct nfcmrvl_private *priv, uint8_t plen)
- 
- static void fw_dnld_over(struct nfcmrvl_private *priv, u32 error)
- {
-+	spin_lock_irq(&priv->fw_dnld.lock);
- 	if (priv->fw_dnld.fw) {
- 		release_firmware(priv->fw_dnld.fw);
- 		priv->fw_dnld.fw = NULL;
- 		priv->fw_dnld.header = NULL;
- 		priv->fw_dnld.binary_config = NULL;
+@@ -511,7 +511,10 @@ int nfcmrvl_fw_dnld_start(struct nci_dev *ndev, const char *firmware_name)
+ 		return -ENOENT;
  	}
-+	spin_unlock_irq(&priv->fw_dnld.lock);
  
- 	atomic_set(&priv->ndev->cmd_cnt, 0);
+-	fw_dnld->header = (const struct nfcmrvl_fw *) priv->fw_dnld.fw->data;
++	spin_lock(&priv->fw_dnld.lock);
++	if (priv->fw_dnld.fw)
++		fw_dnld->header = (const struct nfcmrvl_fw *)priv->fw_dnld.fw->data;
++	spin_unlock(&priv->fw_dnld.lock);
  
-@@ -451,6 +453,7 @@ int nfcmrvl_fw_dnld_init(struct nfcmrvl_private *priv)
- 	if (!priv->fw_dnld.rx_wq)
- 		return -ENOMEM;
- 	skb_queue_head_init(&priv->fw_dnld.rx_q);
-+	spin_lock_init(&priv->fw_dnld.lock);
- 	return 0;
- }
- 
-diff --git a/drivers/nfc/nfcmrvl/fw_dnld.h b/drivers/nfc/nfcmrvl/fw_dnld.h
-index 7c4d91b0191..6974c307947 100644
---- a/drivers/nfc/nfcmrvl/fw_dnld.h
-+++ b/drivers/nfc/nfcmrvl/fw_dnld.h
-@@ -75,6 +75,8 @@ struct nfcmrvl_fw_dnld {
- 	struct sk_buff_head rx_q;
- 
- 	struct timer_list timer;
-+	/* To synchronize among different threads that call firmware.*/
-+	spinlock_t lock;
- };
- 
- int nfcmrvl_fw_dnld_init(struct nfcmrvl_private *priv);
+ 	if (fw_dnld->header->magic != NFCMRVL_FW_MAGIC ||
+ 	    fw_dnld->header->phy != priv->phy) {
 -- 
 2.17.1
 
