@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77166C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7DB6C43217
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351942AbiDNObl (ORCPT
+        id S1352044AbiDNObv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46990 "EHLO
+        Thu, 14 Apr 2022 10:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344304AbiDNNkn (ORCPT
+        with ESMTP id S242291AbiDNNhK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:40:43 -0400
+        Thu, 14 Apr 2022 09:37:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C9F120;
-        Thu, 14 Apr 2022 06:38:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB13B972EC;
+        Thu, 14 Apr 2022 06:31:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10E116190F;
-        Thu, 14 Apr 2022 13:38:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26D37C385A5;
-        Thu, 14 Apr 2022 13:38:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 76C656190F;
+        Thu, 14 Apr 2022 13:31:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8136FC385A5;
+        Thu, 14 Apr 2022 13:31:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943498;
-        bh=JAhQDkAgxBJ22aXCRTC+DVf3j3snAhwxg+8w9iTMXCE=;
+        s=korg; t=1649943081;
+        bh=Hxo4l3G3ezXXxyeir2RGiMkhpL4xQTk/wS0+4Y5M1K8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GAceZ3tAWMnHwlD0/WfJ4tXmwGeu4lakS4qYpZd5Tf/A3TvCOBNLgYuoG1++do6MX
-         2hpIQTiMzKiSaVscTM0UU5BTdIapOu8+v3ZHrbd0qXhOhReDSHw85MPPGKxQ4XdZy1
-         ovP+sgP/K4Ys1Ufuen5KpPQcpiOtZO4VIwTKBm4Q=
+        b=q0BeB8kWqju3xV1zz3pL/QvBFgBjUOeinRA5feTX7JLJtliHZMnVwR0IzE2tRJUKt
+         umKHLgLHCxZ/kwLOBz9EBYQt6kgxp2md9VLDEcQ2oCUxRqE6xbppFNwNNG60b2uMbV
+         FTLbJv42CWvV2QfGNAoTDWNQq1bCDFiurHih0tYo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 136/475] ASoC: mxs-saif: Handle errors for clk_enable
-Date:   Thu, 14 Apr 2022 15:08:41 +0200
-Message-Id: <20220414110858.955489358@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.4 028/475] greybus: svc: fix an error handling bug in gb_svc_hello()
+Date:   Thu, 14 Apr 2022 15:06:53 +0200
+Message-Id: <20220414110855.941883172@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,40 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 2ecf362d220317debf5da376e0390e9f7a3f7b29 ]
+commit 5f8583a3b7552092582a92e7bbd2153319929ad7 upstream.
 
-As the potential failure of the clk_enable(),
-it should be better to check it, like mxs_saif_trigger().
+Cleanup if gb_svc_queue_deferred_request() fails.
 
-Fixes: d0ba4c014934 ("ASoC: mxs-saif: set a base clock rate for EXTMASTER mode work")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220301081717.3727190-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220202072016.GA6748@kili
+Fixes: ee2f2074fdb2 ("greybus: svc: reconfig APBridgeA-Switch link to handle required load")
+Cc: stable@vger.kernel.org      # 4.9
+[johan: fix commit summary prefix and rename label ]
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Link: https://lore.kernel.org/r/20220202113347.1288-2-johan@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/mxs/mxs-saif.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/greybus/svc.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
-index 1e38ce858326..cb1b525cbe9d 100644
---- a/sound/soc/mxs/mxs-saif.c
-+++ b/sound/soc/mxs/mxs-saif.c
-@@ -455,7 +455,10 @@ static int mxs_saif_hw_params(struct snd_pcm_substream *substream,
- 		* basic clock which should be fast enough for the internal
- 		* logic.
- 		*/
--		clk_enable(saif->clk);
-+		ret = clk_enable(saif->clk);
-+		if (ret)
-+			return ret;
+--- a/drivers/greybus/svc.c
++++ b/drivers/greybus/svc.c
+@@ -866,8 +866,14 @@ static int gb_svc_hello(struct gb_operat
+ 
+ 	gb_svc_debugfs_init(svc);
+ 
+-	return gb_svc_queue_deferred_request(op);
++	ret = gb_svc_queue_deferred_request(op);
++	if (ret)
++		goto err_remove_debugfs;
+ 
++	return 0;
 +
- 		ret = clk_set_rate(saif->clk, 24000000);
- 		clk_disable(saif->clk);
- 		if (ret)
--- 
-2.34.1
-
++err_remove_debugfs:
++	gb_svc_debugfs_exit(svc);
+ err_unregister_device:
+ 	gb_svc_watchdog_destroy(svc);
+ 	device_del(&svc->dev);
 
 
