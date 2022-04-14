@@ -2,101 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B003EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:12:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E8FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:12:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245126AbiDNRPC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49996 "EHLO
+        id S245436AbiDNRPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 13:15:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245248AbiDNRO1 (ORCPT
+        with ESMTP id S245368AbiDNRO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:14:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9FB3D79
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 10:05:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649955955;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nBhx5wysQrY6D6fszl8D8rXczIbbbgncZbi9tNPkiCQ=;
-        b=YHGmuCP6+bbpUsCdi+GHJoCkqXtn+DTwW4yaBMXeApcTqryW6h4Fyf1CzCtcw+UYjz83/F
-        sfNtuYp/g4/gxDNQFFE39tJAuc9+XKp01Xi7f4ilAZ3+m3LbTQA6cDY5l2egMazV7UaQQL
-        b9uu+d9U7JyqWT/ntitj2/VJjVHXFsc=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-414-3SaWySQXP3qAUJInBm-VIQ-1; Thu, 14 Apr 2022 13:05:54 -0400
-X-MC-Unique: 3SaWySQXP3qAUJInBm-VIQ-1
-Received: by mail-qt1-f199.google.com with SMTP id ay36-20020a05622a22a400b002f1d1702432so3438784qtb.14
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 10:05:54 -0700 (PDT)
+        Thu, 14 Apr 2022 13:14:28 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3E02B4;
+        Thu, 14 Apr 2022 10:06:52 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id u7so10198816lfs.8;
+        Thu, 14 Apr 2022 10:06:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UqP4xfrPo10vTgY/j5s+P5EZr0sl8LLw6TahcYWWquQ=;
+        b=aIuOZaL18kpoDTDXW+XpXtRxHjrNQ1EWRCmtzl8P+yeCXCuf7y0GuQY03My+fuzKYp
+         D/Yp7zegMF6Ij46yMl+EcSMrKoprf09qOhSXxb3KPVerAxjlCJJasHn49LJ4+A8D3BFv
+         CVNIwkta3rzORr6ZIN26KKGcy/qykZ5+AEu12YIjDc2OwFZCi0wchqOaFoL2XjGc/c0R
+         QCvxSeD9OSYAuwvw5R2hmYfUJsespFo3vBr+UGwAOQ/kCpfmNfRKKMzPxcK8Wj1Z0Ywx
+         qJ9QnGoEa43yOKtY9FZUktMM9HZuF4OzxVQYbAln+Ns0XHEi60YSHd0uZ1qnHPug5tbz
+         A2DQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nBhx5wysQrY6D6fszl8D8rXczIbbbgncZbi9tNPkiCQ=;
-        b=zIC/YOXmirtSXQK5neMGH6oXQ/ckLrelC3gJC/N39ly7vYIqfBY3g4pXdkxrjFHqoR
-         xMbDtnn0GnGzYpTK+X8DtxLhscZozgH1KgS3OrDXVEElXQTeN9jTmk1OApR3r7z28Wov
-         g7qbwjhQi0kqt4c77EM0WQGESI4vLEh45tooqg9Bg73lr1AY0MQ5g1E/pYsk3SKWQrgi
-         vxAfy/yfLpXmDqx4+dFfvaU+paMbefGpRJn7FTduHPg6ndgBv/+YO2cdYw0c9V3Bo7RZ
-         GHHOoKIIayfmOIagjSEo2kAyBaqDltaT2Vt8G9REIVE7U1Poc/WLL8oCL/7a5bHDPet3
-         Verg==
-X-Gm-Message-State: AOAM531J/Xo/xWbhRAQpU8c1CCLU3dRJ2yEpnpT1gxJ2odUbgQzSqZew
-        LSru7Shbv5dGNSL2LsrlrFsUnahjdRpMuiG+x8hZ0h/i+RCsVcg+Bf2OzWUo8rRDn2qKCfeCVIW
-        JdvnfO7vpIhpNTQDdqHmEoXcY
-X-Received: by 2002:a05:6214:c83:b0:441:51c7:9dc9 with SMTP id r3-20020a0562140c8300b0044151c79dc9mr4234704qvr.83.1649955953863;
-        Thu, 14 Apr 2022 10:05:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxsLfcv9b/CX+hJLgRu8qgUX5aJuQ+q/0sUtEN62VU6+15rBzy5BCoh4f97BCUOEU8LJK3NHQ==
-X-Received: by 2002:a05:6214:c83:b0:441:51c7:9dc9 with SMTP id r3-20020a0562140c8300b0044151c79dc9mr4234673qvr.83.1649955953609;
-        Thu, 14 Apr 2022 10:05:53 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::45])
-        by smtp.gmail.com with ESMTPSA id s3-20020a05622a1a8300b002f15bb78651sm1411780qtc.38.2022.04.14.10.05.52
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UqP4xfrPo10vTgY/j5s+P5EZr0sl8LLw6TahcYWWquQ=;
+        b=3fSJvr8aHioLWVeZuoJ0Kj6gZQR+lOIOWd7Pcakwzbl1C4LmE8DFAHC9Qgbh9tdRId
+         xavTmUDBpVfy2Ctg5wYnSoxDGtRgkot18vzJYj3YNQLnAwdBBP8mpK/MHW5jOpqwl54X
+         2kRia+eejrXOFzi79SZPI6E2+fjoLk+vfn+ipV6g0y8NtJzIArbJijujVOLvL87K5JjW
+         i8UOmUzZXq5e81neOoqAyR/lF6IUbEFF+5f8f37qZFsd7eBiW8l2iSugjNcqoZSGf8OB
+         R9NTzlu0eGab33MwRsX9NL4YCipD/D78MjX1Ysdxo9EhKuFSkY0B0qeo574KLpS6WYvq
+         9gng==
+X-Gm-Message-State: AOAM532/bpMj4wZsapYciubluaLQkdzn5q5r1OIulErGeAlYT2ODGGA1
+        rfrmGGhq+98Hs+B00StWpn7/BZnNEvU=
+X-Google-Smtp-Source: ABdhPJznpm7lMO1/Kusi9VhokL4ZNsSDNoOGSIbhniAmsoR8zp63cwGawE7wTq1PhNpPwwG5oXsCig==
+X-Received: by 2002:a05:6512:128b:b0:46b:a392:1186 with SMTP id u11-20020a056512128b00b0046ba3921186mr2497713lfs.495.1649956010976;
+        Thu, 14 Apr 2022 10:06:50 -0700 (PDT)
+Received: from nergzd-desktop.localdomain ([194.39.226.133])
+        by smtp.gmail.com with ESMTPSA id x11-20020a056512046b00b0046bbe5d2eabsm52216lfd.75.2022.04.14.10.06.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 10:05:53 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 10:05:50 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Miroslav Benes <mbenes@suse.cz>
-Subject: Re: [PATCH 10/18] objtool: Extricate ibt from stack validation
-Message-ID: <20220414170550.v2jmdfhmz7zbuug6@treble>
-References: <cover.1649891421.git.jpoimboe@redhat.com>
- <44a73f724b51c4a994edc43536b7a7ee5e972b40.1649891421.git.jpoimboe@redhat.com>
- <YlfS7twQVCHGgtCV@hirez.programming.kicks-ass.net>
- <20220414154449.5moa7xsczwybbqhd@treble>
- <YlhN+GFZlycwydSv@hirez.programming.kicks-ass.net>
+        Thu, 14 Apr 2022 10:06:50 -0700 (PDT)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH 2/4] dt-bindings: mfd: Add bindings for Silicon Mitus SM5703 MFD
+Date:   Thu, 14 Apr 2022 20:06:13 +0300
+Message-Id: <20220414170616.23319-3-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220414170616.23319-1-markuss.broks@gmail.com>
+References: <20220414170616.23319-1-markuss.broks@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YlhN+GFZlycwydSv@hirez.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 06:38:16PM +0200, Peter Zijlstra wrote:
-> On Thu, Apr 14, 2022 at 08:44:49AM -0700, Josh Poimboeuf wrote:
-> 
-> > Ok.  That was subtle, it needs a comment or two.  I had the distinct
-> > feeling I was introducing a bug, then I got distracted ;-)
-> 
-> Right, lemme try and not forget to write one ;-)
+This patch adds device-tree bindings for the Silicon Mitus
+SM5703 MFD.
 
-I'm rewriting the code anyway, I'll add some comments.
+Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+---
+ .../bindings/mfd/siliconmitus,sm5703.yaml     | 96 +++++++++++++++++++
+ 1 file changed, 96 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
 
-> > Doesn't the compiler give those special cases ENDBR anyway?  Just
-> > wondering why we avoid the warning for those.
-> 
-> Sure, but this is about not scribbling that ENDBR with a NOP.
-
-Right, but it only prints warnings for data sections, despite marking
-others:
-
--                       dest = validate_ibt_reloc(file, reloc);
--                       if (is_data && dest && !dest->noendbr)
--                               warn_noendbr("data ", sec, reloc->offset, dest);
-
-
+diff --git a/Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml b/Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
+new file mode 100644
+index 000000000000..cf72bee7a679
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
+@@ -0,0 +1,96 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/siliconmitus,sm5703.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Silicon Mitus multi-function device bindings
++
++maintainers:
++  - Markuss Broks <markuss.broks@gmail.com>
++
++description: |
++  Silicon Mitus SM5703 is a multi-function device, that consists of several
++  modules, designed for a mobile phone use. It consists of
++  LDO, Buck, USBLDO and VBUS regulators, a flash LED driver, a MUIC unit,
++  a fuel gauge and a battery charger circuit. The MUIC and Fuel-Gauge units
++  are separate from the main MFD, having their own i2c lines, while the
++  LED driver, regulators and charger are sharing the main i2c bus of the MFD.
++
++properties:
++  compatible:
++    const:
++      - siliconmitus,sm5703-mfd
++
++  reg:
++    description:
++      I2C slave address.
++    maxItems: 1
++
++  regulators:
++    $ref: ../regulator/siliconmitus,sm5703-regulator.yaml
++    description:
++      List of child nodes that specify the regulators.
++
++  reset-gpio:
++    description:
++      GPIO which is connected to the MRSTB pin.
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - regulators
++
++additionalProperties: false
++
++examples:
++  - |
++  i2c {
++    #address-cells = <1>;
++    #size-cells = <0>;
++
++    mfd@49 {
++      compatible = "siliconmitus,sm5703-mfd";
++      reg = <0x49>;
++
++      reset-gpio = <&msmgpio 24 GPIO_ACTIVE_HIGH>;
++      pinctrl-0 = <&mrstb_default>;
++
++      regulator {
++        compatible = "siliconmitus,sm5703-regulator";
++
++        regulators {
++          sm5703_ldo1: ldo1 {
++            regulator-min-microvolt = <2800000>;
++            regulator-max-microvolt = <2800000>;
++          };
++
++          sm5703_ldo2: ldo2 {
++            regulator-min-microvolt = <1500000>;
++            regulator-max-microvolt = <3300000>;
++          };
++
++          sm5703_ldo3: ldo3 {
++            regulator-min-microvolt = <3300000>;
++            regulator-max-microvolt = <3300000>;
++          };
++
++          sm5703_usbldo1: usbldo1 {
++            regulator-min-microvolt = <4800000>;
++            regulator-max-microvolt = <4800000>;
++          };
++
++          sm5703_usbldo2: usbldo2 {
++            regulator-min-microvolt = <4800000>;
++            regulator-max-microvolt = <4800000>;
++          };
++
++          sm5703_vbus: vbus {
++            regulator-min-microvolt = <5000000>;
++            regulator-max-microvolt = <5000000>;
++          };
++        };
++      };
++    };
++  };
 -- 
-Josh
+2.35.1
 
