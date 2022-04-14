@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E26D2C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A07C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243826AbiDNOhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35322 "EHLO
+        id S232364AbiDNOgb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245262AbiDNNiW (ORCPT
+        with ESMTP id S245420AbiDNNia (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBFF9F3A5;
-        Thu, 14 Apr 2022 06:31:48 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530BB3CFD2;
+        Thu, 14 Apr 2022 06:32:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A19DE61BA6;
-        Thu, 14 Apr 2022 13:31:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD58DC385A1;
-        Thu, 14 Apr 2022 13:31:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C734B82984;
+        Thu, 14 Apr 2022 13:32:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E770C385BC;
+        Thu, 14 Apr 2022 13:32:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943107;
-        bh=UxiJWQzOxUTKSG/tgEQ7ATLQBu5U6+KUi7zIDsnJIkM=;
+        s=korg; t=1649943132;
+        bh=gXLc8Nmru/OE480BeQnP0EBfJ2//XCu6TqSqJ64TlP0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PmWX782I7jmUlzjoPlkxwTi1Dt3m1v6c6g13Y2Xc7cREvHHUdPUrYErUMfBHJ7QpL
-         p19KcncRYgZR7mr7BIY+C364Au1dyLNP7NOlEsEl5278GCOqQ7Oa6qIZP6r+RWgykI
-         G3o16KZE+U9mXi0sL+1YcLJdP+Ma4urRCQYuOPGc=
+        b=H7Sq1hw1NTl2rGyAyPNlv+hL1SyVThpGMZ5tB97Te6jvX7kPL5l7nAXGiWakiat2c
+         wDi8JFRXBjLyXKfFgwijND5W7d+LGcVCY5ESSpjScWGpjUlV0o3sCIUo8+AbnBArCP
+         cz/qAUDcLOdX+0YOZZ96fPZR30KLbm60x4Gwdmqc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.4 036/475] NFSD: prevent underflow in nfssvc_decode_writeargs()
-Date:   Thu, 14 Apr 2022 15:07:01 +0200
-Message-Id: <20220414110856.167378742@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.4 044/475] jffs2: fix use-after-free in jffs2_clear_xattr_subsystem
+Date:   Thu, 14 Apr 2022 15:07:09 +0200
+Message-Id: <20220414110856.390528814@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -48,47 +49,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Baokun Li <libaokun1@huawei.com>
 
-commit 184416d4b98509fb4c3d8fc3d6dc1437896cc159 upstream.
+commit 4c7c44ee1650677fbe89d86edbad9497b7679b5c upstream.
 
-Smatch complains:
+When we mount a jffs2 image, assume that the first few blocks of
+the image are normal and contain at least one xattr-related inode,
+but the next block is abnormal. As a result, an error is returned
+in jffs2_scan_eraseblock(). jffs2_clear_xattr_subsystem() is then
+called in jffs2_build_filesystem() and then again in
+jffs2_do_fill_super().
 
-	fs/nfsd/nfsxdr.c:341 nfssvc_decode_writeargs()
-	warn: no lower bound on 'args->len'
+Finally we can observe the following report:
+ ==================================================================
+ BUG: KASAN: use-after-free in jffs2_clear_xattr_subsystem+0x95/0x6ac
+ Read of size 8 at addr ffff8881243384e0 by task mount/719
 
-Change the type to unsigned to prevent this issue.
+ Call Trace:
+  dump_stack+0x115/0x16b
+  jffs2_clear_xattr_subsystem+0x95/0x6ac
+  jffs2_do_fill_super+0x84f/0xc30
+  jffs2_fill_super+0x2ea/0x4c0
+  mtd_get_sb+0x254/0x400
+  mtd_get_sb_by_nr+0x4f/0xd0
+  get_tree_mtd+0x498/0x840
+  jffs2_get_tree+0x25/0x30
+  vfs_get_tree+0x8d/0x2e0
+  path_mount+0x50f/0x1e50
+  do_mount+0x107/0x130
+  __se_sys_mount+0x1c5/0x2f0
+  __x64_sys_mount+0xc7/0x160
+  do_syscall_64+0x45/0x70
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
+ Allocated by task 719:
+  kasan_save_stack+0x23/0x60
+  __kasan_kmalloc.constprop.0+0x10b/0x120
+  kasan_slab_alloc+0x12/0x20
+  kmem_cache_alloc+0x1c0/0x870
+  jffs2_alloc_xattr_ref+0x2f/0xa0
+  jffs2_scan_medium.cold+0x3713/0x4794
+  jffs2_do_mount_fs.cold+0xa7/0x2253
+  jffs2_do_fill_super+0x383/0xc30
+  jffs2_fill_super+0x2ea/0x4c0
+ [...]
+
+ Freed by task 719:
+  kmem_cache_free+0xcc/0x7b0
+  jffs2_free_xattr_ref+0x78/0x98
+  jffs2_clear_xattr_subsystem+0xa1/0x6ac
+  jffs2_do_mount_fs.cold+0x5e6/0x2253
+  jffs2_do_fill_super+0x383/0xc30
+  jffs2_fill_super+0x2ea/0x4c0
+ [...]
+
+ The buggy address belongs to the object at ffff8881243384b8
+  which belongs to the cache jffs2_xattr_ref of size 48
+ The buggy address is located 40 bytes inside of
+  48-byte region [ffff8881243384b8, ffff8881243384e8)
+ [...]
+ ==================================================================
+
+The triggering of the BUG is shown in the following stack:
+-----------------------------------------------------------
+jffs2_fill_super
+  jffs2_do_fill_super
+    jffs2_do_mount_fs
+      jffs2_build_filesystem
+        jffs2_scan_medium
+          jffs2_scan_eraseblock        <--- ERROR
+        jffs2_clear_xattr_subsystem    <--- free
+    jffs2_clear_xattr_subsystem        <--- free again
+-----------------------------------------------------------
+
+An error is returned in jffs2_do_mount_fs(). If the error is returned
+by jffs2_sum_init(), the jffs2_clear_xattr_subsystem() does not need to
+be executed. If the error is returned by jffs2_build_filesystem(), the
+jffs2_clear_xattr_subsystem() also does not need to be executed again.
+So move jffs2_clear_xattr_subsystem() from 'out_inohash' to 'out_root'
+to fix this UAF problem.
+
+Fixes: aa98d7cf59b5 ("[JFFS2][XATTR] XATTR support on JFFS2 (version. 5)")
 Cc: stable@vger.kernel.org
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/nfsproc.c |    2 +-
- fs/nfsd/xdr.h     |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ fs/jffs2/fs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/nfsd/nfsproc.c
-+++ b/fs/nfsd/nfsproc.c
-@@ -230,7 +230,7 @@ nfsd_proc_write(struct svc_rqst *rqstp)
- 	unsigned long cnt = argp->len;
- 	unsigned int nvecs;
- 
--	dprintk("nfsd: WRITE    %s %d bytes at %d\n",
-+	dprintk("nfsd: WRITE    %s %u bytes at %d\n",
- 		SVCFH_fmt(&argp->fh),
- 		argp->len, argp->offset);
- 
---- a/fs/nfsd/xdr.h
-+++ b/fs/nfsd/xdr.h
-@@ -33,7 +33,7 @@ struct nfsd_readargs {
- struct nfsd_writeargs {
- 	svc_fh			fh;
- 	__u32			offset;
--	int			len;
-+	__u32			len;
- 	struct kvec		first;
- };
- 
+--- a/fs/jffs2/fs.c
++++ b/fs/jffs2/fs.c
+@@ -602,8 +602,8 @@ out_root:
+ 	jffs2_free_ino_caches(c);
+ 	jffs2_free_raw_node_refs(c);
+ 	kvfree(c->blocks);
+- out_inohash:
+ 	jffs2_clear_xattr_subsystem(c);
++ out_inohash:
+ 	kfree(c->inocache_list);
+  out_wbuf:
+ 	jffs2_flash_cleanup(c);
 
 
