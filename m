@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC15FC46467
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC18C4707E
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356225AbiDNP2r (ORCPT
+        id S1357148AbiDNP3R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:28:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43058 "EHLO
+        Thu, 14 Apr 2022 11:29:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346562AbiDNN5k (ORCPT
+        with ESMTP id S1346456AbiDNN5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:57:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC6E2018A;
-        Thu, 14 Apr 2022 06:46:53 -0700 (PDT)
+        Thu, 14 Apr 2022 09:57:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6E45FF0B;
+        Thu, 14 Apr 2022 06:46:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF5D761DA2;
-        Thu, 14 Apr 2022 13:46:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF1A0C385A5;
-        Thu, 14 Apr 2022 13:46:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C395B82985;
+        Thu, 14 Apr 2022 13:46:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3495C385A5;
+        Thu, 14 Apr 2022 13:46:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944012;
-        bh=t5Kjxi8BKChE7cLLOSmUC5fA8BDDzn2f270Eb+wM/pU=;
+        s=korg; t=1649943998;
+        bh=+r+nESv/qzOm6IdEf29mDmUPKKrFEOEg5L6QpN7iQjI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NJAyvOMhAoYYbvYor8bjHaB/m277hckXLT6xO+j+fDpPi53rnHbKc7jp57FFRjxg9
-         hm9QEw/d/jSKjrE7dHMp3pofcI6TDMpNLI2OP5rZn2d5e39ZrE4l0ANPRoFtcdHY19
-         a5h/Oow6Yxw+jHB2pyw0wt5bKAVksegS3hqdUmtc=
+        b=0wxejdwaRORRR0TsWDqP58k3TZmjVvoR2mqAnC0mNdQoB/V9w4lfvtJU4P7ICVlzC
+         3AQdS2jqL/20F0r0T5Z1yFvwnBW+wWCYpGrrgMexxsqXmvycV6vipmj7Z14t84tser
+         crP5+bYAT9HttWRmYzWekHuPMYH1qb5cEVl21GXc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.4 363/475] ARM: dts: spear13xx: Update SPI dma properties
-Date:   Thu, 14 Apr 2022 15:12:28 +0200
-Message-Id: <20220414110905.239452744@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH 5.4 358/475] dt-bindings: mtd: nand-controller: Fix a comment in the examples
+Date:   Thu, 14 Apr 2022 15:12:23 +0200
+Message-Id: <20220414110905.101640914@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,37 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-commit 31d3687d6017c7ce6061695361598d9cda70807a upstream.
+commit 0e7f1b557974ce297e5e4c9d4245720fbb489886 upstream.
 
-Reorder dmas and dma-names property for spi controller node to make it
-compliant with bindings.
+The controller properties should be in the controller 'parent' node,
+while properties in the children nodes are specific to the NAND
+*chip*. This error was already present during the yaml conversion.
 
-Fixes: 6e8887f60f60 ("ARM: SPEAr13xx: Pass generic DW DMAC platform data from DT")
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-Link: https://lore.kernel.org/r/20220326042313.97862-2-singh.kuldeep87k@gmail.com'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 2d472aba15ff ("mtd: nand: document the NAND controller/NAND chip DT representation")
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/linux-mtd/20211216111654.238086-3-miquel.raynal@bootlin.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/spear13xx.dtsi |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/mtd/nand-controller.yaml |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm/boot/dts/spear13xx.dtsi
-+++ b/arch/arm/boot/dts/spear13xx.dtsi
-@@ -284,9 +284,9 @@
- 				#size-cells = <0>;
- 				interrupts = <0 31 0x4>;
- 				status = "disabled";
--				dmas = <&dwdma0 4 0 0>,
--					<&dwdma0 5 0 0>;
--				dma-names = "tx", "rx";
-+				dmas = <&dwdma0 5 0 0>,
-+					<&dwdma0 4 0 0>;
-+				dma-names = "rx", "tx";
- 			};
+--- a/Documentation/devicetree/bindings/mtd/nand-controller.yaml
++++ b/Documentation/devicetree/bindings/mtd/nand-controller.yaml
+@@ -139,6 +139,6 @@ examples:
+         nand-ecc-mode = "soft";
+         nand-ecc-algo = "bch";
  
- 			rtc@e0580000 {
+-        /* controller specific properties */
++        /* NAND chip specific properties */
+       };
+     };
 
 
