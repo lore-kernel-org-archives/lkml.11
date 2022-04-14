@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB011C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:16:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243881AbiDNNTD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:19:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37776 "EHLO
+        id S243913AbiDNNTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243795AbiDNNSD (ORCPT
+        with ESMTP id S243812AbiDNNSD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:18:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910278BF65;
-        Thu, 14 Apr 2022 06:15:29 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A31B890275;
+        Thu, 14 Apr 2022 06:15:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FCDAB8296D;
-        Thu, 14 Apr 2022 13:15:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94E09C385AB;
-        Thu, 14 Apr 2022 13:15:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BB4961307;
+        Thu, 14 Apr 2022 13:15:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 390A1C385A1;
+        Thu, 14 Apr 2022 13:15:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942127;
-        bh=86yCOVwWyaM1OvXwGlUToQ5hd/hGtiWfS3GYUhkVnKs=;
+        s=korg; t=1649942132;
+        bh=fZ0NMhp8ITe263nvjodv6Z57zmXNL/LGHoSpLaRSkNE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=azDzlA8Cm7D3Hfdb8IVEHV2wvFjZPuxQuJedFV/nkcu0cHAwinSHdJvIdEBBE+akK
-         5Go/VhmK9nSBKnpuCUCUbVJXOiSQp0OrQ4wLxVDWXVky5PresbkrawNCKHjboBRnIx
-         q/YcEi8YFR5rntKd7Ynigq85O+N/JOBxITj/c224=
+        b=S+YhTp/797hot6zW4OZJIc3mHTaQVfp5kyA3itm9tSJndj5kHd2WkMESs+8nAjEYg
+         136fCpn7wqlv9gDtmhiVBh4WaUegHjo+bFkxdr8iZxW2z/vnDK63J7VvDkDCwn+Zmx
+         pzPKo19QzZA5yXq3NuL4fICFUzvx+NEmunc9sYhw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 006/338] virtio_console: break out of buf poll on remove
-Date:   Thu, 14 Apr 2022 15:08:29 +0200
-Message-Id: <20220414110839.071436289@linuxfoundation.org>
+Subject: [PATCH 4.19 008/338] spi: Fix invalid sgs value
+Date:   Thu, 14 Apr 2022 15:08:31 +0200
+Message-Id: <20220414110839.127888557@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -48,53 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael S. Tsirkin <mst@redhat.com>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit 0e7174b9d5877130fec41fb4a16e0c2ee4958d44 ]
+[ Upstream commit 1a4e53d2fc4f68aa654ad96d13ad042e1a8e8a7d ]
 
-A common pattern for device reset is currently:
-vdev->config->reset(vdev);
-.. cleanup ..
+max_seg_size is unsigned int and it can have a value up to 2^32
+(for eg:-RZ_DMAC driver sets dma_set_max_seg_size as U32_MAX)
+When this value is used in min_t() as an integer type, it becomes
+-1 and the value of sgs becomes 0.
 
-reset prevents new interrupts from arriving and waits for interrupt
-handlers to finish.
+Fix this issue by replacing the 'int' data type with 'unsigned int'
+in min_t().
 
-However if - as is common - the handler queues a work request which is
-flushed during the cleanup stage, we have code adding buffers / trying
-to get buffers while device is reset. Not good.
-
-This was reproduced by running
-	modprobe virtio_console
-	modprobe -r virtio_console
-in a loop.
-
-Fix this up by calling virtio_break_device + flush before reset.
-
-Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1786239
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220307184843.9994-1-biju.das.jz@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/virtio_console.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/spi/spi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
-index cdf441942bae..ac0b84afabe7 100644
---- a/drivers/char/virtio_console.c
-+++ b/drivers/char/virtio_console.c
-@@ -1985,6 +1985,13 @@ static void virtcons_remove(struct virtio_device *vdev)
- 	list_del(&portdev->list);
- 	spin_unlock_irq(&pdrvdata_lock);
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index 49f592e433a8..518c8e0eef7f 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -779,10 +779,10 @@ int spi_map_buf(struct spi_controller *ctlr, struct device *dev,
+ 	int i, ret;
  
-+	/* Device is going away, exit any polling for buffers */
-+	virtio_break_device(vdev);
-+	if (use_multiport(portdev))
-+		flush_work(&portdev->control_work);
-+	else
-+		flush_work(&portdev->config_work);
-+
- 	/* Disable interrupts for vqs */
- 	vdev->config->reset(vdev);
- 	/* Finish up work that's lined up */
+ 	if (vmalloced_buf || kmap_buf) {
+-		desc_len = min_t(int, max_seg_size, PAGE_SIZE);
++		desc_len = min_t(unsigned int, max_seg_size, PAGE_SIZE);
+ 		sgs = DIV_ROUND_UP(len + offset_in_page(buf), desc_len);
+ 	} else if (virt_addr_valid(buf)) {
+-		desc_len = min_t(int, max_seg_size, ctlr->max_dma_len);
++		desc_len = min_t(unsigned int, max_seg_size, ctlr->max_dma_len);
+ 		sgs = DIV_ROUND_UP(len, desc_len);
+ 	} else {
+ 		return -EINVAL;
 -- 
 2.34.1
 
