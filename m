@@ -2,109 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C19C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A1DC4321E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356614AbiDNPT3 (ORCPT
+        id S1347163AbiDNPXt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:19:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47174 "EHLO
+        Thu, 14 Apr 2022 11:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347684AbiDNN71 (ORCPT
+        with ESMTP id S1347546AbiDNN7R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 500E148881;
-        Thu, 14 Apr 2022 06:51:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E024C61D29;
-        Thu, 14 Apr 2022 13:51:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE663C385A1;
-        Thu, 14 Apr 2022 13:51:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944274;
-        bh=eyOC9+0o2d+lz78ju2LtHHHrCmZzxFMwiDBQxOBnII4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w3uClQmsWaSLA4tqrTP9smzJe3wD+e9HcuDovLboVKIbH111aUno8dQw15cdbPQEM
-         l+xrEDOHJlINUJOBDLm622lvwzlBZ/3HUqoJGxIrVClkrlHDvdcsFrF97ThopO2law
-         Xqj/VyKOC54wuAADPkLqkd9wra80xIeKYsbgix28=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.4 456/475] irqchip/gic-v3: Fix GICR_CTLR.RWP polling
-Date:   Thu, 14 Apr 2022 15:14:01 +0200
-Message-Id: <20220414110907.818169704@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 14 Apr 2022 09:59:17 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE4D3FDB9;
+        Thu, 14 Apr 2022 06:49:59 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id p15so10168041ejc.7;
+        Thu, 14 Apr 2022 06:49:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=m8ZH1QRf9uASf5s5u8tzlTaBurC1zqHxJb4eLZNXq+o=;
+        b=EKw2WT2fRZ8eAUATbrMlkvLp0o2PWkQ5Gp8swARA9czaMiZeyQjtQdkP7alZkbipzd
+         KYmgc0VpZld0/sKAM2bnHC6tcBG2Gt3bsvXAzZlNxgwMsTrPR65dAZnhBrBxHKXrAMVF
+         xM11dFd5G3kLz4+icGfdyc0UEkR4El7/cHdGoZ+aCXzUcOhCSEpme2Epp1x0tnCPqNw4
+         pR62jXYdTcEF/ma3PE+W1ClT8v8yf02JQbR845Z/OARk+/ZRVQGvc8JyZbdejecefaQa
+         0i1MDZJuHuzRaKUgDZG9kFad13ZvKvq85feFZA09Dov0mz/o69Mw+Qo5Zy2mkuoJoAr7
+         VZjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=m8ZH1QRf9uASf5s5u8tzlTaBurC1zqHxJb4eLZNXq+o=;
+        b=70D+V9LcGcOYKt1XfbGB1uECCiup0GwqM5CaNk94j+Rr3Rs8UG0O6fYuaIbhYqJbGp
+         8nwNmt+g8wvvvMdvHTbuos4pWYjMs+CvGsaIaFsHURl/lXBdKoPcGDeomGcm/giqbjsv
+         cuk+RlaOKvM+O8HWVWdpphxG4eGFMvgzVDoqxd5S3pojzbM3+Nj/GkFDqNLkZ+uPg+bf
+         DyHFM3gHU0Iw5uCZFzMNe26gQ3GIY2+5pJD13yi4Avv43P/2YObIU1QyzklbTpLm3l+X
+         keyl4yD9KFzQR1TBhWm7is5aSW4j6UjC40ZAshJO2VOEz2BuUL1QyftZPkvpSQ/99iXl
+         O48Q==
+X-Gm-Message-State: AOAM530lm1fJr2cDJe8KFuBt/x+0zG4GtUb8gzYYpG7fVCh2XMjcK0Sg
+        fLPJb3Y3vqYNhNS2t3Ax/+s=
+X-Google-Smtp-Source: ABdhPJwymHpwz981JROZTM4IVL1QGEXRI2JUEmGM/YRgxOJio8SDv+IFeogbALTvvy66ki9PjiY0iw==
+X-Received: by 2002:a17:907:6d10:b0:6e8:8fbc:310c with SMTP id sa16-20020a1709076d1000b006e88fbc310cmr2370020ejc.530.1649944197594;
+        Thu, 14 Apr 2022 06:49:57 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id u4-20020aa7db84000000b004136c2c357csm1058710edt.70.2022.04.14.06.49.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 06:49:57 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 16:49:55 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH v2 2/4] drivers: net: dsa: qca8k: drop port_sts
+ from qca8k_priv
+Message-ID: <20220414134955.rzt4bbeolpq6b4uo@skbuf>
+References: <20220412173019.4189-1-ansuelsmth@gmail.com>
+ <20220412173019.4189-3-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220412173019.4189-3-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+On Tue, Apr 12, 2022 at 07:30:17PM +0200, Ansuel Smith wrote:
+> Port_sts is a thing of the past for this driver. It was something
+> present on the initial implementation of this driver and parts of the
+> original struct were dropped over time. Using an array of int to store if
+> a port is enabled or not to handle PM operation seems overkill. Switch
+> and use a simple u8 to store the port status where each bit correspond
+> to a port. (bit is set port is enabled, bit is not set, port is disabled)
+> Also add some comments to better describe why we need to track port
+> status.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
 
-commit 0df6664531a12cdd8fc873f0cac0dcb40243d3e9 upstream.
-
-It turns out that our polling of RWP is totally wrong when checking
-for it in the redistributors, as we test the *distributor* bit index,
-whereas it is a different bit number in the RDs... Oopsie boo.
-
-This is embarassing. Not only because it is wrong, but also because
-it took *8 years* to notice the blunder...
-
-Just fix the damn thing.
-
-Fixes: 021f653791ad ("irqchip: gic-v3: Initial support for GICv3")
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: stable@vger.kernel.org
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Link: https://lore.kernel.org/r/20220315165034.794482-2-maz@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/irqchip/irq-gic-v3.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -162,11 +162,11 @@ static inline void __iomem *gic_dist_bas
- 	}
- }
- 
--static void gic_do_wait_for_rwp(void __iomem *base)
-+static void gic_do_wait_for_rwp(void __iomem *base, u32 bit)
- {
- 	u32 count = 1000000;	/* 1s! */
- 
--	while (readl_relaxed(base + GICD_CTLR) & GICD_CTLR_RWP) {
-+	while (readl_relaxed(base + GICD_CTLR) & bit) {
- 		count--;
- 		if (!count) {
- 			pr_err_ratelimited("RWP timeout, gone fishing\n");
-@@ -180,13 +180,13 @@ static void gic_do_wait_for_rwp(void __i
- /* Wait for completion of a distributor change */
- static void gic_dist_wait_for_rwp(void)
- {
--	gic_do_wait_for_rwp(gic_data.dist_base);
-+	gic_do_wait_for_rwp(gic_data.dist_base, GICD_CTLR_RWP);
- }
- 
- /* Wait for completion of a redistributor change */
- static void gic_redist_wait_for_rwp(void)
- {
--	gic_do_wait_for_rwp(gic_data_rdist_rd_base());
-+	gic_do_wait_for_rwp(gic_data_rdist_rd_base(), GICR_CTLR_RWP);
- }
- 
- #ifdef CONFIG_ARM64
-
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
