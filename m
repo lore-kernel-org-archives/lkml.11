@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22EA2C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D1CC352A7
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345067AbiDNNwu (ORCPT
+        id S1345409AbiDNNxG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56898 "EHLO
+        Thu, 14 Apr 2022 09:53:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343611AbiDNN3l (ORCPT
+        with ESMTP id S1343619AbiDNN3m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:29:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925D59F6C1;
-        Thu, 14 Apr 2022 06:24:57 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35851AFB1C;
+        Thu, 14 Apr 2022 06:25:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F079A61B20;
-        Thu, 14 Apr 2022 13:24:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D302C385A1;
-        Thu, 14 Apr 2022 13:24:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C50B760C14;
+        Thu, 14 Apr 2022 13:24:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2692C385A1;
+        Thu, 14 Apr 2022 13:24:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942696;
-        bh=lw5UyGMX3eE9b/Atcp9+zvrS8ntRqRwxCOGfBukoTeI=;
+        s=korg; t=1649942699;
+        bh=DvO4Q6O1F3LvL6SxTGWGFwRMZo0rx/7YfcpZ+33sstM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fUi6qkUFB+6vutP9f8pacOAwlfAATzIhIGFPqiQw0pLDhEW8V5hdYHFfSVZU5ev46
-         XWX8slEz29qkqwEEG0gXz0AQtUwMpDc2P64dR9sBYXdKb0B0d1BzFx8nBY1YUYCAG2
-         R8EKdiB0+aIyZEMoMDnTt75acM694/aiy+9muYlQ=
+        b=v3maDFtUOODx6gnvQ3dunUTy1d5dz2PCteVgzpDijlQs1XbHigV3rWob3Zk6zH0Uz
+         9PhBEK+84yU7Kbff1JVTdmGSzjNdf/qI+UscxRAxxQB1/eUFHmTMw+nYxWmXd8wnux
+         /x2QKqQ3po/vtOL8mCtlCjbHEFT29NhuiDB/4UR8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,9 +38,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Quinn Tran <qutran@marvell.com>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.19 227/338] scsi: qla2xxx: Fix incorrect reporting of task management failure
-Date:   Thu, 14 Apr 2022 15:12:10 +0200
-Message-Id: <20220414110845.352651502@linuxfoundation.org>
+Subject: [PATCH 4.19 228/338] scsi: qla2xxx: Fix hang due to session stuck
+Date:   Thu, 14 Apr 2022 15:12:11 +0200
+Message-Id: <20220414110845.380562740@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -54,16 +54,20 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Quinn Tran <qutran@marvell.com>
 
-commit 58ca5999e0367d131de82a75257fbfd5aed0195d upstream.
+commit c02aada06d19a215c8291bd968a99a270e96f734 upstream.
 
-User experienced no task management error while target device is responding
-with error. The RSP_CODE field in the status IOCB is in little endian.
-Driver assumes it's big endian and it picked up erroneous data.
+User experienced device lost. The log shows Get port data base command was
+queued up, failed, and requeued again. Every time it is requeued, it set
+the FCF_ASYNC_ACTIVE. This prevents any recovery code from occurring
+because driver thinks a recovery is in progress for this session. In
+essence, this session is hung.  The reason it gets into this place is the
+session deletion got in front of this call due to link perturbation.
 
-Convert the data back to big endian as is on the wire.
+Break the requeue cycle and exit.  The session deletion code will trigger a
+session relogin.
 
-Link: https://lore.kernel.org/r/20220310092604.22950-2-njavali@marvell.com
-Fixes: faef62d13463 ("[SCSI] qla2xxx: Fix Task Management command asynchronous handling")
+Link: https://lore.kernel.org/r/20220310092604.22950-8-njavali@marvell.com
+Fixes: 726b85487067 ("qla2xxx: Add framework for async fabric discovery")
 Cc: stable@vger.kernel.org
 Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
 Signed-off-by: Quinn Tran <qutran@marvell.com>
@@ -71,18 +75,55 @@ Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_isr.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/qla2xxx/qla_def.h  |    4 ++++
+ drivers/scsi/qla2xxx/qla_init.c |   19 +++++++++++++++++--
+ 2 files changed, 21 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_isr.c
-+++ b/drivers/scsi/qla2xxx/qla_isr.c
-@@ -1819,6 +1819,7 @@ qla24xx_tm_iocb_entry(scsi_qla_host_t *v
- 		iocb->u.tmf.data = QLA_FUNCTION_FAILED;
- 	} else if ((le16_to_cpu(sts->scsi_status) &
- 	    SS_RESPONSE_INFO_LEN_VALID)) {
-+		host_to_fcp_swap(sts->data, sizeof(sts->data));
- 		if (le32_to_cpu(sts->rsp_data_len) < 4) {
- 			ql_log(ql_log_warn, fcport->vha, 0x503b,
- 			    "Async-%s error - hdl=%x not enough response(%d).\n",
+--- a/drivers/scsi/qla2xxx/qla_def.h
++++ b/drivers/scsi/qla2xxx/qla_def.h
+@@ -4655,4 +4655,8 @@ struct sff_8247_a0 {
+ #include "qla_gbl.h"
+ #include "qla_dbg.h"
+ #include "qla_inline.h"
++
++#define IS_SESSION_DELETED(_fcport) (_fcport->disc_state == DSC_DELETE_PEND || \
++				      _fcport->disc_state == DSC_DELETED)
++
+ #endif
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -891,6 +891,14 @@ int qla24xx_async_gnl(struct scsi_qla_ho
+ 	unsigned long flags;
+ 	u16 *mb;
+ 
++	if (IS_SESSION_DELETED(fcport)) {
++		ql_log(ql_log_warn, vha, 0xffff,
++		       "%s: %8phC is being delete - not sending command.\n",
++		       __func__, fcport->port_name);
++		fcport->flags &= ~FCF_ASYNC_ACTIVE;
++		return rval;
++	}
++
+ 	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT))
+ 		return rval;
+ 
+@@ -1121,8 +1129,15 @@ int qla24xx_async_gpdb(struct scsi_qla_h
+ 	struct port_database_24xx *pd;
+ 	struct qla_hw_data *ha = vha->hw;
+ 
+-	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT) ||
+-	    fcport->loop_id == FC_NO_LOOP_ID) {
++	if (IS_SESSION_DELETED(fcport)) {
++		ql_log(ql_log_warn, vha, 0xffff,
++		       "%s: %8phC is being delete - not sending command.\n",
++		       __func__, fcport->port_name);
++		fcport->flags &= ~FCF_ASYNC_ACTIVE;
++		return rval;
++	}
++
++	if (!vha->flags.online || fcport->flags & FCF_ASYNC_SENT) {
+ 		ql_log(ql_log_warn, vha, 0xffff,
+ 		    "%s: %8phC - not sending command.\n",
+ 		    __func__, fcport->port_name);
 
 
