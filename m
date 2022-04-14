@@ -2,114 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DCEDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:46:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64496C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240666AbiDNHtU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 03:49:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60678 "EHLO
+        id S237421AbiDNHuC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 03:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241436AbiDNHsT (ORCPT
+        with ESMTP id S232463AbiDNHuA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 03:48:19 -0400
-Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47B1B5BD25;
-        Thu, 14 Apr 2022 00:45:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=QUIdS
-        H5S9XcWXxCUY4HCK2YAdAec2apaxrqVFd637JQ=; b=F+PaiP0/jxp/dEZUiKzM2
-        RoAx++fZzG5XUF8RCoaIZn6BumMkO3VsDGCvHZa3GE287s+fPDbM78/8eYRFsbUX
-        tpND4r6tUnMlUoTlYNnTTHxtSXbAMOuFyEIk+Cy3D6XszSpmDapzaLctanzSsmW5
-        KUYBMq0ZRUhao0iDRKd/sQ=
-Received: from localhost.localdomain (unknown [223.104.68.55])
-        by smtp8 (Coremail) with SMTP id DMCowAAHBv3r0FdiwljaBA--.54991S2;
-        Thu, 14 Apr 2022 15:44:45 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     johan@kernel.org, gregkh@linuxfoundation.org
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] USB: serial: option: Adding support for Cinterion MV32-WA/MV32-WB
-Date:   Thu, 14 Apr 2022 15:44:34 +0800
-Message-Id: <20220414074434.5699-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 14 Apr 2022 03:50:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 57EF7F3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:47:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649922455;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hLR76CNlBvCn367FjMy29XVyfR2fU9onpgPKm9lbY1c=;
+        b=FoYcpcek4jNw7gnECGN/Ahvt2hYuRMKnsy7i2N62Cdnru0tKzGyRAzvWraaJmakEOF09Cr
+        3fJTnyOr60ncWahryny60DuDQjhAUmhxnN1LIn7iYq3Bu9UlRLJqp5vQxNTZjVDXHApNFT
+        xXwdEBH0jzgReDKEcb4XPCGQJm0m/A8=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-561-jW501v1YM2iaK6Rhjm3NxQ-1; Thu, 14 Apr 2022 03:47:34 -0400
+X-MC-Unique: jW501v1YM2iaK6Rhjm3NxQ-1
+Received: by mail-wm1-f71.google.com with SMTP id t2-20020a7bc3c2000000b003528fe59cb9so1853361wmj.5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:47:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=hLR76CNlBvCn367FjMy29XVyfR2fU9onpgPKm9lbY1c=;
+        b=mXUDCeS9yErnxgq+hKrAUt47zGlXPNgcT0vo0LjTKVxwl5/xC1JtMETbfDHIChtNsg
+         RSfEsWq7nibC56xu++JxAEFr1Rz6DnYMT+XfyKMBd89ZmQ0jTLhwKl7hS6N8AE3s/ljE
+         qY6HD9SiiXOFqSAKCA0/SRTeYuQkmHNdHAzd6v9bvYFfwYoTa0Pva6KbrjHg+Cll2Tri
+         EDFgZxI8b+6IllGEOL1Xp+nVVC1DNdZZ3u1OeHXqhf0gD3iYVTo12IcJ3h8wCS/HsXXB
+         cf1UtsZb1hCEIrnxuWuVOpYSLYU79EC+dQynIkqMi5bSKF7rsnSmztDrtG5G7SPvVzei
+         UWMQ==
+X-Gm-Message-State: AOAM531iqKUg+QT9JbxQf9O5XnsQyHtfeIwmoyAybMp1Ag9ZlhZDgbsm
+        yxiqIj/OLBgQvh8Fef8U8j1FGu6+N5kSVToCy0r48lHnMYNAKoTImL9q3GILmzQcjpAZrn27W3e
+        Dkw+EwviHNC/1ecjUTfFkuYuDiU8k0+t3TDztJajTn6WMUymlWb1zL/oNLu2mm52LONms6bPQMO
+        0S
+X-Received: by 2002:a05:6000:1684:b0:209:7fda:e3a with SMTP id y4-20020a056000168400b002097fda0e3amr996962wrd.709.1649922452719;
+        Thu, 14 Apr 2022 00:47:32 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyEJVPZguqe+57EiWbrcBRp0bTCz82V4YapmfmKU9u/wpnFSTs9cs8DetLk5K/Yq5vV4Bkr4Q==
+X-Received: by 2002:a05:6000:1684:b0:209:7fda:e3a with SMTP id y4-20020a056000168400b002097fda0e3amr996947wrd.709.1649922452438;
+        Thu, 14 Apr 2022 00:47:32 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id n42-20020a05600c3baa00b0038ffadd6e4asm169831wms.30.2022.04.14.00.47.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 00:47:31 -0700 (PDT)
+Message-ID: <2939c0cb-8e0c-7de4-7143-2df303bbb542@redhat.com>
+Date:   Thu, 14 Apr 2022 09:47:31 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DMCowAAHBv3r0FdiwljaBA--.54991S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxZr4fZr45AF18XF1xXF1DJrb_yoW5Zr1rpF
-        W5AFW3ZFyUGF47ZF9rtF1fCF95uan7K3yIkanrAwsIvFWIyrnFq3yUt3yxAF12gw1SgrsF
-        vF4DK34UGa95C3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pRpc_cUUUUU=
-X-Originating-IP: [223.104.68.55]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiJQ7iZGAJnZatEQAAsz
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 00/22] https://www.spinics.net/lists/kvm/msg267878.html
+Content-Language: en-US
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     seanjc@google.com
+References: <20220414074000.31438-1-pbonzini@redhat.com>
+In-Reply-To: <20220414074000.31438-1-pbonzini@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding support for Cinterion device MV32-WA/MV32-WB.
-MV32-WA PID is 0x00F1, and MV32-WB PID is 0x00F2.
+Uh-oh, wrong subject.  Should be "KVM MMU refactoring part 2: role changes".
 
-Test evidence as below:
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  4 Spd=5000 MxCh= 0
-D:  Ver= 3.20 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=1e2d ProdID=00f1 Rev=05.04
-S:  Manufacturer=Cinterion
-S:  Product=Cinterion PID 0x00F1 USB Mobile Broadband
-S:  SerialNumber=78ada8c4
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
-I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
+Supersedes: <20220221162243.683208-1-pbonzini@redhat.com>
 
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  3 Spd=5000 MxCh= 0
-D:  Ver= 3.20 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=1e2d ProdID=00f2 Rev=05.04
-S:  Manufacturer=Cinterion
-S:  Product=Cinterion PID 0x00F2 USB Mobile Broadband
-S:  SerialNumber=cdd06a78
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
-I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
+Paolo
 
-Interface 0&1: MBIM, 2:Modem, 3: GNSS, 4: NMEA, 5: Diag
-GNSS port don't use serial driver.
-
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- drivers/usb/serial/option.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
-index e7755d9cfc61..d947357881c3 100644
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -432,7 +432,8 @@ static void option_instat_callback(struct urb *urb);
- #define CINTERION_PRODUCT_CLS8			0x00b0
- #define CINTERION_PRODUCT_MV31_MBIM		0x00b3
- #define CINTERION_PRODUCT_MV31_RMNET		0x00b7
--
-+#define CINTERION_PRODUCT_MV32_WA		0x00f1
-+#define CINTERION_PRODUCT_MV32_WB		0x00f2
- /* Olivetti products */
- #define OLIVETTI_VENDOR_ID			0x0b3c
- #define OLIVETTI_PRODUCT_OLICARD100		0xc000
-@@ -1969,6 +1970,10 @@ static const struct usb_device_id option_ids[] = {
- 	  .driver_info = RSVD(3)},
- 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_RMNET, 0xff),
- 	  .driver_info = RSVD(0)},
-+	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WA, 0xff),
-+	  .driver_info = RSVD(3)},
-+	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WB, 0xff),
-+	  .driver_info = RSVD(3)},
- 	{ USB_DEVICE(OLIVETTI_VENDOR_ID, OLIVETTI_PRODUCT_OLICARD100),
- 	  .driver_info = RSVD(4) },
- 	{ USB_DEVICE(OLIVETTI_VENDOR_ID, OLIVETTI_PRODUCT_OLICARD120),
--- 
-2.25.1
+On 4/14/22 09:39, Paolo Bonzini wrote:
+> Right now the "MMU role" is a messy mix of the shadow page table format
+> and the CPU paging mode (CR0/CR4/EFER, SMM, guest mode, etc).  Whenever
+> something is different between the MMU and the CPU, it is stored as an
+> extra field in struct kvm_mmu; for extra bonus complication, sometimes
+> the same thing is stored in both the role and an extra field.
+> 
+> This series cleans up things by putting the two in separate fields,
+> so that the "MMU role" represents exactly the role of the root page.
+> This in turn makes it possible to eliminate various fields that are
+> now redundant with either the CPU or te MMU role.
+> 
+> These patches have mostly been posted and reviewed already[1], and I
+> have now retested them on top of kvm/next.
+> 
+> Paolo
+> 
+> [1] https://patchew.org/linux/20220221162243.683208-1-pbonzini@redhat.com/
+> 
+> Paolo Bonzini (21):
+>    KVM: x86/mmu: nested EPT cannot be used in SMM
+>    KVM: x86/mmu: constify uses of struct kvm_mmu_role_regs
+>    KVM: x86/mmu: pull computation of kvm_mmu_role_regs to kvm_init_mmu
+>    KVM: x86/mmu: rephrase unclear comment
+>    KVM: x86/mmu: remove "bool base_only" arguments
+>    KVM: x86/mmu: split cpu_role from mmu_role
+>    KVM: x86/mmu: do not recompute root level from kvm_mmu_role_regs
+>    KVM: x86/mmu: remove ept_ad field
+>    KVM: x86/mmu: remove kvm_calc_shadow_root_page_role_common
+>    KVM: x86/mmu: cleanup computation of MMU roles for two-dimensional
+>      paging
+>    KVM: x86/mmu: cleanup computation of MMU roles for shadow paging
+>    KVM: x86/mmu: store shadow EFER.NX in the MMU role
+>    KVM: x86/mmu: remove extended bits from mmu_role, rename field
+>    KVM: x86/mmu: rename kvm_mmu_role union
+>    KVM: x86/mmu: remove redundant bits from extended role
+>    KVM: x86/mmu: remove valid from extended role
+>    KVM: x86/mmu: simplify and/or inline computation of shadow MMU roles
+>    KVM: x86/mmu: pull CPU mode computation to kvm_init_mmu
+>    KVM: x86/mmu: replace shadow_root_level with root_role.level
+>    KVM: x86/mmu: replace root_level with cpu_role.base.level
+>    KVM: x86/mmu: replace direct_map with root_role.direct
+> 
+> Sean Christopherson (1):
+>    KVM: x86: Clean up and document nested #PF workaround
+> 
+>   arch/x86/include/asm/kvm_host.h |  19 +-
+>   arch/x86/kvm/mmu.h              |   2 +-
+>   arch/x86/kvm/mmu/mmu.c          | 376 ++++++++++++++------------------
+>   arch/x86/kvm/mmu/paging_tmpl.h  |  14 +-
+>   arch/x86/kvm/mmu/tdp_mmu.c      |   4 +-
+>   arch/x86/kvm/svm/nested.c       |  18 +-
+>   arch/x86/kvm/svm/svm.c          |   2 +-
+>   arch/x86/kvm/vmx/nested.c       |  15 +-
+>   arch/x86/kvm/vmx/vmx.c          |   2 +-
+>   arch/x86/kvm/x86.c              |  33 ++-
+>   10 files changed, 219 insertions(+), 266 deletions(-)
+> 
 
