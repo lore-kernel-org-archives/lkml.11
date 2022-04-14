@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B5EC35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A0FC3527C
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353879AbiDNPSG (ORCPT
+        id S1352664AbiDNPRk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:18:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45722 "EHLO
+        Thu, 14 Apr 2022 11:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347729AbiDNN7a (ORCPT
+        with ESMTP id S1347707AbiDNN7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:59:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A48BCB5A;
-        Thu, 14 Apr 2022 06:52:18 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB50BB0AD;
+        Thu, 14 Apr 2022 06:51:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EA1261E31;
-        Thu, 14 Apr 2022 13:52:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C362C385A5;
-        Thu, 14 Apr 2022 13:52:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E99C61E2F;
+        Thu, 14 Apr 2022 13:51:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6DAEC385A1;
+        Thu, 14 Apr 2022 13:51:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944337;
-        bh=/zLnqoUMxEH8yHfbu0ADd7ZyjFPhSQM7COh6dcT7lCI=;
+        s=korg; t=1649944316;
+        bh=lyLBJJG9Dgaoq9jiwGkE6UHnyGwQW6C3/SkxPDoKQrE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YEkFRM7ze25Npap6J0sH/IweokLpqmAORWqPxtNY7Yppey87AIU+yTfthK40lkc17
-         lottMsPn2hbEExYvFYj0h6Z6cK3ceLxeJsH1XKvIal7BYztO2TXJ7JwyiDQu56N1S7
-         7REIN7YrWR2a32Ub+/JGRcMPazlViL5CEBSicngs=
+        b=eF9xMYdUJ3S0On8Mb698GUDbjSEiay0dq425Ft4ysoudxmGS5MnO7R3ivRBHdOu0l
+         PzJbavly+JDZxNyCpmp2ByD6Cd74CCzUB/aAM9VqqJK/dP0+tTdbROvDlF6uSlDfD2
+         m3Zy5Qb68sCEhdM337njs96jNrO3T2V8dPefs03o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lv Yunlong <lyl2019@mail.ustc.edu.cn>,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 440/475] drbd: Fix five use after free bugs in get_initial_state
-Date:   Thu, 14 Apr 2022 15:13:45 +0200
-Message-Id: <20220414110907.375047644@linuxfoundation.org>
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Oleg Nesterov <oleg@redhat.com>,
+        syzbot+50f5cf33a284ce738b62@syzkaller.appspotmail.com,
+        Tejun Heo <tj@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.4 470/475] cgroup: Use open-time cgroup namespace for process migration perm checks
+Date:   Thu, 14 Apr 2022 15:14:15 +0200
+Message-Id: <20220414110908.209753133@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,341 +54,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+From: Tejun Heo <tj@kernel.org>
 
-[ Upstream commit aadb22ba2f656581b2f733deb3a467c48cc618f6 ]
+commit e57457641613fef0d147ede8bd6a3047df588b95 upstream.
 
-In get_initial_state, it calls notify_initial_state_done(skb,..) if
-cb->args[5]==1. If genlmsg_put() failed in notify_initial_state_done(),
-the skb will be freed by nlmsg_free(skb).
-Then get_initial_state will goto out and the freed skb will be used by
-return value skb->len, which is a uaf bug.
+cgroup process migration permission checks are performed at write time as
+whether a given operation is allowed or not is dependent on the content of
+the write - the PID. This currently uses current's cgroup namespace which is
+a potential security weakness as it may allow scenarios where a less
+privileged process tricks a more privileged one into writing into a fd that
+it created.
 
-What's worse, the same problem goes even further: skb can also be
-freed in the notify_*_state_change -> notify_*_state calls below.
-Thus 4 additional uaf bugs happened.
+This patch makes cgroup remember the cgroup namespace at the time of open
+and uses it for migration permission checks instad of current's. Note that
+this only applies to cgroup2 as cgroup1 doesn't have namespace support.
 
-My patch lets the problem callee functions: notify_initial_state_done
-and notify_*_state_change return an error code if errors happen.
-So that the error codes could be propagated and the uaf bugs can be avoid.
+This also fixes a use-after-free bug on cgroupns reported in
 
-v2 reports a compilation warning. This v3 fixed this warning and built
-successfully in my local environment with no additional warnings.
-v2: https://lore.kernel.org/patchwork/patch/1435218/
+ https://lore.kernel.org/r/00000000000048c15c05d0083397@google.com
 
-Fixes: a29728463b254 ("drbd: Backport the "events2" command")
-Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Note that backporting this fix also requires the preceding patch.
+
+Reported-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
+Cc: Michal Koutný <mkoutny@suse.com>
+Cc: Oleg Nesterov <oleg@redhat.com>
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Reported-by: syzbot+50f5cf33a284ce738b62@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/00000000000048c15c05d0083397@google.com
+Fixes: 5136f6365ce3 ("cgroup: implement "nsdelegate" mount option")
+Signed-off-by: Tejun Heo <tj@kernel.org>
+[mkoutny: v5.10: duplicate ns check in procs/threads write handler, adjust context]
+Signed-off-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[OP: backport to v5.4: drop changes to cgroup_attach_permissions() and
+cgroup_css_set_fork(), adjust cgroup_procs_write_permission() calls]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/drbd/drbd_int.h          |  8 ++---
- drivers/block/drbd/drbd_nl.c           | 41 ++++++++++++++++----------
- drivers/block/drbd/drbd_state.c        | 18 +++++------
- drivers/block/drbd/drbd_state_change.h |  8 ++---
- 4 files changed, 42 insertions(+), 33 deletions(-)
+ kernel/cgroup/cgroup-internal.h |    2 ++
+ kernel/cgroup/cgroup.c          |   24 +++++++++++++++++-------
+ 2 files changed, 19 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/block/drbd/drbd_int.h b/drivers/block/drbd/drbd_int.h
-index ddbf56014c51..6da7f5749a7c 100644
---- a/drivers/block/drbd/drbd_int.h
-+++ b/drivers/block/drbd/drbd_int.h
-@@ -1673,22 +1673,22 @@ struct sib_info {
- };
- void drbd_bcast_event(struct drbd_device *device, const struct sib_info *sib);
+--- a/kernel/cgroup/cgroup-internal.h
++++ b/kernel/cgroup/cgroup-internal.h
+@@ -68,6 +68,8 @@ static inline struct cgroup_fs_context *
+ struct cgroup_pidlist;
  
--extern void notify_resource_state(struct sk_buff *,
-+extern int notify_resource_state(struct sk_buff *,
- 				  unsigned int,
- 				  struct drbd_resource *,
- 				  struct resource_info *,
- 				  enum drbd_notification_type);
--extern void notify_device_state(struct sk_buff *,
-+extern int notify_device_state(struct sk_buff *,
- 				unsigned int,
- 				struct drbd_device *,
- 				struct device_info *,
- 				enum drbd_notification_type);
--extern void notify_connection_state(struct sk_buff *,
-+extern int notify_connection_state(struct sk_buff *,
- 				    unsigned int,
- 				    struct drbd_connection *,
- 				    struct connection_info *,
- 				    enum drbd_notification_type);
--extern void notify_peer_device_state(struct sk_buff *,
-+extern int notify_peer_device_state(struct sk_buff *,
- 				     unsigned int,
- 				     struct drbd_peer_device *,
- 				     struct peer_device_info *,
-diff --git a/drivers/block/drbd/drbd_nl.c b/drivers/block/drbd/drbd_nl.c
-index 5d52a2d32155..bfb00d3b091f 100644
---- a/drivers/block/drbd/drbd_nl.c
-+++ b/drivers/block/drbd/drbd_nl.c
-@@ -4630,7 +4630,7 @@ static int nla_put_notification_header(struct sk_buff *msg,
- 	return drbd_notification_header_to_skb(msg, &nh, true);
+ struct cgroup_file_ctx {
++	struct cgroup_namespace	*ns;
++
+ 	struct {
+ 		void			*trigger;
+ 	} psi;
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -3758,14 +3758,19 @@ static int cgroup_file_open(struct kernf
+ 	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
+ 	if (!ctx)
+ 		return -ENOMEM;
++
++	ctx->ns = current->nsproxy->cgroup_ns;
++	get_cgroup_ns(ctx->ns);
+ 	of->priv = ctx;
+ 
+ 	if (!cft->open)
+ 		return 0;
+ 
+ 	ret = cft->open(of);
+-	if (ret)
++	if (ret) {
++		put_cgroup_ns(ctx->ns);
+ 		kfree(ctx);
++	}
+ 	return ret;
  }
  
--void notify_resource_state(struct sk_buff *skb,
-+int notify_resource_state(struct sk_buff *skb,
- 			   unsigned int seq,
- 			   struct drbd_resource *resource,
- 			   struct resource_info *resource_info,
-@@ -4672,16 +4672,17 @@ void notify_resource_state(struct sk_buff *skb,
- 		if (err && err != -ESRCH)
- 			goto failed;
- 	}
--	return;
-+	return 0;
+@@ -3776,13 +3781,14 @@ static void cgroup_file_release(struct k
  
- nla_put_failure:
- 	nlmsg_free(skb);
- failed:
- 	drbd_err(resource, "Error %d while broadcasting event. Event seq:%u\n",
- 			err, seq);
-+	return err;
+ 	if (cft->release)
+ 		cft->release(of);
++	put_cgroup_ns(ctx->ns);
+ 	kfree(ctx);
  }
  
--void notify_device_state(struct sk_buff *skb,
-+int notify_device_state(struct sk_buff *skb,
- 			 unsigned int seq,
- 			 struct drbd_device *device,
- 			 struct device_info *device_info,
-@@ -4721,16 +4722,17 @@ void notify_device_state(struct sk_buff *skb,
- 		if (err && err != -ESRCH)
- 			goto failed;
- 	}
--	return;
-+	return 0;
- 
- nla_put_failure:
- 	nlmsg_free(skb);
- failed:
- 	drbd_err(device, "Error %d while broadcasting event. Event seq:%u\n",
- 		 err, seq);
-+	return err;
- }
- 
--void notify_connection_state(struct sk_buff *skb,
-+int notify_connection_state(struct sk_buff *skb,
- 			     unsigned int seq,
- 			     struct drbd_connection *connection,
- 			     struct connection_info *connection_info,
-@@ -4770,16 +4772,17 @@ void notify_connection_state(struct sk_buff *skb,
- 		if (err && err != -ESRCH)
- 			goto failed;
- 	}
--	return;
-+	return 0;
- 
- nla_put_failure:
- 	nlmsg_free(skb);
- failed:
- 	drbd_err(connection, "Error %d while broadcasting event. Event seq:%u\n",
- 		 err, seq);
-+	return err;
- }
- 
--void notify_peer_device_state(struct sk_buff *skb,
-+int notify_peer_device_state(struct sk_buff *skb,
- 			      unsigned int seq,
- 			      struct drbd_peer_device *peer_device,
- 			      struct peer_device_info *peer_device_info,
-@@ -4820,13 +4823,14 @@ void notify_peer_device_state(struct sk_buff *skb,
- 		if (err && err != -ESRCH)
- 			goto failed;
- 	}
--	return;
-+	return 0;
- 
- nla_put_failure:
- 	nlmsg_free(skb);
- failed:
- 	drbd_err(peer_device, "Error %d while broadcasting event. Event seq:%u\n",
- 		 err, seq);
-+	return err;
- }
- 
- void notify_helper(enum drbd_notification_type type,
-@@ -4877,7 +4881,7 @@ void notify_helper(enum drbd_notification_type type,
- 		 err, seq);
- }
- 
--static void notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
-+static int notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
+ static ssize_t cgroup_file_write(struct kernfs_open_file *of, char *buf,
+ 				 size_t nbytes, loff_t off)
  {
- 	struct drbd_genlmsghdr *dh;
- 	int err;
-@@ -4891,11 +4895,12 @@ static void notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
- 	if (nla_put_notification_header(skb, NOTIFY_EXISTS))
- 		goto nla_put_failure;
- 	genlmsg_end(skb, dh);
--	return;
-+	return 0;
+-	struct cgroup_namespace *ns = current->nsproxy->cgroup_ns;
++	struct cgroup_file_ctx *ctx = of->priv;
+ 	struct cgroup *cgrp = of->kn->parent->priv;
+ 	struct cftype *cft = of->kn->priv;
+ 	struct cgroup_subsys_state *css;
+@@ -3796,7 +3802,7 @@ static ssize_t cgroup_file_write(struct
+ 	 */
+ 	if ((cgrp->root->flags & CGRP_ROOT_NS_DELEGATE) &&
+ 	    !(cft->flags & CFTYPE_NS_DELEGATABLE) &&
+-	    ns != &init_cgroup_ns && ns->root_cset->dfl_cgrp == cgrp)
++	    ctx->ns != &init_cgroup_ns && ctx->ns->root_cset->dfl_cgrp == cgrp)
+ 		return -EPERM;
  
- nla_put_failure:
- 	nlmsg_free(skb);
- 	pr_err("Error %d sending event. Event seq:%u\n", err, seq);
-+	return err;
- }
+ 	if (cft->write)
+@@ -4772,9 +4778,9 @@ static int cgroup_procs_show(struct seq_
  
- static void free_state_changes(struct list_head *list)
-@@ -4922,6 +4927,7 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
- 	unsigned int seq = cb->args[2];
- 	unsigned int n;
- 	enum drbd_notification_type flags = 0;
-+	int err = 0;
- 
- 	/* There is no need for taking notification_mutex here: it doesn't
- 	   matter if the initial state events mix with later state chage
-@@ -4930,32 +4936,32 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
- 
- 	cb->args[5]--;
- 	if (cb->args[5] == 1) {
--		notify_initial_state_done(skb, seq);
-+		err = notify_initial_state_done(skb, seq);
- 		goto out;
- 	}
- 	n = cb->args[4]++;
- 	if (cb->args[4] < cb->args[3])
- 		flags |= NOTIFY_CONTINUES;
- 	if (n < 1) {
--		notify_resource_state_change(skb, seq, state_change->resource,
-+		err = notify_resource_state_change(skb, seq, state_change->resource,
- 					     NOTIFY_EXISTS | flags);
- 		goto next;
- 	}
- 	n--;
- 	if (n < state_change->n_connections) {
--		notify_connection_state_change(skb, seq, &state_change->connections[n],
-+		err = notify_connection_state_change(skb, seq, &state_change->connections[n],
- 					       NOTIFY_EXISTS | flags);
- 		goto next;
- 	}
- 	n -= state_change->n_connections;
- 	if (n < state_change->n_devices) {
--		notify_device_state_change(skb, seq, &state_change->devices[n],
-+		err = notify_device_state_change(skb, seq, &state_change->devices[n],
- 					   NOTIFY_EXISTS | flags);
- 		goto next;
- 	}
- 	n -= state_change->n_devices;
- 	if (n < state_change->n_devices * state_change->n_connections) {
--		notify_peer_device_state_change(skb, seq, &state_change->peer_devices[n],
-+		err = notify_peer_device_state_change(skb, seq, &state_change->peer_devices[n],
- 						NOTIFY_EXISTS | flags);
- 		goto next;
- 	}
-@@ -4970,7 +4976,10 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
- 		cb->args[4] = 0;
- 	}
- out:
--	return skb->len;
-+	if (err)
-+		return err;
-+	else
-+		return skb->len;
- }
- 
- int drbd_adm_get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
-diff --git a/drivers/block/drbd/drbd_state.c b/drivers/block/drbd/drbd_state.c
-index eeaa3b49b264..4dad4dd0ceb6 100644
---- a/drivers/block/drbd/drbd_state.c
-+++ b/drivers/block/drbd/drbd_state.c
-@@ -1537,7 +1537,7 @@ int drbd_bitmap_io_from_worker(struct drbd_device *device,
- 	return rv;
- }
- 
--void notify_resource_state_change(struct sk_buff *skb,
-+int notify_resource_state_change(struct sk_buff *skb,
- 				  unsigned int seq,
- 				  struct drbd_resource_state_change *resource_state_change,
- 				  enum drbd_notification_type type)
-@@ -1550,10 +1550,10 @@ void notify_resource_state_change(struct sk_buff *skb,
- 		.res_susp_fen = resource_state_change->susp_fen[NEW],
- 	};
- 
--	notify_resource_state(skb, seq, resource, &resource_info, type);
-+	return notify_resource_state(skb, seq, resource, &resource_info, type);
- }
- 
--void notify_connection_state_change(struct sk_buff *skb,
-+int notify_connection_state_change(struct sk_buff *skb,
- 				    unsigned int seq,
- 				    struct drbd_connection_state_change *connection_state_change,
- 				    enum drbd_notification_type type)
-@@ -1564,10 +1564,10 @@ void notify_connection_state_change(struct sk_buff *skb,
- 		.conn_role = connection_state_change->peer_role[NEW],
- 	};
- 
--	notify_connection_state(skb, seq, connection, &connection_info, type);
-+	return notify_connection_state(skb, seq, connection, &connection_info, type);
- }
- 
--void notify_device_state_change(struct sk_buff *skb,
-+int notify_device_state_change(struct sk_buff *skb,
- 				unsigned int seq,
- 				struct drbd_device_state_change *device_state_change,
- 				enum drbd_notification_type type)
-@@ -1577,10 +1577,10 @@ void notify_device_state_change(struct sk_buff *skb,
- 		.dev_disk_state = device_state_change->disk_state[NEW],
- 	};
- 
--	notify_device_state(skb, seq, device, &device_info, type);
-+	return notify_device_state(skb, seq, device, &device_info, type);
- }
- 
--void notify_peer_device_state_change(struct sk_buff *skb,
-+int notify_peer_device_state_change(struct sk_buff *skb,
- 				     unsigned int seq,
- 				     struct drbd_peer_device_state_change *p,
- 				     enum drbd_notification_type type)
-@@ -1594,7 +1594,7 @@ void notify_peer_device_state_change(struct sk_buff *skb,
- 		.peer_resync_susp_dependency = p->resync_susp_dependency[NEW],
- 	};
- 
--	notify_peer_device_state(skb, seq, peer_device, &peer_device_info, type);
-+	return notify_peer_device_state(skb, seq, peer_device, &peer_device_info, type);
- }
- 
- static void broadcast_state_change(struct drbd_state_change *state_change)
-@@ -1602,7 +1602,7 @@ static void broadcast_state_change(struct drbd_state_change *state_change)
- 	struct drbd_resource_state_change *resource_state_change = &state_change->resource[0];
- 	bool resource_state_has_changed;
- 	unsigned int n_device, n_connection, n_peer_device, n_peer_devices;
--	void (*last_func)(struct sk_buff *, unsigned int, void *,
-+	int (*last_func)(struct sk_buff *, unsigned int, void *,
- 			  enum drbd_notification_type) = NULL;
- 	void *uninitialized_var(last_arg);
- 
-diff --git a/drivers/block/drbd/drbd_state_change.h b/drivers/block/drbd/drbd_state_change.h
-index ba80f612d6ab..d5b0479bc9a6 100644
---- a/drivers/block/drbd/drbd_state_change.h
-+++ b/drivers/block/drbd/drbd_state_change.h
-@@ -44,19 +44,19 @@ extern struct drbd_state_change *remember_old_state(struct drbd_resource *, gfp_
- extern void copy_old_to_new_state_change(struct drbd_state_change *);
- extern void forget_state_change(struct drbd_state_change *);
- 
--extern void notify_resource_state_change(struct sk_buff *,
-+extern int notify_resource_state_change(struct sk_buff *,
- 					 unsigned int,
- 					 struct drbd_resource_state_change *,
- 					 enum drbd_notification_type type);
--extern void notify_connection_state_change(struct sk_buff *,
-+extern int notify_connection_state_change(struct sk_buff *,
- 					   unsigned int,
- 					   struct drbd_connection_state_change *,
- 					   enum drbd_notification_type type);
--extern void notify_device_state_change(struct sk_buff *,
-+extern int notify_device_state_change(struct sk_buff *,
- 				       unsigned int,
- 				       struct drbd_device_state_change *,
- 				       enum drbd_notification_type type);
--extern void notify_peer_device_state_change(struct sk_buff *,
-+extern int notify_peer_device_state_change(struct sk_buff *,
- 					    unsigned int,
- 					    struct drbd_peer_device_state_change *,
- 					    enum drbd_notification_type type);
--- 
-2.35.1
-
+ static int cgroup_procs_write_permission(struct cgroup *src_cgrp,
+ 					 struct cgroup *dst_cgrp,
+-					 struct super_block *sb)
++					 struct super_block *sb,
++					 struct cgroup_namespace *ns)
+ {
+-	struct cgroup_namespace *ns = current->nsproxy->cgroup_ns;
+ 	struct cgroup *com_cgrp = src_cgrp;
+ 	struct inode *inode;
+ 	int ret;
+@@ -4810,6 +4816,7 @@ static int cgroup_procs_write_permission
+ static ssize_t cgroup_procs_write(struct kernfs_open_file *of,
+ 				  char *buf, size_t nbytes, loff_t off)
+ {
++	struct cgroup_file_ctx *ctx = of->priv;
+ 	struct cgroup *src_cgrp, *dst_cgrp;
+ 	struct task_struct *task;
+ 	const struct cred *saved_cred;
+@@ -4836,7 +4843,8 @@ static ssize_t cgroup_procs_write(struct
+ 	 */
+ 	saved_cred = override_creds(of->file->f_cred);
+ 	ret = cgroup_procs_write_permission(src_cgrp, dst_cgrp,
+-					    of->file->f_path.dentry->d_sb);
++					    of->file->f_path.dentry->d_sb,
++					    ctx->ns);
+ 	revert_creds(saved_cred);
+ 	if (ret)
+ 		goto out_finish;
+@@ -4859,6 +4867,7 @@ static void *cgroup_threads_start(struct
+ static ssize_t cgroup_threads_write(struct kernfs_open_file *of,
+ 				    char *buf, size_t nbytes, loff_t off)
+ {
++	struct cgroup_file_ctx *ctx = of->priv;
+ 	struct cgroup *src_cgrp, *dst_cgrp;
+ 	struct task_struct *task;
+ 	const struct cred *saved_cred;
+@@ -4887,7 +4896,8 @@ static ssize_t cgroup_threads_write(stru
+ 	 */
+ 	saved_cred = override_creds(of->file->f_cred);
+ 	ret = cgroup_procs_write_permission(src_cgrp, dst_cgrp,
+-					    of->file->f_path.dentry->d_sb);
++					    of->file->f_path.dentry->d_sb,
++					    ctx->ns);
+ 	revert_creds(saved_cred);
+ 	if (ret)
+ 		goto out_finish;
 
 
