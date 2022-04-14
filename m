@@ -2,103 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB53C38162
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 840E3C352B6
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359363AbiDNPoO (ORCPT
+        id S1359396AbiDNPoi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57468 "EHLO
+        Thu, 14 Apr 2022 11:44:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352656AbiDNPRk (ORCPT
+        with ESMTP id S1352601AbiDNPRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 11:17:40 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A627F61A35;
-        Thu, 14 Apr 2022 08:02:35 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id u15so10544016ejf.11;
-        Thu, 14 Apr 2022 08:02:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=NaW3uwRS/6FaXBKfVrvwdBzKWMrtN62MAAhE0D3p16s=;
-        b=Ftmn2tslRoFo5kjZZYcZh376SNswuFaAST8TXXySj1EQZyxHD/y2bW4tGghR0A6pfi
-         TP6wVNRcGA0ZENqH6SN3h1Jrxlc19ZJa3qeVQs8hu1iLq0WPWehSREUluuICNIDkvPTd
-         CQuwy7NS5c3v571sugYalQ3qxjjt/HUKyt0ddL+suHPyPl/N0XIwxBrxJJ5YqBvoJyTI
-         WTFH5x5Nc6Q/DbGAY+BLdbSD8oG4QWfU2UigHgSPVDALH+dsEGEmeuNZ9HpFAz0LgU8C
-         i1pEdHZb3Jjb5g1b3vJds6l+/dWEow0QWj37myQqXHCgZKBT34dyrqMPz1oUOsq1656l
-         d5Dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NaW3uwRS/6FaXBKfVrvwdBzKWMrtN62MAAhE0D3p16s=;
-        b=RlZYhJDYkKvgPOsNLVRKzKDGzjvriXKINLF9g6/eRfpOO1di35xIO38TR1Di8H7cCk
-         Jaa9HxWTssVtRW7aq7lGc+XogTYHekvYv6YCrI8lDtTLnWyIJzotEJydIZf/s5GqUBYH
-         f3s0q07SZIerYQWLtCQtnnMP17m+jc8zYJEyR6BO6YMPQdVn7qGpUwXF/CYWoDTH77hv
-         lfjf0a1o+GTa92rsE7E6y07+RraKCwKgVQqWtzr5QNRd6V98AUTyrXanW1j8rMjCKEcl
-         c3hgLIz09eMLx4e5FB9WFJzUj1zHkuBsxxv/0dPJx3rmt54gVXY6piDAxtHBmdiAr4GX
-         eI7g==
-X-Gm-Message-State: AOAM533W95JoXOVLTc9txkL8WDYlE2oQuGkYtvTw8e8/Tv+rbOOCaD/c
-        xS7rxKcXrYJRt1xU/sgd75YSKJ2oNOsriOnN3S4=
-X-Google-Smtp-Source: ABdhPJxsfCiDGHoztilISww5idTIll6LpIs4Gm/tQhfvSoxH+J/SSbqV2+n5Tfdxyh4VfsvxmoLehq2tfeBEWE0xEU8=
-X-Received: by 2002:a17:907:8a14:b0:6e8:9691:62f7 with SMTP id
- sc20-20020a1709078a1400b006e8969162f7mr2720540ejc.497.1649948554022; Thu, 14
- Apr 2022 08:02:34 -0700 (PDT)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89872E9979
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:02:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649948524; x=1681484524;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=TgkPZshN5hDEklQlrl5b3Kc0wb0nYhlnABPZbUPVVos=;
+  b=nzBwpwiem7SK8h6T3BEBe8hEwo4l86Q8tmyjOJDVjPdA0IZw4ZK6dDp9
+   h3z9KbE+cTb6vEKeDzXhLt/073TRCCnuEBNvs3GSupXYPC46Kfg9HBEWa
+   I0QQSpS1aWBHqPnYTbL6rtGhd8L6RC6BMkCWgZwUrtZ0DTmdZMtebYhUP
+   9vNQ1x4F98pF8x6O4p6IvjxuvL8F67CqBjzNngiVhw5erDrq4q5g0nBhc
+   pvOppqAbHxHVwIcaz2L28nsh3kRDT8F7kPd/IRCgyuUpQkRj66p6M5D9i
+   SJTedUjgvgkPg+oyoAH6d/XkbxxRphxOqRYFNBuOwPDpFw0f3PZzJApbP
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="262392969"
+X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
+   d="scan'208";a="262392969"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 08:02:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
+   d="scan'208";a="527424783"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 14 Apr 2022 08:02:02 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nf0yv-00012f-PK;
+        Thu, 14 Apr 2022 15:02:01 +0000
+Date:   Thu, 14 Apr 2022 23:01:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jpoimboe:objtool-run 11/29] arch/powerpc/kernel/smp.c:1781:1:
+ warning: 'noreturn' function does return
+Message-ID: <202204142253.7Hya9r42-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220409120901.267526-1-dzm91@hust.edu.cn> <YlQbqnYP/jcYinvz@hovoldconsulting.com>
-In-Reply-To: <YlQbqnYP/jcYinvz@hovoldconsulting.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 14 Apr 2022 18:01:57 +0300
-Message-ID: <CAHp75VeTqmdLhavZ+VbBYSFMDHr0FG4iKFGdbzE-wo5MCNikAA@mail.gmail.com>
-Subject: Re: [PATCH] driver: usb: nullify dangling pointer in cdc_ncm_free
-To:     Johan Hovold <johan@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
-        Oliver Neukum <oliver@neukum.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+eabbf2aaa999cc507108@syzkaller.appspotmail.com,
-        USB <linux-usb@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 9:33 PM Johan Hovold <johan@kernel.org> wrote:
-> On Sat, Apr 09, 2022 at 08:09:00PM +0800, Dongliang Mu wrote:
-> > From: Dongliang Mu <mudongliangabcd@gmail.com>
-> >
-> > cdc_ncm_bind calls cdc_ncm_bind_common and sets dev->data[0]
-> > with ctx. However, in the unbind function - cdc_ncm_unbind,
-> > it calls cdc_ncm_free and frees ctx, leaving dev->data[0] as
-> > a dangling pointer. The following ioctl operation will trigger
-> > the UAF in the function cdc_ncm_set_dgram_size.
-> >
-> > Fix this by setting dev->data[0] as zero.
->
-> This sounds like a poor band-aid. Please explain how this prevent the
-> ioctl() from racing with unbind().
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git objtool-run
+head:   47d3f4f7a72524799c1f646713e2377e3c4e239f
+commit: 685d8d205c29aa853326bd2bb27dcee2ba1f5ef4 [11/29] sched: Convert arch_cpu_idle_dead() to proper __noreturn
+config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220414/202204142253.7Hya9r42-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git/commit/?id=685d8d205c29aa853326bd2bb27dcee2ba1f5ef4
+        git remote add jpoimboe https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git
+        git fetch --no-tags jpoimboe objtool-run
+        git checkout 685d8d205c29aa853326bd2bb27dcee2ba1f5ef4
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/kernel/
 
-Good question. Isn't it the commit 2c9d6c2b871d ("usbnet: run unbind()
-before unregister_netdev()") which changed the ordering of the
-interface shutdown and basically makes this race happen? I don't see
-how we can guarantee that IOCTL won't be called until we quiescence
-the network device =E2=80=94 my understanding that on device surprise remov=
-al
-we have to first shutdown what it created and then unbind the device.
-If I understand the original issue correctly then the problem is in
-usbnet->unbind and it should actually be split to two hooks, otherwise
-it seems every possible IOCTL callback must have some kind of
-reference counting and keep an eye on the surprise removal.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Johan, can you correct me if my understanding is wrong?
+All warnings (new ones prefixed by >>):
 
---=20
-With Best Regards,
-Andy Shevchenko
+   arch/powerpc/kernel/smp.c: In function 'arch_cpu_idle_dead':
+>> arch/powerpc/kernel/smp.c:1781:1: warning: 'noreturn' function does return
+    1781 | }
+         | ^
+
+
+vim +/noreturn +1781 arch/powerpc/kernel/smp.c
+
+d0174c721900ff8 Nathan Fontenot        2010-01-14  1767  
+1ea21ba231f2480 Michael Ellerman       2020-08-19  1768  void arch_cpu_idle_dead(void)
+1ea21ba231f2480 Michael Ellerman       2020-08-19  1769  {
+424ef0160f439fe Naveen N. Rao          2018-04-19  1770  	/*
+424ef0160f439fe Naveen N. Rao          2018-04-19  1771  	 * Disable on the down path. This will be re-enabled by
+424ef0160f439fe Naveen N. Rao          2018-04-19  1772  	 * start_secondary() via start_secondary_resume() below
+424ef0160f439fe Naveen N. Rao          2018-04-19  1773  	 */
+424ef0160f439fe Naveen N. Rao          2018-04-19  1774  	this_cpu_disable_ftrace();
+424ef0160f439fe Naveen N. Rao          2018-04-19  1775  
+39f87561454dc33 Michael Ellerman       2020-08-19  1776  	if (smp_ops->cpu_offline_self)
+39f87561454dc33 Michael Ellerman       2020-08-19  1777  		smp_ops->cpu_offline_self();
+fa3f82c8bb7acbe Benjamin Herrenschmidt 2011-02-10  1778  
+fa3f82c8bb7acbe Benjamin Herrenschmidt 2011-02-10  1779  	/* If we return, we re-enter start_secondary */
+fa3f82c8bb7acbe Benjamin Herrenschmidt 2011-02-10  1780  	start_secondary_resume();
+abb17f9c3a92c5a Milton Miller          2010-05-19 @1781  }
+fa3f82c8bb7acbe Benjamin Herrenschmidt 2011-02-10  1782  
+
+:::::: The code at line 1781 was first introduced by commit
+:::::: abb17f9c3a92c5acf30e749efdf0419b7f50a5b8 powerpc: Use common cpu_die (fixes SMP+SUSPEND build)
+
+:::::: TO: Milton Miller <miltonm@bga.com>
+:::::: CC: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
