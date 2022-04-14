@@ -2,241 +2,273 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8AEEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 02:52:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26ED4C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 02:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239640AbiDNCzE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 22:55:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36560 "EHLO
+        id S239649AbiDNCze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 22:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236394AbiDNCzB (ORCPT
+        with ESMTP id S233832AbiDNCzc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 22:55:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B01D612086
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 19:52:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649904757;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=08wAUOLAjmVi5WGA9fNEcUbOxst9UNJnV+1CTWd2dkE=;
-        b=OlEPx/DiveueAfXftWy2bLbMxUnsTBNS2CW5ezY+gwBE29lkOJUVwPoTWNPNfKfQEs/5SQ
-        tOsCfdRSXFdv2kQv/OuHVPeLx+4MlEiI9JHW9nShipNyH8LqBA9WxSNugqLCKO0Ck93wrk
-        j1uAjM1s2rH/n9F/zdA3QuIcJ41NdBY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-605-PASSujPYP5OPmZu3dnfN_g-1; Wed, 13 Apr 2022 22:52:34 -0400
-X-MC-Unique: PASSujPYP5OPmZu3dnfN_g-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8B3D91C05156;
-        Thu, 14 Apr 2022 02:52:33 +0000 (UTC)
-Received: from localhost (ovpn-13-186.pek2.redhat.com [10.72.13.186])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B6D512166B4F;
-        Thu, 14 Apr 2022 02:52:32 +0000 (UTC)
-Date:   Thu, 14 Apr 2022 10:52:29 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Eric DeVolder <eric.devolder@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
-Subject: Re: [PATCH v7 7/8] x86/crash: Add x86 crash hotplug support for
- kexec_file_load
-Message-ID: <YleMbVq5XcSX+mWZ@MiWiFi-R3L-srv>
-References: <20220413164237.20845-1-eric.devolder@oracle.com>
- <20220413164237.20845-8-eric.devolder@oracle.com>
+        Wed, 13 Apr 2022 22:55:32 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC9802229B;
+        Wed, 13 Apr 2022 19:53:07 -0700 (PDT)
+X-UUID: 67c29a9b4f0b4390a3e9127464c07b58-20220414
+X-UUID: 67c29a9b4f0b4390a3e9127464c07b58-20220414
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <nick.fan@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1246117363; Thu, 14 Apr 2022 10:53:02 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 14 Apr 2022 10:53:00 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 14 Apr 2022 10:53:00 +0800
+From:   Nick Fan <Nick.Fan@mediatek.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        <srv_heupstream@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <fshao@chromium.org>,
+        <wenst@chromium.org>, <alyssa.rosenzweig@collabora.com>,
+        <nick.fan@mediatek.com>, Nick Fan <Nick.Fan@mediatek.com>
+Subject: [PATCH v6 1/2] dt-bindings: Add DT schema for Arm Mali Valhall GPU
+Date:   Thu, 14 Apr 2022 10:50:22 +0800
+Message-ID: <20220414025023.11516-1-Nick.Fan@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220413164237.20845-8-eric.devolder@oracle.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/13/22 at 12:42pm, Eric DeVolder wrote:
-> For x86_64, when CPU or memory is hot un/plugged, the crash
-> elfcorehdr, which describes the CPUs and memory in the system,
-> must also be updated.
-> 
-> To update the elfcorehdr for x86_64, a new elfcorehdr must be
-> generated from the available CPUs and memory. The new elfcorehdr
-> is prepared into a buffer, and then installed over the top of
-> the existing elfcorehdr.
-> 
-> In the patch 'kexec: exclude elfcorehdr from the segment digest'
-> the need to update purgatory due to the change in elfcorehdr was
-> eliminated.  As a result, no changes to purgatory or boot_params
-> (as the elfcorehdr= kernel command line parameter pointer
-> remains unchanged and correct) are needed, just elfcorehdr.
-> 
-> To accommodate a growing number of resources via hotplug, the
-> elfcorehdr segment must be sufficiently large enough to accommodate
-> changes, see the CRASH_HOTPLUG_ELFCOREHDR_SZ configure item.
-> 
-> With this change, crash hotplug for kexec_file_load syscall
-> is supported. When loading the crash kernel via kexec_file_load,
-> the elfcorehdr is identified at load time in crash_load_segments().
-> 
-> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
-> ---
->  arch/x86/kernel/crash.c | 117 ++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 117 insertions(+)
-> 
-> diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
-> index 9db41cce8d97..47adf69c9f71 100644
-> --- a/arch/x86/kernel/crash.c
-> +++ b/arch/x86/kernel/crash.c
-> @@ -25,6 +25,7 @@
->  #include <linux/slab.h>
->  #include <linux/vmalloc.h>
->  #include <linux/memblock.h>
-> +#include <linux/highmem.h>
->  
->  #include <asm/processor.h>
->  #include <asm/hardirq.h>
-> @@ -398,7 +399,17 @@ int crash_load_segments(struct kimage *image)
->  	image->elf_headers = kbuf.buffer;
->  	image->elf_headers_sz = kbuf.bufsz;
->  
-> +#ifdef CONFIG_CRASH_HOTPLUG
-> +	/* Ensure elfcorehdr segment large enough for hotplug changes */
-> +	kbuf.memsz = CONFIG_CRASH_HOTPLUG_ELFCOREHDR_SZ;
-> +	/* For marking as usable to crash kernel */
-> +	image->elf_headers_sz = kbuf.memsz;
-> +	/* Record the index of the elfcorehdr segment */
-> +	image->elfcorehdr_index = image->nr_segments;
-> +	image->elfcorehdr_index_valid = true;
-> +#else
->  	kbuf.memsz = kbuf.bufsz;
-> +#endif
->  	kbuf.buf_align = ELF_CORE_HEADER_ALIGN;
->  	kbuf.mem = KEXEC_BUF_MEM_UNKNOWN;
->  	ret = kexec_add_buffer(&kbuf);
-> @@ -413,3 +424,109 @@ int crash_load_segments(struct kimage *image)
->  	return ret;
->  }
->  #endif /* CONFIG_KEXEC_FILE */
-> +
-> +#ifdef CONFIG_CRASH_HOTPLUG
-> +static void *map_crash_pages(unsigned long paddr, unsigned long size)
-> +{
-> +	/*
-> +	 * NOTE: The addresses and sizes passed to this routine have
-> +	 * already been fully aligned on page boundaries. There is no
-> +	 * need for massaging the address or size.
-> +	 */
-> +	void *ptr = NULL;
-> +
-> +	/* NOTE: requires arch_kexec_[un]protect_crashkres() for write access */
-> +	if (size > 0) {
-> +		struct page *page = pfn_to_page(paddr >> PAGE_SHIFT);
-> +
-> +		ptr = kmap(page);
-> +	}
-> +
-> +	return ptr;
-> +}
-> +
-> +static void unmap_crash_pages(void **ptr)
-> +{
-> +	if (ptr) {
-> +		if (*ptr)
-> +			kunmap(*ptr);
-> +		*ptr = NULL;
-> +	}
-> +}
-> +
-> +/**
-> + * arch_crash_hotplug_handler() - Handle hotplug elfcorehdr changes
-> + * @image: the active struct kimage
-> + * @hp_action: the hot un/plug action being handled
-> + * @cpu: when hp_action is KEXEC_CRASH_HP_ADD|REMOVE_CPU, the affected cpu
-> + *
-> + * To accurately reflect hot un/plug changes, the elfcorehdr (which
-> + * is passed to the crash kernel via the elfcorehdr= parameter)
-> + * must be updated with the new list of CPUs and memories. The new
-> + * elfcorehdr is prepared in a kernel buffer, and then it is
-> + * written on top of the existing/old elfcorehdr.
-> + *
-> + * For hotplug changes to elfcorehdr to work, two conditions are
-> + * needed:
-> + * First, the segment containing the elfcorehdr must be large enough
-> + * to permit a growing number of resources. See
-> + * CONFIG_CRASH_HOTPLUG_ELFCOREHDR_SZ.
-> + * Second, purgatory must explicitly exclude the elfcorehdr from the
-> + * list of segments it checks (since the elfcorehdr changes and thus
-> + * would require an update to purgatory itself to update the digest).
-> + *
-> + */
-> +void arch_crash_hotplug_handler(struct kimage *image,
-> +	unsigned int hp_action, unsigned int cpu)
+Add devicetree schema for Arm Mali Valhall GPU
 
-We have stored the necessary information into kimage, e.g image->hotplug_event,
-image->offlinecpu, do we still need to pass down the hp_action and cpu
-in arch_crash_hotplug_handler()? Do you foresee it will be used in other
-architectures?
+Define a compatible string for the Mali Valhall GPU
+for MediaTek's SoC platform.
 
-> +{
-> +	struct kexec_segment *ksegment;
-> +	unsigned char *ptr = NULL;
-> +	unsigned long elfsz = 0;
-> +	void *elfbuf = NULL;
-> +	unsigned long mem, memsz;
-> +
-> +	if (!image->elfcorehdr_index_valid) {
-> +		pr_err("crash hp: unable to locate elfcorehdr segment");
-> +		goto out;
-> +	}
-> +
-> +	ksegment = &image->segment[image->elfcorehdr_index];
-> +	mem = ksegment->mem;
-> +	memsz = ksegment->memsz;
-> +
-> +	/*
-> +	 * Create the new elfcorehdr reflecting the changes to CPU and/or
-> +	 * memory resources.
-> +	 */
-> +	if (prepare_elf_headers(image, &elfbuf, &elfsz)) {
-> +		pr_err("crash hp: unable to prepare elfcore headers");
-> +		goto out;
-> +	}
-> +	if (elfsz > memsz) {
-> +		pr_err("crash hp: update elfcorehdr elfsz %lu > memsz %lu",
-> +			elfsz, memsz);
-> +		goto out;
-> +	}
-> +
-> +	/*
-> +	 * At this point, we are all but assured of success.
-> +	 * Copy new elfcorehdr into destination.
-> +	 */
-> +	ptr = map_crash_pages(mem, memsz);
-> +	if (ptr) {
-> +		/*
-> +		 * Temporarily invalidate the crash image while the
-> +		 * elfcorehdr is updated.
-> +		 */
-> +		xchg(&kexec_crash_image, NULL);
-> +		memcpy_flushcache((void *)ptr, elfbuf, elfsz);
-> +		xchg(&kexec_crash_image, image);
-> +	}
-> +	unmap_crash_pages((void **)&ptr);
-> +	pr_debug("crash hp: re-loaded elfcorehdr at 0x%lx\n", mem);
-> +
-> +out:
-> +	if (elfbuf)
-> +		vfree(elfbuf);
-> +}
-> +#endif /* CONFIG_CRASH_HOTPLUG */
-> -- 
-> 2.27.0
-> 
+Signed-off-by: Nick Fan <Nick.Fan@mediatek.com>
+---
+ .../bindings/gpu/arm,mali-valhall.yaml        | 201 ++++++++++++++++++
+ 1 file changed, 201 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/gpu/arm,mali-valhall.yaml
+
+diff --git a/Documentation/devicetree/bindings/gpu/arm,mali-valhall.yaml b/Documentation/devicetree/bindings/gpu/arm,mali-valhall.yaml
+new file mode 100644
+index 000000000000..526384d1e3ff
+--- /dev/null
++++ b/Documentation/devicetree/bindings/gpu/arm,mali-valhall.yaml
+@@ -0,0 +1,201 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (c) 2020 MediaTek Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/gpu/arm,mali-valhall.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ARM Mali Valhall GPU
++
++maintainers:
++  - Rob Herring <robh@kernel.org>
++
++properties:
++  $nodename:
++    pattern: '^gpu@[a-f0-9]+$'
++
++  compatible:
++    items:
++      - enum:
++          - mediatek,mt8192-mali
++      - const: arm,mali-valhall
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    items:
++      - description: Job interrupt
++      - description: MMU interrupt
++      - description: GPU interrupt
++
++  interrupt-names:
++    items:
++      - const: job
++      - const: mmu
++      - const: gpu
++
++  clocks:
++    minItems: 1
++
++  power-domains:
++    minItems: 1
++    maxItems: 5
++
++  mali-supply: true
++  sram-supply: true
++
++  operating-points-v2: true
++  opp-table: true
++
++  "#cooling-cells":
++    const: 2
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-names
++  - clocks
++
++additionalProperties: false
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: mediatek,mt8192-mali
++    then:
++      properties:
++        power-domains:
++          minItems: 5
++          maxItems: 5
++
++        power-domain-names:
++          items:
++            - const: core0
++            - const: core1
++            - const: core2
++            - const: core3
++            - const: core4
++
++      required:
++        - sram-supply
++        - power-domains
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    gpu@13000000 {
++        compatible = "mediatek,mt8192-mali", "arm,mali-valhall";
++        reg = <0x13000000 0x4000>;
++        interrupts =
++            <GIC_SPI 363 IRQ_TYPE_LEVEL_HIGH 0>,
++            <GIC_SPI 364 IRQ_TYPE_LEVEL_HIGH 0>,
++            <GIC_SPI 365 IRQ_TYPE_LEVEL_HIGH 0>;
++        interrupt-names =
++            "gpu",
++            "mmu",
++            "job";
++
++        clocks = <&mfgcfg 0>;
++
++        power-domains =
++            <&spm 4>,
++            <&spm 5>,
++            <&spm 6>,
++            <&spm 7>,
++            <&spm 8>;
++
++        operating-points-v2 = <&gpu_opp_table>;
++        mali-supply = <&mt6315_7_vbuck1>;
++        sram-supply = <&mt6359_vsram_others_ldo_reg>;
++        gpu_opp_table: opp_table {
++            compatible = "operating-points-v2";
++            opp-shared;
++
++            opp-358000000 {
++                opp-hz = /bits/ 64 <358000000>;
++                opp-microvolt = <606250>, <750000>;
++            };
++
++            opp-399000000 {
++                opp-hz = /bits/ 64 <399000000>;
++                opp-microvolt = <618750>, <750000>;
++            };
++
++            opp-440000000 {
++                opp-hz = /bits/ 64 <440000000>;
++                opp-microvolt = <631250>, <750000>;
++            };
++
++            opp-482000000 {
++                opp-hz = /bits/ 64 <482000000>;
++                opp-microvolt = <643750>, <750000>;
++            };
++
++            opp-523000000 {
++                opp-hz = /bits/ 64 <523000000>;
++                opp-microvolt = <656250>, <750000>;
++            };
++
++            opp-564000000 {
++                opp-hz = /bits/ 64 <564000000>;
++                opp-microvolt = <668750>, <750000>;
++            };
++
++            opp-605000000 {
++                opp-hz = /bits/ 64 <605000000>;
++                opp-microvolt = <681250>, <750000>;
++            };
++
++            opp-647000000 {
++                opp-hz = /bits/ 64 <647000000>;
++                opp-microvolt = <693750>, <750000>;
++            };
++
++            opp-688000000 {
++                opp-hz = /bits/ 64 <688000000>;
++                opp-microvolt = <706250>, <750000>;
++            };
++
++            opp-724000000 {
++                opp-hz = /bits/ 64 <724000000>;
++                opp-microvolt = <725000>, <750000>;
++            };
++
++            opp-748000000 {
++                opp-hz = /bits/ 64 <748000000>;
++                opp-microvolt = <737500>, <750000>;
++            };
++
++            opp-772000000 {
++                opp-hz = /bits/ 64 <772000000>;
++                opp-microvolt = <750000>, <750000>;
++            };
++
++            opp-795000000 {
++                opp-hz = /bits/ 64 <795000000>;
++                opp-microvolt = <762500>, <762500>;
++            };
++
++            opp-819000000 {
++                opp-hz = /bits/ 64 <819000000>;
++                opp-microvolt = <775000>, <775000>;
++            };
++
++            opp-843000000 {
++                opp-hz = /bits/ 64 <843000000>;
++                opp-microvolt = <787500>, <787500>;
++            };
++
++            opp-866000000 {
++                opp-hz = /bits/ 64 <866000000>;
++                opp-microvolt = <800000>, <800000>;
++            };
++        };
++    };
++...
+-- 
+2.18.0
 
