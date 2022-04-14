@@ -2,113 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA830C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03393C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241275AbiDNIzc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 04:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58398 "EHLO
+        id S240633AbiDNIzj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 04:55:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241252AbiDNIyw (ORCPT
+        with ESMTP id S241250AbiDNIyw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 04:54:52 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFEB66238;
-        Thu, 14 Apr 2022 01:52:14 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id 32so4230442pgl.4;
-        Thu, 14 Apr 2022 01:52:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pDWGdxJhFsxcNNUteEWhKVijX9qVkGiF7WeSXdTWmXI=;
-        b=LKt+dQAa1ppfZi/SzA3+Alnlf7kW1nzl/w8YG98sUCn1sR645pItyBn0vX1vmguEyE
-         NfKb1CY4sv41k0kGquCOk7rIahMhoTOJugyQCzXhey9HMkHfgLZNh3JHzPrtqPa6oYgW
-         RK0YnW0x8cGMSeQTVasigahOHx0X/L73KuS1uKWbXKyLVgoPFhbeoguyjH5+1x4q8znr
-         Alpxnc8tp1jEYiXAWWd1hJQBHa61Jx9mJYBZh5JeudT3lMM+b9ic2Zdj1yIL3Z6nlaXj
-         pNmkOmiwMlfjjnc/DQL8RyQ4o1ZJ6aElnUe0vFapNtM7KKthqgi9mhf3L9B/sKbTO6Vm
-         HMQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pDWGdxJhFsxcNNUteEWhKVijX9qVkGiF7WeSXdTWmXI=;
-        b=oGsJbHPScY/SlFE7IXv+GSvjEtS2x4pXznpikiGVxkGZZC/W3UQ344loDH+eoaUYHT
-         26Y5Dd0iDd2zYKSmOEgMiLDF3ssD6JYWKWQ5zfclZd97M2j6SWKZJ34TX3fY3eASyUsl
-         m7rNRS9IlHr6Hfb8YPqePVPGL/TYfMZq0erOWJ7p5UGkIQqdw+Qrk8rmsA0Cw9pZlqSx
-         nqdFTnvw7+F4+m4u2Kg7wYKCGcGngtx9KYk0AoEHTBl60Vv/J2Bj376jKJZFLBrijZeJ
-         lrqigH4pMLHt/8tF3ktJtdibZ1EspXd08GEWhHYCyJVqvmrw6zU+t20T7jdutjWVyvV4
-         FliA==
-X-Gm-Message-State: AOAM530UXCSNubZBwudZ7w2W0fCLmqoO3hs43YgVaEZY5tKQE9Y7Sl4b
-        pEQZBEcZcK6iQsEk5Dytzt0UmANsXTI=
-X-Google-Smtp-Source: ABdhPJyrrGwYvaw+Ko1XagjxjEwBjCMFJu7TrWZ7k6E1EzMLljruP968lnhC0Qf9+4bL8nsvSEA65w==
-X-Received: by 2002:a63:5409:0:b0:382:7e1:db0c with SMTP id i9-20020a635409000000b0038207e1db0cmr1478101pgb.204.1649926333321;
-        Thu, 14 Apr 2022 01:52:13 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id a67-20020a621a46000000b005060c73ef43sm1428315pfa.195.2022.04.14.01.52.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4F1865798;
         Thu, 14 Apr 2022 01:52:12 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     vkoul@kernel.org
-Cc:     rdunlap@infradead.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] dmaengine: cppi41: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Thu, 14 Apr 2022 08:52:09 +0000
-Message-Id: <20220414085209.2541420-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+Received: from toolbox.toradex.int ([31.10.206.124]) by mrelay.perfora.net
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MulRf-1nvUaK2uax-00rqnX;
+ Thu, 14 Apr 2022 10:52:00 +0200
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1 12/14] ARM: dts: imx6ull-colibri: fix nand bch geometry
+Date:   Thu, 14 Apr 2022 10:51:04 +0200
+Message-Id: <20220414085106.18621-13-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220414085106.18621-1-marcel@ziswiler.com>
+References: <20220414085106.18621-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:XxbB439krdV/bwopLiYcp8T6UyVX2isIwVPw/tjKqC3RNfjSuG6
+ oQXrg7r9YcHyxM0r/1FVzif48de62pBxm37P+qMc8XX+l9jDy+FRsagDFMj+q05LF93AKsx
+ +LiSzMls786etjIM8ftFzfFL+m4O9bMz1AqB0rZgSekqPAhpoKxzXY51ClgoypXdWb9NSif
+ vNfYVd4QEi/ZkQ2jXIOeA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:TZyNMa1bln8=:zhWTyQU5mH5VckOx4fdXCo
+ cJWQHyflr3m4S4owI3tpuU6fHhMg3r1AoL3LBokgRH6rbJEtcfKI4y9Qbo+e1d3qWYV3aJVB8
+ GAGMhp3mzpYrdUjQHsG4YR8URNR2wfimDLEfQlaShEfzPoKEhbSycsEw5GLVa2TCevPO4IQd+
+ gfGuMcSNWup3Tku8jzAFD47IZ1yi2/dtOjr9+uzLqy498AnvOiAgwM4SbK3rKGv9ieeUhO4bJ
+ S/7XqFO5R+FLImudDjPNu9eDQeE5a50e0FYL9k5Ar+jm0kFYZC2ldNPRhq3nJOVQ2iHRPjIGw
+ B591ecBXUqyuiy9PjQ31Ddk3LYNIketgm581kvPDgaZUsrz1V54nP4V5pJPtV3s82eX+wl5Vz
+ JVBrdT+P0ifmHoLC27KtA/WAVKmwpn3y1dCsHnpqLxhefh5+G49u/qogmWklfrrQ0HxPEogMk
+ 6i+aNuAAwmhi4mCZYCwnf6hZBY0LBkTLRN56VyolH2QUh6pMsogZkJNwsb4D4SzbJE8SrPBiP
+ kHEjufjNQ0DZWWQMqPkrnhm2Am/5bTu0ufQj7l1f+/CWwwNySpfbCoVTRcNKX/NFRxCT9bNGM
+ ggEXQEcK4khNX9p/xYS/OAga0tE0nRMB5uAmGs/wu4rEhDACKL9mVbNtnZvQvy+kOBboUX8Gp
+ f6+xhCurMzCFcVK+TLuVGgj32VZp/ux5rzQFClB9c6aqhmtsfdda8xEwCzsd6xo5w/iSy9KRu
+ 1JFpsRNKvmEVDl0S
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
-pm_runtime_put_noidle. This change is just to simplify the code, no
-actual functional changes.
+Fix NAND BCH geometry relevant mainly for U-Boot.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
- drivers/dma/ti/cppi41.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/dma/ti/cppi41.c b/drivers/dma/ti/cppi41.c
-index 062bd9bd4de0..44363a731409 100644
---- a/drivers/dma/ti/cppi41.c
-+++ b/drivers/dma/ti/cppi41.c
-@@ -374,11 +374,10 @@ static int cppi41_dma_alloc_chan_resources(struct dma_chan *chan)
- 	struct cppi41_dd *cdd = c->cdd;
- 	int error;
- 
--	error = pm_runtime_get_sync(cdd->ddev.dev);
-+	error = pm_runtime_resume_and_get(cdd->ddev.dev);
- 	if (error < 0) {
- 		dev_err(cdd->ddev.dev, "%s pm runtime get: %i\n",
- 			__func__, error);
--		pm_runtime_put_noidle(cdd->ddev.dev);
- 
- 		return error;
- 	}
-@@ -402,12 +401,9 @@ static void cppi41_dma_free_chan_resources(struct dma_chan *chan)
- 	struct cppi41_dd *cdd = c->cdd;
- 	int error;
- 
--	error = pm_runtime_get_sync(cdd->ddev.dev);
--	if (error < 0) {
--		pm_runtime_put_noidle(cdd->ddev.dev);
--
-+	error = pm_runtime_resume_and_get(cdd->ddev.dev);
-+	if (error < 0)
- 		return;
--	}
- 
- 	WARN_ON(!list_empty(&cdd->pending));
- 
+ arch/arm/boot/dts/imx6ull-colibri.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/boot/dts/imx6ull-colibri.dtsi b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+index 59731ae7d04d..04384139b512 100644
+--- a/arch/arm/boot/dts/imx6ull-colibri.dtsi
++++ b/arch/arm/boot/dts/imx6ull-colibri.dtsi
+@@ -128,6 +128,7 @@ ethphy1: ethernet-phy@2 {
+ &gpmi {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_gpmi_nand>;
++	fsl,use-minimum-ecc;
+ 	nand-on-flash-bbt;
+ 	nand-ecc-mode = "hw";
+ 	nand-ecc-strength = <8>;
 -- 
-2.25.1
-
+2.35.1
 
