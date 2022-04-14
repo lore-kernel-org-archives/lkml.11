@@ -2,106 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9257CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 19:01:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4228C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 19:01:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345120AbiDNTCa (ORCPT
+        id S1344444AbiDNTDf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 15:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36462 "EHLO
+        Thu, 14 Apr 2022 15:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243025AbiDNTCP (ORCPT
+        with ESMTP id S240550AbiDNTCR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 15:02:15 -0400
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FAC235DD1;
-        Thu, 14 Apr 2022 11:59:49 -0700 (PDT)
-Received: by mail-ot1-f46.google.com with SMTP id m16-20020a9d73d0000000b005f8edc0599eso2312386otk.11;
-        Thu, 14 Apr 2022 11:59:49 -0700 (PDT)
+        Thu, 14 Apr 2022 15:02:17 -0400
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF10A35DD1;
+        Thu, 14 Apr 2022 11:59:50 -0700 (PDT)
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-df22f50e0cso6189323fac.3;
+        Thu, 14 Apr 2022 11:59:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=Nl2pGAEONu2QZQaKFQeELDG1/h7wE66s82x4Cf8lwpw=;
-        b=fFmkASgi7c5K5t4ivloXXBd1lU6eonwg7lTiaHiAWNKXRcty1Q9MF4btkdnlrHIG7x
-         mkfUztOi9vAQsHrZr89nGO27J/AG/3Z+tqOKGOLlrQSEwDBEg9DF4ej3+csV/o3VpATI
-         X3qFDljhKPePxoHkMX1olhKtwxs+kRoVVUCRNj+pQ21IEZvSNalfl2owhYo5WgJ2d9Oe
-         odMRJDlQ8/+xDmIefH/ILW/7tKaMcUqpJ5IfFajT887HdlRWkBDhx6u2PYiuIuwReYWa
-         YIX7Tb84/CCXQeQFeZrVhfKfgbgMXmXLsGrhaWFn1UFB+7jqDqGDuKeJai0+5ycWCFNC
-         tf3w==
-X-Gm-Message-State: AOAM530Ztu2mNldIXam158lM+ixzFZ8Bj8yPMrkMD9FnHeKX6kSZcRSF
-        W58aOfkAXXUzCb5rwugI+Q==
-X-Google-Smtp-Source: ABdhPJwedm86wTsiUMw3yS6TJXC6nvD9bMArTaTctu3idGdEl8LSY9aitZoSwhqQzZELBAOqDK+aYg==
-X-Received: by 2002:a05:6830:2051:b0:602:4dc7:c893 with SMTP id f17-20020a056830205100b006024dc7c893mr673170otp.187.1649962788669;
-        Thu, 14 Apr 2022 11:59:48 -0700 (PDT)
+        bh=sGXGJsA6ojsv1bZR7pNAd+jEQyhK/dZz4WuojRJvdPo=;
+        b=OAnhA4GUJ/NSZaI1OetcGpHAjz/Q7L0YjujNsg4Ug5GM5YytL7qboTlhzJHhhIR0ve
+         WY4Fr46XA2yft08aouPKUbLOFkP5cgfW8SLYueEwSUAViAehrPoj1kUXRm9zdEJURb6p
+         NaRXQx0jxC6d4d2d1Pp465c1+ISpMaqCgvM2MRUelW8XRJZvibXNAwn6TctRYmt4wPUP
+         9H++Bt4H22P+WWSbKbpGB3uRksPkqIUIU/lmXoB5fYQPEab5PeHNwq/ENT8aZzdwAzn/
+         aHZ2alqMJyv8liwTHkMwyRuMxImppMO1xqZj7oma5wls5lp4vsJA5fzNZz4xNdSCGeSJ
+         tvyg==
+X-Gm-Message-State: AOAM5326Hz0RJM11AkdLxV3MbILiTm12xX40zGwpxkoUU22mF7QTozm0
+        007o7VBMxFL3sp+AykLnUg==
+X-Google-Smtp-Source: ABdhPJzl2G7/Jj7Yz2M4LJif3HpLB1RIFVYTsN5iMog0zkACwjqqeuSpXmtLg6UZNKYv/jBw5JCGrA==
+X-Received: by 2002:a05:6870:d392:b0:e2:aa54:9601 with SMTP id k18-20020a056870d39200b000e2aa549601mr16586oag.184.1649962789989;
+        Thu, 14 Apr 2022 11:59:49 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id y27-20020a544d9b000000b002f9e39a7467sm317435oix.39.2022.04.14.11.59.48
+        by smtp.gmail.com with ESMTPSA id 1-20020a05687011c100b000de98359b43sm998780oav.1.2022.04.14.11.59.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 11:59:48 -0700 (PDT)
-Received: (nullmailer pid 2441858 invoked by uid 1000);
+        Thu, 14 Apr 2022 11:59:49 -0700 (PDT)
+Received: (nullmailer pid 2441854 invoked by uid 1000);
         Thu, 14 Apr 2022 18:59:45 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Markuss Broks <markuss.broks@gmail.com>
-Cc:     Lee Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+To:     =?utf-8?b?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     linux-renesas-soc@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Herve Codina <herve.codina@bootlin.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        =?utf-8?q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        devicetree@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         Rob Herring <robh+dt@kernel.org>,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Liam Girdwood <lgirdwood@gmail.com>
-In-Reply-To: <20220414170616.23319-3-markuss.broks@gmail.com>
-References: <20220414170616.23319-1-markuss.broks@gmail.com> <20220414170616.23319-3-markuss.broks@gmail.com>
-Subject: Re: [PATCH 2/4] dt-bindings: mfd: Add bindings for Silicon Mitus SM5703 MFD
+        Paolo Abeni <pabeni@redhat.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+In-Reply-To: <20220414122250.158113-6-clement.leger@bootlin.com>
+References: <20220414122250.158113-1-clement.leger@bootlin.com> <20220414122250.158113-6-clement.leger@bootlin.com>
+Subject: Re: [PATCH net-next 05/12] dt-bindings: net: dsa: add bindings for Renesas RZ/N1 Advanced 5 port switch
 Date:   Thu, 14 Apr 2022 13:59:45 -0500
-Message-Id: <1649962785.233373.2441857.nullmailer@robh.at.kernel.org>
+Message-Id: <1649962785.217704.2441853.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 20:06:13 +0300, Markuss Broks wrote:
-> This patch adds device-tree bindings for the Silicon Mitus
-> SM5703 MFD.
+On Thu, 14 Apr 2022 14:22:43 +0200, Clément Léger wrote:
+> Add bindings for Renesas RZ/N1 Advanced 5 port switch. This switch is
+> present on Renesas RZ/N1 SoC and was probably provided by MoreThanIP.
+> This company does not exists anymore and has been bought by Synopsys.
+> Since this IP can't be find anymore in the Synospsy portfolio, lets use
+> Renesas as the vendor compatible for this IP.
 > 
-> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 > ---
->  .../bindings/mfd/siliconmitus,sm5703.yaml     | 96 +++++++++++++++++++
->  1 file changed, 96 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
+>  .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  | 128 ++++++++++++++++++
+>  1 file changed, 128 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
 on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
 yamllint warnings/errors:
-./Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml:50:5: [error] syntax error: could not find expected ':' (syntax)
 
 dtschema/dtc warnings/errors:
-make[1]: *** Deleting file 'Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.example.dts'
+schemas/net/dsa/mdio.yaml: ignoring, error parsing file
+schemas/net/dsa/mdio.yaml: ignoring, error parsing file
 Traceback (most recent call last):
-  File "/usr/local/bin/dt-extract-example", line 52, in <module>
-    binding = yaml.load(open(args.yamlfile, encoding='utf-8').read())
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/main.py", line 434, in load
-    return constructor.get_single_data()
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/constructor.py", line 119, in get_single_data
-    node = self.composer.get_single_node()
-  File "_ruamel_yaml.pyx", line 706, in _ruamel_yaml.CParser.get_single_node
-  File "_ruamel_yaml.pyx", line 724, in _ruamel_yaml.CParser._compose_document
-  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
-  File "_ruamel_yaml.pyx", line 773, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 852, in _ruamel_yaml.CParser._compose_sequence_node
-  File "_ruamel_yaml.pyx", line 904, in _ruamel_yaml.CParser._parse_next_event
-ruamel.yaml.scanner.ScannerError: while scanning a simple key
-  in "<unicode string>", line 49, column 3
-could not find expected ':'
-  in "<unicode string>", line 50, column 5
-make[1]: *** [Documentation/devicetree/bindings/Makefile:26: Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.example.dts] Error 1
-make[1]: *** Waiting for unfinished jobs....
-./Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml:  while scanning a simple key
-  in "<unicode string>", line 49, column 3
-could not find expected ':'
-  in "<unicode string>", line 50, column 5
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml: ignoring, error parsing file
-make: *** [Makefile:1401: dt_binding_check] Error 2
+  File "/usr/local/bin/dt-validate", line 176, in <module>
+    sg.check_trees(filename, testtree)
+  File "/usr/local/bin/dt-validate", line 123, in check_trees
+    self.check_subtree(dt, subtree, False, "/", "/", filename)
+  File "/usr/local/bin/dt-validate", line 112, in check_subtree
+    self.check_subtree(tree, value, disabled, name, fullname + name, filename)
+  File "/usr/local/bin/dt-validate", line 112, in check_subtree
+    self.check_subtree(tree, value, disabled, name, fullname + name, filename)
+  File "/usr/local/bin/dt-validate", line 107, in check_subtree
+    self.check_node(tree, subtree, disabled, nodename, fullname, filename)
+  File "/usr/local/bin/dt-validate", line 51, in check_node
+    errors = sorted(dtschema.DTValidator(schema).iter_errors(node), key=lambda e: e.linecol)
+  File "/usr/local/lib/python3.8/dist-packages/dtschema/lib.py", line 1027, in iter_errors
+    for error in super().iter_errors(instance, _schema):
+  File "/usr/local/lib/python3.8/dist-packages/jsonschema/validators.py", line 229, in iter_errors
+    for error in errors:
+  File "/usr/local/lib/python3.8/dist-packages/jsonschema/_validators.py", line 332, in properties
+    yield from validator.descend(
+  File "/usr/local/lib/python3.8/dist-packages/jsonschema/validators.py", line 245, in descend
+    for error in self.evolve(schema=schema).iter_errors(instance):
+  File "/usr/local/lib/python3.8/dist-packages/dtschema/lib.py", line 1027, in iter_errors
+    for error in super().iter_errors(instance, _schema):
+  File "/usr/local/lib/python3.8/dist-packages/jsonschema/validators.py", line 229, in iter_errors
+    for error in errors:
+  File "/usr/local/lib/python3.8/dist-packages/jsonschema/_validators.py", line 298, in ref
+    yield from validator.descend(instance, resolved)
+  File "/usr/local/lib/python3.8/dist-packages/jsonschema/validators.py", line 245, in descend
+    for error in self.evolve(schema=schema).iter_errors(instance):
+  File "/usr/local/lib/python3.8/dist-packages/dtschema/lib.py", line 1027, in iter_errors
+    for error in super().iter_errors(instance, _schema):
+  File "/usr/local/lib/python3.8/dist-packages/jsonschema/validators.py", line 219, in iter_errors
+    scope = id_of(_schema)
+  File "/usr/local/lib/python3.8/dist-packages/jsonschema/validators.py", line 96, in _id_of
+    return schema.get("$id", "")
+AttributeError: 'NoneType' object has no attribute 'get'
 
 doc reference errors (make refcheckdocs):
 
