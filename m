@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9975C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB1AC41535
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353366AbiDNOju (ORCPT
+        id S1353379AbiDNOjy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:39:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58590 "EHLO
+        Thu, 14 Apr 2022 10:39:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344820AbiDNNom (ORCPT
+        with ESMTP id S1344818AbiDNNom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:44:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D30538D86;
-        Thu, 14 Apr 2022 06:40:17 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CD5438DA0;
+        Thu, 14 Apr 2022 06:40:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E98AB82968;
-        Thu, 14 Apr 2022 13:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFB78C385A1;
-        Thu, 14 Apr 2022 13:40:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB0D561DA2;
+        Thu, 14 Apr 2022 13:40:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4299C385A1;
+        Thu, 14 Apr 2022 13:40:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943615;
-        bh=CSM//Rz3PDHvzk+BYq71+X+1Jm1t0/cBCElyGnnl1/g=;
+        s=korg; t=1649943618;
+        bh=y5YIjea00GKKfI6l/BDxtYNFZa0CHf8VnDm2FYM27uw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qsa1MBfw0rduwvxT67ajWxqTLVMyadbzorSqp15siYS+B/ZCBlCMOcXvsjKrDwZBH
-         AUFrzSdmvPflb+ZT/Hp1phg+ulWNy2CYwWjgQUu3UTJx9dJkRuiKRY76o13nC36/48
-         fyl7gM6Q4dIKmyA2vGyhzdmqopqvesN7r5PycJOA=
+        b=GSmadgQce9tettmVQXIihcv30tSAJA6FJ0aBqjnJSyR5SlzTwKOCcunWfJsdmRIn4
+         WWao8Dp79PWWyev5w/jVydmWZXAf6MbaJ/76KHxsWjGepuGtvQJJrVrG3ELQQ/U8Bs
+         b3Tc2eUdPLGBemxjHJEWwgBDeX2LMPDed1tANNhY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
+        stable@vger.kernel.org, Colin Ian King <colin.king@canonical.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 217/475] USB: storage: ums-realtek: fix error code in rts51x_read_mem()
-Date:   Thu, 14 Apr 2022 15:10:02 +0200
-Message-Id: <20220414110901.196759005@linuxfoundation.org>
+Subject: [PATCH 5.4 180/475] iwlwifi: Fix -EIO error code that is never returned
+Date:   Thu, 14 Apr 2022 15:09:25 +0200
+Message-Id: <20220414110900.171796120@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,37 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Colin Ian King <colin.king@canonical.com>
 
-[ Upstream commit b07cabb8361dc692522538205552b1b9dab134be ]
+[ Upstream commit c305c94bdc18e45b5ad1db54da4269f8cbfdff6b ]
 
-The rts51x_read_mem() function should return negative error codes.
-Currently if the kmalloc() fails it returns USB_STOR_TRANSPORT_ERROR (3)
-which is treated as success by the callers.
+Currently the error -EIO is being assinged to variable ret when
+the READY_BIT is not set but the function iwlagn_mac_start returns
+0 rather than ret. Fix this by returning ret instead of 0.
 
-Fixes: 065e60964e29 ("ums_realtek: do not use stack memory for DMA")
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220304073504.GA26464@kili
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Addresses-Coverity: ("Unused value")
+Fixes: 7335613ae27a ("iwlwifi: move all mac80211 related functions to one place")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Link: https://lore.kernel.org/r/20210907104658.14706-1-colin.king@canonical.com
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/storage/realtek_cr.c | 2 +-
+ drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/storage/realtek_cr.c b/drivers/usb/storage/realtek_cr.c
-index 3789698d9d3c..0c423916d7bf 100644
---- a/drivers/usb/storage/realtek_cr.c
-+++ b/drivers/usb/storage/realtek_cr.c
-@@ -365,7 +365,7 @@ static int rts51x_read_mem(struct us_data *us, u16 addr, u8 *data, u16 len)
+diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
+index 6512d25e3563..f3bb1f91b587 100644
+--- a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
+@@ -303,7 +303,7 @@ static int iwlagn_mac_start(struct ieee80211_hw *hw)
  
- 	buf = kmalloc(len, GFP_NOIO);
- 	if (buf == NULL)
--		return USB_STOR_TRANSPORT_ERROR;
-+		return -ENOMEM;
+ 	priv->is_open = 1;
+ 	IWL_DEBUG_MAC80211(priv, "leave\n");
+-	return 0;
++	return ret;
+ }
  
- 	usb_stor_dbg(us, "addr = 0x%x, len = %d\n", addr, len);
- 
+ static void iwlagn_mac_stop(struct ieee80211_hw *hw)
 -- 
 2.34.1
 
