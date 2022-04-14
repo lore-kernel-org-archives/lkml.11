@@ -2,307 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D09C4167E
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:07:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 470F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:07:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344436AbiDNQIu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55250 "EHLO
+        id S241935AbiDNQHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:07:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355764AbiDNP6k (ORCPT
+        with ESMTP id S1349688AbiDNP5A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:58:40 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B66E38BB
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:46:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649951202; x=1681487202;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to;
-  bh=uAhqgnl1kawPXwaAA7Oh8LVeG+sDmv9ZViRW52v9suY=;
-  b=Otw2SjqIdW72+0PFmZYOKTOvXrSZgJvF+8Cs0Cn76MEomzz+R4i+CEnE
-   bBeZQIAfTID4jV73PLysqbelu5JCFgEMvYUz7l/Af6RKuClvSQbRnxTkJ
-   gpRJstJzKsSP4jMxp8X/NKKavd9+MMZVpk1tEDHV8/u6Z3U9aq3y2r9JH
-   eYnKBPjtBUQ7DGjdTNvhKUaAxaaI60edlK12w4Im5F2j5DRNfZ0lOYlzQ
-   Ct88hYsAIu9tbvnL+D37P0ydo6utCNBv5PuZh45WflJVscKSddxytrMNO
-   GhMYnhtWXPEw7k9GlpYFmNKXtDgyAhpAg0m5IGDpFx2DIeDQBxtez77NM
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="263137012"
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="263137012"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 08:46:30 -0700
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="612377905"
-Received: from msahoo-mobl1.amr.corp.intel.com (HELO [10.212.62.78]) ([10.212.62.78])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 08:46:29 -0700
-Content-Type: multipart/mixed; boundary="------------LYGojPVYD6BcZ9cjMhM0heIe"
-Message-ID: <d2f927c9-187a-906c-e1f3-33541b3b5a84@intel.com>
-Date:   Thu, 14 Apr 2022 08:46:36 -0700
+        Thu, 14 Apr 2022 11:57:00 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1F5E65
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:38:11 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id h15-20020a17090a054f00b001cb7cd2b11dso6004403pjf.5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:38:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Qq44QcgUTvrM0yR0uIBFO4qbEgfmXFTn9DFwrR1re2U=;
+        b=DJcQZgGgCMSdEr73OHf4KjCFWkfmLDjCW6J+MKp7+BvlAxQbpy3LWtQHsiJRMomLKf
+         QQy/cDZGSi7hIsxhUMiBI2sSOMqZ94VJvI/zsS2or5jz3Okd9ZEENLtR9gfrUpM0GVt1
+         wf5lYwEClRX+nU8oJkVa/PZ6nob4NgW5hiLs929efgHRtERBFzIt/30LvL5O1hf84NLO
+         J1aRow7aurhrwwZWPNAfNAdaBqJISM1rd9EWMkjWuFN0GW8inMXzIqEAYbHBU4FruJQq
+         4rljZH0IKyhkSVXPeLRNiubyEjXunPkdPDp4YbCCgq/50ckpd/IrjcxSC19Vqx6P+aJH
+         QzKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Qq44QcgUTvrM0yR0uIBFO4qbEgfmXFTn9DFwrR1re2U=;
+        b=ow+aUYJxS0+E2LpYoCjWJ35qAKIONERYePNRqRNllFxTz8gVqOt+7cxUP2R/E4hBWJ
+         lbr3yG+0pWcmlr4AUWwOCQpkCDSz59ETCgHj/kqCQQjWaLZXw+JuY7S00PidswxEiwGH
+         MauftWpWBR99osUHLKDrN1oaoGQGS/2Ff9UhQ5pQ78ISjBmCyzZgCw5zGZtJuGByNm6i
+         H1Ak43C+LMcw/nbT2bXyNuesgvT83oy/VUVKGUyiQNv7nc/gxzQXetYjSBF+LE1H7EGe
+         O17uVdIngQxpgVKAbKpM70dGqFMe7MfgAV/ShClkoM9LHKfCd73Yffaf/NLKoAtlMdJA
+         XGKA==
+X-Gm-Message-State: AOAM533JbzYzs4FBv+ogdYt1nEHda25BXYNxyS2hCNbo4RJiCO8p/hFU
+        kZqawFV0hIeKdPShLXYGAYX4Tw==
+X-Google-Smtp-Source: ABdhPJyhlJFCjRIXFLlqIT5zK8kOE8XYJzsA83tVovosUIggNLpD+sH0kv/J9kuxtWvD3ngjbfHtbg==
+X-Received: by 2002:a17:903:2ca:b0:156:f1cc:7cb6 with SMTP id s10-20020a17090302ca00b00156f1cc7cb6mr41777445plk.174.1649950691276;
+        Thu, 14 Apr 2022 08:38:11 -0700 (PDT)
+Received: from [10.255.214.21] ([139.177.225.227])
+        by smtp.gmail.com with ESMTPSA id d14-20020a65620e000000b003a1112c6cbesm1779587pgv.39.2022.04.14.08.38.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 08:38:10 -0700 (PDT)
+Message-ID: <60cbd089-f514-44eb-a629-62556936be35@bytedance.com>
+Date:   Thu, 14 Apr 2022 23:38:06 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.8.0
+Subject: Re: [RFC v2 2/2] sched/fair: introduce sched-idle balance
 Content-Language: en-US
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     x86@kernel.org, Andrew Cooper <andrew.cooper3@citrix.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-References: <20220404103741.809025935@linutronix.de>
- <20220404104820.656881574@linutronix.de>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [patch 2/3] x86/fpu/xsave: Prepare for optimized compaction
-In-Reply-To: <20220404104820.656881574@linutronix.de>
+To:     Josh Don <joshdon@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Abel Wu <wuyun.abel@bytedance.com>
+References: <20220409135104.3733193-1-wuyun.abel@bytedance.com>
+ <20220409135104.3733193-3-wuyun.abel@bytedance.com>
+ <CABk29NvE=Fmgo4xqQLfy-K8j0hNS-+ppGdYt37yDUnRJiqjZ5w@mail.gmail.com>
+ <801da029-6bbe-2a0c-7de0-afffc3d5de02@bytedance.com>
+ <CABk29Nu9QTUKHP3cyx3qpiGcNM-PbaSxCvfhvBvOs++67KeXCw@mail.gmail.com>
+From:   Abel Wu <wuyun.abel@bytedance.com>
+In-Reply-To: <CABk29Nu9QTUKHP3cyx3qpiGcNM-PbaSxCvfhvBvOs++67KeXCw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------LYGojPVYD6BcZ9cjMhM0heIe
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-
-On 4/4/22 05:11, Thomas Gleixner wrote:
-...
-> For copy_uabi_to_xstate() it's more effort when supervisor states are
-> supported and active. If the user space buffer has active states which are
-> not in the set of current states of the XSTATE buffer, then the buffer
-> layout will change which means the supervisor states might be overwritten.
+On 4/14/22 8:08 AM, Josh Don Wrote:
+>>>>    /*
+>>>>     * Use locality-friendly rq->overloaded to cache the status of the rq
+>>>>     * to minimize the heavy cost on LLC shared data.
+>>>> @@ -7837,6 +7867,22 @@ int can_migrate_task(struct task_struct *p, struct lb_env *env)
+>>>>           if (kthread_is_per_cpu(p))
+>>>>                   return 0;
+>>>>
+>>>> +       if (unlikely(task_h_idle(p))) {
+>>>> +               /*
+>>>> +                * Disregard hierarchically idle tasks during sched-idle
+>>>> +                * load balancing.
+>>>> +                */
+>>>> +               if (env->idle == CPU_SCHED_IDLE)
+>>>> +                       return 0;
+>>>> +       } else if (!static_branch_unlikely(&sched_asym_cpucapacity)) {
+>>>> +               /*
+>>>> +                * It's not gonna help if stacking non-idle tasks on one
+>>>> +                * cpu while leaving some idle.
+>>>> +                */
+>>>> +               if (cfs_rq_busy(env->src_rq) && !need_pull_cfs_task(env->dst_rq))
+>>>> +                       return 0;
+>>>
+>>> These checks don't involve the task at all, so this kind of check
+>>> should be pushed into the more general load balance function. But, I'm
+>>> not totally clear on the motivation here. If we have cpu A with 1
+>>> non-idle task and 100 idle tasks, and cpu B with 1 non-idle task, we
+>>> should definitely try to load balance some of the idle tasks from A to
+>>> B. idle tasks _do_ get time to run (although little), and this can add
+>>> up and cause antagonism to the non-idle task if there are a lot of
+>>> idle threads.
+>>
+>> CPU_SCHED_IDLE means triggered by sched_idle_balance() in which pulls
+>> a non-idle task for the unoccupied cpu from the overloaded ones, so
+>> idle tasks are not the target and should be skipped.
+>>
+>> The second part is: if we have cpu A with 1 non-idle task and 100 idle
+>> tasks, and B with >=1 non-idle task, we don't migrate the last non-idle
+>> task on A to B.
 > 
-> Provide a function, which moves them out of the way and invoke it before
-> any of the extended features is copied from the user space buffer.
+> It could be possible that we do want to migrate the last non-idle task
+> from A to B, if the weight sum of idle tasks on A is very high (easily
+> possible with affinity restrictions). So I think we should leave
+> regular load balance alone here if it really wants to move the
+> non-idle task, and wrap this entire block in an if (env->idle ==
+> CPU_SCHED_IDLE).
 
-This took me a minute to sort through.  There are three kinds of state
-in the kernel buffer in copy_uabi_to_xstate().
+Makes sense. I will fix it in next version.
 
-1. User state, set in hdr.features which is copied from uabi buffer
-2. User state, clear in hdr.features.  Feature will be set to its init
-   state because xsave->header.xfeatures is cleared.
-3. Supervisor state which is preserved.
+Thanks & BR,
+Abel
 
-I was confused for a *moment* because the space for a #2 might be
-overwritten by a #1 copy-in from userspace.  But, that only happens for
-states that will end up being set to init.  No harm, no foul.
-
-Any interest in doing something like the attached to make
-copy_uabi_to_xstate() easier to read?
-
-> --- a/arch/x86/kernel/fpu/xstate.c
-> +++ b/arch/x86/kernel/fpu/xstate.c
-> @@ -1147,10 +1147,10 @@ void __copy_xstate_to_uabi_buf(struct me
->  			pkru.pkru = pkru_val;
->  			membuf_write(&to, &pkru, sizeof(pkru));
->  		} else {
-> -			copy_feature(header.xfeatures & BIT_ULL(i), &to,
-> -				     __raw_xsave_addr(xsave, i),
-> -				     __raw_xsave_addr(xinit, i),
-> -				     xstate_sizes[i]);
-> +			bool active = header.xfeatures & BIT_ULL(i);
-> +			void *from = __raw_xsave_addr(active ? xsave : xinit, i);
-> +
-> +			membuf_write(&to, from, xstate_sizes[i]);
->  		}
->  		/*
->  		 * Keep track of the last copied state in the non-compacted
-> @@ -1195,6 +1195,73 @@ static int copy_from_buffer(void *dst, u
->  	return 0;
->  }
->  
-> +/*
-> + * Prepare the kernel XSTATE buffer for saving the user supplied XSTATE. If
-> + * the XGETBV1 based optimization is in use then the kernel buffer might
-> + * not have the user supplied active features set and an eventual active
-> + * supervisor state has to be moved out of the way. With optimized
-> + * compaction the features which are to be stored need to be set in the
-> + * XCOMP_BV field of the XSTATE header.
-> + */
-
-What does "eventual active supervisor state" mean?  Just that the state
-needs to be preserved since it needs to be restored eventually?  I found
-that phrase a bit confusing.
-
-I was thinking of a comment more along these lines:
-
-/*
- * Adjust 'fpstate' so that it can additionally store all the xfeatures
- * set in 'xuser' when optimized compaction is enabled.  All bits in
- * 'xuser' will be set in XCOMP_BV.  Supervisor state will be preserved
- * and may be moved to make room for new 'xuser' states.  User state may
- * be destroyed.
- */
-
-> +static void xsave_adjust_xcomp(struct fpstate *fpstate, u64 xuser)
-> +{
-> +	struct xregs_state *xsave = &fpstate->regs.xsave;
-> +	u64 xtmp, xall, xbv, xcur = xsave->header.xfeatures;
-> +	int i;
-> +
-> +	/* Nothing to do if optimized compaction is not in use */
-> +	if (!xsave_use_xgetbv1())
-> +		return;
-
-The comment makes me wonder if we need a more descriptive name for
-xsave_use_xgetbv1(), like:
-
-	if (!xsave_do_optimized_compaction())
-		return;
-
-> +	/*
-> +	 * Check whether the current xstate buffer contains supervisor
-> +	 * state. If not, just set the user supplied features.
-> +	 */
-> +	if (!(xcur & XFEATURE_MASK_SUPERVISOR_ALL)) {
-> +		__xstate_init_xcomp_bv(xsave, xuser);
-> +		return;
-> +	}
-> +
-> +	/*
-> +	 * Set legacy features. They are at a fixed offset and do not
-> +	 * affect the layout.
-> +	 */
-> +	xbv = xsave->header.xcomp_bv;
-> +	xbv |= xuser & (XFEATURE_MASK_FP | XFEATURE_MASK_SSE);
-> +
-> +	/*
-> +	 * Check whether there is new extended state in the user supplied
-> +	 * buffer. If not, then nothing has to be moved around.
-> +	 */
-> +	if (!(xuser & ~xbv)) {
-> +		__xstate_init_xcomp_bv(xsave, xbv);
-> +		return;
-> +	}
-> +
-> +	/*
-> +	 * No more optimizations. Set the user features and move the
-> +	 * supervisor state(s). If the new user feature is past
-> +	 * the supervisor state, then the loop is moving nothing.
-> +	 */
-> +	xtmp = xbv & XFEATURE_MASK_SUPERVISOR_ALL;
-> +	xall = xbv | xuser;
-
-
-I'd probably at least comment why the loop is backwards:
-
-	/*
-	 * Features are only be moved up in the buffer.  Start with
-	 * high features to avoid overwriting them with a lower ones.
-	 */
-
-I know this is a very typical way to implement non-destructive moves,
-but my stupid brain seems to default to assuming that for loops only go
-forward.
-
-> +	for (i = fls64(xtmp) - 1; i >= FIRST_EXTENDED_XFEATURE;
-> +	     i = fls64(xtmp) - 1) {
-> +		unsigned int to, from;
-
-Is it worth a check here like:
-
-		/* Do not move features in their init state: */
-		if (!(xcur & BIT_ULL(i))) {
-			xtmp &= ~BIT_ULL(i);
-			continue;
-		}
-
-(probably also moving the &= around instead of copying it)
-
-> +		from = xfeature_get_offset(xbv, i);
-> +		to = xfeature_get_offset(xall, i);
-> +		if (from < to) {
-> +			memmove((void *)xsave + to, (void *)xsave + from,
-> +				xstate_sizes[i]);
-> +		} else {
-> +			WARN_ON_ONCE(to < from);
-> +		}
-> +		xtmp &= ~BIT_ULL(i);
-> +	}
-> +	__xstate_init_xcomp_bv(xsave, xall);
-> +}
->  
->  static int copy_uabi_to_xstate(struct fpstate *fpstate, const void *kbuf,
->  			       const void __user *ubuf)
-> @@ -1232,6 +1299,8 @@ static int copy_uabi_to_xstate(struct fp
->  		}
->  	}
->  
-> +	xsave_adjust_xcomp(fpstate, hdr.xfeatures);
-> +
->  	for (i = 0; i < XFEATURE_MAX; i++) {
->  		u64 mask = ((u64)1 << i);
->  
-> --- a/arch/x86/kernel/fpu/xstate.h
-> +++ b/arch/x86/kernel/fpu/xstate.h
-> @@ -10,14 +10,22 @@
->  DECLARE_PER_CPU(u64, xfd_state);
->  #endif
->  
-> -static inline void xstate_init_xcomp_bv(struct xregs_state *xsave, u64 mask)
-> +static inline bool xsave_use_xgetbv1(void) { return false; }
-> +
-> +static inline void __xstate_init_xcomp_bv(struct xregs_state *xsave, u64 mask)
->  {
->  	/*
->  	 * XRSTORS requires these bits set in xcomp_bv, or it will
-> -	 * trigger #GP:
-> +	 * trigger #GP. It's also required for XRSTOR when the buffer
-> +	 * was saved with XSAVEC in compacted format.
->  	 */
-> +	xsave->header.xcomp_bv = mask | XCOMP_BV_COMPACTED_FORMAT;
-> +}
-> +
-> +static inline void xstate_init_xcomp_bv(struct xregs_state *xsave, u64 mask)
-> +{
->  	if (cpu_feature_enabled(X86_FEATURE_XCOMPACTED))
-> -		xsave->header.xcomp_bv = mask | XCOMP_BV_COMPACTED_FORMAT;
-> +		__xstate_init_xcomp_bv(xsave, mask);
->  }
->  
->  static inline u64 xstate_get_group_perm(bool guest)
-
---------------LYGojPVYD6BcZ9cjMhM0heIe
-Content-Type: text/x-patch; charset=UTF-8; name="copy_uabi_to_xstate.1.patch"
-Content-Disposition: attachment; filename="copy_uabi_to_xstate.1.patch"
-Content-Transfer-Encoding: base64
-
-ZGlmZiAtLWdpdCBhL2FyY2gveDg2L2tlcm5lbC9mcHUveHN0YXRlLmMgYi9hcmNoL3g4Ni9r
-ZXJuZWwvZnB1L3hzdGF0ZS5jCmluZGV4IDM5ZTFjODYyNmFiOS4uOGEzMmE4Mzk4ZTFmIDEw
-MDY0NAotLS0gYS9hcmNoL3g4Ni9rZXJuZWwvZnB1L3hzdGF0ZS5jCisrKyBiL2FyY2gveDg2
-L2tlcm5lbC9mcHUveHN0YXRlLmMKQEAgLTExNzgsNiArMTE3OCwxNSBAQCBzdGF0aWMgaW50
-IGNvcHlfZnJvbV9idWZmZXIodm9pZCAqZHN0LCB1bnNpZ25lZCBpbnQgb2Zmc2V0LCB1bnNp
-Z25lZCBpbnQgc2l6ZSwKIH0KIAogCisvKgorICogUmVwbGFjZSBhbGwgdXNlciB4ZmVhdHVy
-ZXMgd2l0aCBkYXRhIGZyb20gJ3VidWYnLiAgRmVhdHVyZXMKKyAqIG1hcmtlZCBhcyBpbml0
-IGluICd1YnVmJyB3aWxsIGJlIG1hcmtlZCBhcyBpbml0IGluIHRoZSBrZXJuZWwKKyAqIGJ1
-ZmZlci4gIFN1cGVydmlzb3IgeGZlYXR1cmVzIHdpbGwgYmUgcHJlc2VydmVkLgorICoKKyAq
-IFJldHVybnMgMCBvbiBzdWNjZXNzLiAgTm9uLXplcm8gcmV0dXJuIGNvZGVzIGluZGljYXRl
-IHRoYXQKKyAqIHRoZSBrZXJuZWwgeHNhdmUgYnVmZmVyIG1heSBoYXZlIGJlZW4gbGVmdCBp
-biBhbiBpbmNvbnNpc3RlbnQKKyAqIHN0YXRlLiAgQ2FsbGVyIG11c3QgcmVzZXQgZnBzdGF0
-ZSB0byByZWNvdmVyLgorICovCiBzdGF0aWMgaW50IGNvcHlfdWFiaV90b194c3RhdGUoc3Ry
-dWN0IGZwc3RhdGUgKmZwc3RhdGUsIGNvbnN0IHZvaWQgKmtidWYsCiAJCQkgICAgICAgY29u
-c3Qgdm9pZCBfX3VzZXIgKnVidWYpCiB7CkBAIC0xMjE0LDMwICsxMjIzLDMwIEBAIHN0YXRp
-YyBpbnQgY29weV91YWJpX3RvX3hzdGF0ZShzdHJ1Y3QgZnBzdGF0ZSAqZnBzdGF0ZSwgY29u
-c3Qgdm9pZCAqa2J1ZiwKIAkJfQogCX0KIAorCS8qCisJICogTGVhdmUgb25seSBzdXBlcnZp
-c29yIHN0YXRlcyBpbiAneGZlYXR1cmVzJy4gIFVzZXIgeGZlYXR1cmUKKwkgKiBiaXRzIGFy
-ZSBzZXQgaW4gdGhlIGxvb3AgYmVsb3cuCisJICovCisJeHNhdmUtPmhlYWRlci54ZmVhdHVy
-ZXMgJj0gWEZFQVRVUkVfTUFTS19TVVBFUlZJU09SX0FMTDsKKwogCWZvciAoaSA9IDA7IGkg
-PCBYRkVBVFVSRV9NQVg7IGkrKykgewogCQl1NjQgbWFzayA9ICgodTY0KTEgPDwgaSk7CisJ
-CXZvaWQgKmRzdCA9IF9fcmF3X3hzYXZlX2FkZHIoeHNhdmUsIGkpOwogCi0JCWlmIChoZHIu
-eGZlYXR1cmVzICYgbWFzaykgewotCQkJdm9pZCAqZHN0ID0gX19yYXdfeHNhdmVfYWRkcih4
-c2F2ZSwgaSk7Ci0KLQkJCW9mZnNldCA9IHhzdGF0ZV9vZmZzZXRzW2ldOwotCQkJc2l6ZSA9
-IHhzdGF0ZV9zaXplc1tpXTsKLQotCQkJaWYgKGNvcHlfZnJvbV9idWZmZXIoZHN0LCBvZmZz
-ZXQsIHNpemUsIGtidWYsIHVidWYpKQotCQkJCXJldHVybiAtRUZBVUxUOworCQlpZiAoIWhk
-ci54ZmVhdHVyZXMgJiBtYXNrKSB7CisJCQkvKiBGZWF0dXJlIHdhcyBtYXJrZWQgYXMgaW5p
-dCBpbiB1YWJpIGJ1ZmZlcjogKi8KKwkJCXhzYXZlLT5oZWFkZXIueGZlYXR1cmVzICY9IH5t
-YXNrOworCQkJY29udGludWUKIAkJfQotCX0KKwkJLyogRmVhdHVyZSB3YXMgcHJlc2VudCBp
-biB1YWJpIGJ1ZmZlcjogKi8KKwkJeHNhdmUtPmhlYWRlci54ZmVhdHVyZXMgfD0gbWFzazsK
-IAotCS8qCi0JICogVGhlIHN0YXRlIHRoYXQgY2FtZSBpbiBmcm9tIHVzZXJzcGFjZSB3YXMg
-dXNlci1zdGF0ZSBvbmx5LgotCSAqIE1hc2sgYWxsIHRoZSB1c2VyIHN0YXRlcyBvdXQgb2Yg
-J3hmZWF0dXJlcyc6Ci0JICovCi0JeHNhdmUtPmhlYWRlci54ZmVhdHVyZXMgJj0gWEZFQVRV
-UkVfTUFTS19TVVBFUlZJU09SX0FMTDsKKwkJb2Zmc2V0ID0geHN0YXRlX29mZnNldHNbaV07
-CisJCXNpemUgPSB4c3RhdGVfc2l6ZXNbaV07CiAKLQkvKgotCSAqIEFkZCBiYWNrIGluIHRo
-ZSBmZWF0dXJlcyB0aGF0IGNhbWUgaW4gZnJvbSB1c2Vyc3BhY2U6Ci0JICovCi0JeHNhdmUt
-PmhlYWRlci54ZmVhdHVyZXMgfD0gaGRyLnhmZWF0dXJlczsKKwkJaWYgKGNvcHlfZnJvbV9i
-dWZmZXIoZHN0LCBvZmZzZXQsIHNpemUsIGtidWYsIHVidWYpKQorCQkJcmV0dXJuIC1FRkFV
-TFQ7CisJfQogCiAJcmV0dXJuIDA7CiB9Cg==
-
---------------LYGojPVYD6BcZ9cjMhM0heIe--
