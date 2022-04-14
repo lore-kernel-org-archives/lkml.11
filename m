@@ -2,219 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F629C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 20:33:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C103C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 20:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346614AbiDNUf5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 16:35:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44118 "EHLO
+        id S245363AbiDNUgr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 16:36:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346376AbiDNUfO (ORCPT
+        with ESMTP id S1346657AbiDNUgj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 16:35:14 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94CAAFACE;
-        Thu, 14 Apr 2022 13:32:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649968368; x=1681504368;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=esZFHOlUtVB8Mxgv4vakb9fRAVpIFIVpO6bWYPlosDk=;
-  b=GFg28qfurQbjF95iMAxvH3oLZI7q9GY0t1OOXyQeSBUBjF2Dzf9iTVm0
-   BO8W8VGJPwlNJaUIwFRl8hzW1ZLC88m0+ctC3pguIJH7BTqhyaQ9Naodr
-   7wHzJn/gt/RrUsXn2Avku7uyZvbIs6risxS3SSy5RQ43jZCLU2d0FHcXr
-   Cdy4fPQoa/k8nxnUqqMq3vO5n7fp3ScTR3/sIBQArVOnl5lgN56nmK0cT
-   P41nCNykFyzEjKyBIRut5Szns4LGTIHRFY50Pry+w9GENamTnud3Ehxn9
-   oaV4XuqRciZQE2bKxZHnfjMCmEK6MPmHT9KL9j0JYV3nxyojteFzjgROs
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="261869991"
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="261869991"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 13:32:48 -0700
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="508546755"
-Received: from aimeehax-mobl1.amr.corp.intel.com (HELO localhost) ([10.212.113.132])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 13:32:47 -0700
-From:   ira.weiny@intel.com
-To:     Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: [PATCH V8 06/10] cxl/pci: Find the DOE mailbox which supports CDAT
-Date:   Thu, 14 Apr 2022 13:32:33 -0700
-Message-Id: <20220414203237.2198665-7-ira.weiny@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220414203237.2198665-1-ira.weiny@intel.com>
-References: <20220414203237.2198665-1-ira.weiny@intel.com>
+        Thu, 14 Apr 2022 16:36:39 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2086EED911;
+        Thu, 14 Apr 2022 13:34:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=ffxFdsGh0bqDPLkDrznla8llrXAaFkdXXDivllwyW4o=; b=0dQ9C7MpbhYSKNF4gxgJy1LX3E
+        7TA6YrJemtuhcydpZkRBEj3qrNIYQA3TqpmIzMF43x0+C47JxgdoknbUehrg1kFgLI/s7zF35BS8i
+        zQ8uSolA1IwUSd7AgZNDsjO8Qi3pRUak5ErpR47J2xiWdoGWeq9rQ+UeJmB8wn6rLmh7yTNL5V9nU
+        dB3aC1bfKFfEU1H8ybeAFEpF365RFI1wCsOEUTDFW0l2Z/6Fsr3rNInZVdVLXPcZwE0lJ57Dc86ge
+        cy1dQQqRDd4W6IwOBklBGxUVOmwpNNJavXGAnfWarAbrFzTqJFjY5MNNSHZjSogK8xUGNh0Aq7VrM
+        U2n8CCtw==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nf6AF-007DAO-JU; Thu, 14 Apr 2022 20:34:03 +0000
+Date:   Thu, 14 Apr 2022 13:34:03 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Song Liu <song@kernel.org>
+Cc:     bpf@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kernel-team@fb.com, akpm@linux-foundation.org,
+        rick.p.edgecombe@intel.com, hch@infradead.org,
+        imbrenda@linux.ibm.com
+Subject: Re: [PATCH v3 bpf RESEND 3/4] module: introduce module_alloc_huge
+Message-ID: <YliFO2sDv31j5vLb@bombadil.infradead.org>
+References: <20220414195914.1648345-1-song@kernel.org>
+ <20220414195914.1648345-4-song@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414195914.1648345-4-song@kernel.org>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ira Weiny <ira.weiny@intel.com>
+On Thu, Apr 14, 2022 at 12:59:13PM -0700, Song Liu wrote:
+> Introduce module_alloc_huge, which allocates huge page backed memory in
+> module memory space. The primary user of this memory is bpf_prog_pack
+> (multiple BPF programs sharing a huge page).
+> 
+> Signed-off-by: Song Liu <song@kernel.org>
 
-Each CXL device may have multiple DOE mailbox capabilities and each
-mailbox may support multiple protocols.
+See modules-next [0], as modules.c has been chopped up as of late.
+So if you want this to go throug modules this will need to rebased
+on that tree. fortunately the amount of code in question does not
+seem like much.
 
-Search the DOE auxiliary devices for one which supports the CDAT
-protocol.  Cache that device to be used for future queries.
+[0] https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git/log/?h=modules-next
 
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-
----
-Changes from V7
-	Minor code clean ups
-
-Changes from V6
-	Adjust for aux devices being a CXL only concept
-	Update commit msg.
-	Ensure devices iterated by auxiliary_find_device() are checked
-		to be DOE devices prior to checking for the CDAT
-		protocol
-	From Ben
-		Ensure reference from auxiliary_find_device() is dropped
----
- drivers/cxl/cxl.h    |  2 ++
- drivers/cxl/cxlmem.h |  2 ++
- drivers/cxl/pci.c    | 76 +++++++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 79 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
-index 990b6670222e..50817fd2c912 100644
---- a/drivers/cxl/cxl.h
-+++ b/drivers/cxl/cxl.h
-@@ -90,6 +90,8 @@ static inline int cxl_hdm_decoder_count(u32 cap_hdr)
- #define CXLDEV_MBOX_BG_CMD_STATUS_OFFSET 0x18
- #define CXLDEV_MBOX_PAYLOAD_OFFSET 0x20
- 
-+#define CXL_DOE_PROTOCOL_TABLE_ACCESS 2
-+
- /*
-  * Using struct_group() allows for per register-block-type helper routines,
-  * without requiring block-type agnostic code to include the prefix.
-diff --git a/drivers/cxl/cxlmem.h b/drivers/cxl/cxlmem.h
-index 7235d2f976e5..0dc6988afb30 100644
---- a/drivers/cxl/cxlmem.h
-+++ b/drivers/cxl/cxlmem.h
-@@ -168,6 +168,7 @@ struct cxl_endpoint_dvsec_info {
-  * Currently only memory devices are represented.
-  *
-  * @dev: The device associated with this CXL state
-+ * @cdat_doe: Auxiliary DOE device capabile of reading CDAT
-  * @regs: Parsed register blocks
-  * @cxl_dvsec: Offset to the PCIe device DVSEC
-  * @payload_size: Size of space for payload
-@@ -200,6 +201,7 @@ struct cxl_endpoint_dvsec_info {
- struct cxl_dev_state {
- 	struct device *dev;
- 
-+	struct cxl_doe_dev *cdat_doe;
- 	struct cxl_regs regs;
- 	int cxl_dvsec;
- 
-diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
-index 0dec1f1a3f38..622cac925262 100644
---- a/drivers/cxl/pci.c
-+++ b/drivers/cxl/pci.c
-@@ -706,6 +706,80 @@ static int cxl_pci_create_doe_devices(struct pci_dev *pdev)
- 	return 0;
- }
- 
-+static bool cxl_doe_dev_supports_prot(struct cxl_doe_dev *doe_dev, u16 vid, u16 pid)
-+{
-+	struct cxl_doe_drv_state *doe_ds;
-+	bool ret;
-+
-+	doe_ds = cxl_pci_doe_get_drv(doe_dev);
-+	if (!doe_ds) {
-+		cxl_pci_doe_put_drv(doe_dev);
-+		return false;
-+	}
-+	ret = pci_doe_supports_prot(doe_ds->doe_mb, vid, pid);
-+	cxl_pci_doe_put_drv(doe_dev);
-+	return ret;
-+}
-+
-+static int cxl_match_cdat_doe_device(struct device *dev, const void *data)
-+{
-+	const struct cxl_dev_state *cxlds = data;
-+	struct auxiliary_device *adev = to_auxiliary_dev(dev);
-+	struct cxl_doe_dev *doe_dev;
-+
-+	/* Ensure this is a DOE device */
-+	if (strcmp(DOE_DEV_NAME, adev->name))
-+		return 0;
-+
-+	/* Determine if this auxiliary device belongs to the cxlds */
-+	if (cxlds->dev != dev->parent)
-+		return 0;
-+
-+	doe_dev = container_of(adev, struct cxl_doe_dev, adev);
-+
-+	/* If it is one of ours check for the CDAT protocol */
-+	if (!cxl_doe_dev_supports_prot(doe_dev, PCI_DVSEC_VENDOR_ID_CXL,
-+				   CXL_DOE_PROTOCOL_TABLE_ACCESS))
-+		return 0;
-+
-+	return 1;
-+}
-+
-+static void drop_cdat_doe_ref(void *data)
-+{
-+	struct cxl_doe_dev *cdat_doe = data;
-+
-+	put_device(&cdat_doe->adev.dev);
-+}
-+
-+static int cxl_setup_doe_devices(struct cxl_dev_state *cxlds)
-+{
-+	struct device *dev = cxlds->dev;
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct auxiliary_device *adev;
-+	int rc;
-+
-+	rc = cxl_pci_create_doe_devices(pdev);
-+	if (rc)
-+		return rc;
-+
-+	adev = auxiliary_find_device(NULL, cxlds, &cxl_match_cdat_doe_device);
-+
-+	if (adev) {
-+		struct cxl_doe_dev *doe_dev = container_of(adev,
-+							   struct cxl_doe_dev,
-+							   adev);
-+
-+		/* auxiliary_find_device() takes the reference */
-+		rc = devm_add_action_or_reset(dev, drop_cdat_doe_ref, doe_dev);
-+		if (rc)
-+			return rc;
-+		cxlds->cdat_doe = doe_dev;
-+	}
-+
-+	return 0;
-+}
-+
- static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- {
- 	struct cxl_register_map map;
-@@ -772,7 +846,7 @@ static int cxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	if (rc)
- 		return rc;
- 
--	rc = cxl_pci_create_doe_devices(pdev);
-+	rc = cxl_setup_doe_devices(cxlds);
- 	if (rc)
- 		return rc;
- 
--- 
-2.35.1
-
+  Luis
