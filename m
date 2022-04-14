@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4952C4321E
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:24:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AF9CC41535
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:24:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347608AbiDNO0n (ORCPT
+        id S1346333AbiDNO0N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:26:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36004 "EHLO
+        Thu, 14 Apr 2022 10:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344130AbiDNNj5 (ORCPT
+        with ESMTP id S1344095AbiDNNjp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2725320BC1;
-        Thu, 14 Apr 2022 06:37:32 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A3F1FA73;
+        Thu, 14 Apr 2022 06:37:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8A2461B51;
-        Thu, 14 Apr 2022 13:37:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0264C385A5;
-        Thu, 14 Apr 2022 13:37:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 922A46190F;
+        Thu, 14 Apr 2022 13:37:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A012EC385A5;
+        Thu, 14 Apr 2022 13:37:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943451;
-        bh=xZFlO/Ssj0ilwMz4LbbFsHCf7q/ubFY/jXMHM64j43U=;
+        s=korg; t=1649943440;
+        bh=DPO1EhdWxOTdYFtQMcxyheguwFiQx1jOgNhtZFXvjHg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vj/nyUk4CtzNxKgSjCnyhOgShiIJ1XYX94NBoaN9YJ4kVk1IX9nKiaAsxYY2+B9W0
-         8xkPwy430jZakgtcK5anIX0Uv3YUnOMzmrlBqvcS5zMKBpKHLIPfk8ta1/Y3xpFd0a
-         iOpZG2PfR7Xla51mK4sxHOrFEXKcbfC1uXGAi7D0=
+        b=NrF921D3GBgZs+xOWjIGqnw3LgiKO3W6WobHfZg2RnacnflVsyhbC0UzqCsze0Dte
+         8d1Tw7pHlT59gHr3GhKwJy8QwEZz4927HBMQr0ssBi1eaW0a4OjQVuTj9mC+Oh7auI
+         6jR7HnFlN7fym5nHui9cEHq3gbN0/EPOA9V5WCAw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 160/475] mtd: onenand: Check for error irq
-Date:   Thu, 14 Apr 2022 15:09:05 +0200
-Message-Id: <20220414110859.616825772@linuxfoundation.org>
+Subject: [PATCH 5.4 156/475] drm/bridge: Add missing pm_runtime_disable() in __dw_mipi_dsi_probe
+Date:   Thu, 14 Apr 2022 15:09:01 +0200
+Message-Id: <20220414110859.506627108@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,45 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 3e68f331c8c759c0daa31cc92c3449b23119a215 ]
+[ Upstream commit 96211b7c56b109a52768e6cc5e23a1f79316eca0 ]
 
-For the possible failure of the platform_get_irq(), the returned irq
-could be error number and will finally cause the failure of the
-request_irq().
-Consider that platform_get_irq() can now in certain cases return
--EPROBE_DEFER, and the consequences of letting request_irq() effectively
-convert that into -EINVAL, even at probe time rather than later on.
-So it might be better to check just now.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable().
+Add missing pm_runtime_disable() for __dw_mipi_dsi_probe.
 
-Fixes: 2c22120fbd01 ("MTD: OneNAND: interrupt based wait support")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220104162658.1988142-1-jiasheng@iscas.ac.cn
+Fixes: 46fc51546d44 ("drm/bridge/synopsys: Add MIPI DSI host controller bridge")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220105104113.31415-1-linmq006@gmail.com
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/onenand/generic.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/mtd/nand/onenand/generic.c b/drivers/mtd/nand/onenand/generic.c
-index 8b6f4da5d720..a4b8b65fe15f 100644
---- a/drivers/mtd/nand/onenand/generic.c
-+++ b/drivers/mtd/nand/onenand/generic.c
-@@ -53,7 +53,12 @@ static int generic_onenand_probe(struct platform_device *pdev)
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
+index 77384c49fb8d..2fc27931d3b5 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
+@@ -1057,6 +1057,7 @@ __dw_mipi_dsi_probe(struct platform_device *pdev,
+ 	ret = mipi_dsi_host_register(&dsi->dsi_host);
+ 	if (ret) {
+ 		dev_err(dev, "Failed to register MIPI host: %d\n", ret);
++		pm_runtime_disable(dev);
+ 		dw_mipi_dsi_debugfs_remove(dsi);
+ 		return ERR_PTR(ret);
  	}
- 
- 	info->onenand.mmcontrol = pdata ? pdata->mmcontrol : NULL;
--	info->onenand.irq = platform_get_irq(pdev, 0);
-+
-+	err = platform_get_irq(pdev, 0);
-+	if (err < 0)
-+		goto out_iounmap;
-+
-+	info->onenand.irq = err;
- 
- 	info->mtd.dev.parent = &pdev->dev;
- 	info->mtd.priv = &info->onenand;
 -- 
 2.34.1
 
