@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC027C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F35ABC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345790AbiDNPAw (ORCPT
+        id S1344293AbiDNPBH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
+        Thu, 14 Apr 2022 11:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346217AbiDNN4F (ORCPT
+        with ESMTP id S1346236AbiDNN4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:56:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9565A098;
-        Thu, 14 Apr 2022 06:46:04 -0700 (PDT)
+        Thu, 14 Apr 2022 09:56:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC35B0A74;
+        Thu, 14 Apr 2022 06:46:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B357B828E6;
-        Thu, 14 Apr 2022 13:46:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9548EC385A1;
-        Thu, 14 Apr 2022 13:46:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93C9561D29;
+        Thu, 14 Apr 2022 13:46:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1737C385A9;
+        Thu, 14 Apr 2022 13:46:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943962;
-        bh=kaBfcwaEPG0w9QfQXaAFjfZgMRuMBTfVid4mHf1EyPY=;
+        s=korg; t=1649943973;
+        bh=AxMd18gbofm6w4krU29ftLJswZhLQ32cx6ujG2KM8Xk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=blR3CNzJC63HQzp/ZWy8zJENaJ51f5/nYKuPp+j6lQu4Ut0mrFaUkWMD5OhRKsmx7
-         vBwxwJFe7eOcufu/t5UBKUXBBAPN3HhBQH4lvYrLVDwzugEFBdqxBSs2kbzeuPW/zD
-         6mLcRZtlDJuoxfp6oLDzv27yneV+dZ/Ar6QfMS6E=
+        b=ufhybB4YMd0Yx9UjGBgS56bgb3bkCiFaWD0L5FMUcqVgthel10YYKslNcfozFO7cj
+         CNyeHf2SBxQEbjPQMxG9MSZzZXTlubO3wJp5o1cAheoYY4zw3lnwsF83I5XQrRqO/Y
+         Af0Z+icB/3WL4kIQwsU7jTmtLGYO1E2e+dgYh3pw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guangbin Huang <huangguangbin2@huawei.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.4 343/475] net: hns3: fix software vlan talbe of vlan 0 inconsistent with hardware
-Date:   Thu, 14 Apr 2022 15:12:08 +0200
-Message-Id: <20220414110904.681017496@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.4 346/475] pinctrl: nuvoton: npcm7xx: Use %zu printk format for ARRAY_SIZE()
+Date:   Thu, 14 Apr 2022 15:12:11 +0200
+Message-Id: <20220414110904.764512810@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,38 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guangbin Huang <huangguangbin2@huawei.com>
+From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
 
-commit 7ed258f12ec5ce855f15cdfb5710361dc82fe899 upstream.
+commit 9d0f18bca3b557ae5d2128661ac06d33b3f45c0a upstream.
 
-When user delete vlan 0, as driver will not delete vlan 0 for hardware in
-function hclge_set_vlan_filter_hw(), so vlan 0 in software vlan talbe should
-not be deleted.
+When compile-testing on 64-bit architectures, GCC complains about the
+mismatch of types between the %d format specifier and value returned by
+ARRAY_LENGTH(). Use %zu, which is correct everywhere.
 
-Fixes: fe4144d47eef ("net: hns3: sync VLAN filter entries when kill VLAN ID failed")
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 3b588e43ee5c7 ("pinctrl: nuvoton: add NPCM7xx pinctrl and GPIO driver")
+Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220205155332.1308899-2-j.neuschaefer@gmx.net
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -8344,11 +8344,11 @@ int hclge_set_vlan_filter(struct hnae3_h
- 	}
+--- a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
++++ b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+@@ -1560,7 +1560,7 @@ static int npcm7xx_get_groups_count(stru
+ {
+ 	struct npcm7xx_pinctrl *npcm = pinctrl_dev_get_drvdata(pctldev);
  
- 	if (!ret) {
--		if (is_kill)
--			hclge_rm_vport_vlan_table(vport, vlan_id, false);
--		else
-+		if (!is_kill)
- 			hclge_add_vport_vlan_table(vport, vlan_id,
- 						   writen_to_tbl);
-+		else if (is_kill && vlan_id != 0)
-+			hclge_rm_vport_vlan_table(vport, vlan_id, false);
- 	} else if (is_kill) {
- 		/* when remove hw vlan filter failed, record the vlan id,
- 		 * and try to remove it from hw later, to be consistence
+-	dev_dbg(npcm->dev, "group size: %d\n", ARRAY_SIZE(npcm7xx_groups));
++	dev_dbg(npcm->dev, "group size: %zu\n", ARRAY_SIZE(npcm7xx_groups));
+ 	return ARRAY_SIZE(npcm7xx_groups);
+ }
+ 
 
 
