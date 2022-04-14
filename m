@@ -2,94 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A772C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:57:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A21C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:57:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345143AbiDNP6v (ORCPT
+        id S1355785AbiDNP7U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:58:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59208 "EHLO
+        Thu, 14 Apr 2022 11:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358382AbiDNPll (ORCPT
+        with ESMTP id S1354665AbiDNPlG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:41:41 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D6AECDA4
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:24:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=a7zF3jN+ZuZUeKxEZxyh6BUyYjHKt2ke+Gaa4KDb6Ss=; b=JI7UTDpPYhqXfQKCuMEmYAowpM
-        KIhHEIS1dFUdiL/5HF6Ars5OntlUd2gqm+jpr8egpvGlWNYIvboqCNJV5AEHMDPviYf2LtankgtO1
-        aN63NIxsiNrqgH/yec/1SBUhuUGXoD2DhaigfktalJ0QviP9lT4XfmUbyBSFrbRBu46E+wkhKg29P
-        S5TTuXj3ELigIDn7xfH0U6QP8z8oaktVYWwuKrTIFGTJi0OdSidmRIzUj2ESbknagmLuFJ3Tcl4l5
-        JR/BZZsqY69LwJApHxjCus6gVVR/R4DXR1bg70z3O9MRZOrdswtpHtL5/LTTA5zD+Tu82Nrb7YNY7
-        +kx8Q6GA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nf1Jd-00FEUn-VO; Thu, 14 Apr 2022 15:23:26 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 80B2C3002DE;
-        Thu, 14 Apr 2022 17:23:25 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 434D631B56D1F; Thu, 14 Apr 2022 17:23:25 +0200 (CEST)
-Date:   Thu, 14 Apr 2022 17:23:25 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Christophe de Dinechin <dinechin@redhat.com>
-Cc:     trivial@kernel.org, Ben Segall <bsegall@google.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Mel Gorman <mgorman@suse.de>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Juri Lelli <juri.lelli@redhat.com>
-Subject: Re: [PATCH 2/3] nodemask.h: Fix compilation error with GCC12
-Message-ID: <Ylg8baQjQTkrnnD9@hirez.programming.kicks-ass.net>
-References: <20220414150855.2407137-1-dinechin@redhat.com>
- <20220414150855.2407137-3-dinechin@redhat.com>
+        Thu, 14 Apr 2022 11:41:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20CC7DFDED
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:21:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649949714;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0xrO22xcEliQqdlgNP22dh9mENDXbmI2r51Wf1LJDew=;
+        b=UJxDmPaTkc3OgZ8UtllnzpiXqdoCNrXUmQ2Pd1hDb9xcGAPSD0ZeOLCE6Nk6fLxwRdVSZ0
+        A4ka1HguV+5X5h4+R1+lI6TVi9GeZwWoykkKTDhDggjNqYpj1QOwJuozYBzXD325CE17OR
+        /ht3FSFwIGrzjrl/B2MB3rLUVeXCcqg=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-662-Vd3usRC8N7KogbdN2xiTfw-1; Thu, 14 Apr 2022 11:21:52 -0400
+X-MC-Unique: Vd3usRC8N7KogbdN2xiTfw-1
+Received: by mail-qk1-f197.google.com with SMTP id q5-20020a05620a0d8500b004738c1b48beso3479810qkl.7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:21:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0xrO22xcEliQqdlgNP22dh9mENDXbmI2r51Wf1LJDew=;
+        b=v93JUX6zdH/ZKyucoBEV9uXJrkinwVjISSkIoTpefuV1j7CKY2wg/2EBd9+EhnbuT0
+         sKnzGsp9kzp3/wPT7UZpuFRSrAWHeG60rrLXyaiQtTiBp1Z9M7NKXv6sssCxO5Q68fa5
+         9xHiTjIVfs0dg0gSeAQ5qbMeRUNKDLFW+SgSrBlGgudvIMJcFsKe8Oda+W5mttqm6tC2
+         KjXNqoX8fAJZN/HHpDx9RdRJrdaRCJkPMOZImY7mWUHkXNL5HjIyjOQP9NohcRekZhpw
+         T4WnYQW3FllWDXE462cHGV2LS4M7soQhdSgoRdI8x4ID2r/810kUivikvkZsTVpKFUW+
+         n4Rw==
+X-Gm-Message-State: AOAM532qF1ABULqUKJVxcr0ByTrLovVncQRpgTMsUmesPHvQU3XONQda
+        2f82oiDkdw+8tscAFy1f6fbqzvMencZDTRXMCZzhu2cdnXNi0puEtF13jDXuAy44rQkXtjHCvWs
+        lp3OwWJani5GGbwnnOpmVvKzh
+X-Received: by 2002:ae9:f016:0:b0:69c:37ea:9b38 with SMTP id l22-20020ae9f016000000b0069c37ea9b38mr2217864qkg.335.1649949712350;
+        Thu, 14 Apr 2022 08:21:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJweSzbcy/dIffGHQ9QM27ZZD4L1/93JLoRe8P0dQu/q22EbhXISKZbPh8s20Tys7Q2guqR4eA==
+X-Received: by 2002:ae9:f016:0:b0:69c:37ea:9b38 with SMTP id l22-20020ae9f016000000b0069c37ea9b38mr2217849qkg.335.1649949712127;
+        Thu, 14 Apr 2022 08:21:52 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::45])
+        by smtp.gmail.com with ESMTPSA id s12-20020a05622a018c00b002e1cd88645dsm1363000qtw.74.2022.04.14.08.21.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 08:21:51 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 08:21:48 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH 02/18] objtool: Support data symbol printing
+Message-ID: <20220414152148.cwdefx744kymqcut@treble>
+References: <cover.1649891421.git.jpoimboe@redhat.com>
+ <097057f88605aa67b0e3ec573fcf394ae7ac4d6f.1649891421.git.jpoimboe@redhat.com>
+ <YlfHy011VP2oPFjV@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220414150855.2407137-3-dinechin@redhat.com>
+In-Reply-To: <YlfHy011VP2oPFjV@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 05:08:54PM +0200, Christophe de Dinechin wrote:
+On Thu, Apr 14, 2022 at 09:05:47AM +0200, Peter Zijlstra wrote:
+> On Wed, Apr 13, 2022 at 04:19:37PM -0700, Josh Poimboeuf wrote:
+> 
+> > @@ -34,8 +37,8 @@ static inline char *offstr(struct section *sec, unsigned long offset)
+> >  
+> >  	str = malloc(strlen(name) + 20);
+> >  
+> > -	if (func)
+> > -		sprintf(str, "%s()+0x%lx", name, name_off);
+> > +	if (sym)
+> > +		sprintf(str, "%s%s+0x%lx", name, is_text ? "()" : "", name_off);
+> >  	else
+> >  		sprintf(str, "%s+0x%lx", name, name_off);
+> 
+> So I like the patch, except that "()" thing is something where we differ
+> from the kernel's %ps format and I've cursed it a number of times
+> because I then have to manually edit (iow remove) things when pasting it
+> in various scripts etc..
 
-> diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
-> index 567c3ddba2c4..c6199dbe2591 100644
-> --- a/include/linux/nodemask.h
-> +++ b/include/linux/nodemask.h
-> @@ -375,14 +375,13 @@ static inline void __nodes_fold(nodemask_t *dstp, const nodemask_t *origp,
->  }
->  
->  #if MAX_NUMNODES > 1
-> -#define for_each_node_mask(node, mask)			\
-> -	for ((node) = first_node(mask);			\
-> -		(node) < MAX_NUMNODES;			\
-> -		(node) = next_node((node), (mask)))
-> +#define for_each_node_mask(node, mask)				    \
-> +	for ((node) = first_node(mask);				    \
-> +	     (node >= 0) && (node) < MAX_NUMNODES;		    \
-> +	     (node) = next_node((node), (mask)))
->  #else /* MAX_NUMNODES == 1 */
-> -#define for_each_node_mask(node, mask)			\
-> -	if (!nodes_empty(mask))				\
-> -		for ((node) = 0; (node) < 1; (node)++)
-> +#define for_each_node_mask(node, mask)                                  \
-> +	for ((node) = 0; (node) < 1 && !nodes_empty(mask); (node)++)
->  #endif /* MAX_NUMNODES */
+Oh, hm, that's true.  I can remove them if you prefer.
 
-Again, less readable code :/ And why?
+> That said, it totally makes sense to differentiate between a text and
+> data symbol this way :/
+
+Yes, but if we're keeping the "Add sec+offset to warnings" patch then
+that distinction is already (kind of) being made by showing the data
+section name.  And the data symbol warnings should be rare.
+
+-- 
+Josh
+
