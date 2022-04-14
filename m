@@ -2,136 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD7BC47080
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:57:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C017C35296
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345765AbiDNNyO (ORCPT
+        id S1345815AbiDNNyT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:54:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
+        Thu, 14 Apr 2022 09:54:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344150AbiDNNal (ORCPT
+        with ESMTP id S1344151AbiDNNal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:30:41 -0400
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BADFE6;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB5BB22F;
         Thu, 14 Apr 2022 06:28:16 -0700 (PDT)
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-ddfa38f1c1so5209497fac.11;
-        Thu, 14 Apr 2022 06:28:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=1uOhWs8cm16131L6dfi8BY/Hr1kwqioEhMv1kPjh21A=;
-        b=n5HIYEo0RplCPe63s7fiDIbFnbQl/vT4PiFq0QMHxuT4cCGZg6fZoCveh01zMR2pYb
-         qvCUC+1b361Vjhzr09bJmwlLJbl3wbP3WnXUIm/7fme8x6Av3I0UmX+DskRV0JAvxEXm
-         hPpfm9bH486vFn0ITdpKeVKLqXDLz6L7KUAkl6TrvDxPaiXJNKDGyROje6bTwzIziknT
-         WMxlSeXeKRtKPlh/FRqhdz4JePFYl+o52e+is6JLKzJPU7dHcHTqiZ+4eMwE7+9k4Hhu
-         HIB7I+ChBKux+ZBx6+XQh3C0HWO3YhYCNHDsnGuNc6OQWUFjT2SSP9hHgt9IzKpbESFS
-         79vw==
-X-Gm-Message-State: AOAM531VBeulcAsz02HQ08hu4/4UqmvD4Rtfio0b/tz4Y/ISHI75VVDE
-        ofVO2GxNYL/nzx+qauan0g==
-X-Google-Smtp-Source: ABdhPJyH1P7seZTuHtknt0P9RpLaIUL8KvuTzAmz12RLMFPKbN6I+QpfZtLgjNxlPTOvprxh63GYuQ==
-X-Received: by 2002:a05:6870:d0ce:b0:de:79e2:7ec7 with SMTP id k14-20020a056870d0ce00b000de79e27ec7mr1224269oaa.245.1649942895544;
-        Thu, 14 Apr 2022 06:28:15 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id o8-20020a05680803c800b00321034c99a6sm8965oie.3.2022.04.14.06.28.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 06:28:15 -0700 (PDT)
-Received: (nullmailer pid 1863786 invoked by uid 1000);
-        Thu, 14 Apr 2022 13:28:14 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     devicetree@vger.kernel.org, robh+dt@kernel.org,
-        herbert@gondor.apana.org.au, krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        heiko@sntech.de, linux-rockchip@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220413190713.1427956-25-clabbe@baylibre.com>
-References: <20220413190713.1427956-1-clabbe@baylibre.com> <20220413190713.1427956-25-clabbe@baylibre.com>
-Subject: Re: [PATCH v5 24/33] dt-bindings: crypto: convert rockchip-crypto to YAML
-Date:   Thu, 14 Apr 2022 08:28:14 -0500
-Message-Id: <1649942894.398402.1863785.nullmailer@robh.at.kernel.org>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 665DB619DA;
+        Thu, 14 Apr 2022 13:28:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76861C385A1;
+        Thu, 14 Apr 2022 13:28:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942895;
+        bh=ziZhs4w4fOyVTrMqEsZJFqB0xAp5wYEYXJ6zPtEua6Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=q9I51YNynTrykyOamzb6nuEajHc/Hoy4qgjyd9tI9IZfUcZjd+8xmffa+ySweQ8NI
+         ZMdDeFXi8N0zOh4am9xka85a8H4SAk4NZxN5vDpuSk0MuO+KtpKkTlXLRSbklRkDz7
+         MRm7+m6cDy9Gfban/Y01LerFoH3pV39Lzbx0Kumw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Willem de Bruijn <willemb@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 300/338] net: add missing SOF_TIMESTAMPING_OPT_ID support
+Date:   Thu, 14 Apr 2022 15:13:23 +0200
+Message-Id: <20220414110847.423397855@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Apr 2022 19:07:04 +0000, Corentin Labbe wrote:
-> Convert rockchip-crypto to YAML.
-> 
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> ---
->  .../crypto/rockchip,rk3288-crypto.yaml        | 66 +++++++++++++++++++
->  .../bindings/crypto/rockchip-crypto.txt       | 28 --------
->  2 files changed, 66 insertions(+), 28 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
->  delete mode 100644 Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
-> 
+From: Willem de Bruijn <willemb@google.com>
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+[ Upstream commit 8f932f762e7928d250e21006b00ff9b7718b0a64 ]
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml:30:7: [error] duplication of key "const" in mapping (key-duplicates)
-./Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml:31:7: [error] duplication of key "const" in mapping (key-duplicates)
-./Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml:32:7: [error] duplication of key "const" in mapping (key-duplicates)
+SOF_TIMESTAMPING_OPT_ID is supported on TCP, UDP and RAW sockets.
+But it was missing on RAW with IPPROTO_IP, PF_PACKET and CAN.
 
-dtschema/dtc warnings/errors:
-make[1]: *** Deleting file 'Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.example.dts'
-Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml: found duplicate key "const" with value "hclk" (original value: "aclk")
-make[1]: *** [Documentation/devicetree/bindings/Makefile:26: Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.example.dts] Error 1
-make[1]: *** Waiting for unfinished jobs....
-Traceback (most recent call last):
-  File "/usr/local/bin/dt-doc-validate", line 25, in check_doc
-    testtree = dtschema.load(filename, line_number=line_number)
-  File "/usr/local/lib/python3.8/dist-packages/dtschema/lib.py", line 912, in load
-    return yaml.load(f.read())
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/main.py", line 434, in load
-    return constructor.get_single_data()
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/constructor.py", line 121, in get_single_data
-    return self.construct_document(node)
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/constructor.py", line 131, in construct_document
-    for _dummy in generator:
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/constructor.py", line 674, in construct_yaml_map
-    value = self.construct_mapping(node)
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/constructor.py", line 445, in construct_mapping
-    return BaseConstructor.construct_mapping(self, node, deep=deep)
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/constructor.py", line 263, in construct_mapping
-    if self.check_mapping_key(node, key_node, mapping, key, value):
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/constructor.py", line 294, in check_mapping_key
-    raise DuplicateKeyError(*args)
-ruamel.yaml.constructor.DuplicateKeyError: while constructing a mapping
-  in "<unicode string>", line 29, column 7
-found duplicate key "const" with value "hclk" (original value: "aclk")
-  in "<unicode string>", line 30, column 7
+Add skb_setup_tx_timestamp that configures both tx_flags and tskey
+for these paths that do not need corking or use bytestream keys.
 
-To suppress this check see:
-    http://yaml.readthedocs.io/en/latest/api.html#duplicate-keys
+Fixes: 09c2d251b707 ("net-timestamp: add key to disambiguate concurrent datagrams")
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ include/net/sock.h     | 25 +++++++++++++++++++++----
+ net/can/raw.c          |  2 +-
+ net/ipv4/raw.c         |  2 +-
+ net/ipv6/raw.c         |  2 +-
+ net/packet/af_packet.c |  6 +++---
+ 5 files changed, 27 insertions(+), 10 deletions(-)
+
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 2bf8dcf863f2..7d3a4c2eea95 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2400,22 +2400,39 @@ static inline void sock_recv_ts_and_drops(struct msghdr *msg, struct sock *sk,
+ void __sock_tx_timestamp(__u16 tsflags, __u8 *tx_flags);
+ 
+ /**
+- * sock_tx_timestamp - checks whether the outgoing packet is to be time stamped
++ * _sock_tx_timestamp - checks whether the outgoing packet is to be time stamped
+  * @sk:		socket sending this packet
+  * @tsflags:	timestamping flags to use
+  * @tx_flags:	completed with instructions for time stamping
++ * @tskey:      filled in with next sk_tskey (not for TCP, which uses seqno)
+  *
+  * Note: callers should take care of initial ``*tx_flags`` value (usually 0)
+  */
+-static inline void sock_tx_timestamp(const struct sock *sk, __u16 tsflags,
+-				     __u8 *tx_flags)
++static inline void _sock_tx_timestamp(struct sock *sk, __u16 tsflags,
++				      __u8 *tx_flags, __u32 *tskey)
+ {
+-	if (unlikely(tsflags))
++	if (unlikely(tsflags)) {
+ 		__sock_tx_timestamp(tsflags, tx_flags);
++		if (tsflags & SOF_TIMESTAMPING_OPT_ID && tskey &&
++		    tsflags & SOF_TIMESTAMPING_TX_RECORD_MASK)
++			*tskey = sk->sk_tskey++;
++	}
+ 	if (unlikely(sock_flag(sk, SOCK_WIFI_STATUS)))
+ 		*tx_flags |= SKBTX_WIFI_STATUS;
+ }
+ 
++static inline void sock_tx_timestamp(struct sock *sk, __u16 tsflags,
++				     __u8 *tx_flags)
++{
++	_sock_tx_timestamp(sk, tsflags, tx_flags, NULL);
++}
++
++static inline void skb_setup_tx_timestamp(struct sk_buff *skb, __u16 tsflags)
++{
++	_sock_tx_timestamp(skb->sk, tsflags, &skb_shinfo(skb)->tx_flags,
++			   &skb_shinfo(skb)->tskey);
++}
++
+ /**
+  * sk_eat_skb - Release a skb if it is no longer needed
+  * @sk: socket to eat this skb from
+diff --git a/net/can/raw.c b/net/can/raw.c
+index d0fb5a57c66d..2a6db8752b61 100644
+--- a/net/can/raw.c
++++ b/net/can/raw.c
+@@ -814,7 +814,7 @@ static int raw_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ 	if (err < 0)
+ 		goto free_skb;
+ 
+-	sock_tx_timestamp(sk, sk->sk_tsflags, &skb_shinfo(skb)->tx_flags);
++	skb_setup_tx_timestamp(skb, sk->sk_tsflags);
+ 
+ 	skb->dev = dev;
+ 	skb->sk  = sk;
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index 8cae691c3c9f..654f586fc0d7 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -391,7 +391,7 @@ static int raw_send_hdrinc(struct sock *sk, struct flowi4 *fl4,
+ 
+ 	skb->ip_summed = CHECKSUM_NONE;
+ 
+-	sock_tx_timestamp(sk, sockc->tsflags, &skb_shinfo(skb)->tx_flags);
++	skb_setup_tx_timestamp(skb, sockc->tsflags);
+ 
+ 	if (flags & MSG_CONFIRM)
+ 		skb_set_dst_pending_confirm(skb, 1);
+diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
+index 98c8f98a7660..ad7bd40b6d53 100644
+--- a/net/ipv6/raw.c
++++ b/net/ipv6/raw.c
+@@ -660,7 +660,7 @@ static int rawv6_send_hdrinc(struct sock *sk, struct msghdr *msg, int length,
+ 
+ 	skb->ip_summed = CHECKSUM_NONE;
+ 
+-	sock_tx_timestamp(sk, sockc->tsflags, &skb_shinfo(skb)->tx_flags);
++	skb_setup_tx_timestamp(skb, sockc->tsflags);
+ 
+ 	if (flags & MSG_CONFIRM)
+ 		skb_set_dst_pending_confirm(skb, 1);
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index d65051959f85..b951f411dded 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -1978,7 +1978,7 @@ static int packet_sendmsg_spkt(struct socket *sock, struct msghdr *msg,
+ 	skb->mark = sk->sk_mark;
+ 	skb->tstamp = sockc.transmit_time;
+ 
+-	sock_tx_timestamp(sk, sockc.tsflags, &skb_shinfo(skb)->tx_flags);
++	skb_setup_tx_timestamp(skb, sockc.tsflags);
+ 
+ 	if (unlikely(extra_len == 4))
+ 		skb->no_fcs = 1;
+@@ -2501,7 +2501,7 @@ static int tpacket_fill_skb(struct packet_sock *po, struct sk_buff *skb,
+ 	skb->priority = po->sk.sk_priority;
+ 	skb->mark = po->sk.sk_mark;
+ 	skb->tstamp = sockc->transmit_time;
+-	sock_tx_timestamp(&po->sk, sockc->tsflags, &skb_shinfo(skb)->tx_flags);
++	skb_setup_tx_timestamp(skb, sockc->tsflags);
+ 	skb_zcopy_set_nouarg(skb, ph.raw);
+ 
+ 	skb_reserve(skb, hlen);
+@@ -2965,7 +2965,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
+ 		goto out_free;
+ 	}
+ 
+-	sock_tx_timestamp(sk, sockc.tsflags, &skb_shinfo(skb)->tx_flags);
++	skb_setup_tx_timestamp(skb, sockc.tsflags);
+ 
+ 	if (!vnet_hdr.gso_type && (len > dev->mtu + reserve + extra_len) &&
+ 	    !packet_extra_vlan_len_allowed(dev, skb)) {
+-- 
+2.35.1
 
 
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/usr/local/bin/dt-doc-validate", line 74, in <module>
-    ret = check_doc(f)
-  File "/usr/local/bin/dt-doc-validate", line 30, in check_doc
-    print(filename + ":", exc.path[-1], exc.message, file=sys.stderr)
-AttributeError: 'DuplicateKeyError' object has no attribute 'path'
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml: ignoring, error parsing file
-make: *** [Makefile:1401: dt_binding_check] Error 2
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
 
