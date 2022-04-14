@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B44FAC38A02
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2148C47082
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243641AbiDNOzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43458 "EHLO
+        id S1350304AbiDNOxu (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344744AbiDNNwf (ORCPT
+        with ESMTP id S1344839AbiDNNon (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:52:35 -0400
+        Thu, 14 Apr 2022 09:44:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541F33A5D1;
-        Thu, 14 Apr 2022 06:44:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD1D39155;
+        Thu, 14 Apr 2022 06:40:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AB9A61D7E;
-        Thu, 14 Apr 2022 13:44:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 452CDC385A5;
-        Thu, 14 Apr 2022 13:44:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88FD461D29;
+        Thu, 14 Apr 2022 13:40:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 910A8C385AA;
+        Thu, 14 Apr 2022 13:40:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943878;
-        bh=qyhaD39uXicANnbXgpb0hYkvUYQGwsqBszT6yjb4oaQ=;
+        s=korg; t=1649943621;
+        bh=Seio0Fa7ANT+2BT+GVc9z76NuvMxiiSnAWYk9Nc5onw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S37l/i9VCXV/oU3WfLTisbnuAOqi6SAG/N6gEYX6U1QQ5yZGx2nehReps9MUHTJk+
-         ex2EEKaugXytFArJemoEq77kqG+NJBTepf9URa9MRFMZvS6sqMlkdm01EIGgBQ1e/U
-         66qy6VS0l6gEedrfb/ND2aRZV6bI+s/M0iAU92Bw=
+        b=Zj7Zng0waJtmVWYjx5BPtbsd8XoXIeCeCrzJyvHpFSzk7H2/HYjtCw+BYNoYMTsVB
+         P4vZb2ES0p8uAQ9q8ZNLLaxrfhclyX2yO9FH2YzribMkjRGz6Egmcq7OccwHEdcZ9J
+         370pAixGhNxi15qPxdyU7MAHxX+Og8WFHFS8wfMg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Bikash Hazarika <bhazarika@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 315/475] scsi: qla2xxx: Fix wrong FDMI data for 64G adapter
-Date:   Thu, 14 Apr 2022 15:11:40 +0200
-Message-Id: <20220414110903.903666629@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 181/475] iwlwifi: mvm: Fix an error code in iwl_mvm_up()
+Date:   Thu, 14 Apr 2022 15:09:26 +0200
+Message-Id: <20220414110900.199435299@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,40 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bikash Hazarika <bhazarika@marvell.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 1cfbbacbee2d6ea3816386a483e3c7a96e5bd657 upstream.
+[ Upstream commit 583d18336abdfb1b355270289ff8f6a2608ba905 ]
 
-Corrected transmission speed mask values for FC.
+Return -ENODEV instead of success on this error path.
 
-Supported Speed: 16 32 20 Gb/s ===> Should be 64 instead of 20
-Supported Speed: 16G 32G 48G   ===> Should be 64G instead of 48G
-
-Link: https://lore.kernel.org/r/20220110050218.3958-9-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Bikash Hazarika <bhazarika@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: dd36a507c806 ("iwlwifi: mvm: look for the first supported channel when add/remove phy ctxt")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/20210816183930.GA2068@kili
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_def.h |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/fw.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/scsi/qla2xxx/qla_def.h
-+++ b/drivers/scsi/qla2xxx/qla_def.h
-@@ -2725,7 +2725,11 @@ struct ct_fdmiv2_hba_attributes {
- #define FDMI_PORT_SPEED_8GB		0x10
- #define FDMI_PORT_SPEED_16GB		0x20
- #define FDMI_PORT_SPEED_32GB		0x40
--#define FDMI_PORT_SPEED_64GB		0x80
-+#define FDMI_PORT_SPEED_20GB		0x80
-+#define FDMI_PORT_SPEED_40GB		0x100
-+#define FDMI_PORT_SPEED_128GB		0x200
-+#define FDMI_PORT_SPEED_64GB		0x400
-+#define FDMI_PORT_SPEED_256GB		0x800
- #define FDMI_PORT_SPEED_UNKNOWN		0x8000
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+index 7272d8522a9e..c5b08a68f6fa 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+@@ -1417,8 +1417,10 @@ int iwl_mvm_up(struct iwl_mvm *mvm)
+ 	while (!sband && i < NUM_NL80211_BANDS)
+ 		sband = mvm->hw->wiphy->bands[i++];
  
- #define FC_CLASS_2	0x04
+-	if (WARN_ON_ONCE(!sband))
++	if (WARN_ON_ONCE(!sband)) {
++		ret = -ENODEV;
+ 		goto error;
++	}
+ 
+ 	chan = &sband->channels[0];
+ 
+-- 
+2.34.1
+
 
 
