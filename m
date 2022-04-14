@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B824C35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F86C4167D
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:20:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349072AbiDNOSt (ORCPT
+        id S1349042AbiDNOS1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:18:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35350 "EHLO
+        Thu, 14 Apr 2022 10:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245645AbiDNNir (ORCPT
+        with ESMTP id S245597AbiDNNio (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD6DA6E0E;
-        Thu, 14 Apr 2022 06:33:29 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750C2A5EA9;
+        Thu, 14 Apr 2022 06:33:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46E636122A;
-        Thu, 14 Apr 2022 13:33:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A396C385A5;
-        Thu, 14 Apr 2022 13:33:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1236661B9C;
+        Thu, 14 Apr 2022 13:33:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D8A1C385A5;
+        Thu, 14 Apr 2022 13:33:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943208;
-        bh=8T8mYvRA69xUfcxoRIPC3Rww2xcYBD/S9gI1S22QyXQ=;
+        s=korg; t=1649943189;
+        bh=YSvU42w2avZnraRlhXJUDZS22loQMohsW4beo4KfuAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iJuguh94sJU5RGm8JO8FbA9O2XdHKTUbMK1CrUQLFJryhbRc0CCredWtkPdzt7k5X
-         BtV+/7XB9mW75GGXvkSVeP40EdEWnSA7WA6U/BTG5P6HpyaKJLnmYZQF/TwsCiI8a9
-         LpEPNxt8JU7mVFB+nviR6xCynNLf+vggjqTdI3rY=
+        b=JrctAviyF8ey3OG2ZAXPBAY3rcXWP7RN34+O9jhqw/ZPTZ8ZT4tb+PPKlx0pqvWv3
+         gAsOo0r6trNO8TEZ4kD0xp36R5HYcNMomGnBb5iFUi2kZjpFN52KsQY8AQaj29Zbqg
+         fwseC7JITd659cnkSMZMdcfHgzm4dyFU/e7rF3Dk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
-        Stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [PATCH 5.4 073/475] carl9170: fix missing bit-wise or operator for tx_params
-Date:   Thu, 14 Apr 2022 15:07:38 +0200
-Message-Id: <20220414110857.198589452@linuxfoundation.org>
+        stable@vger.kernel.org, Jani Nikula <jani.nikula@intel.com>,
+        Shawn C Lee <shawn.c.lee@intel.com>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        Cooper Chiou <cooper.chiou@intel.com>
+Subject: [PATCH 5.4 066/475] drm/edid: check basic audio support on CEA extension block
+Date:   Thu, 14 Apr 2022 15:07:31 +0200
+Message-Id: <20220414110857.000850970@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,39 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.i.king@gmail.com>
+From: Cooper Chiou <cooper.chiou@intel.com>
 
-commit 02a95374b5eebdbd3b6413fd7ddec151d2ea75a1 upstream.
+commit 5662abf6e21338be6d085d6375d3732ac6147fd2 upstream.
 
-Currently tx_params is being re-assigned with a new value and the
-previous setting IEEE80211_HT_MCS_TX_RX_DIFF is being overwritten.
-The assignment operator is incorrect, the original intent was to
-bit-wise or the value in. Fix this by replacing the = operator
-with |= instead.
+Tag code stored in bit7:5 for CTA block byte[3] is not the same as
+CEA extension block definition. Only check CEA block has
+basic audio support.
 
-Kudos to Christian Lamparter for suggesting the correct fix.
+v3: update commit message.
 
-Fixes: fe8ee9ad80b2 ("carl9170: mac80211 glue and command interface")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-Cc: <Stable@vger.kernel.org>
-Acked-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220125004406.344422-1-colin.i.king@gmail.com
+Cc: stable@vger.kernel.org
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Shawn C Lee <shawn.c.lee@intel.com>
+Cc: intel-gfx <intel-gfx@lists.freedesktop.org>
+Signed-off-by: Cooper Chiou <cooper.chiou@intel.com>
+Signed-off-by: Lee Shawn C <shawn.c.lee@intel.com>
+Fixes: e28ad544f462 ("drm/edid: parse CEA blocks embedded in DisplayID")
+Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+Signed-off-by: Jani Nikula <jani.nikula@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220324061218.32739-1-shawn.c.lee@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/carl9170/main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/drm_edid.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/wireless/ath/carl9170/main.c
-+++ b/drivers/net/wireless/ath/carl9170/main.c
-@@ -1917,7 +1917,7 @@ static int carl9170_parse_eeprom(struct
- 		WARN_ON(!(tx_streams >= 1 && tx_streams <=
- 			IEEE80211_HT_MCS_TX_MAX_STREAMS));
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -4380,7 +4380,8 @@ bool drm_detect_monitor_audio(struct edi
+ 	if (!edid_ext)
+ 		goto end;
  
--		tx_params = (tx_streams - 1) <<
-+		tx_params |= (tx_streams - 1) <<
- 			    IEEE80211_HT_MCS_TX_MAX_STREAMS_SHIFT;
+-	has_audio = ((edid_ext[3] & EDID_BASIC_AUDIO) != 0);
++	has_audio = (edid_ext[0] == CEA_EXT &&
++		    (edid_ext[3] & EDID_BASIC_AUDIO) != 0);
  
- 		carl9170_band_2GHz.ht_cap.mcs.tx_params |= tx_params;
+ 	if (has_audio) {
+ 		DRM_DEBUG_KMS("Monitor has basic audio support\n");
 
 
