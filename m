@@ -2,161 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ABC7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24525C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245710AbiDNR1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33702 "EHLO
+        id S235021AbiDNR2R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 13:28:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245627AbiDNR1G (ORCPT
+        with ESMTP id S231698AbiDNR2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:27:06 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A5139D4C6
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 10:24:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649957080; x=1681493080;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=0zLW2H67Vu3q710WNvk8HEeL0XmQc0GrU44QmfVgE2g=;
-  b=NEkABJcBC3zwjxy+I18n4bPPp52cupjgYnzehln2HK11r4uTh9j7umeG
-   KfitzxZTRgzWvREheR2HB1qoWXI1HjpQJbqK/3zKCbQkyfuL1kUPAl3P9
-   BnuEJP130uLO3rEREBKHu8MHRJ1r3UKJg68KHI4mafoxlI8wCmJsP2WiY
-   Sa4PancRyMMFSlBLrWR36AEvopMra8VjmqZtULztgzFRbUSrmHC7l4pdo
-   7rJUlinqk1yAUDhNHZpeo2njwh94YpQQLfqWrnIOjoEuug6ufIYDvLiS1
-   Irx/JfeEJ0J8t6lF3QNs5O/mUXMwiBt/eG+mkVi1bNSDyUXT0YLSE3++6
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="262429728"
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="262429728"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 10:24:39 -0700
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="612409801"
-Received: from msahoo-mobl1.amr.corp.intel.com (HELO [10.212.62.78]) ([10.212.62.78])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 10:24:38 -0700
-Message-ID: <a93e6d3f-e8b9-2fab-1139-a8ba3dc4820b@intel.com>
-Date:   Thu, 14 Apr 2022 10:24:45 -0700
+        Thu, 14 Apr 2022 13:28:15 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA7FC90E2;
+        Thu, 14 Apr 2022 10:25:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649957150; x=1681493150;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=tu03tytOL47ULrreLW7ygMVuHjx60bNs3bbQnN2icPE=;
+  b=rNeH4/pSaZAZ8oSUKFtzFFfTwBrXXdYsZqFLoFEsj2bCkMiXog9QowMl
+   DbBdTi8TuDXCSuU0DHX+AzIWBVqpfoJVcY4Yn7b6dnQjwb7tPDOhRWSaE
+   mX/9jKmv/a/Hfl9yw3kvdVYkuk4v6uJ2QFLUuelIKuZ2xyCysLMeBxL9J
+   4=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 14 Apr 2022 10:25:49 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 10:25:48 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 14 Apr 2022 10:25:48 -0700
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 14 Apr 2022 10:25:47 -0700
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
+        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
+        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
+        <bjorn.andersson@linaro.org>
+CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_khsieh@quicinc.com>, <quic_sbillaka@quicinc.com>,
+        <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3] drm/msm/dp: stop event kernel thread when DP unbind
+Date:   Thu, 14 Apr 2022 10:25:37 -0700
+Message-ID: <1649957137-24620-1-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     x86@kernel.org, Andrew Cooper <andrew.cooper3@citrix.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-References: <20220404103741.809025935@linutronix.de>
- <20220404104820.713066297@linutronix.de>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [patch 3/3] x86/fpu/xsave: Optimize XSAVEC/S when XGETBV1 is
- supported
-In-Reply-To: <20220404104820.713066297@linutronix.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22 05:11, Thomas Gleixner wrote:
-> A typical scenario is an active set of 0x202 (PKRU + SSE) out of the full
-> supported set of 0x2FF. That means XSAVEC/S writes and XRSTOR[S] reads:
+Current DP driver implementation, event thread is kept running
+after DP display is unbind. This patch fix this problem by disabling
+DP irq and stop event thread to exit gracefully at dp_display_unbind().
 
-It might be worth reminding folks why PKRU is a special snowflake:
+Changes in v2:
+-- start event thread at dp_display_bind()
 
-The default PKRU enforced by the kernel is its most restrictive possible
-value (0xfffffffc).  This means that PKRU defaults to being in its
-non-init state even for tasks which do nothing protection-keys-related.
+Changes in v3:
+-- disable all HDP interrupts at unbind
+-- replace dp_hpd_event_setup() with dp_hpd_event_thread_start()
+-- replace dp_hpd_event_stop() with dp_hpd_event_thread_stop()
+-- move init_waitqueue_head(&dp->event_q) to probe()
+-- move spin_lock_init(&dp->event_lock) to probe()
 
+Fixes: e91e3065a806 ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+ drivers/gpu/drm/msm/dp/dp_display.c | 42 ++++++++++++++++++++++++++++---------
+ 1 file changed, 32 insertions(+), 10 deletions(-)
 
-> which is suboptimal. Prefetch works better when the access is linear. But
-> what's worse is that PKRU can be located in a different page which
-> obviously affects dTLB.
-
-The numbers don't lie, but I'm still surprised by this.  Was this in a
-VM that isn't backed with large pages?  task_struct.thread.fpu is
-kmem_cache_alloc()'d and is in the direct map, which should be 2M/1G
-pages almost all the time.
-
-> --- a/arch/x86/kernel/fpu/xstate.c
-> +++ b/arch/x86/kernel/fpu/xstate.c
-> @@ -86,6 +86,8 @@ static unsigned int xstate_flags[XFEATUR
->  #define XSTATE_FLAG_SUPERVISOR	BIT(0)
->  #define XSTATE_FLAG_ALIGNED64	BIT(1)
->  
-> +DEFINE_STATIC_KEY_FALSE(__xsave_use_xgetbv1);
-> +
->  /*
->   * Return whether the system supports a given xfeature.
->   *
-> @@ -1481,7 +1483,7 @@ void xfd_validate_state(struct fpstate *
->  }
->  #endif /* CONFIG_X86_DEBUG_FPU */
->  
-> -static int __init xfd_update_static_branch(void)
-> +static int __init fpu_update_static_branches(void)
->  {
->  	/*
->  	 * If init_fpstate.xfd has bits set then dynamic features are
-> @@ -1489,9 +1491,13 @@ static int __init xfd_update_static_bran
->  	 */
->  	if (init_fpstate.xfd)
->  		static_branch_enable(&__fpu_state_size_dynamic);
-> +
-> +	if (cpu_feature_enabled(X86_FEATURE_XGETBV1) &&
-> +	    cpu_feature_enabled(X86_FEATURE_XCOMPACTED))
-> +		static_branch_enable(&__xsave_use_xgetbv1);
->  	return 0;
->  }
-> -arch_initcall(xfd_update_static_branch)
-> +arch_initcall(fpu_update_static_branches)
->  
->  void fpstate_free(struct fpu *fpu)
->  {
-> --- a/arch/x86/kernel/fpu/xstate.h
-> +++ b/arch/x86/kernel/fpu/xstate.h
-> @@ -10,7 +10,12 @@
->  DECLARE_PER_CPU(u64, xfd_state);
->  #endif
->  
-> -static inline bool xsave_use_xgetbv1(void) { return false; }
-> +DECLARE_STATIC_KEY_FALSE(__xsave_use_xgetbv1);
-> +
-> +static __always_inline __pure bool xsave_use_xgetbv1(void)
-> +{
-> +	return static_branch_likely(&__xsave_use_xgetbv1);
-> +}
->  
->  static inline void __xstate_init_xcomp_bv(struct xregs_state *xsave, u64 mask)
->  {
-> @@ -185,13 +190,18 @@ static inline int __xfd_enable_feature(u
->  static inline void os_xsave(struct fpstate *fpstate)
->  {
->  	u64 mask = fpstate->xfeatures;
-> -	u32 lmask = mask;
-> -	u32 hmask = mask >> 32;
-> +	u32 lmask, hmask;
->  	int err;
->  
->  	WARN_ON_FPU(!alternatives_patched);
->  	xfd_validate_state(fpstate, mask, false);
->  
-> +	if (xsave_use_xgetbv1())
-> +		mask &= xgetbv(1);
-
-How about this comment for the masking operation:
-
-	/*
-	 * Remove features in their init state from the mask.  This
-	 * makes the XSAVE{S,C} writes less sparse and quicker for
-	 * the CPU.
-	 */
-
-> +	lmask = mask;
-> +	hmask = mask >> 32;
-> +
->  	XSTATE_XSAVE(&fpstate->regs.xsave, lmask, hmask, err);
->  
->  	/* We should never fault when copying to a kernel buffer: */
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index 01453db..0b9a96f 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -113,6 +113,7 @@ struct dp_display_private {
+ 	u32 hpd_state;
+ 	u32 event_pndx;
+ 	u32 event_gndx;
++	struct task_struct *ev_tsk;
+ 	struct dp_event event_list[DP_EVENT_Q_MAX];
+ 	spinlock_t event_lock;
+ 
+@@ -230,6 +231,29 @@ void dp_display_signal_audio_complete(struct msm_dp *dp_display)
+ 	complete_all(&dp->audio_comp);
+ }
+ 
++static int hpd_event_thread(void *data);
++
++static int dp_hpd_event_thread_start(struct dp_display_private *dp_priv)
++{
++	int err = 0;
++
++	dp_priv->ev_tsk = kthread_run(hpd_event_thread, dp_priv, "dp_hpd_handler");
++	if (IS_ERR(dp_priv->ev_tsk)) {
++		DRM_ERROR("failed to create DP event thread\n");
++		err = PTR_ERR(dp_priv->ev_tsk);
++	}
++	return err;
++}
++
++static void dp_hpd_event_thread_stop(struct dp_display_private *dp_priv)
++{
++	kthread_stop(dp_priv->ev_tsk);
++
++	/* reset event q to empty */
++	dp_priv->event_gndx = 0;
++	dp_priv->event_pndx = 0;
++}
++
+ static int dp_display_bind(struct device *dev, struct device *master,
+ 			   void *data)
+ {
+@@ -269,6 +293,7 @@ static int dp_display_bind(struct device *dev, struct device *master,
+ 	if (rc)
+ 		DRM_ERROR("Audio registration Dp failed\n");
+ 
++	rc = dp_hpd_event_thread_start(dp);
+ end:
+ 	return rc;
+ }
+@@ -280,6 +305,9 @@ static void dp_display_unbind(struct device *dev, struct device *master,
+ 	struct drm_device *drm = dev_get_drvdata(master);
+ 	struct msm_drm_private *priv = drm->dev_private;
+ 
++	/* disable all HPD interrupts */
++	dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_INT_MASK, false);
++	dp_hpd_event_thread_stop(dp);
+ 	dp_power_client_deinit(dp->power);
+ 	dp_aux_unregister(dp->aux);
+ 	priv->dp[dp->id] = NULL;
+@@ -1054,7 +1082,7 @@ static int hpd_event_thread(void *data)
+ 
+ 	dp_priv = (struct dp_display_private *)data;
+ 
+-	while (1) {
++	while (!kthread_should_stop()) {
+ 		if (timeout_mode) {
+ 			wait_event_timeout(dp_priv->event_q,
+ 				(dp_priv->event_pndx == dp_priv->event_gndx),
+@@ -1132,13 +1160,6 @@ static int hpd_event_thread(void *data)
+ 	return 0;
+ }
+ 
+-static void dp_hpd_event_setup(struct dp_display_private *dp_priv)
+-{
+-	init_waitqueue_head(&dp_priv->event_q);
+-	spin_lock_init(&dp_priv->event_lock);
+-
+-	kthread_run(hpd_event_thread, dp_priv, "dp_hpd_handler");
+-}
+ 
+ static irqreturn_t dp_display_irq_handler(int irq, void *dev_id)
+ {
+@@ -1266,7 +1287,10 @@ static int dp_display_probe(struct platform_device *pdev)
+ 		return -EPROBE_DEFER;
+ 	}
+ 
++	/* setup event q */
+ 	mutex_init(&dp->event_mutex);
++	init_waitqueue_head(&dp->event_q);
++	spin_lock_init(&dp->event_lock);
+ 
+ 	/* Store DP audio handle inside DP display */
+ 	dp->dp_display.dp_audio = dp->audio;
+@@ -1441,8 +1465,6 @@ void msm_dp_irq_postinstall(struct msm_dp *dp_display)
+ 
+ 	dp = container_of(dp_display, struct dp_display_private, dp_display);
+ 
+-	dp_hpd_event_setup(dp);
+-
+ 	dp_add_event(dp, EV_HPD_INIT_SETUP, 0, 100);
+ }
+ 
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
