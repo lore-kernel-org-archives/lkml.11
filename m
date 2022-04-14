@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84D90C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B51C43219
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344332AbiDNPNR (ORCPT
+        id S1345175AbiDNPOM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43132 "EHLO
+        Thu, 14 Apr 2022 11:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347118AbiDNN63 (ORCPT
+        with ESMTP id S1347297AbiDNN6o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:58:29 -0400
+        Thu, 14 Apr 2022 09:58:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8EA9B7162;
-        Thu, 14 Apr 2022 06:48:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F5118385;
+        Thu, 14 Apr 2022 06:49:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 374DE61D73;
-        Thu, 14 Apr 2022 13:48:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F8DEC385A9;
-        Thu, 14 Apr 2022 13:48:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 188B661D29;
+        Thu, 14 Apr 2022 13:49:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29A34C385A1;
+        Thu, 14 Apr 2022 13:49:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944137;
-        bh=+bi3CB0sKMUtiIkI6DbmdeWT1n5jF2lA8k1vBDqSFM4=;
+        s=korg; t=1649944162;
+        bh=leA5SjVEI+OFdMEEiqCpgxxL7VQwPeWyvqNgqzEKnOs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pIINmJoJ5KuniuVGI3WMEUPcEKt3ilKU54IFmkE4XCXhXtn7wc2PmBmToRwsu97/L
-         F/tRjdrCjfpqxCZdyvv13Fv9Ti8/RklcVHAXmce4kNhcfzEovdCYV8pHZbHHFzDyF9
-         o3m3/0d3uUARGDwfX06zQRJrREMQJFf8/hCusxuw=
+        b=yKGdTCNRLDccHF1FSyS7JW2CuHlPmBiKkCSnvbGBMKgfwLjm6TKmG+0a6B5wXl472
+         chuNPTeW0GACoFttFuEMySb32QwIpfN9q4hgG+/a18czoZVVqSwXaYPuRqnQrARskd
+         uKRjXfKPjag3rbM1Ot/S3RpFzNuWBTgxyJBnKPWc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Wujek <dev_public@wujek.eu>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 408/475] clk: si5341: fix reported clk_rate when output divider is 2
-Date:   Thu, 14 Apr 2022 15:13:13 +0200
-Message-Id: <20220414110906.482208290@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Abraham <thomas.abraham@linaro.org>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Hyeonkook Kim <hk619.kim@samsung.com>,
+        Jiri Slaby <jslaby@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 416/475] serial: samsung_tty: do not unlock port->lock for uart_write_wakeup()
+Date:   Thu, 14 Apr 2022 15:13:21 +0200
+Message-Id: <20220414110906.705000925@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,60 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Wujek <dev_public@wujek.eu>
+From: Jiri Slaby <jslaby@suse.cz>
 
-[ Upstream commit 2a8b539433e111c4de364237627ef219d2f6350a ]
+[ Upstream commit 988c7c00691008ea1daaa1235680a0da49dab4e8 ]
 
-SI5341_OUT_CFG_RDIV_FORCE2 shall be checked first to distinguish whether
-a divider for a given output is set to 2 (SI5341_OUT_CFG_RDIV_FORCE2
-is set) or the output is disabled (SI5341_OUT_CFG_RDIV_FORCE2 not set,
-SI5341_OUT_R_REG is set 0).
-Before the change, divider set to 2 (SI5341_OUT_R_REG set to 0) was
-interpreted as output is disabled.
+The commit c15c3747ee32 (serial: samsung: fix potential soft lockup
+during uart write) added an unlock of port->lock before
+uart_write_wakeup() and a lock after it. It was always problematic to
+write data from tty_ldisc_ops::write_wakeup and it was even documented
+that way. We fixed the line disciplines to conform to this recently.
+So if there is still a missed one, we should fix them instead of this
+workaround.
 
-Signed-off-by: Adam Wujek <dev_public@wujek.eu>
-Link: https://lore.kernel.org/r/20211203141125.2447520-1-dev_public@wujek.eu
-Reviewed-by: Robert Hancock <robert.hancock@calian.com>
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+On the top of that, s3c24xx_serial_tx_dma_complete() in this driver
+still holds the port->lock while calling uart_write_wakeup().
+
+So revert the wrap added by the commit above.
+
+Cc: Thomas Abraham <thomas.abraham@linaro.org>
+Cc: Kyungmin Park <kyungmin.park@samsung.com>
+Cc: Hyeonkook Kim <hk619.kim@samsung.com>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20220308115153.4225-1-jslaby@suse.cz
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/clk-si5341.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/tty/serial/samsung.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/clk/clk-si5341.c b/drivers/clk/clk-si5341.c
-index 20ed0955416a..07ef9995b3cb 100644
---- a/drivers/clk/clk-si5341.c
-+++ b/drivers/clk/clk-si5341.c
-@@ -638,6 +638,15 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
- 	u32 r_divider;
- 	u8 r[3];
+diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
+index c7683beb3412..6040d5a6139a 100644
+--- a/drivers/tty/serial/samsung.c
++++ b/drivers/tty/serial/samsung.c
+@@ -761,11 +761,8 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
+ 		goto out;
+ 	}
  
-+	err = regmap_read(output->data->regmap,
-+			SI5341_OUT_CONFIG(output), &val);
-+	if (err < 0)
-+		return err;
-+
-+	/* If SI5341_OUT_CFG_RDIV_FORCE2 is set, r_divider is 2 */
-+	if (val & SI5341_OUT_CFG_RDIV_FORCE2)
-+		return parent_rate / 2;
-+
- 	err = regmap_bulk_read(output->data->regmap,
- 			SI5341_OUT_R_REG(output), r, 3);
- 	if (err < 0)
-@@ -654,13 +663,6 @@ static unsigned long si5341_output_clk_recalc_rate(struct clk_hw *hw,
- 	r_divider += 1;
- 	r_divider <<= 1;
+-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
+-		spin_unlock(&port->lock);
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(port);
+-		spin_lock(&port->lock);
+-	}
  
--	err = regmap_read(output->data->regmap,
--			SI5341_OUT_CONFIG(output), &val);
--	if (err < 0)
--		return err;
--
--	if (val & SI5341_OUT_CFG_RDIV_FORCE2)
--		r_divider = 2;
- 
- 	return parent_rate / r_divider;
- }
+ 	if (uart_circ_empty(xmit))
+ 		s3c24xx_serial_stop_tx(port);
 -- 
 2.35.1
 
