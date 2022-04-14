@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C76BC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B12C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237251AbiDNNqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:46:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57320 "EHLO
+        id S245041AbiDNNqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343581AbiDNN3h (ORCPT
+        with ESMTP id S1343638AbiDNN3n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:29:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F2199693;
-        Thu, 14 Apr 2022 06:24:46 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297B7AFB32;
+        Thu, 14 Apr 2022 06:25:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2799C60C14;
-        Thu, 14 Apr 2022 13:24:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38E7DC385A1;
-        Thu, 14 Apr 2022 13:24:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D36A60C14;
+        Thu, 14 Apr 2022 13:25:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A6E8C385A5;
+        Thu, 14 Apr 2022 13:25:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942685;
-        bh=LU3YU8Is+ClPb+b7Qja4JiTHOQA7dUoTh51HHJU+U0I=;
+        s=korg; t=1649942702;
+        bh=9WRlb7g34HZdRb4Iu1zP64sHnU/hoYGHmY2xIMXjOng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ihaGlExrRNJGM0N/QB6CFMWWFduWjeD0gLVN/YQZKSXNoAMBdU5D/wAdchet4VhPH
-         7y0jBiOekabwuOP2VWr/AkmZjgcFd7xzWwG1jq+wvtJoBVgbam3NlmB6X3rO5R4dEO
-         9O3T62xQVwQdA6jIRduB9WLMkkddD6i0fTvCasr0=
+        b=smSeqmkR6USyIq9xIUeuM1Z6f9wcCwPqw7MbAuOQuqbVvV/5M6fN+qjM27MNJJQ80
+         PECknARgdj0Ad3oincy1NdBgzv8lFcmv4xdFJcqLRzbPw92PP4sPd1XIhP5ipvEq9H
+         pOb6CgtK1S9iHSr089nXoAPhsLLQCQxa6yMcwnFo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Darren Hart <darren@os.amperecomputing.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 197/338] ACPI/APEI: Limit printable size of BERT table data
-Date:   Thu, 14 Apr 2022 15:11:40 +0200
-Message-Id: <20220414110844.503587642@linuxfoundation.org>
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 4.19 229/338] scsi: qla2xxx: Reduce false trigger to login
+Date:   Thu, 14 Apr 2022 15:12:12 +0200
+Message-Id: <20220414110845.409098292@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,72 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darren Hart <darren@os.amperecomputing.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 3f8dec116210ca649163574ed5f8df1e3b837d07 ]
+commit d2646eed7b19a206912f49101178cbbaa507256c upstream.
 
-Platforms with large BERT table data can trigger soft lockup errors
-while attempting to print the entire BERT table data to the console at
-boot:
+While a session is in the middle of a relogin, a late RSCN can be delivered
+from switch. RSCN trigger fabric scan where the scan logic can trigger
+another session login while a login is in progress.  Reduce the extra
+trigger to prevent multiple logins to the same session.
 
-  watchdog: BUG: soft lockup - CPU#160 stuck for 23s! [swapper/0:1]
-
-Observed on Ampere Altra systems with a single BERT record of ~250KB.
-
-The original bert driver appears to have assumed relatively small table
-data. Since it is impractical to reassemble large table data from
-interwoven console messages, and the table data is available in
-
-  /sys/firmware/acpi/tables/data/BERT
-
-limit the size for tables printed to the console to 1024 (for no reason
-other than it seemed like a good place to kick off the discussion, would
-appreciate feedback from existing users in terms of what size would
-maintain their current usage model).
-
-Alternatively, we could make printing a CONFIG option, use the
-bert_disable boot arg (or something similar), or use a debug log level.
-However, all those solutions require extra steps or change the existing
-behavior for small table data. Limiting the size preserves existing
-behavior on existing platforms with small table data, and eliminates the
-soft lockups for platforms with large table data, while still making it
-available.
-
-Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220310092604.22950-10-njavali@marvell.com
+Fixes: bee8b84686c4 ("scsi: qla2xxx: Reduce redundant ADISC command for RSCNs")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/apei/bert.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/scsi/qla2xxx/qla_init.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
-index 876824948c19..d2212e092c50 100644
---- a/drivers/acpi/apei/bert.c
-+++ b/drivers/acpi/apei/bert.c
-@@ -31,6 +31,7 @@
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -1346,7 +1346,8 @@ int qla24xx_fcport_handle_login(struct s
+ 	    fcport->login_gen, fcport->login_retry,
+ 	    fcport->loop_id, fcport->scan_state);
  
- #undef pr_fmt
- #define pr_fmt(fmt) "BERT: " fmt
-+#define ACPI_BERT_PRINT_MAX_LEN 1024
+-	if (fcport->scan_state != QLA_FCPORT_FOUND)
++	if (fcport->scan_state != QLA_FCPORT_FOUND ||
++	    fcport->disc_state == DSC_DELETE_PEND)
+ 		return 0;
  
- static int bert_disable;
+ 	if ((fcport->loop_id != FC_NO_LOOP_ID) &&
+@@ -1365,7 +1366,7 @@ int qla24xx_fcport_handle_login(struct s
+ 	if (vha->host->active_mode == MODE_TARGET)
+ 		return 0;
  
-@@ -59,8 +60,11 @@ static void __init bert_print_all(struct acpi_bert_region *region,
- 		}
- 
- 		pr_info_once("Error records from previous boot:\n");
--
--		cper_estatus_print(KERN_INFO HW_ERR, estatus);
-+		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
-+			cper_estatus_print(KERN_INFO HW_ERR, estatus);
-+		else
-+			pr_info_once("Max print length exceeded, table data is available at:\n"
-+				     "/sys/firmware/acpi/tables/data/BERT");
- 
- 		/*
- 		 * Because the boot error source is "one-time polled" type,
--- 
-2.34.1
-
+-	if (fcport->flags & FCF_ASYNC_SENT) {
++	if (fcport->flags & (FCF_ASYNC_SENT | FCF_ASYNC_ACTIVE)) {
+ 		set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
+ 		return 0;
+ 	}
 
 
