@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A38C47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E961C352A8
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343690AbiDNOJG (ORCPT
+        id S1343789AbiDNOJW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57324 "EHLO
+        Thu, 14 Apr 2022 10:09:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344032AbiDNNaQ (ORCPT
+        with ESMTP id S1344068AbiDNNaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE5492300;
-        Thu, 14 Apr 2022 06:26:35 -0700 (PDT)
+        Thu, 14 Apr 2022 09:30:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502C7BC4;
+        Thu, 14 Apr 2022 06:27:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3488EB82986;
-        Thu, 14 Apr 2022 13:26:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E0B9C385A5;
-        Thu, 14 Apr 2022 13:26:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E088061B18;
+        Thu, 14 Apr 2022 13:27:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9DB2C385A5;
+        Thu, 14 Apr 2022 13:27:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942792;
-        bh=+8oWWhQFbeXgY2fS6ypUQrNuuLh4/MvIj3IT41g/lGU=;
+        s=korg; t=1649942845;
+        bh=9QMv3lahHdv/z11XuDeuy250hfehrksyMfwOkrGc6GA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QJBx01ci8zvGFjgVLfOg4GJ03ulUdp+AtpnhWwkZIl/wiOo+FbTGVASOLyjO/9qry
-         /Ux5B0rUt6woTE6asYqgiOPcf/gX0koPZWcmYW/0u6nehLFfyexrqaNIDrdUkeIJEZ
-         fuh2t7udswVLT8J03VaDBm6espW+xgbrwmFFQvXw=
+        b=k/kKH1BZ7euk8wgS7erCdJX+nh7oUFiwyVOPN0jjrUe7jkR/bCZ188Q5xUdL7au7c
+         Cl27jc7iSG6qn8V99U6XdKd+SzqezWGVPKjvnMy/xunJfmEA6DEnAQAnKLMRemZrlk
+         d0qk0eagWBmyPGta0OdCPgnE5XmqzdWMhS0WgDUE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 263/338] drm/amd/amdgpu/amdgpu_cs: fix refcount leak of a dma_fence obj
-Date:   Thu, 14 Apr 2022 15:12:46 +0200
-Message-Id: <20220414110846.374997237@linuxfoundation.org>
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 4.19 242/338] pinctrl: pinconf-generic: Print arguments for bias-pull-*
+Date:   Thu, 14 Apr 2022 15:12:25 +0200
+Message-Id: <20220414110845.779497153@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -53,43 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit dfced44f122c500004a48ecc8db516bb6a295a1b ]
+commit 188e5834b930acd03ad3cf7c5e7aa24db9665a29 upstream.
 
-This issue takes place in an error path in
-amdgpu_cs_fence_to_handle_ioctl(). When `info->in.what` falls into
-default case, the function simply returns -EINVAL, forgetting to
-decrement the reference count of a dma_fence obj, which is bumped
-earlier by amdgpu_cs_get_fence(). This may result in reference count
-leaks.
+The bias-pull-* properties, or PIN_CONFIG_BIAS_PULL_* pin config
+parameters, accept optional arguments in ohms denoting the strength of
+the pin bias.
 
-Fix it by decreasing the refcount of specific object before returning
-the error code.
+Print these values out in debugfs as well.
 
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: eec450713e5c ("pinctrl: pinconf-generic: Add flag to print arguments")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220308100956.2750295-2-wenst@chromium.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pinctrl/pinconf-generic.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-index 81001d879322..023309296bfc 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-@@ -1469,6 +1469,7 @@ int amdgpu_cs_fence_to_handle_ioctl(struct drm_device *dev, void *data,
- 		return 0;
- 
- 	default:
-+		dma_fence_put(fence);
- 		return -EINVAL;
- 	}
- }
--- 
-2.35.1
-
+--- a/drivers/pinctrl/pinconf-generic.c
++++ b/drivers/pinctrl/pinconf-generic.c
+@@ -31,10 +31,10 @@ static const struct pin_config_item conf
+ 	PCONFDUMP(PIN_CONFIG_BIAS_BUS_HOLD, "input bias bus hold", NULL, false),
+ 	PCONFDUMP(PIN_CONFIG_BIAS_DISABLE, "input bias disabled", NULL, false),
+ 	PCONFDUMP(PIN_CONFIG_BIAS_HIGH_IMPEDANCE, "input bias high impedance", NULL, false),
+-	PCONFDUMP(PIN_CONFIG_BIAS_PULL_DOWN, "input bias pull down", NULL, false),
++	PCONFDUMP(PIN_CONFIG_BIAS_PULL_DOWN, "input bias pull down", "ohms", true),
+ 	PCONFDUMP(PIN_CONFIG_BIAS_PULL_PIN_DEFAULT,
+-				"input bias pull to pin specific state", NULL, false),
+-	PCONFDUMP(PIN_CONFIG_BIAS_PULL_UP, "input bias pull up", NULL, false),
++				"input bias pull to pin specific state", "ohms", true),
++	PCONFDUMP(PIN_CONFIG_BIAS_PULL_UP, "input bias pull up", "ohms", true),
+ 	PCONFDUMP(PIN_CONFIG_DRIVE_OPEN_DRAIN, "output drive open drain", NULL, false),
+ 	PCONFDUMP(PIN_CONFIG_DRIVE_OPEN_SOURCE, "output drive open source", NULL, false),
+ 	PCONFDUMP(PIN_CONFIG_DRIVE_PUSH_PULL, "output drive push pull", NULL, false),
 
 
