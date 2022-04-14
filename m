@@ -2,375 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 358FDC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 832F9C3527E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358902AbiDNPmZ (ORCPT
+        id S1359105AbiDNPmk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37790 "EHLO
+        Thu, 14 Apr 2022 11:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343875AbiDNPM6 (ORCPT
+        with ESMTP id S1352594AbiDNPRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:12:58 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C931B18A7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:53:14 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id u3so7283510wrg.3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:53:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QI8lD7XbQk1BfveDDmKDIM0YNm1W3OSAHogkwLnpMQU=;
-        b=EMUEZKxmHdzg4BJgKlszWLPR+Neo6BXumorjAZTczAnbAShqVdhSyG8CszhVE5NiuB
-         ilp7AyG8cc1Zv8cxgln1N4PqF1k958y9TXlFf/XeBRopTgtD+zZXtZpz6XiD0RInIZ9E
-         3hZhKUHlU/80qNoSOOSnAHbrJRABVnOR1OZpSPmdSnVFx3wJlpA7EEJUtAUkjvyZf7N0
-         NhKTcBxilrTfmM+rrnVflkPC4ARhdy2oLNxLr2zgLksl4XS0qXCIgj557caEunQX+Ppy
-         W7GxpYj5iGLv0+W+7IMQe+Vm/dZQGUZ0X3vsNB3+4V1cM0kt60BSIa0/LlqZ5/fgu8eh
-         NDVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QI8lD7XbQk1BfveDDmKDIM0YNm1W3OSAHogkwLnpMQU=;
-        b=mxSPKbBB7HCtrQ66G+RNv8AEMTJIeOb6M7AtAER2ykikLG4Id07Yx8HAinI70MoZxr
-         +3JVvwYNhUQIsb8gnI86/tUz/x5TrT9krW+Z9ODXSpLOF3mayWI4nTbyZp2TMzb5MP73
-         /EVXa9eFG/nrmNfG7bgRamUDbAKvFmdnrjFeLCOCJCuym6YXiQ4pNvEv0ut2ikezUxPC
-         Fov9S41d5qHEaBUgkM4rgqXdPj3z4p9OkYRDWMLNhXZdcqrxIV2hKi8Ut5cGp8li90m3
-         /GbziiEFJlvh2MS+fdlvVIv+ttjOZ4FS93v0XG1uXw6OZq0SnB/92TJ9GfEdPIVa+udn
-         ULmg==
-X-Gm-Message-State: AOAM530X9nRak5gqKh7q6F3HSvt6MxHoEITFGCF0ECNIjvzbw9h5xnZA
-        CkjSMvNDgTJUVEuzThRIvQTxpFDBbhAVos0NZ/xmeA==
-X-Google-Smtp-Source: ABdhPJz4XnDor898w0IMTEXyJPfrIZWgND6L+p6n6wYtRU+XZqv2HA09vg7AQfgI0AM2HpoVhUwE8FiDDNpHakUu3ec=
-X-Received: by 2002:adf:cd87:0:b0:207:b0ad:6d8 with SMTP id
- q7-20020adfcd87000000b00207b0ad06d8mr2395716wrj.111.1649947992773; Thu, 14
- Apr 2022 07:53:12 -0700 (PDT)
+        Thu, 14 Apr 2022 11:17:40 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FC9BC84F;
+        Thu, 14 Apr 2022 08:01:49 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 15:01:47 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649948508;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5TDdmE09S+E9/Bqk8y91Y/tlKrElwL0r7vtr9lMqW9U=;
+        b=InGj8ELY5RkNkL8kloc8CDlSZ1y2WANocZcFCND+1ssigyWALFB/ng6WkUbYbXJiXTBhSL
+        Y20HEGYHEaj+O77omc/5xrq2ww29MpLHuJSv28immg0A5mRJXC5Fl6d/IjNFR0Bsl1QTms
+        CzgoC2WaQNS8SmFj+ViWq40toUj9gm40qvR7r2NgfjLaF1DsF/wntdG0keZU1oRx85HgOn
+        JXKZ+Bx6zUKw3Y8be4BT64yNtaPbJIOCRp2qHvQkehR8PulBsI5mnTl1wYU4jQ5bQESC33
+        3EAlC9GRJWHGX9s+k+vDjjr7QnnndnCoNWvVwFy0JkWRM/JrB1ZXGVr+S7xhcQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649948508;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5TDdmE09S+E9/Bqk8y91Y/tlKrElwL0r7vtr9lMqW9U=;
+        b=3/uIJrS7WAhtmU1EGBcKtXPgShejbu9njwq0JTnjtLGRSPOWIF6NFxyVabVWlQBU5fWTgj
+        lIh/ULi630BYpkDA==
+From:   "tip-bot2 for Kurt Kanzenbach" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: timers/core] timekeeping: Introduce fast accessor to clock tai
+Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220414091805.89667-2-kurt@linutronix.de>
+References: <20220414091805.89667-2-kurt@linutronix.de>
 MIME-Version: 1.0
-References: <20220412125035.40312-1-quic_jinlmao@quicinc.com> <20220412125035.40312-3-quic_jinlmao@quicinc.com>
-In-Reply-To: <20220412125035.40312-3-quic_jinlmao@quicinc.com>
-From:   Mike Leach <mike.leach@linaro.org>
-Date:   Thu, 14 Apr 2022 15:53:01 +0100
-Message-ID: <CAJ9a7ViS+waaw+wAVVYvisM4ObfsMZCG6+DGJBNX92+PJ9MHug@mail.gmail.com>
-Subject: Re: [PATCH v5 02/10] Coresight: Add coresight TPDM source driver
-To:     Mao Jinlong <quic_jinlmao@quicinc.com>
-Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Tingwei Zhang <quic_tingweiz@quicinc.com>,
-        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        Hao Zhang <quic_hazha@quicinc.com>,
-        linux-arm-msm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <164994850704.4207.9058445142052855306.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The following commit has been merged into the timers/core branch of tip:
 
-On Tue, 12 Apr 2022 at 13:51, Mao Jinlong <quic_jinlmao@quicinc.com> wrote:
->
-> Add driver to support Coresight device TPDM (Trace, Profiling and
-> Diagnostics Monitor). TPDM is a monitor to collect data from
-> different datasets. This change is to add probe/enable/disable
-> functions for tpdm source.
->
-> Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
-> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
-> ---
->  drivers/hwtracing/coresight/Kconfig          |  13 ++
->  drivers/hwtracing/coresight/Makefile         |   1 +
->  drivers/hwtracing/coresight/coresight-core.c |   5 +-
->  drivers/hwtracing/coresight/coresight-tpdm.c | 145 +++++++++++++++++++
->  drivers/hwtracing/coresight/coresight-tpdm.h |  26 ++++
->  include/linux/coresight.h                    |   1 +
->  6 files changed, 190 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/hwtracing/coresight/coresight-tpdm.c
->  create mode 100644 drivers/hwtracing/coresight/coresight-tpdm.h
->
-> diff --git a/drivers/hwtracing/coresight/Kconfig b/drivers/hwtracing/coresight/Kconfig
-> index 514a9b8086e3..5c506a1cd08f 100644
-> --- a/drivers/hwtracing/coresight/Kconfig
-> +++ b/drivers/hwtracing/coresight/Kconfig
-> @@ -201,4 +201,17 @@ config CORESIGHT_TRBE
->
->           To compile this driver as a module, choose M here: the module will be
->           called coresight-trbe.
-> +
-> +config CORESIGHT_TPDM
-> +       tristate "CoreSight Trace, Profiling & Diagnostics Monitor driver"
-> +       select CORESIGHT_LINKS_AND_SINKS
-> +       help
-> +         This driver provides support for configuring monitor. Monitors are
-> +         primarily responsible for data set collection and support the
-> +         ability to collect any permutation of data set types. Monitors are
-> +         also responsible for interaction with system cross triggering.
-> +
-> +         To compile this driver as a module, choose M here: the module will be
-> +         called coresight-tpdm.
-> +
->  endif
-> diff --git a/drivers/hwtracing/coresight/Makefile b/drivers/hwtracing/coresight/Makefile
-> index 329a0c704b87..6bb9b1746bc7 100644
-> --- a/drivers/hwtracing/coresight/Makefile
-> +++ b/drivers/hwtracing/coresight/Makefile
-> @@ -25,5 +25,6 @@ obj-$(CONFIG_CORESIGHT_CPU_DEBUG) += coresight-cpu-debug.o
->  obj-$(CONFIG_CORESIGHT_CATU) += coresight-catu.o
->  obj-$(CONFIG_CORESIGHT_CTI) += coresight-cti.o
->  obj-$(CONFIG_CORESIGHT_TRBE) += coresight-trbe.o
-> +obj-$(CONFIG_CORESIGHT_TPDM) += coresight-tpdm.o
->  coresight-cti-y := coresight-cti-core.o        coresight-cti-platform.o \
->                    coresight-cti-sysfs.o
-> diff --git a/drivers/hwtracing/coresight/coresight-core.c b/drivers/hwtracing/coresight/coresight-core.c
-> index 23ab16dd9b5d..75fe1781df20 100644
-> --- a/drivers/hwtracing/coresight/coresight-core.c
-> +++ b/drivers/hwtracing/coresight/coresight-core.c
-> @@ -1047,7 +1047,8 @@ static int coresight_validate_source(struct coresight_device *csdev,
->         }
->
->         if (subtype != CORESIGHT_DEV_SUBTYPE_SOURCE_PROC &&
-> -           subtype != CORESIGHT_DEV_SUBTYPE_SOURCE_SOFTWARE) {
-> +           subtype != CORESIGHT_DEV_SUBTYPE_SOURCE_SOFTWARE &&
-> +           subtype != CORESIGHT_DEV_SUBTYPE_SOURCE_DATA_ONLY) {
->                 dev_err(&csdev->dev, "wrong device subtype in %s\n", function);
->                 return -EINVAL;
->         }
-> @@ -1116,6 +1117,7 @@ int coresight_enable(struct coresight_device *csdev)
->                 per_cpu(tracer_path, cpu) = path;
->                 break;
->         case CORESIGHT_DEV_SUBTYPE_SOURCE_SOFTWARE:
-> +       case CORESIGHT_DEV_SUBTYPE_SOURCE_DATA_ONLY:
->                 /*
->                  * Use the hash of source's device name as ID
->                  * and map the ID to the pointer of the path.
-> @@ -1165,6 +1167,7 @@ void coresight_disable(struct coresight_device *csdev)
->                 per_cpu(tracer_path, cpu) = NULL;
->                 break;
->         case CORESIGHT_DEV_SUBTYPE_SOURCE_SOFTWARE:
-> +       case CORESIGHT_DEV_SUBTYPE_SOURCE_DATA_ONLY:
->                 hash = hashlen_hash(hashlen_string(NULL, dev_name(&csdev->dev)));
->                 /* Find the path by the hash. */
->                 path = idr_find(&path_idr, hash);
-> diff --git a/drivers/hwtracing/coresight/coresight-tpdm.c b/drivers/hwtracing/coresight/coresight-tpdm.c
-> new file mode 100644
-> index 000000000000..3900ae50670a
-> --- /dev/null
-> +++ b/drivers/hwtracing/coresight/coresight-tpdm.c
-> @@ -0,0 +1,145 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-> + */
-> +
-> +#include <linux/amba/bus.h>
-> +#include <linux/bitmap.h>
-> +#include <linux/coresight.h>
-> +#include <linux/coresight-pmu.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/fs.h>
-> +#include <linux/io.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +
-> +#include "coresight-priv.h"
-> +#include "coresight-tpdm.h"
-> +
-> +DEFINE_CORESIGHT_DEVLIST(tpdm_devs, "tpdm");
-> +
-> +/* TPDM enable operations */
-> +static int tpdm_enable(struct coresight_device *csdev,
-> +                      struct perf_event *event, u32 mode)
-> +{
-> +       struct tpdm_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
-> +
-> +       mutex_lock(&drvdata->lock);
-> +       if (drvdata->enable) {
-> +               mutex_unlock(&drvdata->lock);
-> +               return -EBUSY;
-> +       }
-> +
-> +       drvdata->enable = true;
-> +       mutex_unlock(&drvdata->lock);
-> +
-> +       dev_info(drvdata->dev, "TPDM tracing enabled\n");
-> +       return 0;
-> +}
-> +
-> +/* TPDM disable operations */
-> +static void tpdm_disable(struct coresight_device *csdev,
-> +                        struct perf_event *event)
-> +{
-> +       struct tpdm_drvdata *drvdata = dev_get_drvdata(csdev->dev.parent);
-> +
-> +       mutex_lock(&drvdata->lock);
-> +       if (!drvdata->enable) {
-> +               mutex_unlock(&drvdata->lock);
-> +               return;
-> +       }
-> +
-> +       drvdata->enable = false;
-> +       mutex_unlock(&drvdata->lock);
-> +
-> +       dev_info(drvdata->dev, "TPDM tracing disabled\n");
-> +}
-> +
-> +static const struct coresight_ops_source tpdm_source_ops = {
-> +       .enable         = tpdm_enable,
-> +       .disable        = tpdm_disable,
-> +};
-> +
-> +static const struct coresight_ops tpdm_cs_ops = {
-> +       .source_ops     = &tpdm_source_ops,
-> +};
-> +
-> +static int tpdm_probe(struct amba_device *adev, const struct amba_id *id)
-> +{
-> +       struct device *dev = &adev->dev;
-> +       struct coresight_platform_data *pdata;
-> +       struct tpdm_drvdata *drvdata;
-> +       struct coresight_desc desc = { 0 };
-> +
-> +       pdata = coresight_get_platform_data(dev);
-> +       if (IS_ERR(pdata))
-> +               return PTR_ERR(pdata);
-> +       adev->dev.platform_data = pdata;
-> +
-> +       /* driver data*/
-> +       drvdata = devm_kzalloc(dev, sizeof(*drvdata), GFP_KERNEL);
-> +       if (!drvdata)
-> +               return -ENOMEM;
-> +       drvdata->dev = &adev->dev;
-> +       dev_set_drvdata(dev, drvdata);
-> +
-> +       drvdata->base = devm_ioremap_resource(dev, &adev->res);
-> +       if (!drvdata->base)
-> +               return -ENOMEM;
-> +
-> +       mutex_init(&drvdata->lock);
-> +
-> +       /* Set up coresight component description */
-> +       desc.name = coresight_alloc_device_name(&tpdm_devs, dev);
-> +       if (!desc.name)
-> +               return -ENOMEM;
-> +       desc.type = CORESIGHT_DEV_TYPE_SOURCE;
-> +       desc.subtype.source_subtype = CORESIGHT_DEV_SUBTYPE_SOURCE_DATA_ONLY;
-> +       desc.ops = &tpdm_cs_ops;
-> +       desc.pdata = adev->dev.platform_data;
-> +       desc.dev = &adev->dev;
-> +       drvdata->csdev = coresight_register(&desc);
-> +       if (IS_ERR(drvdata->csdev))
-> +               return PTR_ERR(drvdata->csdev);
-> +
-> +       /* Decrease pm refcount when probe is done.*/
-> +       pm_runtime_put(&adev->dev);
-> +
-> +       return 0;
-> +}
-> +
-> +static void __exit tpdm_remove(struct amba_device *adev)
-> +{
-> +       struct tpdm_drvdata *drvdata = dev_get_drvdata(&adev->dev);
-> +
-> +       coresight_unregister(drvdata->csdev);
-> +}
+Commit-ID:     3dc6ffae2da201284cb24af66af77ee0bbb2efaa
+Gitweb:        https://git.kernel.org/tip/3dc6ffae2da201284cb24af66af77ee0bbb2efaa
+Author:        Kurt Kanzenbach <kurt@linutronix.de>
+AuthorDate:    Thu, 14 Apr 2022 11:18:03 +02:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Thu, 14 Apr 2022 16:19:30 +02:00
 
-How is this function called? The other coresight devices set the
-.remove function pointer in the amba_driver structure.
+timekeeping: Introduce fast accessor to clock tai
 
+Introduce fast/NMI safe accessor to clock tai for tracing. The Linux kernel
+tracing infrastructure has support for using different clocks to generate
+timestamps for trace events. Especially in TSN networks it's useful to have TAI
+as trace clock, because the application scheduling is done in accordance to the
+network time, which is based on TAI. With a tai trace_clock in place, it becomes
+very convenient to correlate network activity with Linux kernel application
+traces.
 
-> +/*
-> + * Different TPDM has different periph id.
-> + * The difference is 0-7 bits' value. So ignore 0-7 bits.
-> + */
-> +static struct amba_id tpdm_ids[] = {
-> +       {
-> +               .id = 0x000f0e00,
-> +               .mask = 0x000fff00,
-> +       },
-> +       { 0, 0},
-> +};
-> +
-> +static struct amba_driver tpdm_driver = {
-> +       .drv = {
-> +               .name   = "coresight-tpdm",
-> +               .owner  = THIS_MODULE,
-> +               .suppress_bind_attrs = true,
-> +       },
-> +       .probe          = tpdm_probe,
+Use the same implementation as ktime_get_boot_fast_ns() does by reading the
+monotonic time and adding the TAI offset. The same limitations as for the fast
+boot implementation apply. The TAI offset may change at run time e.g., by
+setting the time or using adjtimex() with an offset. However, these kind of
+offset changes are rare events. Nevertheless, the user has to be aware and deal
+with it in post processing.
 
-Do you need:-
-       .remove = tpdm_remove;
-in here?
+An alternative approach would be to use the same implementation as
+ktime_get_real_fast_ns() does. However, this requires to add an additional u64
+member to the tk_read_base struct. This struct together with a seqcount is
+designed to fit into a single cache line on 64 bit architectures. Adding a new
+member would violate this constraint.
 
-Regards
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Link: https://lore.kernel.org/r/20220414091805.89667-2-kurt@linutronix.de
 
-Mike
+---
+ Documentation/core-api/timekeeping.rst |  1 +
+ include/linux/timekeeping.h            |  1 +
+ kernel/time/timekeeping.c              | 17 +++++++++++++++++
+ 3 files changed, 19 insertions(+)
 
-> +       .id_table       = tpdm_ids,
-> +};
-> +
-> +module_amba_driver(tpdm_driver);
-> +
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_DESCRIPTION("Trace, Profiling & Diagnostic Monitor driver");
-> diff --git a/drivers/hwtracing/coresight/coresight-tpdm.h b/drivers/hwtracing/coresight/coresight-tpdm.h
-> new file mode 100644
-> index 000000000000..94a7748a5426
-> --- /dev/null
-> +++ b/drivers/hwtracing/coresight/coresight-tpdm.h
-> @@ -0,0 +1,26 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/*
-> + * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-> + */
-> +
-> +#ifndef _CORESIGHT_CORESIGHT_TPDM_H
-> +#define _CORESIGHT_CORESIGHT_TPDM_H
-> +
-> +/**
-> + * struct tpdm_drvdata - specifics associated to an TPDM component
-> + * @base:       memory mapped base address for this component.
-> + * @dev:        The device entity associated to this component.
-> + * @csdev:      component vitals needed by the framework.
-> + * @lock:       lock for the enable value.
-> + * @enable:     enable status of the component.
-> + */
-> +
-> +struct tpdm_drvdata {
-> +       void __iomem            *base;
-> +       struct device           *dev;
-> +       struct coresight_device *csdev;
-> +       struct mutex            lock;
-> +       bool                    enable;
-> +};
-> +
-> +#endif  /* _CORESIGHT_CORESIGHT_TPDM_H */
-> diff --git a/include/linux/coresight.h b/include/linux/coresight.h
-> index 247147c11231..a9efac55029d 100644
-> --- a/include/linux/coresight.h
-> +++ b/include/linux/coresight.h
-> @@ -61,6 +61,7 @@ enum coresight_dev_subtype_source {
->         CORESIGHT_DEV_SUBTYPE_SOURCE_PROC,
->         CORESIGHT_DEV_SUBTYPE_SOURCE_BUS,
->         CORESIGHT_DEV_SUBTYPE_SOURCE_SOFTWARE,
-> +       CORESIGHT_DEV_SUBTYPE_SOURCE_DATA_ONLY,
->  };
->
->  enum coresight_dev_subtype_helper {
-> --
-> 2.17.1
->
-
-
--- 
-Mike Leach
-Principal Engineer, ARM Ltd.
-Manchester Design Centre. UK
+diff --git a/Documentation/core-api/timekeeping.rst b/Documentation/core-api/timekeeping.rst
+index 729e248..22ec68f 100644
+--- a/Documentation/core-api/timekeeping.rst
++++ b/Documentation/core-api/timekeeping.rst
+@@ -132,6 +132,7 @@ Some additional variants exist for more specialized cases:
+ .. c:function:: u64 ktime_get_mono_fast_ns( void )
+ 		u64 ktime_get_raw_fast_ns( void )
+ 		u64 ktime_get_boot_fast_ns( void )
++		u64 ktime_get_tai_fast_ns( void )
+ 		u64 ktime_get_real_fast_ns( void )
+ 
+ 	These variants are safe to call from any context, including from
+diff --git a/include/linux/timekeeping.h b/include/linux/timekeeping.h
+index 78a98bd..fe1e467 100644
+--- a/include/linux/timekeeping.h
++++ b/include/linux/timekeeping.h
+@@ -177,6 +177,7 @@ static inline u64 ktime_get_raw_ns(void)
+ extern u64 ktime_get_mono_fast_ns(void);
+ extern u64 ktime_get_raw_fast_ns(void);
+ extern u64 ktime_get_boot_fast_ns(void);
++extern u64 ktime_get_tai_fast_ns(void);
+ extern u64 ktime_get_real_fast_ns(void);
+ 
+ /*
+diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
+index dcdcb85..2c22023 100644
+--- a/kernel/time/timekeeping.c
++++ b/kernel/time/timekeeping.c
+@@ -532,6 +532,23 @@ u64 notrace ktime_get_boot_fast_ns(void)
+ }
+ EXPORT_SYMBOL_GPL(ktime_get_boot_fast_ns);
+ 
++/**
++ * ktime_get_tai_fast_ns - NMI safe and fast access to tai clock.
++ *
++ * The same limitations as described for ktime_get_boot_fast_ns() apply. The
++ * mono time and the TAI offset are not read atomically which may yield wrong
++ * readouts. However, an update of the TAI offset is an rare event e.g., caused
++ * by settime or adjtimex with an offset. The user of this function has to deal
++ * with the possibility of wrong timestamps in post processing.
++ */
++u64 notrace ktime_get_tai_fast_ns(void)
++{
++	struct timekeeper *tk = &tk_core.timekeeper;
++
++	return (ktime_get_mono_fast_ns() + ktime_to_ns(data_race(tk->offs_tai)));
++}
++EXPORT_SYMBOL_GPL(ktime_get_tai_fast_ns);
++
+ static __always_inline u64 __ktime_get_real_fast(struct tk_fast *tkf, u64 *mono)
+ {
+ 	struct tk_read_base *tkr;
