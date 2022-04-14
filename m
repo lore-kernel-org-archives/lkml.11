@@ -2,87 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 568F4C41535
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:57:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82648C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355953AbiDNP7p (ORCPT
+        id S1347191AbiDNP7v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53136 "EHLO
+        Thu, 14 Apr 2022 11:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349882AbiDNPkT (ORCPT
+        with ESMTP id S1349684AbiDNPkQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:40:19 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8F01EAF3;
-        Thu, 14 Apr 2022 08:19:51 -0700 (PDT)
-Received: from [192.168.0.175] (ip5f5aed13.dynamic.kabel-deutschland.de [95.90.237.19])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: buczek)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 36EBE61EA1928;
-        Thu, 14 Apr 2022 17:19:50 +0200 (CEST)
-Message-ID: <4e83fb26-4d4a-d482-640c-8104973b7ebf@molgen.mpg.de>
-Date:   Thu, 14 Apr 2022 17:19:49 +0200
+        Thu, 14 Apr 2022 11:40:16 -0400
+Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA881117;
+        Thu, 14 Apr 2022 08:19:27 -0700 (PDT)
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 23EFJ9P0009346;
+        Fri, 15 Apr 2022 00:19:10 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 23EFJ9P0009346
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649949550;
+        bh=XPLvg0xD6eFIIDd3CQ6jmzggfMRcYlU0deeya24rkks=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Sld9SLgesc7VNKrWrEHfazd04aip0hDyZzcvdu4Ib+XS2hqXQIJa2zT898kNCkndd
+         u+gZG24HlPqh+XA4WdmKxOw6FQvJo+QbvGLKn2fkt+66N3o2JQdD+qAU6pELNmQAdn
+         274y5Tf0t/hdOzyn3l3vDmF5BtYjKNf3j4YcXfnHruJg2907af+YLWVyppo4eTEVKG
+         n4OHTDgeHZETgJjjVY59OdQS3RS3SfvkPRH7qVmuzsd1qQRSLTHEljBtmcUiYAA8yu
+         N78/4FHfpXZqvPZCuuCl/WRk/1M6pzBERHwHYEF21GZte9dqF0qx+dWZNrLD2q0aNq
+         J2aLWwidlH9QQ==
+X-Nifty-SrcIP: [209.85.214.176]
+Received: by mail-pl1-f176.google.com with SMTP id s14so4896855plk.8;
+        Thu, 14 Apr 2022 08:19:10 -0700 (PDT)
+X-Gm-Message-State: AOAM530zPfWgSTG1+gP6OBPFA5f0tHkB++yDHp5MkIgeOC7vXfpI+s4n
+        5OWFVvQpQ55j9Na7M7SaO6lU0n+Y+xgNP0Ptoek=
+X-Google-Smtp-Source: ABdhPJybgowAcKO6+UUwxv7i58osxALPzH60enIMNcIs2qt6jotYnP6KDZEPI72UGVdUgtyUHQCtD2pMuGlmPPUe0b0=
+X-Received: by 2002:a17:90a:b396:b0:1cd:44cc:15a9 with SMTP id
+ e22-20020a17090ab39600b001cd44cc15a9mr4166506pjr.77.1649949549457; Thu, 14
+ Apr 2022 08:19:09 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        dm-devel@redhat.com
-Cc:     it+linux@molgen.mpg.de,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-From:   Donald Buczek <buczek@molgen.mpg.de>
-Subject: ext4_writepages: jbd2_start: 5120 pages, ino 11; err -5
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220414091419.7654-1-jslaby@suse.cz> <CAK7LNATn2QrFn0fTixnbtZ-VOtWid2PvFKPmjfX+z_UtZgTMgA@mail.gmail.com>
+ <ace87421-eefb-f4f6-307f-cd2990fb25eb@suse.cz> <810ab2b8-4138-1506-fc90-ae5c6ab0522e@suse.cz>
+In-Reply-To: <810ab2b8-4138-1506-fc90-ae5c6ab0522e@suse.cz>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 15 Apr 2022 00:18:14 +0900
+X-Gmail-Original-Message-ID: <CAK7LNATgfosGQ6LRmu8DUxwnWL=Dyu1cOUUq1GBRtP6+BppNbw@mail.gmail.com>
+Message-ID: <CAK7LNATgfosGQ6LRmu8DUxwnWL=Dyu1cOUUq1GBRtP6+BppNbw@mail.gmail.com>
+Subject: Re: [PATCH] scripts: dummy-tools, add pahole
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We have a cluster scheduler which provides each cluster job with a private scratch filesystem (TMPDIR). These are created when a job starts and removed when a job completes. The setup works by fallocate, losetup, mkfs.ext4, mkdir, mount, "losetup -d", rm and the teardown just does a umount and rmdir.
+On Thu, Apr 14, 2022 at 6:44 PM Jiri Slaby <jslaby@suse.cz> wrote:
+>
+> On 14. 04. 22, 11:42, Jiri Slaby wrote:
+> > On 14. 04. 22, 11:33, Masahiro Yamada wrote:
+> >> On Thu, Apr 14, 2022 at 6:14 PM Jiri Slaby <jslaby@suse.cz> wrote:
+> >>>
+> >>> CONFIG_PAHOLE_VERSION is a part of a config since the commit below. And
+> >>> when multiple people update the config, this value constantly changes.
+> >>> Even if they use dummy scripts.
+> >>>
+> >>> To fix this:
+> >>> * add a pahole dummy script returning v99.99 -> 9999
+> >>> * call it in Makefile taking CROSS_COMPILE into account.
+> >>>
+> >>> The latter happens only if $(CROSS_COMPILE)pahole really exists. This is
+> >>> because a cross pahole likely exists only in dummy tools now, not in
+> >>> real cross tools.
+> >>
+> >>
+> >> I do not think this is the right thing to do.
+> >>
+> >> (As I said somewhere, I am opposed to checking pahole version in
+> >> Kconfig).
+> >
+> > If you ask me, I am all for removal as this causes pain. But it's there,
+> > so I cannot do anything about that.
+> >
+> >> Also, $(CROSS_COMPILE)pahole looks insane.
+> >>
+> >> You can create a dummy pahole in your local system.
+> >>
+> >> $ echo 'echo v99.99' > $HOME/bin/dummy-pahole
+> >> $ chmod +x  $HOME/bin/dummy-pahole
+> >> $ make CROSS_COMPILE=scripts/dummy-tools  PAHOLE=dummy-pahole  menuconfig
+> >
+> > Well, the question is how do I that for every kernel developer in SUSE?
+>
+> IOW it'd be quite easier if the scripts/dummy-tools/pahole part of the
+> patch was in the tree. (I don't insist on the Makefile change.)
 
-This works but there is one nuisance: The systems usually have a lot of memory and some jobs write a lot of data to their scratch filesystems. So when a job finishes, there often is a lot to sync by umount which sometimes takes many minutes and wastes a lot of I/O bandwidth. Additionally, the reserved space can't be returned and reused until the umount is finished and the backing file is deleted.
 
-So I was looking for a way to avoid that but didn't find something straightforward. The workaround I've found so far is using a dm-device (linear target) between the filesystem and the loop device and then use this sequence for teardown:
+I do not mind  scripts/dummy-tools/pahole
+although you need to do
+make CROSS_COMPILE=scripts/dummy-tools
+PAHOLE=scripts/dummy-tools/pahole  menuconfig
 
-- fcntl EXT4_IOC_SHUTDOWN with EXT4_GOING_FLAGS_NOLOGFLUSH
-- dmestup reload $dmname --table "0 $sectors zero"
-- dmsetup resume $dmname --noflush
-- umount $mountpoint
-- dmsetup remove --deferred $dmname
-- rmdir $mountpoint
 
-This seems to do what I want. The unnecessary flushing of the temporary data is redirected from the backing file into the zero target and it works really fast. There is one remaining problem though, which might be just a cosmetic one: Although ext4 is shut down to prevent it from writing, I sometimes get the error message from the subject in the logs:
 
-[2963044.462043] EXT4-fs (dm-1): mounted filesystem without journal. Opts: (null)
-[2963044.686994] EXT4-fs (dm-0): mounted filesystem without journal. Opts: (null)
-[2963044.728391] EXT4-fs (dm-2): mounted filesystem without journal. Opts: (null)
-[2963055.585198] EXT4-fs (dm-2): shut down requested (2)
-[2963064.821246] EXT4-fs (dm-2): mounted filesystem without journal. Opts: (null)
-[2963074.838259] EXT4-fs (dm-2): shut down requested (2)
-[2963095.979089] EXT4-fs (dm-0): shut down requested (2)
-[2963096.066376] EXT4-fs (dm-0): ext4_writepages: jbd2_start: 5120 pages, ino 11; err -5
-[2963108.636648] EXT4-fs (dm-0): mounted filesystem without journal. Opts: (null)
-[2963125.194740] EXT4-fs (dm-0): shut down requested (2)
-[2963166.708088] EXT4-fs (dm-1): shut down requested (2)
-[2963169.334437] EXT4-fs (dm-0): mounted filesystem without journal. Opts: (null)
-[2963227.515974] EXT4-fs (dm-0): shut down requested (2)
-[2966222.515143] EXT4-fs (dm-0): mounted filesystem without journal. Opts: (null)
-[2966222.523390] EXT4-fs (dm-1): mounted filesystem without journal. Opts: (null)
-[2966222.598071] EXT4-fs (dm-2): mounted filesystem without journal. Opts: (null)
 
-So I'd like to ask a few questions:
+> > thanks,--
+> js
+> suse labs
 
-- Is this error message expected or is it a bug?
-- Can it be ignored or is there a leak or something on that error path.
-- Is there a better way to do what I want? Something I've overlooked?
-- I consider to create a new dm target or add an option to an existing one, because I feel that "zero" underneath a filesystem asks for problems because a filesystem expects to read back the data that it wrote, and the "error" target would trigger lots of errors during the writeback attempts. What I really want is a target which silently discard writes and returns errors on reads. Any opinion about that?
-- But to use devicemapper to eat away the I/O is also just a workaround to the fact that we can't parse some flag to umount to say that we are okay to lose all data and leave the filesystem in a corrupted state if this was the last reference to it. Would this be a useful feature?
 
-Best
-   Donald
+
 -- 
-Donald Buczek
-buczek@molgen.mpg.de
+Best Regards
+Masahiro Yamada
