@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F32A8C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE166C3527E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353530AbiDNOkX (ORCPT
+        id S1353507AbiDNOkU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53626 "EHLO
+        Thu, 14 Apr 2022 10:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344959AbiDNNo5 (ORCPT
+        with ESMTP id S1344937AbiDNNo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:57 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6EC5EDE6;
-        Thu, 14 Apr 2022 06:41:00 -0700 (PDT)
+        Thu, 14 Apr 2022 09:44:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A2215805;
+        Thu, 14 Apr 2022 06:40:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6D0C7CE29B0;
-        Thu, 14 Apr 2022 13:40:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AB66C385A1;
-        Thu, 14 Apr 2022 13:40:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 115F2B82968;
+        Thu, 14 Apr 2022 13:40:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FDDFC385A5;
+        Thu, 14 Apr 2022 13:40:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943656;
-        bh=UwNe/J8+u2nBEFGBM5ZWw38obJdIYFjRMil+3o9hFHw=;
+        s=korg; t=1649943645;
+        bh=2Z19NIKR0aVRkjY2E95TB9kgygXj4YWTY2oe3UXaocg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p43nlY6mLRDf/keFtsSI/m060uPB3tCNOg3IWlaBEyv19+lr22i7aJ7jCAoFOvrjp
-         xZBDuBg2kApJLg/eRnmQHgDUQvTZHtgb3IN3sHQK+41P4PGBvGL7RoEm+TB3LZoaxZ
-         SDCBg+wA3yDNtrSFlXkUUE41pjEpW++vAi0f6zhY=
+        b=mzONtApRQ1CLv82mMs5hCilIkEdM3yPoaVWOS94frSOW3pC1wCQ5CBNJph/aFszFs
+         MaFNjTjZQtOTd1OF2I+CGaFYPBLcOv0LkR6ALzuax8gQ683HM1Ja0aTKFgqcBcPdjF
+         IUT31lRNSXU3anbSsHUVslHH8AKT0CWkIbjRyYfE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 235/475] serial: 8250: Fix race condition in RTS-after-send handling
-Date:   Thu, 14 Apr 2022 15:10:20 +0200
-Message-Id: <20220414110901.697013819@linuxfoundation.org>
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 231/475] pinctrl: renesas: r8a77470: Reduce size for narrow VIN1 channel
+Date:   Thu, 14 Apr 2022 15:10:16 +0200
+Message-Id: <20220414110901.584754664@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,58 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit dedab69fd650ea74710b2e626e63fd35584ef773 ]
+[ Upstream commit 9e04a0eda84fccab0ac22a33825ad53f47c968c7 ]
 
-Set em485->active_timer = NULL isn't always enough to take out the stop
-timer. While there is a check that it acts in the right state (i.e.
-waiting for RTS-after-send to pass after sending some chars) but the
-following might happen:
+The second video-in channel on RZ/G1C has only 12 data lanes, but the
+pin control driver uses the vin_data union, which is meant for 24 data
+lanes, thus wasting space.
 
- - CPU1: some chars send, shifter becomes empty, stop tx timer armed
- - CPU0: more chars send before RTS-after-send expired
- - CPU0: shifter empty irq, port lock taken
- - CPU1: tx timer triggers, waits for port lock
- - CPU0: em485->active_timer = &em485->stop_tx_timer, hrtimer_start(),
-   releases lock()
- - CPU1: get lock, see em485->active_timer == &em485->stop_tx_timer,
-   tear down RTS too early
+Fix this by using the vin_data12 union instead.
 
-This fix bases on research done by Steffen Trumtrar.
+This reduces kernel size by 96 bytes.
 
-Fixes: b86f86e8e7c5 ("serial: 8250: fix potential deadlock in rs485-mode")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Link: https://lore.kernel.org/r/20220215160236.344236-1-u.kleine-koenig@pengutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 50f3f2d73e3426ba ("pinctrl: sh-pfc: Reduce kernel size for narrow VIN channels")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/52716fa89139f6f92592633edb52804d4c5e18f0.1640269757.git.geert+renesas@glider.be
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_port.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/pinctrl/sh-pfc/pfc-r8a77470.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 777ef1a9591c..87567515591e 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1545,6 +1545,18 @@ static inline void start_tx_rs485(struct uart_port *port)
- 	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
- 		serial8250_stop_rx(&up->port);
- 
-+	/*
-+	 * While serial8250_em485_handle_stop_tx() is a noop if
-+	 * em485->active_timer != &em485->stop_tx_timer, it might happen that
-+	 * the timer is still armed and triggers only after the current bunch of
-+	 * chars is send and em485->active_timer == &em485->stop_tx_timer again.
-+	 * So cancel the timer. There is still a theoretical race condition if
-+	 * the timer is already running and only comes around to check for
-+	 * em485->active_timer when &em485->stop_tx_timer is armed again.
-+	 */
-+	if (em485->active_timer == &em485->stop_tx_timer)
-+		hrtimer_try_to_cancel(&em485->stop_tx_timer);
-+
- 	em485->active_timer = NULL;
- 
- 	mcr = serial8250_in_MCR(up);
+diff --git a/drivers/pinctrl/sh-pfc/pfc-r8a77470.c b/drivers/pinctrl/sh-pfc/pfc-r8a77470.c
+index b3b116da1bb0..14005725a726 100644
+--- a/drivers/pinctrl/sh-pfc/pfc-r8a77470.c
++++ b/drivers/pinctrl/sh-pfc/pfc-r8a77470.c
+@@ -2121,7 +2121,7 @@ static const unsigned int vin0_clk_mux[] = {
+ 	VI0_CLK_MARK,
+ };
+ /* - VIN1 ------------------------------------------------------------------- */
+-static const union vin_data vin1_data_pins = {
++static const union vin_data12 vin1_data_pins = {
+ 	.data12 = {
+ 		RCAR_GP_PIN(3,  1), RCAR_GP_PIN(3, 2),
+ 		RCAR_GP_PIN(3,  3), RCAR_GP_PIN(3, 4),
+@@ -2131,7 +2131,7 @@ static const union vin_data vin1_data_pins = {
+ 		RCAR_GP_PIN(3, 15), RCAR_GP_PIN(3, 16),
+ 	},
+ };
+-static const union vin_data vin1_data_mux = {
++static const union vin_data12 vin1_data_mux = {
+ 	.data12 = {
+ 		VI1_DATA0_MARK, VI1_DATA1_MARK,
+ 		VI1_DATA2_MARK, VI1_DATA3_MARK,
 -- 
 2.34.1
 
