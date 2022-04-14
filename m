@@ -2,223 +2,341 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F99C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DFE5C4321E
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:12:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244751AbiDNROH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
+        id S245461AbiDNROh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 13:14:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245361AbiDNRNt (ORCPT
+        with ESMTP id S245314AbiDNRO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:13:49 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AECDD326C3;
-        Thu, 14 Apr 2022 10:04:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649955886; x=1681491886;
-  h=to:cc:references:from:subject:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=M9pvZ2z0DrNuK7Y81JF7Sp2sNONq9BN0pKSmujNSrEs=;
-  b=K1MrvyU6P5ecGDiog1xSNoFVlIcFsMwe6M8HmUagkwhEEfpUQWqHD4OG
-   ju7+Gonpm9+0SSwfL6IsVu7dibscKStfgLQk5vbcrk121KERBMEgPA9XO
-   w71Awq1Evcu6H3d6HqzlDGnAF/wiRlHIjiHFFOcqHppz1/FGITrEJLlP9
-   GGLcxgjRJeyeshlNdV/KDVHQlBedAfIfqy4Ql1lwQ7uxIE2Qzi82Smce4
-   WD4kkjIEZ5Y70mWmOoRzbVo3iTUGMowPaG081niMVtbHqqZC/0gSNsdwL
-   ZusWGfBVD2yPxGP/At+RW0OX8RBNZ0mgcvzuxWaHh6cJ+zXfJYnti1Vpg
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="244865210"
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="244865210"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 10:04:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="725440296"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga005.jf.intel.com with ESMTP; 14 Apr 2022 10:04:36 -0700
-To:     Evan Green <evgreen@chromium.org>,
-        Alan Stern <stern@rowland.harvard.edu>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Rajat Jain <rajatja@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Youngjin Jang <yj84.jang@samsung.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-usb@vger.kernel.org
-References: <20220407115918.1.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid>
- <YlBGvFFSp/R2CBmh@rowland.harvard.edu>
- <CAE=gft7Zi9tpJ74Tf2iqPRbwJkmSLiKJt-WhwD+h-DxQh75D6g@mail.gmail.com>
- <YlDoSY19HYNJGI50@rowland.harvard.edu>
- <022a50ac-7866-2140-1b40-776255f3a036@linux.intel.com>
- <YlRATrMxRWt9gVqt@rowland.harvard.edu>
- <4353a956-9855-9c14-7dbf-bf16580abe32@linux.intel.com>
- <YlWdfWRXYjkfHLIP@rowland.harvard.edu>
- <b1df80e4-af6a-e84f-f49d-c74500bdec05@linux.intel.com>
- <Ylgt8Y7Mz4nOAhtv@rowland.harvard.edu>
- <CAE=gft7fvjUX7SdjubHBpd=v3abQ=gJrhM-Oc_RxxqSkoG6mSA@mail.gmail.com>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: Re: [PATCH] USB: hcd-pci: Fully suspend across freeze/thaw cycle
-Message-ID: <039bb05f-32e4-2dd1-89ca-b51c17984a7f@linux.intel.com>
-Date:   Thu, 14 Apr 2022 20:06:32 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+        Thu, 14 Apr 2022 13:14:28 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA302BA;
+        Thu, 14 Apr 2022 10:06:55 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id u19so10220388lff.4;
+        Thu, 14 Apr 2022 10:06:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Zu1iv2slDEmPJIqcluQVGAP7gHAtNvDuvYomfYWCtOo=;
+        b=RB2fBs0UREHfpfO64Pv8J+8O6fHarog4sJ6htux10o+4yqxvW1sEd7aSVbEBsTUg/z
+         J8QczwAWaXv4YH236RswaNJeQIJTzCpTZGirp/eVBh5rxeSNOJPHoNIBPDglT8sCBlwO
+         +SUqHq+b2by0NS5zJCC3VyowbNsSkzetIhugJENr9aj9zFaS+Gp0eNX9whXVJWiS806O
+         sebHdcD2WBCH8Eyr41W6cQhj7DXXgAlrR/O6YNRwbcA5EveRGZP7o8+x9OgNSzUdPhiH
+         E0MpmaV7k6Cjl8AKdLkjoNyD9m4jgVR9xHee7jW6+VkXBlITManSnfAH+V8bHm6jokqp
+         2RjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Zu1iv2slDEmPJIqcluQVGAP7gHAtNvDuvYomfYWCtOo=;
+        b=7S1xewE4CpbaNYerOcEGVA19NExcev0v5biU8vagbam3phoxJrhu6+hSRorcoR1o9b
+         NoqypCsD4/T/kHfWi3djD2+eTT37IIJm5+E6/eJO/DYQYIw53Hz31TT4oN+6kpmrCk4v
+         IVSN4bA/5MKucvgO6EaiEQM+qE5zHZDstfZQMC6iJQwTb/89cyW2vvyIKZmbtpg/jo8W
+         1ASaUzSlboRe1Gfz6tHctr1ZLKUqgA53ek9rVcN8pfS1VZcmonfcICnYjeRGB3RcfLDT
+         aWGr9tdQnk+ORNY+j/zeanEJ5WWFqL/cpo3JxqKFKVtIAUZRIXvVbPK413H8G3fqAJjb
+         /xmw==
+X-Gm-Message-State: AOAM531DpVPB/ZygRc1cRmyGNd26Mq0wNu9hYqBd/Uy2RxiDOOXNr9yP
+        SdMMntngERiDHjQTFVCk1ZcY0OZzULk=
+X-Google-Smtp-Source: ABdhPJwHn91RETxTyVCXAOIUspMdntB03AtujzViFqQaVIZ3ZxYbFNcEYoE2/2MPXC3OZcA2xopN8w==
+X-Received: by 2002:a05:6512:22c5:b0:46c:dded:248d with SMTP id g5-20020a05651222c500b0046cdded248dmr2515282lfu.20.1649956014005;
+        Thu, 14 Apr 2022 10:06:54 -0700 (PDT)
+Received: from nergzd-desktop.localdomain ([194.39.226.133])
+        by smtp.gmail.com with ESMTPSA id x11-20020a056512046b00b0046bbe5d2eabsm52216lfd.75.2022.04.14.10.06.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 10:06:53 -0700 (PDT)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH 3/4] mfd: sm5703: Add support for SM5703 MFD
+Date:   Thu, 14 Apr 2022 20:06:14 +0300
+Message-Id: <20220414170616.23319-4-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220414170616.23319-1-markuss.broks@gmail.com>
+References: <20220414170616.23319-1-markuss.broks@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAE=gft7fvjUX7SdjubHBpd=v3abQ=gJrhM-Oc_RxxqSkoG6mSA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14.4.2022 19.30, Evan Green wrote:
-> Hi Alan and Mathias,
-> 
-> On Thu, Apr 14, 2022 at 7:21 AM Alan Stern <stern@rowland.harvard.edu> wrote:
->>
->> On Thu, Apr 14, 2022 at 05:00:12PM +0300, Mathias Nyman wrote:
->>> On 12.4.2022 18.40, Alan Stern wrote:
->>>> On Tue, Apr 12, 2022 at 05:56:42PM +0300, Mathias Nyman wrote:
->>>>> On 11.4.2022 17.50, Alan Stern wrote:
->>>>>> For example, what would happen if the user unplugs a device right in the
->>>>>> middle of the freeze transition, after the root hub has been frozen but
->>>>>> before the controller is frozen?  We don't want such an unplug event to
->>>>>> prevent the system from going into hibernation -- especially if the root
->>>>>> hub was not enabled for wakeup.
->>>>>
->>>>> We should be able to let system go to hibernate even if we get a disconnect
->>>>> interrupt between roothub and host controller freeze.
->>>>> Host is not yet suspended so no PME# wake is generated, only an interrupt.
->>>>>
->>>>> From Linux PM point of view it should be ok as well as the actual xhci
->>>>> device that is generating the interrupt is hasnt completer freeze()
->>>>>
->>>>> The xhci interrupt handler just needs to make sure that the disconnect
->>>>> isn't propagated if roothub is suspended and wake on disconnect
->>>>> is not set. And definitely make sure xhci doesn't start roothub polling.
->>>>>
->>>>> When freeze() is called for the host we should prevent the host from
->>>>> generating interrupts.
->>>>
->>>> I guess that means adding a new callback.  Or we could just suspend the
->>>> controller, like Evan proposed originally
->>>
->>> Suspending the host in freeze should work.
->>> It will do an extra xhci controller state save stage, but that should be harmless.
->>>
->>> But is there really a need for the suggested noirq part?
->>>
->>> +     .freeze_noirq   = hcd_pci_suspend_noirq,
->>>
->>> That will try to set the host to PCI D3 state.
->>> It seems a bit unnecessary for freeze.
->>
->> Agreed.
->>
->>>>>> (If the root hub _is_ enabled for wakeup then it's questionable.
->>>>>> Unplugging a device would be a wakeup event, so you could easily argue
->>>>>> that it _should_ prevent the system from going into hibernation.  After
->>>>>> all, if the unplug happened a few milliseconds later, after the system
->>>>>> had fully gone into hibernation, then it would cause the system to wake
->>>>>> up.)
->>>>>>
->>>>>>> Would it make sense prevent xHCI interrupt generation in the host
->>>>>>> freeze() stage, clearing the xHCI EINT bit in addition to calling
->>>>>>> check_roothub_suspend()?
->>>>>>> Then enable it back in thaw()
->>>>>>
->>>>>> That won't fully eliminate the problem mentioned in the preceding
->>>>>> paragraphs, although I guess it would help somewhat.
->>>>>
->>>>> Would the following steps solve this?
->>>>>
->>>>> 1. Disable device initiated resume for connected usb devices in freeze()
->>>>>
->>>>> 2. Don't propagate connect or OC changes if roothub is suspended and port wake
->>>>>    flags are disabled. I.E don't kick roothub polling in xhci interrupt
->>>>>    handler here.
->>>>
->>>> I guess you can't just halt the entire host controller when only one of
->>>> the root hubs is suspended with wakeup disabled.  That does complicate
->>>> things.  But you could halt it as soon as both of the root hubs are
->>>> frozen.  Wouldn't that prevent interrupt generation?
->>>
->>> True, but probably easier to just suspend host in freeze() as you stated above.
->>
->> Okay.
->>
->> Evan, this discussion suggests that you rewrite your patch as a series
->> of three:
->>
->>      1. Change choose_wakeup() so that for PM_EVENT_FREEZE, wakeup is
->>         always disabled.
-> 
-> If I understand this correctly, this means potentially runtime
-> resuming the device so its wakeup setting can be consistently set to
-> wakeups disabled across a freeze transition. Got it I think in terms
-> of the "how".
-> 
->>
->>      2. Change the xhci-hcd interrupt handler so that port-status
->>         changes are ignored if the port's root hub is suspended with
->>         wakeup disabled.
-> 
-> This part confuses me. This would be way deep under
-> xhci_handle_event(), probably in handle_port_status(), just throwing
-> away certain events that come in the ring. How would we know to go
-> back and process those events later? I think we don't need to do this
-> if we suspend the controller as in #3 below. The suspended (halted)
-> controller wouldn't generate event interrupts (since the spec mentions
-> port status change generation is gated on HCHalted). So we're already
-> covered against receiving interrupts in this zone by halting the
-> controller, and the events stay nicely pending for when we restart it
-> in thaw.
+Silicon Mitus SM5703 is a multi-function device, meant to be
+used in mobile devices. It has several modules: LDO, BUCK regulators,
+charger circuit, flash LED driver, a fuel gauge for monitoring the battery
+and a MUIC USB switcher. The MUIC and fuel gauge parts are separate in that
+they use separate i2c lines to communicate with the device, while charger
+circuit, LED driver and regulators are on the main i2c line the device is
+controlled with.
 
-Was thinking the same here. It would be nice to have this to comply with
-usb spec, keeping roothub from propagating connect/disconnect events
-immediately after suspending it with wake flags cleared.
+Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+---
+ MAINTAINERS                |   8 +++
+ drivers/mfd/Kconfig        |  12 +++++
+ drivers/mfd/Makefile       |   1 +
+ drivers/mfd/sm5703.c       |  81 ++++++++++++++++++++++++++++
+ include/linux/mfd/sm5703.h | 105 +++++++++++++++++++++++++++++++++++++
+ 5 files changed, 207 insertions(+)
+ create mode 100644 drivers/mfd/sm5703.c
+ create mode 100644 include/linux/mfd/sm5703.h
 
-But it's a lot of work to implement this, and for this issue, and linux 
-hibernate point of view I don't think it has any real benefit.
-The actual device generating the interrupt is the host (parent of roothub),
-and that will stop once freeze() is called for it in #3 
-
-> 
-> Is the goal of #1 purely a setup change for #2, or does it stand on
-> its own even if we nixed #2? Said differently, is #1 trying to ensure
-> that wake signaling doesn't occur at all between freeze and thaw, even
-> when the controller is suspended and guaranteed not to generate
-> interrupts via its "normal" mechanism? I don't have a crisp mental
-> picture of how the wake signaling works, but if the controller wake
-> mechanism sidesteps the original problem of sending an MSI to a dead
-> CPU (as in, it does not use MSIs), then it might be ok as-is.
-
-#1 is needed because xHCI can generate wake events even when halted if
-device initiated resume signaling is detected on a roothub port.
-Just like it can generate wake events on connect/disconnect if wake flags
-are set. (xhci spec figure 4-34, see PLS=Resume)
-We want to avoid those wakeups between freeze-thaw
-
-So just #1 and #3 should probably solve this, and be an easier change. 
-
--Mathias
-
-> 
->>
->>      3. As in the original patch, make the .freeze and .thaw callbacks
->>         in hcd-pci.c call the appropriate suspend and resume routines,
->>         but don't do anything for .freeze_noirq and .thaw_noirq.
-> 
-> Sure. I had made the _noirq paths match suspend for consistency, I
-> wasn't sure if those could mix n match without issues. I'll try it out
-> leaving the _noirq callbacks alone.
-> -Evan
-> 
->>
->> How does that sound?
->>
->> Alan Stern
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2a83ac6bfa4d..d3eef171eb8c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17886,6 +17886,14 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev
+ F:	include/linux/srcu*.h
+ F:	kernel/rcu/srcu*.c
+ 
++SM5703 MFD DRIVER
++M:	Markuss Broks <markuss.broks@gmail.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
++F:	Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
++F:	drivers/mfd/sm5703.c
++F:	drivers/regulator/sm5703-regulator.c
++
+ SMACK SECURITY MODULE
+ M:	Casey Schaufler <casey@schaufler-ca.com>
+ L:	linux-security-module@vger.kernel.org
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index e0d2fcb10a0c..e553a8db24c2 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -1223,6 +1223,18 @@ config MFD_SM501
+ 	  interface. The device may be connected by PCI or local bus with
+ 	  varying functions enabled.
+ 
++config MFD_SM5703
++	tristate "Silicon Mitus SM5703 MFD"
++	depends on I2C
++	select MFD_CORE
++	select REGMAP_I2C
++	help
++	  This is the core driver for the Silicon Mitus SM5703 multi-function
++	  device. This device is meant to be used in phones and it has numerous
++	  modules, including LED controller, regulators, fuel gauge, MUIC and
++	  charger circuit. It also support muxing a serial interface over USB
++	  data lines.
++
+ config MFD_SM501_GPIO
+ 	bool "Export GPIO via GPIO layer"
+ 	depends on MFD_SM501 && GPIOLIB
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index df1ecc4a4c95..3278069d3461 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -275,3 +275,4 @@ rsmu-i2c-objs			:= rsmu_core.o rsmu_i2c.o
+ rsmu-spi-objs			:= rsmu_core.o rsmu_spi.o
+ obj-$(CONFIG_MFD_RSMU_I2C)	+= rsmu-i2c.o
+ obj-$(CONFIG_MFD_RSMU_SPI)	+= rsmu-spi.o
++obj-$(CONFIG_MFD_SM5703)	+= sm5703.o
+diff --git a/drivers/mfd/sm5703.c b/drivers/mfd/sm5703.c
+new file mode 100644
+index 000000000000..0eb6f257f109
+--- /dev/null
++++ b/drivers/mfd/sm5703.c
+@@ -0,0 +1,81 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <linux/err.h>
++#include <linux/delay.h>
++#include <linux/gpio/consumer.h>
++#include <linux/i2c.h>
++#include <linux/mfd/core.h>
++#include <linux/mfd/sm5703.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/regmap.h>
++
++static const struct mfd_cell sm5703_devs[] = {
++	{
++		.name = "sm5703-regulator",
++		.of_compatible = "siliconmitus,sm5703-regulator",
++	},
++};
++
++static const struct regmap_config sm5703_regmap_config = {
++	.reg_bits	= 8,
++	.val_bits	= 8,
++};
++
++static int sm5703_i2c_probe(struct i2c_client *i2c,
++			    const struct i2c_device_id *id)
++{
++	struct sm5703_dev *sm5703;
++	struct device *dev = &i2c->dev;
++	unsigned int dev_id;
++	int ret;
++
++	sm5703 = devm_kzalloc(dev, sizeof(*sm5703), GFP_KERNEL);
++	if (!sm5703)
++		return -ENOMEM;
++
++	i2c_set_clientdata(i2c, sm5703);
++	sm5703->dev = dev;
++
++	sm5703->regmap = devm_regmap_init_i2c(i2c, &sm5703_regmap_config);
++	if (IS_ERR(sm5703->regmap))
++		return dev_err_probe(dev, PTR_ERR(sm5703->regmap),
++				     "Failed to allocate the register map\n");
++
++	sm5703->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(sm5703->reset_gpio))
++		return dev_err_probe(dev, PTR_ERR(sm5703->reset_gpio), "Cannot get reset GPIO\n");
++
++	gpiod_set_value_cansleep(sm5703->reset_gpio, 1);
++	msleep(20);
++
++	ret = regmap_read(sm5703->regmap, SM5703_DEVICE_ID, &dev_id);
++	if (ret)
++		return dev_err_probe(dev, -ENODEV, "Device not found\n");
++
++	ret = devm_mfd_add_devices(sm5703->dev, -1, sm5703_devs,
++				   ARRAY_SIZE(sm5703_devs), NULL, 0, NULL);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to add child devices\n");
++
++	return 0;
++}
++
++static const struct of_device_id sm5703_of_match[] = {
++	{ .compatible = "siliconmitus,sm5703-mfd", },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, sm5703_of_match);
++
++static struct i2c_driver sm5703_driver = {
++	.driver = {
++		.name = "sm5703",
++		.of_match_table = sm5703_of_match,
++	},
++	.probe = sm5703_i2c_probe,
++};
++module_i2c_driver(sm5703_driver);
++
++MODULE_DESCRIPTION("Silicon Mitus SM5703 multi-function device driver");
++MODULE_AUTHOR("Markuss Broks <markuss.broks@gmail.com>");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/mfd/sm5703.h b/include/linux/mfd/sm5703.h
+new file mode 100644
+index 000000000000..c62affa0d3f1
+--- /dev/null
++++ b/include/linux/mfd/sm5703.h
+@@ -0,0 +1,105 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++
++#ifndef _SM5703_H
++#define _SM5703_H
++
++struct sm5703_dev {
++	struct device *dev;
++	struct regmap *regmap;
++	struct gpio_desc *reset_gpio;
++};
++
++// Regulator-related defines
++
++#define SM5703_REG_LDO1				0x1A
++#define SM5703_REG_LDO2				0x1B
++#define SM5703_REG_LDO3				0x1C
++#define SM5703_LDO_EN				BIT(3)
++#define SM5703_LDO_VOLT_MASK			0x7
++#define SM5703_BUCK_VOLT_MASK			0x1F
++#define SM5703_REG_USBLDO12			0x1C
++#define SM5703_REG_EN_USBLDO1			BIT(6)
++#define SM5703_REG_EN_USBLDO2			BIT(7)
++#define SM5703_REG_BUCK				0x1D
++#define SM5703_REG_EN_BUCK			BIT(6)
++#define SM5703_USBLDO_MICROVOLT			4800000
++#define SM5703_VBUS_MICROVOLT			5000000
++
++// Fuel-Gauge-related defines
++
++#define SM5703_FG_REG_DEVICE_ID			0x00
++#define SM5703_FG_REG_CNTL			0x01
++#define SM5703_FG_REG_INTFG			0x02
++#define SM5703_FG_REG_INTFG_MASK		0x03
++#define SM5703_FG_REG_STATUS			0x04
++#define SM5703_FG_REG_SOC			0x05
++#define SM5703_FG_REG_OCV			0x06
++#define SM5703_FG_REG_VOLTAGE			0x07
++#define SM5703_FG_REG_CURRENT			0x08
++#define SM5703_FG_REG_TEMPERATURE		0x09
++#define SM5703_FG_REG_CURRENT_EST		0x85
++#define SM5703_FG_REG_FG_OP_STATUS		0x10
++
++// Flash LED driver-related defines
++
++#define SM5703_FLEDCNTL1			0x14
++#define SM5703_FLEDCNTL2			0x15
++#define SM5703_FLEDCNTL3			0x16
++#define SM5703_FLEDCNTL4			0x17
++#define SM5703_FLEDCNTL5			0x18
++#define SM5703_FLEDCNTL6			0x19
++
++#define SM5703_FLEDEN_MASK			0x03
++#define SM5703_FLEDEN_DISABLE			0x00
++#define SM5703_FLEDEN_MOVIE_MODE		0x01
++#define SM5703_FLEDEN_FLASH_MODE		0x02
++#define SM5703_FLEDEN_EXTERNAL			0x03
++
++#define SM5703_IFLED_MASK			0x1F
++#define SM5703_IMLED_MASK			0x1F
++
++// Charger-related, IRQ and device ID defines
++
++#define SM5703_REG_CNTL				0x0C
++#define SM5703_VBUSCNTL				0x0D
++#define SM5703_CHGCNTL1				0x0E
++#define SM5703_CHGCNTL2				0x0F
++#define SM5703_CHGCNTL3				0x10
++#define SM5703_CHGCNTL4				0x11
++#define SM5703_CHGCNTL5				0x12
++#define SM5703_CHGCNTL6				0x13
++#define SM5703_OTGCURRENTCNTL			0x60
++#define SM5703_Q3LIMITCNTL			0x66
++#define SM5703_DEVICE_ID			0x1E
++#define SM5703_OPERATION_MODE			0x07
++#define SM5703_OPERATION_MODE_MASK		0x07
++
++#define SM5703_OPERATION_MODE_SUSPEND		0x00
++#define SM5703_OPERATION_MODE_CHARGING_OFF	0x04
++#define SM5703_OPERATION_MODE_CHARGING_ON	0x05
++#define SM5703_OPERATION_MODE_FLASH_BOOST_MODE	0x06
++#define SM5703_OPERATION_MODE_USB_OTG_MODE	0x07
++
++#define SM5703_BSTOUT				0x0F
++#define SM5703_BSTOUT_MASK			0x0F
++#define SM5703_BSTOUT_SHIFT			0
++
++#define SM5703_BSTOUT_4P5			0x05
++#define SM5703_BSTOUT_5P0			0x0A
++#define SM5703_BSTOUT_5P1			0x0B
++
++#define SM5703_IRQ_STATUS1			0x08
++#define SM5703_IRQ_STATUS2			0x09
++#define SM5703_IRQ_STATUS3			0x0A
++#define SM5703_IRQ_STATUS4			0x0B
++#define SM5703_IRQ_STATUS5			0x6B
++
++#define SM5703_STATUS1_OTGFAIL			0x80
++#define SM5703_STATUS3_DONE			0x08
++#define SM5703_STATUS3_TOPOFF			0x04
++#define SM5703_STATUS3_CHGON			0x01
++#define SM5703_STATUS5_VBUSOVP			0x80
++#define SM5703_STATUS5_VBUSUVLO			0x40
++#define SM5703_STATUS5_VBUSOK			0x20
++
++#endif
+-- 
+2.35.1
 
