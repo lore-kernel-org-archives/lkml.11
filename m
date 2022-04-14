@@ -2,113 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73CC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 06:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 332FAC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 06:22:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240049AbiDNGYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 02:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45936 "EHLO
+        id S240087AbiDNGYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 02:24:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240066AbiDNGXv (ORCPT
+        with ESMTP id S240070AbiDNGX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 02:23:51 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F18B4F468;
-        Wed, 13 Apr 2022 23:21:23 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1BA0D15DB;
-        Wed, 13 Apr 2022 23:21:23 -0700 (PDT)
-Received: from a077893.arm.com (unknown [10.163.37.202])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B229A3F70D;
-        Wed, 13 Apr 2022 23:21:17 -0700 (PDT)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     christophe.leroy@csgroup.eu, catalin.marinas@arm.com,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Khalid Aziz <khalid.aziz@oracle.com>
-Subject: [PATCH V7 4/7] sparc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-Date:   Thu, 14 Apr 2022 11:51:22 +0530
-Message-Id: <20220414062125.609297-5-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220414062125.609297-1-anshuman.khandual@arm.com>
-References: <20220414062125.609297-1-anshuman.khandual@arm.com>
+        Thu, 14 Apr 2022 02:23:56 -0400
+Received: from out199-7.us.a.mail.aliyun.com (out199-7.us.a.mail.aliyun.com [47.90.199.7])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302855373C
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 23:21:26 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VA1M6gs_1649917272;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VA1M6gs_1649917272)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 14 Apr 2022 14:21:22 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     tglx@linutronix.de
+Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] x86/process: Fix kerneldoc warning
+Date:   Thu, 14 Apr 2022 14:21:10 +0800
+Message-Id: <20220414062110.60343-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This defines and exports a platform specific custom vm_get_page_prot() via
-subscribing ARCH_HAS_VM_GET_PAGE_PROT. It localizes arch_vm_get_page_prot()
-as sparc_vm_get_page_prot() and moves near vm_get_page_prot().
+Fix the following W=1 kernel warnings:
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Khalid Aziz <khalid.aziz@oracle.com>
-Cc: sparclinux@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Acked-by: David S. Miller <davem@davemloft.net>
-Reviewed-by: Khalid Aziz <khalid.aziz@oracle.com>
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+arch/x86/kernel/process.c:412: warning: expecting prototype for
+tss_update_io_bitmap(). Prototype was for native_tss_update_io_bitmap()
+instead.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 ---
- arch/sparc/Kconfig            |  1 +
- arch/sparc/include/asm/mman.h |  6 ------
- arch/sparc/mm/init_64.c       | 12 ++++++++++++
- 3 files changed, 13 insertions(+), 6 deletions(-)
+ arch/x86/kernel/process.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
-index 9200bc04701c..85b573643af6 100644
---- a/arch/sparc/Kconfig
-+++ b/arch/sparc/Kconfig
-@@ -84,6 +84,7 @@ config SPARC64
- 	select PERF_USE_VMALLOC
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
- 	select HAVE_C_RECORDMCOUNT
-+	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select HAVE_ARCH_AUDITSYSCALL
- 	select ARCH_SUPPORTS_ATOMIC_RMW
- 	select ARCH_SUPPORTS_DEBUG_PAGEALLOC
-diff --git a/arch/sparc/include/asm/mman.h b/arch/sparc/include/asm/mman.h
-index 274217e7ed70..af9c10c83dc5 100644
---- a/arch/sparc/include/asm/mman.h
-+++ b/arch/sparc/include/asm/mman.h
-@@ -46,12 +46,6 @@ static inline unsigned long sparc_calc_vm_prot_bits(unsigned long prot)
- 	}
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index dbaf12c43fe1..c25c1a9f5673 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -406,7 +406,7 @@ static void tss_copy_io_bitmap(struct tss_struct *tss, struct io_bitmap *iobm)
  }
  
--#define arch_vm_get_page_prot(vm_flags) sparc_vm_get_page_prot(vm_flags)
--static inline pgprot_t sparc_vm_get_page_prot(unsigned long vm_flags)
--{
--	return (vm_flags & VM_SPARC_ADI) ? __pgprot(_PAGE_MCD_4V) : __pgprot(0);
--}
--
- #define arch_validate_prot(prot, addr) sparc_validate_prot(prot, addr)
- static inline int sparc_validate_prot(unsigned long prot, unsigned long addr)
+ /**
+- * tss_update_io_bitmap - Update I/O bitmap before exiting to usermode
++ * native_tss_update_io_bitmap - Update I/O bitmap before exiting to usermode
+  */
+ void native_tss_update_io_bitmap(void)
  {
-diff --git a/arch/sparc/mm/init_64.c b/arch/sparc/mm/init_64.c
-index 8b1911591581..f6174df2d5af 100644
---- a/arch/sparc/mm/init_64.c
-+++ b/arch/sparc/mm/init_64.c
-@@ -3184,3 +3184,15 @@ void copy_highpage(struct page *to, struct page *from)
- 	}
- }
- EXPORT_SYMBOL(copy_highpage);
-+
-+pgprot_t vm_get_page_prot(unsigned long vm_flags)
-+{
-+	unsigned long prot = pgprot_val(protection_map[vm_flags &
-+					(VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]);
-+
-+	if (vm_flags & VM_SPARC_ADI)
-+		prot |= _PAGE_MCD_4V;
-+
-+	return __pgprot(prot);
-+}
-+EXPORT_SYMBOL(vm_get_page_prot);
 -- 
-2.25.1
+2.20.1.7.g153144c
 
