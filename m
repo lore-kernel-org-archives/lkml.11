@@ -2,74 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E123C35294
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC215C35280
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357048AbiDNPZa (ORCPT
+        id S1357034AbiDNPZ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
+        Thu, 14 Apr 2022 11:25:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347974AbiDNOBt (ORCPT
+        with ESMTP id S1346824AbiDNN57 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:01:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD2D3BBEF;
-        Thu, 14 Apr 2022 06:57:29 -0700 (PDT)
+        Thu, 14 Apr 2022 09:57:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA5FB3DDA;
+        Thu, 14 Apr 2022 06:48:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53535B829A8;
-        Thu, 14 Apr 2022 13:57:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9AB6C385A1;
-        Thu, 14 Apr 2022 13:57:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5ABC61D7E;
+        Thu, 14 Apr 2022 13:48:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3DCDC385A5;
+        Thu, 14 Apr 2022 13:48:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944647;
-        bh=UmtEHEoEPr9euwfX1IGVzkYvnt8WHrS3FWOHMrHbhI4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yCttsKBk9ArkjIVOcdO4IGpskmkuRY6jylh2sm1wMHunRPJ9I9BMDnTXZ2P1SJ2as
-         lpInWx0Ml5OCCV0Pd3tZlnprl0j0NjI6QGGp9bCt+1huQKOut7ovrOuJ9vFjMfNVzA
-         oDcKsRvsZtedp0E8Foz7wYiQpCnFooP4i25pWooI=
-Date:   Thu, 14 Apr 2022 15:34:20 +0200
+        s=korg; t=1649944087;
+        bh=y5acm9QtIYIh4TAQnZ1YLQpJn15sclndKlvdLyihpLA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1CYpQGSDDye42xPHMsLYDxdohHTamG73+PjrzSxK17/vRykRGCREUd2Zz5XHhK/Sn
+         Hl2lpylVC3MYgHXqsQXSg42zEBRYf/wFVRAKhazbuFomsRT3A+fFJuwCt/Szyn96lL
+         IlUro/XP2sH7IAVWIG4pxKCQ+Fn3Z5Rkgk2qvm/Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "# 3.4.x" <stable@vger.kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Neal Liu <neal_liu@aspeedtech.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 4.19 208/338] ARM: ftrace: avoid redundant loads or
- clobbering IP
-Message-ID: <Ylgi3Nh8mbAOvXi6@kroah.com>
-References: <20220414110838.883074566@linuxfoundation.org>
- <20220414110844.817011928@linuxfoundation.org>
- <CAMj1kXG9ibOZfo60_pjwqACWhfPt8=38MDJD8C_CBoLrTYmCOw@mail.gmail.com>
+Subject: [PATCH 5.4 387/475] usb: ehci: add pci device support for Aspeed platforms
+Date:   Thu, 14 Apr 2022 15:12:52 +0200
+Message-Id: <20220414110905.898555779@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXG9ibOZfo60_pjwqACWhfPt8=38MDJD8C_CBoLrTYmCOw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 03:25:29PM +0200, Ard Biesheuvel wrote:
-> On Thu, 14 Apr 2022 at 15:23, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > From: Ard Biesheuvel <ardb@kernel.org>
-> >
-> > [ Upstream commit d11967870815b5ab89843980e35aab616c97c463 ]
-> >
-> 
-> NAK. Please don't backport these patches to -stable, I thought I had
-> been clear on this.
+From: Neal Liu <neal_liu@aspeedtech.com>
 
-I dropped the patches you asked to be dropped, but this is a different
-one and is already in the following releases:
-	5.10.110 5.15.33 5.16.19 5.17.2
+[ Upstream commit c3c9cee592828528fd228b01d312c7526c584a42 ]
 
-I can also drop it from here and the 5.4 queue if you do not want it
-there.
+Enable Aspeed quirks in commit 7f2d73788d90 ("usb: ehci:
+handshake CMD_RUN instead of STS_HALT") to support Aspeed
+ehci-pci device.
 
-thanks,
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Link: https://lore.kernel.org/r/20220208101657.76459-1-neal_liu@aspeedtech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/usb/host/ehci-pci.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-greg k-h
+diff --git a/drivers/usb/host/ehci-pci.c b/drivers/usb/host/ehci-pci.c
+index 774ccaa5acee..1962140a59f2 100644
+--- a/drivers/usb/host/ehci-pci.c
++++ b/drivers/usb/host/ehci-pci.c
+@@ -21,6 +21,9 @@ static const char hcd_name[] = "ehci-pci";
+ /* defined here to avoid adding to pci_ids.h for single instance use */
+ #define PCI_DEVICE_ID_INTEL_CE4100_USB	0x2e70
+ 
++#define PCI_VENDOR_ID_ASPEED		0x1a03
++#define PCI_DEVICE_ID_ASPEED_EHCI	0x2603
++
+ /*-------------------------------------------------------------------------*/
+ #define PCI_DEVICE_ID_INTEL_QUARK_X1000_SOC		0x0939
+ static inline bool is_intel_quark_x1000(struct pci_dev *pdev)
+@@ -223,6 +226,12 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
+ 			ehci->has_synopsys_hc_bug = 1;
+ 		}
+ 		break;
++	case PCI_VENDOR_ID_ASPEED:
++		if (pdev->device == PCI_DEVICE_ID_ASPEED_EHCI) {
++			ehci_info(ehci, "applying Aspeed HC workaround\n");
++			ehci->is_aspeed = 1;
++		}
++		break;
+ 	}
+ 
+ 	/* optional debug port, normally in the first BAR */
+-- 
+2.35.1
+
+
+
