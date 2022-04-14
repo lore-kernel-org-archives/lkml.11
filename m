@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E6EC35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76917C35296
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346459AbiDNOur (ORCPT
+        id S1346701AbiDNOvC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34348 "EHLO
+        Thu, 14 Apr 2022 10:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345210AbiDNNp1 (ORCPT
+        with ESMTP id S1345218AbiDNNpb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:27 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3F82DE0;
-        Thu, 14 Apr 2022 06:43:02 -0700 (PDT)
+        Thu, 14 Apr 2022 09:45:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CB8E2DE0;
+        Thu, 14 Apr 2022 06:43:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5CF8FCE29B0;
-        Thu, 14 Apr 2022 13:43:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77095C385A1;
-        Thu, 14 Apr 2022 13:42:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE25261D29;
+        Thu, 14 Apr 2022 13:43:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF5CFC385AA;
+        Thu, 14 Apr 2022 13:43:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943779;
-        bh=4O0N2N8QRgt9YtZz4EGkGqK582Qf7irZX4OwaBX3SkI=;
+        s=korg; t=1649943785;
+        bh=Imipji81g7O1K1+tD6sk4irrm6qC8K168k7Lr8UyD5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M6gvZYIG7hOOLlh3Uq5uFpE/F8qB0K6DPtFiCUeplsKBYM4qo2NAO/p7KlAfjtbbK
-         38t6Nk4uFGl7FIovc053//fIA8rqS+oCYvMTQG5vn85lfoATrWP7L3l4Wpztua7ZsN
-         /s+m4CM+dp/h8xxcCZknCbY1ezHcZPLup2RcqpzY=
+        b=qdHqdgFCjPbtS7sdTDdD3pOA+bkWWTeuq3+b9ZRSuNHDcO8dzltJu1/zIlUpWRQTm
+         QXtyJp244dDBDUGqIBGXr71b0yLNCcL569MYbMptAvYVFqTYY2DEOZHYyp8irzsLSG
+         MjZmV8s67+sThe6zIxLBSiWkXTHeeFzo+Pt/GGsI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Casey Schaufler <casey@schaufler-ca.com>,
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Petr Vorel <petr.vorel@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 279/475] Fix incorrect type in assignment of ipv6 port for audit
-Date:   Thu, 14 Apr 2022 15:11:04 +0200
-Message-Id: <20220414110902.909125869@linuxfoundation.org>
+Subject: [PATCH 5.4 263/475] clk: qcom: gcc-msm8994: Fix gpll4 width
+Date:   Thu, 14 Apr 2022 15:10:48 +0200
+Message-Id: <20220414110902.468516536@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,33 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Casey Schaufler <casey@schaufler-ca.com>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit a5cd1ab7ab679d252a6d2f483eee7d45ebf2040c ]
+[ Upstream commit 71021db1c532c2545ae53b9ee85b37b7154f51d4 ]
 
-Remove inappropriate use of ntohs() and assign the
-port value directly.
+The gpll4 postdiv is actually a div4, so make sure that Linux is aware of
+this.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+This fixes the following error messages:
+
+ mmc1: Card appears overclocked; req 200000000 Hz, actual 343999999 Hz
+ mmc1: Card appears overclocked; req 400000000 Hz, actual 687999999 Hz
+
+Fixes: aec89f78cf01 ("clk: qcom: Add support for msm8994 global clock controller")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Link: https://lore.kernel.org/r/20220319174940.341137-1-konrad.dybcio@somainline.org
+Tested-by: Petr Vorel <petr.vorel@gmail.com>
+Reviewed-by: Petr Vorel <petr.vorel@gmail.com>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/smack/smack_lsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/clk/qcom/gcc-msm8994.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
-index 12c0fa85d9f8..0253cd2e2358 100644
---- a/security/smack/smack_lsm.c
-+++ b/security/smack/smack_lsm.c
-@@ -2501,7 +2501,7 @@ static int smk_ipv6_check(struct smack_known *subject,
- #ifdef CONFIG_AUDIT
- 	smk_ad_init_net(&ad, __func__, LSM_AUDIT_DATA_NET, &net);
- 	ad.a.u.net->family = PF_INET6;
--	ad.a.u.net->dport = ntohs(address->sin6_port);
-+	ad.a.u.net->dport = address->sin6_port;
- 	if (act == SMK_RECEIVING)
- 		ad.a.u.net->v6info.saddr = address->sin6_addr;
- 	else
+diff --git a/drivers/clk/qcom/gcc-msm8994.c b/drivers/clk/qcom/gcc-msm8994.c
+index b7fc8c7ba195..14f0d5d84080 100644
+--- a/drivers/clk/qcom/gcc-msm8994.c
++++ b/drivers/clk/qcom/gcc-msm8994.c
+@@ -107,6 +107,7 @@ static struct clk_alpha_pll gpll4_early = {
+ 
+ static struct clk_alpha_pll_postdiv gpll4 = {
+ 	.offset = 0x1dc0,
++	.width = 4,
+ 	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_DEFAULT],
+ 	.clkr.hw.init = &(struct clk_init_data)
+ 	{
 -- 
 2.34.1
 
