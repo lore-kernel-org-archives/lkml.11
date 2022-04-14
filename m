@@ -2,55 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A927BC4167B
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E960C4321E
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348017AbiDNOCD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60206 "EHLO
+        id S245094AbiDNOCo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:02:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344547AbiDNNcd (ORCPT
+        with ESMTP id S1344633AbiDNNc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:32:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8C022298;
-        Thu, 14 Apr 2022 06:30:08 -0700 (PDT)
+        Thu, 14 Apr 2022 09:32:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C69922298;
+        Thu, 14 Apr 2022 06:30:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F0E95619DA;
-        Thu, 14 Apr 2022 13:30:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7FB2C385A1;
-        Thu, 14 Apr 2022 13:30:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27B4F61B6D;
+        Thu, 14 Apr 2022 13:30:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 364B2C385A5;
+        Thu, 14 Apr 2022 13:30:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943007;
-        bh=Q9VDs3UsyPzN3/j1hGI3OM8MamUwret2pOViPYZEmLg=;
+        s=korg; t=1649943032;
+        bh=j5OThtCkKw8wixPROr3bHPlF7VL+nQO2b6T38K84FyM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rHS01jJiCeMnnIAWDpPUcfoEGMQ73v6J/aVTmLjUeWtz9HbAM10+Y6KloiP/6DbEo
-         NMCvrQkufnJqmUIFVR0du8LPE23LHtuoVXSYwzMk+WwI52ZQ04OEvdaKpkDS+IPhKI
-         UvlAUwn0J99ThvIjSpxBg7k7UX+kWHR24hO8h1MY=
+        b=xmbJzWcQdAB4XiPWbws0m6eRIzHFdSQ8Wc7v4VmYeKZl7YYX5lWmDlIpdu+P9/kSG
+         UqOw7CJpTjsRCSQBvFEnNmZlwro6BkAG7gkOnBQ0noHID3+1gjs7pcUejHaqU9Vj+6
+         7p4wBk0vTjgSdrX1FvFbsU0HmgrSdVHMuQ+yAcGQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Xu <peterx@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Hugh Dickins <hughd@google.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Yang Shi <shy828301@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.19 327/338] mm: dont skip swap entry even if zap_details specified
-Date:   Thu, 14 Apr 2022 15:13:50 +0200
-Message-Id: <20220414110848.198162323@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.4 003/475] USB: serial: simple: add Nokia phone driver
+Date:   Thu, 14 Apr 2022 15:06:28 +0200
+Message-Id: <20220414110855.244962327@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-References: <20220414110838.883074566@linuxfoundation.org>
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -59,179 +47,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Xu <peterx@redhat.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit 5abfd71d936a8aefd9f9ccd299dea7a164a5d455 upstream.
+commit c4b9c570965f75d0d55e639747f1e5ccdad2fae0 upstream.
 
-Patch series "mm: Rework zap ptes on swap entries", v5.
+Add a new "simple" driver for certain Nokia phones, including Nokia 130
+(RM-1035) which exposes two serial ports in "charging only" mode:
 
-Patch 1 should fix a long standing bug for zap_pte_range() on
-zap_details usage.  The risk is we could have some swap entries skipped
-while we should have zapped them.
+Bus 001 Device 009: ID 0421:069a Nokia Mobile Phones 130 [RM-1035] (Charging only)
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.00
+  bDeviceClass            0
+  bDeviceSubClass         0
+  bDeviceProtocol         0
+  bMaxPacketSize0         8
+  idVendor           0x0421 Nokia Mobile Phones
+  idProduct          0x069a 130 [RM-1035] (Charging only)
+  bcdDevice            1.00
+  iManufacturer           1 Nokia
+  iProduct                2 Nokia 130 (RM-1035)
+  iSerial                 0
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength       0x0037
+    bNumInterfaces          2
+    bConfigurationValue     1
+    iConfiguration          0
+    bmAttributes         0x80
+      (Bus Powered)
+    MaxPower              500mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           2
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    255 Vendor Specific Subclass
+      bInterfaceProtocol    255 Vendor Specific Protocol
+      iInterface              0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x01  EP 1 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        1
+      bAlternateSetting       0
+      bNumEndpoints           2
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    255 Vendor Specific Subclass
+      bInterfaceProtocol    255 Vendor Specific Protocol
+      iInterface              0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x82  EP 2 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x02  EP 2 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+Device Status:     0x0000
+  (Bus Powered)
 
-Migration entries are not the major concern because file backed memory
-always zap in the pattern that "first time without page lock, then
-re-zap with page lock" hence the 2nd zap will always make sure all
-migration entries are already recovered.
-
-However there can be issues with real swap entries got skipped
-errornoously.  There's a reproducer provided in commit message of patch
-1 for that.
-
-Patch 2-4 are cleanups that are based on patch 1.  After the whole
-patchset applied, we should have a very clean view of zap_pte_range().
-
-Only patch 1 needs to be backported to stable if necessary.
-
-This patch (of 4):
-
-The "details" pointer shouldn't be the token to decide whether we should
-skip swap entries.
-
-For example, when the callers specified details->zap_mapping==NULL, it
-means the user wants to zap all the pages (including COWed pages), then
-we need to look into swap entries because there can be private COWed
-pages that was swapped out.
-
-Skipping some swap entries when details is non-NULL may lead to wrongly
-leaving some of the swap entries while we should have zapped them.
-
-A reproducer of the problem:
-
-===8<===
-        #define _GNU_SOURCE         /* See feature_test_macros(7) */
-        #include <stdio.h>
-        #include <assert.h>
-        #include <unistd.h>
-        #include <sys/mman.h>
-        #include <sys/types.h>
-
-        int page_size;
-        int shmem_fd;
-        char *buffer;
-
-        void main(void)
-        {
-                int ret;
-                char val;
-
-                page_size = getpagesize();
-                shmem_fd = memfd_create("test", 0);
-                assert(shmem_fd >= 0);
-
-                ret = ftruncate(shmem_fd, page_size * 2);
-                assert(ret == 0);
-
-                buffer = mmap(NULL, page_size * 2, PROT_READ | PROT_WRITE,
-                                MAP_PRIVATE, shmem_fd, 0);
-                assert(buffer != MAP_FAILED);
-
-                /* Write private page, swap it out */
-                buffer[page_size] = 1;
-                madvise(buffer, page_size * 2, MADV_PAGEOUT);
-
-                /* This should drop private buffer[page_size] already */
-                ret = ftruncate(shmem_fd, page_size);
-                assert(ret == 0);
-                /* Recover the size */
-                ret = ftruncate(shmem_fd, page_size * 2);
-                assert(ret == 0);
-
-                /* Re-read the data, it should be all zero */
-                val = buffer[page_size];
-                if (val == 0)
-                        printf("Good\n");
-                else
-                        printf("BUG\n");
-        }
-===8<===
-
-We don't need to touch up the pmd path, because pmd never had a issue with
-swap entries.  For example, shmem pmd migration will always be split into
-pte level, and same to swapping on anonymous.
-
-Add another helper should_zap_cows() so that we can also check whether we
-should zap private mappings when there's no page pointer specified.
-
-This patch drops that trick, so we handle swap ptes coherently.  Meanwhile
-we should do the same check upon migration entry, hwpoison entry and
-genuine swap entries too.
-
-To be explicit, we should still remember to keep the private entries if
-even_cows==false, and always zap them when even_cows==true.
-
-The issue seems to exist starting from the initial commit of git.
-
-[peterx@redhat.com: comment tweaks]
-  Link: https://lkml.kernel.org/r/20220217060746.71256-2-peterx@redhat.com
-
-Link: https://lkml.kernel.org/r/20220217060746.71256-1-peterx@redhat.com
-Link: https://lkml.kernel.org/r/20220216094810.60572-1-peterx@redhat.com
-Link: https://lkml.kernel.org/r/20220216094810.60572-2-peterx@redhat.com
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Peter Xu <peterx@redhat.com>
-Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: Alistair Popple <apopple@nvidia.com>
-Cc: Andrea Arcangeli <aarcange@redhat.com>
-Cc: "Kirill A . Shutemov" <kirill@shutemov.name>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Yang Shi <shy828301@gmail.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220228084919.10656-1-johan@kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/memory.c |   25 +++++++++++++++++++------
- 1 file changed, 19 insertions(+), 6 deletions(-)
+ drivers/usb/serial/Kconfig             |    1 +
+ drivers/usb/serial/usb-serial-simple.c |    7 +++++++
+ 2 files changed, 8 insertions(+)
 
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -1302,6 +1302,17 @@ int copy_page_range(struct mm_struct *ds
- 	return ret;
- }
+--- a/drivers/usb/serial/Kconfig
++++ b/drivers/usb/serial/Kconfig
+@@ -66,6 +66,7 @@ config USB_SERIAL_SIMPLE
+ 		- Libtransistor USB console
+ 		- a number of Motorola phones
+ 		- Motorola Tetra devices
++		- Nokia mobile phones
+ 		- Novatel Wireless GPS receivers
+ 		- Siemens USB/MPI adapter.
+ 		- ViVOtech ViVOpay USB device.
+--- a/drivers/usb/serial/usb-serial-simple.c
++++ b/drivers/usb/serial/usb-serial-simple.c
+@@ -91,6 +91,11 @@ DEVICE(moto_modem, MOTO_IDS);
+ 	{ USB_DEVICE(0x0cad, 0x9016) }	/* TPG2200 */
+ DEVICE(motorola_tetra, MOTOROLA_TETRA_IDS);
  
-+/* Whether we should zap all COWed (private) pages too */
-+static inline bool should_zap_cows(struct zap_details *details)
-+{
-+	/* By default, zap all pages */
-+	if (!details)
-+		return true;
++/* Nokia mobile phone driver */
++#define NOKIA_IDS()			\
++	{ USB_DEVICE(0x0421, 0x069a) }	/* Nokia 130 (RM-1035) */
++DEVICE(nokia, NOKIA_IDS);
 +
-+	/* Or, we zap COWed pages only if the caller wants to */
-+	return !details->check_mapping;
-+}
-+
- static unsigned long zap_pte_range(struct mmu_gather *tlb,
- 				struct vm_area_struct *vma, pmd_t *pmd,
- 				unsigned long addr, unsigned long end,
-@@ -1390,17 +1401,19 @@ again:
- 			continue;
- 		}
- 
--		/* If details->check_mapping, we leave swap entries. */
--		if (unlikely(details))
--			continue;
--
- 		entry = pte_to_swp_entry(ptent);
--		if (!non_swap_entry(entry))
-+		if (!non_swap_entry(entry)) {
-+			/* Genuine swap entry, hence a private anon page */
-+			if (!should_zap_cows(details))
-+				continue;
- 			rss[MM_SWAPENTS]--;
--		else if (is_migration_entry(entry)) {
-+		} else if (is_migration_entry(entry)) {
- 			struct page *page;
- 
- 			page = migration_entry_to_page(entry);
-+			if (details && details->check_mapping &&
-+			    details->check_mapping != page_rmapping(page))
-+				continue;
- 			rss[mm_counter(page)]--;
- 		}
- 		if (unlikely(!free_swap_and_cache(entry)))
+ /* Novatel Wireless GPS driver */
+ #define NOVATEL_IDS()			\
+ 	{ USB_DEVICE(0x09d7, 0x0100) }	/* NovAtel FlexPack GPS */
+@@ -123,6 +128,7 @@ static struct usb_serial_driver * const
+ 	&vivopay_device,
+ 	&moto_modem_device,
+ 	&motorola_tetra_device,
++	&nokia_device,
+ 	&novatel_gps_device,
+ 	&hp4x_device,
+ 	&suunto_device,
+@@ -140,6 +146,7 @@ static const struct usb_device_id id_tab
+ 	VIVOPAY_IDS(),
+ 	MOTO_IDS(),
+ 	MOTOROLA_TETRA_IDS(),
++	NOKIA_IDS(),
+ 	NOVATEL_IDS(),
+ 	HP4X_IDS(),
+ 	SUUNTO_IDS(),
 
 
