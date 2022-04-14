@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E66EC47086
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DC1DC47085
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343840AbiDNOJ2 (ORCPT
+        id S1343766AbiDNOJQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57386 "EHLO
+        Thu, 14 Apr 2022 10:09:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344065AbiDNNaR (ORCPT
+        with ESMTP id S1344069AbiDNNaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:30:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9247A29B;
-        Thu, 14 Apr 2022 06:27:23 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB62E87;
+        Thu, 14 Apr 2022 06:27:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F39C60C14;
-        Thu, 14 Apr 2022 13:27:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E9CAC385A1;
-        Thu, 14 Apr 2022 13:27:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 495BD60C14;
+        Thu, 14 Apr 2022 13:27:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DCBDC385A1;
+        Thu, 14 Apr 2022 13:27:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942842;
-        bh=vj3ncfI3Ru8CtjnT1vco8kX9pfKvkDPvtJog+Y28LS0=;
+        s=korg; t=1649942858;
+        bh=qUoHhxm8c6MY+CT2TztA03prbPlOAEVB7sisnsz2cM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DlKcODIzUiP6zjnB6hA+afQbdjnT9AozNPgvKYJMYNxOP3wyUPmLVKo7RuU6NgZDI
-         UYwxg3FNgI5eT4t4CpJTeYJ+j1BK0G1mcGwvVHOj/WlKJMaqhGPcOIwbzpTcgqiVm4
-         BMHYutaaj+7VX3jW7BbOEy5zTgH8k33Z1ZO92bqE=
+        b=s/Em8c2KAyPiFMqyPRbnsSPnbLKdEXNlQgJ8v/FTD5wCIIUaOoJskX6wNnquNpwkW
+         XELM2e3HGv3QQws3NMWP03V0gAMbKoGmmDDFm5OQfpw37zXs+0yUYFH27mAyEPlDJw
+         kVMYqYfAbXMutgMRgSKklf2C8EZlo2C1HIzETqh0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dust Li <dust.li@linux.alibaba.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 279/338] net/smc: correct settings of RMB window update limit
-Date:   Thu, 14 Apr 2022 15:13:02 +0200
-Message-Id: <20220414110846.828149919@linuxfoundation.org>
+        stable@vger.kernel.org, Chengsong Ke <kechengsong@huawei.com>,
+        Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.19 237/338] ubifs: Fix read out-of-bounds in ubifs_wbuf_write_nolock()
+Date:   Thu, 14 Apr 2022 15:12:20 +0200
+Message-Id: <20220414110845.632867618@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,52 +50,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dust Li <dust.li@linux.alibaba.com>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
+commit 4f2262a334641e05f645364d5ade1f565c85f20b upstream.
 
-rmbe_update_limit is used to limit announcing receive
-window updating too frequently. RFC7609 request a minimal
-increase in the window size of 10% of the receive buffer
-space. But current implementation used:
+Function ubifs_wbuf_write_nolock() may access buf out of bounds in
+following process:
 
-  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
+ubifs_wbuf_write_nolock():
+  aligned_len = ALIGN(len, 8);   // Assume len = 4089, aligned_len = 4096
+  if (aligned_len <= wbuf->avail) ... // Not satisfy
+  if (wbuf->used) {
+    ubifs_leb_write()  // Fill some data in avail wbuf
+    len -= wbuf->avail;   // len is still not 8-bytes aligned
+    aligned_len -= wbuf->avail;
+  }
+  n = aligned_len >> c->max_write_shift;
+  if (n) {
+    n <<= c->max_write_shift;
+    err = ubifs_leb_write(c, wbuf->lnum, buf + written,
+                          wbuf->offs, n);
+    // n > len, read out of bounds less than 8(n-len) bytes
+  }
 
-and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
-always less then 10% of the receive buffer space.
+, which can be catched by KASAN:
+  =========================================================
+  BUG: KASAN: slab-out-of-bounds in ecc_sw_hamming_calculate+0x1dc/0x7d0
+  Read of size 4 at addr ffff888105594ff8 by task kworker/u8:4/128
+  Workqueue: writeback wb_workfn (flush-ubifs_0_0)
+  Call Trace:
+    kasan_report.cold+0x81/0x165
+    nand_write_page_swecc+0xa9/0x160
+    ubifs_leb_write+0xf2/0x1b0 [ubifs]
+    ubifs_wbuf_write_nolock+0x421/0x12c0 [ubifs]
+    write_head+0xdc/0x1c0 [ubifs]
+    ubifs_jnl_write_inode+0x627/0x960 [ubifs]
+    wb_workfn+0x8af/0xb80
 
-This causes the receiver always sending CDC message to
-update its consumer cursor when it consumes more then 2K
-of data. And as a result, we may encounter something like
-"TCP silly window syndrome" when sending 2.5~8K message.
+Function ubifs_wbuf_write_nolock() accepts that parameter 'len' is not 8
+bytes aligned, the 'len' represents the true length of buf (which is
+allocated in 'ubifs_jnl_xxx', eg. ubifs_jnl_write_inode), so
+ubifs_wbuf_write_nolock() must handle the length read from 'buf' carefully
+to write leb safely.
 
-This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
+Fetch a reproducer in [Link].
 
-With this patch and SMC autocorking enabled, qperf 2K/4K/8K
-tcp_bw test shows 45%/75%/40% increase in throughput respectively.
-
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1e51764a3c2ac0 ("UBIFS: add new flash file system")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214785
+Reported-by: Chengsong Ke <kechengsong@huawei.com>
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/smc/smc_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ubifs/io.c |   34 ++++++++++++++++++++++++++++++----
+ 1 file changed, 30 insertions(+), 4 deletions(-)
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 6add3094ea9e..4d421407d6fc 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -709,7 +709,7 @@ static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
-  */
- static inline int smc_rmb_wnd_update_limit(int rmbe_size)
- {
--	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
-+	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
- }
+--- a/fs/ubifs/io.c
++++ b/fs/ubifs/io.c
+@@ -810,16 +810,42 @@ int ubifs_wbuf_write_nolock(struct ubifs
+ 	 */
+ 	n = aligned_len >> c->max_write_shift;
+ 	if (n) {
+-		n <<= c->max_write_shift;
++		int m = n - 1;
++
+ 		dbg_io("write %d bytes to LEB %d:%d", n, wbuf->lnum,
+ 		       wbuf->offs);
+-		err = ubifs_leb_write(c, wbuf->lnum, buf + written,
+-				      wbuf->offs, n);
++
++		if (m) {
++			/* '(n-1)<<c->max_write_shift < len' is always true. */
++			m <<= c->max_write_shift;
++			err = ubifs_leb_write(c, wbuf->lnum, buf + written,
++					      wbuf->offs, m);
++			if (err)
++				goto out;
++			wbuf->offs += m;
++			aligned_len -= m;
++			len -= m;
++			written += m;
++		}
++
++		/*
++		 * The non-written len of buf may be less than 'n' because
++		 * parameter 'len' is not 8 bytes aligned, so here we read
++		 * min(len, n) bytes from buf.
++		 */
++		n = 1 << c->max_write_shift;
++		memcpy(wbuf->buf, buf + written, min(len, n));
++		if (n > len) {
++			ubifs_assert(c, n - len < 8);
++			ubifs_pad(c, wbuf->buf + len, n - len);
++		}
++
++		err = ubifs_leb_write(c, wbuf->lnum, wbuf->buf, wbuf->offs, n);
+ 		if (err)
+ 			goto out;
+ 		wbuf->offs += n;
+ 		aligned_len -= n;
+-		len -= n;
++		len -= min(len, n);
+ 		written += n;
+ 	}
  
- static struct smc_buf_desc *smcr_new_buf_create(struct smc_link_group *lgr,
--- 
-2.35.1
-
 
 
