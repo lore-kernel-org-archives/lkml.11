@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B1FFC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BADAC433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344212AbiDNOtU (ORCPT
+        id S1343697AbiDNOsm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:49:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54410 "EHLO
+        Thu, 14 Apr 2022 10:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345172AbiDNNpT (ORCPT
+        with ESMTP id S1345111AbiDNNpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:19 -0400
+        Thu, 14 Apr 2022 09:45:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 447421CFF1;
-        Thu, 14 Apr 2022 06:42:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE66A0BE4;
+        Thu, 14 Apr 2022 06:42:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3E7661D29;
-        Thu, 14 Apr 2022 13:42:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB548C385A5;
-        Thu, 14 Apr 2022 13:42:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32AF061D68;
+        Thu, 14 Apr 2022 13:42:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37B40C385A5;
+        Thu, 14 Apr 2022 13:42:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943774;
-        bh=2S2WN7lbSNG7gDajWPNwg0YM4+H6wviOd9QuIF14ciY=;
+        s=korg; t=1649943731;
+        bh=B7iP0fhFtuzC5RIPTN4X4kWqSQBwh3wnlKttlydx0YM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ysroe75ISHCrlHH3na1r3BNMvrYKcp5JVAg1pOjPq1vRhZpJoKvAkH8yeslxJlZdM
-         7SrvQTA1pXLrDKz6JbdY704nPSvyAbEsoAgP2fQVuKV8CZpaoy8MEC7+FwwJEMbYer
-         oleeyhpQ3nC/ncJZ7ur3t6twhlD/qOqKOL3U4dQU=
+        b=lxWas5vD2jJ2xA8P5A2IyfJdDe0/dDTMBmvWeeHJLFva9iJQUcA1iaCStxl9YLj9g
+         7gNbR4qcixbFNH7hxegkSsiQeoPkb3zbcYDD16AyDylLubYFBBmOKy68t0vGE5lYYj
+         4J3t4HCuBqcL+IA/GWzPWzDQ43V86RGR4bQcJRKU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
-        Paul Moore <paul@paul-moore.com>,
+        stable@vger.kernel.org, Feng Tang <feng.tang@intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 277/475] selinux: use correct type for context length
-Date:   Thu, 14 Apr 2022 15:11:02 +0200
-Message-Id: <20220414110902.854774521@linuxfoundation.org>
+Subject: [PATCH 5.4 259/475] driver core: dd: fix return value of __setup handler
+Date:   Thu, 14 Apr 2022 15:10:44 +0200
+Message-Id: <20220414110902.358734880@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,42 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Göttsche <cgzones@googlemail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit b97df7c098c531010e445da88d02b7bf7bf59ef6 ]
+[ Upstream commit f2aad54703dbe630f9d8b235eb58e8c8cc78f37d ]
 
-security_sid_to_context() expects a pointer to an u32 as the address
-where to store the length of the computed context.
+When "driver_async_probe=nulltty" is used on the kernel boot command line,
+it causes an Unknown parameter message and the string is added to init's
+environment strings, polluting them.
 
-Reported by sparse:
+  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc6
+  driver_async_probe=nulltty", will be passed to user space.
 
-    security/selinux/xfrm.c:359:39: warning: incorrect type in arg 4
-                                    (different signedness)
-    security/selinux/xfrm.c:359:39:    expected unsigned int
-                                       [usertype] *scontext_len
-    security/selinux/xfrm.c:359:39:    got int *
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc6
+     driver_async_probe=nulltty
 
-Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
-[PM: wrapped commit description]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Change the return value of the __setup function to 1 to indicate
+that the __setup option has been handled.
+
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: 1ea61b68d0f8 ("async: Add cmdline option to specify drivers to be async probed")
+Cc: Feng Tang <feng.tang@intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Reviewed-by: Feng Tang <feng.tang@intel.com>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220301041829.15137-1-rdunlap@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/selinux/xfrm.c | 2 +-
+ drivers/base/dd.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
-index 7314196185d1..00e95f8bd7c7 100644
---- a/security/selinux/xfrm.c
-+++ b/security/selinux/xfrm.c
-@@ -346,7 +346,7 @@ int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
- 	int rc;
- 	struct xfrm_sec_ctx *ctx;
- 	char *ctx_str = NULL;
--	int str_len;
-+	u32 str_len;
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index cf7e5b4afc1b..26cd4ce3ac75 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -747,7 +747,7 @@ static int __init save_async_options(char *buf)
+ 			"Too long list of driver names for 'driver_async_probe'!\n");
  
- 	if (!polsec)
- 		return 0;
+ 	strlcpy(async_probe_drv_names, buf, ASYNC_DRV_NAMES_MAX_LEN);
+-	return 0;
++	return 1;
+ }
+ __setup("driver_async_probe=", save_async_options);
+ 
 -- 
 2.34.1
 
