@@ -2,184 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB77C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 329C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:35:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235654AbiDNQhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56014 "EHLO
+        id S237187AbiDNQhz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:37:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239468AbiDNQhi (ORCPT
+        with ESMTP id S232700AbiDNQhY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 12:37:38 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318E5F9F9E
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:07:29 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id 682F01F47BE5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649952448;
-        bh=Iek+toYCvXLe1eOTOtIkFNeoWkFZlRKogy0n340asiA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=H5sP3u2ittdXz4vA6z0mQpfkiKT5+a37TwykspSQgu3DZjC7Dv0Z2Pj7sq6X9TKbE
-         +lzpdz21l0SSMTI/BpxhImBrAP3v+mByNlwS3onEqGLKtfheYXuWfUlzIC2Qt16HTQ
-         MlqcifTu9Yz9KPYRKpvSBp/0iegrQrodj1RVfBtD6FwOv2klSE4MIAN8EdiefiEl2e
-         AgbETo469gAbb2qXgkzGIqFHY1JZ1a7z+ehID6zhBoEpcn2b28BxqKuGv3VBXWWTSR
-         wBABSvihWog65lHHGEczZnxNbJBvtkTxEu14zKnCSOtye5uYVogp13FtbVvBmwvQ/c
-         XFHud1nzBDh1Q==
-Message-ID: <cc56e644-f20f-27ae-7a21-e40c173dfe1e@collabora.com>
-Date:   Thu, 14 Apr 2022 17:13:21 +0100
+        Thu, 14 Apr 2022 12:37:24 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A79DFDE2E;
+        Thu, 14 Apr 2022 09:07:00 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id bh17so10952480ejb.8;
+        Thu, 14 Apr 2022 09:06:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JZ9b/z89dch9gLvF5vASMxbmJ/Wzdwmfjy6OZsSqtqA=;
+        b=L5sP55TAgL2AI4FDkJ+eMhfVeG1Y6n+mayllGbh7HAbtrbX8Kq31bKTjMTAqXQRdL+
+         uxf5PF0+vennnKdDh1T5GXF47ae2ZFWslbFdRB1FcgBWFjZOP1tG9QRTiMQ5+OPvrUiI
+         uvKkZBe1bmA87leVgy4H4aHNqAh9Ddz8maIOFpwfFldbi/9KASDbBidQAReNFKsRndjF
+         mLrjHMWmyxtIw+DEVEBY5vPe4CNbEs7P2o7fRt23W0xo0/MlvZIRvflgp+6FVESYhKzj
+         /+fwRMHo3W2c6bb3X30RDhJQAUPQQznabpXEXbKrWgIMGkIjBbescnE/2k5wlzkTPJ5D
+         PnJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JZ9b/z89dch9gLvF5vASMxbmJ/Wzdwmfjy6OZsSqtqA=;
+        b=ZuleybUwTBA2lAYh9087tXpZMu5bAv8vSW5J0fS5vKh+2cGY65D5drKyMMSZODaEcY
+         m9ip1PmLX/3v1IljsMGnrX0kribcegZYUCnfGbf46/XE+NI4tM5uOUXnUER0CR9+fsJ0
+         QJsvT/AaUYUKUBQ8ClCGfhLV+vRXmUw4lyzpLWi5rRrbdPcijJAEH16+hcMcufk6FIof
+         6rstVL/GW2MhhhFF1BtQf5z1JDQzVGEVQ0x0UkKZlnLzGNamfEPYTv9tzyoduwGXrjN7
+         pSixGR5o6BNaA1cAo3nCr3tkEFr8nPOHzLbhllyQBLe6+jU7KdXPDoB8rSLJMMuYTrWb
+         Rfig==
+X-Gm-Message-State: AOAM530D/GyabXimb4hGtd6H+ixCkmZ0v7sOFPKYTSNhC3sKh1zthBCl
+        pF828yM/PYtPJZyRiBQFTWHp0+rmJRqJaqh9xN8=
+X-Google-Smtp-Source: ABdhPJyF91NZOaGxS5Pl0tuT7o0nmwxyK0YmWaO6cyOAzEQDgBQtN5VcAICIZk16A9Jhgd3oPfGbcQ4Yyrca0dRmbw8=
+X-Received: by 2002:a17:906:1692:b0:6e8:d245:44a9 with SMTP id
+ s18-20020a170906169200b006e8d24544a9mr2933455ejd.639.1649952418435; Thu, 14
+ Apr 2022 09:06:58 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 4/5] drm/i915: ttm backend dont provide mmap_offset for
- kernel buffers
-Content-Language: en-US
-To:     =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Matthew Auld <matthew.auld@intel.com>, linux-kernel@vger.kernel.org
-References: <20220412151838.1298956-1-bob.beckett@collabora.com>
- <20220412151838.1298956-5-bob.beckett@collabora.com>
- <07e5b1dc442e0b318ee0314f90a433216ed38dcb.camel@linux.intel.com>
-From:   Robert Beckett <bob.beckett@collabora.com>
-In-Reply-To: <07e5b1dc442e0b318ee0314f90a433216ed38dcb.camel@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220401103604.8705-1-andriy.shevchenko@linux.intel.com>
+ <CGME20220414063849eucas1p126e41b53ff0d342f5c48408994b704e9@eucas1p1.samsung.com>
+ <20220401103604.8705-12-andriy.shevchenko@linux.intel.com>
+ <3a24ef01-3231-1bee-7429-dce5680c5682@samsung.com> <CAHp75VfMPpfeMpawRyLo_GtLR8+gVGgm8zW-fatp6=9a9wK18A@mail.gmail.com>
+ <CAFBinCCCtZvdp+01DdEE=-f7rZ8V46O125wKDqE1muA645sdUg@mail.gmail.com>
+In-Reply-To: <CAFBinCCCtZvdp+01DdEE=-f7rZ8V46O125wKDqE1muA645sdUg@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 14 Apr 2022 19:06:21 +0300
+Message-ID: <CAHp75VcYaGmEruEsi2UUrLU4=k3OpBn2YV8B0LhyrhtQ=uCTXg@mail.gmail.com>
+Subject: Re: [PATCH v4 11/13] pinctrl: meson: Replace custom code by
+ gpiochip_node_count() call
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Qianggui Song <qianggui.song@amlogic.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-amlogic <linux-amlogic@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Apr 14, 2022 at 6:32 PM Martin Blumenstingl
+<martin.blumenstingl@googlemail.com> wrote:
+> On Thu, Apr 14, 2022 at 3:51 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> [...]
+> > > This patch landed in linux next-20220413 as commit 88834c75cae5
+> > > ("pinctrl: meson: Replace custom code by gpiochip_node_count() call").
+> > > Unfortunately it breaks booting of all my Amlogic-based test boards
+> > > (Odroid C4, N2, Khadas VIM3, VIM3l). MMC driver is no longer probed and
+> > > boards are unable to mount rootfs. Reverting this patch on top of
+> > > linux-next fixes the issue.
+> >
+> > Thank you for letting me know, I'll withdraw it and investigate.
+> If needed I can investigate further later today/tomorrow. I think the
+> problem is that our node name doesn't follow the .dts recommendation.
+>
+> For GXL (arch/arm64/boot/dts/amlogic/meson-gxl.dtsi) the GPIO
+> controller nodes are for example:
+>   gpio: bank@4b0 {
+>       ...
+>   }
+> and
+>   gpio_ao: bank@14 {
+>       ...
+>   }
+>
+> See also:
+> $ git grep -C6 gpio-controller arch/arm64/boot/dts/amlogic/*.dtsi
+>
+> Marek did not state which error he's getting but I suspect it fails
+> with "no gpio node found".
 
+Would be interesting to know that, yeah.
 
-On 14/04/2022 15:05, Thomas Hellström wrote:
-> On Tue, 2022-04-12 at 15:18 +0000, Robert Beckett wrote:
->> stolen/kernel buffers should not be mmapable by userland.
->> do not provide callbacks to facilitate this for these buffers.
->>
->> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
->> ---
->>   drivers/gpu/drm/i915/gem/i915_gem_ttm.c | 32 +++++++++++++++++++++--
->> --
->>   1 file changed, 27 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
->> b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
->> index a878910a563c..b20f81836c54 100644
->> --- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
->> +++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
->> @@ -1092,8 +1092,8 @@ static void i915_ttm_unmap_virtual(struct
->> drm_i915_gem_object *obj)
->>          ttm_bo_unmap_virtual(i915_gem_to_ttm(obj));
->>   }
->>   
->> -static const struct drm_i915_gem_object_ops i915_gem_ttm_obj_ops = {
->> -       .name = "i915_gem_object_ttm",
->> +static const struct drm_i915_gem_object_ops
->> i915_gem_ttm_user_obj_ops = {
->> +       .name = "i915_gem_object_ttm_user",
->>          .flags = I915_GEM_OBJECT_IS_SHRINKABLE |
->>                   I915_GEM_OBJECT_SELF_MANAGED_SHRINK_LIST,
->>   
->> @@ -1111,6 +1111,21 @@ static const struct drm_i915_gem_object_ops
->> i915_gem_ttm_obj_ops = {
->>          .mmap_ops = &vm_ops_ttm,
->>   };
->>   
->> +static const struct drm_i915_gem_object_ops
->> i915_gem_ttm_kern_obj_ops = {
->> +       .name = "i915_gem_object_ttm_kern",
->> +       .flags = I915_GEM_OBJECT_IS_SHRINKABLE |
->> +                I915_GEM_OBJECT_SELF_MANAGED_SHRINK_LIST,
->> +
->> +       .get_pages = i915_ttm_get_pages,
->> +       .put_pages = i915_ttm_put_pages,
->> +       .truncate = i915_ttm_truncate,
->> +       .shrink = i915_ttm_shrink,
->> +
->> +       .adjust_lru = i915_ttm_adjust_lru,
->> +       .delayed_free = i915_ttm_delayed_free,
->> +       .migrate = i915_ttm_migrate,
->> +};
-> 
-> Do we really need two different ops here?
-> 
-> Since if we don't have mmap ops, basically that tells GEM it should do
-> the mmapping rather than TTM.
-> 
-> That might of course come in handy for the shmem backend, but I don't
-> fully follow why we need this for stolen.
+The subtle difference between the patched and unpatched version is
+that the former uses only available nodes, it means that node is not
+available by some reason and then the error would be the one you
+guessed.
 
-the main rationale for doing this was to avoid 
-drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c:can_mmap() presuming 
-that is can use I915_MMAP_TYPE_FIXED
-
-As the original backend also did not have mmap_offset handlers for 
-stolen, this seemed like a reasonable design.
-
-If desired, we could add a special case for the testing logic, but those 
-special cases have tendency to multiply.
-
-> 
-> Also for the framebuffer handed over from BIOS to fbdev, Does that need
-> mmapping and if so, how do we handle that?
-> 
-
-I'm not sure of the usecase there. Do you know of any igt test that 
-tests this? I can investigate further if you do not.
-
-> 
-> /Thomas
-> 
-> 
-> 
-> 
->> +
->>   void i915_ttm_bo_destroy(struct ttm_buffer_object *bo)
->>   {
->>          struct drm_i915_gem_object *obj = i915_ttm_to_gem(bo);
->> @@ -1165,10 +1180,19 @@ int __i915_gem_ttm_object_init(struct
->> intel_memory_region *mem,
->>                  .no_wait_gpu = false,
->>          };
->>          enum ttm_bo_type bo_type;
->> +       const struct drm_i915_gem_object_ops *ops;
->>          int ret;
->>   
->>          drm_gem_private_object_init(&i915->drm, &obj->base, size);
->> -       i915_gem_object_init(obj, &i915_gem_ttm_obj_ops, &lock_class,
->> flags);
->> +
->> +       if (flags & I915_BO_ALLOC_USER &&
->> intel_region_to_ttm_type(mem) != I915_PL_STOLEN) {
->> +               bo_type = ttm_bo_type_device;
->> +               ops = &i915_gem_ttm_user_obj_ops;
->> +       } else {
->> +               bo_type = ttm_bo_type_kernel;
->> +               ops = &i915_gem_ttm_kern_obj_ops;
->> +       }
->> +       i915_gem_object_init(obj, ops, &lock_class, flags);
->>   
->>          obj->bo_offset = offset;
->>   
->> @@ -1178,8 +1202,6 @@ int __i915_gem_ttm_object_init(struct
->> intel_memory_region *mem,
->>   
->>          INIT_RADIX_TREE(&obj->ttm.get_io_page.radix, GFP_KERNEL |
->> __GFP_NOWARN);
->>          mutex_init(&obj->ttm.get_io_page.lock);
->> -       bo_type = (obj->flags & I915_BO_ALLOC_USER) ?
->> ttm_bo_type_device :
->> -               ttm_bo_type_kernel;
->>   
->>          obj->base.vma_node.driver_private = i915_gem_to_ttm(obj);
->>   
-> 
-> 
+-- 
+With Best Regards,
+Andy Shevchenko
