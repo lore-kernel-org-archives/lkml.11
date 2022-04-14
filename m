@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A3AC4167B
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:12:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44196C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348931AbiDNONo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
+        id S232645AbiDNOOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245406AbiDNNi3 (ORCPT
+        with ESMTP id S245452AbiDNNif (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9952A1460;
-        Thu, 14 Apr 2022 06:32:09 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888D18BF43;
+        Thu, 14 Apr 2022 06:32:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76CE6B82968;
-        Thu, 14 Apr 2022 13:32:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8F82C385A1;
-        Thu, 14 Apr 2022 13:32:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10FCE61B9C;
+        Thu, 14 Apr 2022 13:32:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18C96C385A5;
+        Thu, 14 Apr 2022 13:32:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943127;
-        bh=3TnHiDcoE4UN7piXzw8IEQIziQxDeP2KahwoBf8cuVg=;
+        s=korg; t=1649943141;
+        bh=Fp1YoIjO2KMAPg0tQqEGoQmfoZvjJ3FIpsQ5be5kiY0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0MBVT+GiqFaM8v2yVLl8MB23czFa32gK7QbF9VZ+YynKj44njX+Jobpi75cq/q+VE
-         uFPYLBm6vsktPCoPkg6WJSuR1Nguy0upBOLvUGFuKbWFqNu2KXOAwT+9nnoXSHBkuK
-         yImv3u3xr5QW612SLhKiYcVG+I/+rO9zc5Yl3VTs=
+        b=U+kxgPM6jnXHd8CU1r5dYKgmlRsuhQbCFkFrUOVWWfYzQUezB1Y3P98a5/9rOx2q3
+         IaQgEueSPOz1q+R+kHtFmzW162SzSWUTq5pROTZ9lahWrF4GvnGQ+ZdRK1gTt+ssfs
+         3h68axfHPsH6qUzvSUEkVf5U6SkVdbiv5fGlEsj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mason Yang <masonccyang@mxic.com.tw>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Zhengxun Li <zhengxunli@mxic.com.tw>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.4 042/475] spi: mxic: Fix the transmit path
-Date:   Thu, 14 Apr 2022 15:07:07 +0200
-Message-Id: <20220414110856.335104036@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 009/475] ethernet: sun: Free the coherent when failing in probing
+Date:   Thu, 14 Apr 2022 15:06:34 +0200
+Message-Id: <20220414110855.413812290@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,66 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit 5fd6739e0df7e320bcac103dfb95fe75941fea17 upstream.
+[ Upstream commit bb77bd31c281f70ec77c9c4f584950a779e05cf8 ]
 
-By working with external hardware ECC engines, we figured out that
-Under certain circumstances, it is needed for the SPI controller to
-check INT_TX_EMPTY and INT_RX_NOT_EMPTY in both receive and transmit
-path (not only in the receive path). The delay penalty being
-negligible, move this code in the common path.
+When the driver fails to register net device, it should free the DMA
+region first, and then do other cleanup.
 
-Fixes: b942d80b0a39 ("spi: Add MXIC controller driver")
-Cc: stable@vger.kernel.org
-Suggested-by: Mason Yang <masonccyang@mxic.com.tw>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Reviewed-by: Zhengxun Li <zhengxunli@mxic.com.tw>
-Reviewed-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/linux-mtd/20220127091808.1043392-10-miquel.raynal@bootlin.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-mxic.c |   26 +++++++++++---------------
- 1 file changed, 11 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/sun/sunhme.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/spi/spi-mxic.c
-+++ b/drivers/spi/spi-mxic.c
-@@ -304,25 +304,21 @@ static int mxic_spi_data_xfer(struct mxi
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index d007dfeba5c3..3133f903279c 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -3164,7 +3164,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	if (err) {
+ 		printk(KERN_ERR "happymeal(PCI): Cannot register net device, "
+ 		       "aborting.\n");
+-		goto err_out_iounmap;
++		goto err_out_free_coherent;
+ 	}
  
- 		writel(data, mxic->regs + TXD(nbytes % 4));
+ 	pci_set_drvdata(pdev, hp);
+@@ -3197,6 +3197,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
  
--		if (rxbuf) {
--			ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
--						 sts & INT_TX_EMPTY, 0,
--						 USEC_PER_SEC);
--			if (ret)
--				return ret;
-+		ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
-+					 sts & INT_TX_EMPTY, 0, USEC_PER_SEC);
-+		if (ret)
-+			return ret;
+ 	return 0;
  
--			ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
--						 sts & INT_RX_NOT_EMPTY, 0,
--						 USEC_PER_SEC);
--			if (ret)
--				return ret;
-+		ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
-+					 sts & INT_RX_NOT_EMPTY, 0,
-+					 USEC_PER_SEC);
-+		if (ret)
-+			return ret;
++err_out_free_coherent:
++	dma_free_coherent(hp->dma_dev, PAGE_SIZE,
++			  hp->happy_block, hp->hblock_dvma);
++
+ err_out_iounmap:
+ 	iounmap(hp->gregs);
  
--			data = readl(mxic->regs + RXD);
-+		data = readl(mxic->regs + RXD);
-+		if (rxbuf) {
- 			data >>= (8 * (4 - nbytes));
- 			memcpy(rxbuf + pos, &data, nbytes);
--			WARN_ON(readl(mxic->regs + INT_STS) & INT_RX_NOT_EMPTY);
--		} else {
--			readl(mxic->regs + RXD);
- 		}
- 		WARN_ON(readl(mxic->regs + INT_STS) & INT_RX_NOT_EMPTY);
- 
+-- 
+2.34.1
+
 
 
