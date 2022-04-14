@@ -2,122 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED0A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C71C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:08:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241545AbiDNJKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43028 "EHLO
+        id S241064AbiDNJKd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:10:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241521AbiDNJKL (ORCPT
+        with ESMTP id S238109AbiDNJK2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:10:11 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3176D962;
-        Thu, 14 Apr 2022 02:07:47 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2ec42eae76bso48363707b3.10;
-        Thu, 14 Apr 2022 02:07:47 -0700 (PDT)
+        Thu, 14 Apr 2022 05:10:28 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6546E540;
+        Thu, 14 Apr 2022 02:08:04 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id ll10so4534597pjb.5;
+        Thu, 14 Apr 2022 02:08:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=du9kKSyZ8/iyPYFYOsIaQUov6kGR9ZIsAFs+iWQKGeE=;
-        b=F1Zm9GWuALLdmCRFLyjKZXBMImjjZWjGYMZa6T0Lvy+l/3R+klqHuyhvmq57oK8ilf
-         D/Rf57UIwsxvUSzPtnI7z/BubVJwUyl7Zoq854nzvjQyjPgA2Q3jNsqBX3RcUVU8G3ki
-         ekM+iscNfZ0wSf8eDe3O+raroMVcz4XNrng1odjeirUcoxWjy+b/omiaH35wUDIteTvr
-         sUkHP1tj2SQb0/QoeRF677h5wYes1Hll8MK7HAAA2dbMW8/MQGaVrUotcwyF71Glb58W
-         t2IQM2BfsxiMws/TmWvrZA9nIwNwU8/C300ULYgPGOQRmvaMmlNFSDv9FJVDFVh2p27I
-         gQUA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qYtINvSR5Dih3lqIftjEIHDwvXs93GlfwwGB+RQETjg=;
+        b=G06GEOeVuuzjlWUCEo6hbJXjPuVWMHJvuXq9cM78tfK5tfEvemHx0U8OfWz1npch4h
+         C+3BDn1yqytd1BrwWAwbciqRL/gs79YcAZ6HLGqwPqp5BAKzKWoQ6ATsh69IJOERDMxf
+         M/dxJruoPKM/vxd2jZejIfb3hhrVVOq3y/VaiX0VBIZD9dFdwa1QudQChkYwV4DXHMr2
+         QbZ1+XNAQfrurRt5meXb4lL7cYh5pDUdo/6TOAew4qs678sRKKaI8xSB1VfRct/mHN44
+         o3cvXe1icyX3v4giaOJwOPbWkdjgxG/8vX2iWxWY/cJgmkdI4dsBM8fEovaj0qx3Wf0e
+         uM2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=du9kKSyZ8/iyPYFYOsIaQUov6kGR9ZIsAFs+iWQKGeE=;
-        b=GSlIQyNRZqebljdSSUvTmD3zlydwlsdKi9Fnw9j/YeZRo6M3BKOHHzNNPQbnciJUm4
-         Gx5DUU8VhkwlT9ZTJIIPuaD1SWvKfVp8Ni41ab3mhlqn9EBz0A28zcSILgfQI1muZU1t
-         ziItnSHPlIlOeYDbaQdWQr/b1uk1PjkE5tdlHJ02kPdyvHmJsAoMvtyNx3iN97Z/kP9F
-         uxbSoa0LlMB7RvS+yPt8gBCtZtOPzzlzZrEtfu6gJNgtPjdjWOp9olOdBDl55UDaAhtP
-         dCUxNSk+qdofpuL2oPaXGxAGMDTf++Jsr+Y+imOPST8AjYGRiSYc7o6+3IpRxDjB6P7l
-         Eyyg==
-X-Gm-Message-State: AOAM531e75HaGsJrLvu/yLomCKPJrI3YdJewN2/bI2JBzdi/TMzCIRPA
-        dh8o4lE/g0PDhQh0WX3fZfjmEZOI2V6Sl6DcxtSV/lrWXI0=
-X-Google-Smtp-Source: ABdhPJyDWj6uTxEyHSC/A79SvoyTUflzd7mvIcnj3ZJm/Gun9HLsmkI18Cg5MvBTXESQMQuygmpOwEErmMRyqfKOLXI=
-X-Received: by 2002:a81:178e:0:b0:2eb:ed49:8241 with SMTP id
- 136-20020a81178e000000b002ebed498241mr1166903ywx.417.1649927266264; Thu, 14
- Apr 2022 02:07:46 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qYtINvSR5Dih3lqIftjEIHDwvXs93GlfwwGB+RQETjg=;
+        b=wd5XairboKg1WtY0lVmKSK3q773m87YWmUjPLs0X/6ytEzKHKaWFDRMJ9nm/OBqiTy
+         mwjZ9IVOQfKAIEzSIHX8YEHxLcZmPRGUZcLpq96OYDlAOszSwaoVj8IAr9K8H5Jdgcha
+         QXBWtPRryr+pGtFM1ous+j2xJ1q9E2o470urO3esZeDyzBhD6lqx/iajZLz+43yfW2TH
+         fPGqwfVo6tVoCMIoSFHAa11uDYKJld2XDQpD/L5TuHMLAU18+DNycxGFHsxfiJK3b0rO
+         pd/8Yg3DU7YCf5mbWubq1Cz9YFBd6ENWCSj8m3v3HexUctX3nYAK0qcRDVZ/9XDzea7/
+         K14g==
+X-Gm-Message-State: AOAM531nsfa7FDGe7s5u0gd+in1kOscyqlLuNiD1kC2URh113b+CVMEt
+        zkW6LJqlQIU1ZPB9QgHan+c=
+X-Google-Smtp-Source: ABdhPJz+6ah9if//yY1c2sHC40NolRb/XwCaxX0VprNKeLwyb7PtImEh0zH5k1pYYFwgPSqdAGNk9A==
+X-Received: by 2002:a17:90b:3b84:b0:1cd:fe1c:151 with SMTP id pc4-20020a17090b3b8400b001cdfe1c0151mr2179837pjb.182.1649927283900;
+        Thu, 14 Apr 2022 02:08:03 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id l8-20020a17090a150800b001cbaf536a3esm5496865pja.18.2022.04.14.02.08.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 02:08:03 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     grygorii.strashko@ti.com
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] net: ethernet: ti: davinci_emac: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Thu, 14 Apr 2022 09:08:00 +0000
+Message-Id: <20220414090800.2542064-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220330132152.4568-1-jiangshanlai@gmail.com> <20220330132152.4568-4-jiangshanlai@gmail.com>
- <YlXrshJa2Sd1WQ0P@google.com>
-In-Reply-To: <YlXrshJa2Sd1WQ0P@google.com>
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-Date:   Thu, 14 Apr 2022 17:07:34 +0800
-Message-ID: <CAJhGHyD-4YFDhkxk2SQFmKe3ooqw_0wE+9u3+sZ8zOdSUfbnxw@mail.gmail.com>
-Subject: Re: [RFC PATCH V3 3/4] KVM: X86: Alloc role.pae_root shadow page
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        linux-doc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 5:14 AM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Wed, Mar 30, 2022, Lai Jiangshan wrote:
-> > From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-> >
-> > Currently pae_root is special root page, this patch adds facility to
-> > allow using kvm_mmu_get_page() to allocate pae_root shadow page.
->
-> I don't think this will work for shadow paging.  CR3 only has to be 32-byte aligned
-> for PAE paging.  Unless I'm missing something subtle in the code, KVM will incorrectly
-> reuse a pae_root if the guest puts multiple PAE CR3s on a single page because KVM's
-> gfn calculation will drop bits 11:5.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-I forgot about it.
+Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
+pm_runtime_put_noidle. This change is just to simplify the code, no
+actual functional changes.
 
->
-> Handling this as a one-off is probably easier.  For TDP, only 32-bit KVM with NPT
-> benefits from reusing roots, IMO and shaving a few pages in that case is not worth
-> the complexity.
->
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/net/ethernet/ti/davinci_emac.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-I liked the one-off idea yesterday and started trying it.
+diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/ti/davinci_emac.c
+index 4b6aed78d392..9d1e98db308b 100644
+--- a/drivers/net/ethernet/ti/davinci_emac.c
++++ b/drivers/net/ethernet/ti/davinci_emac.c
+@@ -1422,9 +1422,8 @@ static int emac_dev_open(struct net_device *ndev)
+ 	struct phy_device *phydev = NULL;
+ 	struct device *phy = NULL;
+ 
+-	ret = pm_runtime_get_sync(&priv->pdev->dev);
++	ret = pm_runtime_resume_and_get(&priv->pdev->dev);
+ 	if (ret < 0) {
+-		pm_runtime_put_noidle(&priv->pdev->dev);
+ 		dev_err(&priv->pdev->dev, "%s: failed to get_sync(%d)\n",
+ 			__func__, ret);
+ 		return ret;
+@@ -1661,9 +1660,8 @@ static struct net_device_stats *emac_dev_getnetstats(struct net_device *ndev)
+ 	u32 stats_clear_mask;
+ 	int err;
+ 
+-	err = pm_runtime_get_sync(&priv->pdev->dev);
++	err = pm_runtime_resume_and_get(&priv->pdev->dev);
+ 	if (err < 0) {
+-		pm_runtime_put_noidle(&priv->pdev->dev);
+ 		dev_err(&priv->pdev->dev, "%s: failed to get_sync(%d)\n",
+ 			__func__, err);
+ 		return &ndev->stats;
+@@ -1954,9 +1952,8 @@ static int davinci_emac_probe(struct platform_device *pdev)
+ 	netif_napi_add(ndev, &priv->napi, emac_poll, EMAC_POLL_WEIGHT);
+ 
+ 	pm_runtime_enable(&pdev->dev);
+-	rc = pm_runtime_get_sync(&pdev->dev);
++	rc = pm_runtime_resume_and_get(&pdev->dev);
+ 	if (rc < 0) {
+-		pm_runtime_put_noidle(&pdev->dev);
+ 		dev_err(&pdev->dev, "%s: failed to get_sync(%d)\n",
+ 			__func__, rc);
+ 		goto err_napi_del;
+-- 
+2.25.1
 
-But things were not going as smoothly as I thought.  There are too
-many corner cases to cover.  Maybe I don't get what you envisioned.
 
-one-off shadow pages must not be in the hash, must be freed
-immediately in kvm_mmu_free_roots(), taken care in
-kvm_mmu_prepare_zap_page() and so on.
-
-When the guest is 32bit, the host has to free and allocate sp
-every time when the guest changes cr3.  It will be a regression
-when !TDP.
-
-one-off shadow pages are too distinguished from others.
-
-When using one-off shadow pages, role.passthough can be one
-bit and be used only for 5-level NPT L0 for 4-level NPT L1,
-which is neat.  And role.pae_root can be removed.
-
-I want the newly added shadow pages to fit into the current
-shadow page management and root management.
-
-I'm going to add sp->pae_off (u16) which is 11:5 of the cr3
-when the guest is PAE paging. It needs only less than 10 lines
-of code.
-
-Thanks.
-Lai
