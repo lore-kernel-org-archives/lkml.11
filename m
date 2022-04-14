@@ -2,112 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A42BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC33C4167B
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353213AbiDNOjU (ORCPT
+        id S1353320AbiDNOjl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
+        Thu, 14 Apr 2022 10:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344609AbiDNNo1 (ORCPT
+        with ESMTP id S1344799AbiDNNol (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02AFE340EA;
-        Thu, 14 Apr 2022 06:39:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6736CB8298F;
-        Thu, 14 Apr 2022 13:39:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77BF3C385A1;
-        Thu, 14 Apr 2022 13:39:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943596;
-        bh=Pmy95jZn5haKEEuYNU6AqIskvTvgmt4/onvmm2150WI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x9OIPpxSW9o1dRR9re3OmigQGZrRw6RCj6yFB3t59yNi5zMFkw/bUaVhKrH3ChlHs
-         L2waA+WSlhIZTw8LkzPZgWOUdoZUoXcFmdOGeOiM+rc/pNDsPQnO37Z4kaTkS65Nw9
-         W9b7tYbgj+4OMQ5aPasrm7QYOZU0C8jWKLDCUWwE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Phil Sutter <n0-1@freewrt.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Daniel Walter <dwalter@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 211/475] MIPS: RB532: fix return value of __setup handler
-Date:   Thu, 14 Apr 2022 15:09:56 +0200
-Message-Id: <20220414110901.031621999@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 14 Apr 2022 09:44:41 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0374387B7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:40:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649943616; x=1681479616;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=oe/BJrwW4pAsB1nX950gAS+RLvGZsHho+J6bPq9fR/s=;
+  b=f7Oqqruip+H+RCFFbU4imMnNvJdYuksQFLYUgS3rJoRrhHB9fOUOh9JA
+   z7O6FK7ThLtJMwKA9PoQOKRubhl+5jakIHSVKmi2pGvL9RCcp09xBrk7y
+   qqqfum/RT0+PWij3GlybrYlkHkC4m+zSvDuciyzLdJybTfStNxMiQH9ly
+   /5L5qT46N1VSH6ItZeX1YIPRNWYg4W0vI5bO/CHk9LYxh3Qqy69eU0/3d
+   hjtW6907LjEm0XgqafmkyXbdbuW4+KoHqRyP5iQ5w+agPFKf0B1N2CIj5
+   t9n+byLJxvx9ujNDhMhtn4k26GSYQubg+Q+opUL/8M4lKXK5MtEuQsWZm
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="260526415"
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="260526415"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:40:16 -0700
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="573800067"
+Received: from nplaweck-mobl.ger.corp.intel.com (HELO localhost) ([10.249.149.236])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:40:11 -0700
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>,
+        "Wang, Zhi A" <zhi.a.wang@intel.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "intel-gvt-dev@lists.freedesktop.org" 
+        <intel-gvt-dev@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: refactor the i915 GVT support and move to the modern mdev API v3
+In-Reply-To: <20220414133427.GB2120790@nvidia.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220411141403.86980-1-hch@lst.de>
+ <82c13d8e-1cb4-2873-86e9-16fd38e15b27@intel.com>
+ <20220413154642.GA28095@lst.de> <871qy1geko.fsf@intel.com>
+ <5af7726e-920e-603a-bad3-8adb09d2ba89@intel.com>
+ <20220413232053.GA2120790@nvidia.com>
+ <1c3aaab9-3bd4-95d4-9f9f-4be9e10e6516@intel.com>
+ <20220414133427.GB2120790@nvidia.com>
+Date:   Thu, 14 Apr 2022 16:40:11 +0300
+Message-ID: <87ilrbeqbo.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+On Thu, 14 Apr 2022, Jason Gunthorpe <jgg@nvidia.com> wrote:
+> On Thu, Apr 14, 2022 at 12:20:42PM +0000, Wang, Zhi A wrote:
+>> On 4/13/22 11:20 PM, Jason Gunthorpe wrote:
+>> > On Wed, Apr 13, 2022 at 11:13:06PM +0000, Wang, Zhi A wrote:
+>> >> Hi folks:
+>> >>
+>> >> Thanks so much for the efforts. I prepared a branch which contains all our patches.The aim of the branch is for the VFIO maintainers to pull the whole bunch easily after the drm-intel-next got merged through drm (as one of the MMIO patches depends on a patch in drm-intel-next).
+>> >>
+>> >> I dropped patch 4 and patch 5 as they have been covered by Jani's patches. Some conflicts was solved.
+>> >> QA is going to test it today. 
+>> >>
+>> >> You can find it here:
+>> >>
+>> >> git clone https://github.com/intel/gvt-linux -b for-christoph
+>> > 
+>> > There are alot of extra commits on there - is it possible to base this
+>> > straight on rc1 not on some kind of existing DRM tree?
+>> > 
+>> > Why did you choose drm/i915/fbc: Call intel_fbc_activate() directly
+>> > from frontbuffer flush  as a base?
+>> > 
+>> > Jason
+>> > 
+>> 
+>> Hi Jason:
+>> 
+>> I updated the branch. You can check if those are what you are expecting. :)
+>
+> This is better, except for the first commit:
+>
+>  [DON'T PULL] drm/i915/dmc: split out dmc registers to a separate file
+>  THIS PATCH WILL GO THROUGH DRM-INTEL-NEXT TO UPSTREAM
+>
+>  Clean up the massive i915_reg.h a bit with this isolated set of
+>  registers.
+>
+>  v2: Remove stale comment (Lucas)
+>
+> Clean the commit message and send that as a proper PR to
+> drm-intel-next, then everything else is OK.
 
-[ Upstream commit 8755d57ba1ff910666572fab9e32890e8cc6ed3b ]
+It's already in drm-intel-next, I guess the problem is basing the branch
+on something that doesn't have it. I'd probably just base everything
+cleanly on -rc1, and whoever does the merge between the two will need to
+account for the missing include in the result. It's just adding one line
+in the right place.
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) argument or environment
-strings. Also, error return codes don't mean anything to
-obsolete_checksetup() -- only non-zero (usually 1) or zero.
-So return 1 from setup_kmac().
+BR,
+Jani.
 
-Fixes: 9e21c7e40b7e ("MIPS: RB532: Replace parse_mac_addr() with mac_pton().")
-Fixes: 73b4390fb234 ("[MIPS] Routerboard 532: Support for base system")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-From: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: linux-mips@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Phil Sutter <n0-1@freewrt.org>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ralf Baechle <ralf@linux-mips.org>
-Cc: Daniel Walter <dwalter@google.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/mips/rb532/devices.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/arch/mips/rb532/devices.c b/arch/mips/rb532/devices.c
-index c9ecf17f8660..74808619fefe 100644
---- a/arch/mips/rb532/devices.c
-+++ b/arch/mips/rb532/devices.c
-@@ -310,11 +310,9 @@ static int __init plat_setup_devices(void)
- static int __init setup_kmac(char *s)
- {
- 	printk(KERN_INFO "korina mac = %s\n", s);
--	if (!mac_pton(s, korina_dev0_data.mac)) {
-+	if (!mac_pton(s, korina_dev0_data.mac))
- 		printk(KERN_ERR "Invalid mac\n");
--		return -EINVAL;
--	}
--	return 0;
-+	return 1;
- }
- 
- __setup("kmac=", setup_kmac);
 -- 
-2.34.1
-
-
-
+Jani Nikula, Intel Open Source Graphics Center
