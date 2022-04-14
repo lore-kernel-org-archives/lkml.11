@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E63C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC0CC433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349431AbiDNOUI (ORCPT
+        id S1349347AbiDNOT5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44094 "EHLO
+        Thu, 14 Apr 2022 10:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343691AbiDNNjQ (ORCPT
+        with ESMTP id S245754AbiDNNjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:16 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A762BB3A;
-        Thu, 14 Apr 2022 06:34:39 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A84A8889;
+        Thu, 14 Apr 2022 06:34:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5F0EBCE296C;
-        Thu, 14 Apr 2022 13:34:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72295C385A5;
-        Thu, 14 Apr 2022 13:34:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98EB9B82968;
+        Thu, 14 Apr 2022 13:34:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1FE2C385A9;
+        Thu, 14 Apr 2022 13:34:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943275;
-        bh=+sdG8/qB/CAp5h1HxgzUUfASGZcyD7ZQUj93YtNWyYA=;
+        s=korg; t=1649943250;
+        bh=MYXKRL6zh+SFfUS482sv3pgx8X+jfhG4h+6uNd7kH6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VU5ilyyM+f3voz4DMn+sD+PHXOPKS+zpXC5df6969vhokHzZZ8R1DHsdCWHhzNVBd
-         SBWPwOHO8o2MCFRcHcrDY/p7ggjN+GLWZKF1xh4oSV1JpVImc8q+zOrA0GxzZQJ6Zy
-         7fRsFxNTvaxtF2qFrhFqf44r63NZbtn+6EK5bIrA=
+        b=E7hpBONlnMDwBZ8/aGYycDAQzScXqwh+B3nf7C2t4RDiSycXumOHFqIDVt2lgJYV1
+         Vmqi1ahbP37fe/kbfuDPvWsFUf67zlszAcb8qGKUnoy4nALk33eSPzCIWT5XHbu2HG
+         tW2Z2bCRssEtaVO0xssa16plHe8rdBBLp6nJRYYc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Eric Biggers <ebiggers@google.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 098/475] block: dont delete queue kobject before its children
-Date:   Thu, 14 Apr 2022 15:08:03 +0200
-Message-Id: <20220414110857.898654950@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Hector Martin <marcan@marcan.st>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.4 086/475] brcmfmac: pcie: Fix crashes due to early IRQs
+Date:   Thu, 14 Apr 2022 15:07:51 +0200
+Message-Id: <20220414110857.560093571@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,71 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit 0f69288253e9fc7c495047720e523b9f1aba5712 ]
+commit b50255c83b914defd61a57fbc81d452334b63f4c upstream.
 
-kobjects aren't supposed to be deleted before their child kobjects are
-deleted.  Apparently this is usually benign; however, a WARN will be
-triggered if one of the child kobjects has a named attribute group:
+The driver was enabling IRQs before the message processing was
+initialized. This could cause IRQs to come in too early and crash the
+driver. Instead, move the IRQ enable and hostready to a bus preinit
+function, at which point everything is properly initialized.
 
-    sysfs group 'modes' not found for kobject 'crypto'
-    WARNING: CPU: 0 PID: 1 at fs/sysfs/group.c:278 sysfs_remove_group+0x72/0x80
-    ...
-    Call Trace:
-      sysfs_remove_groups+0x29/0x40 fs/sysfs/group.c:312
-      __kobject_del+0x20/0x80 lib/kobject.c:611
-      kobject_cleanup+0xa4/0x140 lib/kobject.c:696
-      kobject_release lib/kobject.c:736 [inline]
-      kref_put include/linux/kref.h:65 [inline]
-      kobject_put+0x53/0x70 lib/kobject.c:753
-      blk_crypto_sysfs_unregister+0x10/0x20 block/blk-crypto-sysfs.c:159
-      blk_unregister_queue+0xb0/0x110 block/blk-sysfs.c:962
-      del_gendisk+0x117/0x250 block/genhd.c:610
-
-Fix this by moving the kobject_del() and the corresponding
-kobject_uevent() to the correct place.
-
-Fixes: 2c2086afc2b8 ("block: Protect less code with sysfs_lock in blk_{un,}register_queue()")
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220124215938.2769-3-ebiggers@kernel.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220131160713.245637-7-marcan@marcan.st
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/blk-sysfs.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |   16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/block/blk-sysfs.c b/block/blk-sysfs.c
-index bf33570da5ac..3fb37135264b 100644
---- a/block/blk-sysfs.c
-+++ b/block/blk-sysfs.c
-@@ -1060,15 +1060,17 @@ void blk_unregister_queue(struct gendisk *disk)
- 	 */
- 	if (queue_is_mq(q))
- 		blk_mq_unregister_dev(disk_to_dev(disk), q);
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -1306,6 +1306,18 @@ static void brcmf_pcie_down(struct devic
+ {
+ }
+ 
++static int brcmf_pcie_preinit(struct device *dev)
++{
++	struct brcmf_bus *bus_if = dev_get_drvdata(dev);
++	struct brcmf_pciedev *buspub = bus_if->bus_priv.pcie;
++
++	brcmf_dbg(PCIE, "Enter\n");
++
++	brcmf_pcie_intr_enable(buspub->devinfo);
++	brcmf_pcie_hostready(buspub->devinfo);
++
++	return 0;
++}
+ 
+ static int brcmf_pcie_tx(struct device *dev, struct sk_buff *skb)
+ {
+@@ -1414,6 +1426,7 @@ static int brcmf_pcie_reset(struct devic
+ }
+ 
+ static const struct brcmf_bus_ops brcmf_pcie_bus_ops = {
++	.preinit = brcmf_pcie_preinit,
+ 	.txdata = brcmf_pcie_tx,
+ 	.stop = brcmf_pcie_down,
+ 	.txctl = brcmf_pcie_tx_ctlpkt,
+@@ -1786,9 +1799,6 @@ static void brcmf_pcie_setup(struct devi
+ 
+ 	init_waitqueue_head(&devinfo->mbdata_resp_wait);
+ 
+-	brcmf_pcie_intr_enable(devinfo);
+-	brcmf_pcie_hostready(devinfo);
 -
--	kobject_uevent(&q->kobj, KOBJ_REMOVE);
--	kobject_del(&q->kobj);
- 	blk_trace_remove_sysfs(disk_to_dev(disk));
- 
- 	mutex_lock(&q->sysfs_lock);
- 	if (q->elevator)
- 		elv_unregister_queue(q);
- 	mutex_unlock(&q->sysfs_lock);
-+
-+	/* Now that we've deleted all child objects, we can delete the queue. */
-+	kobject_uevent(&q->kobj, KOBJ_REMOVE);
-+	kobject_del(&q->kobj);
-+
- 	mutex_unlock(&q->sysfs_dir_lock);
- 
- 	kobject_put(&disk_to_dev(disk)->kobj);
--- 
-2.34.1
-
+ 	ret = brcmf_attach(&devinfo->pdev->dev);
+ 	if (ret)
+ 		goto fail;
 
 
