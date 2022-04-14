@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24D53C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14BD3C4167D
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352198AbiDNOcD (ORCPT
+        id S1351821AbiDNObg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:32:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47056 "EHLO
+        Thu, 14 Apr 2022 10:31:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344332AbiDNNkz (ORCPT
+        with ESMTP id S245358AbiDNNi1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:40:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D70A1C6;
-        Thu, 14 Apr 2022 06:38:30 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064DBA0BD9;
+        Thu, 14 Apr 2022 06:32:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 197866190F;
-        Thu, 14 Apr 2022 13:38:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 264FCC385A5;
-        Thu, 14 Apr 2022 13:38:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9CEB4B8296A;
+        Thu, 14 Apr 2022 13:31:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10913C385A1;
+        Thu, 14 Apr 2022 13:31:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943509;
-        bh=cO3csObAGATj8OcIKsCInFNJuzbOnf1Jb70tYNG1yr8=;
+        s=korg; t=1649943118;
+        bh=pz4SwLnyQgVCpN4F2tuLiBG4T/dHTViBa/Utc5NSmC4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g4fBotCKod4jnFyPFPRMn2HaCCRr6EImSZ0vHj4fAzwk8GnNvdtFRhP4kOk9Oq8u0
-         7VS0QScrseI0yv4lEwpE8BcXyKrtzkfU5dJm+kHawWddHxxLpLxHjqT3t2kXVPROmp
-         sMUG3vk0rXO+cfPCmmAoS3AkdSWLXYoLGsvR+Vuo=
+        b=RpAhRedYLOUOVNAPn3MgrRMCU2Ph6/JCPv52SVFUE6Rj7stH2Ie9gLGNa/M/tKN8L
+         5Q98/vrdmgxyMZTF9BH4hyLtbiAeqKX6Qu8GlaAgoF9c57VRSBRRKcL2zyqZf58emG
+         oRIv+/Zoa7NiCmMR1S3kvvh/x++A3IWy3jLC/QtM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 140/475] memory: emif: check the pointer temp in get_device_details()
-Date:   Thu, 14 Apr 2022 15:08:45 +0200
-Message-Id: <20220414110859.065354083@linuxfoundation.org>
+        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.4 040/475] f2fs: fix to do sanity check on .cp_pack_total_block_count
+Date:   Thu, 14 Apr 2022 15:07:05 +0200
+Message-Id: <20220414110856.278362208@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,37 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit 5b5ab1bfa1898c6d52936a57c25c5ceba2cb2f87 ]
+commit 5b5b4f85b01604389f7a0f11ef180a725bf0e2d4 upstream.
 
-The pointer temp is allocated by devm_kzalloc(), so it should be
-checked for error handling.
+As bughunter reported in bugzilla:
 
-Fixes: 7ec944538dde ("memory: emif: add basic infrastructure for EMIF driver")
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Link: https://lore.kernel.org/r/20220225132552.27894-1-baijiaju1990@gmail.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+https://bugzilla.kernel.org/show_bug.cgi?id=215709
+
+f2fs may hang when mounting a fuzzed image, the dmesg shows as below:
+
+__filemap_get_folio+0x3a9/0x590
+pagecache_get_page+0x18/0x60
+__get_meta_page+0x95/0x460 [f2fs]
+get_checkpoint_version+0x2a/0x1e0 [f2fs]
+validate_checkpoint+0x8e/0x2a0 [f2fs]
+f2fs_get_valid_checkpoint+0xd0/0x620 [f2fs]
+f2fs_fill_super+0xc01/0x1d40 [f2fs]
+mount_bdev+0x18a/0x1c0
+f2fs_mount+0x15/0x20 [f2fs]
+legacy_get_tree+0x28/0x50
+vfs_get_tree+0x27/0xc0
+path_mount+0x480/0xaa0
+do_mount+0x7c/0xa0
+__x64_sys_mount+0x8b/0xe0
+do_syscall_64+0x38/0xc0
+entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The root cause is cp_pack_total_block_count field in checkpoint was fuzzed
+to one, as calcuated, two cp pack block locates in the same block address,
+so then read latter cp pack block, it will block on the page lock due to
+the lock has already held when reading previous cp pack block, fix it by
+adding sanity check for cp_pack_total_block_count.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/memory/emif.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/f2fs/checkpoint.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
-index 0d6b975616bb..9c4c668f9a88 100644
---- a/drivers/memory/emif.c
-+++ b/drivers/memory/emif.c
-@@ -1423,7 +1423,7 @@ static struct emif_data *__init_or_module get_device_details(
- 	temp	= devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
- 	dev_info = devm_kzalloc(dev, sizeof(*dev_info), GFP_KERNEL);
+--- a/fs/f2fs/checkpoint.c
++++ b/fs/f2fs/checkpoint.c
+@@ -848,6 +848,7 @@ static struct page *validate_checkpoint(
+ 	struct page *cp_page_1 = NULL, *cp_page_2 = NULL;
+ 	struct f2fs_checkpoint *cp_block = NULL;
+ 	unsigned long long cur_version = 0, pre_version = 0;
++	unsigned int cp_blocks;
+ 	int err;
  
--	if (!emif || !pd || !dev_info) {
-+	if (!emif || !temp || !dev_info) {
- 		dev_err(dev, "%s:%d: allocation error\n", __func__, __LINE__);
- 		goto error;
+ 	err = get_checkpoint_version(sbi, cp_addr, &cp_block,
+@@ -855,15 +856,16 @@ static struct page *validate_checkpoint(
+ 	if (err)
+ 		return NULL;
+ 
+-	if (le32_to_cpu(cp_block->cp_pack_total_block_count) >
+-					sbi->blocks_per_seg) {
++	cp_blocks = le32_to_cpu(cp_block->cp_pack_total_block_count);
++
++	if (cp_blocks > sbi->blocks_per_seg || cp_blocks <= F2FS_CP_PACKS) {
+ 		f2fs_warn(sbi, "invalid cp_pack_total_block_count:%u",
+ 			  le32_to_cpu(cp_block->cp_pack_total_block_count));
+ 		goto invalid_cp;
  	}
--- 
-2.34.1
-
+ 	pre_version = *version;
+ 
+-	cp_addr += le32_to_cpu(cp_block->cp_pack_total_block_count) - 1;
++	cp_addr += cp_blocks - 1;
+ 	err = get_checkpoint_version(sbi, cp_addr, &cp_block,
+ 					&cp_page_2, version);
+ 	if (err)
 
 
