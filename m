@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FAAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:14:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DA25C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:14:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243726AbiDNNRM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:17:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36816 "EHLO
+        id S243737AbiDNNRR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:17:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237481AbiDNNRJ (ORCPT
+        with ESMTP id S243723AbiDNNRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:17:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEE130F76;
-        Thu, 14 Apr 2022 06:14:43 -0700 (PDT)
+        Thu, 14 Apr 2022 09:17:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E38E19018;
+        Thu, 14 Apr 2022 06:14:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FF836125A;
-        Thu, 14 Apr 2022 13:14:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C75FC385A5;
-        Thu, 14 Apr 2022 13:14:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AEAC7B82929;
+        Thu, 14 Apr 2022 13:14:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23D57C385A1;
+        Thu, 14 Apr 2022 13:14:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942082;
-        bh=QMNy+Fny+JHW3JnAtkkrRJcsCDWBuheXWC1zePhIsQM=;
+        s=korg; t=1649942085;
+        bh=/2Dck0yXQAUw92M8J6qwutwzsjxHo15GjzK9bZxlqOA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nROeZLPJU8Tsorw1U1pv8VNisfbvO+b0o2PtpkY0RgspDRv8cwjNw2SMYonN6YnYI
-         EJpDFZ42IXS2B8zuliV4txk/OcI2lVOAwxzBLo1qx96rrZthL6LeVtK2NQocDFqIaR
-         fRAjTXUq/6dLbFgE+dMu+9GUCoHIxRVRZabGEiBc=
+        b=kXeg73jjoNUr6pvl1rpHcuY8lvw6iW2qct47gyA5lklAA8Vcf5ErmEBAvrMC4Sx3u
+         fS1p/mK5ls1kt3c5Y/NbKn12k18qd6rDaaUy01q1VDUXB80UoQjPjC1bUbpyGO4V5C
+         UTwvrhVjG0+Vs6u9dgFZ5ZxgYfAIvjialVDindJk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eddie James <eajames@linux.ibm.com>,
-        Joel Stanley <joel@jms.id.au>, Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.19 001/338] USB: serial: pl2303: add IBM device IDs
-Date:   Thu, 14 Apr 2022 15:08:24 +0200
-Message-Id: <20220414110838.929680161@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 010/338] spi: Fix erroneous sgs value with min_t()
+Date:   Thu, 14 Apr 2022 15:08:33 +0200
+Message-Id: <20220414110839.184071949@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,47 +53,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eddie James <eajames@linux.ibm.com>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-commit e1d15646565b284e9ef2433234d6cfdaf66695f1 upstream.
+[ Upstream commit ebc4cb43ea5ada3db46c80156fca58a54b9bbca8 ]
 
-IBM manufactures a PL2303 device for UPS communications. Add the vendor
-and product IDs so that the PL2303 driver binds to the device.
+While computing sgs in spi_map_buf(), the data type
+used in min_t() for max_seg_size is 'unsigned int' where
+as that of ctlr->max_dma_len is 'size_t'.
 
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220301224446.21236-1-eajames@linux.ibm.com
-Cc: stable@vger.kernel.org
-[ johan: amend the SoB chain ]
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+min_t(unsigned int,x,y) gives wrong results if one of x/y is
+'size_t'
+
+Consider the below examples on a 64-bit machine (ie size_t is
+64-bits, and unsigned int is 32-bit).
+    case 1) min_t(unsigned int, 5, 0x100000001);
+    case 2) min_t(size_t, 5, 0x100000001);
+
+Case 1 returns '1', where as case 2 returns '5'. As you can see
+the result from case 1 is wrong.
+
+This patch fixes the above issue by using the data type of the
+parameters that are used in min_t with maximum data length.
+
+Fixes: commit 1a4e53d2fc4f68aa ("spi: Fix invalid sgs value")
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Link: https://lore.kernel.org/r/20220316175317.465-1-biju.das.jz@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/serial/pl2303.c |    1 +
- drivers/usb/serial/pl2303.h |    3 +++
- 2 files changed, 4 insertions(+)
+ drivers/spi/spi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/serial/pl2303.c
-+++ b/drivers/usb/serial/pl2303.c
-@@ -110,6 +110,7 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(ADLINK_VENDOR_ID, ADLINK_ND6530GC_PRODUCT_ID) },
- 	{ USB_DEVICE(SMART_VENDOR_ID, SMART_PRODUCT_ID) },
- 	{ USB_DEVICE(AT_VENDOR_ID, AT_VTKIT3_PRODUCT_ID) },
-+	{ USB_DEVICE(IBM_VENDOR_ID, IBM_PRODUCT_ID) },
- 	{ }					/* Terminating entry */
- };
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index 518c8e0eef7f..3bcd6f178f73 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -779,10 +779,10 @@ int spi_map_buf(struct spi_controller *ctlr, struct device *dev,
+ 	int i, ret;
  
---- a/drivers/usb/serial/pl2303.h
-+++ b/drivers/usb/serial/pl2303.h
-@@ -29,6 +29,9 @@
- #define ATEN_PRODUCT_UC232B	0x2022
- #define ATEN_PRODUCT_ID2	0x2118
- 
-+#define IBM_VENDOR_ID		0x04b3
-+#define IBM_PRODUCT_ID		0x4016
-+
- #define IODATA_VENDOR_ID	0x04bb
- #define IODATA_PRODUCT_ID	0x0a03
- #define IODATA_PRODUCT_ID_RSAQ5	0x0a0e
+ 	if (vmalloced_buf || kmap_buf) {
+-		desc_len = min_t(unsigned int, max_seg_size, PAGE_SIZE);
++		desc_len = min_t(unsigned long, max_seg_size, PAGE_SIZE);
+ 		sgs = DIV_ROUND_UP(len + offset_in_page(buf), desc_len);
+ 	} else if (virt_addr_valid(buf)) {
+-		desc_len = min_t(unsigned int, max_seg_size, ctlr->max_dma_len);
++		desc_len = min_t(size_t, max_seg_size, ctlr->max_dma_len);
+ 		sgs = DIV_ROUND_UP(len, desc_len);
+ 	} else {
+ 		return -EINVAL;
+-- 
+2.34.1
+
 
 
