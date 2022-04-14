@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F10C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98188C3527D
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346330AbiDNN40 (ORCPT
+        id S1346377AbiDNN4l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48682 "EHLO
+        Thu, 14 Apr 2022 09:56:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245147AbiDNN2h (ORCPT
+        with ESMTP id S244994AbiDNN2X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FDEAA03C;
-        Thu, 14 Apr 2022 06:21:50 -0700 (PDT)
+        Thu, 14 Apr 2022 09:28:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1341AA8EC7;
+        Thu, 14 Apr 2022 06:21:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 331BEB82982;
-        Thu, 14 Apr 2022 13:21:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D870C385AA;
-        Thu, 14 Apr 2022 13:21:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A42FE618E3;
+        Thu, 14 Apr 2022 13:21:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1546C385A5;
+        Thu, 14 Apr 2022 13:21:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942507;
-        bh=KoGQ+0vWP49KzgTOCU/ifdDn7F7KOjvEzSHR2vQTS+U=;
+        s=korg; t=1649942488;
+        bh=asKDr/nU5wSM/qT+3cgtkeW02HwaalF7FZleMTvDYhU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l7+hL+l59fbs3gghCzyRnF/KKFcPXBBRczGdiwDK88YKXctNbWX/+WmcIalfNf4xS
-         77mEBraWrxIJ+XUNSP5hZxMb1pz9FmPJOsJpgKWHVZUTjsXdLfekd8c8uCOWypQ/yG
-         HIUMEhrXiE4USPkPWNo3CjzqaLX1tjMb+3Y0r+V4=
+        b=E7irOEGSP2U7+J/J0nTOoL1hCKUWxwUd6IkYe4F8foKUZsA7AOdy04bWGSApLzQf+
+         OShwLdYbRXdquiOvpbzW+49LALlqFtdboTRM+j0RUkZ3x1K9BEBN5uu46M4+sSLCpa
+         zG5XkYehCWOuzlMDSDFwJV11mDuCRsn1L1GCKS7A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qing Wang <wangqing@vivo.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 162/338] serial: 8250_mid: Balance reference count for PCI DMA device
-Date:   Thu, 14 Apr 2022 15:11:05 +0200
-Message-Id: <20220414110843.511130268@linuxfoundation.org>
+Subject: [PATCH 4.19 113/338] ASoC: msm8916-wcd-digital: Fix missing clk_disable_unprepare() in msm8916_wcd_digital_probe
+Date:   Thu, 14 Apr 2022 15:10:16 +0200
+Message-Id: <20220414110842.125201504@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,91 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 67ec6dd0b257bd81b4e9fcac89b29da72f6265e5 ]
+[ Upstream commit 375a347da4889f64d86e1ab7f4e6702b6e9bf299 ]
 
-The pci_get_slot() increases its reference count, the caller
-must decrement the reference count by calling pci_dev_put().
+Fix the missing clk_disable_unprepare() before return
+from msm8916_wcd_digital_probe in the error handling case.
 
-Fixes: 90b9aacf912a ("serial: 8250_pci: add Intel Tangier support")
-Fixes: f549e94effa1 ("serial: 8250_pci: add Intel Penwell ports")
-Reported-by: Qing Wang <wangqing@vivo.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Depends-on: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
-Link: https://lore.kernel.org/r/20220215100920.41984-1-andriy.shevchenko@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220307084523.28687-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_mid.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ sound/soc/codecs/msm8916-wcd-digital.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
-index efa0515139f8..e6c1791609dd 100644
---- a/drivers/tty/serial/8250/8250_mid.c
-+++ b/drivers/tty/serial/8250/8250_mid.c
-@@ -73,6 +73,11 @@ static int pnw_setup(struct mid8250 *mid, struct uart_port *p)
- 	return 0;
+diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
+index 6de2ab6f9706..e6750bda542a 100644
+--- a/sound/soc/codecs/msm8916-wcd-digital.c
++++ b/sound/soc/codecs/msm8916-wcd-digital.c
+@@ -918,7 +918,7 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
+ 	ret = clk_prepare_enable(priv->mclk);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to enable mclk %d\n", ret);
+-		return ret;
++		goto err_clk;
+ 	}
+ 
+ 	dev_set_drvdata(dev, priv);
+@@ -926,6 +926,9 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
+ 	return devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
+ 				      msm8916_wcd_digital_dai,
+ 				      ARRAY_SIZE(msm8916_wcd_digital_dai));
++err_clk:
++	clk_disable_unprepare(priv->ahbclk);
++	return ret;
  }
  
-+static void pnw_exit(struct mid8250 *mid)
-+{
-+	pci_dev_put(mid->dma_dev);
-+}
-+
- static int tng_handle_irq(struct uart_port *p)
- {
- 	struct mid8250 *mid = p->private_data;
-@@ -124,6 +129,11 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
- 	return 0;
- }
- 
-+static void tng_exit(struct mid8250 *mid)
-+{
-+	pci_dev_put(mid->dma_dev);
-+}
-+
- static int dnv_handle_irq(struct uart_port *p)
- {
- 	struct mid8250 *mid = p->private_data;
-@@ -330,9 +340,9 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	pci_set_drvdata(pdev, mid);
- 	return 0;
-+
- err:
--	if (mid->board->exit)
--		mid->board->exit(mid);
-+	mid->board->exit(mid);
- 	return ret;
- }
- 
-@@ -342,8 +352,7 @@ static void mid8250_remove(struct pci_dev *pdev)
- 
- 	serial8250_unregister_port(mid->line);
- 
--	if (mid->board->exit)
--		mid->board->exit(mid);
-+	mid->board->exit(mid);
- }
- 
- static const struct mid8250_board pnw_board = {
-@@ -351,6 +360,7 @@ static const struct mid8250_board pnw_board = {
- 	.freq = 50000000,
- 	.base_baud = 115200,
- 	.setup = pnw_setup,
-+	.exit = pnw_exit,
- };
- 
- static const struct mid8250_board tng_board = {
-@@ -358,6 +368,7 @@ static const struct mid8250_board tng_board = {
- 	.freq = 38400000,
- 	.base_baud = 1843200,
- 	.setup = tng_setup,
-+	.exit = tng_exit,
- };
- 
- static const struct mid8250_board dnv_board = {
+ static int msm8916_wcd_digital_remove(struct platform_device *pdev)
 -- 
 2.34.1
 
