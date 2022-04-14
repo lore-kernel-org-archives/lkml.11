@@ -2,294 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0DFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 23:16:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB6AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 23:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347490AbiDNXS7 (ORCPT
+        id S1347523AbiDNXYS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 19:18:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40510 "EHLO
+        Thu, 14 Apr 2022 19:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345759AbiDNXSu (ORCPT
+        with ESMTP id S239994AbiDNXYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 19:18:50 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C751AC908
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:16:24 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id mm4-20020a17090b358400b001cb93d8b137so10555303pjb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:16:24 -0700 (PDT)
+        Thu, 14 Apr 2022 19:24:15 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19FF1B8989
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:21:49 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id w7so6074605pfu.11
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:21:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vLhomrpooyVkCPnT/V3GspH1VkT6rkdcQOEP4TxU1jc=;
-        b=Xwr79i/rtcdMWZfT7X4gLtn/vh+8ejYnbNEzZrzwPEZQJl3GxaqMmrDWnIP06UETWf
-         QO6k2kmSdAsNnxYgt5BIdG2EfI3eWsFLzQeSK+jjRh9x9Y4Ioih9qk0/4ccMmDO9ZGTP
-         EkpiuIOmmyUG5xn/9MPYjBUzbjrx0E+jWGo4iZCqvaBK2YXRzbgBSN0AmU/0CHsAwf9+
-         IF01Mv0mvybjqpC+tQ4CafC4sv+hVw5uKhFGwj3DUjqowV5+8pMXD7VHKN6TvZnrX5Vb
-         1PCwm0BXhEAlX8VODN06SyLQVUhJsM3g/UH1w0Vi8Obymk11oeN6R/gTjqo3gv7a6mpE
-         t4bQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=eZSMaHVoqT9ySfaPjWWUxErMqhnAV6RP7Xt22+7qSpE=;
+        b=GwTHI0whS+GudzUXxDlT7R/rxGG7MLjsPzDcXeVAAbRy2Ov99jrtHy8huKZ78fb6M4
+         bZlbprkalqPEAcBACLxDC561QYmrqVH/dCWoynsAnm7TaXLwf4eby5RKleM2Gx1zAF5v
+         8aoNoypEVrWmTSLDR1ezsJXzMVo5pcKiI1m8i0jV6l4dqJ9PuphPTp/5fMROBOD8Z8Sh
+         7OonSlkOf2P/kDcZMP2rQr3kbg06Km8Hl0KmBAlPIG91i7G+caRpGeTsb2PEFOV08D/H
+         uWXz16B6NkEO9YulnnRdyBbxvyw/9Gq2oYtLZIX/Y+DBrwREoKDcAJiM5iJY0iqfLmCc
+         MVeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vLhomrpooyVkCPnT/V3GspH1VkT6rkdcQOEP4TxU1jc=;
-        b=RFqzaPxSCFJkYLokDcfeUj/ZWCmOYDXHyRxahiwFSioRpi7dsHs74kYss4Dz+n8Vjk
-         5sxI4dNeNWg29MLJ8mNfi7A5WT60AN3rQ8REPgphU1vvqgG3ZqWDhKPSpUqRWEYcETli
-         q/lc4PktCoCe+ca2bVRUJXv/7Nz4iOhZ9Q3n0CmXd0Nz/R8hj+cIAMHPB4uF5cUrWqSp
-         eDT40Da2tiCqBTqkaRqTyhe6VwTTYwTZV+awEsmEWscxsJQnDZCs49NZ49RiZDE//qas
-         eU4GByBToOZOrFzGIT29FZmPrBD74sW7Gi/bTGv/d5/aphbUgU00WWDNSJvhjCImL+CA
-         i/dw==
-X-Gm-Message-State: AOAM530ICYq/3EbesqA6kCW/eZXHERAc0q6IxQAZdKY3r9qIzB8+cMRv
-        1ZmkpCfz9xFBwd4jYYx/SBkDG0oGm+sZUYXfh43ZJw==
-X-Google-Smtp-Source: ABdhPJxbflLVSecIO9jWZq3CT3nUwaSAazyRt2mR5j1dkuDUM61ZcKA4cPzGoWlR/Al2tHHRIW81IvsVP4tAvssYgs8=
-X-Received: by 2002:a17:90b:164f:b0:1c7:8d20:ff6d with SMTP id
- il15-20020a17090b164f00b001c78d20ff6dmr1006092pjb.64.1649978183669; Thu, 14
- Apr 2022 16:16:23 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=eZSMaHVoqT9ySfaPjWWUxErMqhnAV6RP7Xt22+7qSpE=;
+        b=Bm2g/rPRhg4mYiJNqbBiddF3dO7mTru+lAWn80A53ZoDeyISJELpWCR5LPV2WpjLYV
+         vSTRxRxjz3IP1/uFb5dEbZBR4va0ZjX+haziPHEbSgTcoOOfutriW0XJlxnmI527yw2m
+         KVr0vgsC2b45Toti9+sh4XPp+1eWXn+TbkR9GFrv17R8/ew3cPlirYi7/Rm0uACfl/fm
+         Osp6MqNkFv9L2P0M/mg7g4bXGGORBB8h8DEPfpJNI3AcD3kevxfK6isLPVxrZ4DZgjnB
+         tmw5dUWZnRkZM44iGD8MBy3WY9DQUiYIi3UkqAC4BJChv3n6EV22AWCg5xAZf5m8OUuk
+         R15A==
+X-Gm-Message-State: AOAM530CGxjHIoMwjKFj7XPj4uOxD8ewBhkisw9n/IlpY+6wJXviagZi
+        HfuLIjp520itTEl0bv6EfLY3NA==
+X-Google-Smtp-Source: ABdhPJz2SQdvJSpca+DnY5qvEoTN2B3E4/fHSw7/pl7LTz8w1R5u7xjJ5gFdJDh8LbkpXlvqd6C+ow==
+X-Received: by 2002:a63:c144:0:b0:399:3e75:1d55 with SMTP id p4-20020a63c144000000b003993e751d55mr4121743pgi.199.1649978508429;
+        Thu, 14 Apr 2022 16:21:48 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id d139-20020a621d91000000b00505aa0d10desm921742pfd.0.2022.04.14.16.21.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 16:21:47 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 23:21:44 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Will Deacon <will@kernel.org>, Peter Gonda <pgonda@google.com>,
+        kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Anup Patel <anup@brainfault.org>, maz@kernel.org,
+        Alexandru Elisei <alexandru.elisei@arm.com>
+Subject: Re: [PATCH v4.1] KVM, SEV: Add KVM_EXIT_SHUTDOWN metadata for SEV-ES
+Message-ID: <YlisiF4BU6Uxe+iU@google.com>
+References: <20220407210233.782250-1-pgonda@google.com>
+ <Yk+kNqJjzoJ9TWVH@google.com>
+ <CAMkAt6oc=SOYryXu+_w+WZR+VkMZfLR3_nd=hDvMU_cmOjJ0Xg@mail.gmail.com>
+ <YlBqYcXFiwur3zmo@google.com>
+ <20220411091213.GA2120@willie-the-truck>
+ <YlQ0LZyAgjGr7qX7@e121798.cambridge.arm.com>
+ <YlREEillLRjevKA2@google.com>
 MIME-Version: 1.0
-References: <20220325184609.4059963-1-rajatja@google.com> <20220407191715.GA254460@bhelgaas>
-In-Reply-To: <20220407191715.GA254460@bhelgaas>
-From:   Rajat Jain <rajatja@google.com>
-Date:   Thu, 14 Apr 2022 16:15:47 -0700
-Message-ID: <CACK8Z6Fy3L7vijVn4w+6HwRuuTtW5ePrWc04rUc8U8TPT0Re0w@mail.gmail.com>
-Subject: Re: [PATCH v5 1/2] PCI: ACPI: Support Microsoft's "DmaProperty"
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, linux-pci@vger.kernel.org,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rajat Jain <rajatxjain@gmail.com>,
-        Dmitry Torokhov <dtor@google.com>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Pavel Machek <pavel@denx.de>,
-        "Oliver O'Halloran" <oohall@gmail.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        iommu@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YlREEillLRjevKA2@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Bjorn,
+PAOLO!!!!!!
+
+Or maybe I need to try the Beetlejuice trick...
+
+Paolo, Paolo, Paolo.
+
+This is now sitting in kvm/next, which makes RISC-V and arm64 unhappy.  Thoughts
+on how to proceed?
+
+arch/riscv/kvm/vcpu_sbi.c: In function ‘kvm_riscv_vcpu_sbi_system_reset’:
+arch/riscv/kvm/vcpu_sbi.c:97:26: error: ‘struct <anonymous>’ has no member named ‘flags’
+   97 |         run->system_event.flags = flags;
+      |                          ^
 
 
-On Thu, Apr 7, 2022 at 12:17 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> In subject,
->
->   PCI/ACPI: ...
->
-> would be consistent with previous history (at least things coming
-> through the PCI tree :)).
-
-Will do.
-
->
-> On Fri, Mar 25, 2022 at 11:46:08AM -0700, Rajat Jain wrote:
-> > The "DmaProperty" is supported and documented by Microsoft here:
-> > https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports
->
-> Here's a more specific link (could probably be referenced below to
-> avoid cluttering the text here):
->
-> https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-internal-pcie-ports-accessible-to-users-and-requiring-dma-protection
-
-Will do.
-
->
-> > They use this property for DMA protection:
-> > https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
+On Mon, Apr 11, 2022, Sean Christopherson wrote:
+> On Mon, Apr 11, 2022, Alexandru Elisei wrote:
+> > Hi,
 > >
-> > Support the "DmaProperty" with the same semantics. This is useful for
-> > internal PCI devices that do not hang off a PCIe rootport, but offer
-> > an attack surface for DMA attacks (e.g. internal network devices).
->
-> Same semantics as what?
-
-Er, I meant the same semantics as the "DmaProperty". Please also see below.
-
->
-> The MS description of "ExternalFacingPort" says:
->
->   This ACPI object enables the operating system to identify externally
->   exposed PCIe hierarchies, such as Thunderbolt.
->
-
-No, my patch doesn't have to do with this one.
-
-> and "DmaProperty" says:
->
->   This ACPI object enables the operating system to identify internal
->   PCIe hierarchies that are easily accessible by users (such as,
->   Laptop M.2 PCIe slots accessible by way of a latch) and require
->   protection by the OS Kernel DMA Protection mechanism.
-
-Yes, this is the property that my patch uses. Microsoft has agreed to
-update this documentation (in a sideband thread that I also copied you
-on), with the updated semantics that this property can be used to
-identify any PCI devices that require Kernel DMA protection. i.e. the
-property is not restricted to identify "internal PCIe hierarchies"
-(starting at root port), but to "any PCI device".
-
->
-> I don't really understand why they called out "laptop M.2 PCIe slots"
-> here.  Is the idea that those are more accessible than a standard
-> internal PCIe slot?  Seems like a pretty small distinction to me.
->
-> I can understand your example of internal network devices adding an
-> attack surface.  But I don't see how "DmaProperty" helps identify
-> those.  Wouldn't a NIC in a standard internal PCIe slot add the same
-> attack surface?
-
-Yes it would. The attack surface is the same. They probably only
-thought of devices external to the SoC (starting from a root port)
-when designing this property and thus called out internal M.2 PCI
-slots. But nowhave realized that this could be opened to any PCI
-device.
-
->
-> > Signed-off-by: Rajat Jain <rajatja@google.com>
-> > Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> > ---
-> > v5: * Reorder the patches in the series
-> > v4: * Add the GUID.
-> >     * Update the comment and commitlog.
-> > v3: * Use Microsoft's documented property "DmaProperty"
-> >     * Resctrict to ACPI only
+> > On Mon, Apr 11, 2022 at 10:12:13AM +0100, Will Deacon wrote:
+> > > Hi Sean,
+> > >
+> > > Cheers for the heads-up.
+> > >
+> > > [+Marc and Alex as this looks similar to [1]]
+> > >
+> > > On Fri, Apr 08, 2022 at 05:01:21PM +0000, Sean Christopherson wrote:
+> > > > system_event.flags is broken (at least on x86) due to the prior 'type' field not
+> > > > being propery padded, e.g. userspace will read/write garbage if the userspace
+> > > > and kernel compilers pad structs differently.
+> > > >
+> > > >           struct {
+> > > >                   __u32 type;
+> > > >                   __u64 flags;
+> > > >           } system_event;
+> > >
+> > > On arm64, I think the compiler is required to put the padding between type
+> > > and flags so that both the struct and 'flags' are 64-bit aligned [2]. Does
+> > > x86 not offer any guarantees on the overall structure alignment?
 > >
-> >  drivers/acpi/property.c |  3 +++
-> >  drivers/pci/pci-acpi.c  | 16 ++++++++++++++++
-> >  2 files changed, 19 insertions(+)
-> >
-> > diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
-> > index d0986bda2964..20603cacc28d 100644
-> > --- a/drivers/acpi/property.c
-> > +++ b/drivers/acpi/property.c
-> > @@ -48,6 +48,9 @@ static const guid_t prp_guids[] = {
-> >       /* Storage device needs D3 GUID: 5025030f-842f-4ab4-a561-99a5189762d0 */
-> >       GUID_INIT(0x5025030f, 0x842f, 0x4ab4,
-> >                 0xa5, 0x61, 0x99, 0xa5, 0x18, 0x97, 0x62, 0xd0),
-> > +     /* DmaProperty for PCI devices GUID: 70d24161-6dd5-4c9e-8070-705531292865 */
-> > +     GUID_INIT(0x70d24161, 0x6dd5, 0x4c9e,
-> > +               0x80, 0x70, 0x70, 0x55, 0x31, 0x29, 0x28, 0x65),
-> >  };
-> >
-> >  /* ACPI _DSD data subnodes GUID: dbb8e3e6-5886-4ba6-8795-1319f52a966b */
-> > diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-> > index 1f15ab7eabf8..378e05096c52 100644
-> > --- a/drivers/pci/pci-acpi.c
-> > +++ b/drivers/pci/pci-acpi.c
-> > @@ -1350,12 +1350,28 @@ static void pci_acpi_set_external_facing(struct pci_dev *dev)
-> >               dev->external_facing = 1;
-> >  }
-> >
-> > +static void pci_acpi_check_for_dma_protection(struct pci_dev *dev)
->
-> I try to avoid function names like *_check_*() because they don't give
-> any hint about whether there's a side effect or what direction things
-> are going.  I prefer things that return a value or make sense when
-> used as a predicate.  Maybe something like this?
->
->   int pci_dev_has_dma_property(struct pci_dev *dev)
->
->   dev->untrusted |= pci_dev_has_dma_property(pci_dev);
->
-
-OK, will do.
-
-
-> > +{
-> > +     u8 val;
-> > +
-> > +     /*
-> > +      * Property also used by Microsoft Windows for same purpose,
-> > +      * (to implement DMA protection from a device, using the IOMMU).
-> > +      */
-> > +     if (device_property_read_u8(&dev->dev, "DmaProperty", &val))
->
-> The MS web page says a _DSD with this property must be implemented in
-> the Root Port device scope, but we don't enforce that here.  We *do*
-> enforce it in pci_acpi_set_untrusted().  Shouldn't we do the same
-> here?
-
-No, the whole point of doing this (please refer to the discussion on
-the previous versions of this patch) was that we want to have a
-property that is NOT limited to the root ports only. And we have
-reached an agreement with Microsoft about that.
-
->
-> We currently look at three properties from the same _DSD:
->
->   DmaProperty
->   ExternalFacingPort
->   HotPlugSupportInD3
->
-> For "HotPlugSupportInD3", we check that "value == 1".  For
-> "ExternalFacingPort", we check that it's non-zero.  The MS doc isn't
-> explicit about the values, but shows "1" in the sample ASL.  I think
-> we should handle all three cases the same.
-
-I think we can handle all three cases with "value==1". I will send a
-separate patch for the ExternalFacingPort, and will fixup this patch
-too).
-
->
-> The first two use device_property_read_u8(); the last uses
-> acpi_dev_get_property().  Again, I think they should all be the same.
->
-> acpi_dev_get_property() is easier for me to read because there are
-> slightly fewer layers of abstraction between _DSD and
-> acpi_dev_get_property().
-
-I'd prefer that too, and can change it to acpi_dev_get_property.
-
->
-> But IIUC, device_property_read_u8() works for either ACPI or DT
-> properties, and maybe there is interest in using this for DT systems.
-> None of these appear in any in-tree DTs, but maybe it is important to
-> handle these in DTs?
->
-> If that's the case, this code would no longer be specific to ACPI and
-> should be moved to somewhere that's compiled even when CONFIG_ACPI
-> isn't set.
-
-I think unifying ACPI and GPIO systems to use the same code / function
-to read the properties might be more work/investigation, because
-reading the properties for ACPI system happens much later than DT
-systems (For acpi systems, it happens in pci_acpi_setup() which is
-called much later). Given that no one wants to use this for DT
-systems, I'd prefer for this to be ACPI specific for now, and then we
-can solve it for DT once someone needs it.
-
-WDYT?
-
-Thanks & Best regards,
-
-Rajat
-
->
-> > +             return;
-> > +
-> > +     if (val)
-> > +             dev->untrusted = 1;
-> > +}
-> > +
-> >  void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
-> >  {
-> >       struct pci_dev *pci_dev = to_pci_dev(dev);
-> >
-> >       pci_acpi_optimize_delay(pci_dev, adev->handle);
-> >       pci_acpi_set_external_facing(pci_dev);
-> > +     pci_acpi_check_for_dma_protection(pci_dev);
-> >       pci_acpi_add_edr_notifier(pci_dev);
-> >
-> >       pci_acpi_add_pm_notifier(adev, pci_dev);
-> > --
-> > 2.35.1.1021.g381101b075-goog
-> >
+> > This is also my understanding. The "Procedure Call Standard for the Arm
+> > 64-bit Architecture" [1] has these rules for structs (called "aggregates"):
+> 
+> AFAIK, all x86 compilers will pad structures accordingly, but a 32-bit userspace
+> running against a 64-bit kernel will have different alignment requirements, i.e.
+> won't pad, and x86 supports CONFIG_KVM_COMPAT=y.  And I have no idea what x86's
+> bizarre x32 ABI does.
+> 
+> > > > Our plan to unhose this is to change the struct as follows and use bit 31 in the
+> > > > 'type' to indicate that ndata+data are valid.
+> > > >
+> > > >           struct {
+> > > >                         __u32 type;
+> > > >                   __u32 ndata;
+> > > >                   __u64 data[16];
+> > > >                 } system_event;
+> > > >
+> > > > Any objection to updating your architectures to use a helper to set the bit and
+> > > > populate ndata+data accordingly?  It'll require a userspace update, but v5.18
+> > > > hasn't officially released yet so it's not kinda sort not ABI breakage.
+> > >
+> > > It's a bit annoying, as we're using the current structure in Android 13 :/
+> > > Obviously, if there's no choice then upstream shouldn't worry, but it means
+> > > we'll have to carry a delta in crosvm. Specifically, the new 'ndata' field
+> > > is going to be unusable for us because it coincides with the padding.
+> 
+> Yeah, it'd be unusuable for existing types.  One idea is that we could define the
+> ABI to be that the RESET and SHUTDOWN types have an implicit ndata=1 on arm64 and
+> RISC-V.  That would allow keeping the flags interpretation and so long as crosvm
+> doesn't do something stupid like compile with "pragma pack" (does clang even support
+> that?), there's no delta necessary for Android.
+> 
+> > Just a thought, but wouldn't such a drastical change be better implemented
+> > as a new exit_reason and a new associated struct?
+> 
+> Maybe?  I wasn't aware that arm64/RISC-V picked up usage of "flags" when I
+> suggested this, but I'm not sure it would have changed anything.  We could add
+> SYSTEM_EVENT2 or whatever, but since there's no official usage of flags, it seems
+> a bit gratutious.
