@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE6FC4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA98C3527D
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356961AbiDNPZP (ORCPT
+        id S1356946AbiDNPZM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43162 "EHLO
+        Thu, 14 Apr 2022 11:25:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347011AbiDNN6L (ORCPT
+        with ESMTP id S1347003AbiDNN6L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:58:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E85B6461;
-        Thu, 14 Apr 2022 06:48:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71550B646E;
+        Thu, 14 Apr 2022 06:48:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D52561D73;
-        Thu, 14 Apr 2022 13:48:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5402C385A5;
-        Thu, 14 Apr 2022 13:48:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D6D261D7C;
+        Thu, 14 Apr 2022 13:48:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6968DC385A5;
+        Thu, 14 Apr 2022 13:48:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944107;
-        bh=oxsOU/TAsc8GDoHYex7Rew1S22SyhzlHMySjRQ0/IvQ=;
+        s=korg; t=1649944109;
+        bh=fPmpLe+7FvbhcldTdjSftrunihcoe0o5T4QI/mKdpK4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZUaXUSC0I2iIrs/nr7JXnWTWDRqL36Gfioit3i7fGv7OLAqcPsGBPMjbU0FhusXf6
-         GuVRESF8mH79rwMDca33ev/P73D46tjWC8W/gryQ87fjVJRHgG78AuCX8aBookPnVX
-         Yom7jF4xQzec6qI759LJ9ohQzAn0Yo7eqmsrhPRk=
+        b=AP2CJA790CDVYZDLfBWIDDd9XO7MU/e9xq6wa0dc4jEHTTxD9wN5c97YBc/toXoQX
+         eXKQ4vUV5RLIwilaAT5SZ31MwrzjZ8KjweKImlDx3pGjnjW5LApglPa5r19BlISa2Y
+         ko1JLOvPVgaY7VMIYrklIiCni8ejE6MB6Xj8jyaI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hengqi Chen <hengqi.chen@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>
-Subject: [PATCH 5.4 356/475] bpf: Fix comment for helper bpf_current_task_under_cgroup()
-Date:   Thu, 14 Apr 2022 15:12:21 +0200
-Message-Id: <20220414110905.044233670@linuxfoundation.org>
+        stable@vger.kernel.org, Jiaxin Yu <jiaxin.yu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.4 347/475] ASoC: mediatek: mt6358: add missing EXPORT_SYMBOLs
+Date:   Thu, 14 Apr 2022 15:12:12 +0200
+Message-Id: <20220414110904.791709704@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,48 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hengqi Chen <hengqi.chen@gmail.com>
+From: Jiaxin Yu <jiaxin.yu@mediatek.com>
 
-commit 58617014405ad5c9f94f464444f4972dabb71ca7 upstream.
+commit a7663c89f4193dbf717572e46e5a3251940dbdc8 upstream.
 
-Fix the descriptions of the return values of helper bpf_current_task_under_cgroup().
+Fixes the following build errors when mt6358 is configured as module:
 
-Fixes: c6b5fb8690fa ("bpf: add documentation for eBPF helpers (42-50)")
-Signed-off-by: Hengqi Chen <hengqi.chen@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20220310155335.1278783-1-hengqi.chen@gmail.com
+>> ERROR: modpost: "mt6358_set_mtkaif_protocol"
+>> [sound/soc/mediatek/mt8186/mt8186-mt6366-rt1019-rt5682s.ko] undefined!
+>> ERROR: modpost: "mt6358_set_mtkaif_protocol"
+>> [sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.ko] undefined!
+
+Fixes: 6a8d4198ca80 ("ASoC: mediatek: mt6358: add codec driver")
+Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220319120325.11882-1-jiaxin.yu@mediatek.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/linux/bpf.h       |    4 ++--
- tools/include/uapi/linux/bpf.h |    4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ sound/soc/codecs/mt6358.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1294,8 +1294,8 @@ union bpf_attr {
-  * 	Return
-  * 		The return value depends on the result of the test, and can be:
-  *
-- *		* 0, if current task belongs to the cgroup2.
-- *		* 1, if current task does not belong to the cgroup2.
-+ *		* 1, if current task belongs to the cgroup2.
-+ *		* 0, if current task does not belong to the cgroup2.
-  * 		* A negative error code, if an error occurred.
-  *
-  * int bpf_skb_change_tail(struct sk_buff *skb, u32 len, u64 flags)
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1294,8 +1294,8 @@ union bpf_attr {
-  * 	Return
-  * 		The return value depends on the result of the test, and can be:
-  *
-- *		* 0, if current task belongs to the cgroup2.
-- *		* 1, if current task does not belong to the cgroup2.
-+ *		* 1, if current task belongs to the cgroup2.
-+ *		* 0, if current task does not belong to the cgroup2.
-  * 		* A negative error code, if an error occurred.
-  *
-  * int bpf_skb_change_tail(struct sk_buff *skb, u32 len, u64 flags)
+--- a/sound/soc/codecs/mt6358.c
++++ b/sound/soc/codecs/mt6358.c
+@@ -103,6 +103,7 @@ int mt6358_set_mtkaif_protocol(struct sn
+ 	priv->mtkaif_protocol = mtkaif_protocol;
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(mt6358_set_mtkaif_protocol);
+ 
+ static void playback_gpio_set(struct mt6358_priv *priv)
+ {
+@@ -269,6 +270,7 @@ int mt6358_mtkaif_calibration_enable(str
+ 			   1 << RG_AUD_PAD_TOP_DAT_MISO_LOOPBACK_SFT);
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(mt6358_mtkaif_calibration_enable);
+ 
+ int mt6358_mtkaif_calibration_disable(struct snd_soc_component *cmpnt)
+ {
+@@ -292,6 +294,7 @@ int mt6358_mtkaif_calibration_disable(st
+ 	capture_gpio_reset(priv);
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(mt6358_mtkaif_calibration_disable);
+ 
+ int mt6358_set_mtkaif_calibration_phase(struct snd_soc_component *cmpnt,
+ 					int phase_1, int phase_2)
+@@ -306,6 +309,7 @@ int mt6358_set_mtkaif_calibration_phase(
+ 			   phase_2 << RG_AUD_PAD_TOP_PHASE_MODE2_SFT);
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(mt6358_set_mtkaif_calibration_phase);
+ 
+ /* dl pga gain */
+ enum {
 
 
