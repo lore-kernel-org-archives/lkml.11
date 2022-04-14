@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6F8C3527A
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E6EC35294
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344872AbiDNOtx (ORCPT
+        id S1346459AbiDNOur (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
+        Thu, 14 Apr 2022 10:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345110AbiDNNpI (ORCPT
+        with ESMTP id S1345210AbiDNNp1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E5F3703D;
-        Thu, 14 Apr 2022 06:42:23 -0700 (PDT)
+        Thu, 14 Apr 2022 09:45:27 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3F82DE0;
+        Thu, 14 Apr 2022 06:43:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 770A1612E6;
-        Thu, 14 Apr 2022 13:42:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CF76C385A5;
-        Thu, 14 Apr 2022 13:42:22 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5CF8FCE29B0;
+        Thu, 14 Apr 2022 13:43:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77095C385A1;
+        Thu, 14 Apr 2022 13:42:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943742;
-        bh=bdeyf/EEdqy1IiuOr6PhVWb3INeKAeoYpfyYVYIfNjI=;
+        s=korg; t=1649943779;
+        bh=4O0N2N8QRgt9YtZz4EGkGqK582Qf7irZX4OwaBX3SkI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zQ97Q4Zwb1dSnUesHxTm1+ZyGXgrryvnoFjEHYoPdu2APdOJrc216oGj5D2up9Fdk
-         /q1Q15CDV9qjmuVm/dYVi535bLQqYRcbCiaelZFu/kuLlqPsmdQH9lHNIqR5WTMkZl
-         VTd1RGJK5cYEjD5FwL+sRlmd5jOfZaA7c/AiYtTQ=
+        b=M6gvZYIG7hOOLlh3Uq5uFpE/F8qB0K6DPtFiCUeplsKBYM4qo2NAO/p7KlAfjtbbK
+         38t6Nk4uFGl7FIovc053//fIA8rqS+oCYvMTQG5vn85lfoATrWP7L3l4Wpztua7ZsN
+         /s+m4CM+dp/h8xxcCZknCbY1ezHcZPLup2RcqpzY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ying Xue <ying.xue@windriver.com>,
-        Hoang Le <hoang.h.le@dektech.com.au>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Casey Schaufler <casey@schaufler-ca.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 225/475] tipc: fix the timer expires after interval 100ms
-Date:   Thu, 14 Apr 2022 15:10:10 +0200
-Message-Id: <20220414110901.418792126@linuxfoundation.org>
+Subject: [PATCH 5.4 279/475] Fix incorrect type in assignment of ipv6 port for audit
+Date:   Thu, 14 Apr 2022 15:11:04 +0200
+Message-Id: <20220414110902.909125869@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,43 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hoang Le <hoang.h.le@dektech.com.au>
+From: Casey Schaufler <casey@schaufler-ca.com>
 
-[ Upstream commit 6a7d8cff4a3301087dd139293e9bddcf63827282 ]
+[ Upstream commit a5cd1ab7ab679d252a6d2f483eee7d45ebf2040c ]
 
-In the timer callback function tipc_sk_timeout(), we're trying to
-reschedule another timeout to retransmit a setup request if destination
-link is congested. But we use the incorrect timeout value
-(msecs_to_jiffies(100)) instead of (jiffies + msecs_to_jiffies(100)),
-so that the timer expires immediately, it's irrelevant for original
-description.
+Remove inappropriate use of ntohs() and assign the
+port value directly.
 
-In this commit we correct the timeout value in sk_reset_timer()
-
-Fixes: 6787927475e5 ("tipc: buffer overflow handling in listener socket")
-Acked-by: Ying Xue <ying.xue@windriver.com>
-Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
-Link: https://lore.kernel.org/r/20220321042229.314288-1-hoang.h.le@dektech.com.au
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/socket.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ security/smack/smack_lsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index f4217673eee7..d543c4556df2 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -2698,7 +2698,8 @@ static void tipc_sk_retry_connect(struct sock *sk, struct sk_buff_head *list)
- 
- 	/* Try again later if dest link is congested */
- 	if (tsk->cong_link_cnt) {
--		sk_reset_timer(sk, &sk->sk_timer, msecs_to_jiffies(100));
-+		sk_reset_timer(sk, &sk->sk_timer,
-+			       jiffies + msecs_to_jiffies(100));
- 		return;
- 	}
- 	/* Prepare SYN for retransmit */
+diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
+index 12c0fa85d9f8..0253cd2e2358 100644
+--- a/security/smack/smack_lsm.c
++++ b/security/smack/smack_lsm.c
+@@ -2501,7 +2501,7 @@ static int smk_ipv6_check(struct smack_known *subject,
+ #ifdef CONFIG_AUDIT
+ 	smk_ad_init_net(&ad, __func__, LSM_AUDIT_DATA_NET, &net);
+ 	ad.a.u.net->family = PF_INET6;
+-	ad.a.u.net->dport = ntohs(address->sin6_port);
++	ad.a.u.net->dport = address->sin6_port;
+ 	if (act == SMK_RECEIVING)
+ 		ad.a.u.net->v6info.saddr = address->sin6_addr;
+ 	else
 -- 
 2.34.1
 
