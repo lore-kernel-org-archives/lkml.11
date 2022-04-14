@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F74AC352A1
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:44:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C5EC35274
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345251AbiDNNph (ORCPT
+        id S1345280AbiDNNpm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:45:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56968 "EHLO
+        Thu, 14 Apr 2022 09:45:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343497AbiDNN3W (ORCPT
+        with ESMTP id S1343494AbiDNN3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:29:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3592E9286F;
-        Thu, 14 Apr 2022 06:24:13 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674999D4C6;
+        Thu, 14 Apr 2022 06:24:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9411618F8;
-        Thu, 14 Apr 2022 13:24:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B415FC385A5;
-        Thu, 14 Apr 2022 13:24:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1012EB82983;
+        Thu, 14 Apr 2022 13:24:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53A0CC385A5;
+        Thu, 14 Apr 2022 13:24:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942652;
-        bh=3oTTFOn4x8U2QCSUJl8IaTqxzpbx4bG6EGPFTDb8hoA=;
+        s=korg; t=1649942643;
+        bh=i+ke+0LyftTFAtgMY5X7MwRW8EZFbLFNvYR/L4nrTng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eb1ODZHW12NkUbUjtC9hQhg4UNbjdCmHDRuV1YJ3LymrIKCDTU8daHB+sR3lCkeaU
-         uU/aRuFMUmBAVVzhMuqanWZtRg6RXq64ZgqBWjd9wPut9eY9TBy8jHMksB9dydbDDS
-         /lthxWf0tMbv27OKS1SRnXmpnzvwDZJ3BUQMNEpA=
+        b=B50JBDo/YZkV8EjX8x7fdjbicm4xgPH28rKKiia5WdSFycPXs0aIya6PzQo3gfoHI
+         J0H107fqyjMtzZEq5pWKOWnmhHTBmKbhFW10VQ/ZMR2O2YIdHge5Iy5Uejdh7MMc2h
+         NlET7DU9e/p1E5kk9K+lv07V/P8JABVHiGmT7HNg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 213/338] media: cx88-mpeg: clear interrupt status register before streaming video
-Date:   Thu, 14 Apr 2022 15:11:56 +0200
-Message-Id: <20220414110844.958036892@linuxfoundation.org>
+Subject: [PATCH 4.19 210/338] video: fbdev: omapfb: panel-tpo-td043mtea1: Use sysfs_emit() instead of snprintf()
+Date:   Thu, 14 Apr 2022 15:11:53 +0200
+Message-Id: <20220414110844.873859984@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,41 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel González Cabanelas <dgcbueu@gmail.com>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
+[ Upstream commit c07a039cbb96748f54c02995bae8131cc9a73b0a ]
 
-Some cx88 video cards may have transport stream status interrupts set
-to 1 from cold start, causing errors like this:
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
-  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
-
-According to CX2388x datasheet, the interrupt status register should be
-cleared before enabling IRQs to stream video.
-
-Fix it by clearing the Transport Stream Interrupt Status register.
-
-Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
- 1 file changed, 3 insertions(+)
+ .../video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c  | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
-index 52ff00ebd4bd..281eca525340 100644
---- a/drivers/media/pci/cx88/cx88-mpeg.c
-+++ b/drivers/media/pci/cx88/cx88-mpeg.c
-@@ -171,6 +171,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
- 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
- 	q->count = 0;
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
+index ea8c79a42b41..3f1389bfba6f 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
+@@ -173,7 +173,7 @@ static ssize_t tpo_td043_vmirror_show(struct device *dev,
+ {
+ 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
  
-+	/* clear interrupt status register */
-+	cx_write(MO_TS_INTSTAT,  0x1f1111);
-+
- 	/* enable irqs */
- 	dprintk(1, "setting the interrupt mask\n");
- 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
+-	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->vmirror);
++	return sysfs_emit(buf, "%d\n", ddata->vmirror);
+ }
+ 
+ static ssize_t tpo_td043_vmirror_store(struct device *dev,
+@@ -203,7 +203,7 @@ static ssize_t tpo_td043_mode_show(struct device *dev,
+ {
+ 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->mode);
++	return sysfs_emit(buf, "%d\n", ddata->mode);
+ }
+ 
+ static ssize_t tpo_td043_mode_store(struct device *dev,
 -- 
 2.34.1
 
