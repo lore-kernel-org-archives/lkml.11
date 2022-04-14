@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C5EC35274
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94742C41535
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:44:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345280AbiDNNpm (ORCPT
+        id S1345310AbiDNNpr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56930 "EHLO
+        Thu, 14 Apr 2022 09:45:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343494AbiDNN3W (ORCPT
+        with ESMTP id S1343530AbiDNN30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:29:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674999D4C6;
-        Thu, 14 Apr 2022 06:24:06 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45BE6274;
+        Thu, 14 Apr 2022 06:24:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1012EB82983;
-        Thu, 14 Apr 2022 13:24:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53A0CC385A5;
-        Thu, 14 Apr 2022 13:24:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87109B82984;
+        Thu, 14 Apr 2022 13:24:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBD47C385A1;
+        Thu, 14 Apr 2022 13:24:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942643;
-        bh=i+ke+0LyftTFAtgMY5X7MwRW8EZFbLFNvYR/L4nrTng=;
+        s=korg; t=1649942666;
+        bh=lQBrUwmfXsdQsRwaFoUPkAP80SbEB5lBDkLaNyOFOCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B50JBDo/YZkV8EjX8x7fdjbicm4xgPH28rKKiia5WdSFycPXs0aIya6PzQo3gfoHI
-         J0H107fqyjMtzZEq5pWKOWnmhHTBmKbhFW10VQ/ZMR2O2YIdHge5Iy5Uejdh7MMc2h
-         NlET7DU9e/p1E5kk9K+lv07V/P8JABVHiGmT7HNg=
+        b=PUPwdh8+l5g4tIaRT7UgB/GlacCdfYKB+vx9WFP8o9xQQgtxQV5u9t0WQ7JrFLuVt
+         FS3j1BMZADH5fQOiEElGbePOQTxtmQUkdaTOz1SXjCW+8iVfWIR0LWwhULGjUaAfQ5
+         j3Va2KY/Dnv4sCsmU2WsZQnTt4jjJ7BCH/pgyf/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Maximilian=20B=C3=B6hm?= <maximilian.boehm@elbmurf.de>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 210/338] video: fbdev: omapfb: panel-tpo-td043mtea1: Use sysfs_emit() instead of snprintf()
-Date:   Thu, 14 Apr 2022 15:11:53 +0200
-Message-Id: <20220414110844.873859984@linuxfoundation.org>
+Subject: [PATCH 4.19 217/338] media: Revert "media: em28xx: add missing em28xx_close_extension"
+Date:   Thu, 14 Apr 2022 15:12:00 +0200
+Message-Id: <20220414110845.069528303@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,42 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit c07a039cbb96748f54c02995bae8131cc9a73b0a ]
+[ Upstream commit fde18c3bac3f964d8333ae53b304d8fee430502b ]
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+This reverts commit 2c98b8a3458df03abdc6945bbef67ef91d181938.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Reverted patch causes problems with Hauppauge WinTV dualHD as Maximilian
+reported [1]. Since quick solution didn't come up let's just revert it
+to make this device work with upstream kernels.
+
+Link: https://lore.kernel.org/all/6a72a37b-e972-187d-0322-16336e12bdc5@elbmurf.de/ [1]
+
+Reported-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
+Tested-by: Maximilian Böhm <maximilian.boehm@elbmurf.de>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c  | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/usb/em28xx/em28xx-cards.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-index ea8c79a42b41..3f1389bfba6f 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-@@ -173,7 +173,7 @@ static ssize_t tpo_td043_vmirror_show(struct device *dev,
- {
- 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
+diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
+index c7f79d0f3883..b14bff7b4ec8 100644
+--- a/drivers/media/usb/em28xx/em28xx-cards.c
++++ b/drivers/media/usb/em28xx/em28xx-cards.c
+@@ -4036,11 +4036,8 @@ static void em28xx_usb_disconnect(struct usb_interface *intf)
  
--	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->vmirror);
-+	return sysfs_emit(buf, "%d\n", ddata->vmirror);
- }
+ 	em28xx_close_extension(dev);
  
- static ssize_t tpo_td043_vmirror_store(struct device *dev,
-@@ -203,7 +203,7 @@ static ssize_t tpo_td043_mode_show(struct device *dev,
- {
- 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
+-	if (dev->dev_next) {
+-		em28xx_close_extension(dev->dev_next);
++	if (dev->dev_next)
+ 		em28xx_release_resources(dev->dev_next);
+-	}
+-
+ 	em28xx_release_resources(dev);
  
--	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->mode);
-+	return sysfs_emit(buf, "%d\n", ddata->mode);
- }
- 
- static ssize_t tpo_td043_mode_store(struct device *dev,
+ 	if (dev->dev_next) {
 -- 
 2.34.1
 
