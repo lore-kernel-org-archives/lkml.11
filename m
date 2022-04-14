@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85400C352AA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E66EC47086
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343922AbiDNOJd (ORCPT
+        id S1343840AbiDNOJ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56898 "EHLO
+        Thu, 14 Apr 2022 10:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344054AbiDNNaR (ORCPT
+        with ESMTP id S1344065AbiDNNaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:30:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD6D6266;
-        Thu, 14 Apr 2022 06:27:00 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9247A29B;
+        Thu, 14 Apr 2022 06:27:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08323B82941;
-        Thu, 14 Apr 2022 13:26:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75D32C385A5;
-        Thu, 14 Apr 2022 13:26:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F39C60C14;
+        Thu, 14 Apr 2022 13:27:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E9CAC385A1;
+        Thu, 14 Apr 2022 13:27:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942817;
-        bh=s9u5yjcW4LrLPkXzIn6qiKltlbGHucqa1nAJaDDjy2I=;
+        s=korg; t=1649942842;
+        bh=vj3ncfI3Ru8CtjnT1vco8kX9pfKvkDPvtJog+Y28LS0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o3rqgs76hC00f+Mnk3RhVZsSqN5HL+K30gab0R4zZPecECGDivWXrldeRlQ5Wf67p
-         AlkOuQmzcaVO4P9Hv5uoZ18m9z+brfrSFL5ZL70Gbw8e3EE2GSGbZc1NTZ9roVi8oT
-         YcjTS6nD4gFDV6SaJvbBUE2T1WfGdTO5h2viylRg=
+        b=DlKcODIzUiP6zjnB6hA+afQbdjnT9AozNPgvKYJMYNxOP3wyUPmLVKo7RuU6NgZDI
+         UYwxg3FNgI5eT4t4CpJTeYJ+j1BK0G1mcGwvVHOj/WlKJMaqhGPcOIwbzpTcgqiVm4
+         BMHYutaaj+7VX3jW7BbOEy5zTgH8k33Z1ZO92bqE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Guanghui <zhouguanghui1@huawei.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 271/338] iommu/arm-smmu-v3: fix event handling soft lockup
-Date:   Thu, 14 Apr 2022 15:12:54 +0200
-Message-Id: <20220414110846.601724747@linuxfoundation.org>
+        stable@vger.kernel.org, Dust Li <dust.li@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 279/338] net/smc: correct settings of RMB window update limit
+Date:   Thu, 14 Apr 2022 15:13:02 +0200
+Message-Id: <20220414110846.828149919@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -49,53 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Guanghui <zhouguanghui1@huawei.com>
+From: Dust Li <dust.li@linux.alibaba.com>
 
-[ Upstream commit 30de2b541af98179780054836b48825fcfba4408 ]
+[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
 
-During event processing, events are read from the event queue one
-by one until the queue is empty.If the master device continuously
-requests address access at the same time and the SMMU generates
-events, the cyclic processing of the event takes a long time and
-softlockup warnings may be reported.
+rmbe_update_limit is used to limit announcing receive
+window updating too frequently. RFC7609 request a minimal
+increase in the window size of 10% of the receive buffer
+space. But current implementation used:
 
-arm-smmu-v3 arm-smmu-v3.34.auto: event 0x0a received:
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00007f220000280a
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x000010000000007e
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00000000034e8670
-watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [irq/268-arm-smm:247]
-Call trace:
- _dev_info+0x7c/0xa0
- arm_smmu_evtq_thread+0x1c0/0x230
- irq_thread_fn+0x30/0x80
- irq_thread+0x128/0x210
- kthread+0x134/0x138
- ret_from_fork+0x10/0x1c
-Kernel panic - not syncing: softlockup: hung tasks
+  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
 
-Fix this by calling cond_resched() after the event information is
-printed.
+and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
+always less then 10% of the receive buffer space.
 
-Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
-Link: https://lore.kernel.org/r/20220119070754.26528-1-zhouguanghui1@huawei.com
-Signed-off-by: Will Deacon <will@kernel.org>
+This causes the receiver always sending CDC message to
+update its consumer cursor when it consumes more then 2K
+of data. And as a result, we may encounter something like
+"TCP silly window syndrome" when sending 2.5~8K message.
+
+This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
+
+With this patch and SMC autocorking enabled, qperf 2K/4K/8K
+tcp_bw test shows 45%/75%/40% increase in throughput respectively.
+
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/smc/smc_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 6b7664052b5b..9f16f47e7021 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1250,6 +1250,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 				dev_info(smmu->dev, "\t0x%016llx\n",
- 					 (unsigned long long)evt[i]);
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index 6add3094ea9e..4d421407d6fc 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -709,7 +709,7 @@ static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
+  */
+ static inline int smc_rmb_wnd_update_limit(int rmbe_size)
+ {
+-	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
++	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
+ }
  
-+			cond_resched();
- 		}
- 
- 		/*
+ static struct smc_buf_desc *smcr_new_buf_create(struct smc_link_group *lgr,
 -- 
 2.35.1
 
