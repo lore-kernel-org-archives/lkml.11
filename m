@@ -2,106 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01FBEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A740C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245514AbiDNRZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:25:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59706 "EHLO
+        id S245612AbiDNR0N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 13:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244624AbiDNRZh (ORCPT
+        with ESMTP id S244561AbiDNR0L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:25:37 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946A3BC862
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 10:23:11 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id B79D21F47BCE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649956990;
-        bh=D3Guilrkks6V/1hTwTRFRrqejHfbyPr22LWaBmWvToo=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=KhEWKrc5jpdpnlEan/SJ5+kGF26hEhzLFsX6DVMxJLGi7R7KpgAMDEYPQJotCaaWo
-         uIjlI/MD0FDOyWmglK4Bi4Hy59l9zTdy1cPQZn9lA3euRlaRBBBQAzcuwPj+uUCCdw
-         S3wAiqfaQoVYB0G2jzHVZ5llQJCLsva2bCHU/uetz5eis8/YZpOl0FiBd0Mxtdzd8G
-         OTfzlMLHdHKlP/rKTgpr7UjcAZ+ni5VCtJPpJ+EjFEjRotb/AiwQHPMa0iVx0F1RsS
-         /xWFCgcHZJa9aqNb64gZra/RxZ0455Ef4v8X+NMJyPmLSPY+4iPrhdDBnJXDBP2c7x
-         ZrF4tqzg5GgHw==
-Message-ID: <2f71160e-01cc-40a5-4661-b998b3acd153@collabora.com>
-Date:   Thu, 14 Apr 2022 18:29:03 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 5/5] drm/i915: stolen memory use ttm backend
-Content-Language: en-US
-To:     =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Matthew Auld <matthew.auld@intel.com>, linux-kernel@vger.kernel.org
-References: <20220412193817.2098308-1-bob.beckett@collabora.com>
- <20220412193817.2098308-6-bob.beckett@collabora.com>
- <94ddf51a-90ae-dee8-5d6a-45ee2cd1e584@linux.intel.com>
-From:   Robert Beckett <bob.beckett@collabora.com>
-In-Reply-To: <94ddf51a-90ae-dee8-5d6a-45ee2cd1e584@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Thu, 14 Apr 2022 13:26:11 -0400
+Received: from hutie.ust.cz (hutie.ust.cz [185.8.165.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A690EBC86D;
+        Thu, 14 Apr 2022 10:23:43 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1649957019; bh=K/5Wq1Coy5UPF41OrOzi6vwncUsz5ByKlFemTpBp7mY=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To;
+        b=hHDv4/Ynbqnqn0H/mQ1PdwX3ZHXaSri9w1/fC7gnILTEIs2KrwouTQnFXGDfmVetG
+         q9E/sLo550tFhbSI98Qpj7/kwq4FuU4xgcqhXAx5RukKiTbL3Z0BS/8opuXBG8uiJU
+         BX5rZcrhJOCWRDZchqFZAqlnh9URYk9oFjaqn0A0=
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH v2 1/2] dt-bindings: dma: Add Apple ADMAC
+From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik@cutebit.org>
+In-Reply-To: <YlhBLJQVYvTGlx4o@robh.at.kernel.org>
+Date:   Thu, 14 Apr 2022 19:23:38 +0200
+Cc:     =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>, Vinod Koul <vkoul@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Kettenis <kettenis@openbsd.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <85DF53F6-74BA-4D8D-8E8E-DFD67B24DA19@cutebit.org>
+References: <20220411222204.96860-1-povik+lin@cutebit.org>
+ <20220411222204.96860-2-povik+lin@cutebit.org>
+ <YlhBLJQVYvTGlx4o@robh.at.kernel.org>
+To:     Rob Herring <robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+> On 14. 4. 2022, at 17:43, Rob Herring <robh@kernel.org> wrote:
+>=20
+> On Tue, Apr 12, 2022 at 12:22:03AM +0200, Martin Povi=C5=A1er wrote:
+>> Apple's Audio DMA Controller (ADMAC) is used to fetch and store audio
+>> samples on SoCs from the "Apple Silicon" family.
+>>=20
+>> Signed-off-by: Martin Povi=C5=A1er <povik+lin@cutebit.org>
+>> ---
+>>=20
+>> After the v1 discussion, I dropped the apple,internal-irq-destination
+>> property and instead the index of the usable interrupt is now =
+signified
+>> by prepending -1 entries to the interrupts=3D list. This works when I =
+do
+>> it like this:
+>>=20
+>>  interrupt-parent =3D <&aic>;
+>>  interrupts =3D <AIC_IRQ 0xffffffff 0>,
+>>               <AIC_IRQ 626 IRQ_TYPE_LEVEL_HIGH>;
+>=20
+>=20
+> BTW, just use '-1'. dtc takes negative values (and other expressions).
 
-On 14/04/2022 15:41, Thomas Hellström wrote:
-> Hi,
-> 
-> 
-> On 4/12/22 21:38, Robert Beckett wrote:
->> +struct ttm_resource *
->> +i915_gem_stolen_reserve_range(struct drm_i915_private *i915,
->> +                  resource_size_t size,
->> +                  u64 start, u64 end)
->>   {
->> -    int ret;
->> +    struct intel_memory_region *mem = i915->mm.stolen_region;
->> -    if (!drm_mm_initialized(&i915->mm.stolen))
->> -        return -ENODEV;
->> -
->> -    /* WaSkipStolenMemoryFirstPage:bdw+ */
->> -    if (GRAPHICS_VER(i915) >= 8 && start < 4096)
->> -        start = 4096;
-> 
-> Did we lose this Workaround?
+Ha! <-1> didn=E2=80=99t work for me but <(-1)> does.
 
-woops, looks like we did. Nice catch.
-I'll add a reservation at start of day if wa is needed when I issue v4.
+>=20
+>>=20
+>> I would find it neat to do it like this:
+>>=20
+>>  interrupts-extended =3D <0xffffffff>,
+>>                        <&aic AIC_IRQ 626 IRQ_TYPE_LEVEL_HIGH>;
+>>=20
+>> but unfortunately the kernel doesn't pick up on it:
+>>=20
+>> [    0.767964] apple-admac 238200000.dma-controller: error -6: IRQ =
+index 0 not found
+>> [    0.773943] apple-admac 238200000.dma-controller: error -6: IRQ =
+index 1 not found
+>> [    0.780154] apple-admac 238200000.dma-controller: error -6: IRQ =
+index 2 not found
+>> [    0.786367] apple-admac 238200000.dma-controller: error -6: IRQ =
+index 3 not found
+>> [    0.788592] apple-admac 238200000.dma-controller: error -6: no =
+usable interrupt
+>=20
+> We should make this case work. It is less fragile IMO as it doesn't=20
+> depend on the provider's translation of cells.
 
-> 
-> Need to continue reviewing this patchnext week.
-> 
-> 
-> Thx,
-> 
-> Thomas
-> 
-> 
-> 
-> 
->> -
->> -    mutex_lock(&i915->mm.stolen_lock);
->> -    ret = drm_mm_insert_node_in_range(&i915->mm.stolen, node,
->> -                      size, alignment, 0,
->> -                      start, end, DRM_MM_INSERT_BEST);
->> -    mutex_unlock(&i915->mm.stolen_lock);
->> +    if (!mem)
->> +        return ERR_PTR(-ENODEV);
->> +    return intel_region_ttm_resource_alloc(mem, size, start, end, 
->> I915_BO_ALLOC_CONTIGUOUS);
->> +}
->> -
+Then I may send some patch to that end.
+
+>>=20
+>> .../devicetree/bindings/dma/apple,admac.yaml  | 68 =
++++++++++++++++++++
+>> 1 file changed, 68 insertions(+)
+>> create mode 100644 =
+Documentation/devicetree/bindings/dma/apple,admac.yaml
+>>=20
+>> diff --git a/Documentation/devicetree/bindings/dma/apple,admac.yaml =
+b/Documentation/devicetree/bindings/dma/apple,admac.yaml
+>> new file mode 100644
+>> index 000000000000..bbd5eaf5f709
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/dma/apple,admac.yaml
+>> @@ -0,0 +1,68 @@
+>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/dma/apple,admac.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Apple Audio DMA Controller (ADMAC)
+>> +
+>> +description: |
+>> +  Apple's Audio DMA Controller (ADMAC) is used to fetch and store =
+audio samples
+>> +  on SoCs from the "Apple Silicon" family.
+>> +
+>> +  The controller has been seen with up to 24 channels. Even-numbered =
+channels
+>> +  are TX-only, odd-numbered are RX-only. Individual channels are =
+coupled to
+>> +  fixed device endpoints.
+>> +
+>> +maintainers:
+>> +  - Martin Povi=C5=A1er <povik+lin@cutebit.org>
+>> +
+>> +allOf:
+>> +  - $ref: "dma-controller.yaml#"
+>> +
+>> +properties:
+>> +  compatible:
+>> +    items:
+>> +      - enum:
+>> +          - apple,t6000-admac
+>> +          - apple,t8103-admac
+>> +      - const: apple,admac
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  '#dma-cells':
+>> +    const: 1
+>> +    description:
+>> +      Clients specify single cell with channel number.
+>> +
+>> +  dma-channels:
+>> +    maximum: 24
+>> +
+>> +  interrupts:
+>> +    minItems: 1
+>> +    maxItems: 4
+>=20
+> I'm now confused why this is variable. Put -1 entries on the end if=20
+> that's why it is variable.
+
+That=E2=80=99s why. Fixed length it is then.
+
+>=20
+> This needs some description about there being 1 of 4 outputs being=20
+> connected.
+
+OK. Description there will be.
+
+>> +
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +  - '#dma-cells'
+>> +  - dma-channels
+>> +  - interrupts
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    #include <dt-bindings/interrupt-controller/apple-aic.h>
+>> +    #include <dt-bindings/interrupt-controller/irq.h>
+>> +
+>> +    admac: dma-controller@238200000 {
+>> +      compatible =3D "apple,t8103-admac", "apple,admac";
+>> +      reg =3D <0x38200000 0x34000>;
+>> +      dma-channels =3D <24>;
+>> +      interrupt-parent =3D <&aic>;
+>> +      interrupts =3D <AIC_IRQ 0xffffffff 0>,
+>> +                   <AIC_IRQ 626 IRQ_TYPE_LEVEL_HIGH>;
+>> +      #dma-cells =3D <1>;
+>> +    };
+>> --=20
+>> 2.33.0
+>>=20
+>>=20
+
+Martin
+
