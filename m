@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1842C3527E
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22EA2C35295
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344963AbiDNNwn (ORCPT
+        id S1345067AbiDNNwu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
+        Thu, 14 Apr 2022 09:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344122AbiDNNab (ORCPT
+        with ESMTP id S1343611AbiDNN3l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB9DE6;
-        Thu, 14 Apr 2022 06:28:06 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925D59F6C1;
+        Thu, 14 Apr 2022 06:24:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 488F9B82941;
-        Thu, 14 Apr 2022 13:28:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8EEEC385A1;
-        Thu, 14 Apr 2022 13:28:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F079A61B20;
+        Thu, 14 Apr 2022 13:24:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D302C385A1;
+        Thu, 14 Apr 2022 13:24:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942884;
-        bh=4UlPKpWHwyitqEX+xMObwyQSO+OTwRNf+p6w/mZZ0TI=;
+        s=korg; t=1649942696;
+        bh=lw5UyGMX3eE9b/Atcp9+zvrS8ntRqRwxCOGfBukoTeI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kW8dlvqZb7tckQT0+rWVGTs+YA+15zp4cRyQRZxUCk2UnReTdbUYs0denYvs3KRxZ
-         pU4OLHA0rVzIkdPf4nSvh/cD64xab1DkTG/J9i/zj6+H3yq8b5c5O37748PNKSHE+m
-         0Ym1+AJ//llKQxpmLHqCF+psigt/+mrl8fIxgoJo=
+        b=fUi6qkUFB+6vutP9f8pacOAwlfAATzIhIGFPqiQw0pLDhEW8V5hdYHFfSVZU5ev46
+         XWX8slEz29qkqwEEG0gXz0AQtUwMpDc2P64dR9sBYXdKb0B0d1BzFx8nBY1YUYCAG2
+         R8EKdiB0+aIyZEMoMDnTt75acM694/aiy+9muYlQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Amit Shah <amit@kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 297/338] virtio_console: eliminate anonymous module_init & module_exit
-Date:   Thu, 14 Apr 2022 15:13:20 +0200
-Message-Id: <20220414110847.339704413@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 4.19 227/338] scsi: qla2xxx: Fix incorrect reporting of task management failure
+Date:   Thu, 14 Apr 2022 15:12:10 +0200
+Message-Id: <20220414110845.352651502@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,76 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit fefb8a2a941338d871e2d83fbd65fbfa068857bd ]
+commit 58ca5999e0367d131de82a75257fbfd5aed0195d upstream.
 
-Eliminate anonymous module_init() and module_exit(), which can lead to
-confusion or ambiguity when reading System.map, crashes/oops/bugs,
-or an initcall_debug log.
+User experienced no task management error while target device is responding
+with error. The RSP_CODE field in the status IOCB is in little endian.
+Driver assumes it's big endian and it picked up erroneous data.
 
-Give each of these init and exit functions unique driver-specific
-names to eliminate the anonymous names.
+Convert the data back to big endian as is on the wire.
 
-Example 1: (System.map)
- ffffffff832fc78c t init
- ffffffff832fc79e t init
- ffffffff832fc8f8 t init
-
-Example 2: (initcall_debug log)
- calling  init+0x0/0x12 @ 1
- initcall init+0x0/0x12 returned 0 after 15 usecs
- calling  init+0x0/0x60 @ 1
- initcall init+0x0/0x60 returned 0 after 2 usecs
- calling  init+0x0/0x9a @ 1
- initcall init+0x0/0x9a returned 0 after 74 usecs
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Amit Shah <amit@kernel.org>
-Cc: virtualization@lists.linux-foundation.org
-Cc: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20220316192010.19001-3-rdunlap@infradead.org
+Link: https://lore.kernel.org/r/20220310092604.22950-2-njavali@marvell.com
+Fixes: faef62d13463 ("[SCSI] qla2xxx: Fix Task Management command asynchronous handling")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/virtio_console.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/scsi/qla2xxx/qla_isr.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
-index ac0b84afabe7..d3937d690400 100644
---- a/drivers/char/virtio_console.c
-+++ b/drivers/char/virtio_console.c
-@@ -2265,7 +2265,7 @@ static struct virtio_driver virtio_rproc_serial = {
- 	.remove =	virtcons_remove,
- };
- 
--static int __init init(void)
-+static int __init virtio_console_init(void)
- {
- 	int err;
- 
-@@ -2302,7 +2302,7 @@ static int __init init(void)
- 	return err;
- }
- 
--static void __exit fini(void)
-+static void __exit virtio_console_fini(void)
- {
- 	reclaim_dma_bufs();
- 
-@@ -2312,8 +2312,8 @@ static void __exit fini(void)
- 	class_destroy(pdrvdata.class);
- 	debugfs_remove_recursive(pdrvdata.debugfs_dir);
- }
--module_init(init);
--module_exit(fini);
-+module_init(virtio_console_init);
-+module_exit(virtio_console_fini);
- 
- MODULE_DESCRIPTION("Virtio console driver");
- MODULE_LICENSE("GPL");
--- 
-2.35.1
-
+--- a/drivers/scsi/qla2xxx/qla_isr.c
++++ b/drivers/scsi/qla2xxx/qla_isr.c
+@@ -1819,6 +1819,7 @@ qla24xx_tm_iocb_entry(scsi_qla_host_t *v
+ 		iocb->u.tmf.data = QLA_FUNCTION_FAILED;
+ 	} else if ((le16_to_cpu(sts->scsi_status) &
+ 	    SS_RESPONSE_INFO_LEN_VALID)) {
++		host_to_fcp_swap(sts->data, sizeof(sts->data));
+ 		if (le32_to_cpu(sts->rsp_data_len) < 4) {
+ 			ql_log(ql_log_warn, fcport->vha, 0x503b,
+ 			    "Async-%s error - hdl=%x not enough response(%d).\n",
 
 
