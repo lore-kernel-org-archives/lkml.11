@@ -2,137 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94187C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1CC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241286AbiDNI7w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 04:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42056 "EHLO
+        id S241295AbiDNI77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 04:59:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241279AbiDNI7l (ORCPT
+        with ESMTP id S241273AbiDNI7n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 04:59:41 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642BB689BF;
-        Thu, 14 Apr 2022 01:57:15 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id h15-20020a17090a054f00b001cb7cd2b11dso5045824pjf.5;
-        Thu, 14 Apr 2022 01:57:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PtdPy5iIEOQcZoHnDSw0hgLztC3cDH19YHNzNyg9apQ=;
-        b=aFbdo82vr3djW557YX6je9lvRJYsV5O/9ZQFrW0drz/4ggQWtg9Iuz7+UQHR0lH9rF
-         6LnGlpny3SYoWrV3yX7J7046VUhDDh+zLUh5/zCckRIMaQHmG4GRXcIBy4LDZX4AWoNr
-         AGxEM33cXxOcgZgnNTXgyAyp8jNOOBFvFSegc4N8XZdVHhdQ3ADwP+xpMag8fvl+IeCK
-         5hM1vVWFo4R9rgbDzB19j/ixYCCon/N6TaeqO0NjN55jkv5iet4zG/rbmxcMi+5qpkkZ
-         at2FScNr2JpdYO856a777+p7JqDba2j0Gt7Eyopi0uEzRauDXX3Sgt8U58+gV/ugY+TW
-         dh0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PtdPy5iIEOQcZoHnDSw0hgLztC3cDH19YHNzNyg9apQ=;
-        b=fZ2Co1ONbRcFBOcpjoVQhYP6yae2sgs7RaFyckkCgrdJXq3YLrNsPVF63EEWiMyaWQ
-         DSIDkrO4gCCCqFutYe1SPt24eXkol3RdBeSZeGyf0eWuctZCddJ0MTdW26FFm+sJC6zR
-         uwTCjanBbL2C2PdFcEGx6xBVbZAabs76cmFYroTCvCkpCuE7AkmW6MUGxzSBG6tKu/8Z
-         gQCcbC1EaFbNDGhDn//KBPdrltkBt3/cajOoWWasClqBhH6E1uNyAaDD4EsSzInxITEp
-         jbdZs7GZVb3kZcbxLg5zWMwesHfG5xzlhztr/Tz3ujYpAZQ/8FtGF3oxbE6CcGuoPlzz
-         ILAQ==
-X-Gm-Message-State: AOAM533BoPwot63p/oJXYCl5j4gHa6Efl8JuoCUEXYfQpsVgwA9gMUfA
-        qEqY6QG9fV4IM7Qf2aR15XQ=
-X-Google-Smtp-Source: ABdhPJwRBr22PhiEYJRK6ncnt221HNdSddHEQ2APA92Yamavz6QvRQN5vUnY1Wr2TERt85f6dwVdcg==
-X-Received: by 2002:a17:902:ced2:b0:158:85e5:4c8e with SMTP id d18-20020a170902ced200b0015885e54c8emr12707893plg.92.1649926634976;
-        Thu, 14 Apr 2022 01:57:14 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id 21-20020a630115000000b00382a0895661sm1320168pgb.11.2022.04.14.01.57.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 01:57:14 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     dmitry.torokhov@gmail.com
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] input: omap4-keypad: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Thu, 14 Apr 2022 08:57:10 +0000
-Message-Id: <20220414085710.2541867-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 14 Apr 2022 04:59:43 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15B75689B5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:57:19 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A86CD139F;
+        Thu, 14 Apr 2022 01:57:18 -0700 (PDT)
+Received: from [10.32.36.25] (e121896.Emea.Arm.com [10.32.36.25])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6F3203F5A1;
+        Thu, 14 Apr 2022 01:57:17 -0700 (PDT)
+Message-ID: <b3e647de-8efd-4db2-a910-77e37b026ae7@arm.com>
+Date:   Thu, 14 Apr 2022 09:57:15 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 00/15] Make ETM register accesses consistent with
+ sysreg.h
+Content-Language: en-US
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        mike.leach@linaro.org, anshuman.khandual@arm.com,
+        leo.yan@linaro.com, Leo Yan <leo.yan@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220304171913.2292458-1-james.clark@arm.com>
+ <20220323162257.GC3248686@p14s>
+ <4ef77445-b58d-a71a-0ddc-70e308ea99c8@arm.com> <20220413170844.GA547134@p14s>
+From:   James Clark <james.clark@arm.com>
+In-Reply-To: <20220413170844.GA547134@p14s>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
-
-Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
-pm_runtime_put_noidle. This change is just to simplify the code, no
-actual functional changes.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
- drivers/input/keyboard/omap4-keypad.c | 21 +++++++--------------
- 1 file changed, 7 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/input/keyboard/omap4-keypad.c b/drivers/input/keyboard/omap4-keypad.c
-index 43375b38ee59..df6ab8006807 100644
---- a/drivers/input/keyboard/omap4-keypad.c
-+++ b/drivers/input/keyboard/omap4-keypad.c
-@@ -179,11 +179,9 @@ static irqreturn_t omap4_keypad_irq_thread_fn(int irq, void *dev_id)
- 	int error;
- 	u64 keys;
- 
--	error = pm_runtime_get_sync(dev);
--	if (error < 0) {
--		pm_runtime_put_noidle(dev);
-+	error = pm_runtime_resume_and_get(dev);
-+	if (error < 0)
- 		return IRQ_NONE;
--	}
- 
- 	low = kbd_readl(keypad_data, OMAP4_KBD_FULLCODE31_0);
- 	high = kbd_readl(keypad_data, OMAP4_KBD_FULLCODE63_32);
-@@ -207,11 +205,9 @@ static int omap4_keypad_open(struct input_dev *input)
- 	struct device *dev = input->dev.parent;
- 	int error;
- 
--	error = pm_runtime_get_sync(dev);
--	if (error < 0) {
--		pm_runtime_put_noidle(dev);
-+	error = pm_runtime_resume_and_get(dev);
-+	if (error < 0)
- 		return error;
--	}
- 
- 	disable_irq(keypad_data->irq);
- 
-@@ -254,9 +250,7 @@ static void omap4_keypad_close(struct input_dev *input)
- 	struct device *dev = input->dev.parent;
- 	int error;
- 
--	error = pm_runtime_get_sync(dev);
--	if (error < 0)
--		pm_runtime_put_noidle(dev);
-+	error = pm_runtime_resume_and_get(dev);
- 
- 	disable_irq(keypad_data->irq);
- 	omap4_keypad_stop(keypad_data);
-@@ -392,10 +386,9 @@ static int omap4_keypad_probe(struct platform_device *pdev)
- 	 * Enable clocks for the keypad module so that we can read
- 	 * revision register.
- 	 */
--	error = pm_runtime_get_sync(dev);
-+	error = pm_runtime_resume_and_get(dev);
- 	if (error) {
--		dev_err(dev, "pm_runtime_get_sync() failed\n");
--		pm_runtime_put_noidle(dev);
-+		dev_err(dev, "pm_runtime_resume_and_get() failed\n");
- 		return error;
- 	}
- 
--- 
-2.25.1
 
 
+On 13/04/2022 18:08, Mathieu Poirier wrote:
+> On Mon, Mar 28, 2022 at 11:41:48AM +0100, James Clark wrote:
+>>
+>>
+>> On 23/03/2022 16:22, Mathieu Poirier wrote:
+>>> On Fri, Mar 04, 2022 at 05:18:57PM +0000, James Clark wrote:
+>>>> Changes since v2:
+>>>>  * Implement Mike's suggestion of not having _SHIFT and using the existing
+>>>>    FIELD_GET and FIELD_PREP methods.
+>>>>  * Dropped the change to add the new REG_VAL macro because of the above.
+>>>>  * FIELD_PREP could be used in some trivial cases, but in some cases the
+>>>>    shift is still required but can be calculated with __bf_shf
+>>>>  * Improved the commit messages.
+>>>>  * The change is still binary equivalent, but requires an extra step 
+>>>>    mentioned at the end of this cover letter.
+>>>>
+>>>> Applies to coresight/next 3619ee28488
+>>>> Also available at https://gitlab.arm.com/linux-arm/linux-jc/-/tree/james-cs-register-refactor-v3
+>>>>
+>>>> To check for binary equivalence follow the same steps in the cover letter
+>>>> of v2, but apply the following change to coresight-priv.h. This is because
+>>>> the existing version of the macros wrap the expression in a new scope {}
+>>>> that flips something in the compiler:
+>>>>
+>>>>   #undef FIELD_GET
+>>>>   #define FIELD_GET(_mask, _reg) (((_reg) & (_mask)) >> __bf_shf(_mask))
+>>>>   #undef FIELD_PREP
+>>>>   #define FIELD_PREP(_mask, _val) (((_val) << __bf_shf(_mask)) & (_mask))
+>>>>
+>>>> Thanks
+>>>> James
+>>>>
+>>>> James Clark (15):
+>>>>   coresight: etm4x: Cleanup TRCIDR0 register accesses
+>>>>   coresight: etm4x: Cleanup TRCIDR2 register accesses
+>>>>   coresight: etm4x: Cleanup TRCIDR3 register accesses
+>>>>   coresight: etm4x: Cleanup TRCIDR4 register accesses
+>>>>   coresight: etm4x: Cleanup TRCIDR5 register accesses
+>>>>   coresight: etm4x: Cleanup TRCCONFIGR register accesses
+>>>>   coresight: etm4x: Cleanup TRCEVENTCTL1R register accesses
+>>>>   coresight: etm4x: Cleanup TRCSTALLCTLR register accesses
+>>>>   coresight: etm4x: Cleanup TRCVICTLR register accesses
+>>>>   coresight: etm3x: Cleanup ETMTECR1 register accesses
+>>>>   coresight: etm4x: Cleanup TRCACATRn register accesses
+>>>>   coresight: etm4x: Cleanup TRCSSCCRn and TRCSSCSRn register accesses
+>>>>   coresight: etm4x: Cleanup TRCSSPCICRn register accesses
+>>>>   coresight: etm4x: Cleanup TRCBBCTLR register accesses
+>>>>   coresight: etm4x: Cleanup TRCRSCTLRn register accesses
+>>>>
+>>>>  .../coresight/coresight-etm3x-core.c          |   2 +-
+>>>>  .../coresight/coresight-etm3x-sysfs.c         |   2 +-
+>>>>  .../coresight/coresight-etm4x-core.c          | 136 +++++--------
+>>>>  .../coresight/coresight-etm4x-sysfs.c         | 180 +++++++++---------
+>>>>  drivers/hwtracing/coresight/coresight-etm4x.h | 122 ++++++++++--
+>>>>  5 files changed, 244 insertions(+), 198 deletions(-)
+>>>
+>>> I am done reviewing this set.  I will wait until rc1 or rc2 before moving
+>>> forward.  If there are other comments needing a respin then I will wait for the
+>>> next revision.  Otherwise I will apply this one after correcting the extra lines
+>>> at the end of patch 15.
+>>>  
+>>
+>> Thanks for the review!
+>>
+> 
+> I have applied this set.
+
+Thanks Mathieu
+
+> 
+>>> Thanks,
+>>> Mathieu
+>>>
+>>>>
+>>>> -- 
+>>>> 2.28.0
+>>>>
