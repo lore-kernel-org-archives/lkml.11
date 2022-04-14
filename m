@@ -2,149 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 728E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 22:02:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90998C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 22:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344897AbiDNWEf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 18:04:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48648 "EHLO
+        id S245708AbiDNWHr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 18:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245017AbiDNWEH (ORCPT
+        with ESMTP id S235054AbiDNWHl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 18:04:07 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE21EA5E91;
-        Thu, 14 Apr 2022 15:01:41 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id g18so12478057ejc.10;
-        Thu, 14 Apr 2022 15:01:41 -0700 (PDT)
+        Thu, 14 Apr 2022 18:07:41 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21B8AD135
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 15:05:14 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id t4so5952845pgc.1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 15:05:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=looIiUbZXlEHUGlU5ZBgu9xV9eMHycErO1AbrDOXdUA=;
-        b=FyV2uV6NBhFd3wt4SJN67bzxmm3Am6xXqYpdq05DNRDI3AGnX7ZXwVtyMCg6wc3fLw
-         qdEdRUjzkKCromLtTM74dHOaZBKjTkaWATPsattxuHAgrIgrYaPwpS0DACeWcLD5EETD
-         3Z2sAW6OnK4wU/zrJg7JWpf3oDxq1ivY8DnS0v6qDEVjt11zQL6tRGtTlBhN1+fp5QyE
-         WNTWikUB2XCx7icC2O6H+JDy5WDAku1iJAkfD2SIaDTGRbqLvkWGdnOC5MPcxOR2aqKp
-         qVTFKRLfw3AmbHBnxXA6hkbjzPnPkdnDu6wMPsGevjuvmuyrGE35WvghmM2qaUxZ9vYv
-         XMBA==
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:date:message-id:mime-version:content-transfer-encoding:cc
+         :from:to;
+        bh=kj79e2RofkdZtpcV4cuOdSuq76rCoCCYoAotU+R/caE=;
+        b=Mub7+Xk9wwSBUzXegquRSmLHR9ZMLVl+1ewzq5ugAx4HR1GhjoZLMMFmESOz5cYpd4
+         IUiDTMhYid2V2PzT+m554J80jj/yd0Smc/vEc8jxPkbRHFPCLa6XsvbMaUwGDVx5GqRk
+         Sd5V0dPiRN96hXapmj2tjFQuC0Qh4YXAbNDqG/xgOYl1dzeFH2v0VX3nBxxyFb+9Nern
+         2NFcsL/GBKleI6+/AFI5moGEf64wKIr1pufuCE/CAFm5t1MNIgwqoSnpO8NCH6LeTttu
+         n9q0DFM8C/BW8GyewTYnqBCX5uc2Bm0yPLTCVweVHMFgSjYiAOq98kz9s95A+ZT8PL5J
+         SbzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=looIiUbZXlEHUGlU5ZBgu9xV9eMHycErO1AbrDOXdUA=;
-        b=trloA9EHdcm+YPloVsjJq8dbF7hZg67RXkhXZAG+u1KinnmTcOEQAD8DngZ4JDXvd0
-         rI4JnpJXvPpZCjkO1p0fv8KLzHwDEYdH/TSjrpCgDUlvrQm6QZyDAmoJD7QjY/G22aOG
-         Kx4Cjcs/8RjjqzS71WEbhHm4oFO7jGnrlwfTh1toeCM+SG3rtEx/vcToBg4WM6BmyIQa
-         ynyQf/X9pYAwRqWolN3ttqD8YoS54F1BAm29oqLpAiekG717zZ15hSsI/+RBEVIX2BWs
-         D6dWPxaKJLiRJq8pQktiQl4bRq3cc+68nhfSkM8Icz5iQg04GkRAp1J6DnCH1vopXIf7
-         D+zg==
-X-Gm-Message-State: AOAM533VAlNv2nHX0cTa60BsNFez290Hdd7Ro06kHOYLcAqIXF1vLQYk
-        XgMy3Str0oxx1VAoTgvwX/Y=
-X-Google-Smtp-Source: ABdhPJwjM+0SouYfVuEnSBI4qzOhytGd+BsNEp+lc539PycxGXCxQj9sG42ebPORnmP4hKKJXbw0Ug==
-X-Received: by 2002:a17:906:7955:b0:6e8:a9b:8c7b with SMTP id l21-20020a170906795500b006e80a9b8c7bmr3963680ejo.691.1649973700278;
-        Thu, 14 Apr 2022 15:01:40 -0700 (PDT)
-Received: from linux.. (p5dd1ed70.dip0.t-ipconnect.de. [93.209.237.112])
-        by smtp.gmail.com with ESMTPSA id e15-20020a170906044f00b006e897e110fcsm1060948eja.48.2022.04.14.15.01.39
+        h=x-gm-message-state:subject:date:message-id:mime-version
+         :content-transfer-encoding:cc:from:to;
+        bh=kj79e2RofkdZtpcV4cuOdSuq76rCoCCYoAotU+R/caE=;
+        b=QTqLLqCuxSwRhazPxP/hYdxQ5HeZijZbdOcXlCkbmewFjLLD/EVByEUh6qk8wJi7VV
+         kMu0S2keOq2Yc/kOVbLu5UkkVs0kwSX8uD6bVCaBFyVHYxN8WYaUdxt1PNZz7471DEcV
+         XNUu9wDeZ+VCe3mc1S+6fuOW5KguDNMwxaDWguNCPzOVKNv5NzokNtH4tu86ZRYnsmaS
+         iY+ZolSbYNFeGo1mAvMO2y6YzTDLcvg9oioRN/2VpNAn7xDlPeQ+oUk4H05xG2NLJmSZ
+         klT494bNt82cV19wWYxCY1wBETclxYdKTlxv/+yKpVjVVKcDQxypubftOZ47Xd9wgpbN
+         ZsKg==
+X-Gm-Message-State: AOAM531mrQmrnGAOQRpIe2HvMu8PCnqFfX2JViGo6dOfTMnPZjHPTtwF
+        42WoEGWb9o+QIFwl/H4ab2lB4A==
+X-Google-Smtp-Source: ABdhPJwjtqU6AWYAwYXufYTV42SdwmS0JH8rrNmXsZg+uKyEV95T0qFTo4wyvCTdhcUWt5XoHP3CIg==
+X-Received: by 2002:a63:780f:0:b0:386:5d6f:2153 with SMTP id t15-20020a63780f000000b003865d6f2153mr3792784pgc.555.1649973914297;
+        Thu, 14 Apr 2022 15:05:14 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id g12-20020a056a001a0c00b004e1307b249csm836244pfv.69.2022.04.14.15.05.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 15:01:39 -0700 (PDT)
-From:   Bean Huo <huobean@gmail.com>
-To:     alim.akhtar@samsung.com, avri.altman@wdc.com,
-        asutoshd@codeaurora.org, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, stanley.chu@mediatek.com,
-        beanhuo@micron.com, bvanassche@acm.org, tomas.winkler@intel.com,
-        daejun7.park@samsung.com, powen.kao@mediatek.com
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 3/4] scsi: ufshpb: Cleanup the handler when device reset HPB information
-Date:   Fri, 15 Apr 2022 00:01:26 +0200
-Message-Id: <20220414220127.587917-4-huobean@gmail.com>
+        Thu, 14 Apr 2022 15:05:13 -0700 (PDT)
+Subject: [PATCH v3 0/7] Generic Ticket Spinlocks
+Date:   Thu, 14 Apr 2022 15:02:07 -0700
+Message-Id: <20220414220214.24556-1-palmer@rivosinc.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220414220127.587917-1-huobean@gmail.com>
-References: <20220414220127.587917-1-huobean@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Cc:     peterz@infradead.org, mingo@redhat.com,
+        Will Deacon <will@kernel.org>, longman@redhat.com,
+        boqun.feng@gmail.com, jonas@southpole.se,
+        stefan.kristiansson@saunalahti.fi,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
+        Arnd Bergmann <arnd@arndb.de>, macro@orcam.me.uk,
+        Greg KH <gregkh@linuxfoundation.org>,
+        sudipm.mukherjee@gmail.com, wangkefeng.wang@huawei.com,
+        jszhang@kernel.org, linux-csky@vger.kernel.org,
+        linux-kernel@vger.kernel.org, openrisc@lists.librecores.org,
+        linux-riscv@lists.infradead.org, linux-arch@vger.kernel.org
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     Arnd Bergmann <arnd@arndb.de>, heiko@sntech.de, guoren@kernel.org,
+        shorne@gmail.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bean Huo <beanhuo@micron.com>
+Looks like feedback has been largely positive on this one.  I think I
+got everything from the v1 and v2, but it was a bit mixed up so sorry if
+I missed something.  I'm generally being conservative on the tags here,
+as things have drifted around a bit.  Specifically I dropped the
+Tested-bys, as this is all based on 5.18-rc1 now and there's been a
+touch of diff.
 
-"When the device is powered off by the host, the device may restore L2P map data
-upon power up or build from the host’s HPB READ command. In case device powered
-up and lost HPB information, device can signal to the host through HPB Sense data,
-by setting HPB Operation as ‘2’ which will inform the host that device reset HPB
-information."
+I've put this at palmer/tspinlock-v3, in case that helps anyone.  This
+generally looks good to me, but I'll wait for feedback before putting it
+anywhere else.  I'd default to doing a shared tag for the asm-generic
+stuff and then let other arch folks pull in that (with their arch
+support), but if you want me to take it via my tree then feel free to
+just say so explicitly.  What's on that branch right now definately
+shouldn't be treated as stable, though, as I'll wait for at least an
+official Ack/Review from the asm-generic folks (and of course there may
+be more feedback).
 
-This patch is to clean up the handler and make the intent of this handler more
-readable.
+This passes my standard tests, both as the whole thing and as just the
+RISC-V spinlock change.  That's just QEMU, though, so it's not all that
+exciting.
 
-Signed-off-by: Bean Huo <beanhuo@micron.com>
----
- drivers/scsi/ufs/ufshpb.c | 35 +++++++++++++++++++++++------------
- 1 file changed, 23 insertions(+), 12 deletions(-)
+Changes since v2 <20220319035457.2214979-1-guoren@kernel.org>:
+* Picked up Peter's SOBs, which were posted on the v1.
+* Re-ordered the first two patches, as they
+* Re-worded the RISC-V qrwlock patch, as it was a bit mushy.  I also
+  added a blurb in the qrwlock's top comment about this dependency.
+* Picked up Stafford's fix for big-endian systems, which I have not
+  tested as I don't have one (at least easily availiable, I think the BE
+  MIPS systems are still in that pile in my garage).
+* Call the generic version <asm-genenic/spinlock{_types}.h>, as there's
+  really no utility to the version that only errors out.
 
-diff --git a/drivers/scsi/ufs/ufshpb.c b/drivers/scsi/ufs/ufshpb.c
-index 4463a0fc619f..ac442f19d7f7 100644
---- a/drivers/scsi/ufs/ufshpb.c
-+++ b/drivers/scsi/ufs/ufshpb.c
-@@ -1231,7 +1231,10 @@ static void ufshpb_rsp_req_region_update(struct ufshpb_lu *hpb,
- 		queue_work(ufshpb_wq, &hpb->map_work);
- }
- 
--static void ufshpb_dev_reset_handler(struct ufshpb_lu *hpb)
-+/**
-+ * Set the flags of all active regions to RGN_FLAG_UPDATE, letting the host reload its L2P entries.
-+ */
-+static void ufshpb_set_region_update(struct ufshpb_lu *hpb)
- {
- 	struct victim_select_info *lru_info = &hpb->lru_info;
- 	struct ufshpb_region *rgn;
-@@ -1245,6 +1248,24 @@ static void ufshpb_dev_reset_handler(struct ufshpb_lu *hpb)
- 	spin_unlock_irqrestore(&hpb->rgn_state_lock, flags);
- }
- 
-+static void ufshpb_dev_reset_handler(struct ufs_hba *hba)
-+{
-+	struct scsi_device *sdev;
-+	struct ufshpb_lu *hpb;
-+
-+	__shost_for_each_device(sdev, hba->host) {
-+		hpb = ufshpb_get_hpb_data(sdev);
-+		if (hpb && hpb->is_hcm)
-+			/*
-+			 * For the HPB host mode, in case device powered up and lost HPB
-+			 * information, we will set the region flag to be RGN_FLAG_UPDATE,
-+			 * it will let host reload its L2P entries(re-activate the region
-+			 * in the UFS device).
-+			 */
-+			ufshpb_set_region_update(hpb);
-+	}
-+}
-+
- /*
-  * This function will parse recommended active subregion information in sense
-  * data field of response UPIU with SAM_STAT_GOOD state.
-@@ -1319,17 +1340,7 @@ void ufshpb_rsp_upiu(struct ufs_hba *hba, struct ufshcd_lrb *lrbp)
- 	case HPB_RSP_DEV_RESET:
- 		dev_warn(&hpb->sdev_ufs_lu->sdev_dev,
- 			 "UFS device lost HPB information during PM.\n");
--
--		if (hpb->is_hcm) {
--			struct scsi_device *sdev;
--
--			__shost_for_each_device(sdev, hba->host) {
--				struct ufshpb_lu *h = sdev->hostdata;
--
--				if (h)
--					ufshpb_dev_reset_handler(h);
--			}
--		}
-+		ufshpb_dev_reset_handler(hba);
- 
- 		break;
- 	default:
--- 
-2.34.1
-
+Changes since v1 <20220316232600.20419-1-palmer@rivosinc.com>:
+* Follow Arnd suggestion to make the patch series more generic.
+* Add csky in the series.
+* Combine RISC-V's two patches into one.
+* Modify openrisc's patch to suit the new generic version.
