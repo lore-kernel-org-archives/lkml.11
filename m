@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A9F5C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04AFAC433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357018AbiDNPZX (ORCPT
+        id S1345578AbiDNP0a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:25:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34368 "EHLO
+        Thu, 14 Apr 2022 11:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346856AbiDNN6C (ORCPT
+        with ESMTP id S1346727AbiDNN5x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:58:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF26B3691;
-        Thu, 14 Apr 2022 06:48:04 -0700 (PDT)
+        Thu, 14 Apr 2022 09:57:53 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3D0A207D;
+        Thu, 14 Apr 2022 06:48:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA791B82969;
-        Thu, 14 Apr 2022 13:48:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 279ABC385A1;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 47587CE2998;
         Thu, 14 Apr 2022 13:48:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6470DC385B8;
+        Thu, 14 Apr 2022 13:47:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944081;
-        bh=G0+cWBhGlkDwRq7g2a5KVShJa8j5BV2MYaR23cZLkSM=;
+        s=korg; t=1649944078;
+        bh=JI7snLcuRr6vGN6DmlsFfJ81T4jb2gGiHM2/x6MKNZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vz8pzEA1nnenf8y5DOoeFYSaTiWxQlPZ38mfwGkSEduk+1BRM0s2k7XnpNJK5YECr
-         lvJcf+bDPNXg16Q+iyhJdlHm3s0Bi9T6HH7AvKb0++pmB3xped3HLwLtFBfgMTi8bu
-         rF8l53vV5BPmW1l2AvpMGaRPvbILAF47JYNJlO0Q=
+        b=m6WR9l/pau8HeiXGS1F+kwxbl6Kjhf8lqFcQ4S1HlxOlIT/hugOdfLgIqLCmyqysE
+         gz+mTgctUOgjJClseGxtBt8LfLFloy9sBfwRM1px7JqpAQD0X6P3yu49U3SYueGS4V
+         Muu9DbSTsRt8qgtilYxjinRhi3wMKs4igGEkYxjQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Guanghui <zhouguanghui1@huawei.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 386/475] iommu/arm-smmu-v3: fix event handling soft lockup
-Date:   Thu, 14 Apr 2022 15:12:51 +0200
-Message-Id: <20220414110905.871236885@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 385/475] PCI: aardvark: Fix support for MSI interrupts
+Date:   Thu, 14 Apr 2022 15:12:50 +0200
+Message-Id: <20220414110905.843929782@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,53 +52,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Guanghui <zhouguanghui1@huawei.com>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 30de2b541af98179780054836b48825fcfba4408 ]
+[ Upstream commit b0b0b8b897f8e12b2368e868bd7cdc5742d5c5a9 ]
 
-During event processing, events are read from the event queue one
-by one until the queue is empty.If the master device continuously
-requests address access at the same time and the SMMU generates
-events, the cyclic processing of the event takes a long time and
-softlockup warnings may be reported.
+Aardvark hardware supports Multi-MSI and MSI_FLAG_MULTI_PCI_MSI is already
+set for the MSI chip. But when allocating MSI interrupt numbers for
+Multi-MSI, the numbers need to be properly aligned, otherwise endpoint
+devices send MSI interrupt with incorrect numbers.
 
-arm-smmu-v3 arm-smmu-v3.34.auto: event 0x0a received:
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00007f220000280a
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x000010000000007e
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00000000034e8670
-watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [irq/268-arm-smm:247]
-Call trace:
- _dev_info+0x7c/0xa0
- arm_smmu_evtq_thread+0x1c0/0x230
- irq_thread_fn+0x30/0x80
- irq_thread+0x128/0x210
- kthread+0x134/0x138
- ret_from_fork+0x10/0x1c
-Kernel panic - not syncing: softlockup: hung tasks
+Fix this issue by using function bitmap_find_free_region() instead of
+bitmap_find_next_zero_area().
 
-Fix this by calling cond_resched() after the event information is
-printed.
+To ensure that aligned MSI interrupt numbers are used by endpoint devices,
+we cannot use Linux virtual irq numbers (as they are random and not
+properly aligned). Instead we need to use the aligned hwirq numbers.
 
-Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
-Link: https://lore.kernel.org/r/20220119070754.26528-1-zhouguanghui1@huawei.com
-Signed-off-by: Will Deacon <will@kernel.org>
+This change fixes receiving MSI interrupts on Armada 3720 boards and
+allows using NVMe disks which use Multi-MSI feature with 3 interrupts.
+
+Without this NVMe disks freeze booting as linux nvme-core.c is waiting
+60s for an interrupt.
+
+Link: https://lore.kernel.org/r/20220110015018.26359-4-kabel@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/controller/pci-aardvark.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index ef6af714a7e6..02c2fb551f38 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1708,6 +1708,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 				dev_info(smmu->dev, "\t0x%016llx\n",
- 					 (unsigned long long)evt[i]);
+diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
+index 5958316651e4..721d2652319c 100644
+--- a/drivers/pci/controller/pci-aardvark.c
++++ b/drivers/pci/controller/pci-aardvark.c
+@@ -1170,7 +1170,7 @@ static void advk_msi_irq_compose_msi_msg(struct irq_data *data,
  
-+			cond_resched();
- 		}
+ 	msg->address_lo = lower_32_bits(msi_msg);
+ 	msg->address_hi = upper_32_bits(msi_msg);
+-	msg->data = data->irq;
++	msg->data = data->hwirq;
+ }
  
- 		/*
+ static int advk_msi_set_affinity(struct irq_data *irq_data,
+@@ -1187,15 +1187,11 @@ static int advk_msi_irq_domain_alloc(struct irq_domain *domain,
+ 	int hwirq, i;
+ 
+ 	mutex_lock(&pcie->msi_used_lock);
+-	hwirq = bitmap_find_next_zero_area(pcie->msi_used, MSI_IRQ_NUM,
+-					   0, nr_irqs, 0);
+-	if (hwirq >= MSI_IRQ_NUM) {
+-		mutex_unlock(&pcie->msi_used_lock);
+-		return -ENOSPC;
+-	}
+-
+-	bitmap_set(pcie->msi_used, hwirq, nr_irqs);
++	hwirq = bitmap_find_free_region(pcie->msi_used, MSI_IRQ_NUM,
++					order_base_2(nr_irqs));
+ 	mutex_unlock(&pcie->msi_used_lock);
++	if (hwirq < 0)
++		return -ENOSPC;
+ 
+ 	for (i = 0; i < nr_irqs; i++)
+ 		irq_domain_set_info(domain, virq + i, hwirq + i,
+@@ -1213,7 +1209,7 @@ static void advk_msi_irq_domain_free(struct irq_domain *domain,
+ 	struct advk_pcie *pcie = domain->host_data;
+ 
+ 	mutex_lock(&pcie->msi_used_lock);
+-	bitmap_clear(pcie->msi_used, d->hwirq, nr_irqs);
++	bitmap_release_region(pcie->msi_used, d->hwirq, order_base_2(nr_irqs));
+ 	mutex_unlock(&pcie->msi_used_lock);
+ }
+ 
 -- 
 2.35.1
 
