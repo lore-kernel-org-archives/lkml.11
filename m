@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B05B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:22:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC78C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244269AbiDNNYa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
+        id S244302AbiDNNYf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:24:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244131AbiDNNWb (ORCPT
+        with ESMTP id S244142AbiDNNWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:22:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDC9986C9;
-        Thu, 14 Apr 2022 06:17:47 -0700 (PDT)
+        Thu, 14 Apr 2022 09:22:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E0D986E9;
+        Thu, 14 Apr 2022 06:17:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E236AB82985;
-        Thu, 14 Apr 2022 13:17:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 336C2C385A1;
-        Thu, 14 Apr 2022 13:17:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A59E3612CA;
+        Thu, 14 Apr 2022 13:17:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B792AC385A9;
+        Thu, 14 Apr 2022 13:17:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942264;
-        bh=Q4wNoLp5L+7nNfRO8LA//Pno1XBtwFxiTZA5cUzfUFc=;
+        s=korg; t=1649942270;
+        bh=bEM7qOBc7IJVNEaG71DewBv/7O4ZTdXmvVxauwwLXro=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0kxniU3Iz+gQRQpKUfYhiiq/w5Bd+bS+tO0ZKWZyR1WtEpK/EdqOr+BsDVDVa9Hsu
-         OKBhyh64iw6epZ/EnejFTas7zQ0qNmJLtmHOgPuddwKzol8/Ya6//8xqAMpJojR/RB
-         h23SI73ob8KgbBj6k9eAgkjnLyeuvpstYWELdkZk=
+        b=z5BAQ0VZVUokpzeTyu+zZu8TS6KNlk1/25ZJPSZ7PocBlyNfBiEZqzKPMOvtDx9qj
+         CfpHfQNDQECZPNvm0/zB7+E5LdZeLOAkBRoV8le7HpfVsMxKv41cfTXZd3VHzt8oZK
+         GVSkK89jiXbVic1mmckKsB3uyZVbr8qSk/z4HCfg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Eric Biggers <ebiggers@google.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 074/338] block: dont delete queue kobject before its children
-Date:   Thu, 14 Apr 2022 15:09:37 +0200
-Message-Id: <20220414110841.006123971@linuxfoundation.org>
+Subject: [PATCH 4.19 076/338] PM: suspend: fix return value of __setup handler
+Date:   Thu, 14 Apr 2022 15:09:39 +0200
+Message-Id: <20220414110841.063241365@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,70 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 0f69288253e9fc7c495047720e523b9f1aba5712 ]
+[ Upstream commit 7a64ca17e4dd50d5f910769167f3553902777844 ]
 
-kobjects aren't supposed to be deleted before their child kobjects are
-deleted.  Apparently this is usually benign; however, a WARN will be
-triggered if one of the child kobjects has a named attribute group:
+If an invalid option is given for "test_suspend=<option>", the entire
+string is added to init's environment, so return 1 instead of 0 from
+the __setup handler.
 
-    sysfs group 'modes' not found for kobject 'crypto'
-    WARNING: CPU: 0 PID: 1 at fs/sysfs/group.c:278 sysfs_remove_group+0x72/0x80
-    ...
-    Call Trace:
-      sysfs_remove_groups+0x29/0x40 fs/sysfs/group.c:312
-      __kobject_del+0x20/0x80 lib/kobject.c:611
-      kobject_cleanup+0xa4/0x140 lib/kobject.c:696
-      kobject_release lib/kobject.c:736 [inline]
-      kref_put include/linux/kref.h:65 [inline]
-      kobject_put+0x53/0x70 lib/kobject.c:753
-      blk_crypto_sysfs_unregister+0x10/0x20 block/blk-crypto-sysfs.c:159
-      blk_unregister_queue+0xb0/0x110 block/blk-sysfs.c:962
-      del_gendisk+0x117/0x250 block/genhd.c:610
+  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc5
+    test_suspend=invalid"
 
-Fix this by moving the kobject_del() and the corresponding
-kobject_uevent() to the correct place.
+and
 
-Fixes: 2c2086afc2b8 ("block: Protect less code with sysfs_lock in blk_{un,}register_queue()")
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220124215938.2769-3-ebiggers@kernel.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     test_suspend=invalid
+
+Fixes: 2ce986892faf ("PM / sleep: Enhance test_suspend option with repeat capability")
+Fixes: 27ddcc6596e5 ("PM / sleep: Add state field to pm_states[] entries")
+Fixes: a9d7052363a6 ("PM: Separate suspend to RAM functionality from core")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-sysfs.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ kernel/power/suspend_test.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/block/blk-sysfs.c b/block/blk-sysfs.c
-index 07494deb1a26..67836f212e2d 100644
---- a/block/blk-sysfs.c
-+++ b/block/blk-sysfs.c
-@@ -1002,9 +1002,6 @@ void blk_unregister_queue(struct gendisk *disk)
- 	 */
- 	if (q->mq_ops)
- 		blk_mq_unregister_dev(disk_to_dev(disk), q);
--
--	kobject_uevent(&q->kobj, KOBJ_REMOVE);
--	kobject_del(&q->kobj);
- 	blk_trace_remove_sysfs(disk_to_dev(disk));
+diff --git a/kernel/power/suspend_test.c b/kernel/power/suspend_test.c
+index 6a897e8b2a88..3f6345d60256 100644
+--- a/kernel/power/suspend_test.c
++++ b/kernel/power/suspend_test.c
+@@ -158,22 +158,22 @@ static int __init setup_test_suspend(char *value)
+ 	value++;
+ 	suspend_type = strsep(&value, ",");
+ 	if (!suspend_type)
+-		return 0;
++		return 1;
  
- 	mutex_lock(&q->sysfs_lock);
-@@ -1015,6 +1012,11 @@ void blk_unregister_queue(struct gendisk *disk)
- 	if (q->request_fn || q->elevator)
- 		elv_unregister_queue(q);
- 	mutex_unlock(&q->sysfs_lock);
-+
-+	/* Now that we've deleted all child objects, we can delete the queue. */
-+	kobject_uevent(&q->kobj, KOBJ_REMOVE);
-+	kobject_del(&q->kobj);
-+
- 	mutex_unlock(&q->sysfs_dir_lock);
+ 	repeat = strsep(&value, ",");
+ 	if (repeat) {
+ 		if (kstrtou32(repeat, 0, &test_repeat_count_max))
+-			return 0;
++			return 1;
+ 	}
  
- 	kobject_put(&disk_to_dev(disk)->kobj);
+ 	for (i = PM_SUSPEND_MIN; i < PM_SUSPEND_MAX; i++)
+ 		if (!strcmp(pm_labels[i], suspend_type)) {
+ 			test_state_label = pm_labels[i];
+-			return 0;
++			return 1;
+ 		}
+ 
+ 	printk(warn_bad_state, suspend_type);
+-	return 0;
++	return 1;
+ }
+ __setup("test_suspend", setup_test_suspend);
+ 
 -- 
 2.34.1
 
