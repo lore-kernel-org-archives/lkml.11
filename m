@@ -2,122 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A77C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09BE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243705AbiDNNMY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:12:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34066 "EHLO
+        id S243707AbiDNNN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243150AbiDNNMS (ORCPT
+        with ESMTP id S242365AbiDNNNy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:12:18 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56E91AF13;
-        Thu, 14 Apr 2022 06:09:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649941791; x=1681477791;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=v5CxLQbfWtXiVq/sE32vce32MQXtkQXZiAcw0x85tOs=;
-  b=N6qy/l1225/WvWy3yBeDGBeEe6Bkv2vmF1gju1TpaH+T4SfCMBVcppF+
-   /6ZEjL7q3kDV5CEtp2WeuSA+8wwlSQWpk1+kq14aK7+gMfWkwIWJwge9I
-   uH+RtlXd8SSIncmUFyJ1SYyi9mmdyX89ozsai7PcTG4CB4dF8XW6EAO9z
-   2psrP+I52C/3aqrOSldPpdK7pSFTs/A0At188MAd//hf7OIx/BChXGt2T
-   0vf1UPyn4WMDWE/8wxzkP1n05q9xgKgmjta5AJ56TMdhlKDOc2DvWCHDo
-   KmKjouJewl8WiidNeBnuupAH8fXRaawNUtRPGJrk9JNVdxQrXGtLMNIOV
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="244810465"
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="244810465"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:09:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="508401064"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:09:48 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nezEH-002KKY-Gu;
-        Thu, 14 Apr 2022 16:09:45 +0300
-Date:   Thu, 14 Apr 2022 16:09:45 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Len Brown <lenb@kernel.org>
-Subject: Re: [PATCH v6 4/5] device property: Constify fwnode_handle_get()
-Message-ID: <YlgdGb/vKfdCXXx1@smile.fi.intel.com>
-References: <20220408184844.22829-1-andriy.shevchenko@linux.intel.com>
- <20220408184844.22829-4-andriy.shevchenko@linux.intel.com>
- <CAJZ5v0jnyg6n-1QRmVg1tjzu3szsG3DYqYTXAbobbKwkFhTreg@mail.gmail.com>
- <YlcUMNe5gDsEca4f@smile.fi.intel.com>
- <YlcVFRQ9wJIH+sjI@smile.fi.intel.com>
- <YldE6L7MbgS0NXQY@paasikivi.fi.intel.com>
+        Thu, 14 Apr 2022 09:13:54 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B32D91AF13
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:11:26 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id z8so5323789oix.3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:11:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=FJTqqynozRlFhZj6zQE6SI9JAXhhpX1MJOvb4vtV6bk=;
+        b=b0VXhbb5s9tmmkoY9HD0UOaq4Nn461oG+PsAXbQQhdIuaxr9c2qvZveP19JJwNO6gd
+         MFvH13UWVGq6UqdEvMht9odRsCXK++sZ0pz1duuz2/2QqHh+iCDCL6WnX8UZh0teINV3
+         qBhJKCiwiH4Ekk5J8aKj54TsAxeHiTaVt0y3HDmIViIqlTBSJ1YHBVlYSxr8q78GiphC
+         w2mtnHLDX6jFxDn+9Aztz+DNx1rH1XEUeyG4+X4FLa9fV/yDjrafl3B2fAhEZNMHmy7+
+         4nK0m0Ex/+TUnsUT9Te6rYgcj2UAO86sefVgXCkbyrL9Y6FlQglzoOpwvbh1EMMQvtda
+         W8QA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=FJTqqynozRlFhZj6zQE6SI9JAXhhpX1MJOvb4vtV6bk=;
+        b=iRu2MiK+BRm6f/KwmpDoZxKOixpLjDtDvnk7Vgkr6vAaEiNB8YABjxuEm/GdscIlbU
+         8DHobINkAQPCsvAaAyRIAxXV4Jizzd129YwD1TT9ov+dWTjSoKVnWvxY4WC9VQeW01Jr
+         wnTPNMgmH1Cu/IZIfXQIaJitAdhfSyTkuqjWvIPALkF4KDR1Nq4nZ57atLwNh4ZSCQae
+         H2+DP7rYvipn3woPXn+psEpKwSWp0w7HEiUBw+WTosc5uh26T+QtbFVBCilJU9ztKIy3
+         xqLi993k3NHzaNDQ80kDLWY+VNHysY7GvtWNFtO9fyMgachAxRCmI6UUNfywgzYMphZK
+         58Uw==
+X-Gm-Message-State: AOAM5324lYP29zJjHYGQgtXt+tU88WrEkXyhh9oVJXvpdEcQZXvSUk+i
+        sjEnH3DzKrFM/fAAn0l5u1Q3aNjn4WSdt/sxqfA=
+X-Google-Smtp-Source: ABdhPJylCbYVBm3BfzEiRvj1FrCDnwDBCv10i0cu00almCCBVRtEVezMTYQm0DJI1RRgTvCyd2GsFEdwvVO1QzqvPZE=
+X-Received: by 2002:a05:6808:1486:b0:2f9:e821:51d9 with SMTP id
+ e6-20020a056808148600b002f9e82151d9mr1319996oiw.253.1649941886069; Thu, 14
+ Apr 2022 06:11:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YldE6L7MbgS0NXQY@paasikivi.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220412215000.897344-1-richard.gong@amd.com> <d4ba3998-34aa-86d2-bde9-bc6ae9d8d08d@molgen.mpg.de>
+ <CADnq5_MgvcGPWf2gYn_3qCr+Gq1P39tvv-W-o8NhivvMpMwUBA@mail.gmail.com> <91e916e3-d793-b814-6cbf-abee0667f5f8@molgen.mpg.de>
+In-Reply-To: <91e916e3-d793-b814-6cbf-abee0667f5f8@molgen.mpg.de>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Thu, 14 Apr 2022 09:11:14 -0400
+Message-ID: <CADnq5_MJuH1KEHHWfuF4gY=LOAZ=2adBZ61jqL5k2WnupdFx4Q@mail.gmail.com>
+Subject: Re: [PATCHv4] drm/amdgpu: disable ASPM on Intel Alder Lake based systems
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Richard Gong <richard.gong@amd.com>,
+        Dave Airlie <airlied@linux.ie>,
+        xinhui pan <xinhui.pan@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>, Daniel Vetter <daniel@ffwll.ch>,
+        Alexander Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 12:47:20AM +0300, Sakari Ailus wrote:
-> On Wed, Apr 13, 2022 at 09:23:17PM +0300, Andy Shevchenko wrote:
-> > On Wed, Apr 13, 2022 at 09:19:28PM +0300, Andy Shevchenko wrote:
-> > > On Wed, Apr 13, 2022 at 08:10:22PM +0200, Rafael J. Wysocki wrote:
-> > > > On Fri, Apr 8, 2022 at 8:49 PM Andy Shevchenko
-> > > > <andriy.shevchenko@linux.intel.com> wrote:
+On Thu, Apr 14, 2022 at 3:52 AM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+>
+> [Cc: -kernel test robot <lkp@intel.com>]
+>
+> Dear Alex, dear Richard,
+>
+>
+> Am 13.04.22 um 15:00 schrieb Alex Deucher:
+> > On Wed, Apr 13, 2022 at 3:43 AM Paul Menzel wrote:
+>
+> >> Thank you for sending out v4.
+> >>
+> >> Am 12.04.22 um 23:50 schrieb Richard Gong:
+> >>> Active State Power Management (ASPM) feature is enabled since kernel =
+5.14.
+> >>> There are some AMD GFX cards (such as WX3200 and RX640) that won't wo=
+rk
+> >>> with ASPM-enabled Intel Alder Lake based systems. Using these GFX car=
+ds as
+> >>> video/display output, Intel Alder Lake based systems will hang during
+> >>> suspend/resume.
+> >>
+> >> I am still not clear, what =E2=80=9Chang during suspend/resume=E2=80=
+=9D means. I guess
+> >> suspending works fine? During resume (S3 or S0ix?), where does it hang=
+?
+> >> The system is functional, but there are only display problems?
+> >>
+> >>> The issue was initially reported on one system (Dell Precision 3660 w=
+ith
+> >>> BIOS version 0.14.81), but was later confirmed to affect at least 4 A=
+lder
+> >>> Lake based systems.
+> >>>
+> >>> Add extra check to disable ASPM on Intel Alder Lake based systems.
+> >>>
+> >>> Fixes: 0064b0ce85bb ("drm/amd/pm: enable ASPM by default")
+> >>> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1885
+> >>> Reported-by: kernel test robot <lkp@intel.com>
+> >>
+> >> This tag is a little confusing. Maybe clarify that it was for an issue
+> >> in a previous patch iteration?
+> >>
+> >>> Signed-off-by: Richard Gong <richard.gong@amd.com>
+> >>> ---
+> >>> v4: s/CONFIG_X86_64/CONFIG_X86
+> >>>       enhanced check logic
+> >>> v3: s/intel_core_asom_chk/aspm_support_quirk_check
+> >>>       correct build error with W=3D1 option
+> >>> v2: correct commit description
+> >>>       move the check from chip family to problematic platform
+> >>> ---
+> >>>    drivers/gpu/drm/amd/amdgpu/vi.c | 17 ++++++++++++++++-
+> >>>    1 file changed, 16 insertions(+), 1 deletion(-)
+> >>>
+> >>> diff --git a/drivers/gpu/drm/amd/amdgpu/vi.c b/drivers/gpu/drm/amd/am=
+dgpu/vi.c
+> >>> index 039b90cdc3bc..b33e0a9bee65 100644
+> >>> --- a/drivers/gpu/drm/amd/amdgpu/vi.c
+> >>> +++ b/drivers/gpu/drm/amd/amdgpu/vi.c
+> >>> @@ -81,6 +81,10 @@
+> >>>    #include "mxgpu_vi.h"
+> >>>    #include "amdgpu_dm.h"
+> >>>
+> >>> +#if IS_ENABLED(CONFIG_X86)
+> >>> +#include <asm/intel-family.h>
+> >>> +#endif
+> >>> +
+> >>>    #define ixPCIE_LC_L1_PM_SUBSTATE    0x100100C6
+> >>>    #define PCIE_LC_L1_PM_SUBSTATE__LC_L1_SUBSTATES_OVERRIDE_EN_MASK  =
+  0x00000001L
+> >>>    #define PCIE_LC_L1_PM_SUBSTATE__LC_PCI_PM_L1_2_OVERRIDE_MASK      =
+  0x00000002L
+> >>> @@ -1134,13 +1138,24 @@ static void vi_enable_aspm(struct amdgpu_devi=
+ce *adev)
+> >>>                WREG32_PCIE(ixPCIE_LC_CNTL, data);
+> >>>    }
+> >>>
+> >>> +static bool aspm_support_quirk_check(void)
+> >>> +{
+> >>> +     if (IS_ENABLED(CONFIG_X86)) {
+> >>> +             struct cpuinfo_x86 *c =3D &cpu_data(0);
+> >>> +
+> >>> +             return !(c->x86 =3D=3D 6 && c->x86_model =3D=3D INTEL_F=
+AM6_ALDERLAKE);
+> >>> +     }
+> >>> +
+> >>> +     return true;
+> >>> +}
+> >>> +
+> >>>    static void vi_program_aspm(struct amdgpu_device *adev)
+> >>>    {
+> >>>        u32 data, data1, orig;
+> >>>        bool bL1SS =3D false;
+> >>>        bool bClkReqSupport =3D true;
+> >>>
+> >>> -     if (!amdgpu_device_should_use_aspm(adev))
+> >>> +     if (!amdgpu_device_should_use_aspm(adev) || !aspm_support_quirk=
+_check())
+> >>>                return;
+> >>
+> >> Can users still forcefully enable ASPM with the parameter `amdgpu.aspm=
+`?
+> >>
+> >>>
+> >>>        if (adev->flags & AMD_IS_APU ||
+> >>
+> >> If I remember correctly, there were also newer cards, where ASPM worke=
+d
+> >> with Intel Alder Lake, right? Can only the problematic generations for
+> >> WX3200 and RX640 be excluded from ASPM?
+> >
+> > This patch only disables it for the generation that was problematic.
+>
+> Could that please be made clear in the commit message summary, and messag=
+e?
 
-...
+Sure.  Richard, please add that this only disables ASPM on VI parts
+when in an alderlake system.
 
-> > > > > -struct fwnode_handle *fwnode_handle_get(struct fwnode_handle *fwnode)
-> > > > > +struct fwnode_handle *fwnode_handle_get(const struct fwnode_handle *fwnode)
-> > > > >  {
-> > > 
-> > > > >         if (!fwnode_has_op(fwnode, get))
-> > > > >                 return fwnode;
-> > > 
-> > > ^^^^, so it needs a casting, but then we have to comment why is so.
-> > 
-> > Note, it means that the fwnode parameter either invalid or has no given option.
-> > It's not a problem to drop casting in the first case, but the second one should
-> > be justified and Sakari wants to be sure that the initial container is not
-> > const, which seems can't be achieved even with the original code.
-> 
-> I wonder if I'm missing something. The fwnode argument originally was not
-> const here.
+>
+> Loosely related, is there a public (or internal issue) to analyze how to
+> get ASPM working for VI generation devices with Intel Alder Lake?
 
-Yes, and our discussion went to the direction of what const qualifier implies
-here. I assume that the const means that we do not modify the fwnode object,
-while its container is another story which we have no influence on. You, if
-I read your messages correctly, insisting that const here implies that the
-container object is const as well.
+We'd need support from Intel.  I'm not sure where things currently stand.
 
-Reading current implementation I see now, that with children APIs we have
-two pointers passed, while with parent APIs only a single one. In children
-API due to above is easy to use const qualifier for the first argument.
-Parent APIs missed that and hence have this problem that we can't constify
-their parameters.
-
-to_of_node() expects const parameter while returns non-const container.
-Is it a subtle issue there? (I believe it should be consistent then)
-
-This patch and the followed one can be moved without understanding why
-we need the non-const parameter there.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Alex
