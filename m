@@ -2,82 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D344EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15185C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:23:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344283AbiDNOZI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:25:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35558 "EHLO
+        id S237966AbiDNOZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344037AbiDNNje (ORCPT
+        with ESMTP id S1344028AbiDNNje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:39:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A54CE8;
-        Thu, 14 Apr 2022 06:36:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54849B8296A;
-        Thu, 14 Apr 2022 13:36:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97D5EC385A1;
-        Thu, 14 Apr 2022 13:36:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943412;
-        bh=nfhQSG9JWnqT+nUVC4av6L1bI1OYlS6HDqhxDGKd+f0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M9ZgQd4AJBaAIp8diUl8wWfO1H6x3xfqY63TVZG19P+RF/MiBuWEjItGdQv4xs+Ng
-         IAg1F7MypTsa6SBqgcJAgp1P073aUw2evdefGQJH7H4iT51k8s6UmcKQa8/vXur7ks
-         cX2xQxnRuwYsdK/oAwPfnJ9IaHkGArOhTsGj2094=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 147/475] video: fbdev: omapfb: Add missing of_node_put() in dvic_probe_of
-Date:   Thu, 14 Apr 2022 15:08:52 +0200
-Message-Id: <20220414110859.258799122@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F9F1C6;
+        Thu, 14 Apr 2022 06:36:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=RtIzITOXCt3rbCs8YTplU39bL8FmkvrPa1PNdf4xnRY=; b=xshPJ5m+QfE5fHJ7T9haO0gQ7T
+        JbmiQfLDpbtq87bR7pK0TO413MUY3GiV4wntUqdwULUMs4qLLXv1BcK21008nkITGLC2cSNbaMIJ0
+        IitKrReeV4RwaL8hGwc6JZ/qVR3HQF8MiUJ17XvdGNrMEa0DHZWbyk4P9Y3Xz/nBcIMk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nezeL-00FpgQ-Bm; Thu, 14 Apr 2022 15:36:41 +0200
+Date:   Thu, 14 Apr 2022 15:36:41 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Wells Lu <wellslutw@gmail.com>, davem@davemloft.net,
+        robh+dt@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        p.zabel@pengutronix.de, pabeni@redhat.com, krzk+dt@kernel.org,
+        roopa@nvidia.com, edumazet@google.com, wells.lu@sunplus.com
+Subject: Re: [PATCH net-next v8 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Message-ID: <Ylgjab6qLsrzKZKc@lunn.ch>
+References: <1649817118-14667-1-git-send-email-wellslutw@gmail.com>
+ <1649817118-14667-3-git-send-email-wellslutw@gmail.com>
+ <20220414141825.50eb8b6a@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414141825.50eb8b6a@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+> > +		/* Get mac-address from nvmem. */
+> > +		ret = spl2sw_nvmem_get_mac_address(&pdev->dev, port_np, mac_addr);
+> > +		if (ret) {
+> > +			dev_info(&pdev->dev, "Generate a random mac address!\n");
+> > +
+> > +			/* Generate a mac address using OUI of Sunplus Technology
+> > +			 * and random controller number.
+> > +			 */
+> > +			mac_addr[0] = 0xfc; /* OUI of Sunplus: fc:4b:bc */
+> > +			mac_addr[1] = 0x4b;
+> > +			mac_addr[2] = 0xbc;
+> > +			mac_addr[3] = get_random_int() % 256;
+> > +			mac_addr[4] = get_random_int() % 256;
+> > +			mac_addr[5] = get_random_int() % 256;
+> 
+> I don't think you can do that. Either you use your OUI and assign the
+> address at manufacture or you must use a locally administered address.
+> And if locally administered address is used it better be completely
+> random to lower the probability of collision to absolute minimum.
 
-[ Upstream commit a58c22cfbbf62fefca090334bbd35fd132e92a23 ]
+I commented about that in an earlier version of these patches. We
+probably need a quote from the 802.1 or 802.3 which says this is O.K.
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
-
-Fixes: f76ee892a99e ("omapfb: copy omapdss & displays for omapfb")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c b/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
-index b4a1aefff766..777f6d66c28c 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
-@@ -251,6 +251,7 @@ static int dvic_probe_of(struct platform_device *pdev)
- 	adapter_node = of_parse_phandle(node, "ddc-i2c-bus", 0);
- 	if (adapter_node) {
- 		adapter = of_get_i2c_adapter_by_node(adapter_node);
-+		of_node_put(adapter_node);
- 		if (adapter == NULL) {
- 			dev_err(&pdev->dev, "failed to parse ddc-i2c-bus\n");
- 			omap_dss_put_device(ddata->in);
--- 
-2.34.1
-
-
-
+	 Andrew
