@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:49:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18EF3C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343680AbiDNNuY (ORCPT
+        id S1344057AbiDNNue (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
+        Thu, 14 Apr 2022 09:50:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344099AbiDNNaX (ORCPT
+        with ESMTP id S1344056AbiDNNaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 682821B6;
-        Thu, 14 Apr 2022 06:27:59 -0700 (PDT)
+        Thu, 14 Apr 2022 09:30:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CE113F73;
+        Thu, 14 Apr 2022 06:27:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 068286190F;
-        Thu, 14 Apr 2022 13:27:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16B14C385A5;
-        Thu, 14 Apr 2022 13:27:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11DC06190F;
+        Thu, 14 Apr 2022 13:27:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ADCFC385A9;
+        Thu, 14 Apr 2022 13:27:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942878;
-        bh=cML5sl7w+/mfiwBUeIfZj6Aya5S1WL48P0FZVHONaYY=;
+        s=korg; t=1649942831;
+        bh=kzG7/AXdzwtfNRRHGDRL5LzzlU8h9iHrGNnG5XFHCwc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1BlVQJVWMDAg3n7KhnEwCZ7N8fwEMeVA18cT7bbaSaRL/5ywRRsBURdGjYuN3KzGP
-         JitDWKeNUGGn+PrmSkAT3/3LU3iA05Lg/LpdHn4gNKBNoK74b7i59wr31TlUlNQwON
-         +WuXTrxBLwE4fj+DnDcj5JNPjFSA3+72pkyWRDl0=
+        b=nSUF5yp3wM7B1CGxx9nBeH7ulKLImOj3JvLdmSYpTho8EcPXvQX9QoPTPRRDVQ/zL
+         CGb+zJep6PyOUrnJwBc+fZauaR1Qdxu7szSq9QCxTklR5g1yZmD40h9nWxLoAH9B3x
+         bfJzbilHpBwcmA7VpPK7HIUZCaJynGwY2Xqe25H8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 295/338] NFS: swap-out must always use STABLE writes.
-Date:   Thu, 14 Apr 2022 15:13:18 +0200
-Message-Id: <20220414110847.283683250@linuxfoundation.org>
+Subject: [PATCH 4.19 276/338] drm/amdkfd: make CRAT table missing message informational only
+Date:   Thu, 14 Apr 2022 15:12:59 +0200
+Message-Id: <20220414110846.743517144@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,69 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: NeilBrown <neilb@suse.de>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit c265de257f558a05c1859ee9e3fed04883b9ec0e ]
+[ Upstream commit 9dff13f9edf755a15f6507874185a3290c1ae8bb ]
 
-The commit handling code is not safe against memory-pressure deadlocks
-when writing to swap.  In particular, nfs_commitdata_alloc() blocks
-indefinitely waiting for memory, and this can consume all available
-workqueue threads.
+The driver has a fallback so make the message informational
+rather than a warning. The driver has a fallback if the
+Component Resource Association Table (CRAT) is missing, so
+make this informational now.
 
-swap-out most likely uses STABLE writes anyway as COND_STABLE indicates
-that a stable write should be used if the write fits in a single
-request, and it normally does.  However if we ever swap with a small
-wsize, or gather unusually large numbers of pages for a single write,
-this might change.
-
-For safety, make it explicit in the code that direct writes used for swap
-must always use FLUSH_STABLE.
-
-Signed-off-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1906
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/direct.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_crat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/nfs/direct.c b/fs/nfs/direct.c
-index 41ff316cd6ad..6a4083d550c6 100644
---- a/fs/nfs/direct.c
-+++ b/fs/nfs/direct.c
-@@ -888,7 +888,7 @@ static const struct nfs_pgio_completion_ops nfs_direct_write_completion_ops = {
-  */
- static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
- 					       struct iov_iter *iter,
--					       loff_t pos)
-+					       loff_t pos, int ioflags)
- {
- 	struct nfs_pageio_descriptor desc;
- 	struct inode *inode = dreq->inode;
-@@ -896,7 +896,7 @@ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
- 	size_t requested_bytes = 0;
- 	size_t wsize = max_t(size_t, NFS_SERVER(inode)->wsize, PAGE_SIZE);
- 
--	nfs_pageio_init_write(&desc, inode, FLUSH_COND_STABLE, false,
-+	nfs_pageio_init_write(&desc, inode, ioflags, false,
- 			      &nfs_direct_write_completion_ops);
- 	desc.pg_dreq = dreq;
- 	get_dreq(dreq);
-@@ -1042,11 +1042,13 @@ ssize_t nfs_file_direct_write(struct kiocb *iocb, struct iov_iter *iter,
- 		dreq->iocb = iocb;
- 
- 	if (swap) {
--		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos);
-+		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos,
-+							    FLUSH_STABLE);
- 	} else {
- 		nfs_start_io_direct(inode);
- 
--		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos);
-+		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos,
-+							    FLUSH_COND_STABLE);
- 
- 		if (mapping->nrpages) {
- 			invalidate_inode_pages2_range(mapping,
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+index ee4996029a86..e2780643f4c3 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+@@ -733,7 +733,7 @@ int kfd_create_crat_image_acpi(void **crat_image, size_t *size)
+ 	/* Fetch the CRAT table from ACPI */
+ 	status = acpi_get_table(CRAT_SIGNATURE, 0, &crat_table);
+ 	if (status == AE_NOT_FOUND) {
+-		pr_warn("CRAT table not found\n");
++		pr_info("CRAT table not found\n");
+ 		return -ENODATA;
+ 	} else if (ACPI_FAILURE(status)) {
+ 		const char *err = acpi_format_exception(status);
 -- 
 2.35.1
 
