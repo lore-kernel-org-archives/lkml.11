@@ -2,152 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E8CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:32:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1255BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235858AbiDNPea (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50538 "EHLO
+        id S241643AbiDNPe4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347594AbiDNOMP (ORCPT
+        with ESMTP id S1348790AbiDNONJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:12:15 -0400
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2115.outbound.protection.outlook.com [40.107.215.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E79EBF011
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:03:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Eds2KC6ollFfbEV6EujqG1MWai/OY+FJ8IoZfWBfWntVo4GbjiVbDDKpiTUuA0c61KkdXUngIJbUFyBUvR8s7BvdqM80d7xE9yy6f+xQJfO4X9Lp41yCudyhSLb4dZu3/M+ZkBPaK75hvZm+3Bjmp+NC6IUuTvh2zHm3KY9Anzl8D6xvF10boO22n2Le552ABQ4MSjNcEHr68PuoTorUoDfKAoUb/h+7OTQvtkuftxrkkC55sNoKXhUylMRobXXL8x91TWLV3BXaB+FWMN1fR2500OiZuc64gIwGx6D7t7mATHfokEr/DCdZQm/yX65rZvUGyB1QbSmAftYx4bTnYA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xvDRcUOEPLXaVETYYAHuWrBJa6tmWB68i3kWT3zDowY=;
- b=cgrY984hcyfTzqC9ldXjAv+qNpKYdop3C73GpU2swzeY5SykzhOBCYKuhll0C90ov6GLu0QiOiqFsYi/Xhnb8mhagHVYX2PZ36WjOg8/SnTsFLJifb0EgFJ3fUg0EE5wC3U93H74+kh7ap/RORqAhxhMgbPsmyx0wTmFqw16NXMLrufaf9YottjjhCIwXs7JFyh4my201miYT/G36MJP84xaZluQc+Y58RqD6uIk3AIirFZkJRa6xPhfoR5WkfYLEZTeSvOWwL+0XAmc4KFKbjL/MfoXgXEjbt4ta4JxDiMfvcUikLLQy3rnqXNDvTZ1hgyZYWi30TtvhHPuFCHFsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xvDRcUOEPLXaVETYYAHuWrBJa6tmWB68i3kWT3zDowY=;
- b=JX55wPFmyXiOG3KIj3cJg284TeFCCf17xR75wAhOz6N5/qXLKLtmaXXI2PofjrifuN3TbnIAywJOdSG6pGnMf7NVYTEIYREpYcyumIfuQwTT+DcgtsaqCw7K1pP5OPpfcYhEWKRphtG6Nx2bjP0f0p/p9JiShKJlkmZu6Cp88og=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from TYZPR06MB4173.apcprd06.prod.outlook.com (2603:1096:400:26::14)
- by SG2PR06MB2252.apcprd06.prod.outlook.com (2603:1096:4:d::11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5144.29; Thu, 14 Apr 2022 14:03:40 +0000
-Received: from TYZPR06MB4173.apcprd06.prod.outlook.com
- ([fe80::d4bd:64f4:e1c0:25cb]) by TYZPR06MB4173.apcprd06.prod.outlook.com
- ([fe80::d4bd:64f4:e1c0:25cb%4]) with mapi id 15.20.5164.020; Thu, 14 Apr 2022
- 14:03:39 +0000
-From:   Yihao Han <hanyihao@vivo.com>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Sven Van Asbroeck <TheSven73@gmail.com>,
-        Corentin Labbe <clabbe@baylibre.com>,
-        Yihao Han <hanyihao@vivo.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linuxppc-dev@lists.ozlabs.org,
+        Thu, 14 Apr 2022 10:13:09 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFBFC6F1A
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:05:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649945107; x=1681481107;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=jKQm+kUuUqino+2dW5Y03gm+/rXNyu9sTs6oih6VvXk=;
+  b=nY7idIvgrogFc1bP24fWo1R0+CTAfCL+xU6OTTtT7epQcFuwjecSACa7
+   RP6xkrO+eD74SfjrfCBxxxoeqMMxVXoYDTfVOaCDT9YjCkA9sWOYZhYyG
+   psp3ujf2yk8aQOY5D/XQd39GCkJb0jRDhiMgGnhtvGzIfP+kPgkjZW0E5
+   vJrIs8r3aTbw8W64297bxTkpRi0Keb1f1CSWY/oGUbjbWuJW8UImisRzE
+   S2QAoEW8Xh0VrmnVmCa/Z4v3z3h4FN5JfrGSxuFNlURAx9ND5yYy6h2vp
+   B4WVL6x1chtxFyROFyy6fEJ2xDmGrYyhozg8lt5W/+6TyXapN6NwfFSsH
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="325840839"
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="325840839"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 07:04:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="624106685"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 14 Apr 2022 07:04:53 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nf05d-000110-BZ;
+        Thu, 14 Apr 2022 14:04:53 +0000
+Date:   Thu, 14 Apr 2022 22:04:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        "Darrick J. Wong" <darrick.wong@oracle.com>,
         linux-kernel@vger.kernel.org
-Cc:     kernel@vivo.com
-Subject: [PATCH] macintosh: macio_asic: fix resource_size.cocci warnings
-Date:   Thu, 14 Apr 2022 07:02:42 -0700
-Message-Id: <20220414140304.82751-1-hanyihao@vivo.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR02CA0161.apcprd02.prod.outlook.com
- (2603:1096:201:1f::21) To TYZPR06MB4173.apcprd06.prod.outlook.com
- (2603:1096:400:26::14)
+Subject: [djwong-xfs:vectorized-scrub 38/396]
+ fs/xfs/scrub/agheader_repair.c:585:2: error: implicit declaration of
+ function 'xbitmap_walk'
+Message-ID: <202204142115.5hNAAWHG-lkp@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9cfaa211-6328-4066-7ac3-08da1e1f93b0
-X-MS-TrafficTypeDiagnostic: SG2PR06MB2252:EE_
-X-Microsoft-Antispam-PRVS: <SG2PR06MB2252E4B7F22271DA504F22C2A2EF9@SG2PR06MB2252.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Kmyj8XogfNGPB/dJESatiA0gzGo3SmQG1SRvYKplzOkmIoyKBYnRAlqCjCDWHIPUiFPzSClzhaF1yZ4MXHlUfqfCBrwjJxNFaMKhzqhcpxP9CQ4ZpRYSKt4wvkjxawd8RWbYLh/XVKrHfPENLT0Zgb5OneK90ttwjs4eg8Br+z2o1yjV9smBSyNYwZ19WJMUHJHIbMcmZ70pz41+9cT1NZBEKMZDNxXKSH6rwItePERPST66PNMC1L7X/HjAaw9LavDZ51OH2qMJHRQursFeLjdJlym9ZjZKu5TSXkO9b78u/dz1pOacnCTVxk9v5dkvYL1Tnf73MsGGcItEKdgV4o7PEkPS1vhLyLA6SSH1CHO+dW/mfmrCY28W3mqYgtEbQ1sQ1Er78q8aWSEowF2iR5SdLPBcvANEn+2pyuDw6eOYqroa7A5UtveEwXHm+l7gXV5Yt4SzNC7zoLrAQoLEneHD/7GRwAXI4ehHtuqZojQUmfaklBwlAWlICTv6yN5C9VGTqhBdfa9raZaUDZZeAuxfnM/5wHDEuQgnviNTCv1DufUzvhMbGc5iBGXF4BPR9PiJKHnfaxNMeiiHiaRK7AJLZp7zL4H3MtmETSVrNMsFnbvAM+DnT38XwICAx/pDnCfxZQeJVxiEIbVef8+jd+993piOejQvr70KUyfFI+2OsHz3wmbFMCRn4idF8DmaCkbaXNp0j0NhFSkcMw2/9yokebFayNdN902cRqI2o5w=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYZPR06MB4173.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(52116002)(86362001)(6506007)(2906002)(6512007)(508600001)(6486002)(7416002)(5660300002)(6666004)(8936002)(2616005)(186003)(26005)(83380400001)(1076003)(107886003)(921005)(38350700002)(38100700002)(66946007)(8676002)(66556008)(110136005)(66476007)(316002)(36756003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yJYrTRvhgrcfzSjgYhonGT7OmVA/7d5wtIPy3bQyhP6Ue1RE7NoZ3391fv3F?=
- =?us-ascii?Q?K7ZEJYZM1z4l9Rh+NoD6XDMro/OZbYmMKsjyQzkel30e26zRqEK5myPkVqdT?=
- =?us-ascii?Q?WUP/Uv9j7VqPIjNIQTtkorJjfxnF3VDx/F0S7nZbDY4D3CnWfzWSxiaATtnr?=
- =?us-ascii?Q?y/a3w0ab3RuQXUpD6G8BMtdL7GJ+o4MrTRV1mc+6DwHabmb2GEVXNURwoO4V?=
- =?us-ascii?Q?RP/HlkkXCbuESA7zvWT6MzOafYc/3MK4RPsdLEBDaT44AC/eQwXAsotkZ9zy?=
- =?us-ascii?Q?Gp6iUbU0WSVVOccYayRAwbO0pCuKknGJAAEk1dhzq5npzVbZ4B1IAVzn1kuP?=
- =?us-ascii?Q?u9Tj0Z2R0ONznwNS0OH+ZYinbRxO6/vnUSuKNDgeSTWiztavrJV+i2b5Ulfr?=
- =?us-ascii?Q?dkenFvAKCuEphVXWbIZA5mSNu6x/HUfSXxqccjTdtzE3oyWhEejbz9UH4c7M?=
- =?us-ascii?Q?/mCqV8augxFMooxNK/QmzB5Yas0iqRWX0/WxCESofkhV8qIw1/kJOW/dy/+4?=
- =?us-ascii?Q?3qw2JM/lPo/HanLRTsx4dGBg8p2qrZA+BF3F1CE+s1hezfUEdw3dLxKXm3m1?=
- =?us-ascii?Q?24yshhmxnJkPOylU8parYWCEp4YP6mCZq+xns6TrXmjEp7QRjENrMqEH52LD?=
- =?us-ascii?Q?Zsty1layJwXTb0eJu8Lq2iP8ofAYsW5/q0oZ6/WnA/w1hdnHdXxBZqeygY2P?=
- =?us-ascii?Q?qQqIHadhQzk2cqpLtrrGtOX+HVrZNgZs3w1G7BVPxFc2jZcymeUHdJpW7pgO?=
- =?us-ascii?Q?nG3ZSVLtvfkfjz0JLlicdg5O17eWyGh9oQt+JeHU00B9vE0l7RBW1LYzYqPH?=
- =?us-ascii?Q?mFQ7cboj0CMg9PYt3GWRXdcVs6H9WKoAqDUhkWQ5PyzA8b6mt2rvMpNC07wn?=
- =?us-ascii?Q?g0PswS9yMkIXHtnZt11CiXltr/tAZhfaoFIn1Ee336ewhz5S5VoQ7GPXMXIC?=
- =?us-ascii?Q?1MwLLLS+LrQ3w85Qp7ugs6DTIX6k6ZetyXfwSljge2uAfpw4p1LXC9AIxkjC?=
- =?us-ascii?Q?YIvdwfbIOyGQpxGv2DrsmoW4lX0oogBkag7obOvNbE1vLSeqcTfs/l+jgplq?=
- =?us-ascii?Q?GqAnTG1Vd+4ZMWUijzpHSVRv2MOz+0mSXp+fjQQZVY/zNeZvLWG9OuYlKB+Y?=
- =?us-ascii?Q?tbWsTvXtKkpX97jxI6zImgjDuzZAx+z5LGwNx+ahfKJB5vEuYvuW67qcfGYU?=
- =?us-ascii?Q?Op9nEkCF1N5DdqLHAZZYC5lPSOF6Brivvt3zTgC3Wfj+BzVEUk8PhXIIl8W2?=
- =?us-ascii?Q?roOq4yfS1jDP76SKB2C3bjVCkw06GW6uSISutqmwBHQhdYLtpf3vVfokQQ+H?=
- =?us-ascii?Q?CfcUKaFgwpEsvhVyWOOsqI1KXK7IDTUZRxZkGZHhR3Qrr/zbQx2cJk0lou9f?=
- =?us-ascii?Q?W8k0mOe9jwweDU070BldWJP/HxJoWhIPWurbp9wHTjlWKzQ+vh5dTb1P6VUh?=
- =?us-ascii?Q?HYAk6+2KEw0xMPWpBoaACx81prUGccpY2HO8wfMoNSeHmN/T5MRJwcAqUn7h?=
- =?us-ascii?Q?EtF3H5z1IZZqa1B4pPW99ErBl7tgnKjIIusOoJ6WsJpD2vM3nekWj0SI+TFg?=
- =?us-ascii?Q?5QOSvQBthTkRcy4IVTpaOMwtFeJg3BkTNRT/TjDpaTibpc5Z+hLbwcQ7LM7x?=
- =?us-ascii?Q?7gxIS1NZk+DEZSx9hWIlxSqtr1e/5y/Vz9bluvjP9+fcR/E8alggpXwcNhkB?=
- =?us-ascii?Q?cZKTtsXr0NdIQBeGTNk72kA/QtybXNgmAeI3PeZQdTKAqKGRjJsyYqmI7K4t?=
- =?us-ascii?Q?Fs0Y1XMCAw=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9cfaa211-6328-4066-7ac3-08da1e1f93b0
-X-MS-Exchange-CrossTenant-AuthSource: TYZPR06MB4173.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2022 14:03:39.8570
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3J5MdpxsDhImVLlVGaHnycbQM6gPGPkfAJiahg7UPozMTDU4RT8J4EjsK8VDjefX2XlIMwwhG6yb1rPTpCy3TQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB2252
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-drivers/macintosh/macio_asic.c:219:26-29: WARNING:
-Suspicious code. resource_size is maybe missing with res
-drivers/macintosh/macio_asic.c:221:26-29: WARNING:
-Suspicious code. resource_size is maybe missing with res
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git vectorized-scrub
+head:   bd756ef7af68274b79308166ee64949d288be861
+commit: d8273f3634d00732c204ba1c112bf1b9efcc6e4d [38/396] xfs: make AGFL repair function avoid crosslinked blocks
+config: hexagon-buildonly-randconfig-r002-20220413 (https://download.01.org/0day-ci/archive/20220414/202204142115.5hNAAWHG-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git/commit/?id=d8273f3634d00732c204ba1c112bf1b9efcc6e4d
+        git remote add djwong-xfs https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git
+        git fetch --no-tags djwong-xfs vectorized-scrub
+        git checkout d8273f3634d00732c204ba1c112bf1b9efcc6e4d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
 
-Use resource_size function on resource object instead of
-explicit computation.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Generated by: scripts/coccinelle/api/resource_size.cocci
+Note: the djwong-xfs/vectorized-scrub HEAD bd756ef7af68274b79308166ee64949d288be861 builds fine.
+      It only hurts bisectability.
 
-Signed-off-by: Yihao Han <hanyihao@vivo.com>
----
- drivers/macintosh/macio_asic.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+All errors (new ones prefixed by >>):
 
-diff --git a/drivers/macintosh/macio_asic.c b/drivers/macintosh/macio_asic.c
-index 1943a007e2d5..260fccb3863e 100644
---- a/drivers/macintosh/macio_asic.c
-+++ b/drivers/macintosh/macio_asic.c
-@@ -216,9 +216,9 @@ static int macio_resource_quirks(struct device_node *np, struct resource *res,
- 	/* Some older IDE resources have bogus sizes */
- 	if (of_node_name_eq(np, "IDE") || of_node_name_eq(np, "ATA") ||
- 	    of_node_is_type(np, "ide") || of_node_is_type(np, "ata")) {
--		if (index == 0 && (res->end - res->start) > 0xfff)
-+		if (index == 0 && (resource_size(res)) > 0xfff)
- 			res->end = res->start + 0xfff;
--		if (index == 1 && (res->end - res->start) > 0xff)
-+		if (index == 1 && (resource_size(res)) > 0xff)
- 			res->end = res->start + 0xff;
- 	}
- 	return 0;
+>> fs/xfs/scrub/agheader_repair.c:585:2: error: implicit declaration of function 'xbitmap_walk' [-Werror,-Wimplicit-function-declaration]
+           xbitmap_walk(agfl_extents, xrep_agfl_check_extent, &ra);
+           ^
+   1 error generated.
+
+
+vim +/xbitmap_walk +585 fs/xfs/scrub/agheader_repair.c
+
+   525	
+   526	/*
+   527	 * Map out all the non-AGFL OWN_AG space in this AG so that we can deduce
+   528	 * which blocks belong to the AGFL.
+   529	 *
+   530	 * Compute the set of old AGFL blocks by subtracting from the list of OWN_AG
+   531	 * blocks the list of blocks owned by all other OWN_AG metadata (bnobt, cntbt,
+   532	 * rmapbt).  These are the old AGFL blocks, so return that list and the number
+   533	 * of blocks we're actually going to put back on the AGFL.
+   534	 */
+   535	STATIC int
+   536	xrep_agfl_collect_blocks(
+   537		struct xfs_scrub	*sc,
+   538		struct xfs_buf		*agf_bp,
+   539		struct xbitmap		*agfl_extents,
+   540		xfs_agblock_t		*flcount)
+   541	{
+   542		struct xrep_agfl	ra;
+   543		struct xfs_mount	*mp = sc->mp;
+   544		struct xfs_btree_cur	*cur;
+   545		int			error;
+   546	
+   547		ra.sc = sc;
+   548		ra.freesp = agfl_extents;
+   549		xbitmap_init(&ra.agmetablocks);
+   550		xbitmap_init(&ra.crossed);
+   551	
+   552		/* Find all space used by the free space btrees & rmapbt. */
+   553		cur = xfs_rmapbt_init_cursor(mp, sc->tp, agf_bp, sc->sa.pag);
+   554		error = xfs_rmap_query_all(cur, xrep_agfl_walk_rmap, &ra);
+   555		xfs_btree_del_cursor(cur, error);
+   556		if (error)
+   557			goto out_bmp;
+   558	
+   559		/* Find all blocks currently being used by the bnobt. */
+   560		cur = xfs_allocbt_init_cursor(mp, sc->tp, agf_bp,
+   561				sc->sa.pag, XFS_BTNUM_BNO);
+   562		error = xbitmap_set_btblocks(&ra.agmetablocks, cur);
+   563		xfs_btree_del_cursor(cur, error);
+   564		if (error)
+   565			goto out_bmp;
+   566	
+   567		/* Find all blocks currently being used by the cntbt. */
+   568		cur = xfs_allocbt_init_cursor(mp, sc->tp, agf_bp,
+   569				sc->sa.pag, XFS_BTNUM_CNT);
+   570		error = xbitmap_set_btblocks(&ra.agmetablocks, cur);
+   571		xfs_btree_del_cursor(cur, error);
+   572		if (error)
+   573			goto out_bmp;
+   574	
+   575		/*
+   576		 * Drop the freesp meta blocks that are in use by btrees.
+   577		 * The remaining blocks /should/ be AGFL blocks.
+   578		 */
+   579		error = xbitmap_disunion(agfl_extents, &ra.agmetablocks);
+   580		if (error)
+   581			goto out_bmp;
+   582	
+   583		/* Strike out the blocks that are cross-linked. */
+   584		ra.rmap_cur = xfs_rmapbt_init_cursor(mp, sc->tp, agf_bp, sc->sa.pag);
+ > 585		xbitmap_walk(agfl_extents, xrep_agfl_check_extent, &ra);
+   586		xfs_btree_del_cursor(ra.rmap_cur, 0);
+   587		error = xbitmap_disunion(agfl_extents, &ra.crossed);
+   588		if (error)
+   589			goto out_bmp;
+   590	
+   591		/*
+   592		 * Calculate the new AGFL size.  If we found more blocks than fit in
+   593		 * the AGFL we'll free them later.
+   594		 */
+   595		*flcount = min_t(uint64_t, xbitmap_hweight(agfl_extents),
+   596				 xfs_agfl_size(mp));
+   597	
+   598	out_bmp:
+   599		xbitmap_destroy(&ra.crossed);
+   600		xbitmap_destroy(&ra.agmetablocks);
+   601		return error;
+   602	}
+   603	
+
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
