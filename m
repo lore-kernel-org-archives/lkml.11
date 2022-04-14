@@ -2,226 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91528C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:57:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FBC2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242665AbiDNQ7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47458 "EHLO
+        id S239783AbiDNQ75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:59:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244302AbiDNQ6q (ORCPT
+        with ESMTP id S1344391AbiDNQ6p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 12:58:46 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9BD9F6EE;
-        Thu, 14 Apr 2022 09:32:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649953941; x=1681489941;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=WtMvpSOSqUiDqk13x6O+YfALG9gh3euCT+fVyv9i7tA=;
-  b=EqzNcdIKrJE4qbS/5C8V1LSiYeHA+uB/DaE+DhgDCrwAjv6nUiyqnqU6
-   3BnP4CotNKarvqq/YWr/Ak5Uho+URl7eRPt3g4l+iY84ztstLWMiHIQMB
-   vHi57UQIxC2vBW/RQMAE/yai40gKVNebeqtdZwUkwqBh2ZSZavDMq5ZP2
-   SrJUJ/eClg7CtjhyqH1LKComU8tKkK5qB+oYWM8oqGBT0R3huZ8NYZOeg
-   349f1Pg6173tG8l11+EJx1N5dGf+kgPICHHJUIx3H9x9x1Y88Vrcu+rGb
-   D61n8C1WxJGrPw47oVfx8hbU8/ik2RFv1BAOXk1sbblOtGRzbRqdms9Rt
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="260566978"
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="260566978"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 09:31:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="527456322"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orsmga006.jf.intel.com with ESMTP; 14 Apr 2022 09:31:26 -0700
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 14 Apr 2022 09:31:25 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 14 Apr 2022 09:31:25 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Thu, 14 Apr 2022 09:31:25 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.175)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 14 Apr 2022 09:31:24 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SdtJB36vjiILTHjDEXc/h2QGZm6gQpsb0Govin60l+wj9hAaQoS/F4h1jq2e0QBGj6dV1QX6SJVfrYi9zl1pk/ypbJMGWmqsWXirSjSLvQiLlKapcGL6bwl2nXUoAl61sxeubHdRTVRXKICWctxu6gxs51LSgFZPz+OhKnQ6TmRDzhBQSkGTFkpeNG6QD9gTwqDl4D2PyEbAyhCRl13QIy/WAHP5pV0MqODuTL9GSqkz7j0pf2Aa0E/VVVdaxufsQbtlbznBO4kK8JpyQRWV49t9bLyMH/JjCeHnga65f7pxYBxcd7ux7PnOYq04SjQ7Rsd8iPJ8DsNqcmwNqjRCbw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Hl25e3mepRhP0M0mCMa8DsfhVahD955iyRdjP81xSnI=;
- b=CKyXj3BO+vYjmQebrNViSY/EgK9L2yjzm5pNsZRZIq85ZWUA0ucl6ca/UqTIhHfKoFbEdNibXwkK9z7a4hbXI0S10EXwxL6gQ0QvnDDwA6YItb42aml/4XrFNSJvjdtLPCm/ICRJuS8e6ETqx8lRojhPVOXuPGepV0fKiWCJiYR1nOT9CvxBr2aFMEo5nz4Fd9mz9icbElCga+mcY2d60e6PL1B8i+beR3x5L3dc5kZPIu1Ua438ncOR7c9ZbJq6xAhc/yl/Ql5JWxMAdaeVv2KIxULHYoGCFjoBGDYB+jC8bpmpjx5h208w4p2h65BimuDGiCz/SGBjjYADPdH9kg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BN0PR11MB5744.namprd11.prod.outlook.com (2603:10b6:408:166::16)
- by BN6PR11MB1443.namprd11.prod.outlook.com (2603:10b6:405:8::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Thu, 14 Apr
- 2022 16:31:17 +0000
-Received: from BN0PR11MB5744.namprd11.prod.outlook.com
- ([fe80::918d:6022:8ee6:3e36]) by BN0PR11MB5744.namprd11.prod.outlook.com
- ([fe80::918d:6022:8ee6:3e36%2]) with mapi id 15.20.5144.030; Thu, 14 Apr 2022
- 16:31:17 +0000
-Message-ID: <f9979705-d7aa-0abf-5022-776d17dd977e@intel.com>
-Date:   Thu, 14 Apr 2022 09:31:13 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.8.0
-Subject: Re: [PATCH V4 15/31] x86/sgx: Support restricting of enclave page
- permissions
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>, <dave.hansen@linux.intel.com>,
-        <tglx@linutronix.de>, <bp@alien8.de>, <luto@kernel.org>,
-        <mingo@redhat.com>, <linux-sgx@vger.kernel.org>, <x86@kernel.org>,
-        <shuah@kernel.org>, <linux-kselftest@vger.kernel.org>
-CC:     <seanjc@google.com>, <kai.huang@intel.com>,
-        <cathy.zhang@intel.com>, <cedric.xing@intel.com>,
-        <haitao.huang@intel.com>, <mark.shanahan@intel.com>,
-        <vijay.dhanraj@intel.com>, <hpa@zytor.com>,
-        <linux-kernel@vger.kernel.org>
-References: <cover.1649878359.git.reinette.chatre@intel.com>
- <a1d7820ab5f2e6d21cacb14bafd40a682101c492.1649878359.git.reinette.chatre@intel.com>
- <9abbecc124d61843c27217bf183d7447a281c297.camel@kernel.org>
- <7129163a0565dacc4f4f08c03f2cfe061274d017.camel@kernel.org>
-From:   Reinette Chatre <reinette.chatre@intel.com>
-In-Reply-To: <7129163a0565dacc4f4f08c03f2cfe061274d017.camel@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR05CA0144.namprd05.prod.outlook.com
- (2603:10b6:a03:33d::29) To BN0PR11MB5744.namprd11.prod.outlook.com
- (2603:10b6:408:166::16)
+        Thu, 14 Apr 2022 12:58:45 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAEA9F6E0;
+        Thu, 14 Apr 2022 09:32:18 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2ef4a241cc5so54193897b3.2;
+        Thu, 14 Apr 2022 09:32:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fdEEqqrKzs/3274zBD/YaWisZaBNOP4L2LR8YW1baHw=;
+        b=epZa5nITfJI2m97kCFx+vNtRg4MHtmfEUMolvICzsn1jko+a8J67e9/CCLceB2vI2M
+         lDsf/Wh+Nbm2suVzkaBCWpyOgVi1/9cI0BjenFsVQetNC/l+t+WwF2mJbQioRx5uhn91
+         W6pC7sATbmxXXYyomwHDngtqTxwLQe4ErgJpB6mGugt1J0BIomqsHkC/dfT05R5uoS4u
+         HJHEL0//3vA0ftkAlyy0Kf3lM0MS3RKYaJICOcDZ7tASW37OQ6s4pUqMOeITKnE8ApFT
+         eOD4t+bVKbX0coZB17+BEz967UQpaSRjROjmVZLEhOAGGPtl3FRsGzFra4IOh/F4/Xcn
+         asdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fdEEqqrKzs/3274zBD/YaWisZaBNOP4L2LR8YW1baHw=;
+        b=sqNUAd2Dm1YfyVV/nLWyJtyivfy8bbgxirvjKm2F/J2FfYxKiBg7DqfvbXTr7Rb4Ub
+         d/zISk1H1AroPmcQDmZ5KBi46FQfuKogO07cZDk8rCF9PgfP/J9CEK9H/IeVj4irEaCR
+         YhHstDiY+u28LsF+hrSKcqG8rVsfgNRe0iIEJNeX1rMwzdYVIIpMAIOoj/ENK1Q2HOGc
+         0OQ1WMlTx3S3ZddXLF5lrgBKpXkttdSNA7Eakvie/OvgQiJzoYwupOQmNuVAD9qjr+za
+         ke1jTLKIMJ8hg6IA18eZKG6gVvaMtCOy9kExVtsMw5jSH1pt3SjfVhcJ0xPxclb7Gt3s
+         7uHg==
+X-Gm-Message-State: AOAM530paMmHuk995wZKZ1K4Jd00MleHKECYSfwJGovOJJA0dJ7xJ7G3
+        Jtn8MV4wT9abuTInBSumxeSzrquJK9bDuIccMzs=
+X-Google-Smtp-Source: ABdhPJxNu9eO7mTH0mGGXSBUX+pHhpC3Y7C+1R14VEol1GHJTWqG0895N1899gpoMkuMBWuAuLq2FhQU6yyKFPNSCUs=
+X-Received: by 2002:a81:db05:0:b0:2ea:2b92:c317 with SMTP id
+ u5-20020a81db05000000b002ea2b92c317mr2688217ywm.329.1649953937497; Thu, 14
+ Apr 2022 09:32:17 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 738447c1-24bd-4a51-f9cd-08da1e343350
-X-MS-TrafficTypeDiagnostic: BN6PR11MB1443:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-Microsoft-Antispam-PRVS: <BN6PR11MB1443274B5DB83621E7B4E341F8EF9@BN6PR11MB1443.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jZ42umtCbcDBvNu6fogYXKJ65HqfHgYLePQaRywkq8INXBu92NqZ+0R26MEfxfzKCY3QDhwF0C1z0Q8T1WL6fXhp4aXPRgzu8DpyheoKkwm3v0UUEO6a6GgEddjWNHnnlLznaSOpYXa+UJzV9evD1G/oG/61NtmJ3syuhtOzK0eY4fI4GInyyed5UejJ1FKXGeSWIWEfsyJoBFefa+S3gC5Jz79T/wHeqlE8GoXWxeqYw8BZdovt8/m9zjUu1G8oVMqmF7QgobddJwbaxCJUg9Ey3Iu0Zq4il2PIfeO+RtxEN1vgbmofKVS2BBLptzV+NuccoIQPwjLK9iYKhWZTN8aEmLKEshuq5GUSgo3mvAVyaVaTeh1qJa6xDBm9bsWq4yuAKp317THYaAH2ZjR3xnris56hOLdqXfshYw/eEvscdLmii911l3A1CYFEm/0wzUzqILJtBH7UeibXZQTWDBGF/tgZqRX37nsZFKkjmZdfeeaWlTXQI8KQq5s4zhlvGS7DHg2m5gimpKZqquUlKzk2W/oVtAkxa2Ic8OC2lvYfrWbAI+a92/pgv5xwUbrPbHDnS2mxtQ9GRxkjYfusNF+sWfhsPLPdFmUXRigEWYyrtlD5AYl/XUaHZ/tyqPnNGyWthKdORkWOWYbZtiBwCXC2AxQSA+obHqP1NllV/IooC6tMiaFVTDRFevi/Cblt2pMS7Jj2VTaZYtGWbfaSN9QSw79D/R3jWYC/LYNqZOD9jaf+sep9ZQpl7y19oqF6
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR11MB5744.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(4326008)(8676002)(5660300002)(6666004)(66476007)(66946007)(86362001)(31696002)(66556008)(186003)(2616005)(36756003)(83380400001)(8936002)(31686004)(44832011)(7416002)(2906002)(921005)(26005)(53546011)(6506007)(82960400001)(316002)(38100700002)(6486002)(508600001)(6512007)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Y3FxK0FkQ1lQY2dnYllGWG1PTU9YMmxnTGE3dU9NUVNmNzJ6ZTMxRllySERk?=
- =?utf-8?B?eWtzcmRRY205NWNtQjNLSEZHQVFPREh5WU1Zd2dsZXhaeG5PRnAwVVVMRVZZ?=
- =?utf-8?B?UE8wamZMbjE3eCt1SWVLQ1F2b2M4eXF4NTRZWUVYd2IyYzFhK3p5Y2hVaG1o?=
- =?utf-8?B?V2dFcmdrVjlhZXJOQVdiNzVjaWlJL05Xc3VaK1ZYalJicC9RdVNjcnU0L3Ux?=
- =?utf-8?B?Tk9vRWZxeTAwNU5jTGU4V245M0FSS0hiM05pdGE4clg0bFV1RTgzckZmZHNr?=
- =?utf-8?B?NWJuejNwU2N6dHp1bk9JTVdhbWpvaHZ2cVVBRmRpUkkzU1pCTmJkbWFseDBC?=
- =?utf-8?B?cFlPbHVSVE9QSVRwd2lJZnBLZ2RnbW1KdGFuZkZ0WkNidm1pOXU3S2ZVRGtM?=
- =?utf-8?B?UmNwaEUvNEQ3aGVGTk8yR3IzQkkyV0lpejZUa1dJeU9taGYrMCtwei9xR21E?=
- =?utf-8?B?aWNjQjdWaVNEOHZCc2szZmFxaFpRbGROSm5kRHM2Z3FvTnVTZG1KN1pWVXl5?=
- =?utf-8?B?Q0FNU1B1czhGN1lSVDlUeGMySlh4RmpLZVFuSlFyRzd5ZGhkODlFRERTc0NV?=
- =?utf-8?B?QlcxU0VrWE1yaFpHT0NGdlYzSGI5UTFqWXBTNGcrZVdoMHlqT3FCREN6WE5Z?=
- =?utf-8?B?ZFR1VzFEYlQ1MUdWdytFVHA5cHdya1d4S04zTTZudnhuaU52dmt3RTBOeFlX?=
- =?utf-8?B?bzh4WlZjWjYrK0JCR3BxUUhkZEFUeEZFSG9qK2JCR3ZuWXQ1dG9uU2V6S2Ji?=
- =?utf-8?B?emtmS0pWTTVkb2tDOCtiSEVOZUhBdDRuWDJ0aTBzUitKWFJXeDFZblA2SWZM?=
- =?utf-8?B?ZWtraXpDdTlWOVR1OUJ2RTB4VkQrclRwQ3dNaGo1em94dGZBV0xZcmVjNm1i?=
- =?utf-8?B?ZytSbjJvbUNoemd5T2lDQWQ4WjJKd3VBM0JHZ0pQNVFJcHJtWWRBM2c5bGJj?=
- =?utf-8?B?cTJLVU5RclpEYkpIbm5NWW8yaGdpdVcxelB0R29vZXM0bVRob0NpTkpBRERL?=
- =?utf-8?B?MVArSldPYWRlMm4xOXVwN1EzTEdYaHk1eUlRN3ZoU1krVGtWS09uZGFzczNw?=
- =?utf-8?B?OGl1OWpRQ1c5emk2T3Yrd21IYS81Z3k0bzJsaU9zajArTjlzNmd4ZEJoeC9W?=
- =?utf-8?B?emR0T0JYU3UvRWgwSy9EaWYwRVIzMkFvRHd4MUlDaldmSXcxRTBWN0dFMWR6?=
- =?utf-8?B?dDF4NTA1dXYzemNUNmtrNm9pQUtzb3VHNDJKMjNKUUU5czNCTUUvbnp1enQv?=
- =?utf-8?B?OE5xZVNIZlZSTDJGZ3hwQjJQZnJWeVN1QnYvY3BmUU55Tk5nc3lMakpSNTBB?=
- =?utf-8?B?ckkvQUZHMm56allqN0hMUGh0VVh4ZDFwYlI5SjFYUDhLUGZXdkpUV1VqMzRW?=
- =?utf-8?B?dG5Yb2l4MjVXajNUV2QxQ0JRcCtiT3QzUTNrM1lXTHU1aC9wS2c2blZETE9s?=
- =?utf-8?B?M0lCTmhtNzFqb0RFUCtWOUxHbjAvaTdTeTJ1UlUrZCtDWHBjTnNZNlNHUkFl?=
- =?utf-8?B?Q1dqbGdhaFViUHFZT3I2VmhVSHlFVjBZbVAvWnFXSTNYaklvSkxkd1JMYUNy?=
- =?utf-8?B?SWdtdnRZZTJXZ0FaRnlTcVZWUFpndVVpT0tOTXRKYmhLRXRuM3g3MWtIN201?=
- =?utf-8?B?Uk1xWlJiSGZaN2tmMXZzZ3ZRT08wQkN2M1pxU1lQaVhkaUZ0R1E4RmlFa0ZT?=
- =?utf-8?B?NnRWMWxoQWpmdmtlZm5SQUw3MUxOYk5IWTgvdG1oV01QSGFFM3BJaktPL29G?=
- =?utf-8?B?YjF4K01jMmQ4VlQ4OHdxeERaaTlZVkxrWDhIa1lrcklJTzN1Njhya3RhL0J3?=
- =?utf-8?B?MThzenl2TWZlRjlWZWhJd3RGek1jcmU0OFVkV3ZGanFaTG1qN3FRMTVOSXBu?=
- =?utf-8?B?MXpPdGlWRldDUEI2bG9DcUd4M2I1ejZ1QXhORVpmTTdNYXF5eG81WExDOTZ4?=
- =?utf-8?B?VUNiajZVZWR3SmtjUWZraEZXaFNiWGRFK0I3MXBLMWNRcjdwa2I4aWN4RXpJ?=
- =?utf-8?B?S0Fndm1FeEl3M1VEaFJyT2FZeUNaOEpQUHFCK1NyQ2xNcVFHblNMdUJhS2Ju?=
- =?utf-8?B?Uko3UVcyMEw1VlpuUW1yZUFCZ2JhTnMxNHZ2RUphd3oyNXFpMWsxcHRQR1BB?=
- =?utf-8?B?eVZtaUZGVVI4YmdtZEMwRndRa3c4QmZkNEY0eHlGdUpQV2hwcUNSSmZjOEwy?=
- =?utf-8?B?cVlxQjV5cUg4RXFPR0dVaDZ6R3JOTldiWWFSU21DQmFWSlMwNXNmbWZVeDBn?=
- =?utf-8?B?RHZVS25MbVVQYSszcW44QmkyYVZsUm51aTQ0Q2x2dFhQZ1ZiTXhhckRtdGN5?=
- =?utf-8?B?dkNJazM2VUw4OS9EY3RkTFVsV0RydjNsOE5VVFNnT3ZLc05lS0ZId094TzZK?=
- =?utf-8?Q?N7VVUC0N1DrsB20I=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 738447c1-24bd-4a51-f9cd-08da1e343350
-X-MS-Exchange-CrossTenant-AuthSource: BN0PR11MB5744.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2022 16:31:17.6611
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SZFDQ1yocMmnK/6vHZp4h7sPoe9+eKmbePPnhOBtDLDaSRk+neX4AC2l5jsy+IJqf/fOMOihXUZjP/SSPb88jC0pqqMUy17loyPQEuDkfv0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1443
-X-OriginatorOrg: intel.com
+References: <20220330132152.4568-1-jiangshanlai@gmail.com> <20220330132152.4568-3-jiangshanlai@gmail.com>
+ <YlXvtMqWpyM9Bjox@google.com> <caffa434-5644-ee73-1636-45a87517bae2@redhat.com>
+ <YlbhVov4cvM26FnC@google.com> <d2122fb0-7327-0490-9077-c69bbfba4830@redhat.com>
+ <YlbtEorfabzkRucF@google.com> <e549d4c4-ca56-da1d-cc50-1a73621ba487@redhat.com>
+ <YlhC86CFDRghdd5v@google.com>
+In-Reply-To: <YlhC86CFDRghdd5v@google.com>
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+Date:   Fri, 15 Apr 2022 00:32:05 +0800
+Message-ID: <CAJhGHyB642oXE71Sk_NFSgUeeNfk7nkB3zkKugp-iE1z6dEy6Q@mail.gmail.com>
+Subject: Re: [RFC PATCH V3 2/4] KVM: X86: Introduce role.glevel for level
+ expanded pagetable
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
+        linux-doc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jarkko,
+On Thu, Apr 14, 2022 at 11:51 PM Sean Christopherson <seanjc@google.com> wrote:
+>
+> On Wed, Apr 13, 2022, Paolo Bonzini wrote:
+> > On 4/13/22 17:32, Sean Christopherson wrote:
+> > > > > Are we planning on removing direct?
+> > > >
+> > > > I think so, it's redundant and the code almost always checks
+> > > > direct||passthrough (which would be passthrough_delta > 0 with your scheme).
+> > >
+> > > I'm ok dropping direct and rolling it into target_level, just so long as we add
+> > > helpers, e.g. IIUC they would be
+> > >
+> > > static inline bool is_sp_direct(...)
+> > > {
+> > >     return !sp->role.target_level;
+> > > }
+> > >
+> > > static inline bool is_sp_direct_or_passthrough(...)
+> > > {
+> > >     return sp->role.target_level != sp->role.level;
+> > > }
+> >
+> > Yes of course.  Or respectively:
+> >
+> >       return sp->role.passthrough_levels == s->role.level;
+> >
+> >       return sp->role.passthrough_levels > 0;
+> >
+> > I'm not sure about a more concise name for the latter.  Maybe
+> > sp_has_gpt(...) but I haven't thought it through very much.
+> >
+> > > > > Hmm, it's not a raw level though.
+> > > >
+> > > > Hence the plural. :)
+> > >
+> > > LOL, I honestly thought that was a typo.  Making it plural sounds like it's passing
+> > > through to multiple levels.
+> >
+> > I meant it as number of levels being passed through.  I'll leave that to
+> > Jiangshan, either target_level or passthrough_levels will do for me.
+>
+> It took me until like 9pm last night to finally understand what you meant by
+> "passthrough level".   Now that I actually have my head wrapped around this...
+>
+> Stepping back, "glevel" and any of its derivations is actually just a combination
+> of CR0.PG, CR4.PAE, EFER.LMA, and CR4.LA57.  And "has_4_byte_gpte" is CR0.PG && !CR4.PAE.
+> When running with !tdp_enabled, CR0.PG is tracked by "direct".  And with TDP enabled,
+> CR0.PG is either a don't care (L1 or nested EPT), or is guaranteed to be '1' (nested NPT).
 
-On 4/14/2022 4:19 AM, Jarkko Sakkinen wrote:
-> On Thu, 2022-04-14 at 14:19 +0300, Jarkko Sakkinen wrote:
->> On Wed, 2022-04-13 at 14:10 -0700, Reinette Chatre wrote:
->>> In the initial (SGX1) version of SGX, pages in an enclave need to be
->>> created with permissions that support all usages of the pages, from the
->>> time the enclave is initialized until it is unloaded. For example,
->>> pages used by a JIT compiler or when code needs to otherwise be
->>> relocated need to always have RWX permissions.
->>>
->>> SGX2 includes a new function ENCLS[EMODPR] that is run from the kernel
->>> and can be used to restrict the EPCM permissions of regular enclave
->>> pages within an initialized enclave.
->>>
->>> Introduce ioctl() SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS to support
->>> restricting EPCM permissions. With this ioctl() the user specifies
->>> a page range and the EPCM permissions to be applied to all pages in
->>> the provided range. ENCLS[EMODPR] is run to restrict the EPCM
->>> permissions followed by the ENCLS[ETRACK] flow that will ensure
->>> no cached linear-to-physical address mappings to the changed
->>> pages remain.
->>>
->>> It is possible for the permission change request to fail on any
->>> page within the provided range, either with an error encountered
->>> by the kernel or by the SGX hardware while running
->>> ENCLS[EMODPR]. To support partial success the ioctl() returns an
->>> error code based on failures encountered by the kernel as well
->>> as two result output parameters: one for the number of pages
->>> that were successfully changed and one for the SGX return code.
->>>
->>> The page table entry permissions are not impacted by the EPCM
->>> permission changes. VMAs and PTEs will continue to allow the
->>> maximum vetted permissions determined at the time the pages
->>> are added to the enclave. The SGX error code in a page fault
->>> will indicate if it was an EPCM permission check that prevented
->>> an access attempt.
->>>
->>> No checking is done to ensure that the permissions are actually
->>> being restricted. This is because the enclave may have relaxed
->>> the EPCM permissions from within the enclave without the kernel
->>> knowing. An attempt to relax permissions using this call will
->>> be ignored by the hardware.
->>>
->>> Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
->>
->> Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-> 
-> Also for this:
-> 
-> Tested-by: Jarkko Sakkinen <jarkko@kernel.org>
-> 
+glevel in the patchset is the page level of the corresponding page
+table in the guest, not the level of the guest *root* page table.
 
-Thank you very much.
+role.glevel is initialized as the guest root level, and changed to the
+level of the guest page in kvm_mmu_get_page().
 
-Reinette
+role.glevel is a bad name and is not sufficient to handle other
+purposes like role.pae_root, role.guest_pae_root.
+
+role.root_level is much better.
+
+role.root_level is a combination of CR0.PG, CR4.PAE, EFER.LMA, and
+CR4.LA57 as you said.
+
+
+>
+> So, rather than add yet more synthetic information to the role, what about using
+> the info we already have?  I don't think it changes the number of bits that need to
+> be stored, but I think the result would be easier for people to understand, at
+> least superficially, e.g. "oh, the mode matters, got it".  We'd need a beefy comment
+> to explain the whole "passthrough levels" thing, but I think it the code would be
+> more approachable for most people.
+>
+> If we move efer_lma and cr4_la57 from kvm_mmu_extended_role to kvm_mmu_page_role,
+> and rename has_4_byte_gpte to cr4_pae, then we don't need passthrough_levels.
+> If needed for performance, we could still have a "passthrough" bit, but otherwise
+> detecting a passthrough SP would be
+>
+> static inline bool is_passthrough_sp(struct kvm_mmu_page *sp)
+> {
+>         return !sp->role.direct && sp->role.level > role_to_root_level(sp->role);
+> }
+>
+> where role_to_root_level() is extracted from kvm_calc_cpu_role() is Paolo's series.
+>
+
+I'm going to add
+
+static inline bool sp_has_gpte(struct kvm_mmu_page *sp)
+{
+   return !sp->role.direct && (
+
+   /* passthrough */
+   sp->role.level > role_to_root_level(sp->role) ||
+
+   /* guest pae root */
+   (sp->role.level == 3 && role_to_root_level(sp->role) == 3)
+
+   );
+}
+
+And rename for_each_gfn_indirect_valid_sp() to
+for_each_gfn_valid_sp_has_gpte() which use sp_has_gpte() instead.
+
+I'm not objecting using efer_lma and cr4_la57. But I think role.root_level
+is more convenient than role_to_root_level(sp->role).
+
+cr4_pae, efer_lma and cr4_la57 are more natrual than has_4_byte_gpte
+and root_level.
