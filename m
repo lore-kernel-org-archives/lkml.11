@@ -2,154 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AAC8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C4E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:01:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242118AbiDNRDh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51440 "EHLO
+        id S242876AbiDNREB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 13:04:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244405AbiDNRCg (ORCPT
+        with ESMTP id S243675AbiDNRDU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:02:36 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BA4646D;
-        Thu, 14 Apr 2022 09:38:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1649954254; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=Efq3hAgZ3JW72GIjcSqmPNhOXvfV0qLZnaUMdx5YXtI6lHY9j8oOWB71TPPFwpF05yK0MoXU18FA3hyw0Qeikt9BTCBKfOhYtY9EhkawPzO2Le9P5ebktcpAd1vdiX0LLhrTG9olKbj2bHm56lrrLTHNHq3tZNOvZF7y1VTXvZE=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1649954254; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=M6x4pm1vbOy3um3QdMOsMA8jgAP9SJyU0JGvXSzrgKQ=; 
-        b=kZoXga6nOdc/2RaQbkfLKPCXZnNpumUj8B6d9pGc2EU3sA+UFU64Lar9dQW2sUkvAKzk5KnkBp8PJzL5ONxgQ6ngpK/INUMhAHl3rI2CRVmGB0a6uGc44Whj8b8YH1wa7+QLf1Aqk+8DnIWTW41FMEhT2VyBvLw3qAiLi59ZK44=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1649954254;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=M6x4pm1vbOy3um3QdMOsMA8jgAP9SJyU0JGvXSzrgKQ=;
-        b=SkCb1ICmhSpTm8ptaGnPJ2s4AbmDHUPiDTmCtBRWilsQZHMDL0wMv2RjWabWCO6H
-        QPyJ+f8aOObEv84FgwlyK3oFzu6myK1zrK7RY47vf8yyQlx4yEAYIytsTo+6mJzdhy+
-        KIbGxLC1o1pf0CFHsBAwJZPzLFSltPjep3Rltn3Y=
-Received: from [10.10.10.3] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1649954252283729.6912314444173; Thu, 14 Apr 2022 09:37:32 -0700 (PDT)
-Message-ID: <87c9bf7e-f290-7d38-0844-7a7243688f5a@arinc9.com>
-Date:   Thu, 14 Apr 2022 19:37:25 +0300
+        Thu, 14 Apr 2022 13:03:20 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9773A49F99
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:39:52 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id 21so7125637edv.1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:39:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nYg934FepxhPHJYVYrZutxuJmtuv3DcX7+LrwvmwUiI=;
+        b=eGFM3ztMn9Emo9AjWCLBFf6FEEMtubNIu4UVefX1GeJ26mF6dhm/kQWOM5JylyVuYl
+         AHn+lsZ0Yi4quPDxF8v/hLAKDCzF3fDmkLwshBHfrSsZIyCpo3q5P97DH5qN01gnoVSV
+         2s/CAcL2joy6KFQjXDYCrSGLKApreqzCGzpJc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nYg934FepxhPHJYVYrZutxuJmtuv3DcX7+LrwvmwUiI=;
+        b=43lHCE7vKusTm/XsEK4HZo4anLK+8bnJXeM0eqxvxPYvmLk04Kj7/TECvZvClWtr4U
+         2846OSqeV8uHPnEcLDuUjtz/ASDniHKZd7fSxBsUoes3IBTkhG65GQTvK0V6oUO254bT
+         4khY9XkwA/fRJSVXow2+M3V9kO0FU59EWvddsYzWjUq+mTVQignCMXbeyIJmZHLNQ/Ay
+         A+FMYx/ssoSRUVsyixh92wQVhTx6QGjtzbnEP0+rh17OPhbx0CZ/fTk3VuSZnma1RKR/
+         ETXBRg9mjAfOx21UkOOlCEBZL5NWYqbg3Nvw6OiQbjxd5ruj3NcEz8u6hcfSNpHb3MoK
+         o8Mg==
+X-Gm-Message-State: AOAM531e5pThMXKC1OF7fIHWGZP+/LGKRoIDTZPS7gYh0x+l+APFHRUX
+        ZJM4EA3dRSNmq/3iHs5kPcU8A4DZ5kK9ZpPL
+X-Google-Smtp-Source: ABdhPJw6WShDi03suRIWIAIHP/pm9U+3Ino57J7025v9wvk84pLDuD+bu3zoMffy4ZtSCb8MagDu5Q==
+X-Received: by 2002:a05:6402:1707:b0:41d:9794:6421 with SMTP id y7-20020a056402170700b0041d97946421mr3883033edu.212.1649954390887;
+        Thu, 14 Apr 2022 09:39:50 -0700 (PDT)
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
+        by smtp.gmail.com with ESMTPSA id f2-20020a50e082000000b0041df731649asm1240677edl.60.2022.04.14.09.39.49
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 09:39:49 -0700 (PDT)
+Received: by mail-wm1-f45.google.com with SMTP id ay11-20020a05600c1e0b00b0038eb92fa965so6329059wmb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:39:49 -0700 (PDT)
+X-Received: by 2002:a05:600c:502b:b0:38f:f7c6:3609 with SMTP id
+ n43-20020a05600c502b00b0038ff7c63609mr3225672wmr.15.1649954388394; Thu, 14
+ Apr 2022 09:39:48 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 10/14] dt-bindings: pinctrl: rt2880: fix binding name, pin
- groups and functions
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        erkin.bozoglu@xeront.com, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-References: <20220413060729.27639-1-arinc.unal@arinc9.com>
- <20220413060729.27639-11-arinc.unal@arinc9.com>
- <ba7cd13f-d216-0ac6-97e1-6c13f1e15f38@linaro.org>
- <550b20f2-098e-0f25-ad9f-3ff523879cb7@arinc9.com>
- <YlhJGerakzbsXwnv@robh.at.kernel.org>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <YlhJGerakzbsXwnv@robh.at.kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+References: <1649938766-6768-1-git-send-email-quic_sbillaka@quicinc.com> <1649938766-6768-3-git-send-email-quic_sbillaka@quicinc.com>
+In-Reply-To: <1649938766-6768-3-git-send-email-quic_sbillaka@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 14 Apr 2022 09:39:36 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=Uc+qVKH7fAkqtB+Y_jHpWXy5tOABRCN=8TH1bibAp+8Q@mail.gmail.com>
+Message-ID: <CAD=FV=Uc+qVKH7fAkqtB+Y_jHpWXy5tOABRCN=8TH1bibAp+8Q@mail.gmail.com>
+Subject: Re: [PATCH v7 2/4] drm/msm/dp: Support only IRQ_HPD and REPLUG
+ interrupts for eDP
+To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        quic_vproddut <quic_vproddut@quicinc.com>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        Steev Klimaszewski <steev@kali.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/04/2022 19:17, Rob Herring wrote:
-> On Thu, Apr 14, 2022 at 11:34:31AM +0300, Arınç ÜNAL wrote:
->> On 13/04/2022 18:25, Krzysztof Kozlowski wrote:
->>> On 13/04/2022 08:07, Arınç ÜNAL wrote:
->>>> Change binding name from ralink,rt2880-pinmux to ralink,rt2880-pinctrl.
->>>> This is the binding for the Ralink RT2880 pinctrl subdriver.
->>>
->>> What I don't see here is why you are doing this. pinmux/pinctrl have the
->>> same meaning, I guess?
->>
->> What I understand is pinmux is rather a specific term for the muxing of pins
->> or pin groups. Pinctrl is what we prefer here since the term is more
->> inclusive of what the subdriver does: controlling pins. Any mediatek
->> driver/subdriver is called pinctrl so I'm not doing something uncommon.
-> 
-> The correct name is really whatever the h/w block is called, not
-> whatever we've come up with for some class of devices.
-> 
->>
->>>
->>>>
->>>> Current pin group and function bindings are for MT7621. Put bindings for
->>>> RT2880 instead.
->>>>
->>>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->>>> ---
->>>>    ...pinmux.yaml => ralink,rt2880-pinctrl.yaml} | 24 +++++++++----------
->>>>    1 file changed, 12 insertions(+), 12 deletions(-)
->>>>    rename Documentation/devicetree/bindings/pinctrl/{ralink,rt2880-pinmux.yaml => ralink,rt2880-pinctrl.yaml} (56%)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/pinctrl/ralink,rt2880-pinmux.yaml b/Documentation/devicetree/bindings/pinctrl/ralink,rt2880-pinctrl.yaml
->>>> similarity index 56%
->>>> rename from Documentation/devicetree/bindings/pinctrl/ralink,rt2880-pinmux.yaml
->>>> rename to Documentation/devicetree/bindings/pinctrl/ralink,rt2880-pinctrl.yaml
->>>> index 9de8b0c075e2..c657bbf9fdda 100644
->>>> --- a/Documentation/devicetree/bindings/pinctrl/ralink,rt2880-pinmux.yaml
->>>> +++ b/Documentation/devicetree/bindings/pinctrl/ralink,rt2880-pinctrl.yaml
->>>> @@ -1,21 +1,23 @@
->>>>    # SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->>>>    %YAML 1.2
->>>>    ---
->>>> -$id: http://devicetree.org/schemas/pinctrl/ralink,rt2880-pinmux.yaml#
->>>> +$id: http://devicetree.org/schemas/pinctrl/ralink,rt2880-pinctrl.yaml#
->>>>    $schema: http://devicetree.org/meta-schemas/core.yaml#
->>>> -title: Ralink rt2880 pinmux controller
->>>> +title: Ralink RT2880 Pin Controller
->>>>    maintainers:
->>>> +  - Arınç ÜNAL <arinc.unal@arinc9.com>
->>>
->>> Mention this in commit msg.
->>
->> Will do.
->>
->>>
->>>>      - Sergio Paracuellos <sergio.paracuellos@gmail.com>
->>>>    description:
->>>> -  The rt2880 pinmux can only set the muxing of pin groups. Muxing indiviual pins
->>>> +  Ralink RT2880 pin controller for RT2880 SoC.
->>>> +  The pin controller can only set the muxing of pin groups. Muxing indiviual pins
->>>>      is not supported. There is no pinconf support.
->>>>    properties:
->>>>      compatible:
->>>> -    const: ralink,rt2880-pinmux
->>>> +    const: ralink,rt2880-pinctrl
->>>
->>> you need to deprecate old property and add a new one.
->>
->> Do we really have to? That property name was inaccurate from the start. I
->> don't see a reason to keep it being referred to on the binding.
-> 
-> It's an ABI. There are exceptions, but you've got to spell out the
-> reasoning in the commit message.
+Hi,
 
-Oh, I thought by deprecating, I was supposed to keep the old one on the 
-YAML binding. I'll properly explain the reason in the commit message.
+On Thu, Apr 14, 2022 at 5:20 AM Sankeerth Billakanti
+<quic_sbillaka@quicinc.com> wrote:
+>
+> The panel-edp enables the eDP panel power during probe, get_modes
+> and enable.
 
-> 
-> Really, who cares. It's just a unique identifier. Unless you also had a
-> h/w block called 'pinmux' in addition to a 'pinctrl' block it doesn't
-> matter. We could use just GUIDs instead.
+Technically the panel-edp powers on the panel in pre_enable()
 
-Understood, thanks Rob!
 
-Arınç
+> The eDP connect and disconnect interrupts for the eDP/DP
+> controller are directly dependent on panel power. As eDP display can be
+> assumed as always connected, the controller driver can skip the eDP
+> connect and disconnect interrupts. Any disruption in the link status
+> will be indicated via the IRQ_HPD interrupts.
+>
+> So, the eDP controller driver can just enable the IRQ_HPD and replug
+> interrupts. The DP controller driver still needs to enable all the
+> interrupts.
+>
+> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+> ---
+>
+> Changes in v7:
+>   - reordered the patch in the series
+>   - modified the return statement for isr
+>   - connector check modified to just check for eDP
+>
+>  drivers/gpu/drm/msm/dp/dp_catalog.c |  9 +++------
+>  drivers/gpu/drm/msm/dp/dp_display.c | 22 +++++++++++++++++++++-
+>  2 files changed, 24 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
+> index fac815f..07f2389 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_catalog.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
+> @@ -569,10 +569,6 @@ void dp_catalog_ctrl_hpd_config(struct dp_catalog *dp_catalog)
+>
+>         u32 reftimer = dp_read_aux(catalog, REG_DP_DP_HPD_REFTIMER);
+>
+> -       /* enable HPD plug and unplug interrupts */
+> -       dp_catalog_hpd_config_intr(dp_catalog,
+> -               DP_DP_HPD_PLUG_INT_MASK | DP_DP_HPD_UNPLUG_INT_MASK, true);
+> -
+>         /* Configure REFTIMER and enable it */
+>         reftimer |= DP_DP_HPD_REFTIMER_ENABLE;
+>         dp_write_aux(catalog, REG_DP_DP_HPD_REFTIMER, reftimer);
+> @@ -599,13 +595,14 @@ u32 dp_catalog_hpd_get_intr_status(struct dp_catalog *dp_catalog)
+>  {
+>         struct dp_catalog_private *catalog = container_of(dp_catalog,
+>                                 struct dp_catalog_private, dp_catalog);
+> -       int isr = 0;
+> +       int isr, mask;
+>
+>         isr = dp_read_aux(catalog, REG_DP_DP_HPD_INT_STATUS);
+>         dp_write_aux(catalog, REG_DP_DP_HPD_INT_ACK,
+>                                  (isr & DP_DP_HPD_INT_MASK));
+> +       mask = dp_read_aux(catalog, REG_DP_DP_HPD_INT_MASK);
+>
+> -       return isr;
+> +       return isr & (mask | ~DP_DP_HPD_INT_MASK);
+
+Please add a comment above this explaining what the goal of the above
+statement is. I guess it's something like this, though you might want
+to modify it to remove snark and insert the real reason unless you
+like being snarky:
+
+  /*
+   * Report the raw status of all interrupts (AKA we still report the
+   * interrupt as asserted even if it's masked) _except_ for HPD-related.
+   * interrupts. We only report HPD-related interrupts if they're
+   * unmasked. We do it this way because we thought it would be extra
+   * confusing for readers of this code and we were bribed by Mordac to
+   * confuse you.  OK, maybe that's not true. We actually do it this way
+   * because of <insert your compelling reason here>.
+   */
+
+Along the same lines as my comments in patch #1, I don't have a great
+feel for exactly when the various HPD bits are enabled / disabled and
+it feels like it need to be made super obvious / well documented. That
+being said, I'd be OK w/ that happening in the proposed cleanup.
+
+
+-Doug
