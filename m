@@ -2,102 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED996C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 23:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA58C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 23:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347645AbiDNXeP (ORCPT
+        id S1347114AbiDNXfT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 19:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32866 "EHLO
+        Thu, 14 Apr 2022 19:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347661AbiDNXdy (ORCPT
+        with ESMTP id S237892AbiDNXfR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 19:33:54 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894FAAD132
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:31:23 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id BBE672C03CF;
-        Thu, 14 Apr 2022 23:31:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1649979081;
-        bh=YgP1SqE7JxanVpyL/fogzYYkXKiLRl3c7aan9hD9/9M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i+GL+YkIueZ2/1aLlcyOa1valuRloLGYwUZH4vm2nHKEDIEBO1w5jaCMTRbcsz3tb
-         DT0tmXUX4xeUeF5pca/y1BOjtQm0WDOJkSUCvhSTKkwNo7DLIx7+w+/1QDu4cB/oVT
-         HxDb0kBA5GXa2eKd6fsqlAIVSkcjAewaDy/+cCO4fyzWVgspCVOsKpMV8V06J0sbc/
-         uoU4pRyvFwmV3lyerEPz4552iiAiN+IZZkmZUfey2Xa5YeoOj8B94lrJgtiIV/iVbo
-         23wzMfUflZdbAYBQb1SB8S8bOjAZRqW3XeH0P2FzBeWHUQnIKmeGGJMtMM3yMDUAxa
-         xnuf9XbRr8jyQ==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B6258aec90004>; Fri, 15 Apr 2022 11:31:21 +1200
-Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id 28C7413EE11;
-        Fri, 15 Apr 2022 11:31:21 +1200 (NZST)
-Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id 7AC3F2A2679; Fri, 15 Apr 2022 11:31:16 +1200 (NZST)
-From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
-To:     linus.walleij@linaro.org, robh+dt@kernel.org,
-        catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch,
-        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
-        kostap@marvell.com, robert.marko@sartura.hr
-Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH v4 4/4] arm64: marvell: enable the 98DX2530 pinctrl driver
-Date:   Fri, 15 Apr 2022 11:30:55 +1200
-Message-Id: <20220414233055.586962-5-chris.packham@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220414233055.586962-1-chris.packham@alliedtelesis.co.nz>
-References: <20220414233055.586962-1-chris.packham@alliedtelesis.co.nz>
+        Thu, 14 Apr 2022 19:35:17 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595A4AD125
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:32:51 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id a8so7626052ljq.5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:32:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Sa7u+ZRCHDwKgHlQLbM1vs4Jt2a53sPV1j8OeRq25D8=;
+        b=eglZIE9MXugBNIfsVulolUvIIy8x+cjwaIDOUhzKbQivLhVwRamN5vM+bF4TeAuN5W
+         K12uHIOCK7sGxGm+PUsF6/cUldQ+eDw7biDzolA0vbKfaF0aFR2xzUnniUfH1LQTu2R1
+         vAf2hqcuUX7GHVmi3S2z8la2ROdTYKQsPich8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Sa7u+ZRCHDwKgHlQLbM1vs4Jt2a53sPV1j8OeRq25D8=;
+        b=ppj3pfzDUxep4Nule4PitjORfLTzLndDByTkRc8YHY0oRbOifbgI091W0EgXh+XLYL
+         H/23/waNJzpH7v+GGcYwn7C4c+G4phXhLdzrjtxMGjAD0CRi/zAUH8Hg6fxuSlcBTzZ1
+         mxNtw4XtRiS8V6epCA9GlHM7ACahEI2gWFzwbrIiegH+ccVOaOZjAq2/3Yfwy2/2LB7m
+         Oeb3lYQeZdhWg8D4YHub2DVH8hW9kQtlg9b+We+tP1DofAfMeLufjcte6S8iDx8d9hs1
+         eSNkiAs3SNQI3Hxky2lZ7x6blLFTLra+LUtT6W0aE+Ol/JT/QICRXNEdaQl93E5r/c3i
+         OxdQ==
+X-Gm-Message-State: AOAM530srIQSyNJ4e2IE6GOo6Hu8FxvU2t95G1rBGEMn19hdJalxExi7
+        8OMU85Qd9Liubed7LLKTH/j0U9+GKgKHL5Nx
+X-Google-Smtp-Source: ABdhPJysjVQCVLyVQUjeCyk9Ps5JbfS2ihlsmWefNz3Zoqe+jvxV3HhpTeQbbHi9GlYAMgbHUb7ubQ==
+X-Received: by 2002:a2e:9ad3:0:b0:24b:59a5:ae9 with SMTP id p19-20020a2e9ad3000000b0024b59a50ae9mr2959961ljj.306.1649979169453;
+        Thu, 14 Apr 2022 16:32:49 -0700 (PDT)
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com. [209.85.208.180])
+        by smtp.gmail.com with ESMTPSA id g21-20020a2e9395000000b0024da326f812sm88132ljh.118.2022.04.14.16.32.48
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 16:32:48 -0700 (PDT)
+Received: by mail-lj1-f180.google.com with SMTP id bn33so7858565ljb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:32:48 -0700 (PDT)
+X-Received: by 2002:a2e:a78d:0:b0:24b:62bc:28ab with SMTP id
+ c13-20020a2ea78d000000b0024b62bc28abmr2836956ljf.164.1649979167688; Thu, 14
+ Apr 2022 16:32:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=L59jvNb8 c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=z0gMJWrwH1QA:10 a=XQcNo-tEeLJW46c85tUA:9
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+References: <CAPM=9tzmeDfgQ3VhutQWLcgVhodHJhGmzrjMTB=yvXOhwnw0CA@mail.gmail.com>
+In-Reply-To: <CAPM=9tzmeDfgQ3VhutQWLcgVhodHJhGmzrjMTB=yvXOhwnw0CA@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 14 Apr 2022 16:32:31 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wh2kmGysfLOUHpWZXDEM6oNAQZw9k8pfbQgWg1conE66A@mail.gmail.com>
+Message-ID: <CAHk-=wh2kmGysfLOUHpWZXDEM6oNAQZw9k8pfbQgWg1conE66A@mail.gmail.com>
+Subject: Re: [git pull] drm fixes for 5.18-rc3
+To:     Dave Airlie <airlied@gmail.com>
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit makes sure the drivers for the 98DX2530 pin controller is
-enabled.
+On Thu, Apr 14, 2022 at 2:33 PM Dave Airlie <airlied@gmail.com> wrote:
+>
+>   git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-04-15
 
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
+.. and since I'm  now back home, I can confirm that my boot-time splat
+I saw before is all gone.
 
-Notes:
-    Changes in v4:
-    - None
-    Changes in v3:
-    - Add review from Andrew
-    Changes in v2:
-    - None
+It presumably went away with the previous pull request already, but I
+hadn't remembered to check the issue until this pull reminded me about
+the issue.
 
- arch/arm64/Kconfig.platforms | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
-index 21697449d762..6bbb56901794 100644
---- a/arch/arm64/Kconfig.platforms
-+++ b/arch/arm64/Kconfig.platforms
-@@ -183,11 +183,13 @@ config ARCH_MVEBU
- 	select PINCTRL_ARMADA_37XX
- 	select PINCTRL_ARMADA_AP806
- 	select PINCTRL_ARMADA_CP110
-+	select PINCTRL_AC5
- 	help
- 	  This enables support for Marvell EBU familly, including:
- 	   - Armada 3700 SoC Family
- 	   - Armada 7K SoC Family
- 	   - Armada 8K SoC Family
-+	   - 98DX2530 SoC Family
-=20
- config ARCH_MXC
- 	bool "ARMv8 based NXP i.MX SoC family"
---=20
-2.35.1
-
+Thanks,
+                    Linus
