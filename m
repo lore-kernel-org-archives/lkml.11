@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D4FC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 582BDC433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244747AbiDNN2F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49920 "EHLO
+        id S244541AbiDNN1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244289AbiDNNYc (ORCPT
+        with ESMTP id S244275AbiDNNYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:24:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455B59BB97;
-        Thu, 14 Apr 2022 06:19:11 -0700 (PDT)
+        Thu, 14 Apr 2022 09:24:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0109A9BAE2;
+        Thu, 14 Apr 2022 06:19:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1EF6617B7;
-        Thu, 14 Apr 2022 13:19:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5430C385A1;
-        Thu, 14 Apr 2022 13:19:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9DA0B82986;
+        Thu, 14 Apr 2022 13:19:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5586C385A1;
+        Thu, 14 Apr 2022 13:18:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942350;
-        bh=90CcWk3nvTTg4VQTv/ZjusTYSRCqC48Ds/ZcOUjIAeM=;
+        s=korg; t=1649942339;
+        bh=suKIR3nBMZp01YvKLQQQ+D7fwrZ0GKpKD2JFv8dzE3Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0HouzmPgrGU3sFfB+/RsydjVG4R1t01patAMJ38gcrUC1HC5QlNQ8U/HIgLZjAh11
-         5A+8nb1XT6CrQlBxwlYnX4vbojKv1akSZ/+3mM3HQZ74y9ibvgPR9ovkju2monOQWc
-         wGjMHVVYJ8IpUSer4E16bR/K6eeB8brqme6hRGeo=
+        b=0fuINFSbBzJGWbG3NYa850WCemQMZCYMjvD3dkmiIz9guEIriAzAJIlc71jl+uXpP
+         Z8HzxmyLfBMqFVfLL3RM95Tj379Q4hGrhth9Ydxq9sW3v4i/okv9XSHFE7u2bjI4yT
+         2WbLywSQdtCnoZ+ImBdbHM4drmWsjj1S4ywMnmkc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Borislav Petkov <bp@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 103/338] memory: emif: check the pointer temp in get_device_details()
-Date:   Thu, 14 Apr 2022 15:10:06 +0200
-Message-Id: <20220414110841.833686008@linuxfoundation.org>
+Subject: [PATCH 4.19 099/338] printk: fix return value of printk.devkmsg __setup handler
+Date:   Thu, 14 Apr 2022 15:10:02 +0200
+Message-Id: <20220414110841.715228038@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -49,35 +55,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 5b5ab1bfa1898c6d52936a57c25c5ceba2cb2f87 ]
+[ Upstream commit b665eae7a788c5e2bc10f9ac3c0137aa0ad1fc97 ]
 
-The pointer temp is allocated by devm_kzalloc(), so it should be
-checked for error handling.
+If an invalid option value is used with "printk.devkmsg=<value>",
+it is silently ignored.
+If a valid option value is used, it is honored but the wrong return
+value (0) is used, indicating that the command line option had an
+error and was not handled. This string is not added to init's
+environment strings due to init/main.c::unknown_bootoption()
+checking for a '.' in the boot option string and then considering
+that string to be an "Unused module parameter".
 
-Fixes: 7ec944538dde ("memory: emif: add basic infrastructure for EMIF driver")
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Link: https://lore.kernel.org/r/20220225132552.27894-1-baijiaju1990@gmail.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Print a warning message if a bad option string is used.
+Always return 1 from the __setup handler to indicate that the command
+line option has been handled.
+
+Fixes: 750afe7babd1 ("printk: add kernel parameter to control writes to /dev/kmsg")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/r/20220228220556.23484-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/emif.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/printk/printk.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
-index 8fd97b1b1efb..45f78b38b0da 100644
---- a/drivers/memory/emif.c
-+++ b/drivers/memory/emif.c
-@@ -1425,7 +1425,7 @@ static struct emif_data *__init_or_module get_device_details(
- 	temp	= devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
- 	dev_info = devm_kzalloc(dev, sizeof(*dev_info), GFP_KERNEL);
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 57742e193214..2ba16c426ba5 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -127,8 +127,10 @@ static int __control_devkmsg(char *str)
  
--	if (!emif || !pd || !dev_info) {
-+	if (!emif || !temp || !dev_info) {
- 		dev_err(dev, "%s:%d: allocation error\n", __func__, __LINE__);
- 		goto error;
- 	}
+ static int __init control_devkmsg(char *str)
+ {
+-	if (__control_devkmsg(str) < 0)
++	if (__control_devkmsg(str) < 0) {
++		pr_warn("printk.devkmsg: bad option string '%s'\n", str);
+ 		return 1;
++	}
+ 
+ 	/*
+ 	 * Set sysctl string accordingly:
+@@ -147,7 +149,7 @@ static int __init control_devkmsg(char *str)
+ 	 */
+ 	devkmsg_log |= DEVKMSG_LOG_MASK_LOCK;
+ 
+-	return 0;
++	return 1;
+ }
+ __setup("printk.devkmsg=", control_devkmsg);
+ 
 -- 
 2.34.1
 
