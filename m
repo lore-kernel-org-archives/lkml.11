@@ -2,93 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6D89C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:47:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0135FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346056AbiDNPtw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53110 "EHLO
+        id S236305AbiDNPuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348831AbiDNPkK (ORCPT
+        with ESMTP id S1352538AbiDNPku (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:40:10 -0400
+        Thu, 14 Apr 2022 11:40:50 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 34E9EC31F6
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:18:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8B2FBDA0B3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:20:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649949525;
+        s=mimecast20190719; t=1649949642;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=WebPVtGMXwiaKLP3FU98CAuUa7w60cn7WdQ5x8iGnDU=;
-        b=hop638oHshtLcMgRiSEvvYQgftNraKx5+o8vlYnqxD5I17FiEqiw/BqD/aQAXAelwzqyp8
-        +IzzdR7x6AEezRq4Cv7R6dn0nFakzBYgzpoUFXZYc/jIjLMJLCEzVuS4dUN+9RTSSxW0Wr
-        ktXt5xVU0kbSfTCVRVOCIrmt4h6KHkM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=64iwfqlvvcwkVV5nuqa1Iklmprqi6kfS6cUNegnWB6U=;
+        b=BsV7ZsDn10oGhJQS+UrIw5p9Yx/oC3XrRAflCzFmu1NQFrX38czODAo1VVUc3pcCfSlNnJ
+        RMggM5WAyI+VeX3m8szCEWeMe+uY1RqyHISU6S4s8wrYKMHN29EC+S7IfARug/IDsHGkAh
+        8YXJhIr+VZ0wyRjiJmBCurtQ895Dkog=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-18-sEc2PB6GOKC5B2KpO2xgtg-1; Thu, 14 Apr 2022 11:18:41 -0400
-X-MC-Unique: sEc2PB6GOKC5B2KpO2xgtg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 589AC811E81;
-        Thu, 14 Apr 2022 15:18:40 +0000 (UTC)
-Received: from [10.22.19.30] (unknown [10.22.19.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EE8292166BA3;
-        Thu, 14 Apr 2022 15:18:23 +0000 (UTC)
-Message-ID: <d32d3036-a554-624b-0d3f-247539142273@redhat.com>
-Date:   Thu, 14 Apr 2022 11:18:23 -0400
+ us-mta-12-wCArkRvZNkGAAxr3yJI33Q-1; Thu, 14 Apr 2022 11:20:33 -0400
+X-MC-Unique: wCArkRvZNkGAAxr3yJI33Q-1
+Received: by mail-wm1-f69.google.com with SMTP id i184-20020a1c3bc1000000b0038e4c5968b5so4688018wma.0
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:20:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=64iwfqlvvcwkVV5nuqa1Iklmprqi6kfS6cUNegnWB6U=;
+        b=r3QzJtkwtlpCynphR69h8trOEwW/bqnCtQypGLq37HniJLdLDKMhB1ppZws3C9TwAt
+         u8nixe+bUvowmEi/GlFWemWbUK343JdxLH+taRXo7XvopGesRXe9a5eEfDSuly3gQ79v
+         My6uSNVSyXerkUDJLQxnYBTePqht+F0eJO/Tg67RvbmAvUr+YH8x1LquHFGj2cZYEJP5
+         qeqgg/X0sNrEpo9IP9Ly0OcX8dfcdU4lnAR3g2fNFrB3ELWQ3Bg4HRE9nMn0XsA09npP
+         KQkv3CAJVfSyXi0KTXeO64hwVuzy6pR5El5+K0pJs6s9qQ75bwHLq939lktPcX2Qch4J
+         buYw==
+X-Gm-Message-State: AOAM5321IxjbMonWeHNhZ1yojH4XgfNZVzai+BqDgK49rpPZIbJe2V3z
+        FLVo6GnerQHYj9qgxRYIeTr3Y3cnZlo5TbfZp/vxcmQqBi+8chLgq3TdW/DABwR/1kE22wJf3+r
+        Q2GARXs0mMpx0Nb9edZLmpaTr
+X-Received: by 2002:adf:f44d:0:b0:207:b33f:ea7b with SMTP id f13-20020adff44d000000b00207b33fea7bmr2460565wrp.628.1649949632202;
+        Thu, 14 Apr 2022 08:20:32 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz28lZEMTJTb47EK9BNZSqS459NBUwBeb5BJhEgjG6VLFN5Y0XBH7mSIlwX3WKRvFNLHP3QEw==
+X-Received: by 2002:adf:f44d:0:b0:207:b33f:ea7b with SMTP id f13-20020adff44d000000b00207b33fea7bmr2460559wrp.628.1649949632011;
+        Thu, 14 Apr 2022 08:20:32 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id u1-20020a056000038100b00207a578e9d4sm2054623wrf.89.2022.04.14.08.20.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 08:20:31 -0700 (PDT)
+Message-ID: <f4fa9962-a13f-dcc3-2ac3-e235545072cc@redhat.com>
+Date:   Thu, 14 Apr 2022 17:20:30 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v5] locking/rwsem: Make handoff bit handling more
- consistent
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] kvm: selftests: Fix cut-off of addr_gva2gpa lookup
 Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     john.p.donnelly@oracle.com,
-        chenguanyou <chenguanyou9338@gmail.com>, dave@stgolabs.net,
-        hdanton@sina.com, linux-kernel@vger.kernel.org,
-        mazhenhua@xiaomi.com, mingo@redhat.com, peterz@infradead.org,
-        quic_aiquny@quicinc.com, will@kernel.org, sashal@kernel.org,
-        stable@vger.kernel.org
-References: <20211116012912.723980-1-longman@redhat.com>
- <20220214154741.12399-1-chenguanyou@xiaomi.com>
- <3f02975c-1a9d-be20-32cf-f1d8e3dfafcc@oracle.com>
- <e873727e-22db-3330-015d-bd6581a2937a@redhat.com>
- <31178c33-e25c-c3e8-35e2-776b5211200c@oracle.com>
- <161c2e25-3d26-4dd7-d378-d1741f7bcca8@redhat.com>
- <2b6ed542-b3e0-1a87-33ac-d52fc0e0339c@oracle.com>
- <b3620b7b-c66a-65f8-b10b-c3669b2f82ec@redhat.com>
- <Ylf78yGuXdXWugpn@kroah.com>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <Ylf78yGuXdXWugpn@kroah.com>
+To:     Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Ben Gardon <bgardon@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Andrew Jones <drjones@redhat.com>
+References: <20220414010703.72683-1-peterx@redhat.com>
+ <Ylgn/Jw+FMIFqqc0@google.com> <Ylg4Nel3rDpHUzKT@xz-m1.local>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <Ylg4Nel3rDpHUzKT@xz-m1.local>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/14/22 06:48, Greg KH wrote:
-> On Tue, Apr 12, 2022 at 01:04:05PM -0400, Waiman Long wrote:
->> The patch has already been in the tip tree. It may not be easy to add a
->> Fixes tag to it. Anyway, I will encourage stable tree maintainer to take it
->> as it does fix a problem as shown in your test.
-> I have no idea what you want me to do here.  Please be explicit...
->
-I would like the stable trees to include commit 1ee326196c66 
-("locking/rwsem: Always try to wake waiters in out_nolock path") after 
-it is merged into the mainline in the v5.19 merge window. It should be 
-applied to the stable trees that have incorporated the backport of 
-commit d257cc8cb8d5 ("locking/rwsem: Make handoff bit handling more 
-consistent") since this commit seems to make the missed wakeup problem 
-easier to show up.
+On 4/14/22 17:05, Peter Xu wrote:
+> 
+> So sadly it's only gcc that's not working properly with the bitfields.. at
+> least in my minimum test here.
 
-Cheers,
-Longman
+Apparently both behaviors are allowed.
 
-
+Paolo
 
