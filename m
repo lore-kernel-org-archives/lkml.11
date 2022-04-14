@@ -2,18 +2,18 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60683C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:41:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61E09C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:41:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235294AbiDNHnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 03:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59246 "EHLO
+        id S240469AbiDNHnq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 03:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240475AbiDNHmc (ORCPT
+        with ESMTP id S240478AbiDNHmc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 03:42:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 40E7456C14
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2FCF240931
         for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:40:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1649922007;
@@ -21,106 +21,101 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=F1yCsxHZou/Mo1AiUvg/mXxT+ZuQee/RSzG0HIGGWL8=;
-        b=RJTpJRqmJ9uyAYV5qReqJUIlpdVakpSHbjwM+2c7yQeaGUnW265uYHo02yR7KxpEUy0o9W
-        RKOjvFj9W1259qdgXe9DmPmLZxGQNeoHBdlldX51sFalXOhl0Y8wHiGHEiIFa5QOo8+HBm
-        cuT+zfHPj2tfTLl1HvLeai2DjE+F+s4=
+        bh=GS5GXdXYcQZI1wo1x5s5S3htNZXur5jE8g9OaqoOCOs=;
+        b=O6KKRAEVdSkPAGJWBznDRZLOPyGbQXiqjd2yBiIaeEym2Dfa4qyXhOlsPR02gQ0NxUiPdO
+        zl9EZULhBFeqrpe+M/ISpr0p7/c4U6rB4oebzsCmtYM9ymJyGw6YYyucocEx7PMp/U8kQD
+        4M6Jrus2sIG1VaEbcWSPDuj/kRzmaHg=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-573-UkSJX4qpPSy2PxcdlNNEbA-1; Thu, 14 Apr 2022 03:40:03 -0400
-X-MC-Unique: UkSJX4qpPSy2PxcdlNNEbA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+ us-mta-616-1dpg4S1vONy91vzehhuyqQ-1; Thu, 14 Apr 2022 03:40:03 -0400
+X-MC-Unique: 1dpg4S1vONy91vzehhuyqQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A7CB2833973;
-        Thu, 14 Apr 2022 07:40:02 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 59AB119705DB;
+        Thu, 14 Apr 2022 07:40:03 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8AEFE41D40E;
-        Thu, 14 Apr 2022 07:40:02 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C6CCC28109;
+        Thu, 14 Apr 2022 07:40:03 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com
-Subject: [PATCH 09/22] KVM: x86/mmu: remove ept_ad field
-Date:   Thu, 14 Apr 2022 03:39:47 -0400
-Message-Id: <20220414074000.31438-10-pbonzini@redhat.com>
+Subject: [PATCH 13/22] KVM: x86/mmu: store shadow EFER.NX in the MMU role
+Date:   Thu, 14 Apr 2022 03:39:51 -0400
+Message-Id: <20220414074000.31438-14-pbonzini@redhat.com>
 In-Reply-To: <20220414074000.31438-1-pbonzini@redhat.com>
 References: <20220414074000.31438-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ept_ad field is used during page walk to determine if the guest PTEs
-have accessed and dirty bits.  In the MMU role, the ad_disabled
-bit represents whether the *shadow* PTEs have the bits, so it
-would be incorrect to replace PT_HAVE_ACCESSED_DIRTY with just
-!mmu->mmu_role.base.ad_disabled.
+Now that the MMU role is separate from the CPU role, it can be a
+truthful description of the format of the shadow pages.  This includes
+whether the shadow pages use the NX bit; so force the efer_nx field
+of the MMU role when TDP is disabled, and remove the hardcoding it in
+the callers of reset_shadow_zero_bits_mask.
 
-However, the similar field in the CPU mode, ad_disabled, is initialized
-correctly: to the opposite value of ept_ad for shadow EPT, and zero
-for non-EPT guest paging modes (which always have A/D bits).  It is
-therefore possible to compute PT_HAVE_ACCESSED_DIRTY from the CPU mode,
-like other page-format fields; it just has to be inverted to account
-for the different polarity.
+In fact, the initialization of reserved SPTE bits can now be made common
+to shadow paging and shadow NPT; move it to shadow_mmu_init_context.
 
-In fact, now that the CPU mode is distinct from the MMU roles, it would
-even be possible to remove PT_HAVE_ACCESSED_DIRTY macro altogether, and
-use !mmu->cpu_role.base.ad_disabled instead.  I am not doing this because
-the macro has a small effect in terms of dead code elimination:
-
-   text	   data	    bss	    dec	    hex
- 103544	  16665	    112	 120321	  1d601    # as of this patch
- 103746	  16665	    112	 120523	  1d6cb    # without PT_HAVE_ACCESSED_DIRTY
-
-Reviewed-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h | 1 -
- arch/x86/kvm/mmu/mmu.c          | 1 -
- arch/x86/kvm/mmu/paging_tmpl.h  | 2 +-
- 3 files changed, 1 insertion(+), 3 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 50edf52a3ef6..a299236cfde5 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -442,7 +442,6 @@ struct kvm_mmu {
- 	union kvm_mmu_role mmu_role;
- 	u8 root_level;
- 	u8 shadow_root_level;
--	u8 ept_ad;
- 	bool direct_map;
- 
- 	/*
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 1ba452df8e67..fddc8a3237b0 100644
+index 92dade92462c..f491d3c47ac8 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4964,7 +4964,6 @@ void kvm_init_shadow_ept_mmu(struct kvm_vcpu *vcpu, bool execonly,
+@@ -4430,16 +4430,6 @@ static inline u64 reserved_hpa_bits(void)
+ static void reset_shadow_zero_bits_mask(struct kvm_vcpu *vcpu,
+ 					struct kvm_mmu *context)
+ {
+-	/*
+-	 * KVM uses NX when TDP is disabled to handle a variety of scenarios,
+-	 * notably for huge SPTEs if iTLB multi-hit mitigation is enabled and
+-	 * to generate correct permissions for CR0.WP=0/CR4.SMEP=1/EFER.NX=0.
+-	 * The iTLB multi-hit workaround can be toggled at any time, so assume
+-	 * NX can be used by any non-nested shadow MMU to avoid having to reset
+-	 * MMU contexts.  Note, KVM forces EFER.NX=1 when TDP is disabled.
+-	 */
+-	bool uses_nx = is_efer_nx(context) || !tdp_enabled;
+-
+ 	/* @amd adds a check on bit of SPTEs, which KVM shouldn't use anyways. */
+ 	bool is_amd = true;
+ 	/* KVM doesn't use 2-level page tables for the shadow MMU. */
+@@ -4451,7 +4441,8 @@ static void reset_shadow_zero_bits_mask(struct kvm_vcpu *vcpu,
  
- 		context->shadow_root_level = level;
+ 	shadow_zero_check = &context->shadow_zero_check;
+ 	__reset_rsvds_bits_mask(shadow_zero_check, reserved_hpa_bits(),
+-				context->shadow_root_level, uses_nx,
++				context->shadow_root_level,
++				context->mmu_role.base.efer_nx,
+ 				guest_can_use_gbpages(vcpu), is_pse, is_amd);
  
--		context->ept_ad = accessed_dirty;
- 		context->page_fault = ept_page_fault;
- 		context->gva_to_gpa = ept_gva_to_gpa;
- 		context->sync_page = ept_sync_page;
-diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index 56544c542d05..298e502286cf 100644
---- a/arch/x86/kvm/mmu/paging_tmpl.h
-+++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -63,7 +63,7 @@
- 	#define PT_LEVEL_BITS PT64_LEVEL_BITS
- 	#define PT_GUEST_DIRTY_SHIFT 9
- 	#define PT_GUEST_ACCESSED_SHIFT 8
--	#define PT_HAVE_ACCESSED_DIRTY(mmu) ((mmu)->ept_ad)
-+	#define PT_HAVE_ACCESSED_DIRTY(mmu) (!(mmu)->cpu_role.base.ad_disabled)
- 	#ifdef CONFIG_X86_64
- 	#define CMPXCHG "cmpxchgq"
- 	#endif
+ 	if (!shadow_me_mask)
+@@ -4815,6 +4806,16 @@ kvm_calc_shadow_mmu_root_page_role(struct kvm_vcpu *vcpu,
+ 	else
+ 		role.base.level = PT64_ROOT_4LEVEL;
+ 
++	/*
++	 * KVM forces EFER.NX=1 when TDP is disabled, reflect it in the MMU role.
++	 * KVM uses NX when TDP is disabled to handle a variety of scenarios,
++	 * notably for huge SPTEs if iTLB multi-hit mitigation is enabled and
++	 * to generate correct permissions for CR0.WP=0/CR4.SMEP=1/EFER.NX=0.
++	 * The iTLB multi-hit workaround can be toggled at any time, so assume
++	 * NX can be used by any non-nested shadow MMU to avoid having to reset
++	 * MMU contexts.
++	 */
++	role.base.efer_nx = true;
+ 	return role;
+ }
+ 
 -- 
 2.31.1
 
