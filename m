@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B718C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A42BC433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353303AbiDNOjg (ORCPT
+        id S1353213AbiDNOjU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:39:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54616 "EHLO
+        Thu, 14 Apr 2022 10:39:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344775AbiDNNoj (ORCPT
+        with ESMTP id S1344609AbiDNNo1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F664377E8;
-        Thu, 14 Apr 2022 06:40:12 -0700 (PDT)
+        Thu, 14 Apr 2022 09:44:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02AFE340EA;
+        Thu, 14 Apr 2022 06:39:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81D6561D7C;
-        Thu, 14 Apr 2022 13:40:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90E9EC385A1;
-        Thu, 14 Apr 2022 13:40:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6736CB8298F;
+        Thu, 14 Apr 2022 13:39:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77BF3C385A1;
+        Thu, 14 Apr 2022 13:39:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943606;
-        bh=QdXZfHMgeqEdDVdRvmXDPY15nbciP81tVpwNi5Hrryg=;
+        s=korg; t=1649943596;
+        bh=Pmy95jZn5haKEEuYNU6AqIskvTvgmt4/onvmm2150WI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RRSM9PPoi0u92WY6OoVO/hLY7pLlU5ZBfuNPKjXzLdHyKSOYJLpNTtpl4LZnjj4xK
-         wng2kunPp34bI1xjq7P9MQWLI0RsmnBywfhx0zw47zxabKZSE50oziuieGVClqoH/V
-         qODVXnAPBD2RX7Ws+s/Z4zx9Oiz2qG4lRBnaEA6I=
+        b=x9OIPpxSW9o1dRR9re3OmigQGZrRw6RCj6yFB3t59yNi5zMFkw/bUaVhKrH3ChlHs
+         L2waA+WSlhIZTw8LkzPZgWOUdoZUoXcFmdOGeOiM+rc/pNDsPQnO37Z4kaTkS65Nw9
+         W9b7tYbgj+4OMQ5aPasrm7QYOZU0C8jWKLDCUWwE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tong Zhang <ztong0001@gmail.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dan Williams <dan.j.williams@intel.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Phil Sutter <n0-1@freewrt.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Daniel Walter <dwalter@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 179/475] dax: make sure inodes are flushed before destroy cache
-Date:   Thu, 14 Apr 2022 15:09:24 +0200
-Message-Id: <20220414110900.144369848@linuxfoundation.org>
+Subject: [PATCH 5.4 211/475] MIPS: RB532: fix return value of __setup handler
+Date:   Thu, 14 Apr 2022 15:09:56 +0200
+Message-Id: <20220414110901.031621999@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,49 +57,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tong Zhang <ztong0001@gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit a7e8de822e0b1979f08767c751f6c8a9c1d4ad86 ]
+[ Upstream commit 8755d57ba1ff910666572fab9e32890e8cc6ed3b ]
 
-A bug can be triggered by following command
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) argument or environment
+strings. Also, error return codes don't mean anything to
+obsolete_checksetup() -- only non-zero (usually 1) or zero.
+So return 1 from setup_kmac().
 
-$ modprobe nd_pmem && modprobe -r nd_pmem
-
-[   10.060014] BUG dax_cache (Not tainted): Objects remaining in dax_cache on __kmem_cache_shutdown()
-[   10.060938] Slab 0x0000000085b729ac objects=9 used=1 fp=0x000000004f5ae469 flags=0x200000000010200(slab|head|node)
-[   10.062433] Call Trace:
-[   10.062673]  dump_stack_lvl+0x34/0x44
-[   10.062865]  slab_err+0x90/0xd0
-[   10.063619]  __kmem_cache_shutdown+0x13b/0x2f0
-[   10.063848]  kmem_cache_destroy+0x4a/0x110
-[   10.064058]  __x64_sys_delete_module+0x265/0x300
-
-This is caused by dax_fs_exit() not flushing inodes before destroy cache.
-To fix this issue, call rcu_barrier() before destroy cache.
-
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220212071111.148575-1-ztong0001@gmail.com
-Fixes: 7b6be8444e0f ("dax: refactor dax-fs into a generic provider of 'struct dax_device' instances")
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Fixes: 9e21c7e40b7e ("MIPS: RB532: Replace parse_mac_addr() with mac_pton().")
+Fixes: 73b4390fb234 ("[MIPS] Routerboard 532: Support for base system")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+From: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: linux-mips@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Phil Sutter <n0-1@freewrt.org>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ralf Baechle <ralf@linux-mips.org>
+Cc: Daniel Walter <dwalter@google.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dax/super.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/mips/rb532/devices.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/dax/super.c b/drivers/dax/super.c
-index 8074e5de815b..5005b92b197d 100644
---- a/drivers/dax/super.c
-+++ b/drivers/dax/super.c
-@@ -691,6 +691,7 @@ static int dax_fs_init(void)
- static void dax_fs_exit(void)
+diff --git a/arch/mips/rb532/devices.c b/arch/mips/rb532/devices.c
+index c9ecf17f8660..74808619fefe 100644
+--- a/arch/mips/rb532/devices.c
++++ b/arch/mips/rb532/devices.c
+@@ -310,11 +310,9 @@ static int __init plat_setup_devices(void)
+ static int __init setup_kmac(char *s)
  {
- 	kern_unmount(dax_mnt);
-+	rcu_barrier();
- 	kmem_cache_destroy(dax_cache);
+ 	printk(KERN_INFO "korina mac = %s\n", s);
+-	if (!mac_pton(s, korina_dev0_data.mac)) {
++	if (!mac_pton(s, korina_dev0_data.mac))
+ 		printk(KERN_ERR "Invalid mac\n");
+-		return -EINVAL;
+-	}
+-	return 0;
++	return 1;
  }
  
+ __setup("kmac=", setup_kmac);
 -- 
 2.34.1
 
