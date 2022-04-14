@@ -2,274 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DB27C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FBE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:22:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242886AbiDNNZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37818 "EHLO
+        id S234985AbiDNNZT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:25:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244229AbiDNNWk (ORCPT
+        with ESMTP id S244212AbiDNNWi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:22:40 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F0F92D33;
-        Thu, 14 Apr 2022 06:18:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649942289; x=1681478289;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=NMZ03U0eg6eBQhOA9m78Pt/d+FZJvd2t8GerBvBRu4c=;
-  b=KiyqWrO5+g01GBkMpftI1Hk8ZyjV3BiAXCFbnHXr09R25bCfB7PUdXYe
-   JOLnSr2BwmYe05KNZ+T+U6Hbu/2BuD/DSxh508/++mrs2a9ICA79fSg23
-   PkOtpYgalWZi4R1VCI5N/uFe4AbYyD6Btgn/h6SpRZy0VjHPbvnQwOgCC
-   mrGrPUHzZjWI4vdRmuL4ySmHnfGS/tR8P3ajZ6FbyJBX3z7zla3Z3m47+
-   OeNBObbmc9+52u1h48ufp+g4CxTKmRgULR+EgEFc5nArsbPx9m/l9uRhL
-   nztiuolg4h4RhWBQXyD5PYwkHMoqOk6p5HVGPH4fjBsoizs4loEYUn4/t
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="260522554"
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="260522554"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:18:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="591188379"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 14 Apr 2022 06:18:07 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 2D62B144; Thu, 14 Apr 2022 16:18:07 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 1/1] iio: imu: bmi160: Make use of device properties
-Date:   Thu, 14 Apr 2022 16:18:04 +0300
-Message-Id: <20220414131804.25227-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 14 Apr 2022 09:22:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F279968C;
+        Thu, 14 Apr 2022 06:18:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2382FB8296D;
+        Thu, 14 Apr 2022 13:18:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81061C385A1;
+        Thu, 14 Apr 2022 13:18:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942283;
+        bh=EnoRi90t2aXVSaNfGJ3GBgBtQ7W53wdXYf2h8PwtT8s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uU2ma198w2r2Bx7mgPhy5wY861sQ1Jay2UpoD47uMezaTk8NbWblrNcc6Xh2upAa6
+         hz7AZuls8kZ4+2CeFz6okH4uI//lVqzhhehYcWo1meQ4YD/ZdwJ7SHq81Y/yIQSHZs
+         wITzp26J4HeCkkJRx/3HQDTIXDTCI8Ck546zgcRA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
+        John Allen <john.allen@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 081/338] crypto: ccp - ccp_dmaengine_unregister release dma channels
+Date:   Thu, 14 Apr 2022 15:09:44 +0200
+Message-Id: <20220414110841.205744426@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the module to be property provider agnostic and allow
-it to be used on non-OF platforms.
+From: Dāvis Mosāns <davispuh@gmail.com>
 
-While at it, reuse temporary device pointer in the same function.
+[ Upstream commit 54cce8ecb9254f971b40a72911c6da403720a2d2 ]
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+ccp_dmaengine_register adds dma_chan->device_node to dma_dev->channels list
+but ccp_dmaengine_unregister didn't remove them.
+That can cause crashes in various dmaengine methods that tries to use dma_dev->channels
+
+Fixes: 58ea8abf4904 ("crypto: ccp - Register the CCP as a DMA...")
+Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
+Acked-by: John Allen <john.allen@amd.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-v2: fixed subject to use proper part number in it
- drivers/iio/imu/bmi160/bmi160_core.c | 27 ++++++---------------------
- drivers/iio/imu/bmi160/bmi160_i2c.c  | 13 ++++++-------
- drivers/iio/imu/bmi160/bmi160_spi.c  | 18 +++++++++++-------
- 3 files changed, 23 insertions(+), 35 deletions(-)
+ drivers/crypto/ccp/ccp-dmaengine.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-index 01336105792e..e7aec56ea136 100644
---- a/drivers/iio/imu/bmi160/bmi160_core.c
-+++ b/drivers/iio/imu/bmi160/bmi160_core.c
-@@ -11,10 +11,9 @@
-  */
- #include <linux/module.h>
- #include <linux/regmap.h>
--#include <linux/acpi.h>
- #include <linux/delay.h>
- #include <linux/irq.h>
--#include <linux/of_irq.h>
-+#include <linux/property.h>
- #include <linux/regulator/consumer.h>
- 
- #include <linux/iio/iio.h>
-@@ -525,17 +524,6 @@ static const struct iio_info bmi160_info = {
- 	.attrs = &bmi160_attrs_group,
- };
- 
--static const char *bmi160_match_acpi_device(struct device *dev)
--{
--	const struct acpi_device_id *id;
--
--	id = acpi_match_device(dev->driver->acpi_match_table, dev);
--	if (!id)
--		return NULL;
--
--	return dev_name(dev);
--}
--
- static int bmi160_write_conf_reg(struct regmap *regmap, unsigned int reg,
- 				 unsigned int mask, unsigned int bits,
- 				 unsigned int write_usleep)
-@@ -647,18 +635,18 @@ int bmi160_enable_irq(struct regmap *regmap, bool enable)
+diff --git a/drivers/crypto/ccp/ccp-dmaengine.c b/drivers/crypto/ccp/ccp-dmaengine.c
+index a83588d6ba72..8209273eb85b 100644
+--- a/drivers/crypto/ccp/ccp-dmaengine.c
++++ b/drivers/crypto/ccp/ccp-dmaengine.c
+@@ -631,6 +631,20 @@ static int ccp_terminate_all(struct dma_chan *dma_chan)
+ 	return 0;
  }
- EXPORT_SYMBOL(bmi160_enable_irq);
  
--static int bmi160_get_irq(struct device_node *of_node, enum bmi160_int_pin *pin)
-+static int bmi160_get_irq(struct fwnode_handle *fwnode, enum bmi160_int_pin *pin)
- {
- 	int irq;
- 
- 	/* Use INT1 if possible, otherwise fall back to INT2. */
--	irq = of_irq_get_byname(of_node, "INT1");
-+	irq = fwnode_irq_get_byname(fwnode, "INT1");
- 	if (irq > 0) {
- 		*pin = BMI160_PIN_INT1;
- 		return irq;
- 	}
- 
--	irq = of_irq_get_byname(of_node, "INT2");
-+	irq = fwnode_irq_get_byname(fwnode, "INT2");
- 	if (irq > 0)
- 		*pin = BMI160_PIN_INT2;
- 
-@@ -688,7 +676,7 @@ static int bmi160_config_device_irq(struct iio_dev *indio_dev, int irq_type,
- 		return -EINVAL;
- 	}
- 
--	open_drain = of_property_read_bool(dev->of_node, "drive-open-drain");
-+	open_drain = device_property_read_bool(dev, "drive-open-drain");
- 
- 	return bmi160_config_pin(data->regmap, pin, open_drain, irq_mask,
- 				 BMI160_NORMAL_WRITE_USLEEP);
-@@ -872,9 +860,6 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
- 	if (ret)
- 		return ret;
- 
--	if (!name && ACPI_HANDLE(dev))
--		name = bmi160_match_acpi_device(dev);
--
- 	indio_dev->channels = bmi160_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(bmi160_channels);
- 	indio_dev->name = name;
-@@ -887,7 +872,7 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
- 	if (ret)
- 		return ret;
- 
--	irq = bmi160_get_irq(dev->of_node, &int_pin);
-+	irq = bmi160_get_irq(dev_fwnode(dev), &int_pin);
- 	if (irq > 0) {
- 		ret = bmi160_setup_irq(indio_dev, irq, int_pin);
- 		if (ret)
-diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c b/drivers/iio/imu/bmi160/bmi160_i2c.c
-index 26398614eddf..02f149d37b17 100644
---- a/drivers/iio/imu/bmi160/bmi160_i2c.c
-+++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
-@@ -8,10 +8,9 @@
-  *      - 0x68 if SDO is pulled to GND
-  *      - 0x69 if SDO is pulled to VDDIO
-  */
--#include <linux/acpi.h>
- #include <linux/i2c.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
--#include <linux/of.h>
- #include <linux/regmap.h>
- 
- #include "bmi160.h"
-@@ -20,7 +19,7 @@ static int bmi160_i2c_probe(struct i2c_client *client,
- 			    const struct i2c_device_id *id)
- {
- 	struct regmap *regmap;
--	const char *name = NULL;
-+	const char *name;
- 
- 	regmap = devm_regmap_init_i2c(client, &bmi160_regmap_config);
- 	if (IS_ERR(regmap)) {
-@@ -31,6 +30,8 @@ static int bmi160_i2c_probe(struct i2c_client *client,
- 
- 	if (id)
- 		name = id->name;
-+	else
-+		name = dev_name(&client->dev);
- 
- 	return bmi160_core_probe(&client->dev, regmap, name, false);
- }
-@@ -47,19 +48,17 @@ static const struct acpi_device_id bmi160_acpi_match[] = {
- };
- MODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);
- 
--#ifdef CONFIG_OF
- static const struct of_device_id bmi160_of_match[] = {
- 	{ .compatible = "bosch,bmi160" },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, bmi160_of_match);
--#endif
- 
- static struct i2c_driver bmi160_i2c_driver = {
- 	.driver = {
- 		.name			= "bmi160_i2c",
--		.acpi_match_table	= ACPI_PTR(bmi160_acpi_match),
--		.of_match_table		= of_match_ptr(bmi160_of_match),
-+		.acpi_match_table	= bmi160_acpi_match,
-+		.of_match_table		= bmi160_of_match,
- 	},
- 	.probe		= bmi160_i2c_probe,
- 	.id_table	= bmi160_i2c_id,
-diff --git a/drivers/iio/imu/bmi160/bmi160_spi.c b/drivers/iio/imu/bmi160/bmi160_spi.c
-index 61389b41c6d9..24f7d75c7903 100644
---- a/drivers/iio/imu/bmi160/bmi160_spi.c
-+++ b/drivers/iio/imu/bmi160/bmi160_spi.c
-@@ -5,9 +5,8 @@
-  * Copyright (c) 2016, Intel Corporation.
-  *
-  */
--#include <linux/acpi.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
--#include <linux/of.h>
- #include <linux/regmap.h>
- #include <linux/spi/spi.h>
- 
-@@ -17,6 +16,7 @@ static int bmi160_spi_probe(struct spi_device *spi)
- {
- 	struct regmap *regmap;
- 	const struct spi_device_id *id = spi_get_device_id(spi);
-+	const char *name;
- 
- 	regmap = devm_regmap_init_spi(spi, &bmi160_regmap_config);
- 	if (IS_ERR(regmap)) {
-@@ -24,7 +24,13 @@ static int bmi160_spi_probe(struct spi_device *spi)
- 			regmap);
- 		return PTR_ERR(regmap);
- 	}
--	return bmi160_core_probe(&spi->dev, regmap, id->name, true);
++static void ccp_dma_release(struct ccp_device *ccp)
++{
++	struct ccp_dma_chan *chan;
++	struct dma_chan *dma_chan;
++	unsigned int i;
 +
-+	if (id)
-+		name = id->name;
-+	else
-+		name = dev_name(&spi->dev);
++	for (i = 0; i < ccp->cmd_q_count; i++) {
++		chan = ccp->ccp_dma_chan + i;
++		dma_chan = &chan->dma_chan;
++		tasklet_kill(&chan->cleanup_tasklet);
++		list_del_rcu(&dma_chan->device_node);
++	}
++}
 +
-+	return bmi160_core_probe(&spi->dev, regmap, name, true);
- }
+ int ccp_dmaengine_register(struct ccp_device *ccp)
+ {
+ 	struct ccp_dma_chan *chan;
+@@ -732,6 +746,7 @@ int ccp_dmaengine_register(struct ccp_device *ccp)
+ 	return 0;
  
- static const struct spi_device_id bmi160_spi_id[] = {
-@@ -39,20 +45,18 @@ static const struct acpi_device_id bmi160_acpi_match[] = {
- };
- MODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);
+ err_reg:
++	ccp_dma_release(ccp);
+ 	kmem_cache_destroy(ccp->dma_desc_cache);
  
--#ifdef CONFIG_OF
- static const struct of_device_id bmi160_of_match[] = {
- 	{ .compatible = "bosch,bmi160" },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, bmi160_of_match);
--#endif
+ err_cache:
+@@ -745,6 +760,7 @@ void ccp_dmaengine_unregister(struct ccp_device *ccp)
+ 	struct dma_device *dma_dev = &ccp->dma_dev;
  
- static struct spi_driver bmi160_spi_driver = {
- 	.probe		= bmi160_spi_probe,
- 	.id_table	= bmi160_spi_id,
- 	.driver = {
--		.acpi_match_table	= ACPI_PTR(bmi160_acpi_match),
--		.of_match_table		= of_match_ptr(bmi160_of_match),
-+		.acpi_match_table	= bmi160_acpi_match,
-+		.of_match_table		= bmi160_of_match,
- 		.name			= "bmi160_spi",
- 	},
- };
+ 	dma_async_device_unregister(dma_dev);
++	ccp_dma_release(ccp);
+ 
+ 	kmem_cache_destroy(ccp->dma_desc_cache);
+ 	kmem_cache_destroy(ccp->dma_cmd_cache);
 -- 
-2.35.1
+2.34.1
+
+
 
