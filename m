@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C82C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:12:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A3AC4167B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:12:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344480AbiDNONi (ORCPT
+        id S1348931AbiDNONo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35336 "EHLO
+        Thu, 14 Apr 2022 10:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245404AbiDNNi3 (ORCPT
+        with ESMTP id S245406AbiDNNi3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:38:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8F1A145B;
-        Thu, 14 Apr 2022 06:32:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9952A1460;
+        Thu, 14 Apr 2022 06:32:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AF60B82941;
-        Thu, 14 Apr 2022 13:32:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D36BCC385A1;
-        Thu, 14 Apr 2022 13:32:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76CE6B82968;
+        Thu, 14 Apr 2022 13:32:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8F82C385A1;
+        Thu, 14 Apr 2022 13:32:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943124;
-        bh=ZqGrjoyTLlzOYsHDVHM6YzmHsPEEPwNgz/tXn328VLA=;
+        s=korg; t=1649943127;
+        bh=3TnHiDcoE4UN7piXzw8IEQIziQxDeP2KahwoBf8cuVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F6x1711uFFZG+kBUoyIpNx2YHxc5qZK0FR4YFscaYJwIipYgATGwE5rHEveY58t9s
-         LYaOkDsxQzOeYR13PhQiHCDMRfZnXko9c4pGIRQv/3ue4NMoGDlQ5vrjfQQa7/uke3
-         hdX0BNxHT2/3XqnuKMgzU86S+TFV53QpbH8LzYOo=
+        b=0MBVT+GiqFaM8v2yVLl8MB23czFa32gK7QbF9VZ+YynKj44njX+Jobpi75cq/q+VE
+         uFPYLBm6vsktPCoPkg6WJSuR1Nguy0upBOLvUGFuKbWFqNu2KXOAwT+9nnoXSHBkuK
+         yImv3u3xr5QW612SLhKiYcVG+I/+rO9zc5Yl3VTs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Zampieri <lzampier@redhat.com>,
-        Nestor Lopez Casado <nlopezcasad@logitech.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 006/475] HID: logitech-dj: add new lightspeed receiver id
-Date:   Thu, 14 Apr 2022 15:06:31 +0200
-Message-Id: <20220414110855.329921880@linuxfoundation.org>
+        stable@vger.kernel.org, Mason Yang <masonccyang@mxic.com.tw>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Zhengxun Li <zhengxunli@mxic.com.tw>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.4 042/475] spi: mxic: Fix the transmit path
+Date:   Thu, 14 Apr 2022 15:07:07 +0200
+Message-Id: <20220414110856.335104036@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,43 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Zampieri <lzampier@redhat.com>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-[ Upstream commit 25666e8ccd952627899b09b68f7c9b68cfeaf028 ]
+commit 5fd6739e0df7e320bcac103dfb95fe75941fea17 upstream.
 
-As of logitech lightspeed receiver fw version 04.02.B0009,
-HIDPP_PARAM_DEVICE_INFO is being reported as 0x11.
+By working with external hardware ECC engines, we figured out that
+Under certain circumstances, it is needed for the SPI controller to
+check INT_TX_EMPTY and INT_RX_NOT_EMPTY in both receive and transmit
+path (not only in the receive path). The delay penalty being
+negligible, move this code in the common path.
 
-With patch "HID: logitech-dj: add support for the new lightspeed receiver
-iteration", the mouse starts to error out with:
-  logitech-djreceiver: unusable device of type UNKNOWN (0x011) connected on
-  slot 1
-and becomes unusable.
-
-This has been noticed on a Logitech G Pro X Superlight fw MPM 25.01.B0018.
-
-Signed-off-by: Lucas Zampieri <lzampier@redhat.com>
-Acked-by: Nestor Lopez Casado <nlopezcasad@logitech.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b942d80b0a39 ("spi: Add MXIC controller driver")
+Cc: stable@vger.kernel.org
+Suggested-by: Mason Yang <masonccyang@mxic.com.tw>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Reviewed-by: Zhengxun Li <zhengxunli@mxic.com.tw>
+Reviewed-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/linux-mtd/20220127091808.1043392-10-miquel.raynal@bootlin.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-logitech-dj.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/spi/spi-mxic.c |   26 +++++++++++---------------
+ 1 file changed, 11 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/hid/hid-logitech-dj.c b/drivers/hid/hid-logitech-dj.c
-index 4267e2f2e70f..a663cbb7b683 100644
---- a/drivers/hid/hid-logitech-dj.c
-+++ b/drivers/hid/hid-logitech-dj.c
-@@ -1000,6 +1000,7 @@ static void logi_hidpp_recv_queue_notif(struct hid_device *hdev,
- 		workitem.reports_supported |= STD_KEYBOARD;
- 		break;
- 	case 0x0f:
-+	case 0x11:
- 		device_type = "eQUAD Lightspeed 1.2";
- 		logi_hidpp_dev_conn_notif_equad(hdev, hidpp_report, &workitem);
- 		workitem.reports_supported |= STD_KEYBOARD;
--- 
-2.34.1
-
+--- a/drivers/spi/spi-mxic.c
++++ b/drivers/spi/spi-mxic.c
+@@ -304,25 +304,21 @@ static int mxic_spi_data_xfer(struct mxi
+ 
+ 		writel(data, mxic->regs + TXD(nbytes % 4));
+ 
+-		if (rxbuf) {
+-			ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
+-						 sts & INT_TX_EMPTY, 0,
+-						 USEC_PER_SEC);
+-			if (ret)
+-				return ret;
++		ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
++					 sts & INT_TX_EMPTY, 0, USEC_PER_SEC);
++		if (ret)
++			return ret;
+ 
+-			ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
+-						 sts & INT_RX_NOT_EMPTY, 0,
+-						 USEC_PER_SEC);
+-			if (ret)
+-				return ret;
++		ret = readl_poll_timeout(mxic->regs + INT_STS, sts,
++					 sts & INT_RX_NOT_EMPTY, 0,
++					 USEC_PER_SEC);
++		if (ret)
++			return ret;
+ 
+-			data = readl(mxic->regs + RXD);
++		data = readl(mxic->regs + RXD);
++		if (rxbuf) {
+ 			data >>= (8 * (4 - nbytes));
+ 			memcpy(rxbuf + pos, &data, nbytes);
+-			WARN_ON(readl(mxic->regs + INT_STS) & INT_RX_NOT_EMPTY);
+-		} else {
+-			readl(mxic->regs + RXD);
+ 		}
+ 		WARN_ON(readl(mxic->regs + INT_STS) & INT_RX_NOT_EMPTY);
+ 
 
 
