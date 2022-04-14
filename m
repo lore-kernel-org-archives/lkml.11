@@ -2,45 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9DE9C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9955EC433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350002AbiDNPQX (ORCPT
+        id S1349789AbiDNPQT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:16:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
+        Thu, 14 Apr 2022 11:16:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347687AbiDNN71 (ORCPT
+        with ESMTP id S1347657AbiDNN7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABFC35D672;
-        Thu, 14 Apr 2022 06:51:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Apr 2022 09:59:25 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293CB338AB;
+        Thu, 14 Apr 2022 06:51:01 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47ACC61DF0;
-        Thu, 14 Apr 2022 13:51:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 506ADC385A1;
-        Thu, 14 Apr 2022 13:51:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944282;
-        bh=QaNOR5RKZom6VvVT+7/5NSchd1phah1uvn1QBNxVMAE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FAMqrHmc83yg23Ssyvnt50h8CChPsCG3fYBLHsYGR1pjTs2MpoBNnW5OqdY9zZs7Y
-         Umny/f2JMoLafC0XxMZ+5KvSUZvYuAWHeXcE5fjCRJYb8E3IlWpxYtd3uS0N1q5LDE
-         YBRBm5Fo8NtVIvGPzVpE13UCbOm5bUbDlvqO/gQ0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.4 459/475] dmaengine: Revert "dmaengine: shdma: Fix runtime PM imbalance on error"
-Date:   Thu, 14 Apr 2022 15:14:04 +0200
-Message-Id: <20220414110907.902021377@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by smtp-out1.suse.de (Postfix) with ESMTPS id DA51121613;
+        Thu, 14 Apr 2022 13:50:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649944259; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w48CeVx/KrAp2wYmVlzeqrFMXv/esKDNwCLFBwxR02s=;
+        b=uaeMI/WNT2E/95xcEZ4JcQ06Tm3X0TddvO3ah9jLlN9Oyu476ryR9nE/gc0hsoQMF9Xwet
+        42oI+/ew7Nt4soJEztWKc0aUUJgjzRCuWPMawiC+Zip4wPYybteVu1qcHlzXuqwFUSBR5f
+        QkCHiQFPi3/MVQY1tUAblYHf2Cb8UKg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649944259;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w48CeVx/KrAp2wYmVlzeqrFMXv/esKDNwCLFBwxR02s=;
+        b=eatG4gJ5bW2m1wSrnnkUmuPzvJUWTkADZ8rmg6fn0riFO4RrBXCPQqc8ISHqJQUVX8puMA
+        +oACCwSr942bhbCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6A822132C0;
+        Thu, 14 Apr 2022 13:50:59 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id yBMNF8MmWGJnTgAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Thu, 14 Apr 2022 13:50:59 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id 527b0df8;
+        Thu, 14 Apr 2022 13:51:24 +0000 (UTC)
+From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+Subject: [PATCH v4 1/4] ceph: add support for encrypted snapshot names
+Date:   Thu, 14 Apr 2022 14:51:19 +0100
+Message-Id: <20220414135122.26821-2-lhenriques@suse.de>
+In-Reply-To: <20220414135122.26821-1-lhenriques@suse.de>
+References: <20220414135122.26821-1-lhenriques@suse.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -48,33 +70,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinod Koul <vkoul@kernel.org>
+Since filenames in encrypted directories are already encrypted and shown
+as a base64-encoded string when the directory is locked, snapshot names
+should show a similar behaviour.
 
-commit d143f939a95696d38ff800ada14402fa50ebbd6c upstream.
-
-This reverts commit 455896c53d5b ("dmaengine: shdma: Fix runtime PM
-imbalance on error") as the patch wrongly reduced the count on error and
-did not bail out. So drop the count by reverting the patch .
-
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
 ---
- drivers/dma/sh/shdma-base.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ fs/ceph/inode.c | 31 +++++++++++++++++++++++++++----
+ 1 file changed, 27 insertions(+), 4 deletions(-)
 
---- a/drivers/dma/sh/shdma-base.c
-+++ b/drivers/dma/sh/shdma-base.c
-@@ -115,10 +115,8 @@ static dma_cookie_t shdma_tx_submit(stru
- 		ret = pm_runtime_get(schan->dev);
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index fa0d3018d981..8e97efa2b1a7 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -91,9 +91,15 @@ struct inode *ceph_new_inode(struct inode *dir, struct dentry *dentry,
+ 	if (err < 0)
+ 		goto out_err;
  
- 		spin_unlock_irq(&schan->chan_lock);
--		if (ret < 0) {
-+		if (ret < 0)
- 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
--			pm_runtime_put(schan->dev);
--		}
+-	err = ceph_fscrypt_prepare_context(dir, inode, as_ctx);
+-	if (err)
+-		goto out_err;
++	/*
++	 * We'll skip setting fscrypt context for snapshots, leaving that for
++	 * the handle_reply().
++	 */
++	if (ceph_snap(dir) != CEPH_SNAPDIR) {
++		err = ceph_fscrypt_prepare_context(dir, inode, as_ctx);
++		if (err)
++			goto out_err;
++	}
  
- 		pm_runtime_barrier(schan->dev);
+ 	return inode;
+ out_err:
+@@ -157,6 +163,7 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 	};
+ 	struct inode *inode = ceph_get_inode(parent->i_sb, vino, NULL);
+ 	struct ceph_inode_info *ci = ceph_inode(inode);
++	int ret = -ENOTDIR;
  
-
-
+ 	if (IS_ERR(inode))
+ 		return inode;
+@@ -182,6 +189,22 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 	ci->i_rbytes = 0;
+ 	ci->i_btime = ceph_inode(parent)->i_btime;
+ 
++	/* if encrypted, just borrow fscrypt_auth from parent */
++	if (IS_ENCRYPTED(parent)) {
++		struct ceph_inode_info *pci = ceph_inode(parent);
++
++		ci->fscrypt_auth = kmemdup(pci->fscrypt_auth,
++					   pci->fscrypt_auth_len,
++					   GFP_KERNEL);
++		if (ci->fscrypt_auth) {
++			inode->i_flags |= S_ENCRYPTED;
++			ci->fscrypt_auth_len = pci->fscrypt_auth_len;
++		} else {
++			dout("Failed to alloc snapdir fscrypt_auth\n");
++			ret = -ENOMEM;
++			goto err;
++		}
++	}
+ 	if (inode->i_state & I_NEW) {
+ 		inode->i_op = &ceph_snapdir_iops;
+ 		inode->i_fop = &ceph_snapdir_fops;
+@@ -195,7 +218,7 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 		discard_new_inode(inode);
+ 	else
+ 		iput(inode);
+-	return ERR_PTR(-ENOTDIR);
++	return ERR_PTR(ret);
+ }
+ 
+ const struct inode_operations ceph_file_iops = {
