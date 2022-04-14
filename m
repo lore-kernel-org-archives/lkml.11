@@ -2,79 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C7E0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50B8AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241494AbiDNJtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:49:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41060 "EHLO
+        id S233459AbiDNJtM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241594AbiDNJq6 (ORCPT
+        with ESMTP id S242284AbiDNJsP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:46:58 -0400
-X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:44:03 PDT
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD1C710CE
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 02:44:03 -0700 (PDT)
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20220414094254ee00ff8e333c5c7a66
-        for <linux-kernel@vger.kernel.org>;
-        Thu, 14 Apr 2022 11:43:01 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=d8jKoM9faKsGDQmqC/btc4Rd+AthsQGvuIMNUMeUktA=;
- b=bnygzUD5p6LhzJ+6pWthHULcIJN48ylDv+Bvyl3FblVIRF+VXzJZnTWUwOH9Z3OZSE1tYH
- eyViCjnp2AZY4wZ8Nled9dCfHdzJlMDgDkDECHEfBYhYf88iOopLiNRbR8LYUc0rVNkwp70E
- LQqN0n4ufysRsTKmPQ7V+5Hipcxss=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 20/20] tty: n_gsm: fix incorrect UA handling
-Date:   Thu, 14 Apr 2022 02:42:25 -0700
-Message-Id: <20220414094225.4527-20-daniel.starke@siemens.com>
-In-Reply-To: <20220414094225.4527-1-daniel.starke@siemens.com>
-References: <20220414094225.4527-1-daniel.starke@siemens.com>
+        Thu, 14 Apr 2022 05:48:15 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0964378041;
+        Thu, 14 Apr 2022 02:44:44 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id B29571F746;
+        Thu, 14 Apr 2022 09:44:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649929482; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+bwHZBNR8Br/nOEGyo873hVJQ95GV5dktm7kZJEMdk4=;
+        b=X+JA0g9IcMRaqODyc5U8DkQugxHOE/JNTAsZ9dJVA94UsJhuWs8Xj32yna1dpUX594UiJT
+        WXG/MTOvT5r2oepjC0qgc8K5VUyMFioNqT4eaC+WR23b/Qmo7vm9B5MVUhZWMscvz13zk9
+        NaumvZlpH4C8zWeNzoTgNkLQvw1XXqc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649929482;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+bwHZBNR8Br/nOEGyo873hVJQ95GV5dktm7kZJEMdk4=;
+        b=Bo5pq9NGDk7G73e7w7H1M33GLzmegIkicaqGqS61UNy8hafougd/Oflt82ir7ip7saQxh5
+        96HwsXupWRrzdtDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 94C0C13A86;
+        Thu, 14 Apr 2022 09:44:42 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id GtykIgrtV2KTagAAMHmgww
+        (envelope-from <jslaby@suse.cz>); Thu, 14 Apr 2022 09:44:42 +0000
+Message-ID: <810ab2b8-4138-1506-fc90-ae5c6ab0522e@suse.cz>
+Date:   Thu, 14 Apr 2022 11:44:42 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] scripts: dummy-tools, add pahole
+Content-Language: en-US
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+References: <20220414091419.7654-1-jslaby@suse.cz>
+ <CAK7LNATn2QrFn0fTixnbtZ-VOtWid2PvFKPmjfX+z_UtZgTMgA@mail.gmail.com>
+ <ace87421-eefb-f4f6-307f-cd2990fb25eb@suse.cz>
+In-Reply-To: <ace87421-eefb-f4f6-307f-cd2990fb25eb@suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On 14. 04. 22, 11:42, Jiri Slaby wrote:
+> On 14. 04. 22, 11:33, Masahiro Yamada wrote:
+>> On Thu, Apr 14, 2022 at 6:14 PM Jiri Slaby <jslaby@suse.cz> wrote:
+>>>
+>>> CONFIG_PAHOLE_VERSION is a part of a config since the commit below. And
+>>> when multiple people update the config, this value constantly changes.
+>>> Even if they use dummy scripts.
+>>>
+>>> To fix this:
+>>> * add a pahole dummy script returning v99.99 -> 9999
+>>> * call it in Makefile taking CROSS_COMPILE into account.
+>>>
+>>> The latter happens only if $(CROSS_COMPILE)pahole really exists. This is
+>>> because a cross pahole likely exists only in dummy tools now, not in
+>>> real cross tools.
+>>
+>>
+>> I do not think this is the right thing to do.
+>>
+>> (As I said somewhere, I am opposed to checking pahole version in 
+>> Kconfig).
+> 
+> If you ask me, I am all for removal as this causes pain. But it's there, 
+> so I cannot do anything about that.
+> 
+>> Also, $(CROSS_COMPILE)pahole looks insane.
+>>
+>> You can create a dummy pahole in your local system.
+>>
+>> $ echo 'echo v99.99' > $HOME/bin/dummy-pahole
+>> $ chmod +x  $HOME/bin/dummy-pahole
+>> $ make CROSS_COMPILE=scripts/dummy-tools  PAHOLE=dummy-pahole  menuconfig
+> 
+> Well, the question is how do I that for every kernel developer in SUSE?
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.4.2 states that any received unnumbered
-acknowledgment (UA) with its poll/final (PF) bit set to 0 shall be
-discarded. Currently, all UA frame are handled in the same way regardless
-of the PF bit. This does not comply with the standard.
-Remove the UA case in gsm_queue() to process only UA frames with PF bit set
-to 1 to abide the standard.
+IOW it'd be quite easier if the scripts/dummy-tools/pahole part of the 
+patch was in the tree. (I don't insist on the Makefile change.)
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 1905a0fea89b..cf861598a646 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1871,7 +1871,6 @@ static void gsm_queue(struct gsm_mux *gsm)
- 			}
- 		}
- 		break;
--	case UA:
- 	case UA|PF:
- 		if (cr == 0 || dlci == NULL)
- 			break;
--- 
-2.25.1
-
+> thanks,-- 
+js
+suse labs
