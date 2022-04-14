@@ -2,191 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A4A9C4167B
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61571C3527D
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344071AbiDNOtO (ORCPT
+        id S1345546AbiDNOuT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
+        Thu, 14 Apr 2022 10:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345169AbiDNNpT (ORCPT
+        with ESMTP id S1345199AbiDNNpY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54E519284;
-        Thu, 14 Apr 2022 06:42:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87275B82894;
-        Thu, 14 Apr 2022 13:42:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3B02C385A1;
-        Thu, 14 Apr 2022 13:42:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943771;
-        bh=6UuD1ojtt85+jOATQ/HpRoPyGXO2N8C2h2UJZXoI+wk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YsOb70//tAgLwPkIdFZHMSqkcbSbCliRMXtqDA4VTZP/SeePPvSEkher85C2xy9ZI
-         PkpsJmzud7/7zOxaIrB75iYCqFH9BvCs2bynsGx1YLQUAYh9P0Dd4BVK1N4jYCZCDJ
-         XDdaaavhZgKAyAj5NskOlrLb/TSKewEZugJ5qpnM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>,
-        Paolo Valente <paolo.valente@linaro.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 276/475] block, bfq: dont move oom_bfqq
-Date:   Thu, 14 Apr 2022 15:11:01 +0200
-Message-Id: <20220414110902.826752524@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 14 Apr 2022 09:45:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 22EAB5FD5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:43:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649943779;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cEwU1k8RkWbHuBpGrcJSmZWxIQf9wx4CSSVAzVNcIcQ=;
+        b=ZLcgSWeM8QtZkU9ae04DMJ2myjV4G3DNBxL5Lhd0cQjwBAmwozJq0ZlXRqlCFxX1gf/Lt6
+        0ghdps+DuqWQNsLL+cAJL5I2LMn99cpcB3IhC0e/Dsn71A2jT2GVjb79HxnOxaoDtm7Vl6
+        9kwGcoAyKlA16hDjNrQQtU7mXAag/ko=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-511-wUZU7hvyOgy4Bc7zOMyeAA-1; Thu, 14 Apr 2022 09:42:58 -0400
+X-MC-Unique: wUZU7hvyOgy4Bc7zOMyeAA-1
+Received: by mail-wm1-f70.google.com with SMTP id 6-20020a1c0206000000b0038ff4f1014fso1109215wmc.7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:42:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=cEwU1k8RkWbHuBpGrcJSmZWxIQf9wx4CSSVAzVNcIcQ=;
+        b=i8MgHJlfEbqk4nSa8RKCBTp7wtJIotZ2nwAyU/KyKGV7RhJCPIJjzwvc3aPg1wSCBX
+         Md7sEVr9WtAaD2hrgz8VtgXL7HfozStGjhKfRF5LWLB807HikP8pW6j/6kG47J2/FHdZ
+         ly9lF62ZZSRT4mc3NOcipUrJWvZ6xCScGRJ7V3WXyrElQv+NytjjYeKpLGHf+5OnLV4V
+         MzuBQwIoqWnth/o0PpsmIUoerhWbBm462lR1IYarUvYID0I8wp3KZolQ9PyVfQzGnaFZ
+         rCulVNEcyR3WJXyipOXelSmtnI1Ilmp5yWmw6WV3O/pS/HjRQ0xOjTJPipbrt1zyKJEC
+         KkRA==
+X-Gm-Message-State: AOAM530YMeSYM1Xk9KSdVzU87j7O2B0uTT+ic6i4/VQElF4Q42K03dRP
+        39XasilFc2MPgB0ByPES4sUoFdjfz55m75+0XM/N01QIF1Z4WcvJ1MGObLVPE+mNV0eyLkQa0SI
+        Hy2rBkwHTvn5m1m6+wZXQzkbi
+X-Received: by 2002:adf:f783:0:b0:207:a8ce:c155 with SMTP id q3-20020adff783000000b00207a8cec155mr2222983wrp.258.1649943776972;
+        Thu, 14 Apr 2022 06:42:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwPeHlNz+XH8pGgX+QQTKvuDAR0AtbdicT3vCkba0paOH9TIMgYj+vx/KybA6X1K9UK6B5gJA==
+X-Received: by 2002:adf:f783:0:b0:207:a8ce:c155 with SMTP id q3-20020adff783000000b00207a8cec155mr2222971wrp.258.1649943776771;
+        Thu, 14 Apr 2022 06:42:56 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-96-237.dyn.eolo.it. [146.241.96.237])
+        by smtp.gmail.com with ESMTPSA id e14-20020a5d6d0e000000b002078ea4f6bdsm2166780wrq.75.2022.04.14.06.42.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 06:42:56 -0700 (PDT)
+Message-ID: <7f9ae4f7c484d16e8f9a923f2facee95a720a62b.camel@redhat.com>
+Subject: Re: [net-next PATCH v2 1/4] drivers: net: dsa: qca8k: drop MTU
+ tracking from qca8k_priv
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 14 Apr 2022 15:42:55 +0200
+In-Reply-To: <20220412173019.4189-2-ansuelsmth@gmail.com>
+References: <20220412173019.4189-1-ansuelsmth@gmail.com>
+         <20220412173019.4189-2-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+On Tue, 2022-04-12 at 19:30 +0200, Ansuel Smith wrote:
+> DSA set the CPU port based on the largest MTU of all the slave ports.
+> Based on this we can drop the MTU array from qca8k_priv and set the
+> port_change_mtu logic on DSA changing MTU of the CPU port as the switch
+> have a global MTU settingfor each port.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 
-[ Upstream commit 8410f70977734f21b8ed45c37e925d311dfda2e7 ]
+@Vladimir: it looks like this addresses your concern on the previous
+iteration, could you please have a look?
 
-Our test report a UAF:
+Thanks!
 
-[ 2073.019181] ==================================================================
-[ 2073.019188] BUG: KASAN: use-after-free in __bfq_put_async_bfqq+0xa0/0x168
-[ 2073.019191] Write of size 8 at addr ffff8000ccf64128 by task rmmod/72584
-[ 2073.019192]
-[ 2073.019196] CPU: 0 PID: 72584 Comm: rmmod Kdump: loaded Not tainted 4.19.90-yk #5
-[ 2073.019198] Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
-[ 2073.019200] Call trace:
-[ 2073.019203]  dump_backtrace+0x0/0x310
-[ 2073.019206]  show_stack+0x28/0x38
-[ 2073.019210]  dump_stack+0xec/0x15c
-[ 2073.019216]  print_address_description+0x68/0x2d0
-[ 2073.019220]  kasan_report+0x238/0x2f0
-[ 2073.019224]  __asan_store8+0x88/0xb0
-[ 2073.019229]  __bfq_put_async_bfqq+0xa0/0x168
-[ 2073.019233]  bfq_put_async_queues+0xbc/0x208
-[ 2073.019236]  bfq_pd_offline+0x178/0x238
-[ 2073.019240]  blkcg_deactivate_policy+0x1f0/0x420
-[ 2073.019244]  bfq_exit_queue+0x128/0x178
-[ 2073.019249]  blk_mq_exit_sched+0x12c/0x160
-[ 2073.019252]  elevator_exit+0xc8/0xd0
-[ 2073.019256]  blk_exit_queue+0x50/0x88
-[ 2073.019259]  blk_cleanup_queue+0x228/0x3d8
-[ 2073.019267]  null_del_dev+0xfc/0x1e0 [null_blk]
-[ 2073.019274]  null_exit+0x90/0x114 [null_blk]
-[ 2073.019278]  __arm64_sys_delete_module+0x358/0x5a0
-[ 2073.019282]  el0_svc_common+0xc8/0x320
-[ 2073.019287]  el0_svc_handler+0xf8/0x160
-[ 2073.019290]  el0_svc+0x10/0x218
-[ 2073.019291]
-[ 2073.019294] Allocated by task 14163:
-[ 2073.019301]  kasan_kmalloc+0xe0/0x190
-[ 2073.019305]  kmem_cache_alloc_node_trace+0x1cc/0x418
-[ 2073.019308]  bfq_pd_alloc+0x54/0x118
-[ 2073.019313]  blkcg_activate_policy+0x250/0x460
-[ 2073.019317]  bfq_create_group_hierarchy+0x38/0x110
-[ 2073.019321]  bfq_init_queue+0x6d0/0x948
-[ 2073.019325]  blk_mq_init_sched+0x1d8/0x390
-[ 2073.019330]  elevator_switch_mq+0x88/0x170
-[ 2073.019334]  elevator_switch+0x140/0x270
-[ 2073.019338]  elv_iosched_store+0x1a4/0x2a0
-[ 2073.019342]  queue_attr_store+0x90/0xe0
-[ 2073.019348]  sysfs_kf_write+0xa8/0xe8
-[ 2073.019351]  kernfs_fop_write+0x1f8/0x378
-[ 2073.019359]  __vfs_write+0xe0/0x360
-[ 2073.019363]  vfs_write+0xf0/0x270
-[ 2073.019367]  ksys_write+0xdc/0x1b8
-[ 2073.019371]  __arm64_sys_write+0x50/0x60
-[ 2073.019375]  el0_svc_common+0xc8/0x320
-[ 2073.019380]  el0_svc_handler+0xf8/0x160
-[ 2073.019383]  el0_svc+0x10/0x218
-[ 2073.019385]
-[ 2073.019387] Freed by task 72584:
-[ 2073.019391]  __kasan_slab_free+0x120/0x228
-[ 2073.019394]  kasan_slab_free+0x10/0x18
-[ 2073.019397]  kfree+0x94/0x368
-[ 2073.019400]  bfqg_put+0x64/0xb0
-[ 2073.019404]  bfqg_and_blkg_put+0x90/0xb0
-[ 2073.019408]  bfq_put_queue+0x220/0x228
-[ 2073.019413]  __bfq_put_async_bfqq+0x98/0x168
-[ 2073.019416]  bfq_put_async_queues+0xbc/0x208
-[ 2073.019420]  bfq_pd_offline+0x178/0x238
-[ 2073.019424]  blkcg_deactivate_policy+0x1f0/0x420
-[ 2073.019429]  bfq_exit_queue+0x128/0x178
-[ 2073.019433]  blk_mq_exit_sched+0x12c/0x160
-[ 2073.019437]  elevator_exit+0xc8/0xd0
-[ 2073.019440]  blk_exit_queue+0x50/0x88
-[ 2073.019443]  blk_cleanup_queue+0x228/0x3d8
-[ 2073.019451]  null_del_dev+0xfc/0x1e0 [null_blk]
-[ 2073.019459]  null_exit+0x90/0x114 [null_blk]
-[ 2073.019462]  __arm64_sys_delete_module+0x358/0x5a0
-[ 2073.019467]  el0_svc_common+0xc8/0x320
-[ 2073.019471]  el0_svc_handler+0xf8/0x160
-[ 2073.019474]  el0_svc+0x10/0x218
-[ 2073.019475]
-[ 2073.019479] The buggy address belongs to the object at ffff8000ccf63f00
- which belongs to the cache kmalloc-1024 of size 1024
-[ 2073.019484] The buggy address is located 552 bytes inside of
- 1024-byte region [ffff8000ccf63f00, ffff8000ccf64300)
-[ 2073.019486] The buggy address belongs to the page:
-[ 2073.019492] page:ffff7e000333d800 count:1 mapcount:0 mapping:ffff8000c0003a00 index:0x0 compound_mapcount: 0
-[ 2073.020123] flags: 0x7ffff0000008100(slab|head)
-[ 2073.020403] raw: 07ffff0000008100 ffff7e0003334c08 ffff7e00001f5a08 ffff8000c0003a00
-[ 2073.020409] raw: 0000000000000000 00000000001c001c 00000001ffffffff 0000000000000000
-[ 2073.020411] page dumped because: kasan: bad access detected
-[ 2073.020412]
-[ 2073.020414] Memory state around the buggy address:
-[ 2073.020420]  ffff8000ccf64000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 2073.020424]  ffff8000ccf64080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 2073.020428] >ffff8000ccf64100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 2073.020430]                                   ^
-[ 2073.020434]  ffff8000ccf64180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 2073.020438]  ffff8000ccf64200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 2073.020439] ==================================================================
-
-The same problem exist in mainline as well.
-
-This is because oom_bfqq is moved to a non-root group, thus root_group
-is freed earlier.
-
-Thus fix the problem by don't move oom_bfqq.
-
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Acked-by: Paolo Valente <paolo.valente@linaro.org>
-Link: https://lore.kernel.org/r/20220129015924.3958918-4-yukuai3@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- block/bfq-cgroup.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/block/bfq-cgroup.c b/block/bfq-cgroup.c
-index 342a1cfa48c5..c17eb794f0ae 100644
---- a/block/bfq-cgroup.c
-+++ b/block/bfq-cgroup.c
-@@ -625,6 +625,12 @@ void bfq_bfqq_move(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- {
- 	struct bfq_entity *entity = &bfqq->entity;
- 
-+	/*
-+	 * oom_bfqq is not allowed to move, oom_bfqq will hold ref to root_group
-+	 * until elevator exit.
-+	 */
-+	if (bfqq == &bfqd->oom_bfqq)
-+		return;
- 	/*
- 	 * Get extra reference to prevent bfqq from being freed in
- 	 * next possible expire or deactivate.
--- 
-2.34.1
-
-
+Paolo
 
