@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C13C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D82C43219
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:31:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244612AbiDNN1u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:27:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46572 "EHLO
+        id S244698AbiDNN2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:28:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244279AbiDNNYb (ORCPT
+        with ESMTP id S244292AbiDNNYd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:24:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A98F9BB81;
-        Thu, 14 Apr 2022 06:19:07 -0700 (PDT)
+        Thu, 14 Apr 2022 09:24:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02FD39BBAA;
+        Thu, 14 Apr 2022 06:19:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15599B82984;
-        Thu, 14 Apr 2022 13:19:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73277C385A1;
-        Thu, 14 Apr 2022 13:19:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AFB461670;
+        Thu, 14 Apr 2022 13:19:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9767CC385A1;
+        Thu, 14 Apr 2022 13:19:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942344;
-        bh=WMnhNn60iuxLEY44rApk3woqTH9utIQz7/rUK88ZBR0=;
+        s=korg; t=1649942353;
+        bh=NMmiu5MLoMrhHVrejlu88U7+zjUyvpnRUZBB21OCEXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YmQuI7Fvh1UO6Hz/IA4dSPWpXflz/PIJYfh/Nlrfn4MuJlUeaDjfw+9/7WVH7+irO
-         ShoxkkR+hEYB9NNKd9Lo/m+LGWv9+09Q/wuCE1nLKo+iYz3ekTPA16P2ezBba3l5qX
-         Lz5IE7pbkXP5s6YNTx86cHYUznikvDBH38BPsRgA=
+        b=N3To2GFIt+zv0Ix0TagJdIOLsYLNn8++NwieqT6y4eJiACZFVSyPo5u8nEuT48YZA
+         D6qZ1kyFEGFu6UMlkrKL99RXtup8sCcP01Opg2BivsfzQwyBfI0jIhWXf20Lrl4yNu
+         u3KxmUp6krlm34Uyh+wPC+2wn0YhqcbHLbvXKq28=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Tomas Paukrt <tomaspaukrt@email.cz>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 101/338] ASoC: atmel_ssc_dai: Handle errors for clk_enable
-Date:   Thu, 14 Apr 2022 15:10:04 +0200
-Message-Id: <20220414110841.778014212@linuxfoundation.org>
+Subject: [PATCH 4.19 068/338] crypto: mxs-dcp - Fix scatterlist processing
+Date:   Thu, 14 Apr 2022 15:09:31 +0200
+Message-Id: <20220414110840.835486704@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -49,38 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Tomas Paukrt <tomaspaukrt@email.cz>
 
-[ Upstream commit f9e2ca0640e59d19af0ff285ee5591ed39069b09 ]
+[ Upstream commit 28e9b6d8199a3f124682b143800c2dacdc3d70dd ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error if fals.
+This patch fixes a bug in scatterlist processing that may cause incorrect AES block encryption/decryption.
 
-Fixes: cbaadf0f90d6 ("ASoC: atmel_ssc_dai: refactor the startup and shutdown")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220301090637.3776558-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 2e6d793e1bf0 ("crypto: mxs-dcp - Use sg_mapping_iter to copy data")
+Signed-off-by: Tomas Paukrt <tomaspaukrt@email.cz>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/atmel_ssc_dai.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/crypto/mxs-dcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/atmel/atmel_ssc_dai.c b/sound/soc/atmel/atmel_ssc_dai.c
-index d3b69682d9c2..7272f00222fd 100644
---- a/sound/soc/atmel/atmel_ssc_dai.c
-+++ b/sound/soc/atmel/atmel_ssc_dai.c
-@@ -296,7 +296,10 @@ static int atmel_ssc_startup(struct snd_pcm_substream *substream,
+diff --git a/drivers/crypto/mxs-dcp.c b/drivers/crypto/mxs-dcp.c
+index da834ae3586b..2da6f38e2bcb 100644
+--- a/drivers/crypto/mxs-dcp.c
++++ b/drivers/crypto/mxs-dcp.c
+@@ -328,7 +328,7 @@ static int mxs_dcp_aes_block_crypt(struct crypto_async_request *arq)
+ 		memset(key + AES_KEYSIZE_128, 0, AES_KEYSIZE_128);
+ 	}
  
- 	/* Enable PMC peripheral clock for this SSC */
- 	pr_debug("atmel_ssc_dai: Starting clock\n");
--	clk_enable(ssc_p->ssc->clk);
-+	ret = clk_enable(ssc_p->ssc->clk);
-+	if (ret)
-+		return ret;
-+
- 	ssc_p->mck_rate = clk_get_rate(ssc_p->ssc->clk);
- 
- 	/* Reset the SSC unless initialized to keep it in a clean state */
+-	for_each_sg(req->src, src, sg_nents(src), i) {
++	for_each_sg(req->src, src, sg_nents(req->src), i) {
+ 		src_buf = sg_virt(src);
+ 		len = sg_dma_len(src);
+ 		tlen += len;
 -- 
 2.34.1
 
