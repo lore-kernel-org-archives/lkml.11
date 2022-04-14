@@ -2,98 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08751C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:25:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20473C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:25:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243227AbiDNM1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 08:27:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
+        id S243230AbiDNM11 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 08:27:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242759AbiDNM1O (ORCPT
+        with ESMTP id S243184AbiDNM1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 08:27:14 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED332CE18;
-        Thu, 14 Apr 2022 05:24:43 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 975D840012;
-        Thu, 14 Apr 2022 12:24:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649939082;
+        Thu, 14 Apr 2022 08:27:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D9F32CE34
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 05:24:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649939083;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=VZQJox6pfPHfC3qb+4Dol20vx3ou4eYt1gnOvwZ6wUI=;
-        b=dhPtZSrAX6XBgNQiE5qpr4/oCiYzDuW+OW9z1Al3KuEWRBFR5NXP5hYiuDxDzZDHnD/mCo
-        odGU725IrYUzzY1pFgYrZaZtGNhkdWHbcS4ePfu31ZZHfXgUJSYU1WqI8itvCR+n5WcfjK
-        wwYSikUU4HfsFbkNfn4dUcA/yvYYlkSpdqCF3yP7GFjTsBDdqBFfV0WcSI/fgQ55wWKRbJ
-        CVdZRsdtMtgEp8Ukcrb4zRdgF+8cT0k4mtOSoggIXVGtQahPXdmJVrMqXA6WAPawIWmmbn
-        BGSAUPPtmHRRHiLfYKgzAne9VTMr15HCKH6eJKwYnQMUhXUOqGfWJkIraZvQLg==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 01/12] net: dsa: add support for Renesas RZ/N1 A5PSW switch tag code
-Date:   Thu, 14 Apr 2022 14:22:39 +0200
-Message-Id: <20220414122250.158113-2-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220414122250.158113-1-clement.leger@bootlin.com>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
+        bh=w3YBdRKJUuRVoqjsuVYs7FMkqCpz3SW587vkpc0Rrvg=;
+        b=iUnN5q0ZbfakU7j4xFu2WGxledK1F5TrxOwEkwu7yKVTwIUcljoXDjRw3tfN400vzoUVqT
+        EY2jcWeDv4fy/ZxdgAcskxaFOGRIISW7WGhlv1AaBnaNUxvL08CD82tXJriYafZAkutKwd
+        mQ6i49pxNNSVi20ilznqkBlL6vImKtk=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-352-sCsyIxa4MsaOEEwzBbrRTg-1; Thu, 14 Apr 2022 08:24:42 -0400
+X-MC-Unique: sCsyIxa4MsaOEEwzBbrRTg-1
+Received: by mail-wm1-f69.google.com with SMTP id g13-20020a1c4e0d000000b0038eba16aa46so2160341wmh.7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 05:24:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=w3YBdRKJUuRVoqjsuVYs7FMkqCpz3SW587vkpc0Rrvg=;
+        b=M6MkUW98yVYG5S35uqxMCLDPxkWMofglFTOKK9R5ioObbcXf+HwD/CzpDAMWtEifiI
+         078pJ0hnZRZrqUlvulo63NJ8TuXxlmhllkW9qUSZdZXQ2t85iR3VLR2mswSBlXgciqyX
+         edhQ4fb8sh5SbQ7wDKXkaSukbXy6DoM8/LUHuz/bg8gun6SxB9hBDpKpen/9/8CPh5UE
+         7VV0VDJH1Gh7F6fi1zmFWd0hL/RWWGjk0jSbpV8qqHVJEIPypSr8rFyDP6N4WE+Vf1dS
+         bCMoMDP0iSJQUqFflLiQiKJGvxAwRBmdEaqc2hDuRypGvbKBHc15s0ajzzWlN8nHbxya
+         +uBA==
+X-Gm-Message-State: AOAM531hsNaeCFX7xjrjiP6N9w7+TsRhe4Q5GXwSB35rCy1sFJYu4vcy
+        iuKQoRC7O+3hxEZMFdIhFNXsot/1x6WE9mZcWUZRCEg2yQY59hWLGzJcyMGl0s3V5mJ6gTkdRLC
+        FdjxXrlxAFVU6CnmRDHbryh3/+yxvPzk1D4J3A7k3BiZPjykJUHkNE5aldp4fDBzj3CB7tgkyZR
+        Wn
+X-Received: by 2002:a05:6000:1acf:b0:203:fe67:a8dc with SMTP id i15-20020a0560001acf00b00203fe67a8dcmr1939010wry.212.1649939080930;
+        Thu, 14 Apr 2022 05:24:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzzXxuDleRxU9n7P7jE2XBRIfRSmIzpph4ijPoFszyxobCWls/GbBpEwYTZXs/vLQg4+4xeFg==
+X-Received: by 2002:a05:6000:1acf:b0:203:fe67:a8dc with SMTP id i15-20020a0560001acf00b00203fe67a8dcmr1938985wry.212.1649939080646;
+        Thu, 14 Apr 2022 05:24:40 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id r14-20020a0560001b8e00b00205918bd86esm1671555wru.78.2022.04.14.05.24.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 05:24:39 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 13/31] KVM: x86: hyper-v: Direct TLB flush
+In-Reply-To: <Yk8tDHc5E8SkOVqB@google.com>
+References: <20220407155645.940890-1-vkuznets@redhat.com>
+ <20220407155645.940890-14-vkuznets@redhat.com>
+ <Yk8tDHc5E8SkOVqB@google.com>
+Date:   Thu, 14 Apr 2022 14:24:38 +0200
+Message-ID: <87lew76eex.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DSA tag code for Renesas RZ/N1 Advanced 5 port switch. This switch
-uses a special VLAN type followed by 6 bytes which contains other
-useful information (port, timestamp, etc).
+Sean Christopherson <seanjc@google.com> writes:
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- include/net/dsa.h | 2 ++
- 1 file changed, 2 insertions(+)
+> On Thu, Apr 07, 2022, Vitaly Kuznetsov wrote:
+>> Handle Direct TLB flush requests from L2 by going through all vCPUs
+>
+> What is a "Direct TLB flush request" in this context?  I can't tell if "direct"
+> refers to the MMU being direct, or if it has some other Hyper-V specific meaning.
+>
+> Ewww, it looks to be Hyper-V terminology.  Now I see that @direct=true is getting
+> L2's ring, not L1's ring.  That's all kinds of evil.  That confusion goes away with
+> my suggestion below, but this shortlog and changelog (and the ones for nVMX and
+> nSVM enabling) absolutely need to clarify "direct" since it conflicts mightily
+> with KVM's "direct" terminology.
+>
+> In fact, unless I'm missing a patch where "Direct" doesn't mean "From L2", I vote
+> to not use the "Direct TLB flush" terminology in any of the shortlogs or changelogs
+> and only add a footnote to this first changelog to call out that the TLFS (or
+> wherever this terminology came from) calls these types of flushes
+> "Direct".
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 934958fda962..2aa8eaae4eb9 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -53,6 +53,7 @@ struct phylink_link_state;
- #define DSA_TAG_PROTO_SJA1110_VALUE		23
- #define DSA_TAG_PROTO_RTL8_4_VALUE		24
- #define DSA_TAG_PROTO_RTL8_4T_VALUE		25
-+#define DSA_TAG_PROTO_RZN1_A5PSW_VALUE		26
- 
- enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
-@@ -81,6 +82,7 @@ enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_SJA1110		= DSA_TAG_PROTO_SJA1110_VALUE,
- 	DSA_TAG_PROTO_RTL8_4		= DSA_TAG_PROTO_RTL8_4_VALUE,
- 	DSA_TAG_PROTO_RTL8_4T		= DSA_TAG_PROTO_RTL8_4T_VALUE,
-+	DSA_TAG_PROTO_RZN1_A5PSW	= DSA_TAG_PROTO_RZN1_A5PSW_VALUE,
- };
- 
- struct dsa_switch;
+In soon-to-be-sent-out v3 I got rid of 'Direct TLB flush' completely.
+Note, in addition to what gets introduced in this series, there are
+two other Hyper-V specific places which overload 'direct' already:
+
+- Direct TLB flush for KVM-on-Hyper-V (enable_direct_tlbflush()). I'm
+getting rid of it too.
+
+- Direct synthetic timers. 'Direct' in this case means that the timer
+signal is delivered via dedicated IRQ 'directly' and not through Vmbus
+message. This stays as I can't think of how we can rename it (and if we
+should, in the first place).
+
 -- 
-2.34.1
+Vitaly
 
