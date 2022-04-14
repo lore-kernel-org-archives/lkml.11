@@ -2,165 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 705E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:46:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C48C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344326AbiDNPsu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58310 "EHLO
+        id S241026AbiDNPsk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:48:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344633AbiDNPjU (ORCPT
+        with ESMTP id S245224AbiDNPic (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:39:20 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBA0433B2;
-        Thu, 14 Apr 2022 08:16:51 -0700 (PDT)
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 23EFGbYq018720;
-        Fri, 15 Apr 2022 00:16:37 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 23EFGbYq018720
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649949398;
-        bh=pZAJtygSVmbKTNXuD7l5zcPaOSLqBFoMTTpuCRaKmGM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=immBGPKVEDIH9IfeoELrfMaGJ3K2KY9zHUDGtuJs406kRjHFl0yLRrEQALD4u1vAg
-         rahtDxTVGxwcn9rU7/3d/Fv9vSCMx3C4iYz2Hhx0hMcc6Xydc7bsoHcKw3KG6ggH4S
-         HDUJ62jqUwq0gIFISRWTxIRzRqgT/SxkQLTAammL+5+w4Tjdsf8oCnosTMI5nfEtjN
-         EuZmz9+u9cbq+ltHoqY/NskG+uRKCXMOlA1gcnAwv6lWUHrYnogFwz6eMFYdD9Agx5
-         uig6mtJ5/5r3Xqo/7nrYmEY5BXF26dDqRHuMR8ylKSYLtSsgG5fR55GRuDwCJS8SWe
-         MejJ3DVPaSTpg==
-X-Nifty-SrcIP: [209.85.216.48]
-Received: by mail-pj1-f48.google.com with SMTP id ll10so5408404pjb.5;
-        Thu, 14 Apr 2022 08:16:37 -0700 (PDT)
-X-Gm-Message-State: AOAM531Hf6iTmruMkHe3sLeF0FuZejsTeagOz+mDSr+334hfRukJomzb
-        RKsc4YLeq13C/GmTrR0LxA4kLZJ/5wL3X8HDM2k=
-X-Google-Smtp-Source: ABdhPJwuMbF3kddDumdFdhCpEaX4B4g32YDZWW1V2vN9meXzaTcb8eNHOvNDjHrqamfqkeA9z9BV3ZENmi456uYXtxM=
-X-Received: by 2002:a17:902:7083:b0:158:41f2:3a83 with SMTP id
- z3-20020a170902708300b0015841f23a83mr25282827plk.99.1649949396808; Thu, 14
- Apr 2022 08:16:36 -0700 (PDT)
+        Thu, 14 Apr 2022 11:38:32 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F097842480;
+        Thu, 14 Apr 2022 08:16:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=ZsRcyfHgsom67rurNKLx6V9HZjclTS2jkLPhlClFRLs=; b=udaIYXxYUP+g4H6OzdvOVK++G9
+        qGQUmznF+HIBu36y0AXnja7i2BxxjdG/bdqJmsgmYEEkfUeYAUwEmKh55aPfmduuzbqX1GaRJ5dKI
+        r1f+HvFYyEpze2tmnfBFJLjuW5ItjPjlPei9QzXLHWjmv1AI4QT6fWPFf7sCBbuZZXtfQJnpvdSD7
+        D9+agEGq90Eo5AxANYUK1Je727HyMYrViIvTgnGJl33ruOCPffgCJjwFam1rvmDz/bbViZEXKmL5f
+        aLjAPgNuSix4ustrHw5HJuzbgZn3uIrJ1TAPXRj6Jromg0Gw3jyVch4Pt0J7Yx9aXwax0as1EZXty
+        00dEw7sQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nf1Ca-00FEFk-3H; Thu, 14 Apr 2022 15:16:08 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0403C3002DE;
+        Thu, 14 Apr 2022 17:16:05 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id D346920173681; Thu, 14 Apr 2022 17:16:05 +0200 (CEST)
+Date:   Thu, 14 Apr 2022 17:16:05 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Zhipeng Xie <xiezhipeng1@huawei.com>
+Cc:     mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@redhat.com,
+        namhyung@kernel.org, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xiexiuqi@huawei.com,
+        fanwentao@huawei.com
+Subject: Re: [PATCH v2] perf/core: Fix perf_mmap fail when
+ CONFIG_PERF_USE_VMALLOC enabled
+Message-ID: <Ylg6tU5d9JA/2anr@hirez.programming.kicks-ass.net>
+References: <20220209145417.6495-1-xiezhipeng1@huawei.com>
 MIME-Version: 1.0
-References: <1422803720-14723-1-git-send-email-ydroneaud@opteya.com>
- <20220408084607.106468-1-ydroneaud@opteya.com> <CAK7LNAQZLt_OecOogOQiSu5snW+sffsMoFgVcjPTx_idj_=_tQ@mail.gmail.com>
- <CAKwvOd=yNnKsHJo0QWvoTuFF9p-y=cTftTD+7FY-wJ_f23zFTQ@mail.gmail.com>
- <81585705-6ed8-12e5-1355-332a6a5d2b17@infradead.org> <CAK7LNAS6ap9dR=kzRgQgt+d7FBBbVrwEqGU9g_pFD+nzMUt+gQ@mail.gmail.com>
- <YlgdF9qmJyYGHKXZ@bergen.fjasle.eu>
-In-Reply-To: <YlgdF9qmJyYGHKXZ@bergen.fjasle.eu>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 15 Apr 2022 00:15:40 +0900
-X-Gmail-Original-Message-ID: <CAK7LNARVKL4vCRHz5=_sW_oBpkpqhDu5Hp1hfG+Hnwqg-61HVA@mail.gmail.com>
-Message-ID: <CAK7LNARVKL4vCRHz5=_sW_oBpkpqhDu5Hp1hfG+Hnwqg-61HVA@mail.gmail.com>
-Subject: Re: [PATCHv1] kbuild: support W=e to make build abort in case of warning
-To:     Nicolas Schier <nicolas@fjasle.eu>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Yann Droneaud <ydroneaud@opteya.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220209145417.6495-1-xiezhipeng1@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 10:19 PM Nicolas Schier <nicolas@fjasle.eu> wrote:
->
-> P=C3=A5 l=C3=B8. 09. april 2022 kl. 10.47 +0000 skrev Masahiro Yamada:
-> > On Sat, Apr 9, 2022 at 5:36 AM Randy Dunlap <rdunlap@infradead.org> Wro=
-te:
-> > >
-> > >
-> > >
-> > > On 4/8/22 13:29, Nick Desaulniers wrote:
-> > > > On Fri, Apr 8, 2022 at 4:06 AM Masahiro Yamada <masahiroy@kernel.or=
-g> wrote:
-> > > >>
-> > > >> On Fri, Apr 8, 2022 at 5:46 PM Yann Droneaud <ydroneaud@opteya.com=
-> wrote:
-> > > >>>
-> > > >>> When developing new code/feature, CONFIG_WERROR is most
-> > > >>> often turned off, especially for people using make W=3D12 to
-> > > >>> get more warnings.
-> > > >>>
-> > > >>> In such case, turning on -Werror temporarily would require
-> > > >>> switching on CONFIG_WERROR in the configuration, building,
-> > > >>> then switching off CONFIG_WERROR.
-> > > >>>
-> > > >>> For this use case, this patch introduces a new 'e' modifier
-> > > >>> to W=3D as a short hand for KCFLAGS+=3D-Werror" so that -Werror
-> > > >>> got added to the kernel (built-in) and modules' CFLAGS.
-> > > >>>
-> > > >>> Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
-> > > >>> ---
-> > > >>>  Makefile                   |  1 +
-> > > >>>  scripts/Makefile.extrawarn | 13 +++++++++++--
-> > > >>>  2 files changed, 12 insertions(+), 2 deletions(-)
-> > > >>>
-> > > >>> Changes since v0[0]:
-> > > >>>
-> > > >>>  - rebase on top of commit 64a91907c896 ("kbuild: refactor script=
-s/Makefile.extrawarn")
-> > > >>>  - document use case after commit 3fe617ccafd6 ("Enable '-Werror'=
- by default for all kernel builds")
-> > > >>>
-> > > >>> [0] https://lore.kernel.org/all/1422803720-14723-1-git-send-email=
--ydroneaud@opteya.com/
-> > > >>
-> > > >>
-> > > >> I remembered the previous submission, I liked it, but I had lost i=
-t.
-> > > >>
-> > > >> It seems already 7 years ago, (before I became the Kbuild maintain=
-er).
-> > > >> Thanks for coming back to this.
-> > > >>
-> > > >>
-> > > >> I like this, but I will wait some time for review comments.
-> > > >
-> > > > Dunno, this seems pretty simple:
-> > > >
-> > > > $ ./scripts/config -e WERROR
-> > > > $ make ... W=3D12
-> > >
-> > > Yeah, that's about what I was thinking too..
-> >
-> >
-> >
-> > But, you cannot change the .config
-> > when you build external modules.
-> >
-> > "make W=3De" might be useful for people who strive to
-> > keep their downstream modules warning-free.
-> >
-> >
-> > W=3De is the same pattern.
-> > I do not see much downside.
->
-> If I set CONFIG_WERROR=3Dy on the make command line, I could have the
-> same result, don't I?
->
->   make CONFIG_WERROR=3D1 ...
->
-> no matter if in-tree or for external kernel modules.
+On Wed, Feb 09, 2022 at 09:54:17AM -0500, Zhipeng Xie wrote:
+> This problem can be reproduced with CONFIG_PERF_USE_VMALLOC enabled on both
+> x86_64 and aarch64 arch when using sysdig -B(using ebpf)[1].
+> sysdig -B works fine after rebuilding the kernel with CONFIG_PERF_USE_VMALLOC
+> disabled.
+> 
+> I tracked it down to the if condition event->rb->nr_pages != nr_pages in
+> perf_mmap is true when CONFIG_PERF_USE_VMALLOC is enabled where
+> event->rb->nr_pages = 1 and nr_pages = 2048 resulting perf_mmap to return
+> -EINVAL.This is because when CONFIG_PERF_USE_VMALLOC is enabled, rb->nr_pages
+> is always equal to 1.
+> 
+> Arch with CONFIG_PERF_USE_VMALLOC enabled by default:
+> 	arc/arm/csky/mips/sh/sparc/xtensa
+> Arch with CONFIG_PERF_USE_VMALLOC disabled by default:
+> 	x86_64/aarch64/...
+> 
+> Fix this problem by using data_page_nr.
+> 
+> [1] https://github.com/draios/sysdig
+> 
+> Signed-off-by: Zhipeng Xie <xiezhipeng1@huawei.com>
 
-Yes.
+Right; sorry for being tardy. Fix looks ok, but I tihnk it needs:
 
-If you can change the kernel configuration,
-you can enable CONFIG_WERROR.
+Fixes: 906010b2134e ("perf_event: Provide vmalloc() based mmap() backing")
 
-To build external modules against the read-only
-/lib/modules/$(uname -r)/build/,
-it is not so feasible to change the .config file, though.
+Will go queue.
 
-
->
-> Kind regards,
-> Nicolas
-
-
-
---=20
-Best Regards
-Masahiro Yamada
