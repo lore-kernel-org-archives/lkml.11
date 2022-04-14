@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6B1C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE4EC3527A
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348736AbiDNOwn (ORCPT
+        id S1348543AbiDNOwk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58634 "EHLO
+        Thu, 14 Apr 2022 10:52:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345057AbiDNNpD (ORCPT
+        with ESMTP id S1344852AbiDNNoo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6ABA24F3B;
-        Thu, 14 Apr 2022 06:41:22 -0700 (PDT)
+        Thu, 14 Apr 2022 09:44:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AB0393C6;
+        Thu, 14 Apr 2022 06:40:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8312C61D70;
-        Thu, 14 Apr 2022 13:41:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87992C385A5;
-        Thu, 14 Apr 2022 13:41:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FA2AB82983;
+        Thu, 14 Apr 2022 13:40:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E317C385A5;
+        Thu, 14 Apr 2022 13:40:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943681;
-        bh=6XQKR8MUBPlHxkrIyk50Z3T4imvl4Kx6FCJH0N88HiA=;
+        s=korg; t=1649943623;
+        bh=W36Li4AORCbRpA8/ELuitbJTJ9wO1rcyMXYmqFCWJLo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w9W/bAx+hVK4PYAjIzpIZVb1HvATyboNxQnE78fQYB/SBFDbHxrqStEFQ8QOPtdJy
-         mkAugUEq8XonM14l9RpcT4017zsP8dnqP0aqoi5tBiy1D4by5HMCDY/QOhWatGdTjG
-         4rO0o4djbly9nLee8QMNJvzabbIApXkDO8MvDw+o=
+        b=PAf1vFN31gN0v0PhZUGPZUMYMLlcP7nis4TzzhomR9rKLhQF/un0ZRRV0m2cAq+6u
+         jHR9hY4Qktj5se07WO8pJJj4iKyeuJSfP982pn/oabFvePAt/kGCnqaRbRp9+3bifH
+         rfQWLjV6IpgWUT6iaVzehs0ymTUarLxMujccJAyU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Aashish Sharma <shraash@google.com>,
+        Mike Snitzer <snitzer@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 243/475] remoteproc: qcom_wcnss: Add missing of_node_put() in wcnss_alloc_memory_region
-Date:   Thu, 14 Apr 2022 15:10:28 +0200
-Message-Id: <20220414110901.916070176@linuxfoundation.org>
+Subject: [PATCH 5.4 182/475] dm crypt: fix get_key_size compiler warning if !CONFIG_KEYS
+Date:   Thu, 14 Apr 2022 15:09:27 +0200
+Message-Id: <20220414110900.226782952@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,34 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Aashish Sharma <shraash@google.com>
 
-[ Upstream commit 8f90161a66bc3d6b9fe8dde4d9028d20eae1b62a ]
+[ Upstream commit 6fc51504388c1a1a53db8faafe9fff78fccc7c87 ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+Explicitly convert unsigned int in the right of the conditional
+expression to int to match the left side operand and the return type,
+fixing the following compiler warning:
 
-Fixes: aed361adca9f ("remoteproc: qcom: Introduce WCNSS peripheral image loader")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220308063102.10049-1-linmq006@gmail.com
+drivers/md/dm-crypt.c:2593:43: warning: signed and unsigned
+type in conditional expression [-Wsign-compare]
+
+Fixes: c538f6ec9f56 ("dm crypt: add ability to use keys from the kernel key retention service")
+Signed-off-by: Aashish Sharma <shraash@google.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/qcom_wcnss.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/md/dm-crypt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
-index dc135754bb9c..c72f1b3b6085 100644
---- a/drivers/remoteproc/qcom_wcnss.c
-+++ b/drivers/remoteproc/qcom_wcnss.c
-@@ -440,6 +440,7 @@ static int wcnss_alloc_memory_region(struct qcom_wcnss *wcnss)
- 	}
+diff --git a/drivers/md/dm-crypt.c b/drivers/md/dm-crypt.c
+index 571c04e70343..3ed8ca47bc6e 100644
+--- a/drivers/md/dm-crypt.c
++++ b/drivers/md/dm-crypt.c
+@@ -2010,7 +2010,7 @@ static int crypt_set_keyring_key(struct crypt_config *cc, const char *key_string
  
- 	ret = of_address_to_resource(node, 0, &r);
-+	of_node_put(node);
- 	if (ret)
- 		return ret;
+ static int get_key_size(char **key_string)
+ {
+-	return (*key_string[0] == ':') ? -EINVAL : strlen(*key_string) >> 1;
++	return (*key_string[0] == ':') ? -EINVAL : (int)(strlen(*key_string) >> 1);
+ }
  
+ #endif
 -- 
 2.34.1
 
