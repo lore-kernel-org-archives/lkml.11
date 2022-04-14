@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D32C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:17:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37115C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:17:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243871AbiDNNTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37046 "EHLO
+        id S243738AbiDNNT3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243738AbiDNNRY (ORCPT
+        with ESMTP id S243788AbiDNNRe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:17:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344B38FE50;
-        Thu, 14 Apr 2022 06:15:00 -0700 (PDT)
+        Thu, 14 Apr 2022 09:17:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B10BE0;
+        Thu, 14 Apr 2022 06:15:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3ED9612DA;
-        Thu, 14 Apr 2022 13:14:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D36C9C385A1;
-        Thu, 14 Apr 2022 13:14:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1806B82910;
+        Thu, 14 Apr 2022 13:15:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D3B7C385A1;
+        Thu, 14 Apr 2022 13:15:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942099;
-        bh=PaTngJ64p5Jnkri65TBcUAY1LQxwH7tWkPjQpSs/TRM=;
+        s=korg; t=1649942107;
+        bh=z03uRE2H7zmi68R1Q0lvr3LCmd3ruYnHuWykD/0EvBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1PG1tNo7NkVKMfyRyCIEZ1dMyBMTrd+muj2MuK4b7ljx3ujHva+0TBL5UZ0O1rT8m
-         DQ4srSa82kkZdJ9v+xjsz3gyc91QEOscx8+tCFJFtm7bQSpZbzEV7aDPJKDT90XQoM
-         V5ndZdeuK+w5vYUIrsNn58J9wkyXL/o/YvXAkwEs=
+        b=I1bAnQx4brpBqGL3M2+uCsRpA6DHwSMNsTtXy98gtU+OeimCBD2u969Ov3Xu9iSEY
+         lBwwOJv6kH7PPgRUFWyMNKFLAUSIcBF/Ufd8v/BbW+oVDcWqLVNTLt2yqtRTpS7tEu
+         nxw42bEkGDxF8dp7GqQPG6xBVIDUFe96ze8fKipQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 4.19 015/338] virtio-blk: Use blk_validate_block_size() to validate block size
-Date:   Thu, 14 Apr 2022 15:08:38 +0200
-Message-Id: <20220414110839.326021105@linuxfoundation.org>
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Subject: [PATCH 4.19 018/338] coresight: Fix TRCCONFIGR.QE sysfs interface
+Date:   Thu, 14 Apr 2022 15:08:41 +0200
+Message-Id: <20220414110839.410214554@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -49,72 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: James Clark <james.clark@arm.com>
 
-commit 57a13a5b8157d9a8606490aaa1b805bafe6c37e1 upstream.
+commit ea75a342aed5ed72c87f38fbe0df2f5df7eae374 upstream.
 
-The block layer can't support a block size larger than
-page size yet. And a block size that's too small or
-not a power of two won't work either. If a misconfigured
-device presents an invalid block size in configuration space,
-it will result in the kernel crash something like below:
+It's impossible to program a valid value for TRCCONFIGR.QE
+when TRCIDR0.QSUPP==0b10. In that case the following is true:
 
-[  506.154324] BUG: kernel NULL pointer dereference, address: 0000000000000008
-[  506.160416] RIP: 0010:create_empty_buffers+0x24/0x100
-[  506.174302] Call Trace:
-[  506.174651]  create_page_buffers+0x4d/0x60
-[  506.175207]  block_read_full_page+0x50/0x380
-[  506.175798]  ? __mod_lruvec_page_state+0x60/0xa0
-[  506.176412]  ? __add_to_page_cache_locked+0x1b2/0x390
-[  506.177085]  ? blkdev_direct_IO+0x4a0/0x4a0
-[  506.177644]  ? scan_shadow_nodes+0x30/0x30
-[  506.178206]  ? lru_cache_add+0x42/0x60
-[  506.178716]  do_read_cache_page+0x695/0x740
-[  506.179278]  ? read_part_sector+0xe0/0xe0
-[  506.179821]  read_part_sector+0x36/0xe0
-[  506.180337]  adfspart_check_ICS+0x32/0x320
-[  506.180890]  ? snprintf+0x45/0x70
-[  506.181350]  ? read_part_sector+0xe0/0xe0
-[  506.181906]  bdev_disk_changed+0x229/0x5c0
-[  506.182483]  blkdev_get_whole+0x6d/0x90
-[  506.183013]  blkdev_get_by_dev+0x122/0x2d0
-[  506.183562]  device_add_disk+0x39e/0x3c0
-[  506.184472]  virtblk_probe+0x3f8/0x79b [virtio_blk]
-[  506.185461]  virtio_dev_probe+0x15e/0x1d0 [virtio]
+  Q element support is implemented, and only supports Q elements without
+  instruction counts. TRCCONFIGR.QE can only take the values 0b00 or 0b11.
 
-So let's use a block layer helper to validate the block size.
+Currently the low bit of QSUPP is checked to see if the low bit of QE can
+be written to, but as you can see when QSUPP==0b10 the low bit is cleared
+making it impossible to ever write the only valid value of 0b11 to QE.
+0b10 would be written instead, which is a reserved QE value even for all
+values of QSUPP.
 
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Link: https://lore.kernel.org/r/20211026144015.188-5-xieyongji@bytedance.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
+The fix is to allow writing the low bit of QE for any non zero value of
+QSUPP.
+
+This change also ensures that the low bit is always set, even when the
+user attempts to only set the high bit.
+
+Signed-off-by: James Clark <james.clark@arm.com>
+Reviewed-by: Mike Leach <mike.leach@linaro.org>
+Fixes: d8c66962084f ("coresight-etm4x: Controls pertaining to the reset, mode, pe and events")
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220120113047.2839622-2-james.clark@arm.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/virtio_blk.c |   12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/hwtracing/coresight/coresight-etm4x-sysfs.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -849,9 +849,17 @@ static int virtblk_probe(struct virtio_d
- 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
- 				   struct virtio_blk_config, blk_size,
- 				   &blk_size);
--	if (!err)
-+	if (!err) {
-+		err = blk_validate_block_size(blk_size);
-+		if (err) {
-+			dev_err(&vdev->dev,
-+				"virtio_blk: invalid block size: 0x%x\n",
-+				blk_size);
-+			goto out_free_tags;
-+		}
-+
- 		blk_queue_logical_block_size(q, blk_size);
--	else
-+	} else
- 		blk_size = queue_logical_block_size(q);
- 
- 	/* Use topology information if available */
+--- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
++++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+@@ -367,8 +367,12 @@ static ssize_t mode_store(struct device
+ 	mode = ETM_MODE_QELEM(config->mode);
+ 	/* start by clearing QE bits */
+ 	config->cfg &= ~(BIT(13) | BIT(14));
+-	/* if supported, Q elements with instruction counts are enabled */
+-	if ((mode & BIT(0)) && (drvdata->q_support & BIT(0)))
++	/*
++	 * if supported, Q elements with instruction counts are enabled.
++	 * Always set the low bit for any requested mode. Valid combos are
++	 * 0b00, 0b01 and 0b11.
++	 */
++	if (mode && drvdata->q_support)
+ 		config->cfg |= BIT(13);
+ 	/*
+ 	 * if supported, Q elements with and without instruction
 
 
