@@ -2,77 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C805C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B88C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359410AbiDNPot (ORCPT
+        id S1348537AbiDNPnk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:44:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49186 "EHLO
+        Thu, 14 Apr 2022 11:43:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350677AbiDNPQu (ORCPT
+        with ESMTP id S1352692AbiDNPRm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:16:50 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F74926DF;
-        Thu, 14 Apr 2022 07:59:27 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649948365;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=taiC+lrAFS/tnkPZvEFulCZnvrAxFQiGKHGcqlbV7mc=;
-        b=iTe0QCfkyFLaBgNBvQ7IFLqt0DWAk+yGnK6NCh79E9jkR5CdV9I75IFqcsJ3OU9lpORa+V
-        OgWt/cgFUjWRlpa/kHLOHXl+lh00bXfSG8yUIDw2Gw/nvJbD9ZtgrTS8wvUC/xvYwlv4IQ
-        KZ/gH8q2pcF0FSD4H42f/4goYtQM0wOsS2x2I/xFOFiBQtESgksjmID7MlwQhQnfVfnKxh
-        d3EcXdmkaLtYkS9da2ZQXrT0wT0rnaSaHOldG3GxxdjTKYdVp4BMf1ojA2vm1lCHxgLqgf
-        8D8RI5SQuhlxzpuWGujNU/zbSJJ3gWX2du8tAAQI/0Nk9cApfWprQL0uK9g2gg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649948365;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=taiC+lrAFS/tnkPZvEFulCZnvrAxFQiGKHGcqlbV7mc=;
-        b=/scsCx2hbnK3QHNX7kt4BtQhegatXU31z8wtBg6ipfLQ6NACtD+jZVXBfO0jZbk662hDQ8
-        zBkCQ7APDWo0QLCQ==
-To:     Kurt Kanzenbach <kurt@linutronix.de>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: Re: [PATCH v2 1/3] timekeeping: Introduce fast accessor to clock tai
-In-Reply-To: <20220414091805.89667-2-kurt@linutronix.de>
-References: <20220414091805.89667-1-kurt@linutronix.de>
- <20220414091805.89667-2-kurt@linutronix.de>
-Date:   Thu, 14 Apr 2022 16:59:24 +0200
-Message-ID: <87czhjemnn.ffs@tglx>
+        Thu, 14 Apr 2022 11:17:42 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B253939E4;
+        Thu, 14 Apr 2022 08:03:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649948586; x=1681484586;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=/VBlTs3jL1nxbmcrZIkwzXIXkP2p4Qd9Cgidy2UuOOY=;
+  b=Yn8zFvGHL+4eYN3VxM/LSQ0xlmE/L8jysmkHJMpv+RVGZGiiJyhbciZi
+   btaipoEOC0ISsh/d36HlUBc7Rn/WyuaRfymR52s6RwHT5ICm8DNFA9vwy
+   DxPEfRswD3sWYhO64PdAzA0OGtG5zpP2Nb029A6V0bxfbfdwOM11yCJnX
+   3cqBckhvcf7oFopQigkb6v+Ke+rGdAuOE8BIrD3f3Sshn1JUhnxcs9Tib
+   6gO7sFws0cnH0TE9kyjCvN5K6QzrUpe+tLQ7C19cyVA50m4oy/1MH8VvA
+   La+zdQYvjck+cDBnkeEDPgNP/xl7D/fql9B1voYeCKHasxfKJ3bPoNvPa
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="263126626"
+X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
+   d="scan'208";a="263126626"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 08:03:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
+   d="scan'208";a="725392121"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga005.jf.intel.com with ESMTP; 14 Apr 2022 08:03:05 -0700
+Received: from [10.209.96.223] (kliang2-MOBL.ccr.corp.intel.com [10.209.96.223])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 811035805BD;
+        Thu, 14 Apr 2022 08:03:04 -0700 (PDT)
+Message-ID: <368c5b92-f035-41cc-96a8-4908f1325462@linux.intel.com>
+Date:   Thu, 14 Apr 2022 11:03:03 -0400
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 03/14] perf vendor events intel: Add sapphirerapids events
+Content-Language: en-US
+To:     Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        James Clark <james.clark@arm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+References: <20220413210503.3256922-1-irogers@google.com>
+ <20220413210503.3256922-3-irogers@google.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <20220413210503.3256922-3-irogers@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14 2022 at 11:18, Kurt Kanzenbach wrote:
-> Introduce fast/NMI safe accessor to clock tai for tracing. The Linux kernel
-> tracing infrastructure has support for using different clocks to generate
-> timestamps for trace events. Especially in TSN networks it's useful to have TAI
-> as trace clock, because the application scheduling is done in accordance to the
-> network time, which is based on TAI. With a tai trace_clock in place, it becomes
-> very convenient to correlate network activity with Linux kernel application
-> traces.
 
-Steven, this is available for you to pull via:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip tai-for-tracing
+On 4/13/2022 5:04 PM, Ian Rogers wrote:
+> Events were generated from 01.org using:
+> https://github.com/intel/event-converter-for-linux-perf
+> 
+> Signed-off-by: Ian Rogers<irogers@google.com>
+> ---
+>   tools/perf/pmu-events/arch/x86/mapfile.csv    |    1 +
+>   .../arch/x86/sapphirerapids/cache.json        | 1083 ++++++++++++++
+>   .../x86/sapphirerapids/floating-point.json    |  218 +++
+>   .../arch/x86/sapphirerapids/frontend.json     |  471 ++++++
+>   .../arch/x86/sapphirerapids/memory.json       |  415 ++++++
+>   .../arch/x86/sapphirerapids/other.json        |  329 +++++
+>   .../arch/x86/sapphirerapids/pipeline.json     | 1271 +++++++++++++++++
+>   .../x86/sapphirerapids/virtual-memory.json    |  225 +++
 
-It's a single tagged commit on top of 5.18-rc2
+Thank you very much Ian for the patches. They all looks good to me.
+
+     Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+
+BTW: I think the uncore events for SPR are also published in 01.org.
+Do you have plan to add them later?
 
 Thanks,
-
-        tglx
-
+Kan
