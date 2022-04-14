@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 806A4C4167D
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:13:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B0C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:13:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344474AbiDNOOZ (ORCPT
+        id S1348960AbiDNOOj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:14:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35528 "EHLO
+        Thu, 14 Apr 2022 10:14:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245449AbiDNNif (ORCPT
+        with ESMTP id S245499AbiDNNii (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D529A147E;
-        Thu, 14 Apr 2022 06:32:21 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3FDFA206E;
+        Thu, 14 Apr 2022 06:32:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBB85B82983;
-        Thu, 14 Apr 2022 13:32:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37C10C385A1;
-        Thu, 14 Apr 2022 13:32:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 480F861B9C;
+        Thu, 14 Apr 2022 13:32:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59200C385A1;
+        Thu, 14 Apr 2022 13:32:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943138;
-        bh=whWYiuOm4pdhkujakP95V8BtfJmQpOGf9ucYZeNDPSE=;
+        s=korg; t=1649943149;
+        bh=QMNy+Fny+JHW3JnAtkkrRJcsCDWBuheXWC1zePhIsQM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o66vl8r9E/3E+Xyngf63/FNSEg6OEXM16JWahEno10RskR/OIopYBqRhOqDvKBDCm
-         dXNKQdRyYCfpG+WDNhgmh6BeoVQj5WZOADuFh/TCyZV5VuvK0utkaOLcEIy2wPCLpp
-         rL9acu8UwVpU8O954/zYJBwOAJTwEQGaXGzSX2lU=
+        b=V1LP0RvKXm7I+z1ew3e1OiTB5GPp4iIRwkHSAUuSbyV8xjrXppkROPLbuC/heCvFs
+         mZf4NidQWVJN9xIuWOGrtWWBUyY42UwfEx69ZtH9rrgv03YYQQGtO8q+xtayh4S6sm
+         QsrtsWNulQIU/EAOn3MwO0VDrXX/LOAZSAgoOXDM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 008/475] virtio_console: break out of buf poll on remove
-Date:   Thu, 14 Apr 2022 15:06:33 +0200
-Message-Id: <20220414110855.385536806@linuxfoundation.org>
+        stable@vger.kernel.org, Eddie James <eajames@linux.ibm.com>,
+        Joel Stanley <joel@jms.id.au>, Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.4 002/475] USB: serial: pl2303: add IBM device IDs
+Date:   Thu, 14 Apr 2022 15:06:27 +0200
+Message-Id: <20220414110855.216724652@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,55 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael S. Tsirkin <mst@redhat.com>
+From: Eddie James <eajames@linux.ibm.com>
 
-[ Upstream commit 0e7174b9d5877130fec41fb4a16e0c2ee4958d44 ]
+commit e1d15646565b284e9ef2433234d6cfdaf66695f1 upstream.
 
-A common pattern for device reset is currently:
-vdev->config->reset(vdev);
-.. cleanup ..
+IBM manufactures a PL2303 device for UPS communications. Add the vendor
+and product IDs so that the PL2303 driver binds to the device.
 
-reset prevents new interrupts from arriving and waits for interrupt
-handlers to finish.
-
-However if - as is common - the handler queues a work request which is
-flushed during the cleanup stage, we have code adding buffers / trying
-to get buffers while device is reset. Not good.
-
-This was reproduced by running
-	modprobe virtio_console
-	modprobe -r virtio_console
-in a loop.
-
-Fix this up by calling virtio_break_device + flush before reset.
-
-Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1786239
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Eddie James <eajames@linux.ibm.com>
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Eddie James <eajames@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220301224446.21236-1-eajames@linux.ibm.com
+Cc: stable@vger.kernel.org
+[ johan: amend the SoB chain ]
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/virtio_console.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/usb/serial/pl2303.c |    1 +
+ drivers/usb/serial/pl2303.h |    3 +++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
-index b453029487a1..2660a0c5483a 100644
---- a/drivers/char/virtio_console.c
-+++ b/drivers/char/virtio_console.c
-@@ -1961,6 +1961,13 @@ static void virtcons_remove(struct virtio_device *vdev)
- 	list_del(&portdev->list);
- 	spin_unlock_irq(&pdrvdata_lock);
+--- a/drivers/usb/serial/pl2303.c
++++ b/drivers/usb/serial/pl2303.c
+@@ -110,6 +110,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(ADLINK_VENDOR_ID, ADLINK_ND6530GC_PRODUCT_ID) },
+ 	{ USB_DEVICE(SMART_VENDOR_ID, SMART_PRODUCT_ID) },
+ 	{ USB_DEVICE(AT_VENDOR_ID, AT_VTKIT3_PRODUCT_ID) },
++	{ USB_DEVICE(IBM_VENDOR_ID, IBM_PRODUCT_ID) },
+ 	{ }					/* Terminating entry */
+ };
  
-+	/* Device is going away, exit any polling for buffers */
-+	virtio_break_device(vdev);
-+	if (use_multiport(portdev))
-+		flush_work(&portdev->control_work);
-+	else
-+		flush_work(&portdev->config_work);
+--- a/drivers/usb/serial/pl2303.h
++++ b/drivers/usb/serial/pl2303.h
+@@ -29,6 +29,9 @@
+ #define ATEN_PRODUCT_UC232B	0x2022
+ #define ATEN_PRODUCT_ID2	0x2118
+ 
++#define IBM_VENDOR_ID		0x04b3
++#define IBM_PRODUCT_ID		0x4016
 +
- 	/* Disable interrupts for vqs */
- 	vdev->config->reset(vdev);
- 	/* Finish up work that's lined up */
--- 
-2.34.1
-
+ #define IODATA_VENDOR_ID	0x04bb
+ #define IODATA_PRODUCT_ID	0x0a03
+ #define IODATA_PRODUCT_ID_RSAQ5	0x0a0e
 
 
