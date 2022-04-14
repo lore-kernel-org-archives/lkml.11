@@ -2,145 +2,390 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C3B8C352A8
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C634DC38A06
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346763AbiDNN5z (ORCPT
+        id S1346598AbiDNN5o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:57:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49970 "EHLO
+        Thu, 14 Apr 2022 09:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244431AbiDNN0x (ORCPT
+        with ESMTP id S1344240AbiDNNbT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:26:53 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0C89F6E8;
-        Thu, 14 Apr 2022 06:20:04 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id 12888393597a75da; Thu, 14 Apr 2022 15:20:03 +0200
-Received: from kreacher.localnet (unknown [213.134.181.101])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Thu, 14 Apr 2022 09:31:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33CD1E6;
+        Thu, 14 Apr 2022 06:28:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id 69DCB66BE86;
-        Thu, 14 Apr 2022 15:20:02 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux PCI <linux-pci@vger.kernel.org>
-Cc:     Linux PM <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH v3 1/9] PCI/PM: Resume subordinate bus in bus type callbacks
-Date:   Thu, 14 Apr 2022 15:04:13 +0200
-Message-ID: <3190097.aeNJFYEL58@kreacher>
-In-Reply-To: <5838942.lOV4Wx5bFT@kreacher>
-References: <4419002.LvFx2qVVIh@kreacher> <11975904.O9o76ZdvQC@kreacher> <5838942.lOV4Wx5bFT@kreacher>
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3DE8B82986;
+        Thu, 14 Apr 2022 13:28:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5846AC385A5;
+        Thu, 14 Apr 2022 13:28:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942931;
+        bh=FIwGRw7fm773Bke2bYM7KOSBLeqVaayVUXTE3j6VGS0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kPla8QwSgeP6sxojB9ik0RhlTByoLB+Jn+HbZOjKSUsxIk9C2/NahHPSUN9irqtqB
+         Y/pSmzVdT1DU5u5mVM7QGFOlOiW+/7mx1hhNT0EkstQHJKOpZ8FuSam4loYc+Yc0Eh
+         2HH4z+J7xKTyXDgtNvsZGMKuqMGb4oLoF+gAL6tI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lv Yunlong <lyl2019@mail.ustc.edu.cn>,
+        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 312/338] drbd: Fix five use after free bugs in get_initial_state
+Date:   Thu, 14 Apr 2022 15:13:35 +0200
+Message-Id: <20220414110847.760638975@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.181.101
-X-CLIENT-HOSTNAME: 213.134.181.101
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelfedgieefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkjghfggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpedvjeelgffhiedukedtleekkedvudfggefhgfegjefgueekjeelvefggfdvledutdenucfkphepvddufedrudefgedrudekuddruddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukedurddutddupdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeehpdhrtghpthhtoheplhhinhhugidqphgtihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhpmhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehhvghlghgrrghssehkvghrnhgvlhdrohhrghdprhgtphhtthhopehm
- ihhkrgdrfigvshhtvghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgtohhm
-X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
 
-Calling pci_resume_bus() on the secondary bus from pci_power_up() as
-it is done now is questionable, because it depends on the mandatory
-bridge power-up delays that are only covered by the PCI bus type PM
-callbacks.
+[ Upstream commit aadb22ba2f656581b2f733deb3a467c48cc618f6 ]
 
-For this reason, move the subordinate bus resume to those callbacks
-too and use the observation that if a bridge is being powered-up
-during resume from system-wide suspend, it may be still desirable
-to runtime-resume its subordinate bus after completing the system-
-wide transition (in case the resume of the devices on that bus is
-skipped during it).
+In get_initial_state, it calls notify_initial_state_done(skb,..) if
+cb->args[5]==1. If genlmsg_put() failed in notify_initial_state_done(),
+the skb will be freed by nlmsg_free(skb).
+Then get_initial_state will goto out and the freed skb will be used by
+return value skb->len, which is a uaf bug.
 
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+What's worse, the same problem goes even further: skb can also be
+freed in the notify_*_state_change -> notify_*_state calls below.
+Thus 4 additional uaf bugs happened.
+
+My patch lets the problem callee functions: notify_initial_state_done
+and notify_*_state_change return an error code if errors happen.
+So that the error codes could be propagated and the uaf bugs can be avoid.
+
+v2 reports a compilation warning. This v3 fixed this warning and built
+successfully in my local environment with no additional warnings.
+v2: https://lore.kernel.org/patchwork/patch/1435218/
+
+Fixes: a29728463b254 ("drbd: Backport the "events2" command")
+Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/block/drbd/drbd_int.h          |  8 ++---
+ drivers/block/drbd/drbd_nl.c           | 41 ++++++++++++++++----------
+ drivers/block/drbd/drbd_state.c        | 18 +++++------
+ drivers/block/drbd/drbd_state_change.h |  8 ++---
+ 4 files changed, 42 insertions(+), 33 deletions(-)
 
-v1 -> v3:
-   * Added R-by from Mika.
-
----
- drivers/pci/pci-driver.c |   15 +++++++++++++--
- drivers/pci/pci.c        |   15 ---------------
- 2 files changed, 13 insertions(+), 17 deletions(-)
-
-Index: linux-pm/drivers/pci/pci-driver.c
-===================================================================
---- linux-pm.orig/drivers/pci/pci-driver.c
-+++ linux-pm/drivers/pci/pci-driver.c
-@@ -559,6 +559,17 @@ static void pci_pm_default_resume_early(
- 	pci_pme_restore(pci_dev);
+diff --git a/drivers/block/drbd/drbd_int.h b/drivers/block/drbd/drbd_int.h
+index e35a234b0a8f..4f66cf6879fd 100644
+--- a/drivers/block/drbd/drbd_int.h
++++ b/drivers/block/drbd/drbd_int.h
+@@ -1688,22 +1688,22 @@ struct sib_info {
+ };
+ void drbd_bcast_event(struct drbd_device *device, const struct sib_info *sib);
+ 
+-extern void notify_resource_state(struct sk_buff *,
++extern int notify_resource_state(struct sk_buff *,
+ 				  unsigned int,
+ 				  struct drbd_resource *,
+ 				  struct resource_info *,
+ 				  enum drbd_notification_type);
+-extern void notify_device_state(struct sk_buff *,
++extern int notify_device_state(struct sk_buff *,
+ 				unsigned int,
+ 				struct drbd_device *,
+ 				struct device_info *,
+ 				enum drbd_notification_type);
+-extern void notify_connection_state(struct sk_buff *,
++extern int notify_connection_state(struct sk_buff *,
+ 				    unsigned int,
+ 				    struct drbd_connection *,
+ 				    struct connection_info *,
+ 				    enum drbd_notification_type);
+-extern void notify_peer_device_state(struct sk_buff *,
++extern int notify_peer_device_state(struct sk_buff *,
+ 				     unsigned int,
+ 				     struct drbd_peer_device *,
+ 				     struct peer_device_info *,
+diff --git a/drivers/block/drbd/drbd_nl.c b/drivers/block/drbd/drbd_nl.c
+index 5b15ffd0c7f5..5a80453be553 100644
+--- a/drivers/block/drbd/drbd_nl.c
++++ b/drivers/block/drbd/drbd_nl.c
+@@ -4598,7 +4598,7 @@ static int nla_put_notification_header(struct sk_buff *msg,
+ 	return drbd_notification_header_to_skb(msg, &nh, true);
  }
  
-+static void pci_pm_bridge_power_up_actions(struct pci_dev *pci_dev)
-+{
-+	pci_bridge_wait_for_secondary_bus(pci_dev);
-+	/*
-+	 * When powering on a bridge from D3cold, the whole hierarchy may be
-+	 * powered on into D0uninitialized state, resume them to give them a
-+	 * chance to suspend again
-+	 */
-+	pci_resume_bus(pci_dev->subordinate);
-+}
-+
- #endif
+-void notify_resource_state(struct sk_buff *skb,
++int notify_resource_state(struct sk_buff *skb,
+ 			   unsigned int seq,
+ 			   struct drbd_resource *resource,
+ 			   struct resource_info *resource_info,
+@@ -4640,16 +4640,17 @@ void notify_resource_state(struct sk_buff *skb,
+ 		if (err && err != -ESRCH)
+ 			goto failed;
+ 	}
+-	return;
++	return 0;
  
- #ifdef CONFIG_PM_SLEEP
-@@ -934,7 +945,7 @@ static int pci_pm_resume_noirq(struct de
- 	pcie_pme_root_status_cleanup(pci_dev);
+ nla_put_failure:
+ 	nlmsg_free(skb);
+ failed:
+ 	drbd_err(resource, "Error %d while broadcasting event. Event seq:%u\n",
+ 			err, seq);
++	return err;
+ }
  
- 	if (!skip_bus_pm && prev_state == PCI_D3cold)
--		pci_bridge_wait_for_secondary_bus(pci_dev);
-+		pci_pm_bridge_power_up_actions(pci_dev);
+-void notify_device_state(struct sk_buff *skb,
++int notify_device_state(struct sk_buff *skb,
+ 			 unsigned int seq,
+ 			 struct drbd_device *device,
+ 			 struct device_info *device_info,
+@@ -4689,16 +4690,17 @@ void notify_device_state(struct sk_buff *skb,
+ 		if (err && err != -ESRCH)
+ 			goto failed;
+ 	}
+-	return;
++	return 0;
  
- 	if (pci_has_legacy_pm_support(pci_dev))
- 		return 0;
-@@ -1321,7 +1332,7 @@ static int pci_pm_runtime_resume(struct
- 	pci_pm_default_resume(pci_dev);
+ nla_put_failure:
+ 	nlmsg_free(skb);
+ failed:
+ 	drbd_err(device, "Error %d while broadcasting event. Event seq:%u\n",
+ 		 err, seq);
++	return err;
+ }
  
- 	if (prev_state == PCI_D3cold)
--		pci_bridge_wait_for_secondary_bus(pci_dev);
-+		pci_pm_bridge_power_up_actions(pci_dev);
+-void notify_connection_state(struct sk_buff *skb,
++int notify_connection_state(struct sk_buff *skb,
+ 			     unsigned int seq,
+ 			     struct drbd_connection *connection,
+ 			     struct connection_info *connection_info,
+@@ -4738,16 +4740,17 @@ void notify_connection_state(struct sk_buff *skb,
+ 		if (err && err != -ESRCH)
+ 			goto failed;
+ 	}
+-	return;
++	return 0;
  
- 	if (pm && pm->runtime_resume)
- 		error = pm->runtime_resume(dev);
-Index: linux-pm/drivers/pci/pci.c
-===================================================================
---- linux-pm.orig/drivers/pci/pci.c
-+++ linux-pm/drivers/pci/pci.c
-@@ -1310,21 +1310,6 @@ static int pci_dev_wait(struct pci_dev *
- int pci_power_up(struct pci_dev *dev)
+ nla_put_failure:
+ 	nlmsg_free(skb);
+ failed:
+ 	drbd_err(connection, "Error %d while broadcasting event. Event seq:%u\n",
+ 		 err, seq);
++	return err;
+ }
+ 
+-void notify_peer_device_state(struct sk_buff *skb,
++int notify_peer_device_state(struct sk_buff *skb,
+ 			      unsigned int seq,
+ 			      struct drbd_peer_device *peer_device,
+ 			      struct peer_device_info *peer_device_info,
+@@ -4788,13 +4791,14 @@ void notify_peer_device_state(struct sk_buff *skb,
+ 		if (err && err != -ESRCH)
+ 			goto failed;
+ 	}
+-	return;
++	return 0;
+ 
+ nla_put_failure:
+ 	nlmsg_free(skb);
+ failed:
+ 	drbd_err(peer_device, "Error %d while broadcasting event. Event seq:%u\n",
+ 		 err, seq);
++	return err;
+ }
+ 
+ void notify_helper(enum drbd_notification_type type,
+@@ -4845,7 +4849,7 @@ void notify_helper(enum drbd_notification_type type,
+ 		 err, seq);
+ }
+ 
+-static void notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
++static int notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
  {
- 	pci_platform_power_transition(dev, PCI_D0);
--
--	/*
--	 * Mandatory power management transition delays are handled in
--	 * pci_pm_resume_noirq() and pci_pm_runtime_resume() of the
--	 * corresponding bridge.
--	 */
--	if (dev->runtime_d3cold) {
--		/*
--		 * When powering on a bridge from D3cold, the whole hierarchy
--		 * may be powered on into D0uninitialized state, resume them to
--		 * give them a chance to suspend again
--		 */
--		pci_resume_bus(dev->subordinate);
--	}
--
- 	return pci_raw_set_power_state(dev, PCI_D0);
+ 	struct drbd_genlmsghdr *dh;
+ 	int err;
+@@ -4859,11 +4863,12 @@ static void notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
+ 	if (nla_put_notification_header(skb, NOTIFY_EXISTS))
+ 		goto nla_put_failure;
+ 	genlmsg_end(skb, dh);
+-	return;
++	return 0;
+ 
+ nla_put_failure:
+ 	nlmsg_free(skb);
+ 	pr_err("Error %d sending event. Event seq:%u\n", err, seq);
++	return err;
  }
  
+ static void free_state_changes(struct list_head *list)
+@@ -4890,6 +4895,7 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
+ 	unsigned int seq = cb->args[2];
+ 	unsigned int n;
+ 	enum drbd_notification_type flags = 0;
++	int err = 0;
+ 
+ 	/* There is no need for taking notification_mutex here: it doesn't
+ 	   matter if the initial state events mix with later state chage
+@@ -4898,32 +4904,32 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
+ 
+ 	cb->args[5]--;
+ 	if (cb->args[5] == 1) {
+-		notify_initial_state_done(skb, seq);
++		err = notify_initial_state_done(skb, seq);
+ 		goto out;
+ 	}
+ 	n = cb->args[4]++;
+ 	if (cb->args[4] < cb->args[3])
+ 		flags |= NOTIFY_CONTINUES;
+ 	if (n < 1) {
+-		notify_resource_state_change(skb, seq, state_change->resource,
++		err = notify_resource_state_change(skb, seq, state_change->resource,
+ 					     NOTIFY_EXISTS | flags);
+ 		goto next;
+ 	}
+ 	n--;
+ 	if (n < state_change->n_connections) {
+-		notify_connection_state_change(skb, seq, &state_change->connections[n],
++		err = notify_connection_state_change(skb, seq, &state_change->connections[n],
+ 					       NOTIFY_EXISTS | flags);
+ 		goto next;
+ 	}
+ 	n -= state_change->n_connections;
+ 	if (n < state_change->n_devices) {
+-		notify_device_state_change(skb, seq, &state_change->devices[n],
++		err = notify_device_state_change(skb, seq, &state_change->devices[n],
+ 					   NOTIFY_EXISTS | flags);
+ 		goto next;
+ 	}
+ 	n -= state_change->n_devices;
+ 	if (n < state_change->n_devices * state_change->n_connections) {
+-		notify_peer_device_state_change(skb, seq, &state_change->peer_devices[n],
++		err = notify_peer_device_state_change(skb, seq, &state_change->peer_devices[n],
+ 						NOTIFY_EXISTS | flags);
+ 		goto next;
+ 	}
+@@ -4938,7 +4944,10 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
+ 		cb->args[4] = 0;
+ 	}
+ out:
+-	return skb->len;
++	if (err)
++		return err;
++	else
++		return skb->len;
+ }
+ 
+ int drbd_adm_get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
+diff --git a/drivers/block/drbd/drbd_state.c b/drivers/block/drbd/drbd_state.c
+index b452359b6aae..1474250f9440 100644
+--- a/drivers/block/drbd/drbd_state.c
++++ b/drivers/block/drbd/drbd_state.c
+@@ -1549,7 +1549,7 @@ int drbd_bitmap_io_from_worker(struct drbd_device *device,
+ 	return rv;
+ }
+ 
+-void notify_resource_state_change(struct sk_buff *skb,
++int notify_resource_state_change(struct sk_buff *skb,
+ 				  unsigned int seq,
+ 				  struct drbd_resource_state_change *resource_state_change,
+ 				  enum drbd_notification_type type)
+@@ -1562,10 +1562,10 @@ void notify_resource_state_change(struct sk_buff *skb,
+ 		.res_susp_fen = resource_state_change->susp_fen[NEW],
+ 	};
+ 
+-	notify_resource_state(skb, seq, resource, &resource_info, type);
++	return notify_resource_state(skb, seq, resource, &resource_info, type);
+ }
+ 
+-void notify_connection_state_change(struct sk_buff *skb,
++int notify_connection_state_change(struct sk_buff *skb,
+ 				    unsigned int seq,
+ 				    struct drbd_connection_state_change *connection_state_change,
+ 				    enum drbd_notification_type type)
+@@ -1576,10 +1576,10 @@ void notify_connection_state_change(struct sk_buff *skb,
+ 		.conn_role = connection_state_change->peer_role[NEW],
+ 	};
+ 
+-	notify_connection_state(skb, seq, connection, &connection_info, type);
++	return notify_connection_state(skb, seq, connection, &connection_info, type);
+ }
+ 
+-void notify_device_state_change(struct sk_buff *skb,
++int notify_device_state_change(struct sk_buff *skb,
+ 				unsigned int seq,
+ 				struct drbd_device_state_change *device_state_change,
+ 				enum drbd_notification_type type)
+@@ -1589,10 +1589,10 @@ void notify_device_state_change(struct sk_buff *skb,
+ 		.dev_disk_state = device_state_change->disk_state[NEW],
+ 	};
+ 
+-	notify_device_state(skb, seq, device, &device_info, type);
++	return notify_device_state(skb, seq, device, &device_info, type);
+ }
+ 
+-void notify_peer_device_state_change(struct sk_buff *skb,
++int notify_peer_device_state_change(struct sk_buff *skb,
+ 				     unsigned int seq,
+ 				     struct drbd_peer_device_state_change *p,
+ 				     enum drbd_notification_type type)
+@@ -1606,7 +1606,7 @@ void notify_peer_device_state_change(struct sk_buff *skb,
+ 		.peer_resync_susp_dependency = p->resync_susp_dependency[NEW],
+ 	};
+ 
+-	notify_peer_device_state(skb, seq, peer_device, &peer_device_info, type);
++	return notify_peer_device_state(skb, seq, peer_device, &peer_device_info, type);
+ }
+ 
+ static void broadcast_state_change(struct drbd_state_change *state_change)
+@@ -1614,7 +1614,7 @@ static void broadcast_state_change(struct drbd_state_change *state_change)
+ 	struct drbd_resource_state_change *resource_state_change = &state_change->resource[0];
+ 	bool resource_state_has_changed;
+ 	unsigned int n_device, n_connection, n_peer_device, n_peer_devices;
+-	void (*last_func)(struct sk_buff *, unsigned int, void *,
++	int (*last_func)(struct sk_buff *, unsigned int, void *,
+ 			  enum drbd_notification_type) = NULL;
+ 	void *uninitialized_var(last_arg);
+ 
+diff --git a/drivers/block/drbd/drbd_state_change.h b/drivers/block/drbd/drbd_state_change.h
+index ba80f612d6ab..d5b0479bc9a6 100644
+--- a/drivers/block/drbd/drbd_state_change.h
++++ b/drivers/block/drbd/drbd_state_change.h
+@@ -44,19 +44,19 @@ extern struct drbd_state_change *remember_old_state(struct drbd_resource *, gfp_
+ extern void copy_old_to_new_state_change(struct drbd_state_change *);
+ extern void forget_state_change(struct drbd_state_change *);
+ 
+-extern void notify_resource_state_change(struct sk_buff *,
++extern int notify_resource_state_change(struct sk_buff *,
+ 					 unsigned int,
+ 					 struct drbd_resource_state_change *,
+ 					 enum drbd_notification_type type);
+-extern void notify_connection_state_change(struct sk_buff *,
++extern int notify_connection_state_change(struct sk_buff *,
+ 					   unsigned int,
+ 					   struct drbd_connection_state_change *,
+ 					   enum drbd_notification_type type);
+-extern void notify_device_state_change(struct sk_buff *,
++extern int notify_device_state_change(struct sk_buff *,
+ 				       unsigned int,
+ 				       struct drbd_device_state_change *,
+ 				       enum drbd_notification_type type);
+-extern void notify_peer_device_state_change(struct sk_buff *,
++extern int notify_peer_device_state_change(struct sk_buff *,
+ 					    unsigned int,
+ 					    struct drbd_peer_device_state_change *,
+ 					    enum drbd_notification_type type);
+-- 
+2.35.1
 
 
 
