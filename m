@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C5EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1307C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245201AbiDNOIA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56900 "EHLO
+        id S245321AbiDNOIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:08:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343999AbiDNNaN (ORCPT
+        with ESMTP id S1344030AbiDNNaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B77A986E9;
-        Thu, 14 Apr 2022 06:25:51 -0700 (PDT)
+        Thu, 14 Apr 2022 09:30:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340A592D25;
+        Thu, 14 Apr 2022 06:26:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36C50B82987;
-        Thu, 14 Apr 2022 13:25:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99D54C385A5;
-        Thu, 14 Apr 2022 13:25:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2F06619DA;
+        Thu, 14 Apr 2022 13:26:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0043C385A5;
+        Thu, 14 Apr 2022 13:26:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942749;
-        bh=j8Z1AGKCrXLPe5aJkAu8+ZcWS3IjivjKQItxwfZOl4M=;
+        s=korg; t=1649942790;
+        bh=IID6F9Ke4JqC9L6vJlF0luQUGFuNBiHgFrpgIgXi2P0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FkgJOiBxXGnCsfamyXjiYCGEWEAhoG5aRsXGesCtW7cG+/2/cgH3AwUfXQJKTyr14
-         5s6q+QPlQRrypHmcHaXqg96guAs0yQzpePKz+WTMUSPE5W2yxhE8ksSui4r32349O+
-         kBxTfwWcQ5abpW/p6V791GP8fe7nS4vl1pjuP5Uk=
+        b=yH9L/Skr92sk+y+EuI6XOzeNeAXOAg9Mlqnf8OmHhO2puMTnI1e74UcYO1DeIzsKL
+         L3MfZzJELPVjI8iZD3oW9jyV9mez8406pHcuB65b+ty+k3v1Ds8MK11DAtQf8oo+Ty
+         XKHPPensmCzi1SnodN+ZAnzJm/fD8x596+orpznM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hengqi Chen <hengqi.chen@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>
-Subject: [PATCH 4.19 248/338] bpf: Fix comment for helper bpf_current_task_under_cgroup()
-Date:   Thu, 14 Apr 2022 15:12:31 +0200
-Message-Id: <20220414110845.950753605@linuxfoundation.org>
+        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 262/338] ath5k: fix OOB in ath5k_eeprom_read_pcal_info_5111
+Date:   Thu, 14 Apr 2022 15:12:45 +0200
+Message-Id: <20220414110846.346265747@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -49,48 +50,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hengqi Chen <hengqi.chen@gmail.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-commit 58617014405ad5c9f94f464444f4972dabb71ca7 upstream.
+[ Upstream commit 564d4eceb97eaf381dd6ef6470b06377bb50c95a ]
 
-Fix the descriptions of the return values of helper bpf_current_task_under_cgroup().
+The bug was found during fuzzing. Stacktrace locates it in
+ath5k_eeprom_convert_pcal_info_5111.
+When none of the curve is selected in the loop, idx can go
+up to AR5K_EEPROM_N_PD_CURVES. The line makes pd out of bound.
+pd = &chinfo[pier].pd_curves[idx];
 
-Fixes: c6b5fb8690fa ("bpf: add documentation for eBPF helpers (42-50)")
-Signed-off-by: Hengqi Chen <hengqi.chen@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20220310155335.1278783-1-hengqi.chen@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+There are many OOB writes using pd later in the code. So I
+added a sanity check for idx. Checks for other loops involving
+AR5K_EEPROM_N_PD_CURVES are not needed as the loop index is not
+used outside the loops.
+
+The patch is NOT tested with real device.
+
+The following is the fuzzing report
+
+BUG: KASAN: slab-out-of-bounds in ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+Write of size 1 at addr ffff8880174a4d60 by task modprobe/214
+
+CPU: 0 PID: 214 Comm: modprobe Not tainted 5.6.0 #1
+Call Trace:
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ __kasan_report.cold+0x37/0x7c
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ kasan_report+0xe/0x20
+ ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ ? apic_timer_interrupt+0xa/0x20
+ ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
+ ? ath5k_pci_eeprom_read+0x228/0x3c0 [ath5k]
+ ath5k_eeprom_init+0x2513/0x6290 [ath5k]
+ ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
+ ? usleep_range+0xb8/0x100
+ ? apic_timer_interrupt+0xa/0x20
+ ? ath5k_eeprom_read_pcal_info_2413+0x2f20/0x2f20 [ath5k]
+ ath5k_hw_init+0xb60/0x1970 [ath5k]
+ ath5k_init_ah+0x6fe/0x2530 [ath5k]
+ ? kasprintf+0xa6/0xe0
+ ? ath5k_stop+0x140/0x140 [ath5k]
+ ? _dev_notice+0xf6/0xf6
+ ? apic_timer_interrupt+0xa/0x20
+ ath5k_pci_probe.cold+0x29a/0x3d6 [ath5k]
+ ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
+ ? mutex_lock+0x89/0xd0
+ ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
+ local_pci_probe+0xd3/0x160
+ pci_device_probe+0x23f/0x3e0
+ ? pci_device_remove+0x280/0x280
+ ? pci_device_remove+0x280/0x280
+ really_probe+0x209/0x5d0
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/YckvDdj3mtCkDRIt@a-10-27-26-18.dynapool.vpn.nyu.edu
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/bpf.h       |    4 ++--
- tools/include/uapi/linux/bpf.h |    4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/wireless/ath/ath5k/eeprom.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1207,8 +1207,8 @@ union bpf_attr {
-  * 	Return
-  * 		The return value depends on the result of the test, and can be:
-  *
-- *		* 0, if current task belongs to the cgroup2.
-- *		* 1, if current task does not belong to the cgroup2.
-+ *		* 1, if current task belongs to the cgroup2.
-+ *		* 0, if current task does not belong to the cgroup2.
-  * 		* A negative error code, if an error occurred.
-  *
-  * int bpf_skb_change_tail(struct sk_buff *skb, u32 len, u64 flags)
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1205,8 +1205,8 @@ union bpf_attr {
-  * 	Return
-  * 		The return value depends on the result of the test, and can be:
-  *
-- *		* 0, if current task belongs to the cgroup2.
-- *		* 1, if current task does not belong to the cgroup2.
-+ *		* 1, if current task belongs to the cgroup2.
-+ *		* 0, if current task does not belong to the cgroup2.
-  * 		* A negative error code, if an error occurred.
-  *
-  * int bpf_skb_change_tail(struct sk_buff *skb, u32 len, u64 flags)
+diff --git a/drivers/net/wireless/ath/ath5k/eeprom.c b/drivers/net/wireless/ath/ath5k/eeprom.c
+index 94d34ee02265..01163b333945 100644
+--- a/drivers/net/wireless/ath/ath5k/eeprom.c
++++ b/drivers/net/wireless/ath/ath5k/eeprom.c
+@@ -746,6 +746,9 @@ ath5k_eeprom_convert_pcal_info_5111(struct ath5k_hw *ah, int mode,
+ 			}
+ 		}
+ 
++		if (idx == AR5K_EEPROM_N_PD_CURVES)
++			goto err_out;
++
+ 		ee->ee_pd_gains[mode] = 1;
+ 
+ 		pd = &chinfo[pier].pd_curves[idx];
+-- 
+2.35.1
+
 
 
