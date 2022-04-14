@@ -2,123 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F08E3C46467
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE80C4707A
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344166AbiDNNkG (ORCPT
+        id S1344262AbiDNNk3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:40:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49932 "EHLO
+        Thu, 14 Apr 2022 09:40:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244925AbiDNN2S (ORCPT
+        with ESMTP id S245045AbiDNN21 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C06EA888E
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:21:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649942478;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I+R/eNqjb1wpUKu1EY5DiMRn7IAObJ3SaayfFkvzkX4=;
-        b=eXVYZjbP9hCF8ynJwnNrhwjt+3HKt1njv+3GHZjhy40Nj4DZ5lKBAtQD65R+etPaFqkdBf
-        Wt8pBEbo+MoM2FHIsZEvDzdj63RVEX/UVHvh5JuLxQj5KKGC7812OdCTAfWeOa0xvrZB9c
-        qmH1ntmN6JaBULec7lSKLx8Zh8wh1zE=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-rbs9DGA3PLCik8fHTLS1OQ-1; Thu, 14 Apr 2022 09:21:15 -0400
-X-MC-Unique: rbs9DGA3PLCik8fHTLS1OQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 14 Apr 2022 09:28:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6FE099ECC;
+        Thu, 14 Apr 2022 06:21:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EDE0B38149DD;
-        Thu, 14 Apr 2022 13:21:11 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.195.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E27E53CD;
-        Thu, 14 Apr 2022 13:21:10 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 27/34] KVM: selftests: Sync 'struct hv_enlightened_vmcs' definition with hyperv-tlfs.h
-Date:   Thu, 14 Apr 2022 15:20:06 +0200
-Message-Id: <20220414132013.1588929-28-vkuznets@redhat.com>
-In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41A0FB82989;
+        Thu, 14 Apr 2022 13:21:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8668BC385A1;
+        Thu, 14 Apr 2022 13:21:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942490;
+        bh=0cwtickP+NgWw+WWecWdYHUHie0YObIM9I8XHcGackM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=q6E3huqoPXHzeA6xEO1H4pWDEWGDg2h37gxMMAlGJSveWAcNUw/wHvzuD7vkaOCa4
+         TKRzJ9nY4Yt2eJq6kgXXMvNUHLJLuPkisPYYvgOmkG9c1wpd1LGhyE2MvCR03Lo6q1
+         Jad78UxpVBHT+QAp0fvpQOHygYWLJwisWLD5h6Q8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 114/338] mmc: davinci_mmc: Handle error for clk_enable
+Date:   Thu, 14 Apr 2022 15:10:17 +0200
+Message-Id: <20220414110842.152990433@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'struct hv_enlightened_vmcs' definition in selftests is not '__packed'
-and so we rely on the compiler doing the right padding. This is not
-obvious so it seems beneficial to use the same definition as in kernel.
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+[ Upstream commit 09e7af76db02c74f2a339b3cb2d95460fa2ddbe4 ]
+
+As the potential failure of the clk_enable(),
+it should be better to check it and return error
+if fails.
+
+Fixes: bbce5802afc5 ("davinci: mmc: updates to suspend/resume implementation")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220308071415.1093393-1-jiasheng@iscas.ac.cn
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/kvm/include/x86_64/evmcs.h | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/mmc/host/davinci_mmc.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-index cc5d14a45702..b6067b555110 100644
---- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-@@ -41,6 +41,8 @@ struct hv_enlightened_vmcs {
- 	u16 host_gs_selector;
- 	u16 host_tr_selector;
- 
-+	u16 padding16_1;
+diff --git a/drivers/mmc/host/davinci_mmc.c b/drivers/mmc/host/davinci_mmc.c
+index e6f14257a7d0..70d04962f53a 100644
+--- a/drivers/mmc/host/davinci_mmc.c
++++ b/drivers/mmc/host/davinci_mmc.c
+@@ -1389,8 +1389,12 @@ static int davinci_mmcsd_suspend(struct device *dev)
+ static int davinci_mmcsd_resume(struct device *dev)
+ {
+ 	struct mmc_davinci_host *host = dev_get_drvdata(dev);
++	int ret;
 +
- 	u64 host_ia32_pat;
- 	u64 host_ia32_efer;
++	ret = clk_enable(host->clk);
++	if (ret)
++		return ret;
  
-@@ -159,7 +161,7 @@ struct hv_enlightened_vmcs {
- 	u64 ept_pointer;
+-	clk_enable(host->clk);
+ 	mmc_davinci_reset_ctrl(host, 0);
  
- 	u16 virtual_processor_id;
--	u16 padding16[3];
-+	u16 padding16_2[3];
- 
- 	u64 padding64_2[5];
- 	u64 guest_physical_address;
-@@ -195,15 +197,15 @@ struct hv_enlightened_vmcs {
- 	u64 guest_rip;
- 
- 	u32 hv_clean_fields;
--	u32 hv_padding_32;
-+	u32 padding32_1;
- 	u32 hv_synthetic_controls;
- 	struct {
- 		u32 nested_flush_hypercall:1;
- 		u32 msr_bitmap:1;
- 		u32 reserved:30;
--	} hv_enlightenments_control;
-+	}  __packed hv_enlightenments_control;
- 	u32 hv_vp_id;
--
-+	u32 padding32_2;
- 	u64 hv_vm_id;
- 	u64 partition_assist_page;
- 	u64 padding64_4[4];
-@@ -211,7 +213,7 @@ struct hv_enlightened_vmcs {
- 	u64 padding64_5[7];
- 	u64 xss_exit_bitmap;
- 	u64 padding64_6[7];
--};
-+} __packed;
- 
- #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE                     0
- #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_IO_BITMAP                BIT(0)
+ 	return 0;
 -- 
-2.35.1
+2.34.1
+
+
 
