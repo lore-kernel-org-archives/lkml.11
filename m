@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E60AC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF4CC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347673AbiDNOMS (ORCPT
+        id S1347454AbiDNOLz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:12:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
+        Thu, 14 Apr 2022 10:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244497AbiDNNef (ORCPT
+        with ESMTP id S1344683AbiDNNdX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:34:35 -0400
+        Thu, 14 Apr 2022 09:33:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611CB8BF4F;
-        Thu, 14 Apr 2022 06:30:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B260425C60;
+        Thu, 14 Apr 2022 06:30:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF9EF619DA;
-        Thu, 14 Apr 2022 13:30:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C880BC385A5;
-        Thu, 14 Apr 2022 13:30:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4895E619FC;
+        Thu, 14 Apr 2022 13:30:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5427DC3410F;
+        Thu, 14 Apr 2022 13:30:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943057;
-        bh=qbdtWFFZQI3k9rG1HP1hDJcb1ETB/I6YlvhsV2G2WVA=;
+        s=korg; t=1649943051;
+        bh=bGL/JWnNT3SXoDGDQIG/STlZZ8Wb6FUJ1KCjPhTJqJY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HWl2KZIiMZRW9d86IB7Op7vWkOOk5ELQKXJGtVPHo5/UkqLHDfoMeiDMjDII6LdkF
-         LCoVL3W59oAvnqnkh80iHmtUZl2Cv17S2DruUrg8UVHONLmuSciVAMKK1DlRPgC5Gt
-         YfGn6598y9g5wHsUgbLtQ1I4OnYXypB7AuFg1j3w=
+        b=0wsKS/PiEnSh5312yi+vYvlpKh8FFTGVmS+f13i7fnkWyf0GeqC5G9S3GjTH4ybQK
+         r6OS0pkpGR7l0OxM4CC+WF1KEfQIMflbq0vCb/fnRpZ85GUvmlha04IyGrfoIUxzF7
+         /lpt3J0JTymTNz0ha6QxJapMhDkkFt6zjzfuZcco=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Henry Lin <henryl@nvidia.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.4 020/475] xhci: fix runtime PM imbalance in USB2 resume
-Date:   Thu, 14 Apr 2022 15:06:45 +0200
-Message-Id: <20220414110855.719092898@linuxfoundation.org>
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 5.4 018/475] virtio-blk: Use blk_validate_block_size() to validate block size
+Date:   Thu, 14 Apr 2022 15:06:43 +0200
+Message-Id: <20220414110855.662314371@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,41 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Henry Lin <henryl@nvidia.com>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-commit 70c05e4cf63054cd755ca66c1819327b22cb085f upstream.
+commit 57a13a5b8157d9a8606490aaa1b805bafe6c37e1 upstream.
 
-A race between system resume and device-initiated resume may result in
-runtime PM imbalance on USB2 root hub. If a device-initiated resume
-starts and system resume xhci_bus_resume() directs U0 before hub driver
-sees the resuming device in RESUME state, device-initiated resume will
-not be finished in xhci_handle_usb2_port_link_resume(). In this case,
-usb_hcd_end_port_resume() call is missing.
+The block layer can't support a block size larger than
+page size yet. And a block size that's too small or
+not a power of two won't work either. If a misconfigured
+device presents an invalid block size in configuration space,
+it will result in the kernel crash something like below:
 
-This changes calls usb_hcd_end_port_resume() if resuming device reaches
-U0 to keep runtime PM balance.
+[  506.154324] BUG: kernel NULL pointer dereference, address: 0000000000000008
+[  506.160416] RIP: 0010:create_empty_buffers+0x24/0x100
+[  506.174302] Call Trace:
+[  506.174651]  create_page_buffers+0x4d/0x60
+[  506.175207]  block_read_full_page+0x50/0x380
+[  506.175798]  ? __mod_lruvec_page_state+0x60/0xa0
+[  506.176412]  ? __add_to_page_cache_locked+0x1b2/0x390
+[  506.177085]  ? blkdev_direct_IO+0x4a0/0x4a0
+[  506.177644]  ? scan_shadow_nodes+0x30/0x30
+[  506.178206]  ? lru_cache_add+0x42/0x60
+[  506.178716]  do_read_cache_page+0x695/0x740
+[  506.179278]  ? read_part_sector+0xe0/0xe0
+[  506.179821]  read_part_sector+0x36/0xe0
+[  506.180337]  adfspart_check_ICS+0x32/0x320
+[  506.180890]  ? snprintf+0x45/0x70
+[  506.181350]  ? read_part_sector+0xe0/0xe0
+[  506.181906]  bdev_disk_changed+0x229/0x5c0
+[  506.182483]  blkdev_get_whole+0x6d/0x90
+[  506.183013]  blkdev_get_by_dev+0x122/0x2d0
+[  506.183562]  device_add_disk+0x39e/0x3c0
+[  506.184472]  virtblk_probe+0x3f8/0x79b [virtio_blk]
+[  506.185461]  virtio_dev_probe+0x15e/0x1d0 [virtio]
 
-Fixes: a231ec41e6f6 ("xhci: refactor U0 link state handling in get_port_status")
-Cc: stable@vger.kernel.org
-Signed-off-by: Henry Lin <henryl@nvidia.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220303110903.1662404-5-mathias.nyman@linux.intel.com
+So let's use a block layer helper to validate the block size.
+
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Link: https://lore.kernel.org/r/20211026144015.188-5-xieyongji@bytedance.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci-hub.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/block/virtio_blk.c |   12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/host/xhci-hub.c
-+++ b/drivers/usb/host/xhci-hub.c
-@@ -1000,6 +1000,9 @@ static void xhci_get_usb2_port_status(st
- 		if (link_state == XDEV_U2)
- 			*status |= USB_PORT_STAT_L1;
- 		if (link_state == XDEV_U0) {
-+			if (bus_state->resume_done[portnum])
-+				usb_hcd_end_port_resume(&port->rhub->hcd->self,
-+							portnum);
- 			bus_state->resume_done[portnum] = 0;
- 			clear_bit(portnum, &bus_state->resuming_ports);
- 			if (bus_state->suspended_ports & (1 << portnum)) {
+--- a/drivers/block/virtio_blk.c
++++ b/drivers/block/virtio_blk.c
+@@ -936,9 +936,17 @@ static int virtblk_probe(struct virtio_d
+ 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
+ 				   struct virtio_blk_config, blk_size,
+ 				   &blk_size);
+-	if (!err)
++	if (!err) {
++		err = blk_validate_block_size(blk_size);
++		if (err) {
++			dev_err(&vdev->dev,
++				"virtio_blk: invalid block size: 0x%x\n",
++				blk_size);
++			goto out_free_tags;
++		}
++
+ 		blk_queue_logical_block_size(q, blk_size);
+-	else
++	} else
+ 		blk_size = queue_logical_block_size(q);
+ 
+ 	/* Use topology information if available */
 
 
