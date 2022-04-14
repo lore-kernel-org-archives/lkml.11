@@ -2,119 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78439C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 22:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7FBBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 22:46:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236561AbiDNWsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 18:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41752 "EHLO
+        id S1347248AbiDNWs1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 18:48:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241321AbiDNWsO (ORCPT
+        with ESMTP id S1347232AbiDNWsU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 18:48:14 -0400
-Received: from mail-0201.mail-europe.com (mail-0201.mail-europe.com [51.77.79.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683F4C6B76;
-        Thu, 14 Apr 2022 15:45:47 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 22:45:36 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-        s=protonmail2; t=1649976343;
-        bh=N1CwAcVop9zqLRsxrEXTkTy/S/preizWU4aYyhoZHhM=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-         Message-ID;
-        b=A22Iq2lQ4+bvKuiiH5ymI5leLRm2NdvbTRbCKTbTSPbG9FrsxL4lhq+6lvrKqyYVX
-         f+jqjmtNimSu19D0n3qDygcmD1jdvQp+kYlfG4OE2s1GwAZu6kcwmnJpwpHSULv6+v
-         YkJ5usrs7vsKBaD8n69R3nMgGX9KrJaF6R7iOUOKjdFww7hAJvnC1d9tJpqlb9w7w0
-         RTW+fAuYbwCvz+VXBdIHc/UwvFj62SsB67Zxs+5vY9lCY5WUkeQCMLmyZhuRgubjMN
-         /7zWr9JFt/FO+dtUcBPTOTDQ8qvU4HV/xO4vF3lssWb3vjzIWPUYjhNE8V6O1LHI/T
-         SDUZPwx38pcAw==
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Dmitrii Dolgov <9erthalion6@gmail.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Chenbo Feng <fengc@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Daniel Wagner <daniel.wagner@bmw-carit.de>,
-        Thomas Graf <tgraf@suug.ch>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, llvm@lists.linux.dev
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH bpf-next 04/11] samples: bpf: add 'asm/mach-generic' include path for every MIPS
-Message-ID: <20220414223704.341028-5-alobakin@pm.me>
-In-Reply-To: <20220414223704.341028-1-alobakin@pm.me>
-References: <20220414223704.341028-1-alobakin@pm.me>
+        Thu, 14 Apr 2022 18:48:20 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7678FC6EDE
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 15:45:54 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id c23so5916362plo.0
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 15:45:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:date:message-id:mime-version:content-transfer-encoding:cc
+         :from:to;
+        bh=yrDHQuYb48YDvHbtAzgjJkyK31UIJkjOnff3p/U86sM=;
+        b=4EXXi/qoqg6Olt0vHXOTMdpyoa9bqWxbfOxxLHtrN/t1usD5oljyvFC8cJHbrS5bCe
+         u9lU8Uum0EYbwgVD3niC/emY4qpCVsaBQ9/hzXRInPJWVdkD6yqRCvTTZK4JWQwp7vN6
+         BJS80WVxP9JPInFsHUA1c67XKH5v4ScAdL8+BPzuy+SQFlVmF3HyX+w2q9mAlQKPTeB9
+         ycWnWpndrZS7Opbw4NP8hNikQ4grPBpZ0D67EAo0GsS+2yEm9oVWn48dK8nYYHXo0q7k
+         VQg0andWrnvY8j3uxhyVCy93JB5IU/wMO9fY/27TSTCprcW9W08aLKpy+jYKJghKRaYV
+         abuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:date:message-id:mime-version
+         :content-transfer-encoding:cc:from:to;
+        bh=yrDHQuYb48YDvHbtAzgjJkyK31UIJkjOnff3p/U86sM=;
+        b=XJkN7OumqrueC7Or1mxRCpvYRy4rkVlZP/SiUmeE2RQaxNFrjUsE/chiR6PP8+oilM
+         rjJa2qdlyzeom7jgZwl/fG7BFZjLw16dBA62ujXMbv7R9zxoxXA7aFRW6Es2ESpvBBKe
+         uM3UuHd2v0dDox1hf22gonDIuut1XK+3X3sjc7/XAM5rDTD/8Z9AehbBwLpboH0Zchyl
+         2dGWawGu+lA4UYFPkwnwWBoVcGq5a5niy9kYDE+wO6wGwoqP6LqiFTJK9mukeBvxC6h+
+         lWHvZUGBfoJ+c4MHEGGbLZ4nDamWNEqo4bBIk6PEgHfh/eVhn3leXGTp7l2j10WoVZT/
+         oCHg==
+X-Gm-Message-State: AOAM532otEScKIPLp3NLAPuY4hVVNppMyffQrAyTSm5EZSh5eYFMiKOB
+        VwrTZyDI+fxh969J3h3SH0yRT8cUWXkL9g==
+X-Google-Smtp-Source: ABdhPJylozf6XNHlm1L9F2LPLthfumcFTJLhRp6QX9EUyJeF2D1BQ/HWoOVEEcFvnf1ZtIhqaf4/2w==
+X-Received: by 2002:a17:903:213:b0:156:7efe:4783 with SMTP id r19-20020a170903021300b001567efe4783mr49591858plh.126.1649976354027;
+        Thu, 14 Apr 2022 15:45:54 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id a9-20020aa78649000000b004fe3d6c1731sm858980pfo.175.2022.04.14.15.45.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 15:45:53 -0700 (PDT)
+Subject: [PATCH v1] asm-generic: Describe the logic beind the __io barrier names
+Date:   Thu, 14 Apr 2022 15:45:22 -0700
+Message-Id: <20220414224522.28972-1-palmer@rivosinc.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Cc:     Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     helgaas@kernel.org, macro@orcam.me.uk
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following:
+From: Palmer Dabbelt <palmer@rivosinc.com>
 
-In file included from samples/bpf/tracex2_kern.c:7:
-In file included from ./include/linux/skbuff.h:13:
-In file included from ./include/linux/kernel.h:22:
-In file included from ./include/linux/bitops.h:33:
-In file included from ./arch/mips/include/asm/bitops.h:20:
-In file included from ./arch/mips/include/asm/barrier.h:11:
-./arch/mips/include/asm/addrspace.h:13:10: fatal error: 'spaces.h' file not=
- found
- #include <spaces.h>
-          ^~~~~~~~~~
+These names are very terse, as they weren't originally designed to be
+this spread out.  There was recently some confusion as to how this fits
+together, hopefully this comment makes them easier to understand.
 
-'arch/mips/include/asm/mach-generic' should always be included as
-many other MIPS include files rely on this.
-Move it from under CONFIG_MACH_LOONGSON64 to let it be included
-for every MIPS.
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 
-Fixes: 058107abafc7 ("samples/bpf: Add include dir for MIPS Loongson64 to f=
-ix build errors")
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- samples/bpf/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 8fff5ad3444b..97203c0de252 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -193,8 +193,8 @@ ifeq ($(ARCH), mips)
- TPROGS_CFLAGS +=3D -D__SANE_USERSPACE_TYPES__
- ifdef CONFIG_MACH_LOONGSON64
- BPF_EXTRA_CFLAGS +=3D -I$(srctree)/arch/mips/include/asm/mach-loongson64
--BPF_EXTRA_CFLAGS +=3D -I$(srctree)/arch/mips/include/asm/mach-generic
- endif
-+BPF_EXTRA_CFLAGS +=3D -I$(srctree)/arch/mips/include/asm/mach-generic
- endif
+Maybe we should use 'm', instead of '', for the MMIO barriers?
+---
+ include/asm-generic/io.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
- TPROGS_CFLAGS +=3D -Wall -O2
---
-2.35.2
-
+diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
+index 7ce93aaf69f8..1297807b5831 100644
+--- a/include/asm-generic/io.h
++++ b/include/asm-generic/io.h
+@@ -18,6 +18,15 @@
+ #include <asm/mmiowb.h>
+ #include <asm-generic/pci_iomap.h>
+ 
++/*
++ * These generic IO helpers provide a handful of architecture hooks, which are
++ * the Cartesian product over three dimensions:
++ *   - Memory (the empty character) and port ('p').  The memory flavor is used
++ *     for MMIO (read/write), the ports are used for port IO (in/out).
++ *   - Before ('b') and after ('a'), which are inserted before/after the raw
++ *     access.
++ *   - Read ('r') and write ('w'), for the direction of the access.
++ */
+ #ifndef __io_br
+ #define __io_br()      barrier()
+ #endif
+-- 
+2.34.1
 
