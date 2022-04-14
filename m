@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE75C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9112C35296
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344511AbiDNNoQ (ORCPT
+        id S1344576AbiDNNoY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:44:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49450 "EHLO
+        Thu, 14 Apr 2022 09:44:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245356AbiDNN2w (ORCPT
+        with ESMTP id S245415AbiDNN24 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5326AAC053;
-        Thu, 14 Apr 2022 06:22:33 -0700 (PDT)
+        Thu, 14 Apr 2022 09:28:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 220468FE4C;
+        Thu, 14 Apr 2022 06:22:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8890B8296A;
-        Thu, 14 Apr 2022 13:22:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D035FC385AA;
-        Thu, 14 Apr 2022 13:22:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA46BB82983;
+        Thu, 14 Apr 2022 13:22:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C7A0C385A9;
+        Thu, 14 Apr 2022 13:22:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942550;
-        bh=H3Dt4cJJwR/zpCWMq7h5pmwL4k+5EyFj/mhPC5rRNJU=;
+        s=korg; t=1649942564;
+        bh=fL/9JExO2tXP04LmpEbKDEVhu/cjfqqWwkkGoW1e1g8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q4qSmP1FMci4Z6Yqiped2KqndfuMI/xj4lxmQOnte7q43UKwbk4y0mub3fO5A8JMS
-         0aokbeoQRh0tcYbt88oAOXaartflKnJxkimmbAv41FAApUOaKxhdTD1aCdYRDpU4Eb
-         4L2zpzG9Wdlvv5sFMNH8dtwWGYHJkGw6L04KQm7U=
+        b=jWvgzZ2taV1mprgOfKBP4+i29ExEyllNMG6WLJSItFB56ZJKWzyDYACAyFuzSXeE8
+         PWKec3hMZCeHTyjYiY5/5XV4nu20p1KVmdA2Ntn/W9wGIzlctECHzGA61QQ7Fn0Aty
+         mvWpy1D1QYXF+0rMmzfJQJ21yXOsekgUrP6cVuNE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
+        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 176/338] tty: hvc: fix return value of __setup handler
-Date:   Thu, 14 Apr 2022 15:11:19 +0200
-Message-Id: <20220414110843.907710111@linuxfoundation.org>
+Subject: [PATCH 4.19 154/338] selftests/bpf/test_lirc_mode2.sh: Exit with proper code
+Date:   Thu, 14 Apr 2022 15:10:57 +0200
+Message-Id: <20220414110843.284819545@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -56,48 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Hangbin Liu <liuhangbin@gmail.com>
 
-[ Upstream commit 53819a0d97aace1425bb042829e3446952a9e8a9 ]
+[ Upstream commit ec80906b0fbd7be11e3e960813b977b1ffe5f8fe ]
 
-__setup() handlers should return 1 to indicate that the boot option
-has been handled or 0 to indicate that it was not handled.
-Add a pr_warn() message if the option value is invalid and then
-always return 1.
+When test_lirc_mode2_user exec failed, the test report failed but still
+exit with 0. Fix it by exiting with an error code.
 
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: 86b40567b917 ("tty: replace strict_strtoul() with kstrtoul()")
-Cc: Jingoo Han <jg1.han@samsung.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Julian Wiedmann <jwi@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: linuxppc-dev@lists.ozlabs.org
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Link: https://lore.kernel.org/r/20220308024228.20477-1-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Another issue is for the LIRCDEV checking. With bash -n, we need to quote
+the variable, or it will always be true. So if test_lirc_mode2_user was
+not run, just exit with skip code.
+
+Fixes: 6bdd533cee9a ("bpf: add selftest for lirc_mode2 type program")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220321024149.157861-1-liuhangbin@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/hvc/hvc_iucv.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/test_lirc_mode2.sh | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/hvc/hvc_iucv.c b/drivers/tty/hvc/hvc_iucv.c
-index 2af1e5751bd6..796fbff623f6 100644
---- a/drivers/tty/hvc/hvc_iucv.c
-+++ b/drivers/tty/hvc/hvc_iucv.c
-@@ -1470,7 +1470,9 @@ static int __init hvc_iucv_init(void)
-  */
- static	int __init hvc_iucv_config(char *val)
- {
--	 return kstrtoul(val, 10, &hvc_iucv_devices);
-+	if (kstrtoul(val, 10, &hvc_iucv_devices))
-+		pr_warn("hvc_iucv= invalid parameter value '%s'\n", val);
-+	return 1;
- }
+diff --git a/tools/testing/selftests/bpf/test_lirc_mode2.sh b/tools/testing/selftests/bpf/test_lirc_mode2.sh
+index 677686198df3..795e56e3eaec 100755
+--- a/tools/testing/selftests/bpf/test_lirc_mode2.sh
++++ b/tools/testing/selftests/bpf/test_lirc_mode2.sh
+@@ -3,6 +3,7 @@
  
+ # Kselftest framework requirement - SKIP code is 4.
+ ksft_skip=4
++ret=$ksft_skip
  
+ msg="skip all tests:"
+ if [ $UID != 0 ]; then
+@@ -24,7 +25,7 @@ do
+ 	fi
+ done
+ 
+-if [ -n $LIRCDEV ];
++if [ -n "$LIRCDEV" ];
+ then
+ 	TYPE=lirc_mode2
+ 	./test_lirc_mode2_user $LIRCDEV
+@@ -35,3 +36,5 @@ then
+ 		echo -e ${GREEN}"PASS: $TYPE"${NC}
+ 	fi
+ fi
++
++exit $ret
 -- 
 2.34.1
 
