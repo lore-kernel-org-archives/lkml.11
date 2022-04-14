@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D36FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C0E5C43217
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352854AbiDNOd6 (ORCPT
+        id S1352889AbiDNOeM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:33:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47432 "EHLO
+        Thu, 14 Apr 2022 10:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344490AbiDNNln (ORCPT
+        with ESMTP id S245043AbiDNNiJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:41:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCD8120;
-        Thu, 14 Apr 2022 06:39:18 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD9B99ED4;
+        Thu, 14 Apr 2022 06:31:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18FAB61BA7;
-        Thu, 14 Apr 2022 13:39:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29117C385A1;
-        Thu, 14 Apr 2022 13:39:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCFD6B8296A;
+        Thu, 14 Apr 2022 13:31:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 252E9C385A5;
+        Thu, 14 Apr 2022 13:31:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943557;
-        bh=u7dqo7xzU04dRpQZ+ywfuJhM0M8SJ9rMSWBEkvkCExU=;
+        s=korg; t=1649943090;
+        bh=Utz1YvWbSMLmkIEVCdwmAdUPQ3ARE9UXbQLDcRmNtww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gi1ZuBy5/iKOdDqr8+Qkpt0x88wyDBqAXEIjEnl9DCFKEIcFOT/f1+1qXwg0ML7Vy
-         xj8lGuQYHnBxiTipB6TLDMRzBDN4NlMfE91Ob2j7IMigE7EkHZFMOuZDsMj+4q1Z6S
-         k2lWchUej0Dyxy8Kk8GJk8Tes8v+DXJuRE/yVy2M=
+        b=bPrjwA9pRSkFBdxInZ8Pbk9G/Y1N45reHGPRIIZGKSxH7x0mXjxPifP+ODf7dSvGm
+         YnBG0hfuwuqoA0dUwGbAhTGmx+P+9+cFGYMp5rQh0L7HLR2/Z1R6qao4p5rQ3PSygL
+         OB330XhaOpSPAVlsNrt+oXHRT7kW5tRv49svW0Dk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhenzhong Duan <zhenzhong.duan@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 198/475] KVM: x86: Fix emulation in writing cr8
-Date:   Thu, 14 Apr 2022 15:09:43 +0200
-Message-Id: <20220414110900.670021352@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.4 031/475] KEYS: fix length validation in keyctl_pkey_params_get_2()
+Date:   Thu, 14 Apr 2022 15:06:56 +0200
+Message-Id: <20220414110856.026406958@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,65 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhenzhong Duan <zhenzhong.duan@intel.com>
+From: Eric Biggers <ebiggers@google.com>
 
-[ Upstream commit f66af9f222f08d5b11ea41c1bd6c07a0f12daa07 ]
+commit c51abd96837f600d8fd940b6ab8e2da578575504 upstream.
 
-In emulation of writing to cr8, one of the lowest four bits in TPR[3:0]
-is kept.
+In many cases, keyctl_pkey_params_get_2() is validating the user buffer
+lengths against the wrong algorithm properties.  Fix it to check against
+the correct properties.
 
-According to Intel SDM 10.8.6.1(baremetal scenario):
-"APIC.TPR[bits 7:4] = CR8[bits 3:0], APIC.TPR[bits 3:0] = 0";
+Probably this wasn't noticed before because for all asymmetric keys of
+the "public_key" subtype, max_data_size == max_sig_size == max_enc_size
+== max_dec_size.  However, this isn't necessarily true for the
+"asym_tpm" subtype (it should be, but it's not strictly validated).  Of
+course, future key types could have different values as well.
 
-and SDM 28.3(use TPR shadow):
-"MOV to CR8. The instruction stores bits 3:0 of its source operand into
-bits 7:4 of VTPR; the remainder of VTPR (bits 3:0 and bits 31:8) are
-cleared.";
-
-and AMD's APM 16.6.4:
-"Task Priority Sub-class (TPS)-Bits 3 : 0. The TPS field indicates the
-current sub-priority to be used when arbitrating lowest-priority messages.
-This field is written with zero when TPR is written using the architectural
-CR8 register.";
-
-so in KVM emulated scenario, clear TPR[3:0] to make a consistent behavior
-as in other scenarios.
-
-This doesn't impact evaluation and delivery of pending virtual interrupts
-because processor does not use the processor-priority sub-class to
-determine which interrupts to delivery and which to inhibit.
-
-Sub-class is used by hardware to arbitrate lowest priority interrupts,
-but KVM just does a round-robin style delivery.
-
-Fixes: b93463aa59d6 ("KVM: Accelerated apic support")
-Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220210094506.20181-1-zhenzhong.duan@intel.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 00d60fd3b932 ("KEYS: Provide keyctls to drive the new key type ops for asymmetric keys [ver #2]")
+Cc: <stable@vger.kernel.org> # v4.20+
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/lapic.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ security/keys/keyctl_pkey.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index eea2d6f10f59..afe3b8e61514 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2099,10 +2099,7 @@ void kvm_set_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu, u64 data)
+--- a/security/keys/keyctl_pkey.c
++++ b/security/keys/keyctl_pkey.c
+@@ -135,15 +135,23 @@ static int keyctl_pkey_params_get_2(cons
  
- void kvm_lapic_set_tpr(struct kvm_vcpu *vcpu, unsigned long cr8)
- {
--	struct kvm_lapic *apic = vcpu->arch.apic;
--
--	apic_set_tpr(apic, ((cr8 & 0x0f) << 4)
--		     | (kvm_lapic_get_reg(apic, APIC_TASKPRI) & 4));
-+	apic_set_tpr(vcpu->arch.apic, (cr8 & 0x0f) << 4);
+ 	switch (op) {
+ 	case KEYCTL_PKEY_ENCRYPT:
++		if (uparams.in_len  > info.max_dec_size ||
++		    uparams.out_len > info.max_enc_size)
++			return -EINVAL;
++		break;
+ 	case KEYCTL_PKEY_DECRYPT:
+ 		if (uparams.in_len  > info.max_enc_size ||
+ 		    uparams.out_len > info.max_dec_size)
+ 			return -EINVAL;
+ 		break;
+ 	case KEYCTL_PKEY_SIGN:
++		if (uparams.in_len  > info.max_data_size ||
++		    uparams.out_len > info.max_sig_size)
++			return -EINVAL;
++		break;
+ 	case KEYCTL_PKEY_VERIFY:
+-		if (uparams.in_len  > info.max_sig_size ||
+-		    uparams.out_len > info.max_data_size)
++		if (uparams.in_len  > info.max_data_size ||
++		    uparams.in2_len > info.max_sig_size)
+ 			return -EINVAL;
+ 		break;
+ 	default:
+@@ -151,7 +159,7 @@ static int keyctl_pkey_params_get_2(cons
+ 	}
+ 
+ 	params->in_len  = uparams.in_len;
+-	params->out_len = uparams.out_len;
++	params->out_len = uparams.out_len; /* Note: same as in2_len */
+ 	return 0;
  }
  
- u64 kvm_lapic_get_cr8(struct kvm_vcpu *vcpu)
--- 
-2.34.1
-
 
 
