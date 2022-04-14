@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF429C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B4BC4167B
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348813AbiDNONL (ORCPT
+        id S1348636AbiDNOM7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35606 "EHLO
+        Thu, 14 Apr 2022 10:12:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245297AbiDNNiX (ORCPT
+        with ESMTP id S244345AbiDNNhP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E339F6E5;
-        Thu, 14 Apr 2022 06:31:51 -0700 (PDT)
+        Thu, 14 Apr 2022 09:37:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80BB98581;
+        Thu, 14 Apr 2022 06:31:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F4D760C14;
-        Thu, 14 Apr 2022 13:31:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A752EC385A5;
-        Thu, 14 Apr 2022 13:31:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6243461B51;
+        Thu, 14 Apr 2022 13:31:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AA13C385A5;
+        Thu, 14 Apr 2022 13:31:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943110;
-        bh=W9DqyAUCb1PXgIr1mnwnD5pCSCUhHgFiMR7N0lgl8wc=;
+        s=korg; t=1649943084;
+        bh=nYF/5LlqJxR+dXjtyHU6EiTxJe3DQ65PTODezaKI2RE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jeq50Q53yFPobK1yAIvEdVn+c9FHlxMFdG5ePedrB0MEvlsW+WabRnvNfw/tkV4X0
-         +ppvJoMvvekofOnMFmNbV1FnZgnxFjwOlnWNRbhB+m537qbQeoSGTzfDgaPj4spwU7
-         KE0fiYXDiOqXVvVW3m0ogHvfwoGytEEVKZwPJJhA=
+        b=0/qqkxVdFzMdATTIUQRDzNnyKOBhdmp2pILrMXGXEA8uKsLnPKY2AYaVNDR7ly7gs
+         lJCQnZAmEZ20c82lxrOoXMfLdGGhjsB3LCyXWK+nW0vr0M6oL8cBtX6tfuo2gqLXG3
+         2WJ9UBJDgFLskQlr+JeHKx+37GI0wswx7cZq0Jw0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.4 037/475] NFSD: prevent integer overflow on 32 bit systems
-Date:   Thu, 14 Apr 2022 15:07:02 +0200
-Message-Id: <20220414110856.195028792@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH 5.4 029/475] clk: uniphier: Fix fixed-rate initialization
+Date:   Thu, 14 Apr 2022 15:06:54 +0200
+Message-Id: <20220414110855.971262406@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,31 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 
-commit 23a9dbbe0faf124fc4c139615633b9d12a3a89ef upstream.
+commit ca85a66710a8a1f6b0719397225c3e9ee0abb692 upstream.
 
-On a 32 bit system, the "len * sizeof(*p)" operation can have an
-integer overflow.
+Fixed-rate clocks in UniPhier don't have any parent clocks, however,
+initial data "init.flags" isn't initialized, so it might be determined
+that there is a parent clock for fixed-rate clock.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+This sets init.flags to zero as initialization.
+
+Cc: <stable@vger.kernel.org>
+Fixes: 734d82f4a678 ("clk: uniphier: add core support code for UniPhier clock driver")
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Link: https://lore.kernel.org/r/1646808918-30899-1-git-send-email-hayashi.kunihiko@socionext.com
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/sunrpc/xdr.h |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/clk/uniphier/clk-uniphier-fixed-rate.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/include/linux/sunrpc/xdr.h
-+++ b/include/linux/sunrpc/xdr.h
-@@ -536,6 +536,8 @@ xdr_stream_decode_uint32_array(struct xd
+--- a/drivers/clk/uniphier/clk-uniphier-fixed-rate.c
++++ b/drivers/clk/uniphier/clk-uniphier-fixed-rate.c
+@@ -24,6 +24,7 @@ struct clk_hw *uniphier_clk_register_fix
  
- 	if (unlikely(xdr_stream_decode_u32(xdr, &len) < 0))
- 		return -EBADMSG;
-+	if (len > SIZE_MAX / sizeof(*p))
-+		return -EBADMSG;
- 	p = xdr_inline_decode(xdr, len * sizeof(*p));
- 	if (unlikely(!p))
- 		return -EBADMSG;
+ 	init.name = name;
+ 	init.ops = &clk_fixed_rate_ops;
++	init.flags = 0;
+ 	init.parent_names = NULL;
+ 	init.num_parents = 0;
+ 
 
 
