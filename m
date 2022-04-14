@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 576B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 357BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352516AbiDNOc2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:32:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
+        id S245231AbiDNOdN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344396AbiDNNlK (ORCPT
+        with ESMTP id S1344456AbiDNNle (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:41:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA397120;
-        Thu, 14 Apr 2022 06:38:45 -0700 (PDT)
+        Thu, 14 Apr 2022 09:41:34 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA2C120;
+        Thu, 14 Apr 2022 06:39:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66170B828F4;
-        Thu, 14 Apr 2022 13:38:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA036C385A1;
-        Thu, 14 Apr 2022 13:38:42 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D3A30CE2997;
+        Thu, 14 Apr 2022 13:39:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE23C385A1;
+        Thu, 14 Apr 2022 13:39:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943523;
-        bh=NH+IuC7s1PEE8Lqckal8hd1uMy1jl4ApeVPz+68cphU=;
+        s=korg; t=1649943546;
+        bh=sCBusolubFHnM0j74VpBf6a9iULaG4IbkxyhN+25IB0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hpYEezlsotwLdk4ZS9ABSAiRDU9cCFp7YOZtQEwhNCH1/418aRDj4IO+qAgWQ6Pb1
-         cFCErNaJ4rXWMYmhnwPQbx8ZnU+fy24u+cghodhOMTGNLrdKdrQu0eF5Kz3HVSKW1h
-         /DMetIvxdR0zxEVl5CBjNCU7gSlzHYpAVeJnSRNY=
+        b=yUNJ+ZRuIyc4WRUQT+AOpJNuXAZDiuNs+FCDlTM4KH1qD4qI7v16i07qnDJKNvFsf
+         XgBffum0fEIEV1alDI367EJa1GSkqu6JJ1zDgynt+ZPo3RzUNU7uzD1reKLW1C0Sz6
+         YATqWoG6rsmA9twAYU77LcMrmBkGb1tnveLJH1HQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>,
+        stable@vger.kernel.org, Hersen Wu <hersenwu@amd.com>,
+        Jasdeep Dhillon <jdhillon@amd.com>,
+        Roman Li <Roman.Li@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 187/475] drm/amd/display: Remove vupdate_int_entry definition
-Date:   Thu, 14 Apr 2022 15:09:32 +0200
-Message-Id: <20220414110900.365081881@linuxfoundation.org>
+Subject: [PATCH 5.4 177/475] drm/amd/display: Add affected crtcs to atomic state for dsc mst unplug
+Date:   Thu, 14 Apr 2022 15:09:22 +0200
+Message-Id: <20220414110900.087931158@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,157 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maíra Canal <maira.canal@usp.br>
+From: Roman Li <Roman.Li@amd.com>
 
-[ Upstream commit 3679b8518cd213c25d555553ef212e233faf698c ]
+[ Upstream commit 128f8ed5902a287a6bb4afe0ffdae8a80b2a64ec ]
 
-Remove the vupdate_int_entry definition and utilization to avoid the
-following warning by Clang:
+[Why]
+When display topology changed on DSC hub we add all crtcs with dsc support to
+atomic state.
+Refer to patch:"drm/amd/display: Trigger modesets on MST DSC connectors"
+However the original implementation may skip crtc if the topology change
+caused by unplug.
+That potentially could lead to no-lightup or corruption on DSC hub after
+unplug event on one of the connectors.
 
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:410:2:
-warning: initializer overrides prior initialization of this subobject
-[-Winitializer-overrides]
-    vupdate_no_lock_int_entry(0),
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
-note: expanded from macro 'vupdate_no_lock_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:404:2:
-note: previous initialization is here
-    vupdate_int_entry(0),
-    ^~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
-note: expanded from macro 'vupdate_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:411:2:
-warning: initializer overrides prior initialization of this subobject
-[-Winitializer-overrides]
-    vupdate_no_lock_int_entry(1),
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
-note: expanded from macro 'vupdate_no_lock_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:405:2:
-note: previous initialization is here
-    vupdate_int_entry(1),
-    ^~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
-note: expanded from macro 'vupdate_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:412:2:
-warning: initializer overrides prior initialization of this subobject
-[-Winitializer-overrides]
-    vupdate_no_lock_int_entry(2),
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
-note: expanded from macro 'vupdate_no_lock_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:406:2:
-note: previous initialization is here
-    vupdate_int_entry(2),
-    ^~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
-note: expanded from macro 'vupdate_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:413:2:
-warning: initializer overrides prior initialization of this subobject
-[-Winitializer-overrides]
-    vupdate_no_lock_int_entry(3),
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
-note: expanded from macro 'vupdate_no_lock_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:407:2:
-note: previous initialization is here
-    vupdate_int_entry(3),
-    ^~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
-note: expanded from macro 'vupdate_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:414:2:
-warning: initializer overrides prior initialization of this subobject
-[-Winitializer-overrides]
-    vupdate_no_lock_int_entry(4),
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
-note: expanded from macro 'vupdate_no_lock_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:408:2:
-note: previous initialization is here
-    vupdate_int_entry(4),
-    ^~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
-note: expanded from macro 'vupdate_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:415:2:
-warning: initializer overrides prior initialization of this subobject
-[-Winitializer-overrides]
-    vupdate_no_lock_int_entry(5),
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
-note: expanded from macro 'vupdate_no_lock_int_entry'
-    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-    ^~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:409:2:
-note: previous initialization is here
-    vupdate_int_entry(5),
-    ^~~~~~~~~~~~~~~~~~~~
-drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
-note: expanded from macro 'vupdate_int_entry'
-        [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
-        ^~
-6 warnings generated.
+[How]
+Update add_affected_mst_dsc_crtcs() to use old connector state
+if new connector state has no crtc (undergoes modeset due to unplug)
 
-Fixes: 688f97ed3f5e ("drm/amd/display: Add vupdate_no_lock interrupts for DCN2.1")
-Signed-off-by: Maíra Canal <maira.canal@usp.br>
+Fixes: 44be939ff7ac58 ("drm/amd/display: Trigger modesets on MST DSC connectors")
+
+Reviewed-by: Hersen Wu <hersenwu@amd.com>
+Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
+Signed-off-by: Roman Li <Roman.Li@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../amd/display/dc/irq/dcn21/irq_service_dcn21.c   | 14 --------------
- 1 file changed, 14 deletions(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c b/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
-index 623455cd7520..d6f988403941 100644
---- a/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
-+++ b/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
-@@ -227,14 +227,6 @@ static const struct irq_source_info_funcs vupdate_no_lock_irq_info_funcs = {
- 		.funcs = &pflip_irq_info_funcs\
- 	}
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 29f8b4bd5a76..c5231c50c412 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -7268,10 +7268,13 @@ dm_determine_update_type_for_commit(struct amdgpu_display_manager *dm,
+ static int add_affected_mst_dsc_crtcs(struct drm_atomic_state *state, struct drm_crtc *crtc)
+ {
+ 	struct drm_connector *connector;
+-	struct drm_connector_state *conn_state;
++	struct drm_connector_state *conn_state, *old_conn_state;
+ 	struct amdgpu_dm_connector *aconnector = NULL;
+ 	int i;
+-	for_each_new_connector_in_state(state, connector, conn_state, i) {
++	for_each_oldnew_connector_in_state(state, connector, old_conn_state, conn_state, i) {
++		if (!conn_state->crtc)
++			conn_state = old_conn_state;
++
+ 		if (conn_state->crtc != crtc)
+ 			continue;
  
--#define vupdate_int_entry(reg_num)\
--	[DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
--		IRQ_REG_ENTRY(OTG, reg_num,\
--			OTG_GLOBAL_SYNC_STATUS, VUPDATE_INT_EN,\
--			OTG_GLOBAL_SYNC_STATUS, VUPDATE_EVENT_CLEAR),\
--		.funcs = &vblank_irq_info_funcs\
--	}
--
- /* vupdate_no_lock_int_entry maps to DC_IRQ_SOURCE_VUPDATEx, to match semantic
-  * of DCE's DC_IRQ_SOURCE_VUPDATEx.
-  */
-@@ -348,12 +340,6 @@ irq_source_info_dcn21[DAL_IRQ_SOURCES_NUMBER] = {
- 	dc_underflow_int_entry(6),
- 	[DC_IRQ_SOURCE_DMCU_SCP] = dummy_irq_entry(),
- 	[DC_IRQ_SOURCE_VBIOS_SW] = dummy_irq_entry(),
--	vupdate_int_entry(0),
--	vupdate_int_entry(1),
--	vupdate_int_entry(2),
--	vupdate_int_entry(3),
--	vupdate_int_entry(4),
--	vupdate_int_entry(5),
- 	vupdate_no_lock_int_entry(0),
- 	vupdate_no_lock_int_entry(1),
- 	vupdate_no_lock_int_entry(2),
 -- 
 2.34.1
 
