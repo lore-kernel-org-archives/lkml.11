@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7394BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD37C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241618AbiDNJUo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40846 "EHLO
+        id S241624AbiDNJUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241162AbiDNJUi (ORCPT
+        with ESMTP id S241358AbiDNJUi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 05:20:38 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786EB51312;
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B1A50B34;
         Thu, 14 Apr 2022 02:18:14 -0700 (PDT)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649927893;
+        s=2020; t=1649927892;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YlxWxeEGkgLnVt3u2pgdSqjRibYcLflLeZsegRG9WOc=;
-        b=woA4MM1nalDUbF5qByr5OrBaLP7a5QmD3vxg+EGDy9AV7h0kQexg01M+J801NGmDK5Yg36
-        MegPwzTgDfDGGTOSwH4FYz/HTngLe1bYBBO697YTTfEiy4tTLaikGgtBSrWDfepkhDZ5qQ
-        dMOdbfNCzg7um5DRLP977CmoerlO0gR7QZ/YuG0c9izsqwa/5ssRuARbilkvgCgYRm08Hw
-        b1AftCe7fPuNs0c88r+9q9+reHruSAIWA7V1eg6X4szqXL1BSe7QeoDUMqkSASEzYBSMKQ
-        FoelKpto4IcKmr0h0oZwHBFh3NSTy2C5361MWnJVgcXiCXJwINjIGR+SomoHxw==
+         content-transfer-encoding:content-transfer-encoding;
+        bh=VKYOKsNdtO2aGH0r6q2BwEHQC1rQZ88mXZkktgYJ4/M=;
+        b=fMEDdqLD67Im0YAB13eH/+DEbam1jQociwxB96JNa3zPzdM6DQqjoG1jroCoSV2nnnwkBH
+        fLKur5K2WWkZ2qAOtUUboTc/+1T0Dphvz0hHIYbur9ZNZX/pvnAdYRkiEUxMGDvUFsysee
+        siMxqZzxKrO0F4B1YJAGDvM0Vm2GxSEoLNQyOAwiJTjEwUKfu5TmSjAd0y8COHgIUanJ7s
+        fERMeFkrqtIEjBaDl2J/UCGf25sLTQ9kHVlCBdIzVBqq2L0MBrJ5OClTD0n41yxOE5UmFS
+        4u91nEvC4UadJOZslVkHhy416tn1ZXlPGH+cgwH1ZvWgVQG5QSgHmu/9mUizyA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649927893;
+        s=2020e; t=1649927892;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YlxWxeEGkgLnVt3u2pgdSqjRibYcLflLeZsegRG9WOc=;
-        b=TrVTrdBxZf6P1A7fu27oe3ucmEXu0kBss2Q6deigtyXa+CA3Kjl7ePQI1NoxVkBLowQnN/
-        2nyJAW2UpLWqdHDw==
+         content-transfer-encoding:content-transfer-encoding;
+        bh=VKYOKsNdtO2aGH0r6q2BwEHQC1rQZ88mXZkktgYJ4/M=;
+        b=sero7Ruh9jP3d3VowrepRmpjg7HgtFyrarLTJ3Ys29MkDnSdA84oPsf2bygzOdsNcBl9de
+        euYeBzXWygmu/5BQ==
 To:     John Stultz <john.stultz@linaro.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Stephen Boyd <sboyd@kernel.org>,
@@ -46,37 +44,54 @@ To:     John Stultz <john.stultz@linaro.org>,
 Cc:     Richard Cochran <richardcochran@gmail.com>,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v2 2/3] tracing: Introduce trace clock tai
-Date:   Thu, 14 Apr 2022 11:18:04 +0200
-Message-Id: <20220414091805.89667-3-kurt@linutronix.de>
-In-Reply-To: <20220414091805.89667-1-kurt@linutronix.de>
-References: <20220414091805.89667-1-kurt@linutronix.de>
+Subject: [PATCH v2 0/3] tracing: Introduce trace clock tai
+Date:   Thu, 14 Apr 2022 11:18:02 +0200
+Message-Id: <20220414091805.89667-1-kurt@linutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A fast/NMI safe accessor for CLOCK_TAI has been introduced.
-Use it for adding the additional trace clock "tai".
+Hi,
 
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
----
- kernel/trace/trace.c | 1 +
- 1 file changed, 1 insertion(+)
+the Linux kernel tracing infrastructure has support for using different clocks
+to generate timestamps for trace events. Especially in TSN networks it's useful
+to have TAI as trace clock, because the application scheduling is done in
+accordance to the network time, which is based on TAI. With a tai trace_clock in
+place, it becomes very convenient to correlate network activity with Linux
+kernel application traces.
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index f4de111fa18f..7be87b29c6c1 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -1542,6 +1542,7 @@ static struct {
- 	{ ktime_get_mono_fast_ns,	"mono",		1 },
- 	{ ktime_get_raw_fast_ns,	"mono_raw",	1 },
- 	{ ktime_get_boot_fast_ns,	"boot",		1 },
-+	{ ktime_get_tai_fast_ns,	"tai",		1 },
- 	ARCH_TRACE_CLOCKS
- };
- 
+However, there's no fast accessor for CLOCK_TAI yet. Therefore, patch #1 is
+adding one. Patch #2 introduces the clock and the last one adds documentation
+for it.
+
+Changes since v1:
+
+ - Add missing data_race() annotation for TAI offset which is accessed without
+   any form of locking for KCSAN (Thomas)
+ - Add missing documentation entry for ktime_get_tai_fast_ns()
+ - Minor changelog tweaks
+
+Previous versions:
+
+ - https://lore.kernel.org/all/20220409081300.4762-1-kurt@linutronix.de/
+
+Thanks,
+Kurt
+
+Kurt Kanzenbach (3):
+  timekeeping: Introduce fast accessor to clock tai
+  tracing: Introduce trace clock tai
+  tracing: Add documentation for trace clock tai
+
+ Documentation/core-api/timekeeping.rst |  1 +
+ Documentation/trace/ftrace.rst         | 12 ++++++++++++
+ include/linux/timekeeping.h            |  1 +
+ kernel/time/timekeeping.c              | 17 +++++++++++++++++
+ kernel/trace/trace.c                   |  1 +
+ 5 files changed, 32 insertions(+)
+
 -- 
 2.30.2
 
