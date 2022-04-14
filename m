@@ -2,259 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F1D8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:48:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA72C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:50:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241124AbiDNIuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 04:50:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53776 "EHLO
+        id S241126AbiDNIxM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 04:53:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236287AbiDNIuu (ORCPT
+        with ESMTP id S241153AbiDNIwu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 04:50:50 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8FF165D24
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:48:23 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23E5x8PD001521;
-        Thu, 14 Apr 2022 08:48:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- content-transfer-encoding : in-reply-to; s=pp1;
- bh=9KoSwCzdoavRYeHN2J3+5Miyetgwpz0DL+/kJ6CCnWc=;
- b=VhmirNcpoFB6ZJZp9oZtA4QLD3SEi4qrPsePrAT0GEUEPCcfW6y7ukiXV6fUVIjvPSLF
- N/5UQyeH2fU+OieNu3YMjbSdzz9m6K/FhAlgf8ZG/poCeEsXy0eVD8EZv+2Vi/VM7GHC
- dLB+H2Tpdo2PdOLna9joxrfPRYw5edAITqKX3JRFinOH2Aj4PtYS2xZvJBEZr4819U/J
- 0K+OPdHXT8gUcBZVgQFAlQrR1l+5n9H84aoRzFcjokVFG+1RYMvcD742+RaDIqFjZC1T
- I2j7Fx65JFNCs9MwANTTAQ/j0VOVJUHpHibgWwRkj+S3KbPIy6jHsnpbcXfHblNGn+sj PQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fedxsk09m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Apr 2022 08:48:18 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23E80RtN026020;
-        Thu, 14 Apr 2022 08:48:17 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fedxsk097-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Apr 2022 08:48:17 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23E8mGlM030389;
-        Thu, 14 Apr 2022 08:48:16 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04ams.nl.ibm.com with ESMTP id 3fb1s900yn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Apr 2022 08:48:16 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23E8mDtr49021202
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Apr 2022 08:48:13 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C42F44C04E;
-        Thu, 14 Apr 2022 08:48:13 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 29A5D4C044;
-        Thu, 14 Apr 2022 08:48:11 +0000 (GMT)
-Received: from li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com (unknown [9.43.11.20])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Thu, 14 Apr 2022 08:48:10 +0000 (GMT)
-Date:   Thu, 14 Apr 2022 14:18:00 +0530
-From:   Jagdish Gediya <jvgediya@linux.ibm.com>
-To:     "ying.huang@intel.com" <ying.huang@intel.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, aneesh.kumar@linux.ibm.com,
-        baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com
-Subject: Re: [PATCH v2 1/5] mm: demotion: Set demotion list differently
-Message-ID: <YlffwGJg/RWCYja7@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
-References: <20220413092206.73974-1-jvgediya@linux.ibm.com>
- <20220413092206.73974-2-jvgediya@linux.ibm.com>
- <4288cbad49690d7c4eb2b1d705eea01221ab8328.camel@intel.com>
+        Thu, 14 Apr 2022 04:52:50 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA8E3ED35;
+        Thu, 14 Apr 2022 01:50:26 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 9B7461F746;
+        Thu, 14 Apr 2022 08:50:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649926225; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XxfuG/w8wazXndKDtI84HuuhaGnd2O75E0snozQKqmw=;
+        b=iz08PdaSiF0q8xS9gHtDXbKt2+Cg2/r7HqDgFIICsQQiDZILaWd0JJv5xY+B7tkb8baXaj
+        d/g4alheoIDrplBYmTpAMVYwdxU4se5s9Lg/RqnKsPM6gHipvoqrCizQoFCzlTSnKSUakj
+        bSSd1i86UcwPu8DuSbq1h6F4shixvBs=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 7AB43A3B88;
+        Thu, 14 Apr 2022 08:50:25 +0000 (UTC)
+Date:   Thu, 14 Apr 2022 10:50:24 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org
+Subject: Re: [RFC PATCH v6 01/12] livepatch: Create and include UAPI headers
+Message-ID: <YlfgUNDQsYw8+ksC@alley>
+References: <20220216163940.228309-1-joe.lawrence@redhat.com>
+ <20220216163940.228309-2-joe.lawrence@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4288cbad49690d7c4eb2b1d705eea01221ab8328.camel@intel.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: qNzJLfL8g_AACqRr0gpvPqBEcVdquWdK
-X-Proofpoint-GUID: 818oo_B3BTAKae1XoSZyE31C1hikzShW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-14_02,2022-04-13_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 phishscore=0 malwarescore=0
- adultscore=0 mlxlogscore=847 priorityscore=1501 bulkscore=0 spamscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204140046
+In-Reply-To: <20220216163940.228309-2-joe.lawrence@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 03:09:42PM +0800, ying.huang@intel.com wrote:
-> On Wed, 2022-04-13 at 14:52 +0530, Jagdish Gediya wrote:
-> > Sharing used_targets between multiple nodes in a single
-> > pass limits some of the opportunities for demotion target
-> > sharing.
-> > 
-> > Don't share the used targets between multiple nodes in a
-> > single pass, instead accumulate all the used targets in
-> > source nodes shared by all pass, and reset 'used_targets'
-> > to source nodes while finding demotion targets for any new
-> > node.
-> > 
-> > This results into some more opportunities to share demotion
-> > targets between multiple source nodes, e.g. with below NUMA
-> > topology, where node 0 & 1 are cpu + dram nodes, node 2 & 3
-> > are equally slower memory only nodes, and node 4 is slowest
-> > memory only node,
-> > 
-> > available: 5 nodes (0-4)
-> > node 0 cpus: 0 1
-> > node 0 size: n MB
-> > node 0 free: n MB
-> > node 1 cpus: 2 3
-> > node 1 size: n MB
-> > node 1 free: n MB
-> > node 2 cpus:
-> > node 2 size: n MB
-> > node 2 free: n MB
-> > node 3 cpus:
-> > node 3 size: n MB
-> > node 3 free: n MB
-> > node 4 cpus:
-> > node 4 size: n MB
-> > node 4 free: n MB
-> > node distances:
-> > node   0   1   2   3   4
-> >   0:  10  20  40  40  80
-> >   1:  20  10  40  40  80
-> >   2:  40  40  10  40  80
-> >   3:  40  40  40  10  80
-> >   4:  80  80  80  80  10
-> > 
-> > The existing implementation gives below demotion targets,
-> > 
-> > node    demotion_target
-> >  0              3, 2
-> >  1              4
-> >  2              X
-> >  3              X
-> >  4              X
-> > 
-> > With this patch applied, below are the demotion targets,
-> > 
-> > node    demotion_target
-> >  0              3, 2
-> >  1              3, 2
-> >  2              4
-> >  3              4
-> >  4              X
-> > 
-> > e.g. with below NUMA topology, where node 0, 1 & 2 are
-> > cpu + dram nodes and node 3 is slow memory node,
-> > 
-> > available: 4 nodes (0-3)
-> > node 0 cpus: 0 1
-> > node 0 size: n MB
-> > node 0 free: n MB
-> > node 1 cpus: 2 3
-> > node 1 size: n MB
-> > node 1 free: n MB
-> > node 2 cpus: 4 5
-> > node 2 size: n MB
-> > node 2 free: n MB
-> > node 3 cpus:
-> > node 3 size: n MB
-> > node 3 free: n MB
-> > node distances:
-> > node   0   1   2   3
-> >   0:  10  20  20  40
-> >   1:  20  10  20  40
-> >   2:  20  20  10  40
-> >   3:  40  40  40  10
-> > 
-> > The existing implementation gives below demotion targets,
-> > 
-> > node    demotion_target
-> >  0              3
-> >  1              X
-> >  2              X
-> >  3              X
-> > 
-> > With this patch applied, below are the demotion targets,
-> > 
-> > node    demotion_target
-> >  0              3
-> >  1              3
-> >  2              3
-> >  3              X
-> > 
+On Wed 2022-02-16 11:39:29, Joe Lawrence wrote:
+> From: Josh Poimboeuf <jpoimboe@redhat.com>
 > 
-> With the [PATCH v1], you have describe the demotion order changes for
-> the following system, I guess there's no change with [PATCH v2]?
+> Define klp prefixes in include/uapi/linux/livepatch.h, and use them for
+> replacing hard-coded values in kernel/livepatch/core.c.
+> 
+> Update MAINTAINERS.
+> 
+> Note: Add defines to uapi as these are also to be used by a newly
+> introduced klp-convert script.
+> 
+> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> Signed-off-by: Joao Moreira <jmoreira@suse.de>
+> Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
 
-Yes, there is no change with v2.
+Looks straightforward:
 
-> With below NUMA topology, where node 0 & 2 are cpu + dram
-> nodes and node 1 & 3 are slow memory nodes,
-> 
-> available: 4 nodes (0-3)
-> node 0 cpus: 0 1
-> node 0 size: n MB
-> node 0 free: n MB
-> node 1 cpus:
-> node 1 size: n MB
-> node 1 free: n MB
-> node 2 cpus: 2 3
-> node 2 size: n MB
-> node 2 free: n MB
-> node 3 cpus:
-> node 3 size: n MB
-> node 3 free: n MB
-> node distances:
-> node   0   1   2   3
->   0:  10  40  20  80
->   1:  40  10  80  80
->   2:  20  80  10  40
->   3:  80  80  40  10
-> 
-> And, what is the demotion order for the following system with [PATCH
-> v2]?
-> 
-> Node 0 & 2 are cpu + dram nodes and node 1 are slow
-> memory node near node 0,
-> 
-> available: 3 nodes (0-2)
-> node 0 cpus: 0 1
-> node 0 size: n MB
-> node 0 free: n MB
-> node 1 cpus:
-> node 1 size: n MB
-> node 1 free: n MB
-> node 2 cpus: 2 3
-> node 2 size: n MB
-> node 2 free: n MB
-> node distances:
-> node   0   1   2
->   0:  10  40  20
->   1:  40  10  80
->   2:  20  80  10
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-node 1 is demotion target for both node 0 and node 2 with this patch.
-node 1 is demotion target only for node 0 with existing implementation,
-however if node 1 is near to node 2 instead of node 0, still existing
-implementation will give node 1 as demotion target only for node 0 which
-is not the correct behavior.
-
-for both the scenario, with this patch applied, node 1 will be demotion
-target for both 0 and 2.
-
-> Best Regards,
-> Huang, Ying
-> 
-> 
-> [snip]
-> 
-> 
-> 
-Best regards,
-Jagdish
+Best Regards,
+Petr
