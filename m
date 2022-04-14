@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE02C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB64C4707F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344045AbiDNPAS (ORCPT
+        id S1345484AbiDNPAl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
+        Thu, 14 Apr 2022 11:00:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346225AbiDNN4G (ORCPT
+        with ESMTP id S1346224AbiDNN4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:56:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 721FBAFB23;
-        Thu, 14 Apr 2022 06:46:07 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C6B1B0A5F;
+        Thu, 14 Apr 2022 06:46:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08E7BB82988;
-        Thu, 14 Apr 2022 13:46:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AF68C385A5;
-        Thu, 14 Apr 2022 13:46:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B969761D9C;
+        Thu, 14 Apr 2022 13:45:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBFB6C385A1;
+        Thu, 14 Apr 2022 13:45:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943964;
-        bh=XAQV1CrcJedav+QuupEKT9ZmY5ttZesEv0weh8dfhjM=;
+        s=korg; t=1649943959;
+        bh=r/23rai1XYWj99x1LqgrFVJjqYMbSUUW/TywEyI4vQg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K5NdDDtvrr9Ko8u2n/7+Qob+GttdZ5yOIX/Vvz2rSFV5NjlzKvbUh3xc3lwERszst
-         g8O7y6XckDOMelpRYjk65TELRqDvv87IMe+DUdhdohFEzdxMV20QVgQyB2eJq6y9SC
-         tySoxzJUf2NXoBFN2ZqJVySy3ZuZPPiys/EaEpKM=
+        b=e8LDMvyJY0AhNeftpCkBpyZtTULb0msFMGfA1CoVwcDGO5IVdB2s8X1TavNaEbf4D
+         FMXVzrHfYY5gOxArH8lPioRPFQ1AKTfu1GaBVu12dREPqvBHCwWCGLpr1P4AKp85OP
+         x53paXG7mR2Md1mHr3SGPCE0LAgiHBsaeAqxQG2c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 308/475] media: hdpvr: initialize dev->worker at hdpvr_register_videodev
-Date:   Thu, 14 Apr 2022 15:11:33 +0200
-Message-Id: <20220414110903.710218289@linuxfoundation.org>
+        stable@vger.kernel.org, Andrew Price <anprice@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>
+Subject: [PATCH 5.4 342/475] gfs2: Make sure FITRIM minlen is rounded up to fs block size
+Date:   Thu, 14 Apr 2022 15:12:07 +0200
+Message-Id: <20220414110904.653596274@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,61 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Andrew Price <anprice@redhat.com>
 
-[ Upstream commit 07922937e9a580825f9965c46fd15e23ba5754b6 ]
+commit 27ca8273fda398638ca994a207323a85b6d81190 upstream.
 
-hdpvr_register_videodev is responsible to initialize a worker in
-hdpvr_device. However, the worker is only initialized at
-hdpvr_start_streaming other than hdpvr_register_videodev.
-When hdpvr_probe does not initialize its worker, the hdpvr_disconnect
-will encounter one WARN in flush_work.The stack trace is as follows:
+Per fstrim(8) we must round up the minlen argument to the fs block size.
+The current calculation doesn't take into account devices that have a
+discard granularity and requested minlen less than 1 fs block, so the
+value can get shifted away to zero in the translation to fs blocks.
 
- hdpvr_disconnect+0xb8/0xf2 drivers/media/usb/hdpvr/hdpvr-core.c:425
- usb_unbind_interface+0xbf/0x3a0 drivers/usb/core/driver.c:458
- __device_release_driver drivers/base/dd.c:1206 [inline]
- device_release_driver_internal+0x22a/0x230 drivers/base/dd.c:1237
- bus_remove_device+0x108/0x160 drivers/base/bus.c:529
- device_del+0x1fe/0x510 drivers/base/core.c:3592
- usb_disable_device+0xd1/0x1d0 drivers/usb/core/message.c:1419
- usb_disconnect+0x109/0x330 drivers/usb/core/hub.c:2228
+The zero minlen passed to gfs2_rgrp_send_discards() then allows
+sb_issue_discard() to be called with nr_sects == 0 which returns -EINVAL
+and results in gfs2_rgrp_send_discards() returning -EIO.
 
-Fix this by moving the initialization of dev->worker to the starting of
-hdpvr_register_videodev
+Make sure minlen is never < 1 fs block by taking the max of the
+requested minlen and the fs block size before comparing to the device's
+discard granularity and shifting to fs blocks.
 
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 076f0faa764ab ("GFS2: Fix FITRIM argument handling")
+Signed-off-by: Andrew Price <anprice@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/hdpvr/hdpvr-video.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/gfs2/rgrp.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
-index bad71d863d39..7849f1fbbcc4 100644
---- a/drivers/media/usb/hdpvr/hdpvr-video.c
-+++ b/drivers/media/usb/hdpvr/hdpvr-video.c
-@@ -308,7 +308,6 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
+--- a/fs/gfs2/rgrp.c
++++ b/fs/gfs2/rgrp.c
+@@ -1429,7 +1429,8 @@ int gfs2_fitrim(struct file *filp, void
  
- 	dev->status = STATUS_STREAMING;
+ 	start = r.start >> bs_shift;
+ 	end = start + (r.len >> bs_shift);
+-	minlen = max_t(u64, r.minlen,
++	minlen = max_t(u64, r.minlen, sdp->sd_sb.sb_bsize);
++	minlen = max_t(u64, minlen,
+ 		       q->limits.discard_granularity) >> bs_shift;
  
--	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
- 	schedule_work(&dev->worker);
- 
- 	v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
-@@ -1165,6 +1164,9 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
- 	bool ac3 = dev->flags & HDPVR_FLAG_AC3_CAP;
- 	int res;
- 
-+	// initialize dev->worker
-+	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
-+
- 	dev->cur_std = V4L2_STD_525_60;
- 	dev->width = 720;
- 	dev->height = 480;
--- 
-2.34.1
-
+ 	if (end <= start || minlen > sdp->sd_max_rg_data)
 
 
