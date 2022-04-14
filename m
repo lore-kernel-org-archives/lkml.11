@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33054C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96509C43219
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351761AbiDNObc (ORCPT
+        id S1351984AbiDNObo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35574 "EHLO
+        Thu, 14 Apr 2022 10:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245387AbiDNNi2 (ORCPT
+        with ESMTP id S245110AbiDNNiM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 155A8A1448;
-        Thu, 14 Apr 2022 06:32:04 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F093799ED3;
+        Thu, 14 Apr 2022 06:31:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2E14B82968;
-        Thu, 14 Apr 2022 13:32:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E979CC385A1;
-        Thu, 14 Apr 2022 13:32:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B16FB82968;
+        Thu, 14 Apr 2022 13:31:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8421C385A1;
+        Thu, 14 Apr 2022 13:31:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943121;
-        bh=EOdu4CEmkcnDwJMBk6OsqstsD3MrKYOf+7r24Eg9bds=;
+        s=korg; t=1649943096;
+        bh=GByUJBM4aas1+7xrkkeEe5sZyXUZURKNtdgtAAUAB9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZdvrUUZ/m2ewosRXhq7sAXMGnC1eAiArDjhlVy0IaQz73ZcUytHVsXlWU8EZy122t
-         v/mfhoFrWlR5nmFOL4gglkcZ03b9UNq7LrkY7C9n7fVH3+byn2PEaLvkk1lGUKZp9m
-         0R90yrJQr8YQB51Y+e0D+hdqPK1mZofhNJ/Hf2yY=
+        b=LYP0pSSXB8U4SAo1uYGzsBP9DxRNo3WjXrsCmsW2/Y0vIRH1UFwMNFAKkzmgOQzzL
+         /Jd3QmlBnQEZ4xOgUaeHp4/ULS0ujgoDVUNJCGqCks69vnfKwTTOYpeuUQCS+fIP4k
+         eUrniyPbvH8d7Y5RHDWFehiy+oqeivBNrWmROQD8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        Chanho Park <chanho61.park@samsung.com>
-Subject: [PATCH 5.4 041/475] pinctrl: samsung: drop pin banks references on error paths
-Date:   Thu, 14 Apr 2022 15:07:06 +0200
-Message-Id: <20220414110856.307869652@linuxfoundation.org>
+        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: [PATCH 5.4 032/475] Documentation: add link to stable release candidate tree
+Date:   Thu, 14 Apr 2022 15:06:57 +0200
+Message-Id: <20220414110856.055039109@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,83 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Bagas Sanjaya <bagasdotme@gmail.com>
 
-commit 50ebd19e3585b9792e994cfa8cbee8947fe06371 upstream.
+commit 587d39b260c4d090166314d64be70b1f6a26b0b5 upstream.
 
-The driver iterates over its devicetree children with
-for_each_child_of_node() and stores for later found node pointer.  This
-has to be put in error paths to avoid leak during re-probing.
+There is also stable release candidate tree. Mention it, however with a
+warning that the tree is for testing purposes.
 
-Fixes: ab663789d697 ("pinctrl: samsung: Match pin banks with their device nodes")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
-Reviewed-by: Chanho Park <chanho61.park@samsung.com>
-Link: https://lore.kernel.org/r/20220111201426.326777-2-krzysztof.kozlowski@canonical.com
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Sasha Levin <sashal@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: stable@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Link: https://lore.kernel.org/r/20220314113329.485372-5-bagasdotme@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/samsung/pinctrl-samsung.c |   30 +++++++++++++++++++++++-------
- 1 file changed, 23 insertions(+), 7 deletions(-)
+ Documentation/process/stable-kernel-rules.rst |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/drivers/pinctrl/samsung/pinctrl-samsung.c
-+++ b/drivers/pinctrl/samsung/pinctrl-samsung.c
-@@ -1002,6 +1002,16 @@ samsung_pinctrl_get_soc_data_for_of_alia
- 	return &(of_data->ctrl[id]);
- }
+--- a/Documentation/process/stable-kernel-rules.rst
++++ b/Documentation/process/stable-kernel-rules.rst
+@@ -176,6 +176,15 @@ Trees
  
-+static void samsung_banks_of_node_put(struct samsung_pinctrl_drv_data *d)
-+{
-+	struct samsung_pin_bank *bank;
-+	unsigned int i;
+ 	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+ 
++ - The release candidate of all stable kernel versions can be found at:
 +
-+	bank = d->pin_banks;
-+	for (i = 0; i < d->nr_banks; ++i, ++bank)
-+		of_node_put(bank->of_node);
-+}
++        https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/
 +
- /* retrieve the soc specific data */
- static const struct samsung_pin_ctrl *
- samsung_pinctrl_get_soc_data(struct samsung_pinctrl_drv_data *d,
-@@ -1116,19 +1126,19 @@ static int samsung_pinctrl_probe(struct
- 	if (ctrl->retention_data) {
- 		drvdata->retention_ctrl = ctrl->retention_data->init(drvdata,
- 							  ctrl->retention_data);
--		if (IS_ERR(drvdata->retention_ctrl))
--			return PTR_ERR(drvdata->retention_ctrl);
-+		if (IS_ERR(drvdata->retention_ctrl)) {
-+			ret = PTR_ERR(drvdata->retention_ctrl);
-+			goto err_put_banks;
-+		}
- 	}
- 
- 	ret = samsung_pinctrl_register(pdev, drvdata);
- 	if (ret)
--		return ret;
-+		goto err_put_banks;
- 
- 	ret = samsung_gpiolib_register(pdev, drvdata);
--	if (ret) {
--		samsung_pinctrl_unregister(pdev, drvdata);
--		return ret;
--	}
-+	if (ret)
-+		goto err_unregister;
- 
- 	if (ctrl->eint_gpio_init)
- 		ctrl->eint_gpio_init(drvdata);
-@@ -1138,6 +1148,12 @@ static int samsung_pinctrl_probe(struct
- 	platform_set_drvdata(pdev, drvdata);
- 
- 	return 0;
++   .. warning::
++      The -stable-rc tree is a snapshot in time of the stable-queue tree and
++      will change frequently, hence will be rebased often. It should only be
++      used for testing purposes (e.g. to be consumed by CI systems).
 +
-+err_unregister:
-+	samsung_pinctrl_unregister(pdev, drvdata);
-+err_put_banks:
-+	samsung_banks_of_node_put(drvdata);
-+	return ret;
- }
  
- /**
+ Review committee
+ ----------------
 
 
