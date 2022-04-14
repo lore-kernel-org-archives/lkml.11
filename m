@@ -2,43 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5581C4167D
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B31C35280
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:02:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348037AbiDNOCH (ORCPT
+        id S1347954AbiDNOBs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60220 "EHLO
+        Thu, 14 Apr 2022 10:01:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344555AbiDNNcf (ORCPT
+        with ESMTP id S1344530AbiDNNc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:32:35 -0400
+        Thu, 14 Apr 2022 09:32:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302A722298;
-        Thu, 14 Apr 2022 06:30:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2DC22298;
+        Thu, 14 Apr 2022 06:30:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEFEB60C14;
-        Thu, 14 Apr 2022 13:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF21BC385A5;
-        Thu, 14 Apr 2022 13:30:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8630860C14;
+        Thu, 14 Apr 2022 13:30:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A1CBC385A5;
+        Thu, 14 Apr 2022 13:30:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943010;
-        bh=SVUhsddBmWswKvz/evovXrM8Ot3L4ZbrK62OfJK0Goo=;
+        s=korg; t=1649943001;
+        bh=Dei8eIdKFtNPV7EqpCqkX8hu29SXCGPLftxGq3KgTr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uaEA17COwhu8E9VWU1k8+vrB/SBujB0bV7ikn1Dk4OX0MpZSavYhXTquPwuBhc0z6
-         HxcDV4rJ8v+pD5bxZk3tVk/9lQKX+ERPk0qzUertQpugDEmM5e6iM4e6B/ejb281w0
-         c22FWZSd6JEIhJrHLmlmP1xrSmaR2ULlU59L7PKg=
+        b=opwc5nT3NaY7o+q+lciusJS377ZDFQDLGw9BIHM3IMitnknVlnbjTOF5XTg29ToYY
+         XFNgY+2SjnYCERzHhwo+a2rZmcw0/gdzDjqp1XpKJVfafNMA1PR9cbSidF7kTcL6/e
+         dCuZ+wPnIVJhPTBo0LXaUXheK7xJhVh4nMIfdPXU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
         Fangrui Song <maskray@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>, Will Deacon <will@kernel.org>
-Subject: [PATCH 4.19 328/338] arm64: module: remove (NOLOAD) from linker script
-Date:   Thu, 14 Apr 2022 15:13:51 +0200
-Message-Id: <20220414110848.226379867@linuxfoundation.org>
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Subject: [PATCH 4.19 325/338] tools build: Use $(shell ) instead of `` to get embedded libperls ccopts
+Date:   Thu, 14 Apr 2022 15:13:48 +0200
+Message-Id: <20220414110848.141580434@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,48 +58,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fangrui Song <maskray@google.com>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit 4013e26670c590944abdab56c4fa797527b74325 upstream.
+commit 541f695cbcb6932c22638b06e0cbe1d56177e2e9 upstream.
 
-On ELF, (NOLOAD) sets the section type to SHT_NOBITS[1]. It is conceptually
-inappropriate for .plt and .text.* sections which are always
-SHT_PROGBITS.
+Just like its done for ldopts and for both in tools/perf/Makefile.config.
 
-In GNU ld, if PLT entries are needed, .plt will be SHT_PROGBITS anyway
-and (NOLOAD) will be essentially ignored. In ld.lld, since
-https://reviews.llvm.org/D118840 ("[ELF] Support (TYPE=<value>) to
-customize the output section type"), ld.lld will report a `section type
-mismatch` error. Just remove (NOLOAD) to fix the error.
+Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
 
-[1] https://lld.llvm.org/ELF/linker_script.html As of today, "The
-section should be marked as not loadable" on
-https://sourceware.org/binutils/docs/ld/Output-Section-Type.html is
-outdated for ELF.
+  $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
 
-Tested-by: Nathan Chancellor <nathan@kernel.org>
-Reported-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Fangrui Song <maskray@google.com>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Link: https://lore.kernel.org/r/20220218081209.354383-1-maskray@google.com
-Signed-off-by: Will Deacon <will@kernel.org>
-[nathan: Fix conflicts due to lack of 596b0474d3d9]
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+And we need to do it to allow for building with versions of clang where
+some gcc options selected by distros are not available.
+
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Fangrui Song <maskray@google.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Keeping <john@metanate.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Link: http://lore.kernel.org/lkml/YktYX2OnLtyobRYD@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/module.lds |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ tools/build/feature/Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm64/kernel/module.lds
-+++ b/arch/arm64/kernel/module.lds
-@@ -1,5 +1,5 @@
- SECTIONS {
--	.plt 0 (NOLOAD) : { BYTE(0) }
--	.init.plt 0 (NOLOAD) : { BYTE(0) }
--	.text.ftrace_trampoline 0 (NOLOAD) : { BYTE(0) }
-+	.plt 0 : { BYTE(0) }
-+	.init.plt 0 : { BYTE(0) }
-+	.text.ftrace_trampoline 0 : { BYTE(0) }
- }
+--- a/tools/build/feature/Makefile
++++ b/tools/build/feature/Makefile
+@@ -193,7 +193,7 @@ strip-libs = $(filter-out -l%,$(1))
+ PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
+ PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
+ PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
+-PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
++PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
+ FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+ 
+ ifeq ($(CC_NO_CLANG), 0)
 
 
