@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE82C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B718C43217
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353245AbiDNOjY (ORCPT
+        id S1353303AbiDNOjg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:39:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54848 "EHLO
+        Thu, 14 Apr 2022 10:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344760AbiDNNoh (ORCPT
+        with ESMTP id S1344775AbiDNNoj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924AE3703D;
-        Thu, 14 Apr 2022 06:40:11 -0700 (PDT)
+        Thu, 14 Apr 2022 09:44:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F664377E8;
+        Thu, 14 Apr 2022 06:40:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D20BAB82987;
-        Thu, 14 Apr 2022 13:40:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4553AC385A1;
-        Thu, 14 Apr 2022 13:40:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81D6561D7C;
+        Thu, 14 Apr 2022 13:40:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90E9EC385A1;
+        Thu, 14 Apr 2022 13:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943601;
-        bh=mbdUSHVlV53K0AX1fRMEBXTG9pM0zEjcteH8eqAPhpw=;
+        s=korg; t=1649943606;
+        bh=QdXZfHMgeqEdDVdRvmXDPY15nbciP81tVpwNi5Hrryg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SMeWaiQgqKeSa+ZExuMQ1ZxvIX7WD555l9EZ7PAd2CMYoc3qQMbqsDutU9RvD0d41
-         8sL6P88/ZKX/osQjfvnpKkx3Qtepix0D6XEZ0xIBlcjxyqOIWL2omuuGLsqpXzP5Bm
-         1ZT5WvDmRHwHZGwgBZl2XmHHOyPAEoScOUXUr1j4=
+        b=RRSM9PPoi0u92WY6OoVO/hLY7pLlU5ZBfuNPKjXzLdHyKSOYJLpNTtpl4LZnjj4xK
+         wng2kunPp34bI1xjq7P9MQWLI0RsmnBywfhx0zw47zxabKZSE50oziuieGVClqoH/V
+         qODVXnAPBD2RX7Ws+s/Z4zx9Oiz2qG4lRBnaEA6I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Tong Zhang <ztong0001@gmail.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dan Williams <dan.j.williams@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 213/475] RDMA/mlx5: Fix memory leak in error flow for subscribe event routine
-Date:   Thu, 14 Apr 2022 15:09:58 +0200
-Message-Id: <20220414110901.086656242@linuxfoundation.org>
+Subject: [PATCH 5.4 179/475] dax: make sure inodes are flushed before destroy cache
+Date:   Thu, 14 Apr 2022 15:09:24 +0200
+Message-Id: <20220414110900.144369848@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,37 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Tong Zhang <ztong0001@gmail.com>
 
-[ Upstream commit 087f9c3f2309ed183f7e4b85ae57121d8663224d ]
+[ Upstream commit a7e8de822e0b1979f08767c751f6c8a9c1d4ad86 ]
 
-In case the second xa_insert() fails, the obj_event is not released.  Fix
-the error unwind flow to free that memory to avoid a memory leak.
+A bug can be triggered by following command
 
-Fixes: 759738537142 ("IB/mlx5: Enable subscription for device events over DEVX")
-Link: https://lore.kernel.org/r/1647018361-18266-1-git-send-email-lyz_cs@pku.edu.cn
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+$ modprobe nd_pmem && modprobe -r nd_pmem
+
+[   10.060014] BUG dax_cache (Not tainted): Objects remaining in dax_cache on __kmem_cache_shutdown()
+[   10.060938] Slab 0x0000000085b729ac objects=9 used=1 fp=0x000000004f5ae469 flags=0x200000000010200(slab|head|node)
+[   10.062433] Call Trace:
+[   10.062673]  dump_stack_lvl+0x34/0x44
+[   10.062865]  slab_err+0x90/0xd0
+[   10.063619]  __kmem_cache_shutdown+0x13b/0x2f0
+[   10.063848]  kmem_cache_destroy+0x4a/0x110
+[   10.064058]  __x64_sys_delete_module+0x265/0x300
+
+This is caused by dax_fs_exit() not flushing inodes before destroy cache.
+To fix this issue, call rcu_barrier() before destroy cache.
+
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220212071111.148575-1-ztong0001@gmail.com
+Fixes: 7b6be8444e0f ("dax: refactor dax-fs into a generic provider of 'struct dax_device' instances")
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/mlx5/devx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/dax/super.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
-index 664e0f374ac0..747f42855b7b 100644
---- a/drivers/infiniband/hw/mlx5/devx.c
-+++ b/drivers/infiniband/hw/mlx5/devx.c
-@@ -1844,8 +1844,10 @@ subscribe_event_xa_alloc(struct mlx5_devx_event_table *devx_event_table,
- 				key_level2,
- 				obj_event,
- 				GFP_KERNEL);
--		if (err)
-+		if (err) {
-+			kfree(obj_event);
- 			return err;
-+		}
- 		INIT_LIST_HEAD(&obj_event->obj_sub_list);
- 	}
+diff --git a/drivers/dax/super.c b/drivers/dax/super.c
+index 8074e5de815b..5005b92b197d 100644
+--- a/drivers/dax/super.c
++++ b/drivers/dax/super.c
+@@ -691,6 +691,7 @@ static int dax_fs_init(void)
+ static void dax_fs_exit(void)
+ {
+ 	kern_unmount(dax_mnt);
++	rcu_barrier();
+ 	kmem_cache_destroy(dax_cache);
+ }
  
 -- 
 2.34.1
