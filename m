@@ -2,55 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 050AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3394CC43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243850AbiDNNUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:20:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37906 "EHLO
+        id S243896AbiDNNUa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:20:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243862AbiDNNSr (ORCPT
+        with ESMTP id S243860AbiDNNSr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:18:47 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9720C9398C;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FB79399C;
         Thu, 14 Apr 2022 06:16:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649942164; x=1681478164;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=B+o87umAiGrvPlkkuSVZClpfPRHBEaTV6O93i92xP1Y=;
-  b=b35o0HTrS7t0zEp0nGnfiAj2KP5A/nzVZWXgiEUO9wcLrynWEa20dfrq
-   nioZay5/RSHIf2Q64YW1vGvwqid2vmmXcpa6Cba5BNiiF21bNIYrfpuQY
-   6Js8aK7rNsyXibL3zJsJLmLYVowIO11B4AdEuAYUv7LZ6wShKHOx2IHL9
-   CgG/y0A09TGOVCDR8414KPnBvPg7gevzcXp8weQ2krccevZ6UFSY0hYdf
-   QGLF5nsTxTw6R4Ni58/A2WFseh1oqVCfMZOBKV3IqB2hY2HC5e4o3rcwl
-   4acnCaeYWPCd/Oi7kMkljLfLfuQJU7dgDWMzjlypkCXoJyPTYMIxTNjvf
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="244811571"
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="244811571"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:16:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="656005392"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 14 Apr 2022 06:16:01 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 5AE43144; Thu, 14 Apr 2022 16:16:01 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-Subject: [PATCH v2 1/3] iio: imu: adis16480: Make use of device properties
-Date:   Thu, 14 Apr 2022 16:15:57 +0300
-Message-Id: <20220414131559.24694-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59F4B612CA;
+        Thu, 14 Apr 2022 13:16:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64EC2C385A5;
+        Thu, 14 Apr 2022 13:16:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942163;
+        bh=RnbZr9ihjCs/hbI65XeIou+i5G6vVvdSXIrydyueKeg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=owXHeZUuFvmNL2eU2yEkdJIsCRuPMc96yDtYRpfCvO2DBwv466+LZrbshjYB9M1wo
+         dVmfJhomC65jQEjp/q60JRZxq3+vEHn2QWigoP3/T/J9hQB4NDnqGbpH0R4LNMlqA0
+         1ue/86axNIVEyTk3uHg6NKbxUoMkjGjyF03yeMMU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
+        Oleg Nesterov <oleg@redhat.com>,
+        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.19 038/338] mempolicy: mbind_range() set_policy() after vma_merge()
+Date:   Thu, 14 Apr 2022 15:09:01 +0200
+Message-Id: <20220414110839.979504325@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -58,117 +52,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the module to be property provider agnostic and allow
-it to be used on non-OF platforms.
+From: Hugh Dickins <hughd@google.com>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+commit 4e0906008cdb56381638aa17d9c32734eae6d37a upstream.
+
+v2.6.34 commit 9d8cebd4bcd7 ("mm: fix mbind vma merge problem") introduced
+vma_merge() to mbind_range(); but unlike madvise, mlock and mprotect, it
+put a "continue" to next vma where its precedents go to update flags on
+current vma before advancing: that left vma with the wrong setting in the
+infamous vma_merge() case 8.
+
+v3.10 commit 1444f92c8498 ("mm: merging memory blocks resets mempolicy")
+tried to fix that in vma_adjust(), without fully understanding the issue.
+
+v3.11 commit 3964acd0dbec ("mm: mempolicy: fix mbind_range() &&
+vma_adjust() interaction") reverted that, and went about the fix in the
+right way, but chose to optimize out an unnecessary mpol_dup() with a
+prior mpol_equal() test.  But on tmpfs, that also pessimized out the vital
+call to its ->set_policy(), leaving the new mbind unenforced.
+
+The user visible effect was that the pages got allocated on the local
+node (happened to be 0), after the mbind() caller had specifically
+asked for them to be allocated on node 1.  There was not any page
+migration involved in the case reported: the pages simply got allocated
+on the wrong node.
+
+Just delete that optimization now (though it could be made conditional on
+vma not having a set_policy).  Also remove the "next" variable: it turned
+out to be blameless, but also pointless.
+
+Link: https://lkml.kernel.org/r/319e4db9-64ae-4bca-92f0-ade85d342ff@google.com
+Fixes: 3964acd0dbec ("mm: mempolicy: fix mbind_range() && vma_adjust() interaction")
+Signed-off-by: Hugh Dickins <hughd@google.com>
+Acked-by: Oleg Nesterov <oleg@redhat.com>
+Reviewed-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-v2: added tag (Nuno)
- drivers/iio/imu/adis16480.c | 27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
+ mm/mempolicy.c |    8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
-index 44bbe3d19907..68eed088cca6 100644
---- a/drivers/iio/imu/adis16480.c
-+++ b/drivers/iio/imu/adis16480.c
-@@ -7,14 +7,16 @@
- 
- #include <linux/clk.h>
- #include <linux/bitfield.h>
--#include <linux/of_irq.h>
- #include <linux/interrupt.h>
-+#include <linux/irq.h>
- #include <linux/math.h>
- #include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/spi/spi.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/lcm.h>
-+#include <linux/property.h>
- #include <linux/swab.h>
- #include <linux/crc32.h>
- 
-@@ -1239,9 +1241,10 @@ static int adis16480_enable_irq(struct adis *adis, bool enable)
- 	return __adis_write_reg_16(adis, ADIS16480_REG_FNCTIO_CTRL, val);
- }
- 
--static int adis16480_config_irq_pin(struct device_node *of_node,
--				    struct adis16480 *st)
-+static int adis16480_config_irq_pin(struct adis16480 *st)
+--- a/mm/mempolicy.c
++++ b/mm/mempolicy.c
+@@ -732,7 +732,6 @@ static int vma_replace_policy(struct vm_
+ static int mbind_range(struct mm_struct *mm, unsigned long start,
+ 		       unsigned long end, struct mempolicy *new_pol)
  {
-+	struct device *dev = &st->adis.spi->dev;
-+	struct fwnode_handle *fwnode = dev_fwnode(dev);
- 	struct irq_data *desc;
- 	enum adis16480_int_pin pin;
- 	unsigned int irq_type;
-@@ -1267,7 +1270,7 @@ static int adis16480_config_irq_pin(struct device_node *of_node,
- 	 */
- 	pin = ADIS16480_PIN_DIO1;
- 	for (i = 0; i < ARRAY_SIZE(adis16480_int_pin_names); i++) {
--		irq = of_irq_get_byname(of_node, adis16480_int_pin_names[i]);
-+		irq = fwnode_irq_get_byname(fwnode, adis16480_int_pin_names[i]);
- 		if (irq > 0) {
- 			pin = i;
- 			break;
-@@ -1295,15 +1298,15 @@ static int adis16480_config_irq_pin(struct device_node *of_node,
- 	return adis_write_reg_16(&st->adis, ADIS16480_REG_FNCTIO_CTRL, val);
- }
+-	struct vm_area_struct *next;
+ 	struct vm_area_struct *prev;
+ 	struct vm_area_struct *vma;
+ 	int err = 0;
+@@ -748,8 +747,7 @@ static int mbind_range(struct mm_struct
+ 	if (start > vma->vm_start)
+ 		prev = vma;
  
--static int adis16480_of_get_ext_clk_pin(struct adis16480 *st,
--					struct device_node *of_node)
-+static int adis16480_fw_get_ext_clk_pin(struct adis16480 *st)
- {
-+	struct device *dev = &st->adis.spi->dev;
- 	const char *ext_clk_pin;
- 	enum adis16480_int_pin pin;
- 	int i;
+-	for (; vma && vma->vm_start < end; prev = vma, vma = next) {
+-		next = vma->vm_next;
++	for (; vma && vma->vm_start < end; prev = vma, vma = vma->vm_next) {
+ 		vmstart = max(start, vma->vm_start);
+ 		vmend   = min(end, vma->vm_end);
  
- 	pin = ADIS16480_PIN_DIO2;
--	if (of_property_read_string(of_node, "adi,ext-clk-pin", &ext_clk_pin))
-+	if (device_property_read_string(dev, "adi,ext-clk-pin", &ext_clk_pin))
- 		goto clk_input_not_found;
- 
- 	for (i = 0; i < ARRAY_SIZE(adis16480_int_pin_names); i++) {
-@@ -1317,9 +1320,7 @@ static int adis16480_of_get_ext_clk_pin(struct adis16480 *st,
- 	return pin;
- }
- 
--static int adis16480_ext_clk_config(struct adis16480 *st,
--				    struct device_node *of_node,
--				    bool enable)
-+static int adis16480_ext_clk_config(struct adis16480 *st, bool enable)
- {
- 	unsigned int mode, mask;
- 	enum adis16480_int_pin pin;
-@@ -1330,7 +1331,7 @@ static int adis16480_ext_clk_config(struct adis16480 *st,
- 	if (ret)
- 		return ret;
- 
--	pin = adis16480_of_get_ext_clk_pin(st, of_node);
-+	pin = adis16480_fw_get_ext_clk_pin(st);
- 	/*
- 	 * Each DIOx pin supports only one function at a time. When a single pin
- 	 * has two assignments, the enable bit for a lower priority function
-@@ -1438,7 +1439,7 @@ static int adis16480_probe(struct spi_device *spi)
- 			return ret;
- 	}
- 
--	ret = adis16480_config_irq_pin(spi->dev.of_node, st);
-+	ret = adis16480_config_irq_pin(st);
- 	if (ret)
- 		return ret;
- 
-@@ -1447,7 +1448,7 @@ static int adis16480_probe(struct spi_device *spi)
- 		return ret;
- 
- 	if (!IS_ERR_OR_NULL(st->ext_clk)) {
--		ret = adis16480_ext_clk_config(st, spi->dev.of_node, true);
-+		ret = adis16480_ext_clk_config(st, true);
- 		if (ret)
- 			return ret;
- 
--- 
-2.35.1
+@@ -763,10 +761,6 @@ static int mbind_range(struct mm_struct
+ 				 new_pol, vma->vm_userfaultfd_ctx);
+ 		if (prev) {
+ 			vma = prev;
+-			next = vma->vm_next;
+-			if (mpol_equal(vma_policy(vma), new_pol))
+-				continue;
+-			/* vma_merge() joined vma && vma->next, case 8 */
+ 			goto replace;
+ 		}
+ 		if (vma->vm_start != vmstart) {
+
 
