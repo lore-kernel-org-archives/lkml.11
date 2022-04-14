@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2882FC4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B54E4C433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344694AbiDNNta (ORCPT
+        id S1344758AbiDNNte (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
+        Thu, 14 Apr 2022 09:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344042AbiDNNaR (ORCPT
+        with ESMTP id S1344034AbiDNNaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA925F88;
-        Thu, 14 Apr 2022 06:26:50 -0700 (PDT)
+        Thu, 14 Apr 2022 09:30:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340882BA;
+        Thu, 14 Apr 2022 06:26:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF3986190F;
-        Thu, 14 Apr 2022 13:26:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4235C385A5;
-        Thu, 14 Apr 2022 13:26:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6D656190F;
+        Thu, 14 Apr 2022 13:26:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3E0FC385A1;
+        Thu, 14 Apr 2022 13:26:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942809;
-        bh=dvPcYCzevFs+1/jJSvQNJgim5I2zaaED6vtbihtMvF4=;
+        s=korg; t=1649942798;
+        bh=Y4PFYmdYR2WjNP0fkjHUgXF9wtFrae+g7GdxMfughyY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=szdQKaJnAtlGBK4sFwOQ1GFnx93AF7NHe1f0C0DeUL5bfZE8eAyBh1vDZYL7qb4SQ
-         4vZxRp+WTQM9k/Tyo1AgTqHuEAt8tZ1V80PDle4bwfzrymvCrewxF2xTbzRFGUXzp2
-         T7E0B+CTdPyV6G16EOoskXtGuKWXk4iuZyLjTgXM=
+        b=YV6vHqT3WhLVC6syri6ItLQGXSrpYwREr4nYriNw45YgBRbuOa+lgpY+ibDlYNhmb
+         v7SL95u0oQe5Sk6NfIHwrP5ZtV6FFbo9GBuzqYP9DwGJRHtst6eC0oGHzWQCEmO+tZ
+         BuwLMErAfWHM2V0B/A9WDkAMSYlRNUdlCKb31UGU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evgeny Boger <boger@wirenboard.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org, Maxim Kiselev <bigunclemax@gmail.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 268/338] power: supply: axp20x_battery: properly report current when discharging
-Date:   Thu, 14 Apr 2022 15:12:51 +0200
-Message-Id: <20220414110846.517055203@linuxfoundation.org>
+Subject: [PATCH 4.19 265/338] powerpc: dts: t104xrdb: fix phy type for FMAN 4/5
+Date:   Thu, 14 Apr 2022 15:12:48 +0200
+Message-Id: <20220414110846.432190790@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,60 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgeny Boger <boger@wirenboard.com>
+From: Maxim Kiselev <bigunclemax@gmail.com>
 
-[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
+[ Upstream commit 17846485dff91acce1ad47b508b633dffc32e838 ]
 
-As stated in [1], negative current values are used for discharging
-batteries.
+T1040RDB has two RTL8211E-VB phys which requires setting
+of internal delays for correct work.
 
-AXP PMICs internally have two different ADC channels for shunt current
-measurement: one used during charging and one during discharging.
-The values reported by these ADCs are unsigned.
-While the driver properly selects ADC channel to get the data from,
-it doesn't apply negative sign when reporting discharging current.
+Changing the phy-connection-type property to `rgmii-id`
+will fix this issue.
 
-[1] Documentation/ABI/testing/sysfs-class-power
-
-Signed-off-by: Evgeny Boger <boger@wirenboard.com>
-Acked-by: Chen-Yu Tsai <wens@csie.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
+Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211230151123.1258321-1-bigunclemax@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/axp20x_battery.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ arch/powerpc/boot/dts/fsl/t104xrdb.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index e84b6e4da14a..9fda98b950ba 100644
---- a/drivers/power/supply/axp20x_battery.c
-+++ b/drivers/power/supply/axp20x_battery.c
-@@ -185,7 +185,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 				   union power_supply_propval *val)
- {
- 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
--	struct iio_channel *chan;
- 	int ret = 0, reg, val1;
+diff --git a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
+index 099a598c74c0..bfe1ed5be337 100644
+--- a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
++++ b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
+@@ -139,12 +139,12 @@
+ 		fman@400000 {
+ 			ethernet@e6000 {
+ 				phy-handle = <&phy_rgmii_0>;
+-				phy-connection-type = "rgmii";
++				phy-connection-type = "rgmii-id";
+ 			};
  
- 	switch (psp) {
-@@ -265,12 +264,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 		if (ret)
- 			return ret;
+ 			ethernet@e8000 {
+ 				phy-handle = <&phy_rgmii_1>;
+-				phy-connection-type = "rgmii";
++				phy-connection-type = "rgmii-id";
+ 			};
  
--		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
--			chan = axp20x_batt->batt_chrg_i;
--		else
--			chan = axp20x_batt->batt_dischrg_i;
--
--		ret = iio_read_channel_processed(chan, &val->intval);
-+		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
-+		} else {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
-+			val->intval = -val1;
-+		}
- 		if (ret)
- 			return ret;
- 
+ 			mdio0: mdio@fc000 {
 -- 
 2.35.1
 
