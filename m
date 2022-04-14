@@ -2,126 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74AE7C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3308C4167B
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358235AbiDNPlV (ORCPT
+        id S1358364AbiDNPlj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35898 "EHLO
+        Thu, 14 Apr 2022 11:41:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353866AbiDNOl2 (ORCPT
+        with ESMTP id S1354279AbiDNOly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:41:28 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FD9BD7C7;
-        Thu, 14 Apr 2022 07:32:41 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id t207so3995886qke.2;
-        Thu, 14 Apr 2022 07:32:41 -0700 (PDT)
+        Thu, 14 Apr 2022 10:41:54 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 416C8D1CF3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:34:36 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id f3so5033517pfe.2
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:34:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=emZ7XYPyCRycoXxp05wXOrh8mpo5yDWCQQvk32Zm7lU=;
-        b=i66eVPB+lzhboiXlRHKgeDJD31kRfFC8OiORnXb0A3xXoW/PqCKD4TLQdQRKImo74R
-         jvMgERqUa9HQ0V/klW+xCXYIQ2PhOHSnbEbDpeuPVluaZvI45kPrPp8HFZMDL+Ut3LrO
-         LuzPH2OgiUu6M4e8zWJcen2EBOw5SNCTGNccvnBPbBwjO6KPGIJDWHGqLYy36lKCkNet
-         QOpD6vMMunKVJh7H3kdQr3MC7P3xkXUzW2t3A/Rdq49mGdlRYc9OrB+T+sB1UG3UF0Eh
-         IGrS0zlEl8lSeNkRiA7KsAxqVztDl2nrd14Pr0RBYmjKrAA/2h1D1SOt2ZlUu/E/BD/N
-         Jh9A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JR7TGUzg2jTgqyV7dtws4W0P36w8/I4C5KP+KUJ6XkY=;
+        b=e/V0toUXFKIfbzcWd3+aVJ6Rmm/EpLtj5P9sXxAoSV5ff6JEJlaZJEtSh3kvQI50QE
+         wazu2qVsYBARhMzzJnyULXLSLNXJRTvqXWlZl0WJmUyxzhrXzHSqrJgXHWkmZLbFJE+i
+         SiRJweI/ucaEcCKzvQW3k0KmmBBt1B2AOQnxdeYZG39hurUIUfGETH/4XttlHlRXFe4e
+         8e/KtAADwZk2MplvC14VF5f/7ml0h+b3bJmtS1dQmL3B5L1dP0ERLUQgXMNdBMm2NJNK
+         tiSVKTE0pjhwDhrlEx4+EBeIbeHrGEAomsW2G1g1F9P7xqZRqhbo5uxa9aJQSU5ewMnJ
+         i5Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=emZ7XYPyCRycoXxp05wXOrh8mpo5yDWCQQvk32Zm7lU=;
-        b=7GE3Nmr83HSBSFQIwqthfwdiLoYwAn9WywWoFY6RDVlTSVZ5XJwGd3pCLo1pAaju17
-         ol6Gfx7lmoRcwLmgMf58wowQsASe9Tm/fKexO3u6MKtt7Po2sXRdhnVoXBpgdN1rNQXW
-         yWod96nFVax0BIyjFveBK/K7aokd7rXbHqcZd6deSrv539yeWIzyI9VtfoY750K2VxUR
-         /n46BDtmcqmKm187MJpScDt7camiX1Cbz3lDNM+1bysuBLJc2pswddmClEewa0mEuRF8
-         lZctmE3GfliAYzeYf/P25FObNq3RllYvEJNenvKk5EU5VcdZrQtrIfCDqU5aZX5lYQhT
-         I4WA==
-X-Gm-Message-State: AOAM5305H6L+mu4sPxh0afZklw67dWOc9aV8XqPAt4gybSp69yl09/dc
-        EiO50+0kbGOZu+iv9xQXhbBTipp3d2Q=
-X-Google-Smtp-Source: ABdhPJxKgOA2wI1T+BJbaHAI6XntjtvHEqwGf3e4MZP/bapA/JyfHEH/H7F7N5yCBjWYEj6tYUQTaw==
-X-Received: by 2002:a05:620a:406:b0:69b:e25c:778c with SMTP id 6-20020a05620a040600b0069be25c778cmr2052455qkp.224.1649946760549;
-        Thu, 14 Apr 2022 07:32:40 -0700 (PDT)
-Received: from shaak (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
-        by smtp.gmail.com with ESMTPSA id l9-20020a05622a174900b002ee2fed0583sm1331298qtk.27.2022.04.14.07.32.39
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JR7TGUzg2jTgqyV7dtws4W0P36w8/I4C5KP+KUJ6XkY=;
+        b=ZY7LC9k6qIdl7xkCsUHe6BvoVA8Vqs6E9TnG1b6KsDNHtbpw5rNKycTVUj/pdiu14d
+         TpKWN8B839Xc//mlYjXj9JT8FvGRU3shQ32XTg13G/qSJDQBfzZCcP8PJ7kdV2BcBa5e
+         e3QX35LuJXWTwSTdH6dzuSQGlRpTZlSeSlSZwAXG9CribEUsXzSoKDbDCKknlKyeu/VC
+         yh1ZYlZxuSlaYK9bSvG3nUDIs89lXnneIiLp6o0D3RZI5QvPR4bE11KjPs2mvDxAa/QO
+         wqGHEipY4k/WuMC0KZu2QKCNzH1UMxDwooRGO+9+heS6avd8+W1Doi87ayRDia27tcCh
+         1vNw==
+X-Gm-Message-State: AOAM532EW2p5i+cnnv7FihCiEejmIM8iSMgMuRxs6qPmq7H0w/VShPwl
+        P8Da0MoXyQnvNd5mpExNcZs=
+X-Google-Smtp-Source: ABdhPJwE+zcDwE+ksowryjT2STP8byQ3rarD4EqmnKcvx4kkuBg2EJ8HEW9UA/mzKKQTl8P4SUy0jA==
+X-Received: by 2002:a05:6a00:b8e:b0:505:8d7e:cb02 with SMTP id g14-20020a056a000b8e00b005058d7ecb02mr4202119pfj.68.1649946876042;
+        Thu, 14 Apr 2022 07:34:36 -0700 (PDT)
+Received: from guoguo-omen.lan ([2401:c080:1400:4da2:b701:47d5:9291:4cf9])
+        by smtp.gmail.com with ESMTPSA id k5-20020a17090ac50500b001cd5ffcca96sm4411017pjt.27.2022.04.14.07.34.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 07:32:39 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 10:32:38 -0400
-From:   Liam Beguin <liambeguin@gmail.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Peter Rosin <peda@axentia.se>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/1] iio: afe: rescale: Make use of device properties
-Message-ID: <Ylgwhu9zdmwwYnAq@shaak>
-References: <20220413190117.29814-1-andriy.shevchenko@linux.intel.com>
+        Thu, 14 Apr 2022 07:34:35 -0700 (PDT)
+From:   Chuanhong Guo <gch981213@gmail.com>
+To:     linux-mtd@lists.infradead.org
+Cc:     Chuanhong Guo <gch981213@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Boris Brezillon <boris.brezillon@collabora.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Palmer <daniel@0x0f.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 0/2] mtd: spinand: add support for detection with param page
+Date:   Thu, 14 Apr 2022 22:34:24 +0800
+Message-Id: <20220414143426.723168-1-gch981213@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220413190117.29814-1-andriy.shevchenko@linux.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+This patchset adds support for spi-nand detection using parameter page.
+This helps dealing with future JEDEC ID conflicts introduced by crazy
+vendors. Also, the added ability to auto-detect chip capacity can help
+reducing number of entries in our spi-nand id table.
 
-On Wed, Apr 13, 2022 at 10:01:17PM +0300, Andy Shevchenko wrote:
-> Convert the module to be property provider agnostic and allow
-> it to be used on non-OF platforms.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/iio/afe/Kconfig       | 1 -
->  drivers/iio/afe/iio-rescale.c | 5 ++---
->  2 files changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/afe/Kconfig b/drivers/iio/afe/Kconfig
-> index 4fa397822cff..9a1d95c1c7ed 100644
-> --- a/drivers/iio/afe/Kconfig
-> +++ b/drivers/iio/afe/Kconfig
-> @@ -8,7 +8,6 @@ menu "Analog Front Ends"
->  
->  config IIO_RESCALE
->  	tristate "IIO rescale"
-> -	depends on OF || COMPILE_TEST
->  	help
->  	  Say yes here to build support for the IIO rescaling
->  	  that handles voltage dividers, current sense shunts and
-> diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-> index 7e511293d6d1..c6cf709f0f05 100644
-> --- a/drivers/iio/afe/iio-rescale.c
-> +++ b/drivers/iio/afe/iio-rescale.c
-> @@ -10,9 +10,8 @@
->  
->  #include <linux/err.h>
->  #include <linux/gcd.h>
-> +#include <linux/mod_devicetable.h>
+Chuanhong Guo (2):
+  mtd: spinand: add support for detection with param page
+  mtd: spinand: probe Winbond W25N01GV/W using param page
 
-Is this really needed?
-device_get_match_data() is already defined in <linux/property.h>
+ drivers/mtd/nand/spi/Makefile  |   2 +-
+ drivers/mtd/nand/spi/core.c    |  23 +--
+ drivers/mtd/nand/spi/onfi.c    | 298 +++++++++++++++++++++++++++++++++
+ drivers/mtd/nand/spi/winbond.c |  25 ++-
+ include/linux/mtd/spinand.h    |  53 ++++++
+ 5 files changed, 380 insertions(+), 21 deletions(-)
+ create mode 100644 drivers/mtd/nand/spi/onfi.c
 
-Cheers,
-Liam
+-- 
+2.35.1
 
->  #include <linux/module.h>
-> -#include <linux/of.h>
-> -#include <linux/of_device.h>
->  #include <linux/platform_device.h>
->  #include <linux/property.h>
->  
-> @@ -536,7 +535,7 @@ static int rescale_probe(struct platform_device *pdev)
->  
->  	rescale = iio_priv(indio_dev);
->  
-> -	rescale->cfg = of_device_get_match_data(dev);
-> +	rescale->cfg = device_get_match_data(dev);
->  	rescale->numerator = 1;
->  	rescale->denominator = 1;
->  	rescale->offset = 0;
-> -- 
-> 2.35.1
-> 
