@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A81CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:31:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5084BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:31:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243338AbiDNMdY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 08:33:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51264 "EHLO
+        id S243352AbiDNMd2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 08:33:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243302AbiDNMdS (ORCPT
+        with ESMTP id S243342AbiDNMdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 08:33:18 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247E027FE3;
-        Thu, 14 Apr 2022 05:30:53 -0700 (PDT)
+        Thu, 14 Apr 2022 08:33:22 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE39D275E3;
+        Thu, 14 Apr 2022 05:30:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649939454; x=1681475454;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=AfWxrk3Y1bZ1ztYlbooWmctcbxPBWx/GSAjEuBb/3Gs=;
-  b=j8g4PEz50L8CvqfnQKxIf9Raam/dxJvSpfz94cB7vS30x7puj5camxbm
-   DAT6VQpuiAEJwfQ9EmdUauvzg6fSsp8OFRNIM4zjMr12unXSdxHME6AlI
-   OGKhYPfu295uI9mRMbY3xhTbAWWGKhI5dDEQEVTjb01VBcvcO16IIrt9M
+  t=1649939458; x=1681475458;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=Aq8HvzHRB/MIc27qf/VrkpAgx3k8PjsQkDRQBQeNTR4=;
+  b=AIl3Fjl5xSc3jv124aJpQ0kjchL+jn6Hf23jhZ8atckPP/qJT6+00rTa
+   fxAPUCV9iADC5vs8gyCXmX3AeRvNIoTUFv3osk8i5DYgiJyKKt0piT3QR
+   E/u+UCHaJq+YsQFD8S64degaP9TmBXJspkn2f1wtHlrLFR/ITGZ8xAWl0
    o=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Apr 2022 05:30:53 -0700
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 14 Apr 2022 05:30:57 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 05:30:53 -0700
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 05:30:57 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Apr 2022 05:30:52 -0700
+ 15.2.986.22; Thu, 14 Apr 2022 05:30:57 -0700
 Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Apr 2022 05:30:48 -0700
+ 15.2.986.22; Thu, 14 Apr 2022 05:30:52 -0700
 From:   Satya Priya <quic_c_skakit@quicinc.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>
@@ -48,10 +49,12 @@ CC:     Lee Jones <lee.jones@linaro.org>,
         <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
         <quic_jprakash@quicinc.com>,
         Satya Priya <quic_c_skakit@quicinc.com>
-Subject: [PATCH V10 0/9] Add Qualcomm Technologies, Inc. PM8008 regulator driver
-Date:   Thu, 14 Apr 2022 18:00:09 +0530
-Message-ID: <1649939418-19861-1-git-send-email-quic_c_skakit@quicinc.com>
+Subject: [PATCH V10 1/9] dt-bindings: mfd: pm8008: Add reset-gpios
+Date:   Thu, 14 Apr 2022 18:00:10 +0530
+Message-ID: <1649939418-19861-2-git-send-email-quic_c_skakit@quicinc.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649939418-19861-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1649939418-19861-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
@@ -61,32 +64,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Satya Priya (9):
-  dt-bindings: mfd: pm8008: Add reset-gpios
-  dt-bindings: regulator: pm8008: Add pm8008 regulator bindings
-  dt-bindings: mfd: pm8008: Add regulators
-  mfd: pm8008: Add reset-gpios
-  mfd: pm8008: Use i2c_new_dummy_device() API
-  mfd: pm8008: Add mfd_cell struct to register LDOs
-  regulator: Add a regulator driver for the PM8008 PMIC
-  arm64: dts: qcom: pm8008: Add base dts file
-  arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
+Add reset-gpios property for pm8008.
 
- .../devicetree/bindings/mfd/qcom,pm8008.yaml       |  24 +++
- .../bindings/regulator/qcom,pm8008-regulators.yaml |  40 ++++
- arch/arm64/boot/dts/qcom/pm8008.dtsi               |  42 +++++
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi           |  68 +++++++
- drivers/mfd/qcom-pm8008.c                          |  76 +++++++-
- drivers/regulator/Kconfig                          |   9 +
- drivers/regulator/Makefile                         |   1 +
- drivers/regulator/qcom-pm8008-regulator.c          | 201 +++++++++++++++++++++
- include/linux/mfd/qcom_pm8008.h                    |  13 ++
- 9 files changed, 464 insertions(+), 10 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/regulator/qcom,pm8008-regulators.yaml
- create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
- create mode 100644 drivers/regulator/qcom-pm8008-regulator.c
- create mode 100644 include/linux/mfd/qcom_pm8008.h
+Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+Changes in V10:
+ - None.
 
+Changes in V9:
+ - Undo the changes from V8 and only add reset-gpios. Leave interrupts
+   as required properties and do not change compatible.
+
+ Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
+index ec3138c..3312784 100644
+--- a/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
++++ b/Documentation/devicetree/bindings/mfd/qcom,pm8008.yaml
+@@ -44,6 +44,9 @@ properties:
+   "#size-cells":
+     const: 0
+ 
++  reset-gpios:
++    maxItems: 1
++
+ patternProperties:
+   "^gpio@[0-9a-f]+$":
+     type: object
+@@ -92,6 +95,7 @@ required:
+   - "#address-cells"
+   - "#size-cells"
+   - "#interrupt-cells"
++  - reset-gpios
+ 
+ additionalProperties: false
+ 
+@@ -99,6 +103,7 @@ examples:
+   - |
+     #include <dt-bindings/mfd/qcom-pm8008.h>
+     #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/gpio/gpio.h>
+     qupv3_se13_i2c {
+       #address-cells = <1>;
+       #size-cells = <0>;
+@@ -113,6 +118,8 @@ examples:
+         interrupt-parent = <&tlmm>;
+         interrupts = <32 IRQ_TYPE_EDGE_RISING>;
+ 
++        reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_HIGH>;
++
+         pm8008_gpios: gpio@c000 {
+           compatible = "qcom,pm8008-gpio", "qcom,spmi-gpio";
+           reg = <0xc000>;
 -- 
 2.7.4
 
