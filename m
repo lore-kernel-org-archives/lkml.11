@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B7BDC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7275C4167B
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:57:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345548AbiDNNxj (ORCPT
+        id S1345567AbiDNNxo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:53:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49970 "EHLO
+        Thu, 14 Apr 2022 09:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245695AbiDNN3Q (ORCPT
+        with ESMTP id S245675AbiDNN3O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:29:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA44AFAD4;
-        Thu, 14 Apr 2022 06:23:36 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96106AF1ED;
+        Thu, 14 Apr 2022 06:23:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A5D1619FC;
-        Thu, 14 Apr 2022 13:23:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CBC9C385A9;
-        Thu, 14 Apr 2022 13:23:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C22CB82986;
+        Thu, 14 Apr 2022 13:23:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF9ABC385A9;
+        Thu, 14 Apr 2022 13:23:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942615;
-        bh=vrr9yOlm8FE3cGTKPSJUOj69XGFkfbaYIYMtWeMhDG0=;
+        s=korg; t=1649942610;
+        bh=Un8XpncjO9JrpGSBBgKS6Q1V6sjrZX1aK6GJ1+1hbTY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x92zr2nhWsOYHTK6xiz0Pe4V892EwHUyTf8fuNzEwRs8Jb2xh42Y9dCxIzRSHnpDd
-         DMoGMbi8EJ3DqyAeU8wXx71l5ntw6nqAlbh9RRJgCHRvJjE+X1KvG74iROOmM3FLHQ
-         PE0/YWHR2f6AP6axtLC5IkbfC7epVtCn6mnQVsaA=
+        b=U19rLdwdU/C51EJr8+Bc3Rk1GXEiUrvM4EAd+HDhneZNhmLYARVEX/W70BZubYYhz
+         ZWlbQpQw8Hc4dXslhwNJ9UHW8/wTb44dpnHeXo4ykH1Zd60SueFWwH1TevKbVKEIh0
+         x+Jne7IRyZeoANxJSi4LzAdYVRRNgA0AWeHDC5u4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 159/338] pwm: lpc18xx-sct: Initialize driver data and hardware before pwmchip_add()
-Date:   Thu, 14 Apr 2022 15:11:02 +0200
-Message-Id: <20220414110843.426315036@linuxfoundation.org>
+Subject: [PATCH 4.19 157/338] mfd: asic3: Add missing iounmap() on error asic3_mfd_probe
+Date:   Thu, 14 Apr 2022 15:11:00 +0200
+Message-Id: <20220414110843.369653918@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -52,77 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 0401f24cd238ae200a23a13925f98de3d2c883b8 ]
+[ Upstream commit e84ee1a75f944a0fe3c277aaa10c426603d2b0bc ]
 
-When a driver calls pwmchip_add() it has to be prepared to immediately
-get its callbacks called. So move allocation of driver data and hardware
-initialization before the call to pwmchip_add().
+Add the missing iounmap() before return from asic3_mfd_probe
+in the error handling case.
 
-This fixes a potential NULL pointer exception and a race condition on
-register writes.
-
-Fixes: 841e6f90bb78 ("pwm: NXP LPC18xx PWM/SCT driver")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Fixes: 64e8867ba809 ("mfd: tmio_mmc hardware abstraction for CNF area")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20220307072947.5369-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-lpc18xx-sct.c | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
+ drivers/mfd/asic3.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
-index d7f5f7de030d..8b3aad06e236 100644
---- a/drivers/pwm/pwm-lpc18xx-sct.c
-+++ b/drivers/pwm/pwm-lpc18xx-sct.c
-@@ -406,12 +406,6 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_LIMIT,
- 			   BIT(lpc18xx_pwm->period_event));
- 
--	ret = pwmchip_add(&lpc18xx_pwm->chip);
--	if (ret < 0) {
--		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
--		goto disable_pwmclk;
--	}
--
- 	for (i = 0; i < lpc18xx_pwm->chip.npwm; i++) {
- 		struct lpc18xx_pwm_data *data;
- 
-@@ -421,14 +415,12 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 				    GFP_KERNEL);
- 		if (!data) {
- 			ret = -ENOMEM;
--			goto remove_pwmchip;
-+			goto disable_pwmclk;
- 		}
- 
- 		pwm_set_chip_data(pwm, data);
+diff --git a/drivers/mfd/asic3.c b/drivers/mfd/asic3.c
+index 1531302a50ec..75584cee0da5 100644
+--- a/drivers/mfd/asic3.c
++++ b/drivers/mfd/asic3.c
+@@ -918,14 +918,14 @@ static int __init asic3_mfd_probe(struct platform_device *pdev,
+ 		ret = mfd_add_devices(&pdev->dev, pdev->id,
+ 			&asic3_cell_ds1wm, 1, mem, asic->irq_base, NULL);
+ 		if (ret < 0)
+-			goto out;
++			goto out_unmap;
  	}
  
--	platform_set_drvdata(pdev, lpc18xx_pwm);
--
- 	val = lpc18xx_pwm_readl(lpc18xx_pwm, LPC18XX_PWM_CTRL);
- 	val &= ~LPC18XX_PWM_BIDIR;
- 	val &= ~LPC18XX_PWM_CTRL_HALT;
-@@ -436,10 +428,16 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	val |= LPC18XX_PWM_PRE(0);
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_CTRL, val);
+ 	if (mem_sdio && (irq >= 0)) {
+ 		ret = mfd_add_devices(&pdev->dev, pdev->id,
+ 			&asic3_cell_mmc, 1, mem_sdio, irq, NULL);
+ 		if (ret < 0)
+-			goto out;
++			goto out_unmap;
+ 	}
  
-+	ret = pwmchip_add(&lpc18xx_pwm->chip);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
-+		goto disable_pwmclk;
-+	}
-+
-+	platform_set_drvdata(pdev, lpc18xx_pwm);
-+
- 	return 0;
+ 	ret = 0;
+@@ -939,8 +939,12 @@ static int __init asic3_mfd_probe(struct platform_device *pdev,
+ 		ret = mfd_add_devices(&pdev->dev, 0,
+ 			asic3_cell_leds, ASIC3_NUM_LEDS, NULL, 0, NULL);
+ 	}
++	return ret;
  
--remove_pwmchip:
--	pwmchip_remove(&lpc18xx_pwm->chip);
- disable_pwmclk:
- 	clk_disable_unprepare(lpc18xx_pwm->pwm_clk);
+- out:
++out_unmap:
++	if (asic->tmio_cnf)
++		iounmap(asic->tmio_cnf);
++out:
  	return ret;
+ }
+ 
 -- 
 2.34.1
 
