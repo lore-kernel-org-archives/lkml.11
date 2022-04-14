@@ -2,126 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34751C3A5A1
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DAD0C35280
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344218AbiDNNkP (ORCPT
+        id S1344126AbiDNNj4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49396 "EHLO
+        Thu, 14 Apr 2022 09:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244966AbiDNN2W (ORCPT
+        with ESMTP id S244906AbiDNN2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E9C996A4;
-        Thu, 14 Apr 2022 06:21:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Apr 2022 09:28:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 997DDA7771
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:21:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649942477;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ymMl8hA8K/esTw1tg/apm+DYb9LQJWsl4/Hevby8goQ=;
+        b=Qc7WmYkJ/XDUFJQUxy3fUOtuVYsSOknpTY5mf6Ekz6fxbwo7MKknsLoHXAzrvg+fddAxEi
+        x+T5fBXJmRHaGbVriX6JO3p1mCfl/TQOoMVXOKIy7lhj1rjBHtKXxSMoKd/p0LgzT5TArb
+        yOe2idevwhJFwG1qADsUd+v4O+ABV8c=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-480-9uE9hCFMNhWH1RBS7kJ8pQ-1; Thu, 14 Apr 2022 09:21:12 -0400
+X-MC-Unique: 9uE9hCFMNhWH1RBS7kJ8pQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC848B8296A;
-        Thu, 14 Apr 2022 13:21:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28063C385A1;
-        Thu, 14 Apr 2022 13:21:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942482;
-        bh=BhpvmllLx9VJewFsOFhBeJtqVDutmHhAbX04VqL6EGc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aCYp+Itx5R5uPaeKQDxiBRrWiI6HJQRQJEB5qx8ExApTT+AQdzf47PsShMMIedv1N
-         /EIqnbfTyR40uJXE/tc78j9dNhp8/JLJVAd27vYd75kF2xlEOLKE2E/XKWzamyEfr9
-         MZ3vpzCyO616N0wIwAYd8RyfM1N7EmcARvw8GyIg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 150/338] mtd: rawnand: atmel: fix refcount issue in atmel_nand_controller_init
-Date:   Thu, 14 Apr 2022 15:10:53 +0200
-Message-Id: <20220414110843.172618701@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-References: <20220414110838.883074566@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 39C212A5957A;
+        Thu, 14 Apr 2022 13:20:53 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.195.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7A01C7C28;
+        Thu, 14 Apr 2022 13:20:51 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 18/34] x86/hyperv: Fix 'struct hv_enlightened_vmcs' definition
+Date:   Thu, 14 Apr 2022 15:19:57 +0200
+Message-Id: <20220414132013.1588929-19-vkuznets@redhat.com>
+In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+Section 1.9 of TLFS v6.0b says:
 
-[ Upstream commit fecbd4a317c95d73c849648c406bcf1b6a0ec1cf ]
+"All structures are padded in such a way that fields are aligned
+naturally (that is, an 8-byte field is aligned to an offset of 8 bytes
+and so on)".
 
-The reference counting issue happens in several error handling paths
-on a refcounted object "nc->dmac". In these paths, the function simply
-returns the error code, forgetting to balance the reference count of
-"nc->dmac", increased earlier by dma_request_channel(), which may
-cause refcount leaks.
+'struct enlightened_vmcs' has a glitch:
 
-Fix it by decrementing the refcount of specific object in those error
-paths.
+...
+        struct {
+                u32                nested_flush_hypercall:1; /*   836: 0  4 */
+                u32                msr_bitmap:1;         /*   836: 1  4 */
+                u32                reserved:30;          /*   836: 2  4 */
+        } hv_enlightenments_control;                     /*   836     4 */
+        u32                        hv_vp_id;             /*   840     4 */
+        u64                        hv_vm_id;             /*   844     8 */
+        u64                        partition_assist_page; /*   852     8 */
+...
 
-Fixes: f88fc122cc34 ("mtd: nand: Cleanup/rework the atmel_nand driver")
-Co-developed-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Co-developed-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220304085330.3610-1-xiongx18@fudan.edu.cn
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+And the observed values in 'partition_assist_page' make no sense at
+all. Fix the layout by padding the structure properly.
+
+Fixes: 68d1eb72ee99 ("x86/hyper-v: define struct hv_enlightened_vmcs and clean field bits")
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- drivers/mtd/nand/raw/atmel/nand-controller.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/hyperv-tlfs.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mtd/nand/raw/atmel/nand-controller.c b/drivers/mtd/nand/raw/atmel/nand-controller.c
-index 788762930487..b2ffd22fec31 100644
---- a/drivers/mtd/nand/raw/atmel/nand-controller.c
-+++ b/drivers/mtd/nand/raw/atmel/nand-controller.c
-@@ -1984,13 +1984,15 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
- 	nc->mck = of_clk_get(dev->parent->of_node, 0);
- 	if (IS_ERR(nc->mck)) {
- 		dev_err(dev, "Failed to retrieve MCK clk\n");
--		return PTR_ERR(nc->mck);
-+		ret = PTR_ERR(nc->mck);
-+		goto out_release_dma;
- 	}
+diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
+index 5225a85c08c3..e7ddae8e02c6 100644
+--- a/arch/x86/include/asm/hyperv-tlfs.h
++++ b/arch/x86/include/asm/hyperv-tlfs.h
+@@ -548,7 +548,7 @@ struct hv_enlightened_vmcs {
+ 	u64 guest_rip;
  
- 	np = of_parse_phandle(dev->parent->of_node, "atmel,smc", 0);
- 	if (!np) {
- 		dev_err(dev, "Missing or invalid atmel,smc property\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto out_release_dma;
- 	}
- 
- 	nc->smc = syscon_node_to_regmap(np);
-@@ -1998,10 +2000,16 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
- 	if (IS_ERR(nc->smc)) {
- 		ret = PTR_ERR(nc->smc);
- 		dev_err(dev, "Could not get SMC regmap (err = %d)\n", ret);
--		return ret;
-+		goto out_release_dma;
- 	}
- 
- 	return 0;
-+
-+out_release_dma:
-+	if (nc->dmac)
-+		dma_release_channel(nc->dmac);
-+
-+	return ret;
- }
- 
- static int
+ 	u32 hv_clean_fields;
+-	u32 hv_padding_32;
++	u32 padding32_1;
+ 	u32 hv_synthetic_controls;
+ 	struct {
+ 		u32 nested_flush_hypercall:1;
+@@ -556,7 +556,7 @@ struct hv_enlightened_vmcs {
+ 		u32 reserved:30;
+ 	}  __packed hv_enlightenments_control;
+ 	u32 hv_vp_id;
+-
++	u32 padding32_2;
+ 	u64 hv_vm_id;
+ 	u64 partition_assist_page;
+ 	u64 padding64_4[4];
 -- 
-2.34.1
-
-
+2.35.1
 
