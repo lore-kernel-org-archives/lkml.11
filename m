@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FABAC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C541AC43217
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:24:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229821AbiDNOZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46714 "EHLO
+        id S1347393AbiDNO0j (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344135AbiDNNj7 (ORCPT
+        with ESMTP id S1344104AbiDNNju (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032271C6;
-        Thu, 14 Apr 2022 06:37:35 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FEBF1FA7F;
+        Thu, 14 Apr 2022 06:37:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9176661BA7;
-        Thu, 14 Apr 2022 13:37:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C9FEC385A5;
-        Thu, 14 Apr 2022 13:37:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2ADE6B82983;
+        Thu, 14 Apr 2022 13:37:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EDB5C385A5;
+        Thu, 14 Apr 2022 13:37:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943454;
-        bh=RVi13gWGlxcg1glYZ5+Cq82yuOBQqoj/YktoICuySIM=;
+        s=korg; t=1649943442;
+        bh=vnEk134Kx4D0oRVO2tM/o6uUt6tN7E97qZ+aeslwYNk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CbfffoWByKfpijOFh5OTCFcm27TfJ+o+yxqGdBBcD5SUQ1w6QJmd8cCe6lIbCprXR
-         82aVOcDMbrTcuYzqdqgYi3QiJvv9A2tuKxALyY8qAuMrotjvd/VGo5IcNS/NIdNNpL
-         i3abac2d5AbOOniCXuyi1yWdoZ9CgmZALUh4xkFY=
+        b=Qg+oWjnoa5l9iKiZ5zIE3zxF/6lfnR0RoNXjk6Z1RJVTGEeiukQiT9pB6qcKxbzO3
+         6IX2dYKhtl5wufpQEg5NjdShIjOK4Fbp5d3xEiDzRn7aM9U34Ip/ln/pdcXM1JWYrB
+         SdR1tY5rKYY3AQcZFSXv9deyP78bCU8GLUrvbY3E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Frank Wunderlich <frank-w@public-files.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 134/475] arm64: dts: broadcom: Fix sata nodename
-Date:   Thu, 14 Apr 2022 15:08:39 +0200
-Message-Id: <20220414110858.899667983@linuxfoundation.org>
+Subject: [PATCH 5.4 157/475] ath10k: fix memory overwrite of the WoWLAN wakeup packet pattern
+Date:   Thu, 14 Apr 2022 15:09:02 +0200
+Message-Id: <20220414110859.535075482@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,39 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+From: Wen Gong <quic_wgong@quicinc.com>
 
-[ Upstream commit 55927cb44db43a57699fa652e2437a91620385dc ]
+[ Upstream commit e3fb3d4418fce5484dfe7995fcd94c18b10a431a ]
 
-After converting ahci-platform txt binding to yaml nodename is reported
-as not matching the standard:
+In function ath10k_wow_convert_8023_to_80211(), it will do memcpy for
+the new->pattern, and currently the new->pattern and new->mask is same
+with the old, then the memcpy of new->pattern will also overwrite the
+old->pattern, because the header format of new->pattern is 802.11,
+its length is larger than the old->pattern which is 802.3. Then the
+operation of "Copy frame body" will copy a mistake value because the
+body memory has been overwrite when memcpy the new->pattern.
 
-arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dt.yaml:
-ahci@663f2000: $nodename:0: 'ahci@663f2000' does not match '^sata(@.*)?$'
+Assign another empty value to new_pattern to avoid the overwrite issue.
 
-Fix it to match binding.
+Tested-on: QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00049
 
-Fixes: ac9aae00f0fc ("arm64: dts: Add SATA3 AHCI and SATA3 PHY DT nodes for NS2")
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: fa3440fa2fa1 ("ath10k: convert wow pattern from 802.3 to 802.11")
+Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20211222031347.25463-1-quic_wgong@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath10k/wow.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi b/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi
-index 39802066232e..edc1a8a4c4bc 100644
---- a/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi
-+++ b/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi
-@@ -687,7 +687,7 @@
- 			};
- 		};
+diff --git a/drivers/net/wireless/ath/ath10k/wow.c b/drivers/net/wireless/ath/ath10k/wow.c
+index 8c26adddd034..b4f54ca12756 100644
+--- a/drivers/net/wireless/ath/ath10k/wow.c
++++ b/drivers/net/wireless/ath/ath10k/wow.c
+@@ -337,14 +337,15 @@ static int ath10k_vif_wow_set_wakeups(struct ath10k_vif *arvif,
+ 			if (patterns[i].mask[j / 8] & BIT(j % 8))
+ 				bitmask[j] = 0xff;
+ 		old_pattern.mask = bitmask;
+-		new_pattern = old_pattern;
  
--		sata: ahci@663f2000 {
-+		sata: sata@663f2000 {
- 			compatible = "brcm,iproc-ahci", "generic-ahci";
- 			reg = <0x663f2000 0x1000>;
- 			dma-coherent;
+ 		if (ar->wmi.rx_decap_mode == ATH10K_HW_TXRX_NATIVE_WIFI) {
+-			if (patterns[i].pkt_offset < ETH_HLEN)
++			if (patterns[i].pkt_offset < ETH_HLEN) {
+ 				ath10k_wow_convert_8023_to_80211(&new_pattern,
+ 								 &old_pattern);
+-			else
++			} else {
++				new_pattern = old_pattern;
+ 				new_pattern.pkt_offset += WOW_HDR_LEN - ETH_HLEN;
++			}
+ 		}
+ 
+ 		if (WARN_ON(new_pattern.pattern_len > WOW_MAX_PATTERN_SIZE))
 -- 
 2.34.1
 
