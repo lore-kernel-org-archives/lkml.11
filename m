@@ -2,78 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF26FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0976DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244875AbiDNNg0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:36:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47612 "EHLO
+        id S244897AbiDNNgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244389AbiDNN1G (ORCPT
+        with ESMTP id S244241AbiDNN1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:27:06 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2159F6FE;
+        Thu, 14 Apr 2022 09:27:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4AFA0BC5;
         Thu, 14 Apr 2022 06:20:06 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id f03d98bcf9148086; Thu, 14 Apr 2022 15:20:04 +0200
-Received: from kreacher.localnet (unknown [213.134.181.101])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id F0C8B66BE86;
-        Thu, 14 Apr 2022 15:20:03 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux PCI <linux-pci@vger.kernel.org>
-Cc:     Linux PM <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH v3 0/9] PCI/PM: Improvements related to device transitions into D0
-Date:   Thu, 14 Apr 2022 15:00:23 +0200
-Message-ID: <5838942.lOV4Wx5bFT@kreacher>
-In-Reply-To: <11975904.O9o76ZdvQC@kreacher>
-References: <4419002.LvFx2qVVIh@kreacher> <11975904.O9o76ZdvQC@kreacher>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 330E7612E6;
+        Thu, 14 Apr 2022 13:20:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41894C385A5;
+        Thu, 14 Apr 2022 13:20:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942405;
+        bh=MjzH9VaNpxVoybsV/F7s83Ffo96O/wDIS1zXUyBEfHE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jqECoXRVzldkGGlbiJlWTE4HGwDvXnaAqT8DWqIzWLjkYy25KecXzC06mPaJTjm5B
+         +FVd+iRIVlRk+Hzg6A5KSBg//a1ewNWPHdi22d5KhfSEEq89a5IOvpCV9sw064pTso
+         E948FM2DRlzCJDvAVkHWcJoyQI2dVr2yGLHxUWKY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 125/338] power: supply: ab8500: Fix memory leak in ab8500_fg_sysfs_init
+Date:   Thu, 14 Apr 2022 15:10:28 +0200
+Message-Id: <20220414110842.460545819@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.181.101
-X-CLIENT-HOSTNAME: 213.134.181.101
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelfedgieegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkjghfggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpeetgefgleetgeduheeugeeikeevudelueelvdeufeejfeffgeefjedugfetfeehhfenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppedvudefrddufeegrddukedurddutddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudekuddruddtuddphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohephedprhgtphhtthhopehlihhnuhigqdhptghisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohephhgvlhhgrggrshes
- khgvrhhnvghlrdhorhhgpdhrtghpthhtohepmhhikhgrrdifvghsthgvrhgsvghrgheslhhinhhugidrihhnthgvlhdrtghomh
-X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Monday, April 11, 2022 4:17:41 PM CEST Rafael J. Wysocki wrote:
-> Hi All,
-> 
-> On Saturday, April 9, 2022 3:03:14 PM CEST Rafael J. Wysocki wrote:
-> > Hi All,
-> > 
-> > This series supersedes the one at
-> > 
-> > https://lore.kernel.org/linux-pm/4198163.ejJDZkT8p0@kreacher
-> > 
-> > It addresses some potential issues related to PCI device transitions from
-> > low-power states into D0 and makes the related code more straightforward
-> > and so easier to follow.
-> > 
-> > Please refer to the patch changelogs for details.
-> 
-> Here's a v2 of this patch series which is being sent, because I realized that
-> one of the checks in pci_power_up() added by patch [4/7] in v1 was redundant
-> and can be dropped, but that affected the last 3 patches in the series and
-> then I noticed that more improvements were possible and hence the new patches
-> [2/9].
+From: Miaoqian Lin <linmq006@gmail.com>
 
-Here's a v3 of this series with some minor review comments addressed and R-by
-tags from Mika added.
+[ Upstream commit 6a4760463dbc6b603690938c468839985189ce0a ]
 
-Thanks!
+kobject_init_and_add() takes reference even when it fails.
+According to the doc of kobject_init_and_add()：
+
+   If this function returns an error, kobject_put() must be called to
+   properly clean up the memory associated with the object.
+
+Fix memory leak by calling kobject_put().
+
+Fixes: 8c0984e5a753 ("power: move power supply drivers to power/supply")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/power/supply/ab8500_fg.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/power/supply/ab8500_fg.c b/drivers/power/supply/ab8500_fg.c
+index b0e77324b016..675f9d0e8471 100644
+--- a/drivers/power/supply/ab8500_fg.c
++++ b/drivers/power/supply/ab8500_fg.c
+@@ -2541,8 +2541,10 @@ static int ab8500_fg_sysfs_init(struct ab8500_fg *di)
+ 	ret = kobject_init_and_add(&di->fg_kobject,
+ 		&ab8500_fg_ktype,
+ 		NULL, "battery");
+-	if (ret < 0)
++	if (ret < 0) {
++		kobject_put(&di->fg_kobject);
+ 		dev_err(di->dev, "failed to create sysfs entry\n");
++	}
+ 
+ 	return ret;
+ }
+-- 
+2.34.1
 
 
 
