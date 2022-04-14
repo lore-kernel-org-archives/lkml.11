@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED76FC4707E
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2C89C38162
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346320AbiDNO4q (ORCPT
+        id S1351978AbiDNOyn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56944 "EHLO
+        Thu, 14 Apr 2022 10:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345589AbiDNNxr (ORCPT
+        with ESMTP id S1345426AbiDNNuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:53:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC726ABF6A;
-        Thu, 14 Apr 2022 06:44:58 -0700 (PDT)
+        Thu, 14 Apr 2022 09:50:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 988B2A6E09;
+        Thu, 14 Apr 2022 06:44:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57F7161BA7;
-        Thu, 14 Apr 2022 13:44:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 651ABC385AA;
-        Thu, 14 Apr 2022 13:44:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B0ACB82987;
+        Thu, 14 Apr 2022 13:44:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A71E9C385A5;
+        Thu, 14 Apr 2022 13:44:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943897;
-        bh=+CHxBjUPAssW2Q28/oiH/OK/B0WMnIHTpv9bWzb9PXQ=;
+        s=korg; t=1649943846;
+        bh=ANab7f4cOqKNj2sib7uC1f78bOzxhVfXID49rCCK1Iw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xQmVSmlQU4xbEj3riXHjpUkB6TaeB7EwCw7jsTAvZNilCZIJCy1Z2M5nns0qN+BED
-         3Qyk68w5EYmaov3MLPcMygHWz5CjOCCOqB5xq3t8TGf/rMX0BCyuZ+rcLqa7MdjKlY
-         ajbUBywE9weUtlGEkLFl+nBWqDWJJk5Jmp/NLP/o=
+        b=r4ICkYYLejtfmTF8a4YFdO0mKLli0MkoCFqYpyVl8DLZNg/lhAQvyXgzxR1VLbCIN
+         DmOJr+NXnxf6TWr7SWO9IuLYAHXFmN9+BoCuHTZF/0+9d/eAJbcDRqgo6fK9iNqPEY
+         ckNamT+lYJtC+mVjgIGO5XTEBlKNW7bl/a0vtYG4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 322/475] scsi: qla2xxx: Fix incorrect reporting of task management failure
-Date:   Thu, 14 Apr 2022 15:11:47 +0200
-Message-Id: <20220414110904.099377079@linuxfoundation.org>
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 265/475] xen: fix is_xen_pmu()
+Date:   Thu, 14 Apr 2022 15:10:50 +0200
+Message-Id: <20220414110902.524262472@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,37 +52,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Juergen Gross <jgross@suse.com>
 
-commit 58ca5999e0367d131de82a75257fbfd5aed0195d upstream.
+[ Upstream commit de2ae403b4c0e79a3410e63bc448542fbb9f9bfc ]
 
-User experienced no task management error while target device is responding
-with error. The RSP_CODE field in the status IOCB is in little endian.
-Driver assumes it's big endian and it picked up erroneous data.
+is_xen_pmu() is taking the cpu number as parameter, but it is not using
+it. Instead it just tests whether the Xen PMU initialization on the
+current cpu did succeed. As this test is done by checking a percpu
+pointer, preemption needs to be disabled in order to avoid switching
+the cpu while doing the test. While resuming from suspend() this seems
+not to be the case:
 
-Convert the data back to big endian as is on the wire.
+[   88.082751] ACPI: PM: Low-level resume complete
+[   88.087933] ACPI: EC: EC started
+[   88.091464] ACPI: PM: Restoring platform NVS memory
+[   88.097166] xen_acpi_processor: Uploading Xen processor PM info
+[   88.103850] Enabling non-boot CPUs ...
+[   88.108128] installing Xen timer for CPU 1
+[   88.112763] BUG: using smp_processor_id() in preemptible [00000000] code: systemd-sleep/7138
+[   88.122256] caller is is_xen_pmu+0x12/0x30
+[   88.126937] CPU: 0 PID: 7138 Comm: systemd-sleep Tainted: G        W         5.16.13-2.fc32.qubes.x86_64 #1
+[   88.137939] Hardware name: Star Labs StarBook/StarBook, BIOS 7.97 03/21/2022
+[   88.145930] Call Trace:
+[   88.148757]  <TASK>
+[   88.151193]  dump_stack_lvl+0x48/0x5e
+[   88.155381]  check_preemption_disabled+0xde/0xe0
+[   88.160641]  is_xen_pmu+0x12/0x30
+[   88.164441]  xen_smp_intr_init_pv+0x75/0x100
 
-Link: https://lore.kernel.org/r/20220310092604.22950-2-njavali@marvell.com
-Fixes: faef62d13463 ("[SCSI] qla2xxx: Fix Task Management command asynchronous handling")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix that by replacing is_xen_pmu() by a simple boolean variable which
+reflects the Xen PMU initialization state on cpu 0.
+
+Modify xen_pmu_init() to return early in case it is being called for a
+cpu other than cpu 0 and the boolean variable not being set.
+
+Fixes: bf6dfb154d93 ("xen/PMU: PMU emulation code")
+Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Link: https://lore.kernel.org/r/20220325142002.31789-1-jgross@suse.com
+Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_isr.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/xen/pmu.c    | 10 ++++------
+ arch/x86/xen/pmu.h    |  3 ++-
+ arch/x86/xen/smp_pv.c |  2 +-
+ 3 files changed, 7 insertions(+), 8 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_isr.c
-+++ b/drivers/scsi/qla2xxx/qla_isr.c
-@@ -1839,6 +1839,7 @@ qla24xx_tm_iocb_entry(scsi_qla_host_t *v
- 		iocb->u.tmf.data = QLA_FUNCTION_FAILED;
- 	} else if ((le16_to_cpu(sts->scsi_status) &
- 	    SS_RESPONSE_INFO_LEN_VALID)) {
-+		host_to_fcp_swap(sts->data, sizeof(sts->data));
- 		if (le32_to_cpu(sts->rsp_data_len) < 4) {
- 			ql_log(ql_log_warn, fcport->vha, 0x503b,
- 			    "Async-%s error - hdl=%x not enough response(%d).\n",
+diff --git a/arch/x86/xen/pmu.c b/arch/x86/xen/pmu.c
+index e13b0b49fcdf..d7249f4c90f1 100644
+--- a/arch/x86/xen/pmu.c
++++ b/arch/x86/xen/pmu.c
+@@ -512,10 +512,7 @@ irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id)
+ 	return ret;
+ }
+ 
+-bool is_xen_pmu(int cpu)
+-{
+-	return (get_xenpmu_data() != NULL);
+-}
++bool is_xen_pmu;
+ 
+ void xen_pmu_init(int cpu)
+ {
+@@ -526,7 +523,7 @@ void xen_pmu_init(int cpu)
+ 
+ 	BUILD_BUG_ON(sizeof(struct xen_pmu_data) > PAGE_SIZE);
+ 
+-	if (xen_hvm_domain())
++	if (xen_hvm_domain() || (cpu != 0 && !is_xen_pmu))
+ 		return;
+ 
+ 	xenpmu_data = (struct xen_pmu_data *)get_zeroed_page(GFP_KERNEL);
+@@ -547,7 +544,8 @@ void xen_pmu_init(int cpu)
+ 	per_cpu(xenpmu_shared, cpu).xenpmu_data = xenpmu_data;
+ 	per_cpu(xenpmu_shared, cpu).flags = 0;
+ 
+-	if (cpu == 0) {
++	if (!is_xen_pmu) {
++		is_xen_pmu = true;
+ 		perf_register_guest_info_callbacks(&xen_guest_cbs);
+ 		xen_pmu_arch_init();
+ 	}
+diff --git a/arch/x86/xen/pmu.h b/arch/x86/xen/pmu.h
+index 0e83a160589b..65c58894fc79 100644
+--- a/arch/x86/xen/pmu.h
++++ b/arch/x86/xen/pmu.h
+@@ -4,6 +4,8 @@
+ 
+ #include <xen/interface/xenpmu.h>
+ 
++extern bool is_xen_pmu;
++
+ irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id);
+ #ifdef CONFIG_XEN_HAVE_VPMU
+ void xen_pmu_init(int cpu);
+@@ -12,7 +14,6 @@ void xen_pmu_finish(int cpu);
+ static inline void xen_pmu_init(int cpu) {}
+ static inline void xen_pmu_finish(int cpu) {}
+ #endif
+-bool is_xen_pmu(int cpu);
+ bool pmu_msr_read(unsigned int msr, uint64_t *val, int *err);
+ bool pmu_msr_write(unsigned int msr, uint32_t low, uint32_t high, int *err);
+ int pmu_apic_update(uint32_t reg);
+diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
+index 0cebe5db691d..64e6ec2c32a7 100644
+--- a/arch/x86/xen/smp_pv.c
++++ b/arch/x86/xen/smp_pv.c
+@@ -129,7 +129,7 @@ int xen_smp_intr_init_pv(unsigned int cpu)
+ 	per_cpu(xen_irq_work, cpu).irq = rc;
+ 	per_cpu(xen_irq_work, cpu).name = callfunc_name;
+ 
+-	if (is_xen_pmu(cpu)) {
++	if (is_xen_pmu) {
+ 		pmu_name = kasprintf(GFP_KERNEL, "pmu%d", cpu);
+ 		rc = bind_virq_to_irqhandler(VIRQ_XENPMU, cpu,
+ 					     xen_pmu_irq_handler,
+-- 
+2.34.1
+
 
 
