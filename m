@@ -2,46 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6ADBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C902C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:19:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244075AbiDNNVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:21:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
+        id S244009AbiDNNVj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:21:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243935AbiDNNTS (ORCPT
+        with ESMTP id S243934AbiDNNTS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:19:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C91F93994;
-        Thu, 14 Apr 2022 06:16:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17CEB60BAF;
-        Thu, 14 Apr 2022 13:16:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E3FAC385A9;
-        Thu, 14 Apr 2022 13:16:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942194;
-        bh=Fqq+en8iPEE1HKr+M1OGme3TAAY7CFxeC9XJob4BnVc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1ntHEDpwW58LNvugXnj67Y2N1bInbrzT4UDVAtg3duArwwMeoNFUzS1RSbN+1ocdd
-         0/mgE8qe2e4ex3PJTRuwV2v2ZsS4b2u4NeZns0Y3s1JyebqTViVAHu5db93/lo7THY
-         fvJ0WeAvM7O7Iuy6aRVPuv+BcKNexLR+KjH4bAH0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 4.19 048/338] ACPI: properties: Consistently return -ENOENT if there are no more references
-Date:   Thu, 14 Apr 2022 15:09:11 +0200
-Message-Id: <20220414110840.263746814@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-References: <20220414110838.883074566@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820D392D31;
+        Thu, 14 Apr 2022 06:16:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649942193; x=1681478193;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=xX/cmUcjGxXpG7rPxofxKQoxBKiUs0vSg8GaifSgBio=;
+  b=RZQv5rD+7g1Xz9CvUJO8Z5mBan8rtjPnYbjVgYKhFcGx3zcXRtqKytyt
+   zIP998aMPY7UJT93i17klniMYr+BMMLB85KFk0sIkBSo9eIa2EEXtXjsP
+   3CAS95ZqMgp2ykpqtez2g1+T4Wc9Ih5up98nV/snCJnzkigzkwqdi4zzF
+   JaUX+zrWwQcZQOENz7Ry5sH8SC4Q0lu6hbHtfzziiTzNwVTSrMzClaqX6
+   1gvRs8xuruK3n8NeS5NEjjo2eCieNMqvLZvFilXx16TsNRjzx5ooSCqQ1
+   0ktw5PQnA5QnTUKOyottbmFk2iPVnxs4+ygJKsTB0fKikTSrPJscpCI2r
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="242859747"
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="242859747"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:16:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="591187970"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga001.jf.intel.com with ESMTP; 14 Apr 2022 06:16:01 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 750AD2AE; Thu, 14 Apr 2022 16:16:01 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+Subject: [PATCH v2 3/3] iio: imu: adis16480: Improve getting the optional clocks
+Date:   Thu, 14 Apr 2022 16:15:59 +0300
+Message-Id: <20220414131559.24694-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220414131559.24694-1-andriy.shevchenko@linux.intel.com>
+References: <20220414131559.24694-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,36 +60,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+The extended clocks are optional and may not be present for some
+configurations supported by this driver. Nevertheless, in case
+the clock is provided but some error happens during its getting,
+that error handling should be done properly.
 
-commit babc92da5928f81af951663fc436997352e02d3a upstream.
+Use devm_clk_get_optional() API and report possible errors using
+dev_err_probe() to handle properly -EPROBE_DEFER error.
 
-__acpi_node_get_property_reference() is documented to return -ENOENT if
-the caller requests a property reference at an index that does not exist,
-not -EINVAL which it actually does.
-
-Fix this by returning -ENOENT consistenly, independently of whether the
-property value is a plain reference or a package.
-
-Fixes: c343bc2ce2c6 ("ACPI: properties: Align return codes of __acpi_node_get_property_reference()")
-Cc: 4.14+ <stable@vger.kernel.org> # 4.14+
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/acpi/property.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v2: added tag (Nuno), massaged commit message (Nuno)
+ drivers/iio/imu/adis16480.c | 26 ++++++++++----------------
+ 1 file changed, 10 insertions(+), 16 deletions(-)
 
---- a/drivers/acpi/property.c
-+++ b/drivers/acpi/property.c
-@@ -618,7 +618,7 @@ int __acpi_node_get_property_reference(c
- 	 */
- 	if (obj->type == ACPI_TYPE_LOCAL_REFERENCE) {
- 		if (index)
--			return -EINVAL;
-+			return -ENOENT;
+diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+index 287914016f28..fe520194a837 100644
+--- a/drivers/iio/imu/adis16480.c
++++ b/drivers/iio/imu/adis16480.c
+@@ -1362,31 +1362,25 @@ static int adis16480_get_ext_clocks(struct adis16480 *st)
+ {
+ 	struct device *dev = &st->adis.spi->dev;
  
- 		ret = acpi_bus_get_device(obj->reference.handle, &device);
+-	st->clk_mode = ADIS16480_CLK_INT;
+-	st->ext_clk = devm_clk_get(dev, "sync");
+-	if (!IS_ERR_OR_NULL(st->ext_clk)) {
++	st->ext_clk = devm_clk_get_optional(dev, "sync");
++	if (IS_ERR(st->ext_clk))
++		return dev_err_probe(dev, PTR_ERR(st->ext_clk), "failed to get ext clk\n");
++	if (st->ext_clk) {
+ 		st->clk_mode = ADIS16480_CLK_SYNC;
+ 		return 0;
+ 	}
+ 
+-	if (PTR_ERR(st->ext_clk) != -ENOENT) {
+-		dev_err(dev, "failed to get ext clk\n");
+-		return PTR_ERR(st->ext_clk);
+-	}
+-
+ 	if (st->chip_info->has_pps_clk_mode) {
+-		st->ext_clk = devm_clk_get(dev, "pps");
+-		if (!IS_ERR_OR_NULL(st->ext_clk)) {
++		st->ext_clk = devm_clk_get_optional(dev, "pps");
++		if (IS_ERR(st->ext_clk))
++			return dev_err_probe(dev, PTR_ERR(st->ext_clk), "failed to get ext clk\n");
++		if (st->ext_clk) {
+ 			st->clk_mode = ADIS16480_CLK_PPS;
+ 			return 0;
+ 		}
+-
+-		if (PTR_ERR(st->ext_clk) != -ENOENT) {
+-			dev_err(dev, "failed to get ext clk\n");
+-			return PTR_ERR(st->ext_clk);
+-		}
+ 	}
+ 
++	st->clk_mode = ADIS16480_CLK_INT;
+ 	return 0;
+ }
+ 
+@@ -1447,7 +1441,7 @@ static int adis16480_probe(struct spi_device *spi)
+ 	if (ret)
+ 		return ret;
+ 
+-	if (!IS_ERR_OR_NULL(st->ext_clk)) {
++	if (st->ext_clk) {
+ 		ret = adis16480_ext_clk_config(st, true);
  		if (ret)
-
+ 			return ret;
+-- 
+2.35.1
 
