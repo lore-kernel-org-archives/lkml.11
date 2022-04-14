@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76CF2C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E05E9C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346095AbiDNNzl (ORCPT
+        id S1346081AbiDNNzg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57878 "EHLO
+        Thu, 14 Apr 2022 09:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344180AbiDNNbA (ORCPT
+        with ESMTP id S245487AbiDNN3A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:31:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3172BE6;
-        Thu, 14 Apr 2022 06:28:36 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380EDAC925;
+        Thu, 14 Apr 2022 06:23:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFDEA6190F;
-        Thu, 14 Apr 2022 13:28:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA82CC385B6;
-        Thu, 14 Apr 2022 13:28:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8330B82982;
+        Thu, 14 Apr 2022 13:22:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4229EC385A9;
+        Thu, 14 Apr 2022 13:22:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942915;
-        bh=Uz2K6rMzXEBpy3icDYmX4sup6BOJ99BdoTYeBDhKxwY=;
+        s=korg; t=1649942578;
+        bh=/94NnZF5zCsGRDaGi4EOOs91gwBmesWffr7GrRdd6r0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PurR87x08LEiGOGZf7cxIv2u3VeuVofoLvRCjc1nVvXd8NThmch4ssOWR9Z4uMXDZ
-         8jC9P2YvO49zoDe0j5DZ5WQUulYlMCb6X/TtWc1W2g54jA9KnOck4Pl8VuyLI3+u/4
-         veyGVHzTjxUokFUPJEoffBQ0vJO7mJm83b3yZAes=
+        b=T4oL1QC8bLOaljlXL0b8JPq8BSA8PicyATR2p3RlFkEjpICs4Q4bLklHE1Pv38s9M
+         5hyAQVwOJ4LBS9bP5sq0FtzGJM1f+iGna+7MtBjaZTmdCqxwz2fwttJTPJavcmB1w0
+         YH01zPLmdSBqDcPNgI720oSUDt2TI5g5WL0+cUdw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Lin Ma <linma@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 307/338] drm/imx: Fix memory leak in imx_pd_connector_get_modes
-Date:   Thu, 14 Apr 2022 15:13:30 +0200
-Message-Id: <20220414110847.620267775@linuxfoundation.org>
+Subject: [PATCH 4.19 185/338] net/x25: Fix null-ptr-deref caused by x25_disconnect
+Date:   Thu, 14 Apr 2022 15:11:28 +0200
+Message-Id: <20220414110844.163589087@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,41 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit bce81feb03a20fca7bbdd1c4af16b4e9d5c0e1d3 ]
+[ Upstream commit 7781607938c8371d4c2b243527430241c62e39c2 ]
 
-Avoid leaking the display mode variable if of_get_drm_display_mode
-fails.
+When the link layer is terminating, x25->neighbour will be set to NULL
+in x25_disconnect(). As a result, it could cause null-ptr-deref bugs in
+x25_sendmsg(),x25_recvmsg() and x25_connect(). One of the bugs is
+shown below.
 
-Fixes: 76ecd9c9fb24 ("drm/imx: parallel-display: check return code from of_get_drm_display_mode()")
-Addresses-Coverity-ID: 1443943 ("Resource leak")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Link: https://lore.kernel.org/r/20220108165230.44610-1-jose.exposito89@gmail.com
+    (Thread 1)                 |  (Thread 2)
+x25_link_terminated()          | x25_recvmsg()
+ x25_kill_by_neigh()           |  ...
+  x25_disconnect()             |  lock_sock(sk)
+   ...                         |  ...
+   x25->neighbour = NULL //(1) |
+   ...                         |  x25->neighbour->extended //(2)
+
+The code sets NULL to x25->neighbour in position (1) and dereferences
+x25->neighbour in position (2), which could cause null-ptr-deref bug.
+
+This patch adds lock_sock() in x25_kill_by_neigh() in order to synchronize
+with x25_sendmsg(), x25_recvmsg() and x25_connect(). What`s more, the
+sock held by lock_sock() is not NULL, because it is extracted from x25_list
+and uses x25_list_lock to synchronize.
+
+Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 disconnect")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/imx/parallel-display.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/x25/af_x25.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/imx/parallel-display.c b/drivers/gpu/drm/imx/parallel-display.c
-index aefd04e18f93..e9dff31b377c 100644
---- a/drivers/gpu/drm/imx/parallel-display.c
-+++ b/drivers/gpu/drm/imx/parallel-display.c
-@@ -77,8 +77,10 @@ static int imx_pd_connector_get_modes(struct drm_connector *connector)
- 		ret = of_get_drm_display_mode(np, &imxpd->mode,
- 					      &imxpd->bus_flags,
- 					      OF_USE_NATIVE_MODE);
--		if (ret)
-+		if (ret) {
-+			drm_mode_destroy(connector->dev, mode);
- 			return ret;
-+		}
+diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+index f87002792836..77d8adb27ec7 100644
+--- a/net/x25/af_x25.c
++++ b/net/x25/af_x25.c
+@@ -1797,10 +1797,15 @@ void x25_kill_by_neigh(struct x25_neigh *nb)
  
- 		drm_mode_copy(mode, &imxpd->mode);
- 		mode->type |= DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
+ 	write_lock_bh(&x25_list_lock);
+ 
+-	sk_for_each(s, &x25_list)
+-		if (x25_sk(s)->neighbour == nb)
++	sk_for_each(s, &x25_list) {
++		if (x25_sk(s)->neighbour == nb) {
++			write_unlock_bh(&x25_list_lock);
++			lock_sock(s);
+ 			x25_disconnect(s, ENETUNREACH, 0, 0);
+-
++			release_sock(s);
++			write_lock_bh(&x25_list_lock);
++		}
++	}
+ 	write_unlock_bh(&x25_list_lock);
+ 
+ 	/* Remove any related forwards */
 -- 
-2.35.1
+2.34.1
 
 
 
