@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB93C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A62D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351058AbiDNOaA (ORCPT
+        id S1351096AbiDNOaQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
+        Thu, 14 Apr 2022 10:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343805AbiDNNjY (ORCPT
+        with ESMTP id S1344223AbiDNNkQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F82D31220;
-        Thu, 14 Apr 2022 06:34:55 -0700 (PDT)
+        Thu, 14 Apr 2022 09:40:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941D5120;
+        Thu, 14 Apr 2022 06:37:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15A84B82968;
-        Thu, 14 Apr 2022 13:34:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74CBDC385A1;
-        Thu, 14 Apr 2022 13:34:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F7D06190F;
+        Thu, 14 Apr 2022 13:37:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40337C385A5;
+        Thu, 14 Apr 2022 13:37:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943292;
-        bh=iiGN8GFP5iON9gvPYg50r+k/HKhQy8VR5whe/C2Z20Q=;
+        s=korg; t=1649943470;
+        bh=kcU/Eqok8/jdzy1t2CKhVSmSnBGevGAQKWjGBf8vtKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qZs4hajMjpj/zene9pp+gQcaf52jj1ETBPm3T9+kv0q2mbYpDn7VFQwFP6/kCjxAw
-         +mJuxuq9F4Kv6I2mRqhXUn4/ixacgQUocICB3ABhiTehOoK/Zo4aNHRe0pwBjdAFDu
-         p+8P0hY/2JYWUd9qoFAPA9T+VwlxqGXjOxD0Sakk=
+        b=gqY18b2RpuTt5GdLV0i08LNVMkoAaCCoNslr/1QYHWIdQuDRcACi07qnQgzV1JqIf
+         aE4ADUseyzYiuOGDo67a0yEjArftesJqYb93n9wdCjRJKrVUK3n+tGef0NuSmK/tpc
+         AWTzq8dVD8etimb+7anHNB0/oj71kgR2j3HBcf6w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        "Huang, Ying" <ying.huang@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Kiran Bhandare <kiranx.bhandare@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 104/475] ACPI: APEI: fix return value of __setup handlers
-Date:   Thu, 14 Apr 2022 15:08:09 +0200
-Message-Id: <20220414110858.064345260@linuxfoundation.org>
+Subject: [PATCH 5.4 166/475] i40e: dont reserve excessive XDP_PACKET_HEADROOM on XSK Rx to skb
+Date:   Thu, 14 Apr 2022 15:09:11 +0200
+Message-Id: <20220414110859.784219757@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,84 +54,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit f3303ff649dbf7dcdc6a6e1a922235b12b3028f4 ]
+[ Upstream commit bc97f9c6f988b31b728eb47a94ca825401dbeffe ]
 
-__setup() handlers should return 1 to indicate that the boot option
-has been handled. Returning 0 causes a boot option to be listed in
-the Unknown kernel command line parameters and also added to init's
-arg list (if no '=' sign) or environment list (if of the form 'a=b').
+{__,}napi_alloc_skb() allocates and reserves additional NET_SKB_PAD
++ NET_IP_ALIGN for any skb.
+OTOH, i40e_construct_skb_zc() currently allocates and reserves
+additional `xdp->data - xdp->data_hard_start`, which is
+XDP_PACKET_HEADROOM for XSK frames.
+There's no need for that at all as the frame is post-XDP and will
+go only to the networking stack core.
+Pass the size of the actual data only to __napi_alloc_skb() and
+don't reserve anything. This will give enough headroom for stack
+processing.
 
-Unknown kernel command line parameters "erst_disable
-  bert_disable hest_disable BOOT_IMAGE=/boot/bzImage-517rc6", will be
-  passed to user space.
-
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-     erst_disable
-     bert_disable
-     hest_disable
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc6
-
-Fixes: a3e2acc5e37b ("ACPI / APEI: Add Boot Error Record Table (BERT) support")
-Fixes: a08f82d08053 ("ACPI, APEI, Error Record Serialization Table (ERST) support")
-Fixes: 9dc966641677 ("ACPI, APEI, HEST table parsing")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Reviewed-by: "Huang, Ying" <ying.huang@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 0a714186d3c0 ("i40e: add AF_XDP zero-copy Rx support")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/apei/bert.c | 2 +-
- drivers/acpi/apei/erst.c | 2 +-
- drivers/acpi/apei/hest.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
-index 1155fb9dcc3a..08d820c04618 100644
---- a/drivers/acpi/apei/bert.c
-+++ b/drivers/acpi/apei/bert.c
-@@ -77,7 +77,7 @@ static int __init setup_bert_disable(char *str)
- {
- 	bert_disable = 1;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index a9ad788c4913..fd2da58c7140 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -505,13 +505,11 @@ static struct sk_buff *i40e_construct_skb_zc(struct i40e_ring *rx_ring,
+ 	struct sk_buff *skb;
  
--	return 0;
-+	return 1;
- }
- __setup("bert_disable", setup_bert_disable);
+ 	/* allocate a skb to store the frags */
+-	skb = __napi_alloc_skb(&rx_ring->q_vector->napi,
+-			       xdp->data_end - xdp->data_hard_start,
++	skb = __napi_alloc_skb(&rx_ring->q_vector->napi, datasize,
+ 			       GFP_ATOMIC | __GFP_NOWARN);
+ 	if (unlikely(!skb))
+ 		return NULL;
  
-diff --git a/drivers/acpi/apei/erst.c b/drivers/acpi/apei/erst.c
-index 2015a0967cbb..5ee3cb7fcd90 100644
---- a/drivers/acpi/apei/erst.c
-+++ b/drivers/acpi/apei/erst.c
-@@ -891,7 +891,7 @@ EXPORT_SYMBOL_GPL(erst_clear);
- static int __init setup_erst_disable(char *str)
- {
- 	erst_disable = 1;
--	return 0;
-+	return 1;
- }
- 
- __setup("erst_disable", setup_erst_disable);
-diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
-index 267bdbf6a7bf..add6416e78f2 100644
---- a/drivers/acpi/apei/hest.c
-+++ b/drivers/acpi/apei/hest.c
-@@ -219,7 +219,7 @@ static int __init hest_ghes_dev_register(unsigned int ghes_count)
- static int __init setup_hest_disable(char *str)
- {
- 	hest_disable = HEST_DISABLED;
--	return 0;
-+	return 1;
- }
- 
- __setup("hest_disable", setup_hest_disable);
+-	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+ 	memcpy(__skb_put(skb, datasize), xdp->data, datasize);
+ 	if (metasize)
+ 		skb_metadata_set(skb, metasize);
 -- 
 2.34.1
 
