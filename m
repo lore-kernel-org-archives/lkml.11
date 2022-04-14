@@ -2,118 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF339C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D2EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:59:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243663AbiDNNBQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55054 "EHLO
+        id S243677AbiDNNBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238742AbiDNNBP (ORCPT
+        with ESMTP id S238742AbiDNNBf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:01:15 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2C59284E;
-        Thu, 14 Apr 2022 05:58:48 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id 87cc61afc5c5b63a; Thu, 14 Apr 2022 14:58:46 +0200
-Received: from kreacher.localnet (unknown [213.134.181.101])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id D684B66BE14;
-        Thu, 14 Apr 2022 14:58:43 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux ACPI <linux-acpi@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Subject: [PATCH] ACPI: PM: Always print final debug message in acpi_device_set_power()
-Date:   Thu, 14 Apr 2022 14:58:42 +0200
-Message-ID: <11985385.O9o76ZdvQC@kreacher>
+        Thu, 14 Apr 2022 09:01:35 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF38F92865;
+        Thu, 14 Apr 2022 05:59:10 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KfKGs19YDz688j4;
+        Thu, 14 Apr 2022 20:56:53 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Thu, 14 Apr 2022 14:59:06 +0200
+Received: from [10.47.27.241] (10.47.27.241) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 14 Apr
+ 2022 13:59:05 +0100
+Message-ID: <40f03ea6-1690-8a6f-2969-24c47f39c215@huawei.com>
+Date:   Thu, 14 Apr 2022 14:00:44 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.181.101
-X-CLIENT-HOSTNAME: 213.134.181.101
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelfedgheekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpefhgedtffejheekgeeljeevvedtuefgffeiieejuddutdekgfejvdehueejjeetvdenucfkphepvddufedrudefgedrudekuddruddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukedurddutddupdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeefpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhg
-X-DCC--Metrics: v370.home.net.pl 1024; Body=3 Fuz1=3 Fuz2=3
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v7 5/7] perf tool: Add support for HiSilicon PCIe Tune and
+ Trace device driver
+To:     Yicong Yang <yangyicong@huawei.com>,
+        Yicong Yang <yangyicong@hisilicon.com>,
+        <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
+        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
+        <will@kernel.org>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
+        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
+        <joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
+        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
+        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>
+CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
+        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>
+References: <20220407125841.3678-1-yangyicong@hisilicon.com>
+ <20220407125841.3678-6-yangyicong@hisilicon.com>
+ <276c24d2-daf5-5eba-26b9-55edd4a45537@huawei.com>
+ <e2b7484b-eb15-029c-b1e1-4831368f61c9@huawei.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <e2b7484b-eb15-029c-b1e1-4831368f61c9@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.47.27.241]
+X-ClientProxiedBy: lhreml714-chm.china.huawei.com (10.201.108.65) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+On 12/04/2022 08:41, Yicong Yang wrote:
+>>> +    hisi_ptt_pmus = zalloc(sizeof(struct perf_pmu *) * (*nr_ptts));
+>>> +    if (!hisi_ptt_pmus) {
+>>> +        pr_err("hisi_ptt alloc failed\n");
+>>> +        *err = -ENOMEM;
+>> using PTR_ERR seems better, if possible
+>>
+> ok will change to that. *err = -ENOMEM is used here to keep consistence with
+> what spe does.
+> 
 
-acpi_device_set_power() prints debug messages regarding its outcome
-(whether or not the power state has been changed and how) in all
-cases except when the device whose power state is being changed to D0
-is in that power state already.
-
-Make acpi_device_set_power() print a final debug message in that case
-too and while at it, fix the indentation of the "end" label in this
-function.
-
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
- drivers/acpi/device_pm.c |   18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
-
-Index: linux-pm/drivers/acpi/device_pm.c
-===================================================================
---- linux-pm.orig/drivers/acpi/device_pm.c
-+++ linux-pm/drivers/acpi/device_pm.c
-@@ -173,11 +173,8 @@ int acpi_device_set_power(struct acpi_de
- 	/* Make sure this is a valid target state */
- 
- 	/* There is a special case for D0 addressed below. */
--	if (state > ACPI_STATE_D0 && state == device->power.state) {
--		acpi_handle_debug(device->handle, "Already in %s\n",
--				  acpi_power_state_string(state));
--		return 0;
--	}
-+	if (state > ACPI_STATE_D0 && state == device->power.state)
-+		goto no_change;
- 
- 	if (state == ACPI_STATE_D3_COLD) {
- 		/*
-@@ -249,7 +246,7 @@ int acpi_device_set_power(struct acpi_de
- 
- 			/* Nothing to do here if _PSC is not present. */
- 			if (!device->power.flags.explicit_get)
--				return 0;
-+				goto no_change;
- 
- 			/*
- 			 * The power state of the device was set to D0 last
-@@ -264,13 +261,13 @@ int acpi_device_set_power(struct acpi_de
- 			 */
- 			result = acpi_dev_pm_explicit_get(device, &psc);
- 			if (result || psc == ACPI_STATE_D0)
--				return 0;
-+				goto no_change;
- 		}
- 
- 		result = acpi_dev_pm_explicit_set(device, ACPI_STATE_D0);
- 	}
- 
-- end:
-+end:
- 	if (result) {
- 		acpi_handle_debug(device->handle,
- 				  "Failed to change power state to %s\n",
-@@ -282,6 +279,11 @@ int acpi_device_set_power(struct acpi_de
- 	}
- 
- 	return result;
-+
-+no_change:
-+	acpi_handle_debug(device->handle, "Already in %s\n",
-+			  acpi_power_state_string(state));
-+	return 0;
- }
- EXPORT_SYMBOL(acpi_device_set_power);
- 
-
-
-
+Ah, I see that we are contrained by the interface of 
+auxtrace_record_init() to pass err as a pointer, so I suppose the code 
+in this patch is ok to fit into that.
