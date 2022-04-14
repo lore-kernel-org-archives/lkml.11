@@ -2,76 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E79AC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CBA8C41535
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347607AbiDNP2R (ORCPT
+        id S1353475AbiDNP2f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:28:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
+        Thu, 14 Apr 2022 11:28:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346624AbiDNN5q (ORCPT
+        with ESMTP id S1346569AbiDNN5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:57:46 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6402657F;
-        Thu, 14 Apr 2022 06:47:50 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id lc2so10108650ejb.12;
-        Thu, 14 Apr 2022 06:47:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R9hYB17biMvNqrX89B5MdlYJL0E69SsfsfXeh7dFOiA=;
-        b=FYXH//pkag+vPVt/fhiJZaiDlY3kGR88wCFPSmrTgqb5ZNtAdDLHDD3Y/gF5WauOYG
-         KEzUHL7hY9V5KaWZOwCXfsKpjazg1rcwbrWb4fTLz+L72C8iMnQXb+mclvHFbknOOLoN
-         /oCAOJD8U0YQ4ecNyBm/Dx6KGBcDF12GK8UgGTaPnRGBrXc4oGI4Orfn7mosBnj/ApJO
-         UGlDI98IJzCBFma+xiBUwav3kKgDlTNc+U4ZCF1dIPr/p3A1bj4YOw8zVvyBW8p8UAc+
-         bFFQDTgQfQ1kWC+i2LDoBBEfIiv8k+XCpH7qbnBmWGt5a/40cb63hX9PZDdoRkk46hKv
-         Vj1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R9hYB17biMvNqrX89B5MdlYJL0E69SsfsfXeh7dFOiA=;
-        b=QXRwWF1ZXSlw9bVE7GS2EVNiO+MrCydzVSRUZgic4eFZwJ8NdFEflaYjbfCQTIAnjp
-         hcYr9MFwYXmVK2qor+DMnVnyUkmLOVmJdlhYPvWuwRZNHDlXBHCt4gZhdJmRfdBx9enJ
-         d+aCORxe/Vc1JG6cnxEQWYCrqD3zZiUo6e3NBquoi2cy3Fiq3uWErto0dqrsC+GlZwnp
-         z8ixk1Zj3Q/donkSgCCLf+jVLWJCLAv7wpQeaeK4JkK0H9RFSqSueFVsyPT8vES7A8qD
-         zLP6UFYfBsa/hnyLY0w3PhaIfIb/ufRUUaCBUtY9sSMTmGheA2LXwYuwE9vIHMFBMX/q
-         23CQ==
-X-Gm-Message-State: AOAM531xdpvl7HZJ+ZJzorgRh/UxYqFtB+ebsoBqkimlMt9iSgaoMCFt
-        V0XmH/IzOuyz/BdsOPdxR1jvankqnItUviZFuQogDvbHfRCbvg==
-X-Google-Smtp-Source: ABdhPJzH4bczk+yp+HYwqIc2+zd8sOLX6Q+Bgy0HhVY4Jv5RyQnR9MAwOtrB48Qb7K5VsnR4UsRCEOw6UtYXI6oiJ6I=
-X-Received: by 2002:a17:906:3799:b0:6ec:d25:3afe with SMTP id
- n25-20020a170906379900b006ec0d253afemr1060600ejc.44.1649944068719; Thu, 14
- Apr 2022 06:47:48 -0700 (PDT)
+        Thu, 14 Apr 2022 09:57:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4614283005;
+        Thu, 14 Apr 2022 06:47:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D642861DA5;
+        Thu, 14 Apr 2022 13:47:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E17BDC385A1;
+        Thu, 14 Apr 2022 13:47:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649944023;
+        bh=LuZ72yR3zA8xYuhPdNlrC+HdmP3HwSUgVvw+BOohrac=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=leAHj4BPtd1gi+NDSdw8y4rJfx4l2uZXG1252KnjCfy51OVgKOmXeu3YFNfwGAlqp
+         7yddvQkb2ZKLfp1pYktoLhE0bMGNr7lL56/vOCy6s3MzTAwDz42wnrPjQp2TRKAobo
+         X7yxZNm+HKD425AoBNn/zKHm5aia79N91eweai8E=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: [PATCH 5.4 349/475] ARM: iop32x: offset IRQ numbers by 1
+Date:   Thu, 14 Apr 2022 15:12:14 +0200
+Message-Id: <20220414110904.846922295@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <1649933135-14236-1-git-send-email-baihaowen@meizu.com>
-In-Reply-To: <1649933135-14236-1-git-send-email-baihaowen@meizu.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 14 Apr 2022 16:47:12 +0300
-Message-ID: <CAHp75VfbZhMvs7dHwadvNs6maPsBVOY3Mk5wkKSwZ1RANQQHDA@mail.gmail.com>
-Subject: Re: [PATCH] iio: gp2ap020a00f: Fix signedness bug
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 2:19 PM Haowen Bai <baihaowen@meizu.com> wrote:
->
-> function gp2ap020a00f_get_thresh_reg() is unsigned but returning -EINVAL
-> errcode, and thresh_reg_l is unsigned but receiving -EINVAL errcode. so
-> we have to change u8 -> s8.
+From: Arnd Bergmann <arnd@arndb.de>
 
-s8 is not enough to hold an (arbitrary) error code. To be on the safe
-side you need to use int.
+commit 9d67412f24cc3a2c05f35f7c856addb07a2960ce upstream.
 
--- 
-With Best Regards,
-Andy Shevchenko
+iop32x is one of the last platforms to use IRQ 0, and this has apparently
+stopped working in a 2014 cleanup without anyone noticing. This interrupt
+is used for the DMA engine, so most likely this has not actually worked
+in the past 7 years, but it's also not essential for using this board.
+
+I'm splitting out this change from my GENERIC_IRQ_MULTI_HANDLER
+conversion so it can be backported if anyone cares.
+
+Fixes: a71b092a9c68 ("ARM: Convert handle_IRQ to use __handle_domain_irq")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+[ardb: take +1 offset into account in mask/unmask and init as well]
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Marc Zyngier <maz@kernel.org>
+Tested-by: Vladimir Murzin <vladimir.murzin@arm.com> # ARMv7M
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm/mach-iop32x/include/mach/entry-macro.S |    2 
+ arch/arm/mach-iop32x/include/mach/irqs.h        |    2 
+ arch/arm/mach-iop32x/irq.c                      |    6 +-
+ arch/arm/mach-iop32x/irqs.h                     |   60 ++++++++++++------------
+ 4 files changed, 37 insertions(+), 33 deletions(-)
+
+--- a/arch/arm/mach-iop32x/include/mach/entry-macro.S
++++ b/arch/arm/mach-iop32x/include/mach/entry-macro.S
+@@ -20,7 +20,7 @@
+ 	mrc     p6, 0, \irqstat, c8, c0, 0	@ Read IINTSRC
+ 	cmp     \irqstat, #0
+ 	clzne   \irqnr, \irqstat
+-	rsbne   \irqnr, \irqnr, #31
++	rsbne   \irqnr, \irqnr, #32
+ 	.endm
+ 
+ 	.macro arch_ret_to_user, tmp1, tmp2
+--- a/arch/arm/mach-iop32x/include/mach/irqs.h
++++ b/arch/arm/mach-iop32x/include/mach/irqs.h
+@@ -9,6 +9,6 @@
+ #ifndef __IRQS_H
+ #define __IRQS_H
+ 
+-#define NR_IRQS			32
++#define NR_IRQS			33
+ 
+ #endif
+--- a/arch/arm/mach-iop32x/irq.c
++++ b/arch/arm/mach-iop32x/irq.c
+@@ -32,14 +32,14 @@ static void intstr_write(u32 val)
+ static void
+ iop32x_irq_mask(struct irq_data *d)
+ {
+-	iop32x_mask &= ~(1 << d->irq);
++	iop32x_mask &= ~(1 << (d->irq - 1));
+ 	intctl_write(iop32x_mask);
+ }
+ 
+ static void
+ iop32x_irq_unmask(struct irq_data *d)
+ {
+-	iop32x_mask |= 1 << d->irq;
++	iop32x_mask |= 1 << (d->irq - 1);
+ 	intctl_write(iop32x_mask);
+ }
+ 
+@@ -65,7 +65,7 @@ void __init iop32x_init_irq(void)
+ 	    machine_is_em7210())
+ 		*IOP3XX_PCIIRSR = 0x0f;
+ 
+-	for (i = 0; i < NR_IRQS; i++) {
++	for (i = 1; i < NR_IRQS; i++) {
+ 		irq_set_chip_and_handler(i, &ext_chip, handle_level_irq);
+ 		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
+ 	}
+--- a/arch/arm/mach-iop32x/irqs.h
++++ b/arch/arm/mach-iop32x/irqs.h
+@@ -7,36 +7,40 @@
+ #ifndef __IOP32X_IRQS_H
+ #define __IOP32X_IRQS_H
+ 
++/* Interrupts in Linux start at 1, hardware starts at 0 */
++
++#define IOP_IRQ(x) ((x) + 1)
++
+ /*
+  * IOP80321 chipset interrupts
+  */
+-#define IRQ_IOP32X_DMA0_EOT	0
+-#define IRQ_IOP32X_DMA0_EOC	1
+-#define IRQ_IOP32X_DMA1_EOT	2
+-#define IRQ_IOP32X_DMA1_EOC	3
+-#define IRQ_IOP32X_AA_EOT	6
+-#define IRQ_IOP32X_AA_EOC	7
+-#define IRQ_IOP32X_CORE_PMON	8
+-#define IRQ_IOP32X_TIMER0	9
+-#define IRQ_IOP32X_TIMER1	10
+-#define IRQ_IOP32X_I2C_0	11
+-#define IRQ_IOP32X_I2C_1	12
+-#define IRQ_IOP32X_MESSAGING	13
+-#define IRQ_IOP32X_ATU_BIST	14
+-#define IRQ_IOP32X_PERFMON	15
+-#define IRQ_IOP32X_CORE_PMU	16
+-#define IRQ_IOP32X_BIU_ERR	17
+-#define IRQ_IOP32X_ATU_ERR	18
+-#define IRQ_IOP32X_MCU_ERR	19
+-#define IRQ_IOP32X_DMA0_ERR	20
+-#define IRQ_IOP32X_DMA1_ERR	21
+-#define IRQ_IOP32X_AA_ERR	23
+-#define IRQ_IOP32X_MSG_ERR	24
+-#define IRQ_IOP32X_SSP		25
+-#define IRQ_IOP32X_XINT0	27
+-#define IRQ_IOP32X_XINT1	28
+-#define IRQ_IOP32X_XINT2	29
+-#define IRQ_IOP32X_XINT3	30
+-#define IRQ_IOP32X_HPI		31
++#define IRQ_IOP32X_DMA0_EOT	IOP_IRQ(0)
++#define IRQ_IOP32X_DMA0_EOC	IOP_IRQ(1)
++#define IRQ_IOP32X_DMA1_EOT	IOP_IRQ(2)
++#define IRQ_IOP32X_DMA1_EOC	IOP_IRQ(3)
++#define IRQ_IOP32X_AA_EOT	IOP_IRQ(6)
++#define IRQ_IOP32X_AA_EOC	IOP_IRQ(7)
++#define IRQ_IOP32X_CORE_PMON	IOP_IRQ(8)
++#define IRQ_IOP32X_TIMER0	IOP_IRQ(9)
++#define IRQ_IOP32X_TIMER1	IOP_IRQ(10)
++#define IRQ_IOP32X_I2C_0	IOP_IRQ(11)
++#define IRQ_IOP32X_I2C_1	IOP_IRQ(12)
++#define IRQ_IOP32X_MESSAGING	IOP_IRQ(13)
++#define IRQ_IOP32X_ATU_BIST	IOP_IRQ(14)
++#define IRQ_IOP32X_PERFMON	IOP_IRQ(15)
++#define IRQ_IOP32X_CORE_PMU	IOP_IRQ(16)
++#define IRQ_IOP32X_BIU_ERR	IOP_IRQ(17)
++#define IRQ_IOP32X_ATU_ERR	IOP_IRQ(18)
++#define IRQ_IOP32X_MCU_ERR	IOP_IRQ(19)
++#define IRQ_IOP32X_DMA0_ERR	IOP_IRQ(20)
++#define IRQ_IOP32X_DMA1_ERR	IOP_IRQ(21)
++#define IRQ_IOP32X_AA_ERR	IOP_IRQ(23)
++#define IRQ_IOP32X_MSG_ERR	IOP_IRQ(24)
++#define IRQ_IOP32X_SSP		IOP_IRQ(25)
++#define IRQ_IOP32X_XINT0	IOP_IRQ(27)
++#define IRQ_IOP32X_XINT1	IOP_IRQ(28)
++#define IRQ_IOP32X_XINT2	IOP_IRQ(29)
++#define IRQ_IOP32X_XINT3	IOP_IRQ(30)
++#define IRQ_IOP32X_HPI		IOP_IRQ(31)
+ 
+ #endif
+
+
