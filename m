@@ -2,95 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98188C3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C12D6C4707A
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346377AbiDNN4l (ORCPT
+        id S1346392AbiDNN4r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47788 "EHLO
+        Thu, 14 Apr 2022 09:56:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244994AbiDNN2X (ORCPT
+        with ESMTP id S244938AbiDNN2T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1341AA8EC7;
-        Thu, 14 Apr 2022 06:21:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Apr 2022 09:28:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E05C29233C
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:21:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649942479;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MT8vgLDxgMK5gNkAuk585zBCwERy4TI/VOrbfeHlFRQ=;
+        b=eTKv6HZVlS8VtMdr8W90r8ookSo89ggoGl03U0YB0m2ZApncE2giEOYzWjWcvhgPvOicUt
+        ghxWhA8cIklea6JTGaA0Pb09ablHXSLfAPs2SLwQAcWe8/neEpQMiFSvwUQ3qM9PwoGcpV
+        9RcTLhJs2Kh+UG78lHWrAy283g/Sa6E=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-671-oir2jDqAMtm5tEXIoFUR-w-1; Thu, 14 Apr 2022 09:21:15 -0400
+X-MC-Unique: oir2jDqAMtm5tEXIoFUR-w-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A42FE618E3;
-        Thu, 14 Apr 2022 13:21:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1546C385A5;
-        Thu, 14 Apr 2022 13:21:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942488;
-        bh=asKDr/nU5wSM/qT+3cgtkeW02HwaalF7FZleMTvDYhU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E7irOEGSP2U7+J/J0nTOoL1hCKUWxwUd6IkYe4F8foKUZsA7AOdy04bWGSApLzQf+
-         OShwLdYbRXdquiOvpbzW+49LALlqFtdboTRM+j0RUkZ3x1K9BEBN5uu46M4+sSLCpa
-         zG5XkYehCWOuzlMDSDFwJV11mDuCRsn1L1GCKS7A=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 113/338] ASoC: msm8916-wcd-digital: Fix missing clk_disable_unprepare() in msm8916_wcd_digital_probe
-Date:   Thu, 14 Apr 2022 15:10:16 +0200
-Message-Id: <20220414110842.125201504@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-References: <20220414110838.883074566@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 093DF803533;
+        Thu, 14 Apr 2022 13:20:55 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.195.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 77BD453CD;
+        Thu, 14 Apr 2022 13:20:53 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 19/34] KVM: nVMX: hyper-v: Enable L2 TLB flush
+Date:   Thu, 14 Apr 2022 15:19:58 +0200
+Message-Id: <20220414132013.1588929-20-vkuznets@redhat.com>
+In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+Enable L2 TLB flush feature on nVMX when:
+- Enlightened VMCS is in use.
+- The feature flag is enabled in eVMCS.
+- The feature flag is enabled in partition assist page.
 
-[ Upstream commit 375a347da4889f64d86e1ab7f4e6702b6e9bf299 ]
+Perform synthetic vmexit to L1 after processing TLB flush call upon
+request (HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH).
 
-Fix the missing clk_disable_unprepare() before return
-from msm8916_wcd_digital_probe in the error handling case.
-
-Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220307084523.28687-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- sound/soc/codecs/msm8916-wcd-digital.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/x86/kvm/vmx/evmcs.c  | 20 ++++++++++++++++++++
+ arch/x86/kvm/vmx/evmcs.h  | 10 ++++++++++
+ arch/x86/kvm/vmx/nested.c | 16 ++++++++++++++++
+ 3 files changed, 46 insertions(+)
 
-diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
-index 6de2ab6f9706..e6750bda542a 100644
---- a/sound/soc/codecs/msm8916-wcd-digital.c
-+++ b/sound/soc/codecs/msm8916-wcd-digital.c
-@@ -918,7 +918,7 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
- 	ret = clk_prepare_enable(priv->mclk);
- 	if (ret < 0) {
- 		dev_err(dev, "failed to enable mclk %d\n", ret);
--		return ret;
-+		goto err_clk;
- 	}
- 
- 	dev_set_drvdata(dev, priv);
-@@ -926,6 +926,9 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
- 	return devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
- 				      msm8916_wcd_digital_dai,
- 				      ARRAY_SIZE(msm8916_wcd_digital_dai));
-+err_clk:
-+	clk_disable_unprepare(priv->ahbclk);
-+	return ret;
+diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
+index e390e67496df..e0cb2e223daa 100644
+--- a/arch/x86/kvm/vmx/evmcs.c
++++ b/arch/x86/kvm/vmx/evmcs.c
+@@ -6,6 +6,7 @@
+ #include "../hyperv.h"
+ #include "../cpuid.h"
+ #include "evmcs.h"
++#include "nested.h"
+ #include "vmcs.h"
+ #include "vmx.h"
+ #include "trace.h"
+@@ -438,6 +439,25 @@ int nested_enable_evmcs(struct kvm_vcpu *vcpu,
+ 	return 0;
  }
  
- static int msm8916_wcd_digital_remove(struct platform_device *pdev)
++bool nested_evmcs_l2_tlb_flush_enabled(struct kvm_vcpu *vcpu)
++{
++	struct vcpu_vmx *vmx = to_vmx(vcpu);
++	struct hv_enlightened_vmcs *evmcs = vmx->nested.hv_evmcs;
++	struct hv_vp_assist_page assist_page;
++
++	if (!evmcs)
++		return false;
++
++	if (!evmcs->hv_enlightenments_control.nested_flush_hypercall)
++		return false;
++
++	if (unlikely(!kvm_hv_get_assist_page(vcpu, &assist_page)))
++		return false;
++
++	return assist_page.nested_control.features.directhypercall;
++}
++
+ void vmx_post_hv_l2_tlb_flush(struct kvm_vcpu *vcpu)
+ {
++	nested_vmx_vmexit(vcpu, HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH, 0, 0);
+ }
+diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
+index b120b0ead4f3..ddbdb557cc53 100644
+--- a/arch/x86/kvm/vmx/evmcs.h
++++ b/arch/x86/kvm/vmx/evmcs.h
+@@ -65,6 +65,15 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
+ #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
+ #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
+ 
++/*
++ * Note, Hyper-V isn't actually stealing bit 28 from Intel, just abusing it by
++ * pairing it with architecturally impossible exit reasons.  Bit 28 is set only
++ * on SMI exits to a SMI transfer monitor (STM) and if and only if a MTF VM-Exit
++ * is pending.  I.e. it will never be set by hardware for non-SMI exits (there
++ * are only three), nor will it ever be set unless the VMM is an STM.
++ */
++#define HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH 0x10000031
++
+ struct evmcs_field {
+ 	u16 offset;
+ 	u16 clean_field;
+@@ -244,6 +253,7 @@ int nested_enable_evmcs(struct kvm_vcpu *vcpu,
+ 			uint16_t *vmcs_version);
+ void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata);
+ int nested_evmcs_check_controls(struct vmcs12 *vmcs12);
++bool nested_evmcs_l2_tlb_flush_enabled(struct kvm_vcpu *vcpu);
+ void vmx_post_hv_l2_tlb_flush(struct kvm_vcpu *vcpu);
+ 
+ #endif /* __KVM_X86_VMX_EVMCS_H */
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index cc6c944b5815..3e2ef5edad4a 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -1170,6 +1170,17 @@ static void nested_vmx_transition_tlb_flush(struct kvm_vcpu *vcpu,
+ {
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+ 
++	/*
++	 * KVM_REQ_HV_TLB_FLUSH flushes entries from either L1's VP_ID or
++	 * L2's VP_ID upon request from the guest. Make sure we check for
++	 * pending entries for the case when the request got misplaced (e.g.
++	 * a transition from L2->L1 happened while processing L2 TLB flush
++	 * request or vice versa). kvm_hv_vcpu_flush_tlb() will not flush
++	 * anything if there are no requests in the corresponding buffer.
++	 */
++	if (to_hv_vcpu(vcpu))
++		kvm_make_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
++
+ 	/*
+ 	 * If vmcs12 doesn't use VPID, L1 expects linear and combined mappings
+ 	 * for *all* contexts to be flushed on VM-Enter/VM-Exit, i.e. it's a
+@@ -5997,6 +6008,11 @@ static bool nested_vmx_l0_wants_exit(struct kvm_vcpu *vcpu,
+ 		 * Handle L2's bus locks in L0 directly.
+ 		 */
+ 		return true;
++	case EXIT_REASON_VMCALL:
++		/* Hyper-V L2 TLB flush hypercall is handled by L0 */
++		return kvm_hv_l2_tlb_flush_exposed(vcpu) &&
++			nested_evmcs_l2_tlb_flush_enabled(vcpu) &&
++			kvm_hv_is_tlb_flush_hcall(vcpu);
+ 	default:
+ 		break;
+ 	}
 -- 
-2.34.1
-
-
+2.35.1
 
