@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EF04C4708D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE75C3527D
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344494AbiDNNoL (ORCPT
+        id S1344511AbiDNNoQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:44:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49396 "EHLO
+        Thu, 14 Apr 2022 09:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245360AbiDNN2w (ORCPT
+        with ESMTP id S245356AbiDNN2w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:28:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 016C2AC061;
-        Thu, 14 Apr 2022 06:22:36 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5326AAC053;
+        Thu, 14 Apr 2022 06:22:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D96961670;
-        Thu, 14 Apr 2022 13:22:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63DC6C385A9;
-        Thu, 14 Apr 2022 13:22:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8890B8296A;
+        Thu, 14 Apr 2022 13:22:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D035FC385AA;
+        Thu, 14 Apr 2022 13:22:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942555;
-        bh=gM0OFluqsFUUJnADesDbDDRMoZdunV98SFxLqidEUxE=;
+        s=korg; t=1649942550;
+        bh=H3Dt4cJJwR/zpCWMq7h5pmwL4k+5EyFj/mhPC5rRNJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iEb+I47bNIZo20y6QYggZoQDcIGBaejzemmgDfDvLY5iKeH5cgsPU68RAd6V40lOG
-         +J9BXKvkcwfbEK3G4aaNY1ZsRPp8ykXR4Js58sFY1jQZlv42XNcvyvQg8MfCtWB2ah
-         oIlV4alPxO0mLwWwrN1Sr3ekd4RQb4IRZh9vjsFI=
+        b=q4qSmP1FMci4Z6Yqiped2KqndfuMI/xj4lxmQOnte7q43UKwbk4y0mub3fO5A8JMS
+         0aokbeoQRh0tcYbt88oAOXaartflKnJxkimmbAv41FAApUOaKxhdTD1aCdYRDpU4Eb
+         4L2zpzG9Wdlvv5sFMNH8dtwWGYHJkGw6L04KQm7U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Arnd Bergmann <arnd@arndb.de>,
+        stable@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org,
         Igor Zhbanov <i.zhbanov@omprussia.ru>,
         Randy Dunlap <rdunlap@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 178/338] kgdbts: fix return value of __setup handler
-Date:   Thu, 14 Apr 2022 15:11:21 +0200
-Message-Id: <20220414110843.964406399@linuxfoundation.org>
+Subject: [PATCH 4.19 176/338] tty: hvc: fix return value of __setup handler
+Date:   Thu, 14 Apr 2022 15:11:19 +0200
+Message-Id: <20220414110843.907710111@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -57,61 +58,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 96c9e802c64014a7716865332d732cc9c7f24593 ]
+[ Upstream commit 53819a0d97aace1425bb042829e3446952a9e8a9 ]
 
 __setup() handlers should return 1 to indicate that the boot option
-has been handled. A return of 0 causes the boot option/value to be
-listed as an Unknown kernel parameter and added to init's (limited)
-environment strings. So return 1 from kgdbts_option_setup().
-
-Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
-  kgdboc=kbd kgdbts=", will be passed to user space.
-
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc7
-     kgdboc=kbd
-     kgdbts=
+has been handled or 0 to indicate that it was not handled.
+Add a pr_warn() message if the option value is invalid and then
+always return 1.
 
 Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: e8d31c204e36 ("kgdb: add kgdb internal test suite")
-Cc: kgdb-bugreport@lists.sourceforge.net
-Cc: Jason Wessel <jason.wessel@windriver.com>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
+Fixes: 86b40567b917 ("tty: replace strict_strtoul() with kstrtoul()")
+Cc: Jingoo Han <jg1.han@samsung.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Julian Wiedmann <jwi@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: linuxppc-dev@lists.ozlabs.org
 Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
 Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Link: https://lore.kernel.org/r/20220308033255.22118-1-rdunlap@infradead.org
+Link: https://lore.kernel.org/r/20220308024228.20477-1-rdunlap@infradead.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/kgdbts.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/hvc/hvc_iucv.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/misc/kgdbts.c b/drivers/misc/kgdbts.c
-index 49e08b6133f5..bc4dc92af1f6 100644
---- a/drivers/misc/kgdbts.c
-+++ b/drivers/misc/kgdbts.c
-@@ -1072,10 +1072,10 @@ static int kgdbts_option_setup(char *opt)
+diff --git a/drivers/tty/hvc/hvc_iucv.c b/drivers/tty/hvc/hvc_iucv.c
+index 2af1e5751bd6..796fbff623f6 100644
+--- a/drivers/tty/hvc/hvc_iucv.c
++++ b/drivers/tty/hvc/hvc_iucv.c
+@@ -1470,7 +1470,9 @@ static int __init hvc_iucv_init(void)
+  */
+ static	int __init hvc_iucv_config(char *val)
  {
- 	if (strlen(opt) >= MAX_CONFIG_LEN) {
- 		printk(KERN_ERR "kgdbts: config string too long\n");
--		return -ENOSPC;
-+		return 1;
- 	}
- 	strcpy(config, opt);
--	return 0;
+-	 return kstrtoul(val, 10, &hvc_iucv_devices);
++	if (kstrtoul(val, 10, &hvc_iucv_devices))
++		pr_warn("hvc_iucv= invalid parameter value '%s'\n", val);
 +	return 1;
  }
  
- __setup("kgdbts=", kgdbts_option_setup);
+ 
 -- 
 2.34.1
 
