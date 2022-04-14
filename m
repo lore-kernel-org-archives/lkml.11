@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39516C47088
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 274D8C3527E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:02:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347796AbiDNOAn (ORCPT
+        id S1344564AbiDNOAg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
+        Thu, 14 Apr 2022 10:00:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344458AbiDNNcK (ORCPT
+        with ESMTP id S1344443AbiDNNcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:32:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13D613EA8;
-        Thu, 14 Apr 2022 06:29:45 -0700 (PDT)
+        Thu, 14 Apr 2022 09:32:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D813FBF54;
+        Thu, 14 Apr 2022 06:29:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 339906190F;
-        Thu, 14 Apr 2022 13:29:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42329C385A5;
-        Thu, 14 Apr 2022 13:29:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FB4AB8296A;
+        Thu, 14 Apr 2022 13:29:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD4B2C385A1;
+        Thu, 14 Apr 2022 13:29:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942984;
-        bh=siny51Z+doNuYO6m1NxR9m9eWQilmOugNnUhVUO0yt8=;
+        s=korg; t=1649942979;
+        bh=5g+BsEA6DnJ0Q25AvzhjmSLCT6qOZESEWSf2NgkPWic=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CmtO+vh4P4h7C5lDv62qmZzG3gGBkG73Ii26+TT3v8jEqMhZdcum6wJ6+OyjmH2HN
-         gqqlT42MGAKFiUQ+ln2QE6IIXL/yxzJwfJTwB0saj4R/asSpewYC0WNZuEcEPV4Nml
-         PADHM9KY52Ghd57DAWbdGP7UpzanC2Lav1zfp/zg=
+        b=XupUZmOx3saGMt/n35cNokQ+zBP+4g5+B1u3H46u+8YTrnWz2i0Wt3Hga1i+CYdAf
+         aNYFsrvIYFHQw6m6k6lExDzECiEBnIjf1al4pgb0pjEoj4Jvah/SHUL0wiuSy88mgz
+         MYS3gKBmvxhZrDDff0OO9oaWsCSzAbNGDa1SwtoU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Tejun Heo <tj@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.19 333/338] selftests: cgroup: Make cg_create() use 0755 for permission instead of 0644
-Date:   Thu, 14 Apr 2022 15:13:56 +0200
-Message-Id: <20220414110848.369410824@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
+        Sven Eckelmann <sven@narfation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 280/338] macvtap: advertise link netns via netlink
+Date:   Thu, 14 Apr 2022 15:13:03 +0200
+Message-Id: <20220414110846.858468416@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,32 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: Sven Eckelmann <sven@narfation.org>
 
-commit b09c2baa56347ae65795350dfcc633dedb1c2970 upstream.
+[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
 
-0644 is an odd perm to create a cgroup which is a directory. Use the regular
-0755 instead. This is necessary for euid switching test case.
+Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
+added to rtnetlink messages. This fixes iproute2 which otherwise resolved
+the link interface to an interface in the wrong namespace.
 
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
-[OP: backport to 4.19: adjust context]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Test commands:
+
+  ip netns add nst
+  ip link add dummy0 type dummy
+  ip link add link macvtap0 link dummy0 type macvtap
+  ip link set macvtap0 netns nst
+  ip -netns nst link show macvtap0
+
+Before:
+
+  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
+
+After:
+
+  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+
+Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/cgroup/cgroup_util.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/macvtap.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/tools/testing/selftests/cgroup/cgroup_util.c
-+++ b/tools/testing/selftests/cgroup/cgroup_util.c
-@@ -192,7 +192,7 @@ int cg_find_unified_root(char *root, siz
- 
- int cg_create(const char *cgroup)
- {
--	return mkdir(cgroup, 0644);
-+	return mkdir(cgroup, 0755);
+diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
+index 9a10029caf83..085f1648a8a6 100644
+--- a/drivers/net/macvtap.c
++++ b/drivers/net/macvtap.c
+@@ -132,11 +132,17 @@ static void macvtap_setup(struct net_device *dev)
+ 	dev->tx_queue_len = TUN_READQ_SIZE;
  }
  
- static int cg_killall(const char *cgroup)
++static struct net *macvtap_link_net(const struct net_device *dev)
++{
++	return dev_net(macvlan_dev_real_dev(dev));
++}
++
+ static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
+ 	.kind		= "macvtap",
+ 	.setup		= macvtap_setup,
+ 	.newlink	= macvtap_newlink,
+ 	.dellink	= macvtap_dellink,
++	.get_link_net	= macvtap_link_net,
+ 	.priv_size      = sizeof(struct macvtap_dev),
+ };
+ 
+-- 
+2.35.1
+
 
 
