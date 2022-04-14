@@ -2,114 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84EE3C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07FE7C41535
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238020AbiDNPWc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47330 "EHLO
+        id S1350747AbiDNPYY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:24:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347607AbiDNN7W (ORCPT
+        with ESMTP id S243589AbiDNN7e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7796822B35;
-        Thu, 14 Apr 2022 06:50:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A0F4B828F4;
-        Thu, 14 Apr 2022 13:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A5E0C385A1;
-        Thu, 14 Apr 2022 13:50:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944220;
-        bh=0j51b2k5USNEgRfbIAqo46KnmXhRxmSxnwI1iI9Vohc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LYUybhZ0l0icqVAN0ajlUK0ZwrwhkFfVdI2wvhiVZIgAG3zapQQXc4NXvrR9mwgWE
-         ykxnbsL/r2PE118SrmybnqXagzNMyMpfmjprnkBTtQB7LAai7+tUGUEfEKyAJPkp4z
-         jY7AKIH69yQMpNI4bHYEVmkP0IVoVnD0KEfw4gXQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
-        Sven Eckelmann <sven@narfation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 397/475] macvtap: advertise link netns via netlink
-Date:   Thu, 14 Apr 2022 15:13:02 +0200
-Message-Id: <20220414110906.180400810@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 14 Apr 2022 09:59:34 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138CD1FA7F
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:55:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=4/pEuKJD0exhbqhQFiolMt3v3y9R1XnuywsaVJyyU3c=; b=VN5ehUVtLeYYIJZAHbj1MDO9cp
+        vuBGPIuMjPTKe+xsl/n8nVGc5LWY9Z58eKgDAVEIZBmzh+YZRLF6E8nUNOntDhMSoHDJ4FPTeBE+v
+        NErQ4//4Cz4/dxcR3lDj8i+TrqNSaUUKe0RxKx8lxsKFKub+RtNbyLzKvRI/k8Hsm3xeYABFL6Oco
+        iDTZpZJOAQOfzZeGWKW3ZiGelmquBdaTWd2ZhZ7lZWTONFHgWdmMqV8uyhCSvLs0gZBSqxq+U9mPC
+        psnPmOZsIGH/CofotiGjfMJ86EbTMJQUnXPJyp4u7urXKko1DWNHuQwQHZSfVklLM3qOQh5eO8JR3
+        Ce7UOAVg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nezwa-00FBD7-3W; Thu, 14 Apr 2022 13:55:32 +0000
+Date:   Thu, 14 Apr 2022 14:55:32 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Liam Howlett <liam.howlett@oracle.com>,
+        Yu Zhao <yuzhao@google.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v7 00/70] Introducing the Maple Tree
+Message-ID: <Ylgn1LNM/iCZ2sfU@casper.infradead.org>
+References: <20220404143501.2016403-1-Liam.Howlett@oracle.com>
+ <20220413235051.3a4eb7c86d31656c7aea250c@linux-foundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220413235051.3a4eb7c86d31656c7aea250c@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+On Wed, Apr 13, 2022 at 11:50:51PM -0700, Andrew Morton wrote:
+> Several patches were marked
+> 
+> From: Liam
+> Signed-off-by: Matthew
+> Signed-off-by: Liam
+> 
+> Which makes me wonder whether the attribution was correct.  Please
+> double-check.
 
-[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
-
-Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
-added to rtnetlink messages. This fixes iproute2 which otherwise resolved
-the link interface to an interface in the wrong namespace.
-
-Test commands:
-
-  ip netns add nst
-  ip link add dummy0 type dummy
-  ip link add link macvtap0 link dummy0 type macvtap
-  ip link set macvtap0 netns nst
-  ip -netns nst link show macvtap0
-
-Before:
-
-  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
-      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
-
-After:
-
-  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
-      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-
-Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/macvtap.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
-index 694e2f5dbbe5..39801c31e507 100644
---- a/drivers/net/macvtap.c
-+++ b/drivers/net/macvtap.c
-@@ -133,11 +133,17 @@ static void macvtap_setup(struct net_device *dev)
- 	dev->tx_queue_len = TUN_READQ_SIZE;
- }
- 
-+static struct net *macvtap_link_net(const struct net_device *dev)
-+{
-+	return dev_net(macvlan_dev_real_dev(dev));
-+}
-+
- static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
- 	.kind		= "macvtap",
- 	.setup		= macvtap_setup,
- 	.newlink	= macvtap_newlink,
- 	.dellink	= macvtap_dellink,
-+	.get_link_net	= macvtap_link_net,
- 	.priv_size      = sizeof(struct macvtap_dev),
- };
- 
--- 
-2.35.1
-
-
-
+I'll take responsibility for at least some of those confusions.
+As you might imagine, we've collaborated closely for several of these
+patches, and I may not always have got --author right when re-writing
+a patch.  I don't think it fundumentally matters; nobody's promotion
+is riding on who gets credited for which patch ;-)
