@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A22A5C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E75F4C46467
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351799AbiDNPRP (ORCPT
+        id S1352263AbiDNPRc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:17:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48426 "EHLO
+        Thu, 14 Apr 2022 11:17:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347702AbiDNN7a (ORCPT
+        with ESMTP id S1347701AbiDNN7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:59:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72563BA334;
-        Thu, 14 Apr 2022 06:51:47 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6DCB89B0;
+        Thu, 14 Apr 2022 06:51:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F05CB82985;
-        Thu, 14 Apr 2022 13:51:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8270DC385A1;
-        Thu, 14 Apr 2022 13:51:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85CDEB82968;
+        Thu, 14 Apr 2022 13:51:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1868C385A1;
+        Thu, 14 Apr 2022 13:51:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944304;
-        bh=r2IB35UkUQMt3pjuLBJxNIR0DurAilVizkh8rdXZppk=;
+        s=korg; t=1649944296;
+        bh=SVUhsddBmWswKvz/evovXrM8Ot3L4ZbrK62OfJK0Goo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=18ASRKXvfIqgFZHfn02W0UnmuTaAOiw4yQg1VBHsSt47OvF7pbjKPDeMntrvKPN12
-         7rsRo/lEqj4zSROm4BjoUw1QsuBuAPII8SBjjHhgmpTYvz+b7Y9oelVGKvD+BSWRFm
-         XPFE/PYXYWjfmpp+DyxXIyhzyuc8NjX7ksLa0djs=
+        b=g28l1N3EY1IwGLmSGZ8HoC1QnXgd2oKEuGcvwMD2dzq4ALDxhunhzHmIroZaSuGIe
+         DMiveeYyu3SVp/qUHEx5A0M91NyDi1CueRFEBJ9FrxJK2/g2ki54gyMuQHqlA4hzCc
+         aQtKA/PvkHFN2HPhGva1MsLTOAJGE7MOscDHFRSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 5.4 466/475] drm/amdkfd: Fix -Wstrict-prototypes from amdgpu_amdkfd_gfx_10_0_get_functions()
-Date:   Thu, 14 Apr 2022 15:14:11 +0200
-Message-Id: <20220414110908.096683236@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Fangrui Song <maskray@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>, Will Deacon <will@kernel.org>
+Subject: [PATCH 5.4 463/475] arm64: module: remove (NOLOAD) from linker script
+Date:   Thu, 14 Apr 2022 15:14:08 +0200
+Message-Id: <20220414110908.012579726@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -48,48 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Fangrui Song <maskray@google.com>
 
-This patch is for linux-5.4.y only, it has no equivalent change
-upstream.
+commit 4013e26670c590944abdab56c4fa797527b74325 upstream.
 
-When building x86_64 allmodconfig with tip of tree clang, there is an
-instance of -Wstrict-prototypes:
+On ELF, (NOLOAD) sets the section type to SHT_NOBITS[1]. It is conceptually
+inappropriate for .plt and .text.* sections which are always
+SHT_PROGBITS.
 
-  drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v10.c:168:59: error: a function declaration without a prototype is deprecated in all versions of C [-Werror,-Wstrict-prototypes]
-  struct kfd2kgd_calls *amdgpu_amdkfd_gfx_10_0_get_functions()
-                                                            ^
-                                                             void
-  1 error generated.
+In GNU ld, if PLT entries are needed, .plt will be SHT_PROGBITS anyway
+and (NOLOAD) will be essentially ignored. In ld.lld, since
+https://reviews.llvm.org/D118840 ("[ELF] Support (TYPE=<value>) to
+customize the output section type"), ld.lld will report a `section type
+mismatch` error. Just remove (NOLOAD) to fix the error.
 
-amdgpu_amdkfd_gfx_10_0_get_functions() is prototyped properly in
-drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.h but its definition in
-amdgpu_amdkfd_gfx_v10.c does not have the argument types specified,
-which causes the warning. GCC does not warn because it permits an
-old-style definition if the prototype has the argument types.
+[1] https://lld.llvm.org/ELF/linker_script.html As of today, "The
+section should be marked as not loadable" on
+https://sourceware.org/binutils/docs/ld/Output-Section-Type.html is
+outdated for ELF.
 
-This code was eliminated by commit e392c887df97 ("drm/amdkfd: Use array
-to probe kfd2kgd_calls"), which was a part of a larger series that does
-not look very suitable for stable. Just fix this one location, as it was
-the only instance of this new warning across a variety of builds.
-
-Fixes: 6bdadb207224 ("drm/amdgpu: Add navi10 kfd support for amdgpu (v3)")
+Tested-by: Nathan Chancellor <nathan@kernel.org>
+Reported-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Fangrui Song <maskray@google.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Link: https://lore.kernel.org/r/20220218081209.354383-1-maskray@google.com
+Signed-off-by: Will Deacon <will@kernel.org>
+[nathan: Fix conflicts due to lack of 596b0474d3d9]
 Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v10.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/kernel/module.lds |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v10.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v10.c
-@@ -165,7 +165,7 @@ static const struct kfd2kgd_calls kfd2kg
- 	.get_tile_config = amdgpu_amdkfd_get_tile_config,
- };
- 
--struct kfd2kgd_calls *amdgpu_amdkfd_gfx_10_0_get_functions()
-+struct kfd2kgd_calls *amdgpu_amdkfd_gfx_10_0_get_functions(void)
- {
- 	return (struct kfd2kgd_calls *)&kfd2kgd;
+--- a/arch/arm64/kernel/module.lds
++++ b/arch/arm64/kernel/module.lds
+@@ -1,5 +1,5 @@
+ SECTIONS {
+-	.plt 0 (NOLOAD) : { BYTE(0) }
+-	.init.plt 0 (NOLOAD) : { BYTE(0) }
+-	.text.ftrace_trampoline 0 (NOLOAD) : { BYTE(0) }
++	.plt 0 : { BYTE(0) }
++	.init.plt 0 : { BYTE(0) }
++	.text.ftrace_trampoline 0 : { BYTE(0) }
  }
 
 
