@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38744C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1983AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348411AbiDNO1o (ORCPT
+        id S1350115AbiDNO2H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35770 "EHLO
+        Thu, 14 Apr 2022 10:28:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344081AbiDNNji (ORCPT
+        with ESMTP id S1344040AbiDNNje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674B018B03;
-        Thu, 14 Apr 2022 06:37:14 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E041095;
+        Thu, 14 Apr 2022 06:37:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23BF9B828F4;
-        Thu, 14 Apr 2022 13:37:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EF34C385A5;
-        Thu, 14 Apr 2022 13:37:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28E91B828F4;
+        Thu, 14 Apr 2022 13:36:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A14BC385A9;
+        Thu, 14 Apr 2022 13:36:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943431;
-        bh=JCr2Ye4Z1fXC9vg2SLDZA81Rsg2dRkhgGxicyIEij8A=;
+        s=korg; t=1649943417;
+        bh=A5hg1HJTXZlPgARSYUWjElpidF2kO0Odj4UexzVEnGU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uzfsgn+Lka+VdYdP3tjaaHgOMq0Hpuwik1k+VzQ/TDc9aojn8GbvmU4dEAwbOWt/s
-         ZO6C/oLhIVxb/PvUEu8y7Mwkaki7YWag148xIxDQPk/q0l152OzoJBoTtKKIlHR7D7
-         XrK/9l+xelgciAyu9mqJ7I45qHkyin1clnxLQvpk=
+        b=byFuIU4SMLQLRINMQovqjpxj0kbP1TDOtu1cf/B/atJ+0oqTpXTk1ifE7ROW0vTko
+         WD1CGVRikWSdUC2ehH0erTgZ7DLABRldM3zL+zRcGVFWMolp+iNw8q7V35V9XqUGck
+         r5cAisnVC1GTvfcLduGs/ZXUm3gyamxD9HUBpMuc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 153/475] mmc: davinci_mmc: Handle error for clk_enable
-Date:   Thu, 14 Apr 2022 15:08:58 +0200
-Message-Id: <20220414110859.423393172@linuxfoundation.org>
+Subject: [PATCH 5.4 149/475] ASoC: dmaengine: do not use a NULL prepare_slave_config() callback
+Date:   Thu, 14 Apr 2022 15:08:54 +0200
+Message-Id: <20220414110859.313994383@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,41 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 
-[ Upstream commit 09e7af76db02c74f2a339b3cb2d95460fa2ddbe4 ]
+[ Upstream commit 9a1e13440a4f2e7566fd4c5eae6a53e6400e08a4 ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+Even if struct snd_dmaengine_pcm_config is used, prepare_slave_config()
+callback might not be set. Check if this callback is set before using it.
 
-Fixes: bbce5802afc5 ("davinci: mmc: updates to suspend/resume implementation")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220308071415.1093393-1-jiasheng@iscas.ac.cn
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Fixes: fa654e085300 ("ASoC: dmaengine-pcm: Provide default config")
+Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220307122202.2251639-2-codrin.ciubotariu@microchip.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/davinci_mmc.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ sound/soc/soc-generic-dmaengine-pcm.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/mmc/host/davinci_mmc.c b/drivers/mmc/host/davinci_mmc.c
-index ebfaeb33bc8c..ade7c022a33c 100644
---- a/drivers/mmc/host/davinci_mmc.c
-+++ b/drivers/mmc/host/davinci_mmc.c
-@@ -1376,8 +1376,12 @@ static int davinci_mmcsd_suspend(struct device *dev)
- static int davinci_mmcsd_resume(struct device *dev)
- {
- 	struct mmc_davinci_host *host = dev_get_drvdata(dev);
-+	int ret;
-+
-+	ret = clk_enable(host->clk);
-+	if (ret)
-+		return ret;
+diff --git a/sound/soc/soc-generic-dmaengine-pcm.c b/sound/soc/soc-generic-dmaengine-pcm.c
+index 5552c66ca642..ca4b17bd95d1 100644
+--- a/sound/soc/soc-generic-dmaengine-pcm.c
++++ b/sound/soc/soc-generic-dmaengine-pcm.c
+@@ -91,10 +91,10 @@ static int dmaengine_pcm_hw_params(struct snd_pcm_substream *substream,
  
--	clk_enable(host->clk);
- 	mmc_davinci_reset_ctrl(host, 0);
+ 	memset(&slave_config, 0, sizeof(slave_config));
  
- 	return 0;
+-	if (!pcm->config)
+-		prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;
+-	else
++	if (pcm->config && pcm->config->prepare_slave_config)
+ 		prepare_slave_config = pcm->config->prepare_slave_config;
++	else
++		prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;
+ 
+ 	if (prepare_slave_config) {
+ 		ret = prepare_slave_config(substream, params, &slave_config);
 -- 
 2.34.1
 
