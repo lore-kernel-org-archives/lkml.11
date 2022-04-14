@@ -2,86 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58EECC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF8E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:58:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349241AbiDNQAQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58312 "EHLO
+        id S242185AbiDNQAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:00:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349191AbiDNPkN (ORCPT
+        with ESMTP id S1348917AbiDNPkL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:40:13 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF00C55AC
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:19:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1649949544;
-        bh=SO1sJVRdpuCi5JfeCGZQStJZ9U6nYFQpITMXggWuDTI=;
-        h=X-UI-Sender-Class:Date:To:From:Subject;
-        b=dmQUajujhJGiCL8Ak7oSDMLr38kBW7/NgzQ1noQPx1i6xfITChzk2cWw/NzKl+Fu5
-         ufyhmscUgtgJ0FB+NdQemxxG3DUxjkQN2cxrP7WuvnkMY9YexaWVImsWnxcYe4CSAF
-         jt1/PK0U/iYHJHj4mtWwFfc1CW3xJxOGQHNN5Nmg=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.146] ([37.201.198.107]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N5VD8-1nzVnm1iYM-016yvL for
- <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 17:19:04 +0200
-Message-ID: <4597be87-3a8e-1b62-9fd9-a88213b1fbd9@gmx.net>
-Date:   Thu, 14 Apr 2022 17:19:37 +0200
+        Thu, 14 Apr 2022 11:40:11 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60441C4E33
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:18:55 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id DD5611F748;
+        Thu, 14 Apr 2022 15:18:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649949533; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dkqemCFNSh+ZhebkGa09gVt5pLy70xI4ZccBTAffCZc=;
+        b=DxIcnPfo0yw48SFmUwgjqknFyxwyu9/5UOHIYjR/u80AC8WwvWRGi19AYn+UYzYlcaoNFm
+        CmQuiS7GljV5MGuYtMBDIvPfEBYHaazqJwzzLT7Wl43ZR5M2cXEu5m7luqUOjgoKzt5BeY
+        +SPMS8Hzt2pXydg7/qwdO1v7ZXlbNBc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649949533;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dkqemCFNSh+ZhebkGa09gVt5pLy70xI4ZccBTAffCZc=;
+        b=6P/o1p51DiXtaKeb2Y1dqvIQdSv7sHqoEAyyddZ9KCmHveSbw389Nrh5g+x7lf3P2bOOQc
+        xjqZhKB2ey364hCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8432C13A86;
+        Thu, 14 Apr 2022 15:18:53 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id VJi8H107WGJFbwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 14 Apr 2022 15:18:53 +0000
+Message-ID: <08c355b4-fa21-8716-bf05-3331914f150e@suse.cz>
+Date:   Thu, 14 Apr 2022 17:18:53 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-To:     linux-kernel@vger.kernel.org
-From:   "peter.boettcher.gmx.net" <peter.boettcher@gmx.net>
-Subject: software execution restriction
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:o6mUI06fhIzNtlxtrMQJwf+qm7bEdh/u5W3t0w6PN0Gt99lFh5U
- +QKhwXagkT1CXs7BG+UJ7N0IF8tP6nTLHLjyljA9665OjEEYAvBJiBKIk5sxv8QAxT9YUcK
- Q7PEi9QWPRucsItz8R7zXLEFxsGYj3YVz0gM3Kr7rUzwTxMkfs44j/ec7oZP9OBtXNHOj2o
- sUJyVBH4V0TiBFT2MjTWw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:lFurYPSYnBs=:qbXlGhihQvKrUWqitUT5ia
- wwNipdBl67BdNE8v+jd5LK4eGEPzGBz9KjTlxxLs02jUUmULUJM8PgVtl9Y36GeDOuXXcok37
- XPgq9txhpDEuYhCgKosqMbZVgUoHYKnmNEVgGRbhRnclekclhsAEa0wd9Wjnn21ocsdiyTK5C
- 2hMxCa79k0rqUwVU5Bf/Bazuer57F23A04uGfCYL1LilRHsyKgiOC0oCt0yN/Op9X79/rvuiX
- Bc1nN5R6U3AmyCQUgZTVtIS5Fvzs7Bw2qKIpEEi2Gj9j95BqN46PzzajLESF0b48Q08pQ9EeV
- mEZr+s1OIsn6SD8rlFVTVd49KJB8CL6u8byam6N2/jV2t/3xM5qZ5ky4Eofn9XGpDa2r5sQGU
- aXKp5SlXianCYGKw9DNFwNWih1iApIANoREFno4aKtJ0+Zh2XX+OxApzgIGD5XKMJjhv0CIw7
- al4ycFzFyweg1wlhjSf0IjHe5Wl8+qF1r46wbhyVp6Xp9rz8CZ8RmA1MZ0A8pwiApdZamui2W
- Hmz6pc0F93aJ5z/Lkp4Du7GYZdCfjNVRR/D/BbtVvcu2BFa1DnvJaaFfIr5vJO51P005Z9Nua
- L6HqvJmi5gXY24SfziKBQ4KXrHKEgw6MoIXAwMLqimnNktP7/6fmKCrUQa4YrXdb3tfgctURW
- sUsZRSCUSa6BuqhAs0ldrm5vEhuG62CeP1bL0QzWhXuRn8+lL3iMsxm6rnxp8+wcVN6EUpTHc
- Tt8E4y8xR3NVbW2Ew8tSY1bRoyvz1qAt0AIXc090TEJmQk89taYtk1CUsEocHqblq23Vd8FFk
- 7/PUMtjExWBU79AzbF6inXGCCYu+m+gLenFNu7IIRgwfvxbbUDfaX6HrKOGBdl/uhp8FQQKnO
- j2cCl9IDcm0wZh0SUROmwn+QltsPT04qAPy6k5jX4oXe4RINz+g3YPSguoLk1HN1GvO0QS7v5
- 8PwovIYTl9IyySCgk/JnWVRTtvAq4++6b3PWfs+U5olCaFsX8txzHFHRUD9VvY84hF5smJxZ3
- EsZTZZNQ4qXLnesZ7cd9fNGNXOVyBSnTNylbfGsx5af1+BWkNcZ+oCcmwY7pzLfT+S3ctjGhH
- vnapUz+oOUO/CM=
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 13/16] mm/gup: disallow follow_page(FOLL_PIN)
+Content-Language: en-US
+To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
+References: <20220329160440.193848-1-david@redhat.com>
+ <20220329160440.193848-14-david@redhat.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220329160440.193848-14-david@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mail: peter.boettcher@gmx.net
+On 3/29/22 18:04, David Hildenbrand wrote:
+> We want to change the way we handle R/O pins on anonymous pages that
+> might be shared: if we detect a possibly shared anonymous page --
+> mapped R/O and not !PageAnonExclusive() -- we want to trigger unsharing
+> via a page fault, resulting in an exclusive anonymous page that can be
+> pinned reliably without getting replaced via COW on the next write
+> fault.
+> 
+> However, the required page fault will be problematic for follow_page():
+> in contrast to ordinary GUP, follow_page() doesn't trigger faults
+> internally. So we would have to end up failing a R/O pin via
+> follow_page(), although there is something mapped R/O into the page
+> table, which might be rather surprising.
+> 
+> We don't seem to have follow_page(FOLL_PIN) users, and it's a purely
+> internal MM function. Let's just make our life easier and the semantics of
+> follow_page() clearer by just disallowing FOLL_PIN for follow_page()
+> completely.
+> 
+> Signed-off-by: David Hildenbrand <david@redhat.com>
 
-Hello my name is Peter Boettcher Germany/NRW.
-
-Sorry for this english. I have an extension for the Linux kernel
-written.
-
-The functionality corresponds to the "Software Execution Restriction" in
-Windows.
-But USER and GROUPS are also supported.
-The extension works very well without errors or problems.
-
-You can find the code on GITHUB under /pbamr.
-
-The extensions are available in 2 variants: with and without an
-additional SYSCALL.
-Sorry, but Apparmor etc. are to complicated for me.
-Command and data transfer could also take place via the "PROC SYSTEM".
-
-If the method would be suitable for the official Linux kernel, I would
-adapt the code accordingly.
-
-Peter Boettcher
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
