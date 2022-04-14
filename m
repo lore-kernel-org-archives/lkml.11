@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 223E1C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E5FC3527C
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353408AbiDNOkB (ORCPT
+        id S1353454AbiDNOkP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
+        Thu, 14 Apr 2022 10:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344890AbiDNNot (ORCPT
+        with ESMTP id S1344945AbiDNNo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F86A39B86;
-        Thu, 14 Apr 2022 06:40:32 -0700 (PDT)
+        Thu, 14 Apr 2022 09:44:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690D71FCFD;
+        Thu, 14 Apr 2022 06:40:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87FC8612E6;
-        Thu, 14 Apr 2022 13:40:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BAD5C385A5;
-        Thu, 14 Apr 2022 13:40:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E03E161D73;
+        Thu, 14 Apr 2022 13:40:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBA9CC385A1;
+        Thu, 14 Apr 2022 13:40:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943632;
-        bh=FgkMapFX7HltZgmcI/SyG9B6F5Hr6wX4JefuaCKEJaY=;
+        s=korg; t=1649943651;
+        bh=jdRZxhGVBh24b1pO4PjXneg0iSK34WICAWHCxcRCZRY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y9C/tpYWxjqWnqLZOB0CVGSJieQecN+VSY9Q7XKB2Com9SzqfoUHRFXSNjDcCBVqX
-         5ANZS87dHNwNKtJ3Kh3XrMU0JuCszYHydrTosuA+iFh8an897d4iK35SoxeRBXfn/H
-         50l9SZj1tfxJ//v0kPurHhyQyN1qDmqhxA1eHmIk=
+        b=bc6ZzLZCORjgg8OGasTrJaPawHQUBxct6UFv5HyOR+UmTHWHGpUqxQzTeCBmZy03I
+         cFy0b+nAvzqY/433/arDznxZAKLQmiWk72/Wd8YY/J+PuhuTKAM+bHw2UHk74QYxm8
+         GzSJ+dILXdwdmlGdxgRemV9s2TmbE2jWcg0vHFUw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 175/475] HID: i2c-hid: fix GET/SET_REPORT for unnumbered reports
-Date:   Thu, 14 Apr 2022 15:09:20 +0200
-Message-Id: <20220414110900.032809478@linuxfoundation.org>
+        stable@vger.kernel.org, Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
+        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 233/475] phy: dphy: Correct lpx parameter and its derivatives(ta_{get,go,sure})
+Date:   Thu, 14 Apr 2022 15:10:18 +0200
+Message-Id: <20220414110901.643180267@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,89 +56,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+From: Liu Ying <victor.liu@nxp.com>
 
-[ Upstream commit a5e5e03e94764148a01757b2fa4737d3445c13a6 ]
+[ Upstream commit 3153fa38e38af566cf6454a03b1dbadaf6f323c0 ]
 
-Internally kernel prepends all report buffers, for both numbered and
-unnumbered reports, with report ID, therefore to properly handle unnumbered
-reports we should prepend it ourselves.
+According to the comment of the function phy_mipi_dphy_get_default_config(),
+it uses minimum D-PHY timings based on MIPI D-PHY specification.  They are
+derived from the valid ranges specified in Section 6.9, Table 14, Page 41
+of the D-PHY specification (v1.2).  The table 14 explicitly mentions that
+the minimum T-LPX parameter is 50 nanoseconds and the minimum TA-SURE
+parameter is T-LPX nanoseconds.  Likewise, the kernel doc of the 'lpx' and
+'ta_sure' members of struct phy_configure_opts_mipi_dphy mentions that
+the minimum values are 50000 picoseconds and @lpx picoseconds respectively.
+Also, the function phy_mipi_dphy_config_validate() checks if cfg->lpx is
+less than 50000 picoseconds and if cfg->ta_sure is less than cfg->lpx,
+which hints the same minimum values.
 
-For the same reason we should skip the first byte of the buffer when
-calling i2c_hid_set_or_send_report() which then will take care of properly
-formatting the transfer buffer based on its separate report ID argument
-along with report payload.
+Without this patch, the function phy_mipi_dphy_get_default_config()
+wrongly sets cfg->lpx to 60000 picoseconds and cfg->ta_sure to 2 * cfg->lpx.
+So, let's correct them to 50000 picoseconds and cfg->lpx respectively.
 
-[jkosina@suse.cz: finalize trimmed sentence in changelog as spotted by Benjamin]
-Fixes: 9b5a9ae88573 ("HID: i2c-hid: implement ll_driver transport-layer callbacks")
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Tested-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Note that I've only tested the patch with RM67191 DSI panel on i.MX8mq EVK.
+Help is needed to test with other i.MX8mq, Meson and Rockchip platforms,
+as I don't have the hardwares.
+
+Fixes: dddc97e82303 ("phy: dphy: Add configuration helpers")
+Cc: Andrzej Hajda <andrzej.hajda@intel.com>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Cc: Kishon Vijay Abraham I <kishon@ti.com>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Heiko Stuebner <heiko@sntech.de>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Guido Günther <agx@sigxcpu.org>
+Signed-off-by: Liu Ying <victor.liu@nxp.com>
+Link: https://lore.kernel.org/r/20220216071257.1647703-1-victor.liu@nxp.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/i2c-hid/i2c-hid-core.c | 32 ++++++++++++++++++++++--------
- 1 file changed, 24 insertions(+), 8 deletions(-)
+ drivers/phy/phy-core-mipi-dphy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hid/i2c-hid/i2c-hid-core.c b/drivers/hid/i2c-hid/i2c-hid-core.c
-index ac076ac73de5..1547b0ec6a11 100644
---- a/drivers/hid/i2c-hid/i2c-hid-core.c
-+++ b/drivers/hid/i2c-hid/i2c-hid-core.c
-@@ -622,6 +622,17 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
- 	if (report_type == HID_OUTPUT_REPORT)
- 		return -EINVAL;
+diff --git a/drivers/phy/phy-core-mipi-dphy.c b/drivers/phy/phy-core-mipi-dphy.c
+index 14e0551cd319..0aa740b73d0d 100644
+--- a/drivers/phy/phy-core-mipi-dphy.c
++++ b/drivers/phy/phy-core-mipi-dphy.c
+@@ -66,10 +66,10 @@ int phy_mipi_dphy_get_default_config(unsigned long pixel_clock,
+ 	cfg->hs_trail = max(4 * 8 * ui, 60000 + 4 * 4 * ui);
  
-+	/*
-+	 * In case of unnumbered reports the response from the device will
-+	 * not have the report ID that the upper layers expect, so we need
-+	 * to stash it the buffer ourselves and adjust the data size.
-+	 */
-+	if (!report_number) {
-+		buf[0] = 0;
-+		buf++;
-+		count--;
-+	}
-+
- 	/* +2 bytes to include the size of the reply in the query buffer */
- 	ask_count = min(count + 2, (size_t)ihid->bufsize);
+ 	cfg->init = 100;
+-	cfg->lpx = 60000;
++	cfg->lpx = 50000;
+ 	cfg->ta_get = 5 * cfg->lpx;
+ 	cfg->ta_go = 4 * cfg->lpx;
+-	cfg->ta_sure = 2 * cfg->lpx;
++	cfg->ta_sure = cfg->lpx;
+ 	cfg->wakeup = 1000;
  
-@@ -643,6 +654,9 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
- 	count = min(count, ret_count - 2);
- 	memcpy(buf, ihid->rawbuf + 2, count);
- 
-+	if (!report_number)
-+		count++;
-+
- 	return count;
- }
- 
-@@ -659,17 +673,19 @@ static int i2c_hid_output_raw_report(struct hid_device *hid, __u8 *buf,
- 
- 	mutex_lock(&ihid->reset_lock);
- 
--	if (report_id) {
--		buf++;
--		count--;
--	}
--
-+	/*
-+	 * Note that both numbered and unnumbered reports passed here
-+	 * are supposed to have report ID stored in the 1st byte of the
-+	 * buffer, so we strip it off unconditionally before passing payload
-+	 * to i2c_hid_set_or_send_report which takes care of encoding
-+	 * everything properly.
-+	 */
- 	ret = i2c_hid_set_or_send_report(client,
- 				report_type == HID_FEATURE_REPORT ? 0x03 : 0x02,
--				report_id, buf, count, use_data);
-+				report_id, buf + 1, count - 1, use_data);
- 
--	if (report_id && ret >= 0)
--		ret++; /* add report_id to the number of transfered bytes */
-+	if (ret >= 0)
-+		ret++; /* add report_id to the number of transferred bytes */
- 
- 	mutex_unlock(&ihid->reset_lock);
- 
+ 	cfg->hs_clk_rate = hs_clk_rate;
 -- 
 2.34.1
 
