@@ -2,238 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 786F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 19:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C67DC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 19:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243408AbiDNTEg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 15:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38358 "EHLO
+        id S1344940AbiDNTFQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 15:05:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234302AbiDNTEc (ORCPT
+        with ESMTP id S244730AbiDNTFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 15:04:32 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0797E9CA6
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 12:02:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=7Gtvh+XmNw/2pO9Tbmi5/yhRnGmCojLBbzbV+uUaWf8=; b=kQm1JgtPjs9+xaYrSz0aiArWG3
-        KtdN0jXjEoD1aSFEyuaGkmqgyVOfrqiilYJPfkG1Efm9n9qZGiQWejb+fVdbYPNGwB30EjpBwvTh9
-        v/ERxSnDjHk+oyA06/MsLO5I0e0ufv9ybcQlmdKZkj1VNq1pQfRHEnTguR8Z2iUhryk/eN1oW4jho
-        EvE/eVbqsHkC4Og0BwEB/HGwgHVBnbfBTwg/twtW7oQVeH72Q3syjbtwhND3aRJBaj5UzMaN4vQkp
-        N++sRJinIj8TDPWb8u5GLJugM3mBSL5VTuAQEeBpYs/I36zfTgNkwUWRPi1dhjBdoJFxUVYmQwSVP
-        JJA1fqlw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nf4j8-0056RV-Pl; Thu, 14 Apr 2022 19:01:59 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D565130027B;
-        Thu, 14 Apr 2022 21:01:56 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id B555A322A1704; Thu, 14 Apr 2022 21:01:56 +0200 (CEST)
-Date:   Thu, 14 Apr 2022 21:01:56 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Miroslav Benes <mbenes@suse.cz>
-Subject: Re: [PATCH 10/18] objtool: Extricate ibt from stack validation
-Message-ID: <YlhvpGsUFIOLByhp@hirez.programming.kicks-ass.net>
-References: <cover.1649891421.git.jpoimboe@redhat.com>
- <44a73f724b51c4a994edc43536b7a7ee5e972b40.1649891421.git.jpoimboe@redhat.com>
- <YlfS7twQVCHGgtCV@hirez.programming.kicks-ass.net>
- <20220414154449.5moa7xsczwybbqhd@treble>
- <YlhN+GFZlycwydSv@hirez.programming.kicks-ass.net>
- <20220414170550.v2jmdfhmz7zbuug6@treble>
- <20220414182505.oirx3znjl7ceozq3@treble>
+        Thu, 14 Apr 2022 15:05:13 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9756EA342;
+        Thu, 14 Apr 2022 12:02:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649962967; x=1681498967;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=TdE1RKZsiTimWQo56IAW2eBaZpgN2e/gySOlkjZQK7w=;
+  b=JeH+T84CMrZSRteTS9dF2Z+Q6R/Lokr3wFVU8wOTZZwZWowcfmVoNNcf
+   E3ro6/AH4kYIJrGFF1HcvFoUYak7Z8hvAZd62csLX2bIRzKX5R/w5kPxH
+   rGWLEWbb5uth3zEbt/H7s63Pvfb4KJfQyGu9oUEkQi6xhZ0/PTGRX8pRv
+   rsShOCKUeP6F4f01P+bp4uTKgaYZGJnMOYKi2OfQakuhHR0ryYTjO1jA1
+   Is7splAXAJznQ4o3qdaDT4YYC+wuDnBTzgH2RWG9nkzG0fcP5HdAUWXbk
+   rvl/bBzy3o5rwF4OWZvUdRfdBGIoFNKL1s/mNi1Dn+BitcMiBz0JKQxMP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="250308376"
+X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
+   d="scan'208";a="250308376"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 12:02:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
+   d="scan'208";a="645735755"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by FMSMGA003.fm.intel.com with ESMTP; 14 Apr 2022 12:02:43 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 755FF144; Thu, 14 Apr 2022 22:02:43 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH v5 2/6] pinctrl: armada-37xx: Switch to use fwnode instead of of_node
+Date:   Thu, 14 Apr 2022 22:02:38 +0300
+Message-Id: <20220414190242.22178-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220414190242.22178-1-andriy.shevchenko@linux.intel.com>
+References: <20220414190242.22178-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220414182505.oirx3znjl7ceozq3@treble>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 11:25:05AM -0700, Josh Poimboeuf wrote:
-> On Thu, Apr 14, 2022 at 10:05:53AM -0700, Josh Poimboeuf wrote:
-> > On Thu, Apr 14, 2022 at 06:38:16PM +0200, Peter Zijlstra wrote:
-> > > On Thu, Apr 14, 2022 at 08:44:49AM -0700, Josh Poimboeuf wrote:
-> > > 
-> > > > Ok.  That was subtle, it needs a comment or two.  I had the distinct
-> > > > feeling I was introducing a bug, then I got distracted ;-)
-> > > 
-> > > Right, lemme try and not forget to write one ;-)
-> > 
-> > I'm rewriting the code anyway, I'll add some comments.
-> > 
-> > > > Doesn't the compiler give those special cases ENDBR anyway?  Just
-> > > > wondering why we avoid the warning for those.
-> > > 
-> > > Sure, but this is about not scribbling that ENDBR with a NOP.
-> > 
-> > Right, but it only prints warnings for data sections, despite marking
-> > others:
-> > 
-> > -                       dest = validate_ibt_reloc(file, reloc);
-> > -                       if (is_data && dest && !dest->noendbr)
-> > -                               warn_noendbr("data ", sec, reloc->offset, dest);
-> 
-> 
-> How about this?  This way it doesn't silence warnings for non
-> .data/.rodata, as other sections (including ksymtab) can also have valid
-> function pointers.  It also caught a bug(?) in putuser.S, as some of the
-> exported inner labels didn't have ENDBR.
-> 
-> 
-> diff --git a/arch/x86/include/asm/static_call.h b/arch/x86/include/asm/static_call.h
-> index 2455d721503e..2d8dacd02643 100644
-> --- a/arch/x86/include/asm/static_call.h
-> +++ b/arch/x86/include/asm/static_call.h
-> @@ -26,6 +26,7 @@
->  	    ".align 4						\n"	\
->  	    ".globl " STATIC_CALL_TRAMP_STR(name) "		\n"	\
->  	    STATIC_CALL_TRAMP_STR(name) ":			\n"	\
-> +	    ANNOTATE_NOENDBR						\
->  	    insns "						\n"	\
->  	    ".byte 0x53, 0x43, 0x54				\n"	\
->  	    ".type " STATIC_CALL_TRAMP_STR(name) ", @function	\n"	\
+GPIO library now accepts fwnode as a firmware node,
+so switch the driver to use it.
 
-Right, that makes more sense than hard-coding that exclusion, no idea
-what I was thinking ;-)
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
 
-> diff --git a/arch/x86/lib/putuser.S b/arch/x86/lib/putuser.S
-> index ecb2049c1273..b7dfd60243b7 100644
-> --- a/arch/x86/lib/putuser.S
-> +++ b/arch/x86/lib/putuser.S
-> @@ -48,6 +48,7 @@ SYM_FUNC_START(__put_user_1)
->  	cmp %_ASM_BX,%_ASM_CX
->  	jae .Lbad_put_user
->  SYM_INNER_LABEL(__put_user_nocheck_1, SYM_L_GLOBAL)
-> +	ENDBR
->  	ASM_STAC
->  1:	movb %al,(%_ASM_CX)
->  	xor %ecx,%ecx
-> @@ -62,6 +63,7 @@ SYM_FUNC_START(__put_user_2)
->  	cmp %_ASM_BX,%_ASM_CX
->  	jae .Lbad_put_user
->  SYM_INNER_LABEL(__put_user_nocheck_2, SYM_L_GLOBAL)
-> +	ENDBR
->  	ASM_STAC
->  2:	movw %ax,(%_ASM_CX)
->  	xor %ecx,%ecx
-> @@ -76,6 +78,7 @@ SYM_FUNC_START(__put_user_4)
->  	cmp %_ASM_BX,%_ASM_CX
->  	jae .Lbad_put_user
->  SYM_INNER_LABEL(__put_user_nocheck_4, SYM_L_GLOBAL)
-> +	ENDBR
->  	ASM_STAC
->  3:	movl %eax,(%_ASM_CX)
->  	xor %ecx,%ecx
-> @@ -90,6 +93,7 @@ SYM_FUNC_START(__put_user_8)
->  	cmp %_ASM_BX,%_ASM_CX
->  	jae .Lbad_put_user
->  SYM_INNER_LABEL(__put_user_nocheck_8, SYM_L_GLOBAL)
-> +	ENDBR
->  	ASM_STAC
->  4:	mov %_ASM_AX,(%_ASM_CX)
->  #ifdef CONFIG_X86_32
+diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
+index 08cad14042e2..110f70bce3fe 100644
+--- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
++++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
+@@ -21,6 +21,7 @@
+ #include <linux/pinctrl/pinctrl.h>
+ #include <linux/pinctrl/pinmux.h>
+ #include <linux/platform_device.h>
++#include <linux/property.h>
+ #include <linux/regmap.h>
+ #include <linux/slab.h>
+ #include <linux/string_helpers.h>
+@@ -787,18 +788,13 @@ static int armada_37xx_gpiochip_register(struct platform_device *pdev,
+ 					struct armada_37xx_pinctrl *info)
+ {
+ 	struct device *dev = &pdev->dev;
+-	struct device_node *np;
++	struct fwnode_handle *fwnode;
+ 	struct gpio_chip *gc;
+-	int ret = -ENODEV;
++	int ret;
+ 
+-	for_each_child_of_node(dev->of_node, np) {
+-		if (of_find_property(np, "gpio-controller", NULL)) {
+-			ret = 0;
+-			break;
+-		}
+-	}
+-	if (ret)
+-		return ret;
++	fwnode = gpiochip_node_get_first(dev);
++	if (!fwnode)
++		return -ENODEV;
+ 
+ 	info->gpio_chip = armada_37xx_gpiolib_chip;
+ 
+@@ -806,7 +802,7 @@ static int armada_37xx_gpiochip_register(struct platform_device *pdev,
+ 	gc->ngpio = info->data->nr_pins;
+ 	gc->parent = dev;
+ 	gc->base = -1;
+-	gc->of_node = np;
++	gc->fwnode = fwnode;
+ 	gc->label = info->data->name;
+ 
+ 	ret = armada_37xx_irqchip_register(pdev, info);
+-- 
+2.35.1
 
-Hmm, how did those go missing?
-
-> diff --git a/arch/x86/lib/retpoline.S b/arch/x86/lib/retpoline.S
-> index 5f87bab4fb8d..b2b2366885a2 100644
-> --- a/arch/x86/lib/retpoline.S
-> +++ b/arch/x86/lib/retpoline.S
-> @@ -31,6 +31,7 @@
->  	.align RETPOLINE_THUNK_SIZE
->  SYM_INNER_LABEL(__x86_indirect_thunk_\reg, SYM_L_GLOBAL)
->  	UNWIND_HINT_EMPTY
-> +	ANNOTATE_NOENDBR
->  
->  	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), \
->  		      __stringify(RETPOLINE \reg), X86_FEATURE_RETPOLINE, \
-> @@ -55,7 +56,6 @@ SYM_INNER_LABEL(__x86_indirect_thunk_\reg, SYM_L_GLOBAL)
->  
->  	.align RETPOLINE_THUNK_SIZE
->  SYM_CODE_START(__x86_indirect_thunk_array)
-> -	ANNOTATE_NOENDBR // apply_retpolines
->  
->  #define GEN(reg) THUNK reg
->  #include <asm/GEN-for-each-reg.h>
-
-Hmm, where does that come from? Do you have commit be8a096521ca
-("x86,bpf: Avoid IBT objtool warning")?
-
-> diff --git a/arch/x86/xen/xen-head.S b/arch/x86/xen/xen-head.S
-> index ac17196e2518..3a2cd93bf059 100644
-> --- a/arch/x86/xen/xen-head.S
-> +++ b/arch/x86/xen/xen-head.S
-> @@ -45,6 +45,7 @@ SYM_CODE_END(hypercall_page)
->  	__INIT
->  SYM_CODE_START(startup_xen)
->  	UNWIND_HINT_EMPTY
-> +	ANNOTATE_NOENDBR
->  	cld
->  
->  	/* Clear .bss */
-> diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-> index b09c416432b6..10e375c84088 100644
-> --- a/tools/objtool/check.c
-> +++ b/tools/objtool/check.c
-> @@ -3794,7 +3794,10 @@ static int validate_ibt_data_reloc(struct objtool_file *file,
->  	return 1;
->  }
->  
-> -
-> +/*
-> + * Validate IBT rules and mark used ENDBR instructions so the non-used ones can
-> + * be sealed later by create_ibt_endbr_seal_sections().
-> + */
->  static int validate_ibt(struct objtool_file *file)
->  {
->  	struct section *sec;
-> @@ -3807,12 +3810,36 @@ static int validate_ibt(struct objtool_file *file)
->  
->  	for_each_sec(file, sec) {
->  
-> -		if (!strstr(sec->name, ".data") && !strstr(sec->name, ".rodata"))
-> +		/* Already done by validate_ibt_insn() */
-> +		if (sec->sh.sh_flags & SHF_EXECINSTR)
->  			continue;
->  
->  		if (!sec->reloc)
->  			continue;
->  
-> +		/*
-> +		 * These sections can reference text addresses, but not with
-> +		 * the intent to indirect branch to them.
-> +		 */
-> +		if (!strncmp(sec->name, ".discard", 8)			||
-> +		    !strncmp(sec->name, ".debug", 6)			||
-> +		    !strcmp(sec->name, ".altinstructions")		||
-> +		    !strcmp(sec->name, ".ibt_endbr_seal")		||
-> +		    !strcmp(sec->name, ".orc_unwind_ip")		||
-> +		    !strcmp(sec->name, ".parainstructions")		||
-> +		    !strcmp(sec->name, ".retpoline_sites")		||
-> +		    !strcmp(sec->name, ".smp_locks")			||
-> +		    !strcmp(sec->name, ".static_call_sites")		||
-> +		    !strcmp(sec->name, ".static_call_tramp_key")	||
-> +		    !strcmp(sec->name, "_error_injection_whitelist")	||
-> +		    !strcmp(sec->name, "_kprobe_blacklist")		||
-> +		    !strcmp(sec->name, "__bug_table")			||
-> +		    !strcmp(sec->name, "__ex_table")			||
-> +		    !strcmp(sec->name, "__jump_table")			||
-> +		    !strcmp(sec->name, "__mcount_loc")			||
-> +		    !strcmp(sec->name, "__tracepoints"))
-> +			continue;
-> +
->  		list_for_each_entry(reloc, &sec->reloc->reloc_list, list)
->  			warnings += validate_ibt_data_reloc(file, reloc);
->  	}
-> 
-
-Yes, looks good, Thanks!
