@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC21DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81842C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344647AbiDNNul (ORCPT
+        id S1345006AbiDNNty (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56954 "EHLO
+        Thu, 14 Apr 2022 09:49:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344047AbiDNNaR (ORCPT
+        with ESMTP id S1344074AbiDNNaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:30:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D4F62CE;
-        Thu, 14 Apr 2022 06:27:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0528BE80;
+        Thu, 14 Apr 2022 06:27:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1183460C14;
-        Thu, 14 Apr 2022 13:27:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23AF2C385A5;
-        Thu, 14 Apr 2022 13:26:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94BA460C14;
+        Thu, 14 Apr 2022 13:27:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 798DDC385A5;
+        Thu, 14 Apr 2022 13:27:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942820;
-        bh=xI7yxAPVG8yEPrckyuoQy3QpP3/2Y7j45K3IEDsHzRw=;
+        s=korg; t=1649942856;
+        bh=aHK5wxk0SLdxv9PPPG+tllBNNnQqv2K6I4/kn/MaBC4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QKomvJ0b342f+IycWZaQvM6CUbVCU5CQ2N8a75nC93Tf5FsqvjZ9TRIHdvw4xh6CO
-         ndM3Utb0o5FXYPgBB6i4OBFSaxN1kKXP/Zo9L8y8MJ5YUkZTDwLU8NxUQQlIoQIH0l
-         H5SexR/16oI59MA/ZR7fQkZ/w/UKoN84XrTutEt0=
+        b=XEAE5TMnyTKWDLTrF+q7sUVM8slDKu2BSMtBmTTDgj2PXJOvH0MwzGlc6cxGb04+T
+         RpMwE6oF6bTvPdVAL189h/XXufLSHWFQdsQlsjZjaVeaME0RTlYB7G186rjgC8Qe/2
+         bwiXR/O4ycLyOMrjnS9fWEbVwbRh2PrublomMNlM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Neal Liu <neal_liu@aspeedtech.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 272/338] usb: ehci: add pci device support for Aspeed platforms
-Date:   Thu, 14 Apr 2022 15:12:55 +0200
-Message-Id: <20220414110846.629719603@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.19 246/338] mm/memcontrol: return 1 from cgroup.memory __setup() handler
+Date:   Thu, 14 Apr 2022 15:12:29 +0200
+Message-Id: <20220414110845.892498241@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,52 +56,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neal Liu <neal_liu@aspeedtech.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit c3c9cee592828528fd228b01d312c7526c584a42 ]
+commit 460a79e18842caca6fa0c415de4a3ac1e671ac50 upstream.
 
-Enable Aspeed quirks in commit 7f2d73788d90 ("usb: ehci:
-handshake CMD_RUN instead of STS_HALT") to support Aspeed
-ehci-pci device.
+__setup() handlers should return 1 if the command line option is handled
+and 0 if not (or maybe never return 0; it just pollutes init's
+environment).
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Link: https://lore.kernel.org/r/20220208101657.76459-1-neal_liu@aspeedtech.com
+The only reason that this particular __setup handler does not pollute
+init's environment is that the setup string contains a '.', as in
+"cgroup.memory".  This causes init/main.c::unknown_boottoption() to
+consider it to be an "Unused module parameter" and ignore it.  (This is
+for parsing of loadable module parameters any time after kernel init.)
+Otherwise the string "cgroup.memory=whatever" would be added to init's
+environment strings.
+
+Instead of relying on this '.' quirk, just return 1 to indicate that the
+boot option has been handled.
+
+Note that there is no warning message if someone enters:
+	cgroup.memory=anything_invalid
+
+Link: https://lkml.kernel.org/r/20220222005811.10672-1-rdunlap@infradead.org
+Fixes: f7e1cb6ec51b0 ("mm: memcontrol: account socket memory in unified hierarchy memory controller")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc: Roman Gushchin <roman.gushchin@linux.dev>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/ehci-pci.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ mm/memcontrol.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/host/ehci-pci.c b/drivers/usb/host/ehci-pci.c
-index 56e6fd0f0482..42ace9f92ce9 100644
---- a/drivers/usb/host/ehci-pci.c
-+++ b/drivers/usb/host/ehci-pci.c
-@@ -21,6 +21,9 @@ static const char hcd_name[] = "ehci-pci";
- /* defined here to avoid adding to pci_ids.h for single instance use */
- #define PCI_DEVICE_ID_INTEL_CE4100_USB	0x2e70
- 
-+#define PCI_VENDOR_ID_ASPEED		0x1a03
-+#define PCI_DEVICE_ID_ASPEED_EHCI	0x2603
-+
- /*-------------------------------------------------------------------------*/
- #define PCI_DEVICE_ID_INTEL_QUARK_X1000_SOC		0x0939
- static inline bool is_intel_quark_x1000(struct pci_dev *pdev)
-@@ -223,6 +226,12 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
- 			ehci->has_synopsys_hc_bug = 1;
- 		}
- 		break;
-+	case PCI_VENDOR_ID_ASPEED:
-+		if (pdev->device == PCI_DEVICE_ID_ASPEED_EHCI) {
-+			ehci_info(ehci, "applying Aspeed HC workaround\n");
-+			ehci->is_aspeed = 1;
-+		}
-+		break;
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -6404,7 +6404,7 @@ static int __init cgroup_memory(char *s)
+ 		if (!strcmp(token, "nokmem"))
+ 			cgroup_memory_nokmem = true;
  	}
+-	return 0;
++	return 1;
+ }
+ __setup("cgroup.memory=", cgroup_memory);
  
- 	/* optional debug port, normally in the first BAR */
--- 
-2.35.1
-
 
 
