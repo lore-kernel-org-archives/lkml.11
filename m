@@ -2,245 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60900C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 02:53:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 02:54:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239656AbiDNC4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 22:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37350 "EHLO
+        id S239661AbiDNC4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 22:56:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233832AbiDNC4O (ORCPT
+        with ESMTP id S239657AbiDNC4q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 22:56:14 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D09A3F30A;
-        Wed, 13 Apr 2022 19:53:50 -0700 (PDT)
-X-UUID: 951cb7785ab044a8a5e4e2f9daa1c869-20220414
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:c4ce3310-c820-4909-a37c-50db0c739702,OB:20,L
-        OB:0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:108
-X-CID-INFO: VERSION:1.1.4,REQID:c4ce3310-c820-4909-a37c-50db0c739702,OB:20,LOB
-        :0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:108
-X-CID-META: VersionHash:faefae9,CLOUDID:d5b35178-0afa-4dca-bdec-ca54c998425a,C
-        OID:ff9dd2f348b6,Recheck:0,SF:13|15|28|16|19|48,TC:nil,Content:0,EDM:-3,Fi
-        le:nil,QS:0,BEC:nil
-X-UUID: 951cb7785ab044a8a5e4e2f9daa1c869-20220414
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <nick.fan@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 806534880; Thu, 14 Apr 2022 10:53:45 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 14 Apr 2022 10:53:43 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 14 Apr 2022 10:53:43 +0800
-From:   Nick Fan <Nick.Fan@mediatek.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <fshao@chromium.org>,
-        <wenst@chromium.org>, <alyssa.rosenzweig@collabora.com>,
-        <nick.fan@mediatek.com>, Nick Fan <Nick.Fan@mediatek.com>
-Subject: [PATCH v6 2/2] arm64: dts: mt8192: Add node for the Mali GPU
-Date:   Thu, 14 Apr 2022 10:50:23 +0800
-Message-ID: <20220414025023.11516-2-Nick.Fan@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220414025023.11516-1-Nick.Fan@mediatek.com>
-References: <20220414025023.11516-1-Nick.Fan@mediatek.com>
+        Wed, 13 Apr 2022 22:56:46 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6DC2C6;
+        Wed, 13 Apr 2022 19:54:22 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kf3vc1VfYz4x7Y;
+        Thu, 14 Apr 2022 12:54:20 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649904861;
+        bh=fDOuMrroHlBGTn7iGqRePYiPTvzDieExQ2YVV6a/kDE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=VaX7MahQsZeO/DFFbnHbgfU/6w581lDRdSTL/EQWyzXVZ8QrmO94KF/oiIaqiOPOi
+         XMoy/3xtqKCV4NXpMtDQPwIwCGjElFtd1jA7Izg/lHNnaE0JonkVY4Idn7D7xpfvJu
+         +WMow5UhsokdRMi5r/YJvnfz5H/kyECaN84mEuv7pYfYJNCR951IScLSuRyCI4K0B3
+         5S9PJ/EAwP2DsnGoXunY8CL/VBkAC77KTCYet+JilxgOF3WsT6wUFqLd+poi6trg8N
+         d+9LTS4EUKoIzIn2bMChbeGqTmZbyUX7vlLkFaHTgEtvCGNl77rbArjr6RkYJ4HIwr
+         XqgPtjfxiN97Q==
+Date:   Thu, 14 Apr 2022 12:54:19 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Ard Biesheuvel <ardb@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     Borislav Petkov <bp@suse.de>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the efi tree with the tip tree
+Message-ID: <20220414125419.1c2e346d@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: multipart/signed; boundary="Sig_/jR1S7OkN960Cn7djWsJSW5U";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a basic GPU node for mt8192.
+--Sig_/jR1S7OkN960Cn7djWsJSW5U
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Nick Fan <Nick.Fan@mediatek.com>
----
-This patch depends on MediaTek power and regulator support.
+Hi all,
 
-Listed as following.
+Today's linux-next merge of the efi tree got conflicts in:
 
-[1]https://patchwork.kernel.org/project/linux-mediatek/patch/1612678457-11548-4-git-send-email-hsin-hsiung.wang@mediatek.com/
-[2]https://patchwork.kernel.org/project/linux-mediatek/patch/1622011927-359-9-git-send-email-hsin-hsiung.wang@mediatek.com/
-[3]https://patchwork.kernel.org/project/linux-mediatek/patch/20220318144534.17996-3-allen-kh.cheng@mediatek.com/
-[4]https://patchwork.kernel.org/project/linux-mediatek/patch/1605700894-32699-6-git-send-email-hsin-hsiung.wang@mediatek.com/
----
----
- arch/arm64/boot/dts/mediatek/mt8192-evb.dts |   7 ++
- arch/arm64/boot/dts/mediatek/mt8192.dtsi    | 124 ++++++++++++++++++++
- 2 files changed, 131 insertions(+)
+  drivers/virt/Kconfig
+  drivers/virt/Makefile
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192-evb.dts b/arch/arm64/boot/dts/mediatek/mt8192-evb.dts
-index 3369cd962f11..e232089688b8 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192-evb.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8192-evb.dts
-@@ -5,6 +5,7 @@
-  */
- /dts-v1/;
- #include "mt8192.dtsi"
-+#include "mt6359.dtsi"
- 
- / {
- 	model = "MediaTek MT8192 evaluation board";
-@@ -69,6 +70,12 @@
- 	};
- };
- 
-+&gpu {
-+	supply-names = "mali","sram";
-+	mali-supply = <&mt6315_7_vbuck1>;
-+	sram-supply = <&mt6359_vsram_others_ldo_reg>;
-+};
-+
- &uart0 {
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index 6150f99a9b87..5514f31f1aa2 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -899,6 +899,130 @@
- 			#clock-cells = <1>;
- 		};
- 
-+		gpu: mali@13000000 {
-+			compatible = "mediatek,mt8192-mali", "arm,mali-valhall";
-+			reg = <0 0x13000000 0 0x4000>;
-+			interrupts =
-+				<GIC_SPI 363 IRQ_TYPE_LEVEL_HIGH 0>,
-+				<GIC_SPI 364 IRQ_TYPE_LEVEL_HIGH 0>,
-+				<GIC_SPI 365 IRQ_TYPE_LEVEL_HIGH 0>;
-+			interrupt-names =
-+				"gpu",
-+				"mmu",
-+				"job";
-+
-+			clocks =
-+				<&apmixedsys CLK_APMIXED_MFGPLL>,
-+				<&topckgen CLK_TOP_MFG_PLL_SEL>,
-+				<&topckgen CLK_TOP_MFG_REF_SEL>,
-+				<&mfgcfg CLK_MFG_BG3D>;
-+			clock-names =
-+				"clk_main_parent",
-+				"clk_mux",
-+				"clk_sub_parent",
-+				"subsys_mfg_cg";
-+
-+			power-domains =
-+				<&spm MT8192_POWER_DOMAIN_MFG2>,
-+				<&spm MT8192_POWER_DOMAIN_MFG3>,
-+				<&spm MT8192_POWER_DOMAIN_MFG4>,
-+				<&spm MT8192_POWER_DOMAIN_MFG5>,
-+				<&spm MT8192_POWER_DOMAIN_MFG6>;
-+			power-domain-names = "core0",
-+					     "core1",
-+					     "core2",
-+					     "core3",
-+					     "core4";
-+
-+			operating-points-v2 = <&gpu_opp_table>;
-+			#cooling-cells = <2>;
-+
-+			gpu_opp_table: opp_table0 {
-+				compatible = "operating-points-v2";
-+				opp-shared;
-+
-+				opp-358000000 {
-+					opp-hz = /bits/ 64 <358000000>;
-+					opp-microvolt = <606250>, <750000>;
-+				};
-+
-+				opp-399000000 {
-+					opp-hz = /bits/ 64 <399000000>;
-+					opp-microvolt = <618750>, <750000>;
-+				};
-+
-+				opp-440000000 {
-+					opp-hz = /bits/ 64 <440000000>;
-+					opp-microvolt = <631250>, <750000>;
-+				};
-+
-+				opp-482000000 {
-+					opp-hz = /bits/ 64 <482000000>;
-+					opp-microvolt = <643750>, <750000>;
-+				};
-+
-+				opp-523000000 {
-+					opp-hz = /bits/ 64 <523000000>;
-+					opp-microvolt = <656250>, <750000>;
-+				};
-+
-+				opp-564000000 {
-+					opp-hz = /bits/ 64 <564000000>;
-+					opp-microvolt = <668750>, <750000>;
-+				};
-+
-+				opp-605000000 {
-+					opp-hz = /bits/ 64 <605000000>;
-+					opp-microvolt = <681250>, <750000>;
-+				};
-+
-+				opp-647000000 {
-+					opp-hz = /bits/ 64 <647000000>;
-+					opp-microvolt = <693750>, <750000>;
-+				};
-+
-+				opp-688000000 {
-+					opp-hz = /bits/ 64 <688000000>;
-+					opp-microvolt = <706250>, <750000>;
-+				};
-+
-+				opp-724000000 {
-+					opp-hz = /bits/ 64 <724000000>;
-+					opp-microvolt = <725000>, <750000>;
-+				};
-+
-+				opp-748000000 {
-+					opp-hz = /bits/ 64 <748000000>;
-+					opp-microvolt = <743750>, <750000>;
-+				};
-+
-+				opp-772000000 {
-+					opp-hz = /bits/ 64 <772000000>;
-+					opp-microvolt = <750000>, <750000>;
-+				};
-+
-+				opp-795000000 {
-+					opp-hz = /bits/ 64 <795000000>;
-+					opp-microvolt = <762500>, <762500>;
-+				};
-+
-+				opp-819000000 {
-+					opp-hz = /bits/ 64 <819000000>;
-+					opp-microvolt = <775000>, <775000>;
-+				};
-+
-+				opp-843000000 {
-+					opp-hz = /bits/ 64 <843000000>;
-+					opp-microvolt = <787500>, <787500>;
-+				};
-+
-+				opp-866000000 {
-+					opp-hz = /bits/ 64 <866000000>;
-+					opp-microvolt = <800000>, <800000>;
-+				};
-+			};
-+		};
-+
- 		mfgcfg: clock-controller@13fbf000 {
- 			compatible = "mediatek,mt8192-mfgcfg";
- 			reg = <0 0x13fbf000 0 0x1000>;
--- 
-2.18.0
+between commit:
 
+  fce96cf04430 ("virt: Add SEV-SNP guest driver")
+
+from the tip tree and commit:
+
+  cbabf03c3ef3 ("virt: Add efi_secret module to expose confidential computi=
+ng secrets")
+
+from the efi tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/virt/Kconfig
+index 7d3273cfab27,c877da072d4d..000000000000
+--- a/drivers/virt/Kconfig
++++ b/drivers/virt/Kconfig
+@@@ -48,6 -48,6 +48,8 @@@ source "drivers/virt/nitro_enclaves/Kco
+ =20
+  source "drivers/virt/acrn/Kconfig"
+ =20
+ +source "drivers/virt/coco/sevguest/Kconfig"
+ +
++ source "drivers/virt/coco/efi_secret/Kconfig"
++=20
+  endif
+diff --cc drivers/virt/Makefile
+index 7b87a7ba1972,067b5427f40f..000000000000
+--- a/drivers/virt/Makefile
++++ b/drivers/virt/Makefile
+@@@ -9,4 -9,4 +9,5 @@@ obj-y				+=3D vboxguest
+ =20
+  obj-$(CONFIG_NITRO_ENCLAVES)	+=3D nitro_enclaves/
+  obj-$(CONFIG_ACRN_HSM)		+=3D acrn/
+ +obj-$(CONFIG_SEV_GUEST)		+=3D coco/sevguest/
++ obj-$(CONFIG_EFI_SECRET)	+=3D coco/efi_secret/
+
+--Sig_/jR1S7OkN960Cn7djWsJSW5U
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJXjNsACgkQAVBC80lX
+0GxCRAf8CDeqd0Pq8oWyPwkCa8MTyGXN/q2hLZxOlMDqlaCGeVkjW2odEOlAj2tc
+eBtYvjlnBx/bBqgVmko1rMyLJKacEcCYE72H6m3tdYJRBvClc/AaFTjDChY3WqEB
+rYROqlFrDAwDVm96Ujj9437O+ZJBwmPLsq3tVsEsTAhTL/4uIoaR2gfA4rQrNPr6
+QvCKSfCsiauu4oahbFeCshDai8qi0vSiptWcWikibtwxMjpfdP+6iTL9edmq57pv
+D7YT1o5DjMa4M6cVHPVAlu//tO71ct6J+jBh7TXNhJTvQEUuGxHiJTP25F3OX8S9
+kf3z3oI0z4LwQ8/VzdRpug+GFy0hlQ==
+=TvwK
+-----END PGP SIGNATURE-----
+
+--Sig_/jR1S7OkN960Cn7djWsJSW5U--
