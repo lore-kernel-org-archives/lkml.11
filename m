@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F20DFC35273
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C26CC46467
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355421AbiDNO6t (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
+        id S236517AbiDNO6y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345935AbiDNNy7 (ORCPT
+        with ESMTP id S1346187AbiDNN4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:54:59 -0400
+        Thu, 14 Apr 2022 09:56:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE7839158;
-        Thu, 14 Apr 2022 06:45:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE95B0A5A;
+        Thu, 14 Apr 2022 06:45:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90D52B828F4;
-        Thu, 14 Apr 2022 13:45:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2E77C385A1;
-        Thu, 14 Apr 2022 13:45:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2342B82985;
+        Thu, 14 Apr 2022 13:45:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 547CBC385A5;
+        Thu, 14 Apr 2022 13:45:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943920;
-        bh=OXQboSLCCc6ekno63Z+vQjWUAYh0Kr1qx8wjAgRTReI=;
+        s=korg; t=1649943953;
+        bh=8pB0J7RuG+0VRdERB0M6sy0avVjZh9WeAccoMSSevQo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R4ciQ2dem09PmfOeAQI309aKhlWFvXYxWPj9RInUfvquHcNhcJDw4fIq1nw3UeYWY
-         9uODAPQwfXc7UytHzciNmx80KalGqoLqFcrvfyQtzchFAQKgek9l0HExNJxcK+ODwl
-         lvT01m60D5ijsiHxotnXhzSf1gUHBnEd1sbPWdSw=
+        b=VBzpGz4h4rjEpRqz7A4JsQcdoly8aVkVmio1RcUf75ryBCMprBqS2NMifAyrekNFE
+         AFgQpIt00U0OUy41bLOYHnJmONppVUKEs6eIeh15BojnZnqfu8GZjX57bgLB1BGLRc
+         CV7VitbvlD6wP2v2b/t1E7UfVHH5Cmjz3WPPWV1U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Li RongQing <lirongqing@baidu.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.4 329/475] KVM: x86: fix sending PV IPI
-Date:   Thu, 14 Apr 2022 15:11:54 +0200
-Message-Id: <20220414110904.293423623@linuxfoundation.org>
+        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Subject: [PATCH 5.4 340/475] XArray: Update the LRU list in xas_split()
+Date:   Thu, 14 Apr 2022 15:12:05 +0200
+Message-Id: <20220414110904.597801199@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,38 +48,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li RongQing <lirongqing@baidu.com>
+From: Matthew Wilcox (Oracle) <willy@infradead.org>
 
-commit c15e0ae42c8e5a61e9aca8aac920517cf7b3e94e upstream.
+commit 3ed4bb77156da0bc732847c8c9df92454c1fbeea upstream.
 
-If apic_id is less than min, and (max - apic_id) is greater than
-KVM_IPI_CLUSTER_SIZE, then the third check condition is satisfied but
-the new apic_id does not fit the bitmask.  In this case __send_ipi_mask
-should send the IPI.
+When splitting a value entry, we may need to add the new nodes to the LRU
+list and remove the parent node from the LRU list.  The WARN_ON checks
+in shadow_lru_isolate() catch this oversight.  This bug was latent
+until we stopped splitting folios in shrink_page_list() with commit
+820c4e2e6f51 ("mm/vmscan: Free non-shmem folios without splitting them").
+That allows the creation of large shadow entries, and subsequently when
+trying to page in a small page, we will split the large shadow entry
+in __filemap_add_folio().
 
-This is mostly theoretical, but it can happen if the apic_ids on three
-iterations of the loop are for example 1, KVM_IPI_CLUSTER_SIZE, 0.
-
-Fixes: aaffcfd1e82 ("KVM: X86: Implement PV IPIs in linux guest")
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
-Message-Id: <1646814944-51801-1-git-send-email-lirongqing@baidu.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 8fc75643c5e1 ("XArray: add xas_split")
+Reported-by: Hugh Dickins <hughd@google.com>
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/kvm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/xarray.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -487,7 +487,7 @@ static void __send_ipi_mask(const struct
- 		} else if (apic_id < min && max - apic_id < KVM_IPI_CLUSTER_SIZE) {
- 			ipi_bitmap <<= min - apic_id;
- 			min = apic_id;
--		} else if (apic_id < min + KVM_IPI_CLUSTER_SIZE) {
-+		} else if (apic_id > min && apic_id < min + KVM_IPI_CLUSTER_SIZE) {
- 			max = apic_id < max ? max : apic_id;
+--- a/lib/xarray.c
++++ b/lib/xarray.c
+@@ -1080,6 +1080,7 @@ void xas_split(struct xa_state *xas, voi
+ 					xa_mk_node(child));
+ 			if (xa_is_value(curr))
+ 				values--;
++			xas_update(xas, child);
  		} else {
- 			ret = kvm_hypercall4(KVM_HC_SEND_IPI, (unsigned long)ipi_bitmap,
+ 			unsigned int canon = offset - xas->xa_sibs;
+ 
+@@ -1094,6 +1095,7 @@ void xas_split(struct xa_state *xas, voi
+ 	} while (offset-- > xas->xa_offset);
+ 
+ 	node->nr_values += values;
++	xas_update(xas, node);
+ }
+ EXPORT_SYMBOL_GPL(xas_split);
+ #endif
 
 
