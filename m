@@ -2,148 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D1ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43083C4167E
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240449AbiDNHlk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 03:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57206 "EHLO
+        id S240521AbiDNHnI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 03:43:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233934AbiDNHlj (ORCPT
+        with ESMTP id S240452AbiDNHm3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 03:41:39 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C93A56752;
-        Thu, 14 Apr 2022 00:39:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649921955; x=1681457955;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=wxmRBxyHS+dg9xLU3QSbb0YU+y3j4+3+2rDE+ovnt+E=;
-  b=jUB0q3x976/f9P62HoxD6NTb+E38F0AUp4My84Ng3nGNYG3xgk21JLpo
-   86asEU8VSCwi4eNNJiqaXB7PGFLlMCJJpTZUz/M4lcfRWOwgoGuAEVoEn
-   511tQhT4MnXItN+Bb/+aQsdCmY+2lOaPhu8h0k1uo/LrbXNVa7g8dhpe+
-   k=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 14 Apr 2022 00:39:15 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 00:39:15 -0700
-Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Apr 2022 00:39:14 -0700
-Received: from hu-wcheng-lv.qualcomm.com (10.49.16.6) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Apr 2022 00:39:14 -0700
-From:   Wesley Cheng <quic_wcheng@quicinc.com>
-To:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <quic_jackp@quicinc.com>, <quic_pkondeti@quicinc.com>,
-        <Thinh.Nguyen@synopsys.com>, Wesley Cheng <quic_wcheng@quicinc.com>
-Subject: [PATCH v2] usb: dwc3: EP clear halt leading to clearing of delayed_status
-Date:   Thu, 14 Apr 2022 00:39:02 -0700
-Message-ID: <20220414073902.21960-1-quic_wcheng@quicinc.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 14 Apr 2022 03:42:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A5E4D53B5E
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:40:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649922004;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=StKL8wBLFuz+JBSqbcoQ4KdZ20uKl8Zl8ZBV7e3EAAw=;
+        b=Q5eoNnOaMTwp3uu/s0q9g15VBC1oZ4/BlfjTKDGKFxsIvuTjQQiz4jT5aV8692EqH4b2g3
+        Pub0ZIQHHypSTDwA6iyzPDbZKZnXGHxIC/d5+6T4IwsJv8fTtg0ErpFbJAcopSzThqrKhv
+        GC5n8zOKT3ZA7jM8LGGT9mPJ61w1CaY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-608-RuHUpxrFNvWC1e3WwDO-ZA-1; Thu, 14 Apr 2022 03:40:03 -0400
+X-MC-Unique: RuHUpxrFNvWC1e3WwDO-ZA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E1854811E80;
+        Thu, 14 Apr 2022 07:40:02 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C3C1FC28100;
+        Thu, 14 Apr 2022 07:40:02 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     seanjc@google.com
+Subject: [PATCH 10/22] KVM: x86/mmu: remove kvm_calc_shadow_root_page_role_common
+Date:   Thu, 14 Apr 2022 03:39:48 -0400
+Message-Id: <20220414074000.31438-11-pbonzini@redhat.com>
+In-Reply-To: <20220414074000.31438-1-pbonzini@redhat.com>
+References: <20220414074000.31438-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The usb_ep_clear_halt() API can be called from the function driver, and
-translates to dwc3_gadget_ep_set_halt().  This routine is shared with when
-the host issues a clear feature ENDPOINT_HALT, and is differentiated by the
-protocol argument.  If the following sequence occurs, there can be a
-situation where the delayed_status flag is improperly cleared for the wrong
-SETUP transaction:
+kvm_calc_shadow_root_page_role_common is the same as
+kvm_calc_cpu_role except for the level, which is overwritten
+afterwards in kvm_calc_shadow_mmu_root_page_role
+and kvm_calc_shadow_npt_root_page_role.
 
-1. Vendor specific control transfer returns USB_GADGET_DELAYED_STATUS.
-2. DWC3 gadget sets dwc->delayed_status to '1'.
-3. Another function driver issues a usb_ep_clear_halt() call.
-4. DWC3 gadget issues dwc3_stop_active_transfer() and sets
-   DWC3_EP_PENDING_CLEAR_STALL.
-5. EP command complete interrupt triggers for the end transfer, and
-   dwc3_ep0_send_delayed_status() is allowed to run, as delayed_status
-   is '1' due to step#1.
-6. STATUS phase is sent, and delayed_status is cleared.
-7. Vendor specific control transfer is finished being handled, and issues
-   usb_composite_setup_continue().  This results in queuing of a data
-   phase.
+role.base.direct is already set correctly for the CPU role,
+and CR0.PG=1 is required for VMRUN so it will also be
+correct for nested NPT.
 
-Cache the protocol flag so that DWC3 gadget is aware of when the clear halt
-is due to a SETUP request from the host versus when it is sourced from a
-function driver.  This allows for the EP command complete interrupt to know
-if it needs to issue a delayed status phase.
-
-Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
-Changes in v2:
- - Modified clear_stall_protocol to carry the ep num for the clear halt
-   from PC.  Clear halts on other endpoints in parallel should not
-   affect/interrupt the clear halt from the host.
+ arch/x86/kvm/mmu/mmu.c | 27 +++++++--------------------
+ 1 file changed, 7 insertions(+), 20 deletions(-)
 
- drivers/usb/dwc3/core.h   | 2 ++
- drivers/usb/dwc3/ep0.c    | 1 +
- drivers/usb/dwc3/gadget.c | 5 ++++-
- 3 files changed, 7 insertions(+), 1 deletion(-)
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index fddc8a3237b0..3f712d2de0ed 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -4824,28 +4824,14 @@ static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu,
+ 	reset_tdp_shadow_zero_bits_mask(context);
+ }
+ 
+-static union kvm_mmu_role
+-kvm_calc_shadow_root_page_role_common(struct kvm_vcpu *vcpu,
+-				      const struct kvm_mmu_role_regs *regs)
+-{
+-	union kvm_mmu_role role = kvm_calc_mmu_role_common(vcpu, regs);
+-
+-	role.base.smep_andnot_wp = role.ext.cr4_smep && !____is_cr0_wp(regs);
+-	role.base.smap_andnot_wp = role.ext.cr4_smap && !____is_cr0_wp(regs);
+-	role.base.has_4_byte_gpte = ____is_cr0_pg(regs) && !____is_cr4_pae(regs);
+-
+-	return role;
+-}
+-
+ static union kvm_mmu_role
+ kvm_calc_shadow_mmu_root_page_role(struct kvm_vcpu *vcpu,
+ 				   const struct kvm_mmu_role_regs *regs)
+ {
+-	union kvm_mmu_role role =
+-		kvm_calc_shadow_root_page_role_common(vcpu, regs);
+-
+-	role.base.direct = !____is_cr0_pg(regs);
++	union kvm_mmu_role cpu_role = kvm_calc_cpu_role(vcpu, regs);
++	union kvm_mmu_role role;
+ 
++	role = cpu_role;
+ 	if (!____is_efer_lma(regs))
+ 		role.base.level = PT32E_ROOT_LEVEL;
+ 	else if (____is_cr4_la57(regs))
+@@ -4896,10 +4882,11 @@ static union kvm_mmu_role
+ kvm_calc_shadow_npt_root_page_role(struct kvm_vcpu *vcpu,
+ 				   const struct kvm_mmu_role_regs *regs)
+ {
+-	union kvm_mmu_role role =
+-		kvm_calc_shadow_root_page_role_common(vcpu, regs);
++	union kvm_mmu_role cpu_role = kvm_calc_cpu_role(vcpu, regs);
++	union kvm_mmu_role role;
+ 
+-	role.base.direct = false;
++	WARN_ON_ONCE(cpu_role.base.direct);
++	role = cpu_role;
+ 	role.base.level = kvm_mmu_get_tdp_level(vcpu);
+ 
+ 	return role;
+-- 
+2.31.1
 
-diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
-index 5c9d467195a6..81c486b3941c 100644
---- a/drivers/usb/dwc3/core.h
-+++ b/drivers/usb/dwc3/core.h
-@@ -1046,6 +1046,7 @@ struct dwc3_scratchpad_array {
-  * @tx_thr_num_pkt_prd: periodic ESS transmit packet count
-  * @tx_max_burst_prd: max periodic ESS transmit burst size
-  * @tx_fifo_resize_max_num: max number of fifos allocated during txfifo resize
-+ * @clear_stall_protocol: endpoint number that requires a delayed status phase
-  * @hsphy_interface: "utmi" or "ulpi"
-  * @connected: true when we're connected to a host, false otherwise
-  * @softconnect: true when gadget connect is called, false when disconnect runs
-@@ -1266,6 +1267,7 @@ struct dwc3 {
- 	u8			tx_thr_num_pkt_prd;
- 	u8			tx_max_burst_prd;
- 	u8			tx_fifo_resize_max_num;
-+	u8			clear_stall_protocol;
- 
- 	const char		*hsphy_interface;
- 
-diff --git a/drivers/usb/dwc3/ep0.c b/drivers/usb/dwc3/ep0.c
-index 1064be5518f6..aa8476da222d 100644
---- a/drivers/usb/dwc3/ep0.c
-+++ b/drivers/usb/dwc3/ep0.c
-@@ -1080,6 +1080,7 @@ void dwc3_ep0_send_delayed_status(struct dwc3 *dwc)
- 	unsigned int direction = !dwc->ep0_expect_in;
- 
- 	dwc->delayed_status = false;
-+	dwc->clear_stall_protocol = 0;
- 
- 	if (dwc->ep0state != EP0_STATUS_PHASE)
- 		return;
-diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-index ab725d2262d6..ce1b130202c5 100644
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -2152,6 +2152,9 @@ int __dwc3_gadget_ep_set_halt(struct dwc3_ep *dep, int value, int protocol)
- 		if (dep->flags & DWC3_EP_END_TRANSFER_PENDING ||
- 		    (dep->flags & DWC3_EP_DELAY_STOP)) {
- 			dep->flags |= DWC3_EP_PENDING_CLEAR_STALL;
-+			if (protocol)
-+				dwc->clear_stall_protocol = dep->number;
-+
- 			return 0;
- 		}
- 
-@@ -3483,7 +3486,7 @@ static void dwc3_gadget_endpoint_command_complete(struct dwc3_ep *dep,
- 		}
- 
- 		dep->flags &= ~(DWC3_EP_STALL | DWC3_EP_WEDGE);
--		if (dwc->delayed_status)
-+		if (dwc->clear_stall_protocol == dep->number)
- 			dwc3_ep0_send_delayed_status(dwc);
- 	}
- 
+
