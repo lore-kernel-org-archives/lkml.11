@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 635D6C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D2EEC433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350663AbiDNPQu (ORCPT
+        id S1354421AbiDNPST (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43106 "EHLO
+        Thu, 14 Apr 2022 11:18:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347710AbiDNN7a (ORCPT
+        with ESMTP id S1347690AbiDNN71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:30 -0400
+        Thu, 14 Apr 2022 09:59:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852B2BABA2;
-        Thu, 14 Apr 2022 06:51:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D0B6CA7D;
+        Thu, 14 Apr 2022 06:51:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A3EB61DA1;
-        Thu, 14 Apr 2022 13:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27953C385A1;
-        Thu, 14 Apr 2022 13:51:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22A0461DF0;
+        Thu, 14 Apr 2022 13:51:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28619C385A5;
+        Thu, 14 Apr 2022 13:51:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944310;
-        bh=6+DL0H6P0Lz+kScFSwzG0fxxL3fhyTZhJbBHhSZ44pw=;
+        s=korg; t=1649944285;
+        bh=lkG/jii9kM2C+ITLvFttIvjANoTf3Gajm1ddtt4spd8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ei3RDwaKJQB01QFJhJTufaX58zXUnFZNFYZ7tZMb3bdDzHr6UImGH3M6kDv2+6xcZ
-         usVVKqkgjOgq60q75E9feaSPCPd+Oj07R/tF3M688MBazy6SZJUvaFGqBQfy/XeY2W
-         dAKeRP+bqE1qk1Af9aGrnIEwRL+oJoqU4YO7AJgA=
+        b=CH5kb43p7Ybt7Kom5hlmUn1/P5sL5rJShm/tPb2F5LKf19gQU44Xg/Y9gW5RDrmT0
+         GAhk4XEpDmPwtWr1FVKj8sQNeyyx1OCVKgYBlDYQB2JwwoRkhDaweM5lEzCvM4u9LP
+         XroflGrZCh9bhbDCkWsIJ5Od6/4dy/sIDnw0Gp7Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Tejun Heo <tj@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.4 468/475] cgroup: Use open-time credentials for process migraton perm checks
-Date:   Thu, 14 Apr 2022 15:14:13 +0200
-Message-Id: <20220414110908.152315792@linuxfoundation.org>
+        stable@vger.kernel.org, Ludovic Barre <ludovic.barre@st.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.4 460/475] mmc: mmci_sdmmc: Replace sg_dma_xxx macros
+Date:   Thu, 14 Apr 2022 15:14:05 +0200
+Message-Id: <20220414110907.930335570@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,102 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: Ludovic Barre <ludovic.barre@st.com>
 
-commit 1756d7994ad85c2479af6ae5a9750b92324685af upstream.
+commit 127e6e98ca9b8ac4f87698ebce1508e3449bb791 upstream.
 
-cgroup process migration permission checks are performed at write time as
-whether a given operation is allowed or not is dependent on the content of
-the write - the PID. This currently uses current's credentials which is a
-potential security weakness as it may allow scenarios where a less
-privileged process tricks a more privileged one into writing into a fd that
-it created.
+sg_dma_xxx should be used after a dma_map_sg call has been done to get bus
+addresses of each of the SG entries and their lengths.  But mmci_host_ops
+validate_data can be called before dma_map_sg.  This patch replaces theses
+macros by sg->offset and sg->length which are always defined.
 
-This patch makes both cgroup2 and cgroup1 process migration interfaces to
-use the credentials saved at the time of open (file->f_cred) instead of
-current's.
-
-Reported-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
-Fixes: 187fe84067bd ("cgroup: require write perm on common ancestor when moving processes on the default hierarchy")
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
-[OP: backport to 5.4: apply original __cgroup_procs_write() changes to
-cgroup_threads_write() and cgroup_procs_write()]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Ludovic Barre <ludovic.barre@st.com>
+Link: https://lore.kernel.org/r/20200128090636.13689-2-ludovic.barre@st.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cgroup-v1.c |    7 ++++---
- kernel/cgroup/cgroup.c    |   17 ++++++++++++++++-
- 2 files changed, 20 insertions(+), 4 deletions(-)
+ drivers/mmc/host/mmci_stm32_sdmmc.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/kernel/cgroup/cgroup-v1.c
-+++ b/kernel/cgroup/cgroup-v1.c
-@@ -507,10 +507,11 @@ static ssize_t __cgroup1_procs_write(str
- 		goto out_unlock;
- 
- 	/*
--	 * Even if we're attaching all tasks in the thread group, we only
--	 * need to check permissions on one of them.
-+	 * Even if we're attaching all tasks in the thread group, we only need
-+	 * to check permissions on one of them. Check permissions using the
-+	 * credentials from file open to protect against inherited fd attacks.
+--- a/drivers/mmc/host/mmci_stm32_sdmmc.c
++++ b/drivers/mmc/host/mmci_stm32_sdmmc.c
+@@ -36,8 +36,8 @@ int sdmmc_idma_validate_data(struct mmci
+ 	 * excepted the last element which has no constraint on idmasize
  	 */
--	cred = current_cred();
-+	cred = of->file->f_cred;
- 	tcred = get_task_cred(task);
- 	if (!uid_eq(cred->euid, GLOBAL_ROOT_UID) &&
- 	    !uid_eq(cred->euid, tcred->uid) &&
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -4798,6 +4798,7 @@ static ssize_t cgroup_procs_write(struct
- {
- 	struct cgroup *src_cgrp, *dst_cgrp;
- 	struct task_struct *task;
-+	const struct cred *saved_cred;
- 	ssize_t ret;
+ 	for_each_sg(data->sg, sg, data->sg_len - 1, i) {
+-		if (!IS_ALIGNED(sg_dma_address(data->sg), sizeof(u32)) ||
+-		    !IS_ALIGNED(sg_dma_len(data->sg), SDMMC_IDMA_BURST)) {
++		if (!IS_ALIGNED(data->sg->offset, sizeof(u32)) ||
++		    !IS_ALIGNED(data->sg->length, SDMMC_IDMA_BURST)) {
+ 			dev_err(mmc_dev(host->mmc),
+ 				"unaligned scatterlist: ofst:%x length:%d\n",
+ 				data->sg->offset, data->sg->length);
+@@ -45,7 +45,7 @@ int sdmmc_idma_validate_data(struct mmci
+ 		}
+ 	}
  
- 	dst_cgrp = cgroup_kn_lock_live(of->kn, false);
-@@ -4814,8 +4815,15 @@ static ssize_t cgroup_procs_write(struct
- 	src_cgrp = task_cgroup_from_root(task, &cgrp_dfl_root);
- 	spin_unlock_irq(&css_set_lock);
- 
-+	/*
-+	 * Process and thread migrations follow same delegation rule. Check
-+	 * permissions using the credentials from file open to protect against
-+	 * inherited fd attacks.
-+	 */
-+	saved_cred = override_creds(of->file->f_cred);
- 	ret = cgroup_procs_write_permission(src_cgrp, dst_cgrp,
- 					    of->file->f_path.dentry->d_sb);
-+	revert_creds(saved_cred);
- 	if (ret)
- 		goto out_finish;
- 
-@@ -4839,6 +4847,7 @@ static ssize_t cgroup_threads_write(stru
- {
- 	struct cgroup *src_cgrp, *dst_cgrp;
- 	struct task_struct *task;
-+	const struct cred *saved_cred;
- 	ssize_t ret;
- 
- 	buf = strstrip(buf);
-@@ -4857,9 +4866,15 @@ static ssize_t cgroup_threads_write(stru
- 	src_cgrp = task_cgroup_from_root(task, &cgrp_dfl_root);
- 	spin_unlock_irq(&css_set_lock);
- 
--	/* thread migrations follow the cgroup.procs delegation rule */
-+	/*
-+	 * Process and thread migrations follow same delegation rule. Check
-+	 * permissions using the credentials from file open to protect against
-+	 * inherited fd attacks.
-+	 */
-+	saved_cred = override_creds(of->file->f_cred);
- 	ret = cgroup_procs_write_permission(src_cgrp, dst_cgrp,
- 					    of->file->f_path.dentry->d_sb);
-+	revert_creds(saved_cred);
- 	if (ret)
- 		goto out_finish;
- 
+-	if (!IS_ALIGNED(sg_dma_address(data->sg), sizeof(u32))) {
++	if (!IS_ALIGNED(data->sg->offset, sizeof(u32))) {
+ 		dev_err(mmc_dev(host->mmc),
+ 			"unaligned last scatterlist: ofst:%x length:%d\n",
+ 			data->sg->offset, data->sg->length);
 
 
