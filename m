@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A6FCC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0379C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237853AbiDNOYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
+        id S240491AbiDNOY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343959AbiDNNjc (ORCPT
+        with ESMTP id S1343991AbiDNNjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08139A9A0;
-        Thu, 14 Apr 2022 06:35:53 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5124D3A700;
+        Thu, 14 Apr 2022 06:36:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 974BDB82968;
-        Thu, 14 Apr 2022 13:35:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE37FC385A1;
-        Thu, 14 Apr 2022 13:35:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E04D261D67;
+        Thu, 14 Apr 2022 13:36:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F02E3C385A5;
+        Thu, 14 Apr 2022 13:36:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943351;
-        bh=4JVsQlOM5NZOVTkt8kYRddOZBnYz4cDKs0R50/P4p6k=;
+        s=korg; t=1649943384;
+        bh=rQs5H8uc9j26fZe2HZCqfSJGDUNahqadiRCoxT7AeKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LjnG823TAn5pJWrYBPeX+J9fcfvYvnMdproYSrF7p/fT737zLiKh+Dpe3mGhtZQD7
-         gLuJVEjs+HK2LrLn8x/KbswUSjKcc2myMv+S1Rb+EYDpQh9BVzoErwR3fkUdMCZIXZ
-         SbwApTPqh7/4Gy1fVU8wX6Myr7BEygrj8gKMVdHc=
+        b=RS8AftHo4rzVL/ujhw9ezbSTzp7X0/UTmmFuxTiERU1lCenR2yM1cX2QZanUoNmAN
+         gejbe8fxe5QfyjMxOEOL2AF+p7E2r7G9NedyiQeYXriWt6tMRB3xVnvnMAbaLEpUBg
+         A3NftpTTmGERcW3tMj9Rd/XYb/vLAjy7zQZTUTn4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, devicetree@vger.kernel.org,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org,
+        Patrick Rudolph <patrick.rudolph@9elements.com>,
+        Marcello Sylvester Bauer <sylv@sylv.io>,
+        Alan Tull <atull@opensource.altera.com>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 123/475] arm64: dts: qcom: sm8150: Correct TCS configuration for apps rsc
-Date:   Thu, 14 Apr 2022 15:08:28 +0200
-Message-Id: <20220414110858.594741401@linuxfoundation.org>
+Subject: [PATCH 5.4 096/475] hwmon: (pmbus) Add mutex to regulator ops
+Date:   Thu, 14 Apr 2022 15:08:01 +0200
+Message-Id: <20220414110857.842403768@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,39 +52,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maulik Shah <quic_mkshah@quicinc.com>
+From: Patrick Rudolph <patrick.rudolph@9elements.com>
 
-[ Upstream commit 17ac8af678b6da6a8f1df7da8ebf2c5198741827 ]
+[ Upstream commit 686d303ee6301261b422ea51e64833d7909a2c36 ]
 
-Correct the TCS config by updating the number of TCSes for each type.
+On PMBUS devices with multiple pages, the regulator ops need to be
+protected with the update mutex. This prevents accidentally changing
+the page in a separate thread while operating on the PMBUS_OPERATION
+register.
 
-Cc: devicetree@vger.kernel.org
-Fixes: d8cf9372b654 ("arm64: dts: qcom: sm8150: Add apps shared nodes")
-Signed-off-by: Maulik Shah <quic_mkshah@quicinc.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1641749107-31979-2-git-send-email-quic_mkshah@quicinc.com
+Tested on Infineon xdpe11280 while a separate thread polls for sensor
+data.
+
+Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
+Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
+Link: https://lore.kernel.org/r/b991506bcbf665f7af185945f70bf9d5cf04637c.1645804976.git.sylv@sylv.io
+Fixes: ddbb4db4ced1b ("hwmon: (pmbus) Add regulator support")
+Cc: Alan Tull <atull@opensource.altera.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sm8150.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/hwmon/pmbus/pmbus_core.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-index 9573da378826..1954cef8c6f0 100644
---- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
-@@ -459,9 +459,9 @@
- 			qcom,tcs-offset = <0xd00>;
- 			qcom,drv-id = <2>;
- 			qcom,tcs-config = <ACTIVE_TCS  2>,
--					  <SLEEP_TCS   1>,
--					  <WAKE_TCS    1>,
--					  <CONTROL_TCS 0>;
-+					  <SLEEP_TCS   3>,
-+					  <WAKE_TCS    3>,
-+					  <CONTROL_TCS 1>;
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index 8470097907bc..b2dfbd1cb543 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -2174,10 +2174,14 @@ static int pmbus_regulator_is_enabled(struct regulator_dev *rdev)
+ {
+ 	struct device *dev = rdev_get_dev(rdev);
+ 	struct i2c_client *client = to_i2c_client(dev->parent);
++	struct pmbus_data *data = i2c_get_clientdata(client);
+ 	u8 page = rdev_get_id(rdev);
+ 	int ret;
  
- 			rpmhcc: clock-controller {
- 				compatible = "qcom,sm8150-rpmh-clk";
++	mutex_lock(&data->update_lock);
+ 	ret = pmbus_read_byte_data(client, page, PMBUS_OPERATION);
++	mutex_unlock(&data->update_lock);
++
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -2188,11 +2192,17 @@ static int _pmbus_regulator_on_off(struct regulator_dev *rdev, bool enable)
+ {
+ 	struct device *dev = rdev_get_dev(rdev);
+ 	struct i2c_client *client = to_i2c_client(dev->parent);
++	struct pmbus_data *data = i2c_get_clientdata(client);
+ 	u8 page = rdev_get_id(rdev);
++	int ret;
+ 
+-	return pmbus_update_byte_data(client, page, PMBUS_OPERATION,
+-				      PB_OPERATION_CONTROL_ON,
+-				      enable ? PB_OPERATION_CONTROL_ON : 0);
++	mutex_lock(&data->update_lock);
++	ret = pmbus_update_byte_data(client, page, PMBUS_OPERATION,
++				     PB_OPERATION_CONTROL_ON,
++				     enable ? PB_OPERATION_CONTROL_ON : 0);
++	mutex_unlock(&data->update_lock);
++
++	return ret;
+ }
+ 
+ static int pmbus_regulator_enable(struct regulator_dev *rdev)
 -- 
 2.34.1
 
