@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:46:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4117C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:46:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241942AbiDNJsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41566 "EHLO
+        id S241943AbiDNJsy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:48:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241961AbiDNJql (ORCPT
+        with ESMTP id S241966AbiDNJqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:46:41 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:44:00 PDT
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9AB3716C0
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 02:44:00 -0700 (PDT)
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20220414094252b3c44950e05427b1f3
+        Thu, 14 Apr 2022 05:46:43 -0400
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:44:01 PDT
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C8DA6E54C
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 02:44:01 -0700 (PDT)
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20220414094251f0f4b22f51d08a3779
         for <linux-kernel@vger.kernel.org>;
         Thu, 14 Apr 2022 11:42:57 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=daniel.starke@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=qo+J4Lih8268JeqdwObz7YR4B/SLCefExJgGvrS1nSY=;
- b=jsHEiAIF2Jf6ldjL7SBTyTHT55mj4nYgv6c0+epwdy+uBGwb9KUizKzVG1KGiSJZZcx2q7
- uemSzfZw7idF4wiY2HiQgt2xYGgtcPtXPdzhuxi1/ei02mxHSQFJOk9RTEDjw/Dtbc91SCQ3
- 9HqZDdg/aeWd/BrYVXjGyfEooWstE=;
+ bh=4xST5nXMealzJWOxw0+fWFESwSlcs/PlqI2uAm5csAw=;
+ b=Yl0EQYXrkCNaKKsvBtvQlMTcSanTd8OQSDD1ocSkKm4p2tyWLt77g1rJ5lsKVmnhjPkTSv
+ V1q+QzaP1eURa4Y1KGuxLsrk8/7FJrFrX1Qa7cf7tWYFqd0IPNia6TmqR2RxhLRuk1moP9IS
+ +q42CDQ4uiCJIl8SKVubXMIKKVOhA=;
 From:   "D. Starke" <daniel.starke@siemens.com>
 To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
         jirislaby@kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 18/20] tty: n_gsm: fix implicit CR bit encoding in address field
-Date:   Thu, 14 Apr 2022 02:42:23 -0700
-Message-Id: <20220414094225.4527-18-daniel.starke@siemens.com>
+Subject: [PATCH 17/20] tty: n_gsm: fix reset fifo race condition
+Date:   Thu, 14 Apr 2022 02:42:22 -0700
+Message-Id: <20220414094225.4527-17-daniel.starke@siemens.com>
 In-Reply-To: <20220414094225.4527-1-daniel.starke@siemens.com>
 References: <20220414094225.4527-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
@@ -46,35 +46,58 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Starke <daniel.starke@siemens.com>
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.2.1.2 describes the encoding of the
-address field within the frame header. It is made up of the DLCI address,
-command/response (CR) bit and EA bit.
-Use the predefined CR value instead of a plain 2 in alignment to the
-remaining code and to make the encoding obvious.
+gsmtty_write() and gsm_dlci_data_output() properly guard the fifo access.
+However, gsm_dlci_close() and gsmtty_flush_buffer() modifies the fifo but
+do not guard this.
+Add a guard here to prevent race conditions on parallel writes to the fifo.
 
 Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
 ---
- drivers/tty/n_gsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_gsm.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 1e135a71860f..ecd2ecc61b14 100644
+index f4ec48c0d6d7..1e135a71860f 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -754,7 +754,7 @@ static void __gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
+@@ -1446,13 +1446,17 @@ static int gsm_control_wait(struct gsm_mux *gsm, struct gsm_control *control)
  
- 	*--dp = msg->ctrl;
- 	if (gsm->initiator)
--		*--dp = (msg->addr << 2) | 2 | EA;
-+		*--dp = (msg->addr << 2) | CR | EA;
- 	else
- 		*--dp = (msg->addr << 2) | EA;
- 	*fcs = gsm_fcs_add_block(INIT_FCS, dp , msg->data - dp);
+ static void gsm_dlci_close(struct gsm_dlci *dlci)
+ {
++	unsigned long flags;
++
+ 	del_timer(&dlci->t1);
+ 	if (debug & 8)
+ 		pr_debug("DLCI %d goes closed.\n", dlci->addr);
+ 	dlci->state = DLCI_CLOSED;
+ 	if (dlci->addr != 0) {
+ 		tty_port_tty_hangup(&dlci->port, false);
++		spin_lock_irqsave(&dlci->lock, flags);
+ 		kfifo_reset(&dlci->fifo);
++		spin_unlock_irqrestore(&dlci->lock, flags);
+ 		/* Ensure that gsmtty_open() can return. */
+ 		tty_port_set_initialized(&dlci->port, 0);
+ 		wake_up_interruptible(&dlci->port.open_wait);
+@@ -3150,13 +3154,17 @@ static unsigned int gsmtty_chars_in_buffer(struct tty_struct *tty)
+ static void gsmtty_flush_buffer(struct tty_struct *tty)
+ {
+ 	struct gsm_dlci *dlci = tty->driver_data;
++	unsigned long flags;
++
+ 	if (dlci->state == DLCI_CLOSED)
+ 		return;
+ 	/* Caution needed: If we implement reliable transport classes
+ 	   then the data being transmitted can't simply be junked once
+ 	   it has first hit the stack. Until then we can just blow it
+ 	   away */
++	spin_lock_irqsave(&dlci->lock, flags);
+ 	kfifo_reset(&dlci->fifo);
++	spin_unlock_irqrestore(&dlci->lock, flags);
+ 	/* Need to unhook this DLCI from the transmit queue logic */
+ }
+ 
 -- 
 2.25.1
 
