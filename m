@@ -2,124 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 562F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 02:35:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2AC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 02:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239519AbiDNCiT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 22:38:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56966 "EHLO
+        id S239525AbiDNCkX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 22:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiDNCiR (ORCPT
+        with ESMTP id S229671AbiDNCkS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 22:38:17 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897AF1F63E;
-        Wed, 13 Apr 2022 19:35:54 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id n18so3549967plg.5;
-        Wed, 13 Apr 2022 19:35:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=banPxa9mjLz4QtsVZqr7bQ+Z1tRTpMcXp2eR4D900HQ=;
-        b=IiUKzDWM52iO3GcXKasA41gw4qGcs3Qraiu/Fn1dkvUPCtvPMZO9zGarb8HmUQFBN5
-         oaq05TvWx5a0sDOgjZzGIGZumxQIxriXuZEz2RqQwp0xwGZGoXaOwuBlPCUWT8JKmfVx
-         iYkNzpheF2/u3lfnvFoe2haeGsIHQeJI2ZRO96i+crqh7xM6V1cKzjqJDz24h0JM8NZq
-         chBZUMEfL+8t8B1Ua0ZQdnw9fRiqbBNCdfvk/YuNOHW1UgwdeN41C5HXTZndoTBnogJL
-         XEpTbe5nJt5k2sNJ0dzyBxB1h4VkKD7cimZamCGj3+7fN26aosDGZWwq7cNiEcYXPEKR
-         CVBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=banPxa9mjLz4QtsVZqr7bQ+Z1tRTpMcXp2eR4D900HQ=;
-        b=QnhkIGJtyKDhbqgBH+ORFSfnsNzp2Ov6xpAy3jlZt6hlDsAwogw7MPQZY574ntzYgl
-         VGE7xFLCp3Pd69XMrdtAULZtu6YjtiBLdnDgoNPnszodPXhuwYuymfBRc/oYKPBX5822
-         R6qCxBSTpop1ko0T+YMW9NDRFQPNSWcTppRXLprqyJb3so7BsApGrEEduR2k35qFvgj9
-         FGkcRKZraz95DHkpHQcygGVV2izpUZaVMiduDI/WZ5iwuey4ydXLlDSGb0mH9NaGRolh
-         Zps8GdB+oyJF37boe6eCJeZnKISkVOE69Y/+iswKBzLL5iyH1LvV63FbJuHs55FYo8oC
-         /xxw==
-X-Gm-Message-State: AOAM5322mzE4ImXyQwVaAi32iZIsoXzIEpRBvEIa2A4q6f+/p/qLj3a0
-        SrLWvTFqYmm3HxsUR0V8bW+mEgrMa45u2nMU2w==
-X-Google-Smtp-Source: ABdhPJwTNLMWTa4frWD8F/W1HLZUen2VPTunozndbetzvl6lm/UdmRAGgwMfqaFO7TB+Fsa7mGPFWhfsL6wPIvvBgSg=
-X-Received: by 2002:a17:902:a404:b0:14b:1100:aebc with SMTP id
- p4-20020a170902a40400b0014b1100aebcmr46084837plq.133.1649903754047; Wed, 13
- Apr 2022 19:35:54 -0700 (PDT)
+        Wed, 13 Apr 2022 22:40:18 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45D022B0F;
+        Wed, 13 Apr 2022 19:37:54 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Kf3Rf2hPLzCqwc;
+        Thu, 14 Apr 2022 10:33:34 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 14 Apr
+ 2022 10:37:52 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        <lczerner@redhat.com>, Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next] ext4: fix use-after-free in ext4_rename_dir_prepare
+Date:   Thu, 14 Apr 2022 10:52:23 +0800
+Message-ID: <20220414025223.4113128-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220409140939.2176161-1-zheyuma97@gmail.com> <Yla9f03/j9sEB2Rc@paasikivi.fi.intel.com>
-In-Reply-To: <Yla9f03/j9sEB2Rc@paasikivi.fi.intel.com>
-From:   Zheyu Ma <zheyuma97@gmail.com>
-Date:   Thu, 14 Apr 2022 10:35:42 +0800
-Message-ID: <CAMhUBj=-TWjKFiGf_sE9umW3CtTiazqKPd5XabLhzTk6RiErag@mail.gmail.com>
-Subject: Re: [PATCH] media: i2c: dw9714: Register a callback to disable the regulator
-To:     Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc:     mchehab@kernel.org, linux-media@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 8:09 PM Sakari Ailus
-<sakari.ailus@linux.intel.com> wrote:
->
-> Hi Zheyu,
->
-> Thanks for the patch.
->
-> On Sat, Apr 09, 2022 at 10:09:39PM +0800, Zheyu Ma wrote:
-> > When the driver fails to probe, we will get the following splat:
-> >
-> > [   59.305988] ------------[ cut here ]------------
-> > [   59.306417] WARNING: CPU: 2 PID: 395 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-> > [   59.310345] RIP: 0010:_regulator_put+0x3ec/0x4e0
-> > [   59.318362] Call Trace:
-> > [   59.318582]  <TASK>
-> > [   59.318765]  regulator_put+0x1f/0x30
-> > [   59.319058]  devres_release_group+0x319/0x3d0
-> > [   59.319420]  i2c_device_probe+0x766/0x940
-> >
-> > Fix this by adding a callback that will deal with the disabling when the
-> > driver fails to probe.
-> >
-> > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-> > ---
-> >  drivers/media/i2c/dw9714.c | 11 +++++++++++
-> >  1 file changed, 11 insertions(+)
-> >
-> > diff --git a/drivers/media/i2c/dw9714.c b/drivers/media/i2c/dw9714.c
-> > index cd7008ad8f2f..eccd05fc50c7 100644
-> > --- a/drivers/media/i2c/dw9714.c
-> > +++ b/drivers/media/i2c/dw9714.c
-> > @@ -137,6 +137,13 @@ static int dw9714_init_controls(struct dw9714_device *dev_vcm)
-> >       return hdl->error;
-> >  }
-> >
-> > +static void dw9714_disable_regulator(void *arg)
-> > +{
-> > +     struct dw9714_device *dw9714_dev = arg;
-> > +
-> > +     regulator_disable(dw9714_dev->vcc);
-> > +}
-> > +
-> >  static int dw9714_probe(struct i2c_client *client)
-> >  {
-> >       struct dw9714_device *dw9714_dev;
-> > @@ -157,6 +164,10 @@ static int dw9714_probe(struct i2c_client *client)
-> >               return rval;
-> >       }
-> >
-> > +     rval = devm_add_action_or_reset(&client->dev, dw9714_disable_regulator, dw9714_dev);
-> > +     if (rval)
-> > +             return rval;
-> > +
-> >       v4l2_i2c_subdev_init(&dw9714_dev->sd, client, &dw9714_ops);
-> >       dw9714_dev->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE |
-> >                               V4L2_SUBDEV_FL_HAS_EVENTS;
->
-> Could you instead disable the regulator in error handling in the probe
-> function?
+We got issue as follows:
+EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
+ext4_get_first_dir_block: bh->b_data=0xffff88810bee6000 len=34478
+ext4_get_first_dir_block: *parent_de=0xffff88810beee6ae bh->b_data=0xffff88810bee6000
+ext4_rename_dir_prepare: [1] parent_de=0xffff88810beee6ae
+==================================================================
+BUG: KASAN: use-after-free in ext4_rename_dir_prepare+0x152/0x220
+Read of size 4 at addr ffff88810beee6ae by task rep/1895
 
-OK, I will send a v2 patch.
+CPU: 13 PID: 1895 Comm: rep Not tainted 5.10.0+ #241
+Call Trace:
+ dump_stack+0xbe/0xf9
+ print_address_description.constprop.0+0x1e/0x220
+ kasan_report.cold+0x37/0x7f
+ ext4_rename_dir_prepare+0x152/0x220
+ ext4_rename+0xf44/0x1ad0
+ ext4_rename2+0x11c/0x170
+ vfs_rename+0xa84/0x1440
+ do_renameat2+0x683/0x8f0
+ __x64_sys_renameat+0x53/0x60
+ do_syscall_64+0x33/0x40
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x7f45a6fc41c9
+RSP: 002b:00007ffc5a470218 EFLAGS: 00000246 ORIG_RAX: 0000000000000108
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f45a6fc41c9
+RDX: 0000000000000005 RSI: 0000000020000180 RDI: 0000000000000005
+RBP: 00007ffc5a470240 R08: 00007ffc5a470160 R09: 0000000020000080
+R10: 00000000200001c0 R11: 0000000000000246 R12: 0000000000400bb0
+R13: 00007ffc5a470320 R14: 0000000000000000 R15: 0000000000000000
 
-Zheyu Ma
+The buggy address belongs to the page:
+page:00000000440015ce refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x10beee
+flags: 0x200000000000000()
+raw: 0200000000000000 ffffea00043ff4c8 ffffea0004325608 0000000000000000
+raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88810beee580: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88810beee600: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>ffff88810beee680: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                                  ^
+ ffff88810beee700: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88810beee780: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+Disabling lock debugging due to kernel taint
+ext4_rename_dir_prepare: [2] parent_de->inode=3537895424
+ext4_rename_dir_prepare: [3] dir=0xffff888124170140
+ext4_rename_dir_prepare: [4] ino=2
+ext4_rename_dir_prepare: ent->dir->i_ino=2 parent=-757071872
+
+Reason is first directory entry which 'rec_len' is 34478, then will get illegal
+parent entry. Now, we do not check directory entry after read directory block
+in 'ext4_get_first_dir_block'.
+To solve this issue, check directory entry in 'ext4_get_first_dir_block'.
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ fs/ext4/namei.c | 28 +++++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
+
+diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
+index e37da8d5cd0c..2f78544b1d47 100644
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -3455,6 +3455,9 @@ static struct buffer_head *ext4_get_first_dir_block(handle_t *handle,
+ 	struct buffer_head *bh;
+ 
+ 	if (!ext4_has_inline_data(inode)) {
++		struct ext4_dir_entry_2 *de;
++		unsigned int offset;
++
+ 		/* The first directory block must not be a hole, so
+ 		 * treat it as DIRENT_HTREE
+ 		 */
+@@ -3463,9 +3466,28 @@ static struct buffer_head *ext4_get_first_dir_block(handle_t *handle,
+ 			*retval = PTR_ERR(bh);
+ 			return NULL;
+ 		}
+-		*parent_de = ext4_next_entry(
+-					(struct ext4_dir_entry_2 *)bh->b_data,
+-					inode->i_sb->s_blocksize);
++
++		de = (struct ext4_dir_entry_2 *) bh->b_data;
++		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
++					 bh->b_size, 0) ||
++		    le32_to_cpu(de->inode) != inode->i_ino ||
++		    strcmp(".", de->name)) {
++			ext4_warning_inode(inode, "directory missing '.'");
++			brelse(bh);
++			return NULL;
++		}
++		offset = ext4_rec_len_from_disk(de->rec_len,
++						inode->i_sb->s_blocksize);
++		de = ext4_next_entry(de, inode->i_sb->s_blocksize);
++		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
++					 bh->b_size, offset) ||
++		    le32_to_cpu(de->inode) == 0 || strcmp("..", de->name)) {
++			ext4_warning_inode(inode, "directory missing '..'");
++			brelse(bh);
++			return NULL;
++		}
++		*parent_de = de;
++
+ 		return bh;
+ 	}
+ 
+-- 
+2.31.1
+
