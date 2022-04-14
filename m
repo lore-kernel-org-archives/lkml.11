@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0B3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 924BFC4167B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349606AbiDNOUx (ORCPT
+        id S1349542AbiDNOUl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:20:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46434 "EHLO
+        Thu, 14 Apr 2022 10:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343928AbiDNNja (ORCPT
+        with ESMTP id S1343936AbiDNNjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 420C195A28;
-        Thu, 14 Apr 2022 06:35:29 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDCB9D4DF;
+        Thu, 14 Apr 2022 06:35:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AED52CE296C;
-        Thu, 14 Apr 2022 13:35:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4016C385A5;
-        Thu, 14 Apr 2022 13:35:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DEB5EB82983;
+        Thu, 14 Apr 2022 13:35:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A0CDC385A5;
+        Thu, 14 Apr 2022 13:35:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943326;
-        bh=i20hMlwUrKYD3765QCI98YqipXHd9k85Jzwc+oQE5hA=;
+        s=korg; t=1649943331;
+        bh=U5DXGMZkZO7Pn/O1SPamsvQIw3Rc+QzrCc82s4iJ0ZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CVTdLxcV1/rNRtIIGtdYM9HLUKcsbxim8REa8W+eeIDgKZQn3woiaXHZyeuH4BEq/
-         XIDk40+EVoV/Tcj3MgjvgjUZA2txaLzxtkLcTwgC8gx+zPwRPkgyRDSDnpY6gWsx1i
-         i1V5LTWH9SgHTYvEtPLP1Zgw3Uzs1Y9LA7huEkPc=
+        b=ftINMlf7c1O9wmcDnunPkElkB9O9qyMcED9hUviJ9Whu9Xq0em8Cl0Iq8A24Iqp4G
+         p1F1HkNd3xuk7mJqnpcC6M0nYahA48Qkq9/nfWOfqdXCJ1KfY3FFCpNEHZjtNFWLGu
+         RvmSJRAXlyBbyBWgNjghHaJC60Z2WccQva2ncVeE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 115/475] media: hantro: Fix overfill bottom register field name
-Date:   Thu, 14 Apr 2022 15:08:20 +0200
-Message-Id: <20220414110858.370629779@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 117/475] video: fbdev: smscufx: Fix null-ptr-deref in ufx_usb_probe()
+Date:   Thu, 14 Apr 2022 15:08:22 +0200
+Message-Id: <20220414110858.426272826@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,62 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wenst@chromium.org>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit 89d78e0133e71ba324fb67ca776223fba4353418 ]
+[ Upstream commit 1791f487f877a9e83d81c8677bd3e7b259e7cb27 ]
 
-The Hantro H1 hardware can crop off pixels from the right and bottom of
-the source frame. These are controlled with the H1_REG_IN_IMG_CTRL_OVRFLB
-and H1_REG_IN_IMG_CTRL_OVRFLR in the H1_REG_IN_IMG_CTRL register.
+I got a null-ptr-deref report:
 
-The ChromeOS kernel driver that this was based on incorrectly added the
-_D4 suffix H1_REG_IN_IMG_CTRL_OVRFLB. This field crops the bottom of the
-input frame, and the number is _not_ divided by 4. [1]
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+...
+RIP: 0010:fb_destroy_modelist+0x38/0x100
+...
+Call Trace:
+ ufx_usb_probe.cold+0x2b5/0xac1 [smscufx]
+ usb_probe_interface+0x1aa/0x3c0 [usbcore]
+ really_probe+0x167/0x460
+...
+ ret_from_fork+0x1f/0x30
 
-Correct the name to avoid confusion when crop support with the selection
-API is added.
+If fb_alloc_cmap() fails in ufx_usb_probe(), fb_destroy_modelist() will
+be called to destroy modelist in the error handling path. But modelist
+has not been initialized yet, so it will result in null-ptr-deref.
 
-[1] https://chromium.googlesource.com/chromiumos/third_party/kernel/+/refs/ \
-	heads/chromeos-4.19/drivers/staging/media/hantro/hantro_h1_vp8_enc.c#377
+Initialize modelist before calling fb_alloc_cmap() to fix this bug.
 
-Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
-Fixes: a29add8c9bb2 ("media: rockchip/vpu: rename from rockchip to hantro")
-Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 3c8a63e22a08 ("Add support for SMSC UFX6000/7000 USB display adapters")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_h1_jpeg_enc.c | 2 +-
- drivers/staging/media/hantro/hantro_h1_regs.h     | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/video/fbdev/smscufx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c b/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c
-index 8b76f1f13b06..e81a354b8872 100644
---- a/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c
-+++ b/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c
-@@ -23,7 +23,7 @@ static void hantro_h1_set_src_img_ctrl(struct hantro_dev *vpu,
+diff --git a/drivers/video/fbdev/smscufx.c b/drivers/video/fbdev/smscufx.c
+index 0e0f5bbfc5ef..ad60f739c6a1 100644
+--- a/drivers/video/fbdev/smscufx.c
++++ b/drivers/video/fbdev/smscufx.c
+@@ -1657,6 +1657,7 @@ static int ufx_usb_probe(struct usb_interface *interface,
+ 	info->par = dev;
+ 	info->pseudo_palette = dev->pseudo_palette;
+ 	info->fbops = &ufx_ops;
++	INIT_LIST_HEAD(&info->modelist);
  
- 	reg = H1_REG_IN_IMG_CTRL_ROW_LEN(pix_fmt->width)
- 		| H1_REG_IN_IMG_CTRL_OVRFLR_D4(0)
--		| H1_REG_IN_IMG_CTRL_OVRFLB_D4(0)
-+		| H1_REG_IN_IMG_CTRL_OVRFLB(0)
- 		| H1_REG_IN_IMG_CTRL_FMT(ctx->vpu_src_fmt->enc_fmt);
- 	vepu_write_relaxed(vpu, reg, H1_REG_IN_IMG_CTRL);
- }
-diff --git a/drivers/staging/media/hantro/hantro_h1_regs.h b/drivers/staging/media/hantro/hantro_h1_regs.h
-index d6e9825bb5c7..30e7e7b920b5 100644
---- a/drivers/staging/media/hantro/hantro_h1_regs.h
-+++ b/drivers/staging/media/hantro/hantro_h1_regs.h
-@@ -47,7 +47,7 @@
- #define H1_REG_IN_IMG_CTRL				0x03c
- #define     H1_REG_IN_IMG_CTRL_ROW_LEN(x)		((x) << 12)
- #define     H1_REG_IN_IMG_CTRL_OVRFLR_D4(x)		((x) << 10)
--#define     H1_REG_IN_IMG_CTRL_OVRFLB_D4(x)		((x) << 6)
-+#define     H1_REG_IN_IMG_CTRL_OVRFLB(x)		((x) << 6)
- #define     H1_REG_IN_IMG_CTRL_FMT(x)			((x) << 2)
- #define H1_REG_ENC_CTRL0				0x040
- #define    H1_REG_ENC_CTRL0_INIT_QP(x)			((x) << 26)
+ 	retval = fb_alloc_cmap(&info->cmap, 256, 0);
+ 	if (retval < 0) {
+@@ -1667,8 +1668,6 @@ static int ufx_usb_probe(struct usb_interface *interface,
+ 	INIT_DELAYED_WORK(&dev->free_framebuffer_work,
+ 			  ufx_free_framebuffer_work);
+ 
+-	INIT_LIST_HEAD(&info->modelist);
+-
+ 	retval = ufx_reg_read(dev, 0x3000, &id_rev);
+ 	check_warn_goto_error(retval, "error %d reading 0x3000 register from device", retval);
+ 	dev_dbg(dev->gdev, "ID_REV register value 0x%08x", id_rev);
 -- 
 2.34.1
 
