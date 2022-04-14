@@ -2,153 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F64DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 21:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CDEEC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 21:47:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244870AbiDNVsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 17:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39086 "EHLO
+        id S242746AbiDNVuQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 17:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234435AbiDNVsI (ORCPT
+        with ESMTP id S232439AbiDNVuO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 17:48:08 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE55939C5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 14:45:42 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id c15so7639445ljr.9
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 14:45:42 -0700 (PDT)
+        Thu, 14 Apr 2022 17:50:14 -0400
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EC8939F2
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 14:47:49 -0700 (PDT)
+Received: by mail-il1-x12a.google.com with SMTP id x9so3934223ilc.3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 14:47:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=P6S9KRqkX7A9YoKgU2PmWjCc953BNXu29WrskqsElFU=;
-        b=BYSt7/9CMe6e1cOZOoavQDCxmhu1x78HdprHlMXMk1ysdygv7tLT2SflcRXutu3rLu
-         hRE3Doq7jUXTsKnTmS7BenvXMDIbceuHBh18m/k6KMy/KGSryz5BaxeKvlh/uaZxy5JL
-         hqHvJ0A5TGC7XCcJCXnwQK9qtOqz8ClbchKQU8L1Fzrw2XD9n8YhQ6zWLgYZhnOnOcFR
-         EdB4bf36VfA/J7m5aIzTDpB/P9Jwcg+70XcWCKdAk1Myt6+COEmQC/7pedRK6axH0O2p
-         wRnJG/w91gYmqwZZxjXObg16Cufuo/sSoGf3xBoxxrqzlgFVtcw8JAdm9m58+I53GrMw
-         /zSQ==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=uODln0vhOum+2TmooGakPEQyd171bQ+mLLWEZrWqTtc=;
+        b=EvbgG93teZuoQFogrfgcb/t3dQ0nNizMxjjAe1NOWX+E1MXm+QCLg+Y96hefcOTRMa
+         aLJjZIuP7eGzJR5Zfng32friME4aRgo68ROrj0xDMgz+M4FxZwW5lZDaSYRXCPEFfm37
+         NOquHBfk4dDuS3EGt45XVo6CWaNJW5kubJkhw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=P6S9KRqkX7A9YoKgU2PmWjCc953BNXu29WrskqsElFU=;
-        b=68ZCBA2COT4y3JzaxYZHIiOt2So3X2I9jUap83nMvtdv+TTlJCe/MIBIBtEJUigF66
-         n7feCkxXL6rCfIlzRyrynJcl48rLr0LgEpactscw5XpMlLBuq6LkiANCTFm/nSToeeuA
-         IR97A3TrNHkPkz4aGC42sfUJousCISYBGteZrrZC8lMJu7N49rb+RbYZ6mgRic1eF3Rz
-         9jszT2YTbGjywlYvL//jKzvRDQ3dHnFmKAPRmm9ZJUqchJ86uwzmf4kaDdyP+uMOcmFw
-         7JObdZdivAmy6rB2bt/oH3EuL16VJSDOny9TeAMpgygPzrzKigZkGsh/XDqoU3YDvLjY
-         UquQ==
-X-Gm-Message-State: AOAM530D4sGRtZN4Iu+mSCY4ksSLMqcHeCiVtQnw3HsCM70GD0BWBjvX
-        M0oFaIOaO8GXZf0XFXtaztSGiQ==
-X-Google-Smtp-Source: ABdhPJzW86vujFH03PxD99Oeby+xWsKew7UCfjWbhtO6O52/RZMhu/hElz9UH1L8JcIPVmipfKkBdw==
-X-Received: by 2002:a2e:6a08:0:b0:24d:14af:4be4 with SMTP id f8-20020a2e6a08000000b0024d14af4be4mr2754201ljc.24.1649972740518;
-        Thu, 14 Apr 2022 14:45:40 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id u3-20020a196003000000b0046d02774aa4sm119327lfb.37.2022.04.14.14.45.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 14:45:39 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Johan Hovold <johan@kernel.org>, Rob Herring <robh+dt@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        devicetree@vger.kernel.org
-Subject: [PATCH] dt-bindings: gnss: Add Broacom BCM4751 family bindings
-Date:   Thu, 14 Apr 2022 23:43:37 +0200
-Message-Id: <20220414214337.311880-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        bh=uODln0vhOum+2TmooGakPEQyd171bQ+mLLWEZrWqTtc=;
+        b=q0e5+2DlHLMNdYitBb1R/WiKienKq3lMZWIs1HRpa+lpCXLhkEfdrDpxdXKHRHlPv6
+         Qj4SRYFJOXbpYDe+5Wm+R85f7iJaG6xxirLytiIT4JGmRWiCO0QFd5HoKjx+Jd7lKShA
+         H+WHJ/A/iKPZfnmfXwd7bwSxuseZSfVR55P8ob1EL3yvkRWjPUDR/4XKplH2BnuhhUWR
+         BX4CzJ3x8u8UtFyHMfIL2FW0y/HatXsICcNDrAjR7C65qF+bdTsU2ViQsgrPunfqHmPw
+         jWI3jE9+5vwdUE2kBcoARGp1DzkdMfWEnjNAe/JBfWdqvCi+h6u1nodvwiw4yD6x8+Bu
+         Zd/w==
+X-Gm-Message-State: AOAM532XbSr71rENSX9NO1UDocdcDzHIJcj1mzneZIRql0FeR+J0Vyxp
+        gz9xk+FmJCSBw6EdwO/UfhOCiVpCbZqc6A==
+X-Google-Smtp-Source: ABdhPJwm1f0gSHMWMogFULROo6XpNNk3n4FrlkZHWlqC8j2dQyRz19Hrh73SmO6aqUyxxJLBWVoSNg==
+X-Received: by 2002:a92:640d:0:b0:2ca:ad76:3e88 with SMTP id y13-20020a92640d000000b002caad763e88mr1746974ilb.84.1649972868142;
+        Thu, 14 Apr 2022 14:47:48 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id d195-20020a6bb4cc000000b0064fceb8033dsm1318892iof.7.2022.04.14.14.47.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 14:47:47 -0700 (PDT)
+Subject: Re: [PATCH 2/4] selftest/vm: verify remap destination address in
+ mremap_test
+To:     Sidhartha Kumar <sidhartha.kumar@oracle.com>, shuah@kernel.org,
+        akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220414171529.62058-1-sidhartha.kumar@oracle.com>
+ <20220414171529.62058-3-sidhartha.kumar@oracle.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <e6cc5cf6-b6bc-2eca-255d-5dd247253255@linuxfoundation.org>
+Date:   Thu, 14 Apr 2022 15:47:46 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220414171529.62058-3-sidhartha.kumar@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Broadcom BCM4751 family of (A-)GPS chips have been around for
-some years. The latest iteration BCM4753 is for example mounted
-on the Huawei HiKey970.
+On 4/14/22 11:15 AM, Sidhartha Kumar wrote:
+> Because mremap does not have a NOREPLACE flag,
+> it can destroy existing mappings. This can
+> cause a segfault if regions such as text are
+> destroyed.
 
-Cc: devicetree@vger.kernel.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- .../bindings/gnss/brcm,bcm4751.yaml           | 69 +++++++++++++++++++
- 1 file changed, 69 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/gnss/brcm,bcm4751.yaml
+Please explain the reason for segfault.
 
-diff --git a/Documentation/devicetree/bindings/gnss/brcm,bcm4751.yaml b/Documentation/devicetree/bindings/gnss/brcm,bcm4751.yaml
-new file mode 100644
-index 000000000000..f06a4acf21cf
---- /dev/null
-+++ b/Documentation/devicetree/bindings/gnss/brcm,bcm4751.yaml
-@@ -0,0 +1,69 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/gnss/brcm,bcm4751.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Broadcom BCM4751 family GNSS Receiver Device Tree Bindings
-+
-+maintainers:
-+  - Johan Hovold <johan@kernel.org>
-+  - Linus Walleij <linus.walleij@linaro.org>
-+
-+description:
-+  Broadcom GPS chips can be used over the UART or I2C bus. The UART
-+  bus requires CTS/RTS support. The number of the capsule is more
-+  elaborate than the compatibles BCM4751 may be printed
-+  BCM4751IFBG for example.
-+
-+allOf:
-+  - $ref: gnss-common.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - brcm,bcm4751
-+      - brcm,bcm4752
-+      - brcm,bcm4753
-+
-+  reg:
-+    description:
-+      The I2C Address, not required on UART buses.
-+
-+  vdd-auxin-supply:
-+    description:
-+      Main voltage supply, pin name VDD_AUXIN, typically connected
-+      directly to a battery such as LiIon 3.8V battery or a 2.6V supply.
-+
-+  vddio-supply:
-+    description:
-+      IO voltage supply, pin name VDDIO, typically 1.8V
-+
-+  reset-gpios:
-+    maxItems: 1
-+    description: An optional active low reset line, should be flagged with
-+      GPIO_ACTIVE_LOW.
-+
-+  enable-gpios:
-+    description: Enable GPIO line, connected to pins named REGPU or NSTANDBY.
-+      If the line is active low such as NSTANDBY, it should be tagged
-+      GPIO_ACTIVE_LOW.
-+
-+required:
-+  - compatible
-+  - enable-gpios
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    serial {
-+        gnss {
-+            compatible = "brcm,bcm4751";
-+            vdd-auxin-supply = <&vbat>;
-+            reset-gpios = <&gpio0 15 GPIO_ACTIVE_LOW>;
-+            enable-gpios = <&gpio0 16 GPIO_ACTIVE_HIGH>;
-+            current-speed = <38400>;
-+        };
-+    };
--- 
-2.35.1
+Add a blank line here. Makes it easier to read.
 
+Verify the requested mremap destination
+> address does not overlap any existing mappings
+> by using mmap's FIXED_NOREPLACE flag and checking
+
+Spell this out fully - MAP_FIXED_NOREPLACE
+> for the EEXIST error code. Keep incrementing the
+> destination address until a valid mapping is found
+> or max address is reached.
+> 
+
+Essentially mremap() doesn't check for overlaps and removes
+or overwrites existing mappings? The way you are fixing it
+is by verifying by calling mremap() with MAP_FIXED_NOREPLACE
+flag and check for EEXIST.
+
+What happens when max address is reached?
+
+Same comment on # of chars per line in commit log. Also
+
+> Signed-off-by: Sidhartha Kumar <sidhartha.kumar@oracle.com>
+> ---
+>   tools/testing/selftests/vm/mremap_test.c | 36 ++++++++++++++++++++++++
+>   1 file changed, 36 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/vm/mremap_test.c b/tools/testing/selftests/vm/mremap_test.c
+> index 58600fee4b81..98e9cff34aa7 100644
+> --- a/tools/testing/selftests/vm/mremap_test.c
+> +++ b/tools/testing/selftests/vm/mremap_test.c
+> @@ -10,6 +10,7 @@
+>   #include <string.h>
+>   #include <sys/mman.h>
+>   #include <time.h>
+> +#include <limits.h>
+>   
+>   #include "../kselftest.h"
+>   
+> @@ -65,6 +66,34 @@ enum {
+>   	.expect_failure = should_fail				\
+>   }
+>   
+> +/*
+> + * Returns 0 if the requested remap region overlaps with an
+> + * existing mapping (e.g text, stack) else returns 1.
+> + */
+> +static int remap_region_valid(void *addr, unsigned long long size)
+
+This returns bool 0 (false) 1 (true)
+
+Please name the routine - is_remap_region_valid() and change it to
+return bool.
+
+> +{
+> +	void *remap_addr = NULL;
+> +	int ret = 1;
+> +
+> +	if ((unsigned long long) addr > ULLONG_MAX - size) {
+> +		ksft_print_msg("Can't find a valid region to remap to\n");
+
+Change it to "Couldn't" - also this message doesn't look right. We hav't
+looked for valid region yet and it just exceeds the limits?
+
+
+> +		exit(KSFT_SKIP);> +	}
+> +
+> +	/* Use MAP_FIXED_NOREPLACE flag to ensure region is not mapped */
+> +	remap_addr = mmap(addr, size, PROT_READ | PROT_WRITE,
+> +			MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
+> +			-1, 0);
+
+Alignment should match open parenthesis here and in other places. Makes it
+easier to read the code.
+
+> +	if (remap_addr == MAP_FAILED) {
+> +		if (errno == EEXIST)
+> +			ret = 0;
+> +	} else {
+> +		munmap(remap_addr, size);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+>   /* Returns mmap_min_addr sysctl */
+>   static unsigned long long get_mmap_min_addr(void)
+>   {
+> @@ -180,6 +209,13 @@ static long long remap_region(struct config c, unsigned int threshold_mb,
+>   	if (!((unsigned long long) addr & c.dest_alignment))
+>   		addr = (void *) ((unsigned long long) addr | c.dest_alignment);
+>   
+> +	/* Don't destroy existing mappings unless expected to overlap */
+> +	while (!remap_region_valid(addr, c.region_size)) {
+> +		if (c.overlapping)
+> +			break;
+> +		addr += c.src_alignment;
+> +	}
+> +
+>   	clock_gettime(CLOCK_MONOTONIC, &t_start);
+>   	dest_addr = mremap(src_addr, c.region_size, c.region_size,
+>   			MREMAP_MAYMOVE|MREMAP_FIXED, (char *) addr);
+> 
+
+thanks,
+-- Shuah
