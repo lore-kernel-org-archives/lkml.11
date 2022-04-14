@@ -2,157 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 615CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 01:40:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA239C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 01:44:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239452AbiDNBmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 21:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
+        id S239466AbiDNBqa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 21:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232083AbiDNBmq (ORCPT
+        with ESMTP id S232083AbiDNBq3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 21:42:46 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E189E20F70
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 18:40:23 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id t4so3458460pgc.1
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 18:40:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:date:message-id:mime-version:content-transfer-encoding:cc
-         :from:to;
-        bh=RdayCDxEwJD59KqBdusCEOpxaJASjBt83sSueeG1AHo=;
-        b=ycMC/7bYjbOcLcEX2Tt8VKIilnYKeWYE2bx96R/lFO0m6rchL4vLEVtbx4DIHM3ORk
-         UBDoEhJBvmkZ1TigC5xaY+u+GfFf+KjYS1ZNKjjfcj2SGDdkH3LMRQjQpTd2QexjnxFN
-         tiicpxYwhRWaqtFUTgMbq7IG+Gtk4bo5ggk+L2LbhgUNmU4gFkofLgn07fI7ltWhQZm2
-         CHPxSxMUyO+Z6yE8Nyhyq5/jerzahPX/ibsw4W/GWHCi8BeZg/ET8xiatEvsvv8GYWb/
-         xDTA5AkCl+Rba/02rycJF0AWURAb834y4CuWXOSXPZLrej6FrILXK5HxFb6eMIm4CcF0
-         WcQA==
+        Wed, 13 Apr 2022 21:46:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70CE420F78
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 18:44:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649900644;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jUo4znEOkRrWRs1sMxG9XXTvdlj/WDC4ky0CeyyLoSA=;
+        b=U1XWFI22c0P7MXu7LDxVvtBwEAHilUr6vSYRqsG2+1jTyav5OUbne0h15ROkgu6Uc396Ts
+        hMzdjY0EaQNxE12oQM0+75liUqBiEIUhBz0FbkKtI5t2e+av9t7+CNbFaqTqVQBQkWGLE3
+        w2PcpDxk1niKjdk81oId4Y+DvazpQ90=
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
+ [209.85.215.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-633-RM-rfOzbOkqYhnnCwFcizQ-1; Wed, 13 Apr 2022 21:44:03 -0400
+X-MC-Unique: RM-rfOzbOkqYhnnCwFcizQ-1
+Received: by mail-pg1-f200.google.com with SMTP id l6-20020a637006000000b003811a27370aso1980020pgc.2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 18:44:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:date:message-id:mime-version
-         :content-transfer-encoding:cc:from:to;
-        bh=RdayCDxEwJD59KqBdusCEOpxaJASjBt83sSueeG1AHo=;
-        b=Yv/N7geduT5nXPIe0G7TUQZcsNdta+FiFggX8OvEJDrSnXOoJS4ewAxM/zrGvwoCVT
-         xG+TzFbKFSFO8IyRaXzds6XU8yXO/3Oe2zgtHi6USDJSDTkJlUySFObh2qD5nCR+VOhs
-         gPQCb5ZU55YAr4Kl5C4IzX7gZnantyam5oRB4CLCUAmUbOXhvAfOiNmZKl5onRX1+kiH
-         2aeZX1xTsHOjW6zWEIXyggD5aP6Yru1SBpRR3dqi2Bhc542EIWd7ACLxwk9yXJFKVbxY
-         9hJGhgYam6+g0032tZUkH9zli7jrxQ6ObuwwFb109t5qZTGX9zNls2z4buVMqvPt19u5
-         kvWQ==
-X-Gm-Message-State: AOAM5308dkI11PQN/wQPXpZ0Kq4xThYgP+41eyjxuNiTcy0jS4Ai5mWm
-        cohCJ//Ef+SG4AhGaN7fHS0QkQ==
-X-Google-Smtp-Source: ABdhPJwSA5lCtRjpiMXmwO58f+FjMqudVsOkIGa/B9oWV7MmYVdot6tpFhxuZ3a6QrC+ya7+j4hS+g==
-X-Received: by 2002:a63:e442:0:b0:398:c06b:169c with SMTP id i2-20020a63e442000000b00398c06b169cmr380503pgk.170.1649900423449;
-        Wed, 13 Apr 2022 18:40:23 -0700 (PDT)
-Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id w14-20020a17090a4f4e00b001cb510021ecsm4203901pjl.49.2022.04.13.18.40.23
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jUo4znEOkRrWRs1sMxG9XXTvdlj/WDC4ky0CeyyLoSA=;
+        b=0zMprhfkK0RSYd/Hn8v6AIfStMaw4ja9XVLWiXtesaWvSN843PmVyHb5w3qkMsDkQc
+         z31ffXfCJn1DxPoM4IJ+D5lbRIsVk6m+9+veuJBszEFARPNIYbuDA2/ZxumI/jkMB7QE
+         Ms2+U2gCtd2nO1dloVkzaS58jyM3MGMoPSc6zLSMXYXFuZdQepV1hhZ9MSVGS6lMFv/9
+         mLAcbSC9mep1HSpgdkzJaDd9lee5WQsXvVobDaOOzudnda34h832QK/dYMiDu5Z8oHfX
+         7JXZ+4AkDW90WyxnD8QoNh7em6WboQ6ZDzwxjX8E0PJPffgMHxq/DFoFKAE6DFcmDdDF
+         ygHA==
+X-Gm-Message-State: AOAM533ALHm0L01Fm24N6Z2Wxuuo82qk6J9lnC9XhZQzVLauX5puZ02j
+        skIO3z0/4rWzpNXcFW6ORzEw9XACPs9afpE+53eTHGW1BFHjPfXR5bTgtpx2GSM9QvmVLubu6jP
+        0TGeW/2QIyiTLhq/UcoGFXk4I
+X-Received: by 2002:a05:6a00:4211:b0:506:5061:3e38 with SMTP id cd17-20020a056a00421100b0050650613e38mr1591784pfb.74.1649900642604;
+        Wed, 13 Apr 2022 18:44:02 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwPUPsdDaV0SaXNU950qh/kHth5bPSWxu8nmDnhrsKNKGWJouIJSJ3+yN9qcKr5KVKvb/41OA==
+X-Received: by 2002:a05:6a00:4211:b0:506:5061:3e38 with SMTP id cd17-20020a056a00421100b0050650613e38mr1591763pfb.74.1649900642367;
+        Wed, 13 Apr 2022 18:44:02 -0700 (PDT)
+Received: from localhost ([240e:3a1:31c:360:52fc:c968:cb41:efbc])
+        by smtp.gmail.com with ESMTPSA id ml1-20020a17090b360100b001cd40539cd9sm311141pjb.1.2022.04.13.18.44.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 18:40:23 -0700 (PDT)
-Subject: [PATCH v2] RISC-V: Add CONFIG_{NON,}PORTABLE
-Date:   Wed, 13 Apr 2022 18:40:10 -0700
-Message-Id: <20220414014010.28110-1-palmer@rivosinc.com>
+        Wed, 13 Apr 2022 18:44:01 -0700 (PDT)
+From:   Coiby Xu <coxu@redhat.com>
+To:     kexec@lists.infradead.org
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Michal Suchanek <msuchanek@suse.de>,
+        Baoquan He <bhe@redhat.com>, Dave Young <dyoung@redhat.com>,
+        Will Deacon <will@kernel.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Mimi Zohar <zohar@linux.ibm.com>, Chun-Yi Lee <jlee@suse.com>,
+        stable@kernel.org, linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v6 1/4] kexec: clean up arch_kexec_kernel_verify_sig
+Date:   Thu, 14 Apr 2022 09:43:41 +0800
+Message-Id: <20220414014344.228523-2-coxu@redhat.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220414014344.228523-1-coxu@redhat.com>
+References: <20220414014344.228523-1-coxu@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Palmer Dabbelt <palmer@rivosinc.com>
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:     Arnd Bergmann <arnd@arndb.de>, linux-riscv@lists.infradead.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Palmer Dabbelt <palmer@rivosinc.com>
+Currently there is no arch-specific implementation of
+arch_kexec_kernel_verify_sig. Even if we want to add an implementation
+for an architecture in the future, we can simply use "(struct
+kexec_file_ops*)->verify_sig". So clean it up.
 
-The RISC-V port has collected a handful of options that are
-fundamentally non-portable.  To prevent users from shooting themselves
-in the foot, hide them all behind a config entry that explicitly calls
-out that non-portable binaries may be produced.
-
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-
+Suggested-by: Eric W. Biederman <ebiederm@xmission.com>
+Cc: stable@kernel.org
+Reviewed-by: Michal Suchanek <msuchanek@suse.de>
+Signed-off-by: Coiby Xu <coxu@redhat.com>
 ---
+ include/linux/kexec.h |  4 ----
+ kernel/kexec_file.c   | 34 +++++++++++++---------------------
+ 2 files changed, 13 insertions(+), 25 deletions(-)
 
-Changes since v1:
-
-* Fix a bunch of spelling mistakes.
-* Move NONPORTABLE under the "Platform type" sub-heading.
-* Fix the rv32i dependency.
----
- arch/riscv/Kconfig | 28 ++++++++++++++++++++++++++--
- 1 file changed, 26 insertions(+), 2 deletions(-)
-
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 5adcbd9b5e88..3d8eb44eb889 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -213,6 +213,21 @@ source "arch/riscv/Kconfig.erratas"
+diff --git a/include/linux/kexec.h b/include/linux/kexec.h
+index 58d1b58a971e..413235c6c797 100644
+--- a/include/linux/kexec.h
++++ b/include/linux/kexec.h
+@@ -202,10 +202,6 @@ int arch_kexec_apply_relocations(struct purgatory_info *pi,
+ 				 const Elf_Shdr *relsec,
+ 				 const Elf_Shdr *symtab);
+ int arch_kimage_file_post_load_cleanup(struct kimage *image);
+-#ifdef CONFIG_KEXEC_SIG
+-int arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
+-				 unsigned long buf_len);
+-#endif
+ int arch_kexec_locate_mem_hole(struct kexec_buf *kbuf);
  
- menu "Platform type"
+ extern int kexec_add_buffer(struct kexec_buf *kbuf);
+diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
+index 8347fc158d2b..3720435807eb 100644
+--- a/kernel/kexec_file.c
++++ b/kernel/kexec_file.c
+@@ -89,25 +89,6 @@ int __weak arch_kimage_file_post_load_cleanup(struct kimage *image)
+ 	return kexec_image_post_load_cleanup_default(image);
+ }
  
-+config NONPORTABLE
-+	bool "Allow configurations that result in non-portable kernels"
-+	help
-+	  RISC-V kernel binaries are compatible between all known systems
-+	  whenever possible, but there are some use cases that can only be
-+	  satisfied by configurations that result in kernel binaries that are
-+	  not portable between systems.
+-#ifdef CONFIG_KEXEC_SIG
+-static int kexec_image_verify_sig_default(struct kimage *image, void *buf,
+-					  unsigned long buf_len)
+-{
+-	if (!image->fops || !image->fops->verify_sig) {
+-		pr_debug("kernel loader does not support signature verification.\n");
+-		return -EKEYREJECTED;
+-	}
+-
+-	return image->fops->verify_sig(buf, buf_len);
+-}
+-
+-int __weak arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
+-					unsigned long buf_len)
+-{
+-	return kexec_image_verify_sig_default(image, buf, buf_len);
+-}
+-#endif
+-
+ /*
+  * arch_kexec_apply_relocations_add - apply relocations of type RELA
+  * @pi:		Purgatory to be relocated.
+@@ -184,13 +165,24 @@ void kimage_file_post_load_cleanup(struct kimage *image)
+ }
+ 
+ #ifdef CONFIG_KEXEC_SIG
++static int kexec_image_verify_sig(struct kimage *image, void *buf,
++		unsigned long buf_len)
++{
++	if (!image->fops || !image->fops->verify_sig) {
++		pr_debug("kernel loader does not support signature verification.\n");
++		return -EKEYREJECTED;
++	}
 +
-+	  Selecting N does not guarantee kernels will be portable to all knows
-+	  systems.  Selecting any of the options guarded by NONPORTABLE will
-+	  result in kernel binaries that are unlikely to be portable between
-+	  systems.
++	return image->fops->verify_sig(buf, buf_len);
++}
 +
-+	  If unsure, say N.
-+
- choice
- 	prompt "Base ISA"
- 	default ARCH_RV64I
-@@ -222,6 +237,7 @@ choice
+ static int
+ kimage_validate_signature(struct kimage *image)
+ {
+ 	int ret;
  
- config ARCH_RV32I
- 	bool "RV32I"
-+	depends on NONPORTABLE
- 	select 32BIT
- 	select GENERIC_LIB_ASHLDI3
- 	select GENERIC_LIB_ASHRDI3
-@@ -485,6 +501,7 @@ config STACKPROTECTOR_PER_TASK
+-	ret = arch_kexec_kernel_verify_sig(image, image->kernel_buf,
+-					   image->kernel_buf_len);
++	ret = kexec_image_verify_sig(image, image->kernel_buf,
++			image->kernel_buf_len);
+ 	if (ret) {
  
- config PHYS_RAM_BASE_FIXED
- 	bool "Explicitly specified physical RAM address"
-+	depends on NONPORTABLE
- 	default n
- 
- config PHYS_RAM_BASE
-@@ -498,7 +515,7 @@ config PHYS_RAM_BASE
- 
- config XIP_KERNEL
- 	bool "Kernel Execute-In-Place from ROM"
--	depends on MMU && SPARSEMEM
-+	depends on MMU && SPARSEMEM && NONPORTABLE
- 	# This prevents XIP from being enabled by all{yes,mod}config, which
- 	# fail to build since XIP doesn't support large kernels.
- 	depends on !COMPILE_TEST
-@@ -538,9 +555,16 @@ endmenu
- 
- config BUILTIN_DTB
- 	bool
--	depends on OF
-+	depends on OF && NONPORTABLE
- 	default y if XIP_KERNEL
- 
-+config PORTABLE
-+	bool
-+	default !NONPORTABLE
-+	select EFI
-+	select OF
-+	select MMU
-+
- menu "Power management options"
- 
- source "kernel/power/Kconfig"
+ 		if (IS_ENABLED(CONFIG_KEXEC_SIG_FORCE)) {
 -- 
 2.34.1
 
