@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 324B8C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B367C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354343AbiDNOzK (ORCPT
+        id S1347362AbiDNO44 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:55:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34664 "EHLO
+        Thu, 14 Apr 2022 10:56:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344004AbiDNNuc (ORCPT
+        with ESMTP id S1345582AbiDNNxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:50:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D380E1FCFE;
-        Thu, 14 Apr 2022 06:44:19 -0700 (PDT)
+        Thu, 14 Apr 2022 09:53:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C7BAAB65;
+        Thu, 14 Apr 2022 06:44:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C31DB82968;
-        Thu, 14 Apr 2022 13:44:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D1F1C385A1;
-        Thu, 14 Apr 2022 13:44:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DB0C61D29;
+        Thu, 14 Apr 2022 13:44:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2767C385A9;
+        Thu, 14 Apr 2022 13:44:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943856;
-        bh=iWKH1mlMdsZhiA9X2sK2oDiy++NEq5LxR0fY3wTNPow=;
+        s=korg; t=1649943895;
+        bh=WRZldZ06m2ENn2Nq5B0GnVlgAaxvMUwIjmtL3uYhPbs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OfvWoC8XJMDeqKFYJzKqyscSvOIr/8JCeWaaIYrpJCOgGg/U6+HvzLbpJ/WuVhdjj
-         iL/ys1I9/M7IUD/YePyKegJaZJd/Y2fj5lwZ24wvoxA6hJ4qmZw2PuHPgVWc5OwK10
-         /YB0TEeTXqxxTzXmpWnv7km61/H7tAY6J0MIpKBk=
+        b=GkaFNyEWMBYvkGdCdinP3Qfl6dC06K6fzL75px1lxus209Gvh91orKhryyve/xT66
+         rvwkRV+BQg0Qyhm0c0Ja4YU3oWlie3jAJvMTxxYL1qoPN8qd3BOr4l8l+xScNhrTuk
+         1+aePBam6OyLyzKT0CHg010qSmgJ05SgNVsI1/PE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 266/475] net: phy: broadcom: Fix brcm_fet_config_init()
-Date:   Thu, 14 Apr 2022 15:10:51 +0200
-Message-Id: <20220414110902.552177180@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.4 321/475] scsi: qla2xxx: Fix disk failure to rediscover
+Date:   Thu, 14 Apr 2022 15:11:46 +0200
+Message-Id: <20220414110904.071257013@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,79 +52,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit bf8bfc4336f7a34e48b3bbd19b1542bf085bdc3d ]
+commit 6a45c8e137d4e2c72eecf1ac7cf64f2fdfcead99 upstream.
 
-A Broadcom AC201 PHY (same entry as 5241) would be flagged by the
-Broadcom UniMAC MDIO controller as not completing the turn around
-properly since the PHY expects 65 MDC clock cycles to complete a write
-cycle, and the MDIO controller was only sending 64 MDC clock cycles as
-determined by looking at a scope shot.
+User experienced some of the LUN failed to get rediscovered after long
+cable pull test. The issue is triggered by a race condition between driver
+setting session online state vs starting the LUN scan process at the same
+time. Current code set the online state after notifying the session is
+available. In this case, trigger to start the LUN scan process happened
+before driver could set the session in online state.  LUN scan ends up with
+failure due to the session online check was failing.
 
-This would make the subsequent read fail with the UniMAC MDIO controller
-command field having MDIO_READ_FAIL set and we would abort the
-brcm_fet_config_init() function and thus not probe the PHY at all.
+Set the online state before reporting of the availability of the session.
 
-After issuing a software reset, wait for at least 1ms which is well
-above the 1us reset delay advertised by the datasheet and issue a dummy
-read to let the PHY turn around the line properly. This read
-specifically ignores -EIO which would be returned by MDIO controllers
-checking for the line being turned around.
-
-If we have a genuine reaad failure, the next read of the interrupt
-status register would pick it up anyway.
-
-Fixes: d7a2ed9248a3 ("broadcom: Add AC131 phy support")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220324232438.1156812-1-f.fainelli@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220310092604.22950-3-njavali@marvell.com
+Fixes: aecf043443d3 ("scsi: qla2xxx: Fix Remote port registration")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/phy/broadcom.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ drivers/scsi/qla2xxx/qla_init.c |    5 +++--
+ drivers/scsi/qla2xxx/qla_nvme.c |    5 +++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index c23fec34b50e..7be75a611e9e 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -11,6 +11,7 @@
-  */
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -5372,6 +5372,8 @@ qla2x00_reg_remote_port(scsi_qla_host_t
+ 	if (atomic_read(&fcport->state) == FCS_ONLINE)
+ 		return;
  
- #include "bcm-phy-lib.h"
-+#include <linux/delay.h>
- #include <linux/module.h>
- #include <linux/phy.h>
- #include <linux/brcmphy.h>
-@@ -479,6 +480,26 @@ static int brcm_fet_config_init(struct phy_device *phydev)
- 	if (err < 0)
- 		return err;
++	qla2x00_set_fcport_state(fcport, FCS_ONLINE);
++
+ 	rport_ids.node_name = wwn_to_u64(fcport->node_name);
+ 	rport_ids.port_name = wwn_to_u64(fcport->port_name);
+ 	rport_ids.port_id = fcport->d_id.b.domain << 16 |
+@@ -5467,6 +5469,7 @@ qla2x00_update_fcport(scsi_qla_host_t *v
+ 		qla2x00_reg_remote_port(vha, fcport);
+ 		break;
+ 	case MODE_TARGET:
++		qla2x00_set_fcport_state(fcport, FCS_ONLINE);
+ 		if (!vha->vha_tgt.qla_tgt->tgt_stop &&
+ 			!vha->vha_tgt.qla_tgt->tgt_stopped)
+ 			qlt_fc_port_added(vha, fcport);
+@@ -5481,8 +5484,6 @@ qla2x00_update_fcport(scsi_qla_host_t *v
+ 		break;
+ 	}
  
-+	/* The datasheet indicates the PHY needs up to 1us to complete a reset,
-+	 * build some slack here.
-+	 */
-+	usleep_range(1000, 2000);
+-	qla2x00_set_fcport_state(fcport, FCS_ONLINE);
+-
+ 	if (IS_IIDMA_CAPABLE(vha->hw) && vha->hw->flags.gpsc_supported) {
+ 		if (fcport->id_changed) {
+ 			fcport->id_changed = 0;
+--- a/drivers/scsi/qla2xxx/qla_nvme.c
++++ b/drivers/scsi/qla2xxx/qla_nvme.c
+@@ -36,6 +36,11 @@ int qla_nvme_register_remote(struct scsi
+ 		(fcport->nvme_flag & NVME_FLAG_REGISTERED))
+ 		return 0;
+ 
++	if (atomic_read(&fcport->state) == FCS_ONLINE)
++		return 0;
 +
-+	/* The PHY requires 65 MDC clock cycles to complete a write operation
-+	 * and turnaround the line properly.
-+	 *
-+	 * We ignore -EIO here as the MDIO controller (e.g.: mdio-bcm-unimac)
-+	 * may flag the lack of turn-around as a read failure. This is
-+	 * particularly true with this combination since the MDIO controller
-+	 * only used 64 MDC cycles. This is not a critical failure in this
-+	 * specific case and it has no functional impact otherwise, so we let
-+	 * that one go through. If there is a genuine bus error, the next read
-+	 * of MII_BRCM_FET_INTREG will error out.
-+	 */
-+	err = phy_read(phydev, MII_BMCR);
-+	if (err < 0 && err != -EIO)
-+		return err;
++	qla2x00_set_fcport_state(fcport, FCS_ONLINE);
 +
- 	reg = phy_read(phydev, MII_BRCM_FET_INTREG);
- 	if (reg < 0)
- 		return reg;
--- 
-2.34.1
-
+ 	fcport->nvme_flag &= ~NVME_FLAG_RESETTING;
+ 
+ 	memset(&req, 0, sizeof(struct nvme_fc_port_info));
 
 
