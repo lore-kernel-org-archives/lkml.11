@@ -2,77 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C18C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:46:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4817C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:48:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231283AbiDNJtR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41058 "EHLO
+        id S236727AbiDNJuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241977AbiDNJqn (ORCPT
+        with ESMTP id S229803AbiDNJuV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:46:43 -0400
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:44:02 PDT
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 366EF70F7C
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 02:44:02 -0700 (PDT)
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 2022041409425378c91a5813966cd4da
-        for <linux-kernel@vger.kernel.org>;
-        Thu, 14 Apr 2022 11:42:58 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=daniel.starke@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=o1/uKhXQ+BQXV6sI55mJNjRxBUsoE4LNMsUsb9qaM1I=;
- b=Z577SpL0yFwePYHTali039HGtU7oxIaO/GxImjZBPkRGOpHCebdXH13Bk2KHw3jk1kknQi
- mTz/qJ5CBiNsvgp7cPcmrw5iPQoYtgL4ZsuwRIHGPikXMHqWacxDNIesEzU8XE7/VGuWGdoA
- KsUJQiEVPvHEk6A/N7MBnXmEjTE9w=;
-From:   "D. Starke" <daniel.starke@siemens.com>
-To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 19/20] tty: n_gsm: fix wrong behavior of gsm_carrier_raised() on debug
-Date:   Thu, 14 Apr 2022 02:42:24 -0700
-Message-Id: <20220414094225.4527-19-daniel.starke@siemens.com>
-In-Reply-To: <20220414094225.4527-1-daniel.starke@siemens.com>
-References: <20220414094225.4527-1-daniel.starke@siemens.com>
+        Thu, 14 Apr 2022 05:50:21 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5BB6393;
+        Thu, 14 Apr 2022 02:47:56 -0700 (PDT)
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1new4o-0005MU-Dc; Thu, 14 Apr 2022 11:47:46 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1new4o-000Xad-41; Thu, 14 Apr 2022 11:47:46 +0200
+Subject: Re: [RFC PATCH 0/1] sample: bpf: introduce irqlat
+To:     Song Chen <chensong_2000@189.cn>, ast@kernel.org,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1649927240-18991-1-git-send-email-chensong_2000@189.cn>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <2e6ee265-903c-2b5c-aefd-ec24f930c999@iogearbox.net>
+Date:   Thu, 14 Apr 2022 11:47:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-314044:519-21489:flowmailer
+In-Reply-To: <1649927240-18991-1-git-send-email-chensong_2000@189.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26512/Thu Apr 14 10:28:56 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+On 4/14/22 11:07 AM, Song Chen wrote:
+> I'm planning to implement a couple of ebpf tools for preempt rt,
+> including irq latency, preempt latency and so on, how does it sound
+> to you?
 
-gsm_carrier_raised() returns always 1 if the kernel module parameter
-'debug' has its second least significant bit set. This changes the behavior
-of the module instead of just adding some debug output.
-Remove this 'debug' gated early out to avoid debug settings from changing
-the program flow.
+Sounds great, thanks! Please add these tools for upstream inclusion either to bpftrace [0] or
+bcc [1], then a wider range of users would be able to benefit from them as well as they are
+also shipped as distro packages and generally more widely used compared to kernel samples.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
----
- drivers/tty/n_gsm.c | 3 ---
- 1 file changed, 3 deletions(-)
+Thanks Song!
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index ecd2ecc61b14..1905a0fea89b 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2981,9 +2981,6 @@ static int gsm_carrier_raised(struct tty_port *port)
- 	/* Not yet open so no carrier info */
- 	if (dlci->state != DLCI_OPEN)
- 		return 0;
--	if (debug & 2)
--		return 1;
--
- 	/*
- 	 * Basic mode with control channel in ADM mode may not respond
- 	 * to CMD_MSC at all and modem_rx is empty.
--- 
-2.25.1
+   [0] https://github.com/iovisor/bpftrace/tree/master/tools
+   [1] https://github.com/iovisor/bcc/tree/master/libbpf-tools
+
+> Song Chen (1):
+>    sample: bpf: introduce irqlat
+> 
+>   samples/bpf/.gitignore    |   1 +
+>   samples/bpf/Makefile      |   5 ++
+>   samples/bpf/irqlat_kern.c |  81 ++++++++++++++++++++++++++++++
+>   samples/bpf/irqlat_user.c | 100 ++++++++++++++++++++++++++++++++++++++
+>   4 files changed, 187 insertions(+)
+>   create mode 100644 samples/bpf/irqlat_kern.c
+>   create mode 100644 samples/bpf/irqlat_user.c
+> 
 
