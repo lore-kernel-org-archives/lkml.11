@@ -2,156 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84DE0C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D715C43219
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358256AbiDNPla (ORCPT
+        id S1358195AbiDNPlP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
+        Thu, 14 Apr 2022 11:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354785AbiDNOmi (ORCPT
+        with ESMTP id S1353784AbiDNOlX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:42:38 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2062.outbound.protection.outlook.com [40.107.93.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F5D2AE3C
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:39:03 -0700 (PDT)
+        Thu, 14 Apr 2022 10:41:23 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2049.outbound.protection.outlook.com [40.107.236.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9788B6D17;
+        Thu, 14 Apr 2022 07:31:35 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nq0ps0pG1XN4svM4/gmdCs/txlPlvw82QLoxTwnLtujghdNq62LMkkIgwVTt2SGUqjfxXpBJKQVuaqTWxrh7DC4yEJf31CfKFtO7IpPOQYJa1xoDlBBXit8pgXQRAOq/VfbHkobkeFxe0nKBQtKwjozDgkJKE86VKo55CMp2KvnqdVojncK7wY5uSy0juo4d3aY4+HeC2qMJBDRs2asd9EnCf0tQfQtX8gOd83drgdth2KgnsYzHrsB7EM0FaZS7IBSE9GzQ502HHcUq3gvKbq+JLDVCa/naPi8DOLPfM8DB14qsfUUs34gNTGKB2guI1G4RPMkeTERG7yNXSnHsVA==
+ b=CRz49lUSGFm5JhZc0NPx+GZe/22z7V041gePwTO8KmKhpHjjVoNdppRbawQyvUOCy7zIap1cxIy1c8PDfEKWdgPNnP9YIa2m4UFyRdlojFmCSGAEg9EmtHFaGkSu0SUrrbY1UmZCLyh9iQMjQAntrWgQcsFFTMT2hFNyr15BgdpQHpk6z1BZjD9oBQF7J6yNBbqBT7Fq+aZ++789rv2rWJlH1Xued2uBXpc6AjFIvJ7dM16cev63+3bsucnJiOThrCboQnOeQLm2hY6qhsFIO5yhi4iu5P6xAUQHGe8bWK+wc7fEbo2hBnQcDQpV1YfBCjmj73J0EOOCZHijTBr8zA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=a/Bfz1PATDvC0oypikSeRFZrtlXcP1bU4HB7kfwj9Sc=;
- b=kF3FPSTwMyD2yCH0lQTE6BlgAlSQjxWIj4Xrn2XZL2ZuWqtHpGhk1GadjwDuzEO6knT0ERysxQTmMULupF9iYTd4DbETaXdgZPmHaAiEri3/a4lXImAz13gRqWTLh8vUPVpgbdmdsSxwDZNt0Zufdv5i6Kc0WHze78VQ30up2W7biduRRS1CDQaX0BBOzvXkNozHgIdnl/PIk9nI0sXgUVnn3i6YPAPJFcn0lKjzeJq2rOyj9FmYWPwptZTw8H3OGtVwDbq2q0xbBwBD3VvdmTh3Ya6qoya67NT2OK+Azjdtf8Myh9JWuHr6pQVVWZDNHl/A6bSDyaJHgKCSJllnWg==
+ bh=P6Ula3vvs5+whRUk2TH4Z4ERGxnEEc0a5xYnKJZsnkw=;
+ b=fNo8BQ4lK7uDk6Zcnlrdquq6JKdZvmuyn94QX03fgaWPehMmS0fibf2npsTN+QBAH9a39+VXLyMoAEMVAF7jLaBfm/DhDYAR5u0AS4dgXF/2eQSW7ykAwbl5tISoUYrFzbHdqdHTbjCzixFFUXh/axeRLz5La16TzXxI4lnTUXEzdidxPzwyVDpeRpIAPS/RAdVn6JLQ+Xhm9wdZ05DmkjkP8BvQG86ioBnpdSJwnDFtR6T/5+Bc4hBCXWx62yWnVZq0Lcf+Yh6h/sND6oCLQ8mrBuvyY+CS41Czsr88tbI5mKJFR9wgH4FrB201qZkEhpx5Do7R+udpW+xuwDZGVA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a/Bfz1PATDvC0oypikSeRFZrtlXcP1bU4HB7kfwj9Sc=;
- b=IVpLwYi17PdvXdvwoVwV0OpHKRO2/zXmLCNdmrp9rJZZYNtHrScZo9eRNmr8TEOg18LHeeZMLUr8etQpI0wwiaRRoRaozhQMu6H8FBVLlPv7QZ08jHw/t3WLe5hIDh78GMf5dVdOgu4IKdcE7+N+XBvr/EJGSqwNS800b0ak0CtgklWcyW12HsYFfnfwrlDMlSiA1eSUR7SiHi1w/YAIR4JdBgo4QuRmhFxea28e5R354tNe7AnMlOzv+zmjb3Q72obzw/b5puiuDR6j3/FurIsQyY8qk+gV3K+ms20oOneufhO4Gicxxd2QyCzL5ecmt+shMFoPORARj7Y63aOUGw==
+ bh=P6Ula3vvs5+whRUk2TH4Z4ERGxnEEc0a5xYnKJZsnkw=;
+ b=qeIWShdfUR/E0IYwwzrHBm9Qrquh53lWBhugWraDZvKXWD/yUQIef/SiKeIPoiQKUA8j1TFroiEgjRWmklrUVivMdbSlYlb3g4ISIPW5uuw0TerWJNujK7V9eqg6CVOLZHQ9J6TdAt2Op7feUH5JaVjP8eXSJ0g+bXOaBffU1mg=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by SN6PR12MB4719.namprd12.prod.outlook.com (2603:10b6:805:e9::25) with
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from MN2PR12MB2941.namprd12.prod.outlook.com (2603:10b6:208:a9::12)
+ by CH0PR12MB5284.namprd12.prod.outlook.com (2603:10b6:610:d7::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18; Thu, 14 Apr
- 2022 14:39:01 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2%5]) with mapi id 15.20.5164.020; Thu, 14 Apr 2022
- 14:39:01 +0000
-Date:   Thu, 14 Apr 2022 11:38:59 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     "Wang, Zhi A" <zhi.a.wang@intel.com>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "intel-gvt-dev@lists.freedesktop.org" 
-        <intel-gvt-dev@lists.freedesktop.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: refactor the i915 GVT support and move to the modern mdev API v3
-Message-ID: <20220414143859.GE368031@nvidia.com>
-References: <82c13d8e-1cb4-2873-86e9-16fd38e15b27@intel.com>
- <20220413154642.GA28095@lst.de>
- <871qy1geko.fsf@intel.com>
- <5af7726e-920e-603a-bad3-8adb09d2ba89@intel.com>
- <20220413232053.GA2120790@nvidia.com>
- <1c3aaab9-3bd4-95d4-9f9f-4be9e10e6516@intel.com>
- <20220414133427.GB2120790@nvidia.com>
- <87ilrbeqbo.fsf@intel.com>
- <20220414134321.GD2120790@nvidia.com>
- <abc0a953-8527-ba25-9987-d2f1284a7430@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <abc0a953-8527-ba25-9987-d2f1284a7430@intel.com>
-X-ClientProxiedBy: BLAPR03CA0131.namprd03.prod.outlook.com
- (2603:10b6:208:32e::16) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+ 2022 14:31:33 +0000
+Received: from MN2PR12MB2941.namprd12.prod.outlook.com
+ ([fe80::eccb:463d:2d80:63b7]) by MN2PR12MB2941.namprd12.prod.outlook.com
+ ([fe80::eccb:463d:2d80:63b7%4]) with mapi id 15.20.5144.030; Thu, 14 Apr 2022
+ 14:31:33 +0000
+Message-ID: <9225e49d-816d-a7c2-c1a3-b204488417f9@amd.com>
+Date:   Thu, 14 Apr 2022 10:31:32 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: linux-next: build failure after merge of the amdgpu tree
+Content-Language: en-US
+To:     Alex Deucher <alexdeucher@gmail.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        "Zhang, Dingchen (David)" <Dingchen.Zhang@amd.com>,
+        "Kotarac, Pavle" <Pavle.Kotarac@amd.com>,
+        "Chung, ChiaHsuan (Tom)" <ChiaHsuan.Chung@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        "Siqueira, Rodrigo" <Rodrigo.Siqueira@amd.com>
+References: <BN9PR12MB5145ECB75120FF9AC1AA4CFB8DEC9@BN9PR12MB5145.namprd12.prod.outlook.com>
+ <CADnq5_OjPwzYtW99a-L6OrHz-oH0MqSNi+Me4T-x1vY8zEXLcQ@mail.gmail.com>
+ <BN9PR12MB5145D81F9978B656E9BB67C78DEF9@BN9PR12MB5145.namprd12.prod.outlook.com>
+ <a1203367-834f-a4d0-3478-9e16787a3b8b@amd.com>
+ <CADnq5_MTQSZs7R+DTQWRyGqqQcff6mCb43s_7jtE8w00k+YxQg@mail.gmail.com>
+From:   Rodrigo Siqueira Jordao <rjordrigo@amd.com>
+In-Reply-To: <CADnq5_MTQSZs7R+DTQWRyGqqQcff6mCb43s_7jtE8w00k+YxQg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL1PR13CA0365.namprd13.prod.outlook.com
+ (2603:10b6:208:2c0::10) To MN2PR12MB2941.namprd12.prod.outlook.com
+ (2603:10b6:208:a9::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7bb56b66-d021-4fd6-9b24-08da1e248450
-X-MS-TrafficTypeDiagnostic: SN6PR12MB4719:EE_
-X-Microsoft-Antispam-PRVS: <SN6PR12MB4719D04B56C68210F4E2628BC2EF9@SN6PR12MB4719.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: b690a7b5-676d-4bf0-6ed6-08da1e23794c
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5284:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR12MB5284683D20BF3E4F6E6E45F598EF9@CH0PR12MB5284.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SSGmmUFcJ2RQuZGXFswa7oSIOvY0LUSSv0CuVe6KFh9rfIRN47aed/B/da8LIatR6xhIY2MbjbkYsl9aiayxFhVFmgjZEDvvc4rTD424O51NWU0D1F5VVmEt4RqMPhEwK+8HuUMz0qS+dMtddozrY6q6Y7UjZKlHJelbRrBdktMdCcS/3ry0IIpfec7386L3bVxu7mXUxczczWRi8/3CA57p/B6HS2ZfMUe/FSf9+Mwu279CoPyUp8kXWeQr8UxpqpWMpYQhwrm66Eys0t/qyCNJwpV60Pu71DPYCo3gZBWbLW/EZILGyTZlCKDKgq1D5HKyzPNC0kadyrjOYXwtuMAXT24UdJGNX3ytXmmjT9lDthntqiGV3WsGVLBOt4jceybdkKkF7ZOF2KFu28Veeo+qyFmyw205Honl8n9V1lQaWpbtW8QRmQuUL/ruhdo3+QLEl11hVmPC1DdztO3ig/p1ZmvxF68RSl5jQljfK7FHqLSoAjlwHvCwy8d0fbpnHaF9xxDonh863lDa5F0DooDAtmWviXio/TTyHZSItZFiQnpxEJuZC1BbdaBc5kpyAVRhYtDJWJvDYzAZD4JX6OYkLTg7U6eVwREg5mfOM9upGhMdZRPRm0DbY1Z3+n70od05PCl5YERl2b5vu9f/SDzfp9IiPy20mZQ8sfVrIGXFZZsLOzbtIrqkOSPLUxqkMpHfuUAj1vpq6qBCXmMhMg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(5660300002)(8936002)(26005)(6512007)(33656002)(38100700002)(4326008)(86362001)(316002)(66476007)(66556008)(54906003)(8676002)(66946007)(6916009)(6506007)(6486002)(508600001)(2906002)(7416002)(36756003)(1076003)(186003)(83380400001)(27376004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 2euIsOFTZ8ETID4F+FawNNwmT2J+kg5RjlyQMVTjY7caXwQ5csYw+d2Dke7vX2nzQXaxybLxloKXsOVOMvkqDrXTKT3OoJlWlsWKZzbLggK3dHVC609LuuxxqB3WKKhPbgWfkLpLp2ESYIiDoHYjFxE+Gjg90WZC+XIW6ICaqFeJw4eZdgm/4vH2Yir7KgatvGov/JuKG5NyYFcCuckwM4Fc8R+NLeUFF2lNUGeJ0mbO15ZA2BVuP/ajm15yOP/tooKsxeZAQVPNMyyIK9Hxr2ozd0zo1sxmiMLqRA0N6S4VDFg4gp8RE4A12hbYhSQ5yMj27ooCcFxPhet7mi3t/5H12mkhuV58b0m+GcYTaGLOR8G0ZJUmKK9ZJQclQmku3Ejhb9gHMgXwc0i8FVM2spbGaZj7vLQo0YZ0zFa5zeRcYGr8QrEfhZmb7aXmc2aOEFANAOeA0mRnqdYn/Qirgs13sF9o8230Q+TT8Kk4BECL4ZJhw1j7JLbKfOt3dCIsMGDGJ8QkzTT757rBXp547OhzhCywMiv1Y3JsrhkcKXDRnBHEGEQHqVibhPd8pCetHgoFI2v4vICv3qKWnhVayIjfdOScdgmPntBUaN8+eOq0ccLCV7fw/hnaeCTqiV3fHqE0qEkNXSh6EdXQGC7c71GPgfTC4Qu2jcr028sBC2yKblfmL2F0c1XxG18akVa0KtoouF19AwqrstVeGQQXQ0Xey7XQS9gvLrdaXHu6B2GreFuzjxFfl72fURdYVA99
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB2941.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(26005)(66946007)(8676002)(4326008)(186003)(38100700002)(5660300002)(36756003)(31686004)(2906002)(83380400001)(2616005)(508600001)(316002)(31696002)(6512007)(53546011)(6506007)(6486002)(66556008)(54906003)(966005)(6916009)(66476007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?m3ExuVKoUKybjs389f97/JJ1nbF168b1Uu+Y36OhTFxlMcZHG4D5PFCl0/jB?=
- =?us-ascii?Q?ZC9JjcIkQ6ePZiA+SX5GrMOUGD1vdGsEM9tjGmbLqW4qcFxyFqWJALOEBBIU?=
- =?us-ascii?Q?C5r4E+sgcmR2aQvZTh7FlEjItRBM+z19dkpTEohsco6Ii4F/adBnx4dghJOh?=
- =?us-ascii?Q?M4m/nZsXT/2OWHs2sO3FjPxKPsvLUz0YU2dDv4Bp9Ffo697w3/CGNGVnL8ig?=
- =?us-ascii?Q?rQg9G04mYPyi/5jyEaIb745hgZFv7IOu8KJi6SdwEOuhqXsYogzgLU3LM4PF?=
- =?us-ascii?Q?fbCsfw7/uZUDopdptzrAMvMZfjwA+XgugdADp5lysq75gidQ+FLjVYXIqb94?=
- =?us-ascii?Q?w5VdidKcYuOtScCCMEOINyhaK4ryG270AsYfAzeryHsYMBEW9IW0MKU5VhrX?=
- =?us-ascii?Q?MIPQnCJb0cAnGAPz4roLZMJsksSvIX9ytLXl3VUtJCjB8OVCoQoqyagG8FX6?=
- =?us-ascii?Q?M52k5ZrEua7dPL6F+us26KYx0CAawbQcZDm3LE2s29AFxe32VFvwwY43Mls1?=
- =?us-ascii?Q?Ub2A1OFfowNqBjyvSpLrWyVY5RNJ6sMeem6PoBxuCTLtNrBZfL/ha0Ef+Xiq?=
- =?us-ascii?Q?6RsxFU/1plTs8pHMpjw0YaeTTEBvim4HvX1Hj8/tOaEqoKGcRhTKfpv6uUsO?=
- =?us-ascii?Q?jQ0r1QxaDXOu7wostkLHJBWV3tVUVvOXh1+r3wP2ecIjtlPeeWHQNDondBeM?=
- =?us-ascii?Q?YforjTrAqJpO3ycTLvq5b33IGkzejOmAtQJp0WXJyNbpIFPOnuP/oljASiWz?=
- =?us-ascii?Q?T3kPnp//1aD94QGJ0meTRBcpCaba/W+TIluKK90MECgb9piQS6fpK9IgTsej?=
- =?us-ascii?Q?kLnJyFf9EpNzgDItZrm+80LGUUx6AUDkVE/qs0h8v4YldZ73U2P3EmuF3LQH?=
- =?us-ascii?Q?Z9pa7WaSGPmIMPwIhZp3O8MZ3wLDBaIPkdAYLqIxRcbVL1g7YpWUb4owTHQG?=
- =?us-ascii?Q?ypwX9SrUE9rJiiTiozDBcjxLPk6pfMTZCkR2rzSahgKsG1Kbh6h9E8+jvYaO?=
- =?us-ascii?Q?7C+OBY6PQnzGKDNRPhHM57y5HBDmx/FyBmN0bizkJK0ht2jpM5nP8iotiz+r?=
- =?us-ascii?Q?2JeM+oxn3C7NgYF2DHAgo5Kb7E4ymJkBRhCWRw+lMbtGanJfdseNM8GBB5om?=
- =?us-ascii?Q?PguvilcAK1RtQ4krvtj0Hx8LjdxBSajV5WDEMAov3VM8iGS7E0795h7W9UnP?=
- =?us-ascii?Q?uYN+zMBBcnhjLP5EcOgiUicviOdeLndy1zsm2wWkRzU8ck79ZGl1/VoGtBbW?=
- =?us-ascii?Q?Yo2YuwyoJsLPPrgohMKaIbzt5DgNjcRlVAs3pDPZU2+ApUHGP4v+B1yvEfaA?=
- =?us-ascii?Q?GvfpOIE01qEwr3cXHhivIMmE4P2X8LfuwyWtrPxa+wUulczzwMPcTFVaWrTw?=
- =?us-ascii?Q?7Brj+s0XcEETKjg8HaAk0HYK3eZIxQhNb/yc2sIEzIRMI9ix4MWGgoPAbtw8?=
- =?us-ascii?Q?+O27gW29DmXZhrXOaAwnuZ+aS6MKUaT8KBz2t78vIXfEahVT8dQNIOKC2Acx?=
- =?us-ascii?Q?oGKrli/6e5RuctpqMRThW0g1aE5OG8CLVmGQUYi9n4QUd1V093J931LnTYr4?=
- =?us-ascii?Q?k8v8Gi0OM2J1lkxZGco0T9mSZtMSYU9nc9Wxz/AfY/0GtvlG+0IOATLh9gxI?=
- =?us-ascii?Q?3PJdgCVa7c3vGxmsMM/Q1akkzN8ZTpzuCG+duH0L7unoNPQAI3N5ywtQo55r?=
- =?us-ascii?Q?B/ySYKIzKWMERruj/lgdVQbPElHhPjDZrR383HgQmfXXklW9rRr/Uv8z04cs?=
- =?us-ascii?Q?vajujAETzg=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7bb56b66-d021-4fd6-9b24-08da1e248450
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cElnZkNwZlExOTAwVlRKbCtUanBlYlR1ZXJZMnVyNXFwY05iSlJnWmhXNDhi?=
+ =?utf-8?B?NGFhdzJ3OHJ4eWNYWEFQd2N2eVdqR3BubTJub0VUbWRIRjcwMzlNclR6TTVp?=
+ =?utf-8?B?VitFMWpLeEo4ZEsrTU1DUEcwY1h5NWxxYW02RHl5bUZ0aGtsamx4VGoxaTVw?=
+ =?utf-8?B?Vm9xWk1PZU9qY255R1A5emF4OW94OERvSXN1bklpdjdJV1R0UG9LUjZuNTV5?=
+ =?utf-8?B?aXpPSnIxVjl0L25yME50dUcxMWppeFpyK2grQjROSFROcFRMcjdXY1BGRWxh?=
+ =?utf-8?B?T2kxcGRrQ0hNZUQ0d01GNndiSllOdnlBb25qWHNZUHI2b2lIRmg2QWkxUTUz?=
+ =?utf-8?B?YS9UY0gxd2tnZmM3RHZ2K1VhaGNTTU9ETDNCVzVyY3lYU3kzdVRJZDk4SU4w?=
+ =?utf-8?B?UXhOMlJUMmluWmZRQmdJQmQ5NDdRaXNrM2hyTGFzb240YmtoWXdzNTN4eHhP?=
+ =?utf-8?B?Z0UxUnRpRjhLeitocUFFN1lkVUlJcHQyVjdJRzByT04zNXRIM3BSd1h1a2Ja?=
+ =?utf-8?B?NzJwT2J4R0dXS3VKOWxPOWVLa05vaTlHMDNGWTZxRkhPZmg4Vm51U01tcWdC?=
+ =?utf-8?B?bmlkY2VWTmVxRnJJc0diQ2NzTkhCNEg3SUdxVThjT1NIRkZtYzdvMmQ5RkEv?=
+ =?utf-8?B?eGl4SzhRUVYvUWc5N1FwbDlHUWZXRkpRNStRcVl1d2krSGlWb3BKZ1UvMkx6?=
+ =?utf-8?B?bmxXa29hdStlZ2VUWTZqSWFFVkJNNGdsT05pSUlpbGlyamZneWRXYkdiNmJC?=
+ =?utf-8?B?ZlVXOEFpTXRxRTJRanZmU2FkRGJITmJTUEVpb2dSNFg5M0ZNMWVWcU9nMlpt?=
+ =?utf-8?B?ZGwxTm9iTWM3YnFTcnlTNnZrVk5VL0RxclZYaU1oc2JOem9VS0xyekozN1hL?=
+ =?utf-8?B?dkk0bDdxcDhMS2hKY1k4U0R1NTJoTC90WURZd09hVTBHQnJ0c1BSdGM1b0du?=
+ =?utf-8?B?WjNaUFN5SGlTZUpKNm1hS29MaHMrL3plYU1KYy9BZVI0MTFpNDF4TUMycW0v?=
+ =?utf-8?B?SGNReThsYjRudVNxS28yRzAybS9HNk5uOWFpREVXMDlXNFlPVzN4UUtwOXQ5?=
+ =?utf-8?B?Q3hxdzJkekZtL294aEhBbW5nN1RCR1FOT2ZRVDB0OUFQa3FsaGgrZG1OcW14?=
+ =?utf-8?B?RUVSd1ppbDNaQS9YaWg3YitUK2J2Q3NpeGxpWGpyUGRJb0tBMWFic1crVEVu?=
+ =?utf-8?B?Qy9PMTJzSmwrQnVZUWV1cVloczRBZ0JSdTgxMnE0WmFLU3JVbkdKWHN4eHNI?=
+ =?utf-8?B?a1ZYNTA3WkFqenNVMklWQUVVY2Y4cU5FTE9zYVVNdVhVem0wQ1Nhdk1oUWY2?=
+ =?utf-8?B?N1lXNmowdmdSV1VZeC9lQUtEQU5hR2ZaWVlSQkFaT0RjMXJPY2R6TnZLYXBz?=
+ =?utf-8?B?MzU5elNxNlRaT1NTRFVHelRGN1lMS2hZc2tYb0ZQSkRvM0Z0N0cyV3V0MDhO?=
+ =?utf-8?B?L0MrOHdFSi9sMWJhTGpmOVNBUy90WElJd2NXR3l2VWpRS0lKWnNuQkxESEFt?=
+ =?utf-8?B?Tjc5SStpaVpKaktUc2xLcThjVXdtRERXbXJUUTFzY3haSFBFNmpwdC9CanBv?=
+ =?utf-8?B?V2VFYzNrZlJicUM5U1Z6aWZ5ZDRFdFV5ZHJWL2E0S3NldHFKYVFGODBGUjVu?=
+ =?utf-8?B?TVAxRmFWa216Z21TOUNEWEZMMlU2UWI4Zzh4cmN6NkZycGM1OGxIY3M2LzZU?=
+ =?utf-8?B?TDJObGRSb1lOQXVpN2Q1dEtUUm1lbEFtTGFwWjJ0eEFtblZlOTFnNUpvRU9K?=
+ =?utf-8?B?OHRTRVhWZjB3Vlg5ODdncnBYNk82TWsycVRsVzZIQ1Q0MEtrL1NKRm0xLzV2?=
+ =?utf-8?B?MWVJUU1UeUlLZG9BZUtEVUxhb3VPRFpmSEJXTlp3dDBUMXRCV3dqc2hNN2Z2?=
+ =?utf-8?B?Y3krZWV0b1kyd0pOcks0UmJTdDZBMWpwUDROMXFtMGFOd1d5bGFMbVl0aW5P?=
+ =?utf-8?B?bjJGU1JEbEZYVTZVK2dZUXE1ajNMMnQwR25XcjVHQjhTK0x4RndlMVdaRDhL?=
+ =?utf-8?B?ZngzR1BVQWlIc2hEN1hpS0x6aEVIVXR2RGFlQ3JvL2hDaFhwTzJ0eldlbnR5?=
+ =?utf-8?B?TE1jOTRNWmlzUjZTblBYTmgyejRXTG0wd0s3L2Ura1VMK0U0aDJKNXB2dGFn?=
+ =?utf-8?B?Znl0V0lKU05vakZCK2JJNWVCNjhCMFVXdm45YTZUa2NCTElCd2sxamNTQVFr?=
+ =?utf-8?B?aFZKNjROcFdQZ2Z3STgvMmduNWVnS2tqQzgyRGtxS3RBaEIvcHc3SVN1YXJJ?=
+ =?utf-8?B?Nm0wb083UFBLV0ZsdUoxdG5GaVBUa3dXQW9EOU5VOVd0RWpScWY3alVMaGIr?=
+ =?utf-8?B?UHErQVhES1ZkMDdiSDBjaEJRYUZGbHNEZjZqUVZYK1dzTVlwUkRvdz09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b690a7b5-676d-4bf0-6ed6-08da1e23794c
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB2941.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2022 14:39:01.5752
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2022 14:31:33.5962
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wjISa0hfnwjnGt+3NzPHJ9CAjDSBMDurdl0Hs57LT5xxhM0kfaLr6Y2ctcpCwhqw
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB4719
+X-MS-Exchange-CrossTenant-UserPrincipalName: aJCR0ryAchzSqt8/L9zXwiXHymL+KYWvc717KSYSZgXOJ7/VnKipmbvb6OkzOi5ce/UOmLi/ZfCv+VbUUx0DhQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5284
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 02:25:36PM +0000, Wang, Zhi A wrote:
 
-> > So drop the '[DONT PULL]' commit and send a PR to the next DRM tree -
-> > when that is confirmed send the same PR to vfio,
+
+On 2022-04-14 10:27, Alex Deucher wrote:
+> On Thu, Apr 14, 2022 at 10:23 AM Rodrigo Siqueira Jordao
+> <rjordrigo@amd.com> wrote:
+>>
+>> Hi Alex,
+>>
+>> Do we need to apply David's patch [1] to drm-misc-next? If so, I can
+>> merge it there. Also, I noticed that drm-misc-next changed the dp header
+>> path; in that way, I had to change the original patch a little bit.
+>>
+>> 1. https://patchwork.freedesktop.org/patch/480331/?series=102035&rev=1>>>
 > 
-> I updated the branch again, but I am confused. What is the purpose of sending
-> the PR to next DRM tree? I suppose all the patches will go through VFIO? If
-> I understand correctly?
+> Ideally it would have gone through drm-misc, but since we are the only
+> ones using it at this point, I think it's ok to take through my tree.
+> I'll make a note about the path change when I send the PR.
 
-pull requests can flow through more than one tree concurrently. The
-purpose of the topic branch is to allow all the commits to be in all
-the trees they need to be in at once.
+Ok, Next time I'll try to push this type of patch directly to drm-misc-next.
 
-So you should send this branch as a PR to the next logical upstream
-tree gvt patches normally go through, in the usual way that you send
-PRs. Especially in this case where there is a small merge conflict
-internal to DRM to resolve. I'm assuming this is the drm-intel-next
-tree?
+Thanks
+Siqueira
 
-Once DRM is internally happy then VFIO can merge it as well. You can
-view VFIO as the secondary path to Linus, DRM as primary. Alex will
-mention in his pull request that VFIO has a 'shared branch with DRM
-for gvt'.
+> Alex
+> 
+>> Best Regards,
+>> Siqueira
+>>
+>> On 2022-04-14 10:08, Zhang, Dingchen (David) wrote:
+>>> [AMD Official Use Only]
+>>>
+>>>
+>>> Thanks for clarifying, Alex.
+>>> ------------------------------------------------------------------------
+>>> *From:* Alex Deucher <alexdeucher@gmail.com>
+>>> *Sent:* Wednesday, April 13, 2022 10:18 AM
+>>> *To:* Zhang, Dingchen (David) <Dingchen.Zhang@amd.com>
+>>> *Cc:* Stephen Rothwell <sfr@canb.auug.org.au>; Kotarac, Pavle
+>>> <Pavle.Kotarac@amd.com>; Chung, ChiaHsuan (Tom)
+>>> <ChiaHsuan.Chung@amd.com>; Linux Kernel Mailing List
+>>> <linux-kernel@vger.kernel.org>; Linux Next Mailing List
+>>> <linux-next@vger.kernel.org>
+>>> *Subject:* Re: linux-next: build failure after merge of the amdgpu tree
+>>> The patch should be there now.
+>>>
+>>> Alex
+>>>
+>>> On Wed, Apr 13, 2022 at 10:09 AM Zhang, Dingchen (David)
+>>> <Dingchen.Zhang@amd.com> wrote:
+>>>>
+>>>> [AMD Official Use Only]
+>>>>
+>>>>
+>>>> hi Stephen,
+>>>>
+>>>> Could you please check if below patch (which has been upstreamed) is in your Linux code base?
+>>>>
+>>>> ~~~~
+>>>> eb2bb029bacf David Zhang         12 days ago    drm: add PSR2 support and capability definition as per eDP 1.5
+>>>> ~~~~~
+>>>>
+>>>> Thanks
+>>>> David
+>>>> ________________________________ From: Stephen Rothwell
+>>>> Sent: Tuesday, April 12, 2022 10:32 PM
+>>>> To: Alex Deucher
+>>>> Cc: Zhang, Dingchen (David); Kotarac, Pavle; Chung, ChiaHsuan (Tom); Linux Kernel Mailing List; Linux Next Mailing List
+>>>> Subject: linux-next: build failure after merge of the amdgpu tree
+>>>>
+>>>> Hi all,
+>>>>
+>>>> After merging the amdgpu tree, today's linux-next build (x86_64
+>>>> allmodconfig) failed like this:
+>>>>
+>>>> drivers/gpu/drm/amd/amdgpu/../display/modules/power/power_helpers.c: In function 'is_psr_su_specific_panel':
+>>>> drivers/gpu/drm/amd/amdgpu/../display/modules/power/power_helpers.c:798:61: error: 'DP_PSR2_WITH_Y_COORD_ET_SUPPORTED' undeclared (first use in this function); did you mean 'DP_PSR2_WITH_Y_COORD_IS_SUPPORTED'?
+>>>>    798 |                 if (link->dpcd_caps.psr_info.psr_version >= DP_PSR2_WITH_Y_COORD_ET_SUPPORTED)
+>>>>        |                                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>>>        |                                                             DP_PSR2_WITH_Y_COORD_IS_SUPPORTED
+>>>> drivers/gpu/drm/amd/amdgpu/../display/modules/power/power_helpers.c:798:61: note: each undeclared identifier is reported only once for each function it appears in
+>>>>
+>>>> Caused by commit
+>>>>
+>>>>    901029aa0017 ("drm/amd/display: implement shared PSR-SU sink validation helper")
+>>>>
+>>>> Please start including an x86_64 allmodconfig build in your local testing.
+>>>>
+>>>> I have used the amdgpu tree from next-20220412 for today.
+>>>>
+>>>> --
+>>>> Cheers,
+>>>> Stephen Rothwell
+>>
 
-Jason
