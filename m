@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD7FFC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBD87C4321E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351066AbiDNOaE (ORCPT
+        id S1351073AbiDNOaG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35550 "EHLO
+        Thu, 14 Apr 2022 10:30:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343791AbiDNNjX (ORCPT
+        with ESMTP id S1344219AbiDNNkP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D7C30557;
-        Thu, 14 Apr 2022 06:34:52 -0700 (PDT)
+        Thu, 14 Apr 2022 09:40:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83157120;
+        Thu, 14 Apr 2022 06:37:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C96BB8296A;
-        Thu, 14 Apr 2022 13:34:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A18C7C385A1;
-        Thu, 14 Apr 2022 13:34:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A76AB82983;
+        Thu, 14 Apr 2022 13:37:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B9A5C385A5;
+        Thu, 14 Apr 2022 13:37:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943290;
-        bh=9xVC0t8fE1nc9iethMyli5nPUonY6Z+rOanOsf8awNw=;
+        s=korg; t=1649943467;
+        bh=WFGnr/magdyyCje3mXFUY0rNHEzvwgrhLixtbQcS02c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ge8UWJ0S6AFd7OeJnqfThYvWVTbkAahHAvBJjDrK3QTyIvklh22oyPcCrErdlnhUf
-         xSM8QXg2g5dDKL3ovB2FDXpoHhJkrplqyC9snTJUZlyVfdoSDZFVy01+L5w/IQAy4H
-         PBz5RlNArGUMlTmAbol5Fp+MY4BpdtFbxZhFAe6M=
+        b=L/LE1vKbrbEm1PN3OqnJ99JsTKoy3nBvAS+pSfCOx36fPPRrn6u5w594k/guAvfpi
+         s9ovSlVfTPxI3sLReE026TcmuAY6zhVWdtOpA42XuHFiMNV8mvTjQOUNjpyuLzPeyg
+         1JHCmlROzyxgxezgvAGJUQfjMZt+jlgXFPLFRrNI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Ranquet <granquet@baylibre.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        stable@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 103/475] clocksource/drivers/timer-of: Check return value of of_iomap in timer_of_base_init()
-Date:   Thu, 14 Apr 2022 15:08:08 +0200
-Message-Id: <20220414110858.036715290@linuxfoundation.org>
+Subject: [PATCH 5.4 165/475] KVM: PPC: Fix vmx/vsx mixup in mmio emulation
+Date:   Thu, 14 Apr 2022 15:09:10 +0200
+Message-Id: <20220414110859.756881055@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,42 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Ranquet <granquet@baylibre.com>
+From: Fabiano Rosas <farosas@linux.ibm.com>
 
-[ Upstream commit 4467b8bad2401794fb89a0268c8c8257180bf60f ]
+[ Upstream commit b99234b918c6e36b9aa0a5b2981e86b6bd11f8e2 ]
 
-of_base->base can either be iomapped using of_io_request_and_map() or
-of_iomap() depending whether or not an of_base->name has been set.
+The MMIO emulation code for vector instructions is duplicated between
+VSX and VMX. When emulating VMX we should check the VMX copy size
+instead of the VSX one.
 
-Thus check of_base->base against NULL as of_iomap() does not return a
-PTR_ERR() in case of error.
-
-Fixes: 9aea417afa6b ("clocksource/drivers/timer-of: Don't request the resource by name")
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-Link: https://lore.kernel.org/r/20220307172656.4836-1-granquet@baylibre.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Fixes: acc9eb9305fe ("KVM: PPC: Reimplement LOAD_VMX/STORE_VMX instruction ...")
+Signed-off-by: Fabiano Rosas <farosas@linux.ibm.com>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220125215655.1026224-3-farosas@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/timer-of.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/powerpc/kvm/powerpc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clocksource/timer-of.c b/drivers/clocksource/timer-of.c
-index a3c73e972fce..bf2a6f64ba0c 100644
---- a/drivers/clocksource/timer-of.c
-+++ b/drivers/clocksource/timer-of.c
-@@ -157,9 +157,9 @@ static __init int timer_of_base_init(struct device_node *np,
- 	of_base->base = of_base->name ?
- 		of_io_request_and_map(np, of_base->index, of_base->name) :
- 		of_iomap(np, of_base->index);
--	if (IS_ERR(of_base->base)) {
--		pr_err("Failed to iomap (%s)\n", of_base->name);
--		return PTR_ERR(of_base->base);
-+	if (IS_ERR_OR_NULL(of_base->base)) {
-+		pr_err("Failed to iomap (%s:%s)\n", np->name, of_base->name);
-+		return of_base->base ? PTR_ERR(of_base->base) : -ENOMEM;
- 	}
+diff --git a/arch/powerpc/kvm/powerpc.c b/arch/powerpc/kvm/powerpc.c
+index 8dd4d2b83677..eb8c72846b7f 100644
+--- a/arch/powerpc/kvm/powerpc.c
++++ b/arch/powerpc/kvm/powerpc.c
+@@ -1495,7 +1495,7 @@ int kvmppc_handle_vmx_load(struct kvm_run *run, struct kvm_vcpu *vcpu,
+ {
+ 	enum emulation_result emulated = EMULATE_DONE;
  
- 	return 0;
+-	if (vcpu->arch.mmio_vsx_copy_nums > 2)
++	if (vcpu->arch.mmio_vmx_copy_nums > 2)
+ 		return EMULATE_FAIL;
+ 
+ 	while (vcpu->arch.mmio_vmx_copy_nums) {
+@@ -1592,7 +1592,7 @@ int kvmppc_handle_vmx_store(struct kvm_run *run, struct kvm_vcpu *vcpu,
+ 	unsigned int index = rs & KVM_MMIO_REG_MASK;
+ 	enum emulation_result emulated = EMULATE_DONE;
+ 
+-	if (vcpu->arch.mmio_vsx_copy_nums > 2)
++	if (vcpu->arch.mmio_vmx_copy_nums > 2)
+ 		return EMULATE_FAIL;
+ 
+ 	vcpu->arch.io_gpr = rs;
 -- 
 2.34.1
 
