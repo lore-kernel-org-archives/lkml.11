@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28BBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2124C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350280AbiDNO2Q (ORCPT
+        id S1350440AbiDNO2Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36464 "EHLO
+        Thu, 14 Apr 2022 10:28:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343997AbiDNNjd (ORCPT
+        with ESMTP id S1344008AbiDNNjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:39:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD786FA2A;
-        Thu, 14 Apr 2022 06:36:33 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C043F8FE4C;
+        Thu, 14 Apr 2022 06:36:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19E4E61D70;
-        Thu, 14 Apr 2022 13:36:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DF38C385A5;
-        Thu, 14 Apr 2022 13:36:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F83DB82984;
+        Thu, 14 Apr 2022 13:36:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA0CAC385A5;
+        Thu, 14 Apr 2022 13:36:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943392;
-        bh=wIYZiiX7LOSV2Ed8osLsL7O0y2PdlI8H6Yv0SYtWV/I=;
+        s=korg; t=1649943398;
+        bh=p6+NLxM+C/7NTXma3xlWoVJPn5mg38bc5DXNKXEPwjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NQr82NaX8nnAwYjxRYZ7mFJrb08M2WecpcBXmcjT82tLJ1mwSbg3KjniptJldj9Qq
-         5eWgkFWO+1oru70IUbFHIYrmJlx5MhlrShGyzPnl8tPI8WEPi27/b8ouXxJxCqaCA0
-         amiULWietPDO5dSbD7kPo7d8Gmb48OONqPKm3qbE=
+        b=riUviK0+PHOwk4R4ZEWkA2b2LwOx2kwMcVbzXIdhbrrFo8xsgclvGFraeVvsqINee
+         EwV45e++J9spb8/aI41UfhihaRz4OL0U/gjt8ubQamunbhv3XpBdop6hQNNbR1WZqn
+         bGcR0UU4xk0N9Zt2FCKEaqd5T7ij88l1jDTDZblE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 132/475] ALSA: spi: Add check for clk_enable()
-Date:   Thu, 14 Apr 2022 15:08:37 +0200
-Message-Id: <20220414110858.843066854@linuxfoundation.org>
+        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 142/475] arm64: dts: rockchip: Fix SDIO regulator supply properties on rk3399-firefly
+Date:   Thu, 14 Apr 2022 15:08:47 +0200
+Message-Id: <20220414110859.120178337@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,90 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Rob Herring <robh@kernel.org>
 
-[ Upstream commit ca1697eb09208f0168d94b88b72f57505339cbe5 ]
+[ Upstream commit 37cbd3c522869247ed4525b5042ff4c6a276c813 ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+A label reference without brackets is a path string, not a phandle as
+intended. Add the missing brackets.
 
-Fixes: 3568459a5113 ("ALSA: at73c213: manage SSC clock")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220228022839.3547266-1-jiasheng@iscas.ac.cn
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: a5002c41c383 ("arm64: dts: rockchip: add WiFi module support for Firefly-RK3399")
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220304202559.317749-1-robh@kernel.org
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/spi/at73c213.c | 27 +++++++++++++++++++++------
- 1 file changed, 21 insertions(+), 6 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3399-firefly.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/spi/at73c213.c b/sound/spi/at73c213.c
-index 4de1ba9a418d..6e5d315bab59 100644
---- a/sound/spi/at73c213.c
-+++ b/sound/spi/at73c213.c
-@@ -218,7 +218,9 @@ static int snd_at73c213_pcm_open(struct snd_pcm_substream *substream)
- 	runtime->hw = snd_at73c213_playback_hw;
- 	chip->substream = substream;
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts b/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
+index 76f5db696009..5b7e8fbf1ffe 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-firefly.dts
+@@ -666,8 +666,8 @@
+ 	sd-uhs-sdr104;
  
--	clk_enable(chip->ssc->clk);
-+	err = clk_enable(chip->ssc->clk);
-+	if (err)
-+		return err;
+ 	/* Power supply */
+-	vqmmc-supply = &vcc1v8_s3;	/* IO line */
+-	vmmc-supply = &vcc_sdio;	/* card's power */
++	vqmmc-supply = <&vcc1v8_s3>;	/* IO line */
++	vmmc-supply = <&vcc_sdio>;	/* card's power */
  
- 	return 0;
- }
-@@ -784,7 +786,9 @@ static int snd_at73c213_chip_init(struct snd_at73c213 *chip)
- 		goto out;
- 
- 	/* Enable DAC master clock. */
--	clk_enable(chip->board->dac_clk);
-+	retval = clk_enable(chip->board->dac_clk);
-+	if (retval)
-+		goto out;
- 
- 	/* Initialize at73c213 on SPI bus. */
- 	retval = snd_at73c213_write_reg(chip, DAC_RST, 0x04);
-@@ -897,7 +901,9 @@ static int snd_at73c213_dev_init(struct snd_card *card,
- 	chip->card = card;
- 	chip->irq = -1;
- 
--	clk_enable(chip->ssc->clk);
-+	retval = clk_enable(chip->ssc->clk);
-+	if (retval)
-+		return retval;
- 
- 	retval = request_irq(irq, snd_at73c213_interrupt, 0, "at73c213", chip);
- 	if (retval) {
-@@ -1016,7 +1022,9 @@ static int snd_at73c213_remove(struct spi_device *spi)
- 	int retval;
- 
- 	/* Stop playback. */
--	clk_enable(chip->ssc->clk);
-+	retval = clk_enable(chip->ssc->clk);
-+	if (retval)
-+		goto out;
- 	ssc_writel(chip->ssc->regs, CR, SSC_BIT(CR_TXDIS));
- 	clk_disable(chip->ssc->clk);
- 
-@@ -1096,9 +1104,16 @@ static int snd_at73c213_resume(struct device *dev)
- {
- 	struct snd_card *card = dev_get_drvdata(dev);
- 	struct snd_at73c213 *chip = card->private_data;
-+	int retval;
- 
--	clk_enable(chip->board->dac_clk);
--	clk_enable(chip->ssc->clk);
-+	retval = clk_enable(chip->board->dac_clk);
-+	if (retval)
-+		return retval;
-+	retval = clk_enable(chip->ssc->clk);
-+	if (retval) {
-+		clk_disable(chip->board->dac_clk);
-+		return retval;
-+	}
- 	ssc_writel(chip->ssc->regs, CR, SSC_BIT(CR_TXEN));
- 
- 	return 0;
+ 	#address-cells = <1>;
+ 	#size-cells = <0>;
 -- 
 2.34.1
 
