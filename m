@@ -2,204 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D47DC4707F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BF2C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344203AbiDNNkM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48282 "EHLO
+        id S242436AbiDNNl6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244967AbiDNN2W (ORCPT
+        with ESMTP id S245124AbiDNN2f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27413939C8
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:21:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649942484;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rZuJFI5+WrfKz8zXuuvBEC1ez7qdJgm1x6dbeUA0HMY=;
-        b=YgT13rahRUmXoZXJXhwhS1lSTDtrmebw/6jJ0q0Ebhq5BAiHUAhx25s8m5jxiUsWd2BmvI
-        NITCVCc1lGsELkVXcZ4IDQwdmWPFuixWxn8IjmW6234o+9BSkTznvhrvhcXK4ywL1exDH3
-        xO/41F67/2wPZyWmUAsSt3m6/0wTKjI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-203-dQ0S61LNPKufHBq-p2uloA-1; Thu, 14 Apr 2022 09:21:21 -0400
-X-MC-Unique: dQ0S61LNPKufHBq-p2uloA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 14 Apr 2022 09:28:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D996EAA006;
+        Thu, 14 Apr 2022 06:21:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6B6BF802803;
-        Thu, 14 Apr 2022 13:21:20 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.195.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BE31F7C28;
-        Thu, 14 Apr 2022 13:21:18 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 31/34] KVM: selftests: evmcs_test: Introduce L2 TLB flush test
-Date:   Thu, 14 Apr 2022 15:20:10 +0200
-Message-Id: <20220414132013.1588929-32-vkuznets@redhat.com>
-In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8FA1CB8296A;
+        Thu, 14 Apr 2022 13:21:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0BDFC385A1;
+        Thu, 14 Apr 2022 13:21:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942502;
+        bh=C2h0BP6DiXXyixkU1UrKrKCZG8mtbJkjW/PyCs0prik=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zd2GrAhqGEgdqwL6SUcyjln/BA85jARZVKnSs3dChX7r2YFcAWsvcZrDbQHO9ofR3
+         q3qT/GOk6zhVaXMMQIkcE3+XX1XiMFCHj9tMtzXPCJdarPINh2SsPufr70SWT82Wt1
+         MQ962+IT82M5NA6QGEr9EI0pqpkMUXsGjuTVZNKU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 152/338] af_netlink: Fix shift out of bounds in group mask calculation
+Date:   Thu, 14 Apr 2022 15:10:55 +0200
+Message-Id: <20220414110843.229271398@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable Hyper-V L2 TLB flush and check that Hyper-V TLB flush hypercalls
-from L2 don't exit to L1 unless 'TlbLockCount' is set in the
-Partition assist page.
+From: Petr Machata <petrm@nvidia.com>
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+[ Upstream commit 0caf6d9922192dd1afa8dc2131abfb4df1443b9f ]
+
+When a netlink message is received, netlink_recvmsg() fills in the address
+of the sender. One of the fields is the 32-bit bitfield nl_groups, which
+carries the multicast group on which the message was received. The least
+significant bit corresponds to group 1, and therefore the highest group
+that the field can represent is 32. Above that, the UB sanitizer flags the
+out-of-bounds shift attempts.
+
+Which bits end up being set in such case is implementation defined, but
+it's either going to be a wrong non-zero value, or zero, which is at least
+not misleading. Make the latter choice deterministic by always setting to 0
+for higher-numbered multicast groups.
+
+To get information about membership in groups >= 32, userspace is expected
+to use nl_pktinfo control messages[0], which are enabled by NETLINK_PKTINFO
+socket option.
+[0] https://lwn.net/Articles/147608/
+
+The way to trigger this issue is e.g. through monitoring the BRVLAN group:
+
+	# bridge monitor vlan &
+	# ip link add name br type bridge
+
+Which produces the following citation:
+
+	UBSAN: shift-out-of-bounds in net/netlink/af_netlink.c:162:19
+	shift exponent 32 is too large for 32-bit type 'int'
+
+Fixes: f7fa9b10edbb ("[NETLINK]: Support dynamic number of multicast groups per netlink family")
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Link: https://lore.kernel.org/r/2bef6aabf201d1fc16cca139a744700cff9dcb04.1647527635.git.petrm@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/kvm/include/x86_64/evmcs.h      |  2 +
- .../testing/selftests/kvm/x86_64/evmcs_test.c | 52 ++++++++++++++++++-
- 2 files changed, 52 insertions(+), 2 deletions(-)
+ net/netlink/af_netlink.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-index 9c965ba73dec..36c0a67d8602 100644
---- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-@@ -252,6 +252,8 @@ struct hv_enlightened_vmcs {
- #define HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_MASK	\
- 		(~((1ull << HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_SHIFT) - 1))
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index a7497361e4d7..5c6241964637 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -152,6 +152,8 @@ static const struct rhashtable_params netlink_rhashtable_params;
  
-+#define HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH 0x10000031
-+
- extern struct hv_enlightened_vmcs *current_evmcs;
- extern struct hv_vp_assist_page *current_vp_assist;
- 
-diff --git a/tools/testing/selftests/kvm/x86_64/evmcs_test.c b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-index d12e043aa2ee..8d2aa7600d78 100644
---- a/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-@@ -16,6 +16,7 @@
- 
- #include "kvm_util.h"
- 
-+#include "hyperv.h"
- #include "vmx.h"
- 
- #define VCPU_ID		5
-@@ -49,6 +50,16 @@ static inline void rdmsr_gs_base(void)
- 			      "r13", "r14", "r15");
+ static inline u32 netlink_group_mask(u32 group)
+ {
++	if (group > 32)
++		return 0;
+ 	return group ? 1 << (group - 1) : 0;
  }
  
-+static inline void hypercall(u64 control, vm_vaddr_t arg1, vm_vaddr_t arg2)
-+{
-+	asm volatile("mov %3, %%r8\n"
-+		     "vmcall"
-+		     : "+c" (control), "+d" (arg1)
-+		     :  "r" (arg2)
-+		     : "cc", "memory", "rax", "rbx", "r8", "r9", "r10",
-+		       "r11", "r12", "r13", "r14", "r15");
-+}
-+
- void l2_guest_code(void)
- {
- 	GUEST_SYNC(7);
-@@ -67,15 +78,27 @@ void l2_guest_code(void)
- 	vmcall();
- 	rdmsr_gs_base(); /* intercepted */
- 
-+	/* L2 TLB flush tests */
-+	hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE | HV_HYPERCALL_FAST_BIT, 0x0,
-+		  HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES | HV_FLUSH_ALL_PROCESSORS);
-+	rdmsr_fs_base();
-+	hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE | HV_HYPERCALL_FAST_BIT, 0x0,
-+		  HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES | HV_FLUSH_ALL_PROCESSORS);
-+	/* Make sure we're no issuing Hyper-V TLB flush call again */
-+	__asm__ __volatile__ ("mov $0xdeadbeef, %rcx");
-+
- 	/* Done, exit to L1 and never come back.  */
- 	vmcall();
- }
- 
--void guest_code(struct vmx_pages *vmx_pages)
-+void guest_code(struct vmx_pages *vmx_pages, vm_vaddr_t pgs_gpa)
- {
- #define L2_GUEST_STACK_SIZE 64
- 	unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
- 
-+	wrmsr(HV_X64_MSR_GUEST_OS_ID, HYPERV_LINUX_OS_ID);
-+	wrmsr(HV_X64_MSR_HYPERCALL, pgs_gpa);
-+
- 	x2apic_enable();
- 
- 	GUEST_SYNC(1);
-@@ -105,6 +128,14 @@ void guest_code(struct vmx_pages *vmx_pages)
- 	vmwrite(PIN_BASED_VM_EXEC_CONTROL, vmreadz(PIN_BASED_VM_EXEC_CONTROL) |
- 		PIN_BASED_NMI_EXITING);
- 
-+	/* L2 TLB flush setup */
-+	current_evmcs->partition_assist_page = vmx_pages->partition_assist_gpa;
-+	current_evmcs->hv_enlightenments_control.nested_flush_hypercall = 1;
-+	current_evmcs->hv_vm_id = 1;
-+	current_evmcs->hv_vp_id = 1;
-+	current_vp_assist->nested_control.features.directhypercall = 1;
-+	*(u32 *)(vmx_pages->partition_assist) = 0;
-+
- 	GUEST_ASSERT(!vmlaunch());
- 	GUEST_ASSERT(vmptrstz() == vmx_pages->enlightened_vmcs_gpa);
- 
-@@ -149,6 +180,18 @@ void guest_code(struct vmx_pages *vmx_pages)
- 	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_MSR_READ);
- 	current_evmcs->guest_rip += 2; /* rdmsr */
- 
-+	/*
-+	 * L2 TLB flush test. First VMCALL should be handled directly by L0,
-+	 * no VMCALL exit expected.
-+	 */
-+	GUEST_ASSERT(!vmresume());
-+	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_MSR_READ);
-+	current_evmcs->guest_rip += 2; /* rdmsr */
-+	/* Enable synthetic vmexit */
-+	*(u32 *)(vmx_pages->partition_assist) = 1;
-+	GUEST_ASSERT(!vmresume());
-+	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH);
-+
- 	GUEST_ASSERT(!vmresume());
- 	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_VMCALL);
- 	GUEST_SYNC(11);
-@@ -201,6 +244,7 @@ static void save_restore_vm(struct kvm_vm *vm)
- int main(int argc, char *argv[])
- {
- 	vm_vaddr_t vmx_pages_gva = 0;
-+	vm_vaddr_t hcall_page;
- 
- 	struct kvm_vm *vm;
- 	struct kvm_run *run;
-@@ -217,11 +261,15 @@ int main(int argc, char *argv[])
- 		exit(KSFT_SKIP);
- 	}
- 
-+	hcall_page = vm_vaddr_alloc_pages(vm, 1);
-+	memset(addr_gva2hva(vm, hcall_page), 0x0,  getpagesize());
-+
- 	vcpu_set_hv_cpuid(vm, VCPU_ID);
- 	vcpu_enable_evmcs(vm, VCPU_ID);
- 
- 	vcpu_alloc_vmx(vm, &vmx_pages_gva);
--	vcpu_args_set(vm, VCPU_ID, 1, vmx_pages_gva);
-+	vcpu_args_set(vm, VCPU_ID, 2, vmx_pages_gva, addr_gva2gpa(vm, hcall_page));
-+	vcpu_set_msr(vm, VCPU_ID, HV_X64_MSR_VP_INDEX, VCPU_ID);
- 
- 	vm_init_descriptor_tables(vm);
- 	vcpu_init_descriptor_tables(vm, VCPU_ID);
 -- 
-2.35.1
+2.34.1
+
+
 
