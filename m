@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08169C4707A
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99AB7C41535
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351003AbiDNO3m (ORCPT
+        id S1350941AbiDNO3M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46542 "EHLO
+        Thu, 14 Apr 2022 10:29:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343867AbiDNNj1 (ORCPT
+        with ESMTP id S1343964AbiDNNjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3475BE72;
-        Thu, 14 Apr 2022 06:35:03 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86749A9A1;
+        Thu, 14 Apr 2022 06:35:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A59FB82989;
-        Thu, 14 Apr 2022 13:35:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE7FEC385A5;
-        Thu, 14 Apr 2022 13:35:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57C8661CF3;
+        Thu, 14 Apr 2022 13:35:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6226AC385A1;
+        Thu, 14 Apr 2022 13:35:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943301;
-        bh=xMuBtpSMi0tR4uqVjAuMkRQrPn1kVymN+i1l75YiSig=;
+        s=korg; t=1649943356;
+        bh=Fu4epsVVxWRMweBhSP6v1zFJ6YCpFbeNBK9CV77koHs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pon3eBGbO3f1Mwor294REsukTMG1aTvITMhvmaItgZKNs7d3n2y8755/PbKZIdQ/F
-         5i5Xq1xikx8RR6yXhLVaIZxujnJKx1P39b8viMnlo8RypavgJ3oNjGyQRis12aBOV6
-         DlbWskOhMSvnFRhuSl1e8m7b11IVIJ7E+36FnNno=
+        b=nYZNs4CGkXryA26JGgL8i/7IlJZ19MgykJc/A9ARdLuhNPrNQzbDqnMjYPUk2xRne
+         K++CMjO5qkS5S1LHOmMnGiEKe+rWfJoYT652GlzQUE3C03vVkqDmD7Yok6QdevJyjI
+         GsvFBh330f8lHEwyIWuG5Qsl9zbtGkRiOeDFaXXU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 107/475] clocksource: acpi_pm: fix return value of __setup handler
-Date:   Thu, 14 Apr 2022 15:08:12 +0200
-Message-Id: <20220414110858.147992014@linuxfoundation.org>
+Subject: [PATCH 5.4 125/475] ARM: dts: imx: Add missing LVDS decoder on M53Menlo
+Date:   Thu, 14 Apr 2022 15:08:30 +0200
+Message-Id: <20220414110858.649645825@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,48 +52,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 6a861abceecb68497dd82a324fee45a5332dcece ]
+[ Upstream commit 0c6f71176ea43d6f4003a4d57f7bb518c5ad6145 ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) environment strings.
+The M53Menlo display unit uses an LVDS-to-DPI bridge, TI DS90CF364A.
+Describe this bridge in DT, otherwise the DT incorrectly describes
+DPI panel attached directly to LVDS source.
 
-The __setup() handler interface isn't meant to handle negative return
-values -- they are non-zero, so they mean "handled" (like a return
-value of 1 does), but that's just a quirk. So return 1 from
-parse_pmtmr(). Also print a warning message if kstrtouint() returns
-an error.
-
-Fixes: 6b148507d3d0 ("pmtmr: allow command line override of ioport")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 716be61d1869 ("ARM: dts: imx53: Add Menlosystems M53 board")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/acpi_pm.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/imx53-m53menlo.dts | 29 ++++++++++++++++++++++++++--
+ 1 file changed, 27 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clocksource/acpi_pm.c b/drivers/clocksource/acpi_pm.c
-index eb596ff9e7bb..279ddff81ab4 100644
---- a/drivers/clocksource/acpi_pm.c
-+++ b/drivers/clocksource/acpi_pm.c
-@@ -229,8 +229,10 @@ static int __init parse_pmtmr(char *arg)
- 	int ret;
+diff --git a/arch/arm/boot/dts/imx53-m53menlo.dts b/arch/arm/boot/dts/imx53-m53menlo.dts
+index 03c43c1912a7..d002c8f738b5 100644
+--- a/arch/arm/boot/dts/imx53-m53menlo.dts
++++ b/arch/arm/boot/dts/imx53-m53menlo.dts
+@@ -53,6 +53,31 @@
+ 		};
+ 	};
  
- 	ret = kstrtouint(arg, 16, &base);
--	if (ret)
--		return ret;
-+	if (ret) {
-+		pr_warn("PMTMR: invalid 'pmtmr=' value: '%s'\n", arg);
-+		return 1;
-+	}
++	lvds-decoder {
++		compatible = "ti,ds90cf364a", "lvds-decoder";
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++
++				lvds_decoder_in: endpoint {
++					remote-endpoint = <&lvds0_out>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++
++				lvds_decoder_out: endpoint {
++					remote-endpoint = <&panel_in>;
++				};
++			};
++		};
++	};
++
+ 	panel {
+ 		compatible = "edt,etm0700g0dh6";
+ 		pinctrl-0 = <&pinctrl_display_gpio>;
+@@ -61,7 +86,7 @@
  
- 	pr_info("PMTMR IOPort override: 0x%04x -> 0x%04x\n", pmtmr_ioport,
- 		base);
+ 		port {
+ 			panel_in: endpoint {
+-				remote-endpoint = <&lvds0_out>;
++				remote-endpoint = <&lvds_decoder_out>;
+ 			};
+ 		};
+ 	};
+@@ -450,7 +475,7 @@
+ 			reg = <2>;
+ 
+ 			lvds0_out: endpoint {
+-				remote-endpoint = <&panel_in>;
++				remote-endpoint = <&lvds_decoder_in>;
+ 			};
+ 		};
+ 	};
 -- 
 2.34.1
 
