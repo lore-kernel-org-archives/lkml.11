@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB45DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4FF5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244372AbiDNN00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
+        id S244347AbiDNN0a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244234AbiDNNXo (ORCPT
+        with ESMTP id S244095AbiDNNX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:23:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266CA99EEB;
-        Thu, 14 Apr 2022 06:18:34 -0700 (PDT)
+        Thu, 14 Apr 2022 09:23:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6082B9A9BC;
+        Thu, 14 Apr 2022 06:18:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CABA7B8296D;
-        Thu, 14 Apr 2022 13:18:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DF74C385BF;
-        Thu, 14 Apr 2022 13:18:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2227617BB;
+        Thu, 14 Apr 2022 13:18:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B8F0C385B5;
+        Thu, 14 Apr 2022 13:18:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942311;
-        bh=ejY/FW7jQpHBzQoAP7RBr66XsTAszjxhUvn28Yrr6w8=;
+        s=korg; t=1649942325;
+        bh=QuAAQCQ9d1eBbdpLKqIAF4wtr7Fo6LQ5tW+jUJiAsO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hEZLMMC7FZparG8QDv+xvGJ5CGp3R/n6ijQwsmZXMIrwn7aKKjXUjDz60Db2wFrXt
-         8+zLuqF6RNkSWsnUOD03Krb62bUZXzmjIKaCsi5GuuxEEkNFJZYdjKfDx8qZCUnvIB
-         Lpx1Xk3TzTSuSDuTdMxKc+WKYI1hro4lf3OPjGLI=
+        b=zVsrf4ZdZnLkhjt3hNJIz8c5cJtYJPUqCVwsiagX9Q2FLponxMEsOZNh7yqpWBStq
+         vGzSZ+IdICgJLx5C4er6JMAuxlwAiCtUQYS+8Tg5t244oW5OH9L6f3S0VxG9EEw4C7
+         xJveAyIjTxpmGhDS+ptpTMoTStBvuroPhwBsCZcg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Kubelun <be.dissent@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Christian Lamparter <chunkeey@gmail.com>
-Subject: [PATCH 4.19 090/338] ARM: dts: qcom: ipq4019: fix sleep clock
-Date:   Thu, 14 Apr 2022 15:09:53 +0200
-Message-Id: <20220414110841.459666159@linuxfoundation.org>
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 094/338] ASoC: rt5663: check the return value of devm_kzalloc() in rt5663_parse_dp()
+Date:   Thu, 14 Apr 2022 15:09:57 +0200
+Message-Id: <20220414110841.574385402@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,40 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Kubelun <be.dissent@gmail.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 3d7e7980993d2c1ae42d3d314040fc2de6a9c45f ]
+[ Upstream commit 4d06f92f38b799295ae22c98be7a20cac3e2a1a7 ]
 
-It seems like sleep_clk was copied from ipq806x.
-Fix ipq40xx sleep_clk to the value QSDK defines.
+The function devm_kzalloc() in rt5663_parse_dp() can fail, so its return
+value should be checked.
 
-Link: https://source.codeaurora.org/quic/qsdk/oss/kernel/linux-msm/commit/?id=d92ec59973484acc86dd24b67f10f8911b4b4b7d
-Link: https://patchwork.kernel.org/comment/22721613/
-Fixes: bec6ba4cdf2a ("qcom: ipq4019: Add basic board/dts support for IPQ4019 SoC")
-Suggested-by: Bjorn Andersson <bjorn.andersson@linaro.org> (clock-output-names)
-Signed-off-by: Pavel Kubelun <be.dissent@gmail.com>
-Signed-off-by: Christian Lamparter <chunkeey@gmail.com> (removed clock rename)
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211220170352.34591-1-chunkeey@gmail.com
+Fixes: 457c25efc592 ("ASoC: rt5663: Add the function of impedance sensing")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Link: https://lore.kernel.org/r/20220225131030.27248-1-baijiaju1990@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-ipq4019.dtsi | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/soc/codecs/rt5663.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/qcom-ipq4019.dtsi b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-index 8328ad589e2b..59527bb1225a 100644
---- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -135,7 +135,8 @@
- 	clocks {
- 		sleep_clk: sleep_clk {
- 			compatible = "fixed-clock";
--			clock-frequency = <32768>;
-+			clock-frequency = <32000>;
-+			clock-output-names = "gcc_sleep_clk_src";
- 			#clock-cells = <0>;
- 		};
- 
+diff --git a/sound/soc/codecs/rt5663.c b/sound/soc/codecs/rt5663.c
+index dd77f131ce6c..b92e1b6ed383 100644
+--- a/sound/soc/codecs/rt5663.c
++++ b/sound/soc/codecs/rt5663.c
+@@ -3463,6 +3463,8 @@ static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
+ 		table_size = sizeof(struct impedance_mapping_table) *
+ 			rt5663->pdata.impedance_sensing_num;
+ 		rt5663->imp_table = devm_kzalloc(dev, table_size, GFP_KERNEL);
++		if (!rt5663->imp_table)
++			return -ENOMEM;
+ 		ret = device_property_read_u32_array(dev,
+ 			"realtek,impedance_sensing_table",
+ 			(u32 *)rt5663->imp_table, table_size);
 -- 
 2.34.1
 
