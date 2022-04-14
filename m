@@ -2,128 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 470F0C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F417C433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:07:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241935AbiDNQHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:07:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52862 "EHLO
+        id S235952AbiDNQH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:07:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349688AbiDNP5A (ORCPT
+        with ESMTP id S1349744AbiDNP5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:57:00 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1F5E65
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:38:11 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id h15-20020a17090a054f00b001cb7cd2b11dso6004403pjf.5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:38:11 -0700 (PDT)
+        Thu, 14 Apr 2022 11:57:03 -0400
+Received: from mail-oo1-xc2a.google.com (mail-oo1-xc2a.google.com [IPv6:2607:f8b0:4864:20::c2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CAEAA9
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:40:25 -0700 (PDT)
+Received: by mail-oo1-xc2a.google.com with SMTP id 1-20020a4a0901000000b003296ea2104eso931683ooa.13
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:40:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Qq44QcgUTvrM0yR0uIBFO4qbEgfmXFTn9DFwrR1re2U=;
-        b=DJcQZgGgCMSdEr73OHf4KjCFWkfmLDjCW6J+MKp7+BvlAxQbpy3LWtQHsiJRMomLKf
-         QQy/cDZGSi7hIsxhUMiBI2sSOMqZ94VJvI/zsS2or5jz3Okd9ZEENLtR9gfrUpM0GVt1
-         wf5lYwEClRX+nU8oJkVa/PZ6nob4NgW5hiLs929efgHRtERBFzIt/30LvL5O1hf84NLO
-         J1aRow7aurhrwwZWPNAfNAdaBqJISM1rd9EWMkjWuFN0GW8inMXzIqEAYbHBU4FruJQq
-         4rljZH0IKyhkSVXPeLRNiubyEjXunPkdPDp4YbCCgq/50ckpd/IrjcxSC19Vqx6P+aJH
-         QzKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Qq44QcgUTvrM0yR0uIBFO4qbEgfmXFTn9DFwrR1re2U=;
-        b=ow+aUYJxS0+E2LpYoCjWJ35qAKIONERYePNRqRNllFxTz8gVqOt+7cxUP2R/E4hBWJ
-         lbr3yG+0pWcmlr4AUWwOCQpkCDSz59ETCgHj/kqCQQjWaLZXw+JuY7S00PidswxEiwGH
-         MauftWpWBR99osUHLKDrN1oaoGQGS/2Ff9UhQ5pQ78ISjBmCyzZgCw5zGZtJuGByNm6i
-         H1Ak43C+LMcw/nbT2bXyNuesgvT83oy/VUVKGUyiQNv7nc/gxzQXetYjSBF+LE1H7EGe
-         O17uVdIngQxpgVKAbKpM70dGqFMe7MfgAV/ShClkoM9LHKfCd73Yffaf/NLKoAtlMdJA
-         XGKA==
-X-Gm-Message-State: AOAM533JbzYzs4FBv+ogdYt1nEHda25BXYNxyS2hCNbo4RJiCO8p/hFU
-        kZqawFV0hIeKdPShLXYGAYX4Tw==
-X-Google-Smtp-Source: ABdhPJyhlJFCjRIXFLlqIT5zK8kOE8XYJzsA83tVovosUIggNLpD+sH0kv/J9kuxtWvD3ngjbfHtbg==
-X-Received: by 2002:a17:903:2ca:b0:156:f1cc:7cb6 with SMTP id s10-20020a17090302ca00b00156f1cc7cb6mr41777445plk.174.1649950691276;
-        Thu, 14 Apr 2022 08:38:11 -0700 (PDT)
-Received: from [10.255.214.21] ([139.177.225.227])
-        by smtp.gmail.com with ESMTPSA id d14-20020a65620e000000b003a1112c6cbesm1779587pgv.39.2022.04.14.08.38.08
+        bh=IxYLdrXWJE+/+Zz2EhxEDTAaegDNnJy+1F4w0yBl53Y=;
+        b=dZBkjodGez89buTH1gyFgngXJ0IvQWc1Kp9/9a5K2v12eZGmLXXBoxxUZHoBMF8HyR
+         JckFvG0ogFppisRohAHNlkmWUuhvkyrvqs4xQm1vr7Whzt95NVeWYvaooQByt7rBZf7e
+         O8Ty8uE2TOVazMExFJFdYjEYwyQTYAR0Yyvg624tXENPutQJSet9FWrF77ingV4g/0l0
+         Tf04kmHimboCvu+5KeMpXglKGE1QoAsDaFH+ikvdKqJXKuL8rbUH1N3YcIrc3EVqGynE
+         8OqZ+1d2HQxAjexPDZYjEa/DMDFj8Hb0BCqs35ZyxxThFnkr79sWqlb2jPjobSFScg+Q
+         9PCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IxYLdrXWJE+/+Zz2EhxEDTAaegDNnJy+1F4w0yBl53Y=;
+        b=ByB7HfTtI2G/U0YWDRl09bEftRd6+is6eANCS+FYa2izqadu2zQXetDs+hWeA9x7T5
+         yQIlD7lPdVPNhtzVHC4uUMWLhjp0NMtrnvUzaCyK4kXgJUBvbmbeEGya4bUj2ROyy7i7
+         TZmvXezw0QgEymOLvTLVmG+u2OhvX7gP9Itux9onuViVFcsRe3OWJshOc67mLw2QrBHp
+         bTzTdAMuB9lnI5dYF19F+JIjmxyFrMhPpaiszPssaEcWFoPSaQs/jY2GMo9diYbr6PNP
+         FX9yd/1WZ8oZeAmOicURYmaumorw1EMt/fN2GpESfyHDpeQWobfTNgUz6C9Xbk7LjDXb
+         UL+w==
+X-Gm-Message-State: AOAM531s+AzB+SVt3H669ymf9c3PXg5XOrUAAs0qtULFrLC76YqwbROx
+        F8YweWz2Py5NWgopvy6+VLw=
+X-Google-Smtp-Source: ABdhPJz+pFFarBMLATEHy2Xb9FQsgUBKBC8Sm9O31ONwEXjo0RLGJwrRI1n9JsCR2nfI9Z8C6UWntw==
+X-Received: by 2002:a05:6820:515:b0:328:fdb2:5344 with SMTP id m21-20020a056820051500b00328fdb25344mr938826ooj.54.1649950824719;
+        Thu, 14 Apr 2022 08:40:24 -0700 (PDT)
+Received: from ?IPV6:2603:8090:2005:39b3::100e? (2603-8090-2005-39b3-0000-0000-0000-100e.res6.spectrum.com. [2603:8090:2005:39b3::100e])
+        by smtp.gmail.com with ESMTPSA id bn41-20020a056808232900b003222f6e2ae8sm124050oib.29.2022.04.14.08.40.23
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Apr 2022 08:38:10 -0700 (PDT)
-Message-ID: <60cbd089-f514-44eb-a629-62556936be35@bytedance.com>
-Date:   Thu, 14 Apr 2022 23:38:06 +0800
+        Thu, 14 Apr 2022 08:40:24 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Message-ID: <3e8ba74a-9527-6c1f-7a59-539360735a3a@lwfinger.net>
+Date:   Thu, 14 Apr 2022 10:40:23 -0500
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.0
-Subject: Re: [RFC v2 2/2] sched/fair: introduce sched-idle balance
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 7/7] staging: r8188eu: check firmware header existence
+ before access
 Content-Language: en-US
-To:     Josh Don <joshdon@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Abel Wu <wuyun.abel@bytedance.com>
-References: <20220409135104.3733193-1-wuyun.abel@bytedance.com>
- <20220409135104.3733193-3-wuyun.abel@bytedance.com>
- <CABk29NvE=Fmgo4xqQLfy-K8j0hNS-+ppGdYt37yDUnRJiqjZ5w@mail.gmail.com>
- <801da029-6bbe-2a0c-7de0-afffc3d5de02@bytedance.com>
- <CABk29Nu9QTUKHP3cyx3qpiGcNM-PbaSxCvfhvBvOs++67KeXCw@mail.gmail.com>
-From:   Abel Wu <wuyun.abel@bytedance.com>
-In-Reply-To: <CABk29Nu9QTUKHP3cyx3qpiGcNM-PbaSxCvfhvBvOs++67KeXCw@mail.gmail.com>
+To:     Michael Straube <straube.linux@gmail.com>,
+        gregkh@linuxfoundation.org
+Cc:     phil@philpotter.co.uk, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+References: <20220414083853.3422-1-straube.linux@gmail.com>
+ <20220414083853.3422-8-straube.linux@gmail.com>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <20220414083853.3422-8-straube.linux@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/14/22 8:08 AM, Josh Don Wrote:
->>>>    /*
->>>>     * Use locality-friendly rq->overloaded to cache the status of the rq
->>>>     * to minimize the heavy cost on LLC shared data.
->>>> @@ -7837,6 +7867,22 @@ int can_migrate_task(struct task_struct *p, struct lb_env *env)
->>>>           if (kthread_is_per_cpu(p))
->>>>                   return 0;
->>>>
->>>> +       if (unlikely(task_h_idle(p))) {
->>>> +               /*
->>>> +                * Disregard hierarchically idle tasks during sched-idle
->>>> +                * load balancing.
->>>> +                */
->>>> +               if (env->idle == CPU_SCHED_IDLE)
->>>> +                       return 0;
->>>> +       } else if (!static_branch_unlikely(&sched_asym_cpucapacity)) {
->>>> +               /*
->>>> +                * It's not gonna help if stacking non-idle tasks on one
->>>> +                * cpu while leaving some idle.
->>>> +                */
->>>> +               if (cfs_rq_busy(env->src_rq) && !need_pull_cfs_task(env->dst_rq))
->>>> +                       return 0;
->>>
->>> These checks don't involve the task at all, so this kind of check
->>> should be pushed into the more general load balance function. But, I'm
->>> not totally clear on the motivation here. If we have cpu A with 1
->>> non-idle task and 100 idle tasks, and cpu B with 1 non-idle task, we
->>> should definitely try to load balance some of the idle tasks from A to
->>> B. idle tasks _do_ get time to run (although little), and this can add
->>> up and cause antagonism to the non-idle task if there are a lot of
->>> idle threads.
->>
->> CPU_SCHED_IDLE means triggered by sched_idle_balance() in which pulls
->> a non-idle task for the unoccupied cpu from the overloaded ones, so
->> idle tasks are not the target and should be skipped.
->>
->> The second part is: if we have cpu A with 1 non-idle task and 100 idle
->> tasks, and B with >=1 non-idle task, we don't migrate the last non-idle
->> task on A to B.
+On 4/14/22 03:38, Michael Straube wrote:
+> We should access the fields of fwhdr only if the check for firmware
+> header existence is true. Move the affected code into the if block
+> that checks firmware header existence.
 > 
-> It could be possible that we do want to migrate the last non-idle task
-> from A to B, if the weight sum of idle tasks on A is very high (easily
-> possible with affinity restrictions). So I think we should leave
-> regular load balance alone here if it really wants to move the
-> non-idle task, and wrap this entire block in an if (env->idle ==
-> CPU_SCHED_IDLE).
+> Signed-off-by: Michael Straube <straube.linux@gmail.com>
+> ---
+> Do we need the IS_FW_HEADER_EXIST(fwhdr) check at all?
+> The header _does_ exist in rtl8188eufw.bin and it's very
+> unlikely that it ever changes _and_ the header will be
+> removed.
+> 
+>   drivers/staging/r8188eu/core/rtw_fw.c | 9 ++++-----
+>   1 file changed, 4 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/staging/r8188eu/core/rtw_fw.c b/drivers/staging/r8188eu/core/rtw_fw.c
+> index 64963507a346..c58bce1a1856 100644
+> --- a/drivers/staging/r8188eu/core/rtw_fw.c
+> +++ b/drivers/staging/r8188eu/core/rtw_fw.c
+> @@ -249,14 +249,13 @@ int rtl8188e_firmware_download(struct adapter *padapter)
+>   	fw_data = dvobj->firmware.data;
+>   	fw_size = dvobj->firmware.size;
+>   
+> -	/*  To Check Fw header. Added by tynli. 2009.12.04. */
+>   	fwhdr = (struct rt_firmware_hdr *)dvobj->firmware.data;
+>   
+> -	pr_info("%sFirmware Version %d, SubVersion %d, Signature 0x%x\n",
+> -		DRIVER_PREFIX, le16_to_cpu(fwhdr->version), fwhdr->subversion,
+> -		le16_to_cpu(fwhdr->signature));
+> -
+>   	if (IS_FW_HEADER_EXIST(fwhdr)) {
+> +		pr_info("%sFirmware Version %d, SubVersion %d, Signature 0x%x\n",
+> +			DRIVER_PREFIX, le16_to_cpu(fwhdr->version), fwhdr->subversion,
+> +			le16_to_cpu(fwhdr->signature));
+> +
+>   		fw_data = fw_data + sizeof(struct rt_firmware_hdr);
+>   		fw_size = fw_size - sizeof(struct rt_firmware_hdr);
+>   	}
 
-Makes sense. I will fix it in next version.
+You can probably remove the IS_FW_HEADER_EXIST macro, but please restore the 
+guard against logging the version more than once.
 
-Thanks & BR,
-Abel
+Larry
 
