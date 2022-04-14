@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0678FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 582E1C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239376AbiDNO1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36822 "EHLO
+        id S1349017AbiDNO1w (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:27:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344066AbiDNNjf (ORCPT
+        with ESMTP id S1344061AbiDNNjf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:39:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071EE18392;
-        Thu, 14 Apr 2022 06:37:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558E015805;
+        Thu, 14 Apr 2022 06:37:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9727761D67;
-        Thu, 14 Apr 2022 13:37:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0681C385A9;
-        Thu, 14 Apr 2022 13:37:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E582E61D67;
+        Thu, 14 Apr 2022 13:37:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05363C385A9;
+        Thu, 14 Apr 2022 13:37:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943429;
-        bh=JMbRjxHjk7BFQMGIiIj8gstdGIzg0UFgQWTxL9OTBww=;
+        s=korg; t=1649943423;
+        bh=DGfFICk0ZyhZyp7gehgdnGZsI2rdjdBF6ht5fhvYKxI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FLsuV3Pd8xHQNACxRwJR5P8LqEkBt7TVAIklhWG1AArW9GrsQSjAW0sl5gOxPN4IK
-         Qun/lA9y0YCBXjivnZ/WReUh+1BK8GEFDJV/IaA4sh5hOuMY+pIQ/2VNkLgIUgsgJ6
-         7/WIgvs/RIeYfVOeyFeTYK1/tyGYOtCV98m78bBY=
+        b=lo1wB4i713idcDyr4fr6m6sTq2BUN8P5CCMkjXfA5IGUHsefd2GpZiKyUY1D6mz5L
+         oS7FtvUiO7MzNEUKtNGZ1ZdHXIQS6S+aZxHLln/UUxLkndh0n8C4d9B/SlfkPAudqo
+         4PbuQzSYMzFJZEkSFUKphp/ylWAWmZ42YhsyVKMU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 152/475] ASoC: msm8916-wcd-digital: Fix missing clk_disable_unprepare() in msm8916_wcd_digital_probe
-Date:   Thu, 14 Apr 2022 15:08:57 +0200
-Message-Id: <20220414110859.395758472@linuxfoundation.org>
+Subject: [PATCH 5.4 133/475] arm64: dts: ns2: Fix spi-cpol and spi-cpha property
+Date:   Thu, 14 Apr 2022 15:08:38 +0200
+Message-Id: <20220414110858.871283159@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,45 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
 
-[ Upstream commit 375a347da4889f64d86e1ab7f4e6702b6e9bf299 ]
+[ Upstream commit c953c764e505428f59ffe6afb1c73b89b5b1ac35 ]
 
-Fix the missing clk_disable_unprepare() before return
-from msm8916_wcd_digital_probe in the error handling case.
+Broadcom ns2 platform has spi-cpol and spi-cpho properties set
+incorrectly. As per spi-slave-peripheral-prop.yaml, these properties are
+of flag or boolean type and not integer type. Fix the values.
 
-Fixes: 150db8c5afa1 ("ASoC: codecs: Add msm8916-wcd digital codec")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220307084523.28687-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: d69dbd9f41a7c (arm64: dts: Add ARM PL022 SPI DT nodes for NS2)
+Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+CC: Ray Jui <rjui@broadcom.com>
+CC: Scott Branden <sbranden@broadcom.com>
+CC: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/msm8916-wcd-digital.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/codecs/msm8916-wcd-digital.c b/sound/soc/codecs/msm8916-wcd-digital.c
-index 09fccacadd6b..d5269ab5f91c 100644
---- a/sound/soc/codecs/msm8916-wcd-digital.c
-+++ b/sound/soc/codecs/msm8916-wcd-digital.c
-@@ -1201,7 +1201,7 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
- 	ret = clk_prepare_enable(priv->mclk);
- 	if (ret < 0) {
- 		dev_err(dev, "failed to enable mclk %d\n", ret);
--		return ret;
-+		goto err_clk;
- 	}
- 
- 	dev_set_drvdata(dev, priv);
-@@ -1209,6 +1209,9 @@ static int msm8916_wcd_digital_probe(struct platform_device *pdev)
- 	return devm_snd_soc_register_component(dev, &msm8916_wcd_digital,
- 				      msm8916_wcd_digital_dai,
- 				      ARRAY_SIZE(msm8916_wcd_digital_dai));
-+err_clk:
-+	clk_disable_unprepare(priv->ahbclk);
-+	return ret;
- }
- 
- static int msm8916_wcd_digital_remove(struct platform_device *pdev)
+diff --git a/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts b/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts
+index ec19fbf928a1..12a4b1c03390 100644
+--- a/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts
++++ b/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts
+@@ -111,8 +111,8 @@
+ 		compatible = "silabs,si3226x";
+ 		reg = <0>;
+ 		spi-max-frequency = <5000000>;
+-		spi-cpha = <1>;
+-		spi-cpol = <1>;
++		spi-cpha;
++		spi-cpol;
+ 		pl022,hierarchy = <0>;
+ 		pl022,interface = <0>;
+ 		pl022,slave-tx-disable = <0>;
+@@ -135,8 +135,8 @@
+ 		at25,byte-len = <0x8000>;
+ 		at25,addr-mode = <2>;
+ 		at25,page-size = <64>;
+-		spi-cpha = <1>;
+-		spi-cpol = <1>;
++		spi-cpha;
++		spi-cpol;
+ 		pl022,hierarchy = <0>;
+ 		pl022,interface = <0>;
+ 		pl022,slave-tx-disable = <0>;
 -- 
 2.34.1
 
