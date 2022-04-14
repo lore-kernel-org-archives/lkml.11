@@ -2,88 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE4EC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FBF1C41535
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348543AbiDNOwk (ORCPT
+        id S1348094AbiDNOwZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:52:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
+        Thu, 14 Apr 2022 10:52:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344852AbiDNNoo (ORCPT
+        with ESMTP id S243491AbiDNNp4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AB0393C6;
-        Thu, 14 Apr 2022 06:40:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FA2AB82983;
-        Thu, 14 Apr 2022 13:40:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E317C385A5;
-        Thu, 14 Apr 2022 13:40:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943623;
-        bh=W36Li4AORCbRpA8/ELuitbJTJ9wO1rcyMXYmqFCWJLo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PAf1vFN31gN0v0PhZUGPZUMYMLlcP7nis4TzzhomR9rKLhQF/un0ZRRV0m2cAq+6u
-         jHR9hY4Qktj5se07WO8pJJj4iKyeuJSfP982pn/oabFvePAt/kGCnqaRbRp9+3bifH
-         rfQWLjV6IpgWUT6iaVzehs0ymTUarLxMujccJAyU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aashish Sharma <shraash@google.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 182/475] dm crypt: fix get_key_size compiler warning if !CONFIG_KEYS
-Date:   Thu, 14 Apr 2022 15:09:27 +0200
-Message-Id: <20220414110900.226782952@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 14 Apr 2022 09:45:56 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7ED85FFB
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:43:31 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id i14-20020a056e020ece00b002ca198245e6so3042630ilk.4
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:43:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to:cc;
+        bh=2VrWD7opmJFlL7T6rbv4Z/qjhpNRkx9YT608QCgTBxY=;
+        b=Ax43Z/ijqWk5kOwp2IEHtIYqbwdrsy1PP6uryUGgQ0tbbwwXb4W/MJgx82vODy+jlB
+         nWki3/PVWCAoPM3UiAjcFi+NDOl3lAOsNn5jKaezRmGOkjeAjklqedZoprUi01V4yxBk
+         wtaPE6R7OXphhf2ujs2oUeH8UMY4tZ06xeEV0emc9Kv4E3LGFfIQ+ymjAiFerI8r/fat
+         3IJH8f1AofFShI+wvbD/73hFAiJmmkfN8YsugtINKBtq2wqZyapnS4zVSgyGfuCx/4rM
+         9C5rUHIw6eEAj1AT7m66lBHdRvE2DdqrQTZAz4nO0srjoWXyiK/GSkR/C0MdX16lRYaj
+         1VaA==
+X-Gm-Message-State: AOAM531Yaj9NZQSOblyldWwRGs0t9XjMg77Kk3qur92NpDdjptiAzjTv
+        qhOdLYFMlgxQzgEvTA5A9BqYkxbboODz1JeMsvjtvhZyVLrD
+X-Google-Smtp-Source: ABdhPJzJ0j2GI6IjPYE4GhvLOvIIkMP1+B/Dag4tF8n6BC5RtTyEfK6x/ex5ztjKQ7agboIv4tJcdcFCyqpld4pc3aAI1H4tRzqy
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6602:14cb:b0:646:3b7d:6aee with SMTP id
+ b11-20020a05660214cb00b006463b7d6aeemr1254503iow.178.1649943811352; Thu, 14
+ Apr 2022 06:43:31 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 06:43:31 -0700
+In-Reply-To: <20220414110903.185132971@linuxfoundation.org>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c6715b05dc9d7ab5@google.com>
+Subject: Re: [PATCH 5.4 289/475] ext4: dont BUG if someone dirty pages without
+ asking ext4 first
+From:   syzbot 
+        <syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     gregkh@linuxfoundation.org, lee.jones@linaro.org,
+        linux-kernel@vger.kernel.org, sashal@kernel.org,
+        stable@vger.kernel.org, tytso@mit.edu
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aashish Sharma <shraash@google.com>
+> From: Theodore Ts'o <tytso@mit.edu>
+>
+> [ Upstream commit cc5095747edfb054ca2068d01af20be3fcc3634f ]
+>
+> [un]pin_user_pages_remote is dirtying pages without properly warning
+> the file system in advance.  A related race was noted by Jan Kara in
+> 2018[1]; however, more recently instead of it being a very hard-to-hit
+> race, it could be reliably triggered by process_vm_writev(2) which was
+> discovered by Syzbot[2].
+>
+> This is technically a bug in mm/gup.c, but arguably ext4 is fragile in
+> that if some other kernel subsystem dirty pages without properly
+> notifying the file system using page_mkwrite(), ext4 will BUG, while
+> other file systems will not BUG (although data will still be lost).
+>
+> So instead of crashing with a BUG, issue a warning (since there may be
+> potential data loss) and just mark the page as clean to avoid
+> unprivileged denial of service attacks until the problem can be
+> properly fixed.  More discussion and background can be found in the
+> thread starting at [2].
+>
+> [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
+> [2] https://lore.kernel.org/r/Yg0m6IjcNmfaSokM@google.com
+>
+> Reported-by: syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com
+> Reported-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+> Link: https://lore.kernel.org/r/YiDS9wVfq4mM2jGK@mit.edu
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  fs/ext4/inode.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+>
+> diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+> index dcbd8ac8d471..0d62f05f8925 100644
+> --- a/fs/ext4/inode.c
+> +++ b/fs/ext4/inode.c
+> @@ -2161,6 +2161,15 @@ static int ext4_writepage(struct page *page,
+>  	else
+>  		len = PAGE_SIZE;
+>  
+> +	/* Should never happen but for bugs in other kernel subsystems */
+> +	if (!page_has_buffers(page)) {
+> +		ext4_warning_inode(inode,
+> +		   "page %lu does not have buffers attached", page->index);
+> +		ClearPageDirty(page);
+> +		unlock_page(page);
+> +		return 0;
+> +	}
+> +
+>  	page_bufs = page_buffers(page);
+>  	/*
+>  	 * We cannot do block allocation or other extent handling in this
+> @@ -2710,6 +2719,22 @@ static int mpage_prepare_extent_to_map(struct mpage_da_data *mpd)
+>  			wait_on_page_writeback(page);
+>  			BUG_ON(PageWriteback(page));
+>  
+> +			/*
+> +			 * Should never happen but for buggy code in
+> +			 * other subsystems that call
+> +			 * set_page_dirty() without properly warning
+> +			 * the file system first.  See [1] for more
+> +			 * information.
+> +			 *
+> +			 * [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
+> +			 */
+> +			if (!page_has_buffers(page)) {
+> +				ext4_warning_inode(mpd->inode, "page %lu does not have buffers attached", page->index);
+> +				ClearPageDirty(page);
+> +				unlock_page(page);
+> +				continue;
+> +			}
+> +
+>  			if (mpd->map.m_len == 0)
+>  				mpd->first_page = page->index;
+>  			mpd->next_page = page->index + 1;
+> -- 
+> 2.34.1
+>
+>
+>
 
-[ Upstream commit 6fc51504388c1a1a53db8faafe9fff78fccc7c87 ]
-
-Explicitly convert unsigned int in the right of the conditional
-expression to int to match the left side operand and the return type,
-fixing the following compiler warning:
-
-drivers/md/dm-crypt.c:2593:43: warning: signed and unsigned
-type in conditional expression [-Wsign-compare]
-
-Fixes: c538f6ec9f56 ("dm crypt: add ability to use keys from the kernel key retention service")
-Signed-off-by: Aashish Sharma <shraash@google.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/md/dm-crypt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/md/dm-crypt.c b/drivers/md/dm-crypt.c
-index 571c04e70343..3ed8ca47bc6e 100644
---- a/drivers/md/dm-crypt.c
-+++ b/drivers/md/dm-crypt.c
-@@ -2010,7 +2010,7 @@ static int crypt_set_keyring_key(struct crypt_config *cc, const char *key_string
- 
- static int get_key_size(char **key_string)
- {
--	return (*key_string[0] == ':') ? -EINVAL : strlen(*key_string) >> 1;
-+	return (*key_string[0] == ':') ? -EINVAL : (int)(strlen(*key_string) >> 1);
- }
- 
- #endif
--- 
-2.34.1
-
-
+I see the command but can't find the corresponding bug.
+The email is sent to  syzbot+HASH@syzkaller.appspotmail.com address
+but the HASH does not correspond to any known bug.
+Please double check the address.
 
