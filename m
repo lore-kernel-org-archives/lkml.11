@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB58C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 868CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:21:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244255AbiDNNYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38748 "EHLO
+        id S244260AbiDNNYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:24:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244019AbiDNNVq (ORCPT
+        with ESMTP id S244132AbiDNNWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:21:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF27A972E1;
-        Thu, 14 Apr 2022 06:17:33 -0700 (PDT)
+        Thu, 14 Apr 2022 09:22:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69DE7985BC;
+        Thu, 14 Apr 2022 06:17:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FCD7610A6;
-        Thu, 14 Apr 2022 13:17:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E051C385A1;
-        Thu, 14 Apr 2022 13:17:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1CE6612FE;
+        Thu, 14 Apr 2022 13:17:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09392C385B8;
+        Thu, 14 Apr 2022 13:17:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942252;
-        bh=tKDf/MbBgYBcIuSRd5o9A4mYU79slsU9+wMt9sanalQ=;
+        s=korg; t=1649942267;
+        bh=/P93I739uQcQRexDKRSXGmAGglFzxtv2iRkZGzvIemo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aQf+mii47HhUao92Jpi/bXRoMahk2KNTiXN13KVY1I+WQ7nt92psHZorQe9ZbfnXr
-         xtpV2dikba5y69e7b9m2cTJrwSxQjt3ElSpRoPyuZ30AMl36J2/lpCZoDD64Tf122n
-         fVtmuShY61eM3IQ077Ua4UCi6Z9OAT8O2/8VnF8A=
+        b=xP2AH1Lj7jHZDR5qry6WO73v0Y2AEquvAbUksyH63REGe3B4sNr+Sn1ghPMVdZeTy
+         e9Pz+8b+BRs11JPv+qLLLvIyIKQWqIk3BC8x9cdteBZBlfBO3dFTd8yaP+XYzB82J2
+         wpyKACiorjR5orLHM+aHOobgwsVVzxKRWap7zHS4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 4.19 029/338] NFSD: prevent integer overflow on 32 bit systems
-Date:   Thu, 14 Apr 2022 15:08:52 +0200
-Message-Id: <20220414110839.720507036@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 075/338] PM: hibernate: fix __setup handler error handling
+Date:   Thu, 14 Apr 2022 15:09:38 +0200
+Message-Id: <20220414110841.034367416@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -48,31 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 23a9dbbe0faf124fc4c139615633b9d12a3a89ef upstream.
+[ Upstream commit ba7ffcd4c4da374b0f64666354eeeda7d3827131 ]
 
-On a 32 bit system, the "len * sizeof(*p)" operation can have an
-integer overflow.
+If an invalid value is used in "resumedelay=<seconds>", it is
+silently ignored. Add a warning message and then let the __setup
+handler return 1 to indicate that the kernel command line option
+has been handled.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 317cf7e5e85e3 ("PM / hibernate: convert simple_strtoul to kstrtoul")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sunrpc/xdr.h |    2 ++
- 1 file changed, 2 insertions(+)
+ kernel/power/hibernate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/linux/sunrpc/xdr.h
-+++ b/include/linux/sunrpc/xdr.h
-@@ -509,6 +509,8 @@ xdr_stream_decode_uint32_array(struct xd
+diff --git a/kernel/power/hibernate.c b/kernel/power/hibernate.c
+index 6670a44ec5d4..6abdfdf571ee 100644
+--- a/kernel/power/hibernate.c
++++ b/kernel/power/hibernate.c
+@@ -1219,7 +1219,7 @@ static int __init resumedelay_setup(char *str)
+ 	int rc = kstrtouint(str, 0, &resume_delay);
  
- 	if (unlikely(xdr_stream_decode_u32(xdr, &len) < 0))
- 		return -EBADMSG;
-+	if (len > SIZE_MAX / sizeof(*p))
-+		return -EBADMSG;
- 	p = xdr_inline_decode(xdr, len * sizeof(*p));
- 	if (unlikely(!p))
- 		return -EBADMSG;
+ 	if (rc)
+-		return rc;
++		pr_warn("resumedelay: bad option string '%s'\n", str);
+ 	return 1;
+ }
+ 
+-- 
+2.34.1
+
 
 
