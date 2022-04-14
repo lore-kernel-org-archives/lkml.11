@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BFA2C4167E
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 554A6C3527C
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355033AbiDNP2l (ORCPT
+        id S1357135AbiDNP3L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:28:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60306 "EHLO
+        Thu, 14 Apr 2022 11:29:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346568AbiDNN5l (ORCPT
+        with ESMTP id S1346526AbiDNN52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:57:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3894D81673;
-        Thu, 14 Apr 2022 06:47:03 -0700 (PDT)
+        Thu, 14 Apr 2022 09:57:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CB75F8C1;
+        Thu, 14 Apr 2022 06:47:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB14BB828E6;
-        Thu, 14 Apr 2022 13:47:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18BA0C385A1;
-        Thu, 14 Apr 2022 13:46:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 27260B82894;
+        Thu, 14 Apr 2022 13:47:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FBF3C385A1;
+        Thu, 14 Apr 2022 13:47:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944020;
-        bh=JkVcvjkDM8C5oXeCLrcW2btgV7jD1g2hmZnsjqyKkKg=;
+        s=korg; t=1649944034;
+        bh=iQRV5ateyNk7x82zVTTRxMV9NpHDhO7Yy587hC+Z5TU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M0pmdyoeZ3tD5k3mrvbs82/XdLQ+Sf6nz7KmVc2XnaIeFW/JHtfIHiuVKBXzfUVqJ
-         RRw9FSPwZU9Q1s3YOOFV33DDPu6D+iO2fmWXsW9qehFTtCZhSFm15+zKwvtq8AcyZG
-         KFf+HvUUX6I5NAS8PzsTUC72ffQrcXWG66EfVaiw=
+        b=2JYiFqqW8gtj5qiPDD+LQSBfwyv2hhVVcYXpDxjfNbK+Ce0DIG8Rveyrdhcb/NcZ1
+         Cdwml8/FqzLqZEv7T/W0ggudqcHTz1pvfnN1W0G2DKcstUnlw+w/xZ4v2DUnKixYPZ
+         eV3bx0sI4oBbz+mufIEtl+m65bt++YRywP3Hrg2A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qiuhao Li <qiuhao@sysec.org>,
-        Gaoning Pan <pgn@zju.edu.cn>, Yongkang Jia <kangel@zju.edu.cn>,
-        syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>
-Subject: [PATCH 5.4 366/475] KVM: x86/mmu: do compare-and-exchange of gPTE via the user address
-Date:   Thu, 14 Apr 2022 15:12:31 +0200
-Message-Id: <20220414110905.321317582@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Fangrui Song <maskray@google.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 370/475] riscv module: remove (NOLOAD)
+Date:   Thu, 14 Apr 2022 15:12:35 +0200
+Message-Id: <20220414110905.431887033@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -53,153 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Fangrui Song <maskray@google.com>
 
-commit 2a8859f373b0a86f0ece8ec8312607eacf12485d upstream.
+[ Upstream commit 60210a3d86dc57ce4a76a366e7841dda746a33f7 ]
 
-FNAME(cmpxchg_gpte) is an inefficient mess.  It is at least decent if it
-can go through get_user_pages_fast(), but if it cannot then it tries to
-use memremap(); that is not just terribly slow, it is also wrong because
-it assumes that the VM_PFNMAP VMA is contiguous.
+On ELF, (NOLOAD) sets the section type to SHT_NOBITS[1]. It is conceptually
+inappropriate for .plt, .got, and .got.plt sections which are always
+SHT_PROGBITS.
 
-The right way to do it would be to do the same thing as
-hva_to_pfn_remapped() does since commit add6a0cd1c5b ("KVM: MMU: try to
-fix up page faults before giving up", 2016-07-05), using follow_pte()
-and fixup_user_fault() to determine the correct address to use for
-memremap().  To do this, one could for example extract hva_to_pfn()
-for use outside virt/kvm/kvm_main.c.  But really there is no reason to
-do that either, because there is already a perfectly valid address to
-do the cmpxchg() on, only it is a userspace address.  That means doing
-user_access_begin()/user_access_end() and writing the code in assembly
-to handle exceptions correctly.  Worse, the guest PTE can be 8-byte
-even on i686 so there is the extra complication of using cmpxchg8b to
-account for.  But at least it is an efficient mess.
+In GNU ld, if PLT entries are needed, .plt will be SHT_PROGBITS anyway
+and (NOLOAD) will be essentially ignored. In ld.lld, since
+https://reviews.llvm.org/D118840 ("[ELF] Support (TYPE=<value>) to
+customize the output section type"), ld.lld will report a `section type
+mismatch` error (later changed to a warning). Just remove (NOLOAD) to
+fix the warning.
 
-(Thanks to Linus for suggesting improvement on the inline assembly).
+[1] https://lld.llvm.org/ELF/linker_script.html As of today, "The
+section should be marked as not loadable" on
+https://sourceware.org/binutils/docs/ld/Output-Section-Type.html is
+outdated for ELF.
 
-Reported-by: Qiuhao Li <qiuhao@sysec.org>
-Reported-by: Gaoning Pan <pgn@zju.edu.cn>
-Reported-by: Yongkang Jia <kangel@zju.edu.cn>
-Reported-by: syzbot+6cde2282daa792c49ab8@syzkaller.appspotmail.com
-Debugged-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Tested-by: Maxim Levitsky <mlevitsk@redhat.com>
-Cc: stable@vger.kernel.org
-Fixes: bd53cb35a3e9 ("X86/KVM: Handle PFNs outside of kernel reach when touching GPTEs")
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://github.com/ClangBuiltLinux/linux/issues/1597
+Fixes: ab1ef68e5401 ("RISC-V: Add sections of PLT and GOT for kernel module")
+Reported-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Fangrui Song <maskray@google.com>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/paging_tmpl.h |   77 +++++++++++++++++++++------------------------
- 1 file changed, 37 insertions(+), 40 deletions(-)
+ arch/riscv/kernel/module.lds | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/arch/x86/kvm/paging_tmpl.h
-+++ b/arch/x86/kvm/paging_tmpl.h
-@@ -34,9 +34,8 @@
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
- 	#ifdef CONFIG_X86_64
- 	#define PT_MAX_FULL_LEVELS PT64_ROOT_MAX_LEVEL
--	#define CMPXCHG cmpxchg
-+	#define CMPXCHG "cmpxchgq"
- 	#else
--	#define CMPXCHG cmpxchg64
- 	#define PT_MAX_FULL_LEVELS 2
- 	#endif
- #elif PTTYPE == 32
-@@ -52,7 +51,7 @@
- 	#define PT_GUEST_DIRTY_SHIFT PT_DIRTY_SHIFT
- 	#define PT_GUEST_ACCESSED_SHIFT PT_ACCESSED_SHIFT
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
--	#define CMPXCHG cmpxchg
-+	#define CMPXCHG "cmpxchgl"
- #elif PTTYPE == PTTYPE_EPT
- 	#define pt_element_t u64
- 	#define guest_walker guest_walkerEPT
-@@ -65,8 +64,10 @@
- 	#define PT_GUEST_DIRTY_SHIFT 9
- 	#define PT_GUEST_ACCESSED_SHIFT 8
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) ((mmu)->ept_ad)
--	#define CMPXCHG cmpxchg64
- 	#define PT_MAX_FULL_LEVELS 4
-+	#ifdef CONFIG_X86_64
-+	#define CMPXCHG "cmpxchgq"
-+	#endif
- #else
- 	#error Invalid PTTYPE value
- #endif
-@@ -132,43 +133,39 @@ static int FNAME(cmpxchg_gpte)(struct kv
- 			       pt_element_t __user *ptep_user, unsigned index,
- 			       pt_element_t orig_pte, pt_element_t new_pte)
- {
--	int npages;
--	pt_element_t ret;
--	pt_element_t *table;
--	struct page *page;
--
--	npages = get_user_pages_fast((unsigned long)ptep_user, 1, FOLL_WRITE, &page);
--	if (likely(npages == 1)) {
--		table = kmap_atomic(page);
--		ret = CMPXCHG(&table[index], orig_pte, new_pte);
--		kunmap_atomic(table);
--
--		kvm_release_page_dirty(page);
--	} else {
--		struct vm_area_struct *vma;
--		unsigned long vaddr = (unsigned long)ptep_user & PAGE_MASK;
--		unsigned long pfn;
--		unsigned long paddr;
--
--		down_read(&current->mm->mmap_sem);
--		vma = find_vma_intersection(current->mm, vaddr, vaddr + PAGE_SIZE);
--		if (!vma || !(vma->vm_flags & VM_PFNMAP)) {
--			up_read(&current->mm->mmap_sem);
--			return -EFAULT;
--		}
--		pfn = ((vaddr - vma->vm_start) >> PAGE_SHIFT) + vma->vm_pgoff;
--		paddr = pfn << PAGE_SHIFT;
--		table = memremap(paddr, PAGE_SIZE, MEMREMAP_WB);
--		if (!table) {
--			up_read(&current->mm->mmap_sem);
--			return -EFAULT;
--		}
--		ret = CMPXCHG(&table[index], orig_pte, new_pte);
--		memunmap(table);
--		up_read(&current->mm->mmap_sem);
--	}
-+	int r = -EFAULT;
-+
-+	if (!user_access_begin(ptep_user, sizeof(pt_element_t)))
-+		return -EFAULT;
-+
-+#ifdef CMPXCHG
-+	asm volatile("1:" LOCK_PREFIX CMPXCHG " %[new], %[ptr]\n"
-+		     "mov $0, %[r]\n"
-+		     "setnz %b[r]\n"
-+		     "2:"
-+		     _ASM_EXTABLE_UA(1b, 2b)
-+		     : [ptr] "+m" (*ptep_user),
-+		       [old] "+a" (orig_pte),
-+		       [r] "+q" (r)
-+		     : [new] "r" (new_pte)
-+		     : "memory");
-+#else
-+	asm volatile("1:" LOCK_PREFIX "cmpxchg8b %[ptr]\n"
-+		     "movl $0, %[r]\n"
-+		     "jz 2f\n"
-+		     "incl %[r]\n"
-+		     "2:"
-+		     _ASM_EXTABLE_UA(1b, 2b)
-+		     : [ptr] "+m" (*ptep_user),
-+		       [old] "+A" (orig_pte),
-+		       [r] "+rm" (r)
-+		     : [new_lo] "b" ((u32)new_pte),
-+		       [new_hi] "c" ((u32)(new_pte >> 32))
-+		     : "memory");
-+#endif
+diff --git a/arch/riscv/kernel/module.lds b/arch/riscv/kernel/module.lds
+index 295ecfb341a2..18ec719899e2 100644
+--- a/arch/riscv/kernel/module.lds
++++ b/arch/riscv/kernel/module.lds
+@@ -2,7 +2,7 @@
+ /* Copyright (C) 2017 Andes Technology Corporation */
  
--	return (ret != orig_pte);
-+	user_access_end();
-+	return r;
+ SECTIONS {
+-	.plt (NOLOAD) : { BYTE(0) }
+-	.got (NOLOAD) : { BYTE(0) }
+-	.got.plt (NOLOAD) : { BYTE(0) }
++	.plt : { BYTE(0) }
++	.got : { BYTE(0) }
++	.got.plt : { BYTE(0) }
  }
- 
- static bool FNAME(prefetch_invalid_gpte)(struct kvm_vcpu *vcpu,
+-- 
+2.35.1
+
 
 
