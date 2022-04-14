@@ -2,190 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FECCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F07C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:23:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233763AbiDNQO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37808 "EHLO
+        id S239077AbiDNQ0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347774AbiDNQKN (ORCPT
+        with ESMTP id S245730AbiDNQOR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 12:10:13 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19DC93183
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:55:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649951754; x=1681487754;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Cox/lk173R1lAWkMXSn8T0qitOusiwh1PkHxQFAhQ88=;
-  b=ZmQdnfIEbLfMFkGl4u7e0onE2Dn6lgv8p9X4tOp6YOz2lVpVHGX7c/Au
-   ocPMXmXv9L5aGt4Fda2YHNUA5XAkLEc5B79qnZ9j4QTYRTU3ggkQyudI6
-   884rnS4LccCme0eu86MVIEGOwm2aIxo6klziW/EOjrPtEY+uQ71JvOYTV
-   K5n+Gr1ezepgEQ0Xm2isfQF9wFldEkIxOgOuSdxaU4hK36zHKLUJYvbRE
-   ihrF+JtR76boSs4bsChb17CiSkqldJyPfN2YvTM9JUhe0aXUtS0dLoFr1
-   ZZbJ3QVp2LhFoECFEyiKXTDv+qreGwRNYkUbHLmEdZvYx7ZT215dplot2
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="243549331"
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="243549331"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 08:54:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,260,1643702400"; 
-   d="scan'208";a="508457350"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 14 Apr 2022 08:54:18 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nf1nV-00015l-Ll;
-        Thu, 14 Apr 2022 15:54:17 +0000
-Date:   Thu, 14 Apr 2022 23:54:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: include/linux/fortify-string.h:267:25: warning: call to
- '__write_overflow_field' declared with attribute warning: detected write
- beyond size of field (1st parameter); maybe use struct_group()?
-Message-ID: <202204142318.vDqjjSFn-lkp@intel.com>
+        Thu, 14 Apr 2022 12:14:17 -0400
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86EC3C31F2;
+        Thu, 14 Apr 2022 08:57:25 -0700 (PDT)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-dacc470e03so5686062fac.5;
+        Thu, 14 Apr 2022 08:57:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=m/HgJFU5eyBdqThPB7Gif/3NbbgBxIgCKOJJWS03GxI=;
+        b=h4zUXu3avlhZ8qSHZhOr5ForkeDLpTq09ixAxVLBvIGtEpJqxmnuLoKGZ8VGBOkbxg
+         tijkkAhzgo/tFPqWvDv0KzhJX/+ov/95v5zRQm9Nio+xtH+gG1RacpY2Yi5chJ0l9PED
+         Kno78itgn7apNHbcV8pCUWmwEFTteLTN8KxQPoTynFgEZucnlM7D1wEKhK5NCd/zSU4n
+         AaA/NHgH+LSGsbiXcJf2vKADrjB9r+HVaAq7uZ9E0G9YYbaSb9/naso5G4ixMFrHVr8m
+         nIHH9H1ChBAtdP7HiP8LFEsLX769vc5cn1UdInAJZ7Qgf+SVB4r2yvW9M7QTYonZgAUN
+         uqcA==
+X-Gm-Message-State: AOAM530YId9DWhiijYjRa8y97cyDo9JWR6oxUb7B5KPf/1HJJahlnc1m
+        69SZvjc0c96itAPtXDlBwg==
+X-Google-Smtp-Source: ABdhPJyQchtfSX/mwpYjIzUd1rTj7rtUPQjMM1F1iQB/k7vCs37gybUojwv5hvsA8UyY6S1hVlutSg==
+X-Received: by 2002:a05:6870:f2a9:b0:e5:8106:4486 with SMTP id u41-20020a056870f2a900b000e581064486mr1102887oap.109.1649951843522;
+        Thu, 14 Apr 2022 08:57:23 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id c19-20020a9d7853000000b005cdbc0f02ccsm144090otm.68.2022.04.14.08.57.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 08:57:23 -0700 (PDT)
+Received: (nullmailer pid 2129759 invoked by uid 1000);
+        Thu, 14 Apr 2022 15:57:22 -0000
+Date:   Thu, 14 Apr 2022 10:57:22 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     "J, KEERTHY" <j-keerthy@ti.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        daniel.lezcano@linaro.org, rui.zhang@intel.com, amitk@kernel.org,
+        kristo@kernel.org, linux-pm@vger.kernel.org, vigneshr@ti.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 1/4] dt-bindings: thermal: k3-j72xx: Add VTM bindings
+ documentation
+Message-ID: <YlhEYq8pGsuoA2mv@robh.at.kernel.org>
+References: <20220412101409.7980-1-j-keerthy@ti.com>
+ <20220412101409.7980-2-j-keerthy@ti.com>
+ <17474b72-d823-e1ff-9831-c5f9f887fccd@linaro.org>
+ <54d597e9-5cad-fc44-954d-7de45018fdcf@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <54d597e9-5cad-fc44-954d-7de45018fdcf@ti.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kees,
+On Wed, Apr 13, 2022 at 05:34:20PM +0530, J, KEERTHY wrote:
+> 
+> 
+> On 4/13/2022 3:43 PM, Krzysztof Kozlowski wrote:
+> > On 12/04/2022 12:14, Keerthy wrote:
+> > > Add VTM bindings documentation. In the Voltage Thermal
+> > > Management Module(VTM), K3 J72XX supplies a voltage
+> > > reference and a temperature sensor feature that are gathered in the band
+> > > gap voltage and temperature sensor (VBGAPTS) module. The band
+> > > gap provides current and voltage reference for its internal
+> > > circuits and other analog IP blocks. The analog-to-digital
+> > > converter (ADC) produces an output value that is proportional
+> > > to the silicon temperature.
+> > > 
+> > > Signed-off-by: Keerthy <j-keerthy@ti.com>
+> > > ---
+> > >   .../bindings/thermal/ti,j72xx-thermal.yaml    | 62 +++++++++++++++++++
+> > >   1 file changed, 62 insertions(+)
+> > >   create mode 100644 Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml b/Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml
+> > > new file mode 100644
+> > > index 000000000000..8483c495cb9a
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/thermal/ti,j72xx-thermal.yaml
+> > > @@ -0,0 +1,62 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: http://devicetree.org/schemas/thermal/ti,j72xx-thermal.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: Texas Instruments J72XX VTM (DTS) binding
+> > > +
+> > > +maintainers:
+> > > +  - Keerthy <j-keerthy@ti.com>
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    const: ti,j721e-vtm
+> > > +    oneOf:
+> > > +      - enum:
+> > > +          - ti,j721e-vtm
+> > > +          - ti,j7200-vtm
+> > 
+> > It seems you resent this ignoring all of Rob's comments. In changelog of
+> > cover letter you wrote "Fixed all the comments on v4" but it's not true.
+> > Maybe you sent us old patch?
+> > 
+> > Anyway, you need to follow Rob's comments.
+> 
+> Krzysztof,
+> 
+> Apologies. Some issues with my mailbox. Rob's response didn't reach me for
+> some reason.
 
-FYI, the error/warning still remains.
+Maybe because I'm still banned by TI. Just had another bounce a few days 
+ago.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   a19944809fe9942e6a96292490717904d0690c21
-commit: f68f2ff91512c199ec24883001245912afc17873 fortify: Detect struct member overflows in memcpy() at compile-time
-date:   9 weeks ago
-config: arm-randconfig-r012-20220414 (https://download.01.org/0day-ci/archive/20220414/202204142318.vDqjjSFn-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f68f2ff91512c199ec24883001245912afc17873
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout f68f2ff91512c199ec24883001245912afc17873
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash drivers/usb/serial/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from include/linux/string.h:253,
-                    from include/linux/bitmap.h:11,
-                    from include/linux/cpumask.h:12,
-                    from include/linux/smp.h:13,
-                    from include/linux/lockdep.h:14,
-                    from include/linux/spinlock.h:62,
-                    from include/linux/mmzone.h:8,
-                    from include/linux/gfp.h:6,
-                    from include/linux/slab.h:15,
-                    from drivers/usb/serial/whiteheat.c:17:
-   In function 'fortify_memcpy_chk',
-       inlined from 'firm_send_command' at drivers/usb/serial/whiteheat.c:587:4:
->> include/linux/fortify-string.h:267:25: warning: call to '__write_overflow_field' declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
-     267 |                         __write_overflow_field(p_size_field, size);
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/__write_overflow_field +267 include/linux/fortify-string.h
-
-   213	
-   214	/*
-   215	 * To make sure the compiler can enforce protection against buffer overflows,
-   216	 * memcpy(), memmove(), and memset() must not be used beyond individual
-   217	 * struct members. If you need to copy across multiple members, please use
-   218	 * struct_group() to create a named mirror of an anonymous struct union.
-   219	 * (e.g. see struct sk_buff.) Read overflow checking is currently only
-   220	 * done when a write overflow is also present, or when building with W=1.
-   221	 *
-   222	 * Mitigation coverage matrix
-   223	 *					Bounds checking at:
-   224	 *					+-------+-------+-------+-------+
-   225	 *					| Compile time  |   Run time    |
-   226	 * memcpy() argument sizes:		| write | read  | write | read  |
-   227	 *        dest     source   length      +-------+-------+-------+-------+
-   228	 * memcpy(known,   known,   constant)	|   y   |   y   |  n/a  |  n/a  |
-   229	 * memcpy(known,   unknown, constant)	|   y   |   n   |  n/a  |   V   |
-   230	 * memcpy(known,   known,   dynamic)	|   n   |   n   |   B   |   B   |
-   231	 * memcpy(known,   unknown, dynamic)	|   n   |   n   |   B   |   V   |
-   232	 * memcpy(unknown, known,   constant)	|   n   |   y   |   V   |  n/a  |
-   233	 * memcpy(unknown, unknown, constant)	|   n   |   n   |   V   |   V   |
-   234	 * memcpy(unknown, known,   dynamic)	|   n   |   n   |   V   |   B   |
-   235	 * memcpy(unknown, unknown, dynamic)	|   n   |   n   |   V   |   V   |
-   236	 *					+-------+-------+-------+-------+
-   237	 *
-   238	 * y = perform deterministic compile-time bounds checking
-   239	 * n = cannot perform deterministic compile-time bounds checking
-   240	 * n/a = no run-time bounds checking needed since compile-time deterministic
-   241	 * B = can perform run-time bounds checking (currently unimplemented)
-   242	 * V = vulnerable to run-time overflow (will need refactoring to solve)
-   243	 *
-   244	 */
-   245	__FORTIFY_INLINE void fortify_memcpy_chk(__kernel_size_t size,
-   246						 const size_t p_size,
-   247						 const size_t q_size,
-   248						 const size_t p_size_field,
-   249						 const size_t q_size_field,
-   250						 const char *func)
-   251	{
-   252		if (__builtin_constant_p(size)) {
-   253			/*
-   254			 * Length argument is a constant expression, so we
-   255			 * can perform compile-time bounds checking where
-   256			 * buffer sizes are known.
-   257			 */
-   258	
-   259			/* Error when size is larger than enclosing struct. */
-   260			if (p_size > p_size_field && p_size < size)
-   261				__write_overflow();
-   262			if (q_size > q_size_field && q_size < size)
-   263				__read_overflow2();
-   264	
-   265			/* Warn when write size argument larger than dest field. */
-   266			if (p_size_field < size)
- > 267				__write_overflow_field(p_size_field, size);
-   268			/*
-   269			 * Warn for source field over-read when building with W=1
-   270			 * or when an over-write happened, so both can be fixed at
-   271			 * the same time.
-   272			 */
-   273			if ((IS_ENABLED(KBUILD_EXTRA_WARN1) || p_size_field < size) &&
-   274			    q_size_field < size)
-   275				__read_overflow2_field(q_size_field, size);
-   276		}
-   277		/*
-   278		 * At this point, length argument may not be a constant expression,
-   279		 * so run-time bounds checking can be done where buffer sizes are
-   280		 * known. (This is not an "else" because the above checks may only
-   281		 * be compile-time warnings, and we want to still warn for run-time
-   282		 * overflows.)
-   283		 */
-   284	
-   285		/*
-   286		 * Always stop accesses beyond the struct that contains the
-   287		 * field, when the buffer's remaining size is known.
-   288		 * (The -1 test is to optimize away checks where the buffer
-   289		 * lengths are unknown.)
-   290		 */
-   291		if ((p_size != (size_t)(-1) && p_size < size) ||
-   292		    (q_size != (size_t)(-1) && q_size < size))
-   293			fortify_panic(func);
-   294	}
-   295	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Rob
