@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93684C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9BDBC43219
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346828AbiDNOLZ (ORCPT
+        id S1347128AbiDNOLj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49778 "EHLO
+        Thu, 14 Apr 2022 10:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244877AbiDNN2N (ORCPT
+        with ESMTP id S244867AbiDNN2N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:28:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD985A76F7;
-        Thu, 14 Apr 2022 06:21:12 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA257A6E12;
+        Thu, 14 Apr 2022 06:21:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19E7560BAF;
-        Thu, 14 Apr 2022 13:21:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24D74C385A5;
-        Thu, 14 Apr 2022 13:21:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D791618E3;
+        Thu, 14 Apr 2022 13:21:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 802CEC385A1;
+        Thu, 14 Apr 2022 13:21:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942471;
-        bh=arYmQ6gdhCroZr/XsiSO5yOvG9bBTqXz5YPkWZg9fPc=;
+        s=korg; t=1649942465;
+        bh=eWY6ofTpSdy8cdSc096Y426V6ZJbRKoWWuKcAkr2quM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YQ9UZJip61aHbivt/UwEprZnVUvcao0tbp30N8XQCdyFv2U6NZd8ulk+sFY6rhXu3
-         IyXAkwF+P7keWClFbTnEYYjNg2kFiQj9SuMdy5A5sXYeyomq3l/ivSv7o36p/pxk9H
-         KDI692JgQXBaFLdzHoHl48CuqeqvZ8K8kzXthxS0=
+        b=12sTBKXc3OL4yP4yXnO0yS0zReoVqHhNG6QqUltKN8Bh82RHvyZqQABxV0305nvUZ
+         360emhuumFMyqO9AiHDgllmr9VqOLTyldWEc9drqF/HaSBCr0UI2TQfK1hrR2AKpeV
+         KMMfJtFYZJD6oyFjrrwv/BVU297iv07MVVtBFngU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Bjorn Helgaas <helgaas@kernel.org>,
+        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Scott Branden <scott.branden@broadcom.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 111/338] ASoC: mxs: Fix error handling in mxs_sgtl5000_probe
-Date:   Thu, 14 Apr 2022 15:10:14 +0200
-Message-Id: <20220414110842.068828264@linuxfoundation.org>
+Subject: [PATCH 4.19 145/338] PCI: Reduce warnings on possible RW1C corruption
+Date:   Thu, 14 Apr 2022 15:10:48 +0200
+Message-Id: <20220414110843.032381429@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,41 +54,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
 
-[ Upstream commit 6ae0a4d8fec551ec581d620f0eb1fe31f755551c ]
+[ Upstream commit 92c45b63ce22c8898aa41806e8d6692bcd577510 ]
 
-This function only calls of_node_put() in the regular path.
-And it will cause refcount leak in error paths.
-For example, when codec_np is NULL, saif_np[0] and saif_np[1]
-are not NULL, it will cause leaks.
+For hardware that only supports 32-bit writes to PCI there is the
+possibility of clearing RW1C (write-one-to-clear) bits. A rate-limited
+messages was introduced by fb2659230120, but rate-limiting is not the best
+choice here. Some devices may not show the warnings they should if another
+device has just produced a bunch of warnings. Also, the number of messages
+can be a nuisance on devices which are otherwise working fine.
 
-of_node_put() will check if the node pointer is NULL, so we can
-call it directly to release the refcount of regular pointers.
+Change the ratelimit to a single warning per bus. This ensures no bus is
+'starved' of emitting a warning and also that there isn't a continuous
+stream of warnings. It would be preferable to have a warning per device,
+but the pci_dev structure is not available here, and a lookup from devfn
+would be far too slow.
 
-Fixes: e968194b45c4 ("ASoC: mxs: add device tree support for mxs-sgtl5000")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220308020146.26496-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Suggested-by: Bjorn Helgaas <helgaas@kernel.org>
+Fixes: fb2659230120 ("PCI: Warn on possible RW1C corruption for sub-32 bit config writes")
+Link: https://lore.kernel.org/r/20200806041455.11070-1-mark.tomlinson@alliedtelesis.co.nz
+Signed-off-by: Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Scott Branden <scott.branden@broadcom.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mxs/mxs-sgtl5000.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/pci/access.c | 9 ++++++---
+ include/linux/pci.h  | 1 +
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/mxs/mxs-sgtl5000.c b/sound/soc/mxs/mxs-sgtl5000.c
-index 2b3f2408301a..c40e0ab49657 100644
---- a/sound/soc/mxs/mxs-sgtl5000.c
-+++ b/sound/soc/mxs/mxs-sgtl5000.c
-@@ -120,6 +120,9 @@ static int mxs_sgtl5000_probe(struct platform_device *pdev)
- 	codec_np = of_parse_phandle(np, "audio-codec", 0);
- 	if (!saif_np[0] || !saif_np[1] || !codec_np) {
- 		dev_err(&pdev->dev, "phandle missing or invalid\n");
-+		of_node_put(codec_np);
-+		of_node_put(saif_np[0]);
-+		of_node_put(saif_np[1]);
- 		return -EINVAL;
- 	}
+diff --git a/drivers/pci/access.c b/drivers/pci/access.c
+index 3c8ffd62dc00..98ee5f05fc0f 100644
+--- a/drivers/pci/access.c
++++ b/drivers/pci/access.c
+@@ -160,9 +160,12 @@ int pci_generic_config_write32(struct pci_bus *bus, unsigned int devfn,
+ 	 * write happen to have any RW1C (write-one-to-clear) bits set, we
+ 	 * just inadvertently cleared something we shouldn't have.
+ 	 */
+-	dev_warn_ratelimited(&bus->dev, "%d-byte config write to %04x:%02x:%02x.%d offset %#x may corrupt adjacent RW1C bits\n",
+-			     size, pci_domain_nr(bus), bus->number,
+-			     PCI_SLOT(devfn), PCI_FUNC(devfn), where);
++	if (!bus->unsafe_warn) {
++		dev_warn(&bus->dev, "%d-byte config write to %04x:%02x:%02x.%d offset %#x may corrupt adjacent RW1C bits\n",
++			 size, pci_domain_nr(bus), bus->number,
++			 PCI_SLOT(devfn), PCI_FUNC(devfn), where);
++		bus->unsafe_warn = 1;
++	}
  
+ 	mask = ~(((1 << (size * 8)) - 1) << ((where & 0x3) * 8));
+ 	tmp = readl(addr) & mask;
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index a4bbce871e08..3e06e9790c25 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -581,6 +581,7 @@ struct pci_bus {
+ 	struct bin_attribute	*legacy_io;	/* Legacy I/O for this bus */
+ 	struct bin_attribute	*legacy_mem;	/* Legacy mem */
+ 	unsigned int		is_added:1;
++	unsigned int		unsafe_warn:1;	/* warned about RW1C config write */
+ };
+ 
+ #define to_pci_bus(n)	container_of(n, struct pci_bus, dev)
 -- 
 2.34.1
 
