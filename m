@@ -2,95 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5CBAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:55:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 523AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241238AbiDNI5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 04:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35996 "EHLO
+        id S241249AbiDNI6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 04:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241273AbiDNI5e (ORCPT
+        with ESMTP id S237997AbiDNI6H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 04:57:34 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A027B56C11;
-        Thu, 14 Apr 2022 01:55:10 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id t12so4112293pll.7;
-        Thu, 14 Apr 2022 01:55:10 -0700 (PDT)
+        Thu, 14 Apr 2022 04:58:07 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9370965D24;
+        Thu, 14 Apr 2022 01:55:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mb698fUGO0bHbcwTfiE84awFA8BPhX0m9yxP0nIt750=;
-        b=NC0r3aSoWy3PoGi1ZG9kftXD5tkIjXF6l9lWru/YShtHYY2huRB/93RXqaZAwLZ47K
-         iVhaL5P61xW4Y36eM64iUTxdN0CYz0UFs9jt0wqZSZrfAv5E7jwjN1xy5Zs/V9ZR3fA5
-         fUijOzGvenngLzSds/Cnh0XoTFPwlfvT+s0aeITOyaGv8rOoMnPjW7CQ3od+KdjCIJHo
-         ZNuI5DN3etJpOymVLlOIihSR+JJQeHLjqXv8bYgCbgDlFRVo7vPQPSLeGMJiT1JlBChZ
-         QeamM7icb+jUsL6HPJP1+Q3rVppy5N9pBFFiTTZfi5DvRNDq1IyFHapY/2zApgLz2qJ1
-         S8FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mb698fUGO0bHbcwTfiE84awFA8BPhX0m9yxP0nIt750=;
-        b=IuBJ8PvSm3/ZQ+1rrVD3zZ53cA1gV2zjjpU1A4OWeGKN4sZzXBLMBceTLBDD7iZ3GM
-         inkWpNlwLuC/x3BnZgF6X8034V8BChBYW4374+O0C82nm7dIG1RCDh3+pZGG1XFNfqc+
-         IKQ+j1mBksC0+pFsPG3YpPfyGIWbXTvOdTalvh632SkLUTo/Z/0gRZmQaeaaKomE68Vn
-         JfNqcJKAFyoqB/KgSGUZ3EaUEsMYYfNeVmAzB/GSnJ33AsUODfq4QD54QLLmcqhSUl8u
-         noroI+3v7Ss6xgoe7CHDaJo64ysppuk9FUAJxhBHid4BztPqP5+52y4SiAdiz9AScnWi
-         1RXg==
-X-Gm-Message-State: AOAM532RqRoBnLvj0hhf9x0rQ7nIzJp5x9Cl/Raq68ndkw/42OwB/Jdw
-        s4hYRAN0LEjKGQQP8HQhddLtqIpyrkg=
-X-Google-Smtp-Source: ABdhPJzupmwyylba5UF/AGp13OyiCVCBPL6v+WM8w1NFkkE8n283xkvtxIT2aLEqeGPAI6/p7ZYlBA==
-X-Received: by 2002:a17:902:6bc9:b0:158:b9d0:1e3b with SMTP id m9-20020a1709026bc900b00158b9d01e3bmr2151959plt.84.1649926510203;
-        Thu, 14 Apr 2022 01:55:10 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id a15-20020a62e20f000000b00508363eee44sm482568pfi.219.2022.04.14.01.55.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 01:55:09 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     broonie@kernel.org
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] spi: spi-sprd: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Thu, 14 Apr 2022 08:55:06 +0000
-Message-Id: <20220414085506.2541732-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649926543;
+  x=1681462543;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EKQ0yqkEdK1AucptjfCwr+qtiem+dTCzWK8vM9EwHXY=;
+  b=P4ZNCc46Nr9gF/ml4sK0EFqnqBR2gdLjypk88I6GoOCU9AMQtELRXCxX
+   4sVs9hEE5NaNp3ULGXpO8vs+y7M5rIbeL3lwI2ckGKHKmIxd5aQQdQoq9
+   h3bsArq8QjuphTV61KD4kFfIl8HqigQqxH6u8DLO8dlDAiHQDrcBRjHo0
+   omZnyIHvw5pWXqce6dAMZHPBPzaI5970yO+XAmNC4oczEdhTA3bWY9Zti
+   dx4K95M19hiB8WmpUaxbwVtv1o/fowO5lJVaRLb5uFsrrNhw/r1GwkVJy
+   O7dr7uXhBRB3S4LiPyJPTgRVNJoFvbgfzq0mvhLmN606ufr1qb3QD7pBl
+   g==;
+Date:   Thu, 14 Apr 2022 10:55:40 +0200
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     "wsa@kernel.org" <wsa@kernel.org>, kernel <kernel@axis.com>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/2] dt-bindings: i2c: add property to avoid device
+ detection
+Message-ID: <20220414085539.GA7392@axis.com>
+References: <20220412085046.1110127-1-vincent.whitchurch@axis.com>
+ <20220412085046.1110127-2-vincent.whitchurch@axis.com>
+ <YlXtobiXIyObF/7+@robh.at.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <YlXtobiXIyObF/7+@robh.at.kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+On Tue, Apr 12, 2022 at 11:22:41PM +0200, Rob Herring wrote:
+> On Tue, Apr 12, 2022 at 10:50:45AM +0200, Vincent Whitchurch wrote:
+> > diff --git a/Documentation/devicetree/bindings/i2c/i2c.txt b/Documentation/devicetree/bindings/i2c/i2c.txt
+> > index fc3dd7ec0445..960d1d5c9362 100644
+> > --- a/Documentation/devicetree/bindings/i2c/i2c.txt
+> > +++ b/Documentation/devicetree/bindings/i2c/i2c.txt
+> > @@ -72,6 +72,10 @@ wants to support one of the below features, it should adapt these bindings.
+> >  	this information to adapt power management to keep the arbitration awake
+> >  	all the time, for example. Can not be combined with 'single-master'.
+> >  
+> > +- no-detect
+> > +	states that no other devices are present on this bus other than the
+> > +	ones listed in the devicetree.
+> 
+> This belongs in the schema instead:
+> 
+> https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/i2c/i2c-controller.yaml
 
-Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
-pm_runtime_put_noidle. This change is just to simplify the code, no
-actual functional changes.
+OK, thank you, I've sent a PR[0] now, but I must admit I don't quite
+understand how this property differs from the other ones in this file
+which aren't documented there.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
- drivers/spi/spi-sprd.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/spi/spi-sprd.c b/drivers/spi/spi-sprd.c
-index 28e70db9bbba..65b8075da4eb 100644
---- a/drivers/spi/spi-sprd.c
-+++ b/drivers/spi/spi-sprd.c
-@@ -1008,9 +1008,8 @@ static int sprd_spi_remove(struct platform_device *pdev)
- 	struct sprd_spi *ss = spi_controller_get_devdata(sctlr);
- 	int ret;
- 
--	ret = pm_runtime_get_sync(ss->dev);
-+	ret = pm_runtime_resume_and_get(ss->dev);
- 	if (ret < 0) {
--		pm_runtime_put_noidle(ss->dev);
- 		dev_err(ss->dev, "failed to resume SPI controller\n");
- 		return ret;
- 	}
--- 
-2.25.1
-
+[0] https://github.com/devicetree-org/dt-schema/pull/72
