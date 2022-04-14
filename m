@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 021F3C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9777CC47081
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345952AbiDNOug (ORCPT
+        id S1346826AbiDNOvJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51654 "EHLO
+        Thu, 14 Apr 2022 10:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344964AbiDNNo5 (ORCPT
+        with ESMTP id S1345213AbiDNNpa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6172E5EBF6;
-        Thu, 14 Apr 2022 06:41:02 -0700 (PDT)
+        Thu, 14 Apr 2022 09:45:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173F55FD5;
+        Thu, 14 Apr 2022 06:43:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 175EEB8296A;
-        Thu, 14 Apr 2022 13:41:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DF71C385A5;
-        Thu, 14 Apr 2022 13:40:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBEA4B828E6;
+        Thu, 14 Apr 2022 13:43:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3825CC385A1;
+        Thu, 14 Apr 2022 13:43:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943659;
-        bh=uNEMzq/8S59OR0owNxgONibKfGmpN5u03LSk4vC0jPw=;
+        s=korg; t=1649943782;
+        bh=HAjsokNLpm1BGeHXA8hl2TeS4FY5QiuvnC9KI1mxvmM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eI1d5V3pNWzEuwkzgLVRsExFr28MSwNQ5agUNWylbVshL/+amvcP7UqYbK1Au/tTu
-         BMqlHjPbdqGA9ZU0E/gd5ieFeVxuWHxH8ekPSTECo+fWwbWSrRL+MhrWpXg2bc5avO
-         +H5OBK0AHOctXQFAHqvcoTYx58ZryoQ0K+QL/sJw=
+        b=a+YxLXDTvw4JvAUJHteToh92/Yr+AxWdJvCpE+4nD9mHpnaE3Db4saQvs1PHFIqk7
+         z16hgm5lwPbc9uiQS533dREXUAYBatNjEueW9lNXzP6OHf+aFPyfRzovdyHKH0y54S
+         1UUsA1xZ6wUmqGCaoxMjuFXe9QMLvRtC65NyD2UU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Maulik Shah <quic_mkshah@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 236/475] iio: adc: Add check for devm_request_threaded_irq
-Date:   Thu, 14 Apr 2022 15:10:21 +0200
-Message-Id: <20220414110901.724217103@linuxfoundation.org>
+Subject: [PATCH 5.4 280/475] irqchip/qcom-pdc: Fix broken locking
+Date:   Thu, 14 Apr 2022 15:11:05 +0200
+Message-Id: <20220414110902.936801628@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,36 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Marc Zyngier <maz@kernel.org>
 
-[ Upstream commit b30537a4cedcacf0ade2f33ebb7610178ed1e7d7 ]
+[ Upstream commit a6aca2f460e203781dc41391913cc5b54f4bc0ce ]
 
-As the potential failure of the devm_request_threaded_irq(),
-it should be better to check the return value and return
-error if fails.
+pdc_enable_intr() serves as a primitive to qcom_pdc_gic_{en,dis}able,
+and has a raw spinlock for mutual exclusion, which is uses with
+interruptible primitives.
 
-Fixes: fa659a40b80b ("iio: adc: twl6030-gpadc: Use devm_* API family")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220224062849.3280966-1-jiasheng@iscas.ac.cn
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+This means that this critical section can itself be interrupted.
+Should the interrupt also be a PDC interrupt, and the endpoint driver
+perform an irq_disable() on that interrupt, we end-up in a deadlock.
+
+Fix this by using the irqsave/irqrestore variants of the locking
+primitives.
+
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Reviewed-by: Maulik Shah <quic_mkshah@quicinc.com>
+Link: https://lore.kernel.org/r/20220224101226.88373-5-maz@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/twl6030-gpadc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/irqchip/qcom-pdc.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
-index f24148bd15de..fb77c3ff5a3e 100644
---- a/drivers/iio/adc/twl6030-gpadc.c
-+++ b/drivers/iio/adc/twl6030-gpadc.c
-@@ -911,6 +911,8 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
- 	ret = devm_request_threaded_irq(dev, irq, NULL,
- 				twl6030_gpadc_irq_handler,
- 				IRQF_ONESHOT, "twl6030_gpadc", indio_dev);
-+	if (ret)
-+		return ret;
+diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
+index faa7d61b9d6c..239a889df608 100644
+--- a/drivers/irqchip/qcom-pdc.c
++++ b/drivers/irqchip/qcom-pdc.c
+@@ -50,17 +50,18 @@ static u32 pdc_reg_read(int reg, u32 i)
+ static void pdc_enable_intr(struct irq_data *d, bool on)
+ {
+ 	int pin_out = d->hwirq;
++	unsigned long flags;
+ 	u32 index, mask;
+ 	u32 enable;
  
- 	ret = twl6030_gpadc_enable_irq(TWL6030_GPADC_RT_SW1_EOC_MASK);
- 	if (ret < 0) {
+ 	index = pin_out / 32;
+ 	mask = pin_out % 32;
+ 
+-	raw_spin_lock(&pdc_lock);
++	raw_spin_lock_irqsave(&pdc_lock, flags);
+ 	enable = pdc_reg_read(IRQ_ENABLE_BANK, index);
+ 	enable = on ? ENABLE_INTR(enable, mask) : CLEAR_INTR(enable, mask);
+ 	pdc_reg_write(IRQ_ENABLE_BANK, index, enable);
+-	raw_spin_unlock(&pdc_lock);
++	raw_spin_unlock_irqrestore(&pdc_lock, flags);
+ }
+ 
+ static void qcom_pdc_gic_mask(struct irq_data *d)
 -- 
 2.34.1
 
