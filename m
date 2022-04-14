@@ -2,92 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6921FC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44BF1C4167B
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350906AbiDNO3D (ORCPT
+        id S1350838AbiDNO2u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:29:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
+        Thu, 14 Apr 2022 10:28:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343966AbiDNNjc (ORCPT
+        with ESMTP id S1344159AbiDNNkE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:32 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7DA99EF5;
-        Thu, 14 Apr 2022 06:35:57 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id i20so9424343ybj.7;
-        Thu, 14 Apr 2022 06:35:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=usbrVmh/IqZeGrbdE2M9/Szfr5yBTnD3ZEUOMvSshiE=;
-        b=NLzWJaSJZPz1VxfJ8V35JeiQ1OKP+tDwmCDOL7OEXoBRqFaqNqB1W8N4bJJrl5SRDO
-         BFPtv1bbVEw/tMuvepFWesW4JU7SeKkwbBPXYSfh/t5/IZOneS7duUAwQasMnSpiITQ9
-         XndS1oIdD9jLUoeqTbuMs7OZ+I/NQzLvN3tLEEGwkU7+JFcFcjsh9TbKTJKTjyVu18KN
-         2owBNh8/ILzG/g2vY0LQzUx0JdQxfT181fGTsE7mqO3js9KsHvu827tXz3XoV6PO3F2e
-         4RFn15p8gCznyV8aiDlpQhf49jqef/UFlYcIZlfK3lbgv6UwpD4c7HKg1X1kDqU123ez
-         /lAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=usbrVmh/IqZeGrbdE2M9/Szfr5yBTnD3ZEUOMvSshiE=;
-        b=wcty3/V9HCLzKzMZgWfQeTeFsxbKCvWkyqw3VwRjFDxwUEHfdX2YfBMhsu6X4Dn/iE
-         Fu/ptF3ljHDOGbDoEWUjGBHxsmRfyM5xj28ym6jWptQq99HUk99LmXd/PSQq7GDFWcOI
-         VvHP4C7Q5xTknE3Xb+Hh8VQo5RS0QrwSXwUfxgi3NHhieg3CXPicHa82urkRLwsqU/W+
-         UiCaK1CFCoN2QfX9RVJ1sg6m4/GKCnK71QajpYRJdLMDZHHqsbV30HvZqT8cXFhIsjUw
-         ddGpiib3Ljof5mw3DqEWUKg3oV7zZMJqd6bh2gG72fjfeOVxt5JEhLbztw9LvXYETFkx
-         Zyog==
-X-Gm-Message-State: AOAM533DzkhzlcLJUO08Sv6jAOivYREyNqBYoGdyalyKtMItJaHJcmOg
-        wdfqwAtZ+w+yPX7bYiPQ8M00JBN2k5ST5x9BbwNPX25JqBI=
-X-Google-Smtp-Source: ABdhPJwopzv0ttPI92q96WOpOVANWZ/UA4QN3jGSBMSpKFajdl7+sC2a5dQBmaIJ77V2WoYOt6pYigc+WE79LYNZ87g=
-X-Received: by 2002:a05:6902:1206:b0:641:bc56:7444 with SMTP id
- s6-20020a056902120600b00641bc567444mr1819943ybu.376.1649943356542; Thu, 14
- Apr 2022 06:35:56 -0700 (PDT)
+        Thu, 14 Apr 2022 09:40:04 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3601C6;
+        Thu, 14 Apr 2022 06:37:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 39A8CCE296C;
+        Thu, 14 Apr 2022 13:37:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50AE9C385A1;
+        Thu, 14 Apr 2022 13:37:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649943456;
+        bh=nHqKVKLZqRvDk37NLgF7Ca+K5+ub5ZEn1+PrTH5n6yQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=j4GF4W6q538FkPz6aeNDG9U+K0zKwec61lifo2HO09lq1rFBdCkYTN3hOHD0qm4Qn
+         VoXmuXgYj1vrSmCw/hB3dR/Fc+M8Y1okbAHl8HUC99exkreZ6zWJ9QB51VONbePKug
+         XW6XFwk64p8SQgskXVN471AYMHq6dzD+Vf8rirZI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 161/475] mtd: rawnand: gpmi: fix controller timings setting
+Date:   Thu, 14 Apr 2022 15:09:06 +0200
+Message-Id: <20220414110859.645490082@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220330132152.4568-1-jiangshanlai@gmail.com> <20220330132152.4568-4-jiangshanlai@gmail.com>
- <YlXrshJa2Sd1WQ0P@google.com> <CAJhGHyD-4YFDhkxk2SQFmKe3ooqw_0wE+9u3+sZ8zOdSUfbnxw@mail.gmail.com>
- <683974e7-5801-e289-8fa4-c8a8d21ec1b2@redhat.com> <CAJhGHyCgo-FEgvuRfuLZikgJSyo7HGm1OfU3gme35-WBmqo7yQ@mail.gmail.com>
-In-Reply-To: <CAJhGHyCgo-FEgvuRfuLZikgJSyo7HGm1OfU3gme35-WBmqo7yQ@mail.gmail.com>
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-Date:   Thu, 14 Apr 2022 21:35:45 +0800
-Message-ID: <CAJhGHyCO23JbqdiwRvdggSSxxe93vyKPNY6H5nk+=y6cJJaxvQ@mail.gmail.com>
-Subject: Re: [RFC PATCH V3 3/4] KVM: X86: Alloc role.pae_root shadow page
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        linux-doc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 5:32 PM Lai Jiangshan <jiangshanlai@gmail.com> wrote:
+From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
->
-> All new kinds of sp added in this patchset are in the hash too.
->
+[ Upstream commit 2970bf5a32f079e1e9197411db4fe9faccb1503a ]
+
+Set the controller registers according to the real clock rate. The
+controller registers configuration (setup, hold, timeout, ... cycles)
+depends on the clock rate of the GPMI. Using the real rate instead of
+the ideal one, avoids that this inaccuracy (required_rate - real_rate)
+affects the registers setting.
+
+This patch has been tested on two custom boards with i.MX28 and i.MX6
+SOCs:
+- i.MX28:
+  required rate 100MHz, real rate 99.3MHz
+- i.MX6
+  required rate 100MHz, real rate 99MHz
+
+Fixes: b1206122069a ("mtd: rawnand: gpmi: use core timings instead of an empirical derivation")
+Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
+Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220118095434.35081-3-dario.binacchi@amarulasolutions.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+index ab2f824abf54..02218c3b548f 100644
+--- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
++++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+@@ -645,6 +645,7 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
+ 				     const struct nand_sdr_timings *sdr)
+ {
+ 	struct gpmi_nfc_hardware_timing *hw = &this->hw;
++	struct resources *r = &this->resources;
+ 	unsigned int dll_threshold_ps = this->devdata->max_chain_delay;
+ 	unsigned int period_ps, reference_period_ps;
+ 	unsigned int data_setup_cycles, data_hold_cycles, addr_setup_cycles;
+@@ -668,6 +669,8 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
+ 		wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
+ 	}
+ 
++	hw->clk_rate = clk_round_rate(r->clock[0], hw->clk_rate);
++
+ 	/* SDR core timings are given in picoseconds */
+ 	period_ps = div_u64((u64)NSEC_PER_SEC * 1000, hw->clk_rate);
+ 
+-- 
+2.34.1
 
 
-I think role.guest_pae_root is needed to distinguish it from
-a sp for a level-3 guest page in a 4-level pagetable.
 
-Or just role.guest_root_level(or role.root_level) and it can replace
-role.passthrough_depth and role.guest_pae_root and role.pae_root.
-
-role.pae_root will be
-
-(role.root_level == 3 || role.root_level == 2) && role.level == 3 &&
-(host is 32bit || !tdp_enabled)
