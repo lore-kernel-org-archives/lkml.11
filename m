@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 868F2C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4E8AC43219
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351089AbiDNOaL (ORCPT
+        id S1351103AbiDNOaT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
+        Thu, 14 Apr 2022 10:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343757AbiDNNjW (ORCPT
+        with ESMTP id S1344229AbiDNNkU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764752F01B;
-        Thu, 14 Apr 2022 06:34:47 -0700 (PDT)
+        Thu, 14 Apr 2022 09:40:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9E9120;
+        Thu, 14 Apr 2022 06:37:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E3C01CE29B3;
-        Thu, 14 Apr 2022 13:34:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0489BC385A5;
-        Thu, 14 Apr 2022 13:34:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA88BB82968;
+        Thu, 14 Apr 2022 13:37:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 207B9C385A1;
+        Thu, 14 Apr 2022 13:37:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943284;
-        bh=knN+5Q7Xmx1iTi3Ru3PlZcbuiEyx86ubiS8hxYwuebs=;
+        s=korg; t=1649943473;
+        bh=GRVYjGN0oVU3bLQLZkS30dh2b8ueNqwEcosPDjmYZFA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZNQSGgngj1OZqu3+ljObtQOXT7/zJfUJy2tGKWHi0gGMpHyEQOYaLCQYG+AL6kr93
-         HgGA5Q51gJi4hyk9ood8ojbo2LMyVxNU8GkSZdYlQNE7aG72yMlZkei+D/FXN3Vubi
-         jDe9jZmBGDpvRtQVhknqBwO5FGwLBNSVXdUqlqPk=
+        b=iF2JcNJBplGT32VTFas76CMBIQJPketjEleNf5rmS4XxvDkqJ12eKKdQsh5ZJRjCO
+         3mkpzM4E1kZ2Znc5BEk6UBSK37MARn4fFXw8WJ3Uv6TiAkOhcTanEAdOUfZeLMGrTM
+         N0NA4B7MFSXBJPVBNqTM5+5/tWA/iL7DcvOHwKRg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 101/475] hwrng: atmel - disable trng on failure path
-Date:   Thu, 14 Apr 2022 15:08:06 +0200
-Message-Id: <20220414110857.981050314@linuxfoundation.org>
+Subject: [PATCH 5.4 167/475] power: reset: gemini-poweroff: Fix IRQ check in gemini_poweroff_probe
+Date:   Thu, 14 Apr 2022 15:09:12 +0200
+Message-Id: <20220414110859.811658589@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,31 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit a223ea9f89ab960eb254ba78429efd42eaf845eb ]
+[ Upstream commit ba18dad0fb880cd29aa97b6b75560ef14d1061ba ]
 
-Call atmel_trng_disable() on failure path of probe.
+platform_get_irq() returns negative error number instead 0 on failure.
+And the doc of platform_get_irq() provides a usage example:
 
-Fixes: a1fa98d8116f ("hwrng: atmel - disable TRNG during suspend")
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+    int irq = platform_get_irq(pdev, 0);
+    if (irq < 0)
+        return irq;
+
+Fix the check of return value to catch errors correctly.
+
+Fixes: f7a388d6cd1c ("power: reset: Add a driver for the Gemini poweroff")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/hw_random/atmel-rng.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/power/reset/gemini-poweroff.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/char/hw_random/atmel-rng.c b/drivers/char/hw_random/atmel-rng.c
-index e55705745d5e..f4c94f8acfe0 100644
---- a/drivers/char/hw_random/atmel-rng.c
-+++ b/drivers/char/hw_random/atmel-rng.c
-@@ -96,6 +96,7 @@ static int atmel_trng_probe(struct platform_device *pdev)
+diff --git a/drivers/power/reset/gemini-poweroff.c b/drivers/power/reset/gemini-poweroff.c
+index 90e35c07240a..b7f7a8225f22 100644
+--- a/drivers/power/reset/gemini-poweroff.c
++++ b/drivers/power/reset/gemini-poweroff.c
+@@ -107,8 +107,8 @@ static int gemini_poweroff_probe(struct platform_device *pdev)
+ 		return PTR_ERR(gpw->base);
  
- err_register:
- 	clk_disable_unprepare(trng->clk);
-+	atmel_trng_disable(trng);
- 	return ret;
- }
+ 	irq = platform_get_irq(pdev, 0);
+-	if (!irq)
+-		return -EINVAL;
++	if (irq < 0)
++		return irq;
+ 
+ 	gpw->dev = dev;
  
 -- 
 2.34.1
