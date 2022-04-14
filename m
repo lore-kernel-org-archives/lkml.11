@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B51C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2FC9C4167B
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345175AbiDNPOM (ORCPT
+        id S1345835AbiDNPO1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34706 "EHLO
+        Thu, 14 Apr 2022 11:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347297AbiDNN6o (ORCPT
+        with ESMTP id S1347415AbiDNN6u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:58:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F5118385;
-        Thu, 14 Apr 2022 06:49:23 -0700 (PDT)
+        Thu, 14 Apr 2022 09:58:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6CE38BC0;
+        Thu, 14 Apr 2022 06:49:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 188B661D29;
-        Thu, 14 Apr 2022 13:49:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29A34C385A1;
-        Thu, 14 Apr 2022 13:49:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96B196190F;
+        Thu, 14 Apr 2022 13:49:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4B2DC385A1;
+        Thu, 14 Apr 2022 13:49:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944162;
-        bh=leA5SjVEI+OFdMEEiqCpgxxL7VQwPeWyvqNgqzEKnOs=;
+        s=korg; t=1649944179;
+        bh=mR2O/g+rjFObtLuc8qXfsCZ+aho+SVwU90zDb6t0Px0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yKGdTCNRLDccHF1FSyS7JW2CuHlPmBiKkCSnvbGBMKgfwLjm6TKmG+0a6B5wXl472
-         chuNPTeW0GACoFttFuEMySb32QwIpfN9q4hgG+/a18czoZVVqSwXaYPuRqnQrARskd
-         uKRjXfKPjag3rbM1Ot/S3RpFzNuWBTgxyJBnKPWc=
+        b=c855c0DOIhTykme6jXXGE0qkDcs/gmkHaFCKaTZ9vDq3PdTgRAxXKVj1mhjKjGUCR
+         S69tEEAnxHvDE/QLkGB5mlQ5cm1c3tN0Ts+Snnf+CJuCXfyFGrTzm7NF4IFzXA0ddZ
+         0hCsnZbqw5fPK4SEICFekoV1W9OoqIj0pN/nzjbA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Abraham <thomas.abraham@linaro.org>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Hyeonkook Kim <hk619.kim@samsung.com>,
-        Jiri Slaby <jslaby@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 416/475] serial: samsung_tty: do not unlock port->lock for uart_write_wakeup()
-Date:   Thu, 14 Apr 2022 15:13:21 +0200
-Message-Id: <20220414110906.705000925@linuxfoundation.org>
+        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 421/475] parisc: Fix patch code locking and flushing
+Date:   Thu, 14 Apr 2022 15:13:26 +0200
+Message-Id: <20220414110906.842016034@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,51 +49,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: John David Anglin <dave.anglin@bell.net>
 
-[ Upstream commit 988c7c00691008ea1daaa1235680a0da49dab4e8 ]
+[ Upstream commit a9fe7fa7d874a536e0540469f314772c054a0323 ]
 
-The commit c15c3747ee32 (serial: samsung: fix potential soft lockup
-during uart write) added an unlock of port->lock before
-uart_write_wakeup() and a lock after it. It was always problematic to
-write data from tty_ldisc_ops::write_wakeup and it was even documented
-that way. We fixed the line disciplines to conform to this recently.
-So if there is still a missed one, we should fix them instead of this
-workaround.
+This change fixes the following:
 
-On the top of that, s3c24xx_serial_tx_dma_complete() in this driver
-still holds the port->lock while calling uart_write_wakeup().
+1) The flags variable is not initialized. Always use raw_spin_lock_irqsave
+and raw_spin_unlock_irqrestore to serialize patching.
 
-So revert the wrap added by the commit above.
+2) flush_kernel_vmap_range is primarily intended for DMA flushes. Since
+__patch_text_multiple is often called with interrupts disabled, it is
+better to directly call flush_kernel_dcache_range_asm and
+flush_kernel_icache_range_asm. This avoids an extra call.
 
-Cc: Thomas Abraham <thomas.abraham@linaro.org>
-Cc: Kyungmin Park <kyungmin.park@samsung.com>
-Cc: Hyeonkook Kim <hk619.kim@samsung.com>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20220308115153.4225-1-jslaby@suse.cz
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+3) The final call to flush_icache_range is unnecessary.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/samsung.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ arch/parisc/kernel/patch.c | 25 +++++++++++--------------
+ 1 file changed, 11 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index c7683beb3412..6040d5a6139a 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -761,11 +761,8 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
- 		goto out;
+diff --git a/arch/parisc/kernel/patch.c b/arch/parisc/kernel/patch.c
+index 80a0ab372802..e59574f65e64 100644
+--- a/arch/parisc/kernel/patch.c
++++ b/arch/parisc/kernel/patch.c
+@@ -40,10 +40,7 @@ static void __kprobes *patch_map(void *addr, int fixmap, unsigned long *flags,
+ 
+ 	*need_unmap = 1;
+ 	set_fixmap(fixmap, page_to_phys(page));
+-	if (flags)
+-		raw_spin_lock_irqsave(&patch_lock, *flags);
+-	else
+-		__acquire(&patch_lock);
++	raw_spin_lock_irqsave(&patch_lock, *flags);
+ 
+ 	return (void *) (__fix_to_virt(fixmap) + (uintaddr & ~PAGE_MASK));
+ }
+@@ -52,10 +49,7 @@ static void __kprobes patch_unmap(int fixmap, unsigned long *flags)
+ {
+ 	clear_fixmap(fixmap);
+ 
+-	if (flags)
+-		raw_spin_unlock_irqrestore(&patch_lock, *flags);
+-	else
+-		__release(&patch_lock);
++	raw_spin_unlock_irqrestore(&patch_lock, *flags);
+ }
+ 
+ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+@@ -67,8 +61,9 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 	int mapped;
+ 
+ 	/* Make sure we don't have any aliases in cache */
+-	flush_kernel_vmap_range(addr, len);
+-	flush_icache_range(start, end);
++	flush_kernel_dcache_range_asm(start, end);
++	flush_kernel_icache_range_asm(start, end);
++	flush_tlb_kernel_range(start, end);
+ 
+ 	p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags, &mapped);
+ 
+@@ -81,8 +76,10 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 			 * We're crossing a page boundary, so
+ 			 * need to remap
+ 			 */
+-			flush_kernel_vmap_range((void *)fixmap,
+-						(p-fixmap) * sizeof(*p));
++			flush_kernel_dcache_range_asm((unsigned long)fixmap,
++						      (unsigned long)p);
++			flush_tlb_kernel_range((unsigned long)fixmap,
++					       (unsigned long)p);
+ 			if (mapped)
+ 				patch_unmap(FIX_TEXT_POKE0, &flags);
+ 			p = fixmap = patch_map(addr, FIX_TEXT_POKE0, &flags,
+@@ -90,10 +87,10 @@ void __kprobes __patch_text_multiple(void *addr, u32 *insn, unsigned int len)
+ 		}
  	}
  
--	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
--		spin_unlock(&port->lock);
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
--		spin_lock(&port->lock);
--	}
+-	flush_kernel_vmap_range((void *)fixmap, (p-fixmap) * sizeof(*p));
++	flush_kernel_dcache_range_asm((unsigned long)fixmap, (unsigned long)p);
++	flush_tlb_kernel_range((unsigned long)fixmap, (unsigned long)p);
+ 	if (mapped)
+ 		patch_unmap(FIX_TEXT_POKE0, &flags);
+-	flush_icache_range(start, end);
+ }
  
- 	if (uart_circ_empty(xmit))
- 		s3c24xx_serial_stop_tx(port);
+ void __kprobes __patch_text(void *addr, u32 insn)
 -- 
 2.35.1
 
