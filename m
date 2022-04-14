@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE345C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB324C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:05:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240097AbiDNPCY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:02:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56828 "EHLO
+        id S239456AbiDNPCP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:02:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346263AbiDNN4L (ORCPT
+        with ESMTP id S1346267AbiDNN4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:56:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53094652E6;
-        Thu, 14 Apr 2022 06:46:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE6376AA70;
+        Thu, 14 Apr 2022 06:46:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E13E0612E6;
-        Thu, 14 Apr 2022 13:46:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED44DC385A5;
-        Thu, 14 Apr 2022 13:46:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5672EB82968;
+        Thu, 14 Apr 2022 13:46:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D557C385A1;
+        Thu, 14 Apr 2022 13:46:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943984;
-        bh=GmG49H7qoQjEtcOTtxsppeEViImyfS6qlYEWyemRfbE=;
+        s=korg; t=1649943990;
+        bh=tZLkmdGLd3BRCcgyFFRiPY+tkNgl+dRTZ9QJcTbaIMA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0ZbhNQxjJI2xHR8eRspr0yPZzPHhKisXbzVj9HCsO47f7MYWYcMvqQ9zPKCBc32q3
-         ZjOoLZLFjTyZCH5TLmoN2ChLx608Obi4sZqtJU8WTqqXUpoFZA+AsrM+/dWsJWuKxQ
-         rDWuQ6umBJu5pbnKfweKzpisZd9x8W+kfd3a9nBs=
+        b=TZblIqCyIdnNLcnXG1Nv8Nl9OaIu6coqo2Q6pFZ0QheMo/woXqzDgaZDZHN9HJfZI
+         h9LrWMvgc/uBkk/xSNs9DPnKWvNC258CFLkVhvEILpHdL7mShnoM4ksmNdNaT6engx
+         NoOjmordtUopEkcKGnOj8Nhj6j01Ahp0XewTwQXU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.4 312/475] powerpc/lib/sstep: Fix build errors with newer binutils
-Date:   Thu, 14 Apr 2022 15:11:37 +0200
-Message-Id: <20220414110903.819434521@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Richard Leitner <richard.leitner@skidata.com>,
+        Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 304/475] ARM: tegra: tamonten: Fix I2C3 pad setting
+Date:   Thu, 14 Apr 2022 15:11:29 +0200
+Message-Id: <20220414110903.599819088@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,61 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: Richard Leitner <richard.leitner@skidata.com>
 
-commit 8219d31effa7be5dbc7ff915d7970672e028c701 upstream.
+[ Upstream commit 0092c25b541a5422d7e71892a13c55ee91abc34b ]
 
-Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
-2.37.90.20220207) the following build error shows up:
+This patch fixes the tristate configuration for i2c3 function assigned
+to the dtf pins on the Tamonten Tegra20 SoM.
 
-  {standard input}: Assembler messages:
-  {standard input}:10576: Error: unrecognized opcode: `stbcx.'
-  {standard input}:10680: Error: unrecognized opcode: `lharx'
-  {standard input}:10694: Error: unrecognized opcode: `lbarx'
-
-Rework to add assembler directives [1] around the instruction.  The
-problem with this might be that we can trick a power6 into
-single-stepping through an stbcx. for instance, and it will execute that
-in kernel mode.
-
-[1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
-
-Fixes: 350779a29f11 ("powerpc: Handle most loads and stores in instruction emulation code")
-Cc: stable@vger.kernel.org # v4.14+
-Co-developed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220224162215.3406642-3-anders.roxell@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Richard Leitner <richard.leitner@skidata.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/lib/sstep.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm/boot/dts/tegra20-tamonten.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/arch/powerpc/lib/sstep.c
-+++ b/arch/powerpc/lib/sstep.c
-@@ -906,7 +906,10 @@ NOKPROBE_SYMBOL(emulate_dcbz);
- 
- #define __put_user_asmx(x, addr, err, op, cr)		\
- 	__asm__ __volatile__(				\
-+		".machine push\n"			\
-+		".machine power8\n"			\
- 		"1:	" op " %2,0,%3\n"		\
-+		".machine pop\n"			\
- 		"	mfcr	%1\n"			\
- 		"2:\n"					\
- 		".section .fixup,\"ax\"\n"		\
-@@ -919,7 +922,10 @@ NOKPROBE_SYMBOL(emulate_dcbz);
- 
- #define __get_user_asmx(x, addr, err, op)		\
- 	__asm__ __volatile__(				\
-+		".machine push\n"			\
-+		".machine power8\n"			\
- 		"1:	"op" %1,0,%2\n"			\
-+		".machine pop\n"			\
- 		"2:\n"					\
- 		".section .fixup,\"ax\"\n"		\
- 		"3:	li	%0,%3\n"		\
+diff --git a/arch/arm/boot/dts/tegra20-tamonten.dtsi b/arch/arm/boot/dts/tegra20-tamonten.dtsi
+index 394a6b4dc69d..69cb65d86c46 100644
+--- a/arch/arm/boot/dts/tegra20-tamonten.dtsi
++++ b/arch/arm/boot/dts/tegra20-tamonten.dtsi
+@@ -183,8 +183,8 @@
+ 			};
+ 			conf_ata {
+ 				nvidia,pins = "ata", "atb", "atc", "atd", "ate",
+-					"cdev1", "cdev2", "dap1", "dtb", "gma",
+-					"gmb", "gmc", "gmd", "gme", "gpu7",
++					"cdev1", "cdev2", "dap1", "dtb", "dtf",
++					"gma", "gmb", "gmc", "gmd", "gme", "gpu7",
+ 					"gpv", "i2cp", "irrx", "irtx", "pta",
+ 					"rm", "slxa", "slxk", "spia", "spib",
+ 					"uac";
+@@ -203,7 +203,7 @@
+ 			};
+ 			conf_crtp {
+ 				nvidia,pins = "crtp", "dap2", "dap3", "dap4",
+-					"dtc", "dte", "dtf", "gpu", "sdio1",
++					"dtc", "dte", "gpu", "sdio1",
+ 					"slxc", "slxd", "spdi", "spdo", "spig",
+ 					"uda";
+ 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
+-- 
+2.34.1
+
 
 
