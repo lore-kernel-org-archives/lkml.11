@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5482EC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4660C46467
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350858AbiDNO26 (ORCPT
+        id S1350975AbiDNO3f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36028 "EHLO
+        Thu, 14 Apr 2022 10:29:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343986AbiDNNjc (ORCPT
+        with ESMTP id S1343979AbiDNNjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:39:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B00B9AE4E;
-        Thu, 14 Apr 2022 06:36:17 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77DCB38DA4;
+        Thu, 14 Apr 2022 06:36:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA69B61D70;
-        Thu, 14 Apr 2022 13:36:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD21AC385A1;
-        Thu, 14 Apr 2022 13:36:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1377A61D70;
+        Thu, 14 Apr 2022 13:36:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CFADC385A1;
+        Thu, 14 Apr 2022 13:36:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943376;
-        bh=qSw7DYtG+YVEuSfus7DwJeE3m1HmD3NbCUvmP6ECxEE=;
+        s=korg; t=1649943373;
+        bh=a1FB1C4oh8JpBDRnXblNf0XsxNYuOI3qecPvB/K0FLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g+TDN3Y/oaCB2TLJKt5DRvZSr51Rgdjl+YBI9EleYAbyWyIMibueX/pMxFcNVou8z
-         88AbfGgLugC+EiU0POSyk904Ci4SfQCACt3urhbSL+PXIqx3uwESaZVsUItz+BOUWg
-         g/0si9SzCo1MBG9WlxDUWwyszLQeKGU2cy9Fhq4g=
+        b=WtO2dkxZyucbP4T6EL95exxImrQxH+OITXqLe77IsZ2f1SnOtj51zt4x4BGn8mudu
+         Bp5KO6CNekeuFIVkuGzJ8Rhv3YIEJ55QEOuNwJzy4ajnOXAws/zww9TwEm9cW5kYQY
+         cyR9i+ApvqMe68rS/DC+GudNCgmigXKvvJyrxcs4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Guy Briggs <rgb@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 093/475] audit: log AUDIT_TIME_* records only from rules
-Date:   Thu, 14 Apr 2022 15:07:58 +0200
-Message-Id: <20220414110857.760358381@linuxfoundation.org>
+Subject: [PATCH 5.4 130/475] ASoC: rt5663: check the return value of devm_kzalloc() in rt5663_parse_dp()
+Date:   Thu, 14 Apr 2022 15:08:35 +0200
+Message-Id: <20220414110858.787873144@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,165 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Guy Briggs <rgb@redhat.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 272ceeaea355214b301530e262a0df8600bfca95 ]
+[ Upstream commit 4d06f92f38b799295ae22c98be7a20cac3e2a1a7 ]
 
-AUDIT_TIME_* events are generated when there are syscall rules present
-that are not related to time keeping.  This will produce noisy log
-entries that could flood the logs and hide events we really care about.
+The function devm_kzalloc() in rt5663_parse_dp() can fail, so its return
+value should be checked.
 
-Rather than immediately produce the AUDIT_TIME_* records, store the data
-in the context and log it at syscall exit time respecting the filter
-rules.
-
-Note: This eats the audit_buffer, unlike any others in show_special().
-
-Please see https://bugzilla.redhat.com/show_bug.cgi?id=1991919
-
-Fixes: 7e8eda734d30 ("ntp: Audit NTP parameters adjustment")
-Fixes: 2d87a0674bd6 ("timekeeping: Audit clock adjustments")
-Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-[PM: fixed style/whitespace issues]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Fixes: 457c25efc592 ("ASoC: rt5663: Add the function of impedance sensing")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Link: https://lore.kernel.org/r/20220225131030.27248-1-baijiaju1990@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/audit.h   |  4 +++
- kernel/auditsc.c | 87 +++++++++++++++++++++++++++++++++++++-----------
- 2 files changed, 71 insertions(+), 20 deletions(-)
+ sound/soc/codecs/rt5663.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/audit.h b/kernel/audit.h
-index ddc22878433d..fed8e93ce169 100644
---- a/kernel/audit.h
-+++ b/kernel/audit.h
-@@ -191,6 +191,10 @@ struct audit_context {
- 		struct {
- 			char			*name;
- 		} module;
-+		struct {
-+			struct audit_ntp_data	ntp_data;
-+			struct timespec64	tk_injoffset;
-+		} time;
- 	};
- 	int fds[2];
- 	struct audit_proctitle proctitle;
-diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-index d33c5dccde1c..e8e90c0c4936 100644
---- a/kernel/auditsc.c
-+++ b/kernel/auditsc.c
-@@ -1185,6 +1185,53 @@ static void audit_log_fcaps(struct audit_buffer *ab, struct audit_names *name)
- 			 from_kuid(&init_user_ns, name->fcap.rootid));
- }
- 
-+static void audit_log_time(struct audit_context *context, struct audit_buffer **ab)
-+{
-+	const struct audit_ntp_data *ntp = &context->time.ntp_data;
-+	const struct timespec64 *tk = &context->time.tk_injoffset;
-+	static const char * const ntp_name[] = {
-+		"offset",
-+		"freq",
-+		"status",
-+		"tai",
-+		"tick",
-+		"adjust",
-+	};
-+	int type;
-+
-+	if (context->type == AUDIT_TIME_ADJNTPVAL) {
-+		for (type = 0; type < AUDIT_NTP_NVALS; type++) {
-+			if (ntp->vals[type].newval != ntp->vals[type].oldval) {
-+				if (!*ab) {
-+					*ab = audit_log_start(context,
-+							GFP_KERNEL,
-+							AUDIT_TIME_ADJNTPVAL);
-+					if (!*ab)
-+						return;
-+				}
-+				audit_log_format(*ab, "op=%s old=%lli new=%lli",
-+						 ntp_name[type],
-+						 ntp->vals[type].oldval,
-+						 ntp->vals[type].newval);
-+				audit_log_end(*ab);
-+				*ab = NULL;
-+			}
-+		}
-+	}
-+	if (tk->tv_sec != 0 || tk->tv_nsec != 0) {
-+		if (!*ab) {
-+			*ab = audit_log_start(context, GFP_KERNEL,
-+					      AUDIT_TIME_INJOFFSET);
-+			if (!*ab)
-+				return;
-+		}
-+		audit_log_format(*ab, "sec=%lli nsec=%li",
-+				 (long long)tk->tv_sec, tk->tv_nsec);
-+		audit_log_end(*ab);
-+		*ab = NULL;
-+	}
-+}
-+
- static void show_special(struct audit_context *context, int *call_panic)
- {
- 	struct audit_buffer *ab;
-@@ -1290,6 +1337,11 @@ static void show_special(struct audit_context *context, int *call_panic)
- 			audit_log_format(ab, "(null)");
- 
- 		break;
-+	case AUDIT_TIME_ADJNTPVAL:
-+	case AUDIT_TIME_INJOFFSET:
-+		/* this call deviates from the rest, eating the buffer */
-+		audit_log_time(context, &ab);
-+		break;
- 	}
- 	audit_log_end(ab);
- }
-@@ -2518,31 +2570,26 @@ void __audit_fanotify(unsigned int response)
- 
- void __audit_tk_injoffset(struct timespec64 offset)
- {
--	audit_log(audit_context(), GFP_KERNEL, AUDIT_TIME_INJOFFSET,
--		  "sec=%lli nsec=%li",
--		  (long long)offset.tv_sec, offset.tv_nsec);
--}
--
--static void audit_log_ntp_val(const struct audit_ntp_data *ad,
--			      const char *op, enum audit_ntp_type type)
--{
--	const struct audit_ntp_val *val = &ad->vals[type];
--
--	if (val->newval == val->oldval)
--		return;
-+	struct audit_context *context = audit_context();
- 
--	audit_log(audit_context(), GFP_KERNEL, AUDIT_TIME_ADJNTPVAL,
--		  "op=%s old=%lli new=%lli", op, val->oldval, val->newval);
-+	/* only set type if not already set by NTP */
-+	if (!context->type)
-+		context->type = AUDIT_TIME_INJOFFSET;
-+	memcpy(&context->time.tk_injoffset, &offset, sizeof(offset));
- }
- 
- void __audit_ntp_log(const struct audit_ntp_data *ad)
- {
--	audit_log_ntp_val(ad, "offset",	AUDIT_NTP_OFFSET);
--	audit_log_ntp_val(ad, "freq",	AUDIT_NTP_FREQ);
--	audit_log_ntp_val(ad, "status",	AUDIT_NTP_STATUS);
--	audit_log_ntp_val(ad, "tai",	AUDIT_NTP_TAI);
--	audit_log_ntp_val(ad, "tick",	AUDIT_NTP_TICK);
--	audit_log_ntp_val(ad, "adjust",	AUDIT_NTP_ADJUST);
-+	struct audit_context *context = audit_context();
-+	int type;
-+
-+	for (type = 0; type < AUDIT_NTP_NVALS; type++)
-+		if (ad->vals[type].newval != ad->vals[type].oldval) {
-+			/* unconditionally set type, overwriting TK */
-+			context->type = AUDIT_TIME_ADJNTPVAL;
-+			memcpy(&context->time.ntp_data, ad, sizeof(*ad));
-+			break;
-+		}
- }
- 
- static void audit_log_task(struct audit_buffer *ab)
+diff --git a/sound/soc/codecs/rt5663.c b/sound/soc/codecs/rt5663.c
+index 3610be1590fc..19e2f622718d 100644
+--- a/sound/soc/codecs/rt5663.c
++++ b/sound/soc/codecs/rt5663.c
+@@ -3478,6 +3478,8 @@ static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
+ 		table_size = sizeof(struct impedance_mapping_table) *
+ 			rt5663->pdata.impedance_sensing_num;
+ 		rt5663->imp_table = devm_kzalloc(dev, table_size, GFP_KERNEL);
++		if (!rt5663->imp_table)
++			return -ENOMEM;
+ 		ret = device_property_read_u32_array(dev,
+ 			"realtek,impedance_sensing_table",
+ 			(u32 *)rt5663->imp_table, table_size);
 -- 
 2.34.1
 
