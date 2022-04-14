@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 887D4C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C33E7C4167E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242814AbiDNOiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:38:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49162 "EHLO
+        id S1346089AbiDNOiq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:38:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244348AbiDNNmE (ORCPT
+        with ESMTP id S245250AbiDNNnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:42:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6137E21;
-        Thu, 14 Apr 2022 06:39:22 -0700 (PDT)
+        Thu, 14 Apr 2022 09:43:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736C324087;
+        Thu, 14 Apr 2022 06:39:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99639B82968;
-        Thu, 14 Apr 2022 13:39:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 050DBC385AB;
-        Thu, 14 Apr 2022 13:39:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1E6261D70;
+        Thu, 14 Apr 2022 13:39:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC4D9C385A1;
+        Thu, 14 Apr 2022 13:39:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943560;
-        bh=HJ+L3G6cpGKUVGxOE2mPrXN1Q/qDAmQbftJuwJDPVRo=;
+        s=korg; t=1649943571;
+        bh=CcmxZVqWt0C3IfMQFSdot6JDjR60nIDCK88Be3lD5kU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xNMUynBhq4OZTyUKXT/wZnYvRapqLue2elhCjmAfJPYKa3uL21F2rnJTsUn7posFX
-         zSVOC1do39Fu0vIfSK6mXa8aSjeMnFHv6jbGk+HQ7ZAz9VnNVpetFRh1jaj+sWEmSs
-         o/lotGJqEKkEBW7kw6e+BRyHQ7PknW+G3xWslRUk=
+        b=ymWpk1wPV5jNHQbXgkrfZN+XBlk/HZy+YuIwILoQx9E0x+wJ18WMdn6faKOEStHd4
+         /NooD/6uDXUMrqKLk0YmUgOVSq5nR7Nu2CcfkvbdMbW5IuqJQz/Moj7fQ2pFm9NkmL
+         5/LSsb6CEg5EqErWSYLblAErfNi/HGOaHSdQa0cg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Hou Wenlong <houwenlong.hwl@antgroup.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 199/475] KVM: x86/emulator: Defer not-present segment check in __load_segment_descriptor()
-Date:   Thu, 14 Apr 2022 15:09:44 +0200
-Message-Id: <20220414110900.697455193@linuxfoundation.org>
+Subject: [PATCH 5.4 203/475] power: supply: wm8350-power: Add missing free in free_charger_irq
+Date:   Thu, 14 Apr 2022 15:09:48 +0200
+Message-Id: <20220414110900.810310992@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,66 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Wenlong <houwenlong.hwl@antgroup.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit ca85f002258fdac3762c57d12d5e6e401b6a41af ]
+[ Upstream commit 6dee930f6f6776d1e5a7edf542c6863b47d9f078 ]
 
-Per Intel's SDM on the "Instruction Set Reference", when
-loading segment descriptor, not-present segment check should
-be after all type and privilege checks. But the emulator checks
-it first, then #NP is triggered instead of #GP if privilege fails
-and segment is not present. Put not-present segment check after
-type and privilege checks in __load_segment_descriptor().
+In free_charger_irq(), there is no free for 'WM8350_IRQ_CHG_FAST_RDY'.
+Therefore, it should be better to add it in order to avoid the memory leak.
 
-Fixes: 38ba30ba51a00 (KVM: x86 emulator: Emulate task switch in emulator.c)
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
-Message-Id: <52573c01d369f506cadcf7233812427cf7db81a7.1644292363.git.houwenlong.hwl@antgroup.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 14431aa0c5a4 ("power_supply: Add support for WM8350 PMU")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/emulate.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/power/supply/wm8350_power.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 60c8dcb907a5..ea48a2fb1677 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -1714,11 +1714,6 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 		goto exception;
- 	}
- 
--	if (!seg_desc.p) {
--		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
--		goto exception;
--	}
--
- 	dpl = seg_desc.dpl;
- 
- 	switch (seg) {
-@@ -1758,6 +1753,10 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 	case VCPU_SREG_TR:
- 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
- 			goto exception;
-+		if (!seg_desc.p) {
-+			err_vec = NP_VECTOR;
-+			goto exception;
-+		}
- 		old_desc = seg_desc;
- 		seg_desc.type |= 2; /* busy */
- 		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
-@@ -1782,6 +1781,11 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 		break;
- 	}
- 
-+	if (!seg_desc.p) {
-+		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
-+		goto exception;
-+	}
-+
- 	if (seg_desc.s) {
- 		/* mark segment as accessed */
- 		if (!(seg_desc.type & 1)) {
+diff --git a/drivers/power/supply/wm8350_power.c b/drivers/power/supply/wm8350_power.c
+index 0762ab13fa56..4fe9ea9721b3 100644
+--- a/drivers/power/supply/wm8350_power.c
++++ b/drivers/power/supply/wm8350_power.c
+@@ -524,6 +524,7 @@ static void free_charger_irq(struct wm8350 *wm8350)
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_TO, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_END, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_START, wm8350);
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85, wm8350);
 -- 
 2.34.1
 
