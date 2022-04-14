@@ -2,107 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD2DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23F71C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:32:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240968AbiDNIeT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 04:34:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40684 "EHLO
+        id S240956AbiDNIe7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 04:34:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240910AbiDNIeQ (ORCPT
+        with ESMTP id S237689AbiDNIe5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 04:34:16 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26DE25D64A;
-        Thu, 14 Apr 2022 01:31:52 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23E8VYKv009081;
-        Thu, 14 Apr 2022 03:31:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649925094;
-        bh=3COPlY88LnUH6o9/XVdoWgRzp/ypuXo44dMIV6lPPMM=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=lLPIx9/mH9NAj+h1p1um0BtcNc1T5cg9uJ3NMseQJKjM6/7PLa0ZIcQeuLS2PvZ2T
-         f+zd9F5BKDO7ffngwejghDbkYm6Ugav6w82rVR/Whw8RN6u9EQjGDA2smR5ZvTnK7m
-         O27qpUG3HNAJy+pI5MoDOPpRbWqX5jTxO8mBI9u4=
-Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23E8VYDN071366
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 14 Apr 2022 03:31:34 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 14
- Apr 2022 03:31:34 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 14 Apr 2022 03:31:34 -0500
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23E8VLNn025547;
-        Thu, 14 Apr 2022 03:31:29 -0500
-From:   Aswath Govindraju <a-govindraju@ti.com>
-CC:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Hector Martin <marcan@marcan.st>,
-        Martin Kepplinger <martink@posteo.de>,
-        "Bryan O'Donoghue" <bryan.odonoghue@linaro.org>,
-        <linux-usb@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/2] dt-bindings: usb: tps6598x: Make the interrupts property optional
-Date:   Thu, 14 Apr 2022 14:01:17 +0530
-Message-ID: <20220414083120.22535-2-a-govindraju@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220414083120.22535-1-a-govindraju@ti.com>
-References: <20220414083120.22535-1-a-govindraju@ti.com>
+        Thu, 14 Apr 2022 04:34:57 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B00363391;
+        Thu, 14 Apr 2022 01:32:33 -0700 (PDT)
+Received: from [192.168.1.111] (91-156-85-209.elisa-laajakaista.fi [91.156.85.209])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 99A1125B;
+        Thu, 14 Apr 2022 10:32:30 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1649925151;
+        bh=f95sAmWwdjHUVI8Avcc4pPnkl/AY78Md6cw7xBbSuOw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=vHnKDAOozWKdm9KwKMINztx80dsZqkPD9YUHKngyWssNiBI1T7OkTyynBzZIozuIT
+         l4Dn2O+eAWi5OB2z6Bd+IZcRoMfcU8Ab0DQsirXjNwgvIp8JlCGz5a60gr+3jCNSLe
+         Fr+VPChZjLnp7FfaxMIiJIyxyvUlmW+d3DM5vJKg=
+Message-ID: <b2afddb7-13fc-9ed8-ad0f-fe5a33ee9da0@ideasonboard.com>
+Date:   Thu, 14 Apr 2022 11:32:27 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RESEND][PATCH] omapdrm: fix missing check on list iterator
+Content-Language: en-US
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, airlied@linux.ie,
+        daniel@ffwll.ch
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+References: <20220414061410.7678-1-xiam0nd.tong@gmail.com>
+From:   Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+In-Reply-To: <20220414061410.7678-1-xiam0nd.tong@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Support for polling has been added in the driver, which will be used by
-default if interrupts property is not populated. Therefore, remove
-interrupts and interrupt-names from the required properties and add a note
-under interrupts property describing the above support in driver.
+Hi,
 
-Suggested-by: Roger Quadros <rogerq@kernel.org>
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
----
- Documentation/devicetree/bindings/usb/ti,tps6598x.yaml | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On 14/04/2022 09:14, Xiaomeng Tong wrote:
+> The bug is here:
+> 	bus_flags = connector->display_info.bus_flags;
+> 
+> The list iterator 'connector-' will point to a bogus position containing
+> HEAD if the list is empty or no element is found. This case must
+> be checked before any use of the iterator, otherwise it will lead
+> to a invalid memory access.
+> 
+> To fix this bug, add an check. Use a new value 'iter' as the list
+> iterator, while use the old value 'connector' as a dedicated variable
+> to point to the found element.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: ("drm/omap: Add support for drm_panel")
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> ---
+>   drivers/gpu/drm/omapdrm/omap_encoder.c | 14 +++++++++-----
+>   1 file changed, 9 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/omapdrm/omap_encoder.c b/drivers/gpu/drm/omapdrm/omap_encoder.c
+> index 4dd05bc732da..d648ab4223b1 100644
+> --- a/drivers/gpu/drm/omapdrm/omap_encoder.c
+> +++ b/drivers/gpu/drm/omapdrm/omap_encoder.c
+> @@ -76,14 +76,16 @@ static void omap_encoder_mode_set(struct drm_encoder *encoder,
+>   	struct omap_encoder *omap_encoder = to_omap_encoder(encoder);
+>   	struct omap_dss_device *output = omap_encoder->output;
+>   	struct drm_device *dev = encoder->dev;
+> -	struct drm_connector *connector;
+> +	struct drm_connector *connector = NULL, *iter;
+>   	struct drm_bridge *bridge;
+>   	struct videomode vm = { 0 };
+>   	u32 bus_flags;
+>   
+> -	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
+> -		if (connector->encoder == encoder)
+> +	list_for_each_entry(iter, &dev->mode_config.connector_list, head) {
+> +		if (iter->encoder == encoder) {
+> +			connector = iter;
+>   			break;
+> +		}
+>   	}
 
-diff --git a/Documentation/devicetree/bindings/usb/ti,tps6598x.yaml b/Documentation/devicetree/bindings/usb/ti,tps6598x.yaml
-index a4c53b1f1af3..1c4b8c6233e5 100644
---- a/Documentation/devicetree/bindings/usb/ti,tps6598x.yaml
-+++ b/Documentation/devicetree/bindings/usb/ti,tps6598x.yaml
-@@ -25,6 +25,8 @@ properties:
- 
-   interrupts:
-     maxItems: 1
-+    description:
-+      If interrupts are not populated then by default polling will be used.
- 
-   interrupt-names:
-     items:
-@@ -33,8 +35,6 @@ properties:
- required:
-   - compatible
-   - reg
--  - interrupts
--  - interrupt-names
- 
- additionalProperties: true
- 
--- 
-2.17.1
+When does this bug happen? How do you get omap_encoder_mode_set() called 
+for an encoder with a connector that is not valid?
 
+>   
+>   	drm_display_mode_to_videomode(adjusted_mode, &vm);
+> @@ -106,8 +108,10 @@ static void omap_encoder_mode_set(struct drm_encoder *encoder,
+>   		omap_encoder_update_videomode_flags(&vm, bus_flags);
+>   	}
+>   
+> -	bus_flags = connector->display_info.bus_flags;
+> -	omap_encoder_update_videomode_flags(&vm, bus_flags);
+> +	if (connector) {
+> +		bus_flags = connector->display_info.bus_flags;
+> +		omap_encoder_update_videomode_flags(&vm, bus_flags);
+> +	}
+>   
+>   	/* Set timings for all devices in the display pipeline. */
+>   	dss_mgr_set_timings(output, &vm);
+
+How does this fix the issue? You just skip the lines that set up the 
+videomode, but then pass that videomode to dss_mgr_set_timings()...
+
+  Tomi
