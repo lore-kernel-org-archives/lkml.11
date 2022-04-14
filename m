@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3384EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 631F9C43217
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350600AbiDNOW5 (ORCPT
+        id S1350657AbiDNOX1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:22:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42932 "EHLO
+        Thu, 14 Apr 2022 10:23:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343884AbiDNNj2 (ORCPT
+        with ESMTP id S1343956AbiDNNjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B5E5D645;
-        Thu, 14 Apr 2022 06:35:06 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305DDA94E2;
+        Thu, 14 Apr 2022 06:35:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46E31B82941;
-        Thu, 14 Apr 2022 13:35:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB629C385A1;
-        Thu, 14 Apr 2022 13:35:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1E9461D29;
+        Thu, 14 Apr 2022 13:35:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA023C385A1;
+        Thu, 14 Apr 2022 13:35:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943304;
-        bh=emK4+PLGrhzElF/9OZuyNrv7Fd6uVJQ4VZjngjyI7kA=;
+        s=korg; t=1649943340;
+        bh=zEeKefMZYRslSx40JLS5O+6+t08QoeqPa7ZuL/Iyqg4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PdBiqCc1BoYWZsFHZfznt4+mMy/4Evvc1eFXA0ilYPyo1TF4YdLRoGYxVi+t/cclu
-         5jwZaeSuK2YnYZm1nBhyIPg7ZsZhxmD0CJxIqCj8/sq/DuyYqRZLUTMi4Ilvvmn0PW
-         SqLrrnjHA4qaNh+7vPBev+03DDuWQZmC+gocf83s=
+        b=L4QcMyCk6hluYj5p9hell/IKZFBGJ416D/UEGliKC1N/ysEouPCki+ZPOaTXx1dXW
+         WcAwsBxDUu7TEIJiLsMio+l9m9u3eoNrsyAkM6M8mSFXGhwZWrOfbkIaOexDgDhhYo
+         ZezwDQolHloEw6VS4HtefS0lP68iWVlo9U1FfFuY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tomas Paukrt <tomaspaukrt@email.cz>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 090/475] crypto: mxs-dcp - Fix scatterlist processing
-Date:   Thu, 14 Apr 2022 15:07:55 +0200
-Message-Id: <20220414110857.672201877@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 119/475] video: fbdev: fbcvt.c: fix printing in fb_cvt_print_name()
+Date:   Thu, 14 Apr 2022 15:08:24 +0200
+Message-Id: <20220414110858.482690346@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,33 +49,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomas Paukrt <tomaspaukrt@email.cz>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 28e9b6d8199a3f124682b143800c2dacdc3d70dd ]
+[ Upstream commit 78482af095abd9f4f29f1aa3fe575d25c6ae3028 ]
 
-This patch fixes a bug in scatterlist processing that may cause incorrect AES block encryption/decryption.
+This code has two bugs:
+1) "cnt" is 255 but the size of the buffer is 256 so the last byte is
+   not used.
+2) If we try to print more than 255 characters then "cnt" will be
+   negative and that will trigger a WARN() in snprintf(). The fix for
+   this is to use scnprintf() instead of snprintf().
 
-Fixes: 2e6d793e1bf0 ("crypto: mxs-dcp - Use sg_mapping_iter to copy data")
-Signed-off-by: Tomas Paukrt <tomaspaukrt@email.cz>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+We can re-write this code to be cleaner:
+1) Rename "offset" to "off" because that's shorter.
+2) Get rid of the "cnt" variable and just use "size - off" directly.
+3) Get rid of the "read" variable and just increment "off" directly.
+
+Fixes: 96fe6a2109db ("fbdev: Add VESA Coordinated Video Timings (CVT) support")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/mxs-dcp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/core/fbcvt.c | 53 +++++++++++++-------------------
+ 1 file changed, 21 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/crypto/mxs-dcp.c b/drivers/crypto/mxs-dcp.c
-index 547111079207..9443f31acd27 100644
---- a/drivers/crypto/mxs-dcp.c
-+++ b/drivers/crypto/mxs-dcp.c
-@@ -329,7 +329,7 @@ static int mxs_dcp_aes_block_crypt(struct crypto_async_request *arq)
- 		memset(key + AES_KEYSIZE_128, 0, AES_KEYSIZE_128);
+diff --git a/drivers/video/fbdev/core/fbcvt.c b/drivers/video/fbdev/core/fbcvt.c
+index 55d2bd0ce5c0..64843464c661 100644
+--- a/drivers/video/fbdev/core/fbcvt.c
++++ b/drivers/video/fbdev/core/fbcvt.c
+@@ -214,9 +214,11 @@ static u32 fb_cvt_aspect_ratio(struct fb_cvt_data *cvt)
+ static void fb_cvt_print_name(struct fb_cvt_data *cvt)
+ {
+ 	u32 pixcount, pixcount_mod;
+-	int cnt = 255, offset = 0, read = 0;
+-	u8 *buf = kzalloc(256, GFP_KERNEL);
++	int size = 256;
++	int off = 0;
++	u8 *buf;
+ 
++	buf = kzalloc(size, GFP_KERNEL);
+ 	if (!buf)
+ 		return;
+ 
+@@ -224,43 +226,30 @@ static void fb_cvt_print_name(struct fb_cvt_data *cvt)
+ 	pixcount_mod = (cvt->xres * (cvt->yres/cvt->interlace)) % 1000000;
+ 	pixcount_mod /= 1000;
+ 
+-	read = snprintf(buf+offset, cnt, "fbcvt: %dx%d@%d: CVT Name - ",
+-			cvt->xres, cvt->yres, cvt->refresh);
+-	offset += read;
+-	cnt -= read;
++	off += scnprintf(buf + off, size - off, "fbcvt: %dx%d@%d: CVT Name - ",
++			    cvt->xres, cvt->yres, cvt->refresh);
+ 
+-	if (cvt->status)
+-		snprintf(buf+offset, cnt, "Not a CVT standard - %d.%03d Mega "
+-			 "Pixel Image\n", pixcount, pixcount_mod);
+-	else {
+-		if (pixcount) {
+-			read = snprintf(buf+offset, cnt, "%d", pixcount);
+-			cnt -= read;
+-			offset += read;
+-		}
++	if (cvt->status) {
++		off += scnprintf(buf + off, size - off,
++				 "Not a CVT standard - %d.%03d Mega Pixel Image\n",
++				 pixcount, pixcount_mod);
++	} else {
++		if (pixcount)
++			off += scnprintf(buf + off, size - off, "%d", pixcount);
+ 
+-		read = snprintf(buf+offset, cnt, ".%03dM", pixcount_mod);
+-		cnt -= read;
+-		offset += read;
++		off += scnprintf(buf + off, size - off, ".%03dM", pixcount_mod);
+ 
+ 		if (cvt->aspect_ratio == 0)
+-			read = snprintf(buf+offset, cnt, "3");
++			off += scnprintf(buf + off, size - off, "3");
+ 		else if (cvt->aspect_ratio == 3)
+-			read = snprintf(buf+offset, cnt, "4");
++			off += scnprintf(buf + off, size - off, "4");
+ 		else if (cvt->aspect_ratio == 1 || cvt->aspect_ratio == 4)
+-			read = snprintf(buf+offset, cnt, "9");
++			off += scnprintf(buf + off, size - off, "9");
+ 		else if (cvt->aspect_ratio == 2)
+-			read = snprintf(buf+offset, cnt, "A");
+-		else
+-			read = 0;
+-		cnt -= read;
+-		offset += read;
+-
+-		if (cvt->flags & FB_CVT_FLAG_REDUCED_BLANK) {
+-			read = snprintf(buf+offset, cnt, "-R");
+-			cnt -= read;
+-			offset += read;
+-		}
++			off += scnprintf(buf + off, size - off, "A");
++
++		if (cvt->flags & FB_CVT_FLAG_REDUCED_BLANK)
++			off += scnprintf(buf + off, size - off, "-R");
  	}
  
--	for_each_sg(req->src, src, sg_nents(src), i) {
-+	for_each_sg(req->src, src, sg_nents(req->src), i) {
- 		src_buf = sg_virt(src);
- 		len = sg_dma_len(src);
- 		tlen += len;
+ 	printk(KERN_INFO "%s\n", buf);
 -- 
 2.34.1
 
