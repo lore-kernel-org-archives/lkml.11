@@ -2,118 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74ACFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 06:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E74FCC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 06:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239988AbiDNGQt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 02:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43372 "EHLO
+        id S240002AbiDNGXZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 02:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229990AbiDNGQr (ORCPT
+        with ESMTP id S229990AbiDNGXW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 02:16:47 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A3D641C;
-        Wed, 13 Apr 2022 23:14:21 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso8404018pju.1;
-        Wed, 13 Apr 2022 23:14:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=xSaEo9LO7falECQjCcduKi//QmoNEw98a9U9ZQZJgh0=;
-        b=kxTi7L39zBMmLwbO/yI0P60LXETiezuazG6rlO5ELFcbhEY1oEruR/u/1yo6N3KdQM
-         2O3AUj5NiRsJ7q8fAiWhsh1U7XzByWNXQ0o+0xTNY6Fm/VpR3V3BCHnj6q1Y4ZmerDhl
-         ml3SH/gbEb8sBaGbfujS5u45t1wFcG08OKiubAk72kE3re/C0hcN5oRWV5yHx2cWPh3G
-         4EHxbAAxD5TeYvB/GTp04kn5Ko8AZzXvBXTj5w73Klbl6Pym2+BixMDk3gFHJN2VGOg0
-         7cDTVYIflbge4PL8N9KjNv+cRh+9M1Nx1gAYdPFS3eYVK5FrN+1+TYR4Yd2qMNOSfcC9
-         GKpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=xSaEo9LO7falECQjCcduKi//QmoNEw98a9U9ZQZJgh0=;
-        b=jFyJeWD+L8o7x8WNA8Suz4cYTeqA5QmdL5I21iZPv0cfuHuyGJ34A79moLVBfYnUO4
-         r5SP+/vPT7XWA6ZMHB7AhUDQ7ir8hIYBnRumZZDgWRmFwIhgkPy5VeUrAbdcR8A/WFdX
-         puBbfMO/2htGL9tE/8y7LJuidENU4lGYDz/PrAkR0NUDcUfoX1P474OB7FGmWnuB465F
-         JB6Rjd6nREMJrAN64XepmlEBl0oQY7TSMb6mU6Cq6E9aQZOhzQ7DEaAgdBjIfG6QBfcE
-         xZuBCs1fpqMydD6FsHIM1EkpsTUYdGCu39ONlwWz2J84lPS5e+CLZ3pAgUG5H+/n5+ch
-         9liQ==
-X-Gm-Message-State: AOAM531e5vSTOXcH/JXpnb3rMqa6gnfaR6wsPJw6TzZ/aBUaocL7UfnG
-        beycy9J4tyc9rmFLc55UejA=
-X-Google-Smtp-Source: ABdhPJzfqbuE+SKFgvlaHYYvwCo6iZQfPGv6i6/v9EAG/8WGUTum8VyjBgQWC5Y8dRWej4ZxlU0lQQ==
-X-Received: by 2002:a17:90a:ca:b0:1ca:5253:b625 with SMTP id v10-20020a17090a00ca00b001ca5253b625mr2065267pjd.220.1649916860983;
-        Wed, 13 Apr 2022 23:14:20 -0700 (PDT)
-Received: from localhost.localdomain ([119.3.119.18])
-        by smtp.gmail.com with ESMTPSA id 25-20020a631259000000b0039d353e6d75sm927364pgs.57.2022.04.13.23.14.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 23:14:20 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     tomba@kernel.org, airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>, stable@vger.kernel.org
-Subject: [RESEND][PATCH] omapdrm: fix missing check on list iterator
-Date:   Thu, 14 Apr 2022 14:14:10 +0800
-Message-Id: <20220414061410.7678-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 14 Apr 2022 02:23:22 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B6EE31EECB;
+        Wed, 13 Apr 2022 23:20:57 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 461DC139F;
+        Wed, 13 Apr 2022 23:20:57 -0700 (PDT)
+Received: from a077893.arm.com (unknown [10.163.37.202])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id BEF883F70D;
+        Wed, 13 Apr 2022 23:20:50 -0700 (PDT)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     christophe.leroy@csgroup.eu, catalin.marinas@arm.com,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH V7 0/7] mm/mmap: Drop arch_vm_get_page_prot() and arch_filter_pgprot()
+Date:   Thu, 14 Apr 2022 11:51:18 +0530
+Message-Id: <20220414062125.609297-1-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The bug is here:
-	bus_flags = connector->display_info.bus_flags;
+protection_map[] is an array based construct that translates given vm_flags
+combination. This array contains page protection map, which is populated by
+the platform via [__S000 .. __S111] and [__P000 .. __P111] exported macros.
+Primary usage for protection_map[] is for vm_get_page_prot(), which is used
+to determine page protection value for a given vm_flags. vm_get_page_prot()
+implementation, could again call platform overrides arch_vm_get_page_prot()
+and arch_filter_pgprot(). Some platforms override protection_map[] that was
+originally built with __SXXX/__PXXX with different runtime values.
 
-The list iterator 'connector-' will point to a bogus position containing
-HEAD if the list is empty or no element is found. This case must
-be checked before any use of the iterator, otherwise it will lead
-to a invalid memory access.
+Currently there are multiple layers of abstraction i.e __SXXX/__PXXX macros
+, protection_map[], arch_vm_get_page_prot() and arch_filter_pgprot() built
+between the platform and generic MM, finally defining vm_get_page_prot().
 
-To fix this bug, add an check. Use a new value 'iter' as the list
-iterator, while use the old value 'connector' as a dedicated variable
-to point to the found element.
+Hence this series proposes to drop later two abstraction levels and instead
+just move the responsibility of defining vm_get_page_prot() to the platform
+(still utilizing generic protection_map[] array) itself making it clean and
+simple.
 
-Cc: stable@vger.kernel.org
-Fixes: ("drm/omap: Add support for drm_panel")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
----
- drivers/gpu/drm/omapdrm/omap_encoder.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+This first introduces ARCH_HAS_VM_GET_PAGE_PROT which enables the platforms
+to define custom vm_get_page_prot(). This starts converting platforms that
+define the overrides arch_filter_pgprot() or arch_vm_get_page_prot() which
+enables for those constructs to be dropped off completely.
 
-diff --git a/drivers/gpu/drm/omapdrm/omap_encoder.c b/drivers/gpu/drm/omapdrm/omap_encoder.c
-index 4dd05bc732da..d648ab4223b1 100644
---- a/drivers/gpu/drm/omapdrm/omap_encoder.c
-+++ b/drivers/gpu/drm/omapdrm/omap_encoder.c
-@@ -76,14 +76,16 @@ static void omap_encoder_mode_set(struct drm_encoder *encoder,
- 	struct omap_encoder *omap_encoder = to_omap_encoder(encoder);
- 	struct omap_dss_device *output = omap_encoder->output;
- 	struct drm_device *dev = encoder->dev;
--	struct drm_connector *connector;
-+	struct drm_connector *connector = NULL, *iter;
- 	struct drm_bridge *bridge;
- 	struct videomode vm = { 0 };
- 	u32 bus_flags;
- 
--	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
--		if (connector->encoder == encoder)
-+	list_for_each_entry(iter, &dev->mode_config.connector_list, head) {
-+		if (iter->encoder == encoder) {
-+			connector = iter;
- 			break;
-+		}
- 	}
- 
- 	drm_display_mode_to_videomode(adjusted_mode, &vm);
-@@ -106,8 +108,10 @@ static void omap_encoder_mode_set(struct drm_encoder *encoder,
- 		omap_encoder_update_videomode_flags(&vm, bus_flags);
- 	}
- 
--	bus_flags = connector->display_info.bus_flags;
--	omap_encoder_update_videomode_flags(&vm, bus_flags);
-+	if (connector) {
-+		bus_flags = connector->display_info.bus_flags;
-+		omap_encoder_update_videomode_flags(&vm, bus_flags);
-+	}
- 
- 	/* Set timings for all devices in the display pipeline. */
- 	dss_mgr_set_timings(output, &vm);
+The series has been inspired from an earlier discuss with Christoph Hellwig
+
+https://lore.kernel.org/all/1632712920-8171-1-git-send-email-anshuman.khandual@arm.com/
+
+This series applies on 5.18-rc2.
+
+This series has been cross built for multiple platforms.
+
+- Anshuman
+
+Cc: Christoph Hellwig <hch@infradead.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: sparclinux@vger.kernel.org
+Cc: linux-mm@kvack.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+Changes in V7:
+
+- Changed vm_get_page_prot() on sparc per Christophe
+- Collected additionals tags
+
+Changes in V6:
+
+https://lore.kernel.org/all/20220413055840.392628-1-anshuman.khandual@arm.com/
+
+- Created single merged vm_get_page_prot() function per Christophe
+- Dropped local variable 'ret' in generic vm_get_page_prot() per Christophe
+- Dropped __pgprot(pgprot_val(x)) in generic vm_get_page_prot() per Christophe
+
+Changes in V5:
+
+https://lore.kernel.org/all/20220412043848.80464-2-anshuman.khandual@arm.com/
+
+- Collected new tags on various patches in the series
+- Coalesced arm64_arch_vm_get_page_prot() into vm_get_page_prot() per Catalin
+- Modified powerpc's vm_get_page_prot() implementation per Christophe
+
+Changes in V4:
+
+https://lore.kernel.org/all/20220407103251.1209606-1-anshuman.khandual@arm.com/
+
+- ARCH_HAS_VM_GET_PAGE_PROT now excludes generic protection_map[]
+- Changed platform's vm_get_page_prot() to use generic protection_map[]
+- Dropped all platform changes not enabling either arch_vm_get_page_prot() or arch_filter_pgprot() 
+- Dropped all previous tags as code base has changed
+
+Changes in V3:
+
+https://lore.kernel.org/all/1646045273-9343-1-git-send-email-anshuman.khandual@arm.com/
+
+- Dropped variable 'i' from sme_early_init() on x86 platform
+- Moved CONFIG_COLDFIRE vm_get_page_prot() inside arch/m68k/mm/mcfmmu.c
+- Moved CONFIG_SUN3 vm_get_page_prot() inside arch/m68k/mm/sun3mmu.c
+- Dropped cachebits for vm_get_page_prot() inside arch/m68k/mm/motorola.c
+- Dropped PAGE_XXX_C definitions from arch/m68k/include/asm/motorola_pgtable.h
+- Used PAGE_XXX instead for vm_get_page_prot() inside arch/m68k/mm/motorola.c
+- Dropped all references to protection_map[] in the tree
+- Replaced s/extensa/xtensa/ on the patch title
+- Moved left over comments from pgtable.h into init.c on nios2 platform
+
+Changes in V2:
+
+https://lore.kernel.org/all/1645425519-9034-1-git-send-email-anshuman.khandual@arm.com/
+
+- Dropped the entire comment block in [PATCH 30/30] per Geert
+- Replaced __P010 (although commented) with __PAGE_COPY on arm platform
+- Replaced __P101 with PAGE_READONLY on um platform
+
+Changes in V1:
+
+https://lore.kernel.org/all/1644805853-21338-1-git-send-email-anshuman.khandual@arm.com/
+
+- Add white spaces around the | operators 
+- Moved powerpc_vm_get_page_prot() near vm_get_page_prot() on powerpc
+- Moved arm64_vm_get_page_prot() near vm_get_page_prot() on arm64
+- Moved sparc_vm_get_page_prot() near vm_get_page_prot() on sparc
+- Compacted vm_get_page_prot() switch cases on all platforms
+-  _PAGE_CACHE040 inclusion is dependent on CPU_IS_040_OR_060
+- VM_SHARED case should return PAGE_NONE (not PAGE_COPY) on SH platform
+- Reorganized VM_SHARED, VM_EXEC, VM_WRITE, VM_READ
+- Dropped the last patch [RFC V1 31/31] which added macros for vm_flags combinations
+  https://lore.kernel.org/all/1643029028-12710-32-git-send-email-anshuman.khandual@arm.com/
+
+Changes in RFC:
+
+https://lore.kernel.org/all/1643029028-12710-1-git-send-email-anshuman.khandual@arm.com/
+
+
+Anshuman Khandual (6):
+  mm/mmap: Add new config ARCH_HAS_VM_GET_PAGE_PROT
+  powerpc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  arm64/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  sparc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  mm/mmap: Drop arch_filter_pgprot()
+  mm/mmap: Drop arch_vm_get_page_pgprot()
+
+Christoph Hellwig (1):
+  x86/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+
+ arch/arm64/Kconfig                 |  1 +
+ arch/arm64/include/asm/mman.h      | 24 --------------------
+ arch/arm64/mm/mmap.c               | 25 +++++++++++++++++++++
+ arch/powerpc/Kconfig               |  1 +
+ arch/powerpc/include/asm/mman.h    | 12 ----------
+ arch/powerpc/mm/book3s64/pgtable.c | 17 +++++++++++++++
+ arch/sparc/Kconfig                 |  1 +
+ arch/sparc/include/asm/mman.h      |  6 -----
+ arch/sparc/mm/init_64.c            | 12 ++++++++++
+ arch/x86/Kconfig                   |  2 +-
+ arch/x86/include/asm/pgtable.h     |  5 -----
+ arch/x86/include/uapi/asm/mman.h   | 14 ------------
+ arch/x86/mm/Makefile               |  2 +-
+ arch/x86/mm/pgprot.c               | 35 ++++++++++++++++++++++++++++++
+ include/linux/mman.h               |  4 ----
+ mm/Kconfig                         |  2 +-
+ mm/mmap.c                          | 15 +++----------
+ 17 files changed, 98 insertions(+), 80 deletions(-)
+ create mode 100644 arch/x86/mm/pgprot.c
+
 -- 
-2.17.1
+2.25.1
 
