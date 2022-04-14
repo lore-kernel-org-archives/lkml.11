@@ -2,217 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC5EC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 18:20:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17A3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 18:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241147AbiDNSXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 14:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54368 "EHLO
+        id S245734AbiDNSYk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 14:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233542AbiDNSXR (ORCPT
+        with ESMTP id S243914AbiDNSYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 14:23:17 -0400
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F1122AE14;
-        Thu, 14 Apr 2022 11:20:51 -0700 (PDT)
-Received: by mail-oi1-f178.google.com with SMTP id bj24so820856oib.11;
-        Thu, 14 Apr 2022 11:20:51 -0700 (PDT)
+        Thu, 14 Apr 2022 14:24:36 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9005B645E;
+        Thu, 14 Apr 2022 11:22:10 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id 15so7068410ljw.8;
+        Thu, 14 Apr 2022 11:22:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bZRq3oZhUdWM7gotP1i/Bzhd8FwXVmJKlpEbuaU9E70=;
+        b=RbkSxphZC1+PfPjuq7th0mCg7rl5O1p6S2Y1dozh+P1yhRJutgNhLWnAEVy1odmFFc
+         9SiuzS4AkV62jW0bMYsHo7TLHVN/c+7vFd+P7HmgLr+3PsK79uKCYNfvmrsWaN25Rw3I
+         5P3CVfuPaWCNBiDn6AMXsPR5j7CWbsBBNRuu/86rwpNb/xwJW/31iLFGaVf/qUQp9gg3
+         NlfwSRATcnBGIoLb/uUYv6ScsbJe2JbEWxHA+vgy0qZrk5uz34rnOm5YmdtI3qcIs9/k
+         H2hVr6M3zz7U2wpeiqlQLHcXuCe07uPizBv+GkIRQ4+KwUBVb1YZleMvxVcU4Jg1PAJA
+         4h5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=49UHAT4bvClctyO7SpH/kHuczcmJC7fg1AX1Ne+NSKs=;
-        b=louQMAhSiZ6+bYH5XpZgNy43WUkiJ8G8FeM+H5CjvulKDpV9uBeWI/OICaN8GhXo2O
-         bPhodlbjTgmka9dXNP349xYSNG5zZ4mfhoymHhXmmvEcslM9iOYlmYTnA1DUlFC2cAik
-         GriX0uP6hlox0DVPsS2TGXBboMz7mSQZ9DWGarzWonBBYilwo1rq7Hcn5kmIvuuntiqf
-         osO75NTdOW3jZEkutFQDmyI0pyg1JIyXzVB84Uks4vz7uKVGac/Mtc9AMDQ4nFNY+AZJ
-         Xjjtz6WLDbVu/NNSuzpEsFUkDucn4dmgCJjUAFAaZkugJqDYXPVbLpJl0cHRhBVnbEzR
-         K2eg==
-X-Gm-Message-State: AOAM5321atf2H/2lhpINuONFocpDoeKIwCrrcwEjopjv+ACsR+hbj7Mc
-        8osMmn8jTduCoo0F7RYuoA==
-X-Google-Smtp-Source: ABdhPJwzj6DFzVeRUBf1hovvcj7QNX6k5X5/sLRvxQeN7WjUJKTm7auxmKoXlTJv9NKEkAyhHH6mVg==
-X-Received: by 2002:aca:1817:0:b0:2ec:f542:c96c with SMTP id h23-20020aca1817000000b002ecf542c96cmr2023781oih.36.1649960450795;
-        Thu, 14 Apr 2022 11:20:50 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r19-20020a056830121300b005cdb11a7b85sm301131otp.29.2022.04.14.11.20.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 11:20:50 -0700 (PDT)
-Received: (nullmailer pid 2387691 invoked by uid 1000);
-        Thu, 14 Apr 2022 18:20:49 -0000
-Date:   Thu, 14 Apr 2022 13:20:49 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Kartik <kkartik@nvidia.com>
-Cc:     daniel.lezcano@linaro.org, tglx@linutronix.de, krzk+dt@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com, spujar@nvidia.com,
-        akhilrajeev@nvidia.com, rgumasta@nvidia.com, pshete@nvidia.com,
-        vidyas@nvidia.com, mperttunen@nvidia.com, mkumard@nvidia.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: Re: [PATCH 1/6] dt-bindings: timer: Add Tegra186 & Tegra234 Timer
-Message-ID: <YlhmAQsZVU92OZ3W@robh.at.kernel.org>
-References: <1649924738-17990-1-git-send-email-kkartik@nvidia.com>
- <1649924738-17990-2-git-send-email-kkartik@nvidia.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bZRq3oZhUdWM7gotP1i/Bzhd8FwXVmJKlpEbuaU9E70=;
+        b=15V648oVigSXanTslayohCg0S/1HaFYymPj53LSLhpcBkyclEtoQc0V+KvJnv5Q0IC
+         m3Ej2xZ4HVzi0ylrciEB5/K+de5y8y0ZBtBt+ymlcAQF2ATLtfipGPgeKPLBoH0v9zC2
+         iWafwlGiJxOaX0WZ1c2UdFxlRMC3Selx26evH++T9+kRU06/YbVTToiuWnBzdBygWw/0
+         kRsb9kwjG8roTEJ+rsXe7z4YMvZu2fSm0odOScPICMus6QCsAxu5Q97JGJc8xuaGDbdw
+         jMT2wlsG8Zm6yqc5lHixQG3C2YKk6iN1PO5IDkpUoWfwt821SQIztXOPG0RtCmP5kuNV
+         q3DA==
+X-Gm-Message-State: AOAM530DtmART9QBipuTJwhCz5Z4lMoaimdQFtip3TjkDBuQHGcfZUpA
+        lp840xyhqHqTzQvcA3m2QA3K7OrGSzqefWlD4wcL4CjNF4Q=
+X-Google-Smtp-Source: ABdhPJzdR7mcr/SyAmuNMV8NMAWpk3ps0biU05hpbUXl8no8U+aWyizyZ1JvmS5AVU4ZTOANZXpj5XPBh1kNlxGGI3o=
+X-Received: by 2002:a2e:93d5:0:b0:24b:5637:bbde with SMTP id
+ p21-20020a2e93d5000000b0024b5637bbdemr2275131ljh.256.1649960529062; Thu, 14
+ Apr 2022 11:22:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1649924738-17990-2-git-send-email-kkartik@nvidia.com>
+References: <CAD56B7dMg073f56vfaxp38=dZiAFU0iCn6kmDGiNcNtCijyFoA@mail.gmail.com>
+ <c2e2c7b0-cdfb-8eb0-9550-0fb59b5cd10c@hartkopp.net>
+In-Reply-To: <c2e2c7b0-cdfb-8eb0-9550-0fb59b5cd10c@hartkopp.net>
+From:   Paul Thomas <pthomas8589@gmail.com>
+Date:   Thu, 14 Apr 2022 14:21:57 -0400
+Message-ID: <CAD56B7ebyPr8h2J8WCV9rBXr9LFeakB6DV1Sk2hBYdY7OEJkyA@mail.gmail.com>
+Subject: Re: peak_usb: urb aborted
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     linux-can@vger.kernel.org,
+        =?UTF-8?Q?St=C3=A9phane_Grosjean?= <s.grosjean@peak-system.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        support@peak-system.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 01:55:33PM +0530, Kartik wrote:
-> The Tegra186 timer provides ten 29-bit timer counters and one 32-bit
-> timestamp counter. The Tegra234 timer provides sixteen 29-bit timer
-> counters and one 32-bit timestamp counter. Each NV timer selects its
-> timing reference signal from the 1 MHz reference generated by USEC,
-> TSC or either clk_m or OSC. Each TMR can be programmed to generate
-> one-shot, periodic, or watchdog interrupts.
-> 
-> Signed-off-by: Kartik <kkartik@nvidia.com>
+> On 08.04.22 18:35, Paul Thomas wrote:
+> > Folks,
+> >
+> > I'm using a PCAN-USB adapter, and it seems to have a lot of trouble
+> > under medium load. I'm getting these urb aborted messages.
+> > [125054.082248] peak_usb 3-2.4.4:1.0 can0: Rx urb aborted (-71)
+> > [125077.886850] peak_usb 3-2.4.4:1.0 can0: Rx urb aborted (-32)
+>
+> As I run the same hardware here it is very likely that you have a faulty
+> CAN bus setup with
+>
+> - wrong bitrate setting / sample points / etc
+> - wrong or no termination
+> - missing or wrong configured (other) CAN nodes
+Thanks Oliver, this might have been it, I'm using 1Mbit (up from
+100kbit) on a different board, and not getting those errors.
 
-Full name please.
-
-> ---
->  .../bindings/timer/nvidia,tegra186-timer.yaml | 116 ++++++++++++++++++
->  1 file changed, 116 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/timer/nvidia,tegra186-timer.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/timer/nvidia,tegra186-timer.yaml b/Documentation/devicetree/bindings/timer/nvidia,tegra186-timer.yaml
-> new file mode 100644
-> index 000000000000..7841a68d19f3
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/timer/nvidia,tegra186-timer.yaml
-> @@ -0,0 +1,116 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/timer/nvidia,tegra186-timer.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: NVIDIA Tegra186 timer
-> +
-> +maintainers:
-> +  - Thierry Reding <treding@nvidia.com>
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: nvidia,tegra186-timer
-> +    then:
-> +      properties:
-> +        interrupts:
-> +          # Either a single combined interrupt or up to 14 individual interrupts
-
-This can be part of 'description'
-
-> +          minItems: 1
-> +          maxItems: 10
-> +          description: >
-> +            A list of 10 interrupts; one per each timer channels 0 through 9.
-
-Is it 10 or 14? I'm confused.
-
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: nvidia,tegra234-timer
-> +    then:
-> +      properties:
-> +        interrupts:
-> +          # Either a single combined interrupt or up to 16 individual interrupts
-> +          minItems: 1
-> +          maxItems: 16
-> +          description: >
-> +            A list of 16 interrupts; one per each timer channels 0 through 15.
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - const: nvidia,tegra186-timer
-> +        description: >
-> +          The Tegra186 timer provides ten 29-bit timer counters and one 32-bit
-> +          timestamp counter. Each NV timer selects its timing reference signal
-> +          from the 1 MHz reference generated by USEC, TSC or either clk_m or
-> +          OSC. Each TMR can be programmed to generate one-shot, periodic, or
-> +          watchdog interrupts.
-> +      - const: nvidia,tegra234-timer
-> +        description: >
-> +          The Tegra234 timer provides sixteen 29-bit timer counters and one 32-bit
-> +          timestamp counter. Each NV timer selects its timing reference signal
-> +          from the 1 MHz reference generated by USEC, TSC or either clk_m or
-> +          OSC. Each TMR can be programmed to generate one-shot, periodic, or
-> +          watchdog interrupts.
-
-Move all this description to top-level description leaving out the exact 
-number of counters (as the schema defines that).
-
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts: true
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    timer@3010000 {
-> +        compatible = "nvidia,tegra186-timer";
-> +        reg = <0x03010000 0x000e0000>;
-> +        interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>;
-> +        status = "disabled";
-
-Drop status.
-
-> +    };
-> +
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    timer@2080000 {
-> +        compatible = "nvidia,tegra234-timer";
-> +        reg = <0x02080000 0x00121000>;
-> +        interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
-> +        status = "disabled";
-> +    };
-> -- 
-> 2.17.1
-> 
-> 
+>
+> I added the maintainer of the PEAK USB adapter (Stephane) to the
+> recipient list.
+>
+> Having the linux-can mailing list and Stephane in the recipient list is
+> sufficient to answer the above details.
+>
+> Regards,
+> Oliver
+>
