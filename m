@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C13C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A917C3527A
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237015AbiDNO7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54030 "EHLO
+        id S1355078AbiDNO5Y (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:57:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346205AbiDNN4E (ORCPT
+        with ESMTP id S1345506AbiDNNxT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:56:04 -0400
+        Thu, 14 Apr 2022 09:53:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D1159A57;
-        Thu, 14 Apr 2022 06:46:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1BCA6E0C;
+        Thu, 14 Apr 2022 06:44:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2C7A61D7E;
-        Thu, 14 Apr 2022 13:45:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1029DC385A5;
-        Thu, 14 Apr 2022 13:45:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D3C061D68;
+        Thu, 14 Apr 2022 13:44:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41869C385AA;
+        Thu, 14 Apr 2022 13:44:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943956;
-        bh=BBGt+GgEpJktuRha/6PB6GGM4VbMgSz88KLc5ZHLTZg=;
+        s=korg; t=1649943889;
+        bh=TJrbjpm3lKY1CWyEcbDBz5itmCMZV2/kaX88Cs2rbs4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J3MfoDfI9MfdrpE0IWEaiZofwk0mleFqJ7Kf0T/AdJLFPbH8lj0+JHo2INola+E0m
-         3PjAnpORiLwzsBgE85NoIc77YH8Bf5HZRJ/H1tbuYQyUJ/dGE3+AikAvf0w6h9V8wT
-         DNGXRGYb0ZMUGMvApoWCinPwCYwchClcY+pakngE=
+        b=q5IGpzXzf/NtmMQE2+fzSGM0vM6eemM0Ls4BCU19pIUy1T61gMQC970p3rCEppwFm
+         brK4vFEx+ou+KN5s4QZB79Q/1M2N+LinSg8eZP1DuBp8PJ+WD9/+7WLu0bNuQXE98B
+         DIxeukBvnpM6Pttdc20SQ/JfZZRFgYmvpm/HxT1k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 5.4 341/475] rtc: check if __rtc_read_time was successful
-Date:   Thu, 14 Apr 2022 15:12:06 +0200
-Message-Id: <20220414110904.626066723@linuxfoundation.org>
+        stable@vger.kernel.org, Joe Carnuccio <joe.carnuccio@cavium.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.4 319/475] scsi: qla2xxx: Check for firmware dump already collected
+Date:   Thu, 14 Apr 2022 15:11:44 +0200
+Message-Id: <20220414110904.015578346@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -48,54 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Joe Carnuccio <joe.carnuccio@cavium.com>
 
-commit 915593a7a663b2ad08b895a5f3ba8b19d89d4ebf upstream.
+commit cfbafad7c6032d449a5a07f2d273acd2437bbc6a upstream.
 
-Clang static analysis reports this issue
-interface.c:810:8: warning: Passed-by-value struct
-  argument contains uninitialized data
-  now = rtc_tm_to_ktime(tm);
-      ^~~~~~~~~~~~~~~~~~~
+While allocating firmware dump, check if dump is already collected and do
+not re-allocate the buffer.
 
-tm is set by a successful call to __rtc_read_time()
-but its return status is not checked.  Check if
-it was successful before setting the enabled flag.
-Move the decl of err to function scope.
-
-Fixes: 2b2f5ff00f63 ("rtc: interface: ignore expired timers when enqueuing new timers")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220326194236.2916310-1-trix@redhat.com
+Link: https://lore.kernel.org/r/20220110050218.3958-17-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Joe Carnuccio <joe.carnuccio@cavium.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/rtc/interface.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/scsi/qla2xxx/qla_init.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/rtc/interface.c
-+++ b/drivers/rtc/interface.c
-@@ -793,9 +793,13 @@ static int rtc_timer_enqueue(struct rtc_
- 	struct timerqueue_node *next = timerqueue_getnext(&rtc->timerqueue);
- 	struct rtc_time tm;
- 	ktime_t now;
-+	int err;
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -3231,6 +3231,14 @@ qla2x00_alloc_fw_dump(scsi_qla_host_t *v
+ 	struct rsp_que *rsp = ha->rsp_q_map[0];
+ 	struct qla2xxx_fw_dump *fw_dump;
+ 
++	if (ha->fw_dump) {
++		ql_dbg(ql_dbg_init, vha, 0x00bd,
++		    "Firmware dump already allocated.\n");
++		return;
++	}
 +
-+	err = __rtc_read_time(rtc, &tm);
-+	if (err)
-+		return err;
++	ha->fw_dumped = 0;
++	ha->fw_dump_cap_flags = 0;
+ 	dump_size = fixed_size = mem_size = eft_size = fce_size = mq_size = 0;
+ 	req_q_size = rsp_q_size = 0;
  
- 	timer->enabled = 1;
--	__rtc_read_time(rtc, &tm);
- 	now = rtc_tm_to_ktime(tm);
- 
- 	/* Skip over expired timers */
-@@ -809,7 +813,6 @@ static int rtc_timer_enqueue(struct rtc_
- 	trace_rtc_timer_enqueue(timer);
- 	if (!next || ktime_before(timer->node.expires, next->expires)) {
- 		struct rtc_wkalrm alarm;
--		int err;
- 
- 		alarm.time = rtc_ktime_to_tm(timer->node.expires);
- 		alarm.enabled = 1;
 
 
