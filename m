@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FF5C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245575AbiDNPUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45536 "EHLO
+        id S1346765AbiDNPU6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:20:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347660AbiDNN7Z (ORCPT
+        with ESMTP id S1347654AbiDNN7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:59:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD24547074;
-        Thu, 14 Apr 2022 06:51:01 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D06631929;
+        Thu, 14 Apr 2022 06:50:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17684612B3;
-        Thu, 14 Apr 2022 13:51:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2599BC385A5;
-        Thu, 14 Apr 2022 13:50:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34118B82968;
+        Thu, 14 Apr 2022 13:50:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 823BEC385A9;
+        Thu, 14 Apr 2022 13:50:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944260;
-        bh=mYElAx4n+Ve0PXk4na22YZ+ls6EwvTTE8hf0IPJeNM8=;
+        s=korg; t=1649944254;
+        bh=hPqokpt1S+D0RoQfYU/GmNha60gRb/ACr6l/G4p/+ik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pqJagVvzVBVIil0Ois3mufLAr4CQ+9ZaW7wjGfLnXaAFJuIrf4oRmkEuUk7QJ33dm
-         zFLl+nQLWQL3aS7Rp8T/ZFFf0rHIutR08YXXXyar3GqJxgMDRXCmvMTBmrax750HGo
-         a4hnwxcnlvbpV8MOfAUGWdmO/DLO3Z10LEVvCLFU=
+        b=Smz3x4mRh9Hx76OyjEgV+RZuX6elVJCG3MAopyqN/nLVYQqlNI9sHSMtBl1HVdAkE
+         hZauLdiJaDFFL/Hf4UsUoOufObCuG6j5lGfp7PAoHFyth1/a7XZrDsXBqMchXiPVoL
+         rpi4Szj/zp/5CGwDVK5IM6NlYOYho0RkCdZ88Xh4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        Ethan Lien <ethanlien@synology.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.4 452/475] btrfs: fix qgroup reserve overflow the qgroup limit
-Date:   Thu, 14 Apr 2022 15:13:57 +0200
-Message-Id: <20220414110907.708073731@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 450/475] x86/pm: Save the MSR validity status at context setup
+Date:   Thu, 14 Apr 2022 15:13:55 +0200
+Message-Id: <20220414110907.652509873@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,90 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ethan Lien <ethanlien@synology.com>
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-commit b642b52d0b50f4d398cb4293f64992d0eed2e2ce upstream.
+commit 73924ec4d560257004d5b5116b22a3647661e364 upstream.
 
-We use extent_changeset->bytes_changed in qgroup_reserve_data() to record
-how many bytes we set for EXTENT_QGROUP_RESERVED state. Currently the
-bytes_changed is set as "unsigned int", and it will overflow if we try to
-fallocate a range larger than 4GiB. The result is we reserve less bytes
-and eventually break the qgroup limit.
+The mechanism to save/restore MSRs during S3 suspend/resume checks for
+the MSR validity during suspend, and only restores the MSR if its a
+valid MSR.  This is not optimal, as an invalid MSR will unnecessarily
+throw an exception for every suspend cycle.  The more invalid MSRs,
+higher the impact will be.
 
-Unlike regular buffered/direct write, which we use one changeset for
-each ordered extent, which can never be larger than 256M.  For
-fallocate, we use one changeset for the whole range, thus it no longer
-respects the 256M per extent limit, and caused the problem.
+Check and save the MSR validity at setup.  This ensures that only valid
+MSRs that are guaranteed to not throw an exception will be attempted
+during suspend.
 
-The following example test script reproduces the problem:
-
-  $ cat qgroup-overflow.sh
-  #!/bin/bash
-
-  DEV=/dev/sdj
-  MNT=/mnt/sdj
-
-  mkfs.btrfs -f $DEV
-  mount $DEV $MNT
-
-  # Set qgroup limit to 2GiB.
-  btrfs quota enable $MNT
-  btrfs qgroup limit 2G $MNT
-
-  # Try to fallocate a 3GiB file. This should fail.
-  echo
-  echo "Try to fallocate a 3GiB file..."
-  fallocate -l 3G $MNT/3G.file
-
-  # Try to fallocate a 5GiB file.
-  echo
-  echo "Try to fallocate a 5GiB file..."
-  fallocate -l 5G $MNT/5G.file
-
-  # See we break the qgroup limit.
-  echo
-  sync
-  btrfs qgroup show -r $MNT
-
-  umount $MNT
-
-When running the test:
-
-  $ ./qgroup-overflow.sh
-  (...)
-
-  Try to fallocate a 3GiB file...
-  fallocate: fallocate failed: Disk quota exceeded
-
-  Try to fallocate a 5GiB file...
-
-  qgroupid         rfer         excl     max_rfer
-  --------         ----         ----     --------
-  0/5           5.00GiB      5.00GiB      2.00GiB
-
-Since we have no control of how bytes_changed is used, it's better to
-set it to u64.
-
-CC: stable@vger.kernel.org # 4.14+
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: Ethan Lien <ethanlien@synology.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Acked-by: Borislav Petkov <bp@suse.de>
+Cc: stable@vger.kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/extent_io.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/power/cpu.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/fs/btrfs/extent_io.h
-+++ b/fs/btrfs/extent_io.h
-@@ -202,7 +202,7 @@ struct extent_buffer {
-  */
- struct extent_changeset {
- 	/* How many bytes are set/cleared in this operation */
--	unsigned int bytes_changed;
-+	u64 bytes_changed;
+--- a/arch/x86/power/cpu.c
++++ b/arch/x86/power/cpu.c
+@@ -40,7 +40,8 @@ static void msr_save_context(struct save
+ 	struct saved_msr *end = msr + ctxt->saved_msrs.num;
  
- 	/* Changed ranges */
- 	struct ulist range_changed;
+ 	while (msr < end) {
+-		msr->valid = !rdmsrl_safe(msr->info.msr_no, &msr->info.reg.q);
++		if (msr->valid)
++			rdmsrl(msr->info.msr_no, msr->info.reg.q);
+ 		msr++;
+ 	}
+ }
+@@ -421,8 +422,10 @@ static int msr_build_context(const u32 *
+ 	}
+ 
+ 	for (i = saved_msrs->num, j = 0; i < total_num; i++, j++) {
++		u64 dummy;
++
+ 		msr_array[i].info.msr_no	= msr_id[j];
+-		msr_array[i].valid		= false;
++		msr_array[i].valid		= !rdmsrl_safe(msr_id[j], &dummy);
+ 		msr_array[i].info.reg.q		= 0;
+ 	}
+ 	saved_msrs->num   = total_num;
 
 
