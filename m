@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C82C35273
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:35:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2140FC3527E
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:35:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239971AbiDNOgr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:36:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35334 "EHLO
+        id S1352952AbiDNOed (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:34:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245407AbiDNNi3 (ORCPT
+        with ESMTP id S245708AbiDNNix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB01A3121A;
-        Thu, 14 Apr 2022 06:32:12 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEF5A76F7;
+        Thu, 14 Apr 2022 06:33:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FB4FB82983;
-        Thu, 14 Apr 2022 13:32:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96038C385A5;
-        Thu, 14 Apr 2022 13:32:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B1026190F;
+        Thu, 14 Apr 2022 13:33:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E8E4C385A1;
+        Thu, 14 Apr 2022 13:33:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943130;
-        bh=RM0KKzpT8cLsJyrZoDbIHvg0ONgKHvUQdCMuQWGyK5Q=;
+        s=korg; t=1649943230;
+        bh=/LOOwWxADR70oUQ6lKCBYnij1x7THp3OofmlkedM3f8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sZZOYYFfWzdP6z1QtZVKVHlmvj3kLPs5yjWA8JF2L5QBB8Rus1SSmRpRK9L2rqWsO
-         6xlI278OCnDwVSNSMI8zX/oLURdzFdK+RzLnkofEwMetL5fLUFDNlroUrYtn7fVXFs
-         HDRifhu8bGmzMoASIVBMvKRG3pYJ5J6zEmdjBe8w=
+        b=sxuDsuzyxpbOwEvAZDJuUb40ehimxeqZMPtNDPRLyPdqEHvSgej8siuFnjRCt4SLL
+         V8whAGYMRHkC8IFJPxgQpLszvtjrN04arRV12IAHUnYRvR9LQ2JTeuua7nnJdZ9Rsg
+         qBj9RZFX/lEGqE48CSntPnW0pZasGXKek3DptHrw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sebastian Haas <haas@ems-wuensche.com>,
-        Hangyu Hua <hbh25y@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.4 043/475] can: ems_usb: ems_usb_start_xmit(): fix double dev_kfree_skb() in error path
-Date:   Thu, 14 Apr 2022 15:07:08 +0200
-Message-Id: <20220414110856.363022983@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Lad@vger.kernel.org
+Subject: [PATCH 5.4 080/475] media: davinci: vpif: fix unbalanced runtime PM get
+Date:   Thu, 14 Apr 2022 15:07:45 +0200
+Message-Id: <20220414110857.393953764@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,34 +53,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit c70222752228a62135cee3409dccefd494a24646 upstream.
+commit 4a321de239213300a714fa0353a5f1272d381a44 upstream.
 
-There is no need to call dev_kfree_skb() when usb_submit_urb() fails
-beacause can_put_echo_skb() deletes the original skb and
-can_free_echo_skb() deletes the cloned skb.
+Make sure to balance the runtime PM usage counter on driver unbind.
 
-Link: https://lore.kernel.org/all/20220228083639.38183-1-hbh25y@gmail.com
-Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
-Cc: stable@vger.kernel.org
-Cc: Sebastian Haas <haas@ems-wuensche.com>
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 407ccc65bfd2 ("[media] davinci: vpif: add pm_runtime support")
+Cc: stable@vger.kernel.org      # 3.9
+Cc: Lad, Prabhakar <prabhakar.csengg@gmail.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Reviewed-by: Lad Prabhakar <prabhakar.csengg@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/usb/ems_usb.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/media/platform/davinci/vpif.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/can/usb/ems_usb.c
-+++ b/drivers/net/can/usb/ems_usb.c
-@@ -823,7 +823,6 @@ static netdev_tx_t ems_usb_start_xmit(st
+--- a/drivers/media/platform/davinci/vpif.c
++++ b/drivers/media/platform/davinci/vpif.c
+@@ -496,6 +496,7 @@ static int vpif_probe(struct platform_de
  
- 		usb_unanchor_urb(urb);
- 		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
--		dev_kfree_skb(skb);
- 
- 		atomic_dec(&dev->active_tx_urbs);
- 
+ static int vpif_remove(struct platform_device *pdev)
+ {
++	pm_runtime_put(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
+ 	return 0;
+ }
 
 
