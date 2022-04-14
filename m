@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6CD6C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5E3BC4167B
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244799AbiDNN2I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48382 "EHLO
+        id S244910AbiDNN2R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:28:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233787AbiDNNYi (ORCPT
+        with ESMTP id S237971AbiDNNYt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:24:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A358FE4C;
-        Thu, 14 Apr 2022 06:19:18 -0700 (PDT)
+        Thu, 14 Apr 2022 09:24:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25F16241;
+        Thu, 14 Apr 2022 06:19:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09D19B82986;
-        Thu, 14 Apr 2022 13:19:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5630EC385A1;
-        Thu, 14 Apr 2022 13:19:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CAACD61670;
+        Thu, 14 Apr 2022 13:19:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8904C385A1;
+        Thu, 14 Apr 2022 13:19:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942355;
-        bh=XA8IAKpU3xiHEWoVSgrho19+iO26iVJ3dDrBA4Eycyo=;
+        s=korg; t=1649942361;
+        bh=1oiJ7GX84XDIB1GndQFmO1MX54aeU7npzR69IpsB8sE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v7wOUt79rmMYVgWLPKLn0BndC+faWERR3r2WqM/okCcbpY+ehl4q9t1eghQoWbPTB
-         hZEJhw0F5eYrW1+ZEUHKZ7CHo6S6dpN+PqaFkXHBWY1psqBrl3ClpWnLqFpIGCFOvz
-         d496nqR5lOXbAOYqD43K6NSld6koo9KAhy85SjVE=
+        b=cYXkrmaj1YEX3cLGa15hHWrA02K2YRehQ3l5tharN7H8Ti39cYQOxDpNTXpfISJ8O
+         XGclYbLq4MGIkS+vMmbkeu1epH8EIefde2lCidVoJHxE1jZrt340MD7v1uy019S7hH
+         bMMSkWyIgtWJCoVVZcaHrwBGpoD2FJIK5qBneytY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 104/338] ALSA: firewire-lib: fix uninitialized flag for AV/C deferred transaction
-Date:   Thu, 14 Apr 2022 15:10:07 +0200
-Message-Id: <20220414110841.861444957@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 106/338] ASoC: atmel: Add missing of_node_put() in at91sam9g20ek_audio_probe
+Date:   Thu, 14 Apr 2022 15:10:09 +0200
+Message-Id: <20220414110841.928917811@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -48,81 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit bf0cd60b7e33cf221fbe1114e4acb2c828b0af0d ]
+[ Upstream commit f590797fa3c1bccdd19e55441592a23b46aef449 ]
 
-AV/C deferred transaction was supported at a commit 00a7bb81c20f ("ALSA:
-firewire-lib: Add support for deferred transaction") while 'deferrable'
-flag can be uninitialized for non-control/notify AV/C transactions.
-UBSAN reports it:
+This node pointer is returned by of_parse_phandle() with refcount
+incremented in this function.
+Calling of_node_put() to avoid the refcount leak.
 
-kernel: ================================================================================
-kernel: UBSAN: invalid-load in /build/linux-aa0B4d/linux-5.15.0/sound/firewire/fcp.c:363:9
-kernel: load of value 158 is not a valid value for type '_Bool'
-kernel: CPU: 3 PID: 182227 Comm: irq/35-firewire Tainted: P           OE     5.15.0-18-generic #18-Ubuntu
-kernel: Hardware name: Gigabyte Technology Co., Ltd. AX370-Gaming 5/AX370-Gaming 5, BIOS F42b 08/01/2019
-kernel: Call Trace:
-kernel:  <IRQ>
-kernel:  show_stack+0x52/0x58
-kernel:  dump_stack_lvl+0x4a/0x5f
-kernel:  dump_stack+0x10/0x12
-kernel:  ubsan_epilogue+0x9/0x45
-kernel:  __ubsan_handle_load_invalid_value.cold+0x44/0x49
-kernel:  fcp_response.part.0.cold+0x1a/0x2b [snd_firewire_lib]
-kernel:  fcp_response+0x28/0x30 [snd_firewire_lib]
-kernel:  fw_core_handle_request+0x230/0x3d0 [firewire_core]
-kernel:  handle_ar_packet+0x1d9/0x200 [firewire_ohci]
-kernel:  ? handle_ar_packet+0x1d9/0x200 [firewire_ohci]
-kernel:  ? transmit_complete_callback+0x9f/0x120 [firewire_core]
-kernel:  ar_context_tasklet+0xa8/0x2e0 [firewire_ohci]
-kernel:  tasklet_action_common.constprop.0+0xea/0xf0
-kernel:  tasklet_action+0x22/0x30
-kernel:  __do_softirq+0xd9/0x2e3
-kernel:  ? irq_finalize_oneshot.part.0+0xf0/0xf0
-kernel:  do_softirq+0x75/0xa0
-kernel:  </IRQ>
-kernel:  <TASK>
-kernel:  __local_bh_enable_ip+0x50/0x60
-kernel:  irq_forced_thread_fn+0x7e/0x90
-kernel:  irq_thread+0xba/0x190
-kernel:  ? irq_thread_fn+0x60/0x60
-kernel:  kthread+0x11e/0x140
-kernel:  ? irq_thread_check_affinity+0xf0/0xf0
-kernel:  ? set_kthread_struct+0x50/0x50
-kernel:  ret_from_fork+0x22/0x30
-kernel:  </TASK>
-kernel: ================================================================================
-
-This commit fixes the bug. The bug has no disadvantage for the non-
-control/notify AV/C transactions since the flag has an effect for AV/C
-response with INTERIM (0x0f) status which is not used for the transactions
-in AV/C general specification.
-
-Fixes: 00a7bb81c20f ("ALSA: firewire-lib: Add support for deferred transaction")
-Signed-off-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-Link: https://lore.kernel.org/r/20220304125647.78430-1-o-takashi@sakamocchi.jp
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 531f67e41dcd ("ASoC: at91sam9g20ek-wm8731: convert to dt support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220307124539.1743-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/firewire/fcp.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ sound/soc/atmel/sam9g20_wm8731.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/firewire/fcp.c b/sound/firewire/fcp.c
-index 61dda828f767..c8fbb54269cb 100644
---- a/sound/firewire/fcp.c
-+++ b/sound/firewire/fcp.c
-@@ -240,9 +240,7 @@ int fcp_avc_transaction(struct fw_unit *unit,
- 	t.response_match_bytes = response_match_bytes;
- 	t.state = STATE_PENDING;
- 	init_waitqueue_head(&t.wait);
--
--	if (*(const u8 *)command == 0x00 || *(const u8 *)command == 0x03)
--		t.deferrable = true;
-+	t.deferrable = (*(const u8 *)command == 0x00 || *(const u8 *)command == 0x03);
- 
- 	spin_lock_irq(&transactions_lock);
- 	list_add_tail(&t.list, &transactions);
+diff --git a/sound/soc/atmel/sam9g20_wm8731.c b/sound/soc/atmel/sam9g20_wm8731.c
+index 98f93e79c654..5041f43ee5f7 100644
+--- a/sound/soc/atmel/sam9g20_wm8731.c
++++ b/sound/soc/atmel/sam9g20_wm8731.c
+@@ -225,6 +225,7 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ 	cpu_np = of_parse_phandle(np, "atmel,ssc-controller", 0);
+ 	if (!cpu_np) {
+ 		dev_err(&pdev->dev, "dai and pcm info missing\n");
++		of_node_put(codec_np);
+ 		return -EINVAL;
+ 	}
+ 	at91sam9g20ek_dai.cpu_of_node = cpu_np;
 -- 
 2.34.1
 
