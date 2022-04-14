@@ -2,103 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B590C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:57:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF339C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243656AbiDNNAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54388 "EHLO
+        id S243663AbiDNNBQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:01:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234732AbiDNNAQ (ORCPT
+        with ESMTP id S238742AbiDNNBP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:00:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530E891AC2
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 05:57:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Apr 2022 09:01:15 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2C59284E;
+        Thu, 14 Apr 2022 05:58:48 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id 87cc61afc5c5b63a; Thu, 14 Apr 2022 14:58:46 +0200
+Received: from kreacher.localnet (unknown [213.134.181.101])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7385B82943
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 12:57:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9008FC385A5;
-        Thu, 14 Apr 2022 12:57:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649941069;
-        bh=/73mar6yXG41mELYNx1Ct+uRxOy054yFiSndeMEgqOQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=rEYbcBXKym+8hemNkNynl05P7tEbvG0pcxS5PgFG/K0BqmK9K1cqQqsXZXyc0A+nA
-         0UpTeT/+4Vg5wTLzqiPLItcUN5+ND3voji/YHKaLAlKMAWc4qwAQD2iMGAPI/NXAl0
-         vWk8F9Cec7oog4pqxYwSz5gypWUH1fV2OS7nwvgcSj92kXlThBQZQZvKvdUi9WJriJ
-         AYpn4RZIzJpJLsS3zhJMLMrSrMyfth4+M2gqVO4SmofG91MTcFVQHqQ9jhgMucPT08
-         I/c9EbVXx+hAqCgV6EWWbaLDGUHzE7VpXVjdMsax77QVMEzwpFNaqsj9wa2gQqNBDM
-         7z6IpqQndekaw==
-From:   Oded Gabbay <ogabbay@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Ohad Sharabi <osharabi@habana.ai>
-Subject: [PATCH 1/2] habanalabs: add prefetch flag to the MAP operation
-Date:   Thu, 14 Apr 2022 15:57:43 +0300
-Message-Id: <20220414125744.1928306-1-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        by v370.home.net.pl (Postfix) with ESMTPSA id D684B66BE14;
+        Thu, 14 Apr 2022 14:58:43 +0200 (CEST)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Linux ACPI <linux-acpi@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Subject: [PATCH] ACPI: PM: Always print final debug message in acpi_device_set_power()
+Date:   Thu, 14 Apr 2022 14:58:42 +0200
+Message-ID: <11985385.O9o76ZdvQC@kreacher>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.181.101
+X-CLIENT-HOSTNAME: 213.134.181.101
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelfedgheekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpefhgedtffejheekgeeljeevvedtuefgffeiieejuddutdekgfejvdehueejjeetvdenucfkphepvddufedrudefgedrudekuddruddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukedurddutddupdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeefpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+X-DCC--Metrics: v370.home.net.pl 1024; Body=3 Fuz1=3 Fuz2=3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ohad Sharabi <osharabi@habana.ai>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-This patch let the user decide whether the translations done in the
-page tables will be fetched directly to the STLB right after the map.
+acpi_device_set_power() prints debug messages regarding its outcome
+(whether or not the power state has been changed and how) in all
+cases except when the device whose power state is being changed to D0
+is in that power state already.
 
-We want to let the user control whether to perform prefetch upon map
-operation.
+Make acpi_device_set_power() print a final debug message in that case
+too and while at it, fix the indentation of the "end" label in this
+function.
 
-To do so a memory flag was added, to be used in the MAP ioctl, called
-HL_MEM_PREFETCH and if set- the mappings will be fetched directly to
-the STLB after map operation.
-
-Signed-off-by: Ohad Sharabi <osharabi@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 ---
- drivers/misc/habanalabs/common/memory.c | 11 ++++++-----
- include/uapi/misc/habanalabs.h          |  1 +
- 2 files changed, 7 insertions(+), 5 deletions(-)
+ drivers/acpi/device_pm.c |   18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
-index 326c2179628f..6face45c57e3 100644
---- a/drivers/misc/habanalabs/common/memory.c
-+++ b/drivers/misc/habanalabs/common/memory.c
-@@ -1250,11 +1250,12 @@ static int map_device_va(struct hl_ctx *ctx, struct hl_mem_in *args,
- 	if (rc)
- 		goto map_err;
+Index: linux-pm/drivers/acpi/device_pm.c
+===================================================================
+--- linux-pm.orig/drivers/acpi/device_pm.c
++++ linux-pm/drivers/acpi/device_pm.c
+@@ -173,11 +173,8 @@ int acpi_device_set_power(struct acpi_de
+ 	/* Make sure this is a valid target state */
  
--	/* already prefetch the relevant translations to the cache */
--	rc = hl_mmu_prefetch_cache_range(hdev, *vm_type, ctx->asid, ret_vaddr,
--						phys_pg_pack->total_size);
--	if (rc)
--		goto map_err;
-+	if (args->flags & HL_MEM_PREFETCH) {
-+		rc = hl_mmu_prefetch_cache_range(hdev, *vm_type, ctx->asid, ret_vaddr,
-+							phys_pg_pack->total_size);
-+		if (rc)
-+			goto map_err;
-+	}
+ 	/* There is a special case for D0 addressed below. */
+-	if (state > ACPI_STATE_D0 && state == device->power.state) {
+-		acpi_handle_debug(device->handle, "Already in %s\n",
+-				  acpi_power_state_string(state));
+-		return 0;
+-	}
++	if (state > ACPI_STATE_D0 && state == device->power.state)
++		goto no_change;
  
- 	mutex_unlock(&ctx->mmu_lock);
+ 	if (state == ACPI_STATE_D3_COLD) {
+ 		/*
+@@ -249,7 +246,7 @@ int acpi_device_set_power(struct acpi_de
  
-diff --git a/include/uapi/misc/habanalabs.h b/include/uapi/misc/habanalabs.h
-index ca2af5f98056..3576bf2b4841 100644
---- a/include/uapi/misc/habanalabs.h
-+++ b/include/uapi/misc/habanalabs.h
-@@ -1134,6 +1134,7 @@ union hl_wait_cs_args {
- #define HL_MEM_SHARED		0x2
- #define HL_MEM_USERPTR		0x4
- #define HL_MEM_FORCE_HINT	0x8
-+#define HL_MEM_PREFETCH		0x40
+ 			/* Nothing to do here if _PSC is not present. */
+ 			if (!device->power.flags.explicit_get)
+-				return 0;
++				goto no_change;
  
- /**
-  * structure hl_mem_in - structure that handle input args for memory IOCTL
--- 
-2.25.1
+ 			/*
+ 			 * The power state of the device was set to D0 last
+@@ -264,13 +261,13 @@ int acpi_device_set_power(struct acpi_de
+ 			 */
+ 			result = acpi_dev_pm_explicit_get(device, &psc);
+ 			if (result || psc == ACPI_STATE_D0)
+-				return 0;
++				goto no_change;
+ 		}
+ 
+ 		result = acpi_dev_pm_explicit_set(device, ACPI_STATE_D0);
+ 	}
+ 
+- end:
++end:
+ 	if (result) {
+ 		acpi_handle_debug(device->handle,
+ 				  "Failed to change power state to %s\n",
+@@ -282,6 +279,11 @@ int acpi_device_set_power(struct acpi_de
+ 	}
+ 
+ 	return result;
++
++no_change:
++	acpi_handle_debug(device->handle, "Already in %s\n",
++			  acpi_power_state_string(state));
++	return 0;
+ }
+ EXPORT_SYMBOL(acpi_device_set_power);
+ 
+
+
 
