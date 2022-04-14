@@ -2,86 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68731C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:42:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E457C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:46:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237882AbiDNQoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35730 "EHLO
+        id S242656AbiDNQsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238132AbiDNQmY (ORCPT
+        with ESMTP id S241055AbiDNQsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 12:42:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C253410EDFA;
-        Thu, 14 Apr 2022 09:12:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DAABB82A7D;
-        Thu, 14 Apr 2022 16:12:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91DE2C385A9;
-        Thu, 14 Apr 2022 16:12:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649952735;
-        bh=A8+Hd4LUylBX9Ympns5AtofQeZ2djkNsDkrod7uIVw0=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=aFvA5ryAyuecc7diC3xU/PXHHmdgc8VgyRrG2VxOr2oKO7h0ELHChZpkamB2mKXEV
-         vo4qMt27uYDeaYhdtrzu0VA1RgS1ImxSst2PWTgtfH/a7eluzTsNVYDtD0MRcr2MI7
-         VofkoWyDuQp2Q0tCBScWyV8cUmUEit4Z17H2rrRjLtPwOcVToQm4ShB/UFNu/VTPi4
-         +sIZpBk/RIG5vlfWtQq9my0Nzf2NzWrNm3WHTmvzIo9zyY4DdnTVopCiuzZ8FDWRr2
-         mXRF5qWBTQbQerKoa/9S72STTbMQ3BIsw/A8sTsF755lEyaNn4NKPmo5qTp2vV4cDZ
-         HxhxpxYmTuD0w==
-From:   Mark Brown <broonie@kernel.org>
-To:     linux-kernel@vger.kernel.org, paul.kocialkowski@bootlin.com,
-        linux-spi@vger.kernel.org
-Cc:     thomas.petazzoni@bootlin.com, dan.carpenter@oracle.com
-In-Reply-To: <20220414084040.975520-1-paul.kocialkowski@bootlin.com>
-References: <20220414084040.975520-1-paul.kocialkowski@bootlin.com>
-Subject: Re: [PATCH] spi: core: Initialize returned status in spi_setup
-Message-Id: <164995273428.1502382.15341436161467838466.b4-ty@kernel.org>
-Date:   Thu, 14 Apr 2022 17:12:14 +0100
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        Thu, 14 Apr 2022 12:48:25 -0400
+Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28160129EBC;
+        Thu, 14 Apr 2022 09:15:13 -0700 (PDT)
+Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
+        by finn.localdomain with esmtp (Exim 4.93)
+        (envelope-from <tharvey@gateworks.com>)
+        id 1nf27f-00CSRb-RS; Thu, 14 Apr 2022 16:15:07 +0000
+From:   Tim Harvey <tharvey@gateworks.com>
+To:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Shawn Guo <shawnguo@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+Subject: [PATCH v2 1/2] dt-bindings: arm: Add i.MX8M Plus Gateworks GW74xx board
+Date:   Thu, 14 Apr 2022 09:15:04 -0700
+Message-Id: <20220414161505.15524-1-tharvey@gateworks.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 10:40:40 +0200, Paul Kocialkowski wrote:
-> The previous commit that made bits-per-word validation conditional
-> results in leaving no unconditional affectation of the status variable.
-> 
-> Since the variable is returned at the end of the function, initialize
-> it to avoid returning an undefined value.
-> 
-> 
-> [...]
+Add DT compatible string for i.MX8M Plus based Gateworks GW74xx board.
 
-Applied to
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+---
+v2:
+  - impelement feedback from Krzysztof
+    - use updated 'gateworks' vendor prefix instead of deprecated 'gw'
+---
+ Documentation/devicetree/bindings/arm/fsl.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
+index 08bdd30e511c..c2caaab128b0 100644
+--- a/Documentation/devicetree/bindings/arm/fsl.yaml
++++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+@@ -860,6 +860,7 @@ properties:
+         items:
+           - enum:
+               - fsl,imx8mp-evk            # i.MX8MP EVK Board
++              - gateworks,imx8mp-gw74xx   # i.MX8MP Gateworks Board
+           - const: fsl,imx8mp
+ 
+       - description: PHYTEC phyCORE-i.MX8MP SoM based boards
+-- 
+2.17.1
 
-Thanks!
-
-[1/1] spi: core: Initialize returned status in spi_setup
-      commit: 73f93db5c49b9f52c902e5dc6c750bf9832e0450
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
