@@ -2,105 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A21C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:57:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D92AAC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355785AbiDNP7U (ORCPT
+        id S1350755AbiDNP66 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:59:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58344 "EHLO
+        Thu, 14 Apr 2022 11:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354665AbiDNPlG (ORCPT
+        with ESMTP id S1358349AbiDNPlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:41:06 -0400
+        Thu, 14 Apr 2022 11:41:35 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20CC7DFDED
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:21:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3C2CECC67
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:23:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649949714;
+        s=mimecast20190719; t=1649949834;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0xrO22xcEliQqdlgNP22dh9mENDXbmI2r51Wf1LJDew=;
-        b=UJxDmPaTkc3OgZ8UtllnzpiXqdoCNrXUmQ2Pd1hDb9xcGAPSD0ZeOLCE6Nk6fLxwRdVSZ0
-        A4ka1HguV+5X5h4+R1+lI6TVi9GeZwWoykkKTDhDggjNqYpj1QOwJuozYBzXD325CE17OR
-        /ht3FSFwIGrzjrl/B2MB3rLUVeXCcqg=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=dJ952WGOXndZeyhd9vxjBUmOeHfnPduqI8EF8AuKcTY=;
+        b=N9kkUclSHO5/n4gZDQPB1pSmldgMEcNIojEvwNNOmRcY6hvQy4uE6ihjEkeqt4ZwCL4tHt
+        iXfPMvkAdAy3GSaGVbxN+5tNDixgRzrUtGq1ynF76byB6/34YlWSF4RDA0vHyt1gBM+x+8
+        0EEY/s4y0aKm6XgOExMSXyk2tC1r6JI=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-662-Vd3usRC8N7KogbdN2xiTfw-1; Thu, 14 Apr 2022 11:21:52 -0400
-X-MC-Unique: Vd3usRC8N7KogbdN2xiTfw-1
-Received: by mail-qk1-f197.google.com with SMTP id q5-20020a05620a0d8500b004738c1b48beso3479810qkl.7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:21:52 -0700 (PDT)
+ us-mta-612-Ddo7WSbdPSGH7jaIc3I0XA-1; Thu, 14 Apr 2022 11:23:53 -0400
+X-MC-Unique: Ddo7WSbdPSGH7jaIc3I0XA-1
+Received: by mail-qv1-f70.google.com with SMTP id jr12-20020a0562142a8c00b0044429017bcbso4598789qvb.20
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:23:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0xrO22xcEliQqdlgNP22dh9mENDXbmI2r51Wf1LJDew=;
-        b=v93JUX6zdH/ZKyucoBEV9uXJrkinwVjISSkIoTpefuV1j7CKY2wg/2EBd9+EhnbuT0
-         sKnzGsp9kzp3/wPT7UZpuFRSrAWHeG60rrLXyaiQtTiBp1Z9M7NKXv6sssCxO5Q68fa5
-         9xHiTjIVfs0dg0gSeAQ5qbMeRUNKDLFW+SgSrBlGgudvIMJcFsKe8Oda+W5mttqm6tC2
-         KjXNqoX8fAJZN/HHpDx9RdRJrdaRCJkPMOZImY7mWUHkXNL5HjIyjOQP9NohcRekZhpw
-         T4WnYQW3FllWDXE462cHGV2LS4M7soQhdSgoRdI8x4ID2r/810kUivikvkZsTVpKFUW+
-         n4Rw==
-X-Gm-Message-State: AOAM532qF1ABULqUKJVxcr0ByTrLovVncQRpgTMsUmesPHvQU3XONQda
-        2f82oiDkdw+8tscAFy1f6fbqzvMencZDTRXMCZzhu2cdnXNi0puEtF13jDXuAy44rQkXtjHCvWs
-        lp3OwWJani5GGbwnnOpmVvKzh
-X-Received: by 2002:ae9:f016:0:b0:69c:37ea:9b38 with SMTP id l22-20020ae9f016000000b0069c37ea9b38mr2217864qkg.335.1649949712350;
-        Thu, 14 Apr 2022 08:21:52 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJweSzbcy/dIffGHQ9QM27ZZD4L1/93JLoRe8P0dQu/q22EbhXISKZbPh8s20Tys7Q2guqR4eA==
-X-Received: by 2002:ae9:f016:0:b0:69c:37ea:9b38 with SMTP id l22-20020ae9f016000000b0069c37ea9b38mr2217849qkg.335.1649949712127;
-        Thu, 14 Apr 2022 08:21:52 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::45])
-        by smtp.gmail.com with ESMTPSA id s12-20020a05622a018c00b002e1cd88645dsm1363000qtw.74.2022.04.14.08.21.50
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dJ952WGOXndZeyhd9vxjBUmOeHfnPduqI8EF8AuKcTY=;
+        b=lrb6NWN9ICq5GO/ue27ZtMj05Ic0yqpEORt1yQamFHSuyqKSnvMeuJ9w9JECTH6LiZ
+         6gkWuyaga7Agwb3t6AnvWpz6oWPFHToaoEENW9DiuoeZYki3D7ZMcugg5WzbF166x5M+
+         +ahADfjTifr5ZULpZmrYnSq+Qag6w+zi6rJ4ir3/kGznooYgveHTmYG5kUDP4g6VWWp4
+         X4wLoCHPMCpJCEBud3xdr4oNpEV6AZvgtMuKhCnHruEHhBxZhL3FFMd754mrOUVJabDL
+         Ii4uFOTcbtk52r1vUefMml17ZXmSojoJMom6mRF4l+Eu4+tYBnYaRBRdMMHqptPQDp0t
+         5BAA==
+X-Gm-Message-State: AOAM531gYQqA/0rVPkR6v3cNPrJFo/Q1e8dvlvIZgBmGp2qkEBxu5Bvh
+        oi+9TYXPzSMv71NnCeE5q+51nve7jXTZDgCnliBjclxnym05tBjv4Sf+Tj3KIYDXdqeRyJc+o5M
+        7FfZenBqeq3pPCimFRRFp56sO
+X-Received: by 2002:a0c:b2d7:0:b0:443:afac:fc60 with SMTP id d23-20020a0cb2d7000000b00443afacfc60mr3750474qvf.58.1649949833141;
+        Thu, 14 Apr 2022 08:23:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzDfFqGhctIMuMkohOJTACk8HeRnuayiX/2TbehKgCD7SAbsugdHp+eT2bykwpixK0AJIEDHg==
+X-Received: by 2002:a0c:b2d7:0:b0:443:afac:fc60 with SMTP id d23-20020a0cb2d7000000b00443afacfc60mr3750456qvf.58.1649949832926;
+        Thu, 14 Apr 2022 08:23:52 -0700 (PDT)
+Received: from fedora.redhat.com (modemcable200.11-22-96.mc.videotron.ca. [96.22.11.200])
+        by smtp.gmail.com with ESMTPSA id p5-20020a378d05000000b0069beaffd5b3sm1166038qkd.4.2022.04.14.08.23.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 08:21:51 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 08:21:48 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Miroslav Benes <mbenes@suse.cz>
-Subject: Re: [PATCH 02/18] objtool: Support data symbol printing
-Message-ID: <20220414152148.cwdefx744kymqcut@treble>
-References: <cover.1649891421.git.jpoimboe@redhat.com>
- <097057f88605aa67b0e3ec573fcf394ae7ac4d6f.1649891421.git.jpoimboe@redhat.com>
- <YlfHy011VP2oPFjV@hirez.programming.kicks-ass.net>
+        Thu, 14 Apr 2022 08:23:52 -0700 (PDT)
+From:   Adrien Thierry <athierry@redhat.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Maxime Ripard <mripard@kernel.org>,
+        Takashi Iwai <tiwai@suse.com>
+Cc:     linux-staging@lists.linux.dev,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Adrien Thierry <athierry@redhat.com>
+Subject: [PATCH 0/2] staging: bcm2835-audio: minor code style cleanups
+Date:   Thu, 14 Apr 2022 11:23:38 -0400
+Message-Id: <20220414152340.68932-1-athierry@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YlfHy011VP2oPFjV@hirez.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 09:05:47AM +0200, Peter Zijlstra wrote:
-> On Wed, Apr 13, 2022 at 04:19:37PM -0700, Josh Poimboeuf wrote:
-> 
-> > @@ -34,8 +37,8 @@ static inline char *offstr(struct section *sec, unsigned long offset)
-> >  
-> >  	str = malloc(strlen(name) + 20);
-> >  
-> > -	if (func)
-> > -		sprintf(str, "%s()+0x%lx", name, name_off);
-> > +	if (sym)
-> > +		sprintf(str, "%s%s+0x%lx", name, is_text ? "()" : "", name_off);
-> >  	else
-> >  		sprintf(str, "%s+0x%lx", name, name_off);
-> 
-> So I like the patch, except that "()" thing is something where we differ
-> from the kernel's %ps format and I've cursed it a number of times
-> because I then have to manually edit (iow remove) things when pasting it
-> in various scripts etc..
+This series contains minor code style cleanups to fix checkpatch warnings.
 
-Oh, hm, that's true.  I can remove them if you prefer.
+This handles TODO item "Fix the remaining checkpatch.pl errors and
+warnings"
 
-> That said, it totally makes sense to differentiate between a text and
-> data symbol this way :/
+Adrien Thierry (2):
+  staging: bcm2835-audio: fully describe config symbol
+  staging: bcm2835-audio: clean code style warnings
 
-Yes, but if we're keeping the "Add sec+offset to warnings" patch then
-that distinction is already (kind of) being made by showing the data
-section name.  And the data symbol warnings should be rare.
+ drivers/staging/vc04_services/bcm2835-audio/Kconfig         | 5 ++++-
+ drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c   | 5 ++---
+ drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c | 2 +-
+ drivers/staging/vc04_services/bcm2835-audio/bcm2835.h       | 2 +-
+ 4 files changed, 8 insertions(+), 6 deletions(-)
 
+
+base-commit: 194193dd06848c1839d928090cb2032eec8b2f9c
 -- 
-Josh
+2.35.1
 
