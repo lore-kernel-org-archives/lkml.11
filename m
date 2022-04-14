@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D3D6C47089
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345598AbiDNOKc (ORCPT
+        id S1346169AbiDNOKr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:10:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56976 "EHLO
+        Thu, 14 Apr 2022 10:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343562AbiDNN3f (ORCPT
+        with ESMTP id S1344134AbiDNNaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:29:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B55C91AC3;
-        Thu, 14 Apr 2022 06:24:40 -0700 (PDT)
+        Thu, 14 Apr 2022 09:30:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B80E1D3;
+        Thu, 14 Apr 2022 06:28:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5ADEB82986;
-        Thu, 14 Apr 2022 13:24:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14466C385A1;
-        Thu, 14 Apr 2022 13:24:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1ADA2B8296A;
+        Thu, 14 Apr 2022 13:28:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B283C385A5;
+        Thu, 14 Apr 2022 13:28:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942677;
-        bh=r96+N93s94Y0jEio7FPsUW6ZCd37A4C3bPaDy9ZoV+o=;
+        s=korg; t=1649942887;
+        bh=G1cCzSEmSyEJgD7avDuvFKb78yXZro2e0oLgp9BKbiU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=atrHSaf3TdlHidp+3Su0TIZkWpBs1u9jopcMWf5TKysEJl3gpL7Chtdw3pI4/om+W
-         PZCgwvp7VpUPsWPij3ymaEtg8m3nYH3hgfUN5u7rDqvQcdvw6TWj2Ym8jMGv1Byg5P
-         6U+9aNVjhQxfLniLmCAavUpVBCH2HfUMs13GdyUA=
+        b=fhPRSjtZMjmj7P3Mv/ffbKJuUtNgbJiT5vTGtPDDr+mVdcrJ973FmHOPnviZGo1FS
+         a+0JA05C6tf2R0V+UxPiRu1PFpN01Dt0RWW8CQngKvAcP/r72U0iao+iifL5l5H4fG
+         Uzkm2ctdRApH+XGeAvU1k8Zgjld/MRqsukKos+fE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 4.19 221/338] powerpc/lib/sstep: Fix build errors with newer binutils
-Date:   Thu, 14 Apr 2022 15:12:04 +0200
-Message-Id: <20220414110845.182477891@linuxfoundation.org>
+        stable@vger.kernel.org, TCS Robot <tcs_robot@tencent.com>,
+        Haimin Zhang <tcs_kernel@tencent.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 298/338] jfs: prevent NULL deref in diFree
+Date:   Thu, 14 Apr 2022 15:13:21 +0200
+Message-Id: <20220414110847.367481421@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,61 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: Haimin Zhang <tcs_kernel@tencent.com>
 
-commit 8219d31effa7be5dbc7ff915d7970672e028c701 upstream.
+[ Upstream commit a53046291020ec41e09181396c1e829287b48d47 ]
 
-Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
-2.37.90.20220207) the following build error shows up:
+Add validation check for JFS_IP(ipimap)->i_imap to prevent a NULL deref
+in diFree since diFree uses it without do any validations.
+When function jfs_mount calls diMount to initialize fileset inode
+allocation map, it can fail and JFS_IP(ipimap)->i_imap won't be
+initialized. Then it calls diFreeSpecial to close fileset inode allocation
+map inode and it will flow into jfs_evict_inode. Function jfs_evict_inode
+just validates JFS_SBI(inode->i_sb)->ipimap, then calls diFree. diFree use
+JFS_IP(ipimap)->i_imap directly, then it will cause a NULL deref.
 
-  {standard input}: Assembler messages:
-  {standard input}:10576: Error: unrecognized opcode: `stbcx.'
-  {standard input}:10680: Error: unrecognized opcode: `lharx'
-  {standard input}:10694: Error: unrecognized opcode: `lbarx'
-
-Rework to add assembler directives [1] around the instruction.  The
-problem with this might be that we can trick a power6 into
-single-stepping through an stbcx. for instance, and it will execute that
-in kernel mode.
-
-[1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
-
-Fixes: 350779a29f11 ("powerpc: Handle most loads and stores in instruction emulation code")
-Cc: stable@vger.kernel.org # v4.14+
-Co-developed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220224162215.3406642-3-anders.roxell@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: TCS Robot <tcs_robot@tencent.com>
+Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
+Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/lib/sstep.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/jfs/inode.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/powerpc/lib/sstep.c
-+++ b/arch/powerpc/lib/sstep.c
-@@ -910,7 +910,10 @@ NOKPROBE_SYMBOL(emulate_dcbz);
+diff --git a/fs/jfs/inode.c b/fs/jfs/inode.c
+index 87b41edc800d..68779cc3609a 100644
+--- a/fs/jfs/inode.c
++++ b/fs/jfs/inode.c
+@@ -156,12 +156,13 @@ void jfs_evict_inode(struct inode *inode)
+ 		dquot_initialize(inode);
  
- #define __put_user_asmx(x, addr, err, op, cr)		\
- 	__asm__ __volatile__(				\
-+		".machine push\n"			\
-+		".machine power8\n"			\
- 		"1:	" op " %2,0,%3\n"		\
-+		".machine pop\n"			\
- 		"	mfcr	%1\n"			\
- 		"2:\n"					\
- 		".section .fixup,\"ax\"\n"		\
-@@ -923,7 +926,10 @@ NOKPROBE_SYMBOL(emulate_dcbz);
+ 		if (JFS_IP(inode)->fileset == FILESYSTEM_I) {
++			struct inode *ipimap = JFS_SBI(inode->i_sb)->ipimap;
+ 			truncate_inode_pages_final(&inode->i_data);
  
- #define __get_user_asmx(x, addr, err, op)		\
- 	__asm__ __volatile__(				\
-+		".machine push\n"			\
-+		".machine power8\n"			\
- 		"1:	"op" %1,0,%2\n"			\
-+		".machine pop\n"			\
- 		"2:\n"					\
- 		".section .fixup,\"ax\"\n"		\
- 		"3:	li	%0,%3\n"		\
+ 			if (test_cflag(COMMIT_Freewmap, inode))
+ 				jfs_free_zero_link(inode);
+ 
+-			if (JFS_SBI(inode->i_sb)->ipimap)
++			if (ipimap && JFS_IP(ipimap)->i_imap)
+ 				diFree(inode);
+ 
+ 			/*
+-- 
+2.35.1
+
 
 
