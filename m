@@ -2,153 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2AC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 02:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6D06C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 02:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239525AbiDNCkX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 22:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57690 "EHLO
+        id S239587AbiDNCk1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 22:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiDNCkS (ORCPT
+        with ESMTP id S229671AbiDNCkX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 22:40:18 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45D022B0F;
-        Wed, 13 Apr 2022 19:37:54 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Kf3Rf2hPLzCqwc;
-        Thu, 14 Apr 2022 10:33:34 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 14 Apr
- 2022 10:37:52 +0800
-From:   Ye Bin <yebin10@huawei.com>
-To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
-        <linux-ext4@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
-        <lczerner@redhat.com>, Ye Bin <yebin10@huawei.com>
-Subject: [PATCH -next] ext4: fix use-after-free in ext4_rename_dir_prepare
-Date:   Thu, 14 Apr 2022 10:52:23 +0800
-Message-ID: <20220414025223.4113128-1-yebin10@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 13 Apr 2022 22:40:23 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB15E237C0
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 19:37:58 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id bh17so7450437ejb.8
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 19:37:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uc7ry7HIsnf2r8nUN2XsM9Cr609Rg9Ev/nf0gRDdVjA=;
+        b=J0EA2TPN5DF45RPQJxsxLx9xc2kpvx4GDfs7GmNxtpSy3srw/qZOuOOnaLJe6pfBYu
+         nJ/8EahmmrlsMrZxJ/kmV6hFdQWckTo0h2YFcNcLs91EfnKG7MFj7PRJwvOvDAC+Qvt5
+         jdt70t/HBqRAc94klhFS82Q1W/wvvCUC9JARqYX130KlM26o7BehHtm056rttE2ManH2
+         2qs+554u0U5lgCRra3W/8vKH7jA61mqurSeavoBH4IQE3BSH2mBVDdWKGKH0Ex4wXrr+
+         IddfVTGZEU/Ef78FbKae3ynglEcgS+Q13QmkIoi0KIZKOiyE9B/6zeEiBRbZO5PsCWMz
+         vQxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uc7ry7HIsnf2r8nUN2XsM9Cr609Rg9Ev/nf0gRDdVjA=;
+        b=lDXnL0AfibbtYVWoGXWAu+EraKKl1DpovOhIYhWljyXeoZwTjTZxButPTQu2sawShu
+         EarlrjmtryT7xw3wBXJzyEC1u78+AGcTJtJGr9Vt9qmi1jmnBCQP8Ft4TVAQAK2iVK81
+         z5XBWpPzWIvj9lMBzZgqemf9PWZ3kMscTsjKJHVQoUgxecFGXL7jLSD9JvndVkhlYXkj
+         VbkmLabMQVMiEyoG+e4opXp3QbD3LvvWPnVDJpnCcU29/xnlGZOMAlSOYk84yjREsC1b
+         q0OwCWa5FRN3qkG5sR7KH3WbZpj/RTS3G/XtDK6oyNjkXXHZi7XsnOpbZiqq9nWSAL56
+         n6tg==
+X-Gm-Message-State: AOAM531Xc+psWOcGWM2UeTYG+I5m/47MqYpfkvNZZ3/BN5d1RCYc1gns
+        CQyiszxi1slwNyorbrzOJyFyzA==
+X-Google-Smtp-Source: ABdhPJykhBqOYl/1R7/tZiqUw1EGHPtXtHH5Em+FxWU65fkV7sCECnF78Jm7X+6uOY/+qCV0ESpJ6w==
+X-Received: by 2002:a17:906:7314:b0:6df:839f:af7 with SMTP id di20-20020a170906731400b006df839f0af7mr497470ejc.65.1649903877223;
+        Wed, 13 Apr 2022 19:37:57 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([104.245.96.34])
+        by smtp.gmail.com with ESMTPSA id lg4-20020a170906f88400b006e869103240sm193616ejb.131.2022.04.13.19.37.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 19:37:56 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 10:37:51 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     German Gomez <german.gomez@arm.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] perf arm-spe: Test memory samples
+Message-ID: <20220414023751.GA539224@leoy-ThinkPad-X240s>
+References: <20220413010221.81332-1-leo.yan@linaro.org>
+ <21978774-356b-bc08-ba68-80d877e2b6b4@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <21978774-356b-bc08-ba68-80d877e2b6b4@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We got issue as follows:
-EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
-ext4_get_first_dir_block: bh->b_data=0xffff88810bee6000 len=34478
-ext4_get_first_dir_block: *parent_de=0xffff88810beee6ae bh->b_data=0xffff88810bee6000
-ext4_rename_dir_prepare: [1] parent_de=0xffff88810beee6ae
-==================================================================
-BUG: KASAN: use-after-free in ext4_rename_dir_prepare+0x152/0x220
-Read of size 4 at addr ffff88810beee6ae by task rep/1895
+On Wed, Apr 13, 2022 at 06:17:18PM +0100, German Gomez wrote:
+> 
+> On 13/04/2022 02:02, Leo Yan wrote:
+> > Add a new test to verify the Arm SPE synthesized memory samples with
+> > 'perf mem report' command.
+> >
+> > Signed-off-by: Leo Yan <leo.yan@linaro.org>
+> 
+> Reviewed-by: German Gomez <german.gomez@arm.com>
 
-CPU: 13 PID: 1895 Comm: rep Not tainted 5.10.0+ #241
-Call Trace:
- dump_stack+0xbe/0xf9
- print_address_description.constprop.0+0x1e/0x220
- kasan_report.cold+0x37/0x7f
- ext4_rename_dir_prepare+0x152/0x220
- ext4_rename+0xf44/0x1ad0
- ext4_rename2+0x11c/0x170
- vfs_rename+0xa84/0x1440
- do_renameat2+0x683/0x8f0
- __x64_sys_renameat+0x53/0x60
- do_syscall_64+0x33/0x40
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x7f45a6fc41c9
-RSP: 002b:00007ffc5a470218 EFLAGS: 00000246 ORIG_RAX: 0000000000000108
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f45a6fc41c9
-RDX: 0000000000000005 RSI: 0000000020000180 RDI: 0000000000000005
-RBP: 00007ffc5a470240 R08: 00007ffc5a470160 R09: 0000000020000080
-R10: 00000000200001c0 R11: 0000000000000246 R12: 0000000000400bb0
-R13: 00007ffc5a470320 R14: 0000000000000000 R15: 0000000000000000
+Thanks for reviewing.
 
-The buggy address belongs to the page:
-page:00000000440015ce refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x10beee
-flags: 0x200000000000000()
-raw: 0200000000000000 ffffea00043ff4c8 ffffea0004325608 0000000000000000
-raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
+> Thanks for the patch.
+> 
+> There are some tests for perf_event_attr fields. We added one for SPE
+> recently [1], but it's not checking the sample_type attribute yet.
+> 
+> We could update it from our side and send another patch, to test the
+> DATA_SRC bit is not missing.
 
-Memory state around the buggy address:
- ffff88810beee580: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff88810beee600: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
->ffff88810beee680: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                                  ^
- ffff88810beee700: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff88810beee780: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
-Disabling lock debugging due to kernel taint
-ext4_rename_dir_prepare: [2] parent_de->inode=3537895424
-ext4_rename_dir_prepare: [3] dir=0xffff888124170140
-ext4_rename_dir_prepare: [4] ino=2
-ext4_rename_dir_prepare: ent->dir->i_ino=2 parent=-757071872
+Agreed, it's better to update the patch for checking DATA_SRC bit and
+resend it.  Thanks!
 
-Reason is first directory entry which 'rec_len' is 34478, then will get illegal
-parent entry. Now, we do not check directory entry after read directory block
-in 'ext4_get_first_dir_block'.
-To solve this issue, check directory entry in 'ext4_get_first_dir_block'.
+Leo
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
----
- fs/ext4/namei.c | 28 +++++++++++++++++++++++++---
- 1 file changed, 25 insertions(+), 3 deletions(-)
-
-diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
-index e37da8d5cd0c..2f78544b1d47 100644
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -3455,6 +3455,9 @@ static struct buffer_head *ext4_get_first_dir_block(handle_t *handle,
- 	struct buffer_head *bh;
- 
- 	if (!ext4_has_inline_data(inode)) {
-+		struct ext4_dir_entry_2 *de;
-+		unsigned int offset;
-+
- 		/* The first directory block must not be a hole, so
- 		 * treat it as DIRENT_HTREE
- 		 */
-@@ -3463,9 +3466,28 @@ static struct buffer_head *ext4_get_first_dir_block(handle_t *handle,
- 			*retval = PTR_ERR(bh);
- 			return NULL;
- 		}
--		*parent_de = ext4_next_entry(
--					(struct ext4_dir_entry_2 *)bh->b_data,
--					inode->i_sb->s_blocksize);
-+
-+		de = (struct ext4_dir_entry_2 *) bh->b_data;
-+		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
-+					 bh->b_size, 0) ||
-+		    le32_to_cpu(de->inode) != inode->i_ino ||
-+		    strcmp(".", de->name)) {
-+			ext4_warning_inode(inode, "directory missing '.'");
-+			brelse(bh);
-+			return NULL;
-+		}
-+		offset = ext4_rec_len_from_disk(de->rec_len,
-+						inode->i_sb->s_blocksize);
-+		de = ext4_next_entry(de, inode->i_sb->s_blocksize);
-+		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
-+					 bh->b_size, offset) ||
-+		    le32_to_cpu(de->inode) == 0 || strcmp("..", de->name)) {
-+			ext4_warning_inode(inode, "directory missing '..'");
-+			brelse(bh);
-+			return NULL;
-+		}
-+		*parent_de = de;
-+
- 		return bh;
- 	}
- 
--- 
-2.31.1
-
+> [1] https://lore.kernel.org/all/20220126160710.32983-1-german.gomez@arm.com/
