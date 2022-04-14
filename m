@@ -2,91 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE80C4707A
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF9AC41535
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344262AbiDNNk3 (ORCPT
+        id S1343667AbiDNNjO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48682 "EHLO
+        Thu, 14 Apr 2022 09:39:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245045AbiDNN21 (ORCPT
+        with ESMTP id S244810AbiDNN2I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6FE099ECC;
-        Thu, 14 Apr 2022 06:21:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Apr 2022 09:28:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDD1598F6D
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:20:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649942456;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=80hZSj7GYq252KXZcJptxGG0C+doNDnXvxWCT6FefmU=;
+        b=YvVD+hfrIInImavCScf/CVYE8UU3QCWWblOlPK9+a5Mimw+QbsoXjqh8TUO8cHgdsClMPk
+        xUrrkaYcCAraFnqVO9wpDimiohcm3LUqMkcSlbYhDV9hyw6qUZl9ybg8ybT3UHRZFSssYv
+        y8dODm4pJjCcpZIKbXXD9/S3zDwQiP4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-449-N0SpzraFPMe8jJHL1xLUZw-1; Thu, 14 Apr 2022 09:20:53 -0400
+X-MC-Unique: N0SpzraFPMe8jJHL1xLUZw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41A0FB82989;
-        Thu, 14 Apr 2022 13:21:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8668BC385A1;
-        Thu, 14 Apr 2022 13:21:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942490;
-        bh=0cwtickP+NgWw+WWecWdYHUHie0YObIM9I8XHcGackM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q6E3huqoPXHzeA6xEO1H4pWDEWGDg2h37gxMMAlGJSveWAcNUw/wHvzuD7vkaOCa4
-         TKRzJ9nY4Yt2eJq6kgXXMvNUHLJLuPkisPYYvgOmkG9c1wpd1LGhyE2MvCR03Lo6q1
-         Jad78UxpVBHT+QAp0fvpQOHygYWLJwisWLD5h6Q8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 114/338] mmc: davinci_mmc: Handle error for clk_enable
-Date:   Thu, 14 Apr 2022 15:10:17 +0200
-Message-Id: <20220414110842.152990433@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-References: <20220414110838.883074566@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3648C87AA08;
+        Thu, 14 Apr 2022 13:20:43 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.195.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8CA26814B;
+        Thu, 14 Apr 2022 13:20:41 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 13/34] KVM: nSVM: Keep track of Hyper-V hv_vm_id/hv_vp_id
+Date:   Thu, 14 Apr 2022 15:19:52 +0200
+Message-Id: <20220414132013.1588929-14-vkuznets@redhat.com>
+In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
+References: <20220414132013.1588929-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Similar to nSVM, KVM needs to know L2's VM_ID/VP_ID and Partition
+assist page address to handle L2 TLB flush requests.
 
-[ Upstream commit 09e7af76db02c74f2a339b3cb2d95460fa2ddbe4 ]
-
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
-
-Fixes: bbce5802afc5 ("davinci: mmc: updates to suspend/resume implementation")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220308071415.1093393-1-jiasheng@iscas.ac.cn
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- drivers/mmc/host/davinci_mmc.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/x86/kvm/svm/hyperv.h | 16 ++++++++++++++++
+ arch/x86/kvm/svm/nested.c |  2 ++
+ 2 files changed, 18 insertions(+)
 
-diff --git a/drivers/mmc/host/davinci_mmc.c b/drivers/mmc/host/davinci_mmc.c
-index e6f14257a7d0..70d04962f53a 100644
---- a/drivers/mmc/host/davinci_mmc.c
-+++ b/drivers/mmc/host/davinci_mmc.c
-@@ -1389,8 +1389,12 @@ static int davinci_mmcsd_suspend(struct device *dev)
- static int davinci_mmcsd_resume(struct device *dev)
- {
- 	struct mmc_davinci_host *host = dev_get_drvdata(dev);
-+	int ret;
+diff --git a/arch/x86/kvm/svm/hyperv.h b/arch/x86/kvm/svm/hyperv.h
+index 7d6d97968fb9..8cf702fed7e5 100644
+--- a/arch/x86/kvm/svm/hyperv.h
++++ b/arch/x86/kvm/svm/hyperv.h
+@@ -9,6 +9,7 @@
+ #include <asm/mshyperv.h>
+ 
+ #include "../hyperv.h"
++#include "svm.h"
+ 
+ /*
+  * Hyper-V uses the software reserved 32 bytes in VMCB
+@@ -32,4 +33,19 @@ struct hv_enlightenments {
+  */
+ #define VMCB_HV_NESTED_ENLIGHTENMENTS VMCB_SW
+ 
++static inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)
++{
++	struct vcpu_svm *svm = to_svm(vcpu);
++	struct hv_enlightenments *hve =
++		(struct hv_enlightenments *)svm->nested.ctl.reserved_sw;
++	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
 +
-+	ret = clk_enable(host->clk);
-+	if (ret)
-+		return ret;
++	if (!hv_vcpu)
++		return;
++
++	hv_vcpu->nested.pa_page_gpa = hve->partition_assist_page;
++	hv_vcpu->nested.vm_id = hve->hv_vm_id;
++	hv_vcpu->nested.vp_id = hve->hv_vp_id;
++}
++
+ #endif /* __ARCH_X86_KVM_SVM_HYPERV_H__ */
+diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+index bed5e1692cef..2d1a76343404 100644
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -826,6 +826,8 @@ int nested_svm_vmrun(struct kvm_vcpu *vcpu)
  
--	clk_enable(host->clk);
- 	mmc_davinci_reset_ctrl(host, 0);
+ 	svm->nested.nested_run_pending = 1;
  
- 	return 0;
++	nested_svm_hv_update_vm_vp_ids(vcpu);
++
+ 	if (enter_svm_guest_mode(vcpu, vmcb12_gpa, vmcb12, true))
+ 		goto out_exit_err;
+ 
 -- 
-2.34.1
-
-
+2.35.1
 
