@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2C89C38162
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC04DC38A06
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351978AbiDNOyn (ORCPT
+        id S1345752AbiDNO4e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:54:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43524 "EHLO
+        Thu, 14 Apr 2022 10:56:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345426AbiDNNuN (ORCPT
+        with ESMTP id S1345484AbiDNNxS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:50:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 988B2A6E09;
-        Thu, 14 Apr 2022 06:44:08 -0700 (PDT)
+        Thu, 14 Apr 2022 09:53:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D922D69722;
+        Thu, 14 Apr 2022 06:44:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B0ACB82987;
-        Thu, 14 Apr 2022 13:44:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A71E9C385A5;
-        Thu, 14 Apr 2022 13:44:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7658861D29;
+        Thu, 14 Apr 2022 13:44:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C5E7C385A5;
+        Thu, 14 Apr 2022 13:44:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943846;
-        bh=ANab7f4cOqKNj2sib7uC1f78bOzxhVfXID49rCCK1Iw=;
+        s=korg; t=1649943886;
+        bh=w4WKydU6Nn9pxhdgp5zxAadvtDA/K6whSBp79ozYitg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r4ICkYYLejtfmTF8a4YFdO0mKLli0MkoCFqYpyVl8DLZNg/lhAQvyXgzxR1VLbCIN
-         DmOJr+NXnxf6TWr7SWO9IuLYAHXFmN9+BoCuHTZF/0+9d/eAJbcDRqgo6fK9iNqPEY
-         ckNamT+lYJtC+mVjgIGO5XTEBlKNW7bl/a0vtYG4=
+        b=W2wqr9Ff0JrDTd5fWmmctYpw5Ubqvctgwqj/3OkaeAlBaWzhKFVcTFYqypLLU24Ht
+         EkQ3RhFCY8NIH6+b1a87dsiFs9HTtChEwNQ6wSIhGpSpwvh2Ed5GYDfhOZKtPsbEDf
+         tHCQV7DXVIKC21/ZWhnNQ8ncgY7iazwe6v6Nh8wI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 265/475] xen: fix is_xen_pmu()
-Date:   Thu, 14 Apr 2022 15:10:50 +0200
-Message-Id: <20220414110902.524262472@linuxfoundation.org>
+        stable@vger.kernel.org, Joe Carnuccio <joe.carnuccio@cavium.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.4 318/475] scsi: qla2xxx: Add devids and conditionals for 28xx
+Date:   Thu, 14 Apr 2022 15:11:43 +0200
+Message-Id: <20220414110903.988026866@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,124 +50,177 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Joe Carnuccio <joe.carnuccio@cavium.com>
 
-[ Upstream commit de2ae403b4c0e79a3410e63bc448542fbb9f9bfc ]
+commit 0d6a536cb1fcabb6c3e9c94871c8d0b29bb5813b upstream.
 
-is_xen_pmu() is taking the cpu number as parameter, but it is not using
-it. Instead it just tests whether the Xen PMU initialization on the
-current cpu did succeed. As this test is done by checking a percpu
-pointer, preemption needs to be disabled in order to avoid switching
-the cpu while doing the test. While resuming from suspend() this seems
-not to be the case:
+This is an update to the original 28xx adapter enablement. Add a bunch of
+conditionals that are applicable for 28xx.
 
-[   88.082751] ACPI: PM: Low-level resume complete
-[   88.087933] ACPI: EC: EC started
-[   88.091464] ACPI: PM: Restoring platform NVS memory
-[   88.097166] xen_acpi_processor: Uploading Xen processor PM info
-[   88.103850] Enabling non-boot CPUs ...
-[   88.108128] installing Xen timer for CPU 1
-[   88.112763] BUG: using smp_processor_id() in preemptible [00000000] code: systemd-sleep/7138
-[   88.122256] caller is is_xen_pmu+0x12/0x30
-[   88.126937] CPU: 0 PID: 7138 Comm: systemd-sleep Tainted: G        W         5.16.13-2.fc32.qubes.x86_64 #1
-[   88.137939] Hardware name: Star Labs StarBook/StarBook, BIOS 7.97 03/21/2022
-[   88.145930] Call Trace:
-[   88.148757]  <TASK>
-[   88.151193]  dump_stack_lvl+0x48/0x5e
-[   88.155381]  check_preemption_disabled+0xde/0xe0
-[   88.160641]  is_xen_pmu+0x12/0x30
-[   88.164441]  xen_smp_intr_init_pv+0x75/0x100
-
-Fix that by replacing is_xen_pmu() by a simple boolean variable which
-reflects the Xen PMU initialization state on cpu 0.
-
-Modify xen_pmu_init() to return early in case it is being called for a
-cpu other than cpu 0 and the boolean variable not being set.
-
-Fixes: bf6dfb154d93 ("xen/PMU: PMU emulation code")
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Link: https://lore.kernel.org/r/20220325142002.31789-1-jgross@suse.com
-Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220110050218.3958-16-njavali@marvell.com
+Fixes: ecc89f25e225 ("scsi: qla2xxx: Add Device ID for ISP28XX")
+Cc: stable@vger.kernel.org
+Signed-off-by: Joe Carnuccio <joe.carnuccio@cavium.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/xen/pmu.c    | 10 ++++------
- arch/x86/xen/pmu.h    |  3 ++-
- arch/x86/xen/smp_pv.c |  2 +-
- 3 files changed, 7 insertions(+), 8 deletions(-)
+ drivers/scsi/qla2xxx/qla_attr.c   |    7 ++-----
+ drivers/scsi/qla2xxx/qla_init.c   |    8 +++-----
+ drivers/scsi/qla2xxx/qla_mbx.c    |   14 +++++++++++---
+ drivers/scsi/qla2xxx/qla_os.c     |    3 +--
+ drivers/scsi/qla2xxx/qla_sup.c    |    4 ++--
+ drivers/scsi/qla2xxx/qla_target.c |    3 +--
+ 6 files changed, 20 insertions(+), 19 deletions(-)
 
-diff --git a/arch/x86/xen/pmu.c b/arch/x86/xen/pmu.c
-index e13b0b49fcdf..d7249f4c90f1 100644
---- a/arch/x86/xen/pmu.c
-+++ b/arch/x86/xen/pmu.c
-@@ -512,10 +512,7 @@ irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id)
- 	return ret;
+--- a/drivers/scsi/qla2xxx/qla_attr.c
++++ b/drivers/scsi/qla2xxx/qla_attr.c
+@@ -527,7 +527,7 @@ qla2x00_sysfs_read_vpd(struct file *filp
+ 	if (!capable(CAP_SYS_ADMIN))
+ 		return -EINVAL;
+ 
+-	if (IS_NOCACHE_VPD_TYPE(ha))
++	if (!IS_NOCACHE_VPD_TYPE(ha))
+ 		goto skip;
+ 
+ 	faddr = ha->flt_region_vpd << 2;
+@@ -710,7 +710,7 @@ qla2x00_sysfs_write_reset(struct file *f
+ 		ql_log(ql_log_info, vha, 0x706f,
+ 		    "Issuing MPI reset.\n");
+ 
+-		if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
++		if (IS_QLA83XX(ha)) {
+ 			uint32_t idc_control;
+ 
+ 			qla83xx_idc_lock(vha, 0);
+@@ -1020,9 +1020,6 @@ qla2x00_free_sysfs_attr(scsi_qla_host_t
+ 			continue;
+ 		if (iter->type == 3 && !(IS_CNA_CAPABLE(ha)))
+ 			continue;
+-		if (iter->type == 0x27 &&
+-		    (!IS_QLA27XX(ha) || !IS_QLA28XX(ha)))
+-			continue;
+ 
+ 		sysfs_remove_bin_file(&host->shost_gendev.kobj,
+ 		    iter->attr);
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -3241,7 +3241,7 @@ qla2x00_alloc_fw_dump(scsi_qla_host_t *v
+ 		mem_size = (ha->fw_memory_size - 0x11000 + 1) *
+ 		    sizeof(uint16_t);
+ 	} else if (IS_FWI2_CAPABLE(ha)) {
+-		if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
++		if (IS_QLA83XX(ha))
+ 			fixed_size = offsetof(struct qla83xx_fw_dump, ext_mem);
+ 		else if (IS_QLA81XX(ha))
+ 			fixed_size = offsetof(struct qla81xx_fw_dump, ext_mem);
+@@ -3253,8 +3253,7 @@ qla2x00_alloc_fw_dump(scsi_qla_host_t *v
+ 		mem_size = (ha->fw_memory_size - 0x100000 + 1) *
+ 		    sizeof(uint32_t);
+ 		if (ha->mqenable) {
+-			if (!IS_QLA83XX(ha) && !IS_QLA27XX(ha) &&
+-			    !IS_QLA28XX(ha))
++			if (!IS_QLA83XX(ha))
+ 				mq_size = sizeof(struct qla2xxx_mq_chain);
+ 			/*
+ 			 * Allocate maximum buffer size for all queues - Q0.
+@@ -3751,8 +3750,7 @@ enable_82xx_npiv:
+ 			    ha->fw_major_version, ha->fw_minor_version,
+ 			    ha->fw_subminor_version);
+ 
+-			if (IS_QLA83XX(ha) || IS_QLA27XX(ha) ||
+-			    IS_QLA28XX(ha)) {
++			if (IS_QLA83XX(ha)) {
+ 				ha->flags.fac_supported = 0;
+ 				rval = QLA_SUCCESS;
+ 			}
+--- a/drivers/scsi/qla2xxx/qla_mbx.c
++++ b/drivers/scsi/qla2xxx/qla_mbx.c
+@@ -10,6 +10,12 @@
+ #include <linux/delay.h>
+ #include <linux/gfp.h>
+ 
++#ifdef CONFIG_PPC
++#define IS_PPCARCH      true
++#else
++#define IS_PPCARCH      false
++#endif
++
+ static struct mb_cmd_name {
+ 	uint16_t cmd;
+ 	const char *str;
+@@ -731,6 +737,9 @@ qla2x00_execute_fw(scsi_qla_host_t *vha,
+ 				vha->min_supported_speed =
+ 				    nv->min_supported_speed;
+ 			}
++
++			if (IS_PPCARCH)
++				mcp->mb[11] |= BIT_4;
+ 		}
+ 
+ 		if (ha->flags.exlogins_enabled)
+@@ -2897,8 +2906,7 @@ qla2x00_get_resource_cnts(scsi_qla_host_
+ 		ha->orig_fw_iocb_count = mcp->mb[10];
+ 		if (ha->flags.npiv_supported)
+ 			ha->max_npiv_vports = mcp->mb[11];
+-		if (IS_QLA81XX(ha) || IS_QLA83XX(ha) || IS_QLA27XX(ha) ||
+-		    IS_QLA28XX(ha))
++		if (IS_QLA81XX(ha) || IS_QLA83XX(ha))
+ 			ha->fw_max_fcf_count = mcp->mb[12];
+ 	}
+ 
+@@ -5391,7 +5399,7 @@ qla2x00_get_data_rate(scsi_qla_host_t *v
+ 	mcp->out_mb = MBX_1|MBX_0;
+ 	mcp->in_mb = MBX_2|MBX_1|MBX_0;
+ 	if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha))
+-		mcp->in_mb |= MBX_3;
++		mcp->in_mb |= MBX_4|MBX_3;
+ 	mcp->tov = MBX_TOV_SECONDS;
+ 	mcp->flags = 0;
+ 	rval = qla2x00_mailbox_command(vha, mcp);
+--- a/drivers/scsi/qla2xxx/qla_os.c
++++ b/drivers/scsi/qla2xxx/qla_os.c
+@@ -3627,8 +3627,7 @@ qla2x00_unmap_iobases(struct qla_hw_data
+ 		if (ha->mqiobase)
+ 			iounmap(ha->mqiobase);
+ 
+-		if ((IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) &&
+-		    ha->msixbase)
++		if (ha->msixbase)
+ 			iounmap(ha->msixbase);
+ 	}
  }
- 
--bool is_xen_pmu(int cpu)
--{
--	return (get_xenpmu_data() != NULL);
--}
-+bool is_xen_pmu;
- 
- void xen_pmu_init(int cpu)
- {
-@@ -526,7 +523,7 @@ void xen_pmu_init(int cpu)
- 
- 	BUILD_BUG_ON(sizeof(struct xen_pmu_data) > PAGE_SIZE);
- 
--	if (xen_hvm_domain())
-+	if (xen_hvm_domain() || (cpu != 0 && !is_xen_pmu))
+--- a/drivers/scsi/qla2xxx/qla_sup.c
++++ b/drivers/scsi/qla2xxx/qla_sup.c
+@@ -843,7 +843,7 @@ qla2xxx_get_flt_info(scsi_qla_host_t *vh
+ 				ha->flt_region_nvram = start;
+ 			break;
+ 		case FLT_REG_IMG_PRI_27XX:
+-			if (IS_QLA27XX(ha) && !IS_QLA28XX(ha))
++			if (IS_QLA27XX(ha) || IS_QLA28XX(ha))
+ 				ha->flt_region_img_status_pri = start;
+ 			break;
+ 		case FLT_REG_IMG_SEC_27XX:
+@@ -1355,7 +1355,7 @@ next:
+ 		    flash_data_addr(ha, faddr), cpu_to_le32(*dwptr));
+ 		if (ret) {
+ 			ql_dbg(ql_dbg_user, vha, 0x7006,
+-			    "Failed slopw write %x (%x)\n", faddr, *dwptr);
++			    "Failed slow write %x (%x)\n", faddr, *dwptr);
+ 			break;
+ 		}
+ 	}
+--- a/drivers/scsi/qla2xxx/qla_target.c
++++ b/drivers/scsi/qla2xxx/qla_target.c
+@@ -7084,8 +7084,7 @@ qlt_probe_one_stage1(struct scsi_qla_hos
+ 	if (!QLA_TGT_MODE_ENABLED())
  		return;
  
- 	xenpmu_data = (struct xen_pmu_data *)get_zeroed_page(GFP_KERNEL);
-@@ -547,7 +544,8 @@ void xen_pmu_init(int cpu)
- 	per_cpu(xenpmu_shared, cpu).xenpmu_data = xenpmu_data;
- 	per_cpu(xenpmu_shared, cpu).flags = 0;
- 
--	if (cpu == 0) {
-+	if (!is_xen_pmu) {
-+		is_xen_pmu = true;
- 		perf_register_guest_info_callbacks(&xen_guest_cbs);
- 		xen_pmu_arch_init();
- 	}
-diff --git a/arch/x86/xen/pmu.h b/arch/x86/xen/pmu.h
-index 0e83a160589b..65c58894fc79 100644
---- a/arch/x86/xen/pmu.h
-+++ b/arch/x86/xen/pmu.h
-@@ -4,6 +4,8 @@
- 
- #include <xen/interface/xenpmu.h>
- 
-+extern bool is_xen_pmu;
-+
- irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id);
- #ifdef CONFIG_XEN_HAVE_VPMU
- void xen_pmu_init(int cpu);
-@@ -12,7 +14,6 @@ void xen_pmu_finish(int cpu);
- static inline void xen_pmu_init(int cpu) {}
- static inline void xen_pmu_finish(int cpu) {}
- #endif
--bool is_xen_pmu(int cpu);
- bool pmu_msr_read(unsigned int msr, uint64_t *val, int *err);
- bool pmu_msr_write(unsigned int msr, uint32_t low, uint32_t high, int *err);
- int pmu_apic_update(uint32_t reg);
-diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
-index 0cebe5db691d..64e6ec2c32a7 100644
---- a/arch/x86/xen/smp_pv.c
-+++ b/arch/x86/xen/smp_pv.c
-@@ -129,7 +129,7 @@ int xen_smp_intr_init_pv(unsigned int cpu)
- 	per_cpu(xen_irq_work, cpu).irq = rc;
- 	per_cpu(xen_irq_work, cpu).name = callfunc_name;
- 
--	if (is_xen_pmu(cpu)) {
-+	if (is_xen_pmu) {
- 		pmu_name = kasprintf(GFP_KERNEL, "pmu%d", cpu);
- 		rc = bind_virq_to_irqhandler(VIRQ_XENPMU, cpu,
- 					     xen_pmu_irq_handler,
--- 
-2.34.1
-
+-	if  ((ql2xenablemsix == 0) || IS_QLA83XX(ha) || IS_QLA27XX(ha) ||
+-	    IS_QLA28XX(ha)) {
++	if  (ha->mqenable || IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
+ 		ISP_ATIO_Q_IN(base_vha) = &ha->mqiobase->isp25mq.atio_q_in;
+ 		ISP_ATIO_Q_OUT(base_vha) = &ha->mqiobase->isp25mq.atio_q_out;
+ 	} else {
 
 
