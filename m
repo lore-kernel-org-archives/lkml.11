@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4D7C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AADFC433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239529AbiDNOht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:37:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34966 "EHLO
+        id S1343996AbiDNOhf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:37:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245051AbiDNNiJ (ORCPT
+        with ESMTP id S245116AbiDNNiM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E66699ED9;
-        Thu, 14 Apr 2022 06:31:34 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84C89AE7C;
+        Thu, 14 Apr 2022 06:31:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D918C61BB3;
-        Thu, 14 Apr 2022 13:31:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6DE3C385AB;
-        Thu, 14 Apr 2022 13:31:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50AA16190F;
+        Thu, 14 Apr 2022 13:31:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BA97C385A5;
+        Thu, 14 Apr 2022 13:31:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943093;
-        bh=2mXHrAj04KtaHylAldGkgnozw1wbrx2qEfheCDOgjVw=;
+        s=korg; t=1649943098;
+        bh=PRvNGRbCxJO3uZqkoyIaJS5EUibIifK85wWIQr+TfZQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f5PsMA4DV+2KmpF0BOu+Dc2LIkmqCJNnQmodMH8IPwTANOh4AO00aVhtVzx+jE2DC
-         V0WlY/BSGvrfyE7Q68A60zHxIXC/0vWFJWrT6vRrD+2grb33QzucWBJTLAKRV3LQbL
-         N4sksy5E0R9J/8TQUa+0r7HIDKdj9n0+eY5/N71Q=
+        b=el7Yn3v+vcxQkpNvIZ2mUQ7HcnxZeothEisjybmwBDy00NobXLCY4VI1i0tIPJAXX
+         KPUJ3yeOhhTQbJgbhOGp1LPZRa5WIFS1J4ye2ow5ibhnI7TGIMzuuN1M9+HOvuBlsp
+         kT4g2t+Q491HWnFZ0tt4/LcjEjyesbgc1ooOcyiA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pavel Machek <pavel@denx.de>
-Subject: [PATCH 5.4 005/475] netdevice: add the case if dev is NULL
-Date:   Thu, 14 Apr 2022 15:06:30 +0200
-Message-Id: <20220414110855.302424208@linuxfoundation.org>
+        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: [PATCH 5.4 033/475] Documentation: update stable tree link
+Date:   Thu, 14 Apr 2022 15:06:58 +0200
+Message-Id: <20220414110856.082905736@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,42 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yajun Deng <yajun.deng@linux.dev>
+From: Bagas Sanjaya <bagasdotme@gmail.com>
 
-commit b37a466837393af72fe8bcb8f1436410f3f173f3 upstream.
+commit 555d44932c67e617d89bc13c81c7efac5b51fcfa upstream.
 
-Add the case if dev is NULL in dev_{put, hold}, so the caller doesn't
-need to care whether dev is NULL or not.
+The link to stable tree is redirected to
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git. Update
+accordingly.
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Cc: Pavel Machek <pavel@denx.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Sasha Levin <sashal@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: stable@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Link: https://lore.kernel.org/r/20220314113329.485372-6-bagasdotme@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/netdevice.h |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ Documentation/process/stable-kernel-rules.rst |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3777,7 +3777,8 @@ void netdev_run_todo(void);
-  */
- static inline void dev_put(struct net_device *dev)
- {
--	this_cpu_dec(*dev->pcpu_refcnt);
-+	if (dev)
-+		this_cpu_dec(*dev->pcpu_refcnt);
- }
+--- a/Documentation/process/stable-kernel-rules.rst
++++ b/Documentation/process/stable-kernel-rules.rst
+@@ -174,7 +174,7 @@ Trees
+  - The finalized and tagged releases of all stable kernels can be found
+    in separate branches per version at:
  
- /**
-@@ -3788,7 +3789,8 @@ static inline void dev_put(struct net_de
-  */
- static inline void dev_hold(struct net_device *dev)
- {
--	this_cpu_inc(*dev->pcpu_refcnt);
-+	if (dev)
-+		this_cpu_inc(*dev->pcpu_refcnt);
- }
+-	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
++	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
  
- /* Carrier loss detection, dial on demand. The functions netif_carrier_on
+  - The release candidate of all stable kernel versions can be found at:
+ 
 
 
