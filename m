@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18EB8C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239317AbiDNPKf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:10:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
+        id S241336AbiDNPLI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:11:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346959AbiDNN6J (ORCPT
+        with ESMTP id S1346977AbiDNN6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:58:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67045B53E5;
-        Thu, 14 Apr 2022 06:48:20 -0700 (PDT)
+        Thu, 14 Apr 2022 09:58:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2066AB53FC;
+        Thu, 14 Apr 2022 06:48:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CA106190F;
-        Thu, 14 Apr 2022 13:48:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D4BDC385A5;
-        Thu, 14 Apr 2022 13:48:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD49FB828F4;
+        Thu, 14 Apr 2022 13:48:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFF17C385A1;
+        Thu, 14 Apr 2022 13:48:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944098;
-        bh=PqqEnqUPyy/6buQqeETSjo70JAdEmWL4VvboGIZBVo4=;
+        s=korg; t=1649944101;
+        bh=HTmVfr0Nd+j4vAn0uP6LhkggxBleFaQQfoRReiLyuFA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C87hURGKOMlFPGxBU4CjqN7WzYwMoL2BPfPvVIrP5pf+5v8k+jwdd5VR+DTRSYMfJ
-         ZCLU2IOFFxjDAVcQhthJf4K4Ql/8zjULYvsWiG8x4cJZZqSUX2MX9HfrVfbnsUX4lF
-         Hvb44+CD4JWK/MI6vELX0dxZkPMpFmzlfaawcAzQ=
+        b=nV19b1Rmvcgf/S2s548sP8ne1Ba1hFX722I5wRGbh8h9g4VYVBpFTeDSv4dMaqPOt
+         PySXufLfs1ClUilCaUCQDpxI2oCl8qZBYxOn295+W+zcni6YFKm/kG7fqz72TbfWUR
+         2xYRoWUDnjBPAvPWDeHKCVG2oA5w/xaihf9tGzU8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
         Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Hugh Dickins <hughd@google.com>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
         Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 353/475] mm/mmap: return 1 from stack_guard_gap __setup() handler
-Date:   Thu, 14 Apr 2022 15:12:18 +0200
-Message-Id: <20220414110904.960816805@linuxfoundation.org>
+Subject: [PATCH 5.4 354/475] mm/memcontrol: return 1 from cgroup.memory __setup() handler
+Date:   Thu, 14 Apr 2022 15:12:19 +0200
+Message-Id: <20220414110904.988533865@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -53,59 +57,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Randy Dunlap <rdunlap@infradead.org>
 
-commit e6d094936988910ce6e8197570f2753898830081 upstream.
+commit 460a79e18842caca6fa0c415de4a3ac1e671ac50 upstream.
 
 __setup() handlers should return 1 if the command line option is handled
 and 0 if not (or maybe never return 0; it just pollutes init's
-environment).  This prevents:
+environment).
 
-  Unknown kernel command line parameters \
-  "BOOT_IMAGE=/boot/bzImage-517rc5 stack_guard_gap=100", will be \
-  passed to user space.
+The only reason that this particular __setup handler does not pollute
+init's environment is that the setup string contains a '.', as in
+"cgroup.memory".  This causes init/main.c::unknown_boottoption() to
+consider it to be an "Unused module parameter" and ignore it.  (This is
+for parsing of loadable module parameters any time after kernel init.)
+Otherwise the string "cgroup.memory=whatever" would be added to init's
+environment strings.
 
-  Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     stack_guard_gap=100
-
-Return 1 to indicate that the boot option has been handled.
+Instead of relying on this '.' quirk, just return 1 to indicate that the
+boot option has been handled.
 
 Note that there is no warning message if someone enters:
-	stack_guard_gap=anything_invalid
-and 'val' and stack_guard_gap are both set to 0 due to the use of
-simple_strtoul(). This could be improved by using kstrtoxxx() and
-checking for an error.
+	cgroup.memory=anything_invalid
 
-It appears that having stack_guard_gap == 0 is valid (if unexpected) since
-using "stack_guard_gap=0" on the kernel command line does that.
-
-Link: https://lkml.kernel.org/r/20220222005817.11087-1-rdunlap@infradead.org
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: 1be7107fbe18e ("mm: larger stack guard gap, between vmas")
+Link: https://lkml.kernel.org/r/20220222005811.10672-1-rdunlap@infradead.org
+Fixes: f7e1cb6ec51b0 ("mm: memcontrol: account socket memory in unified hierarchy memory controller")
 Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Hugh Dickins <hughd@google.com>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc: Roman Gushchin <roman.gushchin@linux.dev>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mmap.c |    2 +-
+ mm/memcontrol.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -2515,7 +2515,7 @@ static int __init cmdline_parse_stack_gu
- 	if (!*endptr)
- 		stack_guard_gap = val << PAGE_SHIFT;
- 
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -6973,7 +6973,7 @@ static int __init cgroup_memory(char *s)
+ 		if (!strcmp(token, "nokmem"))
+ 			cgroup_memory_nokmem = true;
+ 	}
 -	return 0;
 +	return 1;
  }
- __setup("stack_guard_gap=", cmdline_parse_stack_guard_gap);
+ __setup("cgroup.memory=", cgroup_memory);
  
 
 
