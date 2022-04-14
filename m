@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7FB5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85B4CC433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348380AbiDNOMh (ORCPT
+        id S1348095AbiDNOMa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33068 "EHLO
+        Thu, 14 Apr 2022 10:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244683AbiDNNfN (ORCPT
+        with ESMTP id S244602AbiDNNeq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:35:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFF91939F3;
-        Thu, 14 Apr 2022 06:31:13 -0700 (PDT)
+        Thu, 14 Apr 2022 09:34:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63D893188;
+        Thu, 14 Apr 2022 06:31:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51AAAB82984;
-        Thu, 14 Apr 2022 13:31:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F161C385A1;
-        Thu, 14 Apr 2022 13:31:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C37D61C22;
+        Thu, 14 Apr 2022 13:31:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2585FC385AE;
+        Thu, 14 Apr 2022 13:31:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943071;
-        bh=fJfAxLgU5ZYT0blaKUPM/lFIty97wmdikPk91H852pY=;
+        s=korg; t=1649943065;
+        bh=Msk1/S0blG+wD3AjfUYMwn885w9Rq7l1rJUSvA8x++E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LAYj6xLd6EUHPQn6tGXdrDKVcTs3adW7WAH2dUSGZ8UyFA3O80yBUuDTr+nmqBJIe
-         /QUudDpIrSxydEIyrgd0mIAz3q7AczO62zOqvqAd7F8QqcHuq0VDa+0lbVdZKKK4s3
-         Xv6d6QD62YhsOu5LPkhA0y7/fV9vTjEoNeC3KFB8=
+        b=vcRxvxlxC+pjzj3PkVYme0nIPegn724ilHpiaBB8oggEWcG5ZF+RIAM6ebrlOidJ3
+         TSn1wcZRfxKMd384hYyBcXjVH5jueH43uNPBRU4+xdfPrtyjZGvPKmoKQNOZDoJH9C
+         zdyBspDZBYjVJNDaYgMunhY5N8/oVoayjGcBHqtg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
-        Peter Rosin <peda@axentia.se>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.4 024/475] iio: afe: rescale: use s64 for temporary scale calculations
-Date:   Thu, 14 Apr 2022 15:06:49 +0200
-Message-Id: <20220414110855.829727826@linuxfoundation.org>
+        stable@vger.kernel.org, Anssi Hannula <anssi.hannula@bitwise.fi>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.4 022/475] xhci: fix uninitialized string returned by xhci_decode_ctrl_ctx()
+Date:   Thu, 14 Apr 2022 15:06:47 +0200
+Message-Id: <20220414110855.774140169@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,50 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liam Beguin <liambeguin@gmail.com>
+From: Anssi Hannula <anssi.hannula@bitwise.fi>
 
-commit 51593106b608ae4247cc8da928813347da16d025 upstream.
+commit 05519b8589a679edb8fa781259893d20bece04ad upstream.
 
-All four scaling coefficients can take signed values.
-Make tmp a signed 64-bit integer and switch to div_s64() to preserve
-signs during 64-bit divisions.
+xhci_decode_ctrl_ctx() returns the untouched buffer as-is if both "drop"
+and "add" parameters are zero.
 
-Fixes: 8b74816b5a9a ("iio: afe: rescale: new driver")
-Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-Reviewed-by: Peter Rosin <peda@axentia.se>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220108205319.2046348-5-liambeguin@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fix the function to return an empty string in that case.
+
+It was not immediately clear from the possible call chains whether this
+issue is currently actually triggerable or not.
+
+Note that before commit 4843b4b5ec64 ("xhci: fix even more unsafe memory
+usage in xhci tracing") the result effect in the failure case was different
+as a static buffer was used here, but the code still worked incorrectly.
+
+Fixes: 90d6d5731da7 ("xhci: Add tracing for input control context")
+Cc: stable@vger.kernel.org
+Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+commit 4843b4b5ec64 ("xhci: fix even more unsafe memory usage in xhci tracing")
+Link: https://lore.kernel.org/r/20220303110903.1662404-4-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/afe/iio-rescale.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/usb/host/xhci.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/iio/afe/iio-rescale.c
-+++ b/drivers/iio/afe/iio-rescale.c
-@@ -38,7 +38,7 @@ static int rescale_read_raw(struct iio_d
- 			    int *val, int *val2, long mask)
- {
- 	struct rescale *rescale = iio_priv(indio_dev);
--	unsigned long long tmp;
-+	s64 tmp;
- 	int ret;
+--- a/drivers/usb/host/xhci.h
++++ b/drivers/usb/host/xhci.h
+@@ -2452,6 +2452,8 @@ static inline const char *xhci_decode_ct
+ 	unsigned int	bit;
+ 	int		ret = 0;
  
- 	switch (mask) {
-@@ -59,10 +59,10 @@ static int rescale_read_raw(struct iio_d
- 			*val2 = rescale->denominator;
- 			return IIO_VAL_FRACTIONAL;
- 		case IIO_VAL_FRACTIONAL_LOG2:
--			tmp = *val * 1000000000LL;
--			do_div(tmp, rescale->denominator);
-+			tmp = (s64)*val * 1000000000LL;
-+			tmp = div_s64(tmp, rescale->denominator);
- 			tmp *= rescale->numerator;
--			do_div(tmp, 1000000000LL);
-+			tmp = div_s64(tmp, 1000000000LL);
- 			*val = tmp;
- 			return ret;
- 		default:
++	str[0] = '\0';
++
+ 	if (drop) {
+ 		ret = sprintf(str, "Drop:");
+ 		for_each_set_bit(bit, &drop, 32)
 
 
