@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0FE6C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5ABAC4167D
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346141AbiDNNzw (ORCPT
+        id S1346191AbiDNN4D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49876 "EHLO
+        Thu, 14 Apr 2022 09:56:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245394AbiDNN2z (ORCPT
+        with ESMTP id S1344189AbiDNNbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:55 -0400
+        Thu, 14 Apr 2022 09:31:05 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0189BBA8;
-        Thu, 14 Apr 2022 06:22:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725BBE6;
+        Thu, 14 Apr 2022 06:28:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCA1AB82987;
-        Thu, 14 Apr 2022 13:22:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C4AC385A9;
-        Thu, 14 Apr 2022 13:22:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35608B82984;
+        Thu, 14 Apr 2022 13:28:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EB18C385A5;
+        Thu, 14 Apr 2022 13:28:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942561;
-        bh=UVIxEjLwTyhY1EWsi9ZaUq3FIYE6RvmWaAcVq6ha+Is=;
+        s=korg; t=1649942918;
+        bh=qSayJhxGXTLXW2afgOno1/qZon/DBb4zO2hFrDAy1H0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZqzsjJ3vYdOqgUV/HHuzsvDfi4QPPVMqY7r7blVEs97uiAAXH3DJ/RfmcdBYe7Mrf
-         VP91w7KJ7Sp2ws3HaeYIytJ8YwhFbPClfbQjJ5/7GBtGqPDmrM+LR5Wd3NDd4UOLpf
-         lS3KmMNby2GEkvc5BRT1GN3iTIUdSw8X/a8FUAJQ=
+        b=DmIjMzjujQ44RG5+liX2y+qFHwjvwzP8E26/oEkisg0fRKqyoGwK4vHQrIP2qmSNf
+         Z9C+t7C/pjfFWFqFky+i5x7h4T10No3cZcbRZOMmo1D2SNhKyx9EG54wlD3nhSug6e
+         SXxdbCNSFi5zN1OCEYBNgXsOkqW/uX5DzsocKTrM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Auhagen <sven.auhagen@voleatech.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 180/338] netfilter: nf_conntrack_tcp: preserve liberal flag in tcp options
-Date:   Thu, 14 Apr 2022 15:11:23 +0200
-Message-Id: <20220414110844.021152865@linuxfoundation.org>
+Subject: [PATCH 4.19 308/338] net: openvswitch: dont send internal clone attribute to the userspace.
+Date:   Thu, 14 Apr 2022 15:13:31 +0200
+Message-Id: <20220414110847.647701636@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,71 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Ilya Maximets <i.maximets@ovn.org>
 
-[ Upstream commit f2dd495a8d589371289981d5ed33e6873df94ecc ]
+[ Upstream commit 3f2a3050b4a3e7f32fc0ea3c9b0183090ae00522 ]
 
-Do not reset IP_CT_TCP_FLAG_BE_LIBERAL flag in out-of-sync scenarios
-coming before the TCP window tracking, otherwise such connections will
-fail in the window check.
+'OVS_CLONE_ATTR_EXEC' is an internal attribute that is used for
+performance optimization inside the kernel.  It's added by the kernel
+while parsing user-provided actions and should not be sent during the
+flow dump as it's not part of the uAPI.
 
-Update tcp_options() to leave this flag in place and add a new helper
-function to reset the tcp window state.
+The issue doesn't cause any significant problems to the ovs-vswitchd
+process, because reported actions are not really used in the
+application lifecycle and only supposed to be shown to a human via
+ovs-dpctl flow dump.  However, the action list is still incorrect
+and causes the following error if the user wants to look at the
+datapath flows:
 
-Based on patch from Sven Auhagen.
+  # ovs-dpctl add-dp system@ovs-system
+  # ovs-dpctl add-flow "<flow match>" "clone(ct(commit),0)"
+  # ovs-dpctl dump-flows
+  <flow match>, packets:0, bytes:0, used:never,
+    actions:clone(bad length 4, expected -1 for: action0(01 00 00 00),
+                  ct(commit),0)
 
-Fixes: c4832c7bbc3f ("netfilter: nf_ct_tcp: improve out-of-sync situation in TCP tracking")
-Tested-by: Sven Auhagen <sven.auhagen@voleatech.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+With the fix:
+
+  # ovs-dpctl dump-flows
+  <flow match>, packets:0, bytes:0, used:never,
+    actions:clone(ct(commit),0)
+
+Additionally fixed an incorrect attribute name in the comment.
+
+Fixes: b233504033db ("openvswitch: kernel datapath clone action")
+Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+Acked-by: Aaron Conole <aconole@redhat.com>
+Link: https://lore.kernel.org/r/20220404104150.2865736-1-i.maximets@ovn.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_proto_tcp.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ net/openvswitch/actions.c      | 2 +-
+ net/openvswitch/flow_netlink.c | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
-index 40f8a1252394..66cda5e2d6b9 100644
---- a/net/netfilter/nf_conntrack_proto_tcp.c
-+++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -362,8 +362,8 @@ static void tcp_options(const struct sk_buff *skb,
- 				 length, buff);
- 	BUG_ON(ptr == NULL);
+diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+index 100cc09c100d..8b75afe41284 100644
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -1098,7 +1098,7 @@ static int clone(struct datapath *dp, struct sk_buff *skb,
+ 	int rem = nla_len(attr);
+ 	bool dont_clone_flow_key;
  
--	state->td_scale =
--	state->flags = 0;
-+	state->td_scale = 0;
-+	state->flags &= IP_CT_TCP_FLAG_BE_LIBERAL;
+-	/* The first action is always 'OVS_CLONE_ATTR_ARG'. */
++	/* The first action is always 'OVS_CLONE_ATTR_EXEC'. */
+ 	clone_arg = nla_data(attr);
+ 	dont_clone_flow_key = nla_get_u32(clone_arg);
+ 	actions = nla_next(clone_arg, &rem);
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+index fb69978f50ec..4413ffdc1e03 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -3173,7 +3173,9 @@ static int clone_action_to_attr(const struct nlattr *attr,
+ 	if (!start)
+ 		return -EMSGSIZE;
  
- 	while (length > 0) {
- 		int opcode=*ptr++;
-@@ -784,6 +784,16 @@ static bool nf_conntrack_tcp_established(const struct nf_conn *ct)
- 	       test_bit(IPS_ASSURED_BIT, &ct->status);
- }
+-	err = ovs_nla_put_actions(nla_data(attr), rem, skb);
++	/* Skipping the OVS_CLONE_ATTR_EXEC that is always the first attribute. */
++	attr = nla_next(nla_data(attr), &rem);
++	err = ovs_nla_put_actions(attr, rem, skb);
  
-+static void nf_ct_tcp_state_reset(struct ip_ct_tcp_state *state)
-+{
-+	state->td_end		= 0;
-+	state->td_maxend	= 0;
-+	state->td_maxwin	= 0;
-+	state->td_maxack	= 0;
-+	state->td_scale		= 0;
-+	state->flags		&= IP_CT_TCP_FLAG_BE_LIBERAL;
-+}
-+
- /* Returns verdict for packet, or -1 for invalid. */
- static int tcp_packet(struct nf_conn *ct,
- 		      const struct sk_buff *skb,
-@@ -882,8 +892,7 @@ static int tcp_packet(struct nf_conn *ct,
- 			ct->proto.tcp.last_flags &= ~IP_CT_EXP_CHALLENGE_ACK;
- 			ct->proto.tcp.seen[ct->proto.tcp.last_dir].flags =
- 				ct->proto.tcp.last_flags;
--			memset(&ct->proto.tcp.seen[dir], 0,
--			       sizeof(struct ip_ct_tcp_state));
-+			nf_ct_tcp_state_reset(&ct->proto.tcp.seen[dir]);
- 			break;
- 		}
- 		ct->proto.tcp.last_index = index;
+ 	if (err)
+ 		nla_nest_cancel(skb, start);
 -- 
-2.34.1
+2.35.1
 
 
 
