@@ -2,146 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B90C8C3A59D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F224C3A589
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344087AbiDNNjm (ORCPT
+        id S1344001AbiDNNjd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:39:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49814 "EHLO
+        Thu, 14 Apr 2022 09:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244904AbiDNN2P (ORCPT
+        with ESMTP id S244898AbiDNN2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:28:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6BA08A7770
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:21:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649942477;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Zm7vWWpJoFp3QcOqQVtM2lUKGQCpQSZQDFy6GatKo98=;
-        b=gae7PrjA0wdZUsxQlhiVf59WD6AzXJNvdwd4bEGp5JAUgLeaHRVEOuPQ2KiEHfom1TfnAs
-        g5frFNXBIUDxx34N0uHFHf6vwYTI+ZQjAmiIeOXh1tLNWqUjJDG1ovlOpIUD/DabgLsX8P
-        U6DEOHGTV3MaMTKiVSVoXY8I8RJM8L0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-659-7za_fzKSNOqilB9AI3PYsA-1; Thu, 14 Apr 2022 09:21:13 -0400
-X-MC-Unique: 7za_fzKSNOqilB9AI3PYsA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E172091557;
+        Thu, 14 Apr 2022 06:21:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E7FF91801229;
-        Thu, 14 Apr 2022 13:21:07 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.195.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 56CB210725;
-        Thu, 14 Apr 2022 13:21:06 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 25/34] KVM: selftests: Make it possible to replace PTEs with __virt_pg_map()
-Date:   Thu, 14 Apr 2022 15:20:04 +0200
-Message-Id: <20220414132013.1588929-26-vkuznets@redhat.com>
-In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97B7DB82910;
+        Thu, 14 Apr 2022 13:21:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09458C385A5;
+        Thu, 14 Apr 2022 13:21:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942474;
+        bh=vyCVv6qJIsnjkSaHv0zFcCe681Rag8sg95z3AiB6Fuk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IUyUmTV8RyFy1D1yZ1kohxIwHlM1JHKmjcHoXjmqau3e7CAhvN9DWagdeAcAX1FVt
+         5AkwNn5l3Ldbuj98nN7NbxXnYqUrjaYBGM2KA2c1H4shJP4VO6N3U2ne1jK8RTMBl0
+         F3zMFkhz/jbH6t9/gDKqb/3TZFYPDbMLQxqjaseo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 147/338] mfd: mc13xxx: Add check for mc13xxx_irq_request
+Date:   Thu, 14 Apr 2022 15:10:50 +0200
+Message-Id: <20220414110843.088144094@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__virt_pg_map() makes an assumption that leaf PTE is not present. This
-is not suitable if the test wants to replace an already present
-PTE. Hyper-V PV TLB flush test is going to need that.
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+[ Upstream commit e477e51a41cb5d6034f3c5ea85a71ad4613996b9 ]
+
+As the potential failure of the devm_request_threaded_irq(),
+it should be better to check the return value of the
+mc13xxx_irq_request() and return error if fails.
+
+Fixes: 8e00593557c3 ("mfd: Add mc13892 support to mc13xxx")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20220224022331.3208275-1-jiasheng@iscas.ac.cn
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/kvm/include/x86_64/processor.h | 2 +-
- tools/testing/selftests/kvm/lib/x86_64/processor.c     | 6 +++---
- tools/testing/selftests/kvm/max_guest_memory_test.c    | 2 +-
- tools/testing/selftests/kvm/x86_64/mmu_role_test.c     | 2 +-
- 4 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/mfd/mc13xxx-core.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index 9ad7602a257b..c20b18d05119 100644
---- a/tools/testing/selftests/kvm/include/x86_64/processor.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -473,7 +473,7 @@ enum x86_page_size {
- 	X86_PAGE_SIZE_1G,
- };
- void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
--		   enum x86_page_size page_size);
-+		   enum x86_page_size page_size, bool replace);
+diff --git a/drivers/mfd/mc13xxx-core.c b/drivers/mfd/mc13xxx-core.c
+index d0bf50e3568d..dcbb969af5f4 100644
+--- a/drivers/mfd/mc13xxx-core.c
++++ b/drivers/mfd/mc13xxx-core.c
+@@ -326,8 +326,10 @@ int mc13xxx_adc_do_conversion(struct mc13xxx *mc13xxx, unsigned int mode,
+ 		adc1 |= MC13783_ADC1_ATOX;
  
- /*
-  * Basic CPU control in CR0
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index 9f000dfb5594..20df3e84d777 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -229,7 +229,7 @@ static struct pageUpperEntry *virt_create_upper_pte(struct kvm_vm *vm,
- }
+ 	dev_dbg(mc13xxx->dev, "%s: request irq\n", __func__);
+-	mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_ADCDONE,
++	ret = mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_ADCDONE,
+ 			mc13xxx_handler_adcdone, __func__, &adcdone_data);
++	if (ret)
++		goto out;
  
- void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
--		   enum x86_page_size page_size)
-+		   enum x86_page_size page_size, bool replace)
- {
- 	const uint64_t pg_size = 1ull << ((page_size * 9) + 12);
- 	struct pageUpperEntry *pml4e, *pdpe, *pde;
-@@ -270,7 +270,7 @@ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
- 
- 	/* Fill in page table entry. */
- 	pte = virt_get_pte(vm, pde->pfn, vaddr, 0);
--	TEST_ASSERT(!pte->present,
-+	TEST_ASSERT(replace || !pte->present,
- 		    "PTE already present for 4k page at vaddr: 0x%lx\n", vaddr);
- 	pte->pfn = paddr >> vm->page_shift;
- 	pte->writable = true;
-@@ -279,7 +279,7 @@ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
- 
- void virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr)
- {
--	__virt_pg_map(vm, vaddr, paddr, X86_PAGE_SIZE_4K);
-+	__virt_pg_map(vm, vaddr, paddr, X86_PAGE_SIZE_4K, false);
- }
- 
- static struct pageTableEntry *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid,
-diff --git a/tools/testing/selftests/kvm/max_guest_memory_test.c b/tools/testing/selftests/kvm/max_guest_memory_test.c
-index 3875c4b23a04..437f77633b0e 100644
---- a/tools/testing/selftests/kvm/max_guest_memory_test.c
-+++ b/tools/testing/selftests/kvm/max_guest_memory_test.c
-@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
- #ifdef __x86_64__
- 		/* Identity map memory in the guest using 1gb pages. */
- 		for (i = 0; i < slot_size; i += size_1gb)
--			__virt_pg_map(vm, gpa + i, gpa + i, X86_PAGE_SIZE_1G);
-+			__virt_pg_map(vm, gpa + i, gpa + i, X86_PAGE_SIZE_1G, false);
- #else
- 		for (i = 0; i < slot_size; i += vm_get_page_size(vm))
- 			virt_pg_map(vm, gpa + i, gpa + i);
-diff --git a/tools/testing/selftests/kvm/x86_64/mmu_role_test.c b/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
-index da2325fcad87..e3fdf320b9f4 100644
---- a/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
-@@ -35,7 +35,7 @@ static void mmu_role_test(u32 *cpuid_reg, u32 evil_cpuid_val)
- 	run = vcpu_state(vm, VCPU_ID);
- 
- 	/* Map 1gb page without a backing memlot. */
--	__virt_pg_map(vm, MMIO_GPA, MMIO_GPA, X86_PAGE_SIZE_1G);
-+	__virt_pg_map(vm, MMIO_GPA, MMIO_GPA, X86_PAGE_SIZE_1G, false);
- 
- 	r = _vcpu_run(vm, VCPU_ID);
- 
+ 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC0, adc0);
+ 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC1, adc1);
 -- 
-2.35.1
+2.34.1
+
+
 
