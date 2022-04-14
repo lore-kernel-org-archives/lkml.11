@@ -2,63 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 240FFC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDEDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344364AbiDNPUu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:20:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47110 "EHLO
+        id S245575AbiDNPUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347661AbiDNN7Z (ORCPT
+        with ESMTP id S1347660AbiDNN7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:59:25 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED6846B3E;
-        Thu, 14 Apr 2022 06:51:00 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD24547074;
+        Thu, 14 Apr 2022 06:51:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 5699A1F747;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17684612B3;
+        Thu, 14 Apr 2022 13:51:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2599BC385A5;
         Thu, 14 Apr 2022 13:50:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649944259; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=gbIphq0QNBqc29zesgzd0IBueAhZON446tUirSSogoI=;
-        b=KU2YavbKNIHGm/F1mZJnwxliny8xpEJ5SHTaYCZenKXiFpwngm93rchLD8c9LC5OdeODJp
-        XjK+kLkflg0K5U/+0jGouCupkKZUdJdEAxKdb00frOy9RbbtugvqucZpyK/lHPDcF+hb0P
-        3KdfFeEnHyP1i1jzz5GN3I/gUOYvBNM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649944259;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=gbIphq0QNBqc29zesgzd0IBueAhZON446tUirSSogoI=;
-        b=GRzLswhuJrXY5wgLJh5O0fPWhbaOyZ6eBsVnf1cFVdlkxIR/ay2bzahaN4WmTDrm9W/g90
-        TfaZF4AhuQsHJiCQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D9D7D132C0;
-        Thu, 14 Apr 2022 13:50:58 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id cjbEMcImWGJnTgAAMHmgww
-        (envelope-from <lhenriques@suse.de>); Thu, 14 Apr 2022 13:50:58 +0000
-Received: from localhost (brahms.olymp [local])
-        by brahms.olymp (OpenSMTPD) with ESMTPA id 187a4637;
-        Thu, 14 Apr 2022 13:51:24 +0000 (UTC)
-From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-Subject: [PATCH v4 0/4] ceph: add support for snapshot names encryption
-Date:   Thu, 14 Apr 2022 14:51:18 +0100
-Message-Id: <20220414135122.26821-1-lhenriques@suse.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649944260;
+        bh=mYElAx4n+Ve0PXk4na22YZ+ls6EwvTTE8hf0IPJeNM8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pqJagVvzVBVIil0Ois3mufLAr4CQ+9ZaW7wjGfLnXaAFJuIrf4oRmkEuUk7QJ33dm
+         zFLl+nQLWQL3aS7Rp8T/ZFFf0rHIutR08YXXXyar3GqJxgMDRXCmvMTBmrax750HGo
+         a4hnwxcnlvbpV8MOfAUGWdmO/DLO3Z10LEVvCLFU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Ethan Lien <ethanlien@synology.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.4 452/475] btrfs: fix qgroup reserve overflow the qgroup limit
+Date:   Thu, 14 Apr 2022 15:13:57 +0200
+Message-Id: <20220414110907.708073731@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -66,69 +49,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+From: Ethan Lien <ethanlien@synology.com>
 
-Time for another iteration on the encrypted snapshots names, which is
-mostly a rebase to the wip-fscrypt branch.  To test this, I've used ceph
-with the following PRs:
+commit b642b52d0b50f4d398cb4293f64992d0eed2e2ce upstream.
 
-  mds: add protection from clients without fscrypt support #45073
-  mds: use the whole string as the snapshot long name #45192
-  mds: support alternate names for snapshots #45224
-  mds: limit the snapshot names to 240 characters #45312
+We use extent_changeset->bytes_changed in qgroup_reserve_data() to record
+how many bytes we set for EXTENT_QGROUP_RESERVED state. Currently the
+bytes_changed is set as "unsigned int", and it will overflow if we try to
+fallocate a range larger than 4GiB. The result is we reserve less bytes
+and eventually break the qgroup limit.
 
-Changes since v3:
+Unlike regular buffered/direct write, which we use one changeset for
+each ordered extent, which can never be larger than 256M.  For
+fallocate, we use one changeset for the whole range, thus it no longer
+respects the 256M per extent limit, and caused the problem.
 
-- Fixed WARN_ON() in ceph_encode_encrypted_dname()
+The following example test script reproduces the problem:
 
-- Updated documentation and copyright notice for the base64
-  encoding/decoding implementaiton which was taken from the fscrypt base.
+  $ cat qgroup-overflow.sh
+  #!/bin/bash
 
-Changes since v2:
+  DEV=/dev/sdj
+  MNT=/mnt/sdj
 
-- Use ceph_find_inode() instead of ceph_get_inode() for finding a snapshot
-  parent in function parse_longname().  I've also added a fallback to
-  ceph_get_inode() in case we fail to find the inode.  This may happen if,
-  for example, the mount root doesn't include that inode.  The iput() was
-  also complemented by a discard_new_inode() if the inode is in the I_NEW
-  state. (patch 0002)
+  mkfs.btrfs -f $DEV
+  mount $DEV $MNT
 
-- Move the check for '_' snapshots further up in the ceph_fname_to_usr()
-  and ceph_encode_encrypted_dname().  This fixes the case pointed out by
-  Xiubo in v2. (patch 0002)
+  # Set qgroup limit to 2GiB.
+  btrfs quota enable $MNT
+  btrfs qgroup limit 2G $MNT
 
-- Use NAME_MAX for tmp arrays (patch 0002)
+  # Try to fallocate a 3GiB file. This should fail.
+  echo
+  echo "Try to fallocate a 3GiB file..."
+  fallocate -l 3G $MNT/3G.file
 
-- Added an extra patch for replacing the base64url encoding by a different
-  encoding standard, the one used for IMAP mailboxes (which uses '+' and
-  ',' instead of '-' and '_').  This should fix the issue with snapshot
-  names starting with '_'. (patch 0003)
+  # Try to fallocate a 5GiB file.
+  echo
+  echo "Try to fallocate a 5GiB file..."
+  fallocate -l 5G $MNT/5G.file
 
-Changes since v1:
+  # See we break the qgroup limit.
+  echo
+  sync
+  btrfs qgroup show -r $MNT
 
-- Dropped the dentry->d_flags change in ceph_mkdir().  Thanks to Xiubo
-  suggestion, patch 0001 now skips calling ceph_fscrypt_prepare_context()
-  if we're handling a snapshot.
+  umount $MNT
 
-- Added error handling to ceph_get_snapdir() in patch 0001 (Jeff had
-  already pointed that out but I forgot to include that change in previous
-  revision).
+When running the test:
 
-- Rebased patch 0002 to the latest wip-fscrypt branch.
+  $ ./qgroup-overflow.sh
+  (...)
 
-- Added some documentation regarding snapshots naming restrictions.
+  Try to fallocate a 3GiB file...
+  fallocate: fallocate failed: Disk quota exceeded
 
+  Try to fallocate a 5GiB file...
 
-Luís Henriques (4):
-  ceph: add support for encrypted snapshot names
-  ceph: add support for handling encrypted snapshot names
-  ceph: update documentation regarding snapshot naming limitations
-  ceph: replace base64url by the encoding used for mailbox names
+  qgroupid         rfer         excl     max_rfer
+  --------         ----         ----     --------
+  0/5           5.00GiB      5.00GiB      2.00GiB
 
- Documentation/filesystems/ceph.rst |  10 ++
- fs/ceph/crypto.c                   | 252 +++++++++++++++++++++++++----
- fs/ceph/crypto.h                   |  14 +-
- fs/ceph/dir.c                      |   2 +-
- fs/ceph/inode.c                    |  33 +++-
- 5 files changed, 273 insertions(+), 38 deletions(-)
+Since we have no control of how bytes_changed is used, it's better to
+set it to u64.
+
+CC: stable@vger.kernel.org # 4.14+
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: Ethan Lien <ethanlien@synology.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/btrfs/extent_io.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/fs/btrfs/extent_io.h
++++ b/fs/btrfs/extent_io.h
+@@ -202,7 +202,7 @@ struct extent_buffer {
+  */
+ struct extent_changeset {
+ 	/* How many bytes are set/cleared in this operation */
+-	unsigned int bytes_changed;
++	u64 bytes_changed;
+ 
+ 	/* Changed ranges */
+ 	struct ulist range_changed;
+
 
