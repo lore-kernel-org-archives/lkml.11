@@ -2,225 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E24CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:34:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A52EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:34:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237289AbiDNPgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58316 "EHLO
+        id S1345744AbiDNPgs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349524AbiDNOUj (ORCPT
+        with ESMTP id S1350007AbiDNOVg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:20:39 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB4155F8F0;
-        Thu, 14 Apr 2022 07:11:17 -0700 (PDT)
-Received: from [192.168.254.32] (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 8676120C34F6;
-        Thu, 14 Apr 2022 07:11:16 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8676120C34F6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1649945477;
-        bh=CCivcobdjTSIqO/n6SrPCQb7F6TrngftOXYOVomxLcA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=pC3wgC3+4kgZsZLu/RdVdTFtTyKFejRU6j7YbpASO52I1iedmlBrjkEVG9aa7uy/2
-         mZP5pReBbAVE0VfmJIsMzg227QaQOcpR8LCYOG4WEdY5AnZxb3HklnKvA5rMUuH/ZY
-         ZQjRBi5wjusZlpu6CkGMq0NCRVgvuEbgzds5bLAg=
-Message-ID: <fb1667fd-58a3-d4b9-3943-ef7143d85756@linux.microsoft.com>
-Date:   Thu, 14 Apr 2022 09:11:15 -0500
+        Thu, 14 Apr 2022 10:21:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2FB86BD2C3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:12:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649945562;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=j1PUWoxND9yB/RqRBJNB2R/kkEVrgsT3WEOw5xZ9hqE=;
+        b=Nt2MaKwlGvnjl5bOyEEtGsRITCXyVBPlbjKjbFPitqLbXL9INs7SyQKnE5FvY4Xqmo7ZLF
+        y87eDiLY2s1LL45XmgQ1YQeCpRnkMoleL6ANxF/+i80MXrbQ38vYAIbP1a2ymEUVJPDI4u
+        wsFx6KzaA0xiDI1OmmN4224fADfXhvQ=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-662-4OraD1QlMHGUQuuyvBEbMg-1; Thu, 14 Apr 2022 10:12:41 -0400
+X-MC-Unique: 4OraD1QlMHGUQuuyvBEbMg-1
+Received: by mail-ed1-f72.google.com with SMTP id eg29-20020a056402289d00b0041d6db0fbc9so3084395edb.9
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:12:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=j1PUWoxND9yB/RqRBJNB2R/kkEVrgsT3WEOw5xZ9hqE=;
+        b=ye2pczJUj1UWLlbQSy/PEPR9eisTvy8vf08454UHRt8w9CSuSNOZoQQscV+jacR2YY
+         ezlhlPBBiXi2ZCrxKXn9NAqw2Wna1JA42hJ/cVp947L1URMdUt96zMUxYEfA2Otg/EQN
+         UC1qBWMA6S2GmGVsRW5dDY7lbQh+PezrBRZuuPtPwMu6AzU831qDYQ9w47euB4O/H0hK
+         14dt+biKGtJ0KDCh2mMOwdILXu4H0aAr4nBbCFMsD6QLbN5GV5E0ob+WIKm/PNYe++d8
+         V3cIBuHWvapMJd4yULDNpsdXgOB027g3IzA/x54j2BO8PKO+YmR+0HFfL78LX8nzFnBI
+         I+Rw==
+X-Gm-Message-State: AOAM5329KHvKi5/OqEPrdxJU1O+5BRp6p8rvmJmb1TVavBSpGBsfPBt7
+        QxnM36cZdqNlszZlxCoCCbOl2VqpgIAC9oJ7Q7IlDRTAMA0o/aXXLTdfDDtG9chmGufYJoNkjRb
+        4W0aA7qaEMk3HB1fEO6kDzT+a
+X-Received: by 2002:a17:907:d16:b0:6d6:e3b6:9cd8 with SMTP id gn22-20020a1709070d1600b006d6e3b69cd8mr2431086ejc.94.1649945560320;
+        Thu, 14 Apr 2022 07:12:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxzpmBaUrfDVV7d9ZOREkhEyKHyJVyB5pXUAJ4fe06+V64NEb8u+mjFbLOmP1i+mBi6Xh9zRQ==
+X-Received: by 2002:a17:907:d16:b0:6d6:e3b6:9cd8 with SMTP id gn22-20020a1709070d1600b006d6e3b69cd8mr2431066ejc.94.1649945560128;
+        Thu, 14 Apr 2022 07:12:40 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id g16-20020a170906521000b006d58773e992sm672870ejm.188.2022.04.14.07.12.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 07:12:39 -0700 (PDT)
+Message-ID: <77699a19-65bd-5088-2f25-1be59364f5ee@redhat.com>
+Date:   Thu, 14 Apr 2022 16:12:35 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v1 0/9] arm64: livepatch: Use DWARF Call Frame
- Information for frame pointer validation
+Subject: Re: [RFC PATCH V3 3/4] KVM: X86: Alloc role.pae_root shadow page
 Content-Language: en-US
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     mark.rutland@arm.com, broonie@kernel.org, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
- <20220407202518.19780-1-madvenka@linux.microsoft.com>
- <20220408002147.pk7clzruj6sawj7z@treble>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <20220408002147.pk7clzruj6sawj7z@treble>
-Content-Type: text/plain; charset=UTF-8
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
+        linux-doc@vger.kernel.org
+References: <20220330132152.4568-1-jiangshanlai@gmail.com>
+ <20220330132152.4568-4-jiangshanlai@gmail.com> <YlXrshJa2Sd1WQ0P@google.com>
+ <CAJhGHyD-4YFDhkxk2SQFmKe3ooqw_0wE+9u3+sZ8zOdSUfbnxw@mail.gmail.com>
+ <683974e7-5801-e289-8fa4-c8a8d21ec1b2@redhat.com>
+ <CAJhGHyCgo-FEgvuRfuLZikgJSyo7HGm1OfU3gme35-WBmqo7yQ@mail.gmail.com>
+ <658729a1-a4a1-a353-50d6-ef71e83a4375@redhat.com>
+ <CAJhGHyDYeQGUWmco=c4TA1uu=33ccW7z0fDLuYjvkGFW5WnDSQ@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <CAJhGHyDYeQGUWmco=c4TA1uu=33ccW7z0fDLuYjvkGFW5WnDSQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Josh, Peter,
-
-I have decided to accept your comment that using the compiler generated DWARF info
-is probably not reliable. I can write a DWARF verifier. But I decided that if I can
-write a DWARF verifier, I can use that same code to generate the same information as
-DWARF CFI.
-
-So, I am going to implement this in the traditional way as you wanted. Fortunately,
-I only need to decode a small subset of the instruction formats (just the ones that
-affect the SP and FP) and branch and return instructions to be able to compute the
-SP and FP offsets at every instruction address. I only need a small part of the
-static analysis code.
-
-In other words, I am removing the crazy from my patch series. I am still retaining the
-idea of dynamic FP validation rather than static validation. IMO, that will be able to
-handle even non-ABI compliant functions and FP corruptions from buggy kernel functions.
-
-Huawei has resubmitted the objtool patch set. When the full blown static analysis
-is implemented by them and accepted by the community, my changes can be easily merged
-with theirs. So, my solution is not a competing solution. In fact, it will provide an
-additional level of robustness.
-
-I will make these changes, test and send out version 2.
-
-Thanks for your comments.
-
-Madhavan
-
-On 4/7/22 19:21, Josh Poimboeuf wrote:
-> On Thu, Apr 07, 2022 at 03:25:09PM -0500, madvenka@linux.microsoft.com wrote:
->> The solution
->> ============
+On 4/14/22 13:06, Lai Jiangshan wrote:
+>> Right, but then load_pdptrs only needs to zap the page before (or
+>> instead of) calling kvm_mmu_free_roots().
 >>
->> The goal here is to use the absolute minimum CFI needed to compute the FP at
->> every instruction address. The unwinder can compute the FP in each frame,
->> compare the actual FP with the computed one and validate the actual FP.
->>
->> Objtool is enhanced to parse the CFI, extract just the rules required,
->> encode them in compact data structures and create special sections for
->> the rules. The unwinder uses the special sections to find the rules for
->> a given instruction address and compute the FP.
->>
->> Objtool can be invoked as follows:
->>
->> 	objtool dwarf generate <object-file>
 > 
-> Hi Madhaven,
-> 
-> This is quite interesting.  And it's exactly the kind of crazy idea I
-> can appreciate ;-)
-> 
-> Some initial thoughts:
-> 
-> 
-> 1)
-> 
-> I have some concerns about DWARF's reliability, especially considering
-> a) inline asm, b) regular asm, and c) the kernel's tendency to push
-> compilers to their limits.
-> 
-> BUT, supplementing the frame pointer unwinding with DWARF, rather than
-> just relying on DWARF alone, does help a LOT.
-> 
-> I guess the hope is that cross-checking two "mostly reliable" things
-> against each other (frame pointers and DWARF) will give a reliable
-> result ;-)
-> 
-> In a general sense, I've never looked at DWARF's reliability, even for
-> just normal C code.  It would be good to have some way of knowing that
-> DWARF looks mostly sane for both GCC and Clang.  For example, maybe
-> somehow cross-checking it with objtool's knowledge.  And then of course
-> we'd have to hope that it stays bug-free in future compilers.
-> 
-> I'd also be somewhat concerned about assembly.  Since there's nothing
-> ensuring the unwind hints are valid, and will stay valid over time, I
-> wonder how likely it would be for that to break, and what the
-> implications would be.  Most likely I guess it would break silently, but
-> then get caught by the frame pointer cross-checking.  So a broken hint
-> might not get noticed for a long time, but at least it (hopefully)
-> wouldn't break reliable unwinding.
-> 
-> Also, inline asm can sometimes do stack hacks like
-> "push;do_something;pop" which isn't visible to the toolchain.  But
-> again, hopefully the frame pointer checking would fail and mark it
-> unreliable.
-> 
-> So I do have some worries about DWARF, but the fact that it's getting
-> "fact checked" by frame pointers might be sufficient.
-> 
-> 
-> 2)
-> 
-> If I understand correctly, objtool is converting parts of DWARF to a new
-> format which can then be read by the kernel.  In that case, please don't
-> call it DWARF as that will cause a lot of confusion.
-> 
-> There are actually several similarities between your new format and ORC,
-> which is also an objtool-created DWARF alternative.  It would be
-> interesting to see if they could be combined somehow.
-> 
-> 
-> 3)
-> 
-> Objtool has become an integral part of x86-64, due to security and
-> performance features and toolchain workarounds.
-> 
-> Not *all* of its features require the full "branch validation" which
-> follows all code paths -- and was the hardest part to get right -- but
-> several features *do* need that: stack validation, ORC, uaccess
-> validation, noinstr validation.
-> 
-> Objtool has been picking up a lot of steam (and features) lately, with
-> more features currently in active development.  And lately there have
-> been renewed patches for porting it to powerpc and arm64 (and rumors of
-> s390).
-> 
-> If arm64 ever wants one of those features -- particularly a "branch
-> validation" based feature -- I think it would make more sense to just do
-> the stack validation in objtool, rather than the DWARF supplementation
-> approach.
-> 
-> Just to give an idea of what objtool already supports and how useful it
-> has become for x86, here's an excerpt from some documentation I've been
-> working on, since I'm in the middle of rewriting the interface to make
-> it more modular.  This is a list of all its current features:
-> 
-> 
-> Features
-> --------
-> 
-> Objtool has the following features:
-> 
-> 
-> - Stack unwinding metadata validation -- useful for helping to ensure
->   stack traces are reliable for live patching
-> 
-> - ORC unwinder metadata generation -- a faster and more precise
->   alternative to frame pointer based unwinding
-> 
-> - Retpoline validation -- ensures that all indirect calls go through
->   retpoline thunks, for Spectre v2 mitigations
-> 
-> - Retpoline call site annotation -- annotates all retpoline thunk call
->   sites, enabling the kernel to patch them inline, to prevent "thunk
->   funneling" for both security and performance reasons
-> 
-> - Non-instrumentation validation -- validates non-instrumentable
->   ("noinstr") code rules, preventing unexpected instrumentation in
->   low-level C entry code
-> 
-> - Static call annotation -- annotates static call sites, enabling the
->   kernel to implement inline static calls, a faster alternative to some
->   indirect branches
-> 
-> - Uaccess validation -- validates uaccess rules for a proper safe
->   implementation of Supervisor Mode Access Protection (SMAP)
-> 
-> - Straight Line Speculation validation -- validates certain SLS
->   mitigations
-> 
-> - Indirect Branch Tracking validation -- validates Intel CET IBT rules
->   to ensure that all functions referenced by function pointers have
->   corresponding ENDBR instructions
-> 
-> - Indirect Branch Tracking annotation -- annotates unused ENDBR
->   instruction sites, enabling the kernel to "seal" them (replace them
->   with NOPs) to further harden IBT
-> 
-> - Function entry annotation -- annotates function entries, enabling
->   kernel function tracing
-> 
-> - Other toolchain hacks which will go unmentioned at this time...
-> 
+> Guest PAE page is write-protected instead now (see patch4) and
+> kvm_mmu_pte_write() needs to handle this special write operation
+> with respect to sp->pae_off (todo).
+> And load_pdptrs() doesn't need to check if the pdptrs are changed.
+
+Write-protecting the PDPTR page is unnecessary, the PDPTRs cannot change 
+without another CR3.  That should be easy to do in account_shadowed and 
+unaccount_shadowed
+
+> I think role.guest_pae_root is needed to distinguish it from
+> a sp for a level-3 guest page in a 4-level pagetable.
+>
+> Or just role.guest_root_level(or role.root_level) and it can replace
+> role.passthrough_depth and role.guest_pae_root and role.pae_root.
+
+Yes, I agree.  Though this would also get change patch 1 substantially, 
+so I'll wait for you to respin.
+
+Paolo
+
