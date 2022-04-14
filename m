@@ -2,120 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDDAAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26FCAC43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236602AbiDNQll (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:41:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
+        id S237250AbiDNQlu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:41:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239622AbiDNQlV (ORCPT
+        with ESMTP id S239700AbiDNQlW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 12:41:21 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF10EAACB3;
+        Thu, 14 Apr 2022 12:41:22 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498A6AC047
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:10:09 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id h5so5138188pgc.7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:10:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=++TmBWO1YM92e9/sGWADvMXzGuWQuA2AD0SMUsAqv+Q=;
+        b=JoUoj8n/GW9gkKQC1j6p3chTuhXkvPltZdV1WwSw3ET/WW2qintUx7JYtkS0C+Dn/n
+         ns41TCv2Olei9/sxo0eUZ6hHo9JfC+Trb6vcLuwZh6A7JSmFouitlK62Cb5YStHALyFh
+         1VNfCeG6hcoCkRApyt101mCwSPXCqKHG3qS8sqybkuQ12StcZEU88yEQ7V1/f6dG8muy
+         juNzghTVH02wdgsShkpXvpNZkhU1aGjLJglQ5xXIixshsCHv3ihuCBu1AHfggTZGnHua
+         keDc8HOIKevZPwnSlFBnU4Jae0ocHwcMypk++/5KUNdSzXOJyS01Mrmj/w92B5fDvTSH
+         ZWcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=++TmBWO1YM92e9/sGWADvMXzGuWQuA2AD0SMUsAqv+Q=;
+        b=lO3bIqSd5yARvqOVQyZiA9CeQQCdtvevl83k9d/9HDOzVoV0FMGRKx3rrJNQ0F44zY
+         ++Y69KOVvQhRPsE5RtxAnpF6dCoisDfxel1JRqF3YxkQqZea81+z2do+EH583BRK2ew8
+         ETMVcWRuHOCVrbIYnTl2kQlfhBU2VPceX/rCZgQC9pyjSfiRMv/vyniX3jHqYE7ZCogk
+         3bYIkuqMPejRAkcH0sk0SEmxDD1qnvM0NdrnzbVUVjZBlJCnvUHCcnrKeg7uDCZInccb
+         W6yJhyms0Gcj9Ek3WqJtJEUPKiHk+bG2wG1WioSHwmxr9gMy7W7ipkn286028RJ3HOn/
+         qwww==
+X-Gm-Message-State: AOAM530fIMoV+j1TrtSbBerpmHfTYkm6FzhrYc3snRBFYDba0W+DuLk2
+        18uHTZgKoike4c9kcz20VOVEuw==
+X-Google-Smtp-Source: ABdhPJwvTXSLjFWKJT2b2kUclniIMf+jXP1VUhMPADLUMQgcA+BzmtbVUrDr4ZpIjDVNMHi3GupQLQ==
+X-Received: by 2002:a63:310f:0:b0:39d:90e3:6a44 with SMTP id x15-20020a63310f000000b0039d90e36a44mr2847254pgx.281.1649952608633;
         Thu, 14 Apr 2022 09:10:08 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KfPY44gfNz1HBMx;
-        Fri, 15 Apr 2022 00:09:28 +0800 (CST)
-Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Apr
- 2022 00:10:04 +0800
-From:   Xu Kuohai <xukuohai@huawei.com>
-To:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-CC:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>
-Subject: [PATCH bpf-next v2 0/6] bpf trampoline for arm64
-Date:   Thu, 14 Apr 2022 12:22:14 -0400
-Message-ID: <20220414162220.1985095-1-xukuohai@huawei.com>
-X-Mailer: git-send-email 2.30.2
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id m21-20020a17090a7f9500b001c97c6bcaf4sm6336845pjl.39.2022.04.14.09.10.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 09:10:06 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 10:10:03 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     bjorn.andersson@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com,
+        linux-arm-kernel@lists.infradead.org, Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH V3] remoteproc: imx_rproc: Ignore create mem entry for
+ resource table
+Message-ID: <20220414161003.GA698343@p14s>
+References: <20220331084007.2323377-1-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.197]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220331084007.2323377-1-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bpf trampoline support for arm64. Most of the logic is the same as
-x86.
+On Thu, Mar 31, 2022 at 04:40:07PM +0800, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> Resource table is used by Linux to get information pubished by
 
-Tested on qemu, result:
- #55 fentry_fexit:OK
- #56 fentry_test:OK
- #58 fexit_sleep:OK
- #59 fexit_stress:OK
- #60 fexit_test:OK
- #67 get_func_args_test:OK
- #68 get_func_ip_test:OK
- #101 modify_return:OK
+s/pubished/published
 
-v2:
-- Add Song's ACK
-- Change the multi-line comment in is_valid_bpf_tramp_flags() into net
-  style (patch 3)
-- Fix a deadloop issue in ftrace selftest (patch 2)
-- Replace pt_regs->x0 with pt_regs->orig_x0 in patch 1 commit message 
-- Replace "bpf trampoline" with "custom trampoline" in patch 1, as
-  ftrace direct call is not only used by bpf trampoline.
+> remote processor. It should be not be used for memory allocation, so
+> not create rproc mem entry.
+> 
+> Fixes: b29b4249f8f0 ("remoteproc: imx_rproc: add i.MX specific parse fw hook")
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+> 
+> V3:
+>  Update commit log
+>  Update Fixes tag
+> 
+> V2:
+>  Add Fixes tag
+>  Separate the patch from https://patchwork.kernel.org/project/linux-remoteproc/patch/20220111033333.403448-7-peng.fan@oss.nxp.com/
+>  Address typo
+> 
+>  drivers/remoteproc/imx_rproc.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/remoteproc/imx_rproc.c b/drivers/remoteproc/imx_rproc.c
+> index 7a096f1891e6..f2bfc9077c19 100644
+> --- a/drivers/remoteproc/imx_rproc.c
+> +++ b/drivers/remoteproc/imx_rproc.c
+> @@ -423,6 +423,9 @@ static int imx_rproc_prepare(struct rproc *rproc)
+>  		if (!strcmp(it.node->name, "vdev0buffer"))
+>  			continue;
+>  
+> +		if (!strncmp(it.node->name, "rsc-table", strlen("rsc-table")))
+> +			continue;
+> +
 
-v1: https://lore.kernel.org/bpf/20220413054959.1053668-1-xukuohai@huawei.com/
+Any reason the handling of vdev0buffer is using strcmp() and the resource table
+strncmp()?
 
-Xu Kuohai (6):
-  arm64: ftrace: Add ftrace direct call support
-  ftrace: Fix deadloop caused by direct call in ftrace selftest
-  bpf: Move is_valid_bpf_tramp_flags() to the public trampoline code
-  bpf, arm64: Impelment bpf_arch_text_poke() for arm64
-  bpf, arm64: bpf trampoline for arm64
-  selftests/bpf: Fix trivial typo in fentry_fexit.c
+Thanks,
+Mathieu
 
- arch/arm64/Kconfig                            |   2 +
- arch/arm64/include/asm/ftrace.h               |  10 +
- arch/arm64/kernel/asm-offsets.c               |   1 +
- arch/arm64/kernel/entry-ftrace.S              |  28 +-
- arch/arm64/net/bpf_jit.h                      |  14 +-
- arch/arm64/net/bpf_jit_comp.c                 | 390 +++++++++++++++++-
- arch/x86/net/bpf_jit_comp.c                   |  20 -
- include/linux/bpf.h                           |   5 +
- kernel/bpf/bpf_struct_ops.c                   |   4 +-
- kernel/bpf/trampoline.c                       |  35 +-
- kernel/trace/trace_selftest.c                 |   4 +-
- .../selftests/bpf/prog_tests/fentry_fexit.c   |   4 +-
- 12 files changed, 482 insertions(+), 35 deletions(-)
-
--- 
-2.30.2
-
+>  		rmem = of_reserved_mem_lookup(it.node);
+>  		if (!rmem) {
+>  			dev_err(priv->dev, "unable to acquire memory-region\n");
+> -- 
+> 2.25.1
+> 
