@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0206AC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE8E5C43217
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349403AbiDNOUF (ORCPT
+        id S1349116AbiDNOTK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35926 "EHLO
+        Thu, 14 Apr 2022 10:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343634AbiDNNjN (ORCPT
+        with ESMTP id S245700AbiDNNix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:13 -0400
+        Thu, 14 Apr 2022 09:38:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD70829C90;
-        Thu, 14 Apr 2022 06:34:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B4E93984;
+        Thu, 14 Apr 2022 06:33:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51A5EB82983;
-        Thu, 14 Apr 2022 13:34:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF3EFC385A1;
-        Thu, 14 Apr 2022 13:34:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61A4EB82984;
+        Thu, 14 Apr 2022 13:33:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9031C385A5;
+        Thu, 14 Apr 2022 13:33:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943270;
-        bh=5IqUjJTSOJ5iA71G3v7PMy802c6wfxcw7Yd0aVsWReA=;
+        s=korg; t=1649943228;
+        bh=CRkojIeG8hfsFSBTHg4oYYawOOdZgescy1u4wNygcPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gmbXrsVjqMkkzzqZMBz55Li/FmjdH8b+KhMc3ekOsg2EvBkC+0HBobEXndaa37QJv
-         UZsxEsBBNSzRpgXP4CE3lD17klqiSWfCu7QvBopARunpzYo8qIrbpRIVlA6wd2ity1
-         o2ZJtLy9+CZHZFRRb2uY/RQqs04kUBAN4XVEWd8w=
+        b=dNMlhjyQM3srDedCTshWbRnRDPfUXl8oshiGwmxBO7h+BQOk31zgYI51/otiQX6Ly
+         B6GmZJIPEdi6rRmIhu8Ny8oIbw4W9P9e1j6sBc5Ro7A68VpDrlOI27Mz6CaAm1gbMi
+         Z4L0aYmohuxTm4D7t0VGdVhjIGa/Ur6UUs0ZVGWk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.4 045/475] jffs2: fix memory leak in jffs2_do_mount_fs
-Date:   Thu, 14 Apr 2022 15:07:10 +0200
-Message-Id: <20220414110856.417847316@linuxfoundation.org>
+        stable@vger.kernel.org, Jan-Benedict Glaw <jbglaw@lug-owl.de>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 5.4 079/475] DEC: Limit PMAX memory probing to R3k systems
+Date:   Thu, 14 Apr 2022 15:07:44 +0200
+Message-Id: <20220414110857.365717260@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,71 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-commit d051cef784de4d54835f6b6836d98a8f6935772c upstream.
+commit 244eae91a94c6dab82b3232967d10eeb9dfa21c6 upstream.
 
-If jffs2_build_filesystem() in jffs2_do_mount_fs() returns an error,
-we can observe the following kmemleak report:
+Recent tightening of the opcode table in binutils so as to consistently
+disallow the assembly or disassembly of CP0 instructions not supported
+by the processor architecture chosen has caused a regression like below:
 
---------------------------------------------
-unreferenced object 0xffff88811b25a640 (size 64):
-  comm "mount", pid 691, jiffies 4294957728 (age 71.952s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffffa493be24>] kmem_cache_alloc_trace+0x584/0x880
-    [<ffffffffa5423a06>] jffs2_sum_init+0x86/0x130
-    [<ffffffffa5400e58>] jffs2_do_mount_fs+0x798/0xac0
-    [<ffffffffa540acf3>] jffs2_do_fill_super+0x383/0xc30
-    [<ffffffffa540c00a>] jffs2_fill_super+0x2ea/0x4c0
-    [...]
-unreferenced object 0xffff88812c760000 (size 65536):
-  comm "mount", pid 691, jiffies 4294957728 (age 71.952s)
-  hex dump (first 32 bytes):
-    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
-    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
-  backtrace:
-    [<ffffffffa493a449>] __kmalloc+0x6b9/0x910
-    [<ffffffffa5423a57>] jffs2_sum_init+0xd7/0x130
-    [<ffffffffa5400e58>] jffs2_do_mount_fs+0x798/0xac0
-    [<ffffffffa540acf3>] jffs2_do_fill_super+0x383/0xc30
-    [<ffffffffa540c00a>] jffs2_fill_super+0x2ea/0x4c0
-    [...]
---------------------------------------------
+arch/mips/dec/prom/locore.S: Assembler messages:
+arch/mips/dec/prom/locore.S:29: Error: opcode not supported on this processor: r4600 (mips3) `rfe'
 
-This is because the resources allocated in jffs2_sum_init() are not
-released. Call jffs2_sum_exit() to release these resources to solve
-the problem.
+in a piece of code used to probe for memory with PMAX DECstation models,
+which have non-REX firmware.  Those computers always have an R2000 CPU
+and consequently the exception handler used in memory probing uses the
+RFE instruction, which those processors use.
 
-Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
-Cc: stable@vger.kernel.org
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+While adding 64-bit support this code was correctly excluded for 64-bit
+configurations, however it should have also been excluded for irrelevant
+32-bit configurations.  Do this now then, and only enable PMAX memory
+probing for R3k systems.
+
+Reported-by: Jan-Benedict Glaw <jbglaw@lug-owl.de>
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Cc: stable@vger.kernel.org # v2.6.12+
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/jffs2/build.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/mips/dec/prom/Makefile      |    2 +-
+ arch/mips/include/asm/dec/prom.h |   15 +++++----------
+ 2 files changed, 6 insertions(+), 11 deletions(-)
 
---- a/fs/jffs2/build.c
-+++ b/fs/jffs2/build.c
-@@ -415,13 +415,15 @@ int jffs2_do_mount_fs(struct jffs2_sb_in
- 		jffs2_free_ino_caches(c);
- 		jffs2_free_raw_node_refs(c);
- 		ret = -EIO;
--		goto out_free;
-+		goto out_sum_exit;
- 	}
+--- a/arch/mips/dec/prom/Makefile
++++ b/arch/mips/dec/prom/Makefile
+@@ -6,4 +6,4 @@
  
- 	jffs2_calc_trigger_levels(c);
+ lib-y			+= init.o memory.o cmdline.o identify.o console.o
  
- 	return 0;
+-lib-$(CONFIG_32BIT)	+= locore.o
++lib-$(CONFIG_CPU_R3000)	+= locore.o
+--- a/arch/mips/include/asm/dec/prom.h
++++ b/arch/mips/include/asm/dec/prom.h
+@@ -43,16 +43,11 @@
+  */
+ #define REX_PROM_MAGIC		0x30464354
  
-+ out_sum_exit:
-+	jffs2_sum_exit(c);
-  out_free:
- 	kvfree(c->blocks);
+-#ifdef CONFIG_64BIT
+-
+-#define prom_is_rex(magic)	1	/* KN04 and KN05 are REX PROMs.  */
+-
+-#else /* !CONFIG_64BIT */
+-
+-#define prom_is_rex(magic)	((magic) == REX_PROM_MAGIC)
+-
+-#endif /* !CONFIG_64BIT */
+-
++/* KN04 and KN05 are REX PROMs, so only do the check for R3k systems.  */
++static inline bool prom_is_rex(u32 magic)
++{
++	return !IS_ENABLED(CONFIG_CPU_R3000) || magic == REX_PROM_MAGIC;
++}
  
+ /*
+  * 3MIN/MAXINE PROM entry points for DS5000/1xx's, DS5000/xx's and
 
 
