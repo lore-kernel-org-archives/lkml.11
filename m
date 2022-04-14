@@ -2,43 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7586EC3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C39C3527A
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353524AbiDNPRv (ORCPT
+        id S1352361AbiDNPRe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43198 "EHLO
+        Thu, 14 Apr 2022 11:17:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347732AbiDNN7a (ORCPT
+        with ESMTP id S1347689AbiDNN71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E1FBCB61;
-        Thu, 14 Apr 2022 06:52:24 -0700 (PDT)
+        Thu, 14 Apr 2022 09:59:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22C94AE03;
+        Thu, 14 Apr 2022 06:51:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D715561E31;
-        Thu, 14 Apr 2022 13:52:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E82DAC385A5;
-        Thu, 14 Apr 2022 13:52:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67970B828F4;
+        Thu, 14 Apr 2022 13:51:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A4AEC385A5;
+        Thu, 14 Apr 2022 13:51:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944343;
-        bh=tQ6RP01tLYy8Y0i8GgUr/GR/+sTv4tYTSrSG3yR9SRc=;
+        s=korg; t=1649944277;
+        bh=vLVOPMognLMhpE0ZDdF5GInYSFaFskp/cxYu91KQCHU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PLuqwb6zmai10mW257ijDPrIVq2dprK7q7eFpomuSV9021LDib94XKkc/nW0UfZPj
-         Fmo8WdRGUxfP8ExI8fYBV5TnwvJMIPX0X7x5EzJpmPLrMbDEOZde7kiLSxNOcEZVbv
-         wq1xyFHJAetyikOVmK4Moyo/y+4GSU/XrycFT7jM=
+        b=ISFgsdhmajIyTqPU2CbTxxXpB9eXzcp2gI9NPnXv1+aME41CsolO420ulUBSCtRe0
+         fyZS9/bguiGhVakHYfEzTKXan53dRDpaCqi87T5L/qGbEdDmKHpOUO/bPGQPEUzvkm
+         nNrsydEKalovNVfpEE4c47ZBs2MoeeD89FCkwql0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 442/475] SUNRPC: Handle low memory situations in call_status()
-Date:   Thu, 14 Apr 2022 15:13:47 +0200
-Message-Id: <20220414110907.429264463@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Fangrui Song <maskray@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Subject: [PATCH 5.4 457/475] tools build: Filter out options and warnings not supported by clang
+Date:   Thu, 14 Apr 2022 15:14:02 +0200
+Message-Id: <20220414110907.845945743@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,39 +58,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-[ Upstream commit 9d82819d5b065348ce623f196bf601028e22ed00 ]
+commit 41caff459a5b956b3e23ba9ca759dd0629ad3dda upstream.
 
-We need to handle ENFILE, ENOBUFS, and ENOMEM, because
-xprt_wake_pending_tasks() can be called with any one of these due to
-socket creation failures.
+These make the feature check fail when using clang, so remove them just
+like is done in tools/perf/Makefile.config to build perf itself.
 
-Fixes: b61d59fffd3e ("SUNRPC: xs_tcp_connect_worker{4,6}: merge common code")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Adding -Wno-compound-token-split-by-macro to tools/perf/Makefile.config
+when building with clang is also necessary to avoid these warnings
+turned into errors (-Werror):
+
+    CC      /tmp/build/perf/util/scripting-engines/trace-event-perl.o
+  In file included from util/scripting-engines/trace-event-perl.c:35:
+  In file included from /usr/lib64/perl5/CORE/perl.h:4085:
+  In file included from /usr/lib64/perl5/CORE/hv.h:659:
+  In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
+  In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: error: '(' and '{' tokens introducing statement expression appear in different macro expansion contexts [-Werror,-Wcompound-token-split-by-macro]
+      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:80:38: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
+  #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+                                       ^~~~~~~~~~
+  /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_START'
+  #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
+                                ^
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: note: '{' token is here
+      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:80:49: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
+  #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+                                                  ^
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: error: '}' and ')' tokens terminating statement expression appear in different macro expansion contexts [-Werror,-Wcompound-token-split-by-macro]
+      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:87:41: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
+      v ^= (v>>23);                       \
+                                          ^
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: note: ')' token is here
+      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /usr/lib64/perl5/CORE/zaphod32_hash.h:88:3: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
+  } STMT_END
+    ^~~~~~~~
+  /usr/lib64/perl5/CORE/perl.h:738:21: note: expanded from macro 'STMT_END'
+  #   define STMT_END     )
+                          ^
+
+Please refer to the discussion on the Link: tag below, where Nathan
+clarifies the situation:
+
+<quote>
+acme> And then get to the problems at the end of this message, which seem
+acme> similar to the problem described here:
+acme>
+acme> From  Nathan Chancellor <>
+acme> Subject	[PATCH] mwifiex: Remove unnecessary braces from HostCmd_SET_SEQ_NO_BSS_INFO
+acme>
+acme> https://lkml.org/lkml/2020/9/1/135
+acme>
+acme> So perhaps in this case its better to disable that
+acme> -Werror,-Wcompound-token-split-by-macro when building with clang?
+
+Yes, I think that is probably the best solution. As far as I can tell,
+at least in this file and context, the warning appears harmless, as the
+"create a GNU C statement expression from two different macros" is very
+much intentional, based on the presence of PERL_USE_GCC_BRACE_GROUPS.
+The warning is fixed in upstream Perl by just avoiding creating GNU C
+statement expressions using STMT_START and STMT_END:
+
+  https://github.com/Perl/perl5/issues/18780
+  https://github.com/Perl/perl5/pull/18984
+
+If I am reading the source code correctly, an alternative to disabling
+the warning would be specifying -DPERL_GCC_BRACE_GROUPS_FORBIDDEN but it
+seems like that might end up impacting more than just this site,
+according to the issue discussion above.
+</quote>
+
+Based-on-a-patch-by: Sedat Dilek <sedat.dilek@gmail.com>
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Fangrui Song <maskray@google.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Keeping <john@metanate.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Link: http://lore.kernel.org/lkml/YkxWcYzph5pC1EK8@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/clnt.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ tools/build/feature/Makefile |    7 +++++++
+ tools/perf/Makefile.config   |    3 +++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index bc191d2c193e..08e1ccc01e98 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -2394,6 +2394,11 @@ call_status(struct rpc_task *task)
- 	case -EPIPE:
- 	case -EAGAIN:
- 		break;
-+	case -ENFILE:
-+	case -ENOBUFS:
-+	case -ENOMEM:
-+		rpc_delay(task, HZ>>2);
-+		break;
- 	case -EIO:
- 		/* shutdown or soft timeout */
- 		goto out_exit;
--- 
-2.35.1
-
+--- a/tools/build/feature/Makefile
++++ b/tools/build/feature/Makefile
+@@ -207,6 +207,13 @@ PERL_EMBED_LIBADD = $(call grep-libs,$(P
+ PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
+ FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+ 
++ifeq ($(CC_NO_CLANG), 0)
++  PERL_EMBED_LDOPTS := $(filter-out -specs=%,$(PERL_EMBED_LDOPTS))
++  PERL_EMBED_CCOPTS := $(filter-out -flto=auto -ffat-lto-objects, $(PERL_EMBED_CCOPTS))
++  PERL_EMBED_CCOPTS := $(filter-out -specs=%,$(PERL_EMBED_CCOPTS))
++  FLAGS_PERL_EMBED += -Wno-compound-token-split-by-macro
++endif
++
+ $(OUTPUT)test-libperl.bin:
+ 	$(BUILD) $(FLAGS_PERL_EMBED)
+ 
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -706,6 +706,9 @@ else
+     LDFLAGS += $(PERL_EMBED_LDFLAGS)
+     EXTLIBS += $(PERL_EMBED_LIBADD)
+     CFLAGS += -DHAVE_LIBPERL_SUPPORT
++    ifeq ($(CC_NO_CLANG), 0)
++      CFLAGS += -Wno-compound-token-split-by-macro
++    endif
+     $(call detected,CONFIG_LIBPERL)
+   endif
+ endif
 
 
