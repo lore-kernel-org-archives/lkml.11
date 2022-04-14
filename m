@@ -2,186 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C2AFC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA4CEC38162
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245026AbiDNNiH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49778 "EHLO
+        id S245144AbiDNNiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244547AbiDNN1k (ORCPT
+        with ESMTP id S244604AbiDNN1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:27:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90394A0BD6
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:20:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649942421;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=kd6yprk4VlEg5xosbW/30KWUxD+GYa+hGTxr9KOLLms=;
-        b=SiH4I/i/URHLsBn4k20JLXHenJ+MAmWfJCEP6RSzX9ihl84/sjGn0vfFhuHHZDh/uHEVw8
-        J2jT+IbiFdMxtTB/ul8Xydg9en46SKNEAclIyKq+8LM1rN002l8rQYOf7y027gQAFbN8wH
-        Xg/qIQGwVi/VmGy5N6j9HqQs5Fi1i8I=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-548-EXkFvnH2PfCglnShalZ-Ew-1; Thu, 14 Apr 2022 09:20:17 -0400
-X-MC-Unique: EXkFvnH2PfCglnShalZ-Ew-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 14 Apr 2022 09:27:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F7CA147B;
+        Thu, 14 Apr 2022 06:20:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5FFA9805A30;
-        Thu, 14 Apr 2022 13:20:16 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.195.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2F6957C28;
-        Thu, 14 Apr 2022 13:20:14 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 00/34] KVM: x86: hyper-v: Fine-grained TLB flush + L2 TLB flush feature
-Date:   Thu, 14 Apr 2022 15:19:39 +0200
-Message-Id: <20220414132013.1588929-1-vkuznets@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FD23618F8;
+        Thu, 14 Apr 2022 13:20:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CB78C385A5;
+        Thu, 14 Apr 2022 13:20:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942432;
+        bh=+pom7rYuiu1GHH2u/bfaDM5Mokwk4HiMpu7sSxFzKzc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=H9Yo7hxWtXZGzlJ4rGCfU13+VSymLwoFECkS/NX+1M3Kj9XokE2OKko7gzIWwcE0O
+         tsMGyWTumI4DU12q2A6qaFvT7zKcs0uDp0qxfALxuE4JOwCI1Gt0jWTkwAho0rxGCW
+         DzAJzUE4nsAIkmY6Ie1pqjkK+RVS4aXlixKrNodg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
+        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 134/338] ext2: correct max file size computing
+Date:   Thu, 14 Apr 2022 15:10:37 +0200
+Message-Id: <20220414110842.713711498@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes since v1:
-To address Sean's review comments:
-- s,Direct,L2, everywhere.
-- s,tlbflush,tlb_flush, everywhere.
-- "KVM: x86: hyper-v: Add helper to read hypercall data for array" patch
-  added.
-- "x86/hyperv: Introduce HV_MAX_SPARSE_VCPU_BANKS/HV_VCPUS_PER_SPARSE_BANK
-  constants" patch added.
-- "KVM: x86: hyper-v: Use HV_MAX_SPARSE_VCPU_BANKS/HV_VCPUS_PER_SPARSE_BANK
-  instead of raw '64'" patch added.
-- Other code improvements.
+From: Zhang Yi <yi.zhang@huawei.com>
 
-Other changes:
-- Rebase to the latest kvm/queue.
-- "KVM: selftests: add hyperv_svm_test to .gitignore" patch dropped
- (already fixed).
-- "KVM: x86: Rename 'enable_direct_tlbflush' to 'enable_l2_tlb_flush'" 
- patch added.
-- Fix a race in the newly introduced Hyper-V IPI test.
+[ Upstream commit 50b3a818991074177a56c87124c7a7bdf5fa4f67 ]
 
-Original description:
+We need to calculate the max file size accurately if the total blocks
+that can address by block tree exceed the upper_limit. But this check is
+not correct now, it only compute the total data blocks but missing
+metadata blocks are needed. So in the case of "data blocks < upper_limit
+&& total blocks > upper_limit", we will get wrong result. Fortunately,
+this case could not happen in reality, but it's confused and better to
+correct the computing.
 
-Currently, KVM handles HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} requests
-by flushing the whole VPID and this is sub-optimal. This series introduces
-the required mechanism to make handling of these requests more 
-fine-grained by flushing individual GVAs only (when requested). On this
-foundation, "Direct Virtual Flush" Hyper-V feature is implemented. The 
-feature allows L0 to handle Hyper-V TLB flush hypercalls directly at
-L0 without the need to reflect the exit to L1. This has at least two
-benefits: reflecting vmexit and the consequent vmenter are avoided + L0
-has precise information whether the target vCPU is actually running (and
-thus requires a kick).
+  bits   data blocks   metadatablocks   upper_limit
+  10        16843020            66051    2147483647
+  11       134480396           263171    1073741823
+  12      1074791436          1050627     536870911 (*)
+  13      8594130956          4198403     268435455 (*)
+  14     68736258060         16785411     134217727 (*)
+  15    549822930956         67125251      67108863 (*)
+  16   4398314962956        268468227      33554431 (*)
 
-Sean Christopherson (1):
-  KVM: x86: hyper-v: Add helper to read hypercall data for array
+  [*] Need to calculate in depth.
 
-Vitaly Kuznetsov (33):
-  KVM: x86: hyper-v: Resurrect dedicated KVM_REQ_HV_TLB_FLUSH flag
-  KVM: x86: hyper-v: Introduce TLB flush ring
-  KVM: x86: hyper-v: Handle HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} calls
-    gently
-  KVM: x86: hyper-v: Expose support for extended gva ranges for flush
-    hypercalls
-  KVM: x86: Prepare kvm_hv_flush_tlb() to handle L2's GPAs
-  x86/hyperv: Introduce
-    HV_MAX_SPARSE_VCPU_BANKS/HV_VCPUS_PER_SPARSE_BANK constants
-  KVM: x86: hyper-v: Use
-    HV_MAX_SPARSE_VCPU_BANKS/HV_VCPUS_PER_SPARSE_BANK instead of raw
-    '64'
-  KVM: x86: hyper-v: Don't use sparse_set_to_vcpu_mask() in
-    kvm_hv_send_ipi()
-  KVM: x86: hyper-v: Create a separate ring for L2 TLB flush
-  KVM: x86: hyper-v: Use preallocated buffer in 'struct kvm_vcpu_hv'
-    instead of on-stack 'sparse_banks'
-  KVM: nVMX: Keep track of hv_vm_id/hv_vp_id when eVMCS is in use
-  KVM: nSVM: Keep track of Hyper-V hv_vm_id/hv_vp_id
-  KVM: x86: Introduce .post_hv_l2_tlb_flush() nested hook
-  KVM: x86: hyper-v: Introduce kvm_hv_is_tlb_flush_hcall()
-  KVM: x86: hyper-v: L2 TLB flush
-  KVM: x86: hyper-v: Introduce fast kvm_hv_l2_tlb_flush_exposed() check
-  x86/hyperv: Fix 'struct hv_enlightened_vmcs' definition
-  KVM: nVMX: hyper-v: Enable L2 TLB flush
-  KVM: x86: KVM_REQ_TLB_FLUSH_CURRENT is a superset of
-    KVM_REQ_HV_TLB_FLUSH too
-  KVM: nSVM: hyper-v: Enable L2 TLB flush
-  KVM: x86: Expose Hyper-V L2 TLB flush feature
-  KVM: selftests: Better XMM read/write helpers
-  KVM: selftests: Hyper-V PV IPI selftest
-  KVM: selftests: Make it possible to replace PTEs with __virt_pg_map()
-  KVM: selftests: Hyper-V PV TLB flush selftest
-  KVM: selftests: Sync 'struct hv_enlightened_vmcs' definition with
-    hyperv-tlfs.h
-  KVM: selftests: nVMX: Allocate Hyper-V partition assist page
-  KVM: selftests: nSVM: Allocate Hyper-V partition assist and VP assist
-    pages
-  KVM: selftests: Sync 'struct hv_vp_assist_page' definition with
-    hyperv-tlfs.h
-  KVM: selftests: evmcs_test: Introduce L2 TLB flush test
-  KVM: selftests: Move Hyper-V VP assist page enablement out of evmcs.h
-  KVM: selftests: hyperv_svm_test: Introduce L2 TLB flush test
-  KVM: x86: Rename 'enable_direct_tlbflush' to 'enable_l2_tlb_flush'
+Fixes: 1c2d14212b15 ("ext2: Fix underflow in ext2_max_size()")
+Link: https://lore.kernel.org/r/20220212050532.179055-1-yi.zhang@huawei.com
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/ext2/super.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
- arch/x86/include/asm/hyperv-tlfs.h            |   6 +-
- arch/x86/include/asm/kvm-x86-ops.h            |   2 +-
- arch/x86/include/asm/kvm_host.h               |  37 +-
- arch/x86/kvm/Makefile                         |   3 +-
- arch/x86/kvm/hyperv.c                         | 376 ++++++++--
- arch/x86/kvm/hyperv.h                         |  48 ++
- arch/x86/kvm/svm/hyperv.c                     |  18 +
- arch/x86/kvm/svm/hyperv.h                     |  37 +
- arch/x86/kvm/svm/nested.c                     |  25 +-
- arch/x86/kvm/svm/svm_onhyperv.c               |   2 +-
- arch/x86/kvm/svm/svm_onhyperv.h               |   6 +-
- arch/x86/kvm/trace.h                          |  21 +-
- arch/x86/kvm/vmx/evmcs.c                      |  24 +
- arch/x86/kvm/vmx/evmcs.h                      |  11 +
- arch/x86/kvm/vmx/nested.c                     |  32 +
- arch/x86/kvm/vmx/vmx.c                        |   6 +-
- arch/x86/kvm/x86.c                            |  20 +-
- arch/x86/kvm/x86.h                            |   1 +
- include/asm-generic/hyperv-tlfs.h             |   5 +
- include/asm-generic/mshyperv.h                |  11 +-
- tools/testing/selftests/kvm/.gitignore        |   2 +
- tools/testing/selftests/kvm/Makefile          |   4 +-
- .../selftests/kvm/include/x86_64/evmcs.h      |  40 +-
- .../selftests/kvm/include/x86_64/hyperv.h     |  35 +
- .../selftests/kvm/include/x86_64/processor.h  |  72 +-
- .../selftests/kvm/include/x86_64/svm_util.h   |  10 +
- .../selftests/kvm/include/x86_64/vmx.h        |   4 +
- .../testing/selftests/kvm/lib/x86_64/hyperv.c |  21 +
- .../selftests/kvm/lib/x86_64/processor.c      |   6 +-
- tools/testing/selftests/kvm/lib/x86_64/svm.c  |  10 +
- tools/testing/selftests/kvm/lib/x86_64/vmx.c  |   7 +
- .../selftests/kvm/max_guest_memory_test.c     |   2 +-
- .../testing/selftests/kvm/x86_64/evmcs_test.c |  53 +-
- .../selftests/kvm/x86_64/hyperv_features.c    |   5 +-
- .../testing/selftests/kvm/x86_64/hyperv_ipi.c | 374 ++++++++++
- .../selftests/kvm/x86_64/hyperv_svm_test.c    |  60 +-
- .../selftests/kvm/x86_64/hyperv_tlb_flush.c   | 647 ++++++++++++++++++
- .../selftests/kvm/x86_64/mmu_role_test.c      |   2 +-
- 38 files changed, 1883 insertions(+), 162 deletions(-)
- create mode 100644 arch/x86/kvm/svm/hyperv.c
- create mode 100644 tools/testing/selftests/kvm/lib/x86_64/hyperv.c
- create mode 100644 tools/testing/selftests/kvm/x86_64/hyperv_ipi.c
- create mode 100644 tools/testing/selftests/kvm/x86_64/hyperv_tlb_flush.c
-
+diff --git a/fs/ext2/super.c b/fs/ext2/super.c
+index 80a3038e0e46..ad9fd08f66ba 100644
+--- a/fs/ext2/super.c
++++ b/fs/ext2/super.c
+@@ -780,8 +780,12 @@ static loff_t ext2_max_size(int bits)
+ 	res += 1LL << (bits-2);
+ 	res += 1LL << (2*(bits-2));
+ 	res += 1LL << (3*(bits-2));
++	/* Compute how many metadata blocks are needed */
++	meta_blocks = 1;
++	meta_blocks += 1 + ppb;
++	meta_blocks += 1 + ppb + ppb * ppb;
+ 	/* Does block tree limit file size? */
+-	if (res < upper_limit)
++	if (res + meta_blocks <= upper_limit)
+ 		goto check_lfs;
+ 
+ 	res = upper_limit;
 -- 
-2.35.1
+2.34.1
+
+
 
