@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE15C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E4DC35273
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237408AbiDNNwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57650 "EHLO
+        id S1343746AbiDNNwe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:52:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344112AbiDNNa2 (ORCPT
+        with ESMTP id S1343688AbiDNN3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F03E6;
-        Thu, 14 Apr 2022 06:28:04 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2185E9F6EE;
+        Thu, 14 Apr 2022 06:25:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B233CB82985;
-        Thu, 14 Apr 2022 13:28:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F04E2C385A5;
-        Thu, 14 Apr 2022 13:28:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B216F61B18;
+        Thu, 14 Apr 2022 13:25:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF205C385A1;
+        Thu, 14 Apr 2022 13:25:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942881;
-        bh=qedZ/DiD1BGM2zpjtJoVkqrA0QPzqzuFdcPCJjoXqQI=;
+        s=korg; t=1649942713;
+        bh=AyLMklGPuJYElFV3GJEcjuGGHBpthjripRp0e51U+I4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aJIYbGXlM54feJGx3ymmg9c/MksPwLFA/Nv8LhYvNdeCJ35QIXX7nBQ8ZvVv+ACs0
-         OMk+c9RSnEhWUTeqlfD39UXrCha7//qhNgPnTYeQ0m78wXBJQZGGz/LXTIM+tBTN3j
-         oJulOgo3ytmDV1Wg6158xq7hcyLRpK65WffoWMak=
+        b=sfimXx5uC7rui1QXbn80N1dKY6UR/chzpMz4hPCi7m6rzC8XTf/BatCRa9uBG3zP1
+         eRfxh6tQmpihNs2e9o0FOEyajmMB8fnR3rqdfOo+TCVH5yB62wT4nzrkE/OdfyaS7M
+         Vq5VJjRjvRVccjFdumWSiyhk49lmakbi8izuYfRc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Abraham <thomas.abraham@linaro.org>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Hyeonkook Kim <hk619.kim@samsung.com>,
-        Jiri Slaby <jslaby@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 296/338] serial: samsung_tty: do not unlock port->lock for uart_write_wakeup()
-Date:   Thu, 14 Apr 2022 15:13:19 +0200
-Message-Id: <20220414110847.311340500@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.19 233/338] ubifs: rename_whiteout: Fix double free for whiteout_ui->data
+Date:   Thu, 14 Apr 2022 15:12:16 +0200
+Message-Id: <20220414110845.521261097@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,53 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-[ Upstream commit 988c7c00691008ea1daaa1235680a0da49dab4e8 ]
+commit 40a8f0d5e7b3999f096570edab71c345da812e3e upstream.
 
-The commit c15c3747ee32 (serial: samsung: fix potential soft lockup
-during uart write) added an unlock of port->lock before
-uart_write_wakeup() and a lock after it. It was always problematic to
-write data from tty_ldisc_ops::write_wakeup and it was even documented
-that way. We fixed the line disciplines to conform to this recently.
-So if there is still a missed one, we should fix them instead of this
-workaround.
+'whiteout_ui->data' will be freed twice if space budget fail for
+rename whiteout operation as following process:
 
-On the top of that, s3c24xx_serial_tx_dma_complete() in this driver
-still holds the port->lock while calling uart_write_wakeup().
+rename_whiteout
+  dev = kmalloc
+  whiteout_ui->data = dev
+  kfree(whiteout_ui->data)  // Free first time
+  iput(whiteout)
+    ubifs_free_inode
+      kfree(ui->data)	    // Double free!
 
-So revert the wrap added by the commit above.
+KASAN reports:
+==================================================================
+BUG: KASAN: double-free or invalid-free in ubifs_free_inode+0x4f/0x70
+Call Trace:
+  kfree+0x117/0x490
+  ubifs_free_inode+0x4f/0x70 [ubifs]
+  i_callback+0x30/0x60
+  rcu_do_batch+0x366/0xac0
+  __do_softirq+0x133/0x57f
 
-Cc: Thomas Abraham <thomas.abraham@linaro.org>
-Cc: Kyungmin Park <kyungmin.park@samsung.com>
-Cc: Hyeonkook Kim <hk619.kim@samsung.com>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20220308115153.4225-1-jslaby@suse.cz
+Allocated by task 1506:
+  kmem_cache_alloc_trace+0x3c2/0x7a0
+  do_rename+0x9b7/0x1150 [ubifs]
+  ubifs_rename+0x106/0x1f0 [ubifs]
+  do_syscall_64+0x35/0x80
+
+Freed by task 1506:
+  kfree+0x117/0x490
+  do_rename.cold+0x53/0x8a [ubifs]
+  ubifs_rename+0x106/0x1f0 [ubifs]
+  do_syscall_64+0x35/0x80
+
+The buggy address belongs to the object at ffff88810238bed8 which
+belongs to the cache kmalloc-8 of size 8
+==================================================================
+
+Let ubifs_free_inode() free 'whiteout_ui->data'. BTW, delete unused
+assignment 'whiteout_ui->data_len = 0', process 'ubifs_evict_inode()
+-> ubifs_jnl_delete_inode() -> ubifs_jnl_write_inode()' doesn't need it
+(because 'inc_nlink(whiteout)' won't be excuted by 'goto out_release',
+ and the nlink of whiteout inode is 0).
+
+Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/samsung.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ fs/ubifs/dir.c |    2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/tty/serial/samsung.c b/drivers/tty/serial/samsung.c
-index 1528a7ba2bf4..49661cef5469 100644
---- a/drivers/tty/serial/samsung.c
-+++ b/drivers/tty/serial/samsung.c
-@@ -761,11 +761,8 @@ static irqreturn_t s3c24xx_serial_tx_chars(int irq, void *id)
- 		goto out;
- 	}
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -1442,8 +1442,6 @@ static int do_rename(struct inode *old_d
  
--	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
--		spin_unlock(&port->lock);
-+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
--		spin_lock(&port->lock);
--	}
- 
- 	if (uart_circ_empty(xmit))
- 		s3c24xx_serial_stop_tx(port);
--- 
-2.35.1
-
+ 		err = ubifs_budget_space(c, &wht_req);
+ 		if (err) {
+-			kfree(whiteout_ui->data);
+-			whiteout_ui->data_len = 0;
+ 			iput(whiteout);
+ 			goto out_release;
+ 		}
 
 
