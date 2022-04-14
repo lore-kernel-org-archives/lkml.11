@@ -2,90 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2407FC35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75C3FC4707F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346442AbiDNN5H (ORCPT
+        id S1346508AbiDNN50 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
+        Thu, 14 Apr 2022 09:57:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244894AbiDNN2O (ORCPT
+        with ESMTP id S244765AbiDNN2G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6F485A775F
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:21:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649942474;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8GnOa2nJ6fSpwmAR7Vt3Kl/N0xAjTqupgL1N6sCmJHI=;
-        b=VvWXyvOKQkf7uZy6USwiMF0ho9UivF5S5DzFhw9mXu5ONCOTcrKkTVB+lj/RLwsXm/sR/L
-        rMkk4p86RynQ9+C2kolRZU/kOXuslOQE1vNgYuhx9IhbtStfjU5DlTE+Iyk/eBJM8oF9We
-        U3k7Cy5n3vrol+77sNXDafn9CMWLh7k=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-513-iruDZws-PEq6HuEuzVViwg-1; Thu, 14 Apr 2022 09:21:11 -0400
-X-MC-Unique: iruDZws-PEq6HuEuzVViwg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 14 Apr 2022 09:28:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359A7A5EA2;
+        Thu, 14 Apr 2022 06:20:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 05910811E83;
-        Thu, 14 Apr 2022 13:20:57 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.195.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4521A7774;
-        Thu, 14 Apr 2022 13:20:55 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 20/34] KVM: x86: KVM_REQ_TLB_FLUSH_CURRENT is a superset of KVM_REQ_HV_TLB_FLUSH too
-Date:   Thu, 14 Apr 2022 15:19:59 +0200
-Message-Id: <20220414132013.1588929-21-vkuznets@redhat.com>
-In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
-References: <20220414132013.1588929-1-vkuznets@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1B756125A;
+        Thu, 14 Apr 2022 13:20:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC330C385A5;
+        Thu, 14 Apr 2022 13:20:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942452;
+        bh=M17IKYJWhPg4SFCSQnJGvSE2qWIo5R3jjaDEMUuAmuQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Jmq2h6g8hjBkv//V6hW/Qy/4KYvlhay1EwhH4myl0DxVPTytJ08gdGdnO3g91jUqY
+         Nqolv/LVgiEEkZqXuOch1Tlq31GV1f634eCHUME18U7zKZofQW4RAJyU/L4wR4BX+8
+         2G7MNMeqOwY/j2D7UJiX6hl3eUVbJdG5NgXJCPpU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Hou Wenlong <houwenlong.hwl@antgroup.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 140/338] KVM: x86/emulator: Defer not-present segment check in __load_segment_descriptor()
+Date:   Thu, 14 Apr 2022 15:10:43 +0200
+Message-Id: <20220414110842.889901588@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KVM_REQ_TLB_FLUSH_CURRENT is an even stronger operation than
-KVM_REQ_TLB_FLUSH_GUEST so KVM_REQ_HV_TLB_FLUSH needs not to be
-processed after it.
+From: Hou Wenlong <houwenlong.hwl@antgroup.com>
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+[ Upstream commit ca85f002258fdac3762c57d12d5e6e401b6a41af ]
+
+Per Intel's SDM on the "Instruction Set Reference", when
+loading segment descriptor, not-present segment check should
+be after all type and privilege checks. But the emulator checks
+it first, then #NP is triggered instead of #GP if privilege fails
+and segment is not present. Put not-present segment check after
+type and privilege checks in __load_segment_descriptor().
+
+Fixes: 38ba30ba51a00 (KVM: x86 emulator: Emulate task switch in emulator.c)
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
+Message-Id: <52573c01d369f506cadcf7233812427cf7db81a7.1644292363.git.houwenlong.hwl@antgroup.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/x86.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/x86/kvm/emulate.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index e5aec386d299..d3839e648ab3 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3357,8 +3357,11 @@ static inline void kvm_vcpu_flush_tlb_current(struct kvm_vcpu *vcpu)
-  */
- void kvm_service_local_tlb_flush_requests(struct kvm_vcpu *vcpu)
- {
--	if (kvm_check_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu))
-+	if (kvm_check_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu)) {
- 		kvm_vcpu_flush_tlb_current(vcpu);
-+		if (kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu))
-+			kvm_hv_vcpu_empty_flush_tlb(vcpu);
-+	}
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index 3e182c7ae771..63754d248dfb 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -1669,11 +1669,6 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
+ 		goto exception;
+ 	}
  
- 	if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu)) {
- 		kvm_vcpu_flush_tlb_guest(vcpu);
+-	if (!seg_desc.p) {
+-		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
+-		goto exception;
+-	}
+-
+ 	dpl = seg_desc.dpl;
+ 
+ 	switch (seg) {
+@@ -1713,6 +1708,10 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
+ 	case VCPU_SREG_TR:
+ 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
+ 			goto exception;
++		if (!seg_desc.p) {
++			err_vec = NP_VECTOR;
++			goto exception;
++		}
+ 		old_desc = seg_desc;
+ 		seg_desc.type |= 2; /* busy */
+ 		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
+@@ -1737,6 +1736,11 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
+ 		break;
+ 	}
+ 
++	if (!seg_desc.p) {
++		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
++		goto exception;
++	}
++
+ 	if (seg_desc.s) {
+ 		/* mark segment as accessed */
+ 		if (!(seg_desc.type & 1)) {
 -- 
-2.35.1
+2.34.1
+
+
 
