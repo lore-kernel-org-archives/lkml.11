@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8936C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88618C433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:35:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347135AbiDNOfg (ORCPT
+        id S1353203AbiDNOfc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
+        Thu, 14 Apr 2022 10:35:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343773AbiDNNjW (ORCPT
+        with ESMTP id S1344019AbiDNNjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A682FFD0;
-        Thu, 14 Apr 2022 06:34:49 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:33 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BBA8FE50;
+        Thu, 14 Apr 2022 06:36:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3600B82983;
-        Thu, 14 Apr 2022 13:34:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBE35C385A1;
-        Thu, 14 Apr 2022 13:34:46 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2639BCE29B0;
+        Thu, 14 Apr 2022 13:36:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31046C385A5;
+        Thu, 14 Apr 2022 13:36:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943287;
-        bh=PCrH6URjmuB5guwZhaskUFJLccnRisVbZQOv3UYszQI=;
+        s=korg; t=1649943403;
+        bh=uUNa3NlegxYcB6cQM6c8D/B02FjfX/V9Ty1uPdZadF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p94u3qE2Cu9/YwqZc7DERci/dH7kwNFubLzSX239r/27S/UroQ8c0ODmImtdlWGNP
-         dJy67DskeYKt3QKdpxLYDZYoFnebFcvzN47VbziUuL5RodFFFtQkL2bwiOiOQF4/bO
-         l0N2jEvvPanL8SHxqQkIcBO04O/mRNWKPLCegCyg=
+        b=GwvM/hK+RMN5yMqM1KuOT4MQQYVGSV8wInaU0yJ5bR8YASjO+bLBnk1qDgcE9Ttlw
+         g1fS3eNoTsR273Bnwx+4OaOq427R+yA7R8G0wCrHGuzdfnFS0vn/e3A8G2tIwHEuu7
+         jaESelPyMMtq2Yr7e6kNg73Url71l7h6ZSX9OdPE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
-        Petr Vorel <pvorel@suse.cz>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 102/475] crypto: vmx - add missing dependencies
-Date:   Thu, 14 Apr 2022 15:08:07 +0200
-Message-Id: <20220414110858.008719433@linuxfoundation.org>
+Subject: [PATCH 5.4 144/475] ASoC: atmel: Add missing of_node_put() in at91sam9g20ek_audio_probe
+Date:   Thu, 14 Apr 2022 15:08:49 +0200
+Message-Id: <20220414110859.175996412@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,60 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Vorel <pvorel@suse.cz>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 647d41d3952d726d4ae49e853a9eff68ebad3b3f ]
+[ Upstream commit f590797fa3c1bccdd19e55441592a23b46aef449 ]
 
-vmx-crypto module depends on CRYPTO_AES, CRYPTO_CBC, CRYPTO_CTR or
-CRYPTO_XTS, thus add them.
+This node pointer is returned by of_parse_phandle() with refcount
+incremented in this function.
+Calling of_node_put() to avoid the refcount leak.
 
-These dependencies are likely to be enabled, but if
-CRYPTO_DEV_VMX=y && !CRYPTO_MANAGER_DISABLE_TESTS
-and either of CRYPTO_AES, CRYPTO_CBC, CRYPTO_CTR or CRYPTO_XTS is built
-as module or disabled, alg_test() from crypto/testmgr.c complains during
-boot about failing to allocate the generic fallback implementations
-(2 == ENOENT):
-
-[    0.540953] Failed to allocate xts(aes) fallback: -2
-[    0.541014] alg: skcipher: failed to allocate transform for p8_aes_xts: -2
-[    0.541120] alg: self-tests for p8_aes_xts (xts(aes)) failed (rc=-2)
-[    0.544440] Failed to allocate ctr(aes) fallback: -2
-[    0.544497] alg: skcipher: failed to allocate transform for p8_aes_ctr: -2
-[    0.544603] alg: self-tests for p8_aes_ctr (ctr(aes)) failed (rc=-2)
-[    0.547992] Failed to allocate cbc(aes) fallback: -2
-[    0.548052] alg: skcipher: failed to allocate transform for p8_aes_cbc: -2
-[    0.548156] alg: self-tests for p8_aes_cbc (cbc(aes)) failed (rc=-2)
-[    0.550745] Failed to allocate transformation for 'aes': -2
-[    0.550801] alg: cipher: Failed to load transform for p8_aes: -2
-[    0.550892] alg: self-tests for p8_aes (aes) failed (rc=-2)
-
-Fixes: c07f5d3da643 ("crypto: vmx - Adding support for XTS")
-Fixes: d2e3ae6f3aba ("crypto: vmx - Enabling VMX module for PPC64")
-
-Suggested-by: Nicolai Stange <nstange@suse.de>
-Signed-off-by: Petr Vorel <pvorel@suse.cz>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: 531f67e41dcd ("ASoC: at91sam9g20ek-wm8731: convert to dt support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220307124539.1743-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/vmx/Kconfig | 4 ++++
- 1 file changed, 4 insertions(+)
+ sound/soc/atmel/sam9g20_wm8731.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/crypto/vmx/Kconfig b/drivers/crypto/vmx/Kconfig
-index c85fab7ef0bd..b2c28b87f14b 100644
---- a/drivers/crypto/vmx/Kconfig
-+++ b/drivers/crypto/vmx/Kconfig
-@@ -2,7 +2,11 @@
- config CRYPTO_DEV_VMX_ENCRYPT
- 	tristate "Encryption acceleration support on P8 CPU"
- 	depends on CRYPTO_DEV_VMX
-+	select CRYPTO_AES
-+	select CRYPTO_CBC
-+	select CRYPTO_CTR
- 	select CRYPTO_GHASH
-+	select CRYPTO_XTS
- 	default m
- 	help
- 	  Support for VMX cryptographic acceleration instructions on Power8 CPU.
+diff --git a/sound/soc/atmel/sam9g20_wm8731.c b/sound/soc/atmel/sam9g20_wm8731.c
+index b1bef2bf142d..05277a88e20d 100644
+--- a/sound/soc/atmel/sam9g20_wm8731.c
++++ b/sound/soc/atmel/sam9g20_wm8731.c
+@@ -214,6 +214,7 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
+ 	cpu_np = of_parse_phandle(np, "atmel,ssc-controller", 0);
+ 	if (!cpu_np) {
+ 		dev_err(&pdev->dev, "dai and pcm info missing\n");
++		of_node_put(codec_np);
+ 		return -EINVAL;
+ 	}
+ 	at91sam9g20ek_dai.cpus->of_node = cpu_np;
 -- 
 2.34.1
 
