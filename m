@@ -2,18 +2,18 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA05AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E90F5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:41:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240560AbiDNHnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 03:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59148 "EHLO
+        id S240617AbiDNHn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 03:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240459AbiDNHma (ORCPT
+        with ESMTP id S240457AbiDNHma (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 03:42:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3430456201
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 618E856752
         for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:40:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1649922005;
@@ -21,105 +21,62 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=eqvqj5T+LOq6yAGMZt//QgZxyQ9dWMtUkAV4xPeREAg=;
-        b=gWDIljCKvo/KQUkxr5FoCBj6QIDHMXGDrEtRg9l9/lLw7qt9fZKrJk3qTR5TqbcQ6RI/Ef
-        DCdoMnmRCI7Cb7vdN2kzntZjtsDk4oGDRwxjGSJC+q9ssFaI7cntzu9erj/VSXmEOj4Cwa
-        AqAWlZO52Lap2XSQDgcy6V+N2xSV5to=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=RQ5CWUGjT4K4xbXyZ8WaQBFYz0mKZYfkG8ySlVTr0k4=;
+        b=FHgVyH6DSnDZ6zocRxb7JVMKtXlby4n3NkdDGze6XpwndrFWRqAg8zSVQ4Rh9HIHoEN6nH
+        ti5qOHub6t2dLSxAKxP61ceCZWiDBqJhSho/Vq8Te0n4M984J/BUQJAGH9FP6lRfgbs5ea
+        5fLn5bn8CN2zc0PfUARQoJ6QZSPuLrg=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-583-MtFxEjoXPXSW_DG4jlReRg-1; Thu, 14 Apr 2022 03:40:04 -0400
-X-MC-Unique: MtFxEjoXPXSW_DG4jlReRg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+ us-mta-642-4VnvEsw1Nvm-SapdnWd0mw-1; Thu, 14 Apr 2022 03:40:02 -0400
+X-MC-Unique: 4VnvEsw1Nvm-SapdnWd0mw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E78EE38149B6;
-        Thu, 14 Apr 2022 07:40:03 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DFD39101AA45;
+        Thu, 14 Apr 2022 07:40:01 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CB794C28109;
-        Thu, 14 Apr 2022 07:40:03 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C256841D40E;
+        Thu, 14 Apr 2022 07:40:01 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com
-Subject: [PATCH 17/22] KVM: x86/mmu: remove valid from extended role
-Date:   Thu, 14 Apr 2022 03:39:55 -0400
-Message-Id: <20220414074000.31438-18-pbonzini@redhat.com>
+Subject: [PATCH 04/22] KVM: x86/mmu: rephrase unclear comment
+Date:   Thu, 14 Apr 2022 03:39:42 -0400
+Message-Id: <20220414074000.31438-5-pbonzini@redhat.com>
 In-Reply-To: <20220414074000.31438-1-pbonzini@redhat.com>
 References: <20220414074000.31438-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The level and direct field of the CPU role can act as a marker for validity
-instead: exactly one of them is guaranteed to be nonzero, so a zero value
-for both means that the role is invalid and the MMU properties will be
-computed again.
+If accessed bits are not supported there simple isn't any distinction
+between accessed and non-accessed gPTEs, so the comment does not make
+much sense.  Rephrase it in terms of what happens if accessed bits
+*are* supported.
 
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h | 4 +---
- arch/x86/kvm/mmu/mmu.c          | 8 +++-----
- 2 files changed, 4 insertions(+), 8 deletions(-)
+ arch/x86/kvm/mmu/paging_tmpl.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 52ceeadbed28..1356959a2fe1 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -347,8 +347,7 @@ union kvm_mmu_page_role {
-  * kvm_mmu_extended_role complements kvm_mmu_page_role, tracking properties
-  * relevant to the current MMU configuration.   When loading CR0, CR4, or EFER,
-  * including on nested transitions, if nothing in the full role changes then
-- * MMU re-configuration can be skipped. @valid bit is set on first usage so we
-- * don't treat all-zero structure as valid data.
-+ * MMU re-configuration can be skipped.
-  *
-  * The properties that are tracked in the extended role but not the page role
-  * are for things that either (a) do not affect the validity of the shadow page
-@@ -365,7 +364,6 @@ union kvm_mmu_page_role {
- union kvm_mmu_extended_role {
- 	u32 word;
- 	struct {
--		unsigned int valid:1;
- 		unsigned int execonly:1;
- 		unsigned int cr4_pse:1;
- 		unsigned int cr4_pke:1;
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index cf8a41675a79..33827d1e3d5a 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4699,7 +4699,6 @@ kvm_calc_cpu_role(struct kvm_vcpu *vcpu, const struct kvm_mmu_role_regs *regs)
- 	role.base.access = ACC_ALL;
- 	role.base.smm = is_smm(vcpu);
- 	role.base.guest_mode = is_guest_mode(vcpu);
--	role.ext.valid = 1;
+diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+index 7d4377f1ef2a..07a7832f96cb 100644
+--- a/arch/x86/kvm/mmu/paging_tmpl.h
++++ b/arch/x86/kvm/mmu/paging_tmpl.h
+@@ -151,7 +151,7 @@ static bool FNAME(prefetch_invalid_gpte)(struct kvm_vcpu *vcpu,
+ 	if (!FNAME(is_present_gpte)(gpte))
+ 		goto no_present;
  
- 	if (!____is_cr0_pg(regs)) {
- 		role.base.direct = 1;
-@@ -4909,7 +4908,6 @@ kvm_calc_shadow_ept_root_page_role(struct kvm_vcpu *vcpu, bool accessed_dirty,
- 
- 	role.ext.word = 0;
- 	role.ext.execonly = execonly;
--	role.ext.valid = 1;
- 
- 	return role;
- }
-@@ -5030,9 +5028,9 @@ void kvm_mmu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 	vcpu->arch.root_mmu.root_role.word = 0;
- 	vcpu->arch.guest_mmu.root_role.word = 0;
- 	vcpu->arch.nested_mmu.root_role.word = 0;
--	vcpu->arch.root_mmu.cpu_role.ext.valid = 0;
--	vcpu->arch.guest_mmu.cpu_role.ext.valid = 0;
--	vcpu->arch.nested_mmu.cpu_role.ext.valid = 0;
-+	vcpu->arch.root_mmu.cpu_role.as_u64 = 0;
-+	vcpu->arch.guest_mmu.cpu_role.as_u64 = 0;
-+	vcpu->arch.nested_mmu.cpu_role.as_u64 = 0;
- 	kvm_mmu_reset_context(vcpu);
- 
- 	/*
+-	/* if accessed bit is not supported prefetch non accessed gpte */
++	/* Prefetch only accessed entries (unless A/D bits are disabled). */
+ 	if (PT_HAVE_ACCESSED_DIRTY(vcpu->arch.mmu) &&
+ 	    !(gpte & PT_GUEST_ACCESSED_MASK))
+ 		goto no_present;
 -- 
 2.31.1
 
