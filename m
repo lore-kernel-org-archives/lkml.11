@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76DA5C38A04
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C12C38A05
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245503AbiDNNij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47800 "EHLO
+        id S245435AbiDNNid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:38:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244701AbiDNN2B (ORCPT
+        with ESMTP id S244673AbiDNN17 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:01 -0400
+        Thu, 14 Apr 2022 09:27:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B4EA27E8;
-        Thu, 14 Apr 2022 06:20:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5675DA2071;
+        Thu, 14 Apr 2022 06:20:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26E9561670;
-        Thu, 14 Apr 2022 13:20:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ABA0C385A5;
-        Thu, 14 Apr 2022 13:20:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 619AD618FE;
+        Thu, 14 Apr 2022 13:20:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A26CC385A5;
+        Thu, 14 Apr 2022 13:20:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942446;
-        bh=iNvgSVgt3pJsi4RUJjwFI3DWHwekNw9Wj2oqLngQwAY=;
+        s=korg; t=1649942440;
+        bh=oYuw4mPYXpnVQt2LjPBguXjejJ1z5wVWhetTmZbca/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A/xg6L43caJAcSl25NswzvMjYBQkY4DHWgTpv39iW7lm9LwEqS+9tfVoHJwAHDh5Z
-         CSuxd3+wjKd74RDMh6vzAE5jCM9IilgLBE1DiBymYE/6BRbCMP6JJKSydikq7ZOWeL
-         E2p2uBmgWm29eB2mRsnZzEwwiZpt/dvOxQ/MIMi0=
+        b=KGugzzNxKoR0Ajnppr62aYgowoSiEYEApJ+Om7f1HdRKDl8GFHQDwVxoTm13CYqu7
+         vw/yKGjxX5NZZgPJmDGoAYbE/eCtwJNzNrEPsIF/6jFdOurtOB+7G/PEJ8ETi770/9
+         fybfD2sPcN6KTyI8t2zmVFkJw1IPjiC/e59yzJ2A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 138/338] powerpc/Makefile: Dont pass -mcpu=powerpc64 when building 32-bit
-Date:   Thu, 14 Apr 2022 15:10:41 +0200
-Message-Id: <20220414110842.834302491@linuxfoundation.org>
+Subject: [PATCH 4.19 110/338] ASoC: dmaengine: do not use a NULL prepare_slave_config() callback
+Date:   Thu, 14 Apr 2022 15:10:13 +0200
+Message-Id: <20220414110842.040827448@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -48,55 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 
-[ Upstream commit 2863dd2db23e0407f6c50b8ba5c0e55abef894f1 ]
+[ Upstream commit 9a1e13440a4f2e7566fd4c5eae6a53e6400e08a4 ]
 
-When CONFIG_GENERIC_CPU=y (true for all our defconfigs) we pass
--mcpu=powerpc64 to the compiler, even when we're building a 32-bit
-kernel.
+Even if struct snd_dmaengine_pcm_config is used, prepare_slave_config()
+callback might not be set. Check if this callback is set before using it.
 
-This happens because we have an ifdef CONFIG_PPC_BOOK3S_64/else block in
-the Makefile that was written before 32-bit supported GENERIC_CPU. Prior
-to that the else block only applied to 64-bit Book3E.
-
-The GCC man page says -mcpu=powerpc64 "[specifies] a pure ... 64-bit big
-endian PowerPC ... architecture machine [type], with an appropriate,
-generic processor model assumed for scheduling purposes."
-
-It's unclear how that interacts with -m32, which we are also passing,
-although obviously -m32 is taking precedence in some sense, as the
-32-bit kernel only contains 32-bit instructions.
-
-This was noticed by inspection, not via any bug reports, but it does
-affect code generation. Comparing before/after code generation, there
-are some changes to instruction scheduling, and the after case (with
--mcpu=powerpc64 removed) the compiler seems more keen to use r8.
-
-Fix it by making the else case only apply to Book3E 64, which excludes
-32-bit.
-
-Fixes: 0e00a8c9fd92 ("powerpc: Allow CPU selection also on PPC32")
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220215112858.304779-1-mpe@ellerman.id.au
+Fixes: fa654e085300 ("ASoC: dmaengine-pcm: Provide default config")
+Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Link: https://lore.kernel.org/r/20220307122202.2251639-2-codrin.ciubotariu@microchip.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/soc-generic-dmaengine-pcm.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
-index f51e21ea5349..26654d0c2af7 100644
---- a/arch/powerpc/Makefile
-+++ b/arch/powerpc/Makefile
-@@ -167,7 +167,7 @@ else
- CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=power7,$(call cc-option,-mtune=power5))
- CFLAGS-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mcpu=power5,-mcpu=power4)
- endif
--else
-+else ifdef CONFIG_PPC_BOOK3E_64
- CFLAGS-$(CONFIG_GENERIC_CPU) += -mcpu=powerpc64
- endif
+diff --git a/sound/soc/soc-generic-dmaengine-pcm.c b/sound/soc/soc-generic-dmaengine-pcm.c
+index 232df04ca586..45cce7376191 100644
+--- a/sound/soc/soc-generic-dmaengine-pcm.c
++++ b/sound/soc/soc-generic-dmaengine-pcm.c
+@@ -91,10 +91,10 @@ static int dmaengine_pcm_hw_params(struct snd_pcm_substream *substream,
  
+ 	memset(&slave_config, 0, sizeof(slave_config));
+ 
+-	if (!pcm->config)
+-		prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;
+-	else
++	if (pcm->config && pcm->config->prepare_slave_config)
+ 		prepare_slave_config = pcm->config->prepare_slave_config;
++	else
++		prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;
+ 
+ 	if (prepare_slave_config) {
+ 		ret = prepare_slave_config(substream, params, &slave_config);
 -- 
 2.34.1
 
