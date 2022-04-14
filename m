@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68156C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8677EC43217
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244572AbiDNN1o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49856 "EHLO
+        id S244661AbiDNN1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244131AbiDNNYb (ORCPT
+        with ESMTP id S244282AbiDNNYb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:24:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A289A9BB84;
-        Thu, 14 Apr 2022 06:19:04 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85ABA9BB8E;
+        Thu, 14 Apr 2022 06:19:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FEAEB82986;
-        Thu, 14 Apr 2022 13:19:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8E5DC385A1;
-        Thu, 14 Apr 2022 13:19:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2170A610A6;
+        Thu, 14 Apr 2022 13:19:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F5DCC385A5;
+        Thu, 14 Apr 2022 13:19:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942342;
-        bh=uL8gsqBp9qxoVBEHIUetvCQwCqbDjLIqa0SXOg5/iJ4=;
+        s=korg; t=1649942347;
+        bh=c4Vr/hwzGYqpo6BmuyxPjlXTZoR9qkoY3XzDf8x2oL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lY+twHzTL5iCsh1drYhUPSaJwUbNyab7dCkmAHjC8nyCJt2ei9Bgvj6X4R6rn6gzG
-         y9ordqzMF0S1Q8ZqERtaY4L2wF+PoYyJJWGSvZrUKiN5/4PTJA+uu5OYdH6I9Y2JA9
-         4H7Abe+1ZJ7lS1sMrh3AdSV3kbOA/332mOvzvSqU=
+        b=RlAdWWSVvXXyvpVSgIIRwM+AblN0MPCo7VqkFz9F4cuwzNRNxXztd7MNk2ZaMpnYK
+         IpFwrcfNrRaBoQwjmnW/TvSfz86cFlaTWpgab6HbevIXe2QlqEIneo0jZ3jTs5/e3i
+         JA9Yc4HBsI3oDkQYWZdmTzg4TiJIS5sI8i5IaTzM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 100/338] ASoC: mxs-saif: Handle errors for clk_enable
-Date:   Thu, 14 Apr 2022 15:10:03 +0200
-Message-Id: <20220414110841.744819001@linuxfoundation.org>
+Subject: [PATCH 4.19 102/338] memory: emif: Add check for setup_interrupts
+Date:   Thu, 14 Apr 2022 15:10:05 +0200
+Message-Id: <20220414110841.805835810@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,36 +51,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 2ecf362d220317debf5da376e0390e9f7a3f7b29 ]
+[ Upstream commit fd7bd80b46373887b390852f490f21b07e209498 ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it, like mxs_saif_trigger().
+As the potential failure of the devm_request_threaded_irq(),
+it should be better to check the return value of the
+setup_interrupts() and return error if fails.
 
-Fixes: d0ba4c014934 ("ASoC: mxs-saif: set a base clock rate for EXTMASTER mode work")
+Fixes: 68b4aee35d1f ("memory: emif: add interrupt and temperature handling")
 Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220301081717.3727190-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220224025444.3256530-1-jiasheng@iscas.ac.cn
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mxs/mxs-saif.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/memory/emif.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
-index 156aa7c00787..93c019670199 100644
---- a/sound/soc/mxs/mxs-saif.c
-+++ b/sound/soc/mxs/mxs-saif.c
-@@ -467,7 +467,10 @@ static int mxs_saif_hw_params(struct snd_pcm_substream *substream,
- 		* basic clock which should be fast enough for the internal
- 		* logic.
- 		*/
--		clk_enable(saif->clk);
-+		ret = clk_enable(saif->clk);
-+		if (ret)
-+			return ret;
-+
- 		ret = clk_set_rate(saif->clk, 24000000);
- 		clk_disable(saif->clk);
- 		if (ret)
+diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
+index 1c6b2cc6269a..8fd97b1b1efb 100644
+--- a/drivers/memory/emif.c
++++ b/drivers/memory/emif.c
+@@ -1517,7 +1517,7 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
+ {
+ 	struct emif_data	*emif;
+ 	struct resource		*res;
+-	int			irq;
++	int			irq, ret;
+ 
+ 	if (pdev->dev.of_node)
+ 		emif = of_get_memory_device_details(pdev->dev.of_node, &pdev->dev);
+@@ -1551,7 +1551,9 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
+ 	emif_onetime_settings(emif);
+ 	emif_debugfs_init(emif);
+ 	disable_and_clear_all_interrupts(emif);
+-	setup_interrupts(emif, irq);
++	ret = setup_interrupts(emif, irq);
++	if (ret)
++		goto error;
+ 
+ 	/* One-time actions taken on probing the first device */
+ 	if (!emif1) {
 -- 
 2.34.1
 
