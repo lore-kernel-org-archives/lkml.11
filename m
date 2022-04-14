@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC207C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 23:06:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72BFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 23:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243276AbiDNXI5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 19:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45936 "EHLO
+        id S1347474AbiDNXJC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 19:09:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347427AbiDNXIl (ORCPT
+        with ESMTP id S1347438AbiDNXIl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 19:08:41 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [202.36.163.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5466939DF
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9379728D
         for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 16:06:13 -0700 (PDT)
 Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 71E5E2C034E;
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id DAA042C0650;
         Thu, 14 Apr 2022 23:06:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
         s=mail181024; t=1649977570;
-        bh=Wut52E+BuohgUjJBGYIWfPqPDfFRuCKcu1A20WPht0I=;
+        bh=wM1gUAUK5fiJFyGOgqOfrElIDMcVpkW5bkW1WhrC3TQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RxV4lwlHEZeRPsr9Dz3UKMhCc8bZUPCXR7MakQPO2VqBkpKcBFcb6LlTTMOu+i9Kc
-         F9qee1/3Lzkhvxe32liwRSRKuO7SqqXWHr+60IaDyN24F0g4/4ws+TFHGurDYyL78o
-         CubQTQHO1LdtghMD3hPyjPbbDNmAgELM++SxHbnPC+JI41o2PD8M4Ieb70J5V08w4O
-         HrmfW+AaQOG8qHHdZZrACwDcpCbkRUGkSt0vF0JBvi+mhtc+5nn0gVp+iS55wm9AxL
-         TMZIr9359e4yabvpjf7Lypi/DL5IRbNmD57BqGU+1WADystz/vbMnMGr+dpZDzkKbl
-         rkASsQ6zWKJ1A==
+        b=U88lg85UZj1INYaRuQnOMzM3F9iiVPr7R+L5iG+YlK3nFxuz53GLU3oVP8K+XX1BR
+         1pkblkj0IN/Lmi81Dki7RS9nDdx9NGA8dgY+PZoPI6cLaXkENcxINeU6tvy9voqMWD
+         VMotunS1ITMIaSm1vSZpvIPT4iS8BVuwZOrukZl6qEKTgwXwaThnU1U5BBClUxFE8Z
+         g+ga+CwBj1xzP5kHcm+N/WdY5L7vMvbaBL3+zK6Nd3F9bIFVql+yNznmGkz89m0C+n
+         fTC77S4Ee1djWkCmQ/pCg/GsRo+BLGwZK6z3J/+DTtiMO7e/DZ0TCDcvwDABspeXtO
+         QCz48P1pimtmA==
 Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B6258a8e20001>; Fri, 15 Apr 2022 11:06:10 +1200
+        id <B6258a8e20004>; Fri, 15 Apr 2022 11:06:10 +1200
 Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id 4211F13EE37;
+        by pat.atlnz.lc (Postfix) with ESMTP id B81F513EE37;
         Fri, 15 Apr 2022 11:06:10 +1200 (NZST)
 Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id E28AF2A2679; Fri, 15 Apr 2022 11:06:06 +1200 (NZST)
+        id 63EFD2A2679; Fri, 15 Apr 2022 11:06:07 +1200 (NZST)
 From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
 To:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
         andrew@lunn.ch, gregory.clement@bootlin.com,
@@ -45,103 +46,98 @@ To:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
 Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH 1/4] ARM: dts: mvebu: Update mvsdio node names to match schema
-Date:   Fri, 15 Apr 2022 11:06:00 +1200
-Message-Id: <20220414230603.567049-2-chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH 4/4] dt-bindings: mmc: convert sdhci-dove to JSON schema
+Date:   Fri, 15 Apr 2022 11:06:03 +1200
+Message-Id: <20220414230603.567049-5-chris.packham@alliedtelesis.co.nz>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220414230603.567049-1-chris.packham@alliedtelesis.co.nz>
 References: <20220414230603.567049-1-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=L59jvNb8 c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=z0gMJWrwH1QA:10 a=AgHtZ1O-xYyxAwoHFCcA:9
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=L59jvNb8 c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=z0gMJWrwH1QA:10 a=gEfo2CItAAAA:8 a=KKAkSRfTAAAA:8 a=RGhaJwkFiXH1yVd61u0A:9 a=sptkURWiP4Gy88Gu7hUp:22 a=cvBusfyB2V15izCimMoJ:22
 X-SEG-SpamProfiler-Score: 0
 x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the node names of the mvsdio@ interfaces to be mmc@ to match the
-node name enforced by the mmc-controller.yaml schema.
+Convert the sdhci-dove binding to JSON schema.
 
 Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
 ---
- arch/arm/boot/dts/armada-370-xp.dtsi | 2 +-
- arch/arm/boot/dts/armada-375.dtsi    | 2 +-
- arch/arm/boot/dts/kirkwood-6192.dtsi | 2 +-
- arch/arm/boot/dts/kirkwood-6281.dtsi | 2 +-
- arch/arm/boot/dts/kirkwood-6282.dtsi | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
+ .../bindings/mmc/marvell,dove-sdhci.yaml      | 38 +++++++++++++++++++
+ .../devicetree/bindings/mmc/sdhci-dove.txt    | 14 -------
+ 2 files changed, 38 insertions(+), 14 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mmc/marvell,dove-sd=
+hci.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mmc/sdhci-dove.txt
 
-diff --git a/arch/arm/boot/dts/armada-370-xp.dtsi b/arch/arm/boot/dts/arm=
-ada-370-xp.dtsi
-index 0b8c2a64b36f..c611166b6dc5 100644
---- a/arch/arm/boot/dts/armada-370-xp.dtsi
-+++ b/arch/arm/boot/dts/armada-370-xp.dtsi
-@@ -252,7 +252,7 @@ nand_controller: nand-controller@d0000 {
- 				status =3D "disabled";
- 			};
-=20
--			sdio: mvsdio@d4000 {
-+			sdio: mmc@d4000 {
- 				compatible =3D "marvell,orion-sdio";
- 				reg =3D <0xd4000 0x200>;
- 				interrupts =3D <54>;
-diff --git a/arch/arm/boot/dts/armada-375.dtsi b/arch/arm/boot/dts/armada=
--375.dtsi
-index 7f2f24a29e6c..802cabb8dd8a 100644
---- a/arch/arm/boot/dts/armada-375.dtsi
-+++ b/arch/arm/boot/dts/armada-375.dtsi
-@@ -510,7 +510,7 @@ nand_controller: nand-controller@d0000 {
- 				status =3D "disabled";
- 			};
-=20
--			sdio: mvsdio@d4000 {
-+			sdio: mmc@d4000 {
- 				compatible =3D "marvell,orion-sdio";
- 				reg =3D <0xd4000 0x200>;
- 				interrupts =3D <GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>;
-diff --git a/arch/arm/boot/dts/kirkwood-6192.dtsi b/arch/arm/boot/dts/kir=
-kwood-6192.dtsi
-index 396bcba08adb..d558980af67b 100644
---- a/arch/arm/boot/dts/kirkwood-6192.dtsi
-+++ b/arch/arm/boot/dts/kirkwood-6192.dtsi
-@@ -73,7 +73,7 @@ sata: sata@80000 {
- 			status =3D "disabled";
- 		};
-=20
--		sdio: mvsdio@90000 {
-+		sdio: mmc@90000 {
- 			compatible =3D "marvell,orion-sdio";
- 			reg =3D <0x90000 0x200>;
- 			interrupts =3D <28>;
-diff --git a/arch/arm/boot/dts/kirkwood-6281.dtsi b/arch/arm/boot/dts/kir=
-kwood-6281.dtsi
-index faa05849a40d..e09dbbf35078 100644
---- a/arch/arm/boot/dts/kirkwood-6281.dtsi
-+++ b/arch/arm/boot/dts/kirkwood-6281.dtsi
-@@ -73,7 +73,7 @@ sata: sata@80000 {
- 			status =3D "disabled";
- 		};
-=20
--		sdio: mvsdio@90000 {
-+		sdio: mmc@90000 {
- 			compatible =3D "marvell,orion-sdio";
- 			reg =3D <0x90000 0x200>;
- 			interrupts =3D <28>;
-diff --git a/arch/arm/boot/dts/kirkwood-6282.dtsi b/arch/arm/boot/dts/kir=
-kwood-6282.dtsi
-index e84c54b77dea..bc372f48a1af 100644
---- a/arch/arm/boot/dts/kirkwood-6282.dtsi
-+++ b/arch/arm/boot/dts/kirkwood-6282.dtsi
-@@ -124,7 +124,7 @@ sata: sata@80000 {
- 			status =3D "disabled";
- 		};
-=20
--		sdio: mvsdio@90000 {
-+		sdio: mmc@90000 {
- 			compatible =3D "marvell,orion-sdio";
- 			reg =3D <0x90000 0x200>;
- 			interrupts =3D <28>;
+diff --git a/Documentation/devicetree/bindings/mmc/marvell,dove-sdhci.yam=
+l b/Documentation/devicetree/bindings/mmc/marvell,dove-sdhci.yaml
+new file mode 100644
+index 000000000000..b3a762b528fd
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mmc/marvell,dove-sdhci.yaml
+@@ -0,0 +1,38 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mmc/marvell,dove-sdhci.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Marvell sdhci-dove controller
++
++maintainers:
++  - Ulf Hansson <ulf.hansson@linaro.org>
++
++allOf:
++  - $ref: mmc-controller.yaml#
++
++properties:
++  compatible:
++    const: marvell,dove-sdhci
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    sdio0: mmc@92000 {
++      compatible =3D "marvell,dove-sdhci";
++      reg =3D <0x92000 0x100>;
++      interrupts =3D <35>;
++    };
+diff --git a/Documentation/devicetree/bindings/mmc/sdhci-dove.txt b/Docum=
+entation/devicetree/bindings/mmc/sdhci-dove.txt
+deleted file mode 100644
+index ae9aab9abcd7..000000000000
+--- a/Documentation/devicetree/bindings/mmc/sdhci-dove.txt
++++ /dev/null
+@@ -1,14 +0,0 @@
+-* Marvell sdhci-dove controller
+-
+-This file documents differences between the core properties in mmc.txt
+-and the properties used by the sdhci-pxav2 and sdhci-pxav3 drivers.
+-
+-- compatible: Should be "marvell,dove-sdhci".
+-
+-Example:
+-
+-sdio0: sdio@92000 {
+-	compatible =3D "marvell,dove-sdhci";
+-	reg =3D <0x92000 0x100>;
+-	interrupts =3D <35>;
+-};
 --=20
 2.35.1
 
