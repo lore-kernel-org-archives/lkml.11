@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ACE9C4167D
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 391DCC4167E
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352935AbiDNOe1 (ORCPT
+        id S1352990AbiDNOek (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:34:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35338 "EHLO
+        Thu, 14 Apr 2022 10:34:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245510AbiDNNik (ORCPT
+        with ESMTP id S1343525AbiDNNjE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F925A207A;
-        Thu, 14 Apr 2022 06:32:35 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356D21095;
+        Thu, 14 Apr 2022 06:34:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2CFAB82968;
-        Thu, 14 Apr 2022 13:32:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18F0BC385A1;
-        Thu, 14 Apr 2022 13:32:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E54F3B82968;
+        Thu, 14 Apr 2022 13:34:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54F5DC385A1;
+        Thu, 14 Apr 2022 13:34:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943152;
-        bh=NcRu25js3toUPx0KLfzmrjPtNYkGWmP5Qed61QgN4e4=;
+        s=korg; t=1649943261;
+        bh=LLwRp3ENrPhMEI4bqu6WcRra/U7y12FSubcvTmwVew4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h0Xes7dLXSEYoFQ9L8z1oCUmLHQQtW2GRq0PyGpKfFNngp2Qv6i1S53CrP4YbCOj4
-         +p19DtvQgvo0sinwOTC9wIRlGhSzg8neL6WkJy2MnaP0krlHHV09TdFOEs+uuV7f4H
-         HMOdNVNrWZF+hF0nZK+UhGm427fdaTR4KCg122X8=
+        b=dIYfCCKR7iCwONDUCKdGVe/ufBOQpj2o3COQ8jIuLWcjAkMAMabDo2xuUH6OjxEtk
+         orWpAt36JmgnPZW93Qv4zzhZcMwwNwI6bo/5aCIyWvNMx+Sh2XwdwBEjoOwFkQ7REn
+         r+NhvptMXtZhkQV5lbsDTYzjyYI1EipZ0TX6eREs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.4 046/475] jffs2: fix memory leak in jffs2_scan_medium
-Date:   Thu, 14 Apr 2022 15:07:11 +0200
-Message-Id: <20220414110856.445560065@linuxfoundation.org>
+        stable@vger.kernel.org, Manish Chopra <manishc@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 052/475] qed: validate and restrict untrusted VFs vlan promisc mode
+Date:   Thu, 14 Apr 2022 15:07:17 +0200
+Message-Id: <20220414110856.610579042@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,110 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Manish Chopra <manishc@marvell.com>
 
-commit 9cdd3128874f5fe759e2c4e1360ab7fb96a8d1df upstream.
+commit cbcc44db2cf7b836896733acc0e5ea966136ed22 upstream.
 
-If an error is returned in jffs2_scan_eraseblock() and some memory
-has been added to the jffs2_summary *s, we can observe the following
-kmemleak report:
+Today when VFs are put in promiscuous mode, they can request PF
+to configure device for them to receive all VLANs traffic regardless
+of what vlan is configured by the PF (via ip link) and PF allows this
+config request regardless of whether VF is trusted or not.
 
---------------------------------------------
-unreferenced object 0xffff88812b889c40 (size 64):
-  comm "mount", pid 692, jiffies 4294838325 (age 34.288s)
-  hex dump (first 32 bytes):
-    40 48 b5 14 81 88 ff ff 01 e0 31 00 00 00 50 00  @H........1...P.
-    00 00 01 00 00 00 01 00 00 00 02 00 00 00 09 08  ................
-  backtrace:
-    [<ffffffffae93a3a3>] __kmalloc+0x613/0x910
-    [<ffffffffaf423b9c>] jffs2_sum_add_dirent_mem+0x5c/0xa0
-    [<ffffffffb0f3afa8>] jffs2_scan_medium.cold+0x36e5/0x4794
-    [<ffffffffb0f3dbe1>] jffs2_do_mount_fs.cold+0xa7/0x2267
-    [<ffffffffaf40acf3>] jffs2_do_fill_super+0x383/0xc30
-    [<ffffffffaf40c00a>] jffs2_fill_super+0x2ea/0x4c0
-    [<ffffffffb0315d64>] mtd_get_sb+0x254/0x400
-    [<ffffffffb0315f5f>] mtd_get_sb_by_nr+0x4f/0xd0
-    [<ffffffffb0316478>] get_tree_mtd+0x498/0x840
-    [<ffffffffaf40bd15>] jffs2_get_tree+0x25/0x30
-    [<ffffffffae9f358d>] vfs_get_tree+0x8d/0x2e0
-    [<ffffffffaea7a98f>] path_mount+0x50f/0x1e50
-    [<ffffffffaea7c3d7>] do_mount+0x107/0x130
-    [<ffffffffaea7c5c5>] __se_sys_mount+0x1c5/0x2f0
-    [<ffffffffaea7c917>] __x64_sys_mount+0xc7/0x160
-    [<ffffffffb10142f5>] do_syscall_64+0x45/0x70
-unreferenced object 0xffff888114b54840 (size 32):
-  comm "mount", pid 692, jiffies 4294838325 (age 34.288s)
-  hex dump (first 32 bytes):
-    c0 75 b5 14 81 88 ff ff 02 e0 02 00 00 00 02 00  .u..............
-    00 00 84 00 00 00 44 00 00 00 6b 6b 6b 6b 6b a5  ......D...kkkkk.
-  backtrace:
-    [<ffffffffae93be24>] kmem_cache_alloc_trace+0x584/0x880
-    [<ffffffffaf423b04>] jffs2_sum_add_inode_mem+0x54/0x90
-    [<ffffffffb0f3bd44>] jffs2_scan_medium.cold+0x4481/0x4794
-    [...]
-unreferenced object 0xffff888114b57280 (size 32):
-  comm "mount", pid 692, jiffies 4294838393 (age 34.357s)
-  hex dump (first 32 bytes):
-    10 d5 6c 11 81 88 ff ff 08 e0 05 00 00 00 01 00  ..l.............
-    00 00 38 02 00 00 28 00 00 00 6b 6b 6b 6b 6b a5  ..8...(...kkkkk.
-  backtrace:
-    [<ffffffffae93be24>] kmem_cache_alloc_trace+0x584/0x880
-    [<ffffffffaf423c34>] jffs2_sum_add_xattr_mem+0x54/0x90
-    [<ffffffffb0f3a24f>] jffs2_scan_medium.cold+0x298c/0x4794
-    [...]
-unreferenced object 0xffff8881116cd510 (size 16):
-  comm "mount", pid 692, jiffies 4294838395 (age 34.355s)
-  hex dump (first 16 bytes):
-    00 00 00 00 00 00 00 00 09 e0 60 02 00 00 6b a5  ..........`...k.
-  backtrace:
-    [<ffffffffae93be24>] kmem_cache_alloc_trace+0x584/0x880
-    [<ffffffffaf423cc4>] jffs2_sum_add_xref_mem+0x54/0x90
-    [<ffffffffb0f3b2e3>] jffs2_scan_medium.cold+0x3a20/0x4794
-    [...]
---------------------------------------------
+>From security POV, when VLAN is configured for VF through PF (via ip link),
+honour such config requests from VF only when they are configured to be
+trusted, otherwise restrict such VFs vlan promisc mode config.
 
-Therefore, we should call jffs2_sum_reset_collected(s) on exit to
-release the memory added in s. In addition, a new tag "out_buf" is
-added to prevent the NULL pointer reference caused by s being NULL.
-(thanks to Zhang Yi for this analysis)
-
-Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
 Cc: stable@vger.kernel.org
-Co-developed-with: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Fixes: f990c82c385b ("qed*: Add support for ndo_set_vf_trust")
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/jffs2/scan.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_sriov.c |   28 ++++++++++++++++++++++++++--
+ drivers/net/ethernet/qlogic/qed/qed_sriov.h |    1 +
+ 2 files changed, 27 insertions(+), 2 deletions(-)
 
---- a/fs/jffs2/scan.c
-+++ b/fs/jffs2/scan.c
-@@ -136,7 +136,7 @@ int jffs2_scan_medium(struct jffs2_sb_in
- 		if (!s) {
- 			JFFS2_WARNING("Can't allocate memory for summary\n");
- 			ret = -ENOMEM;
--			goto out;
-+			goto out_buf;
- 		}
+--- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+@@ -3003,12 +3003,16 @@ static int qed_iov_pre_update_vport(stru
+ 	u8 mask = QED_ACCEPT_UCAST_UNMATCHED | QED_ACCEPT_MCAST_UNMATCHED;
+ 	struct qed_filter_accept_flags *flags = &params->accept_flags;
+ 	struct qed_public_vf_info *vf_info;
++	u16 tlv_mask;
++
++	tlv_mask = BIT(QED_IOV_VP_UPDATE_ACCEPT_PARAM) |
++		   BIT(QED_IOV_VP_UPDATE_ACCEPT_ANY_VLAN);
+ 
+ 	/* Untrusted VFs can't even be trusted to know that fact.
+ 	 * Simply indicate everything is configured fine, and trace
+ 	 * configuration 'behind their back'.
+ 	 */
+-	if (!(*tlvs & BIT(QED_IOV_VP_UPDATE_ACCEPT_PARAM)))
++	if (!(*tlvs & tlv_mask))
+ 		return 0;
+ 
+ 	vf_info = qed_iov_get_public_vf_info(hwfn, vfid, true);
+@@ -3025,6 +3029,13 @@ static int qed_iov_pre_update_vport(stru
+ 			flags->tx_accept_filter &= ~mask;
  	}
  
-@@ -274,13 +274,15 @@ int jffs2_scan_medium(struct jffs2_sb_in
- 	}
- 	ret = 0;
-  out:
-+	jffs2_sum_reset_collected(s);
-+	kfree(s);
-+ out_buf:
- 	if (buf_size)
- 		kfree(flashbuf);
- #ifndef __ECOS
- 	else
- 		mtd_unpoint(c->mtd, 0, c->mtd->size);
- #endif
--	kfree(s);
- 	return ret;
++	if (params->update_accept_any_vlan_flg) {
++		vf_info->accept_any_vlan = params->accept_any_vlan;
++
++		if (vf_info->forced_vlan && !vf_info->is_trusted_configured)
++			params->accept_any_vlan = false;
++	}
++
+ 	return 0;
  }
  
+@@ -5148,6 +5159,12 @@ static void qed_iov_handle_trust_change(
+ 
+ 		params.update_ctl_frame_check = 1;
+ 		params.mac_chk_en = !vf_info->is_trusted_configured;
++		params.update_accept_any_vlan_flg = 0;
++
++		if (vf_info->accept_any_vlan && vf_info->forced_vlan) {
++			params.update_accept_any_vlan_flg = 1;
++			params.accept_any_vlan = vf_info->accept_any_vlan;
++		}
+ 
+ 		if (vf_info->rx_accept_mode & mask) {
+ 			flags->update_rx_mode_config = 1;
+@@ -5163,13 +5180,20 @@ static void qed_iov_handle_trust_change(
+ 		if (!vf_info->is_trusted_configured) {
+ 			flags->rx_accept_filter &= ~mask;
+ 			flags->tx_accept_filter &= ~mask;
++			params.accept_any_vlan = false;
+ 		}
+ 
+ 		if (flags->update_rx_mode_config ||
+ 		    flags->update_tx_mode_config ||
+-		    params.update_ctl_frame_check)
++		    params.update_ctl_frame_check ||
++		    params.update_accept_any_vlan_flg) {
++			DP_VERBOSE(hwfn, QED_MSG_IOV,
++				   "vport update config for %s VF[abs 0x%x rel 0x%x]\n",
++				   vf_info->is_trusted_configured ? "trusted" : "untrusted",
++				   vf->abs_vf_id, vf->relative_vf_id);
+ 			qed_sp_vport_update(hwfn, &params,
+ 					    QED_SPQ_MODE_EBLOCK, NULL);
++		}
+ 	}
+ }
+ 
+--- a/drivers/net/ethernet/qlogic/qed/qed_sriov.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.h
+@@ -88,6 +88,7 @@ struct qed_public_vf_info {
+ 	bool is_trusted_request;
+ 	u8 rx_accept_mode;
+ 	u8 tx_accept_mode;
++	bool accept_any_vlan;
+ };
+ 
+ struct qed_iov_vf_init_params {
 
 
