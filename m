@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD41C38A04
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 240C2C35280
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345125AbiDNOz7 (ORCPT
+        id S1355095AbiDNO5a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43650 "EHLO
+        Thu, 14 Apr 2022 10:57:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344883AbiDNNxS (ORCPT
+        with ESMTP id S1345693AbiDNNyF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:53:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D06D5DA2E;
-        Thu, 14 Apr 2022 06:44:45 -0700 (PDT)
+        Thu, 14 Apr 2022 09:54:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20919ADD4C;
+        Thu, 14 Apr 2022 06:45:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98E4C61BA7;
-        Thu, 14 Apr 2022 13:44:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4E5FC385A5;
-        Thu, 14 Apr 2022 13:44:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A514BB82894;
+        Thu, 14 Apr 2022 13:45:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E163BC385A1;
+        Thu, 14 Apr 2022 13:45:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943884;
-        bh=Iuq8Ee1e4p6+D/zvNNeiej/ULtkgpt2PrjCWCmzJEh8=;
+        s=korg; t=1649943903;
+        bh=yD6j1fnTv8REaI/DYQ4/I9JyKfmStY72PLy1+LTQ6pg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F6owHZ2HUfEdmNMmgaXlJaJ9Pkmie/fkfRbQXMOP/6tQG1yONWoCzXEyL9MGkIT/G
-         WitB4MQk7vwQf9eoLPQewlU9QRcvfBbKlqFouacxYpIsXd7n8BYLaPM7KtzEjsbibw
-         WzGuL/DYqfik4D8qQMtUr+tZ36ZhqvRkEoxtDTYE=
+        b=hGqZZdD69Stq8mfvY1KO2RrLm2uHIbxVAAZmmJmimNHpTrPy8pSFq4fk+7c78hRE1
+         MUurdd79zzWuhX/OAUlYKn8uLHi7KJZTlVvPzWAQjE4ordbax6+9OCelIe/8Vq5YH+
+         uJU/BDp4SP4cCdTSATErYrsLTXsdYtYCXskGudNY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Arun Easi <aeasi@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 317/475] scsi: qla2xxx: Fix device reconnect in loop topology
-Date:   Thu, 14 Apr 2022 15:11:42 +0200
-Message-Id: <20220414110903.960074098@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 306/475] video: fbdev: sm712fb: Fix crash in smtcfb_write()
+Date:   Thu, 14 Apr 2022 15:11:31 +0200
+Message-Id: <20220414110903.655028749@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,78 +49,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Easi <aeasi@marvell.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit 8ad4be3d15cf144b5834bdb00d5bbe4050938dc7 upstream.
+[ Upstream commit 4f01d09b2bbfbcb47b3eb305560a7f4857a32260 ]
 
-A device logout in loop topology initiates a device connection teardown
-which loses the FW device handle. In loop topo, the device handle is not
-regrabbed leading to device login failures and eventually to loss of the
-device. Fix this by taking the main login path that does it.
+When the sm712fb driver writes three bytes to the framebuffer, the
+driver will crash:
 
-Link: https://lore.kernel.org/r/20220110050218.3958-11-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Arun Easi <aeasi@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    BUG: unable to handle page fault for address: ffffc90001ffffff
+    RIP: 0010:smtcfb_write+0x454/0x5b0
+    Call Trace:
+     vfs_write+0x291/0xd60
+     ? do_sys_openat2+0x27d/0x350
+     ? __fget_light+0x54/0x340
+     ksys_write+0xce/0x190
+     do_syscall_64+0x43/0x90
+     entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fix it by removing the open-coded endianness fixup-code.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |   15 +++++++++++++++
- drivers/scsi/qla2xxx/qla_os.c   |    5 +++++
- 2 files changed, 20 insertions(+)
+ drivers/video/fbdev/sm712fb.c |   21 ++++-----------------
+ 1 file changed, 4 insertions(+), 17 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -955,6 +955,9 @@ static void qla24xx_handle_gnl_done_even
- 				set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
- 			}
- 			break;
-+		case ISP_CFG_NL:
-+			qla24xx_fcport_handle_login(vha, fcport);
-+			break;
- 		default:
+--- a/drivers/video/fbdev/sm712fb.c
++++ b/drivers/video/fbdev/sm712fb.c
+@@ -1119,7 +1119,7 @@ static ssize_t smtcfb_write(struct fb_in
+ 		count = total_size - p;
+ 	}
+ 
+-	buffer = kmalloc((count > PAGE_SIZE) ? PAGE_SIZE : count, GFP_KERNEL);
++	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
+ 	if (!buffer)
+ 		return -ENOMEM;
+ 
+@@ -1137,24 +1137,11 @@ static ssize_t smtcfb_write(struct fb_in
  			break;
  		}
-@@ -1477,6 +1480,11 @@ static void qla_chk_n2n_b4_login(struct
- 	u8 login = 0;
- 	int rc;
  
-+	ql_dbg(ql_dbg_disc, vha, 0x307b,
-+	    "%s %8phC DS %d LS %d lid %d retries=%d\n",
-+	    __func__, fcport->port_name, fcport->disc_state,
-+	    fcport->fw_login_state, fcport->loop_id, fcport->login_retry);
-+
- 	if (qla_tgt_mode_enabled(vha))
- 		return;
- 
-@@ -5217,6 +5225,13 @@ skip_login:
- 			memcpy(fcport->node_name, new_fcport->node_name,
- 			    WWN_SIZE);
- 			fcport->scan_state = QLA_FCPORT_FOUND;
-+			if (fcport->login_retry == 0) {
-+				fcport->login_retry = vha->hw->login_retry_count;
-+				ql_dbg(ql_dbg_disc, vha, 0x2135,
-+				    "Port login retry %8phN, lid 0x%04x retry cnt=%d.\n",
-+				    fcport->port_name, fcport->loop_id,
-+				    fcport->login_retry);
-+			}
- 			found++;
- 			break;
+-		for (i = c >> 2; i--;) {
+-			fb_writel(big_swap(*src), dst++);
++		for (i = (c + 3) >> 2; i--;) {
++			fb_writel(big_swap(*src), dst);
++			dst++;
+ 			src++;
  		}
---- a/drivers/scsi/qla2xxx/qla_os.c
-+++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -5349,6 +5349,11 @@ void qla2x00_relogin(struct scsi_qla_hos
- 					ea.fcport = fcport;
- 					qla24xx_handle_relogin_event(vha, &ea);
- 				} else if (vha->hw->current_topology ==
-+					 ISP_CFG_NL &&
-+					IS_QLA2XXX_MIDTYPE(vha->hw)) {
-+					(void)qla24xx_fcport_handle_login(vha,
-+									fcport);
-+				} else if (vha->hw->current_topology ==
- 				    ISP_CFG_NL) {
- 					fcport->login_retry--;
- 					status =
+-		if (c & 3) {
+-			u8 *src8 = (u8 *)src;
+-			u8 __iomem *dst8 = (u8 __iomem *)dst;
+-
+-			for (i = c & 3; i--;) {
+-				if (i & 1) {
+-					fb_writeb(*src8++, ++dst8);
+-				} else {
+-					fb_writeb(*src8++, --dst8);
+-					dst8 += 2;
+-				}
+-			}
+-			dst = (u32 __iomem *)dst8;
+-		}
+ 
+ 		*ppos += c;
+ 		buf += c;
 
 
