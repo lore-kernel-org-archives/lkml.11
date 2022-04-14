@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF4CC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA853C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347454AbiDNOLz (ORCPT
+        id S1347900AbiDNOMZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:11:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
+        Thu, 14 Apr 2022 10:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344683AbiDNNdX (ORCPT
+        with ESMTP id S244518AbiDNNeg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:33:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B260425C60;
-        Thu, 14 Apr 2022 06:30:52 -0700 (PDT)
+        Thu, 14 Apr 2022 09:34:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A77092860;
+        Thu, 14 Apr 2022 06:31:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4895E619FC;
-        Thu, 14 Apr 2022 13:30:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5427DC3410F;
-        Thu, 14 Apr 2022 13:30:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E1F2B82968;
+        Thu, 14 Apr 2022 13:31:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89536C385A5;
+        Thu, 14 Apr 2022 13:30:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943051;
-        bh=bGL/JWnNT3SXoDGDQIG/STlZZ8Wb6FUJ1KCjPhTJqJY=;
+        s=korg; t=1649943059;
+        bh=GC+ilHk3EcKaGInc4JRGAKGASFFXBctqAkfl0eWYp+I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0wsKS/PiEnSh5312yi+vYvlpKh8FFTGVmS+f13i7fnkWyf0GeqC5G9S3GjTH4ybQK
-         r6OS0pkpGR7l0OxM4CC+WF1KEfQIMflbq0vCb/fnRpZ85GUvmlha04IyGrfoIUxzF7
-         /lpt3J0JTymTNz0ha6QxJapMhDkkFt6zjzfuZcco=
+        b=yH/mNtYjFqLQTgqnzhqwjVwTxXJKOVIwcdjwqnUGX7NID0HQGalF5CxtGbjWY1AnY
+         JP6xz+VL0HxJahpzZPa6j4813VO6Cux0nRBTW5eMI8zKnkLu9cxhpfdZRcZdbzJTUB
+         YCK1N2DatlcC1Sb5wcgpwSfPMQ3IjqQnqSUzdfD0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 5.4 018/475] virtio-blk: Use blk_validate_block_size() to validate block size
-Date:   Thu, 14 Apr 2022 15:06:43 +0200
-Message-Id: <20220414110855.662314371@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Pavan Kondeti <quic_pkondeti@quicinc.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.4 021/475] xhci: make xhci_handshake timeout for xhci_reset() adjustable
+Date:   Thu, 14 Apr 2022 15:06:46 +0200
+Message-Id: <20220414110855.746788857@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,72 +50,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Mathias Nyman <mathias.nyman@linux.intel.com>
 
-commit 57a13a5b8157d9a8606490aaa1b805bafe6c37e1 upstream.
+commit 14073ce951b5919da450022c050772902f24f054 upstream.
 
-The block layer can't support a block size larger than
-page size yet. And a block size that's too small or
-not a power of two won't work either. If a misconfigured
-device presents an invalid block size in configuration space,
-it will result in the kernel crash something like below:
+xhci_reset() timeout was increased from 250ms to 10 seconds in order to
+give Renesas 720201 xHC enough time to get ready in probe.
 
-[  506.154324] BUG: kernel NULL pointer dereference, address: 0000000000000008
-[  506.160416] RIP: 0010:create_empty_buffers+0x24/0x100
-[  506.174302] Call Trace:
-[  506.174651]  create_page_buffers+0x4d/0x60
-[  506.175207]  block_read_full_page+0x50/0x380
-[  506.175798]  ? __mod_lruvec_page_state+0x60/0xa0
-[  506.176412]  ? __add_to_page_cache_locked+0x1b2/0x390
-[  506.177085]  ? blkdev_direct_IO+0x4a0/0x4a0
-[  506.177644]  ? scan_shadow_nodes+0x30/0x30
-[  506.178206]  ? lru_cache_add+0x42/0x60
-[  506.178716]  do_read_cache_page+0x695/0x740
-[  506.179278]  ? read_part_sector+0xe0/0xe0
-[  506.179821]  read_part_sector+0x36/0xe0
-[  506.180337]  adfspart_check_ICS+0x32/0x320
-[  506.180890]  ? snprintf+0x45/0x70
-[  506.181350]  ? read_part_sector+0xe0/0xe0
-[  506.181906]  bdev_disk_changed+0x229/0x5c0
-[  506.182483]  blkdev_get_whole+0x6d/0x90
-[  506.183013]  blkdev_get_by_dev+0x122/0x2d0
-[  506.183562]  device_add_disk+0x39e/0x3c0
-[  506.184472]  virtblk_probe+0x3f8/0x79b [virtio_blk]
-[  506.185461]  virtio_dev_probe+0x15e/0x1d0 [virtio]
+xhci_reset() is called with interrupts disabled in other places, and
+waiting for 10 seconds there is not acceptable.
 
-So let's use a block layer helper to validate the block size.
+Add a timeout parameter to xhci_reset(), and adjust it back to 250ms
+when called from xhci_stop() or xhci_shutdown() where interrupts are
+disabled, and successful reset isn't that critical.
+This solves issues when deactivating host mode on platforms like SM8450.
 
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Link: https://lore.kernel.org/r/20211026144015.188-5-xieyongji@bytedance.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
+For now don't change the timeout if xHC is reset in xhci_resume().
+No issues are reported for it, and we need the reset to succeed.
+Locking around that reset needs to be revisited later.
+
+Additionally change the signed integer timeout parameter in
+xhci_handshake() to a u64 to match the timeout value we pass to
+readl_poll_timeout_atomic()
+
+Fixes: 22ceac191211 ("xhci: Increase reset timeout for Renesas 720201 host.")
+Cc: stable@vger.kernel.org
+Reported-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Reported-by: Pavan Kondeti <quic_pkondeti@quicinc.com>
+Tested-by: Pavan Kondeti <quic_pkondeti@quicinc.com>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220303110903.1662404-2-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/virtio_blk.c |   12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/usb/host/xhci-hub.c |    2 +-
+ drivers/usb/host/xhci-mem.c |    2 +-
+ drivers/usb/host/xhci.c     |   20 +++++++++-----------
+ drivers/usb/host/xhci.h     |    7 +++++--
+ 4 files changed, 16 insertions(+), 15 deletions(-)
 
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -936,9 +936,17 @@ static int virtblk_probe(struct virtio_d
- 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
- 				   struct virtio_blk_config, blk_size,
- 				   &blk_size);
--	if (!err)
-+	if (!err) {
-+		err = blk_validate_block_size(blk_size);
-+		if (err) {
-+			dev_err(&vdev->dev,
-+				"virtio_blk: invalid block size: 0x%x\n",
-+				blk_size);
-+			goto out_free_tags;
-+		}
-+
- 		blk_queue_logical_block_size(q, blk_size);
--	else
-+	} else
- 		blk_size = queue_logical_block_size(q);
+--- a/drivers/usb/host/xhci-hub.c
++++ b/drivers/usb/host/xhci-hub.c
+@@ -674,7 +674,7 @@ static int xhci_exit_test_mode(struct xh
+ 	}
+ 	pm_runtime_allow(xhci_to_hcd(xhci)->self.controller);
+ 	xhci->test_mode = 0;
+-	return xhci_reset(xhci);
++	return xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
+ }
  
- 	/* Use topology information if available */
+ void xhci_set_link_state(struct xhci_hcd *xhci, struct xhci_port *port,
+--- a/drivers/usb/host/xhci-mem.c
++++ b/drivers/usb/host/xhci-mem.c
+@@ -2583,7 +2583,7 @@ int xhci_mem_init(struct xhci_hcd *xhci,
+ 
+ fail:
+ 	xhci_halt(xhci);
+-	xhci_reset(xhci);
++	xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
+ 	xhci_mem_cleanup(xhci);
+ 	return -ENOMEM;
+ }
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -66,7 +66,7 @@ static bool td_on_ring(struct xhci_td *t
+  * handshake done).  There are two failure modes:  "usec" have passed (major
+  * hardware flakeout), or the register reads as all-ones (hardware removed).
+  */
+-int xhci_handshake(void __iomem *ptr, u32 mask, u32 done, int usec)
++int xhci_handshake(void __iomem *ptr, u32 mask, u32 done, u64 timeout_us)
+ {
+ 	u32	result;
+ 	int	ret;
+@@ -74,7 +74,7 @@ int xhci_handshake(void __iomem *ptr, u3
+ 	ret = readl_poll_timeout_atomic(ptr, result,
+ 					(result & mask) == done ||
+ 					result == U32_MAX,
+-					1, usec);
++					1, timeout_us);
+ 	if (result == U32_MAX)		/* card removed */
+ 		return -ENODEV;
+ 
+@@ -163,7 +163,7 @@ int xhci_start(struct xhci_hcd *xhci)
+  * Transactions will be terminated immediately, and operational registers
+  * will be set to their defaults.
+  */
+-int xhci_reset(struct xhci_hcd *xhci)
++int xhci_reset(struct xhci_hcd *xhci, u64 timeout_us)
+ {
+ 	u32 command;
+ 	u32 state;
+@@ -196,8 +196,7 @@ int xhci_reset(struct xhci_hcd *xhci)
+ 	if (xhci->quirks & XHCI_INTEL_HOST)
+ 		udelay(1000);
+ 
+-	ret = xhci_handshake(&xhci->op_regs->command,
+-			CMD_RESET, 0, 10 * 1000 * 1000);
++	ret = xhci_handshake(&xhci->op_regs->command, CMD_RESET, 0, timeout_us);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -210,8 +209,7 @@ int xhci_reset(struct xhci_hcd *xhci)
+ 	 * xHCI cannot write to any doorbells or operational registers other
+ 	 * than status until the "Controller Not Ready" flag is cleared.
+ 	 */
+-	ret = xhci_handshake(&xhci->op_regs->status,
+-			STS_CNR, 0, 10 * 1000 * 1000);
++	ret = xhci_handshake(&xhci->op_regs->status, STS_CNR, 0, timeout_us);
+ 
+ 	xhci->usb2_rhub.bus_state.port_c_suspend = 0;
+ 	xhci->usb2_rhub.bus_state.suspended_ports = 0;
+@@ -732,7 +730,7 @@ static void xhci_stop(struct usb_hcd *hc
+ 	xhci->xhc_state |= XHCI_STATE_HALTED;
+ 	xhci->cmd_ring_state = CMD_RING_STATE_STOPPED;
+ 	xhci_halt(xhci);
+-	xhci_reset(xhci);
++	xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
+ 	spin_unlock_irq(&xhci->lock);
+ 
+ 	xhci_cleanup_msix(xhci);
+@@ -785,7 +783,7 @@ void xhci_shutdown(struct usb_hcd *hcd)
+ 	xhci_halt(xhci);
+ 	/* Workaround for spurious wakeups at shutdown with HSW */
+ 	if (xhci->quirks & XHCI_SPURIOUS_WAKEUP)
+-		xhci_reset(xhci);
++		xhci_reset(xhci, XHCI_RESET_SHORT_USEC);
+ 	spin_unlock_irq(&xhci->lock);
+ 
+ 	xhci_cleanup_msix(xhci);
+@@ -1170,7 +1168,7 @@ int xhci_resume(struct xhci_hcd *xhci, b
+ 		xhci_dbg(xhci, "Stop HCD\n");
+ 		xhci_halt(xhci);
+ 		xhci_zero_64b_regs(xhci);
+-		retval = xhci_reset(xhci);
++		retval = xhci_reset(xhci, XHCI_RESET_LONG_USEC);
+ 		spin_unlock_irq(&xhci->lock);
+ 		if (retval)
+ 			return retval;
+@@ -5272,7 +5270,7 @@ int xhci_gen_setup(struct usb_hcd *hcd,
+ 
+ 	xhci_dbg(xhci, "Resetting HCD\n");
+ 	/* Reset the internal HC memory state and registers. */
+-	retval = xhci_reset(xhci);
++	retval = xhci_reset(xhci, XHCI_RESET_LONG_USEC);
+ 	if (retval)
+ 		return retval;
+ 	xhci_dbg(xhci, "Reset complete\n");
+--- a/drivers/usb/host/xhci.h
++++ b/drivers/usb/host/xhci.h
+@@ -229,6 +229,9 @@ struct xhci_op_regs {
+ #define CMD_ETE		(1 << 14)
+ /* bits 15:31 are reserved (and should be preserved on writes). */
+ 
++#define XHCI_RESET_LONG_USEC		(10 * 1000 * 1000)
++#define XHCI_RESET_SHORT_USEC		(250 * 1000)
++
+ /* IMAN - Interrupt Management Register */
+ #define IMAN_IE		(1 << 1)
+ #define IMAN_IP		(1 << 0)
+@@ -2061,11 +2064,11 @@ void xhci_free_container_ctx(struct xhci
+ 
+ /* xHCI host controller glue */
+ typedef void (*xhci_get_quirks_t)(struct device *, struct xhci_hcd *);
+-int xhci_handshake(void __iomem *ptr, u32 mask, u32 done, int usec);
++int xhci_handshake(void __iomem *ptr, u32 mask, u32 done, u64 timeout_us);
+ void xhci_quiesce(struct xhci_hcd *xhci);
+ int xhci_halt(struct xhci_hcd *xhci);
+ int xhci_start(struct xhci_hcd *xhci);
+-int xhci_reset(struct xhci_hcd *xhci);
++int xhci_reset(struct xhci_hcd *xhci, u64 timeout_us);
+ int xhci_run(struct usb_hcd *hcd);
+ int xhci_gen_setup(struct usb_hcd *hcd, xhci_get_quirks_t get_quirks);
+ void xhci_shutdown(struct usb_hcd *hcd);
 
 
