@@ -2,130 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 015EEC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0979C4167E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358787AbiDNPmP (ORCPT
+        id S1358614AbiDNPmB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:42:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45008 "EHLO
+        Thu, 14 Apr 2022 11:42:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355432AbiDNPEf (ORCPT
+        with ESMTP id S1348537AbiDNOwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:04:35 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 500D1A8EC0
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:44:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=07JiligZE/4GH4BaZTL7wgTjvBdZxthvgQyY/4H+jtA=; b=U5KNuPPiSY3gWFaMAmgvDiJiAo
-        UMct/Awrtq9CTXyRMreCQBa8XsfWjAViM9oQ5WRjsrKK1gSm/S7wwnIvZ2aOIMwlj+6zSmlSd7gP8
-        Hi32LDtaXzc/h1ze8wtPbK0QGVw7ayKN1KEAJiqChfc1bH45pavDVa2vjvrQJAX0zbvArVLN+cPJj
-        12+E4JK6ufHMGW19AZsmeyen0JppChZKQdDn7+YyacoUsXUZvuUu9g0E/0a0LEcih89GQQcVYP12/
-        UeMWDA1T3Sxl8k42r4j3bB7Ig9oChiT83U8Zm2+pGIEyK7+SFuI8OEbjxAQu3ZtSodB6Qu4YxxrZH
-        OjhDvt/g==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nf0i0-0052Va-5V; Thu, 14 Apr 2022 14:44:32 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 750A730080F;
-        Thu, 14 Apr 2022 16:44:29 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 346482B388774; Thu, 14 Apr 2022 16:44:29 +0200 (CEST)
-Date:   Thu, 14 Apr 2022 16:44:29 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Kuyo Chang <kuyo.chang@mediatek.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
+        Thu, 14 Apr 2022 10:52:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90B93C31CB
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:41:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649947303;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=KbkJclTWBay2PEj54Brgd+xYZFlm7dVc8gZa/bypjmU=;
+        b=cieRv6cJsGgpKDTt5w3djP6WkWdi8kOK/HJWsFQMjNF/JBOMVQc8yuxo20Ps++PrJwxnE6
+        5gxgDjluIi5IUrUQuoX9EgEgcVr4ujCSqtCBQDZxRxvLg4fsC5CscIPmWjVFB/slJ8Lyk6
+        XsuUsmnwdorxGHZzcbpayeU81OS61yc=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-524-bSWFm-5SPb64ZSQ6S0QV2w-1; Thu, 14 Apr 2022 10:41:40 -0400
+X-MC-Unique: bSWFm-5SPb64ZSQ6S0QV2w-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3AD6018E5312;
+        Thu, 14 Apr 2022 14:41:38 +0000 (UTC)
+Received: from localhost.localdomain.com (unknown [10.22.11.30])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 130444AE6FC;
+        Thu, 14 Apr 2022 14:41:32 +0000 (UTC)
+From:   Nico Pache <npache@redhat.com>
+To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     Rafael Aquini <aquini@redhat.com>,
+        Waiman Long <longman@redhat.com>,
+        "Herton R . Krzesinski" <herton@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
         Vincent Guittot <vincent.guittot@linaro.org>,
         Dietmar Eggemann <dietmar.eggemann@arm.com>,
         Steven Rostedt <rostedt@goodmis.org>,
         Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
         Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        wsd_upstream@mediatek.com, Ingo Molnar <mingo@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH 1/1] [PATCH v3]sched/pelt: Fix the attach_entity_load_avg
- calculate method
-Message-ID: <YlgzTS+laNNvMukT@hirez.programming.kicks-ass.net>
-References: <20220414090229.342-1-kuyo.chang@mediatek.com>
+        David Rientjes <rientjes@google.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Joel Savitz <jsavitz@redhat.com>,
+        Darren Hart <dvhart@infradead.org>, stable@kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH v9] oom_kill.c: futex: Delay the OOM reaper to allow time for proper futex cleanup
+Date:   Thu, 14 Apr 2022 10:40:42 -0400
+Message-Id: <20220414144042.677008-1-npache@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220414090229.342-1-kuyo.chang@mediatek.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The pthread struct is allocated on PRIVATE|ANONYMOUS memory [1] which can
+be targeted by the oom reaper. This mapping is used to store the futex
+robust list head; the kernel does not keep a copy of the robust list and
+instead references a userspace address to maintain the robustness during
+a process death. A race can occur between exit_mm and the oom reaper that
+allows the oom reaper to free the memory of the futex robust list before
+the exit path has handled the futex death:
 
-I've taken the liberty of carrying over the tags from v2 and reworked
-the Changelog a little.
+    CPU1                               CPU2
+------------------------------------------------------------------------
+    page_fault
+    do_exit "signal"
+    wake_oom_reaper
+                                        oom_reaper
+                                        oom_reap_task_mm (invalidates mm)
+    exit_mm
+    exit_mm_release
+    futex_exit_release
+    futex_cleanup
+    exit_robust_list
+    get_user (EFAULT- can't access memory)
 
+If the get_user EFAULT's, the kernel will be unable to recover the
+waiters on the robust_list, leaving userspace mutexes hung indefinitely.
+
+Delay the OOM reaper, allowing more time for the exit path to perform
+the futex cleanup.
+
+Reproducer: https://gitlab.com/jsavitz/oom_futex_reproducer
+
+[1] https://elixir.bootlin.com/glibc/latest/source/nptl/allocatestack.c#L370
+
+Fixes: 212925802454 ("mm: oom: let oom_reap_task and exit_mmap run concurrently")
+Cc: Rafael Aquini <aquini@redhat.com>
+Cc: Waiman Long <longman@redhat.com>
+Cc: Herton R. Krzesinski <herton@redhat.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Vincent Guittot <vincent.guittot@linaro.org>
+Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ben Segall <bsegall@google.com>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Michal Hocko <mhocko@suse.com>
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Davidlohr Bueso <dave@stgolabs.net>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Joel Savitz <jsavitz@redhat.com>
+Cc: Darren Hart <dvhart@infradead.org>
+Cc: stable@kernel.org
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+[ Based on a patch by Michal Hocko ]
+Co-developed-by: Joel Savitz <jsavitz@redhat.com>
+Signed-off-by: Joel Savitz <jsavitz@redhat.com>
+Signed-off-by: Nico Pache <npache@redhat.com>
 ---
-Subject: sched/pelt: Fix attach_entity_load_avg() corner case
-From: kuyo chang <kuyo.chang@mediatek.com>
-Date: Thu, 14 Apr 2022 17:02:20 +0800
+ include/linux/sched.h |  1 +
+ mm/oom_kill.c         | 54 ++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 41 insertions(+), 14 deletions(-)
 
-From: kuyo chang <kuyo.chang@mediatek.com>
-
-The warning in cfs_rq_is_decayed() triggered:
-
-    SCHED_WARN_ON(cfs_rq->avg.load_avg ||
-		  cfs_rq->avg.util_avg ||
-		  cfs_rq->avg.runnable_avg)
-
-There exists a corner case in attach_entity_load_avg() which will
-cause load_sum to be zero while load_avg will not be.
-
-Consider se_weight is 88761 as per the sched_prio_to_weight[] table.
-Further assume the get_pelt_divider() is 47742, this gives:
-se->avg.load_avg is 1.
-
-However, calculating load_sum results in 0:
-
-  se->avg.load_sum = div_u64(se->avg.load_avg * se->avg.load_sum, se_weight(se));
-  se->avg.load_sum = 1*47742/88761 = 0.
-
-Then enqueue_load_avg() adds this to the cfs_rq totals:
-
-  cfs_rq->avg.load_avg += se->avg.load_avg;
-  cfs_rq->avg.load_sum += se_weight(se) * se->avg.load_sum;
-
-Resulting in load_avg being 1 with load_sum is 0, which will trigger
-the WARN.
-
-Fixes: f207934fb79d ("sched/fair: Align PELT windows between cfs_rq and its se")
-Signed-off-by: kuyo chang <kuyo.chang@mediatek.com>
-[peterz: massage changelog]
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
-Tested-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Link: https://lkml.kernel.org/r/20220414090229.342-1-kuyo.chang@mediatek.com
----
- kernel/sched/fair.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -3829,11 +3829,11 @@ static void attach_entity_load_avg(struc
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index d5e3c00b74e1..a8911b1f35aa 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1443,6 +1443,7 @@ struct task_struct {
+ 	int				pagefault_disabled;
+ #ifdef CONFIG_MMU
+ 	struct task_struct		*oom_reaper_list;
++	struct timer_list		oom_reaper_timer;
+ #endif
+ #ifdef CONFIG_VMAP_STACK
+ 	struct vm_struct		*stack_vm_area;
+diff --git a/mm/oom_kill.c b/mm/oom_kill.c
+index 7ec38194f8e1..49d7df39b02d 100644
+--- a/mm/oom_kill.c
++++ b/mm/oom_kill.c
+@@ -632,7 +632,7 @@ static void oom_reap_task(struct task_struct *tsk)
+ 	 */
+ 	set_bit(MMF_OOM_SKIP, &mm->flags);
  
- 	se->avg.runnable_sum = se->avg.runnable_avg * divider;
+-	/* Drop a reference taken by wake_oom_reaper */
++	/* Drop a reference taken by queue_oom_reaper */
+ 	put_task_struct(tsk);
+ }
  
--	se->avg.load_sum = divider;
--	if (se_weight(se)) {
--		se->avg.load_sum =
--			div_u64(se->avg.load_avg * se->avg.load_sum, se_weight(se));
--	}
-+	se->avg.load_sum = se->avg.load_avg * divider;
-+	if (se_weight(se) < se->avg.load_sum)
-+		se->avg.load_sum = div_u64(se->avg.load_sum, se_weight(se));
-+	else
-+		se->avg.load_sum = 1;
+@@ -644,12 +644,12 @@ static int oom_reaper(void *unused)
+ 		struct task_struct *tsk = NULL;
  
- 	enqueue_load_avg(cfs_rq, se);
- 	cfs_rq->avg.util_avg += se->avg.util_avg;
+ 		wait_event_freezable(oom_reaper_wait, oom_reaper_list != NULL);
+-		spin_lock(&oom_reaper_lock);
++		spin_lock_irq(&oom_reaper_lock);
+ 		if (oom_reaper_list != NULL) {
+ 			tsk = oom_reaper_list;
+ 			oom_reaper_list = tsk->oom_reaper_list;
+ 		}
+-		spin_unlock(&oom_reaper_lock);
++		spin_unlock_irq(&oom_reaper_lock);
+ 
+ 		if (tsk)
+ 			oom_reap_task(tsk);
+@@ -658,22 +658,48 @@ static int oom_reaper(void *unused)
+ 	return 0;
+ }
+ 
+-static void wake_oom_reaper(struct task_struct *tsk)
++static void wake_oom_reaper(struct timer_list *timer)
+ {
+-	/* mm is already queued? */
+-	if (test_and_set_bit(MMF_OOM_REAP_QUEUED, &tsk->signal->oom_mm->flags))
+-		return;
++	struct task_struct *tsk = container_of(timer, struct task_struct,
++			oom_reaper_timer);
++	struct mm_struct *mm = tsk->signal->oom_mm;
++	unsigned long flags;
+ 
+-	get_task_struct(tsk);
++	/* The victim managed to terminate on its own - see exit_mmap */
++	if (test_bit(MMF_OOM_SKIP, &mm->flags)) {
++		put_task_struct(tsk);
++		return;
++	}
+ 
+-	spin_lock(&oom_reaper_lock);
++	spin_lock_irqsave(&oom_reaper_lock, flags);
+ 	tsk->oom_reaper_list = oom_reaper_list;
+ 	oom_reaper_list = tsk;
+-	spin_unlock(&oom_reaper_lock);
++	spin_unlock_irqrestore(&oom_reaper_lock, flags);
+ 	trace_wake_reaper(tsk->pid);
+ 	wake_up(&oom_reaper_wait);
+ }
+ 
++/*
++ * Give the OOM victim time to exit naturally before invoking the oom_reaping.
++ * The timers timeout is arbitrary... the longer it is, the longer the worst
++ * case scenario for the OOM can take. If it is too small, the oom_reaper can
++ * get in the way and release resources needed by the process exit path.
++ * e.g. The futex robust list can sit in Anon|Private memory that gets reaped
++ * before the exit path is able to wake the futex waiters.
++ */
++#define OOM_REAPER_DELAY (2*HZ)
++static void queue_oom_reaper(struct task_struct *tsk)
++{
++	/* mm is already queued? */
++	if (test_and_set_bit(MMF_OOM_REAP_QUEUED, &tsk->signal->oom_mm->flags))
++		return;
++
++	get_task_struct(tsk);
++	timer_setup(&tsk->oom_reaper_timer, wake_oom_reaper, 0);
++	tsk->oom_reaper_timer.expires = jiffies + OOM_REAPER_DELAY;
++	add_timer(&tsk->oom_reaper_timer);
++}
++
+ static int __init oom_init(void)
+ {
+ 	oom_reaper_th = kthread_run(oom_reaper, NULL, "oom_reaper");
+@@ -681,7 +707,7 @@ static int __init oom_init(void)
+ }
+ subsys_initcall(oom_init)
+ #else
+-static inline void wake_oom_reaper(struct task_struct *tsk)
++static inline void queue_oom_reaper(struct task_struct *tsk)
+ {
+ }
+ #endif /* CONFIG_MMU */
+@@ -932,7 +958,7 @@ static void __oom_kill_process(struct task_struct *victim, const char *message)
+ 	rcu_read_unlock();
+ 
+ 	if (can_oom_reap)
+-		wake_oom_reaper(victim);
++		queue_oom_reaper(victim);
+ 
+ 	mmdrop(mm);
+ 	put_task_struct(victim);
+@@ -968,7 +994,7 @@ static void oom_kill_process(struct oom_control *oc, const char *message)
+ 	task_lock(victim);
+ 	if (task_will_free_mem(victim)) {
+ 		mark_oom_victim(victim);
+-		wake_oom_reaper(victim);
++		queue_oom_reaper(victim);
+ 		task_unlock(victim);
+ 		put_task_struct(victim);
+ 		return;
+@@ -1067,7 +1093,7 @@ bool out_of_memory(struct oom_control *oc)
+ 	 */
+ 	if (task_will_free_mem(current)) {
+ 		mark_oom_victim(current);
+-		wake_oom_reaper(current);
++		queue_oom_reaper(current);
+ 		return true;
+ 	}
+ 
+-- 
+2.35.1
+
