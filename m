@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B0C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE304C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:13:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348960AbiDNOOj (ORCPT
+        id S1348966AbiDNOO6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:14:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36808 "EHLO
+        Thu, 14 Apr 2022 10:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245499AbiDNNii (ORCPT
+        with ESMTP id S245526AbiDNNil (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3FDFA206E;
-        Thu, 14 Apr 2022 06:32:30 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D886A27CB;
+        Thu, 14 Apr 2022 06:32:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 480F861B9C;
-        Thu, 14 Apr 2022 13:32:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59200C385A1;
-        Thu, 14 Apr 2022 13:32:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0338619DA;
+        Thu, 14 Apr 2022 13:32:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4D29C385A1;
+        Thu, 14 Apr 2022 13:32:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943149;
-        bh=QMNy+Fny+JHW3JnAtkkrRJcsCDWBuheXWC1zePhIsQM=;
+        s=korg; t=1649943161;
+        bh=p/E/ewZRqi+ub1ezBHspRUFAIIx4sJNFUP5+SgZa15U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V1LP0RvKXm7I+z1ew3e1OiTB5GPp4iIRwkHSAUuSbyV8xjrXppkROPLbuC/heCvFs
-         mZf4NidQWVJN9xIuWOGrtWWBUyY42UwfEx69ZtH9rrgv03YYQQGtO8q+xtayh4S6sm
-         QsrtsWNulQIU/EAOn3MwO0VDrXX/LOAZSAgoOXDM=
+        b=pgY6idAVB+Q/06PPMnc1xiSSq95HWt3rTEGr8h2ewA1tapssVxN64+XxhUyisidHd
+         eb4JQt5OElxeybwZM7dKewqtt7r3RnxV0Lc9NalDkv9gYwk/3zQyAP1BeFiGvcju/D
+         QlJomE4IAgEfiEE1MIApW5zLCeM2Qn+Ckp7YhFp0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eddie James <eajames@linux.ibm.com>,
-        Joel Stanley <joel@jms.id.au>, Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.4 002/475] USB: serial: pl2303: add IBM device IDs
-Date:   Thu, 14 Apr 2022 15:06:27 +0200
-Message-Id: <20220414110855.216724652@linuxfoundation.org>
+        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Mel Gorman <mgorman@suse.de>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 057/475] mm,hwpoison: unmap poisoned page before invalidation
+Date:   Thu, 14 Apr 2022 15:07:22 +0200
+Message-Id: <20220414110856.748754251@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,47 +55,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eddie James <eajames@linux.ibm.com>
+From: Rik van Riel <riel@surriel.com>
 
-commit e1d15646565b284e9ef2433234d6cfdaf66695f1 upstream.
+commit 3149c79f3cb0e2e3bafb7cfadacec090cbd250d3 upstream.
 
-IBM manufactures a PL2303 device for UPS communications. Add the vendor
-and product IDs so that the PL2303 driver binds to the device.
+In some cases it appears the invalidation of a hwpoisoned page fails
+because the page is still mapped in another process.  This can cause a
+program to be continuously restarted and die when it page faults on the
+page that was not invalidated.  Avoid that problem by unmapping the
+hwpoisoned page when we find it.
 
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220301224446.21236-1-eajames@linux.ibm.com
-Cc: stable@vger.kernel.org
-[ johan: amend the SoB chain ]
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Another issue is that sometimes we end up oopsing in finish_fault, if
+the code tries to do something with the now-NULL vmf->page.  I did not
+hit this error when submitting the previous patch because there are
+several opportunities for alloc_set_pte to bail out before accessing
+vmf->page, and that apparently happened on those systems, and most of
+the time on other systems, too.
+
+However, across several million systems that error does occur a handful
+of times a day.  It can be avoided by returning VM_FAULT_NOPAGE which
+will cause do_read_fault to return before calling finish_fault.
+
+Link: https://lkml.kernel.org/r/20220325161428.5068d97e@imladris.surriel.com
+Fixes: e53ac7374e64 ("mm: invalidate hwpoison page cache page in fault path")
+Signed-off-by: Rik van Riel <riel@surriel.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Tested-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/pl2303.c |    1 +
- drivers/usb/serial/pl2303.h |    3 +++
- 2 files changed, 4 insertions(+)
+ mm/memory.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
---- a/drivers/usb/serial/pl2303.c
-+++ b/drivers/usb/serial/pl2303.c
-@@ -110,6 +110,7 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(ADLINK_VENDOR_ID, ADLINK_ND6530GC_PRODUCT_ID) },
- 	{ USB_DEVICE(SMART_VENDOR_ID, SMART_PRODUCT_ID) },
- 	{ USB_DEVICE(AT_VENDOR_ID, AT_VTKIT3_PRODUCT_ID) },
-+	{ USB_DEVICE(IBM_VENDOR_ID, IBM_PRODUCT_ID) },
- 	{ }					/* Terminating entry */
- };
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3245,14 +3245,18 @@ static vm_fault_t __do_fault(struct vm_f
+ 		return ret;
  
---- a/drivers/usb/serial/pl2303.h
-+++ b/drivers/usb/serial/pl2303.h
-@@ -29,6 +29,9 @@
- #define ATEN_PRODUCT_UC232B	0x2022
- #define ATEN_PRODUCT_ID2	0x2118
- 
-+#define IBM_VENDOR_ID		0x04b3
-+#define IBM_PRODUCT_ID		0x4016
-+
- #define IODATA_VENDOR_ID	0x04bb
- #define IODATA_PRODUCT_ID	0x0a03
- #define IODATA_PRODUCT_ID_RSAQ5	0x0a0e
+ 	if (unlikely(PageHWPoison(vmf->page))) {
++		struct page *page = vmf->page;
+ 		vm_fault_t poisonret = VM_FAULT_HWPOISON;
+ 		if (ret & VM_FAULT_LOCKED) {
++			if (page_mapped(page))
++				unmap_mapping_pages(page_mapping(page),
++						    page->index, 1, false);
+ 			/* Retry if a clean page was removed from the cache. */
+-			if (invalidate_inode_page(vmf->page))
+-				poisonret = 0;
+-			unlock_page(vmf->page);
++			if (invalidate_inode_page(page))
++				poisonret = VM_FAULT_NOPAGE;
++			unlock_page(page);
+ 		}
+-		put_page(vmf->page);
++		put_page(page);
+ 		vmf->page = NULL;
+ 		return poisonret;
+ 	}
 
 
