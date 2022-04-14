@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8F4C35273
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08169C4707A
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350961AbiDNO3d (ORCPT
+        id S1351003AbiDNO3m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35348 "EHLO
+        Thu, 14 Apr 2022 10:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343965AbiDNNjc (ORCPT
+        with ESMTP id S1343867AbiDNNj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 838639A993;
-        Thu, 14 Apr 2022 06:36:00 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3475BE72;
+        Thu, 14 Apr 2022 06:35:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2068C61CF3;
-        Thu, 14 Apr 2022 13:36:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D16EC385A9;
-        Thu, 14 Apr 2022 13:35:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A59FB82989;
+        Thu, 14 Apr 2022 13:35:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE7FEC385A5;
+        Thu, 14 Apr 2022 13:35:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943359;
-        bh=lGxzoZQcpGG+SFTb6be7RF4mMGO8GD8TToyJJ+Yuhnw=;
+        s=korg; t=1649943301;
+        bh=xMuBtpSMi0tR4uqVjAuMkRQrPn1kVymN+i1l75YiSig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vPEpScLRHIfaDGJCd6C+N2FR7Px4ZFo5dNtk0ipU5wc9glHvKTEECO+CS6jKyd9GS
-         lLTJAsTeR8vzr8gB6eVVmCnkr6gE2gMcQg6rnTSSXftOyMFpPbvymWGhg/sd3K6ktk
-         TRXC2VC3JMVh450+3vQ7NoR8cCUQmq42q7xTGGwg=
+        b=Pon3eBGbO3f1Mwor294REsukTMG1aTvITMhvmaItgZKNs7d3n2y8755/PbKZIdQ/F
+         5i5Xq1xikx8RR6yXhLVaIZxujnJKx1P39b8viMnlo8RypavgJ3oNjGyQRis12aBOV6
+         DlbWskOhMSvnFRhuSl1e8m7b11IVIJ7E+36FnNno=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 126/475] media: video/hdmi: handle short reads of hdmi info frame.
-Date:   Thu, 14 Apr 2022 15:08:31 +0200
-Message-Id: <20220414110858.677611532@linuxfoundation.org>
+Subject: [PATCH 5.4 107/475] clocksource: acpi_pm: fix return value of __setup handler
+Date:   Thu, 14 Apr 2022 15:08:12 +0200
+Message-Id: <20220414110858.147992014@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,64 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 4a92fc6e55da5b87cecb572275deaff6ac9dd27e ]
+[ Upstream commit 6a861abceecb68497dd82a324fee45a5332dcece ]
 
-Calling hdmi_infoframe_unpack() with static sizeof(buffer) skips all
-the size checking done later in hdmi_infoframe_unpack().  A better
-value is the amount of data read into buffer.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) environment strings.
 
-Fixes: 480b8b3e42c3 ("video/hdmi: Pass buffer size to infoframe unpack functions")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+The __setup() handler interface isn't meant to handle negative return
+values -- they are non-zero, so they mean "handled" (like a return
+value of 1 does), but that's just a quirk. So return 1 from
+parse_pmtmr(). Also print a warning message if kstrtouint() returns
+an error.
+
+Fixes: 6b148507d3d0 ("pmtmr: allow command line override of ioport")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/adv7511-v4l2.c | 2 +-
- drivers/media/i2c/adv7604.c      | 2 +-
- drivers/media/i2c/adv7842.c      | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/clocksource/acpi_pm.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/i2c/adv7511-v4l2.c b/drivers/media/i2c/adv7511-v4l2.c
-index 809fa44ed988..86267e01c251 100644
---- a/drivers/media/i2c/adv7511-v4l2.c
-+++ b/drivers/media/i2c/adv7511-v4l2.c
-@@ -555,7 +555,7 @@ static void log_infoframe(struct v4l2_subdev *sd, const struct adv7511_cfg_read_
- 	buffer[3] = 0;
- 	buffer[3] = hdmi_infoframe_checksum(buffer, len + 4);
+diff --git a/drivers/clocksource/acpi_pm.c b/drivers/clocksource/acpi_pm.c
+index eb596ff9e7bb..279ddff81ab4 100644
+--- a/drivers/clocksource/acpi_pm.c
++++ b/drivers/clocksource/acpi_pm.c
+@@ -229,8 +229,10 @@ static int __init parse_pmtmr(char *arg)
+ 	int ret;
  
--	if (hdmi_infoframe_unpack(&frame, buffer, sizeof(buffer)) < 0) {
-+	if (hdmi_infoframe_unpack(&frame, buffer, len + 4) < 0) {
- 		v4l2_err(sd, "%s: unpack of %s infoframe failed\n", __func__, cri->desc);
- 		return;
- 	}
-diff --git a/drivers/media/i2c/adv7604.c b/drivers/media/i2c/adv7604.c
-index b887299ac195..1cee69919e1b 100644
---- a/drivers/media/i2c/adv7604.c
-+++ b/drivers/media/i2c/adv7604.c
-@@ -2444,7 +2444,7 @@ static int adv76xx_read_infoframe(struct v4l2_subdev *sd, int index,
- 		buffer[i + 3] = infoframe_read(sd,
- 				       adv76xx_cri[index].payload_addr + i);
+ 	ret = kstrtouint(arg, 16, &base);
+-	if (ret)
+-		return ret;
++	if (ret) {
++		pr_warn("PMTMR: invalid 'pmtmr=' value: '%s'\n", arg);
++		return 1;
++	}
  
--	if (hdmi_infoframe_unpack(frame, buffer, sizeof(buffer)) < 0) {
-+	if (hdmi_infoframe_unpack(frame, buffer, len + 3) < 0) {
- 		v4l2_err(sd, "%s: unpack of %s infoframe failed\n", __func__,
- 			 adv76xx_cri[index].desc);
- 		return -ENOENT;
-diff --git a/drivers/media/i2c/adv7842.c b/drivers/media/i2c/adv7842.c
-index 02cbab826d0b..a581e822ce6f 100644
---- a/drivers/media/i2c/adv7842.c
-+++ b/drivers/media/i2c/adv7842.c
-@@ -2574,7 +2574,7 @@ static void log_infoframe(struct v4l2_subdev *sd, struct adv7842_cfg_read_infofr
- 	for (i = 0; i < len; i++)
- 		buffer[i + 3] = infoframe_read(sd, cri->payload_addr + i);
- 
--	if (hdmi_infoframe_unpack(&frame, buffer, sizeof(buffer)) < 0) {
-+	if (hdmi_infoframe_unpack(&frame, buffer, len + 3) < 0) {
- 		v4l2_err(sd, "%s: unpack of %s infoframe failed\n", __func__, cri->desc);
- 		return;
- 	}
+ 	pr_info("PMTMR IOPort override: 0x%04x -> 0x%04x\n", pmtmr_ioport,
+ 		base);
 -- 
 2.34.1
 
