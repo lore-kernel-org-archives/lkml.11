@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D619BC388F3
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D2CC38162
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345404AbiDNOKM (ORCPT
+        id S1344535AbiDNOJr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57278 "EHLO
+        Thu, 14 Apr 2022 10:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344052AbiDNNaR (ORCPT
+        with ESMTP id S1344078AbiDNNaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:17 -0400
+        Thu, 14 Apr 2022 09:30:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F23F60C0;
-        Thu, 14 Apr 2022 06:26:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C4F3117D;
+        Thu, 14 Apr 2022 06:27:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AECA2619FC;
-        Thu, 14 Apr 2022 13:26:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 540BFC385A5;
-        Thu, 14 Apr 2022 13:26:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEEEE6190F;
+        Thu, 14 Apr 2022 13:27:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DACCFC385A1;
+        Thu, 14 Apr 2022 13:27:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942815;
-        bh=/01P0piO9urcTUt9KNn1/6+7yqOjEw/nho/i2I1i5NA=;
+        s=korg; t=1649942864;
+        bh=pq5Hkm5sFmOw4+bSV+L9OhXIlFKnUqlcIn+go98fDOo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B78rOlqyJrvlmyCFD3NMeGjNkjccE6zuRlamnX16iScl+ZzSmybZCP0kH+xKvpDOl
-         bxirT+RRnbsV+7gspYsQZgCl2Ir2oBgrzXOXHmSWDpD1ueAKTtJ80GBBtxjU+ScdxW
-         LTqdCBMyvz/WxiFPgEVkA8SOKuGUopTj9kScd2yM=
+        b=ijCF15l19Sqi4SZIlgeVvJja3RBJwnbyJirewikgVEWeHEEp9aIO2Qhu/yoAmCskC
+         ViOVDNp9eYj/7R76OhGCVQVePuYE7EjCRXqAtQaXsRhK31YJ3cXeNDouzbtxrugYwq
+         zKjDTkPXX0DNP99h6mYXOKoKXG1HpilcWP7nLcbQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 270/338] PCI: aardvark: Fix support for MSI interrupts
-Date:   Thu, 14 Apr 2022 15:12:53 +0200
-Message-Id: <20220414110846.574199286@linuxfoundation.org>
+Subject: [PATCH 4.19 290/338] NFSv4: Protect the state recovery thread against direct reclaim
+Date:   Thu, 14 Apr 2022 15:13:13 +0200
+Message-Id: <20220414110847.143408909@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -52,79 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit b0b0b8b897f8e12b2368e868bd7cdc5742d5c5a9 ]
+[ Upstream commit 3e17898aca293a24dae757a440a50aa63ca29671 ]
 
-Aardvark hardware supports Multi-MSI and MSI_FLAG_MULTI_PCI_MSI is already
-set for the MSI chip. But when allocating MSI interrupt numbers for
-Multi-MSI, the numbers need to be properly aligned, otherwise endpoint
-devices send MSI interrupt with incorrect numbers.
+If memory allocation triggers a direct reclaim from the state recovery
+thread, then we can deadlock. Use memalloc_nofs_save/restore to ensure
+that doesn't happen.
 
-Fix this issue by using function bitmap_find_free_region() instead of
-bitmap_find_next_zero_area().
-
-To ensure that aligned MSI interrupt numbers are used by endpoint devices,
-we cannot use Linux virtual irq numbers (as they are random and not
-properly aligned). Instead we need to use the aligned hwirq numbers.
-
-This change fixes receiving MSI interrupts on Armada 3720 boards and
-allows using NVMe disks which use Multi-MSI feature with 3 interrupts.
-
-Without this NVMe disks freeze booting as linux nvme-core.c is waiting
-60s for an interrupt.
-
-Link: https://lore.kernel.org/r/20220110015018.26359-4-kabel@kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-aardvark.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ fs/nfs/nfs4state.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
-index e6d60fa2217d..db778a25bae3 100644
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -833,7 +833,7 @@ static void advk_msi_irq_compose_msi_msg(struct irq_data *data,
+diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
+index 9c98547fcefc..30576a10a1f4 100644
+--- a/fs/nfs/nfs4state.c
++++ b/fs/nfs/nfs4state.c
+@@ -49,6 +49,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/bitops.h>
+ #include <linux/jiffies.h>
++#include <linux/sched/mm.h>
  
- 	msg->address_lo = lower_32_bits(msi_msg);
- 	msg->address_hi = upper_32_bits(msi_msg);
--	msg->data = data->irq;
-+	msg->data = data->hwirq;
+ #include <linux/sunrpc/clnt.h>
+ 
+@@ -2505,9 +2506,17 @@ static int nfs4_bind_conn_to_session(struct nfs_client *clp)
+ 
+ static void nfs4_state_manager(struct nfs_client *clp)
+ {
++	unsigned int memflags;
+ 	int status = 0;
+ 	const char *section = "", *section_sep = "";
+ 
++	/*
++	 * State recovery can deadlock if the direct reclaim code tries
++	 * start NFS writeback. So ensure memory allocations are all
++	 * GFP_NOFS.
++	 */
++	memflags = memalloc_nofs_save();
++
+ 	/* Ensure exclusive access to NFSv4 state */
+ 	do {
+ 		clear_bit(NFS4CLNT_RUN_MANAGER, &clp->cl_state);
+@@ -2600,6 +2609,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
+ 				goto out_error;
+ 		}
+ 
++		memalloc_nofs_restore(memflags);
+ 		nfs4_end_drain_session(clp);
+ 		nfs4_clear_state_manager_bit(clp);
+ 
+@@ -2616,6 +2626,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
+ 			return;
+ 		if (test_and_set_bit(NFS4CLNT_MANAGER_RUNNING, &clp->cl_state) != 0)
+ 			return;
++		memflags = memalloc_nofs_save();
+ 	} while (refcount_read(&clp->cl_count) > 1 && !signalled());
+ 	goto out_drain;
+ 
+@@ -2627,6 +2638,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
+ 			clp->cl_hostname, -status);
+ 	ssleep(1);
+ out_drain:
++	memalloc_nofs_restore(memflags);
+ 	nfs4_end_drain_session(clp);
+ 	nfs4_clear_state_manager_bit(clp);
  }
- 
- static int advk_msi_set_affinity(struct irq_data *irq_data,
-@@ -850,15 +850,11 @@ static int advk_msi_irq_domain_alloc(struct irq_domain *domain,
- 	int hwirq, i;
- 
- 	mutex_lock(&pcie->msi_used_lock);
--	hwirq = bitmap_find_next_zero_area(pcie->msi_used, MSI_IRQ_NUM,
--					   0, nr_irqs, 0);
--	if (hwirq >= MSI_IRQ_NUM) {
--		mutex_unlock(&pcie->msi_used_lock);
--		return -ENOSPC;
--	}
--
--	bitmap_set(pcie->msi_used, hwirq, nr_irqs);
-+	hwirq = bitmap_find_free_region(pcie->msi_used, MSI_IRQ_NUM,
-+					order_base_2(nr_irqs));
- 	mutex_unlock(&pcie->msi_used_lock);
-+	if (hwirq < 0)
-+		return -ENOSPC;
- 
- 	for (i = 0; i < nr_irqs; i++)
- 		irq_domain_set_info(domain, virq + i, hwirq + i,
-@@ -876,7 +872,7 @@ static void advk_msi_irq_domain_free(struct irq_domain *domain,
- 	struct advk_pcie *pcie = domain->host_data;
- 
- 	mutex_lock(&pcie->msi_used_lock);
--	bitmap_clear(pcie->msi_used, d->hwirq, nr_irqs);
-+	bitmap_release_region(pcie->msi_used, d->hwirq, order_base_2(nr_irqs));
- 	mutex_unlock(&pcie->msi_used_lock);
- }
- 
 -- 
 2.35.1
 
