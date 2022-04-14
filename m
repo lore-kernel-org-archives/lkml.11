@@ -2,119 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A050C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 22:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D106CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 22:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245292AbiDNWJK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 18:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58782 "EHLO
+        id S1344214AbiDNWKa (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 18:10:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346949AbiDNWJA (ORCPT
+        with ESMTP id S244107AbiDNWK1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 18:09:00 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3422ADD76;
-        Thu, 14 Apr 2022 15:06:31 -0700 (PDT)
+        Thu, 14 Apr 2022 18:10:27 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F96ADD61;
+        Thu, 14 Apr 2022 15:07:59 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id g18so12500792ejc.10;
+        Thu, 14 Apr 2022 15:07:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649973992; x=1681509992;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=xVp5TAphqYTgZpbaJdav7ZSflN0pUeu1cQ9O+2F3xb8=;
-  b=ObhgheizD7sxrohog/qMBJIQtApS5bhqgEqmYf8quzWWGYpTO3ae8Vbw
-   xy/1mJ3Uk0jHz+ipXxe+ZVx1SGzd910ex6n+9HfvhAV3qoC5QZgktQF0A
-   8CpE+SWBDjHsaYYCvtIhyLfbmKqIU/bgntLmcv5oi6lbEe1tSuTw2xIe8
-   s=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 14 Apr 2022 15:06:32 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 15:06:31 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Apr 2022 15:06:30 -0700
-Received: from [10.110.19.13] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 14 Apr
- 2022 15:06:29 -0700
-Message-ID: <2039ef97-4fdb-bffe-1e02-18ae79c18be4@quicinc.com>
-Date:   Thu, 14 Apr 2022 15:06:28 -0700
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=a+eBKXg+HvEOWqCYxJUK4jczCUZDQAIkE1tarFAa5PQ=;
+        b=POyZeHcWT1no5HjX1bNC8NvYTtOBHqFwIiC+OxkhZfXmSoyfEEq+yGr0w5GRkl+4M/
+         cjAAzAbPkdKCUd78AbBDRBDKBws7momKROy6V13z74cZZ4HRfvaD9AlFYAb4NH7wb4s2
+         9c8e/PSlXRnWz4MarGy5iIwMz3v0Zn+L9ink5i61suX7E0ZKfO6W6HE0BGdJiPhPmT6r
+         EkFE89fAEraKstWMgYy+T6ExJmM6O060n37UVUIKhV2ML3EDO7peh0Ffv8lwu/+SA7xs
+         6Dzq2ZyUNb7MOEzm8AFCqNGcLaBVxPjFDblAeDmrURkxTSEXf7TfzLX5LXh3OXv3IrQG
+         uZqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=a+eBKXg+HvEOWqCYxJUK4jczCUZDQAIkE1tarFAa5PQ=;
+        b=Kiam+A5lmabEQgKDtobqcz+vJiMSbZfhVL1fJLZRA6IBE4fAeKnAiIldQ+yDBoGcb5
+         NIQlFW2ByxfBFTERKG6fm88OKFsJb/QNtYx592WuOzqQhFkhAefr/9Jcf3o4snIdZgXC
+         tCjnND5XTf59jv+4viiz/PVfdB1AiluO2a54Ielh3FuJATbP7EqHMnD0qNvxXWe+/wqx
+         EEREW17MLD8cLCQFv0uRpPQifPUGplNpIxgcLcLBsPxBHxRWAKBfidnzBZgxg4veHL/r
+         G/ljB+vlxItIBpQDnKlG2t5rOAtiH17323gApxv0CZ0UHSvv7HlQP6uTwmtAd0pKcil9
+         12hQ==
+X-Gm-Message-State: AOAM530uqPUJIxvrvV3jK1fdUOg1NKBVNVFGo3DXzGhy2TD8koL2Ib5d
+        s+l1DTJjyQMziiAUy2MdQ9c=
+X-Google-Smtp-Source: ABdhPJycg5sAyJlqC0y3pBXqqj2ZKaEeWREZOLjoq30ZvH+3SM9+ZvZB3WG6oizUmc1EycU86vYKXg==
+X-Received: by 2002:a17:906:65d5:b0:6ba:3133:dfb9 with SMTP id z21-20020a17090665d500b006ba3133dfb9mr4135427ejn.56.1649974077944;
+        Thu, 14 Apr 2022 15:07:57 -0700 (PDT)
+Received: from [192.168.3.2] (p5dd1ed70.dip0.t-ipconnect.de. [93.209.237.112])
+        by smtp.googlemail.com with ESMTPSA id k15-20020a50ce4f000000b00420119333c1sm1687605edj.62.2022.04.14.15.07.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 15:07:57 -0700 (PDT)
+Message-ID: <44108a7ad56dd6984523af35cfa003f4ed7be41e.camel@gmail.com>
+Subject: Re: [PATCH 1/1] scsi: ufs: remove redundant HPB unmap
+From:   Bean Huo <huobean@gmail.com>
+To:     Po-Wen Kao <powen.kao@mediatek.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     wsd_upstream@mediatek.com, peter.wang@mediatek.com,
+        stanley.chu@mediatek.com, alice.chao@mediatek.com,
+        chun-hung.wu@mediatek.com, cc.chou@mediatek.com,
+        chaotian.jing@mediatek.com, jiajie.hao@mediatek.com,
+        yohan.joung@sk.com, jason.li@sk.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Date:   Fri, 15 Apr 2022 00:07:56 +0200
+In-Reply-To: <004b55d8-fcd3-136c-526c-6ada025d6a1c@mediatek.com>
+References: <20220412073131.10644-1-powen.kao@mediatek.com>
+         <781bfe33efb1e44d22f71e6711da7d15be9d3ab4.camel@gmail.com>
+         <7550da4043ae45ffd58399f1ee696238a5689f25.camel@gmail.com>
+         <004b55d8-fcd3-136c-526c-6ada025d6a1c@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.0-1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2] drm/msm/dp: enhance both connect and disconnect
- pending_timeout handle
-Content-Language: en-US
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-CC:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
-        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
-        <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1649280493-4393-1-git-send-email-quic_khsieh@quicinc.com>
- <625ce8a0-4e25-5513-5599-c1cdebf5a3a5@linaro.org>
- <09fd563f-4a2c-f670-51c2-0e5ff023816d@quicinc.com>
- <CAA8EJpqzucFGf8ndDi2LZqtKiOt_w=_h1oPAUNVCdmUyh_3+zA@mail.gmail.com>
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-In-Reply-To: <CAA8EJpqzucFGf8ndDi2LZqtKiOt_w=_h1oPAUNVCdmUyh_3+zA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 2022-04-14 at 12:49 +0800, Po-Wen Kao wrote:
+> Hi Bean,
+>=20
+> The general idea looks good.
+>=20
+> As ufshpb_issue_umap_all_req in ufshpb_state_toggle won't actually
+> runs=20
+> at cold boot probe due to the fact that sdev are not present yet,
+> this=20
+> should avoid sending HPB command before UAC being cleared while keeps
+> HPB mapping clean when rest flow occurs.
+>=20
+> Just a concern, shouldn't ufshpb_issue_umap_all_req be send for each=20
+> sdev's corresponding hpb?
+>=20
 
-On 4/8/2022 4:59 PM, Dmitry Baryshkov wrote:
-> On Fri, 8 Apr 2022 at 23:30, Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
->>
->> On 4/8/2022 5:27 AM, Dmitry Baryshkov wrote:
->>> On 07/04/2022 00:28, Kuogee Hsieh wrote:
->>>> dp_hpd_plug_handle() is responsible for setting up main link and send
->>>> uevent to notify user space framework to start video stream. Similarly,
->>>> dp_hdp_unplug_handle is responsible to send uevent to notify user space
->>>> framework to stop video stream and then tear down main link.
->>>> However there are rare cases, such as in the middle of system
->>>> suspending,
->>>> that uevent could not be delivered to user space framework. Therefore
->>>> some kind of recover mechanism armed by timer need to be in place in the
->>>> case of user space framework does not respond to uevent.
->>> Hmm, how does userpsace 'respond' to the uevent? The driver should
->>> send hotplug notifications to userspace, but it must not expect any
->>> particular reaction. The userspace might be as simple, as fbdev
->>> emulation, but the driver still should function correctly.
->> yes, driver is function correctly by setting up main link. but it does
->> not know which resolution to display.
->>
->> It send hotplug notification through uevent to framework after main link
->> is ready.
->>
->> Framework  is responsible to set up MDP timing engine to start video stream.
->>
->>
->> However it does not know which
-> It's of no concern to the driver. It is completely the userspace
-> problem. After resuming, it should reread available video output
-> properties. The display could have been changed while the system is
-> suspended.
->  From your description I still do not understand why you need the
-> 'recovery' mechanism.
+Hi Po Wen,
 
-I mean "recovery" means  dp driver may leave stay at link ready 
-mistakenly after dongle unplugged due to missing framework action to 
-tear down main link so that next dongle plug in will not work.
+I replied in another email that setting the flag resets all active
+regions in the device, which is a more efficient way, I have submitted
+a fix for HPB device mode, your review and testing are welcome.
 
-Currently it was armed with timeout function and it will fired if 
-framework did not call msm_dp_display_disable() after 5 second.
+Kind regards,
+Bean
 
-Anyway, we think this approach is not good. therefore it is replaced 
-with  below patch.
-
-drm/msm/dp: tear down main link at unplug handle immediately
-
+> Looking forward to your further fixes.
+>=20
+>=20
 
