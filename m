@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1868C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8261BC38162
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347247AbiDNN6k (ORCPT
+        id S1347197AbiDNN6e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:58:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58446 "EHLO
+        Thu, 14 Apr 2022 09:58:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344355AbiDNNbq (ORCPT
+        with ESMTP id S1344349AbiDNNbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:31:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBA9297;
-        Thu, 14 Apr 2022 06:29:20 -0700 (PDT)
+        Thu, 14 Apr 2022 09:31:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBFB23B;
+        Thu, 14 Apr 2022 06:29:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ADF9619FC;
-        Thu, 14 Apr 2022 13:29:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D80FC385A1;
-        Thu, 14 Apr 2022 13:29:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BC02B8296A;
+        Thu, 14 Apr 2022 13:29:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B23DAC385A5;
+        Thu, 14 Apr 2022 13:29:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942959;
-        bh=PoYRFGU0GjJBUUHKvDBhsqlm12snxwq8S3uEQtl9yfA=;
+        s=korg; t=1649942957;
+        bh=zOsN+FLqFZCw6lZbkSg40nx71Jwo58ZaQZ43pUJ7t9c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TRno+SjDBokNLlVP7G85igtvpTchnO8DX1XubKt4Nc+TJ44L3BL6+PApFnZrS36HX
-         hW1sqqqn5CNoTxe5hP+pwywa+wvPAj8euUV5sBRUUABPZZGWv9UbSllU2sm6/k/YtU
-         cA1n0wsALRJ6ujk45E9tOOjTNidpHxkvcvDCRxgY=
+        b=twC63MMi7qpQgOp3IsvkadiUbH7t+d4jGSPgO1YbCmHEZ53h1aFC6fJwoVRdyQJDH
+         pY5BTIM1qirLimpjysM1OG9uXeGvlUEI/ilXMGziu4rsMGTBPvZ95jERyqXzsqKx9x
+         tUcsyjf04cDnMvgbNg3NmD7lUq/9zpkuHHkY20Cw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        stable@kernel.org
-Subject: [PATCH 4.19 321/338] ata: sata_dwc_460ex: Fix crash due to OOB write
-Date:   Thu, 14 Apr 2022 15:13:44 +0200
-Message-Id: <20220414110848.025150856@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 4.19 320/338] arm64: patch_text: Fixup last cpu should be master
+Date:   Thu, 14 Apr 2022 15:13:43 +0200
+Message-Id: <20220414110847.996385416@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,83 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Lamparter <chunkeey@gmail.com>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-commit 7aa8104a554713b685db729e66511b93d989dd6a upstream.
+commit 31a099dbd91e69fcab55eef4be15ed7a8c984918 upstream.
 
-the driver uses libata's "tag" values from in various arrays.
-Since the mentioned patch bumped the ATA_TAG_INTERNAL to 32,
-the value of the SATA_DWC_QCMD_MAX needs to account for that.
+These patch_text implementations are using stop_machine_cpuslocked
+infrastructure with atomic cpu_count. The original idea: When the
+master CPU patch_text, the others should wait for it. But current
+implementation is using the first CPU as master, which couldn't
+guarantee the remaining CPUs are waiting. This patch changes the
+last CPU as the master to solve the potential risk.
 
-Otherwise ATA_TAG_INTERNAL usage cause similar crashes like
-this as reported by Tice Rex on the OpenWrt Forum and
-reproduced (with symbols) here:
-
-| BUG: Kernel NULL pointer dereference at 0x00000000
-| Faulting instruction address: 0xc03ed4b8
-| Oops: Kernel access of bad area, sig: 11 [#1]
-| BE PAGE_SIZE=4K PowerPC 44x Platform
-| CPU: 0 PID: 362 Comm: scsi_eh_1 Not tainted 5.4.163 #0
-| NIP:  c03ed4b8 LR: c03d27e8 CTR: c03ed36c
-| REGS: cfa59950 TRAP: 0300   Not tainted  (5.4.163)
-| MSR:  00021000 <CE,ME>  CR: 42000222  XER: 00000000
-| DEAR: 00000000 ESR: 00000000
-| GPR00: c03d27e8 cfa59a08 cfa55fe0 00000000 0fa46bc0 [...]
-| [..]
-| NIP [c03ed4b8] sata_dwc_qc_issue+0x14c/0x254
-| LR [c03d27e8] ata_qc_issue+0x1c8/0x2dc
-| Call Trace:
-| [cfa59a08] [c003f4e0] __cancel_work_timer+0x124/0x194 (unreliable)
-| [cfa59a78] [c03d27e8] ata_qc_issue+0x1c8/0x2dc
-| [cfa59a98] [c03d2b3c] ata_exec_internal_sg+0x240/0x524
-| [cfa59b08] [c03d2e98] ata_exec_internal+0x78/0xe0
-| [cfa59b58] [c03d30fc] ata_read_log_page.part.38+0x1dc/0x204
-| [cfa59bc8] [c03d324c] ata_identify_page_supported+0x68/0x130
-| [...]
-
-This is because sata_dwc_dma_xfer_complete() NULLs the
-dma_pending's next neighbour "chan" (a *dma_chan struct) in
-this '32' case right here (line ~735):
-> hsdevp->dma_pending[tag] = SATA_DWC_DMA_PENDING_NONE;
-
-Then the next time, a dma gets issued; dma_dwc_xfer_setup() passes
-the NULL'd hsdevp->chan to the dmaengine_slave_config() which then
-causes the crash.
-
-With this patch, SATA_DWC_QCMD_MAX is now set to ATA_MAX_QUEUE + 1.
-This avoids the OOB. But please note, there was a worthwhile discussion
-on what ATA_TAG_INTERNAL and ATA_MAX_QUEUE is. And why there should not
-be a "fake" 33 command-long queue size.
-
-Ideally, the dw driver should account for the ATA_TAG_INTERNAL.
-In Damien Le Moal's words: "... having looked at the driver, it
-is a bigger change than just faking a 33rd "tag" that is in fact
-not a command tag at all."
-
-Fixes: 28361c403683c ("libata: add extra internal command")
-Cc: stable@kernel.org # 4.18+
-BugLink: https://github.com/openwrt/openwrt/issues/9505
-Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Fixes: ae16480785de ("arm64: introduce interfaces to hotpatch kernel and module code")
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220407073323.743224-2-guoren@kernel.org
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/ata/sata_dwc_460ex.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/arm64/kernel/insn.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/ata/sata_dwc_460ex.c
-+++ b/drivers/ata/sata_dwc_460ex.c
-@@ -149,7 +149,11 @@ struct sata_dwc_device {
- #endif
- };
+--- a/arch/arm64/kernel/insn.c
++++ b/arch/arm64/kernel/insn.c
+@@ -204,8 +204,8 @@ static int __kprobes aarch64_insn_patch_
+ 	int i, ret = 0;
+ 	struct aarch64_insn_patch *pp = arg;
  
--#define SATA_DWC_QCMD_MAX	32
-+/*
-+ * Allow one extra special slot for commands and DMA management
-+ * to account for libata internal commands.
-+ */
-+#define SATA_DWC_QCMD_MAX	(ATA_MAX_QUEUE + 1)
- 
- struct sata_dwc_device_port {
- 	struct sata_dwc_device	*hsdev;
+-	/* The first CPU becomes master */
+-	if (atomic_inc_return(&pp->cpu_count) == 1) {
++	/* The last CPU becomes master */
++	if (atomic_inc_return(&pp->cpu_count) == num_online_cpus()) {
+ 		for (i = 0; ret == 0 && i < pp->insn_cnt; i++)
+ 			ret = aarch64_insn_patch_text_nosync(pp->text_addrs[i],
+ 							     pp->new_insns[i]);
 
 
