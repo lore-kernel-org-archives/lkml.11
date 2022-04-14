@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6122BC388F3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA96C4707A
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354979AbiDNOzW (ORCPT
+        id S1346254AbiDNOun (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
+        Thu, 14 Apr 2022 10:50:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344055AbiDNNue (ORCPT
+        with ESMTP id S1344908AbiDNNov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:50:34 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC07AE4F;
-        Thu, 14 Apr 2022 06:44:22 -0700 (PDT)
+        Thu, 14 Apr 2022 09:44:51 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30C956415;
+        Thu, 14 Apr 2022 06:40:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 31F45CE296C;
-        Thu, 14 Apr 2022 13:44:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4286DC385AC;
-        Thu, 14 Apr 2022 13:44:19 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EA6A4CE29B0;
+        Thu, 14 Apr 2022 13:40:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F4D1C385A5;
+        Thu, 14 Apr 2022 13:40:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943859;
-        bh=WTTgE0jq1ET24nxFgkUnERXPbOwuOz6l4qpBGMY5MV0=;
+        s=korg; t=1649943637;
+        bh=sWy0e/18JWbVs46Eodi28jgo6Ubg6qIZHedHHPj0BUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fVTwJNyPkgfF9euSFwVgAoVAL+t+CdKuMUJydZZGkmYPD3DAmc+KOLRtLDsVT9mmY
-         QWmuslCBNH1iK1BHXYPZs2aAUUFslStlHyw+UWVT2cXyVjKYjgusfVM6vlBkQlk7Ai
-         i/OCVmzgwE/Rfbis/uTsijvAawE8QuuLDAtYZD4s=
+        b=gfdqK5E3vwKk48Va2jxeGLFyQRFxgYLRRaDfeGyTLv4IeqhnQKX0YAr3uq71q2MDM
+         qDe+Wj+78oa6q7vc6Luc8x7pPldjfluP4UfrNcnuGfJn+5Ef9sP0uEaYzTuzUS5t94
+         QfIp1a4vvO++87GZpdYVvXB701P1RoSCVCaPKzHc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 267/475] selftests: test_vxlan_under_vrf: Fix broken test case
-Date:   Thu, 14 Apr 2022 15:10:52 +0200
-Message-Id: <20220414110902.579470253@linuxfoundation.org>
+Subject: [PATCH 5.4 228/475] pwm: lpc18xx-sct: Initialize driver data and hardware before pwmchip_add()
+Date:   Thu, 14 Apr 2022 15:10:13 +0200
+Message-Id: <20220414110901.500914263@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,67 +52,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit b50d3b46f84282d795ae3076111acb75ae1031f3 ]
+[ Upstream commit 0401f24cd238ae200a23a13925f98de3d2c883b8 ]
 
-The purpose of the last test case is to test VXLAN encapsulation and
-decapsulation when the underlay lookup takes place in a non-default VRF.
-This is achieved by enslaving the physical device of the tunnel to a
-VRF.
+When a driver calls pwmchip_add() it has to be prepared to immediately
+get its callbacks called. So move allocation of driver data and hardware
+initialization before the call to pwmchip_add().
 
-The binding of the VXLAN UDP socket to the VRF happens when the VXLAN
-device itself is opened, not when its physical device is opened. This
-was also mentioned in the cited commit ("tests that moving the underlay
-from a VRF to another works when down/up the VXLAN interface"), but the
-test did something else.
+This fixes a potential NULL pointer exception and a race condition on
+register writes.
 
-Fix it by reopening the VXLAN device instead of its physical device.
-
-Before:
-
- # ./test_vxlan_under_vrf.sh
- Checking HV connectivity                                           [ OK ]
- Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
- Check VM connectivity through VXLAN (underlay in a VRF)            [FAIL]
-
-After:
-
- # ./test_vxlan_under_vrf.sh
- Checking HV connectivity                                           [ OK ]
- Check VM connectivity through VXLAN (underlay in the default VRF)  [ OK ]
- Check VM connectivity through VXLAN (underlay in a VRF)            [ OK ]
-
-Fixes: 03f1c26b1c56 ("test/net: Add script for VXLAN underlay in a VRF")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220324200514.1638326-1-idosch@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 841e6f90bb78 ("pwm: NXP LPC18xx PWM/SCT driver")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/test_vxlan_under_vrf.sh | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/pwm/pwm-lpc18xx-sct.c | 20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
 
-diff --git a/tools/testing/selftests/net/test_vxlan_under_vrf.sh b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
-index 09f9ed92cbe4..a44b9aca7427 100755
---- a/tools/testing/selftests/net/test_vxlan_under_vrf.sh
-+++ b/tools/testing/selftests/net/test_vxlan_under_vrf.sh
-@@ -118,11 +118,11 @@ echo "[ OK ]"
+diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
+index 5ff11145c1a3..9b15b6a79082 100644
+--- a/drivers/pwm/pwm-lpc18xx-sct.c
++++ b/drivers/pwm/pwm-lpc18xx-sct.c
+@@ -400,12 +400,6 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
+ 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_LIMIT,
+ 			   BIT(lpc18xx_pwm->period_event));
  
- # Move the underlay to a non-default VRF
- ip -netns hv-1 link set veth0 vrf vrf-underlay
--ip -netns hv-1 link set veth0 down
--ip -netns hv-1 link set veth0 up
-+ip -netns hv-1 link set vxlan0 down
-+ip -netns hv-1 link set vxlan0 up
- ip -netns hv-2 link set veth0 vrf vrf-underlay
--ip -netns hv-2 link set veth0 down
--ip -netns hv-2 link set veth0 up
-+ip -netns hv-2 link set vxlan0 down
-+ip -netns hv-2 link set vxlan0 up
+-	ret = pwmchip_add(&lpc18xx_pwm->chip);
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
+-		goto disable_pwmclk;
+-	}
+-
+ 	for (i = 0; i < lpc18xx_pwm->chip.npwm; i++) {
+ 		struct lpc18xx_pwm_data *data;
  
- echo -n "Check VM connectivity through VXLAN (underlay in a VRF)            "
- ip netns exec vm-1 ping -c 1 -W 1 10.0.0.2 &> /dev/null || (echo "[FAIL]"; false)
+@@ -415,14 +409,12 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
+ 				    GFP_KERNEL);
+ 		if (!data) {
+ 			ret = -ENOMEM;
+-			goto remove_pwmchip;
++			goto disable_pwmclk;
+ 		}
+ 
+ 		pwm_set_chip_data(pwm, data);
+ 	}
+ 
+-	platform_set_drvdata(pdev, lpc18xx_pwm);
+-
+ 	val = lpc18xx_pwm_readl(lpc18xx_pwm, LPC18XX_PWM_CTRL);
+ 	val &= ~LPC18XX_PWM_BIDIR;
+ 	val &= ~LPC18XX_PWM_CTRL_HALT;
+@@ -430,10 +422,16 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
+ 	val |= LPC18XX_PWM_PRE(0);
+ 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_CTRL, val);
+ 
++	ret = pwmchip_add(&lpc18xx_pwm->chip);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
++		goto disable_pwmclk;
++	}
++
++	platform_set_drvdata(pdev, lpc18xx_pwm);
++
+ 	return 0;
+ 
+-remove_pwmchip:
+-	pwmchip_remove(&lpc18xx_pwm->chip);
+ disable_pwmclk:
+ 	clk_disable_unprepare(lpc18xx_pwm->pwm_clk);
+ 	return ret;
 -- 
 2.34.1
 
