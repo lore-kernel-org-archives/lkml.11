@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAC8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:16:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D32C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:17:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243802AbiDNNTQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37776 "EHLO
+        id S243871AbiDNNTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:19:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243803AbiDNNSD (ORCPT
+        with ESMTP id S243738AbiDNNRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:18:03 -0400
+        Thu, 14 Apr 2022 09:17:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CDE9154F;
-        Thu, 14 Apr 2022 06:15:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344B38FE50;
+        Thu, 14 Apr 2022 06:15:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47015612D6;
-        Thu, 14 Apr 2022 13:15:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5760CC385A1;
-        Thu, 14 Apr 2022 13:15:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3ED9612DA;
+        Thu, 14 Apr 2022 13:14:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D36C9C385A1;
+        Thu, 14 Apr 2022 13:14:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942129;
-        bh=YBW9ISviAOPaKNtXuRYKHpW5Tf299q3Fe1E8jrVtelQ=;
+        s=korg; t=1649942099;
+        bh=PaTngJ64p5Jnkri65TBcUAY1LQxwH7tWkPjQpSs/TRM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FWHkbnsvrOfFdT/j6hnCNNCb3ygK9nB1gMtf13Gx/0oAYCv0ECEzzYa3909cGayUI
-         1l2V3MBKLUxrohml1Utl0OMqWLlFl53EOk2cd4ra1oAkCrqn8bOEScw3Ts6y9SksXp
-         OGrIAERMSANQgwmY8f8bQIWSCkm38sjZu9k2wP48=
+        b=1PG1tNo7NkVKMfyRyCIEZ1dMyBMTrd+muj2MuK4b7ljx3ujHva+0TBL5UZ0O1rT8m
+         DQ4srSa82kkZdJ9v+xjsz3gyc91QEOscx8+tCFJFtm7bQSpZbzEV7aDPJKDT90XQoM
+         V5ndZdeuK+w5vYUIrsNn58J9wkyXL/o/YvXAkwEs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 007/338] ethernet: sun: Free the coherent when failing in probing
-Date:   Thu, 14 Apr 2022 15:08:30 +0200
-Message-Id: <20220414110839.099966571@linuxfoundation.org>
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 4.19 015/338] virtio-blk: Use blk_validate_block_size() to validate block size
+Date:   Thu, 14 Apr 2022 15:08:38 +0200
+Message-Id: <20220414110839.326021105@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,47 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-[ Upstream commit bb77bd31c281f70ec77c9c4f584950a779e05cf8 ]
+commit 57a13a5b8157d9a8606490aaa1b805bafe6c37e1 upstream.
 
-When the driver fails to register net device, it should free the DMA
-region first, and then do other cleanup.
+The block layer can't support a block size larger than
+page size yet. And a block size that's too small or
+not a power of two won't work either. If a misconfigured
+device presents an invalid block size in configuration space,
+it will result in the kernel crash something like below:
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[  506.154324] BUG: kernel NULL pointer dereference, address: 0000000000000008
+[  506.160416] RIP: 0010:create_empty_buffers+0x24/0x100
+[  506.174302] Call Trace:
+[  506.174651]  create_page_buffers+0x4d/0x60
+[  506.175207]  block_read_full_page+0x50/0x380
+[  506.175798]  ? __mod_lruvec_page_state+0x60/0xa0
+[  506.176412]  ? __add_to_page_cache_locked+0x1b2/0x390
+[  506.177085]  ? blkdev_direct_IO+0x4a0/0x4a0
+[  506.177644]  ? scan_shadow_nodes+0x30/0x30
+[  506.178206]  ? lru_cache_add+0x42/0x60
+[  506.178716]  do_read_cache_page+0x695/0x740
+[  506.179278]  ? read_part_sector+0xe0/0xe0
+[  506.179821]  read_part_sector+0x36/0xe0
+[  506.180337]  adfspart_check_ICS+0x32/0x320
+[  506.180890]  ? snprintf+0x45/0x70
+[  506.181350]  ? read_part_sector+0xe0/0xe0
+[  506.181906]  bdev_disk_changed+0x229/0x5c0
+[  506.182483]  blkdev_get_whole+0x6d/0x90
+[  506.183013]  blkdev_get_by_dev+0x122/0x2d0
+[  506.183562]  device_add_disk+0x39e/0x3c0
+[  506.184472]  virtblk_probe+0x3f8/0x79b [virtio_blk]
+[  506.185461]  virtio_dev_probe+0x15e/0x1d0 [virtio]
+
+So let's use a block layer helper to validate the block size.
+
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Link: https://lore.kernel.org/r/20211026144015.188-5-xieyongji@bytedance.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/sun/sunhme.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/block/virtio_blk.c |   12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index 06da2f59fcbf..882908e74cc9 100644
---- a/drivers/net/ethernet/sun/sunhme.c
-+++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -3164,7 +3164,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
- 	if (err) {
- 		printk(KERN_ERR "happymeal(PCI): Cannot register net device, "
- 		       "aborting.\n");
--		goto err_out_iounmap;
-+		goto err_out_free_coherent;
- 	}
- 
- 	pci_set_drvdata(pdev, hp);
-@@ -3197,6 +3197,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
- 
- 	return 0;
- 
-+err_out_free_coherent:
-+	dma_free_coherent(hp->dma_dev, PAGE_SIZE,
-+			  hp->happy_block, hp->hblock_dvma);
+--- a/drivers/block/virtio_blk.c
++++ b/drivers/block/virtio_blk.c
+@@ -849,9 +849,17 @@ static int virtblk_probe(struct virtio_d
+ 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
+ 				   struct virtio_blk_config, blk_size,
+ 				   &blk_size);
+-	if (!err)
++	if (!err) {
++		err = blk_validate_block_size(blk_size);
++		if (err) {
++			dev_err(&vdev->dev,
++				"virtio_blk: invalid block size: 0x%x\n",
++				blk_size);
++			goto out_free_tags;
++		}
 +
- err_out_iounmap:
- 	iounmap(hp->gregs);
+ 		blk_queue_logical_block_size(q, blk_size);
+-	else
++	} else
+ 		blk_size = queue_logical_block_size(q);
  
--- 
-2.34.1
-
+ 	/* Use topology information if available */
 
 
