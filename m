@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87393C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F540C47081
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351753AbiDNOy2 (ORCPT
+        id S1350495AbiDNOx7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:54:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35616 "EHLO
+        Thu, 14 Apr 2022 10:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345386AbiDNNuK (ORCPT
+        with ESMTP id S245283AbiDNNqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:50:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7F1A5EAA;
-        Thu, 14 Apr 2022 06:44:04 -0700 (PDT)
+        Thu, 14 Apr 2022 09:46:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C57B326117;
+        Thu, 14 Apr 2022 06:43:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E77F061D29;
-        Thu, 14 Apr 2022 13:44:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01919C385A1;
-        Thu, 14 Apr 2022 13:44:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B73261B51;
+        Thu, 14 Apr 2022 13:43:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7004FC385A1;
+        Thu, 14 Apr 2022 13:43:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943843;
-        bh=2l3NMKJwTl8iPLfY5ms0FYzbxI/GUgoliNVkJUrhCcs=;
+        s=korg; t=1649943815;
+        bh=+MmGqabb7lZi/IA9iCaC6RQ3A+tD+p0VWv+J3PRsqG0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kidj2jojwcOT2DE2uJIY0tWqI44kpK9vzsr7Dt8Tsf0iKHFx5uca3Fi62saNixbE0
-         F1UHy8waEJ9MGznVkZGiSpVNWfC2QbGEp4YDFRII/+g3hmOkDQiAahP/IH0xKSsKLL
-         EEziDS7jqARf6DqZqzuxXFrP3BcBwSPvCYghGt9g=
+        b=MbshjGRXzB/ZaYGrHQD/3SCpi553g7zvNCzxoLtFug4TrNJl7/wc3v9FDCS2dsef7
+         CdzxpnCLu1EUquFmgWi8Ro3749fbNJoYNXb/dR/2qCHz82VsIMV8+ThQlCdanWvwDY
+         u1/NCRNn7UXmUV/SY9Irop9ztPw13NdamOz2oXaM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
+        stable@vger.kernel.org,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 300/475] video: fbdev: omapfb: panel-tpo-td043mtea1: Use sysfs_emit() instead of snprintf()
-Date:   Thu, 14 Apr 2022 15:11:25 +0200
-Message-Id: <20220414110903.489506477@linuxfoundation.org>
+Subject: [PATCH 5.4 264/475] clk: Initialize orphan req_rate
+Date:   Thu, 14 Apr 2022 15:10:49 +0200
+Message-Id: <20220414110902.496167947@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,42 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit c07a039cbb96748f54c02995bae8131cc9a73b0a ]
+[ Upstream commit 5f7e2af00807f2117650e711a58b7f0e986ce1df ]
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+When registering a clock that doesn't have a recalc_rate implementation,
+and doesn't have its parent registered yet, we initialize the clk_core
+rate and 'req_rate' fields to 0.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
+The rate field is later updated when the parent is registered in
+clk_core_reparent_orphans_nolock() using __clk_recalc_rates(), but the
+'req_rate' field is never updated.
+
+This leads to an issue in clk_set_rate_range() and clk_put(), since
+those functions will call clk_set_rate() with the content of 'req_rate'
+to provide drivers with the opportunity to change the rate based on the
+new boundaries. In this case, we would call clk_set_rate() with a rate
+of 0, effectively enforcing the minimum allowed for this clock whenever
+we would call one of those two functions, even though the actual rate
+might be within range.
+
+Let's fix this by setting 'req_rate' in
+clk_core_reparent_orphans_nolock() with the rate field content just
+updated by the call to __clk_recalc_rates().
+
+Fixes: 1c8e600440c7 ("clk: Add rate constraints to clocks")
+Reported-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Tested-by: Dmitry Osipenko <dmitry.osipenko@collabora.com> # T30 Nexus7
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://lore.kernel.org/r/20220325161144.1901695-2-maxime@cerno.tech
+[sboyd@kernel.org: Reword comment]
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c  | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/clk/clk.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-index bb85b21f0724..9f6ef9e04d9c 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-tpo-td043mtea1.c
-@@ -169,7 +169,7 @@ static ssize_t tpo_td043_vmirror_show(struct device *dev,
- {
- 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->vmirror);
-+	return sysfs_emit(buf, "%d\n", ddata->vmirror);
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index e4e1b4e94a67..ccb26a513b29 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -3278,6 +3278,19 @@ static void clk_core_reparent_orphans_nolock(void)
+ 			__clk_set_parent_after(orphan, parent, NULL);
+ 			__clk_recalc_accuracies(orphan);
+ 			__clk_recalc_rates(orphan, 0);
++
++			/*
++			 * __clk_init_parent() will set the initial req_rate to
++			 * 0 if the clock doesn't have clk_ops::recalc_rate and
++			 * is an orphan when it's registered.
++			 *
++			 * 'req_rate' is used by clk_set_rate_range() and
++			 * clk_put() to trigger a clk_set_rate() call whenever
++			 * the boundaries are modified. Let's make sure
++			 * 'req_rate' is set to something non-zero so that
++			 * clk_set_rate_range() doesn't drop the frequency.
++			 */
++			orphan->req_rate = orphan->rate;
+ 		}
+ 	}
  }
- 
- static ssize_t tpo_td043_vmirror_store(struct device *dev,
-@@ -199,7 +199,7 @@ static ssize_t tpo_td043_mode_show(struct device *dev,
- {
- 	struct panel_drv_data *ddata = dev_get_drvdata(dev);
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", ddata->mode);
-+	return sysfs_emit(buf, "%d\n", ddata->mode);
- }
- 
- static ssize_t tpo_td043_mode_store(struct device *dev,
 -- 
 2.34.1
 
