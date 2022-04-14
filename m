@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E5FC3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1333C4707E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353454AbiDNOkP (ORCPT
+        id S1353548AbiDNOk0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58634 "EHLO
+        Thu, 14 Apr 2022 10:40:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344945AbiDNNo4 (ORCPT
+        with ESMTP id S1344954AbiDNNo5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:44:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690D71FCFD;
-        Thu, 14 Apr 2022 06:40:52 -0700 (PDT)
+        Thu, 14 Apr 2022 09:44:57 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E105D65C;
+        Thu, 14 Apr 2022 06:40:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E03E161D73;
-        Thu, 14 Apr 2022 13:40:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBA9CC385A1;
-        Thu, 14 Apr 2022 13:40:50 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BA6D1CE2997;
+        Thu, 14 Apr 2022 13:40:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0F0EC385A5;
+        Thu, 14 Apr 2022 13:40:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943651;
-        bh=jdRZxhGVBh24b1pO4PjXneg0iSK34WICAWHCxcRCZRY=;
+        s=korg; t=1649943654;
+        bh=KoGQ+0vWP49KzgTOCU/ifdDn7F7KOjvEzSHR2vQTS+U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bc6ZzLZCORjgg8OGasTrJaPawHQUBxct6UFv5HyOR+UmTHWHGpUqxQzTeCBmZy03I
-         cFy0b+nAvzqY/433/arDznxZAKLQmiWk72/Wd8YY/J+PuhuTKAM+bHw2UHk74QYxm8
-         GzSJ+dILXdwdmlGdxgRemV9s2TmbE2jWcg0vHFUw=
+        b=dbBPx4QboJJ0hmFCIY2BLHfNrbIBw/4QiYQa1j+M04tMWOWBJ3UklIMiGq80FBDpA
+         f47oyjdZ6aazfodsDbZ05P6mkJpX35xS6ogzbbb5s9toof+PMea4g8TIPyXnGSFw+D
+         FjfSDIU/Ay57vVDONm/8wUpxdIBkyvqmcpqPeJ0M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
-        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 233/475] phy: dphy: Correct lpx parameter and its derivatives(ta_{get,go,sure})
-Date:   Thu, 14 Apr 2022 15:10:18 +0200
-Message-Id: <20220414110901.643180267@linuxfoundation.org>
+        stable@vger.kernel.org, Qing Wang <wangqing@vivo.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 234/475] serial: 8250_mid: Balance reference count for PCI DMA device
+Date:   Thu, 14 Apr 2022 15:10:19 +0200
+Message-Id: <20220414110901.670558939@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -56,64 +50,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Ying <victor.liu@nxp.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 3153fa38e38af566cf6454a03b1dbadaf6f323c0 ]
+[ Upstream commit 67ec6dd0b257bd81b4e9fcac89b29da72f6265e5 ]
 
-According to the comment of the function phy_mipi_dphy_get_default_config(),
-it uses minimum D-PHY timings based on MIPI D-PHY specification.  They are
-derived from the valid ranges specified in Section 6.9, Table 14, Page 41
-of the D-PHY specification (v1.2).  The table 14 explicitly mentions that
-the minimum T-LPX parameter is 50 nanoseconds and the minimum TA-SURE
-parameter is T-LPX nanoseconds.  Likewise, the kernel doc of the 'lpx' and
-'ta_sure' members of struct phy_configure_opts_mipi_dphy mentions that
-the minimum values are 50000 picoseconds and @lpx picoseconds respectively.
-Also, the function phy_mipi_dphy_config_validate() checks if cfg->lpx is
-less than 50000 picoseconds and if cfg->ta_sure is less than cfg->lpx,
-which hints the same minimum values.
+The pci_get_slot() increases its reference count, the caller
+must decrement the reference count by calling pci_dev_put().
 
-Without this patch, the function phy_mipi_dphy_get_default_config()
-wrongly sets cfg->lpx to 60000 picoseconds and cfg->ta_sure to 2 * cfg->lpx.
-So, let's correct them to 50000 picoseconds and cfg->lpx respectively.
-
-Note that I've only tested the patch with RM67191 DSI panel on i.MX8mq EVK.
-Help is needed to test with other i.MX8mq, Meson and Rockchip platforms,
-as I don't have the hardwares.
-
-Fixes: dddc97e82303 ("phy: dphy: Add configuration helpers")
-Cc: Andrzej Hajda <andrzej.hajda@intel.com>
-Cc: Neil Armstrong <narmstrong@baylibre.com>
-Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-Cc: Kishon Vijay Abraham I <kishon@ti.com>
-Cc: Vinod Koul <vkoul@kernel.org>
-Cc: Heiko Stuebner <heiko@sntech.de>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Guido Günther <agx@sigxcpu.org>
-Signed-off-by: Liu Ying <victor.liu@nxp.com>
-Link: https://lore.kernel.org/r/20220216071257.1647703-1-victor.liu@nxp.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 90b9aacf912a ("serial: 8250_pci: add Intel Tangier support")
+Fixes: f549e94effa1 ("serial: 8250_pci: add Intel Penwell ports")
+Reported-by: Qing Wang <wangqing@vivo.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Depends-on: d9eda9bab237 ("serial: 8250_pci: Intel MID UART support to its own driver")
+Link: https://lore.kernel.org/r/20220215100920.41984-1-andriy.shevchenko@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/phy-core-mipi-dphy.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_mid.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/phy/phy-core-mipi-dphy.c b/drivers/phy/phy-core-mipi-dphy.c
-index 14e0551cd319..0aa740b73d0d 100644
---- a/drivers/phy/phy-core-mipi-dphy.c
-+++ b/drivers/phy/phy-core-mipi-dphy.c
-@@ -66,10 +66,10 @@ int phy_mipi_dphy_get_default_config(unsigned long pixel_clock,
- 	cfg->hs_trail = max(4 * 8 * ui, 60000 + 4 * 4 * ui);
+diff --git a/drivers/tty/serial/8250/8250_mid.c b/drivers/tty/serial/8250/8250_mid.c
+index efa0515139f8..e6c1791609dd 100644
+--- a/drivers/tty/serial/8250/8250_mid.c
++++ b/drivers/tty/serial/8250/8250_mid.c
+@@ -73,6 +73,11 @@ static int pnw_setup(struct mid8250 *mid, struct uart_port *p)
+ 	return 0;
+ }
  
- 	cfg->init = 100;
--	cfg->lpx = 60000;
-+	cfg->lpx = 50000;
- 	cfg->ta_get = 5 * cfg->lpx;
- 	cfg->ta_go = 4 * cfg->lpx;
--	cfg->ta_sure = 2 * cfg->lpx;
-+	cfg->ta_sure = cfg->lpx;
- 	cfg->wakeup = 1000;
++static void pnw_exit(struct mid8250 *mid)
++{
++	pci_dev_put(mid->dma_dev);
++}
++
+ static int tng_handle_irq(struct uart_port *p)
+ {
+ 	struct mid8250 *mid = p->private_data;
+@@ -124,6 +129,11 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
+ 	return 0;
+ }
  
- 	cfg->hs_clk_rate = hs_clk_rate;
++static void tng_exit(struct mid8250 *mid)
++{
++	pci_dev_put(mid->dma_dev);
++}
++
+ static int dnv_handle_irq(struct uart_port *p)
+ {
+ 	struct mid8250 *mid = p->private_data;
+@@ -330,9 +340,9 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	pci_set_drvdata(pdev, mid);
+ 	return 0;
++
+ err:
+-	if (mid->board->exit)
+-		mid->board->exit(mid);
++	mid->board->exit(mid);
+ 	return ret;
+ }
+ 
+@@ -342,8 +352,7 @@ static void mid8250_remove(struct pci_dev *pdev)
+ 
+ 	serial8250_unregister_port(mid->line);
+ 
+-	if (mid->board->exit)
+-		mid->board->exit(mid);
++	mid->board->exit(mid);
+ }
+ 
+ static const struct mid8250_board pnw_board = {
+@@ -351,6 +360,7 @@ static const struct mid8250_board pnw_board = {
+ 	.freq = 50000000,
+ 	.base_baud = 115200,
+ 	.setup = pnw_setup,
++	.exit = pnw_exit,
+ };
+ 
+ static const struct mid8250_board tng_board = {
+@@ -358,6 +368,7 @@ static const struct mid8250_board tng_board = {
+ 	.freq = 38400000,
+ 	.base_baud = 1843200,
+ 	.setup = tng_setup,
++	.exit = tng_exit,
+ };
+ 
+ static const struct mid8250_board dnv_board = {
 -- 
 2.34.1
 
