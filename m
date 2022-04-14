@@ -2,157 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06663C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8C6C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353942AbiDNPkz (ORCPT
+        id S1358113AbiDNPlM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:40:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39150 "EHLO
+        Thu, 14 Apr 2022 11:41:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354236AbiDNOlv (ORCPT
+        with ESMTP id S1354780AbiDNOmh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:41:51 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200C5CD664
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:34:45 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id i184so4461210pgc.2
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:34:45 -0700 (PDT)
+        Thu, 14 Apr 2022 10:42:37 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FBD8DEA8
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:39:36 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id i24-20020a17090adc1800b001cd5529465aso4782520pjv.0
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:39:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=J8XpPS8fF6//JWfsSd8RX2fW6+WaMSPbmBOhZGi8MbQ=;
-        b=jx2Nrf2VkS8q76IMPSON7sYZumK4VxWREXX+8G8xMt0+IvbBEkw28ugTypfP52JZU+
-         kPl43iO94PcgSFCd5MbuFZw/nWXCXCGJtGJfFZeXdctU46OqDsNjSmkJG493x5tFwsFm
-         pnYkQFt/b6NHNwsYP48D8e+uju9FirrxS6WA2EZPt4HUMba+fDeRY7bOlcD15rDnEtaS
-         NCYD7lm+BuSYz8FNYYizuPLVDtWXkVjPsV4p39/PGezqC30DFTgHDNuoWnRrI1bHJjVK
-         juG6/AkukOFByjK25Vex48lwNP0kt8dWUTiRJ0RK2TlUdpMjF5iltfoyjN2ZjCiQhl35
-         f1IA==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gJ8pcz3Yaw1gKMnr6f7nkiOA+qMs14RS4sjJplU0gjM=;
+        b=R4JJPAxBiFl6PYRwZGRkCFzqF4VwdjE3sCH/tcEdYlbUlKE40ftv4JdLWisRcFdYD+
+         ZLPXO8yK68lWcdip9fPvd539XPVr0LDMwcHJYld7xq+NTMqK4zO/fBnRDPY4ReezcpiT
+         JdwrQMgNMvGbpSuS30JR74qg3aQuKtF2S2RQYN1PhbM0k3BNLsaBiv45OV5UWZagEa4u
+         Jr/VESJVUOAcZAQr/ZCswkJRgxe1UdqlQiNNfmilwIZIwDOp5tfmoIHRHxAvjoNxXnN+
+         EQ1InC2XexhkzFjVnN9GiHdeciEeyR+KRFdB1lWMlL1esYJgtlNQfvZN9wS2wH7Tk5On
+         Io6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=J8XpPS8fF6//JWfsSd8RX2fW6+WaMSPbmBOhZGi8MbQ=;
-        b=L/D2t2xJdlm490zAKEbjdZg2CoQCQlJ3x9pRNz0uIqURB6X4VAdRh11NVxBUigrRTj
-         hMOJzlFm8C6Noa5cSCm+rvo5YbSRESXCuMD1+HNnF2QH5jMD+NqU3nUcissK3lm0JWUs
-         RB3kfXXGLNVIM/oldKsd3wDIWQ5A9qnUQPrHxkT/ufM7lRBQZplA0LwWCd5qsOzaXh5S
-         mRHS3oLkgR7IdoIJMyO9GFmgFkstUffzSeNDwZMJ40bXd5DOSzI8OjtnquNk9W15DUsd
-         CUkLsPdZ1pZ6oobDcO+bH1agNxKA7NrW3BKjR52MlsUnT0mDn4FV5suOg6bPsUQfiAii
-         +bPg==
-X-Gm-Message-State: AOAM531Pbr4XSw59qLMrIg4NCICtbuJtXXL9I/yCQ9HwU+ZE2VyAs7TN
-        cQENY8rIowgbHPW/gLXfE8A=
-X-Google-Smtp-Source: ABdhPJxg6LkhK/f+4dkzBNst6mLyHzIY5tyPpKXHH/ea82lbmQG9WigxzTBaAvxHsT91GmLMfKHTnA==
-X-Received: by 2002:a05:6a02:206:b0:399:3c9:f465 with SMTP id bh6-20020a056a02020600b0039903c9f465mr2640670pgb.388.1649946885024;
-        Thu, 14 Apr 2022 07:34:45 -0700 (PDT)
-Received: from guoguo-omen.lan ([2401:c080:1400:4da2:b701:47d5:9291:4cf9])
-        by smtp.gmail.com with ESMTPSA id k5-20020a17090ac50500b001cd5ffcca96sm4411017pjt.27.2022.04.14.07.34.41
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gJ8pcz3Yaw1gKMnr6f7nkiOA+qMs14RS4sjJplU0gjM=;
+        b=u3btk27K+qosmEszuLeg+vgHxQQUW7XVnRAqH+N0bTudsSu4xbVZj8TZDzPRTms7dm
+         TpgbIVHyiV1JYU8VW00qsGOjaWwdo7nVRPMBATrYXGdruMlSL27de35Rpw2IHCcYhfUb
+         dDybRiP3ReOfi7bW2BPB7idBAv90wkCxOieuc9UClKzeIJS44UndPTKzLEqXkXjMFoHi
+         zOEotiRWEAusVI7kMxFyvX8yMTa0jzZYuQpTVzIUZgdpjkzTWR/ykl6BSMAl3VXJBRm9
+         Ucmlp2EhLuWMkHv78TXSYc5ID51jUXp0uHLgn0UpyhLVkQd35bivhu8tYlt3hN6mzhfQ
+         tbzQ==
+X-Gm-Message-State: AOAM5304UQnje10cWH8N9TB5EdiRzK0z1r04/xJAAVwLz+tsWum7nyBX
+        EgHFj9GKfTIsZqxjjknAMXkMkA==
+X-Google-Smtp-Source: ABdhPJyQhgIYo4iouGyYUQ+Q7Nt/zlHN4/wmdz2jjSvmkYXLB9lHmvXGarXlMm7Az348QWDplNeaIw==
+X-Received: by 2002:a17:903:110c:b0:14d:8859:5c8 with SMTP id n12-20020a170903110c00b0014d885905c8mr47115691plh.156.1649947176324;
+        Thu, 14 Apr 2022 07:39:36 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id p10-20020a056a0026ca00b004fb44e0cb17sm178299pfw.116.2022.04.14.07.39.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 07:34:44 -0700 (PDT)
-From:   Chuanhong Guo <gch981213@gmail.com>
-To:     linux-mtd@lists.infradead.org
-Cc:     Chuanhong Guo <gch981213@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Boris Brezillon <boris.brezillon@collabora.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        Mark Brown <broonie@kernel.org>,
-        Daniel Palmer <daniel@0x0f.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 2/2] mtd: spinand: probe Winbond W25N01GV/W using param page
-Date:   Thu, 14 Apr 2022 22:34:26 +0800
-Message-Id: <20220414143426.723168-3-gch981213@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220414143426.723168-1-gch981213@gmail.com>
-References: <20220414143426.723168-1-gch981213@gmail.com>
+        Thu, 14 Apr 2022 07:39:35 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 14:39:32 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] KVM: VMX: make read-only const array vmx_uret_msrs_list
+ static
+Message-ID: <YlgyJPRVNCe4w8q3@google.com>
+References: <20220414100720.295502-1-colin.i.king@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414100720.295502-1-colin.i.king@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The JEDEC ID of EFAA21 is assigned to both W25N01G and W25N01K.
-Probing the chip with JEDEC ID isn't reliable anymore. Use parameter
-page instead.
+On Thu, Apr 14, 2022, Colin Ian King wrote:
+> Don't populate the read-only array vmx_uret_msrs_list on the stack
+> but instead make it static. Also makes the object code a little smaller.
 
-Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
----
- drivers/mtd/nand/spi/onfi.c    |  4 +++-
- drivers/mtd/nand/spi/winbond.c | 25 ++++++++++++++++---------
- include/linux/mtd/spinand.h    |  3 +++
- 3 files changed, 22 insertions(+), 10 deletions(-)
+Why not put it on the stack?  It's an __init function, i.e. called once in the
+lifetime of kvm-intel.ko, isn't all that big, and is certainly not performance
+critical.  And making it static begs the question of whether or not the data gets
+thrown away after init, i.e. this might consume _more_ memory once KVM has reached
+steady state.
 
-diff --git a/drivers/mtd/nand/spi/onfi.c b/drivers/mtd/nand/spi/onfi.c
-index 5cc888e3d038..27484e0cd22d 100644
---- a/drivers/mtd/nand/spi/onfi.c
-+++ b/drivers/mtd/nand/spi/onfi.c
-@@ -141,7 +141,9 @@ static void nand_bit_wise_majority(const void **srcbufs, unsigned int nsrcbufs,
- 	}
- }
- 
--static const struct spinand_manufacturer *spinand_onfi_manufacturers[] = {};
-+static const struct spinand_manufacturer *spinand_onfi_manufacturers[] = {
-+	&winbond_onfi_spinand_manufacturer,
-+};
- 
- static const struct spinand_onfi_info *
- spinand_onfi_chip_match(struct nand_onfi_params *p,
-diff --git a/drivers/mtd/nand/spi/winbond.c b/drivers/mtd/nand/spi/winbond.c
-index 76684428354e..601316c80b3e 100644
---- a/drivers/mtd/nand/spi/winbond.c
-+++ b/drivers/mtd/nand/spi/winbond.c
-@@ -85,15 +85,15 @@ static const struct spinand_info winbond_spinand_table[] = {
- 		     0,
- 		     SPINAND_ECCINFO(&w25m02gv_ooblayout, NULL),
- 		     SPINAND_SELECT_TARGET(w25m02gv_select_target)),
--	SPINAND_INFO("W25N01GV",
--		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0xaa),
--		     NAND_MEMORG(1, 2048, 64, 64, 1024, 20, 1, 1, 1),
--		     NAND_ECCREQ(1, 512),
--		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
--					      &write_cache_variants,
--					      &update_cache_variants),
--		     0,
--		     SPINAND_ECCINFO(&w25m02gv_ooblayout, NULL)),
-+};
-+
-+static const struct spinand_onfi_info winbond_spinand_onfi_table[] = {
-+	SPINAND_ONFI_INFO(SPINAND_ONFI_MODELS("W25N01GV", "W25N01GW"),
-+			  SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
-+						   &write_cache_variants,
-+						   &update_cache_variants),
-+			  0,
-+			  SPINAND_ECCINFO(&w25m02gv_ooblayout, NULL)),
- };
- 
- static int winbond_spinand_init(struct spinand_device *spinand)
-@@ -125,3 +125,10 @@ const struct spinand_manufacturer winbond_spinand_manufacturer = {
- 	.nchips = ARRAY_SIZE(winbond_spinand_table),
- 	.ops = &winbond_spinand_manuf_ops,
- };
-+
-+const struct spinand_manufacturer winbond_onfi_spinand_manufacturer = {
-+	.name = "Winbond",
-+	.onfi_chips = winbond_spinand_onfi_table,
-+	.nchips = ARRAY_SIZE(winbond_spinand_onfi_table),
-+	.ops = &winbond_spinand_manuf_ops,
-+};
-diff --git a/include/linux/mtd/spinand.h b/include/linux/mtd/spinand.h
-index dc218082d773..610320b03773 100644
---- a/include/linux/mtd/spinand.h
-+++ b/include/linux/mtd/spinand.h
-@@ -268,6 +268,9 @@ extern const struct spinand_manufacturer paragon_spinand_manufacturer;
- extern const struct spinand_manufacturer toshiba_spinand_manufacturer;
- extern const struct spinand_manufacturer winbond_spinand_manufacturer;
- 
-+/* SPI NAND manufacturers with ONFI parameter page support */
-+extern const struct spinand_manufacturer winbond_onfi_spinand_manufacturer;
-+
- /**
-  * struct spinand_op_variants - SPI NAND operation variants
-  * @ops: the list of variants for a given operation
--- 
-2.35.1
-
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  arch/x86/kvm/vmx/vmx.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index c654c9d76e09..36429e2bb918 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -7871,7 +7871,7 @@ static __init void vmx_setup_user_return_msrs(void)
+>  	 * but is never loaded into hardware.  MSR_CSTAR is also never loaded
+>  	 * into hardware and is here purely for emulation purposes.
+>  	 */
+> -	const u32 vmx_uret_msrs_list[] = {
+> +	static const u32 vmx_uret_msrs_list[] = {
+>  	#ifdef CONFIG_X86_64
+>  		MSR_SYSCALL_MASK, MSR_LSTAR, MSR_CSTAR,
+>  	#endif
+> -- 
+> 2.35.1
+> 
