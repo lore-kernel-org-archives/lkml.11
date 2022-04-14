@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7DB6C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 246AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352044AbiDNObv (ORCPT
+        id S1352109AbiDNObz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:31:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35962 "EHLO
+        Thu, 14 Apr 2022 10:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242291AbiDNNhK (ORCPT
+        with ESMTP id S1344328AbiDNNkw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:37:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB13B972EC;
-        Thu, 14 Apr 2022 06:31:22 -0700 (PDT)
+        Thu, 14 Apr 2022 09:40:52 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33828120;
+        Thu, 14 Apr 2022 06:38:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76C656190F;
-        Thu, 14 Apr 2022 13:31:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8136FC385A5;
-        Thu, 14 Apr 2022 13:31:21 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 987A5CE29B0;
+        Thu, 14 Apr 2022 13:38:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A96A4C385A1;
+        Thu, 14 Apr 2022 13:38:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943081;
-        bh=Hxo4l3G3ezXXxyeir2RGiMkhpL4xQTk/wS0+4Y5M1K8=;
+        s=korg; t=1649943504;
+        bh=WHqzE88lBVJT1xJ8LvBQh6M3R/S5kvHmeEmCJDIqYXU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q0BeB8kWqju3xV1zz3pL/QvBFgBjUOeinRA5feTX7JLJtliHZMnVwR0IzE2tRJUKt
-         umKHLgLHCxZ/kwLOBz9EBYQt6kgxp2md9VLDEcQ2oCUxRqE6xbppFNwNNG60b2uMbV
-         FTLbJv42CWvV2QfGNAoTDWNQq1bCDFiurHih0tYo=
+        b=QnJQU2qgiBIM0liQO2+I+2fiYWAHrdghxYFXbkbI4Q4gwTefEs6iDsthRjZVgc8SD
+         aNJhv1AGnryAD4XDmub2wmjgeY+QvwBWxQ2LDVkLO55Yz2WXHdYGowOdLAadiXk64A
+         B8ZBt2/YULvVMbpWho2rREasoYbF9c0AAcMMzLVA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.4 028/475] greybus: svc: fix an error handling bug in gb_svc_hello()
-Date:   Thu, 14 Apr 2022 15:06:53 +0200
-Message-Id: <20220414110855.941883172@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 138/475] ASoC: soc-compress: prevent the potentially use of null pointer
+Date:   Thu, 14 Apr 2022 15:08:43 +0200
+Message-Id: <20220414110859.010008924@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,41 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 5f8583a3b7552092582a92e7bbd2153319929ad7 upstream.
+[ Upstream commit de2c6f98817fa5decb9b7d3b3a8a3ab864c10588 ]
 
-Cleanup if gb_svc_queue_deferred_request() fails.
+There is one call trace that snd_soc_register_card()
+->snd_soc_bind_card()->soc_init_pcm_runtime()
+->snd_soc_dai_compress_new()->snd_soc_new_compress().
+In the trace the 'codec_dai' transfers from card->dai_link,
+and we can see from the snd_soc_add_pcm_runtime() in
+snd_soc_bind_card() that, if value of card->dai_link->num_codecs
+is 0, then 'codec_dai' could be null pointer caused
+by index out of bound in 'asoc_rtd_to_codec(rtd, 0)'.
+And snd_soc_register_card() is called by various platforms.
+Therefore, it is better to add the check in the case of misusing.
+And because 'cpu_dai' has already checked in soc_init_pcm_runtime(),
+there is no need to check again.
+Adding the check as follow, then if 'codec_dai' is null,
+snd_soc_new_compress() will not pass through the check
+'if (playback + capture != 1)', avoiding the leftover use of
+'codec_dai'.
 
-Link: https://lore.kernel.org/r/20220202072016.GA6748@kili
-Fixes: ee2f2074fdb2 ("greybus: svc: reconfig APBridgeA-Switch link to handle required load")
-Cc: stable@vger.kernel.org      # 4.9
-[johan: fix commit summary prefix and rename label ]
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Link: https://lore.kernel.org/r/20220202113347.1288-2-johan@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 467fece ("ASoC: soc-dai: move snd_soc_dai_stream_valid() to soc-dai.c")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/1634285633-529368-1-git-send-email-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/greybus/svc.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ sound/soc/soc-compress.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
---- a/drivers/greybus/svc.c
-+++ b/drivers/greybus/svc.c
-@@ -866,8 +866,14 @@ static int gb_svc_hello(struct gb_operat
+diff --git a/sound/soc/soc-compress.c b/sound/soc/soc-compress.c
+index 9e54d8ae6d2c..fec736c8c45f 100644
+--- a/sound/soc/soc-compress.c
++++ b/sound/soc/soc-compress.c
+@@ -872,12 +872,14 @@ int snd_soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
+ 	}
  
- 	gb_svc_debugfs_init(svc);
+ 	/* check client and interface hw capabilities */
+-	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
+-	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
+-		playback = 1;
+-	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
+-	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
+-		capture = 1;
++	if (codec_dai) {
++		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
++		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
++			playback = 1;
++		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
++		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
++			capture = 1;
++	}
  
--	return gb_svc_queue_deferred_request(op);
-+	ret = gb_svc_queue_deferred_request(op);
-+	if (ret)
-+		goto err_remove_debugfs;
- 
-+	return 0;
-+
-+err_remove_debugfs:
-+	gb_svc_debugfs_exit(svc);
- err_unregister_device:
- 	gb_svc_watchdog_destroy(svc);
- 	device_del(&svc->dev);
+ 	/*
+ 	 * Compress devices are unidirectional so only one of the directions
+-- 
+2.34.1
+
 
 
