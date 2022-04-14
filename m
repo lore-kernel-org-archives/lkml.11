@@ -2,125 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1CC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B8FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:57:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241295AbiDNI77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 04:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42114 "EHLO
+        id S241301AbiDNJAN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 05:00:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241273AbiDNI7n (ORCPT
+        with ESMTP id S241300AbiDNJAC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 04:59:43 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15B75689B5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:57:19 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A86CD139F;
-        Thu, 14 Apr 2022 01:57:18 -0700 (PDT)
-Received: from [10.32.36.25] (e121896.Emea.Arm.com [10.32.36.25])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6F3203F5A1;
-        Thu, 14 Apr 2022 01:57:17 -0700 (PDT)
-Message-ID: <b3e647de-8efd-4db2-a910-77e37b026ae7@arm.com>
-Date:   Thu, 14 Apr 2022 09:57:15 +0100
+        Thu, 14 Apr 2022 05:00:02 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285A6692A9
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:57:39 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id 12so4100181pll.12
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:57:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SvUcfGV0AI5Z5Ok9/naO7LBjVi2omORuN4/12C7DmHE=;
+        b=JR2RAEmge/keIR/Ml2wlBOCVlLAFG6iue7Hc3B84gbF39ETD8Z6w5ipfhgjcI5pt7n
+         3JnqtA6jCC1bW0jZPfN623VDrHkCImpoQypj/WGex6PSaxrG78yJ+B0oaSeDTcxiPJNp
+         6+7kCsCgADfNs8lZ7ExcafvNtMW+mL8Sxp0dfM5e+MAOc5Dugo3w+JoIdZeUc9/ctGFJ
+         /DOI7zCm0yXvjyIIriUxmTSBHhaO2uTX3GLvTBIH6SYDd6L6Tr/DK4za39KscI7iwIRS
+         ZAV5k+h52w0ZHukEJP+LOLZNUzhayIx+qoSZpg21P01X01Yt7gTi3+tFVmTG+mUm99mi
+         SVDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SvUcfGV0AI5Z5Ok9/naO7LBjVi2omORuN4/12C7DmHE=;
+        b=DzjTzL5wXfzUUZSERtd5lNjLNqjpNvsFzH/3LfjI1H4U5WctE1rXwXGApEb1P14emb
+         ufZgZIIdj7aU5tw94r4YZF5SzaXqi6kyliUywQeInGRq+HiauDZ59C5G6Yx00TKPTEvr
+         wFYw6c/Qaze83L7X30CFIN9JCqz2U/uLMyc2J+7KUh9oWZvXJRL+xuAyARRSukY0Xtn6
+         EcVJf4FiuApI1ntLBz+SN/SZsPkCioECiD+YyuUa31OtLewj78Yl3xFgcsic6ihAp1gO
+         WnnSOR4HAmJPXx/fNVmz0Q742SiVbya39Fr2YxYJBMbLbA7y1yhcMy06ByIBEPvvjYyg
+         piVw==
+X-Gm-Message-State: AOAM530+UoeHonAoFb/K+aeXQ51aFZigS/qbR9i6/2cJuTK/2Z26+8AQ
+        h9vEsS0JXXeok51FFSQJgb4=
+X-Google-Smtp-Source: ABdhPJyizoPS3uBWKhkZvBXCVjTSS1AwqRPB39uv9wUmFhns1Opl4pKj6mE0GhOs94q49W+tXxsj1Q==
+X-Received: by 2002:a17:902:b495:b0:158:8318:4cf9 with SMTP id y21-20020a170902b49500b0015883184cf9mr13576324plr.33.1649926658591;
+        Thu, 14 Apr 2022 01:57:38 -0700 (PDT)
+Received: from hyeyoo.. ([114.29.24.243])
+        by smtp.gmail.com with ESMTPSA id p9-20020aa79e89000000b00505fada20dfsm1403537pfq.117.2022.04.14.01.57.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 01:57:36 -0700 (PDT)
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Marco Elver <elver@google.com>,
+        Matthew WilCox <willy@infradead.org>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 00/23] common kmalloc for SLUB and SLAB v2
+Date:   Thu, 14 Apr 2022 17:57:04 +0900
+Message-Id: <20220414085727.643099-1-42.hyeyoo@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 00/15] Make ETM register accesses consistent with
- sysreg.h
-Content-Language: en-US
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        mike.leach@linaro.org, anshuman.khandual@arm.com,
-        leo.yan@linaro.com, Leo Yan <leo.yan@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220304171913.2292458-1-james.clark@arm.com>
- <20220323162257.GC3248686@p14s>
- <4ef77445-b58d-a71a-0ddc-70e308ea99c8@arm.com> <20220413170844.GA547134@p14s>
-From:   James Clark <james.clark@arm.com>
-In-Reply-To: <20220413170844.GA547134@p14s>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Changes since v1:
+- The code is basically same, but split some patches to make it
+easier to review.
+- Adjusted comments and added Reviewed-by from Vlastimil. Thanks!
 
+Hello, this series is cleanup of kmalloc code. After this series,
+kmalloc subsystem is perfectly generalized on SLAB and SLUB.
 
-On 13/04/2022 18:08, Mathieu Poirier wrote:
-> On Mon, Mar 28, 2022 at 11:41:48AM +0100, James Clark wrote:
->>
->>
->> On 23/03/2022 16:22, Mathieu Poirier wrote:
->>> On Fri, Mar 04, 2022 at 05:18:57PM +0000, James Clark wrote:
->>>> Changes since v2:
->>>>  * Implement Mike's suggestion of not having _SHIFT and using the existing
->>>>    FIELD_GET and FIELD_PREP methods.
->>>>  * Dropped the change to add the new REG_VAL macro because of the above.
->>>>  * FIELD_PREP could be used in some trivial cases, but in some cases the
->>>>    shift is still required but can be calculated with __bf_shf
->>>>  * Improved the commit messages.
->>>>  * The change is still binary equivalent, but requires an extra step 
->>>>    mentioned at the end of this cover letter.
->>>>
->>>> Applies to coresight/next 3619ee28488
->>>> Also available at https://gitlab.arm.com/linux-arm/linux-jc/-/tree/james-cs-register-refactor-v3
->>>>
->>>> To check for binary equivalence follow the same steps in the cover letter
->>>> of v2, but apply the following change to coresight-priv.h. This is because
->>>> the existing version of the macros wrap the expression in a new scope {}
->>>> that flips something in the compiler:
->>>>
->>>>   #undef FIELD_GET
->>>>   #define FIELD_GET(_mask, _reg) (((_reg) & (_mask)) >> __bf_shf(_mask))
->>>>   #undef FIELD_PREP
->>>>   #define FIELD_PREP(_mask, _val) (((_val) << __bf_shf(_mask)) & (_mask))
->>>>
->>>> Thanks
->>>> James
->>>>
->>>> James Clark (15):
->>>>   coresight: etm4x: Cleanup TRCIDR0 register accesses
->>>>   coresight: etm4x: Cleanup TRCIDR2 register accesses
->>>>   coresight: etm4x: Cleanup TRCIDR3 register accesses
->>>>   coresight: etm4x: Cleanup TRCIDR4 register accesses
->>>>   coresight: etm4x: Cleanup TRCIDR5 register accesses
->>>>   coresight: etm4x: Cleanup TRCCONFIGR register accesses
->>>>   coresight: etm4x: Cleanup TRCEVENTCTL1R register accesses
->>>>   coresight: etm4x: Cleanup TRCSTALLCTLR register accesses
->>>>   coresight: etm4x: Cleanup TRCVICTLR register accesses
->>>>   coresight: etm3x: Cleanup ETMTECR1 register accesses
->>>>   coresight: etm4x: Cleanup TRCACATRn register accesses
->>>>   coresight: etm4x: Cleanup TRCSSCCRn and TRCSSCSRn register accesses
->>>>   coresight: etm4x: Cleanup TRCSSPCICRn register accesses
->>>>   coresight: etm4x: Cleanup TRCBBCTLR register accesses
->>>>   coresight: etm4x: Cleanup TRCRSCTLRn register accesses
->>>>
->>>>  .../coresight/coresight-etm3x-core.c          |   2 +-
->>>>  .../coresight/coresight-etm3x-sysfs.c         |   2 +-
->>>>  .../coresight/coresight-etm4x-core.c          | 136 +++++--------
->>>>  .../coresight/coresight-etm4x-sysfs.c         | 180 +++++++++---------
->>>>  drivers/hwtracing/coresight/coresight-etm4x.h | 122 ++++++++++--
->>>>  5 files changed, 244 insertions(+), 198 deletions(-)
->>>
->>> I am done reviewing this set.  I will wait until rc1 or rc2 before moving
->>> forward.  If there are other comments needing a respin then I will wait for the
->>> next revision.  Otherwise I will apply this one after correcting the extra lines
->>> at the end of patch 15.
->>>  
->>
->> Thanks for the review!
->>
-> 
-> I have applied this set.
+This series is not small, but each patch is easy to review and
+I bet you will like this :)
 
-Thanks Mathieu
+Many thanks to Matthew, Marco, Vlastimil who gave comments
+in previous series.
 
-> 
->>> Thanks,
->>> Mathieu
->>>
->>>>
->>>> -- 
->>>> 2.28.0
->>>>
+Any feedbacks will be appreciated.
+Thanks!
+
+======== series description =======
+
+patch 1-2 make slab_alloc_node() in SLAB available for non-NUMA
+configurations for further cleanup.
+
+patch 3-12 remove duplicate code in common kmalloc functions.
+
+patch 13 makes SLAB pass requests larger than order-1 page to page
+allocator. This is useful for further generalization.
+
+patch 14-16 unify tracepoints. after them, we use only
+kmem_cache_alloc and kmem_cache_free tracepoints in slab allocators.
+
+patch 17-18 generalize whole kmalloc subsystem on SLAB/SLUB.
+
+patch 19-20 factor out common code of __kmalloc_node()
+and __kmalloc_node_track_caller().
+
+patch 21 removes now unnecessary kmem_cache_alloc_node_trace().
+
+patch 22-23 is small improvements of __ksize(). They are not part of
+generalization but depends on this series.
+
+Hyeonggon Yoo (23):
+  mm/slab: move NUMA-related code to __do_cache_alloc()
+  mm/slab: cleanup slab_alloc() and slab_alloc_node()
+  mm/slab_common: remove CONFIG_NUMA ifdefs for common kmalloc functions
+  mm/slab_common: cleanup kmalloc_track_caller()
+  mm/slab_common: cleanup __kmalloc()
+  mm/sl[auo]b: fold kmalloc_order_trace() into kmalloc_large()
+  mm/slub: move kmalloc_large_node() to slab_common.c
+  mm/slab_common: make kmalloc_large_node() consistent with
+    kmalloc_large()
+  mm/slab_common: cleanup kmalloc_large()
+  mm/slab_common: cleanup kmem_cache_alloc{,node,lru}
+  mm/slab_common: kmalloc_node: pass large requests to page allocator
+  mm/slab_common: cleanup kmalloc()
+  mm/slab: kmalloc: pass requests larger than order-1 page to page
+    allocator
+  mm/slab_common: print cache name in tracepoints
+  mm/slab_common: use same tracepoint in kmalloc and normal caches
+  mm/slab_common: rename tracepoint
+  mm/slab_common: implement __kmem_cache_free()
+  mm/sl[au]b: generalize kmalloc subsystem
+  mm/slab_common: add kasan_kmalloc() in __kmalloc_node_track_caller()
+  mm/slab_common: factor out __do_kmalloc_node()
+  mm/sl[au]b: remove kmem_cache_alloc_node_trace()
+  mm/sl[auo]b: move definition of __ksize() to mm/slab.h
+  mm/sl[au]b: check if large object is valid in __ksize()
+
+ include/linux/slab.h        | 245 ++++++++++++-------------
+ include/trace/events/kmem.h | 109 ++---------
+ mm/slab.c                   | 354 ++++++------------------------------
+ mm/slab.h                   |   9 +
+ mm/slab_common.c            | 146 ++++++++++++---
+ mm/slob.c                   |  78 +++-----
+ mm/slub.c                   | 264 ++-------------------------
+ 7 files changed, 350 insertions(+), 855 deletions(-)
+
+-- 
+2.32.0
+
