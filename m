@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A86BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E2FC4321E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349389AbiDNOUD (ORCPT
+        id S1349483AbiDNOU0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36796 "EHLO
+        Thu, 14 Apr 2022 10:20:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343559AbiDNNjG (ORCPT
+        with ESMTP id S1343904AbiDNNj3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:06 -0400
+        Thu, 14 Apr 2022 09:39:29 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F060818392;
-        Thu, 14 Apr 2022 06:34:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530D370079;
+        Thu, 14 Apr 2022 06:35:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AACFFB8296A;
-        Thu, 14 Apr 2022 13:34:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E965C385A5;
-        Thu, 14 Apr 2022 13:34:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15CD4B8296A;
+        Thu, 14 Apr 2022 13:35:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E928C385A5;
+        Thu, 14 Apr 2022 13:35:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943264;
-        bh=CdMOvF6r2GW8m2roTh6MVKEvGZyY1x+ccDj8OjjuD2Q=;
+        s=korg; t=1649943317;
+        bh=PaaOdIznsXfUpK/AM7p7giJmI1mKr0xa1VOsdXg0rmM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jo6XPMrT7i4m0IRj+9BNe5Mj9DSJKFXVOr+qtiuzxhwkUTDaFp+5a+21d05f3FPjc
-         dRkpTd48zKR/AoiTiMxZcHbqYDKuOqHOLiJueJsdwlq13DXq3hx3m/ZPjYXdzDmzVF
-         HS2Zd58Sc/sGuygIlwQL+rc1PIbE4me31rDaNVq8=
+        b=m53bdjGQ7gqNWx32dRRsghv2J2TwUsFE+Idkl3BaeUfYsed4U9uYMjNbMIyuWKw8q
+         zF42j9EDsyH6HhFKmctvD+zJkYbUsSWKUW5l3rGzKYvJ24UA7Ln8/rrv3OovoyKSFQ
+         MmO5WslrFMIW2T0udqXB6aTTT38TkhoJRyVUXaIs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikita Shubin <n.shubin@yadro.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.4 053/475] riscv: Fix fill_callchain return value
-Date:   Thu, 14 Apr 2022 15:07:18 +0200
-Message-Id: <20220414110856.638091092@linuxfoundation.org>
+        stable@vger.kernel.org, Chao Yu <yuchao0@huawei.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 112/475] f2fs: fix to avoid potential deadlock
+Date:   Thu, 14 Apr 2022 15:08:17 +0200
+Message-Id: <20220414110858.287814558@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,32 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Shubin <n.shubin@yadro.com>
+From: Chao Yu <chao@kernel.org>
 
-commit 2b2b574ac587ec5bd7716a356492a85ab8b0ce9f upstream.
+[ Upstream commit df77fbd8c5b222c680444801ffd20e8bbc90a56e ]
 
-perf_callchain_store return 0 on success, -1 otherwise,
-fix fill_callchain to return correct bool value.
+Using f2fs_trylock_op() in f2fs_write_compressed_pages() to avoid potential
+deadlock like we did in f2fs_write_single_data_page().
 
-Fixes: dbeb90b0c1eb ("riscv: Add perf callchain support")
-Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Chao Yu <yuchao0@huawei.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/kernel/perf_callchain.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/f2fs/data.c | 6 +++++-
+ fs/f2fs/node.c | 6 +++++-
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
---- a/arch/riscv/kernel/perf_callchain.c
-+++ b/arch/riscv/kernel/perf_callchain.c
-@@ -77,7 +77,7 @@ void perf_callchain_user(struct perf_cal
+diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+index 1679f9c0b63b..773028921c48 100644
+--- a/fs/f2fs/data.c
++++ b/fs/f2fs/data.c
+@@ -2467,8 +2467,12 @@ static int __f2fs_write_data_pages(struct address_space *mapping,
+ 	/* to avoid spliting IOs due to mixed WB_SYNC_ALL and WB_SYNC_NONE */
+ 	if (wbc->sync_mode == WB_SYNC_ALL)
+ 		atomic_inc(&sbi->wb_sync_req[DATA]);
+-	else if (atomic_read(&sbi->wb_sync_req[DATA]))
++	else if (atomic_read(&sbi->wb_sync_req[DATA])) {
++		/* to avoid potential deadlock */
++		if (current->plug)
++			blk_finish_plug(current->plug);
+ 		goto skip_write;
++	}
  
- bool fill_callchain(unsigned long pc, void *entry)
- {
--	return perf_callchain_store(entry, pc);
-+	return perf_callchain_store(entry, pc) == 0;
- }
+ 	if (__should_serialize_io(inode, wbc)) {
+ 		mutex_lock(&sbi->writepages);
+diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
+index 0cd1d51dde06..3dc7cc3d6ac6 100644
+--- a/fs/f2fs/node.c
++++ b/fs/f2fs/node.c
+@@ -1995,8 +1995,12 @@ static int f2fs_write_node_pages(struct address_space *mapping,
  
- void notrace walk_stackframe(struct task_struct *task,
+ 	if (wbc->sync_mode == WB_SYNC_ALL)
+ 		atomic_inc(&sbi->wb_sync_req[NODE]);
+-	else if (atomic_read(&sbi->wb_sync_req[NODE]))
++	else if (atomic_read(&sbi->wb_sync_req[NODE])) {
++		/* to avoid potential deadlock */
++		if (current->plug)
++			blk_finish_plug(current->plug);
+ 		goto skip_write;
++	}
+ 
+ 	trace_f2fs_writepages(mapping->host, wbc, NODE);
+ 
+-- 
+2.34.1
+
 
 
