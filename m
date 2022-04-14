@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E934DC47080
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C19C2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345933AbiDNNy7 (ORCPT
+        id S1346049AbiDNNz0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
+        Thu, 14 Apr 2022 09:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344165AbiDNNaz (ORCPT
+        with ESMTP id S245521AbiDNN3C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870A3E6;
-        Thu, 14 Apr 2022 06:28:29 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA67DAD115;
+        Thu, 14 Apr 2022 06:23:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D5CDB82941;
-        Thu, 14 Apr 2022 13:28:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88D54C385A1;
-        Thu, 14 Apr 2022 13:28:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74ECFB82910;
+        Thu, 14 Apr 2022 13:23:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF090C385AC;
+        Thu, 14 Apr 2022 13:23:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942906;
-        bh=24UIpAxbACU4J3+JpRKrQprP+S2RDN/2SjFzZhg5Eis=;
+        s=korg; t=1649942584;
+        bh=ffsS/x+Hp3UTeuQC96zgTgsG4G+Laxov6WtZwS7N87o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WOXLRwJ+kxljtNNMNuFFsEbi3GnHmTbNKIkMi4iZRG4Lp175wmWj1WsjSrT1RRSEp
-         lXit8pUTNeCFYJKsR5OejbXu1ePvbiHexGx79i/EgH35ZqqKHG+pE+GvmoZYcsAsXz
-         ztPdJamhFRfYdEviRC/Qj8upI7gZFP8wtlvSLPsE=
+        b=1xKbgoeyFYbG4aOSP47uaa3NIQXDGTw+z5QphX26bxVQq6pF67kNkPCauLLO7ynjA
+         eBbLdTsdv2m7OUQDMe91SNrCLJgtGHdXpSuq0oQdbNYWMbnQEsoNXJ7aIsAlJPkx7k
+         7Wr2jMPUQEZ0a32+pXxU4tWvTahqU+feuvKntXn4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 304/338] Drivers: hv: vmbus: Fix potential crash on module unload
-Date:   Thu, 14 Apr 2022 15:13:27 +0200
-Message-Id: <20220414110847.537041808@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 187/338] lib/test: use after free in register_test_dev_kmod()
+Date:   Thu, 14 Apr 2022 15:11:30 +0200
+Message-Id: <20220414110844.220307654@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,58 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guilherme G. Piccoli <gpiccoli@igalia.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 792f232d57ff28bbd5f9c4abe0466b23d5879dc8 ]
+[ Upstream commit dc0ce6cc4b133f5f2beb8b47dacae13a7d283c2c ]
 
-The vmbus driver relies on the panic notifier infrastructure to perform
-some operations when a panic event is detected. Since vmbus can be built
-as module, it is required that the driver handles both registering and
-unregistering such panic notifier callback.
+The "test_dev" pointer is freed but then returned to the caller.
 
-After commit 74347a99e73a ("x86/Hyper-V: Unload vmbus channel in hv panic callback")
-though, the panic notifier registration is done unconditionally in the module
-initialization routine whereas the unregistering procedure is conditionally
-guarded and executes only if HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE capability
-is set.
-
-This patch fixes that by unconditionally unregistering the panic notifier
-in the module's exit routine as well.
-
-Fixes: 74347a99e73a ("x86/Hyper-V: Unload vmbus channel in hv panic callback")
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/20220315203535.682306-1-gpiccoli@igalia.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Fixes: d9c6a72d6fa2 ("kmod: add test driver to stress test the module loader")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hv/vmbus_drv.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ lib/test_kmod.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 51fe219c91fc..0c17743b4a65 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -2062,10 +2062,15 @@ static void __exit vmbus_exit(void)
- 	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE) {
- 		kmsg_dump_unregister(&hv_kmsg_dumper);
- 		unregister_die_notifier(&hyperv_die_block);
--		atomic_notifier_chain_unregister(&panic_notifier_list,
--						 &hyperv_panic_block);
+diff --git a/lib/test_kmod.c b/lib/test_kmod.c
+index 87a0cc750ea2..6813b183aa34 100644
+--- a/lib/test_kmod.c
++++ b/lib/test_kmod.c
+@@ -1155,6 +1155,7 @@ static struct kmod_test_device *register_test_dev_kmod(void)
+ 	if (ret) {
+ 		pr_err("could not register misc device: %d\n", ret);
+ 		free_test_dev_kmod(test_dev);
++		test_dev = NULL;
+ 		goto out;
  	}
  
-+	/*
-+	 * The panic notifier is always registered, hence we should
-+	 * also unconditionally unregister it here as well.
-+	 */
-+	atomic_notifier_chain_unregister(&panic_notifier_list,
-+					 &hyperv_panic_block);
-+
- 	free_page((unsigned long)hv_panic_page);
- 	unregister_sysctl_table(hv_ctl_table_hdr);
- 	hv_ctl_table_hdr = NULL;
 -- 
-2.35.1
+2.34.1
 
 
 
