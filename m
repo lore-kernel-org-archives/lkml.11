@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA0EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 950DBC433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347380AbiDNOvt (ORCPT
+        id S1347335AbiDNOvo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:51:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34464 "EHLO
+        Thu, 14 Apr 2022 10:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345308AbiDNNpr (ORCPT
+        with ESMTP id S1343955AbiDNNoE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:47 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7CA5FD5;
-        Thu, 14 Apr 2022 06:43:22 -0700 (PDT)
+        Thu, 14 Apr 2022 09:44:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA392DAA1;
+        Thu, 14 Apr 2022 06:39:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id F1C21CE2997;
-        Thu, 14 Apr 2022 13:43:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F1FFC385A5;
-        Thu, 14 Apr 2022 13:43:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7388161D7C;
+        Thu, 14 Apr 2022 13:39:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84392C385A5;
+        Thu, 14 Apr 2022 13:39:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943799;
-        bh=6u4aBbe7i69Fsu1VOhKUiFkUhrWR5ouoCib/ZwTmlgo=;
+        s=korg; t=1649943584;
+        bh=OujLyIAuJDB01DrksZ7hONiDI8cX9frFQiwTX/GwhKY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qpHv0XsHo/B9/D4s3dQTC5AaxhchsfmmaSBuxcNZM6tgIfD/rXWEzLBthA5xxST8X
-         B7P+3V10mIrIUwN4N0m/0y0ACRQGsxL8CMIL/R0Xnt0BlR1sTjxqn3iS+HXsB70I3B
-         gCx+NudAsfKogo5lOn3Axfw/SHmwpdtrBu7qkxJ8=
+        b=trWFycgs+9rWvzMRzKo4fAGi/XC0ijCVnq3tm857wVCskmX4VCthxJjXrFnY1iJLm
+         xTnKAdozcYYBuMeo8Bghpv9/UZXi4BWyYzxrd39ZugjJOtyXM7uNQdnfqq6FNLEB0X
+         fyU10+YEk32xCxN3wAeIelG4XIN96Yti+ikpGtC0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Holger=20Hoffst=C3=A4tte?= 
-        <holger@applied-asynchrony.com>,
-        Paolo Valente <paolo.valente@linaro.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 285/475] Revert "Revert "block, bfq: honor already-setup queue merges""
-Date:   Thu, 14 Apr 2022 15:11:10 +0200
-Message-Id: <20220414110903.075184556@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 207/475] mfd: mc13xxx: Add check for mc13xxx_irq_request
+Date:   Thu, 14 Apr 2022 15:09:52 +0200
+Message-Id: <20220414110900.922311529@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,73 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Valente <paolo.valente@linaro.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 15729ff8143f8135b03988a100a19e66d7cb7ecd ]
+[ Upstream commit e477e51a41cb5d6034f3c5ea85a71ad4613996b9 ]
 
-A crash [1] happened to be triggered in conjunction with commit
-2d52c58b9c9b ("block, bfq: honor already-setup queue merges"). The
-latter was then reverted by commit ebc69e897e17 ("Revert "block, bfq:
-honor already-setup queue merges""). Yet, the reverted commit was not
-the one introducing the bug. In fact, it actually triggered a UAF
-introduced by a different commit, and now fixed by commit d29bd41428cf
-("block, bfq: reset last_bfqq_created on group change").
+As the potential failure of the devm_request_threaded_irq(),
+it should be better to check the return value of the
+mc13xxx_irq_request() and return error if fails.
 
-So, there is no point in keeping commit 2d52c58b9c9b ("block, bfq:
-honor already-setup queue merges") out. This commit restores it.
-
-[1] https://bugzilla.kernel.org/show_bug.cgi?id=214503
-
-Reported-by: Holger Hoffstätte <holger@applied-asynchrony.com>
-Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
-Link: https://lore.kernel.org/r/20211125181510.15004-1-paolo.valente@linaro.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 8e00593557c3 ("mfd: Add mc13892 support to mc13xxx")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20220224022331.3208275-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-iosched.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ drivers/mfd/mc13xxx-core.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 38c39d50ae04..1d443d17cf7c 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2523,6 +2523,15 @@ bfq_setup_merge(struct bfq_queue *bfqq, struct bfq_queue *new_bfqq)
- 	 * are likely to increase the throughput.
- 	 */
- 	bfqq->new_bfqq = new_bfqq;
-+	/*
-+	 * The above assignment schedules the following redirections:
-+	 * each time some I/O for bfqq arrives, the process that
-+	 * generated that I/O is disassociated from bfqq and
-+	 * associated with new_bfqq. Here we increases new_bfqq->ref
-+	 * in advance, adding the number of processes that are
-+	 * expected to be associated with new_bfqq as they happen to
-+	 * issue I/O.
-+	 */
- 	new_bfqq->ref += process_refs;
- 	return new_bfqq;
- }
-@@ -2582,6 +2591,10 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- {
- 	struct bfq_queue *in_service_bfqq, *new_bfqq;
+diff --git a/drivers/mfd/mc13xxx-core.c b/drivers/mfd/mc13xxx-core.c
+index 1abe7432aad8..e281a9202f11 100644
+--- a/drivers/mfd/mc13xxx-core.c
++++ b/drivers/mfd/mc13xxx-core.c
+@@ -323,8 +323,10 @@ int mc13xxx_adc_do_conversion(struct mc13xxx *mc13xxx, unsigned int mode,
+ 		adc1 |= MC13783_ADC1_ATOX;
  
-+	/* if a merge has already been setup, then proceed with that first */
-+	if (bfqq->new_bfqq)
-+		return bfqq->new_bfqq;
-+
- 	/*
- 	 * Do not perform queue merging if the device is non
- 	 * rotational and performs internal queueing. In fact, such a
-@@ -2636,9 +2649,6 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- 	if (bfq_too_late_for_merging(bfqq))
- 		return NULL;
+ 	dev_dbg(mc13xxx->dev, "%s: request irq\n", __func__);
+-	mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_ADCDONE,
++	ret = mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_ADCDONE,
+ 			mc13xxx_handler_adcdone, __func__, &adcdone_data);
++	if (ret)
++		goto out;
  
--	if (bfqq->new_bfqq)
--		return bfqq->new_bfqq;
--
- 	if (!io_struct || unlikely(bfqq == &bfqd->oom_bfqq))
- 		return NULL;
- 
+ 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC0, adc0);
+ 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC1, adc1);
 -- 
 2.34.1
 
