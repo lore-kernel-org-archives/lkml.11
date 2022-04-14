@@ -2,138 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B935AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 01:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D738C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 01:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239496AbiDNBsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 21:48:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40908 "EHLO
+        id S239505AbiDNBtM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 21:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239500AbiDNBr5 (ORCPT
+        with ESMTP id S239127AbiDNBtJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 21:47:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C26C252B1
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 18:45:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649900733;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UaUH/uBDt0Khh1i/AkQAQeFZf7ctY3a5V5SG+bAPmQY=;
-        b=RC+9QE2ZbCehRQxP+3Hmg1epOJc5yvNrh/2NIKUFwV1K7zy6qEzVwQF4/DwRDVRgIxfLdW
-        +cv0zxxi+HigCZPDSYQFOKw6JtirVdZZegvb7v9ORSOnAHg40iiqc5wmhNQNOWtCcYc6XQ
-        QsYYW5h0KMc5vU8ZRffOtR9oVyJmv7I=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-582-iL0NJb2RP-eSttnPK0eorQ-1; Wed, 13 Apr 2022 21:45:32 -0400
-X-MC-Unique: iL0NJb2RP-eSttnPK0eorQ-1
-Received: by mail-pj1-f70.google.com with SMTP id r15-20020a17090a4dcf00b001cb7ea0b0bdso2257046pjl.1
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 18:45:32 -0700 (PDT)
+        Wed, 13 Apr 2022 21:49:09 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6FE63152F
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 18:46:46 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2eb58f605aeso32075387b3.0
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 18:46:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=4qwvYVooM7YaW2143ob33/RDOtgCck3amy1lZ/qZ43Q=;
+        b=a82+8uScUFTY7UVOEcfN1mbnKXdw94mA5rNEPHiinFfjwaAc0yJbWi6EkFclTpOHst
+         EQL1MiawyR2AvJ120Nz3AyPXHpD7fj6H2vkVVeiLn7CkioUhXRh44RGbM4GC87nS8NPA
+         lPCfINqrWTnXWyoCGURkhfEoIgRsuARD3M+PNgy1+0IfXm2TMwdZj03N7A84wURImXGT
+         fq9jiy5h/gdZuBEOBQWpNYqGp7HnNDvyhN8sKkJLPJpcVx3OcmIRXB+KfGePEC7fpI77
+         DJt1T6AClZaJ5hrq6Cg0kDdHpfD+vtGtVuaOMnPtlZz7cpE0NRk5S+HzgKdy3jxIkJnO
+         INzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=UaUH/uBDt0Khh1i/AkQAQeFZf7ctY3a5V5SG+bAPmQY=;
-        b=l/TscxO1ZMAe6cl/hEFPr772dcAimhX1EbVRBNjyQzPejscT15hql5W+kja7UtnB1p
-         3gLMSz6d8opLLD0qCgpkR5UDLeVpXxu1lnkPz8r4WYRsEUB3z0gcb+h8SFLgC+Yuh624
-         MQk7FT3fiwOq14Hx8fgD1pE4ZmzkvRWFzSSNMIOlP7t7neX27ja/e1SzwcKQZyXiW/5B
-         06E17n4IRNiusCzxWlY8ycVKqfQ2xHVX8bEq1RDbp2OfApiqBaDBJ9zB63q89VCpI9dL
-         OJUp+INUhL0lEKd1uTB/mkW7vCe3nuCPwoZpCpcV6NeWLJOUalU99Za2eDvBGdPXCOeH
-         vD6Q==
-X-Gm-Message-State: AOAM532NBe84bKVvzA5vacYlOUzSbHM52KFRrGL3b0GsyuzjcuaehyUC
-        p6Az0qJaNqF+dVb2VawesWQ9G87PpmW0Lhl6j6uAGrIw1tzw+mj6HZHQz8rK1bM0ERAe9cqAT6U
-        eQpF+z4WPQQ/Qx41dUf60k5bt
-X-Received: by 2002:a17:90b:3b4d:b0:1cd:3ce7:aaec with SMTP id ot13-20020a17090b3b4d00b001cd3ce7aaecmr1137071pjb.32.1649900731303;
-        Wed, 13 Apr 2022 18:45:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzhkFSPwz69To4M7mJ3fKFULldZWpqa3OVP1lY/uMySD5zgHHwlIcM9BKs0THLjUvA8cwG07Q==
-X-Received: by 2002:a17:90b:3b4d:b0:1cd:3ce7:aaec with SMTP id ot13-20020a17090b3b4d00b001cd3ce7aaecmr1137051pjb.32.1649900731059;
-        Wed, 13 Apr 2022 18:45:31 -0700 (PDT)
-Received: from localhost ([240e:3a1:31c:360:52fc:c968:cb41:efbc])
-        by smtp.gmail.com with ESMTPSA id u17-20020a056a00159100b004faef351ebcsm335950pfk.45.2022.04.13.18.45.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Apr 2022 18:45:30 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 09:44:46 +0800
-From:   Coiby Xu <coxu@redhat.com>
-To:     Michal =?utf-8?B?U3VjaMOhbmVr?= <msuchanek@suse.de>
-Cc:     kexec@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
-        Baoquan He <bhe@redhat.com>, Dave Young <dyoung@redhat.com>,
-        Will Deacon <will@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 3/3] arm64: kexec_file: use more system keyrings to
- verify kernel image signature
-Message-ID: <20220414014446.tqopgaz2n3srwc6p@Rk>
-References: <20220401013118.348084-1-coxu@redhat.com>
- <20220401013118.348084-4-coxu@redhat.com>
- <20220411085938.GA163591@kunlun.suse.cz>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220411085938.GA163591@kunlun.suse.cz>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=4qwvYVooM7YaW2143ob33/RDOtgCck3amy1lZ/qZ43Q=;
+        b=6KGZ3x59uPin0mMJNgrfUwNyMnUxkutvj9yh61bTBiefJWmCQNf5dwer6iAYfwxYor
+         c2LK5LpsDEIsvXnjP9Pm7YwEYOwbzFtWax25SAQ5NzSwEhTD0R4gyv82kpA+qYZ8M+MM
+         FBJLi5WUUdfAJonaMtnhnEsgggsr0oNUVNFA8uB9r2cAf3XLuzBLE1JdvKoJrGu6ZjkL
+         XkMkxMbxnbq5nkaWR05TDcHXWoAsNsXgtzm6N2c0t48B5dFH3TnJfINkzeXGBsbbaMII
+         YrLl4rLcqO25d7iGf0zw3mrG8UaDnMw9UdUxZCU4/6o8cTW2+kDesQ+2qEZtoNSn4Hs/
+         /ghw==
+X-Gm-Message-State: AOAM531otAGTsGZ/P54QuyAgyzZ5exGikuZ/BMdn444ancPWG8MSNKli
+        GuWz3QiKXCZL/WGlSnFpX0NnBdycgp2h
+X-Google-Smtp-Source: ABdhPJy6OxalAJ2viaEkc8iVPXzpVO2fRlZPiZ/UHIAzZTkwwkgrTiWyCENuCg+wbC6JtsqCplrE96jWMF3e
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:9135:da53:a8a2:bf11])
+ (user=irogers job=sendgmr) by 2002:a81:16cb:0:b0:2eb:f4c2:fadd with SMTP id
+ 194-20020a8116cb000000b002ebf4c2faddmr288000yww.475.1649900806080; Wed, 13
+ Apr 2022 18:46:46 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 18:46:40 -0700
+Message-Id: <20220414014642.3308206-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
+Subject: [PATCH v2 1/3] perf record: Fix per-thread option.
+From:   Ian Rogers <irogers@google.com>
+To:     Alexey Bayduraev <alexey.bayduraev@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 10:59:38AM +0200, Michal Suchánek wrote:
->On Fri, Apr 01, 2022 at 09:31:18AM +0800, Coiby Xu wrote:
->> Currently, a problem faced by arm64 is if a kernel image is signed by a
->> MOK key, loading it via the kexec_file_load() system call would be
->> rejected with the error "Lockdown: kexec: kexec of unsigned images is
->> restricted; see man kernel_lockdown.7".
->
->This is because image_verify_sig uses only the primary keyring that
->contains only kernel built-in keys to verify the kexec image.
->
->> This patch allows to verify arm64 kernel image signature using not only
->> .builtin_trusted_keys but also .platform and .secondary_trusted_key
->> keyring.
->>
->> Acked-by: Will Deacon <will@kernel.org>
->> Signed-off-by: Coiby Xu <coxu@redhat.com>
->> ---
->>  arch/arm64/kernel/kexec_image.c | 4 +---
->>  1 file changed, 1 insertion(+), 3 deletions(-)
->>
->> diff --git a/arch/arm64/kernel/kexec_image.c b/arch/arm64/kernel/kexec_image.c
->> index 9ec34690e255..51af1c22d6da 100644
->> --- a/arch/arm64/kernel/kexec_image.c
->> +++ b/arch/arm64/kernel/kexec_image.c
->> @@ -14,7 +14,6 @@
->>  #include <linux/kexec.h>
->>  #include <linux/pe.h>
->>  #include <linux/string.h>
->> -#include <linux/verification.h>
->>  #include <asm/byteorder.h>
->>  #include <asm/cpufeature.h>
->>  #include <asm/image.h>
->> @@ -133,8 +132,7 @@ static void *image_load(struct kimage *image,
->>  #ifdef CONFIG_KEXEC_IMAGE_VERIFY_SIG
->>  static int image_verify_sig(const char *kernel, unsigned long kernel_len)
->>  {
->> -	return verify_pefile_signature(kernel, kernel_len, NULL,
->> -				       VERIFYING_KEXEC_PE_SIGNATURE);
->> +	return kexec_kernel_verify_pe_sig(kernel, kernel_len);
->>  }
->>  #endif
->
->You can eliminate image_verify_sig here aswell and directly assign
->kexec_kernel_verify_pe_sig to fops.
+From: Alexey Bayduraev <alexey.bayduraev@gmail.com>
 
-Good suggestions, thanks!
+Per-thread mode doesn't have specific CPUs for events, add checks for
+this case.
 
->
->Thanks
->
->Michal
->
+Minor fix to a pr_debug by Ian Rogers <irogers@google.com> to avoid an
+out of bound array access.
 
+Reported-by: Ian Rogers <irogers@google.com>
+Fixes: 7954f71689f9 ("perf record: Introduce thread affinity and mmap masks")
+Signed-off-by: Ian Rogers <irogers@google.com>
+Signed-off-by: Alexey Bayduraev <alexey.bayduraev@gmail.com>
+---
+ tools/perf/builtin-record.c | 22 +++++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
+
+diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
+index ba74fab02e62..069825c48d40 100644
+--- a/tools/perf/builtin-record.c
++++ b/tools/perf/builtin-record.c
+@@ -989,8 +989,11 @@ static int record__thread_data_init_maps(struct record_thread *thread_data, stru
+ 	struct mmap *overwrite_mmap = evlist->overwrite_mmap;
+ 	struct perf_cpu_map *cpus = evlist->core.user_requested_cpus;
+ 
+-	thread_data->nr_mmaps = bitmap_weight(thread_data->mask->maps.bits,
+-					      thread_data->mask->maps.nbits);
++	if (cpu_map__is_dummy(cpus))
++		thread_data->nr_mmaps = nr_mmaps;
++	else
++		thread_data->nr_mmaps = bitmap_weight(thread_data->mask->maps.bits,
++						      thread_data->mask->maps.nbits);
+ 	if (mmap) {
+ 		thread_data->maps = zalloc(thread_data->nr_mmaps * sizeof(struct mmap *));
+ 		if (!thread_data->maps)
+@@ -1007,16 +1010,17 @@ static int record__thread_data_init_maps(struct record_thread *thread_data, stru
+ 		 thread_data->nr_mmaps, thread_data->maps, thread_data->overwrite_maps);
+ 
+ 	for (m = 0, tm = 0; m < nr_mmaps && tm < thread_data->nr_mmaps; m++) {
+-		if (test_bit(cpus->map[m].cpu, thread_data->mask->maps.bits)) {
++		if (cpu_map__is_dummy(cpus) ||
++		    test_bit(cpus->map[m].cpu, thread_data->mask->maps.bits)) {
+ 			if (thread_data->maps) {
+ 				thread_data->maps[tm] = &mmap[m];
+ 				pr_debug2("thread_data[%p]: cpu%d: maps[%d] -> mmap[%d]\n",
+-					  thread_data, cpus->map[m].cpu, tm, m);
++					  thread_data, perf_cpu_map__cpu(cpus, m).cpu, tm, m);
+ 			}
+ 			if (thread_data->overwrite_maps) {
+ 				thread_data->overwrite_maps[tm] = &overwrite_mmap[m];
+ 				pr_debug2("thread_data[%p]: cpu%d: ow_maps[%d] -> ow_mmap[%d]\n",
+-					  thread_data, cpus->map[m].cpu, tm, m);
++					  thread_data, perf_cpu_map__cpu(cpus, m).cpu, tm, m);
+ 			}
+ 			tm++;
+ 		}
+@@ -3329,6 +3333,9 @@ static void record__mmap_cpu_mask_init(struct mmap_cpu_mask *mask, struct perf_c
+ {
+ 	int c;
+ 
++	if (cpu_map__is_dummy(cpus))
++		return;
++
+ 	for (c = 0; c < cpus->nr; c++)
+ 		set_bit(cpus->map[c].cpu, mask->bits);
+ }
+@@ -3680,6 +3687,11 @@ static int record__init_thread_masks(struct record *rec)
+ 	if (!record__threads_enabled(rec))
+ 		return record__init_thread_default_masks(rec, cpus);
+ 
++	if (cpu_map__is_dummy(cpus)) {
++		pr_err("--per-thread option is mutually exclusive to parallel streaming mode.\n");
++		return -EINVAL;
++	}
++
+ 	switch (rec->opts.threads_spec) {
+ 	case THREAD_SPEC__CPU:
+ 		ret = record__init_thread_cpu_masks(rec, cpus);
 -- 
-Best regards,
-Coiby
+2.36.0.rc0.470.gd361397f0d-goog
 
