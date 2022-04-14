@@ -2,113 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF8E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2595C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242185AbiDNQAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:00:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57640 "EHLO
+        id S243501AbiDNQAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348917AbiDNPkL (ORCPT
+        with ESMTP id S1359472AbiDNPpZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:40:11 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60441C4E33
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:18:55 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        Thu, 14 Apr 2022 11:45:25 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF223F3A5B
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:32:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Yidt7R5bheIfbYpn867nE8JQLZqnVpDSVLNv8ery+dk=; b=FAnI244LULICsDqLqtDUx9+abr
+        dmQY4PY/y5ohjZDKBQQ/9ng7A+uDXKdNQYVYgNfSWPNBOefKpMm4rOLkDAtQjRCszNW8ErMWtMKBP
+        Z+Q6cAmqL4GvFjSMUKt5RYbo7B2xwEFHZ6rFDHQ511QF6XVddbJb0lXitM9zDWGHSHDrjeJroHeFk
+        SuIXr9JnXZkRorlXP7z/RLhOtqsputjnaXSsTKFhVUfvAvSHkKtp0i0Wh6K3Tn3PhOvuFW/4GK82s
+        aQnNfJkoMGepsrQ6mDNtqo8PfAfVuI4tNkE+QvHY3nPdSAARUnvYk0mu/wpl9jKDJtd/O4dgGG7LC
+        uERcRV6Q==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nf1Ru-00536U-Am; Thu, 14 Apr 2022 15:31:58 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id DD5611F748;
-        Thu, 14 Apr 2022 15:18:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649949533; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dkqemCFNSh+ZhebkGa09gVt5pLy70xI4ZccBTAffCZc=;
-        b=DxIcnPfo0yw48SFmUwgjqknFyxwyu9/5UOHIYjR/u80AC8WwvWRGi19AYn+UYzYlcaoNFm
-        CmQuiS7GljV5MGuYtMBDIvPfEBYHaazqJwzzLT7Wl43ZR5M2cXEu5m7luqUOjgoKzt5BeY
-        +SPMS8Hzt2pXydg7/qwdO1v7ZXlbNBc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649949533;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dkqemCFNSh+ZhebkGa09gVt5pLy70xI4ZccBTAffCZc=;
-        b=6P/o1p51DiXtaKeb2Y1dqvIQdSv7sHqoEAyyddZ9KCmHveSbw389Nrh5g+x7lf3P2bOOQc
-        xjqZhKB2ey364hCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8432C13A86;
-        Thu, 14 Apr 2022 15:18:53 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id VJi8H107WGJFbwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 14 Apr 2022 15:18:53 +0000
-Message-ID: <08c355b4-fa21-8716-bf05-3331914f150e@suse.cz>
-Date:   Thu, 14 Apr 2022 17:18:53 +0200
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D54D73002DE;
+        Thu, 14 Apr 2022 17:31:57 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id B5DD62041A9A0; Thu, 14 Apr 2022 17:31:57 +0200 (CEST)
+Date:   Thu, 14 Apr 2022 17:31:57 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Miroslav Benes <mbenes@suse.cz>
+Subject: Re: [PATCH 02/18] objtool: Support data symbol printing
+Message-ID: <Ylg+bewBpaqqYgeB@hirez.programming.kicks-ass.net>
+References: <cover.1649891421.git.jpoimboe@redhat.com>
+ <097057f88605aa67b0e3ec573fcf394ae7ac4d6f.1649891421.git.jpoimboe@redhat.com>
+ <YlfHy011VP2oPFjV@hirez.programming.kicks-ass.net>
+ <20220414152148.cwdefx744kymqcut@treble>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 13/16] mm/gup: disallow follow_page(FOLL_PIN)
-Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
-References: <20220329160440.193848-1-david@redhat.com>
- <20220329160440.193848-14-david@redhat.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220329160440.193848-14-david@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414152148.cwdefx744kymqcut@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/29/22 18:04, David Hildenbrand wrote:
-> We want to change the way we handle R/O pins on anonymous pages that
-> might be shared: if we detect a possibly shared anonymous page --
-> mapped R/O and not !PageAnonExclusive() -- we want to trigger unsharing
-> via a page fault, resulting in an exclusive anonymous page that can be
-> pinned reliably without getting replaced via COW on the next write
-> fault.
+On Thu, Apr 14, 2022 at 08:21:48AM -0700, Josh Poimboeuf wrote:
+> On Thu, Apr 14, 2022 at 09:05:47AM +0200, Peter Zijlstra wrote:
+> > On Wed, Apr 13, 2022 at 04:19:37PM -0700, Josh Poimboeuf wrote:
+> > 
+> > > @@ -34,8 +37,8 @@ static inline char *offstr(struct section *sec, unsigned long offset)
+> > >  
+> > >  	str = malloc(strlen(name) + 20);
+> > >  
+> > > -	if (func)
+> > > -		sprintf(str, "%s()+0x%lx", name, name_off);
+> > > +	if (sym)
+> > > +		sprintf(str, "%s%s+0x%lx", name, is_text ? "()" : "", name_off);
+> > >  	else
+> > >  		sprintf(str, "%s+0x%lx", name, name_off);
+> > 
+> > So I like the patch, except that "()" thing is something where we differ
+> > from the kernel's %ps format and I've cursed it a number of times
+> > because I then have to manually edit (iow remove) things when pasting it
+> > in various scripts etc..
 > 
-> However, the required page fault will be problematic for follow_page():
-> in contrast to ordinary GUP, follow_page() doesn't trigger faults
-> internally. So we would have to end up failing a R/O pin via
-> follow_page(), although there is something mapped R/O into the page
-> table, which might be rather surprising.
-> 
-> We don't seem to have follow_page(FOLL_PIN) users, and it's a purely
-> internal MM function. Let's just make our life easier and the semantics of
-> follow_page() clearer by just disallowing FOLL_PIN for follow_page()
-> completely.
-> 
-> Signed-off-by: David Hildenbrand <david@redhat.com>
+> Oh, hm, that's true.  I can remove them if you prefer.
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Yeah, I think taking it out is best, easier if we're consistent with %ps
+for everybody.
+
+> > That said, it totally makes sense to differentiate between a text and
+> > data symbol this way :/
+> 
+> Yes, but if we're keeping the "Add sec+offset to warnings" patch then
+> that distinction is already (kind of) being made by showing the data
+> section name.  And the data symbol warnings should be rare.
+
+Yes, I'd not seen that yet, what's that for? The Changelog alludes to
+something, but I don't think it actually does get used later.
