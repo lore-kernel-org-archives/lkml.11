@@ -2,113 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E61C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF34C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:49:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245501AbiDNPva (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56438 "EHLO
+        id S244870AbiDNPvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358350AbiDNPlg (ORCPT
+        with ESMTP id S1358635AbiDNPmC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:41:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 107BDECC73
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:23:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649949836;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IGRJLz7z/3jGasxkIFljjT/M7YCjB3xjYdcrHt5JsPY=;
-        b=R6F46RRSoVmJ5TxbsSSECf0FPaYBKNSX1pSMHSwwfkqQ58M4RFcvU0fIGssO1qfcSOpKjD
-        HqtfPS9KGBI13SP/wAzyH2Wffa8rjfSYYgyzSSPsLS4kNkNK+vOvUq4BQncX0RU+fVYbbD
-        8w+Na2hMm1eGJqgOOVCLdufUTWkpCmI=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-536-f-lfp3HlNhyHZPEo0TjWEg-1; Thu, 14 Apr 2022 11:23:55 -0400
-X-MC-Unique: f-lfp3HlNhyHZPEo0TjWEg-1
-Received: by mail-qv1-f69.google.com with SMTP id jz4-20020a0562140e6400b004461f104a7cso2693773qvb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:23:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IGRJLz7z/3jGasxkIFljjT/M7YCjB3xjYdcrHt5JsPY=;
-        b=w+6ZlI6Zs6E4bfEZvfFN4Qcn8S9WGf8z6QRmxtrUQ9JzEUWDtCnXLCL1PUAJOZ+LFx
-         ubsT/tOZFtbCT7sMIWNqZz2ZLnkUbaaaIXYSZ2gIlepS2UlKHIfj3C/9WGRYx8acCDyy
-         5YwRT02oJ98UMTUU4aj3sQwBXHj2f/kEerwtde3U1tahe2P+69uxNJfaLs2ahX1nKFz2
-         QaUFrQZ6JuCwheBOS0HFCK9sN8pu6A0sui00l9dXkafMzw5uRQlIktsYM9IX7OPcYWoT
-         N4GmQbE89Q7R7oRKwcOIFpWLov45jaeKPLVbncgCOBXWxDPBB2nwIAbQ1HPmAuMwh713
-         K8Vw==
-X-Gm-Message-State: AOAM533hiAamZWIkT5mVElv2SXXUdhZ8IbbEqwldHtjGg7P1xGDW1Sf1
-        Mp930Eaqkg0UD1U2kfUMLUdREwYlpS5UBSVR4tP+8p4oXvYaQDOMMOEB9suEPiGVADY+zJkq1vx
-        j7ZJR1+FaFq/I+yukhohVyavU
-X-Received: by 2002:ad4:5dc7:0:b0:443:6f15:fe32 with SMTP id m7-20020ad45dc7000000b004436f15fe32mr3852121qvh.6.1649949834657;
-        Thu, 14 Apr 2022 08:23:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxDIMnHIaFBi6EAQ93deNI9TIf/lTnkCTwd5RkyfWbj4eTfNhDjJwcfrcjQzxV8pE0w7SpAiw==
-X-Received: by 2002:ad4:5dc7:0:b0:443:6f15:fe32 with SMTP id m7-20020ad45dc7000000b004436f15fe32mr3852106qvh.6.1649949834481;
-        Thu, 14 Apr 2022 08:23:54 -0700 (PDT)
-Received: from fedora.redhat.com (modemcable200.11-22-96.mc.videotron.ca. [96.22.11.200])
-        by smtp.gmail.com with ESMTPSA id p5-20020a378d05000000b0069beaffd5b3sm1166038qkd.4.2022.04.14.08.23.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 08:23:54 -0700 (PDT)
-From:   Adrien Thierry <athierry@redhat.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Maxime Ripard <mripard@kernel.org>,
-        Takashi Iwai <tiwai@suse.com>
-Cc:     linux-staging@lists.linux.dev,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Adrien Thierry <athierry@redhat.com>
-Subject: [PATCH 1/2] staging: bcm2835-audio: fully describe config symbol
-Date:   Thu, 14 Apr 2022 11:23:39 -0400
-Message-Id: <20220414152340.68932-2-athierry@redhat.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220414152340.68932-1-athierry@redhat.com>
-References: <20220414152340.68932-1-athierry@redhat.com>
+        Thu, 14 Apr 2022 11:42:02 -0400
+Received: from sonic307-55.consmr.mail.gq1.yahoo.com (sonic307-55.consmr.mail.gq1.yahoo.com [98.137.64.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B29C6F2A
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:24:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.ca; s=s2048; t=1649949882; bh=l7uEf+zHfGuXlKA/7aMuUENHXKPZm3r3B51bsgI8f2Q=; h=Date:From:Subject:To:Cc:References:In-Reply-To:From:Subject:Reply-To; b=h+ZC2BvN8pcuEOWtR9p6QOwASKIVW8HY7x+GeFfL0FCDoMREsJoK+zDw/7f0u+vZ4AbUTDubeQ0yPJfna4JdMNkDqmyAnIJBLqoLKT4bv5BBBa7lUjBQYtDH6lRxlatEsLHcUPoCGl76yimjCoz6cnp+w/hu4PsEEZKwV+e7EZ5HosQ5gJBebML5FqlnYq/u1t8aQTe2VoZQCFMPy7w8cWTzqhvxZovuoKD9qwDTkFxH0CP40fUSjbd/CDuFjkKrjVe4bVxup5MOayb3ygXgbBiWb1NY2ZFVsWH3eAJLpJFwuVNJX68/3ZvsME4QHWJSK5gq4i80Gnf335fTyOoITA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1649949882; bh=c0PR5MdqQVMbrOS9QgNLeD581KVxI66+yo63nInVZPI=; h=X-Sonic-MF:Date:From:Subject:To:From:Subject; b=fv4lNBYS5pFRa2GLDlY0GtUPYkRBA738m2HwyXxbgv51t0GqjdERVrnXyu8xJEZkE/qP2gLP/R92EpOxF7Xm0CCqU2JHHa3Wk2VRmD1TB+ishh9xY2zHgssMFELAqjfBbLHshg4FGadUcNWN5+8hpbIzEgXwDTWLyF5N18ersnG9DeYBq+ZIIImGrSQ/0GIlhHUnf6oYX+7PkSwXDphOgxtUCIumcpHPq9tWPEr/n3iikz9GGKoeRXCuyUT4mC4iYHkaEPvWdtijVTxLCypbE3iEOUxjUZXs4vBPHfc4v4C+45SwpSEVlDjwUTQtlpkcEYRb53tYvy8B7m9oW1QPaQ==
+X-YMail-OSG: ixi72QsVM1ludGt1a_NOmZsL3Tw7Yf6Hu6LmOJvnhrp_Pg.OBrJkFUPM.k_p9uu
+ t2iM4LjQNAOcKrDdY019Q6RRB2xHaQcrOi8JoyXT1U7klhVvFGTyb8XfjOCLJRj2lNxJ8q2Jjvdh
+ 0RCoA4bNSaEglicQOBF6JijL1UyjdGqANkqNLMF8WTZHT8qAWKHUAdNOWprquOz2aip0gHtlfW.F
+ 0xWCdWi1JNQHgebpbqM2ehQx37fndADEArENjDbErQINW3gwXdV6.BHRZEncyo_O7lFejfXw8nAu
+ 8wZAWTa1WhwWGVdqzti_7lgINmDzf6PAvnC9sVTYakQdynskwkUSBRx28YrAfEvIbC2qH3rntOmP
+ cMa4KJ7f59etRXona43oI.tNprJz9MEd3HMvGgdsO1hRpIwM9ixzjhTUPLbMOSDD0YmFFy5AdaS8
+ rxom2dwujAZ7WldrKaLTDypL.tCaBPvoJx3YmdC6I8yK54rKwVc3Xvv.fjGKmR.TqtD4Tpf3mRh4
+ gU2T7phP0k_mNV3SfwBY5uyKiBVoTYH4tqARM9.T.0HaRuzw3ZrNbvvIiMGmmB0F5WuYcl4pygSJ
+ ccprenv8z5lX7mrLTvVDsUh43Q8aSLrll0t6jqbGf2yip8416VNNKHS2BARuun1b_z4sWmSo8_HS
+ ikDysAr6t5LyyrUiyqsCW5OoXI0d3pBTmuMlFdpWrOOAGBRBLOalciBwHxkbW_YlPZtUTCmsCLNW
+ eRRV5vs9bQYD.H4Wstf5ghG17lJkvCG2X0QgtqfLA737NdbzeIRVD8iFOxlmh_Y_zCZJ_2E4v0B.
+ xXgHnnCbGAxFuiFGr7WnSQCf1ne_hJf6bTaQKrNI3tPbJmjuX6QfhVZyqqeblBvD0asA5iIqP5ft
+ 4JuOcawECMqsLJUgBLWWOBw5YLGGQfAlsdfHWgLmbzvl8gy3rienmPLDZtQa.uFNVb8XpLLEh93J
+ AC3RCdzF9zOHQbZw39ZDQVeavhTMT1q_2UKxZZbmwGH6GNuNlrYwiQcaeOfSHRWDabId2ml4mUQR
+ RFFON__K84I9DPQQx5IyI3YvR46LhJwagtwWYJF_bBUE86W6kf3_f4epIb_wRXj.HIJ29k94FvF_
+ AgloODt10QIMUepFAQjRX8pJcRJBPNVc0I5HgV0bfiFpTNP3DQfM9HhJfoQWUYpfEgtZrnEZ0bYc
+ rXLV0aHPyjqTuJXwxwbBXiuk2uK7K5WbEJxvQ25fmdx0ODo1MCjBLCzMi.Jz9gK7w3toR9_YoELv
+ .jEWGSU78GfBVC8Bl1lII2VporKr09cqrtCuoho8WYVPiWZJEzowjBlETfBgriWEmd9Sy7pI9KEo
+ LyJwYL5dAz5n.JEukZ7FfzBCyf0yohXpY4mw1xighpeSnmeLHeqKQD6Noc.90esAHwxfaWdVzcqw
+ vdv6hCcKB.kYiA6wJvlXwAp2lSfpT4nSR70AdGnHlsVm1GRVdkX2D5Mpr6c3L9wBoa5_oesEpVo6
+ rXgpj7YZ.ptcghQwRXqa2ce4GrWpSFodvnyloFkoB2gWux.LQjoElUboRwNNWNbwYeQmP75CCr99
+ H3ix8fgwAZSoMFoSQJN0vbuWawRblVDxqfZ57_CnNuQWAcWCKnmcYcVVWh7rJpJoM.ZRakDakI3a
+ 7H49tOCA1OUP3GlfxuR28ypdhF5X.x0BCZ4gOUmlePbXGspmb.FoV3hR_3vskdEXg0s1zfF2fP1m
+ DQMb69kxOKu7MEtGDxMBuI3QJG.hSUJmwKEDhDQ8xy4C3v8yeuHXmt3i1dAva01wCdeaoI4o2HNp
+ xraygLZ5eiIfcCiOUjhR6xRbroLClVMtgJuSR_r0abBVIHBBfEVVxDmBWwBxcbx2n0J_eE8haMCL
+ hesR30KTb0GsDF8IZjlQeUWdyMoGZMQ9K5IfXX3_VO_4qA7TnpUayZAQcmEGZw4QDuCDhtPXTbg_
+ Lrq6imWqIqkLOa77ZyccZl_tVndLc3_bVv_Xb.4KcKkmNDl9CuC5aRL0wJ0jBXtf76Wr56I34xaY
+ HoK07z0oV1FVukmEeiqjLtH0Bi9SsF_7BV3B3gK5S3yy2fO2bfRdWdbVOLPL3HWQpSi7nWcv0Wq5
+ yHGlTGNSX5U2AipMpz90gBCIa3mM4TBeNgwChvHra0TO_5rxjsSPZOZKc.iKcizrrnETSFXAqGFd
+ 6e.B5t0ohwE8SO_600iyK5F0AD5RB30OaOuiZFrIoTwDN4o.OY0txDMPjHbSAIjVx7WLNXf45i2K
+ Dpo7wcPaJ5i3RFM7d4zoP3FsWFJKTf7MD9qKCNM86HojINd3evbgu7ZSfJrsRsva82arIk2UmcVD
+ p
+X-Sonic-MF: <alex_y_xu@yahoo.ca>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.gq1.yahoo.com with HTTP; Thu, 14 Apr 2022 15:24:42 +0000
+Received: by hermes--canary-production-gq1-cc54c7bb9-9gfh6 (VZM Hermes SMTP Server) with ESMTPA ID 70fcc1be1711c5a35768f5595215e0c4;
+          Thu, 14 Apr 2022 15:24:38 +0000 (UTC)
+Date:   Thu, 14 Apr 2022 11:24:35 -0400
+From:   "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>
+Subject: Re: [PATCH] mm/smaps_rollup: return empty file for kthreads instead
+ of ESRCH
+To:     Alexey Dobriyan <adobriyan@gmail.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Daniel Colascione <dancol@google.com>,
+        linux-api@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Vlastimil Babka <vbabka@suse.cz>
+References: <20220413211357.26938-1-alex_y_xu.ref@yahoo.ca>
+        <20220413211357.26938-1-alex_y_xu@yahoo.ca>
+        <20220413142748.a5796e31e567a6205c850ae7@linux-foundation.org>
+        <1649886492.rqei1nn3vm.none@localhost>
+        <20220413160613.385269bf45a9ebb2f7223ca8@linux-foundation.org>
+        <YleToQbgeRalHTwO@casper.infradead.org>
+        <YlfFaPhNFWNP+1Z7@localhost.localdomain>
+In-Reply-To: <YlfFaPhNFWNP+1Z7@localhost.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-Id: <1649949601.z8rr7ed5qb.none@localhost>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: WebService/1.1.20001 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Explain SND_BCM2835 config option in more detail, especially the
-implications of using the bcm2835-audio driver in conjunction with vc4
-for HDMI audio.
+Excerpts from Alexey Dobriyan's message of April 14, 2022 2:55 am:
+> Returning ESRCH is better so that programs don't waste time reading and
+> closing empty files and instantiating useless inodes.
 
-Reported by checkpatch:
+Yes, except ESRCH is not returned for open, it is returned for read.
 
-WARNING: please write a help paragraph that fully describes the config
-symbol
-FILE: drivers/staging/vc04_services/bcm2835-audio/Kconfig:2
+> Of course it is different if this patch was sent as response to a regress=
+ion.
 
-Signed-off-by: Adrien Thierry <athierry@redhat.com>
----
- drivers/staging/vc04_services/bcm2835-audio/Kconfig | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+I'm not sure I would classify it as a regression; I don't have an=20
+existing program which broke, it is a new program which happens to use=20
+some functionality which worked with a previous kernel. It is=20
+theoretically possible that some program exists that currently uses=20
+4.14, and will break if upgraded to 4.19+, but it is also possible that=20
+some program exists that currently uses 4.19+ and will break if this=20
+patch is applied.
 
-diff --git a/drivers/staging/vc04_services/bcm2835-audio/Kconfig b/drivers/staging/vc04_services/bcm2835-audio/Kconfig
-index d32ea348e846..7cd0b3c0cae4 100644
---- a/drivers/staging/vc04_services/bcm2835-audio/Kconfig
-+++ b/drivers/staging/vc04_services/bcm2835-audio/Kconfig
-@@ -5,5 +5,8 @@ config SND_BCM2835
- 	select SND_PCM
- 	select BCM2835_VCHIQ
- 	help
--	  Say Y or M if you want to support BCM2835 built in audio
-+	  Say Y or M if you want to support BCM2835 built in audio.
-+	  This driver handles both 3.5mm and HDMI audio. However, please
-+	  note that when HDMI audio is enabled with this driver, the vc4
-+	  driver cannot be used simultaneously, otherwise HDMI will break.
- 
--- 
-2.35.1
-
+Cheers,
+Alex.
