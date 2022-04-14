@@ -2,136 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F42C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 691B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241253AbiDNI7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 04:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41512 "EHLO
+        id S241271AbiDNI7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 04:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241248AbiDNI7M (ORCPT
+        with ESMTP id S232467AbiDNI7e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 04:59:12 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E9B68322;
-        Thu, 14 Apr 2022 01:56:45 -0700 (PDT)
-Received: from [192.168.0.2] (ip5f5ae8d7.dynamic.kabel-deutschland.de [95.90.232.215])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 12B9961EA1936;
-        Thu, 14 Apr 2022 10:56:44 +0200 (CEST)
-Message-ID: <14d07709-07ef-21a8-ad74-0f56447cf6dd@molgen.mpg.de>
-Date:   Thu, 14 Apr 2022 10:56:43 +0200
+        Thu, 14 Apr 2022 04:59:34 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB78A674F7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:57:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649926630; x=1681462630;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tLaRkQDxia82zDYbjT8YtujxT1/TuK3a5kx+Pr2IB8w=;
+  b=m/PgyYMPEvZ9no5PIadxOUr3aqV4/F+T54GRXpNeMm0ni39FmpJLTFVC
+   b3hsK2txwsx5Dj53elItDngPry1W/xExKeEO16+Y4/cTB7ZAyyp1PVFnD
+   0VWWcOQVRpKWGhVsFxXf0PNz2njRMB+ocZL7HJ5kc3zef4gJ/u6oD5rvb
+   JrwLkHW3lw7q9trXlO9EdOyibiXnaNEQSZkv8ZzJ6SkSCtOkVzeHSsNeo
+   jItdyrxM6aDi6dEq6B7tKGWeF4UF1et8zLKDfXyuyf+eQ9jbCmX068P+2
+   epk4QP9b/2G94yctlS/pyHeBUg89F7B8Ic7vqPWHHS85p84+EK2NkRgHh
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262328459"
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="262328459"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 01:57:10 -0700
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="573682710"
+Received: from xikunjia-mobl1.ccr.corp.intel.com ([10.254.215.168])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 01:57:08 -0700
+Message-ID: <d330a8942933e7c0fd4ea35b2c96948cd034aae2.camel@intel.com>
+Subject: Re: [PATCH v2 1/5] mm: demotion: Set demotion list differently
+From:   "ying.huang@intel.com" <ying.huang@intel.com>
+To:     Jagdish Gediya <jvgediya@linux.ibm.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, aneesh.kumar@linux.ibm.com,
+        baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com
+Date:   Thu, 14 Apr 2022 16:57:04 +0800
+In-Reply-To: <YlffwGJg/RWCYja7@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
+References: <20220413092206.73974-1-jvgediya@linux.ibm.com>
+         <20220413092206.73974-2-jvgediya@linux.ibm.com>
+         <4288cbad49690d7c4eb2b1d705eea01221ab8328.camel@intel.com>
+         <YlffwGJg/RWCYja7@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v6 3/3] EDAC: nuvoton: Add NPCM memory controller driver
-Content-Language: en-US
-To:     Borislav Petkov <bp@alien8.de>, Medad Young <medadyoung@gmail.com>
-Cc:     rric@kernel.org, James Morse <james.morse@arm.com>,
-        tony.luck@intel.com, Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Patrick Venture <venture@google.com>, KWLIU@nuvoton.com,
-        YSCHU@nuvoton.com, JJLIU0@nuvoton.com, KFTING <KFTING@nuvoton.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>, ctcchien@nuvoton.com,
-        devicetree <devicetree@vger.kernel.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-edac <linux-edac@vger.kernel.org>
-References: <20220322030152.19018-1-ctcchien@nuvoton.com>
- <20220322030152.19018-4-ctcchien@nuvoton.com>
- <a06441fc-85cf-9386-e362-4a90e855aa19@molgen.mpg.de>
- <CAHpyw9fQVbS1Cpv0ULQc2=vK8LsG6n7tgP+J9AboUupDAPT27Q@mail.gmail.com>
- <YlfeXVSkUC2B4xH2@zn.tnic>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <YlfeXVSkUC2B4xH2@zn.tnic>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Borislav,
-
-
-Am 14.04.22 um 10:42 schrieb Borislav Petkov:
-> On Thu, Apr 14, 2022 at 09:55:05AM +0800, Medad Young wrote:
->>>> +                             if (mtype == MEM_TYPE_DDR4)
->>>> +                                     dimm->mtype = MEM_DDR4;
->>>> +                             else
->>>> +                                     dimm->mtype = MEM_EMPTY;
->>>
->>> Use ternary operator?
->>>
->>>       dimm-mtype = (mtype == MEM_TYPE_DDR4) ? MEM_DDR4 : MEM_EMPTY;
+On Thu, 2022-04-14 at 14:18 +0530, Jagdish Gediya wrote:
+> On Thu, Apr 14, 2022 at 03:09:42PM +0800, ying.huang@intel.com wrote:
+> > On Wed, 2022-04-13 at 14:52 +0530, Jagdish Gediya wrote:
+> > > Sharing used_targets between multiple nodes in a single
+> > > pass limits some of the opportunities for demotion target
+> > > sharing.
+> > > 
+> > > Don't share the used targets between multiple nodes in a
+> > > single pass, instead accumulate all the used targets in
+> > > source nodes shared by all pass, and reset 'used_targets'
+> > > to source nodes while finding demotion targets for any new
+> > > node.
+> > > 
+> > > This results into some more opportunities to share demotion
+> > > targets between multiple source nodes, e.g. with below NUMA
+> > > topology, where node 0 & 1 are cpu + dram nodes, node 2 & 3
+> > > are equally slower memory only nodes, and node 4 is slowest
+> > > memory only node,
+> > > 
+> > > available: 5 nodes (0-4)
+> > > node 0 cpus: 0 1
+> > > node 0 size: n MB
+> > > node 0 free: n MB
+> > > node 1 cpus: 2 3
+> > > node 1 size: n MB
+> > > node 1 free: n MB
+> > > node 2 cpus:
+> > > node 2 size: n MB
+> > > node 2 free: n MB
+> > > node 3 cpus:
+> > > node 3 size: n MB
+> > > node 3 free: n MB
+> > > node 4 cpus:
+> > > node 4 size: n MB
+> > > node 4 free: n MB
+> > > node distances:
+> > > node   0   1   2   3   4
+> > >   0:  10  20  40  40  80
+> > >   1:  20  10  40  40  80
+> > >   2:  40  40  10  40  80
+> > >   3:  40  40  40  10  80
+> > >   4:  80  80  80  80  10
+> > > 
+> > > The existing implementation gives below demotion targets,
+> > > 
+> > > node    demotion_target
+> > >  0              3, 2
+> > >  1              4
+> > >  2              X
+> > >  3              X
+> > >  4              X
+> > > 
+> > > With this patch applied, below are the demotion targets,
+> > > 
+> > > node    demotion_target
+> > >  0              3, 2
+> > >  1              3, 2
+> > >  2              4
+> > >  3              4
+> > >  4              X
+> > > 
+> > > e.g. with below NUMA topology, where node 0, 1 & 2 are
+> > > cpu + dram nodes and node 3 is slow memory node,
+> > > 
+> > > available: 4 nodes (0-3)
+> > > node 0 cpus: 0 1
+> > > node 0 size: n MB
+> > > node 0 free: n MB
+> > > node 1 cpus: 2 3
+> > > node 1 size: n MB
+> > > node 1 free: n MB
+> > > node 2 cpus: 4 5
+> > > node 2 size: n MB
+> > > node 2 free: n MB
+> > > node 3 cpus:
+> > > node 3 size: n MB
+> > > node 3 free: n MB
+> > > node distances:
+> > > node   0   1   2   3
+> > >   0:  10  20  20  40
+> > >   1:  20  10  20  40
+> > >   2:  20  20  10  40
+> > >   3:  40  40  40  10
+> > > 
+> > > The existing implementation gives below demotion targets,
+> > > 
+> > > node    demotion_target
+> > >  0              3
+> > >  1              X
+> > >  2              X
+> > >  3              X
+> > > 
+> > > With this patch applied, below are the demotion targets,
+> > > 
+> > > node    demotion_target
+> > >  0              3
+> > >  1              3
+> > >  2              3
+> > >  3              X
+> > > 
+> > 
+> > With the [PATCH v1], you have describe the demotion order changes for
+> > the following system, I guess there's no change with [PATCH v2]?
 > 
-> Ternary operator is less readable than a plain and simple if-else.
+> Yes, there is no change with v2.
 > 
->>>> +{
->>>> +     struct priv_data *priv = mci->pvt_info;
->>>> +     const struct npcm_edac_platform_data *npcm_chip = priv->npcm_chip;
->>>> +     u64 err_c_addr = 0x0;
->>>
->>> size_t
->>
->> OK
+> > With below NUMA topology, where node 0 & 2 are cpu + dram
+> > nodes and node 1 & 3 are slow memory nodes,
+> > 
+> > available: 4 nodes (0-3)
+> > node 0 cpus: 0 1
+> > node 0 size: n MB
+> > node 0 free: n MB
+> > node 1 cpus:
+> > node 1 size: n MB
+> > node 1 free: n MB
+> > node 2 cpus: 2 3
+> > node 2 size: n MB
+> > node 2 free: n MB
+> > node 3 cpus:
+> > node 3 size: n MB
+> > node 3 free: n MB
+> > node distances:
+> > node   0   1   2   3
+> >   0:  10  40  20  80
+> >   1:  40  10  80  80
+> >   2:  20  80  10  40
+> >   3:  80  80  40  10
+> > 
+> > And, what is the demotion order for the following system with [PATCH
+> > v2]?
+> > 
+> > Node 0 & 2 are cpu + dram nodes and node 1 are slow
+> > memory node near node 0,
+> > 
+> > available: 3 nodes (0-2)
+> > node 0 cpus: 0 1
+> > node 0 size: n MB
+> > node 0 free: n MB
+> > node 1 cpus:
+> > node 1 size: n MB
+> > node 1 free: n MB
+> > node 2 cpus: 2 3
+> > node 2 size: n MB
+> > node 2 free: n MB
+> > node distances:
+> > node   0   1   2
+> >   0:  10  40  20
+> >   1:  40  10  80
+> >   2:  20  80  10
 > 
-> Why is size_t? error address doesn't have anything to do with a
-> sizeof(), array indexing or loop counting.
+> node 1 is demotion target for both node 0 and node 2 with this patch.
+> node 1 is demotion target only for node 0 with existing implementation,
+> however if node 1 is near to node 2 instead of node 0, still existing
+> implementation will give node 1 as demotion target only for node 0 which
+> is not the correct behavior.
 > 
-> It is an error address and having it in an u64 tells you exactly what
-> its quantity is.
-
-Good point. Sorry for missing that.
-
-> So can we stop the silliness pls?
-
-No idea, why you had to ask this question, while you statement before 
-already made the point.
-
->>>> +static irqreturn_t edac_ecc_isr(int irq, void *dev_id)
->>>> +{
->>>> +     struct mem_ctl_info *mci = dev_id;
->>>> +     struct priv_data *priv = mci->pvt_info;
->>>> +     const struct npcm_edac_platform_data *npcm_chip = priv->npcm_chip;
->>>> +     u32 intr_status;
->>>> +     u32 val;
->>>> +
->>>> +     /* Check the intr status and confirm ECC error intr */
->>>> +     intr_status = readl(priv->reg + npcm_chip->ecc_ctl_int_status);
->>>> +
->>>> +     edac_dbg(3, "InterruptStatus : 0x%x\n", intr_status);
->>>
->>> Remove the space before the colon? Maybe use:
->>>
->>> "Interrupt status (intr_status): 0x%x\n"
+> for both the scenario, with this patch applied, node 1 will be demotion
+> target for both 0 and 2.
 > 
-> And repeat "interrupt status"? Also silly. The question to ask
-> yourselves should always be: is this error message helpful enough to its
-> intended recipients.
-> 
-> When I see
-> 
->    "Interrupt status (intr_status): 0x%x\n"
-> 
-> in my code, I go: "hm, where does this message come from?" because it
-> ain't helpful enough. So I have to go stare at the code too.
-> 
-> I hope you're catching my drift.
 
-Sorry I do not get your point. Would you elaborate on the debug message 
-so it’s more useful? Or would you keep `InterruptStatus`, or – as it’s a 
-debug message – use the variable name? My point was mainly about, why 
-not use the variable name directly in the debug message, and the space 
-before the colon.
+Sounds good!  Thanks.
+
+Acked-by: "Huang, Ying" <ying.huang@intel.com>
+
+> > Best Regards,
+> > Huang, Ying
+> > 
+> > 
+> > [snip]
+> > 
+> > 
+> > 
+> Best regards,
+> Jagdish
 
 
-Kind regards,
-
-Paul
