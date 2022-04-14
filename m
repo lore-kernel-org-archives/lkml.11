@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A9A8C38A02
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D34C352B6
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344691AbiDNOKA (ORCPT
+        id S1344074AbiDNOJk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56776 "EHLO
+        Thu, 14 Apr 2022 10:09:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344072AbiDNNaR (ORCPT
+        with ESMTP id S1344091AbiDNNaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA571146;
-        Thu, 14 Apr 2022 06:27:44 -0700 (PDT)
+        Thu, 14 Apr 2022 09:30:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71466265;
+        Thu, 14 Apr 2022 06:27:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B57F6B82984;
-        Thu, 14 Apr 2022 13:27:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11420C385A1;
-        Thu, 14 Apr 2022 13:27:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4377960C14;
+        Thu, 14 Apr 2022 13:27:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B3EAC385A1;
+        Thu, 14 Apr 2022 13:27:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942861;
-        bh=1Cqi0dAt/x9cICIj/uLfaQvjeVebog30Z1zjjw7FLb0=;
+        s=korg; t=1649942875;
+        bh=a1iPLyt3/Czrbu1gWemAJpCnIFWibewpU8fc5Nmz7O4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DMZLy9O0DaIemejLaCfh+9Zx9ciZvi03fhf5pCPjdzaHG2/TsdgVQcuDs2my/dkTQ
-         P0Dt3EcxE8cDcRfu3mwWgxYnzvXy37PiZduODbkAvZy5QEvU1AQTtQvlAuq2j7NJmK
-         fNpQt2wpp2YpqAOdIoTz0l+pfCFDtJHpYPZFNx24=
+        b=RJlFDdRmh20T6i46KywZuwpON/43tnjmX8O9UITh5tYTE1+d4sfCYtnjKU1tgwjOA
+         TtQx5WwaL9sjS4g9K1MwIQfDRPC22cioLR5bFmhcV9XPQVaaccM6uQ8JeXhw3ZuY+i
+         jgH353cnGuuKVXjop6TD3z37a5ZsM9lOudWk/WC4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Colin Winegarden <colin.winegarden@broadcom.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 281/338] bnxt_en: Eliminate unintended link toggle during FW reset
-Date:   Thu, 14 Apr 2022 15:13:04 +0200
-Message-Id: <20220414110846.887331905@linuxfoundation.org>
+Subject: [PATCH 4.19 294/338] NFS: swap IO handling is slightly different for O_DIRECT IO
+Date:   Thu, 14 Apr 2022 15:13:17 +0200
+Message-Id: <20220414110847.255786443@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -53,45 +50,181 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
+From: NeilBrown <neilb@suse.de>
 
-[ Upstream commit 7c492a2530c1f05441da541307c2534230dfd59b ]
+[ Upstream commit 64158668ac8b31626a8ce48db4cad08496eb8340 ]
 
-If the flow control settings have been changed, a subsequent FW reset
-may cause the ethernet link to toggle unnecessarily.  This link toggle
-will increase the down time by a few seconds.
+1/ Taking the i_rwsem for swap IO triggers lockdep warnings regarding
+   possible deadlocks with "fs_reclaim".  These deadlocks could, I believe,
+   eventuate if a buffered read on the swapfile was attempted.
 
-The problem is caused by bnxt_update_phy_setting() detecting a false
-mismatch in the flow control settings between the stored software
-settings and the current FW settings after the FW reset.  This mismatch
-is caused by the AUTONEG bit added to link_info->req_flow_ctrl in an
-inconsistent way in bnxt_set_pauseparam() in autoneg mode.  The AUTONEG
-bit should not be added to link_info->req_flow_ctrl.
+   We don't need coherence with the page cache for a swap file, and
+   buffered writes are forbidden anyway.  There is no other need for
+   i_rwsem during direct IO.  So never take it for swap_rw()
 
-Reviewed-by: Colin Winegarden <colin.winegarden@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+2/ generic_write_checks() explicitly forbids writes to swap, and
+   performs checks that are not needed for swap.  So bypass it
+   for swap_rw().
+
+Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ fs/nfs/direct.c        | 42 ++++++++++++++++++++++++++++--------------
+ fs/nfs/file.c          |  4 ++--
+ include/linux/nfs_fs.h |  8 ++++----
+ 3 files changed, 34 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index e75a47a9f511..deba77670b1c 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -1377,9 +1377,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
- 		}
+diff --git a/fs/nfs/direct.c b/fs/nfs/direct.c
+index e5da9d7fb69e..41ff316cd6ad 100644
+--- a/fs/nfs/direct.c
++++ b/fs/nfs/direct.c
+@@ -288,8 +288,8 @@ ssize_t nfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
+ 	VM_BUG_ON(iov_iter_count(iter) != PAGE_SIZE);
  
- 		link_info->autoneg |= BNXT_AUTONEG_FLOW_CTRL;
--		if (bp->hwrm_spec_code >= 0x10201)
--			link_info->req_flow_ctrl =
--				PORT_PHY_CFG_REQ_AUTO_PAUSE_AUTONEG_PAUSE;
-+		link_info->req_flow_ctrl = 0;
- 	} else {
- 		/* when transition from auto pause to force pause,
- 		 * force a link change
+ 	if (iov_iter_rw(iter) == READ)
+-		return nfs_file_direct_read(iocb, iter);
+-	return nfs_file_direct_write(iocb, iter);
++		return nfs_file_direct_read(iocb, iter, true);
++	return nfs_file_direct_write(iocb, iter, true);
+ }
+ 
+ static void nfs_direct_release_pages(struct page **pages, unsigned int npages)
+@@ -553,6 +553,7 @@ static ssize_t nfs_direct_read_schedule_iovec(struct nfs_direct_req *dreq,
+  * nfs_file_direct_read - file direct read operation for NFS files
+  * @iocb: target I/O control block
+  * @iter: vector of user buffers into which to read data
++ * @swap: flag indicating this is swap IO, not O_DIRECT IO
+  *
+  * We use this function for direct reads instead of calling
+  * generic_file_aio_read() in order to avoid gfar's check to see if
+@@ -568,7 +569,8 @@ static ssize_t nfs_direct_read_schedule_iovec(struct nfs_direct_req *dreq,
+  * client must read the updated atime from the server back into its
+  * cache.
+  */
+-ssize_t nfs_file_direct_read(struct kiocb *iocb, struct iov_iter *iter)
++ssize_t nfs_file_direct_read(struct kiocb *iocb, struct iov_iter *iter,
++			     bool swap)
+ {
+ 	struct file *file = iocb->ki_filp;
+ 	struct address_space *mapping = file->f_mapping;
+@@ -610,12 +612,14 @@ ssize_t nfs_file_direct_read(struct kiocb *iocb, struct iov_iter *iter)
+ 	if (iter_is_iovec(iter))
+ 		dreq->flags = NFS_ODIRECT_SHOULD_DIRTY;
+ 
+-	nfs_start_io_direct(inode);
++	if (!swap)
++		nfs_start_io_direct(inode);
+ 
+ 	NFS_I(inode)->read_io += count;
+ 	requested = nfs_direct_read_schedule_iovec(dreq, iter, iocb->ki_pos);
+ 
+-	nfs_end_io_direct(inode);
++	if (!swap)
++		nfs_end_io_direct(inode);
+ 
+ 	if (requested > 0) {
+ 		result = nfs_direct_wait(dreq);
+@@ -971,6 +975,7 @@ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
+  * nfs_file_direct_write - file direct write operation for NFS files
+  * @iocb: target I/O control block
+  * @iter: vector of user buffers from which to write data
++ * @swap: flag indicating this is swap IO, not O_DIRECT IO
+  *
+  * We use this function for direct writes instead of calling
+  * generic_file_aio_write() in order to avoid taking the inode
+@@ -987,7 +992,8 @@ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
+  * Note that O_APPEND is not supported for NFS direct writes, as there
+  * is no atomic O_APPEND write facility in the NFS protocol.
+  */
+-ssize_t nfs_file_direct_write(struct kiocb *iocb, struct iov_iter *iter)
++ssize_t nfs_file_direct_write(struct kiocb *iocb, struct iov_iter *iter,
++			      bool swap)
+ {
+ 	ssize_t result = -EINVAL, requested;
+ 	size_t count;
+@@ -1001,7 +1007,11 @@ ssize_t nfs_file_direct_write(struct kiocb *iocb, struct iov_iter *iter)
+ 	dfprintk(FILE, "NFS: direct write(%pD2, %zd@%Ld)\n",
+ 		file, iov_iter_count(iter), (long long) iocb->ki_pos);
+ 
+-	result = generic_write_checks(iocb, iter);
++	if (swap)
++		/* bypass generic checks */
++		result =  iov_iter_count(iter);
++	else
++		result = generic_write_checks(iocb, iter);
+ 	if (result <= 0)
+ 		return result;
+ 	count = result;
+@@ -1031,16 +1041,20 @@ ssize_t nfs_file_direct_write(struct kiocb *iocb, struct iov_iter *iter)
+ 	if (!is_sync_kiocb(iocb))
+ 		dreq->iocb = iocb;
+ 
+-	nfs_start_io_direct(inode);
++	if (swap) {
++		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos);
++	} else {
++		nfs_start_io_direct(inode);
+ 
+-	requested = nfs_direct_write_schedule_iovec(dreq, iter, pos);
++		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos);
+ 
+-	if (mapping->nrpages) {
+-		invalidate_inode_pages2_range(mapping,
+-					      pos >> PAGE_SHIFT, end);
+-	}
++		if (mapping->nrpages) {
++			invalidate_inode_pages2_range(mapping,
++						      pos >> PAGE_SHIFT, end);
++		}
+ 
+-	nfs_end_io_direct(inode);
++		nfs_end_io_direct(inode);
++	}
+ 
+ 	if (requested > 0) {
+ 		result = nfs_direct_wait(dreq);
+diff --git a/fs/nfs/file.c b/fs/nfs/file.c
+index 29553fdba8af..62a86c414391 100644
+--- a/fs/nfs/file.c
++++ b/fs/nfs/file.c
+@@ -157,7 +157,7 @@ nfs_file_read(struct kiocb *iocb, struct iov_iter *to)
+ 	ssize_t result;
+ 
+ 	if (iocb->ki_flags & IOCB_DIRECT)
+-		return nfs_file_direct_read(iocb, to);
++		return nfs_file_direct_read(iocb, to, false);
+ 
+ 	dprintk("NFS: read(%pD2, %zu@%lu)\n",
+ 		iocb->ki_filp,
+@@ -606,7 +606,7 @@ ssize_t nfs_file_write(struct kiocb *iocb, struct iov_iter *from)
+ 		return result;
+ 
+ 	if (iocb->ki_flags & IOCB_DIRECT)
+-		return nfs_file_direct_write(iocb, from);
++		return nfs_file_direct_write(iocb, from, false);
+ 
+ 	dprintk("NFS: write(%pD2, %zu@%Ld)\n",
+ 		file, iov_iter_count(from), (long long) iocb->ki_pos);
+diff --git a/include/linux/nfs_fs.h b/include/linux/nfs_fs.h
+index 0ff7dd2bf8a4..8ea7ceed8285 100644
+--- a/include/linux/nfs_fs.h
++++ b/include/linux/nfs_fs.h
+@@ -475,10 +475,10 @@ static inline struct rpc_cred *nfs_file_cred(struct file *file)
+  * linux/fs/nfs/direct.c
+  */
+ extern ssize_t nfs_direct_IO(struct kiocb *, struct iov_iter *);
+-extern ssize_t nfs_file_direct_read(struct kiocb *iocb,
+-			struct iov_iter *iter);
+-extern ssize_t nfs_file_direct_write(struct kiocb *iocb,
+-			struct iov_iter *iter);
++ssize_t nfs_file_direct_read(struct kiocb *iocb,
++			     struct iov_iter *iter, bool swap);
++ssize_t nfs_file_direct_write(struct kiocb *iocb,
++			      struct iov_iter *iter, bool swap);
+ 
+ /*
+  * linux/fs/nfs/dir.c
 -- 
 2.35.1
 
