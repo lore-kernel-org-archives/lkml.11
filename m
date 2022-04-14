@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3BD7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 209B3C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351771AbiDNOjF (ORCPT
+        id S1352456AbiDNOjP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:39:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
+        Thu, 14 Apr 2022 10:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245753AbiDNNnw (ORCPT
+        with ESMTP id S1344632AbiDNNo2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:43:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFB628E16;
-        Thu, 14 Apr 2022 06:39:38 -0700 (PDT)
+        Thu, 14 Apr 2022 09:44:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4DF33880;
+        Thu, 14 Apr 2022 06:39:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F05461D9C;
-        Thu, 14 Apr 2022 13:39:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47543C385A1;
-        Thu, 14 Apr 2022 13:39:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82D4EB82983;
+        Thu, 14 Apr 2022 13:39:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1E7EC385A1;
+        Thu, 14 Apr 2022 13:39:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943576;
-        bh=iuF5T81YHbniPUlgmgiGZ+c4o5xQ3UyLXpR0L9lh9EA=;
+        s=korg; t=1649943593;
+        bh=BUp89Y48prw3uC7Zsp9NBI6Xgc8DoR1PbAzvthqIWTM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UX4cATHgMcDKeZS0CPmSagLNj+xeONQcMepQvye97VUtcSl2xha3MxbARrphJgUTc
-         w5HuG/QzqPUYhNTOuUAsNxl55xCEOJHAaFY6GDZllshF4Inh1OSPSAH1VQPxkmnoTY
-         Q9O3VimWpnlO5ADUaBOpSPRMDwB3Te3nft5Rnq/A=
+        b=XAskTyVCX3YwmOii8GFyXDxAgJfREihaxWOwyIBBTytRQgKNIh5MaELHoptGb4/5z
+         ADcPpsHKrrJ920iiEDfrl2MNqHxUbx5TZT7EU4fB5peel3f+NMtEcoVkBmu4Jt5L+A
+         g9tvNTJWjV2xTShG2r/xjguDiQ5h8VIFlYJ+lJSg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?H=C3=A5kon=20Bugge?= <haakon.bugge@oracle.com>,
-        Avneesh Pant <avneesh.pant@oracle.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 178/475] IB/cma: Allow XRC INI QPs to set their local ACK timeout
-Date:   Thu, 14 Apr 2022 15:09:23 +0200
-Message-Id: <20220414110900.115769846@linuxfoundation.org>
+Subject: [PATCH 5.4 210/475] vxcan: enable local echo for sent CAN frames
+Date:   Thu, 14 Apr 2022 15:09:55 +0200
+Message-Id: <20220414110901.004512805@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -53,36 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Håkon Bugge <haakon.bugge@oracle.com>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-[ Upstream commit 748663c8ccf6b2e5a800de19127c2cc1c4423fd2 ]
+[ Upstream commit 259bdba27e32368b4404f69d613b1c1014c07cbf ]
 
-XRC INI QPs should be able to adjust their local ACK timeout.
+The vxcan driver provides a pair of virtual CAN interfaces to exchange
+CAN traffic between different namespaces - analogue to veth.
 
-Fixes: 2c1619edef61 ("IB/cma: Define option to set ack timeout and pack tos_set")
-Link: https://lore.kernel.org/r/1644421175-31943-1-git-send-email-haakon.bugge@oracle.com
-Signed-off-by: Håkon Bugge <haakon.bugge@oracle.com>
-Suggested-by: Avneesh Pant <avneesh.pant@oracle.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+In opposite to the vcan driver the local sent CAN traffic on this interface
+is not echo'ed back but only sent to the remote peer. This is unusual and
+can be easily fixed by removing IFF_ECHO from the netdevice flags that
+are set for vxcan interfaces by default at startup.
+
+Without IFF_ECHO set on driver level, the local sent CAN frames are echo'ed
+in af_can.c in can_send(). This patch makes vxcan interfaces adopt the
+same local echo behavior and procedures as known from the vcan interfaces.
+
+Fixes: a8f820a380a2 ("can: add Virtual CAN Tunnel driver (vxcan)")
+Link: https://lore.kernel.org/all/20220309120416.83514-5-socketcan@hartkopp.net
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/core/cma.c | 2 +-
+ drivers/net/can/vxcan.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/core/cma.c b/drivers/infiniband/core/cma.c
-index 5e2b688e36fc..de7df5ab06f3 100644
---- a/drivers/infiniband/core/cma.c
-+++ b/drivers/infiniband/core/cma.c
-@@ -2559,7 +2559,7 @@ int rdma_set_ack_timeout(struct rdma_cm_id *id, u8 timeout)
- {
- 	struct rdma_id_private *id_priv;
+diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
+index 7000c6cd1e48..282c53ef76d2 100644
+--- a/drivers/net/can/vxcan.c
++++ b/drivers/net/can/vxcan.c
+@@ -148,7 +148,7 @@ static void vxcan_setup(struct net_device *dev)
+ 	dev->hard_header_len	= 0;
+ 	dev->addr_len		= 0;
+ 	dev->tx_queue_len	= 0;
+-	dev->flags		= (IFF_NOARP|IFF_ECHO);
++	dev->flags		= IFF_NOARP;
+ 	dev->netdev_ops		= &vxcan_netdev_ops;
+ 	dev->needs_free_netdev	= true;
  
--	if (id->qp_type != IB_QPT_RC)
-+	if (id->qp_type != IB_QPT_RC && id->qp_type != IB_QPT_XRC_INI)
- 		return -EINVAL;
- 
- 	id_priv = container_of(id, struct rdma_id_private, id);
 -- 
 2.34.1
 
