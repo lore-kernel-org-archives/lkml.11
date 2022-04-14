@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B6F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:21:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 529E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236865AbiDNNYF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:24:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38846 "EHLO
+        id S235986AbiDNNYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:24:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243954AbiDNNWI (ORCPT
+        with ESMTP id S244111AbiDNNWL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:22:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4ADE972FE;
-        Thu, 14 Apr 2022 06:17:37 -0700 (PDT)
+        Thu, 14 Apr 2022 09:22:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3FEB9859A;
+        Thu, 14 Apr 2022 06:17:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82A14B82968;
-        Thu, 14 Apr 2022 13:17:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F03E4C385A1;
-        Thu, 14 Apr 2022 13:17:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53B2DB82981;
+        Thu, 14 Apr 2022 13:17:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B87B9C385A5;
+        Thu, 14 Apr 2022 13:17:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942255;
-        bh=KLGo8g7kILFDsYSGimZs1OgY+bChucqqpbIHm8CuvKE=;
+        s=korg; t=1649942259;
+        bh=7kX7CnvluiWbJU3rkOnN9B/tJ1K7lAW9rQihbi123BI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u4Xylr/PCZ4z5CLxdUU0zczSw03f4GN2IsRwWS+IuaSo20Yuib3anyRpx+5zRdl+T
-         IeBh8XqcZ08rfyObsmDMGzXKga1jk7hCE/xL5JV38DOE1HdGNUimF//DP6z+gLUqTW
-         Q1MsGUJzlzM4wChKGNhVj4vNyB8NJGU65BDrjkPM=
+        b=DrxC2rZ+6L6ajvagSOoloRI0DPbHYUBjKCv9824zHZCn5vh791EcoHl/AooPA1iRT
+         RVfSfN1jkJlrn2q2VO1av2Il4s8V/8BvhctXs0yqjOgbgX+qRzn+gAninkLHu2yU/5
+         /V5u+O8SxVTLNMQcGtup1QBViKlQtNlrQjak1hOw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 4.19 030/338] f2fs: fix to unlock page correctly in error path of is_alive()
-Date:   Thu, 14 Apr 2022 15:08:53 +0200
-Message-Id: <20220414110839.749999630@linuxfoundation.org>
+        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
+        Peter Rosin <peda@axentia.se>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 4.19 021/338] iio: inkern: apply consumer scale when no channel scale is available
+Date:   Thu, 14 Apr 2022 15:08:44 +0200
+Message-Id: <20220414110839.494960947@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -48,43 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Liam Beguin <liambeguin@gmail.com>
 
-commit 6d18762ed5cd549fde74fd0e05d4d87bac5a3beb upstream.
+commit 14b457fdde38de594a4bc4bd9075019319d978da upstream.
 
-As Pavel Machek reported in below link [1]:
+When a consumer calls iio_read_channel_processed() and no channel scale
+is available, it's assumed that the scale is one and the raw value is
+returned as expected.
 
-After commit 77900c45ee5c ("f2fs: fix to do sanity check in is_alive()"),
-node page should be unlock via calling f2fs_put_page() in the error path
-of is_alive(), otherwise, f2fs may hang when it tries to lock the node
-page, fix it.
+On the other hand, if the consumer calls iio_convert_raw_to_processed()
+the scaling factor requested by the consumer is not applied.
 
-[1] https://lore.kernel.org/stable/20220124203637.GA19321@duo.ucw.cz/
+This for example causes the consumer to process mV when expecting uV.
+Make sure to always apply the scaling factor requested by the consumer.
 
-Fixes: 77900c45ee5c ("f2fs: fix to do sanity check in is_alive()")
-Cc: <stable@vger.kernel.org>
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: adc8ec5ff183 ("iio: inkern: pass through raw values if no scaling")
+Signed-off-by: Liam Beguin <liambeguin@gmail.com>
+Reviewed-by: Peter Rosin <peda@axentia.se>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220108205319.2046348-3-liambeguin@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/gc.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iio/inkern.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/fs/f2fs/gc.c
-+++ b/fs/f2fs/gc.c
-@@ -589,8 +589,10 @@ static bool is_alive(struct f2fs_sb_info
- 		set_sbi_flag(sbi, SBI_NEED_FSCK);
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -603,10 +603,10 @@ static int iio_convert_raw_to_processed_
+ 					IIO_CHAN_INFO_SCALE);
+ 	if (scale_type < 0) {
+ 		/*
+-		 * Just pass raw values as processed if no scaling is
+-		 * available.
++		 * If no channel scaling is available apply consumer scale to
++		 * raw value and return.
+ 		 */
+-		*processed = raw;
++		*processed = raw * scale;
+ 		return 0;
  	}
  
--	if (f2fs_check_nid_range(sbi, dni->ino))
-+	if (f2fs_check_nid_range(sbi, dni->ino)) {
-+		f2fs_put_page(node_page, 1);
- 		return false;
-+	}
- 
- 	*nofs = ofs_of_node(node_page);
- 	source_blkaddr = datablock_addr(NULL, node_page, ofs_in_node);
 
 
