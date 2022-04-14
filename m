@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3556C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D35C433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356138AbiDNPSk (ORCPT
+        id S1356092AbiDNPSi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55024 "EHLO
+        Thu, 14 Apr 2022 11:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238894AbiDNNwF (ORCPT
+        with ESMTP id S1347737AbiDNN7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:52:05 -0400
+        Thu, 14 Apr 2022 09:59:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DDFE31929;
-        Thu, 14 Apr 2022 06:44:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B2CBCB69;
+        Thu, 14 Apr 2022 06:52:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBE9761D68;
-        Thu, 14 Apr 2022 13:44:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6DD2C385A5;
-        Thu, 14 Apr 2022 13:44:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5A5D61E31;
+        Thu, 14 Apr 2022 13:52:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAB55C385A5;
+        Thu, 14 Apr 2022 13:52:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943873;
-        bh=cmQjIDOiyu6i0WOxV+vP3qJn8wa2woRKYCESBKH7hvg=;
+        s=korg; t=1649944346;
+        bh=uOFlIV0D3jXsATvvcnZjxmJXXsANn5tRGxWLY7ltiQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nczZKgwY2/XkhUNqUz8N9GsOOdXt5f2xO5P0t8MZkn/QCoG/PUG0RBJHX3Y4aHjE3
-         uOsY7xLLptg9nmfaLPOakCLkqbhrQd7FP+QqnPiqnYFkZeY/dWi7yW3XgxDHmVaMiu
-         eJXdh6SJf1NeAyqR4473RcUMYluBLbk4IkHOPEFY=
+        b=zCBCkbdMJM2yGM9UKglyfbjqiqwOHSY/CyzJrTyRwFGyxCAqs/wHvYnWfjxOvmBVX
+         vRRupHqroPjQyH5bmVisQuxYWSAcRfpOmJJ6u/jWt8etHBBCjD0Q9pE1gZAS5SATg8
+         3TM/Lm5pMaGuw/gfxvgr070Sh8veqpVC1WK8Ua5w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 305/475] ARM: mmp: Fix failure to remove sram device
-Date:   Thu, 14 Apr 2022 15:11:30 +0200
-Message-Id: <20220414110903.627433029@linuxfoundation.org>
+Subject: [PATCH 5.4 433/475] dpaa2-ptp: Fix refcount leak in dpaa2_ptp_probe
+Date:   Thu, 14 Apr 2022 15:13:38 +0200
+Message-Id: <20220414110907.181576285@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,76 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 4036b29a146b2749af3bb213b003eb69f3e5ecc4 ]
+[ Upstream commit 2b04bd4f03bba021959ca339314f6739710f0954 ]
 
-Make sure in .probe() to set driver data before the function is left to
-make it possible in .remove() to undo the actions done.
+This node pointer is returned by of_find_compatible_node() with
+refcount incremented. Calling of_node_put() to aovid the refcount leak.
 
-This fixes a potential memory leak and stops returning an error code in
-.remove() that is ignored by the driver core anyhow.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: d346c9e86d86 ("dpaa2-ptp: reuse ptp_qoriq driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220404125336.13427-1-linmq006@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-mmp/sram.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
-index 6794e2db1ad5..ecc46c31004f 100644
---- a/arch/arm/mach-mmp/sram.c
-+++ b/arch/arm/mach-mmp/sram.c
-@@ -72,6 +72,8 @@ static int sram_probe(struct platform_device *pdev)
- 	if (!info)
- 		return -ENOMEM;
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+index 6437fe6b9abf..a6b8f573ab5b 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+@@ -148,7 +148,7 @@ static int dpaa2_ptp_probe(struct fsl_mc_device *mc_dev)
+ 	base = of_iomap(node, 0);
+ 	if (!base) {
+ 		err = -ENOMEM;
+-		goto err_close;
++		goto err_put;
+ 	}
  
-+	platform_set_drvdata(pdev, info);
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (res == NULL) {
- 		dev_err(&pdev->dev, "no memory resource defined\n");
-@@ -107,8 +109,6 @@ static int sram_probe(struct platform_device *pdev)
- 	list_add(&info->node, &sram_bank_list);
- 	mutex_unlock(&sram_lock);
- 
--	platform_set_drvdata(pdev, info);
--
- 	dev_info(&pdev->dev, "initialized\n");
- 	return 0;
- 
-@@ -127,17 +127,19 @@ static int sram_remove(struct platform_device *pdev)
- 	struct sram_bank_info *info;
- 
- 	info = platform_get_drvdata(pdev);
--	if (info == NULL)
--		return -ENODEV;
- 
--	mutex_lock(&sram_lock);
--	list_del(&info->node);
--	mutex_unlock(&sram_lock);
-+	if (info->sram_size) {
-+		mutex_lock(&sram_lock);
-+		list_del(&info->node);
-+		mutex_unlock(&sram_lock);
-+
-+		gen_pool_destroy(info->gpool);
-+		iounmap(info->sram_virt);
-+		kfree(info->pool_name);
-+	}
- 
--	gen_pool_destroy(info->gpool);
--	iounmap(info->sram_virt);
--	kfree(info->pool_name);
- 	kfree(info);
-+
- 	return 0;
- }
- 
+ 	err = fsl_mc_allocate_irqs(mc_dev);
+@@ -191,6 +191,8 @@ static int dpaa2_ptp_probe(struct fsl_mc_device *mc_dev)
+ 	fsl_mc_free_irqs(mc_dev);
+ err_unmap:
+ 	iounmap(base);
++err_put:
++	of_node_put(node);
+ err_close:
+ 	dprtc_close(mc_dev->mc_io, 0, mc_dev->mc_handle);
+ err_free_mcp:
 -- 
-2.34.1
+2.35.1
 
 
 
