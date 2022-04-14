@@ -2,86 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B164CC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C19C433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343721AbiDNPX2 (ORCPT
+        id S1356614AbiDNPT3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43106 "EHLO
+        Thu, 14 Apr 2022 11:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242410AbiDNN7d (ORCPT
+        with ESMTP id S1347684AbiDNN71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:33 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B412018A;
-        Thu, 14 Apr 2022 06:55:44 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id c64so6433544edf.11;
-        Thu, 14 Apr 2022 06:55:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y5aWYxkMrcBFiZitnUw0BTQJF0hESlZ4bWlKsoVZ2qk=;
-        b=JY+wyiniWXODIB9ip+nO+wz7WCk7mIMRSrne8Efqpq6QArFTFLkSy1HHHAcMyfO5Lh
-         7c1+uBsd4DXxMgKgAzuhJTQ0T9kSCP/aKmZ/hIqrpZTi8d3M3czgJv7aRJNpJ66uwW63
-         BDRAZJPH/yW0iqGp3y8Hz29qbByy24RMCqzS22Jv3/MJqFu5JTzVRgfIJ5fQLRGVOKGe
-         Xr5vqtVVMEhDZeplv7OUiuwOGeVEm7ycntN+Frp3W/awvwq20P3gmiVwW14Qpmv4N7aj
-         Zwyk166RqpMzhj/c31zjd7lwvBFPdn/RyZVLjjZ/ofxopRqmY5+oBYmQyLX5EBnMvwah
-         ZvXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y5aWYxkMrcBFiZitnUw0BTQJF0hESlZ4bWlKsoVZ2qk=;
-        b=VzsQjve0imrdIA5pTjN/xdTpcH8ZCY9eRvqNTrZwHFFG8SkSE5Z3bw4DNjt20CSlWi
-         0UPINHOxSs3DctGS5K6Bzy22gF/UA2tBrFt/P/Ajp7vreKD260LWRl/HwGFWyVwGiGTC
-         OeqbJg31v4ZpRtsV+QyDt13jqkIyVwwhD3HTjg/thMHFBqLZYzpw3F4mIUEr+giiCieO
-         D6BwqkNiHIg2lYE0J2LTka2s6MlW9XJpqgpBdUPmUwQgYAsuLFHglgQT2o9k6TyHmyxv
-         TCCWUYsztgtUYCYDhDPX/hHFNBkBOWHVobQzRwUrQ+GiKnMp5gsviaqSYkZFjXGrmvCZ
-         caTg==
-X-Gm-Message-State: AOAM531eb0WkOPEpBG0GzPdUeNOFSa5XO2Fholrwn9BhvIxILPoSXPoq
-        J3VkVnnlnKjaK6yU2/MSxHrBGebf2bqJDwQHbaY=
-X-Google-Smtp-Source: ABdhPJwyww3e7aXwVAs5W5XjFg3dukyYoKr1v4cFU96Oyg0QAXFlpH1HVg2jgzcNDXhZb66cB0aqELroxq5jSc7mxQ4=
-X-Received: by 2002:a50:e696:0:b0:419:998d:5feb with SMTP id
- z22-20020a50e696000000b00419998d5febmr3188574edm.122.1649944543309; Thu, 14
- Apr 2022 06:55:43 -0700 (PDT)
-MIME-Version: 1.0
-References: <alpine.DEB.2.21.2203310114210.44113@angie.orcam.me.uk>
- <alpine.DEB.2.21.2204132103190.9383@angie.orcam.me.uk> <CAHp75VdOf3+j8yQh=-f6iCN_gRhisgoQjov2kK1fhgv7xaBJRg@mail.gmail.com>
- <alpine.DEB.2.21.2204141421190.9383@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2204141421190.9383@angie.orcam.me.uk>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 14 Apr 2022 16:55:07 +0300
-Message-ID: <CAHp75Vcb0JBQoNrb=ABCsPeM1U2zmHLw0P7Haa-Z=6D__VuqWA@mail.gmail.com>
-Subject: Re: [PING][PATCH v3 0/2] serial: 8250: Fixes for Oxford Semiconductor
- 950 UARTs
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+        Thu, 14 Apr 2022 09:59:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 500E148881;
+        Thu, 14 Apr 2022 06:51:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E024C61D29;
+        Thu, 14 Apr 2022 13:51:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE663C385A1;
+        Thu, 14 Apr 2022 13:51:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649944274;
+        bh=eyOC9+0o2d+lz78ju2LtHHHrCmZzxFMwiDBQxOBnII4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=w3uClQmsWaSLA4tqrTP9smzJe3wD+e9HcuDovLboVKIbH111aUno8dQw15cdbPQEM
+         l+xrEDOHJlINUJOBDLm622lvwzlBZ/3HUqoJGxIrVClkrlHDvdcsFrF97ThopO2law
+         Xqj/VyKOC54wuAADPkLqkd9wra80xIeKYsbgix28=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.4 456/475] irqchip/gic-v3: Fix GICR_CTLR.RWP polling
+Date:   Thu, 14 Apr 2022 15:14:01 +0200
+Message-Id: <20220414110907.818169704@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 4:47 PM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
-> On Thu, 14 Apr 2022, Andy Shevchenko wrote:
+From: Marc Zyngier <maz@kernel.org>
 
->  I fail to understand really why a piece of code to correct and improve
-> broken UART baud rate calculation has to be stuck in limbo for almost a
-> year.  There is nothing wrong with this code and it has a proper change
-> description and my observation has been that actually broken code often
-> with half a sentence serving as justification gets accepted with no fuss
-> all the time. :(
+commit 0df6664531a12cdd8fc873f0cac0dcb40243d3e9 upstream.
 
-If you remove those 3 or so lines of the code (that are pushing old
-SPD_CUST hack) I would be happy to Ack your patches immediately.
-Otherwise it's up to maintainers, if they are fine on that. I think
-it's a step back advertising something that should have not existed
-from day 1.
+It turns out that our polling of RWP is totally wrong when checking
+for it in the redistributors, as we test the *distributor* bit index,
+whereas it is a different bit number in the RDs... Oopsie boo.
 
--- 
-With Best Regards,
-Andy Shevchenko
+This is embarassing. Not only because it is wrong, but also because
+it took *8 years* to notice the blunder...
+
+Just fix the damn thing.
+
+Fixes: 021f653791ad ("irqchip: gic-v3: Initial support for GICv3")
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Cc: stable@vger.kernel.org
+Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Link: https://lore.kernel.org/r/20220315165034.794482-2-maz@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/irqchip/irq-gic-v3.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -162,11 +162,11 @@ static inline void __iomem *gic_dist_bas
+ 	}
+ }
+ 
+-static void gic_do_wait_for_rwp(void __iomem *base)
++static void gic_do_wait_for_rwp(void __iomem *base, u32 bit)
+ {
+ 	u32 count = 1000000;	/* 1s! */
+ 
+-	while (readl_relaxed(base + GICD_CTLR) & GICD_CTLR_RWP) {
++	while (readl_relaxed(base + GICD_CTLR) & bit) {
+ 		count--;
+ 		if (!count) {
+ 			pr_err_ratelimited("RWP timeout, gone fishing\n");
+@@ -180,13 +180,13 @@ static void gic_do_wait_for_rwp(void __i
+ /* Wait for completion of a distributor change */
+ static void gic_dist_wait_for_rwp(void)
+ {
+-	gic_do_wait_for_rwp(gic_data.dist_base);
++	gic_do_wait_for_rwp(gic_data.dist_base, GICD_CTLR_RWP);
+ }
+ 
+ /* Wait for completion of a redistributor change */
+ static void gic_redist_wait_for_rwp(void)
+ {
+-	gic_do_wait_for_rwp(gic_data_rdist_rd_base());
++	gic_do_wait_for_rwp(gic_data_rdist_rd_base(), GICR_CTLR_RWP);
+ }
+ 
+ #ifdef CONFIG_ARM64
+
+
