@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 956F5C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2407FC35280
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346545AbiDNN5g (ORCPT
+        id S1346442AbiDNN5H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47610 "EHLO
+        Thu, 14 Apr 2022 09:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244630AbiDNN1v (ORCPT
+        with ESMTP id S244894AbiDNN2O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:27:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B2D8EA204E
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:20:38 -0700 (PDT)
+        Thu, 14 Apr 2022 09:28:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6F485A775F
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:21:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649942437;
+        s=mimecast20190719; t=1649942474;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CxB8iaRITqlyT1LXAuvMAWvTt3GuClHhFoZbY8SSysE=;
-        b=CUBkkoJgGf97vd4067W5l6ezRMljoAVagfhOJtDqXYzg3F8xewNBtkEmBuI5pWGq4W/gHc
-        H75pVb0Ut/JgfTcMgHM0obWquEsLU9vvgyTF0KEiVFSyzhvTrToRDoDg8b8rdLCFqyHTfo
-        lnIdpzF+9+PIpStE5hSYLhR9Xydnrho=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=8GnOa2nJ6fSpwmAR7Vt3Kl/N0xAjTqupgL1N6sCmJHI=;
+        b=VvWXyvOKQkf7uZy6USwiMF0ho9UivF5S5DzFhw9mXu5ONCOTcrKkTVB+lj/RLwsXm/sR/L
+        rMkk4p86RynQ9+C2kolRZU/kOXuslOQE1vNgYuhx9IhbtStfjU5DlTE+Iyk/eBJM8oF9We
+        U3k7Cy5n3vrol+77sNXDafn9CMWLh7k=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-518-N9OqsHY-Mv6bPG_8PU3kMA-1; Thu, 14 Apr 2022 09:20:36 -0400
-X-MC-Unique: N9OqsHY-Mv6bPG_8PU3kMA-1
+ us-mta-513-iruDZws-PEq6HuEuzVViwg-1; Thu, 14 Apr 2022 09:21:11 -0400
+X-MC-Unique: iruDZws-PEq6HuEuzVViwg-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 47E801C0152F;
-        Thu, 14 Apr 2022 13:20:35 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 05910811E83;
+        Thu, 14 Apr 2022 13:20:57 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.195.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4664B9D7B;
-        Thu, 14 Apr 2022 13:20:33 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4521A7774;
+        Thu, 14 Apr 2022 13:20:55 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -47,9 +47,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Michael Kelley <mikelley@microsoft.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 09/34] KVM: x86: hyper-v: Don't use sparse_set_to_vcpu_mask() in kvm_hv_send_ipi()
-Date:   Thu, 14 Apr 2022 15:19:48 +0200
-Message-Id: <20220414132013.1588929-10-vkuznets@redhat.com>
+Subject: [PATCH v3 20/34] KVM: x86: KVM_REQ_TLB_FLUSH_CURRENT is a superset of KVM_REQ_HV_TLB_FLUSH too
+Date:   Thu, 14 Apr 2022 15:19:59 +0200
+Message-Id: <20220414132013.1588929-21-vkuznets@redhat.com>
 In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
 References: <20220414132013.1588929-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -60,95 +60,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Get rid of on-stack allocation of vcpu_mask and optimize kvm_hv_send_ipi()
-for a smaller number of vCPUs in the request. When Hyper-V TLB flush
-is in  use, HvSendSyntheticClusterIpi{,Ex} calls are not commonly used to
-send IPIs to a large number of vCPUs (and are rarely used in general).
-
-Introduce hv_is_vp_in_sparse_set() to directly check if the specified
-VP_ID is present in sparse vCPU set.
+KVM_REQ_TLB_FLUSH_CURRENT is an even stronger operation than
+KVM_REQ_TLB_FLUSH_GUEST so KVM_REQ_HV_TLB_FLUSH needs not to be
+processed after it.
 
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/hyperv.c | 37 ++++++++++++++++++++++++++-----------
- 1 file changed, 26 insertions(+), 11 deletions(-)
+ arch/x86/kvm/x86.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index 3cf68645a2e6..aebbb598ad1d 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -1746,6 +1746,25 @@ static void sparse_set_to_vcpu_mask(struct kvm *kvm, u64 *sparse_banks,
- 	}
- }
- 
-+static bool hv_is_vp_in_sparse_set(u32 vp_id, u64 valid_bank_mask, u64 sparse_banks[])
-+{
-+	int bank, sbank = 0;
-+
-+	if (!test_bit(vp_id / HV_VCPUS_PER_SPARSE_BANK,
-+		      (unsigned long *)&valid_bank_mask))
-+		return false;
-+
-+	for_each_set_bit(bank, (unsigned long *)&valid_bank_mask,
-+			 KVM_HV_MAX_SPARSE_VCPU_SET_BITS) {
-+		if (bank == vp_id / HV_VCPUS_PER_SPARSE_BANK)
-+			break;
-+		sbank++;
-+	}
-+
-+	return test_bit(vp_id % HV_VCPUS_PER_SPARSE_BANK,
-+			(unsigned long *)&sparse_banks[sbank]);
-+}
-+
- struct kvm_hv_hcall {
- 	u64 param;
- 	u64 ingpa;
-@@ -2089,8 +2108,8 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 		((u64)hc->rep_cnt << HV_HYPERCALL_REP_COMP_OFFSET);
- }
- 
--static void kvm_send_ipi_to_many(struct kvm *kvm, u32 vector,
--				 unsigned long *vcpu_bitmap)
-+static void kvm_hv_send_ipi_to_many(struct kvm *kvm, u32 vector,
-+				    u64 *sparse_banks, u64 valid_bank_mask)
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index e5aec386d299..d3839e648ab3 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -3357,8 +3357,11 @@ static inline void kvm_vcpu_flush_tlb_current(struct kvm_vcpu *vcpu)
+  */
+ void kvm_service_local_tlb_flush_requests(struct kvm_vcpu *vcpu)
  {
- 	struct kvm_lapic_irq irq = {
- 		.delivery_mode = APIC_DM_FIXED,
-@@ -2100,7 +2119,10 @@ static void kvm_send_ipi_to_many(struct kvm *kvm, u32 vector,
- 	unsigned long i;
+-	if (kvm_check_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu))
++	if (kvm_check_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu)) {
+ 		kvm_vcpu_flush_tlb_current(vcpu);
++		if (kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu))
++			kvm_hv_vcpu_empty_flush_tlb(vcpu);
++	}
  
- 	kvm_for_each_vcpu(i, vcpu, kvm) {
--		if (vcpu_bitmap && !test_bit(i, vcpu_bitmap))
-+		if (sparse_banks &&
-+		    !hv_is_vp_in_sparse_set(kvm_hv_get_vpindex(vcpu),
-+					    valid_bank_mask,
-+					    sparse_banks))
- 			continue;
- 
- 		/* We fail only when APIC is disabled */
-@@ -2113,7 +2135,6 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 	struct kvm *kvm = vcpu->kvm;
- 	struct hv_send_ipi_ex send_ipi_ex;
- 	struct hv_send_ipi send_ipi;
--	DECLARE_BITMAP(vcpu_mask, KVM_MAX_VCPUS);
- 	unsigned long valid_bank_mask;
- 	u64 sparse_banks[KVM_HV_MAX_SPARSE_VCPU_SET_BITS];
- 	u32 vector;
-@@ -2175,13 +2196,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 	if ((vector < HV_IPI_LOW_VECTOR) || (vector > HV_IPI_HIGH_VECTOR))
- 		return HV_STATUS_INVALID_HYPERCALL_INPUT;
- 
--	if (all_cpus) {
--		kvm_send_ipi_to_many(kvm, vector, NULL);
--	} else {
--		sparse_set_to_vcpu_mask(kvm, sparse_banks, valid_bank_mask, vcpu_mask);
--
--		kvm_send_ipi_to_many(kvm, vector, vcpu_mask);
--	}
-+	kvm_hv_send_ipi_to_many(kvm, vector, all_cpus ? NULL : sparse_banks, valid_bank_mask);
- 
- ret_success:
- 	return HV_STATUS_SUCCESS;
+ 	if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu)) {
+ 		kvm_vcpu_flush_tlb_guest(vcpu);
 -- 
 2.35.1
 
