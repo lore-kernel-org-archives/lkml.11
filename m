@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34353C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E11DC41535
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356832AbiDNPVy (ORCPT
+        id S1356817AbiDNPVo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
+        Thu, 14 Apr 2022 11:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347632AbiDNN7Y (ORCPT
+        with ESMTP id S1347644AbiDNN7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E09C4579B;
-        Thu, 14 Apr 2022 06:50:40 -0700 (PDT)
+        Thu, 14 Apr 2022 09:59:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A344614B;
+        Thu, 14 Apr 2022 06:50:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51F15B82894;
-        Thu, 14 Apr 2022 13:50:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6013C385A5;
-        Thu, 14 Apr 2022 13:50:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77200B82910;
+        Thu, 14 Apr 2022 13:50:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3294C385A1;
+        Thu, 14 Apr 2022 13:50:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944238;
-        bh=UJ/ZCZObDlL/CWvNdNYfrmTLONFMY8IQg6iCnaVFk5s=;
+        s=korg; t=1649944249;
+        bh=3VVivc/RhCqCrHRTKMJ3oOfid8dXSDmtwK7BdwPjUmY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eMCwmEwhIFcDCpeuKZ8PLtNctoTGuGqfY5SxhuSyqXwCtgX6B5sNwbliaRubK6AI4
-         Gof47wBYEnG9QMq/4CVzQl4duPXp0/hWF7s/1wUGl3LmstInyJ+BwB8Pa0D+KI6RqP
-         wOgWsJ3J4waGAclRudjN9kyoPmILjIVmnTPDLeBE=
+        b=hMV8Xeo7vE4SfFWG7DySxxjiVG66rGOI9dk1qBPr42yx+l8O0zDhWFjMcSDbG0tgO
+         5qUwIofWwGXVNa2ehRNHRntgotm1E1DrO9oVzJ2niSTBLy9gVrSlWMC3reN6bF0bqy
+         u0osWSy+4GYG1MUeKlgmmCAOLfJwR2vunMSJPE6o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Denis Nikitin <denik@chromium.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexey Budankov <alexey.budankov@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 444/475] perf session: Remap buf if there is no space for event
-Date:   Thu, 14 Apr 2022 15:13:49 +0200
-Message-Id: <20220414110907.483969398@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+6bde52d89cfdf9f61425@syzkaller.appspotmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 448/475] mmmremap.c: avoid pointless invalidate_range_start/end on mremap(old_size=0)
+Date:   Thu, 14 Apr 2022 15:13:53 +0200
+Message-Id: <20220414110907.595867115@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -55,78 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Denis Nikitin <denik@chromium.org>
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-[ Upstream commit bc21e74d4775f883ae1f542c1f1dc7205b15d925 ]
+commit 01e67e04c28170c47700c2c226d732bbfedb1ad0 upstream.
 
-If a perf event doesn't fit into remaining buffer space return NULL to
-remap buf and fetch the event again.
+If an mremap() syscall with old_size=0 ends up in move_page_tables(), it
+will call invalidate_range_start()/invalidate_range_end() unnecessarily,
+i.e.  with an empty range.
 
-Keep the logic to error out on inadequate input from fuzzing.
+This causes a WARN in KVM's mmu_notifier.  In the past, empty ranges
+have been diagnosed to be off-by-one bugs, hence the WARNing.  Given the
+low (so far) number of unique reports, the benefits of detecting more
+buggy callers seem to outweigh the cost of having to fix cases such as
+this one, where userspace is doing something silly.  In this particular
+case, an early return from move_page_tables() is enough to fix the
+issue.
 
-This fixes perf failing on ChromeOS (with 32b userspace):
-
-  $ perf report -v -i perf.data
-  ...
-  prefetch_event: head=0x1fffff8 event->header_size=0x30, mmap_size=0x2000000: fuzzed or compressed perf.data?
-  Error:
-  failed to process sample
-
-Fixes: 57fc032ad643ffd0 ("perf session: Avoid infinite loop when seeing invalid header.size")
-Reviewed-by: James Clark <james.clark@arm.com>
-Signed-off-by: Denis Nikitin <denik@chromium.org>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Alexey Budankov <alexey.budankov@linux.intel.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Link: https://lore.kernel.org/r/20220330031130.2152327-1-denik@chromium.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lkml.kernel.org/r/20220329173155.172439-1-pbonzini@redhat.com
+Reported-by: syzbot+6bde52d89cfdf9f61425@syzkaller.appspotmail.com
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/session.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ mm/mremap.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
-index 8ff2c98e9032..01e15b445cb5 100644
---- a/tools/perf/util/session.c
-+++ b/tools/perf/util/session.c
-@@ -1960,6 +1960,7 @@ prefetch_event(char *buf, u64 head, size_t mmap_size,
- 	       bool needs_swap, union perf_event *error)
- {
- 	union perf_event *event;
-+	u16 event_size;
+--- a/mm/mremap.c
++++ b/mm/mremap.c
+@@ -246,6 +246,9 @@ unsigned long move_page_tables(struct vm
+ 	struct mmu_notifier_range range;
+ 	pmd_t *old_pmd, *new_pmd;
  
- 	/*
- 	 * Ensure we have enough space remaining to read
-@@ -1972,15 +1973,23 @@ prefetch_event(char *buf, u64 head, size_t mmap_size,
- 	if (needs_swap)
- 		perf_event_header__bswap(&event->header);
- 
--	if (head + event->header.size <= mmap_size)
-+	event_size = event->header.size;
-+	if (head + event_size <= mmap_size)
- 		return event;
- 
- 	/* We're not fetching the event so swap back again */
- 	if (needs_swap)
- 		perf_event_header__bswap(&event->header);
- 
--	pr_debug("%s: head=%#" PRIx64 " event->header_size=%#x, mmap_size=%#zx:"
--		 " fuzzed or compressed perf.data?\n",__func__, head, event->header.size, mmap_size);
-+	/* Check if the event fits into the next mmapped buf. */
-+	if (event_size <= mmap_size - head % page_size) {
-+		/* Remap buf and fetch again. */
-+		return NULL;
-+	}
++	if (!len)
++		return 0;
 +
-+	/* Invalid input. Event size should never exceed mmap_size. */
-+	pr_debug("%s: head=%#" PRIx64 " event->header.size=%#x, mmap_size=%#zx:"
-+		 " fuzzed or compressed perf.data?\n", __func__, head, event_size, mmap_size);
+ 	old_end = old_addr + len;
+ 	flush_cache_range(vma, old_addr, old_end);
  
- 	return error;
- }
--- 
-2.35.1
-
 
 
