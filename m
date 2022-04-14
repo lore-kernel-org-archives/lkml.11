@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 240C2C35280
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AEDEC4167D
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355095AbiDNO5a (ORCPT
+        id S1355031AbiDNOz1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60306 "EHLO
+        Thu, 14 Apr 2022 10:55:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345693AbiDNNyF (ORCPT
+        with ESMTP id S242186AbiDNNvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:54:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20919ADD4C;
-        Thu, 14 Apr 2022 06:45:06 -0700 (PDT)
+        Thu, 14 Apr 2022 09:51:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DB42CC85;
+        Thu, 14 Apr 2022 06:44:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A514BB82894;
-        Thu, 14 Apr 2022 13:45:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E163BC385A1;
-        Thu, 14 Apr 2022 13:45:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A0F2B82987;
+        Thu, 14 Apr 2022 13:44:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A953C385AB;
+        Thu, 14 Apr 2022 13:44:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943903;
-        bh=yD6j1fnTv8REaI/DYQ4/I9JyKfmStY72PLy1+LTQ6pg=;
+        s=korg; t=1649943867;
+        bh=yjhMRVtZPGGwzhzbciu+Un3Q5Ng5Of8NYQwpe11SpUc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hGqZZdD69Stq8mfvY1KO2RrLm2uHIbxVAAZmmJmimNHpTrPy8pSFq4fk+7c78hRE1
-         MUurdd79zzWuhX/OAUlYKn8uLHi7KJZTlVvPzWAQjE4ordbax6+9OCelIe/8Vq5YH+
-         uJU/BDp4SP4cCdTSATErYrsLTXsdYtYCXskGudNY=
+        b=RewHEGtW8YzuVwGhG67ztC3ShMvcPNhiADlvFcllbegEQQnpRnjOg4gFObJhZfDM0
+         heIU4KxMzhb1VFpoB79RZOkNXTFyF7oNIJvIPmSHy35JXUizgEfbbOeKfSjEZxWODP
+         /CbtTAfF/XXuABvm1kwyulemsd+wcSd/lJmRCcQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 306/475] video: fbdev: sm712fb: Fix crash in smtcfb_write()
-Date:   Thu, 14 Apr 2022 15:11:31 +0200
-Message-Id: <20220414110903.655028749@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 270/475] NFSv4/pNFS: Fix another issue with a list iterator pointing to the head
+Date:   Thu, 14 Apr 2022 15:10:55 +0200
+Message-Id: <20220414110902.662158964@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,70 +50,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 4f01d09b2bbfbcb47b3eb305560a7f4857a32260 ]
+[ Upstream commit 7c9d845f0612e5bcd23456a2ec43be8ac43458f1 ]
 
-When the sm712fb driver writes three bytes to the framebuffer, the
-driver will crash:
+In nfs4_callback_devicenotify(), if we don't find a matching entry for
+the deviceid, we're left with a pointer to 'struct nfs_server' that
+actually points to the list of super blocks associated with our struct
+nfs_client.
+Furthermore, even if we have a valid pointer, nothing pins the super
+block, and so the struct nfs_server could end up getting freed while
+we're using it.
 
-    BUG: unable to handle page fault for address: ffffc90001ffffff
-    RIP: 0010:smtcfb_write+0x454/0x5b0
-    Call Trace:
-     vfs_write+0x291/0xd60
-     ? do_sys_openat2+0x27d/0x350
-     ? __fget_light+0x54/0x340
-     ksys_write+0xce/0x190
-     do_syscall_64+0x43/0x90
-     entry_SYSCALL_64_after_hwframe+0x44/0xae
+Since all we want is a pointer to the struct pnfs_layoutdriver_type,
+let's skip all the iteration over super blocks, and just use APIs to
+find the layout driver directly.
 
-Fix it by removing the open-coded endianness fixup-code.
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Reported-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Fixes: 1be5683b03a7 ("pnfs: CB_NOTIFY_DEVICEID")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/sm712fb.c |   21 ++++-----------------
- 1 file changed, 4 insertions(+), 17 deletions(-)
+ fs/nfs/callback_proc.c | 27 +++++++++------------------
+ fs/nfs/pnfs.c          | 11 +++++++++++
+ fs/nfs/pnfs.h          |  2 ++
+ 3 files changed, 22 insertions(+), 18 deletions(-)
 
---- a/drivers/video/fbdev/sm712fb.c
-+++ b/drivers/video/fbdev/sm712fb.c
-@@ -1119,7 +1119,7 @@ static ssize_t smtcfb_write(struct fb_in
- 		count = total_size - p;
+diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
+index b8a7b223b5b1..31922657e836 100644
+--- a/fs/nfs/callback_proc.c
++++ b/fs/nfs/callback_proc.c
+@@ -364,12 +364,11 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
+ 				  struct cb_process_state *cps)
+ {
+ 	struct cb_devicenotifyargs *args = argp;
++	const struct pnfs_layoutdriver_type *ld = NULL;
+ 	uint32_t i;
+ 	__be32 res = 0;
+-	struct nfs_client *clp = cps->clp;
+-	struct nfs_server *server = NULL;
+ 
+-	if (!clp) {
++	if (!cps->clp) {
+ 		res = cpu_to_be32(NFS4ERR_OP_NOT_IN_SESSION);
+ 		goto out;
  	}
+@@ -377,23 +376,15 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
+ 	for (i = 0; i < args->ndevs; i++) {
+ 		struct cb_devicenotifyitem *dev = &args->devs[i];
  
--	buffer = kmalloc((count > PAGE_SIZE) ? PAGE_SIZE : count, GFP_KERNEL);
-+	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
-@@ -1137,24 +1137,11 @@ static ssize_t smtcfb_write(struct fb_in
- 			break;
- 		}
- 
--		for (i = c >> 2; i--;) {
--			fb_writel(big_swap(*src), dst++);
-+		for (i = (c + 3) >> 2; i--;) {
-+			fb_writel(big_swap(*src), dst);
-+			dst++;
- 			src++;
- 		}
--		if (c & 3) {
--			u8 *src8 = (u8 *)src;
--			u8 __iomem *dst8 = (u8 __iomem *)dst;
--
--			for (i = c & 3; i--;) {
--				if (i & 1) {
--					fb_writeb(*src8++, ++dst8);
--				} else {
--					fb_writeb(*src8++, --dst8);
--					dst8 += 2;
+-		if (!server ||
+-		    server->pnfs_curr_ld->id != dev->cbd_layout_type) {
+-			rcu_read_lock();
+-			list_for_each_entry_rcu(server, &clp->cl_superblocks, client_link)
+-				if (server->pnfs_curr_ld &&
+-				    server->pnfs_curr_ld->id == dev->cbd_layout_type) {
+-					rcu_read_unlock();
+-					goto found;
 -				}
--			}
--			dst = (u32 __iomem *)dst8;
--		}
+-			rcu_read_unlock();
+-			continue;
++		if (!ld || ld->id != dev->cbd_layout_type) {
++			pnfs_put_layoutdriver(ld);
++			ld = pnfs_find_layoutdriver(dev->cbd_layout_type);
++			if (!ld)
++				continue;
+ 		}
+-
+-	found:
+-		nfs4_delete_deviceid(server->pnfs_curr_ld, clp, &dev->cbd_dev_id);
++		nfs4_delete_deviceid(ld, cps->clp, &dev->cbd_dev_id);
+ 	}
+-
++	pnfs_put_layoutdriver(ld);
+ out:
+ 	kfree(args->devs);
+ 	return res;
+diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
+index 1b512df1003f..0471b6e0da16 100644
+--- a/fs/nfs/pnfs.c
++++ b/fs/nfs/pnfs.c
+@@ -92,6 +92,17 @@ find_pnfs_driver(u32 id)
+ 	return local;
+ }
  
- 		*ppos += c;
- 		buf += c;
++const struct pnfs_layoutdriver_type *pnfs_find_layoutdriver(u32 id)
++{
++	return find_pnfs_driver(id);
++}
++
++void pnfs_put_layoutdriver(const struct pnfs_layoutdriver_type *ld)
++{
++	if (ld)
++		module_put(ld->owner);
++}
++
+ void
+ unset_pnfs_layoutdriver(struct nfs_server *nfss)
+ {
+diff --git a/fs/nfs/pnfs.h b/fs/nfs/pnfs.h
+index 3d55edd6b25a..68339680bb7d 100644
+--- a/fs/nfs/pnfs.h
++++ b/fs/nfs/pnfs.h
+@@ -226,6 +226,8 @@ struct pnfs_devicelist {
+ 
+ extern int pnfs_register_layoutdriver(struct pnfs_layoutdriver_type *);
+ extern void pnfs_unregister_layoutdriver(struct pnfs_layoutdriver_type *);
++extern const struct pnfs_layoutdriver_type *pnfs_find_layoutdriver(u32 id);
++extern void pnfs_put_layoutdriver(const struct pnfs_layoutdriver_type *ld);
+ 
+ /* nfs4proc.c */
+ extern size_t max_response_pages(struct nfs_server *server);
+-- 
+2.34.1
+
 
 
