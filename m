@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76917C35296
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 044D7C352A7
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346701AbiDNOvC (ORCPT
+        id S1347105AbiDNOvc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:51:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34366 "EHLO
+        Thu, 14 Apr 2022 10:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345218AbiDNNpb (ORCPT
+        with ESMTP id S1344583AbiDNNoY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:31 -0400
+        Thu, 14 Apr 2022 09:44:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CB8E2DE0;
-        Thu, 14 Apr 2022 06:43:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C886330567;
+        Thu, 14 Apr 2022 06:39:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE25261D29;
-        Thu, 14 Apr 2022 13:43:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF5CFC385AA;
-        Thu, 14 Apr 2022 13:43:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17B3761DB4;
+        Thu, 14 Apr 2022 13:39:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23C07C2BBE4;
+        Thu, 14 Apr 2022 13:39:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943785;
-        bh=Imipji81g7O1K1+tD6sk4irrm6qC8K168k7Lr8UyD5w=;
+        s=korg; t=1649943590;
+        bh=RS6vEzQZlWHn94CItCKXeHfk33gD5etvIdkF0aJY5ZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qdHqdgFCjPbtS7sdTDdD3pOA+bkWWTeuq3+b9ZRSuNHDcO8dzltJu1/zIlUpWRQTm
-         QXtyJp244dDBDUGqIBGXr71b0yLNCcL569MYbMptAvYVFqTYY2DEOZHYyp8irzsLSG
-         MjZmV8s67+sThe6zIxLBSiWkXTHeeFzo+Pt/GGsI=
+        b=bqmPe208sgo0IwGQVGvpc9Cp3HscF5AHu7+8Dst7NyNeU9mJiHCvZzSwjQ9VhQ3We
+         Jg5G4g5+iCA6efSIOJNAfjhxPf0+1UzmhXtULqjdFTUR1sAU99gfO9AyP1UqIBeW85
+         A8uk6vTUeyl6Cs9Lx8p4S9sVjjFIdhHoMInQ5C88=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Petr Vorel <petr.vorel@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 263/475] clk: qcom: gcc-msm8994: Fix gpll4 width
-Date:   Thu, 14 Apr 2022 15:10:48 +0200
-Message-Id: <20220414110902.468516536@linuxfoundation.org>
+Subject: [PATCH 5.4 209/475] powerpc: 8xx: fix a return value error in mpc8xx_pic_init
+Date:   Thu, 14 Apr 2022 15:09:54 +0200
+Message-Id: <20220414110900.977319812@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,41 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 71021db1c532c2545ae53b9ee85b37b7154f51d4 ]
+[ Upstream commit 3fd46e551f67f4303c3276a0d6cd20baf2d192c4 ]
 
-The gpll4 postdiv is actually a div4, so make sure that Linux is aware of
-this.
+mpc8xx_pic_init() should return -ENOMEM instead of 0 when
+irq_domain_add_linear() return NULL. This cause mpc8xx_pics_init to continue
+executing even if mpc8xx_pic_host is NULL.
 
-This fixes the following error messages:
-
- mmc1: Card appears overclocked; req 200000000 Hz, actual 343999999 Hz
- mmc1: Card appears overclocked; req 400000000 Hz, actual 687999999 Hz
-
-Fixes: aec89f78cf01 ("clk: qcom: Add support for msm8994 global clock controller")
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Link: https://lore.kernel.org/r/20220319174940.341137-1-konrad.dybcio@somainline.org
-Tested-by: Petr Vorel <petr.vorel@gmail.com>
-Reviewed-by: Petr Vorel <petr.vorel@gmail.com>
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Fixes: cc76404feaed ("powerpc/8xx: Fix possible device node reference leak")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220223070223.26845-1-hbh25y@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/gcc-msm8994.c | 1 +
+ arch/powerpc/platforms/8xx/pic.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/clk/qcom/gcc-msm8994.c b/drivers/clk/qcom/gcc-msm8994.c
-index b7fc8c7ba195..14f0d5d84080 100644
---- a/drivers/clk/qcom/gcc-msm8994.c
-+++ b/drivers/clk/qcom/gcc-msm8994.c
-@@ -107,6 +107,7 @@ static struct clk_alpha_pll gpll4_early = {
+diff --git a/arch/powerpc/platforms/8xx/pic.c b/arch/powerpc/platforms/8xx/pic.c
+index e9617d35fd1f..209b12323aa4 100644
+--- a/arch/powerpc/platforms/8xx/pic.c
++++ b/arch/powerpc/platforms/8xx/pic.c
+@@ -153,6 +153,7 @@ int mpc8xx_pic_init(void)
+ 	if (mpc8xx_pic_host == NULL) {
+ 		printk(KERN_ERR "MPC8xx PIC: failed to allocate irq host!\n");
+ 		ret = -ENOMEM;
++		goto out;
+ 	}
  
- static struct clk_alpha_pll_postdiv gpll4 = {
- 	.offset = 0x1dc0,
-+	.width = 4,
- 	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_DEFAULT],
- 	.clkr.hw.init = &(struct clk_init_data)
- 	{
+ 	ret = 0;
 -- 
 2.34.1
 
