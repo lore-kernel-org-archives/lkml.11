@@ -2,136 +2,307 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F09C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E666C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245615AbiDNRPV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49650 "EHLO
+        id S244192AbiDNRP0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 13:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245335AbiDNRO2 (ORCPT
+        with ESMTP id S245235AbiDNRO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:14:28 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A478E2AC;
-        Thu, 14 Apr 2022 10:06:49 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id k5so10195882lfg.9;
-        Thu, 14 Apr 2022 10:06:49 -0700 (PDT)
+        Thu, 14 Apr 2022 13:14:27 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8FBE01
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 10:06:05 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2edbd522c21so61677377b3.13
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 10:06:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/92dgGLUolkAH3AU+1is8vSs4x9gInGUtOx7kaljC1s=;
-        b=bZgldF2lv9T9o0cFvCbfuIL7I+DP73WYYM4S6EjQIg6LjVtSHP7P0byYkiRAd2cp+a
-         GvtiAbapLphNXb/3+ft2LkBakDeK/9N+gQbnnkSQ80PNkUwsxYOd5VSCAdDGBQN06f7S
-         YMB1P2vlPtuwUTtk2Z1x3Y/7xf25kImU2bATt5Kv6wYQpb5Nbq3uoHIWAuD+uErFZx+t
-         Ls8vVZhrGml2AAh1K/p2l+Y+jIc7H6umnvF39HxLRtmOGMUhhfPNymEET8RZQz7JTgUa
-         tQwWw5O1cNT2gMY4yJOkYqgEZsEauS68Y1kTAWSjFMOnPiiWDDlK0SNRNjBEKvRQmRwS
-         7NKQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8FncpDyJrwuRFXzkHfkmw8cO+5rJ1nS25HZyNzVQgAo=;
+        b=PtJy3Lbs9qxhKHo4bC+JW5ENQp8QM/Fhk0uFaKKp4Us40fcytDYKYxqaKd+HvOdHJe
+         mwpqwomNyt4F+DDGcba+5PScYUXoQFHp8n8oUXpGtkI6dl+9j+VfSs/cAVu3sBK1dgue
+         kq5sB1+qlIHk/SaKOE60hkI1SIJkpEPz4r7s6J1nc33db7bxfPw3VRGZoUGyyk3G14et
+         UOk2lINkmfc8MQcMxf3PvDXsArabjognSaiOm/nNrymeZghKMPpUX6FZql6ABryE+DJR
+         hIpGxVjrTHh2ICNtqKdAolHnZdkdby+nzgx6cON+t+3IZwuAyShGziM2VH8zbKKFl3m5
+         V91g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/92dgGLUolkAH3AU+1is8vSs4x9gInGUtOx7kaljC1s=;
-        b=E49Hc2Wsm2Bfp6wF77Lf1UtzNDVzqPuwCZP44+IRi2mQz47QeSLuYn3X9GRl/L8EHi
-         c2V78HG1g4m66zmVqpeeG55+9DTRslVwph3rbOVYWqs4GRcc/QBs296Y8XA0r44sVmMz
-         nQiqHLw+tDCFnHkIjd33VvtiRf/tRxjhzQ9lncXsroSGPZmw1Bl/2f50pc5V9BZuydLY
-         Dlo47B01rQjjJ3afo5ov8ymifNRB5BO+wSKgf9Q4LD29I1pi3a7u8Gpy/FR60vYKqFGR
-         9r7HuqW5BhZdjHTtr+aKQDXz/NkZH1M4r/EF6RD5A7AMKuiAOLiKzc+AS+vVRkBpMCMI
-         MliA==
-X-Gm-Message-State: AOAM532o1QUHojakKaLQn3lwaWaLXU5gnchL+YtqTNYYrloSl69K/vCT
-        gyFoBqWAz2B1+UJnyBtcB+36ypx/hWc=
-X-Google-Smtp-Source: ABdhPJyqd6QiuzQgazxcAFLbvPElBxpHe4xypq/hljs6ZpZC+Vsc2yn8LOfXtmzSp8/HSn3ehEb90g==
-X-Received: by 2002:a05:6512:ea3:b0:46d:103c:8a46 with SMTP id bi35-20020a0565120ea300b0046d103c8a46mr2414914lfb.221.1649956007830;
-        Thu, 14 Apr 2022 10:06:47 -0700 (PDT)
-Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id x11-20020a056512046b00b0046bbe5d2eabsm52216lfd.75.2022.04.14.10.06.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 10:06:47 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org
-Subject: [PATCH 1/4] dt-bindings: regulator: Add bindings for Silicon Mitus SM5703 regulators
-Date:   Thu, 14 Apr 2022 20:06:12 +0300
-Message-Id: <20220414170616.23319-2-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220414170616.23319-1-markuss.broks@gmail.com>
-References: <20220414170616.23319-1-markuss.broks@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8FncpDyJrwuRFXzkHfkmw8cO+5rJ1nS25HZyNzVQgAo=;
+        b=gtbUO7SAbeCDtxOQZYnUswMj4oWQf/nF0sdBE3/bZVh4zumEijQTRwTxdh/Nl/Unt0
+         rvtQri55oV5dHABLaMlreDSKoW1JX3pr807EQf6SRC1ZO/lpMc9htvsxwkHQWYcZNSsX
+         GPXXsSHbzl5547d4G2ceYEW5OrFI2/2OYkH6eit11zYGELF4BxXosQuW6jgxiwy7HtyD
+         gcyWp9AAY2849/Atge7ulpUUBEL1cdbJZV3V6+hgn7tRm4Ys4cC9BgJ/eSZFCAU6/2sf
+         mcbH1flTTZzT9QT8Pv2upJskNOlrEGjbuiyRe9BQ1GnQNzps4cpwEXxJrYofx3HzZLMc
+         vUiw==
+X-Gm-Message-State: AOAM533HwlQrWG1LUlSwTCJKBezNtOT0CNK2k1JodEQr5h4lByQ0DzoX
+        mNyChpcPEpo/LBatKa7pnH3pRFmMk27FjEmOUDH/ZA==
+X-Google-Smtp-Source: ABdhPJxcXSYpARM6hoHSfqy8G8TnHxliR+byMigSHHxsIZtKlKpvYWzcA7P5xAs10k0rRnNkaXCMt8hDZ/OGAWZKvQ0=
+X-Received: by 2002:a81:58c1:0:b0:2eb:faf0:1e25 with SMTP id
+ m184-20020a8158c1000000b002ebfaf01e25mr2693077ywb.311.1649955964102; Thu, 14
+ Apr 2022 10:06:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220407011605.1966778-1-rananta@google.com> <20220407011605.1966778-5-rananta@google.com>
+ <06b7539f-c5c0-843d-7617-a35a9f1d0e60@redhat.com> <CAJHc60y_rbTd4uX6aZCkt_P46EgM4QKXg5YXGzit3oweSzh8Sg@mail.gmail.com>
+ <b01164d2-4c2a-0c7b-3837-35e95fb1b14c@redhat.com>
+In-Reply-To: <b01164d2-4c2a-0c7b-3837-35e95fb1b14c@redhat.com>
+From:   Raghavendra Rao Ananta <rananta@google.com>
+Date:   Thu, 14 Apr 2022 10:05:52 -0700
+Message-ID: <CAJHc60waHRxx54e1ki-NUvOfpBrdZxm1Et8g5K0k=qTE6nhTcQ@mail.gmail.com>
+Subject: Re: [PATCH v5 04/10] KVM: arm64: Add vendor hypervisor firmware register
+To:     Gavin Shan <gshan@redhat.com>
+Cc:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Peter Shier <pshier@google.com>, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Will Deacon <will@kernel.org>, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds device-tree bindings for regulators on Silicon Mitus
-SM5703 MFD.
+On Wed, Apr 13, 2022 at 6:04 PM Gavin Shan <gshan@redhat.com> wrote:
+>
+> Hi Raghavendra,
+>
+> On 4/14/22 12:59 AM, Raghavendra Rao Ananta wrote:
+> > On Tue, Apr 12, 2022 at 8:59 PM Gavin Shan <gshan@redhat.com> wrote:
+> >> On 4/7/22 9:15 AM, Raghavendra Rao Ananta wrote:
+> >>> Introduce the firmware register to hold the vendor specific
+> >>> hypervisor service calls (owner value 6) as a bitmap. The
+> >>> bitmap represents the features that'll be enabled for the
+> >>> guest, as configured by the user-space. Currently, this
+> >>> includes support for KVM-vendor features, and Precision Time
+> >>> Protocol (PTP), represented by bit-0 and bit-1 respectively.
+> >>>
+> >>> Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
+> >>> ---
+> >>>    arch/arm64/include/asm/kvm_host.h |  2 ++
+> >>>    arch/arm64/include/uapi/asm/kvm.h |  4 ++++
+> >>>    arch/arm64/kvm/hypercalls.c       | 21 +++++++++++++++++----
+> >>>    include/kvm/arm_hypercalls.h      |  4 ++++
+> >>>    4 files changed, 27 insertions(+), 4 deletions(-)
+> >>>
+> >>> diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
+> >>> index 20165242ebd9..b79161bad69a 100644
+> >>> --- a/arch/arm64/include/asm/kvm_host.h
+> >>> +++ b/arch/arm64/include/asm/kvm_host.h
+> >>> @@ -106,10 +106,12 @@ struct kvm_arch_memory_slot {
+> >>>     *
+> >>>     * @std_bmap: Bitmap of standard secure service calls
+> >>>     * @std_hyp_bmap: Bitmap of standard hypervisor service calls
+> >>> + * @vendor_hyp_bmap: Bitmap of vendor specific hypervisor service calls
+> >>>     */
+> >>>    struct kvm_smccc_features {
+> >>>        u64 std_bmap;
+> >>>        u64 std_hyp_bmap;
+> >>> +     u64 vendor_hyp_bmap;
+> >>>    };
+> >>>
+> >>>    struct kvm_arch {
+> >>> diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
+> >>> index 67353bf4e69d..9a5ac0ed4113 100644
+> >>> --- a/arch/arm64/include/uapi/asm/kvm.h
+> >>> +++ b/arch/arm64/include/uapi/asm/kvm.h
+> >>> @@ -344,6 +344,10 @@ struct kvm_arm_copy_mte_tags {
+> >>>    #define KVM_REG_ARM_STD_HYP_BMAP            KVM_REG_ARM_FW_FEAT_BMAP_REG(1)
+> >>>    #define KVM_REG_ARM_STD_HYP_BIT_PV_TIME             BIT(0)
+> >>>
+> >>> +#define KVM_REG_ARM_VENDOR_HYP_BMAP          KVM_REG_ARM_FW_FEAT_BMAP_REG(2)
+> >>> +#define KVM_REG_ARM_VENDOR_HYP_BIT_FUNC_FEAT BIT(0)
+> >>> +#define KVM_REG_ARM_VENDOR_HYP_BIT_PTP               BIT(1)
+> >>> +
+> >>>    /* Device Control API: ARM VGIC */
+> >>>    #define KVM_DEV_ARM_VGIC_GRP_ADDR   0
+> >>>    #define KVM_DEV_ARM_VGIC_GRP_DIST_REGS      1
+> >>> diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
+> >>> index 64ae6c7e7145..80836c341fd3 100644
+> >>> --- a/arch/arm64/kvm/hypercalls.c
+> >>> +++ b/arch/arm64/kvm/hypercalls.c
+> >>> @@ -66,8 +66,6 @@ static const u32 hvc_func_default_allowed_list[] = {
+> >>>        ARM_SMCCC_VERSION_FUNC_ID,
+> >>>        ARM_SMCCC_ARCH_FEATURES_FUNC_ID,
+> >>>        ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID,
+> >>> -     ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID,
+> >>> -     ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID,
+> >>>    };
+> >>>
+> >>>    static bool kvm_hvc_call_default_allowed(struct kvm_vcpu *vcpu, u32 func_id)
+> >>> @@ -102,6 +100,12 @@ static bool kvm_hvc_call_allowed(struct kvm_vcpu *vcpu, u32 func_id)
+> >>>        case ARM_SMCCC_HV_PV_TIME_ST:
+> >>>                return kvm_arm_fw_reg_feat_enabled(smccc_feat->std_hyp_bmap,
+> >>>                                        KVM_REG_ARM_STD_HYP_BIT_PV_TIME);
+> >>> +     case ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID:
+> >>> +             return kvm_arm_fw_reg_feat_enabled(smccc_feat->vendor_hyp_bmap,
+> >>> +                                     KVM_REG_ARM_VENDOR_HYP_BIT_FUNC_FEAT);
+> >>> +     case ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID:
+> >>> +             return kvm_arm_fw_reg_feat_enabled(smccc_feat->vendor_hyp_bmap,
+> >>> +                                     KVM_REG_ARM_VENDOR_HYP_BIT_PTP);
+> >>>        default:
+> >>>                return kvm_hvc_call_default_allowed(vcpu, func_id);
+> >>>        }
+> >>
+> >> I guess we may return SMCCC_RET_NOT_SUPPORTED for ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID
+> >> if KVM_REG_ARM_VENDOR_HYP_BIT_FUNC_FEAT isn't set? Otherwise, we need explain it
+> >> in the commit log.
+> >>
+> > ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID is a part of the hvc
+> > allowed-list (hvc_func_default_allowed_list[]), which means it's not
+> > associated with any feature bit and is always enabled. If the guest
+> > were to issue ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID, we'd end up in
+> > the 'default' case and the kvm_hvc_call_default_allowed() would return
+> > 'true'. This is documented in patch 2/10.
+> >
+>
+> I think I might not make myself clear and sorry for that. The point is
+> the following hvc calls should be belonging to 'Vendor Specific Hypervisor
+> Service', or I'm wrong. If I'm correct, VENDOR_HYP_CALL_UID_FUNC_ID
+> should be disallowed if bit#0 isn't set in @vendor_hyp_bmap.
+>
+>      ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID
+>      ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID
+>      ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID
+>
+> ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID was introduced by commit 6e085e0ac9cf
+> ("arm/arm64: Probe for the presence of KVM hypervisor"). According to the
+> commit log, the identifier and supported (vendor specific) feature list
+> is returned by this call and ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID.
+> So the users depend on both calls to probe the supported features or
+> services. So it seems incorrect to allow ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID
+> even the 'Vendor Specific Hypervisor Service' is disabled and bit#0
+> is cleared in @vendor_hyp_bmap by users.
+>
+Hm, it was a grey area for me since the FEATURES_FUNC_ID didn't
+broadcast the presence of UID_FUNC_ID. But what you said makes sense.
+UID_FUNC_ID should tag along with FEATURES_FUNC_ID. I can merge both
+of them under bit-0.
+Thanks for sharing the background.
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- .../siliconmitus,sm5703-regulator.yaml        | 48 +++++++++++++++++++
- 1 file changed, 48 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
+Regards,
+Raghavendra
 
-diff --git a/Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml b/Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
-new file mode 100644
-index 000000000000..560df4c020ca
---- /dev/null
-+++ b/Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
-@@ -0,0 +1,48 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/regulator/siliconmitus,sm5703-regulator.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Silicon Mitus SM5703 multi function device regulators
-+
-+maintainers:
-+  - Markuss Broks <markuss.broks@gmail.com>
-+
-+description: |
-+  SM5703 regulators node should be a sub node of the SM5703 MFD node. See SM5703 MFD
-+  bindings at Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
-+  Regulator nodes should be named as USBLDO_<number>, BUCK, VBUS, LDO_<number>.
-+  The definition for each of these nodes is defined using the standard
-+  binding for regulators at Documentation/devicetree/bindings/regulator/regulator.txt.
-+
-+properties:
-+  compatible:
-+    const: siliconmitus,sm5703-regulator
-+
-+  buck:
-+    type: object
-+    $ref: regulator.yaml#
-+    description:
-+      Properties for the BUCK regulator.
-+
-+  vbus:
-+    type: object
-+    $ref: regulator.yaml#
-+    description:
-+      Properties for the VBUS regulator.
-+
-+patternProperties:
-+  "^ldo[1-3]$":
-+    type: object
-+    $ref: regulator.yaml#
-+    description:
-+      Properties for single LDO regulator.
-+
-+  "^usbldo[1-2]$":
-+    type: object
-+    $ref: regulator.yaml#
-+    description:
-+      Properties for a single USBLDO regulator.
-+
-+additionalProperties: false
--- 
-2.35.1
-
+> >> KVM_REG_ARM_VENDOR_HYP_BIT_{FUNC_FEAT, PTP} aren't parallel to each other.
+> >> I think PTP can't be on if KVM_REG_ARM_VENDOR_HYP_BIT_FUNC_FEAT is off.
+> >>
+> > Actually we went through this scenario [1]. Of course, we can build
+> > some logic around it to make sure that the userspace does the right
+> > thing, but at this point the consensus is that, unless it's an issue
+> > for KVM, it's treated as a userspace bug.
+> >
+>
+> Thanks for the pointer. I chime in late and I didn't check the reviewing
+> history on this series. Hopefully I didn't bring too much confusing comments
+> to you.
+>
+> I think it's fine by treating it as a userspace bug, but it would be nice
+> to add comments somewhere if you agree.
+>
+> >>> @@ -194,8 +198,7 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+> >>>                val[3] = ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_3;
+> >>>                break;
+> >>>        case ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID:
+> >>> -             val[0] = BIT(ARM_SMCCC_KVM_FUNC_FEATURES);
+> >>> -             val[0] |= BIT(ARM_SMCCC_KVM_FUNC_PTP);
+> >>> +             val[0] = smccc_feat->vendor_hyp_bmap;
+> >>>                break;
+> >>>        case ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID:
+> >>>                kvm_ptp_get_time(vcpu, val);
+> >>> @@ -222,6 +225,7 @@ static const u64 kvm_arm_fw_reg_ids[] = {
+> >>>        KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3,
+> >>>        KVM_REG_ARM_STD_BMAP,
+> >>>        KVM_REG_ARM_STD_HYP_BMAP,
+> >>> +     KVM_REG_ARM_VENDOR_HYP_BMAP,
+> >>>    };
+> >>>
+> >>>    void kvm_arm_init_hypercalls(struct kvm *kvm)
+> >>> @@ -230,6 +234,7 @@ void kvm_arm_init_hypercalls(struct kvm *kvm)
+> >>>
+> >>>        smccc_feat->std_bmap = KVM_ARM_SMCCC_STD_FEATURES;
+> >>>        smccc_feat->std_hyp_bmap = KVM_ARM_SMCCC_STD_HYP_FEATURES;
+> >>> +     smccc_feat->vendor_hyp_bmap = KVM_ARM_SMCCC_VENDOR_HYP_FEATURES;
+> >>>    }
+> >>>
+> >>>    int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
+> >>> @@ -322,6 +327,9 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+> >>>        case KVM_REG_ARM_STD_HYP_BMAP:
+> >>>                val = READ_ONCE(smccc_feat->std_hyp_bmap);
+> >>>                break;
+> >>> +     case KVM_REG_ARM_VENDOR_HYP_BMAP:
+> >>> +             val = READ_ONCE(smccc_feat->vendor_hyp_bmap);
+> >>> +             break;
+> >>>        default:
+> >>>                return -ENOENT;
+> >>>        }
+> >>> @@ -348,6 +356,10 @@ static int kvm_arm_set_fw_reg_bmap(struct kvm_vcpu *vcpu, u64 reg_id, u64 val)
+> >>>                fw_reg_bmap = &smccc_feat->std_hyp_bmap;
+> >>>                fw_reg_features = KVM_ARM_SMCCC_STD_HYP_FEATURES;
+> >>>                break;
+> >>> +     case KVM_REG_ARM_VENDOR_HYP_BMAP:
+> >>> +             fw_reg_bmap = &smccc_feat->vendor_hyp_bmap;
+> >>> +             fw_reg_features = KVM_ARM_SMCCC_VENDOR_HYP_FEATURES;
+> >>> +             break;
+> >>>        default:
+> >>>                return -ENOENT;
+> >>>        }
+> >>
+> >> If KVM_REG_ARM_VENDOR_HYP_BIT_{FUNC_FEAT, PTP} aren't parallel to each other,
+> >> special code is needed to gurantee PTP is cleared if VENDOR_HYP is disabled.
+> >>
+> > Please see the above comment :)
+> >
+>
+> Thanks for the pointer and explanation :)
+>
+> >>> @@ -453,6 +465,7 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+> >>>                return 0;
+> >>>        case KVM_REG_ARM_STD_BMAP:
+> >>>        case KVM_REG_ARM_STD_HYP_BMAP:
+> >>> +     case KVM_REG_ARM_VENDOR_HYP_BMAP:
+> >>>                return kvm_arm_set_fw_reg_bmap(vcpu, reg->id, val);
+> >>>        default:
+> >>>                return -ENOENT;
+> >>> diff --git a/include/kvm/arm_hypercalls.h b/include/kvm/arm_hypercalls.h
+> >>> index b0915d8c5b81..eaf4f6b318a8 100644
+> >>> --- a/include/kvm/arm_hypercalls.h
+> >>> +++ b/include/kvm/arm_hypercalls.h
+> >>> @@ -9,6 +9,7 @@
+> >>>    /* Last valid bits of the bitmapped firmware registers */
+> >>>    #define KVM_REG_ARM_STD_BMAP_BIT_MAX                0
+> >>>    #define KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX    0
+> >>> +#define KVM_REG_ARM_VENDOR_HYP_BMAP_BIT_MAX  1
+> >>>
+> >>>    #define KVM_ARM_SMCCC_STD_FEATURES \
+> >>>        GENMASK_ULL(KVM_REG_ARM_STD_BMAP_BIT_MAX, 0)
+> >>> @@ -16,6 +17,9 @@
+> >>>    #define KVM_ARM_SMCCC_STD_HYP_FEATURES \
+> >>>        GENMASK_ULL(KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX, 0)
+> >>>
+> >>> +#define KVM_ARM_SMCCC_VENDOR_HYP_FEATURES \
+> >>> +     GENMASK_ULL(KVM_REG_ARM_VENDOR_HYP_BMAP_BIT_MAX, 0)
+> >>> +
+> >>>    int kvm_hvc_call_handler(struct kvm_vcpu *vcpu);
+> >>>
+> >>>    static inline u32 smccc_get_function(struct kvm_vcpu *vcpu)
+> >>>
+> >>
+> >
+> > Thanks for the review.
+> >
+>
+> No worries and sorry for the late chime-in :)
+>
+> >
+> > [1]: https://lore.kernel.org/lkml/YjA1AzZPlPV20kMj@google.com/
+> >
+>
+> Thanks,
+> Gavin
+>
