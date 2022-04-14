@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C029C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FBA7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350675AbiDNOXj (ORCPT
+        id S1350694AbiDNOXs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35346 "EHLO
+        Thu, 14 Apr 2022 10:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343957AbiDNNjc (ORCPT
+        with ESMTP id S1343972AbiDNNjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:39:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F22A972DB;
-        Thu, 14 Apr 2022 06:35:45 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36EB69A9B5;
+        Thu, 14 Apr 2022 06:36:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 477F0B8296A;
-        Thu, 14 Apr 2022 13:35:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EF37C385A1;
-        Thu, 14 Apr 2022 13:35:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C844B612E6;
+        Thu, 14 Apr 2022 13:36:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA396C385A1;
+        Thu, 14 Apr 2022 13:36:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943342;
-        bh=RUj1M3Fs3NhMm/N2tqGoOuOwazr9EvTPpCMg8Scw0lQ=;
+        s=korg; t=1649943362;
+        bh=BJOhgVpJWVuRr8XmBhuZ42FhSUzRCW4h2+TUL416x9Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zCA7espudVulMJkVKRte4VkG/Id43j+kGNwIblNPqXaiMhROwC5pBqe23iHeWXmaq
-         NWSU8kCA4eHARLnB0r02ZyHUGRRp1FLJfcD0/sFL4mXZ8gOZa0lZpIWW0ncJgoVDbN
-         rxh+sARMYDqGAJ3UJcBA3rS96t311NhggpYIS/Uw=
+        b=PWna7kcQ51Z8rG6zRC3KKLgb3G8+AN4e5MrAI35QL7N2BKC3TghHOQurQPqMS/6mj
+         534iFIiJEZavZbORaZ8uL5oQBJqRUBNRLRVryeIwWhVYtpBWTRRNcHu4lXm/8PYD6G
+         uPAN1mjdv+dEhT3rUTUu68qc8jNcDPXOmexUSLQ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Kubelun <be.dissent@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Christian Lamparter <chunkeey@gmail.com>
-Subject: [PATCH 5.4 120/475] ARM: dts: qcom: ipq4019: fix sleep clock
-Date:   Thu, 14 Apr 2022 15:08:25 +0200
-Message-Id: <20220414110858.510157467@linuxfoundation.org>
+        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 127/475] media: em28xx: initialize refcount before kref_get
+Date:   Thu, 14 Apr 2022 15:08:32 +0200
+Message-Id: <20220414110858.705217142@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,40 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Kubelun <be.dissent@gmail.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit 3d7e7980993d2c1ae42d3d314040fc2de6a9c45f ]
+[ Upstream commit c08eadca1bdfa099e20a32f8fa4b52b2f672236d ]
 
-It seems like sleep_clk was copied from ipq806x.
-Fix ipq40xx sleep_clk to the value QSDK defines.
+The commit 47677e51e2a4("[media] em28xx: Only deallocate struct
+em28xx after finishing all extensions") adds kref_get to many init
+functions (e.g., em28xx_audio_init). However, kref_init is called too
+late in em28xx_usb_probe, since em28xx_init_dev before will invoke
+those init functions and call kref_get function. Then refcount bug
+occurs in my local syzkaller instance.
 
-Link: https://source.codeaurora.org/quic/qsdk/oss/kernel/linux-msm/commit/?id=d92ec59973484acc86dd24b67f10f8911b4b4b7d
-Link: https://patchwork.kernel.org/comment/22721613/
-Fixes: bec6ba4cdf2a ("qcom: ipq4019: Add basic board/dts support for IPQ4019 SoC")
-Suggested-by: Bjorn Andersson <bjorn.andersson@linaro.org> (clock-output-names)
-Signed-off-by: Pavel Kubelun <be.dissent@gmail.com>
-Signed-off-by: Christian Lamparter <chunkeey@gmail.com> (removed clock rename)
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211220170352.34591-1-chunkeey@gmail.com
+Fix it by moving kref_init before em28xx_init_dev. This issue occurs
+not only in dev but also dev->dev_next.
+
+Fixes: 47677e51e2a4 ("[media] em28xx: Only deallocate struct em28xx after finishing all extensions")
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-ipq4019.dtsi | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/media/usb/em28xx/em28xx-cards.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-ipq4019.dtsi b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-index 56f51599852d..338256c59ca5 100644
---- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -141,7 +141,8 @@
- 	clocks {
- 		sleep_clk: sleep_clk {
- 			compatible = "fixed-clock";
--			clock-frequency = <32768>;
-+			clock-frequency = <32000>;
-+			clock-output-names = "gcc_sleep_clk_src";
- 			#clock-cells = <0>;
- 		};
+diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
+index bfca9d0a1fe1..885ccb840ab0 100644
+--- a/drivers/media/usb/em28xx/em28xx-cards.c
++++ b/drivers/media/usb/em28xx/em28xx-cards.c
+@@ -3821,6 +3821,8 @@ static int em28xx_usb_probe(struct usb_interface *intf,
+ 		goto err_free;
+ 	}
  
++	kref_init(&dev->ref);
++
+ 	dev->devno = nr;
+ 	dev->model = id->driver_info;
+ 	dev->alt   = -1;
+@@ -3921,6 +3923,8 @@ static int em28xx_usb_probe(struct usb_interface *intf,
+ 	}
+ 
+ 	if (dev->board.has_dual_ts && em28xx_duplicate_dev(dev) == 0) {
++		kref_init(&dev->dev_next->ref);
++
+ 		dev->dev_next->ts = SECONDARY_TS;
+ 		dev->dev_next->alt   = -1;
+ 		dev->dev_next->is_audio_only = has_vendor_audio &&
+@@ -3975,12 +3979,8 @@ static int em28xx_usb_probe(struct usb_interface *intf,
+ 			em28xx_write_reg(dev, 0x0b, 0x82);
+ 			mdelay(100);
+ 		}
+-
+-		kref_init(&dev->dev_next->ref);
+ 	}
+ 
+-	kref_init(&dev->ref);
+-
+ 	request_modules(dev);
+ 
+ 	/*
 -- 
 2.34.1
 
