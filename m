@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 008EDC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F2EC46467
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:05:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352544AbiDNPEI (ORCPT
+        id S1350024AbiDNPDr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60366 "EHLO
+        Thu, 14 Apr 2022 11:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346573AbiDNN5m (ORCPT
+        with ESMTP id S1346575AbiDNN5m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:57:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906AF8C7EA;
-        Thu, 14 Apr 2022 06:47:10 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56415EBF6;
+        Thu, 14 Apr 2022 06:46:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35590B82988;
-        Thu, 14 Apr 2022 13:47:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E95BC385A1;
-        Thu, 14 Apr 2022 13:47:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AB3561D9B;
+        Thu, 14 Apr 2022 13:46:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CB7BC385A5;
+        Thu, 14 Apr 2022 13:46:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944029;
-        bh=Ti6npx+XBz+vRIA0uWfsCsai9jdUGH16snYnLGzhmJo=;
+        s=korg; t=1649944006;
+        bh=y8qTDUU89JfGa8eZGV063SlRAFzrEvcF+jAExHfm8OE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x55zn+BzO/1shpfk3OspEdVsS1/IUxoRsu909mKAZM4uxA36O0Ot1+KdtDNCMqjKf
-         OFjW3Ha7oAgc+WCoxl/xGJCMbusg/4CHGHK/7DOz3f07xRjLqWd32yK2+YDjvD4YJB
-         miQAtnkixTWPHb2vtWFXF6q2MfD166gTRTC4DU0g=
+        b=1SCN3wIhVysYp4f1/RWH+ffacaui8A8D+kJFjQCizoxK/a8N9t72D3GAA3Ez5Ib7T
+         Q7SgZmThPqvoWhklGIBpuKlxzYItlRsLIbVpvL9OXxlOOWaX1zcazbggcxHeuHXCmd
+         TG5jZ4zedHk7OoG3acBh8Fqnyw1sNcCNYVBNu+sQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 368/475] ubifs: Rectify space amount budget for mkdir/tmpfile operations
-Date:   Thu, 14 Apr 2022 15:12:33 +0200
-Message-Id: <20220414110905.377243078@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.4 361/475] ASoC: topology: Allow TLV control to be either read or write
+Date:   Thu, 14 Apr 2022 15:12:26 +0200
+Message-Id: <20220414110905.184485001@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,71 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
 
-[ Upstream commit a6dab6607d4681d227905d5198710b575dbdb519 ]
+commit feb00b736af64875560f371fe7f58b0b7f239046 upstream.
 
-UBIFS should make sure the flash has enough space to store dirty (Data
-that is newer than disk) data (in memory), space budget is exactly
-designed to do that. If space budget calculates less data than we need,
-'make_reservation()' will do more work(return -ENOSPC if no free space
-lelf, sometimes we can see "cannot reserve xxx bytes in jhead xxx, error
--28" in ubifs error messages) with ubifs inodes locked, which may effect
-other syscalls.
+There is no reason to force readwrite access on TLV controls. It can be
+either read, write or both. This is further evidenced in code where it
+performs following checks:
+                if ((k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READ) && !sbe->get)
+                        return -EINVAL;
+                if ((k->access & SNDRV_CTL_ELEM_ACCESS_TLV_WRITE) && !sbe->put)
+                        return -EINVAL;
 
-A simple way to decide how much space do we need when make a budget:
-See how much space is needed by 'make_reservation()' in ubifs_jnl_xxx()
-function according to corresponding operation.
-
-It's better to report ENOSPC in ubifs_budget_space(), as early as we can.
-
-Fixes: 474b93704f32163 ("ubifs: Implement O_TMPFILE")
-Fixes: 1e51764a3c2ac05 ("UBIFS: add new flash file system")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1a3232d2f61d ("ASoC: topology: Add support for TLV bytes controls")
+Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220112170030.569712-3-amadeuszx.slawinski@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ubifs/dir.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ sound/soc/soc-topology.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fs/ubifs/dir.c b/fs/ubifs/dir.c
-index 6a49b1ed659d..83a173feb698 100644
---- a/fs/ubifs/dir.c
-+++ b/fs/ubifs/dir.c
-@@ -361,15 +361,18 @@ static int do_tmpfile(struct inode *dir, struct dentry *dentry,
- {
- 	struct inode *inode;
- 	struct ubifs_info *c = dir->i_sb->s_fs_info;
--	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1};
-+	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1,
-+					.dirtied_ino = 1};
- 	struct ubifs_budget_req ino_req = { .dirtied_ino = 1 };
- 	struct ubifs_inode *ui, *dir_ui = ubifs_inode(dir);
- 	int err, instantiated = 0;
- 	struct fscrypt_name nm;
+--- a/sound/soc/soc-topology.c
++++ b/sound/soc/soc-topology.c
+@@ -587,7 +587,8 @@ static int soc_tplg_kcontrol_bind_io(str
  
- 	/*
--	 * Budget request settings: new dirty inode, new direntry,
--	 * budget for dirtied inode will be released via writeback.
-+	 * Budget request settings: new inode, new direntry, changing the
-+	 * parent directory inode.
-+	 * Allocate budget separately for new dirtied inode, the budget will
-+	 * be released via writeback.
- 	 */
- 
- 	dbg_gen("dent '%pd', mode %#hx in dir ino %lu",
-@@ -957,7 +960,8 @@ static int ubifs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
- 	struct ubifs_inode *dir_ui = ubifs_inode(dir);
- 	struct ubifs_info *c = dir->i_sb->s_fs_info;
- 	int err, sz_change;
--	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1 };
-+	struct ubifs_budget_req req = { .new_ino = 1, .new_dent = 1,
-+					.dirtied_ino = 1};
- 	struct fscrypt_name nm;
- 
- 	/*
--- 
-2.35.1
-
+ 	if (le32_to_cpu(hdr->ops.info) == SND_SOC_TPLG_CTL_BYTES
+ 		&& k->iface & SNDRV_CTL_ELEM_IFACE_MIXER
+-		&& k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READWRITE
++		&& (k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READ
++		    || k->access & SNDRV_CTL_ELEM_ACCESS_TLV_WRITE)
+ 		&& k->access & SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK) {
+ 		struct soc_bytes_ext *sbe;
+ 		struct snd_soc_tplg_bytes_control *be;
 
 
