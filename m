@@ -2,51 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C96B7C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 368BFC4167B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350181AbiDNPQ1 (ORCPT
+        id S1350542AbiDNPQm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:16:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47256 "EHLO
+        Thu, 14 Apr 2022 11:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347688AbiDNN71 (ORCPT
+        with ESMTP id S1347711AbiDNN7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C934B432;
-        Thu, 14 Apr 2022 06:51:20 -0700 (PDT)
+        Thu, 14 Apr 2022 09:59:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC6EBB92A;
+        Thu, 14 Apr 2022 06:52:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F12E61E2F;
-        Thu, 14 Apr 2022 13:51:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60F16C385A1;
-        Thu, 14 Apr 2022 13:51:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 262F2B82991;
+        Thu, 14 Apr 2022 13:52:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E7C5C385A5;
+        Thu, 14 Apr 2022 13:51:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944279;
-        bh=+8lXLn8Tcq7BDiyz8rcCoEZQQJFwZgXIBM2J2U9FhUM=;
+        s=korg; t=1649944318;
+        bh=GnmKCvE+ByfuYzISgpPJ3qaRhO1tC7mUEen+1h7+eto=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DJ9VARRTbCeV94NjjDu59cPE21GVgngolXGZBgcrcheoF8V9wPbpLzH+m9Y3vors4
-         mm6ZH5ihGXeTL7BbiQTo5tUHP736kn0nISLuwQvWH1UaBMIq0HT2YDA8Pbz8mB3Dch
-         jMuxxWWugzZoiDUUsGm6DWn9DiwBdvXNbNxYVg9k=
+        b=VzcHfJW8lP5oInsAvWLbS33eR0p8rzr6aHvQLNxyW3UPdRv7/5HJSq3L2XJqn9kSu
+         Q3acZZu/Iwb4immByA2vGw3rkzKd9C8f5Evl1LYejPzzl3oIx0k6I6YVEHn+RaQ1p5
+         GaZHxWXC1xIoL9VPmO4XvwvEZOetGmu+EW4q/y3I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Fangrui Song <maskray@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Subject: [PATCH 5.4 458/475] tools build: Use $(shell ) instead of `` to get embedded libperls ccopts
-Date:   Thu, 14 Apr 2022 15:14:03 +0200
-Message-Id: <20220414110907.873929220@linuxfoundation.org>
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Tejun Heo <tj@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.4 471/475] selftests: cgroup: Make cg_create() use 0755 for permission instead of 0644
+Date:   Thu, 14 Apr 2022 15:14:16 +0200
+Message-Id: <20220414110908.237958598@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -58,48 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Tejun Heo <tj@kernel.org>
 
-commit 541f695cbcb6932c22638b06e0cbe1d56177e2e9 upstream.
+commit b09c2baa56347ae65795350dfcc633dedb1c2970 upstream.
 
-Just like its done for ldopts and for both in tools/perf/Makefile.config.
+0644 is an odd perm to create a cgroup which is a directory. Use the regular
+0755 instead. This is necessary for euid switching test case.
 
-Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
-
-  $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
-
-And we need to do it to allow for building with versions of clang where
-some gcc options selected by distros are not available.
-
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Fangrui Song <maskray@google.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Keeping <john@metanate.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Michael Petlan <mpetlan@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Link: http://lore.kernel.org/lkml/YktYX2OnLtyobRYD@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/build/feature/Makefile |    2 +-
+ tools/testing/selftests/cgroup/cgroup_util.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/build/feature/Makefile
-+++ b/tools/build/feature/Makefile
-@@ -204,7 +204,7 @@ strip-libs = $(filter-out -l%,$(1))
- PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
- PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
- PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
--PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
-+PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
- FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+--- a/tools/testing/selftests/cgroup/cgroup_util.c
++++ b/tools/testing/selftests/cgroup/cgroup_util.c
+@@ -202,7 +202,7 @@ int cg_find_unified_root(char *root, siz
  
- ifeq ($(CC_NO_CLANG), 0)
+ int cg_create(const char *cgroup)
+ {
+-	return mkdir(cgroup, 0644);
++	return mkdir(cgroup, 0755);
+ }
+ 
+ int cg_wait_for_proc_count(const char *cgroup, int count)
 
 
