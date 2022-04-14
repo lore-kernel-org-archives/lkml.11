@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67BBEC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 576B2C433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352700AbiDNOcm (ORCPT
+        id S1352516AbiDNOc2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:32:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47218 "EHLO
+        Thu, 14 Apr 2022 10:32:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344424AbiDNNlV (ORCPT
+        with ESMTP id S1344396AbiDNNlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:41:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B743B120;
-        Thu, 14 Apr 2022 06:38:56 -0700 (PDT)
+        Thu, 14 Apr 2022 09:41:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA397120;
+        Thu, 14 Apr 2022 06:38:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79791B828F4;
-        Thu, 14 Apr 2022 13:38:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB256C385A1;
-        Thu, 14 Apr 2022 13:38:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66170B828F4;
+        Thu, 14 Apr 2022 13:38:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA036C385A1;
+        Thu, 14 Apr 2022 13:38:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943534;
-        bh=kpIJFWMcqxcqjFuoso9jkxfzSX1OdPZB8F0t3dVUqcg=;
+        s=korg; t=1649943523;
+        bh=NH+IuC7s1PEE8Lqckal8hd1uMy1jl4ApeVPz+68cphU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pgmhI1IdsHLke8NQtXWKeWzTXK7Z9ug3WL1Ohv0efOVkOyWrpcj7pdDaPb0X9ZZ7T
-         jr3/KJJ/TI87N4k3ayYI6U8Kwu99KhE17a3k1ZMB5SY93mC7TQMQqPG8JDDtf/N75/
-         ipQzgKui6cH5UfVWLOAhzMDz1Mfqa+WlkVoEYx2M=
+        b=hpYEezlsotwLdk4ZS9ABSAiRDU9cCFp7YOZtQEwhNCH1/418aRDj4IO+qAgWQ6Pb1
+         cFCErNaJ4rXWMYmhnwPQbx8ZnU+fy24u+cghodhOMTGNLrdKdrQu0eF5Kz3HVSKW1h
+         /DMetIvxdR0zxEVl5CBjNCU7gSlzHYpAVeJnSRNY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bastien Nocera <hadess@hadess.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <maira.canal@usp.br>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 191/475] power: supply: bq24190_charger: Fix bq24190_vbus_is_enabled() wrong false return
-Date:   Thu, 14 Apr 2022 15:09:36 +0200
-Message-Id: <20220414110900.475386082@linuxfoundation.org>
+Subject: [PATCH 5.4 187/475] drm/amd/display: Remove vupdate_int_entry definition
+Date:   Thu, 14 Apr 2022 15:09:32 +0200
+Message-Id: <20220414110900.365081881@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,55 +51,157 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Maíra Canal <maira.canal@usp.br>
 
-[ Upstream commit f7731754fdce33dad19be746f647d6ac47c5d695 ]
+[ Upstream commit 3679b8518cd213c25d555553ef212e233faf698c ]
 
-The datasheet says that the BQ24190_REG_POC_CHG_CONFIG bits can
-have a value of either 10(0x2) or 11(0x3) for OTG (5V boost regulator)
-mode.
+Remove the vupdate_int_entry definition and utilization to avoid the
+following warning by Clang:
 
-Sofar bq24190_vbus_is_enabled() was only checking for 10 but some BIOS-es
-uses 11 when enabling the regulator at boot.
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:410:2:
+warning: initializer overrides prior initialization of this subobject
+[-Winitializer-overrides]
+    vupdate_no_lock_int_entry(0),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
+note: expanded from macro 'vupdate_no_lock_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:404:2:
+note: previous initialization is here
+    vupdate_int_entry(0),
+    ^~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
+note: expanded from macro 'vupdate_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:411:2:
+warning: initializer overrides prior initialization of this subobject
+[-Winitializer-overrides]
+    vupdate_no_lock_int_entry(1),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
+note: expanded from macro 'vupdate_no_lock_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:405:2:
+note: previous initialization is here
+    vupdate_int_entry(1),
+    ^~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
+note: expanded from macro 'vupdate_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:412:2:
+warning: initializer overrides prior initialization of this subobject
+[-Winitializer-overrides]
+    vupdate_no_lock_int_entry(2),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
+note: expanded from macro 'vupdate_no_lock_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:406:2:
+note: previous initialization is here
+    vupdate_int_entry(2),
+    ^~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
+note: expanded from macro 'vupdate_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:413:2:
+warning: initializer overrides prior initialization of this subobject
+[-Winitializer-overrides]
+    vupdate_no_lock_int_entry(3),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
+note: expanded from macro 'vupdate_no_lock_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:407:2:
+note: previous initialization is here
+    vupdate_int_entry(3),
+    ^~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
+note: expanded from macro 'vupdate_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:414:2:
+warning: initializer overrides prior initialization of this subobject
+[-Winitializer-overrides]
+    vupdate_no_lock_int_entry(4),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
+note: expanded from macro 'vupdate_no_lock_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:408:2:
+note: previous initialization is here
+    vupdate_int_entry(4),
+    ^~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
+note: expanded from macro 'vupdate_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:415:2:
+warning: initializer overrides prior initialization of this subobject
+[-Winitializer-overrides]
+    vupdate_no_lock_int_entry(5),
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:280:39:
+note: expanded from macro 'vupdate_no_lock_int_entry'
+    [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+    ^~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:409:2:
+note: previous initialization is here
+    vupdate_int_entry(5),
+    ^~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/../display/dc/irq/dcn21/irq_service_dcn21.c:269:39:
+note: expanded from macro 'vupdate_int_entry'
+        [DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+        ^~
+6 warnings generated.
 
-Make bq24190_vbus_is_enabled() also check for 11 so that it does not
-wrongly returns false when the bits are set to 11.
-
-Fixes: 66b6bef2c4e0 ("power: supply: bq24190_charger: Export 5V boost converter as regulator")
-Cc: Bastien Nocera <hadess@hadess.net>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Fixes: 688f97ed3f5e ("drm/amd/display: Add vupdate_no_lock interrupts for DCN2.1")
+Signed-off-by: Maíra Canal <maira.canal@usp.br>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/bq24190_charger.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ .../amd/display/dc/irq/dcn21/irq_service_dcn21.c   | 14 --------------
+ 1 file changed, 14 deletions(-)
 
-diff --git a/drivers/power/supply/bq24190_charger.c b/drivers/power/supply/bq24190_charger.c
-index 1ae5d6d42c9e..64d87dccea82 100644
---- a/drivers/power/supply/bq24190_charger.c
-+++ b/drivers/power/supply/bq24190_charger.c
-@@ -41,6 +41,7 @@
- #define BQ24190_REG_POC_CHG_CONFIG_DISABLE		0x0
- #define BQ24190_REG_POC_CHG_CONFIG_CHARGE		0x1
- #define BQ24190_REG_POC_CHG_CONFIG_OTG			0x2
-+#define BQ24190_REG_POC_CHG_CONFIG_OTG_ALT		0x3
- #define BQ24190_REG_POC_SYS_MIN_MASK		(BIT(3) | BIT(2) | BIT(1))
- #define BQ24190_REG_POC_SYS_MIN_SHIFT		1
- #define BQ24190_REG_POC_SYS_MIN_MIN			3000
-@@ -550,7 +551,11 @@ static int bq24190_vbus_is_enabled(struct regulator_dev *dev)
- 	pm_runtime_mark_last_busy(bdi->dev);
- 	pm_runtime_put_autosuspend(bdi->dev);
+diff --git a/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c b/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
+index 623455cd7520..d6f988403941 100644
+--- a/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
++++ b/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
+@@ -227,14 +227,6 @@ static const struct irq_source_info_funcs vupdate_no_lock_irq_info_funcs = {
+ 		.funcs = &pflip_irq_info_funcs\
+ 	}
  
--	return ret ? ret : val == BQ24190_REG_POC_CHG_CONFIG_OTG;
-+	if (ret)
-+		return ret;
-+
-+	return (val == BQ24190_REG_POC_CHG_CONFIG_OTG ||
-+		val == BQ24190_REG_POC_CHG_CONFIG_OTG_ALT);
- }
- 
- static const struct regulator_ops bq24190_vbus_ops = {
+-#define vupdate_int_entry(reg_num)\
+-	[DC_IRQ_SOURCE_VUPDATE1 + reg_num] = {\
+-		IRQ_REG_ENTRY(OTG, reg_num,\
+-			OTG_GLOBAL_SYNC_STATUS, VUPDATE_INT_EN,\
+-			OTG_GLOBAL_SYNC_STATUS, VUPDATE_EVENT_CLEAR),\
+-		.funcs = &vblank_irq_info_funcs\
+-	}
+-
+ /* vupdate_no_lock_int_entry maps to DC_IRQ_SOURCE_VUPDATEx, to match semantic
+  * of DCE's DC_IRQ_SOURCE_VUPDATEx.
+  */
+@@ -348,12 +340,6 @@ irq_source_info_dcn21[DAL_IRQ_SOURCES_NUMBER] = {
+ 	dc_underflow_int_entry(6),
+ 	[DC_IRQ_SOURCE_DMCU_SCP] = dummy_irq_entry(),
+ 	[DC_IRQ_SOURCE_VBIOS_SW] = dummy_irq_entry(),
+-	vupdate_int_entry(0),
+-	vupdate_int_entry(1),
+-	vupdate_int_entry(2),
+-	vupdate_int_entry(3),
+-	vupdate_int_entry(4),
+-	vupdate_int_entry(5),
+ 	vupdate_no_lock_int_entry(0),
+ 	vupdate_no_lock_int_entry(1),
+ 	vupdate_no_lock_int_entry(2),
 -- 
 2.34.1
 
