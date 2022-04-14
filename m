@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AAA5C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 18:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18697C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 18:59:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344853AbiDNTBh (ORCPT
+        id S1344474AbiDNTBk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 15:01:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34052 "EHLO
+        Thu, 14 Apr 2022 15:01:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344815AbiDNTBa (ORCPT
+        with ESMTP id S1345017AbiDNTBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 15:01:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89DD3E887B;
-        Thu, 14 Apr 2022 11:59:05 -0700 (PDT)
+        Thu, 14 Apr 2022 15:01:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A929E9945
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 11:59:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24F9A61AE4;
-        Thu, 14 Apr 2022 18:59:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8AEE8C385A9;
-        Thu, 14 Apr 2022 18:59:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8EFEB82B9B
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 18:59:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8522EC385A8;
+        Thu, 14 Apr 2022 18:59:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649962744;
-        bh=cGeSw59Fv7JJDhyg+1pXh9iLfGBu4RQKPA3b4RX+TOI=;
+        s=k20201202; t=1649962746;
+        bh=+zx7ctRFU9qLRN0YEXG1njhOh0aBmyhr4yS3knPfHHU=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Y4eokNXHsEpDDAVoJJAQYaQnOT4OJKEB+Tlhgh57zJkwuFnhdnClmP70fuSslWJIx
-         k2DMbGRaQL3jq6j0y7FUTIkRoonXG8K7jaMYq17+Nt6eEH2yBdf9WGTM4mU3ovLEv1
-         xTqWI0UyspZqWaH8pslErRGfpRmwrIT9xLQftp9eHK5IUpRuEoC1A1O1sqw0eez+Uh
-         CDtP6yOM2FOCkbld6FHWqkJ2AnMcuuqBwFX+JSzRXHY6/mAEM12Y0o1cDZrtbq+8kY
-         umo0GrptincA4WFIMFJ+WBmU9mZ5iz7C63UxJfEJgWq6lw/ZZqK4ga+8WQ3LH+bejb
-         hn/CuG1dR6MLQ==
+        b=beMxTU9cJq43DBAmCXJ6V9N6twP660xvaXnnLpRs1UjQPbavodv6NyVbG02bc9SWh
+         3I/YHyXcyARKwi4chWDA1SbtV6FtAKVuMqZ5+MzIYDYTuSqBAFigX5ZffjeK32xxZy
+         8KKj13KsYRNCJ9Cya1lIdDbvGEo2uZv4DflCQ2sJNZ4dlDK8LbmUMJWPwmpgGPe+Sf
+         N3Ce7w9j4m9gUCxOaqP4omwUec2QBBb0UlnUYNr05OEfNRziEqjoilhTnBT2ZCURTz
+         4qOHaA39ejGygXemdI3LKD7Oqv3L2YLDi+88SOvdX4G93JkHitbRi6QFaKkeRVkN1k
+         IbUhFM67NTDhg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 77FD7E8DBD4;
-        Thu, 14 Apr 2022 18:59:04 +0000 (UTC)
-Subject: Re: [GIT PULL] Btrfs fixes for 5.18-rc3
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73CFAE8DBD4;
+        Thu, 14 Apr 2022 18:59:06 +0000 (UTC)
+Subject: Re: [GIT PULL] sound fixes for 5.18-rc3
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <cover.1649705056.git.dsterba@suse.com>
-References: <cover.1649705056.git.dsterba@suse.com>
-X-PR-Tracked-List-Id: <linux-btrfs.vger.kernel.org>
-X-PR-Tracked-Message-Id: <cover.1649705056.git.dsterba@suse.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.18-rc2-tag
-X-PR-Tracked-Commit-Id: acee08aaf6d158d03668dc82b0a0eef41100531b
+In-Reply-To: <s5hv8vc3vpl.wl-tiwai@suse.de>
+References: <s5hv8vc3vpl.wl-tiwai@suse.de>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <s5hv8vc3vpl.wl-tiwai@suse.de>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.18-rc3
+X-PR-Tracked-Commit-Id: 24d0c9f0e7de95fe3e3e0067cbea1cd5d413244b
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 722985e2f6ec9127064771ba526578ea8275834d
-Message-Id: <164996274448.15440.11784724442404556147.pr-tracker-bot@kernel.org>
-Date:   Thu, 14 Apr 2022 18:59:04 +0000
-To:     David Sterba <dsterba@suse.com>
-Cc:     torvalds@linux-foundation.org, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+X-PR-Merge-Commit-Id: b9b4c79e58305ac64352286ee5030d193fc8aa22
+Message-Id: <164996274647.15440.5766284768997852742.pr-tracker-bot@kernel.org>
+Date:   Thu, 14 Apr 2022 18:59:06 +0000
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 11 Apr 2022 23:31:43 +0200:
+The pull request you sent on Thu, 14 Apr 2022 10:39:18 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.18-rc2-tag
+> git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.18-rc3
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/722985e2f6ec9127064771ba526578ea8275834d
+https://git.kernel.org/torvalds/c/b9b4c79e58305ac64352286ee5030d193fc8aa22
 
 Thank you!
 
