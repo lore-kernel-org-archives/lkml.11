@@ -2,167 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66CBEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 21:45:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F64DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 21:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346810AbiDNVr0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 17:47:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36450 "EHLO
+        id S244870AbiDNVsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 17:48:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241439AbiDNVrW (ORCPT
+        with ESMTP id S234435AbiDNVsI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 17:47:22 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B50F13633E;
-        Thu, 14 Apr 2022 14:44:55 -0700 (PDT)
+        Thu, 14 Apr 2022 17:48:08 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE55939C5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 14:45:42 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id c15so7639445ljr.9
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 14:45:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649972696; x=1681508696;
-  h=message-id:date:mime-version:from:subject:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=rq7yUoLN5kZ74ztwyG29HHmd6+Kid7Wc5fWXZhevA0E=;
-  b=ctHaCHRU3YF5OiAcXN5Qu8ufatuiR4+LZFXmievZErVeQjBQXy1njkLk
-   xs2KEFWzBcVBdq8YMojfVSV6YPmtfm1gQKRc8xrrtkN3BI3v0BYDgMZWs
-   GcFjmnOtLVsKrdzvogOd/E9VqQ5RNQ80unIHnGMjtXGVpPRaC6rejPjA3
-   0=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 14 Apr 2022 14:44:55 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 14:44:55 -0700
-Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Apr 2022 14:44:55 -0700
-Received: from [10.110.74.74] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 14 Apr
- 2022 14:44:54 -0700
-Message-ID: <10f77fe4-a1a7-60a2-af98-a6060318ab0d@quicinc.com>
-Date:   Thu, 14 Apr 2022 14:44:53 -0700
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=P6S9KRqkX7A9YoKgU2PmWjCc953BNXu29WrskqsElFU=;
+        b=BYSt7/9CMe6e1cOZOoavQDCxmhu1x78HdprHlMXMk1ysdygv7tLT2SflcRXutu3rLu
+         hRE3Doq7jUXTsKnTmS7BenvXMDIbceuHBh18m/k6KMy/KGSryz5BaxeKvlh/uaZxy5JL
+         hqHvJ0A5TGC7XCcJCXnwQK9qtOqz8ClbchKQU8L1Fzrw2XD9n8YhQ6zWLgYZhnOnOcFR
+         EdB4bf36VfA/J7m5aIzTDpB/P9Jwcg+70XcWCKdAk1Myt6+COEmQC/7pedRK6axH0O2p
+         wRnJG/w91gYmqwZZxjXObg16Cufuo/sSoGf3xBoxxrqzlgFVtcw8JAdm9m58+I53GrMw
+         /zSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=P6S9KRqkX7A9YoKgU2PmWjCc953BNXu29WrskqsElFU=;
+        b=68ZCBA2COT4y3JzaxYZHIiOt2So3X2I9jUap83nMvtdv+TTlJCe/MIBIBtEJUigF66
+         n7feCkxXL6rCfIlzRyrynJcl48rLr0LgEpactscw5XpMlLBuq6LkiANCTFm/nSToeeuA
+         IR97A3TrNHkPkz4aGC42sfUJousCISYBGteZrrZC8lMJu7N49rb+RbYZ6mgRic1eF3Rz
+         9jszT2YTbGjywlYvL//jKzvRDQ3dHnFmKAPRmm9ZJUqchJ86uwzmf4kaDdyP+uMOcmFw
+         7JObdZdivAmy6rB2bt/oH3EuL16VJSDOny9TeAMpgygPzrzKigZkGsh/XDqoU3YDvLjY
+         UquQ==
+X-Gm-Message-State: AOAM530D4sGRtZN4Iu+mSCY4ksSLMqcHeCiVtQnw3HsCM70GD0BWBjvX
+        M0oFaIOaO8GXZf0XFXtaztSGiQ==
+X-Google-Smtp-Source: ABdhPJzW86vujFH03PxD99Oeby+xWsKew7UCfjWbhtO6O52/RZMhu/hElz9UH1L8JcIPVmipfKkBdw==
+X-Received: by 2002:a2e:6a08:0:b0:24d:14af:4be4 with SMTP id f8-20020a2e6a08000000b0024d14af4be4mr2754201ljc.24.1649972740518;
+        Thu, 14 Apr 2022 14:45:40 -0700 (PDT)
+Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
+        by smtp.gmail.com with ESMTPSA id u3-20020a196003000000b0046d02774aa4sm119327lfb.37.2022.04.14.14.45.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 14:45:39 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Johan Hovold <johan@kernel.org>, Rob Herring <robh+dt@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        devicetree@vger.kernel.org
+Subject: [PATCH] dt-bindings: gnss: Add Broacom BCM4751 family bindings
+Date:   Thu, 14 Apr 2022 23:43:37 +0200
+Message-Id: <20220414214337.311880-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-From:   Wesley Cheng <quic_wcheng@quicinc.com>
-Subject: Re: [PATCH] usb: dwc3: EP clear halt leading to incorrect submission
- of delayed_status
-To:     Pavan Kondeti <quic_pkondeti@quicinc.com>
-CC:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220407015336.19455-1-quic_wcheng@quicinc.com>
- <20220411154803.GA26372@hu-pkondeti-hyd.qualcomm.com>
-Content-Language: en-US
-In-Reply-To: <20220411154803.GA26372@hu-pkondeti-hyd.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pavan,
+The Broadcom BCM4751 family of (A-)GPS chips have been around for
+some years. The latest iteration BCM4753 is for example mounted
+on the Huawei HiKey970.
 
-On 4/11/2022 8:48 AM, Pavan Kondeti wrote:
-> Hi Wesley,
-> 
-> On Wed, Apr 06, 2022 at 06:53:36PM -0700, Wesley Cheng wrote:
->> The usb_ep_clear_halt() API can be called from the function driver, and
->> translates to dwc3_gadget_ep_set_halt().  This routine is shared with when
->> the host issues a clear feature ENDPOINT_HALT, and is differentiated by the
->> protocol argument.  If the following sequence occurs, there can be a
->> situation where the delayed_status flag is improperly cleared for the wrong
->> SETUP transaction:
->>
->> 1. Vendor specific control transfer returns USB_GADGET_DELAYED_STATUS.
->> 2. DWC3 gadget sets dwc->delayed_status to '1'.
->> 3. Another function driver issues a usb_ep_clear_halt() call.
->> 4. DWC3 gadget issues dwc3_stop_active_transfer() and sets
->>     DWC3_EP_PENDING_CLEAR_STALL.
->> 5. EP command complete interrupt triggers for the end transfer, and
->>     dwc3_ep0_send_delayed_status() is allowed to run, as delayed_status
->>     is '1' due to step#1.
->> 6. STATUS phase is sent, and delayed_status is cleared.
->> 7. Vendor specific control transfer is finished being handled, and issues
->>     usb_composite_setup_continue().  This results in queuing of a data
->>     phase.
->>
->> Cache the protocol flag so that DWC3 gadget is aware of when the clear halt
->> is due to a SETUP request from the host versus when it is sourced from a
->> function driver.  This allows for the EP command complete interrupt to know
->> if it needs to issue a delayed status phase.
->>
->> Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
->> ---
->>   drivers/usb/dwc3/core.h   | 1 +
->>   drivers/usb/dwc3/ep0.c    | 1 +
->>   drivers/usb/dwc3/gadget.c | 3 ++-
->>   3 files changed, 4 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
->> index 5c9d467195a6..55f98485c54c 100644
->> --- a/drivers/usb/dwc3/core.h
->> +++ b/drivers/usb/dwc3/core.h
->> @@ -1272,6 +1272,7 @@ struct dwc3 {
->>   	unsigned		connected:1;
->>   	unsigned		softconnect:1;
->>   	unsigned		delayed_status:1;
->> +	unsigned		clear_stall_protocol:1;
->>   	unsigned		ep0_bounced:1;
->>   	unsigned		ep0_expect_in:1;
->>   	unsigned		has_hibernation:1;
->> diff --git a/drivers/usb/dwc3/ep0.c b/drivers/usb/dwc3/ep0.c
->> index 1064be5518f6..aa8476da222d 100644
->> --- a/drivers/usb/dwc3/ep0.c
->> +++ b/drivers/usb/dwc3/ep0.c
->> @@ -1080,6 +1080,7 @@ void dwc3_ep0_send_delayed_status(struct dwc3 *dwc)
->>   	unsigned int direction = !dwc->ep0_expect_in;
->>   
->>   	dwc->delayed_status = false;
->> +	dwc->clear_stall_protocol = 0;
->>   
->>   	if (dwc->ep0state != EP0_STATUS_PHASE)
->>   		return;
->> diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
->> index ab725d2262d6..c427ddae016f 100644
->> --- a/drivers/usb/dwc3/gadget.c
->> +++ b/drivers/usb/dwc3/gadget.c
->> @@ -2152,6 +2152,7 @@ int __dwc3_gadget_ep_set_halt(struct dwc3_ep *dep, int value, int protocol)
->>   		if (dep->flags & DWC3_EP_END_TRANSFER_PENDING ||
->>   		    (dep->flags & DWC3_EP_DELAY_STOP)) {
->>   			dep->flags |= DWC3_EP_PENDING_CLEAR_STALL;
->> +			dwc->clear_stall_protocol = protocol;
->>   			return 0;
->>   		}
->>   
->> @@ -3483,7 +3484,7 @@ static void dwc3_gadget_endpoint_command_complete(struct dwc3_ep *dep,
->>   		}
->>   
->>   		dep->flags &= ~(DWC3_EP_STALL | DWC3_EP_WEDGE);
->> -		if (dwc->delayed_status)
->> +		if (dwc->clear_stall_protocol)
->>   			dwc3_ep0_send_delayed_status(dwc);
->>   	}
->>   
-> 
-> Is it safe to maintain clear_stall_protocol per dwc3 instance? What if
-> CLEAR_FEATURE(halt_endpoint) and usb_ep_clear_halt() are interleaved and
-> We come here as part of usb_ep_clear_halt()'s endpoint command complete.
-> We may simply send the delayed status corresponding to the protocol clear
-> stall.
-> 
-> We can still maintain a global flag if we cache endpoint number in it so
-> that we can cross check against the endpoint for which completion received.
-> 
-> Thanks,
-> Pavan
-> 
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ .../bindings/gnss/brcm,bcm4751.yaml           | 69 +++++++++++++++++++
+ 1 file changed, 69 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/gnss/brcm,bcm4751.yaml
 
-Thanks for the comments/feedback.  I agree with what you mentioned, and 
-will fix that potential condition.  Will resubmit a new rev, after some 
-testing.
+diff --git a/Documentation/devicetree/bindings/gnss/brcm,bcm4751.yaml b/Documentation/devicetree/bindings/gnss/brcm,bcm4751.yaml
+new file mode 100644
+index 000000000000..f06a4acf21cf
+--- /dev/null
++++ b/Documentation/devicetree/bindings/gnss/brcm,bcm4751.yaml
+@@ -0,0 +1,69 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/gnss/brcm,bcm4751.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Broadcom BCM4751 family GNSS Receiver Device Tree Bindings
++
++maintainers:
++  - Johan Hovold <johan@kernel.org>
++  - Linus Walleij <linus.walleij@linaro.org>
++
++description:
++  Broadcom GPS chips can be used over the UART or I2C bus. The UART
++  bus requires CTS/RTS support. The number of the capsule is more
++  elaborate than the compatibles BCM4751 may be printed
++  BCM4751IFBG for example.
++
++allOf:
++  - $ref: gnss-common.yaml#
++
++properties:
++  compatible:
++    enum:
++      - brcm,bcm4751
++      - brcm,bcm4752
++      - brcm,bcm4753
++
++  reg:
++    description:
++      The I2C Address, not required on UART buses.
++
++  vdd-auxin-supply:
++    description:
++      Main voltage supply, pin name VDD_AUXIN, typically connected
++      directly to a battery such as LiIon 3.8V battery or a 2.6V supply.
++
++  vddio-supply:
++    description:
++      IO voltage supply, pin name VDDIO, typically 1.8V
++
++  reset-gpios:
++    maxItems: 1
++    description: An optional active low reset line, should be flagged with
++      GPIO_ACTIVE_LOW.
++
++  enable-gpios:
++    description: Enable GPIO line, connected to pins named REGPU or NSTANDBY.
++      If the line is active low such as NSTANDBY, it should be tagged
++      GPIO_ACTIVE_LOW.
++
++required:
++  - compatible
++  - enable-gpios
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    serial {
++        gnss {
++            compatible = "brcm,bcm4751";
++            vdd-auxin-supply = <&vbat>;
++            reset-gpios = <&gpio0 15 GPIO_ACTIVE_LOW>;
++            enable-gpios = <&gpio0 16 GPIO_ACTIVE_HIGH>;
++            current-speed = <38400>;
++        };
++    };
+-- 
+2.35.1
 
-Thanks
-Wesley Cheng
