@@ -2,73 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF8DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 10:35:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B754EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 10:35:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242352AbiDNKh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 06:37:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43574 "EHLO
+        id S242356AbiDNKh7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 06:37:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233467AbiDNKhZ (ORCPT
+        with ESMTP id S242442AbiDNKhu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 06:37:25 -0400
-Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4200149925
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 03:34:59 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
- (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 14 Apr
- 2022 18:34:59 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 14 Apr
- 2022 18:34:57 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Haowen Bai <baihaowen@meizu.com>, <linux-staging@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] staging: rtl8192e: Fix signedness bug in rtllib_rx_assoc_resp()
-Date:   Thu, 14 Apr 2022 18:34:50 +0800
-Message-ID: <1649932490-13622-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 14 Apr 2022 06:37:50 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5208053B74;
+        Thu, 14 Apr 2022 03:35:26 -0700 (PDT)
+Date:   Thu, 14 Apr 2022 10:35:16 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649932517;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jEdXWOolFMpX310q7AURVkltiWxCj+2BxsZYXt8kQpA=;
+        b=kDxrbrnyHTOG+ioShl/gIQUbaSQSuenZhauiZ2E1eIsz209F3hyPhxk15zOIkMLQIctLHZ
+        Cs7IOXPGmNAtAyrtE6QQ9dqma5EoMVad2dA3j/IPAHly8Z3tQzLRWbu7mw/+YSs4VUji3z
+        Rp3/4S4WjTL2di/CJZL0AFEUCIL3ar3XH7qbuWok8+ECV/a9grSnw3KetTSvnsVCqRxapz
+        Jj4pI25DelSCsHVhuFRS9e1ViNxkMANo8SiyKYEZ484lKBkFlpGxGKcufF2WG/Sgbqf6a9
+        s3tqv47EfHe3vPp2Zfb3SHGPzNY9eAqIV1+ros59qH0BOsR8a38LBq4nf79PHA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649932517;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jEdXWOolFMpX310q7AURVkltiWxCj+2BxsZYXt8kQpA=;
+        b=LAChuiDqlV5Qju9t+bTqshWgyMyxm/Pnlw8Ehbf2BRkOE9y7QnaYzySImholarTVkyTD8r
+        6uG/QQrdj9aIECCA==
+From:   "tip-bot2 for Jiapeng Chong" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/cleanups] x86/process: Fix kernel-doc warning due to a
+ changed function name
+Cc:     Abaci Robot <abaci@linux.alibaba.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220414062110.60343-1-jiapeng.chong@linux.alibaba.com>
+References: <20220414062110.60343-1-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Message-ID: <164993251625.4207.15885270496028960488.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-function rtllib_rx_assoc_resp () unsigned errcode receive auth_parse()'s
-errcode -ENOMEM.
+The following commit has been merged into the x86/cleanups branch of tip:
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Commit-ID:     dbb5ab6d2c0a7397d77c9f60fe23844d4fe4e634
+Gitweb:        https://git.kernel.org/tip/dbb5ab6d2c0a7397d77c9f60fe23844d4fe4e634
+Author:        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+AuthorDate:    Thu, 14 Apr 2022 14:21:10 +08:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Thu, 14 Apr 2022 12:23:06 +02:00
+
+x86/process: Fix kernel-doc warning due to a changed function name
+
+Fix the following scripts/kernel-doc warning:
+
+  arch/x86/kernel/process.c:412: warning: expecting prototype for tss_update_io_bitmap().
+  Prototype was for native_tss_update_io_bitmap() instead.
+
+  [ bp: Massage. ]
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220414062110.60343-1-jiapeng.chong@linux.alibaba.com
 ---
- drivers/staging/rtl8192e/rtllib_softmac.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/kernel/process.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
-index 4b6c2295a3cf..57f70cc8cb81 100644
---- a/drivers/staging/rtl8192e/rtllib_softmac.c
-+++ b/drivers/staging/rtl8192e/rtllib_softmac.c
-@@ -1764,7 +1764,7 @@ static void rtllib_softmac_check_all_nets(struct rtllib_device *ieee)
- 	spin_unlock_irqrestore(&ieee->lock, flags);
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index b370767..b3d2d41 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -405,7 +405,7 @@ static void tss_copy_io_bitmap(struct tss_struct *tss, struct io_bitmap *iobm)
  }
  
--static inline u16 auth_parse(struct net_device *dev, struct sk_buff *skb,
-+static inline s16 auth_parse(struct net_device *dev, struct sk_buff *skb,
- 			     u8 **challenge, int *chlen)
+ /**
+- * tss_update_io_bitmap - Update I/O bitmap before exiting to usermode
++ * native_tss_update_io_bitmap - Update I/O bitmap before exiting to user mode
+  */
+ void native_tss_update_io_bitmap(void)
  {
- 	struct rtllib_authentication *a;
-@@ -2278,7 +2278,7 @@ rtllib_rx_assoc_resp(struct rtllib_device *ieee, struct sk_buff *skb,
- 
- static void rtllib_rx_auth_resp(struct rtllib_device *ieee, struct sk_buff *skb)
- {
--	u16 errcode;
-+	s16 errcode;
- 	u8 *challenge;
- 	int chlen = 0;
- 	bool bSupportNmode = true, bHalfSupportNmode = false;
--- 
-2.7.4
-
