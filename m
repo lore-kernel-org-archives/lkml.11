@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96509C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 572CBC433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351984AbiDNObo (ORCPT
+        id S1351909AbiDNObj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36464 "EHLO
+        Thu, 14 Apr 2022 10:31:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245110AbiDNNiM (ORCPT
+        with ESMTP id S1344295AbiDNNkl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F093799ED3;
-        Thu, 14 Apr 2022 06:31:38 -0700 (PDT)
+        Thu, 14 Apr 2022 09:40:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A1F1C6;
+        Thu, 14 Apr 2022 06:38:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B16FB82968;
-        Thu, 14 Apr 2022 13:31:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8421C385A1;
-        Thu, 14 Apr 2022 13:31:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5229F6190F;
+        Thu, 14 Apr 2022 13:38:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C137C385A1;
+        Thu, 14 Apr 2022 13:38:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943096;
-        bh=GByUJBM4aas1+7xrkkeEe5sZyXUZURKNtdgtAAUAB9A=;
+        s=korg; t=1649943495;
+        bh=6i2pIc4DfBlAvUDdBVgV5ahqFbgGM70bfdwOdV3kkJI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LYP0pSSXB8U4SAo1uYGzsBP9DxRNo3WjXrsCmsW2/Y0vIRH1UFwMNFAKkzmgOQzzL
-         /Jd3QmlBnQEZ4xOgUaeHp4/ULS0ujgoDVUNJCGqCks69vnfKwTTOYpeuUQCS+fIP4k
-         eUrniyPbvH8d7Y5RHDWFehiy+oqeivBNrWmROQD8=
+        b=eVhfd/9tOD5faxh1JVw/4rk6EGeqWHgzEfdzB0qxqdB/DeMaaIkas6MxewOIGcuoL
+         FdEigILnm5X7usPIDl96+mrUWIgIQz+mdSXemotYwzQ6AAta7mgYAuSEnzbhPEGRrx
+         0T4YPYw3CSBbmRDLbfTOT1kElr4FFSnMVS3airb8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 5.4 032/475] Documentation: add link to stable release candidate tree
-Date:   Thu, 14 Apr 2022 15:06:57 +0200
-Message-Id: <20220414110856.055039109@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 174/475] power: supply: ab8500: Fix memory leak in ab8500_fg_sysfs_init
+Date:   Thu, 14 Apr 2022 15:09:19 +0200
+Message-Id: <20220414110900.005260227@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,42 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bagas Sanjaya <bagasdotme@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 587d39b260c4d090166314d64be70b1f6a26b0b5 upstream.
+[ Upstream commit 6a4760463dbc6b603690938c468839985189ce0a ]
 
-There is also stable release candidate tree. Mention it, however with a
-warning that the tree is for testing purposes.
+kobject_init_and_add() takes reference even when it fails.
+According to the doc of kobject_init_and_add()：
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Sasha Levin <sashal@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
-Link: https://lore.kernel.org/r/20220314113329.485372-5-bagasdotme@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+   If this function returns an error, kobject_put() must be called to
+   properly clean up the memory associated with the object.
+
+Fix memory leak by calling kobject_put().
+
+Fixes: 8c0984e5a753 ("power: move power supply drivers to power/supply")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/process/stable-kernel-rules.rst |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/power/supply/ab8500_fg.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/Documentation/process/stable-kernel-rules.rst
-+++ b/Documentation/process/stable-kernel-rules.rst
-@@ -176,6 +176,15 @@ Trees
+diff --git a/drivers/power/supply/ab8500_fg.c b/drivers/power/supply/ab8500_fg.c
+index 69452fc085b9..4c229e6fb750 100644
+--- a/drivers/power/supply/ab8500_fg.c
++++ b/drivers/power/supply/ab8500_fg.c
+@@ -2541,8 +2541,10 @@ static int ab8500_fg_sysfs_init(struct ab8500_fg *di)
+ 	ret = kobject_init_and_add(&di->fg_kobject,
+ 		&ab8500_fg_ktype,
+ 		NULL, "battery");
+-	if (ret < 0)
++	if (ret < 0) {
++		kobject_put(&di->fg_kobject);
+ 		dev_err(di->dev, "failed to create sysfs entry\n");
++	}
  
- 	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
- 
-+ - The release candidate of all stable kernel versions can be found at:
-+
-+        https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/
-+
-+   .. warning::
-+      The -stable-rc tree is a snapshot in time of the stable-queue tree and
-+      will change frequently, hence will be rebased often. It should only be
-+      used for testing purposes (e.g. to be consumed by CI systems).
-+
- 
- Review committee
- ----------------
+ 	return ret;
+ }
+-- 
+2.34.1
+
 
 
