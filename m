@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B31C38A2C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F08E3C46467
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:39:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343846AbiDNNj0 (ORCPT
+        id S1344166AbiDNNkG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:39:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48656 "EHLO
+        Thu, 14 Apr 2022 09:40:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244874AbiDNN2N (ORCPT
+        with ESMTP id S244925AbiDNN2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:13 -0400
+        Thu, 14 Apr 2022 09:28:18 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48E65A6E36
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:21:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C06EA888E
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:21:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649942466;
+        s=mimecast20190719; t=1649942478;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=nLH13vK6YhUccliR3apzUYTKpkvsAYqQrKUY2KtRR1w=;
-        b=TLxli1TqdN+79EoaOLVKdCqe1DUgA4Pa02RRe5h/nupGJA9AqUVXiUhvxdslPEoKwLa41f
-        A6m1YB8DrJrvQyW52yPNxINkGTsySdk9aIXvRUadd3m/aZ9GF0iVgw+RG0YEfT1nmboIz9
-        YXeiY0vtITRk1gL0Dw5IdtRbzvzbWc4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=I+R/eNqjb1wpUKu1EY5DiMRn7IAObJ3SaayfFkvzkX4=;
+        b=eXVYZjbP9hCF8ynJwnNrhwjt+3HKt1njv+3GHZjhy40Nj4DZ5lKBAtQD65R+etPaFqkdBf
+        Wt8pBEbo+MoM2FHIsZEvDzdj63RVEX/UVHvh5JuLxQj5KKGC7812OdCTAfWeOa0xvrZB9c
+        qmH1ntmN6JaBULec7lSKLx8Zh8wh1zE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-361-PmzDrDJxMRSsRhyIRBh42A-1; Thu, 14 Apr 2022 09:21:05 -0400
-X-MC-Unique: PmzDrDJxMRSsRhyIRBh42A-1
+ us-mta-669-rbs9DGA3PLCik8fHTLS1OQ-1; Thu, 14 Apr 2022 09:21:15 -0400
+X-MC-Unique: rbs9DGA3PLCik8fHTLS1OQ-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4E3C9894EF4;
-        Thu, 14 Apr 2022 13:20:47 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EDE0B38149DD;
+        Thu, 14 Apr 2022 13:21:11 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.195.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 751D27C28;
-        Thu, 14 Apr 2022 13:20:45 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E27E53CD;
+        Thu, 14 Apr 2022 13:21:10 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -47,9 +47,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Michael Kelley <mikelley@microsoft.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 15/34] KVM: x86: hyper-v: Introduce kvm_hv_is_tlb_flush_hcall()
-Date:   Thu, 14 Apr 2022 15:19:54 +0200
-Message-Id: <20220414132013.1588929-16-vkuznets@redhat.com>
+Subject: [PATCH v3 27/34] KVM: selftests: Sync 'struct hv_enlightened_vmcs' definition with hyperv-tlfs.h
+Date:   Thu, 14 Apr 2022 15:20:06 +0200
+Message-Id: <20220414132013.1588929-28-vkuznets@redhat.com>
 In-Reply-To: <20220414132013.1588929-1-vkuznets@redhat.com>
 References: <20220414132013.1588929-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -60,44 +60,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The newly introduced helper checks whether vCPU is performing a
-Hyper-V TLB flush hypercall. This is required to filter out L2 TLB
-flush hypercalls for processing.
+'struct hv_enlightened_vmcs' definition in selftests is not '__packed'
+and so we rely on the compiler doing the right padding. This is not
+obvious so it seems beneficial to use the same definition as in kernel.
 
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/hyperv.h | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ tools/testing/selftests/kvm/include/x86_64/evmcs.h | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
-index d59f96700104..ca67c18cef2c 100644
---- a/arch/x86/kvm/hyperv.h
-+++ b/arch/x86/kvm/hyperv.h
-@@ -170,6 +170,24 @@ static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu)
- 	tlb_flush_ring = kvm_hv_get_tlb_flush_ring(vcpu);
- 	tlb_flush_ring->read_idx = tlb_flush_ring->write_idx;
- }
-+
-+static inline bool kvm_hv_is_tlb_flush_hcall(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+	u16 code;
-+
-+	if (!hv_vcpu)
-+		return false;
-+
-+	code = is_64_bit_hypercall(vcpu) ? kvm_rcx_read(vcpu) :
-+		kvm_rax_read(vcpu);
-+
-+	return (code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE ||
-+		code == HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST ||
-+		code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX ||
-+		code == HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX);
-+}
-+
- void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu);
+diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
+index cc5d14a45702..b6067b555110 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
++++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
+@@ -41,6 +41,8 @@ struct hv_enlightened_vmcs {
+ 	u16 host_gs_selector;
+ 	u16 host_tr_selector;
  
++	u16 padding16_1;
++
+ 	u64 host_ia32_pat;
+ 	u64 host_ia32_efer;
  
+@@ -159,7 +161,7 @@ struct hv_enlightened_vmcs {
+ 	u64 ept_pointer;
+ 
+ 	u16 virtual_processor_id;
+-	u16 padding16[3];
++	u16 padding16_2[3];
+ 
+ 	u64 padding64_2[5];
+ 	u64 guest_physical_address;
+@@ -195,15 +197,15 @@ struct hv_enlightened_vmcs {
+ 	u64 guest_rip;
+ 
+ 	u32 hv_clean_fields;
+-	u32 hv_padding_32;
++	u32 padding32_1;
+ 	u32 hv_synthetic_controls;
+ 	struct {
+ 		u32 nested_flush_hypercall:1;
+ 		u32 msr_bitmap:1;
+ 		u32 reserved:30;
+-	} hv_enlightenments_control;
++	}  __packed hv_enlightenments_control;
+ 	u32 hv_vp_id;
+-
++	u32 padding32_2;
+ 	u64 hv_vm_id;
+ 	u64 partition_assist_page;
+ 	u64 padding64_4[4];
+@@ -211,7 +213,7 @@ struct hv_enlightened_vmcs {
+ 	u64 padding64_5[7];
+ 	u64 xss_exit_bitmap;
+ 	u64 padding64_6[7];
+-};
++} __packed;
+ 
+ #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE                     0
+ #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_IO_BITMAP                BIT(0)
 -- 
 2.35.1
 
