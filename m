@@ -2,48 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE304C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:13:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E33C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348966AbiDNOO6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36882 "EHLO
+        id S229584AbiDNOPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:15:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245526AbiDNNil (ORCPT
+        with ESMTP id S245554AbiDNNim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D886A27CB;
-        Thu, 14 Apr 2022 06:32:42 -0700 (PDT)
+        Thu, 14 Apr 2022 09:38:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13FAC92D36;
+        Thu, 14 Apr 2022 06:32:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D0338619DA;
-        Thu, 14 Apr 2022 13:32:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4D29C385A1;
-        Thu, 14 Apr 2022 13:32:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BEFC9B82968;
+        Thu, 14 Apr 2022 13:32:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1559CC385A5;
+        Thu, 14 Apr 2022 13:32:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943161;
-        bh=p/E/ewZRqi+ub1ezBHspRUFAIIx4sJNFUP5+SgZa15U=;
+        s=korg; t=1649943169;
+        bh=/vSptA5YddKrMRYEVwozcLIsPiINX27TrXq69pfeqmQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pgY6idAVB+Q/06PPMnc1xiSSq95HWt3rTEGr8h2ewA1tapssVxN64+XxhUyisidHd
-         eb4JQt5OElxeybwZM7dKewqtt7r3RnxV0Lc9NalDkv9gYwk/3zQyAP1BeFiGvcju/D
-         QlJomE4IAgEfiEE1MIApW5zLCeM2Qn+Ckp7YhFp0=
+        b=WdT2Ng8OZsniGXWL0ITEEKx/syeANOlNRcTFT8nxwmYEKWMEIf67BYBRzJqAwnIqA
+         +3gJnLRZerWaKh9kDSkz8rjnOK3/s3ZR2f00Va5xUsHLeUXpZvGepBM9gJOQeO9xYS
+         J66hbVY9h4OwUqRcdcrmTf0cqbOWllEN5Fg50sz8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rik van Riel <riel@surriel.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 057/475] mm,hwpoison: unmap poisoned page before invalidation
-Date:   Thu, 14 Apr 2022 15:07:22 +0200
-Message-Id: <20220414110856.748754251@linuxfoundation.org>
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        Anand Jain <anand.jain@oracle.com>
+Subject: [PATCH 5.4 060/475] powerpc/kvm: Fix kvm_use_magic_page
+Date:   Thu, 14 Apr 2022 15:07:25 +0200
+Message-Id: <20220414110856.832208206@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -55,67 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rik van Riel <riel@surriel.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-commit 3149c79f3cb0e2e3bafb7cfadacec090cbd250d3 upstream.
+commit 0c8eb2884a42d992c7726539328b7d3568f22143 upstream.
 
-In some cases it appears the invalidation of a hwpoisoned page fails
-because the page is still mapped in another process.  This can cause a
-program to be continuously restarted and die when it page faults on the
-page that was not invalidated.  Avoid that problem by unmapping the
-hwpoisoned page when we find it.
+When switching from __get_user to fault_in_pages_readable, commit
+9f9eae5ce717 broke kvm_use_magic_page: like __get_user,
+fault_in_pages_readable returns 0 on success.
 
-Another issue is that sometimes we end up oopsing in finish_fault, if
-the code tries to do something with the now-NULL vmf->page.  I did not
-hit this error when submitting the previous patch because there are
-several opportunities for alloc_set_pte to bail out before accessing
-vmf->page, and that apparently happened on those systems, and most of
-the time on other systems, too.
-
-However, across several million systems that error does occur a handful
-of times a day.  It can be avoided by returning VM_FAULT_NOPAGE which
-will cause do_read_fault to return before calling finish_fault.
-
-Link: https://lkml.kernel.org/r/20220325161428.5068d97e@imladris.surriel.com
-Fixes: e53ac7374e64 ("mm: invalidate hwpoison page cache page in fault path")
-Signed-off-by: Rik van Riel <riel@surriel.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Tested-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 9f9eae5ce717 ("powerpc/kvm: Prefer fault_in_pages_readable function")
+Cc: stable@vger.kernel.org # v4.18+
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Anand Jain <anand.jain@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/memory.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ arch/powerpc/kernel/kvm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3245,14 +3245,18 @@ static vm_fault_t __do_fault(struct vm_f
- 		return ret;
+--- a/arch/powerpc/kernel/kvm.c
++++ b/arch/powerpc/kernel/kvm.c
+@@ -669,7 +669,7 @@ static void __init kvm_use_magic_page(vo
+ 	on_each_cpu(kvm_map_magic_page, &features, 1);
  
- 	if (unlikely(PageHWPoison(vmf->page))) {
-+		struct page *page = vmf->page;
- 		vm_fault_t poisonret = VM_FAULT_HWPOISON;
- 		if (ret & VM_FAULT_LOCKED) {
-+			if (page_mapped(page))
-+				unmap_mapping_pages(page_mapping(page),
-+						    page->index, 1, false);
- 			/* Retry if a clean page was removed from the cache. */
--			if (invalidate_inode_page(vmf->page))
--				poisonret = 0;
--			unlock_page(vmf->page);
-+			if (invalidate_inode_page(page))
-+				poisonret = VM_FAULT_NOPAGE;
-+			unlock_page(page);
- 		}
--		put_page(vmf->page);
-+		put_page(page);
- 		vmf->page = NULL;
- 		return poisonret;
+ 	/* Quick self-test to see if the mapping works */
+-	if (!fault_in_pages_readable((const char *)KVM_MAGIC_PAGE, sizeof(u32))) {
++	if (fault_in_pages_readable((const char *)KVM_MAGIC_PAGE, sizeof(u32))) {
+ 		kvm_patching_worked = false;
+ 		return;
  	}
 
 
