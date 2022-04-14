@@ -2,79 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 238F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FCA5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234969AbiDNQfF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:35:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53800 "EHLO
+        id S237665AbiDNQfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238780AbiDNQef (ORCPT
+        with ESMTP id S232479AbiDNQen (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 12:34:35 -0400
-Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3FC6ED90E;
-        Thu, 14 Apr 2022 09:02:02 -0700 (PDT)
-Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-d39f741ba0so5657670fac.13;
-        Thu, 14 Apr 2022 09:02:02 -0700 (PDT)
+        Thu, 14 Apr 2022 12:34:43 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13973B89
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:03:19 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id mp16-20020a17090b191000b001cb5efbcab6so9675410pjb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:03:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gYZcqKE4gPDeEOq6vTanVgpcbt838PrfODIBOARgOwI=;
+        b=4vuqFuX1dWiC5cbQZSo/4Nymm/397TPgn4uZnwxpIHvo7WmsxxQEWcubR+78H9RGkS
+         tqwbnVO6dIGbhVLHh4EcXCkn4PtpZgmVDO8AjkKEKTV+6FOzUGn9o9QzQsE3usQ1Pv8+
+         A9YQHbxVWcxkYB6k98I7dBsIpti/5SF3Vd0xVmKorRrldBywq40dJWsbeFlknWApg2WJ
+         VF9COUCF7DFhm4zkTc3pYEI22QCZF15AThM2bok7ptikUiJT8gV3Sb597vhM9fPDGC7N
+         KqKPx1caag9BIPESKDcKIGKf/EYsZ1xaK5/NXpz7hLRVNX5sx35CNbqmuUJ15M2dk1pY
+         5TZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7KsLQRipqF2R1uTMIte3i9/IDcR/0h8XgddwnNJ3ITE=;
-        b=8QpoPIhGhAR6OCEs6CyltORZj5h9f+XNxatCot1BOe/si+aWRf48Pj8DPZ+J57bPrW
-         F/0tbf95AI4bZVFs+lfqw7WYRtHBEKRf/mhOTeHJ8WmGgs2wvw4FD4MEFODXLzb4d9Pj
-         fLwcfFFw5Gr2/pZqzqxNSL9cmj8HEHCJM3EcGM1x948k0XFzA80NXc8QCKStCPuOUv7U
-         U0+u5pZTjWzC6k3WPxlIpd7UwXdCGgeVao/a8B8GCu8MvDmum4ll/xcFWLvlFcHC3Iu2
-         RW8cFFdUxUfnEADVP78C1iBDs6e9RLjvWdDVW8sV5+eJlpS/MxUkay5NQmy+h3PUdOE5
-         puYw==
-X-Gm-Message-State: AOAM530jAq81cPFl4VWTuqZJb6C5bkZQzzS2RoSe1f7xcJSX6xnQ3yuy
-        aw7+3Xi3EThQ7QWKWM7YoA==
-X-Google-Smtp-Source: ABdhPJzuFrRAnqEOjn2Y036KhsZvM/oPgRNGTA4p69Jxmvf28J/M6tED0pEVCoQb189X/X79bsYoqQ==
-X-Received: by 2002:a05:6871:1d0:b0:da:b3f:2b28 with SMTP id q16-20020a05687101d000b000da0b3f2b28mr1845203oad.199.1649952121431;
-        Thu, 14 Apr 2022 09:02:01 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id j16-20020a544810000000b002fa6ba4317esm138611oij.44.2022.04.14.09.02.00
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gYZcqKE4gPDeEOq6vTanVgpcbt838PrfODIBOARgOwI=;
+        b=lyeTLw9oBcwfHBEfaSCQr7gVPD0vLH17XFfBsLmUYcjtEUOHZ6bXqRqI13qKvwmEfP
+         2C+/w1oy3tXH6bFGTJQLBFe/hrTrcyre2q+Z6FGgFalfQ9RI/ZsoF6uP7nnZwrtUqt68
+         gmvmDJZ4/qccjsKuGlSKYip3usAV7XDdErDQwo8NG/DQGr2GcDMJbQtMQw5ApWDlLkvS
+         9xqoEwMsqi1l0Oy4vuEVLmdUCWE9KOPIxos1rM4lEzk72iNV2ggxFV9mXkG56IWufvwr
+         gdGJwTLGHnYRfcLyzw1zNhoYf65r8ibX28EM/OA8ZXRvVRoLRRZHnRyaoMngqCPxEcuL
+         PNPA==
+X-Gm-Message-State: AOAM5308DKQva9kHWzeVuEtJWTh/f4LKlk2Zm7XL4qflTx1mncGcuueR
+        LTksSDhYhQwlwhsTrRVwVWpC9g==
+X-Google-Smtp-Source: ABdhPJxwpB4OEHYX+HrxFPLkb3cIMhFw8/1arc2ZYfNvjukO2q+K0xJUf8EeHiI49j7WNtRMHneGWQ==
+X-Received: by 2002:a17:902:854c:b0:158:35ce:9739 with SMTP id d12-20020a170902854c00b0015835ce9739mr26794439plo.150.1649952198568;
+        Thu, 14 Apr 2022 09:03:18 -0700 (PDT)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id h14-20020a63384e000000b00366ba5335e7sm2310922pgn.72.2022.04.14.09.03.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 09:02:00 -0700 (PDT)
-Received: (nullmailer pid 2136331 invoked by uid 1000);
-        Thu, 14 Apr 2022 16:02:00 -0000
-Date:   Thu, 14 Apr 2022 11:02:00 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     vigneshr@ti.com, richard@nod.at, miquel.raynal@bootlin.com,
-        joern@lazybastard.org, kernel@axis.com,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        krzk+dt@kernel.org, frowand.list@gmail.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/4] mtd: phram: Allow probing via reserved-memory
-Message-ID: <YlhFeEvOPHHsMC34@robh.at.kernel.org>
-References: <20220412135302.1682890-1-vincent.whitchurch@axis.com>
- <20220412135302.1682890-4-vincent.whitchurch@axis.com>
+        Thu, 14 Apr 2022 09:03:17 -0700 (PDT)
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Shachar Raindel <shacharr@microsoft.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Dimitris Michailidis <d.michailidis@fungible.com>,
+        =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] net: restore alpha order to Ethernet devices in config
+Date:   Thu, 14 Apr 2022 09:03:12 -0700
+Message-Id: <20220414160315.105212-1-stephen@networkplumber.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412135302.1682890-4-vincent.whitchurch@axis.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 03:53:01PM +0200, Vincent Whitchurch wrote:
-> Allow phram to be probed from the devicetree.  It expects to be in a
-> reserved-memory node as documented by the bindings.  This allows things
-> like partitioning to be specified via the devicetree.
-> 
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-> ---
-> 
-> Notes:
->     v3:
->     - Add missing semicolon after MODULE_DEVICE_TABLE causing build errors on some
->       configs.
-> 
->  drivers/mtd/devices/phram.c | 67 ++++++++++++++++++++++++++++++++++---
->  drivers/of/platform.c       |  1 +
+The displayed list of Ethernet devices in make menuconfig
+has gotten out of order. This is mostly due to changes in vendor
+names etc, but also because of new Microsoft entry in wrong place.
 
-For DT,
+This restores so that the display is in order even if the names
+of the sub directories are not.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Fixes: ca9c54d2d6a5 ("net: mana: Add a driver for Microsoft Azure Network Adapter (MANA)")
+Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+---
+ drivers/net/ethernet/Kconfig | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
+index bd4cb9d7c35d..827993022386 100644
+--- a/drivers/net/ethernet/Kconfig
++++ b/drivers/net/ethernet/Kconfig
+@@ -35,15 +35,6 @@ source "drivers/net/ethernet/aquantia/Kconfig"
+ source "drivers/net/ethernet/arc/Kconfig"
+ source "drivers/net/ethernet/asix/Kconfig"
+ source "drivers/net/ethernet/atheros/Kconfig"
+-source "drivers/net/ethernet/broadcom/Kconfig"
+-source "drivers/net/ethernet/brocade/Kconfig"
+-source "drivers/net/ethernet/cadence/Kconfig"
+-source "drivers/net/ethernet/calxeda/Kconfig"
+-source "drivers/net/ethernet/cavium/Kconfig"
+-source "drivers/net/ethernet/chelsio/Kconfig"
+-source "drivers/net/ethernet/cirrus/Kconfig"
+-source "drivers/net/ethernet/cisco/Kconfig"
+-source "drivers/net/ethernet/cortina/Kconfig"
+ 
+ config CX_ECAT
+ 	tristate "Beckhoff CX5020 EtherCAT master support"
+@@ -57,6 +48,14 @@ config CX_ECAT
+ 	  To compile this driver as a module, choose M here. The module
+ 	  will be called ec_bhf.
+ 
++source "drivers/net/ethernet/broadcom/Kconfig"
++source "drivers/net/ethernet/cadence/Kconfig"
++source "drivers/net/ethernet/calxeda/Kconfig"
++source "drivers/net/ethernet/cavium/Kconfig"
++source "drivers/net/ethernet/chelsio/Kconfig"
++source "drivers/net/ethernet/cirrus/Kconfig"
++source "drivers/net/ethernet/cisco/Kconfig"
++source "drivers/net/ethernet/cortina/Kconfig"
+ source "drivers/net/ethernet/davicom/Kconfig"
+ 
+ config DNET
+@@ -85,7 +84,6 @@ source "drivers/net/ethernet/huawei/Kconfig"
+ source "drivers/net/ethernet/i825xx/Kconfig"
+ source "drivers/net/ethernet/ibm/Kconfig"
+ source "drivers/net/ethernet/intel/Kconfig"
+-source "drivers/net/ethernet/microsoft/Kconfig"
+ source "drivers/net/ethernet/xscale/Kconfig"
+ 
+ config JME
+@@ -128,8 +126,9 @@ source "drivers/net/ethernet/mediatek/Kconfig"
+ source "drivers/net/ethernet/mellanox/Kconfig"
+ source "drivers/net/ethernet/micrel/Kconfig"
+ source "drivers/net/ethernet/microchip/Kconfig"
+-source "drivers/net/ethernet/moxa/Kconfig"
+ source "drivers/net/ethernet/mscc/Kconfig"
++source "drivers/net/ethernet/microsoft/Kconfig"
++source "drivers/net/ethernet/moxa/Kconfig"
+ source "drivers/net/ethernet/myricom/Kconfig"
+ 
+ config FEALNX
+@@ -141,10 +140,10 @@ config FEALNX
+ 	  Say Y here to support the Myson MTD-800 family of PCI-based Ethernet
+ 	  cards. <http://www.myson.com.tw/>
+ 
++source "drivers/net/ethernet/ni/Kconfig"
+ source "drivers/net/ethernet/natsemi/Kconfig"
+ source "drivers/net/ethernet/neterion/Kconfig"
+ source "drivers/net/ethernet/netronome/Kconfig"
+-source "drivers/net/ethernet/ni/Kconfig"
+ source "drivers/net/ethernet/8390/Kconfig"
+ source "drivers/net/ethernet/nvidia/Kconfig"
+ source "drivers/net/ethernet/nxp/Kconfig"
+@@ -164,6 +163,7 @@ source "drivers/net/ethernet/packetengines/Kconfig"
+ source "drivers/net/ethernet/pasemi/Kconfig"
+ source "drivers/net/ethernet/pensando/Kconfig"
+ source "drivers/net/ethernet/qlogic/Kconfig"
++source "drivers/net/ethernet/brocade/Kconfig"
+ source "drivers/net/ethernet/qualcomm/Kconfig"
+ source "drivers/net/ethernet/rdc/Kconfig"
+ source "drivers/net/ethernet/realtek/Kconfig"
+@@ -171,10 +171,10 @@ source "drivers/net/ethernet/renesas/Kconfig"
+ source "drivers/net/ethernet/rocker/Kconfig"
+ source "drivers/net/ethernet/samsung/Kconfig"
+ source "drivers/net/ethernet/seeq/Kconfig"
+-source "drivers/net/ethernet/sfc/Kconfig"
+ source "drivers/net/ethernet/sgi/Kconfig"
+ source "drivers/net/ethernet/silan/Kconfig"
+ source "drivers/net/ethernet/sis/Kconfig"
++source "drivers/net/ethernet/sfc/Kconfig"
+ source "drivers/net/ethernet/smsc/Kconfig"
+ source "drivers/net/ethernet/socionext/Kconfig"
+ source "drivers/net/ethernet/stmicro/Kconfig"
+-- 
+2.35.1
+
