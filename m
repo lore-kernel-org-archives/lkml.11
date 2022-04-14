@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C33E7C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B29CEC4321E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:40:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346089AbiDNOiq (ORCPT
+        id S1345341AbiDNOij (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:38:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54656 "EHLO
+        Thu, 14 Apr 2022 10:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245250AbiDNNnL (ORCPT
+        with ESMTP id S244708AbiDNNmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:43:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736C324087;
-        Thu, 14 Apr 2022 06:39:32 -0700 (PDT)
+        Thu, 14 Apr 2022 09:42:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABECEDF11;
+        Thu, 14 Apr 2022 06:39:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1E6261D70;
-        Thu, 14 Apr 2022 13:39:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC4D9C385A1;
-        Thu, 14 Apr 2022 13:39:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5663FB82987;
+        Thu, 14 Apr 2022 13:39:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD361C385A5;
+        Thu, 14 Apr 2022 13:39:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943571;
-        bh=CcmxZVqWt0C3IfMQFSdot6JDjR60nIDCK88Be3lD5kU=;
+        s=korg; t=1649943563;
+        bh=ycQWW2SjYMu8JULGVpcGnxyZKLS58hSe5nzQtG6LpSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ymWpk1wPV5jNHQbXgkrfZN+XBlk/HZy+YuIwILoQx9E0x+wJ18WMdn6faKOEStHd4
-         /NooD/6uDXUMrqKLk0YmUgOVSq5nR7Nu2CcfkvbdMbW5IuqJQz/Moj7fQ2pFm9NkmL
-         5/LSsb6CEg5EqErWSYLblAErfNi/HGOaHSdQa0cg=
+        b=fd3hligAvldcTG5AuFEyewL0F4r/HM5a+Qk+9tcc9f0Yy+KNtOioSlotvIr+fmopy
+         84PltC05eCMUQHzxiHRnrynNNYA1oZWbhaPtIGok/igG7GzhjAe5VbrPyO9h+aLcn5
+         2zPjqigbJ0pf3RBlcVB2dpnTJGiCyE29mn12pCuQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 203/475] power: supply: wm8350-power: Add missing free in free_charger_irq
-Date:   Thu, 14 Apr 2022 15:09:48 +0200
-Message-Id: <20220414110900.810310992@linuxfoundation.org>
+        stable@vger.kernel.org, Anssi Hannula <anssi.hannula@bitwise.fi>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 200/475] hv_balloon: rate-limit "Unhandled message" warning
+Date:   Thu, 14 Apr 2022 15:09:45 +0200
+Message-Id: <20220414110900.726506331@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,34 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Anssi Hannula <anssi.hannula@bitwise.fi>
 
-[ Upstream commit 6dee930f6f6776d1e5a7edf542c6863b47d9f078 ]
+[ Upstream commit 1d7286729aa616772be334eb908e11f527e1e291 ]
 
-In free_charger_irq(), there is no free for 'WM8350_IRQ_CHG_FAST_RDY'.
-Therefore, it should be better to add it in order to avoid the memory leak.
+For a couple of times I have encountered a situation where
 
-Fixes: 14431aa0c5a4 ("power_supply: Add support for WM8350 PMU")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+  hv_balloon: Unhandled message: type: 12447
+
+is being flooded over 1 million times per second with various values,
+filling the log and consuming cycles, making debugging difficult.
+
+Add rate limiting to the message.
+
+Most other Hyper-V drivers already have similar rate limiting in their
+message callbacks.
+
+The cause of the floods in my case was probably fixed by 96d9d1fa5cd5
+("Drivers: hv: balloon: account for vmbus packet header in
+max_pkt_size").
+
+Fixes: 9aa8b50b2b3d ("Drivers: hv: Add Hyper-V balloon driver")
+Signed-off-by: Anssi Hannula <anssi.hannula@bitwise.fi>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/20220222141400.98160-1-anssi.hannula@bitwise.fi
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/wm8350_power.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/hv/hv_balloon.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/power/supply/wm8350_power.c b/drivers/power/supply/wm8350_power.c
-index 0762ab13fa56..4fe9ea9721b3 100644
---- a/drivers/power/supply/wm8350_power.c
-+++ b/drivers/power/supply/wm8350_power.c
-@@ -524,6 +524,7 @@ static void free_charger_irq(struct wm8350 *wm8350)
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_TO, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_END, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_START, wm8350);
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1, wm8350);
- 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85, wm8350);
+diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
+index bd4e72f6dfd4..44d6de6fc03d 100644
+--- a/drivers/hv/hv_balloon.c
++++ b/drivers/hv/hv_balloon.c
+@@ -1550,7 +1550,7 @@ static void balloon_onchannelcallback(void *context)
+ 			break;
+ 
+ 		default:
+-			pr_warn("Unhandled message: type: %d\n", dm_hdr->type);
++			pr_warn_ratelimited("Unhandled message: type: %d\n", dm_hdr->type);
+ 
+ 		}
+ 	}
 -- 
 2.34.1
 
