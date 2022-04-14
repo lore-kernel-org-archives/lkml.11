@@ -2,100 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC215C35280
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD398C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:24:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357034AbiDNPZ1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:25:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
+        id S240788AbiDNPZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346824AbiDNN57 (ORCPT
+        with ESMTP id S1348105AbiDNOCM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:57:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA5FB3DDA;
-        Thu, 14 Apr 2022 06:48:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5ABC61D7E;
-        Thu, 14 Apr 2022 13:48:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3DCDC385A5;
-        Thu, 14 Apr 2022 13:48:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944087;
-        bh=y5acm9QtIYIh4TAQnZ1YLQpJn15sclndKlvdLyihpLA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1CYpQGSDDye42xPHMsLYDxdohHTamG73+PjrzSxK17/vRykRGCREUd2Zz5XHhK/Sn
-         Hl2lpylVC3MYgHXqsQXSg42zEBRYf/wFVRAKhazbuFomsRT3A+fFJuwCt/Szyn96lL
-         IlUro/XP2sH7IAVWIG4pxKCQ+Fn3Z5Rkgk2qvm/Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Neal Liu <neal_liu@aspeedtech.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 387/475] usb: ehci: add pci device support for Aspeed platforms
-Date:   Thu, 14 Apr 2022 15:12:52 +0200
-Message-Id: <20220414110905.898555779@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-References: <20220414110855.141582785@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 14 Apr 2022 10:02:12 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F39F5D672;
+        Thu, 14 Apr 2022 06:58:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649944701; x=1681480701;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=VmrXDG9iJKewRIG8lSEXIl4FCcpuFmOe4gRwKxCybl4=;
+  b=RfMoz9ZBhmLCfkBbLiYpwQz0khne0f906HyRjFYDD/w5x8hL4r/OAQR7
+   bu8RKcz8d2xBuRY7wkEa2b6sI29QN8/0JTAkI3mJPu5UVcl+f5LjqpxzH
+   WAgHxmTt/SHTOwcavwI4zl76AqoaTR03B2Mx+pUhX5McSOhEdoK9IjrZP
+   P0hU948fNn3JGhynDK3DwoRpE++NIZT1X/UUHnQWkAk+frB+UjLo5r7nr
+   Naa1JF3m+GwNe+/pM5pfUbHS/hDi4iWpL/+38HgMfV3VxlNgt0JIb3zYn
+   3CQ0CWKGlmYjL8CZkJuY8P4/A1vN5nXj1O7laU2x0hweHdwrXheEUocFF
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262686545"
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="262686545"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:58:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
+   d="scan'208";a="725372894"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga005.jf.intel.com with ESMTP; 14 Apr 2022 06:58:17 -0700
+To:     Alan Stern <stern@rowland.harvard.edu>
+Cc:     Evan Green <evgreen@chromium.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Rajat Jain <rajatja@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Youngjin Jang <yj84.jang@samsung.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-usb@vger.kernel.org
+References: <20220407115918.1.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid>
+ <YlBGvFFSp/R2CBmh@rowland.harvard.edu>
+ <CAE=gft7Zi9tpJ74Tf2iqPRbwJkmSLiKJt-WhwD+h-DxQh75D6g@mail.gmail.com>
+ <YlDoSY19HYNJGI50@rowland.harvard.edu>
+ <022a50ac-7866-2140-1b40-776255f3a036@linux.intel.com>
+ <YlRATrMxRWt9gVqt@rowland.harvard.edu>
+ <4353a956-9855-9c14-7dbf-bf16580abe32@linux.intel.com>
+ <YlWdfWRXYjkfHLIP@rowland.harvard.edu>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH] USB: hcd-pci: Fully suspend across freeze/thaw cycle
+Message-ID: <b1df80e4-af6a-e84f-f49d-c74500bdec05@linux.intel.com>
+Date:   Thu, 14 Apr 2022 17:00:12 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <YlWdfWRXYjkfHLIP@rowland.harvard.edu>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neal Liu <neal_liu@aspeedtech.com>
+On 12.4.2022 18.40, Alan Stern wrote:
+> On Tue, Apr 12, 2022 at 05:56:42PM +0300, Mathias Nyman wrote:
+>> On 11.4.2022 17.50, Alan Stern wrote:
+>>> For example, what would happen if the user unplugs a device right in the 
+>>> middle of the freeze transition, after the root hub has been frozen but 
+>>> before the controller is frozen?  We don't want such an unplug event to 
+>>> prevent the system from going into hibernation -- especially if the root 
+>>> hub was not enabled for wakeup.
+>>
+>> We should be able to let system go to hibernate even if we get a disconnect
+>> interrupt between roothub and host controller freeze.
+>> Host is not yet suspended so no PME# wake is generated, only an interrupt.
+>>
+>> From Linux PM point of view it should be ok as well as the actual xhci
+>> device that is generating the interrupt is hasnt completer freeze() 
+>>
+>> The xhci interrupt handler just needs to make sure that the disconnect
+>> isn't propagated if roothub is suspended and wake on disconnect
+>> is not set. And definitely make sure xhci doesn't start roothub polling. 
+>>
+>> When freeze() is called for the host we should prevent the host from 
+>> generating interrupts.
+> 
+> I guess that means adding a new callback.  Or we could just suspend the 
+> controller, like Evan proposed originally
 
-[ Upstream commit c3c9cee592828528fd228b01d312c7526c584a42 ]
+Suspending the host in freeze should work.
+It will do an extra xhci controller state save stage, but that should be harmless.
 
-Enable Aspeed quirks in commit 7f2d73788d90 ("usb: ehci:
-handshake CMD_RUN instead of STS_HALT") to support Aspeed
-ehci-pci device.
+But is there really a need for the suggested noirq part?
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Link: https://lore.kernel.org/r/20220208101657.76459-1-neal_liu@aspeedtech.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/usb/host/ehci-pci.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
++	.freeze_noirq	= hcd_pci_suspend_noirq, 
 
-diff --git a/drivers/usb/host/ehci-pci.c b/drivers/usb/host/ehci-pci.c
-index 774ccaa5acee..1962140a59f2 100644
---- a/drivers/usb/host/ehci-pci.c
-+++ b/drivers/usb/host/ehci-pci.c
-@@ -21,6 +21,9 @@ static const char hcd_name[] = "ehci-pci";
- /* defined here to avoid adding to pci_ids.h for single instance use */
- #define PCI_DEVICE_ID_INTEL_CE4100_USB	0x2e70
- 
-+#define PCI_VENDOR_ID_ASPEED		0x1a03
-+#define PCI_DEVICE_ID_ASPEED_EHCI	0x2603
-+
- /*-------------------------------------------------------------------------*/
- #define PCI_DEVICE_ID_INTEL_QUARK_X1000_SOC		0x0939
- static inline bool is_intel_quark_x1000(struct pci_dev *pdev)
-@@ -223,6 +226,12 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
- 			ehci->has_synopsys_hc_bug = 1;
- 		}
- 		break;
-+	case PCI_VENDOR_ID_ASPEED:
-+		if (pdev->device == PCI_DEVICE_ID_ASPEED_EHCI) {
-+			ehci_info(ehci, "applying Aspeed HC workaround\n");
-+			ehci->is_aspeed = 1;
-+		}
-+		break;
- 	}
- 
- 	/* optional debug port, normally in the first BAR */
--- 
-2.35.1
+That will try to set the host to PCI D3 state.
+It seems a bit unnecessary for freeze.
 
+> 
+>>> (If the root hub _is_ enabled for wakeup then it's questionable.  
+>>> Unplugging a device would be a wakeup event, so you could easily argue 
+>>> that it _should_ prevent the system from going into hibernation.  After 
+>>> all, if the unplug happened a few milliseconds later, after the system 
+>>> had fully gone into hibernation, then it would cause the system to wake 
+>>> up.)
+>>>
+>>>> Would it make sense prevent xHCI interrupt generation in the host
+>>>> freeze() stage, clearing the xHCI EINT bit in addition to calling 
+>>>> check_roothub_suspend()?
+>>>> Then enable it back in thaw()
+>>>
+>>> That won't fully eliminate the problem mentioned in the preceding 
+>>> paragraphs, although I guess it would help somewhat.
+>>
+>> Would the following steps solve this?
+>>
+>> 1. Disable device initiated resume for connected usb devices in freeze()
+>>
+>> 2. Don't propagate connect or OC changes if roothub is suspended and port wake
+>>    flags are disabled. I.E don't kick roothub polling in xhci interrupt
+>>    handler here.
+> 
+> I guess you can't just halt the entire host controller when only one of 
+> the root hubs is suspended with wakeup disabled.  That does complicate 
+> things.  But you could halt it as soon as both of the root hubs are 
+> frozen.  Wouldn't that prevent interrupt generation?
 
+True, but probably easier to just suspend host in freeze() as you stated above.
 
+-Mathias
