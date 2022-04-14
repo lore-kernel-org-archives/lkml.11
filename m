@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C9EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A149FC4167D
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349513AbiDNOUi (ORCPT
+        id S1349565AbiDNOUp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36822 "EHLO
+        Thu, 14 Apr 2022 10:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343927AbiDNNja (ORCPT
+        with ESMTP id S1343942AbiDNNjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC65972A6;
-        Thu, 14 Apr 2022 06:35:31 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB28A8EDB;
+        Thu, 14 Apr 2022 06:35:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39FE0B82941;
-        Thu, 14 Apr 2022 13:35:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85EBAC385A1;
-        Thu, 14 Apr 2022 13:35:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBD2A61D70;
+        Thu, 14 Apr 2022 13:35:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8527C385A1;
+        Thu, 14 Apr 2022 13:35:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943328;
-        bh=Ka01HyzPMs56b4utr0IJ9g0EEtd4Y4SB99M9CxIvCxk=;
+        s=korg; t=1649943337;
+        bh=WDYk853cnf7XgNf3KD/FCThRZet/E/qBvqM1/yjX7og=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1WsnbsdeDB9F/XsFfDh5lv2xwl2DBGXn87r/46MM6P5bH3M8OoIYj3iAUgpRarqVX
-         gNqAnByUxGC8/5kCLolotXr1JqCcQxlsS930Mis0yjSMLvXXWEbgRH9RqsggxTTy0h
-         2NOqsghUK4WLzWzFZE7WS/ydsiwmfPjBpSEviv80=
+        b=Mj2SljdI7uf2hUgeydgwAhbJ7NhOxVSRxz+hQU3tQF67Jyk/UeprXOIB1ozbGGmpu
+         9d14c2RuF9ygdYoFs+bwFQ91wtf6vbrYUoIB4B9RP/pDIs+7nJ38lCLwKcKy0LAOXo
+         cA1ME2qUBG1+Jy02DfHc449025id12M5yC1GT7Vw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jammy Huang <jammy_huang@aspeedtech.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 116/475] media: aspeed: Correct value for h-total-pixels
-Date:   Thu, 14 Apr 2022 15:08:21 +0200
-Message-Id: <20220414110858.398626906@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 118/475] video: fbdev: atmel_lcdfb: fix an error code in atmel_lcdfb_probe()
+Date:   Thu, 14 Apr 2022 15:08:23 +0200
+Message-Id: <20220414110858.454507840@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,72 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jammy Huang <jammy_huang@aspeedtech.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 4b732a0016853eaff35944f900b0db66f3914374 ]
+[ Upstream commit fee5c1e4b789e41719af9fee0e2dd397cd31988f ]
 
-Previous reg-field, 0x98[11:0], stands for the period of the detected
-hsync signal.
-Use the correct reg, 0xa0, to get h-total in pixels.
+If "sinfo->config" is not found, then return -ENODEV.  Don't
+return success.
 
-Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
-Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
-Reviewed-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: b985172b328a ("video: atmel_lcdfb: add device tree suport")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/aspeed-video.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/video/fbdev/atmel_lcdfb.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
-index 1e0867016bf3..c87eddb1c93f 100644
---- a/drivers/media/platform/aspeed-video.c
-+++ b/drivers/media/platform/aspeed-video.c
-@@ -151,7 +151,7 @@
- #define  VE_SRC_TB_EDGE_DET_BOT		GENMASK(28, VE_SRC_TB_EDGE_DET_BOT_SHF)
+diff --git a/drivers/video/fbdev/atmel_lcdfb.c b/drivers/video/fbdev/atmel_lcdfb.c
+index cf2bfff2efbf..b91919861075 100644
+--- a/drivers/video/fbdev/atmel_lcdfb.c
++++ b/drivers/video/fbdev/atmel_lcdfb.c
+@@ -1062,15 +1062,16 @@ static int __init atmel_lcdfb_probe(struct platform_device *pdev)
  
- #define VE_MODE_DETECT_STATUS		0x098
--#define  VE_MODE_DETECT_H_PIXELS	GENMASK(11, 0)
-+#define  VE_MODE_DETECT_H_PERIOD	GENMASK(11, 0)
- #define  VE_MODE_DETECT_V_LINES_SHF	16
- #define  VE_MODE_DETECT_V_LINES		GENMASK(27, VE_MODE_DETECT_V_LINES_SHF)
- #define  VE_MODE_DETECT_STATUS_VSYNC	BIT(28)
-@@ -162,6 +162,8 @@
- #define  VE_SYNC_STATUS_VSYNC_SHF	16
- #define  VE_SYNC_STATUS_VSYNC		GENMASK(27, VE_SYNC_STATUS_VSYNC_SHF)
+ 	INIT_LIST_HEAD(&info->modelist);
  
-+#define VE_H_TOTAL_PIXELS		0x0A0
+-	if (pdev->dev.of_node) {
+-		ret = atmel_lcdfb_of_init(sinfo);
+-		if (ret)
+-			goto free_info;
+-	} else {
++	if (!pdev->dev.of_node) {
+ 		dev_err(dev, "cannot get default configuration\n");
+ 		goto free_info;
+ 	}
+ 
++	ret = atmel_lcdfb_of_init(sinfo);
++	if (ret)
++		goto free_info;
 +
- #define VE_INTERRUPT_CTRL		0x304
- #define VE_INTERRUPT_STATUS		0x308
- #define  VE_INTERRUPT_MODE_DETECT_WD	BIT(0)
-@@ -743,6 +745,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
- 	u32 src_lr_edge;
- 	u32 src_tb_edge;
- 	u32 sync;
-+	u32 htotal;
- 	struct v4l2_bt_timings *det = &video->detected_timings;
++	ret = -ENODEV;
+ 	if (!sinfo->config)
+ 		goto free_info;
  
- 	det->width = MIN_WIDTH;
-@@ -787,6 +790,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
- 		src_tb_edge = aspeed_video_read(video, VE_SRC_TB_EDGE_DET);
- 		mds = aspeed_video_read(video, VE_MODE_DETECT_STATUS);
- 		sync = aspeed_video_read(video, VE_SYNC_STATUS);
-+		htotal = aspeed_video_read(video, VE_H_TOTAL_PIXELS);
- 
- 		video->frame_bottom = (src_tb_edge & VE_SRC_TB_EDGE_DET_BOT) >>
- 			VE_SRC_TB_EDGE_DET_BOT_SHF;
-@@ -803,8 +807,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
- 			VE_SRC_LR_EDGE_DET_RT_SHF;
- 		video->frame_left = src_lr_edge & VE_SRC_LR_EDGE_DET_LEFT;
- 		det->hfrontporch = video->frame_left;
--		det->hbackporch = (mds & VE_MODE_DETECT_H_PIXELS) -
--			video->frame_right;
-+		det->hbackporch = htotal - video->frame_right;
- 		det->hsync = sync & VE_SYNC_STATUS_HSYNC;
- 		if (video->frame_left > video->frame_right)
- 			continue;
 -- 
 2.34.1
 
