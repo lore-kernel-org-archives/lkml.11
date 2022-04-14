@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55658C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40B0BC3527D
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351129AbiDNOa2 (ORCPT
+        id S1351050AbiDNO3y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46860 "EHLO
+        Thu, 14 Apr 2022 10:29:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344242AbiDNNkX (ORCPT
+        with ESMTP id S1344188AbiDNNkK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:40:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBB4120;
-        Thu, 14 Apr 2022 06:37:59 -0700 (PDT)
+        Thu, 14 Apr 2022 09:40:10 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65163120;
+        Thu, 14 Apr 2022 06:37:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BAE72B8296A;
-        Thu, 14 Apr 2022 13:37:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 082EEC385A9;
-        Thu, 14 Apr 2022 13:37:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C7A08CE2997;
+        Thu, 14 Apr 2022 13:37:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D78E9C385A5;
+        Thu, 14 Apr 2022 13:37:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943476;
-        bh=m4rqaYlx0DDFTAyMPATzTutb0BZYg1FyFgvI8DIxmHw=;
+        s=korg; t=1649943462;
+        bh=CJDEHaqs2OO5xDx5042fVeBV4hlsXrbPQw4D+12ZElY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SYkfmoIWDWRgAP8yJ6zEe/KKcGeb18O17Uh2BQ87UtqiNBd8trfUgGaCJ292MuIfv
-         pXyBaeZDsUM0vNZeg0wI0rq8ZhTA/mJdsZ6VlFefbYlynvUHeTjYUNRAUM/r3leJDP
-         epXd4k650Qe5R7ZwtBZevO9tzSjdLefSFQ+rWIrE=
+        b=jYERjCbDUIWFlHiTg+YZPk46jGFRJ2cpZtCvp5mjQz88YeU3AkpQefZ0IxIV2uFrp
+         e17vWvBSikAkuzcZIBu42WlKDXkykts1eb0Gr8z4BzxAMEK900rOECMHfopx5QuFbb
+         CwkmWq39KxxChS5J6UXXAPDtfhb347UXRIKBCsDc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 168/475] ray_cs: Check ioremap return value
-Date:   Thu, 14 Apr 2022 15:09:13 +0200
-Message-Id: <20220414110859.839130940@linuxfoundation.org>
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 163/475] drm/amd/display: Fix a NULL pointer dereference in amdgpu_dm_connector_add_common_modes()
+Date:   Thu, 14 Apr 2022 15:09:08 +0200
+Message-Id: <20220414110859.700238236@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,55 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit 7e4760713391ee46dc913194b33ae234389a174e ]
+[ Upstream commit 588a70177df3b1777484267584ef38ab2ca899a2 ]
 
-As the possible failure of the ioremap(), the 'local->sram' and other
-two could be NULL.
-Therefore it should be better to check it in order to avoid the later
-dev_dbg.
+In amdgpu_dm_connector_add_common_modes(), amdgpu_dm_create_common_mode()
+is assigned to mode and is passed to drm_mode_probed_add() directly after
+that. drm_mode_probed_add() passes &mode->head to list_add_tail(), and
+there is a dereference of it in list_add_tail() without recoveries, which
+could lead to NULL pointer dereference on failure of
+amdgpu_dm_create_common_mode().
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20211230022926.1846757-1-jiasheng@iscas.ac.cn
+Fix this by adding a NULL check of mode.
+
+This bug was found by a static analyzer.
+
+Builds with 'make allyesconfig' show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: e7b07ceef2a6 ("drm/amd/display: Merge amdgpu_dm_types and amdgpu_dm")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ray_cs.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
-index cf372684b681..3836d6ac5304 100644
---- a/drivers/net/wireless/ray_cs.c
-+++ b/drivers/net/wireless/ray_cs.c
-@@ -382,6 +382,8 @@ static int ray_config(struct pcmcia_device *link)
- 		goto failed;
- 	local->sram = ioremap(link->resource[2]->start,
- 			resource_size(link->resource[2]));
-+	if (!local->sram)
-+		goto failed;
- 
- /*** Set up 16k window for shared memory (receive buffer) ***************/
- 	link->resource[3]->flags |=
-@@ -396,6 +398,8 @@ static int ray_config(struct pcmcia_device *link)
- 		goto failed;
- 	local->rmem = ioremap(link->resource[3]->start,
- 			resource_size(link->resource[3]));
-+	if (!local->rmem)
-+		goto failed;
- 
- /*** Set up window for attribute memory ***********************************/
- 	link->resource[4]->flags |=
-@@ -410,6 +414,8 @@ static int ray_config(struct pcmcia_device *link)
- 		goto failed;
- 	local->amem = ioremap(link->resource[4]->start,
- 			resource_size(link->resource[4]));
-+	if (!local->amem)
-+		goto failed;
- 
- 	dev_dbg(&link->dev, "ray_config sram=%p\n", local->sram);
- 	dev_dbg(&link->dev, "ray_config rmem=%p\n", local->rmem);
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 8e4d863c7570..29f8b4bd5a76 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -5013,6 +5013,9 @@ static void amdgpu_dm_connector_add_common_modes(struct drm_encoder *encoder,
+ 		mode = amdgpu_dm_create_common_mode(encoder,
+ 				common_modes[i].name, common_modes[i].w,
+ 				common_modes[i].h);
++		if (!mode)
++			continue;
++
+ 		drm_mode_probed_add(connector, mode);
+ 		amdgpu_dm_connector->num_modes++;
+ 	}
 -- 
 2.34.1
 
