@@ -2,69 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1560CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 05:28:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 620FAC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 05:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239851AbiDNFaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 01:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
+        id S239875AbiDNFeM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 01:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232614AbiDNFaW (ORCPT
+        with ESMTP id S239861AbiDNFeK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 01:30:22 -0400
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E14630570;
-        Wed, 13 Apr 2022 22:27:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1649914079; x=1681450079;
-  h=message-id:date:mime-version:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:subject;
-  bh=2uCzEJAQZ1S/abq8qomCN1D7IBy8U0sN2Uh5wC0Cs08=;
-  b=PsBHDKfX4iN1fC/a6v8N/2FnPIKvzUchfdgZkfLrNOqoGv5XoxiQeEa4
-   3YJ1L18t59CglApecNTyRRLtAizCowNK9uGJ9GNkElQIcyBcHQYojU0x1
-   tkTuP1y5vT+yr0rHkvK2mfgT75+Zj88bs7bgQGP26YG8/8nacH31EGP4G
-   M=;
-X-IronPort-AV: E=Sophos;i="5.90,258,1643673600"; 
-   d="scan'208";a="210589874"
-Subject: Re: [UNVERIFIED SENDER] Re: [PATCH] watchdog: sp805: disable watchdog on
- remove
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-1f9d5b26.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 14 Apr 2022 05:27:44 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-1f9d5b26.us-west-2.amazon.com (Postfix) with ESMTPS id CFB8240ED1;
-        Thu, 14 Apr 2022 05:27:43 +0000 (UTC)
-Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Thu, 14 Apr 2022 05:27:37 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Thu, 14 Apr 2022 05:27:37 +0000
-Received: from [192.168.18.125] (10.1.213.24) by mail-relay.amazon.com
- (10.43.60.234) with Microsoft SMTP Server id 15.0.1497.32 via Frontend
- Transport; Thu, 14 Apr 2022 05:27:34 +0000
-Message-ID: <a92322d9-6fb8-c1d8-0397-544465e1588d@amazon.com>
-Date:   Thu, 14 Apr 2022 08:27:34 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Content-Language: en-US
-To:     Guenter Roeck <linux@roeck-us.net>, <wim@linux-watchdog.org>,
-        <linux-watchdog@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <ronenk@amazon.com>, <talel@amazon.com>, <hhhawa@amazon.com>,
-        <jonnyc@amazon.com>, <hanochu@amazon.com>, <dwmw@amazon.co.uk>
-References: <20220403052249.48784-1-farbere@amazon.com>
- <1009cf3a-587b-307a-d1c9-efe71cd0a104@roeck-us.net>
-From:   "Farber, Eliav" <farbere@amazon.com>
-In-Reply-To: <1009cf3a-587b-307a-d1c9-efe71cd0a104@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+        Thu, 14 Apr 2022 01:34:10 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E5273B54F;
+        Wed, 13 Apr 2022 22:31:42 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app4 (Coremail) with SMTP id cS_KCgDHr_KqsVdi+oM1AQ--.59165S4;
+        Thu, 14 Apr 2022 13:31:35 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     krzk@kernel.org, linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
+        alexander.deucher@amd.com, akpm@linux-foundation.org,
+        broonie@kernel.org, netdev@vger.kernel.org, linma@zju.edu.cn,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH V2 2/3] drivers: nfc: nfcmrvl: fix double free bug in nfc_fw_download_done()
+Date:   Thu, 14 Apr 2022 13:31:21 +0800
+Message-Id: <538873335b034d7d97a08d2343e898cfa924918a.1649913521.git.duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <cover.1649913521.git.duoming@zju.edu.cn>
+References: <cover.1649913521.git.duoming@zju.edu.cn>
+In-Reply-To: <cover.1649913521.git.duoming@zju.edu.cn>
+References: <cover.1649913521.git.duoming@zju.edu.cn>
+X-CM-TRANSID: cS_KCgDHr_KqsVdi+oM1AQ--.59165S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7Cw1DZFW8KF4ktF15tr43Jrb_yoW8ZFW5pr
+        WrGFy2yr4DAr4jvFWrtFyDWrs8Cw47CryUGFZrG3yfZFn8tFyqyr1kGFyrZF4DWr48ta15
+        K39xJayjkanYvr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvm1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
+        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
+        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
+        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
+        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IY
+        c2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r
+        4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
+        67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
+        x0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2
+        z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnU
+        UI43ZEXa7VUbXdbUUUUUU==
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgITAVZdtZLd3gAgsd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/3/2022 8:41 AM, Guenter Roeck wrote:
-> Why not use watchdog_stop_on_unregister() ? 
+There are potential double free bug in nfc_fw_download_done().
+The timer handler fw_dnld_timeout() and work item fw_dnld_rx_work()
+could both reach in fw_dnld_over() and nfc_fw_download_done() is not
+protected by any lock, which leads to double free.
 
-I'll use watchdog_stop_on_unregister() instead of my change.
+The race between fw_dnld_rx_work() and fw_dnld_timeout()
+can be shown as below:
+
+   (Thread 1)               |      (Thread 2)
+fw_dnld_timeout             |  fw_dnld_rx_work
+                            |   fw_dnld_over
+ fw_dnld_over               |    nfc_fw_download_done
+  nfc_fw_download_done      |     nfc_genl_fw_download_done
+   nfc_genl_fw_download_done|      nlmsg_free(msg)  //(1)
+    nlmsg_free(msg) //(2)   |      ...
+     ...                    |
+
+The nlmsg_free() will deallocate sk_buff in position (1), but
+nlmsg_free will be deallocated again in position (2), which
+leads to double free.
+
+This patch adds spin_lock_irq() and check in fw_dnld_over()
+in order to synchronize among different threads that call
+fw_dnld_over(). So the double free bug could be prevented.
+
+Fixes: 3194c6870158e3 ("NFC: nfcmrvl: add firmware download support")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Lin Ma <linma@zju.edu.cn>
+---
+Changes in V2:
+  - Fix the check in spin_lock_irq.
+
+ drivers/nfc/nfcmrvl/fw_dnld.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/nfc/nfcmrvl/fw_dnld.c b/drivers/nfc/nfcmrvl/fw_dnld.c
+index c22a4556db5..bb9e7e2bdec 100644
+--- a/drivers/nfc/nfcmrvl/fw_dnld.c
++++ b/drivers/nfc/nfcmrvl/fw_dnld.c
+@@ -115,8 +115,10 @@ static void fw_dnld_over(struct nfcmrvl_private *priv, u32 error)
+ 		/* failed, halt the chip to avoid power consumption */
+ 		nfcmrvl_chip_halt(priv);
+ 	}
+-
+-	nfc_fw_download_done(priv->ndev->nfc_dev, priv->fw_dnld.name, error);
++	spin_lock_irq(&priv->fw_dnld.lock);
++	if (priv->ndev->nfc_dev->fw_download_in_progress)
++		nfc_fw_download_done(priv->ndev->nfc_dev, priv->fw_dnld.name, error);
++	spin_unlock_irq(&priv->fw_dnld.lock);
+ }
+ 
+ static void fw_dnld_timeout(struct timer_list *t)
+-- 
+2.17.1
 
