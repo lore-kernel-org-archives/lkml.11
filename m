@@ -2,119 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D4F2C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:32:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61401C4707F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:32:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244510AbiDNNef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49940 "EHLO
+        id S244574AbiDNNen (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:34:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240134AbiDNNZY (ORCPT
+        with ESMTP id S244346AbiDNN0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:25:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFAC91AC4;
-        Thu, 14 Apr 2022 06:19:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Apr 2022 09:26:30 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5999E9E1;
+        Thu, 14 Apr 2022 06:19:56 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id 6ff0503fedc9cd83; Thu, 14 Apr 2022 15:19:55 +0200
+Received: from kreacher.localnet (unknown [213.134.181.101])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EB49B82982;
-        Thu, 14 Apr 2022 13:19:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5480C385AA;
-        Thu, 14 Apr 2022 13:19:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942383;
-        bh=/ml5tdhAb3zdSZI2FjZp5xcFQqBak2tGhtErww/empE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ux/8lF8mVDYAaK6tAnNXwA74s8zE9I1dgJCrOQ9FciGRK178Zg2zRfpP98sXZxXqI
-         hBqOvVIyzWkW5h/CVmQZRtohHMkqsxtnMsOHcfdajZQHnqW+oVvKArZODMWx1gvkg9
-         nMO59i33788ZUlVOsrvxAXKr6Yic/1ETDaq+METU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yiru Xu <xyru1999@gmail.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 117/338] Bluetooth: hci_serdev: call init_rwsem() before p->open()
-Date:   Thu, 14 Apr 2022 15:10:20 +0200
-Message-Id: <20220414110842.237202671@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-References: <20220414110838.883074566@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by v370.home.net.pl (Postfix) with ESMTPSA id 3DC4666BE86;
+        Thu, 14 Apr 2022 15:19:54 +0200 (CEST)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Linux PCI <linux-pci@vger.kernel.org>
+Cc:     Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: [PATCH v3 6/9] PCI/PM: Clean up pci_set_low_power_state()
+Date:   Thu, 14 Apr 2022 15:15:31 +0200
+Message-ID: <1749771.VLH7GnMWUR@kreacher>
+In-Reply-To: <5838942.lOV4Wx5bFT@kreacher>
+References: <4419002.LvFx2qVVIh@kreacher> <11975904.O9o76ZdvQC@kreacher> <5838942.lOV4Wx5bFT@kreacher>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.181.101
+X-CLIENT-HOSTNAME: 213.134.181.101
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelfedgieegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkjghfggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpedvjeelgffhiedukedtleekkedvudfggefhgfegjefgueekjeelvefggfdvledutdenucfkphepvddufedrudefgedrudekuddruddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukedurddutddupdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeehpdhrtghpthhtoheplhhinhhugidqphgtihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhpmhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehhvghlghgrrghssehkvghrnhgvlhdrohhrghdprhgtphhtthhopehm
+ ihhkrgdrfigvshhtvghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgtohhm
+X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 9d7cbe2b9cf5f650067df4f402fdd799d4bbb4e1 ]
+Make the following assorted non-essential changes in
+pci_set_low_power_state():
 
-kvartet reported, that hci_uart_tx_wakeup() uses uninitialized rwsem.
-The problem was in wrong place for percpu_init_rwsem() call.
+ 1. Drop two redundant checks from it (the caller takes care of these
+    conditions).
 
-hci_uart_proto::open() may register a timer whose callback may call
-hci_uart_tx_wakeup(). There is a chance, that hci_uart_register_device()
-thread won't be fast enough to call percpu_init_rwsem().
+ 2. Modify error messages printed by it to make them more consistent
+    with the messages printed by pci_power_up() and
+    pci_set_full_power_state().
 
-Fix it my moving percpu_init_rwsem() call before p->open().
+ 3. Change the log level of one of the messages to "debug", because
+    it only indicates a programming mistake.
 
-INFO: trying to register non-static key.
-The code is fine but needs lockdep annotation, or maybe
-you didn't initialize this object before use?
-turning off the locking correctness validator.
-CPU: 2 PID: 18524 Comm: syz-executor.5 Not tainted 5.16.0-rc6 #9
-...
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- assign_lock_key kernel/locking/lockdep.c:951 [inline]
- register_lock_class+0x148d/0x1950 kernel/locking/lockdep.c:1263
- __lock_acquire+0x106/0x57e0 kernel/locking/lockdep.c:4906
- lock_acquire kernel/locking/lockdep.c:5637 [inline]
- lock_acquire+0x1ab/0x520 kernel/locking/lockdep.c:5602
- percpu_down_read_trylock include/linux/percpu-rwsem.h:92 [inline]
- hci_uart_tx_wakeup+0x12e/0x490 drivers/bluetooth/hci_ldisc.c:124
- h5_timed_event+0x32f/0x6a0 drivers/bluetooth/hci_h5.c:188
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
+ 4. Make it return -ENODEV (instead of -EIO) when the device is not
+    accessible.
 
-Fixes: d73e17281665 ("Bluetooth: hci_serdev: Init hci_uart proto_lock to avoid oops")
-Reported-by: Yiru Xu <xyru1999@gmail.com>
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 ---
- drivers/bluetooth/hci_serdev.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
-index 7b3aade431e5..9ebcf0d9e395 100644
---- a/drivers/bluetooth/hci_serdev.c
-+++ b/drivers/bluetooth/hci_serdev.c
-@@ -288,6 +288,8 @@ int hci_uart_register_device(struct hci_uart *hu,
- 	if (err)
- 		return err;
+v1 -> v3:
+   * Added R-by from Mika.
+
+---
+ drivers/pci/pci.c |   13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
+
+Index: linux-pm/drivers/pci/pci.c
+===================================================================
+--- linux-pm.orig/drivers/pci/pci.c
++++ linux-pm/drivers/pci/pci.c
+@@ -1345,16 +1345,9 @@ static int pci_set_low_power_state(struc
+ {
+ 	u16 pmcsr;
  
-+	percpu_init_rwsem(&hu->proto_lock);
-+
- 	err = p->open(hu);
- 	if (err)
- 		goto err_open;
-@@ -310,7 +312,6 @@ int hci_uart_register_device(struct hci_uart *hu,
+-	/* Check if we're already there */
+-	if (dev->current_state == state)
+-		return 0;
+-
+ 	if (!dev->pm_cap)
+ 		return -EIO;
  
- 	INIT_WORK(&hu->init_ready, hci_uart_init_work);
- 	INIT_WORK(&hu->write_work, hci_uart_write_work);
--	percpu_init_rwsem(&hu->proto_lock);
+-	if (state < PCI_D1 || state > PCI_D3hot)
+-		return -EINVAL;
+-
+ 	/*
+ 	 * Validate transition: We can enter D0 from any state, but if
+ 	 * we're already in a low-power state, we can only go deeper.  E.g.,
+@@ -1362,7 +1355,7 @@ static int pci_set_low_power_state(struc
+ 	 * we'd have to go from D3 to D0, then to D1.
+ 	 */
+ 	if (dev->current_state <= PCI_D3cold && dev->current_state > state) {
+-		pci_err(dev, "invalid power transition (from %s to %s)\n",
++		pci_dbg(dev, "Invalid power transition (from %s to %s)\n",
+ 			pci_power_name(dev->current_state),
+ 			pci_power_name(state));
+ 		return -EINVAL;
+@@ -1375,10 +1368,10 @@ static int pci_set_low_power_state(struc
  
- 	/* Only when vendor specific setup callback is provided, consider
- 	 * the manufacturer information valid. This avoids filling in the
--- 
-2.34.1
+ 	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
+ 	if (PCI_POSSIBLE_ERROR(pmcsr)) {
+-		pci_err(dev, "can't change power state from %s to %s (config space inaccessible)\n",
++		pci_err(dev, "Unable to change power state from %s to %s, device inaccessible\n",
+ 			pci_power_name(dev->current_state),
+ 			pci_power_name(state));
+-		return -EIO;
++		return -ENODEV;
+ 	}
+ 
+ 	pmcsr &= ~PCI_PM_CTRL_STATE_MASK;
 
 
 
