@@ -2,104 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C220C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22DB9C4321E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346601AbiDNP1p (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58064 "EHLO
+        id S243471AbiDNP16 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:27:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245187AbiDNOCw (ORCPT
+        with ESMTP id S1346626AbiDNN5q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:02:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC25F3614A
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:00:22 -0700 (PDT)
+        Thu, 14 Apr 2022 09:57:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09CD8A206B;
+        Thu, 14 Apr 2022 06:47:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4C8761E5C
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 14:00:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50AC5C385A1;
-        Thu, 14 Apr 2022 14:00:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649944821;
-        bh=yZzfIMgMmACle5FvcjBY14F1kiew6Oh0EdfQGa1Lu/w=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GdNzy7tEXojYjxjcPiyL7svP/TCkJEWu6yG63EQMWofMlPfJQsBuxBVi8/xMnXY0d
-         ncCKQ0xbxP927jda8qOO026FeLLhQItV3c27LPro+FTnVaQ0Ba+2pur7vwE44iDoCH
-         OnbbPtn4O04Xq3Afq7XTh18N1KURud6bGemG6phHzNMSuxAt9u7loCocopMiOKOdoV
-         B3b9a2xoECZ62Yix1Ut/6xpI1i49XMYPcv2c44B+TfoG/8rgx4+07l6zdSQX9L0uUQ
-         237p+iFX9dZM7WGgIwROssl5dNg1D/cR+F0dirDTOLCyGGeiFrIVe6SEtysubDuSMR
-         z3HqsRGh9AhQA==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nf01C-004JJB-S2; Thu, 14 Apr 2022 15:00:19 +0100
-From:   Marc Zyngier <maz@kernel.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0A77B82968;
+        Thu, 14 Apr 2022 13:47:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F638C385A5;
+        Thu, 14 Apr 2022 13:47:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649944070;
+        bh=14GF3tbQ2IwIhFRdh7RRbQxLPJx1hx8o4m7xqSsrKeM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QqC6fyn0ytT8pMcF4WVbCgQGW0D8I+aWdrhvtEaZyV7UdGf6fT7HmYRN/mXCSu6sY
+         tjTf4YWX6f2OHOCnS5F1uDa+Srn9StOQgG4vCVfxRy5bDqoY/piw/mzVsd3OAB3cAU
+         931o/TM6+uDOGa/Nr+QCMgEwT8ziBqC2PtZts4t8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>, kernel-team@android.com,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH] genirq: Take the proposed affinity at face value if force==true
-Date:   Thu, 14 Apr 2022 15:00:11 +0100
-Message-Id: <20220414140011.541725-1-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 382/475] ipv6: make mc_forwarding atomic
+Date:   Thu, 14 Apr 2022 15:12:47 +0200
+Message-Id: <20220414110905.761788016@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, tglx@linutronix.de, kernel-team@android.com, m.szyprowski@samsung.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Although setting the affinity of an interrupt to a set of CPUs
-that doesn't have any online CPU is generally frowned apon,
-there are a few limited cases where such affinity is set from
-a CPUHP notifier, setting the affinity to a CPU that isn't online
-yet.
+From: Eric Dumazet <edumazet@google.com>
 
-The saving grace is that this is always done using the 'force'
-attribute, which gives us a hint that we really shouldn't worry
-too much about the affinity at this stage, and that the caller
-knows best. Or so we hope.
+[ Upstream commit 145c7a793838add5e004e7d49a67654dc7eba147 ]
 
-This restores the expected behaviour on Marek's system.
+This fixes minor data-races in ip6_mc_input() and
+batadv_mcast_mla_rtr_flags_softif_get_ipv6()
 
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link:: https://lore.kernel.org/r/4b7fc13c-887b-a664-26e8-45aed13f048a@samsung.com
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/irq/manage.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ include/linux/ipv6.h       | 2 +-
+ net/batman-adv/multicast.c | 2 +-
+ net/ipv6/addrconf.c        | 4 ++--
+ net/ipv6/ip6_input.c       | 2 +-
+ net/ipv6/ip6mr.c           | 8 ++++----
+ 5 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index f71ecc100545..f1d5a94c6c9f 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -266,10 +266,16 @@ int irq_do_set_affinity(struct irq_data *data, const struct cpumask *mask,
- 		prog_mask = mask;
- 	}
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index bbe297bbbca5..d5c507311efb 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -50,7 +50,7 @@ struct ipv6_devconf {
+ 	__s32		use_optimistic;
+ #endif
+ #ifdef CONFIG_IPV6_MROUTE
+-	__s32		mc_forwarding;
++	atomic_t	mc_forwarding;
+ #endif
+ 	__s32		disable_ipv6;
+ 	__s32		drop_unicast_in_l2_multicast;
+diff --git a/net/batman-adv/multicast.c b/net/batman-adv/multicast.c
+index 09d81f9c2a64..6f0a9f439233 100644
+--- a/net/batman-adv/multicast.c
++++ b/net/batman-adv/multicast.c
+@@ -136,7 +136,7 @@ static u8 batadv_mcast_mla_rtr_flags_softif_get_ipv6(struct net_device *dev)
+ {
+ 	struct inet6_dev *in6_dev = __in6_dev_get(dev);
  
--	/* Make sure we only provide online CPUs to the irqchip */
-+	/*
-+	 * Make sure we only provide online CPUs to the irqchip,
-+	 * unless we are being asked to force the affinity (in which
-+	 * case we do as we are told).
-+	 */
- 	cpumask_and(&tmp_mask, prog_mask, cpu_online_mask);
--	if (!cpumask_empty(&tmp_mask))
-+	if (!force && !cpumask_empty(&tmp_mask))
- 		ret = chip->irq_set_affinity(data, &tmp_mask, force);
-+	else if (force)
-+		ret = chip->irq_set_affinity(data, mask, force);
+-	if (in6_dev && in6_dev->cnf.mc_forwarding)
++	if (in6_dev && atomic_read(&in6_dev->cnf.mc_forwarding))
+ 		return BATADV_NO_FLAGS;
  	else
- 		ret = -EINVAL;
+ 		return BATADV_MCAST_WANT_NO_RTR6;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 60d070b25484..69aef71f32ea 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -542,7 +542,7 @@ static int inet6_netconf_fill_devconf(struct sk_buff *skb, int ifindex,
+ #ifdef CONFIG_IPV6_MROUTE
+ 	if ((all || type == NETCONFA_MC_FORWARDING) &&
+ 	    nla_put_s32(skb, NETCONFA_MC_FORWARDING,
+-			devconf->mc_forwarding) < 0)
++			atomic_read(&devconf->mc_forwarding)) < 0)
+ 		goto nla_put_failure;
+ #endif
+ 	if ((all || type == NETCONFA_PROXY_NEIGH) &&
+@@ -5460,7 +5460,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
+ 	array[DEVCONF_USE_OPTIMISTIC] = cnf->use_optimistic;
+ #endif
+ #ifdef CONFIG_IPV6_MROUTE
+-	array[DEVCONF_MC_FORWARDING] = cnf->mc_forwarding;
++	array[DEVCONF_MC_FORWARDING] = atomic_read(&cnf->mc_forwarding);
+ #endif
+ 	array[DEVCONF_DISABLE_IPV6] = cnf->disable_ipv6;
+ 	array[DEVCONF_ACCEPT_DAD] = cnf->accept_dad;
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 7e5df23cbe7b..e6c4966aa956 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -485,7 +485,7 @@ int ip6_mc_input(struct sk_buff *skb)
+ 	/*
+ 	 *      IPv6 multicast router mode is now supported ;)
+ 	 */
+-	if (dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding &&
++	if (atomic_read(&dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding) &&
+ 	    !(ipv6_addr_type(&hdr->daddr) &
+ 	      (IPV6_ADDR_LOOPBACK|IPV6_ADDR_LINKLOCAL)) &&
+ 	    likely(!(IP6CB(skb)->flags & IP6SKB_FORWARDED))) {
+diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+index aee1f6bc039a..6248e00c2bf7 100644
+--- a/net/ipv6/ip6mr.c
++++ b/net/ipv6/ip6mr.c
+@@ -736,7 +736,7 @@ static int mif6_delete(struct mr_table *mrt, int vifi, int notify,
  
+ 	in6_dev = __in6_dev_get(dev);
+ 	if (in6_dev) {
+-		in6_dev->cnf.mc_forwarding--;
++		atomic_dec(&in6_dev->cnf.mc_forwarding);
+ 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
+ 					     NETCONFA_MC_FORWARDING,
+ 					     dev->ifindex, &in6_dev->cnf);
+@@ -904,7 +904,7 @@ static int mif6_add(struct net *net, struct mr_table *mrt,
+ 
+ 	in6_dev = __in6_dev_get(dev);
+ 	if (in6_dev) {
+-		in6_dev->cnf.mc_forwarding++;
++		atomic_inc(&in6_dev->cnf.mc_forwarding);
+ 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
+ 					     NETCONFA_MC_FORWARDING,
+ 					     dev->ifindex, &in6_dev->cnf);
+@@ -1553,7 +1553,7 @@ static int ip6mr_sk_init(struct mr_table *mrt, struct sock *sk)
+ 	} else {
+ 		rcu_assign_pointer(mrt->mroute_sk, sk);
+ 		sock_set_flag(sk, SOCK_RCU_FREE);
+-		net->ipv6.devconf_all->mc_forwarding++;
++		atomic_inc(&net->ipv6.devconf_all->mc_forwarding);
+ 	}
+ 	write_unlock_bh(&mrt_lock);
+ 
+@@ -1586,7 +1586,7 @@ int ip6mr_sk_done(struct sock *sk)
+ 			 * so the RCU grace period before sk freeing
+ 			 * is guaranteed by sk_destruct()
+ 			 */
+-			net->ipv6.devconf_all->mc_forwarding--;
++			atomic_dec(&net->ipv6.devconf_all->mc_forwarding);
+ 			write_unlock_bh(&mrt_lock);
+ 			inet6_netconf_notify_devconf(net, RTM_NEWNETCONF,
+ 						     NETCONFA_MC_FORWARDING,
 -- 
-2.34.1
+2.35.1
+
+
 
