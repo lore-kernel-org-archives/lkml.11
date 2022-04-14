@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 271D3C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66963C41535
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:20:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356592AbiDNPTT (ORCPT
+        id S1356714AbiDNPTg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:19:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42474 "EHLO
+        Thu, 14 Apr 2022 11:19:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347585AbiDNN7W (ORCPT
+        with ESMTP id S1347676AbiDNN70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93CAF3E0F4;
-        Thu, 14 Apr 2022 06:50:07 -0700 (PDT)
+        Thu, 14 Apr 2022 09:59:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7479948313;
+        Thu, 14 Apr 2022 06:51:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F92061DAA;
-        Thu, 14 Apr 2022 13:50:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E3ABC385A5;
-        Thu, 14 Apr 2022 13:50:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A6EC61D93;
+        Thu, 14 Apr 2022 13:51:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88D62C385A1;
+        Thu, 14 Apr 2022 13:51:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944206;
-        bh=+AkGY8+PhTH+ThLmE3nSHtM39Y6w3htVNAPSTX1ghcM=;
+        s=korg; t=1649944265;
+        bh=E9oBKnGrbOL8j3KL7Qiy9TC8aJztPpm2YTXjK64aTY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uqLKbm0N9jKm+HPT+TUPnXS725NLGS4NcIGsImTh7kbF5dj9ggWRQFc4xLgla7obh
-         l5JMvzfA9nVj3a7UOL/F9rSJOzVATKKTIjOXpVhg0R1iXTBuNA3VM8uunZuxR1e3qE
-         YC3EX73n01YRf+JmDToGmviaGgUuORikZVmDa4Xc=
+        b=ihZbG3l4LUTiyvqvPg6lA0A+lzWVnxB+7Md6tNeb9vtB4otHgLjBIx47nB1Vc6PzE
+         MmUjP96vnSLOEDh6gPEim7X8XqwaDs+JFgOhdzIllNHvOpkFNuOffXmuRMtu4r9sBY
+         Aqcd8FGVz1A2bg2J9uAJIFPIUsu2uNVWA8gfN3qk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 430/475] drm/imx: Fix memory leak in imx_pd_connector_get_modes
-Date:   Thu, 14 Apr 2022 15:13:35 +0200
-Message-Id: <20220414110907.097967340@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 5.4 453/475] arm64: patch_text: Fixup last cpu should be master
+Date:   Thu, 14 Apr 2022 15:13:58 +0200
+Message-Id: <20220414110907.735915849@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,41 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-[ Upstream commit bce81feb03a20fca7bbdd1c4af16b4e9d5c0e1d3 ]
+commit 31a099dbd91e69fcab55eef4be15ed7a8c984918 upstream.
 
-Avoid leaking the display mode variable if of_get_drm_display_mode
-fails.
+These patch_text implementations are using stop_machine_cpuslocked
+infrastructure with atomic cpu_count. The original idea: When the
+master CPU patch_text, the others should wait for it. But current
+implementation is using the first CPU as master, which couldn't
+guarantee the remaining CPUs are waiting. This patch changes the
+last CPU as the master to solve the potential risk.
 
-Fixes: 76ecd9c9fb24 ("drm/imx: parallel-display: check return code from of_get_drm_display_mode()")
-Addresses-Coverity-ID: 1443943 ("Resource leak")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Link: https://lore.kernel.org/r/20220108165230.44610-1-jose.exposito89@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: ae16480785de ("arm64: introduce interfaces to hotpatch kernel and module code")
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220407073323.743224-2-guoren@kernel.org
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/imx/parallel-display.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm64/kernel/insn.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/imx/parallel-display.c b/drivers/gpu/drm/imx/parallel-display.c
-index be55548f352a..e24272428744 100644
---- a/drivers/gpu/drm/imx/parallel-display.c
-+++ b/drivers/gpu/drm/imx/parallel-display.c
-@@ -68,8 +68,10 @@ static int imx_pd_connector_get_modes(struct drm_connector *connector)
- 		ret = of_get_drm_display_mode(np, &imxpd->mode,
- 					      &imxpd->bus_flags,
- 					      OF_USE_NATIVE_MODE);
--		if (ret)
-+		if (ret) {
-+			drm_mode_destroy(connector->dev, mode);
- 			return ret;
-+		}
+--- a/arch/arm64/kernel/insn.c
++++ b/arch/arm64/kernel/insn.c
+@@ -207,8 +207,8 @@ static int __kprobes aarch64_insn_patch_
+ 	int i, ret = 0;
+ 	struct aarch64_insn_patch *pp = arg;
  
- 		drm_mode_copy(mode, &imxpd->mode);
- 		mode->type |= DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
--- 
-2.35.1
-
+-	/* The first CPU becomes master */
+-	if (atomic_inc_return(&pp->cpu_count) == 1) {
++	/* The last CPU becomes master */
++	if (atomic_inc_return(&pp->cpu_count) == num_online_cpus()) {
+ 		for (i = 0; ret == 0 && i < pp->insn_cnt; i++)
+ 			ret = aarch64_insn_patch_text_nosync(pp->text_addrs[i],
+ 							     pp->new_insns[i]);
 
 
