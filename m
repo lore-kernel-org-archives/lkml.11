@@ -2,120 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FB6C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D66C433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244415AbiDNN11 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:27:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47792 "EHLO
+        id S244485AbiDNN1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244183AbiDNNXo (ORCPT
+        with ESMTP id S244173AbiDNNYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:23:44 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E47F939ED;
-        Thu, 14 Apr 2022 06:18:33 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2eafabbc80aso54530987b3.11;
-        Thu, 14 Apr 2022 06:18:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=VSPSHGLNryKTOTOge0ylfTJKLHsA725QG3K5z7xv3vQ=;
-        b=mzWrWwMEQ3pI8mP8YATBmRidCAoh3CfJ3ZEoKRvU/hHhk+epGF0cWiBIe+gMTfRG7M
-         JLofzUCSt7FOvDvWoAd0Cz4EJjHM+vtgdfOyvRV1Df6lpRDHn+ycrgprZg3GPWuVWXw/
-         zDqLZHVkl55JdcERRPvuilaE0ghuLJhV3jYRHp7aQEazFf0h+AZb/OY0BNm7FFikyUh8
-         2OFyH+OSRjSojLe4FzHaaEfUxSsSGF/T8sQZ+6AjO1r5Tk6/4ba7mnJt19a5ITEXX7ms
-         Ig8C1xutmBlhR42x9LIgohdBjS8wRUNKcPCywc2WDCV893IRcfLphbHWbvkYOZtem/KC
-         UJ3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=VSPSHGLNryKTOTOge0ylfTJKLHsA725QG3K5z7xv3vQ=;
-        b=hzWdlTmEd4mD9a+12mm17fULW07cK/ocaZ5HT0C1WXqkwnEbIFCnuAitnyUvUZw7H4
-         n8yJxurUfntrDMV6XpHTpf1fKRM3ne3otu8CWupdxlYzBqtHcqjXKz2I3iCzoZV8SNFF
-         ZQHglEnBkPIEOFwwHK4m8SNyWpEE4kPht5Fjl8uGdS/tcHnqaMPuG67OPJrLNgvfjzHO
-         zW1Ux3cIpcjSaUU7APaZedK5J2bjXZ0fMElpzJeO8GyHpenrdtz3af5Gv1aSIGbPeRoM
-         ZhktCPP3aPS48YlbmxMKNAo3fHs8iKQWtTAC4urdjA0bFy1+OK68NY1m+WvfRas7L2Ed
-         Cj0Q==
-X-Gm-Message-State: AOAM531YT/l3FjiBMCQGt8urDFAm9ZIZMO8wcNZJhPzHzIqJCjZ/710+
-        7h8F7HWmLhhitqPRiE26GjNzu/r1RGHaz2RTH6mhr9USvyM=
-X-Google-Smtp-Source: ABdhPJw7JUk3PaMO3ZTIH6MHWMnYDMymlZdf02YIpUqHKqDgK9Ke78x/au9ULwW+2UgR4ORl9VvEyHq2/PIbd6B/AXk=
-X-Received: by 2002:a0d:d702:0:b0:2ef:32f7:b800 with SMTP id
- z2-20020a0dd702000000b002ef32f7b800mr1937878ywd.482.1649942312435; Thu, 14
- Apr 2022 06:18:32 -0700 (PDT)
+        Thu, 14 Apr 2022 09:24:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D289BACD;
+        Thu, 14 Apr 2022 06:18:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6C5AB82983;
+        Thu, 14 Apr 2022 13:18:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41725C385A1;
+        Thu, 14 Apr 2022 13:18:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942336;
+        bh=sK/8tAo386GkaVn0pJ+9mOSyh9okjYxv4OWLYLHOphk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RNzkKu8pjorbP6n6wjvHKC30/OQZHG0XnxF+JGHURtGcy8ZV81PvvRGYN8wFHPH4E
+         wnC6FZnaI6rTEnfE67HlM7ibEAKTturldpK84cyeFBf3G31r4cQ+udqgtdGd2Nr5zG
+         CwZc8PXFAQJSwLayq2iATyq1k5mHPlCTiK3avnnw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Frank Wunderlich <frank-w@public-files.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 098/338] arm64: dts: broadcom: Fix sata nodename
+Date:   Thu, 14 Apr 2022 15:10:01 +0200
+Message-Id: <20220414110841.687219671@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <9e12d806c5554b4ed18c644f71f6662fcf0d0516.1649813822.git.lhjeff911@gmail.com>
- <fdb1e0a6-62f9-c0a3-c1db-8857087701a1@redhat.com>
-In-Reply-To: <fdb1e0a6-62f9-c0a3-c1db-8857087701a1@redhat.com>
-From:   =?UTF-8?B?6YOt5Yqb6LGq?= <lhjeff911@gmail.com>
-Date:   Thu, 14 Apr 2022 21:16:15 +0800
-Message-ID: <CAGcXWkzZex-XTEoq8H5mc+3Y2BH=cphdpH-815Y+TAq812K=8g@mail.gmail.com>
-Subject: Re: [PATCH] spi: remove spin_lock_irq in the irq procress
-To:     Tom Rix <trix@redhat.com>
-Cc:     Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?B?5ZGC6Iqz6aiwTHVXZWxscw==?= <wells.lu@sunplus.com>,
-        "lh.kuo" <lh.kuo@sunplus.com>, nathan@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tom :
+From: Frank Wunderlich <frank-w@public-files.de>
 
-    This SPI driver only handles one transfer at a time.
-That's why locks are not needed.
+[ Upstream commit 55927cb44db43a57699fa652e2437a91620385dc ]
+
+After converting ahci-platform txt binding to yaml nodename is reported
+as not matching the standard:
+
+arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dt.yaml:
+ahci@663f2000: $nodename:0: 'ahci@663f2000' does not match '^sata(@.*)?$'
+
+Fix it to match binding.
+
+Fixes: ac9aae00f0fc ("arm64: dts: Add SATA3 AHCI and SATA3 PHY DT nodes for NS2")
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi b/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi
+index 6bfb7bbd264a..772ecf4ed3e6 100644
+--- a/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi
++++ b/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi
+@@ -687,7 +687,7 @@
+ 			};
+ 		};
+ 
+-		sata: ahci@663f2000 {
++		sata: sata@663f2000 {
+ 			compatible = "brcm,iproc-ahci", "generic-ahci";
+ 			reg = <0x663f2000 0x1000>;
+ 			dma-coherent;
+-- 
+2.34.1
 
 
-Li-hao Kuo
 
-Tom Rix <trix@redhat.com> =E6=96=BC 2022=E5=B9=B44=E6=9C=8813=E6=97=A5 =E9=
-=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=887:45=E5=AF=AB=E9=81=93=EF=BC=9A
->
->
-> On 4/12/22 6:38 PM, Li-hao Kuo wrote:
-> > - remove spin_lock_irq and spin_unlock_irq in the irq funciton
->
-> function
->
-> I was expecting a statement on why is the lock is not needed.
->
-> Could you add one ?
->
-> Tom
->
-> >
-> > Signed-off-by: Li-hao Kuo <lhjeff911@gmail.com>
-> > ---
-> >   drivers/spi/spi-sunplus-sp7021.c | 4 +---
-> >   1 file changed, 1 insertion(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/spi/spi-sunplus-sp7021.c b/drivers/spi/spi-sunplus=
--sp7021.c
-> > index f989f7b..120623c 100644
-> > --- a/drivers/spi/spi-sunplus-sp7021.c
-> > +++ b/drivers/spi/spi-sunplus-sp7021.c
-> > @@ -199,8 +199,6 @@ static irqreturn_t sp7021_spi_master_irq(int irq, v=
-oid *dev)
-> >       if (tx_len =3D=3D 0 && total_len =3D=3D 0)
-> >               return IRQ_NONE;
-> >
-> > -     spin_lock_irq(&pspim->lock);
-> > -
-> >       rx_cnt =3D FIELD_GET(SP7021_RX_CNT_MASK, fd_status);
-> >       if (fd_status & SP7021_RX_FULL_FLAG)
-> >               rx_cnt =3D pspim->data_unit;
-> > @@ -239,7 +237,7 @@ static irqreturn_t sp7021_spi_master_irq(int irq, v=
-oid *dev)
-> >
-> >       if (isrdone)
-> >               complete(&pspim->isr_done);
-> > -     spin_unlock_irq(&pspim->lock);
-> > +
-> >       return IRQ_HANDLED;
-> >   }
-> >
->
