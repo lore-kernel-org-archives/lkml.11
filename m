@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E7C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D75C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 07:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240537AbiDNHnM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 03:43:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
+        id S240466AbiDNHnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 03:43:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240451AbiDNHm3 (ORCPT
+        with ESMTP id S240465AbiDNHmb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 03:42:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 50AEF53723
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:40:05 -0700 (PDT)
+        Thu, 14 Apr 2022 03:42:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 059CC532F0
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 00:40:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649922004;
+        s=mimecast20190719; t=1649922006;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=o9bQvmPTCK11kqEDs1q9cZ1XNwIKypiXik4QOo0yR6k=;
-        b=au/fTAgXg4jOX0zrOx2gBw8ID8yXlseyGfBSt21Ff3csJ9HPKMH+JU9eepgjOM20faODwq
-        MQFrydHVavKYNW/hLGw2IZGCvIivPmM2gz9WtHgAXm2RJRMUwDhMWRiHhxfzLfOJEj3nm8
-        as/PSV7CWnG0maN0c/T9whX8mZmcXaM=
+        bh=0L91IV9juJwXTqLZivqOLbPgg0tCOhPwZrbJH/lPbL4=;
+        b=RSXsc2N1HqNMwxD/zFONdwJZNuuvYqZwRIa+8kz4LaDGN1fsxz99MnnyGv+s2sVne63zxP
+        JmpBQrma7r9CESRuhlUjJm5IzQKK/p/yUdZgzHGq6yIE/sq9Ugq6Gx9HkQ/rxkkdlSXK/c
+        7jyFWaVZ68PD4cFYC7QEK823JYP0S+o=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-170-UOSB2-7aP6aqQv6pY3HtTA-1; Thu, 14 Apr 2022 03:40:02 -0400
-X-MC-Unique: UOSB2-7aP6aqQv6pY3HtTA-1
+ us-mta-205-LoULkJyjN0SUeft8gkiQSA-1; Thu, 14 Apr 2022 03:40:02 -0400
+X-MC-Unique: LoULkJyjN0SUeft8gkiQSA-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BAE4B83396B;
-        Thu, 14 Apr 2022 07:40:01 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 370B9805A30;
+        Thu, 14 Apr 2022 07:40:02 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 97F5B41D40E;
-        Thu, 14 Apr 2022 07:40:01 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 19C4140D1DB;
+        Thu, 14 Apr 2022 07:40:02 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com, David Matlack <dmatlack@google.com>
-Subject: [PATCH 03/22] KVM: x86/mmu: pull computation of kvm_mmu_role_regs to kvm_init_mmu
-Date:   Thu, 14 Apr 2022 03:39:41 -0400
-Message-Id: <20220414074000.31438-4-pbonzini@redhat.com>
+Cc:     seanjc@google.com
+Subject: [PATCH 06/22] KVM: x86/mmu: remove "bool base_only" arguments
+Date:   Thu, 14 Apr 2022 03:39:44 -0400
+Message-Id: <20220414074000.31438-7-pbonzini@redhat.com>
 In-Reply-To: <20220414074000.31438-1-pbonzini@redhat.com>
 References: <20220414074000.31438-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -54,97 +54,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The init_kvm_*mmu functions, with the exception of shadow NPT,
-do not need to know the full values of CR0/CR4/EFER; they only
-need to know the bits that make up the "role".  This cleanup
-however will take quite a few incremental steps.  As a start,
-pull the common computation of the struct kvm_mmu_role_regs
-into their caller: all of them extract the struct from the vcpu
-as the very first step.
+The argument is always false now that kvm_mmu_calc_root_page_role has
+been removed.
 
-Reviewed-by: David Matlack <dmatlack@google.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 28 +++++++++++++++-------------
- 1 file changed, 15 insertions(+), 13 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 66 +++++++++++++++---------------------------
+ 1 file changed, 23 insertions(+), 43 deletions(-)
 
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 07b8550e68e9..d56875938c29 100644
+index d56875938c29..7f156da3ca93 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4778,12 +4778,12 @@ kvm_calc_tdp_mmu_root_page_role(struct kvm_vcpu *vcpu,
- 	return role;
+@@ -4705,47 +4705,30 @@ static void paging32_init_context(struct kvm_mmu *context)
+ 	context->direct_map = false;
  }
  
--static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu)
-+static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu,
-+			     const struct kvm_mmu_role_regs *regs)
+-static union kvm_mmu_extended_role kvm_calc_mmu_role_ext(struct kvm_vcpu *vcpu,
+-							 const struct kvm_mmu_role_regs *regs)
+-{
+-	union kvm_mmu_extended_role ext = {0};
+-
+-	if (____is_cr0_pg(regs)) {
+-		ext.cr0_pg = 1;
+-		ext.cr4_pae = ____is_cr4_pae(regs);
+-		ext.cr4_smep = ____is_cr4_smep(regs);
+-		ext.cr4_smap = ____is_cr4_smap(regs);
+-		ext.cr4_pse = ____is_cr4_pse(regs);
+-
+-		/* PKEY and LA57 are active iff long mode is active. */
+-		ext.cr4_pke = ____is_efer_lma(regs) && ____is_cr4_pke(regs);
+-		ext.cr4_la57 = ____is_efer_lma(regs) && ____is_cr4_la57(regs);
+-		ext.efer_lma = ____is_efer_lma(regs);
+-	}
+-
+-	ext.valid = 1;
+-
+-	return ext;
+-}
+-
+ static union kvm_mmu_role kvm_calc_mmu_role_common(struct kvm_vcpu *vcpu,
+-						   const struct kvm_mmu_role_regs *regs,
+-						   bool base_only)
++						   const struct kvm_mmu_role_regs *regs)
+ {
+ 	union kvm_mmu_role role = {0};
+ 
+ 	role.base.access = ACC_ALL;
+ 	if (____is_cr0_pg(regs)) {
++		role.ext.cr0_pg = 1;
+ 		role.base.efer_nx = ____is_efer_nx(regs);
+ 		role.base.cr0_wp = ____is_cr0_wp(regs);
++
++		role.ext.cr4_pae = ____is_cr4_pae(regs);
++		role.ext.cr4_smep = ____is_cr4_smep(regs);
++		role.ext.cr4_smap = ____is_cr4_smap(regs);
++		role.ext.cr4_pse = ____is_cr4_pse(regs);
++
++		/* PKEY and LA57 are active iff long mode is active. */
++		role.ext.cr4_pke = ____is_efer_lma(regs) && ____is_cr4_pke(regs);
++		role.ext.cr4_la57 = ____is_efer_lma(regs) && ____is_cr4_la57(regs);
++		role.ext.efer_lma = ____is_efer_lma(regs);
+ 	}
+ 	role.base.smm = is_smm(vcpu);
+ 	role.base.guest_mode = is_guest_mode(vcpu);
+-
+-	if (base_only)
+-		return role;
+-
+-	role.ext = kvm_calc_mmu_role_ext(vcpu, regs);
++	role.ext.valid = 1;
+ 
+ 	return role;
+ }
+@@ -4765,10 +4748,9 @@ static inline int kvm_mmu_get_tdp_level(struct kvm_vcpu *vcpu)
+ 
+ static union kvm_mmu_role
+ kvm_calc_tdp_mmu_root_page_role(struct kvm_vcpu *vcpu,
+-				const struct kvm_mmu_role_regs *regs,
+-				bool base_only)
++				const struct kvm_mmu_role_regs *regs)
+ {
+-	union kvm_mmu_role role = kvm_calc_mmu_role_common(vcpu, regs, base_only);
++	union kvm_mmu_role role = kvm_calc_mmu_role_common(vcpu, regs);
+ 
+ 	role.base.ad_disabled = (shadow_accessed_mask == 0);
+ 	role.base.level = kvm_mmu_get_tdp_level(vcpu);
+@@ -4783,7 +4765,7 @@ static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu,
  {
  	struct kvm_mmu *context = &vcpu->arch.root_mmu;
--	struct kvm_mmu_role_regs regs = vcpu_to_role_regs(vcpu);
  	union kvm_mmu_role new_role =
--		kvm_calc_tdp_mmu_root_page_role(vcpu, &regs, false);
-+		kvm_calc_tdp_mmu_root_page_role(vcpu, regs, false);
+-		kvm_calc_tdp_mmu_root_page_role(vcpu, regs, false);
++		kvm_calc_tdp_mmu_root_page_role(vcpu, regs);
  
  	if (new_role.as_u64 == context->mmu_role.as_u64)
  		return;
-@@ -4797,7 +4797,7 @@ static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu)
- 	context->get_guest_pgd = get_cr3;
- 	context->get_pdptr = kvm_pdptr_read;
- 	context->inject_page_fault = kvm_inject_page_fault;
--	context->root_level = role_regs_to_root_level(&regs);
-+	context->root_level = role_regs_to_root_level(regs);
+@@ -4812,10 +4794,9 @@ static void init_kvm_tdp_mmu(struct kvm_vcpu *vcpu,
  
- 	if (!is_cr0_pg(context))
- 		context->gva_to_gpa = nonpaging_gva_to_gpa;
-@@ -4966,12 +4966,12 @@ void kvm_init_shadow_ept_mmu(struct kvm_vcpu *vcpu, bool execonly,
- }
- EXPORT_SYMBOL_GPL(kvm_init_shadow_ept_mmu);
+ static union kvm_mmu_role
+ kvm_calc_shadow_root_page_role_common(struct kvm_vcpu *vcpu,
+-				      const struct kvm_mmu_role_regs *regs,
+-				      bool base_only)
++				      const struct kvm_mmu_role_regs *regs)
+ {
+-	union kvm_mmu_role role = kvm_calc_mmu_role_common(vcpu, regs, base_only);
++	union kvm_mmu_role role = kvm_calc_mmu_role_common(vcpu, regs);
  
--static void init_kvm_softmmu(struct kvm_vcpu *vcpu)
-+static void init_kvm_softmmu(struct kvm_vcpu *vcpu,
-+			     const struct kvm_mmu_role_regs *regs)
+ 	role.base.smep_andnot_wp = role.ext.cr4_smep && !____is_cr0_wp(regs);
+ 	role.base.smap_andnot_wp = role.ext.cr4_smap && !____is_cr0_wp(regs);
+@@ -4826,11 +4807,10 @@ kvm_calc_shadow_root_page_role_common(struct kvm_vcpu *vcpu,
+ 
+ static union kvm_mmu_role
+ kvm_calc_shadow_mmu_root_page_role(struct kvm_vcpu *vcpu,
+-				   const struct kvm_mmu_role_regs *regs,
+-				   bool base_only)
++				   const struct kvm_mmu_role_regs *regs)
+ {
+ 	union kvm_mmu_role role =
+-		kvm_calc_shadow_root_page_role_common(vcpu, regs, base_only);
++		kvm_calc_shadow_root_page_role_common(vcpu, regs);
+ 
+ 	role.base.direct = !____is_cr0_pg(regs);
+ 
+@@ -4872,7 +4852,7 @@ static void kvm_init_shadow_mmu(struct kvm_vcpu *vcpu,
  {
  	struct kvm_mmu *context = &vcpu->arch.root_mmu;
--	struct kvm_mmu_role_regs regs = vcpu_to_role_regs(vcpu);
+ 	union kvm_mmu_role new_role =
+-		kvm_calc_shadow_mmu_root_page_role(vcpu, regs, false);
++		kvm_calc_shadow_mmu_root_page_role(vcpu, regs);
  
--	kvm_init_shadow_mmu(vcpu, &regs);
-+	kvm_init_shadow_mmu(vcpu, regs);
- 
- 	context->get_guest_pgd     = get_cr3;
- 	context->get_pdptr         = kvm_pdptr_read;
-@@ -4995,10 +4995,10 @@ kvm_calc_nested_mmu_role(struct kvm_vcpu *vcpu, const struct kvm_mmu_role_regs *
- 	return role;
+ 	shadow_mmu_init_context(vcpu, context, regs, new_role);
  }
- 
--static void init_kvm_nested_mmu(struct kvm_vcpu *vcpu)
-+static void init_kvm_nested_mmu(struct kvm_vcpu *vcpu,
-+				const struct kvm_mmu_role_regs *regs)
+@@ -4882,7 +4862,7 @@ kvm_calc_shadow_npt_root_page_role(struct kvm_vcpu *vcpu,
+ 				   const struct kvm_mmu_role_regs *regs)
  {
--	struct kvm_mmu_role_regs regs = vcpu_to_role_regs(vcpu);
--	union kvm_mmu_role new_role = kvm_calc_nested_mmu_role(vcpu, &regs);
-+	union kvm_mmu_role new_role = kvm_calc_nested_mmu_role(vcpu, regs);
- 	struct kvm_mmu *g_context = &vcpu->arch.nested_mmu;
+ 	union kvm_mmu_role role =
+-		kvm_calc_shadow_root_page_role_common(vcpu, regs, false);
++		kvm_calc_shadow_root_page_role_common(vcpu, regs);
  
- 	if (new_role.as_u64 == g_context->mmu_role.as_u64)
-@@ -5038,12 +5038,14 @@ static void init_kvm_nested_mmu(struct kvm_vcpu *vcpu)
- 
- void kvm_init_mmu(struct kvm_vcpu *vcpu)
+ 	role.base.direct = false;
+ 	role.base.level = kvm_mmu_get_tdp_level(vcpu);
+@@ -4983,7 +4963,7 @@ kvm_calc_nested_mmu_role(struct kvm_vcpu *vcpu, const struct kvm_mmu_role_regs *
  {
-+	struct kvm_mmu_role_regs regs = vcpu_to_role_regs(vcpu);
-+
- 	if (mmu_is_nested(vcpu))
--		init_kvm_nested_mmu(vcpu);
-+		init_kvm_nested_mmu(vcpu, &regs);
- 	else if (tdp_enabled)
--		init_kvm_tdp_mmu(vcpu);
-+		init_kvm_tdp_mmu(vcpu, &regs);
- 	else
--		init_kvm_softmmu(vcpu);
-+		init_kvm_softmmu(vcpu, &regs);
- }
- EXPORT_SYMBOL_GPL(kvm_init_mmu);
+ 	union kvm_mmu_role role;
  
+-	role = kvm_calc_shadow_root_page_role_common(vcpu, regs, false);
++	role = kvm_calc_shadow_root_page_role_common(vcpu, regs);
+ 
+ 	/*
+ 	 * Nested MMUs are used only for walking L2's gva->gpa, they never have
 -- 
 2.31.1
 
