@@ -2,51 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04C39C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE34C3527D
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352361AbiDNPRe (ORCPT
+        id S1353176AbiDNPRs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:17:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
+        Thu, 14 Apr 2022 11:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347689AbiDNN71 (ORCPT
+        with ESMTP id S1347712AbiDNN7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22C94AE03;
-        Thu, 14 Apr 2022 06:51:19 -0700 (PDT)
+        Thu, 14 Apr 2022 09:59:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C66BB900;
+        Thu, 14 Apr 2022 06:52:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67970B828F4;
-        Thu, 14 Apr 2022 13:51:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A4AEC385A5;
-        Thu, 14 Apr 2022 13:51:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A61A61E2F;
+        Thu, 14 Apr 2022 13:52:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D80EC385A9;
+        Thu, 14 Apr 2022 13:52:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944277;
-        bh=vLVOPMognLMhpE0ZDdF5GInYSFaFskp/cxYu91KQCHU=;
+        s=korg; t=1649944321;
+        bh=BbAbQTiD5sPKd5mjvDKHGYczpcz1xT3MGOGL0xfKAHo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ISFgsdhmajIyTqPU2CbTxxXpB9eXzcp2gI9NPnXv1+aME41CsolO420ulUBSCtRe0
-         fyZS9/bguiGhVakHYfEzTKXan53dRDpaCqi87T5L/qGbEdDmKHpOUO/bPGQPEUzvkm
-         nNrsydEKalovNVfpEE4c47ZBs2MoeeD89FCkwql0=
+        b=rFjfUQZpGYalK5uQ44XhJpnMvMQ6utX0SF/d+2wuTrSGm1hU6eEL9uZPib5hkCx4N
+         jT9ENYEL6DRHGKxMZYiVziSIc9oc4fv4FZ9TWTvailZliCtQ4q3BnH7Dm6gPCDhTbf
+         mwez5isAhrsVxamzVgUoCp2GWKTt7S7JgdSvIz1k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Fangrui Song <maskray@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Subject: [PATCH 5.4 457/475] tools build: Filter out options and warnings not supported by clang
-Date:   Thu, 14 Apr 2022 15:14:02 +0200
-Message-Id: <20220414110907.845945743@linuxfoundation.org>
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Tejun Heo <tj@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.4 472/475] selftests: cgroup: Test open-time credential usage for migration checks
+Date:   Thu, 14 Apr 2022 15:14:17 +0200
+Message-Id: <20220414110908.266181813@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -58,133 +50,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Tejun Heo <tj@kernel.org>
 
-commit 41caff459a5b956b3e23ba9ca759dd0629ad3dda upstream.
+commit 613e040e4dc285367bff0f8f75ea59839bc10947 upstream.
 
-These make the feature check fail when using clang, so remove them just
-like is done in tools/perf/Makefile.config to build perf itself.
+When a task is writing to an fd opened by a different task, the perm check
+should use the credentials of the latter task. Add a test for it.
 
-Adding -Wno-compound-token-split-by-macro to tools/perf/Makefile.config
-when building with clang is also necessary to avoid these warnings
-turned into errors (-Werror):
-
-    CC      /tmp/build/perf/util/scripting-engines/trace-event-perl.o
-  In file included from util/scripting-engines/trace-event-perl.c:35:
-  In file included from /usr/lib64/perl5/CORE/perl.h:4085:
-  In file included from /usr/lib64/perl5/CORE/hv.h:659:
-  In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
-  In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: error: '(' and '{' tokens introducing statement expression appear in different macro expansion contexts [-Werror,-Wcompound-token-split-by-macro]
-      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
-      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:80:38: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
-  #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
-                                       ^~~~~~~~~~
-  /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_START'
-  #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
-                                ^
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: note: '{' token is here
-      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
-      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:80:49: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
-  #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
-                                                  ^
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: error: '}' and ')' tokens terminating statement expression appear in different macro expansion contexts [-Werror,-Wcompound-token-split-by-macro]
-      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
-      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:87:41: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
-      v ^= (v>>23);                       \
-                                          ^
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: note: ')' token is here
-      ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
-      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  /usr/lib64/perl5/CORE/zaphod32_hash.h:88:3: note: expanded from macro 'ZAPHOD32_SCRAMBLE32'
-  } STMT_END
-    ^~~~~~~~
-  /usr/lib64/perl5/CORE/perl.h:738:21: note: expanded from macro 'STMT_END'
-  #   define STMT_END     )
-                          ^
-
-Please refer to the discussion on the Link: tag below, where Nathan
-clarifies the situation:
-
-<quote>
-acme> And then get to the problems at the end of this message, which seem
-acme> similar to the problem described here:
-acme>
-acme> From  Nathan Chancellor <>
-acme> Subject	[PATCH] mwifiex: Remove unnecessary braces from HostCmd_SET_SEQ_NO_BSS_INFO
-acme>
-acme> https://lkml.org/lkml/2020/9/1/135
-acme>
-acme> So perhaps in this case its better to disable that
-acme> -Werror,-Wcompound-token-split-by-macro when building with clang?
-
-Yes, I think that is probably the best solution. As far as I can tell,
-at least in this file and context, the warning appears harmless, as the
-"create a GNU C statement expression from two different macros" is very
-much intentional, based on the presence of PERL_USE_GCC_BRACE_GROUPS.
-The warning is fixed in upstream Perl by just avoiding creating GNU C
-statement expressions using STMT_START and STMT_END:
-
-  https://github.com/Perl/perl5/issues/18780
-  https://github.com/Perl/perl5/pull/18984
-
-If I am reading the source code correctly, an alternative to disabling
-the warning would be specifying -DPERL_GCC_BRACE_GROUPS_FORBIDDEN but it
-seems like that might end up impacting more than just this site,
-according to the issue discussion above.
-</quote>
-
-Based-on-a-patch-by: Sedat Dilek <sedat.dilek@gmail.com>
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Fangrui Song <maskray@google.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Keeping <john@metanate.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Michael Petlan <mpetlan@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Link: http://lore.kernel.org/lkml/YkxWcYzph5pC1EK8@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Tested-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+[OP: backport to v5.4: adjust context]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/build/feature/Makefile |    7 +++++++
- tools/perf/Makefile.config   |    3 +++
- 2 files changed, 10 insertions(+)
+ tools/testing/selftests/cgroup/test_core.c |   68 +++++++++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
 
---- a/tools/build/feature/Makefile
-+++ b/tools/build/feature/Makefile
-@@ -207,6 +207,13 @@ PERL_EMBED_LIBADD = $(call grep-libs,$(P
- PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
- FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+--- a/tools/testing/selftests/cgroup/test_core.c
++++ b/tools/testing/selftests/cgroup/test_core.c
+@@ -354,6 +354,73 @@ cleanup:
+ 	return ret;
+ }
  
-+ifeq ($(CC_NO_CLANG), 0)
-+  PERL_EMBED_LDOPTS := $(filter-out -specs=%,$(PERL_EMBED_LDOPTS))
-+  PERL_EMBED_CCOPTS := $(filter-out -flto=auto -ffat-lto-objects, $(PERL_EMBED_CCOPTS))
-+  PERL_EMBED_CCOPTS := $(filter-out -specs=%,$(PERL_EMBED_CCOPTS))
-+  FLAGS_PERL_EMBED += -Wno-compound-token-split-by-macro
-+endif
++/*
++ * cgroup migration permission check should be performed based on the
++ * credentials at the time of open instead of write.
++ */
++static int test_cgcore_lesser_euid_open(const char *root)
++{
++	const uid_t test_euid = 65534;	/* usually nobody, any !root is fine */
++	int ret = KSFT_FAIL;
++	char *cg_test_a = NULL, *cg_test_b = NULL;
++	char *cg_test_a_procs = NULL, *cg_test_b_procs = NULL;
++	int cg_test_b_procs_fd = -1;
++	uid_t saved_uid;
 +
- $(OUTPUT)test-libperl.bin:
- 	$(BUILD) $(FLAGS_PERL_EMBED)
++	cg_test_a = cg_name(root, "cg_test_a");
++	cg_test_b = cg_name(root, "cg_test_b");
++
++	if (!cg_test_a || !cg_test_b)
++		goto cleanup;
++
++	cg_test_a_procs = cg_name(cg_test_a, "cgroup.procs");
++	cg_test_b_procs = cg_name(cg_test_b, "cgroup.procs");
++
++	if (!cg_test_a_procs || !cg_test_b_procs)
++		goto cleanup;
++
++	if (cg_create(cg_test_a) || cg_create(cg_test_b))
++		goto cleanup;
++
++	if (cg_enter_current(cg_test_a))
++		goto cleanup;
++
++	if (chown(cg_test_a_procs, test_euid, -1) ||
++	    chown(cg_test_b_procs, test_euid, -1))
++		goto cleanup;
++
++	saved_uid = geteuid();
++	if (seteuid(test_euid))
++		goto cleanup;
++
++	cg_test_b_procs_fd = open(cg_test_b_procs, O_RDWR);
++
++	if (seteuid(saved_uid))
++		goto cleanup;
++
++	if (cg_test_b_procs_fd < 0)
++		goto cleanup;
++
++	if (write(cg_test_b_procs_fd, "0", 1) >= 0 || errno != EACCES)
++		goto cleanup;
++
++	ret = KSFT_PASS;
++
++cleanup:
++	cg_enter_current(root);
++	if (cg_test_b_procs_fd >= 0)
++		close(cg_test_b_procs_fd);
++	if (cg_test_b)
++		cg_destroy(cg_test_b);
++	if (cg_test_a)
++		cg_destroy(cg_test_a);
++	free(cg_test_b_procs);
++	free(cg_test_a_procs);
++	free(cg_test_b);
++	free(cg_test_a);
++	return ret;
++}
++
+ #define T(x) { x, #x }
+ struct corecg_test {
+ 	int (*fn)(const char *root);
+@@ -366,6 +433,7 @@ struct corecg_test {
+ 	T(test_cgcore_parent_becomes_threaded),
+ 	T(test_cgcore_invalid_domain),
+ 	T(test_cgcore_populated),
++	T(test_cgcore_lesser_euid_open),
+ };
+ #undef T
  
---- a/tools/perf/Makefile.config
-+++ b/tools/perf/Makefile.config
-@@ -706,6 +706,9 @@ else
-     LDFLAGS += $(PERL_EMBED_LDFLAGS)
-     EXTLIBS += $(PERL_EMBED_LIBADD)
-     CFLAGS += -DHAVE_LIBPERL_SUPPORT
-+    ifeq ($(CC_NO_CLANG), 0)
-+      CFLAGS += -Wno-compound-token-split-by-macro
-+    endif
-     $(call detected,CONFIG_LIBPERL)
-   endif
- endif
 
 
