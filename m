@@ -2,90 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80DCCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:03:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23AEAC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:03:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244987AbiDNRGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51432 "EHLO
+        id S242904AbiDNRGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 13:06:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243806AbiDNRFc (ORCPT
+        with ESMTP id S244060AbiDNRFm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:05:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE0D321;
-        Thu, 14 Apr 2022 09:45:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A7D3AB82A63;
-        Thu, 14 Apr 2022 16:45:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B115C385A1;
-        Thu, 14 Apr 2022 16:45:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649954710;
-        bh=EHvHZqQ8PezYz6tH8c5/n0Zz580GmorgdpGMD73yBpk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=TO5HgoWM2HCijQiMf5Ii/ai+Kas9SijrS4oMSyTpooBg865KZgLZiFnhKSA8ywfy0
-         Ko1YN1MrXPWhfLoaF0lldsMksAUOOFy5/Pb/SrlhYoBjJFxh6wFPLDYvj0LyfYBwJc
-         nMDfGSXxRatFMyJhltgGTRz5AGhQtFti5l+tsIyXMpjaC1JQb6sNwq91H6vt4+Ucj+
-         TZg1+M7Y3PNLHPIDiIIHh7PSnjhvHQIZ/pJ0cMBVUWXhpPbRP2src72ieWbaFJqT1j
-         HAaozkfr4cwBHUBSklLd67JwQ6KBzSSifw0SMwkP2SmzgRWcsFEtrntio6fFnbOU+C
-         TzwVezm93bULA==
-Date:   Thu, 14 Apr 2022 11:45:08 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Michal Simek <michal.simek@xilinx.com>
-Cc:     Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com,
-        bhelgaas@google.com, robh@kernel.org
-Subject: Re: [PATCH v1 1/3] dt-bindings: PCI: xilinx-cpm: Remove version
- number in compatible string
-Message-ID: <20220414164508.GA753109@bhelgaas>
+        Thu, 14 Apr 2022 13:05:42 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2F63BBED
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:47:19 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id bj36so901517ljb.13
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:47:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/81+PkkPmPe/TTQwrTB+sxyYxn9iTbpRvnVkvTg+pC8=;
+        b=B9wDWH42g9YW9AI0Nss9bPg2ke9AcgJPM27MaTf5FcLd2cYA8sez9IWCsZ1KH5qcqa
+         Lu+dH/ZYnrkVAhHHkskGQMRfl28OXKQ8/hvdgxC+Gd1N0dqNrZq14l0edVEEzLsBFvGP
+         IU9Ox5r96ULPR95h7HSZz6dMttqUaACHn8hkw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/81+PkkPmPe/TTQwrTB+sxyYxn9iTbpRvnVkvTg+pC8=;
+        b=QauKxiT80RS7ILj63nyTWD/7Zj0lrcW7FJDDeXys2maKwI2QN93/4fECsAqQMokxB7
+         0wXE1hCjFJRnjrB2PxGQ5jJVbnjSSVDO4TQ8qEcpy6ddlyDAquRuLUozbJusRolHi4HV
+         r2wwb1ukS0FIDBUZQgNqYtwbGSNLzU84692FABmm30bP/NH6RzjggMCkZApmBgth4S+1
+         d0fiTYoMbjo9jOITdgqHl4GUH8nj/g0GOw7DOcvicnJnlgRujC6pWhAsKbkETqQGdrhv
+         qyCx88LjZUBmmHAIGJAboPGNHfr3g1ZfEh+q0r3BEF5ECEvx1NnT2JEfjJ+OuZww8w4e
+         LQmQ==
+X-Gm-Message-State: AOAM530WttkQa1UesKNegDHYYx21XIDGQLdQerkKUFJEzXQefuYO43Mi
+        iepFJlDY3AYtWGlZuTuAfMne5Zabx2BUyoEds+s=
+X-Google-Smtp-Source: ABdhPJyX1/xgcmXdpzdtsJVtk74bhwzcSa9bR4LUVKHXX+QxGuPvS89nbK7a5YenSZnPZ3z8jrTYwg==
+X-Received: by 2002:a05:651c:1a0e:b0:24c:83e3:14f3 with SMTP id by14-20020a05651c1a0e00b0024c83e314f3mr2070810ljb.376.1649954837606;
+        Thu, 14 Apr 2022 09:47:17 -0700 (PDT)
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com. [209.85.208.175])
+        by smtp.gmail.com with ESMTPSA id n9-20020a196f49000000b0046bbeb8c242sm46751lfk.171.2022.04.14.09.47.17
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Apr 2022 09:47:17 -0700 (PDT)
+Received: by mail-lj1-f175.google.com with SMTP id 17so6801420lji.1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 09:47:17 -0700 (PDT)
+X-Received: by 2002:a05:6000:1c15:b0:207:849a:648b with SMTP id
+ ba21-20020a0560001c1500b00207849a648bmr2610564wrb.513.1649954370738; Thu, 14
+ Apr 2022 09:39:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <91ef84f9-4cac-c0aa-c717-7f1b3bc566fb@xilinx.com>
+References: <1649938766-6768-1-git-send-email-quic_sbillaka@quicinc.com> <1649938766-6768-2-git-send-email-quic_sbillaka@quicinc.com>
+In-Reply-To: <1649938766-6768-2-git-send-email-quic_sbillaka@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 14 Apr 2022 09:39:18 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=Wmiv2WGhFCLYmXbWESNOh5FfobjNme85aU6YtN1SLVDA@mail.gmail.com>
+Message-ID: <CAD=FV=Wmiv2WGhFCLYmXbWESNOh5FfobjNme85aU6YtN1SLVDA@mail.gmail.com>
+Subject: Re: [PATCH v7 1/4] drm/msm/dp: Add eDP support via aux_bus
+To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        quic_vproddut <quic_vproddut@quicinc.com>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        Steev Klimaszewski <steev@kali.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 02:46:25PM +0200, Michal Simek wrote:
-> On 4/14/22 11:22, Bharat Kumar Gogada wrote:
-> > Removing unnecessary version number in compatible string.
-> 
-> I am missing reason for this in commit message.
+Hi,
 
-Agreed.  The commit log for the pcie-xilinx-cpm.c change also needs to
-explain why removing the version is useful and safe.
+On Thu, Apr 14, 2022 at 5:20 AM Sankeerth Billakanti
+<quic_sbillaka@quicinc.com> wrote:
+>
+> @@ -1530,6 +1532,60 @@ void msm_dp_debugfs_init(struct msm_dp *dp_display, struct drm_minor *minor)
+>         }
+>  }
+>
+> +static int dp_display_get_next_bridge(struct msm_dp *dp)
+> +{
+> +       int rc;
+> +       struct dp_display_private *dp_priv;
+> +       struct device_node *aux_bus;
+> +       struct device *dev;
+> +
+> +       dp_priv = container_of(dp, struct dp_display_private, dp_display);
+> +       dev = &dp_priv->pdev->dev;
+> +       aux_bus = of_get_child_by_name(dev->of_node, "aux-bus");
+> +
+> +       if (aux_bus && dp->is_edp) {
+> +               dp_display_host_init(dp_priv);
+> +               dp_catalog_ctrl_hpd_config(dp_priv->catalog);
+> +               dp_display_host_phy_init(dp_priv);
+> +               enable_irq(dp_priv->irq);
+> +
+> +               rc = devm_of_dp_aux_populate_ep_devices(dp_priv->aux);
+> +               of_node_put(aux_bus);
+> +               if (rc) {
+> +                       disable_irq(dp_priv->irq);
+> +                       dp_display_host_phy_exit(dp_priv);
+> +                       dp_display_host_deinit(dp_priv);
+> +                       return rc;
+> +               }
+> +       } else if (dp->is_edp) {
+> +               DRM_ERROR("eDP aux_bus not found\n");
+> +               return -ENODEV;
+> +       }
+> +
+> +       /*
+> +        * External bridges are mandatory for eDP interfaces: one has to
+> +        * provide at least an eDP panel (which gets wrapped into panel-bridge).
+> +        *
+> +        * For DisplayPort interfaces external bridges are optional, so
+> +        * silently ignore an error if one is not present (-ENODEV).
+> +        */
+> +       rc = dp_parser_find_next_bridge(dp_priv->parser);
 
-> > Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-> > ---
-> >   Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml | 4 ++--
-> >   1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
-> > index 32f4641085bc..4ebcc838a1f6 100644
-> > --- a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
-> > +++ b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
-> > @@ -14,7 +14,7 @@ allOf:
-> >   properties:
-> >     compatible:
-> > -    const: xlnx,versal-cpm-host-1.00
-> > +    const: xlnx,versal-cpm-host
-> 
-> And this is likely breaking compatibility for existing DTs.
-> 
-> M
-> 
-> >     reg:
-> >       items:
-> > @@ -70,7 +70,7 @@ examples:
-> >                  #address-cells = <2>;
-> >                  #size-cells = <2>;
-> >                  cpm_pcie: pcie@fca10000 {
-> > -                       compatible = "xlnx,versal-cpm-host-1.00";
-> > +                       compatible = "xlnx,versal-cpm-host";
-> >                          device_type = "pci";
-> >                          #address-cells = <3>;
-> >                          #interrupt-cells = <1>;
+This gets into the same problem that Dmitry pointed out that ps8640
+has that's addressed by my recent series [1].  Namely it's not
+guaranteed that the panel will have finished probing by the time
+devm_of_dp_aux_populate_ep_devices() finishes probing. I don't think
+it's going to be really solvable without the bigger rewrite that we've
+been discussing, though. ...it's probably OK to land something like
+what you have here, but it might at least deserve a comment in the
+code?
+
+[1] https://lore.kernel.org/r/20220409023628.2104952-1-dianders@chromium.org
+
+
+> +       if (rc == -ENODEV) {
+> +               if (dp->is_edp) {
+> +                       DRM_ERROR("eDP: next bridge is not present\n");
+> +                       return rc;
+> +               }
+> +       } else if (rc) {
+> +               if (rc != -EPROBE_DEFER)
+> +                       DRM_ERROR("DP: error parsing next bridge: %d\n", rc);
+> +               return rc;
+
+In both of your two error returns here isn't it a problem that you don't do:
+
+  disable_irq(dp_priv->irq);
+  dp_display_host_phy_exit(dp_priv);
+  dp_display_host_deinit(dp_priv);
+
+Should probably at least fix that clear error before landing, unless
+I'm misunderstanding and there's some reason not to do that?
+
+
+As discussed previously, I'm not convinced that we've covered every
+corner case for properly doing and undoing the above things. I'm
+hoping that once we do the cleanup and move to pm_runtime() management
+that it will be cleaned up?
+
+
+> @@ -114,10 +114,12 @@ struct drm_bridge *dp_bridge_init(struct msm_dp *dp_display, struct drm_device *
+>         bridge->funcs = &dp_bridge_ops;
+>         bridge->type = dp_display->connector_type;
+>
+> -       bridge->ops =
+> -               DRM_BRIDGE_OP_DETECT |
+> -               DRM_BRIDGE_OP_HPD |
+> -               DRM_BRIDGE_OP_MODES;
+> +       if (!dp_display->is_edp) {
+> +               bridge->ops =
+> +                       DRM_BRIDGE_OP_DETECT |
+> +                       DRM_BRIDGE_OP_HPD |
+> +                       DRM_BRIDGE_OP_MODES;
+
+Given that Dmitry had questions about why eDP has different ops in his
+previous review of this code, the above probably deserves an inline
+code comment. If you want to use my wording, you could paste this into
+your code:
+
+  /*
+   * Many ops only make sense for DP. Why?
+   * - Detect/HPD are used by DRM to know if a display is _physically_
+   *   there, not whether the display is powered on / finished initting.
+   *   On eDP we assume the display is always there because you can't
+   *   know until power is applied. If we don't implement the ops DRM will
+   *   assume our display is always there.
+   * - Currently eDP mode reading is driven by the panel driver. This
+   *   allows the panel driver to properly power itself on to read the
+   *   modes.
+   */
+
+
+Overall: as discussed, I think that the current implementation is a
+bit fragile and might have some wrong corner cases since it's hard for
+me to reason about exactly when we init/de-init things. Even if it
+works great, the fact that it's hard to reason about isn't wonderful.
+That being said, I honestly believe that would benefit upstream to get
+this landed and iterate on it. I don't think this should be causing
+any existing behavior to be _worse_ and getting it landed upstream
+will keep more people focused on the same codebase.
+
+
+-Doug
