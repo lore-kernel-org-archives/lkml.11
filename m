@@ -2,77 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA14C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 654E9C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 17:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344023AbiDNRyL (ORCPT
+        id S1344078AbiDNRyO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 13:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47414 "EHLO
+        Thu, 14 Apr 2022 13:54:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343977AbiDNRx6 (ORCPT
+        with ESMTP id S1343966AbiDNRyG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 13:53:58 -0400
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF3BEA763;
-        Thu, 14 Apr 2022 10:51:30 -0700 (PDT)
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-ddfa38f1c1so5976788fac.11;
-        Thu, 14 Apr 2022 10:51:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DEI45G4jfdbLSLjK6F+n7UUuOmq9pwFT5soFbJ9qWrA=;
-        b=i4shKFO0PU7GNvQNI2WW03fSzG2RT5nXceVYvQvopOYuiAMV7cLICqQWnigjTL2+Cl
-         r2OH2LqO2K14zAd1fmzYe0BqsUGf98Qq1rd4rxe6IWZliP+sZhmytWWx0E1H3sHdAbUP
-         oEmJzgVVZVvhtVk/jz/xmKN/Df+Xk+rw5Oe9WmX4td5d2PvE5GkeQH/KfTXxCeDoUhEu
-         I7OVgogKHBMRAWXkINMZvZ0ubyX0A3C5Sr2T6Kl2QiNf1Z0ikPSB6g0+FAKxWC/AbSDy
-         Va9Cu7Jj6oxLFDVZrIEdE2IZL9SzcYY2imoOxH/iJiago3CU1Vp7iUygjm8JPNXavD6N
-         Xd7A==
-X-Gm-Message-State: AOAM531aBbU7dDl1f3FWFzy/e2aEQXVVlx4gXFiNEOYGTuzXlVDJMujQ
-        dfAwDkcnQb9JcRU7eL2v+MJJiJT5hg==
-X-Google-Smtp-Source: ABdhPJxDRDHbf/842fJuBWcyzVoT6YVdh1vmmWxgq2DyQr5CdgXiXnV4EA6kD1bGnC8psumRBaM8/w==
-X-Received: by 2002:a05:6870:6192:b0:e1:dcc4:e0e8 with SMTP id a18-20020a056870619200b000e1dcc4e0e8mr2085666oah.58.1649958689349;
-        Thu, 14 Apr 2022 10:51:29 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id w133-20020acadf8b000000b002ef9fa2ba84sm266647oig.12.2022.04.14.10.51.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 10:51:29 -0700 (PDT)
-Received: (nullmailer pid 2304505 invoked by uid 1000);
-        Thu, 14 Apr 2022 17:51:28 -0000
-Date:   Thu, 14 Apr 2022 12:51:28 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Abel Vesa <abel.vesa@nxp.com>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Fabio Estevam <fabio.estevam@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-mmc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v6 13/13] dt-bindings: usb: usbmisc-imx: Add i.MX8DXL
- compatible string
-Message-ID: <YlhfIAqBvZM7k67Z@robh.at.kernel.org>
-References: <20220413103356.3433637-1-abel.vesa@nxp.com>
- <20220413103356.3433637-14-abel.vesa@nxp.com>
+        Thu, 14 Apr 2022 13:54:06 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83BEEAC84;
+        Thu, 14 Apr 2022 10:51:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=LymSj2bkAQBsKt59tP7qveJbohj2dcOZKvwQYkKRUzg=; b=hYa/LhL1uUAkf7VpnkoQM3umNT
+        ZiFgJylZZ8CTcvVDkzB716ymJQwJl6129TYGV0zmzutMI6dycH3XCVuDZ407OruoML/8K3CayX7TS
+        crsIOVoMKjW+j7L1ID+2ClF6X1yMZZ3hb+D89ZI33eSBZUsK8nfIgK9dnmxAwflxznKM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nf3ci-00FrIe-Dc; Thu, 14 Apr 2022 19:51:16 +0200
+Date:   Thu, 14 Apr 2022 19:51:16 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        Laurent Gonzales <laurent.gonzales@non.se.com>,
+        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Subject: Re: [PATCH net-next 06/12] net: dsa: rzn1-a5psw: add Renesas RZ/N1
+ advanced 5 port switch driver
+Message-ID: <YlhfFIDy4gCbokpP@lunn.ch>
+References: <20220414122250.158113-1-clement.leger@bootlin.com>
+ <20220414122250.158113-7-clement.leger@bootlin.com>
+ <20220414144709.tpxiiaiy2hu4n7fd@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220413103356.3433637-14-abel.vesa@nxp.com>
+In-Reply-To: <20220414144709.tpxiiaiy2hu4n7fd@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Apr 2022 13:33:56 +0300, Abel Vesa wrote:
-> Add i.MX8DXL compatible string to the usbmisc-imx bindings.
+> > +static int a5psw_probe_mdio(struct a5psw *a5psw)
+> > +{
+> > +	struct device *dev = a5psw->dev;
+> > +	struct device_node *mdio_node;
+> > +	struct mii_bus *bus;
+> > +	int err;
+> > +
+> > +	if (of_property_read_u32(dev->of_node, "clock-frequency",
+> > +				 &a5psw->mdio_freq))
+> > +		a5psw->mdio_freq = A5PSW_MDIO_DEF_FREQ;
 > 
-> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
-> ---
->  Documentation/devicetree/bindings/usb/usbmisc-imx.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
+> Shouldn't the clock-frequency be a property of the "mdio" node?
+> At least I see it in Documentation/devicetree/bindings/net/mdio.yaml.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Yes. And the example in the binding document for this driver also
+places it in the mdio node.
+
+       Andrew
