@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC0CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B8FC4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:21:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349347AbiDNOT5 (ORCPT
+        id S1349447AbiDNOUP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:19:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44996 "EHLO
+        Thu, 14 Apr 2022 10:20:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245754AbiDNNjC (ORCPT
+        with ESMTP id S1343835AbiDNNj0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A84A8889;
-        Thu, 14 Apr 2022 06:34:12 -0700 (PDT)
+        Thu, 14 Apr 2022 09:39:26 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD8E506F5;
+        Thu, 14 Apr 2022 06:34:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98EB9B82968;
-        Thu, 14 Apr 2022 13:34:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1FE2C385A9;
-        Thu, 14 Apr 2022 13:34:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 131D6CE2997;
+        Thu, 14 Apr 2022 13:34:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E002C385A1;
+        Thu, 14 Apr 2022 13:34:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943250;
-        bh=MYXKRL6zh+SFfUS482sv3pgx8X+jfhG4h+6uNd7kH6E=;
+        s=korg; t=1649943295;
+        bh=Wp0hPJ9IukXcUIGFX8IaXuqKEfhpodXZOqo2dOyyxsg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E7hpBONlnMDwBZ8/aGYycDAQzScXqwh+B3nf7C2t4RDiSycXumOHFqIDVt2lgJYV1
-         Vmqi1ahbP37fe/kbfuDPvWsFUf67zlszAcb8qGKUnoy4nALk33eSPzCIWT5XHbu2HG
-         tW2Z2bCRssEtaVO0xssa16plHe8rdBBLp6nJRYYc=
+        b=v4l8H1rjAlcTi4fKk9CpIzX/laWYVYzPPUFs0LqcLKIHU4ToFnOnEBxbxb/GKkKj+
+         pzgL6mGTAvfgrN0JMWNHePwMQwpsoVLoiOHRyPk0xz8XrQTdQXNTwimFt+xfyK1tK/
+         NmESHn3A8yIIBgRMYi18eyeH3fRhTZ58DwRgVfOg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Hector Martin <marcan@marcan.st>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.4 086/475] brcmfmac: pcie: Fix crashes due to early IRQs
-Date:   Thu, 14 Apr 2022 15:07:51 +0200
-Message-Id: <20220414110857.560093571@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
+        John Allen <john.allen@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 105/475] crypto: ccp - ccp_dmaengine_unregister release dma channels
+Date:   Thu, 14 Apr 2022 15:08:10 +0200
+Message-Id: <20220414110858.092392956@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,66 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Dāvis Mosāns <davispuh@gmail.com>
 
-commit b50255c83b914defd61a57fbc81d452334b63f4c upstream.
+[ Upstream commit 54cce8ecb9254f971b40a72911c6da403720a2d2 ]
 
-The driver was enabling IRQs before the message processing was
-initialized. This could cause IRQs to come in too early and crash the
-driver. Instead, move the IRQ enable and hostready to a bus preinit
-function, at which point everything is properly initialized.
+ccp_dmaengine_register adds dma_chan->device_node to dma_dev->channels list
+but ccp_dmaengine_unregister didn't remove them.
+That can cause crashes in various dmaengine methods that tries to use dma_dev->channels
 
-Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220131160713.245637-7-marcan@marcan.st
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 58ea8abf4904 ("crypto: ccp - Register the CCP as a DMA...")
+Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
+Acked-by: John Allen <john.allen@amd.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |   16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ drivers/crypto/ccp/ccp-dmaengine.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -1306,6 +1306,18 @@ static void brcmf_pcie_down(struct devic
- {
+diff --git a/drivers/crypto/ccp/ccp-dmaengine.c b/drivers/crypto/ccp/ccp-dmaengine.c
+index 0770a83bf1a5..b3eea329f840 100644
+--- a/drivers/crypto/ccp/ccp-dmaengine.c
++++ b/drivers/crypto/ccp/ccp-dmaengine.c
+@@ -633,6 +633,20 @@ static int ccp_terminate_all(struct dma_chan *dma_chan)
+ 	return 0;
  }
  
-+static int brcmf_pcie_preinit(struct device *dev)
++static void ccp_dma_release(struct ccp_device *ccp)
 +{
-+	struct brcmf_bus *bus_if = dev_get_drvdata(dev);
-+	struct brcmf_pciedev *buspub = bus_if->bus_priv.pcie;
++	struct ccp_dma_chan *chan;
++	struct dma_chan *dma_chan;
++	unsigned int i;
 +
-+	brcmf_dbg(PCIE, "Enter\n");
-+
-+	brcmf_pcie_intr_enable(buspub->devinfo);
-+	brcmf_pcie_hostready(buspub->devinfo);
-+
-+	return 0;
++	for (i = 0; i < ccp->cmd_q_count; i++) {
++		chan = ccp->ccp_dma_chan + i;
++		dma_chan = &chan->dma_chan;
++		tasklet_kill(&chan->cleanup_tasklet);
++		list_del_rcu(&dma_chan->device_node);
++	}
 +}
- 
- static int brcmf_pcie_tx(struct device *dev, struct sk_buff *skb)
++
+ int ccp_dmaengine_register(struct ccp_device *ccp)
  {
-@@ -1414,6 +1426,7 @@ static int brcmf_pcie_reset(struct devic
- }
+ 	struct ccp_dma_chan *chan;
+@@ -737,6 +751,7 @@ int ccp_dmaengine_register(struct ccp_device *ccp)
+ 	return 0;
  
- static const struct brcmf_bus_ops brcmf_pcie_bus_ops = {
-+	.preinit = brcmf_pcie_preinit,
- 	.txdata = brcmf_pcie_tx,
- 	.stop = brcmf_pcie_down,
- 	.txctl = brcmf_pcie_tx_ctlpkt,
-@@ -1786,9 +1799,6 @@ static void brcmf_pcie_setup(struct devi
+ err_reg:
++	ccp_dma_release(ccp);
+ 	kmem_cache_destroy(ccp->dma_desc_cache);
  
- 	init_waitqueue_head(&devinfo->mbdata_resp_wait);
+ err_cache:
+@@ -753,6 +768,7 @@ void ccp_dmaengine_unregister(struct ccp_device *ccp)
+ 		return;
  
--	brcmf_pcie_intr_enable(devinfo);
--	brcmf_pcie_hostready(devinfo);
--
- 	ret = brcmf_attach(&devinfo->pdev->dev);
- 	if (ret)
- 		goto fail;
+ 	dma_async_device_unregister(dma_dev);
++	ccp_dma_release(ccp);
+ 
+ 	kmem_cache_destroy(ccp->dma_desc_cache);
+ 	kmem_cache_destroy(ccp->dma_cmd_cache);
+-- 
+2.34.1
+
 
 
