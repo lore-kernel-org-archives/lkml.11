@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F60FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:07:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 431EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235875AbiDNPJu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:09:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43372 "EHLO
+        id S245304AbiDNPKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346952AbiDNN6J (ORCPT
+        with ESMTP id S1346944AbiDNN6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:58:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EAC9B53D2;
+        Thu, 14 Apr 2022 09:58:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFA9B53D5;
         Thu, 14 Apr 2022 06:48:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B5DA0CE2973;
-        Thu, 14 Apr 2022 13:48:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D008EC385A1;
-        Thu, 14 Apr 2022 13:48:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8365A61D7C;
+        Thu, 14 Apr 2022 13:48:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 940F0C385A5;
+        Thu, 14 Apr 2022 13:48:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944093;
-        bh=MUQIhcZ7wHOqV9bShpydnjC4UGdYVtJ1yXD4aZZYlrA=;
+        s=korg; t=1649944095;
+        bh=gUdxT1VasgA5XAo/uD+/ZVGLVxk2Cwn+6TvEB2RMvbw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CGzwl0umFZiclbcbeIrhozFQihFXyyLB0/ao9XO82qe6I1STueIsQTEKw9kYrjlHh
-         r1p6dvm/DsSHrpW9uyV/D7W4recfLtDTUHcqE2NU9KtugL5UOh5pD9a5i0c4BTgIyN
-         7H9JVxfrq7j0r18mnzm78EQXsUAz8MUBb8J4TRjA=
+        b=cJC3iclbGGf/Lji9/QHoLkrotlyGsWYZ2FVwGeehBO3HyTvJBLmaZAeia8fHeFatU
+         vNE/ZuXldxXW0gBe9WkIzX8lT3qEoMpVYufu9aGbS9EKI0HIti8jBzBTA46ww30jmI
+         69LiTI/TfKV6nntE81fio/ZqNGHkq0opM9U1izMU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 389/475] power: supply: axp288-charger: Set Vhold to 4.4V
-Date:   Thu, 14 Apr 2022 15:12:54 +0200
-Message-Id: <20220414110905.958971013@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.4 352/475] ASoC: soc-compress: Change the check for codec_dai
+Date:   Thu, 14 Apr 2022 15:12:17 +0200
+Message-Id: <20220414110904.932524310@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -49,85 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 5ac121b81b4051e7fc83d5b3456a5e499d5bd147 ]
+commit ccb4214f7f2a8b75acf493f31128e464ee1a3536 upstream.
 
-The AXP288's recommended and factory default Vhold value (minimum
-input voltage below which the input current draw will be reduced)
-is 4.4V. This lines up with other charger IC's such as the TI
-bq2419x/bq2429x series which use 4.36V or 4.44V.
+It should be better to reverse the check on codec_dai
+and returned early in order to be easier to understand.
 
-For some reason some BIOS-es initialize Vhold to 4.6V or even 4.7V
-which combined with the typical voltage drop over typically low
-wire gauge micro-USB cables leads to the input-current getting
-capped below 1A (with a 2A capable dedicated charger) based on Vhold.
-
-This leads to slow charging, or even to the device slowly discharging
-if the device is in heavy use.
-
-As the Linux AXP288 drivers use the builtin BC1.2 charger detection
-and send the input-current-limit according to the detected charger
-there really is no reason not to use the recommended 4.4V Vhold.
-
-Set Vhold to 4.4V to fix the slow charging issue on various devices.
-
-There is one exception, the special-case of the HP X2 2-in-1s which
-combine this BC1.2 capable PMIC with a Type-C port and a 5V/3A factory
-provided charger with a Type-C plug which does not do BC1.2. These
-have their input-current-limit hardcoded to 3A (like under Windows)
-and use a higher Vhold on purpose to limit the current when used
-with other chargers. To avoid touching Vhold on these HP X2 laptops
-the code setting Vhold is added to an else branch of the if checking
-for these models.
-
-Note this also fixes the sofar unused VBUS_ISPOUT_VHOLD_SET_MASK
-define, which was wrong.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: de2c6f98817f ("ASoC: soc-compress: prevent the potentially use of null pointer")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220310030041.1556323-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/power/supply/axp288_charger.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ sound/soc/soc-compress.c |   19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/power/supply/axp288_charger.c b/drivers/power/supply/axp288_charger.c
-index 7d09e49f04d3..2ee6bb7c0804 100644
---- a/drivers/power/supply/axp288_charger.c
-+++ b/drivers/power/supply/axp288_charger.c
-@@ -41,11 +41,11 @@
- #define VBUS_ISPOUT_CUR_LIM_1500MA	0x1	/* 1500mA */
- #define VBUS_ISPOUT_CUR_LIM_2000MA	0x2	/* 2000mA */
- #define VBUS_ISPOUT_CUR_NO_LIM		0x3	/* 2500mA */
--#define VBUS_ISPOUT_VHOLD_SET_MASK	0x31
-+#define VBUS_ISPOUT_VHOLD_SET_MASK	0x38
- #define VBUS_ISPOUT_VHOLD_SET_BIT_POS	0x3
- #define VBUS_ISPOUT_VHOLD_SET_OFFSET	4000	/* 4000mV */
- #define VBUS_ISPOUT_VHOLD_SET_LSB_RES	100	/* 100mV */
--#define VBUS_ISPOUT_VHOLD_SET_4300MV	0x3	/* 4300mV */
-+#define VBUS_ISPOUT_VHOLD_SET_4400MV	0x4	/* 4400mV */
- #define VBUS_ISPOUT_VBUS_PATH_DIS	BIT(7)
- 
- #define CHRG_CCCV_CC_MASK		0xf		/* 4 bits */
-@@ -744,6 +744,16 @@ static int charger_init_hw_regs(struct axp288_chrg_info *info)
- 		ret = axp288_charger_vbus_path_select(info, true);
- 		if (ret < 0)
- 			return ret;
-+	} else {
-+		/* Set Vhold to the factory default / recommended 4.4V */
-+		val = VBUS_ISPOUT_VHOLD_SET_4400MV << VBUS_ISPOUT_VHOLD_SET_BIT_POS;
-+		ret = regmap_update_bits(info->regmap, AXP20X_VBUS_IPSOUT_MGMT,
-+					 VBUS_ISPOUT_VHOLD_SET_MASK, val);
-+		if (ret < 0) {
-+			dev_err(&info->pdev->dev, "register(%x) write error(%d)\n",
-+				AXP20X_VBUS_IPSOUT_MGMT, ret);
-+			return ret;
-+		}
+--- a/sound/soc/soc-compress.c
++++ b/sound/soc/soc-compress.c
+@@ -871,16 +871,19 @@ int snd_soc_new_compress(struct snd_soc_
+ 		return -EINVAL;
  	}
  
- 	/* Read current charge voltage and current limit */
--- 
-2.35.1
-
+-	/* check client and interface hw capabilities */
+-	if (codec_dai) {
+-		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
+-		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
+-			playback = 1;
+-		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
+-		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
+-			capture = 1;
++	if (!codec_dai) {
++		dev_err(rtd->card->dev, "Missing codec\n");
++		return -EINVAL;
+ 	}
+ 
++	/* check client and interface hw capabilities */
++	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
++	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
++		playback = 1;
++	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
++	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
++		capture = 1;
++
+ 	/*
+ 	 * Compress devices are unidirectional so only one of the directions
+ 	 * should be set, check for that (xor)
 
 
