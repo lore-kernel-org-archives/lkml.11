@@ -2,105 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34AC8C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:40:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EAEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:40:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238640AbiDNImT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 04:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45444 "EHLO
+        id S241100AbiDNIm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 04:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241006AbiDNIli (ORCPT
+        with ESMTP id S241028AbiDNIlv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 04:41:38 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CAA6515D
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:39:15 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id bh17so8660902ejb.8
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:39:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UqSU6uGvzefM7JqsLVkp47vheVpreBM8RRaia816jV8=;
-        b=fJxEecFFxrOn0EueDfzfdFYNkDi7VyjFuEqZA68NnzPDC5IOQ4sffH4hGLLmq+v6JF
-         bD2CrcrYFhseb01NvTx9njFY+1/vVGY8a4gcV33l7BgBHnH77viHZowL9By7aO7rRWxx
-         SSFAqSdbLT490hWUKaUMDqIiRsYj/FIW8+98fPf5xE5Pf18m7B85JkUPuKFOxE1X7Oq0
-         mKQEaQD4TFRaH5nZpv8RgQD/1bZfuXOIbZFoIMXcL7jtIhNyIDghw2Ndf8y14DNxvunv
-         VqmejS60wgWOrpaEOLBXXX6JG2g+qOIDthLzSnWeVMhSFQEmvMYREiArRbS/EVYbfyA0
-         8G7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UqSU6uGvzefM7JqsLVkp47vheVpreBM8RRaia816jV8=;
-        b=3OV1i4URDHW8RCzQALlc8gFJhCo+7HiaaR1bv4PboAF9f1Fhkp72ruTLVGwiy6Ulws
-         ObWu8v1xoeLJfbCO9Q1a9ZUcXHw1jCsUf8VDaL8qJEENPMISZd5yYKRXGO+Gq7VS4PiH
-         lQ83zS5DLIqVMXDWIL6I1sQaSi0o2Ip2NAa5ftNa8JHePPWkddwXmwyoi7y4w4HJ5pfT
-         P9cqhN3pfsAXO3RIPYmyJI7xLbJx1HeybfqvXSMrSC1MMB6KUZpRuG7EcCGGyR0GH74B
-         UmDDlaE3YBXe6hvzy2OIfuaRNTp/n1AGm/EBwwF0RHJU9bR2tD4G8VwvFiFhVY7vhEsY
-         yqlA==
-X-Gm-Message-State: AOAM531c6/0hJXlR4CgDErSdloX8iEQoR9Qb2VVsMgQsQIFVqEltq64o
-        BaeT+L2oNVVwxAwWj5DKXq8=
-X-Google-Smtp-Source: ABdhPJwpaGNjqIdCer8Ui1XN0n5nWE6nuXkwc31+cYETm/IFNZdI5z9zF3n+PWmvD1dljt9eHeVfCg==
-X-Received: by 2002:a17:906:c091:b0:6db:62b6:f4cc with SMTP id f17-20020a170906c09100b006db62b6f4ccmr1413652ejz.607.1649925553721;
-        Thu, 14 Apr 2022 01:39:13 -0700 (PDT)
-Received: from localhost.localdomain (ip5f5abb6b.dynamic.kabel-deutschland.de. [95.90.187.107])
-        by smtp.gmail.com with ESMTPSA id ah13-20020a1709069acd00b006e8a0b3e071sm418138ejc.110.2022.04.14.01.39.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 01:39:13 -0700 (PDT)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 6/7] staging: r8188eu: always log firmware info
-Date:   Thu, 14 Apr 2022 10:38:52 +0200
-Message-Id: <20220414083853.3422-7-straube.linux@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220414083853.3422-1-straube.linux@gmail.com>
-References: <20220414083853.3422-1-straube.linux@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 14 Apr 2022 04:41:51 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42C92BA
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:39:20 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 087361F747;
+        Thu, 14 Apr 2022 08:39:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649925559; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=uErXGT94lzjaW6470zjLwKuokbUb5+yISqq1DdTGlSw=;
+        b=XJlwhCqVQa9Jm3hvHg3y2b9K7zphNFo8TtJ+2xVT7O8+GsHoa8Uj+epCLq2hy2q6XD0a1a
+        ZWPTVF2ZR0QfqjLbGP+I2a5zg2BpE5VRcwjw4YINrypRWpmlBdQtDb+m8neB43vSEteTpM
+        ycYDgUCWrq+MagbYMPUBTYFN6V5FOd0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649925559;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=uErXGT94lzjaW6470zjLwKuokbUb5+yISqq1DdTGlSw=;
+        b=bBPJS5diDJyN6A04YMy+1IMkhnMCvIYoWl5Ad74bBQlkes9JvFlejhTSjdDWGJokeHuHvR
+        Ti3em3UrtF+bpJBQ==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 027C5A3B82;
+        Thu, 14 Apr 2022 08:39:18 +0000 (UTC)
+Date:   Thu, 14 Apr 2022 10:39:18 +0200
+Message-ID: <s5hv8vc3vpl.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] sound fixes for 5.18-rc3
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The local static variable log_version prevents logging the firmware
-information more than once, e.g. when the device is unplugged and
-plugged again. That is not necessary and complicates the code. Remove
-it.
+Linus,
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
+please pull sound fixes for v5.18-rc3 from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.18-rc3
+
+The topmost commit is 24d0c9f0e7de95fe3e3e0067cbea1cd5d413244b
+
+----------------------------------------------------------------
+
+sound fixes for 5.18-rc3
+
+This became an unexpectedly large pull request due to various
+regression fixes in the previous kernels.
+
+The majority of fixes are a series of patches to address the
+regression at probe errors in devres'ed drivers, while there are
+yet more fixes for the x86 SG allocations and for USB-audio
+buffer management.  In addition, a few HD-audio quirks and other
+small fixes are found.
+
+----------------------------------------------------------------
+
+Borislav Petkov (1):
+      ALSA: usb-audio: Fix undefined behavior due to shift overflowing the constant
+
+Fabio M. De Francesco (1):
+      ALSA: pcm: Test for "silence" field in struct "pcm_format_data"
+
+Kai Vehmanen (1):
+      ALSA: hda/i915 - skip acomp init if no matching display
+
+Pierre-Louis Bossart (1):
+      ALSA: hda: intel-dsp-config: update AlderLake PCI IDs
+
+Randy Dunlap (1):
+      sound/oss/dmasound: fix build when drivers are mixed =y/=m
+
+Takashi Iwai (45):
+      ALSA: usb-audio: Cap upper limits of buffer/period bytes for implicit fb
+      ALSA: usb-audio: Increase max buffer size
+      ALSA: core: Add snd_card_free_on_error() helper
+      ALSA: echoaudio: Fix the missing snd_card_free() call at probe error
+      ALSA: galaxy: Fix the missing snd_card_free() call at probe error
+      ALSA: sc6000: Fix the missing snd_card_free() call at probe error
+      ALSA: ad1889: Fix the missing snd_card_free() call at probe error
+      ALSA: ali5451: Fix the missing snd_card_free() call at probe error
+      ALSA: als4000: Fix the missing snd_card_free() call at probe error
+      ALSA: atiixp: Fix the missing snd_card_free() call at probe error
+      ALSA: au88x0: Fix the missing snd_card_free() call at probe error
+      ALSA: azt3328: Fix the missing snd_card_free() call at probe error
+      ALSA: ca0106: Fix the missing snd_card_free() call at probe error
+      ALSA: cs4281: Fix the missing snd_card_free() call at probe error
+      ALSA: cs5535audio: Fix the missing snd_card_free() call at probe error
+      ALSA: emu10k1x: Fix the missing snd_card_free() call at probe error
+      ALSA: ens137x: Fix the missing snd_card_free() call at probe error
+      ALSA: es1938: Fix the missing snd_card_free() call at probe error
+      ALSA: es1968: Fix the missing snd_card_free() call at probe error
+      ALSA: fm801: Fix the missing snd_card_free() call at probe error
+      ALSA: ice1724: Fix the missing snd_card_free() call at probe error
+      ALSA: intel8x0: Fix the missing snd_card_free() call at probe error
+      ALSA: korg1212: Fix the missing snd_card_free() call at probe error
+      ALSA: maestro3: Fix the missing snd_card_free() call at probe error
+      ALSA: riptide: Fix the missing snd_card_free() call at probe error
+      ALSA: rme32: Fix the missing snd_card_free() call at probe error
+      ALSA: rme96: Fix the missing snd_card_free() call at probe error
+      ALSA: sonicvibes: Fix the missing snd_card_free() call at probe error
+      ALSA: via82xx: Fix the missing snd_card_free() call at probe error
+      ALSA: intel_hdmi: Fix the missing snd_card_free() call at probe error
+      ALSA: sis7019: Fix the missing error handling
+      ALSA: bt87x: Fix the missing snd_card_free() call at probe error
+      ALSA: lola: Fix the missing snd_card_free() call at probe error
+      ALSA: als300: Fix the missing snd_card_free() call at probe error
+      ALSA: aw2: Fix the missing snd_card_free() call at probe error
+      ALSA: cmipci: Fix the missing snd_card_free() call at probe error
+      ALSA: lx6464es: Fix the missing snd_card_free() call at probe error
+      ALSA: oxygen: Fix the missing snd_card_free() call at probe error
+      ALSA: hdsp: Fix the missing snd_card_free() call at probe error
+      ALSA: hdspm: Fix the missing snd_card_free() call at probe error
+      ALSA: rme9652: Fix the missing snd_card_free() call at probe error
+      ALSA: mtpav: Don't call card private_free at probe error path
+      ALSA: nm256: Don't call card private_free at probe error path
+      ALSA: memalloc: Add fallback SG-buffer allocations for x86
+      ALSA: usb-audio: Limit max buffer and period sizes per time
+
+Tao Jin (1):
+      ALSA: hda/realtek: add quirk for Lenovo Thinkpad X12 speakers
+
+Tim Crawford (1):
+      ALSA: hda/realtek: Add quirk for Clevo PD50PNT
+
 ---
- drivers/staging/r8188eu/core/rtw_fw.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/staging/r8188eu/core/rtw_fw.c b/drivers/staging/r8188eu/core/rtw_fw.c
-index cbc4980bd938..64963507a346 100644
---- a/drivers/staging/r8188eu/core/rtw_fw.c
-+++ b/drivers/staging/r8188eu/core/rtw_fw.c
-@@ -239,7 +239,6 @@ int rtl8188e_firmware_download(struct adapter *padapter)
- 	struct rt_firmware_hdr *fwhdr = NULL;
- 	u8 *fw_data;
- 	u32 fw_size;
--	static int log_version;
- 
- 	if (!dvobj->firmware.data)
- 		ret = load_firmware(&dvobj->firmware, device);
-@@ -253,10 +252,9 @@ int rtl8188e_firmware_download(struct adapter *padapter)
- 	/*  To Check Fw header. Added by tynli. 2009.12.04. */
- 	fwhdr = (struct rt_firmware_hdr *)dvobj->firmware.data;
- 
--	if (!log_version++)
--		pr_info("%sFirmware Version %d, SubVersion %d, Signature 0x%x\n",
--			DRIVER_PREFIX, le16_to_cpu(fwhdr->version), fwhdr->subversion,
--			le16_to_cpu(fwhdr->signature));
-+	pr_info("%sFirmware Version %d, SubVersion %d, Signature 0x%x\n",
-+		DRIVER_PREFIX, le16_to_cpu(fwhdr->version), fwhdr->subversion,
-+		le16_to_cpu(fwhdr->signature));
- 
- 	if (IS_FW_HEADER_EXIST(fwhdr)) {
- 		fw_data = fw_data + sizeof(struct rt_firmware_hdr);
--- 
-2.35.1
+ include/sound/core.h                |   1 +
+ include/sound/memalloc.h            |   5 ++
+ sound/core/init.c                   |  28 +++++++++
+ sound/core/memalloc.c               | 111 +++++++++++++++++++++++++++++++++++-
+ sound/core/pcm_misc.c               |   2 +-
+ sound/drivers/mtpav.c               |   4 +-
+ sound/hda/hdac_i915.c               |  29 ++++++----
+ sound/hda/intel-dsp-config.c        |  18 +++++-
+ sound/isa/galaxy/galaxy.c           |   7 ++-
+ sound/isa/sc6000.c                  |   7 ++-
+ sound/oss/dmasound/dmasound.h       |   6 --
+ sound/oss/dmasound/dmasound_core.c  |  24 +-------
+ sound/pci/ad1889.c                  |  10 +++-
+ sound/pci/ali5451/ali5451.c         |  10 +++-
+ sound/pci/als300.c                  |   8 ++-
+ sound/pci/als4000.c                 |  10 +++-
+ sound/pci/atiixp.c                  |  10 +++-
+ sound/pci/atiixp_modem.c            |  10 +++-
+ sound/pci/au88x0/au88x0.c           |   8 ++-
+ sound/pci/aw2/aw2-alsa.c            |   8 ++-
+ sound/pci/azt3328.c                 |   8 ++-
+ sound/pci/bt87x.c                   |  10 +++-
+ sound/pci/ca0106/ca0106_main.c      |  10 +++-
+ sound/pci/cmipci.c                  |   8 ++-
+ sound/pci/cs4281.c                  |  10 +++-
+ sound/pci/cs5535audio/cs5535audio.c |  10 +++-
+ sound/pci/echoaudio/echoaudio.c     |   9 ++-
+ sound/pci/emu10k1/emu10k1x.c        |  10 +++-
+ sound/pci/ens1370.c                 |  10 +++-
+ sound/pci/es1938.c                  |  10 +++-
+ sound/pci/es1968.c                  |  10 +++-
+ sound/pci/fm801.c                   |  10 +++-
+ sound/pci/hda/patch_realtek.c       |   2 +
+ sound/pci/ice1712/ice1724.c         |  10 +++-
+ sound/pci/intel8x0.c                |  10 +++-
+ sound/pci/intel8x0m.c               |  10 +++-
+ sound/pci/korg1212/korg1212.c       |   8 ++-
+ sound/pci/lola/lola.c               |  10 +++-
+ sound/pci/lx6464es/lx6464es.c       |   8 ++-
+ sound/pci/maestro3.c                |   8 ++-
+ sound/pci/nm256/nm256.c             |   2 +-
+ sound/pci/oxygen/oxygen_lib.c       |  12 +++-
+ sound/pci/riptide/riptide.c         |   8 ++-
+ sound/pci/rme32.c                   |   8 ++-
+ sound/pci/rme96.c                   |  10 +++-
+ sound/pci/rme9652/hdsp.c            |   8 ++-
+ sound/pci/rme9652/hdspm.c           |   8 ++-
+ sound/pci/rme9652/rme9652.c         |   8 ++-
+ sound/pci/sis7019.c                 |  14 +++--
+ sound/pci/sonicvibes.c              |  10 +++-
+ sound/pci/via82xx.c                 |  10 +++-
+ sound/pci/via82xx_modem.c           |  10 +++-
+ sound/usb/pcm.c                     |  16 +++++-
+ sound/usb/usbaudio.h                |   2 +-
+ sound/x86/intel_hdmi_audio.c        |   7 ++-
+ 55 files changed, 506 insertions(+), 124 deletions(-)
 
