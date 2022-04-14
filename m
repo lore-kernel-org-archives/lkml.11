@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5ABAC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFCC1C4167E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346191AbiDNN4D (ORCPT
+        id S1346157AbiDNNzz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:56:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57898 "EHLO
+        Thu, 14 Apr 2022 09:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344189AbiDNNbF (ORCPT
+        with ESMTP id S245418AbiDNN24 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:31:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725BBE6;
-        Thu, 14 Apr 2022 06:28:40 -0700 (PDT)
+        Thu, 14 Apr 2022 09:28:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D043BE0;
+        Thu, 14 Apr 2022 06:22:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35608B82984;
-        Thu, 14 Apr 2022 13:28:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EB18C385A5;
-        Thu, 14 Apr 2022 13:28:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D76C5619EF;
+        Thu, 14 Apr 2022 13:22:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4D32C385A1;
+        Thu, 14 Apr 2022 13:22:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942918;
-        bh=qSayJhxGXTLXW2afgOno1/qZon/DBb4zO2hFrDAy1H0=;
+        s=korg; t=1649942567;
+        bh=ONVrsDX9luGxtvHXfM9RH5hOjSyNdgMQabC4i6/1Woo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DmIjMzjujQ44RG5+liX2y+qFHwjvwzP8E26/oEkisg0fRKqyoGwK4vHQrIP2qmSNf
-         Z9C+t7C/pjfFWFqFky+i5x7h4T10No3cZcbRZOMmo1D2SNhKyx9EG54wlD3nhSug6e
-         SXxdbCNSFi5zN1OCEYBNgXsOkqW/uX5DzsocKTrM=
+        b=YehMOWE/1KZEWizY3JWDKhZK3e5gPN0Ty0g6zQD4iqZu17UWfoZ53f3Gwc949dZ1F
+         wslOvlRV0HOfd12tS0SaevihnZlIHVvdJnNrK/1EGA2AK/aWCeVXo4Ei7aG2/NB34K
+         TxBpLvWUZYK9YKokvI0VTaV266cve25Ce/XD5Nhg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Petr Vorel <petr.vorel@gmail.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 308/338] net: openvswitch: dont send internal clone attribute to the userspace.
-Date:   Thu, 14 Apr 2022 15:13:31 +0200
-Message-Id: <20220414110847.647701636@linuxfoundation.org>
+Subject: [PATCH 4.19 181/338] clk: qcom: gcc-msm8994: Fix gpll4 width
+Date:   Thu, 14 Apr 2022 15:11:24 +0200
+Message-Id: <20220414110844.049387319@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,78 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilya Maximets <i.maximets@ovn.org>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit 3f2a3050b4a3e7f32fc0ea3c9b0183090ae00522 ]
+[ Upstream commit 71021db1c532c2545ae53b9ee85b37b7154f51d4 ]
 
-'OVS_CLONE_ATTR_EXEC' is an internal attribute that is used for
-performance optimization inside the kernel.  It's added by the kernel
-while parsing user-provided actions and should not be sent during the
-flow dump as it's not part of the uAPI.
+The gpll4 postdiv is actually a div4, so make sure that Linux is aware of
+this.
 
-The issue doesn't cause any significant problems to the ovs-vswitchd
-process, because reported actions are not really used in the
-application lifecycle and only supposed to be shown to a human via
-ovs-dpctl flow dump.  However, the action list is still incorrect
-and causes the following error if the user wants to look at the
-datapath flows:
+This fixes the following error messages:
 
-  # ovs-dpctl add-dp system@ovs-system
-  # ovs-dpctl add-flow "<flow match>" "clone(ct(commit),0)"
-  # ovs-dpctl dump-flows
-  <flow match>, packets:0, bytes:0, used:never,
-    actions:clone(bad length 4, expected -1 for: action0(01 00 00 00),
-                  ct(commit),0)
+ mmc1: Card appears overclocked; req 200000000 Hz, actual 343999999 Hz
+ mmc1: Card appears overclocked; req 400000000 Hz, actual 687999999 Hz
 
-With the fix:
-
-  # ovs-dpctl dump-flows
-  <flow match>, packets:0, bytes:0, used:never,
-    actions:clone(ct(commit),0)
-
-Additionally fixed an incorrect attribute name in the comment.
-
-Fixes: b233504033db ("openvswitch: kernel datapath clone action")
-Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
-Acked-by: Aaron Conole <aconole@redhat.com>
-Link: https://lore.kernel.org/r/20220404104150.2865736-1-i.maximets@ovn.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: aec89f78cf01 ("clk: qcom: Add support for msm8994 global clock controller")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Link: https://lore.kernel.org/r/20220319174940.341137-1-konrad.dybcio@somainline.org
+Tested-by: Petr Vorel <petr.vorel@gmail.com>
+Reviewed-by: Petr Vorel <petr.vorel@gmail.com>
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/openvswitch/actions.c      | 2 +-
- net/openvswitch/flow_netlink.c | 4 +++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/clk/qcom/gcc-msm8994.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index 100cc09c100d..8b75afe41284 100644
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -1098,7 +1098,7 @@ static int clone(struct datapath *dp, struct sk_buff *skb,
- 	int rem = nla_len(attr);
- 	bool dont_clone_flow_key;
+diff --git a/drivers/clk/qcom/gcc-msm8994.c b/drivers/clk/qcom/gcc-msm8994.c
+index 53f0f369a33e..4ec481efedc8 100644
+--- a/drivers/clk/qcom/gcc-msm8994.c
++++ b/drivers/clk/qcom/gcc-msm8994.c
+@@ -115,6 +115,7 @@ static struct clk_alpha_pll gpll4_early = {
  
--	/* The first action is always 'OVS_CLONE_ATTR_ARG'. */
-+	/* The first action is always 'OVS_CLONE_ATTR_EXEC'. */
- 	clone_arg = nla_data(attr);
- 	dont_clone_flow_key = nla_get_u32(clone_arg);
- 	actions = nla_next(clone_arg, &rem);
-diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-index fb69978f50ec..4413ffdc1e03 100644
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -3173,7 +3173,9 @@ static int clone_action_to_attr(const struct nlattr *attr,
- 	if (!start)
- 		return -EMSGSIZE;
- 
--	err = ovs_nla_put_actions(nla_data(attr), rem, skb);
-+	/* Skipping the OVS_CLONE_ATTR_EXEC that is always the first attribute. */
-+	attr = nla_next(nla_data(attr), &rem);
-+	err = ovs_nla_put_actions(attr, rem, skb);
- 
- 	if (err)
- 		nla_nest_cancel(skb, start);
+ static struct clk_alpha_pll_postdiv gpll4 = {
+ 	.offset = 0x1dc0,
++	.width = 4,
+ 	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_DEFAULT],
+ 	.clkr.hw.init = &(struct clk_init_data)
+ 	{
 -- 
-2.35.1
+2.34.1
 
 
 
