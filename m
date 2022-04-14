@@ -2,88 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B76C3527C
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD41C38A04
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350210AbiDNO5G (ORCPT
+        id S1345125AbiDNOz7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56942 "EHLO
+        Thu, 14 Apr 2022 10:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345596AbiDNNxs (ORCPT
+        with ESMTP id S1344883AbiDNNxS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:53:48 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEEFCAAC8A
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:44:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649943896; x=1681479896;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=h/1cEA2KokmS/KpSs5jH8/70OIy1UebIn7InZNEstbU=;
-  b=ds/GWiSq2YktergqhNzQ3YS57BVqKXDBn0OB6WpC96ohx6ZTtIE7UtNe
-   whcjME8jeCirLrqWsMMFniLOSaV+8X8uXx2YBFjJV+6KPt/WLYeJFNnfF
-   Jr452wZ0rtlcoZbhN68vO+gVOSoPcXjM+dHvVdLW1okMhqTTjrfyBSUr9
-   m/gAGKkOb5pmlgc2yB8HF7W0ZgmFQi8wQ6GyuuFDSGgCnPHSQ4F6QI6NA
-   hDb3CzM1fFoGcBxAohzHvEvE9SHkLxw7F/QfQpP96PSbaMfP8i7PGlkrp
-   qJsFZ//DAv/nNH6E1ITjqtCBCthLymIrHFdUVnr3fw4Av6iEcjy+Z2AdE
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262684401"
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="262684401"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:44:56 -0700
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="573801563"
-Received: from nplaweck-mobl.ger.corp.intel.com (HELO localhost) ([10.249.149.236])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:44:52 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>,
-        "Wang, Zhi A" <zhi.a.wang@intel.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        "Vivi, Rodrigo" <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "intel-gvt-dev@lists.freedesktop.org" 
-        <intel-gvt-dev@lists.freedesktop.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: refactor the i915 GVT support and move to the modern mdev API v3
-In-Reply-To: <20220414134129.GC2120790@nvidia.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220411141403.86980-1-hch@lst.de>
- <82c13d8e-1cb4-2873-86e9-16fd38e15b27@intel.com>
- <20220413154642.GA28095@lst.de> <871qy1geko.fsf@intel.com>
- <5af7726e-920e-603a-bad3-8adb09d2ba89@intel.com>
- <20220413232053.GA2120790@nvidia.com>
- <1c3aaab9-3bd4-95d4-9f9f-4be9e10e6516@intel.com>
- <20220414133427.GB2120790@nvidia.com>
- <ae3bec3f-b89a-2845-a924-046874fa38c7@intel.com>
- <20220414134129.GC2120790@nvidia.com>
-Date:   Thu, 14 Apr 2022 16:44:52 +0300
-Message-ID: <87fsmfeq3v.fsf@intel.com>
+        Thu, 14 Apr 2022 09:53:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D06D5DA2E;
+        Thu, 14 Apr 2022 06:44:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98E4C61BA7;
+        Thu, 14 Apr 2022 13:44:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4E5FC385A5;
+        Thu, 14 Apr 2022 13:44:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649943884;
+        bh=Iuq8Ee1e4p6+D/zvNNeiej/ULtkgpt2PrjCWCmzJEh8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=F6owHZ2HUfEdmNMmgaXlJaJ9Pkmie/fkfRbQXMOP/6tQG1yONWoCzXEyL9MGkIT/G
+         WitB4MQk7vwQf9eoLPQewlU9QRcvfBbKlqFouacxYpIsXd7n8BYLaPM7KtzEjsbibw
+         WzGuL/DYqfik4D8qQMtUr+tZ36ZhqvRkEoxtDTYE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Arun Easi <aeasi@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.4 317/475] scsi: qla2xxx: Fix device reconnect in loop topology
+Date:   Thu, 14 Apr 2022 15:11:42 +0200
+Message-Id: <20220414110903.960074098@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022, Jason Gunthorpe <jgg@nvidia.com> wrote:
-> On Thu, Apr 14, 2022 at 01:39:11PM +0000, Wang, Zhi A wrote:
->> This one belongs to i915, which has already been queued in drm-intel-next, but
->> not yet reached to the top. When it is landed in -rc, I will rebase this branch
->> on it, then we can drop this patch in this branch.
->
-> A commit called 'split out dmc registers' with no Fixes: will be sent
-> to a rc?
+From: Arun Easi <aeasi@marvell.com>
 
-Won't. It's in drm-intel-next (and drm-next), headed to v5.19.
+commit 8ad4be3d15cf144b5834bdb00d5bbe4050938dc7 upstream.
 
-BR,
-Jani.
+A device logout in loop topology initiates a device connection teardown
+which loses the FW device handle. In loop topo, the device handle is not
+regrabbed leading to device login failures and eventually to loss of the
+device. Fix this by taking the main login path that does it.
 
--- 
-Jani Nikula, Intel Open Source Graphics Center
+Link: https://lore.kernel.org/r/20220110050218.3958-11-njavali@marvell.com
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Arun Easi <aeasi@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/scsi/qla2xxx/qla_init.c |   15 +++++++++++++++
+ drivers/scsi/qla2xxx/qla_os.c   |    5 +++++
+ 2 files changed, 20 insertions(+)
+
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -955,6 +955,9 @@ static void qla24xx_handle_gnl_done_even
+ 				set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
+ 			}
+ 			break;
++		case ISP_CFG_NL:
++			qla24xx_fcport_handle_login(vha, fcport);
++			break;
+ 		default:
+ 			break;
+ 		}
+@@ -1477,6 +1480,11 @@ static void qla_chk_n2n_b4_login(struct
+ 	u8 login = 0;
+ 	int rc;
+ 
++	ql_dbg(ql_dbg_disc, vha, 0x307b,
++	    "%s %8phC DS %d LS %d lid %d retries=%d\n",
++	    __func__, fcport->port_name, fcport->disc_state,
++	    fcport->fw_login_state, fcport->loop_id, fcport->login_retry);
++
+ 	if (qla_tgt_mode_enabled(vha))
+ 		return;
+ 
+@@ -5217,6 +5225,13 @@ skip_login:
+ 			memcpy(fcport->node_name, new_fcport->node_name,
+ 			    WWN_SIZE);
+ 			fcport->scan_state = QLA_FCPORT_FOUND;
++			if (fcport->login_retry == 0) {
++				fcport->login_retry = vha->hw->login_retry_count;
++				ql_dbg(ql_dbg_disc, vha, 0x2135,
++				    "Port login retry %8phN, lid 0x%04x retry cnt=%d.\n",
++				    fcport->port_name, fcport->loop_id,
++				    fcport->login_retry);
++			}
+ 			found++;
+ 			break;
+ 		}
+--- a/drivers/scsi/qla2xxx/qla_os.c
++++ b/drivers/scsi/qla2xxx/qla_os.c
+@@ -5349,6 +5349,11 @@ void qla2x00_relogin(struct scsi_qla_hos
+ 					ea.fcport = fcport;
+ 					qla24xx_handle_relogin_event(vha, &ea);
+ 				} else if (vha->hw->current_topology ==
++					 ISP_CFG_NL &&
++					IS_QLA2XXX_MIDTYPE(vha->hw)) {
++					(void)qla24xx_fcport_handle_login(vha,
++									fcport);
++				} else if (vha->hw->current_topology ==
+ 				    ISP_CFG_NL) {
+ 					fcport->login_retry--;
+ 					status =
+
+
