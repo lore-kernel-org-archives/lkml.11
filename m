@@ -2,208 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF4AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 288E1C4167D
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:57:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238322AbiDNP6o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58422 "EHLO
+        id S1355860AbiDNP72 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:59:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245264AbiDNPnr (ORCPT
+        with ESMTP id S1354687AbiDNPlG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:43:47 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4ECECC6F;
-        Thu, 14 Apr 2022 08:31:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649950307; x=1681486307;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=CKnXeJmG80qNasD/DJM86YXzz1D3OUPPffQmkS3LbJs=;
-  b=I+dIBkDQADPb1OrLjQ8TjhdKmiyAdRZAOrRWBmTw1bR7MBJOlbc+cHbE
-   PaORcllqwIozbyE4e0bdMxsE4xJhdGaQrDKUYXF1H5SoFwxGd0lDeMwe6
-   +4diJy+Jing/IouVcczizZrvBRdUu7Gj77mEFvb/S5yknc1uX9SyJYANO
-   g=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 14 Apr 2022 08:31:46 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 08:31:46 -0700
-Received: from [10.216.13.146] (10.80.80.8) by nasanex01a.na.qualcomm.com
- (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 14 Apr
- 2022 08:31:43 -0700
-Message-ID: <c28fe8d6-86e9-3676-37ac-6adc8a7baaac@quicinc.com>
-Date:   Thu, 14 Apr 2022 21:01:26 +0530
+        Thu, 14 Apr 2022 11:41:06 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B1CDFD5D
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 08:21:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=+iRSXHQlt9lmhOSBYrvMuVQHw2ElrWncN2mrge5/yQ4=; b=D4UH8lPRYK29ybcCYqOCJLNd3u
+        Q4+bXU/1kTRxIE7w0/mHcMkrSCPJLapr2iCBsE80oGx3aeLmDbXhfKP6Fkzs31vlY0FP+8YSnLnGA
+        psKONhCK8ST+iduJ2Cti5dc3/6xuzu4tUyrIHXDJUf3AQJwRNtqCqg/sZFQdBxJcqgIJGbD60Bxdi
+        oaS0jyseexJ2bmKgeTcR1u426IWL9UnLdxAAKWVNxQBpyvSlDMHvhbL3rxBlCURpBfsccZHjsU40U
+        p/tYya+kBtsh2ywbDnxGs9FU+WwVs7jWaPh4lOoJ1W1BUap47SGA8TWNcD30kSVuVAPp+UnWSnl0A
+        I59pSpRQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nf1HL-0052yG-BV; Thu, 14 Apr 2022 15:21:03 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 578083002DE;
+        Thu, 14 Apr 2022 17:21:01 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 3B94F2057AAE7; Thu, 14 Apr 2022 17:21:01 +0200 (CEST)
+Date:   Thu, 14 Apr 2022 17:21:01 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Christophe de Dinechin <dinechin@redhat.com>
+Cc:     trivial@kernel.org, Ben Segall <bsegall@google.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Mel Gorman <mgorman@suse.de>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Juri Lelli <juri.lelli@redhat.com>
+Subject: Re: [PATCH 1/3] sched/headers: Fix compilation error with GCC 12
+Message-ID: <Ylg73c83AJGwz9UN@hirez.programming.kicks-ass.net>
+References: <20220414150855.2407137-1-dinechin@redhat.com>
+ <20220414150855.2407137-2-dinechin@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] mtd: rawnand: qcom: fix memory corruption that causes
- panic
-Content-Language: en-US
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Manivannan Sadhasivam <mani@kernel.org>
-CC:     <richard@nod.at>, <vigneshr@ti.com>,
-        <linux-mtd@lists.infradead.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <konrad.dybcio@somainline.org>,
-        <quic_srichara@quicinc.com>
-References: <1649914773-22434-1-git-send-email-quic_mdalam@quicinc.com>
- <20220414101517.7bbc5e9d@xps13>
- <DM6PR02MB580382FA47C4884AFC1A98D0FAEF9@DM6PR02MB5803.namprd02.prod.outlook.com>
- <2697e757-f446-9cdb-95e0-ea01a642e6d4@quicinc.com>
- <20220414144236.4ea54e20@xps13> <20220414143907.GA20493@thinkpad>
- <20220414165909.249c2325@xps13>
-From:   Md Sadre Alam <quic_mdalam@quicinc.com>
-In-Reply-To: <20220414165909.249c2325@xps13>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414150855.2407137-2-dinechin@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Apr 14, 2022 at 05:08:53PM +0200, Christophe de Dinechin wrote:
+> With gcc version 12.0.1 20220401 (Red Hat 12.0.1-0) (GCC), the following
+> errors are reported in sched.h when building after `make defconfig`:
 
-On 4/14/2022 8:29 PM, Miquel Raynal wrote:
-> WARNING: This email originated from outside of Qualcomm. Please be wary of any links or attachments, and do not enable macros.
->
-> Hi Manivannan,
->
-> mani@kernel.org wrote on Thu, 14 Apr 2022 20:09:07 +0530:
->
->> On Thu, Apr 14, 2022 at 02:42:36PM +0200, Miquel Raynal wrote:
->>> Hi Md,
->>>
->>> quic_mdalam@quicinc.com wrote on Thu, 14 Apr 2022 17:50:48 +0530:
->>>
->>>>> Hi Md,
->>>>>
->>>>> quic_mdalam@quicinc.com wrote on Thu, 14 Apr 2022 11:09:33 +0530:
->>>>>
->>>>>> This patch fixes a memory corruption that occurred in the
->>>>>> nand_scan() path for Hynix nand device.
->>>>>>
->>>>>> On boot, for Hynix nand device will panic at a weird place:
->>>>>> | Unable to handle kernel NULL pointer dereference at virtual
->>>>>>     address 00000070
->>>>>> | [00000070] *pgd=00000000
->>>>>> | Internal error: Oops: 5 [#1] PREEMPT SMP ARM Modules linked in:
->>>>>> | CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-01473-g13ae1769cfb0
->>>>>>     #38
->>>>>> | Hardware name: Generic DT based system PC is at
->>>>>> | nandc_set_reg+0x8/0x1c LR is at qcom_nandc_command+0x20c/0x5d0
->>>>>> | pc : [<c088b74c>]    lr : [<c088d9c8>]    psr: 00000113
->>>>>> | sp : c14adc50  ip : c14ee208  fp : c0cc970c
->>>>>> | r10: 000000a3  r9 : 00000000  r8 : 00000040
->>>>>> | r7 : c16f6a00  r6 : 00000090  r5 : 00000004  r4 :c14ee040
->>>>>> | r3 : 00000000  r2 : 0000000b  r1 : 00000000  r0 :c14ee040
->>>>>> | Flags: nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM Segment none
->>>>>> | Control: 10c5387d  Table: 8020406a  DAC: 00000051 Register r0
->>>>>> | information: slab kmalloc-2k start c14ee000 pointer offset
->>>>>>     64 size 2048
->>>>>> | Process swapper/0 (pid: 1, stack limit = 0x(ptrval)) nandc_set_reg
->>>>>> | from qcom_nandc_command+0x20c/0x5d0 qcom_nandc_command from
->>>>>> | nand_readid_op+0x198/0x1e8 nand_readid_op from
->>>>>> | hynix_nand_has_valid_jedecid+0x30/0x78
->>>>>> | hynix_nand_has_valid_jedecid from hynix_nand_init+0xb8/0x454
->>>>>> | hynix_nand_init from nand_scan_with_ids+0xa30/0x14a8
->>>>>> | nand_scan_with_ids from qcom_nandc_probe+0x648/0x7b0
->>>>>> | qcom_nandc_probe from platform_probe+0x58/0xac
->>>>>>
->>>>>> The problem is that the nand_scan()'s qcom_nand_attach_chip callback
->>>>>> is updating the nandc->max_cwperpage from 1 to 4.This causes the
->>>>>> sg_init_table of clear_bam_transaction() in the driver's
->>>>>> qcom_nandc_command() to memset much more than what was initially
->>>>>> allocated by alloc_bam_transaction().
->>>>> Thanks for investigating!
->>>>>
->>>>>> This patch will update nandc->max_cwperpage 1 to 4 after nand_scan()
->>>>>> returns, and remove updating nandc->max_cwperpage from
->>>>>> qcom_nand_attach_chip call back.
->>>>> The fix does not look right, as far as I understand, this should be properly handled during the attach phase. That is where we have all information about the chip and do the configuration for this chip.
->>>>>
->>>>> If you update max_cwperpage there you should probably update other internal variables that depend on it as well.
->>>>      Currently we are updating max_cwperpage  in qcom_nand_attach_chip(), but we are seeing issue for Hynix nand device since nand_scan_tail() is getting called after nand_attach() and in nand_attach() we are updating max_cwperpage to 4 or 8 based on page size.
->>>>
->>>>       From nand_scan_tail() there is a call for nand_manufacturer_init() , specific to Hynix nand read_id is getting called that's why we are seeing this issue only for Hynix nand device. Read id sequence as below
->>>>
->>>>      hynix_nand_has_valid_jedecid()
->>>>
->>>>                   |
->>>>
->>>>      nand_readid_op()
->>>>
->>>>                |
->>>>
->>>>    qcom_nandc_command()
->>>>
->>>>               |
->>>>
->>>> pre_command()
->>>>
->>>>             |
->>>>
->>>> clear_bam_transaction()   --> In this call we are doing sg_init_table() which is calling memset() based on max_cwperpage.Since initially we have allocated bam transaction as per max_cwperpage =1 and , since nand_chip_attach() updated max_cwperpage,  now we are doing memset as per max_cwperpage = 4 or 8.
->>>>
->>>>
->>>> So anyway we have to updated max_cwperpage after nand_scan() call only.  Since there is no other dependency on max_cwperpage in nand_attach_chip() and we are using this in bam_alloc() and bam_clear().
->>> Why don't you update the sg table after increasing max_cwperpage?
->>>
->> Or we could move the bam reallocation inside qcom_nand_attach_chip() as below?
-> Much better approach, yes.
-  Updated in V2 patch , as Manivannan suggested.
->
->> diff --git a/drivers/mtd/nand/raw/qcom_nandc.c b/drivers/mtd/nand/raw/qcom_nandc.c
->> index 7c6efa3b6255..58c16054630f 100644
->> --- a/drivers/mtd/nand/raw/qcom_nandc.c
->> +++ b/drivers/mtd/nand/raw/qcom_nandc.c
->> @@ -2653,9 +2653,23 @@ static int qcom_nand_attach_chip(struct nand_chip *chip)
->>
->>          mtd_set_ooblayout(mtd, &qcom_nand_ooblayout_ops);
->>
->> +       /* Free the initially allocated BAM transaction for reading the ONFI params */
->> +       if (nandc->props->is_bam)
->> +               free_bam_transaction(nandc);
->> +
->>          nandc->max_cwperpage = max_t(unsigned int, nandc->max_cwperpage,
->>                                       cwperpage);
->>
->> +       /* Now allocate the BAM transaction based on updated max_cwperpage */
->> +       if (nandc->props->is_bam) {
->> +               nandc->bam_txn = alloc_bam_transaction(nandc);
->> +               if (!nandc->bam_txn) {
->> +                       dev_err(nandc->dev,
->> +                               "failed to allocate bam transaction\n");
->> +                       return -ENOMEM;
->> +               }
->> +       }
->> +
->>          /*
->>           * DATA_UD_BYTES varies based on whether the read/write command protects
->>           * spare data with ECC too. We protect spare data by default, so we set
->> @@ -2956,17 +2970,6 @@ static int qcom_nand_host_init_and_register(struct qcom_nand_controller *nandc,
->>          if (ret)
->>                  return ret;
->>
->> -       if (nandc->props->is_bam) {
->> -               free_bam_transaction(nandc);
->> -               nandc->bam_txn = alloc_bam_transaction(nandc);
->> -               if (!nandc->bam_txn) {
->> -                       dev_err(nandc->dev,
->> -                               "failed to allocate bam transaction\n");
->> -                       nand_cleanup(chip);
->> -                       return -ENOMEM;
->> -               }
->> -       }
->> -
->>          ret = mtd_device_parse_register(mtd, probes, NULL, NULL, 0);
->>          if (ret)
->>                  nand_cleanup(chip);
->>
->> Thanks,
->> Mani
->
-> Thanks,
-> Miquèl
+<snip tons of noise>
+
+> Rewrite the definitions of sched_class_highest and for_class_range to
+> avoid this error as follows:
+> 
+> 1/ The sched_class_highest is rewritten to be relative to
+>   __begin_sched_classes, so that GCC sees it as being part of the
+>   __begin_sched_classes array and not a distinct __end_sched_classes
+>   array.
+> 
+> 2/ The for_class_range macro is modified to replace the comparison with
+>   an out-of-bound pointer __begin_sched_classes - 1 with an equivalent,
+>   but in-bounds comparison.
+> 
+> In that specific case, I believe that the GCC analysis is correct and
+> potentially valuable for other arrays, so it makes sense to keep it
+> enabled.
+> 
+> Signed-off-by: Christophe de Dinechin <christophe@dinechin.org>
+> Signed-off-by: Christophe de Dinechin <dinechin@redhat.com>
+> ---
+>  kernel/sched/sched.h | 11 +++++++++--
+>  1 file changed, 9 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+> index 8dccb34eb190..6350fbc7418d 100644
+> --- a/kernel/sched/sched.h
+> +++ b/kernel/sched/sched.h
+> @@ -2193,11 +2193,18 @@ const struct sched_class name##_sched_class \
+>  extern struct sched_class __begin_sched_classes[];
+>  extern struct sched_class __end_sched_classes[];
+>  
+> -#define sched_class_highest (__end_sched_classes - 1)
+> +/*
+> + * sched_class_highests is really __end_sched_classes - 1, but written in a way
+> + * that makes it clear that it is within __begin_sched_classes[] and not outside
+> + * of __end_sched_classes[].
+> + */
+> +#define sched_class_highest (__begin_sched_classes + \
+> +			     (__end_sched_classes - __begin_sched_classes - 1))
+>  #define sched_class_lowest  (__begin_sched_classes - 1)
+>  
+> +/* The + 1 below places the pointers within the range of their array */
+>  #define for_class_range(class, _from, _to) \
+> -	for (class = (_from); class != (_to); class--)
+> +	for (class = (_from); class + 1 != (_to) + 1; class--)
+
+Urgh, so now we get less readable code, just because GCC is being
+stupid?
+
+What's wrong with negative array indexes? memory is memory, stuff works.
