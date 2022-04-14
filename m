@@ -2,121 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E7E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B167EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 09:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241091AbiDNJ6r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 05:58:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51430 "EHLO
+        id S235483AbiDNKAb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 06:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242087AbiDNJ5M (ORCPT
+        with ESMTP id S229599AbiDNKA3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 05:57:12 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C8618399;
-        Thu, 14 Apr 2022 02:54:42 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KfFCv4bddz1HBwy;
-        Thu, 14 Apr 2022 17:54:03 +0800 (CST)
-Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Apr 2022 17:54:40 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Apr 2022 17:54:39 +0800
-From:   Wupeng Ma <mawupeng1@huawei.com>
-To:     <akpm@linux-foundation.org>, <catalin.marinas@arm.com>,
-        <will@kernel.org>, <corbet@lwn.net>
-CC:     <ardb@kernel.org>, <tglx@linutronix.de>, <mingo@redhat.com>,
-        <bp@alien8.de>, <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zyccr.com>, <dvhart@infradead.org>, <andy@infradead.org>,
-        <rppt@kernel.org>, <paulmck@kernel.org>, <peterz@infradead.org>,
-        <jroedel@suse.de>, <songmuchun@bytedance.com>, <macro@orcam.me.uk>,
-        <frederic@kernel.org>, <W_Armin@gmx.de>, <john.garry@huawei.com>,
-        <seanjc@google.com>, <tsbogend@alpha.franken.de>,
-        <anshuman.khandual@arm.com>, <chenhuacai@kernel.org>,
-        <david@redhat.com>, <gpiccoli@igalia.com>, <mark.rutland@arm.com>,
-        <wangkefeng.wang@huawei.com>, <mawupeng1@huawei.com>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-efi@vger.kernel.org>, <linux-ia64@vger.kernel.org>,
-        <platform-driver-x86@vger.kernel.org>, <linux-mm@kvack.org>
-Subject: [PATCH v2 9/9] ia64/efi: Code simplification in efi_init
-Date:   Thu, 14 Apr 2022 18:13:14 +0800
-Message-ID: <20220414101314.1250667-10-mawupeng1@huawei.com>
-X-Mailer: git-send-email 2.18.0.huawei.25
-In-Reply-To: <20220414101314.1250667-1-mawupeng1@huawei.com>
-References: <20220414101314.1250667-1-mawupeng1@huawei.com>
+        Thu, 14 Apr 2022 06:00:29 -0400
+X-Greylist: delayed 154583 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 02:58:04 PDT
+Received: from gentwo.de (gentwo.de [161.97.139.209])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570C96E540
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 02:58:04 -0700 (PDT)
+Received: by gentwo.de (Postfix, from userid 1001)
+        id 592E6B002FC; Thu, 14 Apr 2022 11:58:01 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by gentwo.de (Postfix) with ESMTP id 57F2BB00268;
+        Thu, 14 Apr 2022 11:58:01 +0200 (CEST)
+Date:   Thu, 14 Apr 2022 11:58:01 +0200 (CEST)
+From:   Christoph Lameter <cl@gentwo.de>
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+cc:     Vlastimil Babka <vbabka@suse.cz>, Marco Elver <elver@google.com>,
+        Matthew WilCox <willy@infradead.org>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 23/23] mm/sl[au]b: check if large object is valid in
+ __ksize()
+In-Reply-To: <20220414085727.643099-24-42.hyeyoo@gmail.com>
+Message-ID: <alpine.DEB.2.22.394.2204141156160.690844@gentwo.de>
+References: <20220414085727.643099-1-42.hyeyoo@gmail.com> <20220414085727.643099-24-42.hyeyoo@gmail.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500014.china.huawei.com (7.185.36.153)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ma Wupeng <mawupeng1@huawei.com>
+On Thu, 14 Apr 2022, Hyeonggon Yoo wrote:
 
-Since efi_print_memmap() was made public, print EFI memory map in
-efi_init() can be simplified by using efi_print_memmap().
+> If address of large object is not beginning of folio or size of
+> the folio is too small, it must be invalid. Return zero in such cases.
 
-Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
----
- arch/ia64/kernel/efi.c | 37 +------------------------------------
- 1 file changed, 1 insertion(+), 36 deletions(-)
-
-diff --git a/arch/ia64/kernel/efi.c b/arch/ia64/kernel/efi.c
-index 31149e41f9be..4b8209b8797d 100644
---- a/arch/ia64/kernel/efi.c
-+++ b/arch/ia64/kernel/efi.c
-@@ -557,42 +557,7 @@ efi_init (void)
- 
- #if EFI_DEBUG
- 	/* print EFI memory map: */
--	{
--		efi_memory_desc_t *md;
--		void *p;
--		unsigned int i;
--
--		for (i = 0, p = efi_map_start; p < efi_map_end;
--		     ++i, p += efi_desc_size)
--		{
--			const char *unit;
--			unsigned long size;
--			char buf[64];
--
--			md = p;
--			size = md->num_pages << EFI_PAGE_SHIFT;
--
--			if ((size >> 40) > 0) {
--				size >>= 40;
--				unit = "TB";
--			} else if ((size >> 30) > 0) {
--				size >>= 30;
--				unit = "GB";
--			} else if ((size >> 20) > 0) {
--				size >>= 20;
--				unit = "MB";
--			} else {
--				size >>= 10;
--				unit = "KB";
--			}
--
--			printk("mem%02d: %s "
--			       "range=[0x%016llx-0x%016llx) (%4lu%s)\n",
--			       i, efi_md_typeattr_format(buf, sizeof(buf), md),
--			       md->phys_addr,
--			       md->phys_addr + efi_md_size(md), size, unit);
--		}
--	}
-+	efi_print_memmap();
- #endif
- 
- 	efi_map_pal_code();
--- 
-2.18.0.huawei.25
-
+This looks like a slab usage error on the part of the caller that would
+benefit from a kernel log entry. A warning or an error?
