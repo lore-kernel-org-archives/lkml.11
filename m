@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CCBCC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0FE6C4321E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346109AbiDNNzp (ORCPT
+        id S1346141AbiDNNzw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:55:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48682 "EHLO
+        Thu, 14 Apr 2022 09:55:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245433AbiDNN25 (ORCPT
+        with ESMTP id S245394AbiDNN2z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:28:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 067255FFE;
-        Thu, 14 Apr 2022 06:22:51 -0700 (PDT)
+        Thu, 14 Apr 2022 09:28:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0189BBA8;
+        Thu, 14 Apr 2022 06:22:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9330B612B3;
-        Thu, 14 Apr 2022 13:22:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4D45C385A1;
-        Thu, 14 Apr 2022 13:22:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CCA1AB82987;
+        Thu, 14 Apr 2022 13:22:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C4AC385A9;
+        Thu, 14 Apr 2022 13:22:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942570;
-        bh=4v/yDrBNzH4Ef8dtWG9e+cTCiC46Aw75T/jxJC7wCug=;
+        s=korg; t=1649942561;
+        bh=UVIxEjLwTyhY1EWsi9ZaUq3FIYE6RvmWaAcVq6ha+Is=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cTuSaIywNVLY/H2DEW81VwhYzbGqz+v7a1PWdwo0HR9vt4HoNYWv8tyVim+SiY88I
-         iqEkjmXX2FiRtR1ei8SQfrEIDQ7xBDIZ8vcD6xSnd6UZEwqkIoagf5aQCrpY2P7xCP
-         W4/vvRKGJg9ivcFv3A4xDIABpEDMtp1P72v+1g9E=
+        b=ZqzsjJ3vYdOqgUV/HHuzsvDfi4QPPVMqY7r7blVEs97uiAAXH3DJ/RfmcdBYe7Mrf
+         VP91w7KJ7Sp2ws3HaeYIytJ8YwhFbPClfbQjJ5/7GBtGqPDmrM+LR5Wd3NDd4UOLpf
+         lS3KmMNby2GEkvc5BRT1GN3iTIUdSw8X/a8FUAJQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        stable@vger.kernel.org, Sven Auhagen <sven.auhagen@voleatech.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 182/338] xen: fix is_xen_pmu()
-Date:   Thu, 14 Apr 2022 15:11:25 +0200
-Message-Id: <20220414110844.077182109@linuxfoundation.org>
+Subject: [PATCH 4.19 180/338] netfilter: nf_conntrack_tcp: preserve liberal flag in tcp options
+Date:   Thu, 14 Apr 2022 15:11:23 +0200
+Message-Id: <20220414110844.021152865@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -52,122 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit de2ae403b4c0e79a3410e63bc448542fbb9f9bfc ]
+[ Upstream commit f2dd495a8d589371289981d5ed33e6873df94ecc ]
 
-is_xen_pmu() is taking the cpu number as parameter, but it is not using
-it. Instead it just tests whether the Xen PMU initialization on the
-current cpu did succeed. As this test is done by checking a percpu
-pointer, preemption needs to be disabled in order to avoid switching
-the cpu while doing the test. While resuming from suspend() this seems
-not to be the case:
+Do not reset IP_CT_TCP_FLAG_BE_LIBERAL flag in out-of-sync scenarios
+coming before the TCP window tracking, otherwise such connections will
+fail in the window check.
 
-[   88.082751] ACPI: PM: Low-level resume complete
-[   88.087933] ACPI: EC: EC started
-[   88.091464] ACPI: PM: Restoring platform NVS memory
-[   88.097166] xen_acpi_processor: Uploading Xen processor PM info
-[   88.103850] Enabling non-boot CPUs ...
-[   88.108128] installing Xen timer for CPU 1
-[   88.112763] BUG: using smp_processor_id() in preemptible [00000000] code: systemd-sleep/7138
-[   88.122256] caller is is_xen_pmu+0x12/0x30
-[   88.126937] CPU: 0 PID: 7138 Comm: systemd-sleep Tainted: G        W         5.16.13-2.fc32.qubes.x86_64 #1
-[   88.137939] Hardware name: Star Labs StarBook/StarBook, BIOS 7.97 03/21/2022
-[   88.145930] Call Trace:
-[   88.148757]  <TASK>
-[   88.151193]  dump_stack_lvl+0x48/0x5e
-[   88.155381]  check_preemption_disabled+0xde/0xe0
-[   88.160641]  is_xen_pmu+0x12/0x30
-[   88.164441]  xen_smp_intr_init_pv+0x75/0x100
+Update tcp_options() to leave this flag in place and add a new helper
+function to reset the tcp window state.
 
-Fix that by replacing is_xen_pmu() by a simple boolean variable which
-reflects the Xen PMU initialization state on cpu 0.
+Based on patch from Sven Auhagen.
 
-Modify xen_pmu_init() to return early in case it is being called for a
-cpu other than cpu 0 and the boolean variable not being set.
-
-Fixes: bf6dfb154d93 ("xen/PMU: PMU emulation code")
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Link: https://lore.kernel.org/r/20220325142002.31789-1-jgross@suse.com
-Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Fixes: c4832c7bbc3f ("netfilter: nf_ct_tcp: improve out-of-sync situation in TCP tracking")
+Tested-by: Sven Auhagen <sven.auhagen@voleatech.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/xen/pmu.c    | 10 ++++------
- arch/x86/xen/pmu.h    |  3 ++-
- arch/x86/xen/smp_pv.c |  2 +-
- 3 files changed, 7 insertions(+), 8 deletions(-)
+ net/netfilter/nf_conntrack_proto_tcp.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/xen/pmu.c b/arch/x86/xen/pmu.c
-index 95997e6c0696..9813298ba57d 100644
---- a/arch/x86/xen/pmu.c
-+++ b/arch/x86/xen/pmu.c
-@@ -505,10 +505,7 @@ irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id)
- 	return ret;
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
+index 40f8a1252394..66cda5e2d6b9 100644
+--- a/net/netfilter/nf_conntrack_proto_tcp.c
++++ b/net/netfilter/nf_conntrack_proto_tcp.c
+@@ -362,8 +362,8 @@ static void tcp_options(const struct sk_buff *skb,
+ 				 length, buff);
+ 	BUG_ON(ptr == NULL);
+ 
+-	state->td_scale =
+-	state->flags = 0;
++	state->td_scale = 0;
++	state->flags &= IP_CT_TCP_FLAG_BE_LIBERAL;
+ 
+ 	while (length > 0) {
+ 		int opcode=*ptr++;
+@@ -784,6 +784,16 @@ static bool nf_conntrack_tcp_established(const struct nf_conn *ct)
+ 	       test_bit(IPS_ASSURED_BIT, &ct->status);
  }
  
--bool is_xen_pmu(int cpu)
--{
--	return (get_xenpmu_data() != NULL);
--}
-+bool is_xen_pmu;
- 
- void xen_pmu_init(int cpu)
- {
-@@ -519,7 +516,7 @@ void xen_pmu_init(int cpu)
- 
- 	BUILD_BUG_ON(sizeof(struct xen_pmu_data) > PAGE_SIZE);
- 
--	if (xen_hvm_domain())
-+	if (xen_hvm_domain() || (cpu != 0 && !is_xen_pmu))
- 		return;
- 
- 	xenpmu_data = (struct xen_pmu_data *)get_zeroed_page(GFP_KERNEL);
-@@ -540,7 +537,8 @@ void xen_pmu_init(int cpu)
- 	per_cpu(xenpmu_shared, cpu).xenpmu_data = xenpmu_data;
- 	per_cpu(xenpmu_shared, cpu).flags = 0;
- 
--	if (cpu == 0) {
-+	if (!is_xen_pmu) {
-+		is_xen_pmu = true;
- 		perf_register_guest_info_callbacks(&xen_guest_cbs);
- 		xen_pmu_arch_init();
- 	}
-diff --git a/arch/x86/xen/pmu.h b/arch/x86/xen/pmu.h
-index 0e83a160589b..65c58894fc79 100644
---- a/arch/x86/xen/pmu.h
-+++ b/arch/x86/xen/pmu.h
-@@ -4,6 +4,8 @@
- 
- #include <xen/interface/xenpmu.h>
- 
-+extern bool is_xen_pmu;
++static void nf_ct_tcp_state_reset(struct ip_ct_tcp_state *state)
++{
++	state->td_end		= 0;
++	state->td_maxend	= 0;
++	state->td_maxwin	= 0;
++	state->td_maxack	= 0;
++	state->td_scale		= 0;
++	state->flags		&= IP_CT_TCP_FLAG_BE_LIBERAL;
++}
 +
- irqreturn_t xen_pmu_irq_handler(int irq, void *dev_id);
- #ifdef CONFIG_XEN_HAVE_VPMU
- void xen_pmu_init(int cpu);
-@@ -12,7 +14,6 @@ void xen_pmu_finish(int cpu);
- static inline void xen_pmu_init(int cpu) {}
- static inline void xen_pmu_finish(int cpu) {}
- #endif
--bool is_xen_pmu(int cpu);
- bool pmu_msr_read(unsigned int msr, uint64_t *val, int *err);
- bool pmu_msr_write(unsigned int msr, uint32_t low, uint32_t high, int *err);
- int pmu_apic_update(uint32_t reg);
-diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
-index 41fd4c123165..e8248e8a04ca 100644
---- a/arch/x86/xen/smp_pv.c
-+++ b/arch/x86/xen/smp_pv.c
-@@ -126,7 +126,7 @@ int xen_smp_intr_init_pv(unsigned int cpu)
- 	per_cpu(xen_irq_work, cpu).irq = rc;
- 	per_cpu(xen_irq_work, cpu).name = callfunc_name;
- 
--	if (is_xen_pmu(cpu)) {
-+	if (is_xen_pmu) {
- 		pmu_name = kasprintf(GFP_KERNEL, "pmu%d", cpu);
- 		rc = bind_virq_to_irqhandler(VIRQ_XENPMU, cpu,
- 					     xen_pmu_irq_handler,
+ /* Returns verdict for packet, or -1 for invalid. */
+ static int tcp_packet(struct nf_conn *ct,
+ 		      const struct sk_buff *skb,
+@@ -882,8 +892,7 @@ static int tcp_packet(struct nf_conn *ct,
+ 			ct->proto.tcp.last_flags &= ~IP_CT_EXP_CHALLENGE_ACK;
+ 			ct->proto.tcp.seen[ct->proto.tcp.last_dir].flags =
+ 				ct->proto.tcp.last_flags;
+-			memset(&ct->proto.tcp.seen[dir], 0,
+-			       sizeof(struct ip_ct_tcp_state));
++			nf_ct_tcp_state_reset(&ct->proto.tcp.seen[dir]);
+ 			break;
+ 		}
+ 		ct->proto.tcp.last_index = index;
 -- 
 2.34.1
 
