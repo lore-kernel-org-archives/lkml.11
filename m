@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D1CFC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A22A5C41535
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351314AbiDNPRE (ORCPT
+        id S1351799AbiDNPRP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43134 "EHLO
+        Thu, 14 Apr 2022 11:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347706AbiDNN7a (ORCPT
+        with ESMTP id S1347702AbiDNN7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:59:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C20B6BCB4D;
-        Thu, 14 Apr 2022 06:52:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72563BA334;
+        Thu, 14 Apr 2022 06:51:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83080B82988;
-        Thu, 14 Apr 2022 13:52:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB489C385A5;
-        Thu, 14 Apr 2022 13:52:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F05CB82985;
+        Thu, 14 Apr 2022 13:51:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8270DC385A1;
+        Thu, 14 Apr 2022 13:51:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944324;
-        bh=OsjVIZBpW8KGFkJpDx6b+8haq46QzoYbEKwyz1LfhGQ=;
+        s=korg; t=1649944304;
+        bh=r2IB35UkUQMt3pjuLBJxNIR0DurAilVizkh8rdXZppk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PKaqz8dSBCcm6mrL1Lxug0SB8F6RmNN98yLRJUIkOduin7hR6NgEmg50nVPIRs4fl
-         ng/FsGx30rV178pNCa8Gvv6ufBcimcqs/eGcsPNjcD8pB32EcCfIKnghKVAHy+zT03
-         a2BKOK/6EIy4fpokPAT0Ut8iOEzm+CKVNsKhKpMA=
+        b=18ASRKXvfIqgFZHfn02W0UnmuTaAOiw4yQg1VBHsSt47OvF7pbjKPDeMntrvKPN12
+         7rsRo/lEqj4zSROm4BjoUw1QsuBuAPII8SBjjHhgmpTYvz+b7Y9oelVGKvD+BSWRFm
+         XPFE/PYXYWjfmpp+DyxXIyhzyuc8NjX7ksLa0djs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jamie Bainbridge <jamie.bainbridge@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 437/475] qede: confirm skb is allocated before using
-Date:   Thu, 14 Apr 2022 15:13:42 +0200
-Message-Id: <20220414110907.292438461@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 5.4 466/475] drm/amdkfd: Fix -Wstrict-prototypes from amdgpu_amdkfd_gfx_10_0_get_functions()
+Date:   Thu, 14 Apr 2022 15:14:11 +0200
+Message-Id: <20220414110908.096683236@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,42 +48,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit 4e910dbe36508654a896d5735b318c0b88172570 ]
+This patch is for linux-5.4.y only, it has no equivalent change
+upstream.
 
-qede_build_skb() assumes build_skb() always works and goes straight
-to skb_reserve(). However, build_skb() can fail under memory pressure.
-This results in a kernel panic because the skb to reserve is NULL.
+When building x86_64 allmodconfig with tip of tree clang, there is an
+instance of -Wstrict-prototypes:
 
-Add a check in case build_skb() failed to allocate and return NULL.
+  drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v10.c:168:59: error: a function declaration without a prototype is deprecated in all versions of C [-Werror,-Wstrict-prototypes]
+  struct kfd2kgd_calls *amdgpu_amdkfd_gfx_10_0_get_functions()
+                                                            ^
+                                                             void
+  1 error generated.
 
-The NULL return is handled correctly in callers to qede_build_skb().
+amdgpu_amdkfd_gfx_10_0_get_functions() is prototyped properly in
+drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd.h but its definition in
+amdgpu_amdkfd_gfx_v10.c does not have the argument types specified,
+which causes the warning. GCC does not warn because it permits an
+old-style definition if the prototype has the argument types.
 
-Fixes: 8a8633978b842 ("qede: Add build_skb() support.")
-Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This code was eliminated by commit e392c887df97 ("drm/amdkfd: Use array
+to probe kfd2kgd_calls"), which was a part of a larger series that does
+not look very suitable for stable. Just fix this one location, as it was
+the only instance of this new warning across a variety of builds.
+
+Fixes: 6bdadb207224 ("drm/amdgpu: Add navi10 kfd support for amdgpu (v3)")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/qlogic/qede/qede_fp.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v10.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-index b81579afa361..f16032635ba7 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-@@ -723,6 +723,9 @@ qede_build_skb(struct qede_rx_queue *rxq,
- 	buf = page_address(bd->data) + bd->page_offset;
- 	skb = build_skb(buf, rxq->rx_buf_seg_size);
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v10.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gfx_v10.c
+@@ -165,7 +165,7 @@ static const struct kfd2kgd_calls kfd2kg
+ 	.get_tile_config = amdgpu_amdkfd_get_tile_config,
+ };
  
-+	if (unlikely(!skb))
-+		return NULL;
-+
- 	skb_reserve(skb, pad);
- 	skb_put(skb, len);
- 
--- 
-2.35.1
-
+-struct kfd2kgd_calls *amdgpu_amdkfd_gfx_10_0_get_functions()
++struct kfd2kgd_calls *amdgpu_amdkfd_gfx_10_0_get_functions(void)
+ {
+ 	return (struct kfd2kgd_calls *)&kfd2kgd;
+ }
 
 
