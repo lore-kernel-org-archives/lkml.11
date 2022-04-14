@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 368BFC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17136C43217
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350542AbiDNPQm (ORCPT
+        id S1350401AbiDNPQb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
+        Thu, 14 Apr 2022 11:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347711AbiDNN7a (ORCPT
+        with ESMTP id S1347677AbiDNN70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:59:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC6EBB92A;
-        Thu, 14 Apr 2022 06:52:01 -0700 (PDT)
+        Thu, 14 Apr 2022 09:59:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18DB0488B7;
+        Thu, 14 Apr 2022 06:51:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 262F2B82991;
-        Thu, 14 Apr 2022 13:52:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E7C5C385A5;
-        Thu, 14 Apr 2022 13:51:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40732612B3;
+        Thu, 14 Apr 2022 13:51:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F0BDC385A5;
+        Thu, 14 Apr 2022 13:51:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944318;
-        bh=GnmKCvE+ByfuYzISgpPJ3qaRhO1tC7mUEen+1h7+eto=;
+        s=korg; t=1649944268;
+        bh=J+TnkjUnUJTPTjWdY0vnCLiIu4RAOPI2eSIf3Ml9EyI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VzcHfJW8lP5oInsAvWLbS33eR0p8rzr6aHvQLNxyW3UPdRv7/5HJSq3L2XJqn9kSu
-         Q3acZZu/Iwb4immByA2vGw3rkzKd9C8f5Evl1LYejPzzl3oIx0k6I6YVEHn+RaQ1p5
-         GaZHxWXC1xIoL9VPmO4XvwvEZOetGmu+EW4q/y3I=
+        b=u4uegCANtdxHHdr0Kmh1dqCSUTgx3DSRHZD1yEcB5eUQ13bcIi7VEu60h45eCvS0d
+         A83P/mPg+o2yF0E3E/KbydXS4H3IGCyrIc4TLO9CVPj7db/QgpdG22C0AeF4V1yFmH
+         Xv3DJDSZJbs9e8TLxuiW0pXYqof3C8T40KtrpvEg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Tejun Heo <tj@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.4 471/475] selftests: cgroup: Make cg_create() use 0755 for permission instead of 0644
-Date:   Thu, 14 Apr 2022 15:14:16 +0200
-Message-Id: <20220414110908.237958598@linuxfoundation.org>
+        stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        stable@kernel.org
+Subject: [PATCH 5.4 454/475] ata: sata_dwc_460ex: Fix crash due to OOB write
+Date:   Thu, 14 Apr 2022 15:13:59 +0200
+Message-Id: <20220414110907.763470410@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,31 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: Christian Lamparter <chunkeey@gmail.com>
 
-commit b09c2baa56347ae65795350dfcc633dedb1c2970 upstream.
+commit 7aa8104a554713b685db729e66511b93d989dd6a upstream.
 
-0644 is an odd perm to create a cgroup which is a directory. Use the regular
-0755 instead. This is necessary for euid switching test case.
+the driver uses libata's "tag" values from in various arrays.
+Since the mentioned patch bumped the ATA_TAG_INTERNAL to 32,
+the value of the SATA_DWC_QCMD_MAX needs to account for that.
 
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Otherwise ATA_TAG_INTERNAL usage cause similar crashes like
+this as reported by Tice Rex on the OpenWrt Forum and
+reproduced (with symbols) here:
+
+| BUG: Kernel NULL pointer dereference at 0x00000000
+| Faulting instruction address: 0xc03ed4b8
+| Oops: Kernel access of bad area, sig: 11 [#1]
+| BE PAGE_SIZE=4K PowerPC 44x Platform
+| CPU: 0 PID: 362 Comm: scsi_eh_1 Not tainted 5.4.163 #0
+| NIP:  c03ed4b8 LR: c03d27e8 CTR: c03ed36c
+| REGS: cfa59950 TRAP: 0300   Not tainted  (5.4.163)
+| MSR:  00021000 <CE,ME>  CR: 42000222  XER: 00000000
+| DEAR: 00000000 ESR: 00000000
+| GPR00: c03d27e8 cfa59a08 cfa55fe0 00000000 0fa46bc0 [...]
+| [..]
+| NIP [c03ed4b8] sata_dwc_qc_issue+0x14c/0x254
+| LR [c03d27e8] ata_qc_issue+0x1c8/0x2dc
+| Call Trace:
+| [cfa59a08] [c003f4e0] __cancel_work_timer+0x124/0x194 (unreliable)
+| [cfa59a78] [c03d27e8] ata_qc_issue+0x1c8/0x2dc
+| [cfa59a98] [c03d2b3c] ata_exec_internal_sg+0x240/0x524
+| [cfa59b08] [c03d2e98] ata_exec_internal+0x78/0xe0
+| [cfa59b58] [c03d30fc] ata_read_log_page.part.38+0x1dc/0x204
+| [cfa59bc8] [c03d324c] ata_identify_page_supported+0x68/0x130
+| [...]
+
+This is because sata_dwc_dma_xfer_complete() NULLs the
+dma_pending's next neighbour "chan" (a *dma_chan struct) in
+this '32' case right here (line ~735):
+> hsdevp->dma_pending[tag] = SATA_DWC_DMA_PENDING_NONE;
+
+Then the next time, a dma gets issued; dma_dwc_xfer_setup() passes
+the NULL'd hsdevp->chan to the dmaengine_slave_config() which then
+causes the crash.
+
+With this patch, SATA_DWC_QCMD_MAX is now set to ATA_MAX_QUEUE + 1.
+This avoids the OOB. But please note, there was a worthwhile discussion
+on what ATA_TAG_INTERNAL and ATA_MAX_QUEUE is. And why there should not
+be a "fake" 33 command-long queue size.
+
+Ideally, the dw driver should account for the ATA_TAG_INTERNAL.
+In Damien Le Moal's words: "... having looked at the driver, it
+is a bigger change than just faking a 33rd "tag" that is in fact
+not a command tag at all."
+
+Fixes: 28361c403683c ("libata: add extra internal command")
+Cc: stable@kernel.org # 4.18+
+BugLink: https://github.com/openwrt/openwrt/issues/9505
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/cgroup/cgroup_util.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/ata/sata_dwc_460ex.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/cgroup/cgroup_util.c
-+++ b/tools/testing/selftests/cgroup/cgroup_util.c
-@@ -202,7 +202,7 @@ int cg_find_unified_root(char *root, siz
+--- a/drivers/ata/sata_dwc_460ex.c
++++ b/drivers/ata/sata_dwc_460ex.c
+@@ -145,7 +145,11 @@ struct sata_dwc_device {
+ #endif
+ };
  
- int cg_create(const char *cgroup)
- {
--	return mkdir(cgroup, 0644);
-+	return mkdir(cgroup, 0755);
- }
+-#define SATA_DWC_QCMD_MAX	32
++/*
++ * Allow one extra special slot for commands and DMA management
++ * to account for libata internal commands.
++ */
++#define SATA_DWC_QCMD_MAX	(ATA_MAX_QUEUE + 1)
  
- int cg_wait_for_proc_count(const char *cgroup, int count)
+ struct sata_dwc_device_port {
+ 	struct sata_dwc_device	*hsdev;
 
 
