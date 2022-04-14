@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B12C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:45:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C9FC43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245041AbiDNNqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
+        id S241636AbiDNNrU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343638AbiDNN3n (ORCPT
+        with ESMTP id S1343648AbiDNN3p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:29:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297B7AFB32;
-        Thu, 14 Apr 2022 06:25:03 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F969F6D1;
+        Thu, 14 Apr 2022 06:25:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D36A60C14;
-        Thu, 14 Apr 2022 13:25:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A6E8C385A5;
-        Thu, 14 Apr 2022 13:25:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAFD5B82985;
+        Thu, 14 Apr 2022 13:25:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4855CC385A1;
+        Thu, 14 Apr 2022 13:25:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942702;
-        bh=9WRlb7g34HZdRb4Iu1zP64sHnU/hoYGHmY2xIMXjOng=;
+        s=korg; t=1649942707;
+        bh=+xgV+ndEiDs9HMQaiNCFsXJgrETfEDgoKXWrlaoOwXQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=smSeqmkR6USyIq9xIUeuM1Z6f9wcCwPqw7MbAuOQuqbVvV/5M6fN+qjM27MNJJQ80
-         PECknARgdj0Ad3oincy1NdBgzv8lFcmv4xdFJcqLRzbPw92PP4sPd1XIhP5ipvEq9H
-         pOb6CgtK1S9iHSr089nXoAPhsLLQCQxa6yMcwnFo=
+        b=EJrhjjF/Tx8SEU0Ufd7YGH05aYb7L0iPa9RfpVFb5hkX3q2XCOebhgn3XnXEK55PC
+         VUHoqUELxhhMTi7XmJTZSWsvLAzrJRQJWJ1x3S5ueYR60J0zB+7gQgUXGFZi+hQqIi
+         3EeB0q5/YSCCdv2dd/Jj5W/HhsdE0PUO4MBOEgyA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.19 229/338] scsi: qla2xxx: Reduce false trigger to login
-Date:   Thu, 14 Apr 2022 15:12:12 +0200
-Message-Id: <20220414110845.409098292@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Gardon <bgardon@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 4.19 231/338] KVM: Prevent module exit until all VMs are freed
+Date:   Thu, 14 Apr 2022 15:12:14 +0200
+Message-Id: <20220414110845.464716649@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,47 +49,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: David Matlack <dmatlack@google.com>
 
-commit d2646eed7b19a206912f49101178cbbaa507256c upstream.
+commit 5f6de5cbebee925a612856fce6f9182bb3eee0db upstream.
 
-While a session is in the middle of a relogin, a late RSCN can be delivered
-from switch. RSCN trigger fabric scan where the scan logic can trigger
-another session login while a login is in progress.  Reduce the extra
-trigger to prevent multiple logins to the same session.
+Tie the lifetime the KVM module to the lifetime of each VM via
+kvm.users_count. This way anything that grabs a reference to the VM via
+kvm_get_kvm() cannot accidentally outlive the KVM module.
 
-Link: https://lore.kernel.org/r/20220310092604.22950-10-njavali@marvell.com
-Fixes: bee8b84686c4 ("scsi: qla2xxx: Reduce redundant ADISC command for RSCNs")
+Prior to this commit, the lifetime of the KVM module was tied to the
+lifetime of /dev/kvm file descriptors, VM file descriptors, and vCPU
+file descriptors by their respective file_operations "owner" field.
+This approach is insufficient because references grabbed via
+kvm_get_kvm() do not prevent closing any of the aforementioned file
+descriptors.
+
+This fixes a long standing theoretical bug in KVM that at least affects
+async page faults. kvm_setup_async_pf() grabs a reference via
+kvm_get_kvm(), and drops it in an asynchronous work callback. Nothing
+prevents the VM file descriptor from being closed and the KVM module
+from being unloaded before this callback runs.
+
+Fixes: af585b921e5d ("KVM: Halt vcpu if page it tries to access is swapped out")
+Fixes: 3d3aab1b973b ("KVM: set owner of cpu and vm file operations")
 Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Suggested-by: Ben Gardon <bgardon@google.com>
+[ Based on a patch from Ben implemented for Google's kernel. ]
+Signed-off-by: David Matlack <dmatlack@google.com>
+Message-Id: <20220303183328.1499189-2-dmatlack@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ virt/kvm/kvm_main.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -1346,7 +1346,8 @@ int qla24xx_fcport_handle_login(struct s
- 	    fcport->login_gen, fcport->login_retry,
- 	    fcport->loop_id, fcport->scan_state);
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -112,6 +112,8 @@ EXPORT_SYMBOL_GPL(kvm_debugfs_dir);
+ static int kvm_debugfs_num_entries;
+ static const struct file_operations *stat_fops_per_vm[];
  
--	if (fcport->scan_state != QLA_FCPORT_FOUND)
-+	if (fcport->scan_state != QLA_FCPORT_FOUND ||
-+	    fcport->disc_state == DSC_DELETE_PEND)
- 		return 0;
++static struct file_operations kvm_chardev_ops;
++
+ static long kvm_vcpu_ioctl(struct file *file, unsigned int ioctl,
+ 			   unsigned long arg);
+ #ifdef CONFIG_KVM_COMPAT
+@@ -741,6 +743,16 @@ static struct kvm *kvm_create_vm(unsigne
  
- 	if ((fcport->loop_id != FC_NO_LOOP_ID) &&
-@@ -1365,7 +1366,7 @@ int qla24xx_fcport_handle_login(struct s
- 	if (vha->host->active_mode == MODE_TARGET)
- 		return 0;
+ 	preempt_notifier_inc();
  
--	if (fcport->flags & FCF_ASYNC_SENT) {
-+	if (fcport->flags & (FCF_ASYNC_SENT | FCF_ASYNC_ACTIVE)) {
- 		set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
- 		return 0;
- 	}
++	/*
++	 * When the fd passed to this ioctl() is opened it pins the module,
++	 * but try_module_get() also prevents getting a reference if the module
++	 * is in MODULE_STATE_GOING (e.g. if someone ran "rmmod --wait").
++	 */
++	if (!try_module_get(kvm_chardev_ops.owner)) {
++		r = -ENODEV;
++		goto out_err;
++	}
++
+ 	return kvm;
+ 
+ out_err:
+@@ -817,6 +829,7 @@ static void kvm_destroy_vm(struct kvm *k
+ 	preempt_notifier_dec();
+ 	hardware_disable_all();
+ 	mmdrop(mm);
++	module_put(kvm_chardev_ops.owner);
+ }
+ 
+ void kvm_get_kvm(struct kvm *kvm)
 
 
