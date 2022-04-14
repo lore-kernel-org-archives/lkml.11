@@ -2,141 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B30BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C58C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241886AbiDNPfv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:35:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49050 "EHLO
+        id S1346199AbiDNPgC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 11:36:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346927AbiDNOLa (ORCPT
+        with ESMTP id S1349384AbiDNOUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 10:11:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9EB52B6468
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:02:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649944956;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=r1AnOH9s7DSYL3vteuGfJhK0BPbgyTYHpqqRt2VurCg=;
-        b=d9Z9QK4cqrRx9QlJMA0r7MGa4L/J25J8w88PwGyVKPVuZETY8CyuWr/0tJcUFU//LNfS9g
-        wvU5Pk8d4ywnmJ272mb9CUa1J2v3DF+sLKZ2JGbLITt76uF9DwarX8tJNn96oG4krXja7x
-        v1JqEgOBoqaI8ijWuqKwVR3KAD6OaAQ=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-16-DNNyKczDOHiWq0AUCJYu_w-1; Thu, 14 Apr 2022 10:02:34 -0400
-X-MC-Unique: DNNyKczDOHiWq0AUCJYu_w-1
-Received: by mail-wr1-f70.google.com with SMTP id v9-20020adfc409000000b002079e379921so850176wrf.5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:02:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=r1AnOH9s7DSYL3vteuGfJhK0BPbgyTYHpqqRt2VurCg=;
-        b=C7MbOvb3QHx8JMA+xAJMaD62L/h6YkG0NLr2vU7C+BSPzaVcBx5qWTrdgmMpegDZIA
-         DdIqmKiuXSsIPgVIVuvu4HgX3+k1kcLBIiVhQBKu4usa3NVQ4iYhs+6wpaPCLA8Ke+r7
-         wSa0UfFNTWn0yfhwRRjnHVnRhSieZRHCAtLCtbvXJMaKL3xwKWF1UVnbF5LvKO1EjTVN
-         ubT5dI5EfA2JjOSPbPOGqA3gDA+PHPXnLvyFbP3QxbBVIC8M0OFuEBBViEUCqNSQz0AO
-         vMtv/HF/AMP7OXLSlVC79old6tRsFRhODjVSpnHtUKDUDrdlDcu2u6uvE87PLiPxTEmj
-         RMnw==
-X-Gm-Message-State: AOAM531q261rHFr2zle1DlvTw+4PsANuCZKzAYZwP3BKvKivTnJPnjx1
-        Bbe22FuICj3RZJjkGm4ogsOQv6XE9JIcMIrkrPRvvxZh7iQsHja2gH8WblOfQun72QYuT4RWY+4
-        GuiN57PV4uY8Ep+tOJ9ZEMe6x
-X-Received: by 2002:adf:e3c8:0:b0:207:a128:6205 with SMTP id k8-20020adfe3c8000000b00207a1286205mr2158344wrm.370.1649944953586;
-        Thu, 14 Apr 2022 07:02:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzCOLeKlyEqyoNtDnsf/KJBwbDMTg1Ighp92mVOoajOu0oPWOYLt1ASMLPz3qkqj3C5XmDGBA==
-X-Received: by 2002:adf:e3c8:0:b0:207:a128:6205 with SMTP id k8-20020adfe3c8000000b00207a1286205mr2158327wrm.370.1649944953315;
-        Thu, 14 Apr 2022 07:02:33 -0700 (PDT)
-Received: from ?IPV6:2a09:80c0:192:0:20af:34be:985b:b6c8? ([2a09:80c0:192:0:20af:34be:985b:b6c8])
-        by smtp.gmail.com with ESMTPSA id i5-20020adfb645000000b002060e559f24sm1858050wre.92.2022.04.14.07.02.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Apr 2022 07:02:32 -0700 (PDT)
-Message-ID: <91b35970-b68e-580f-b17d-789fcc2e1c47@redhat.com>
-Date:   Thu, 14 Apr 2022 16:02:32 +0200
+        Thu, 14 Apr 2022 10:20:01 -0400
+Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [5.144.164.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2340C9BBB6
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 07:11:12 -0700 (PDT)
+Received: from SoMainline.org (D57D4C6E.static.ziggozakelijk.nl [213.125.76.110])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id A5B533EEFB;
+        Thu, 14 Apr 2022 16:11:09 +0200 (CEST)
+Date:   Thu, 14 Apr 2022 16:11:07 +0200
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, bhupesh.linux@gmail.com,
+        agross@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org,
+        bjorn.andersson@linaro.org, konrad.dybcio@somainline.org,
+        Vinod Koul <vkoul@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>
+Subject: Re: [PATCH 1/1] arm64: dts: qcom: sm8350-sagami: UFS phy - add
+ 'vdda-pll-supply' & 'vdda-phy-supply'
+Message-ID: <20220414141107.sazz72sl6giehpjx@SoMainline.org>
+References: <20220414122928.349126-1-bhupesh.sharma@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] mm, page_alloc: check pfn is valid before moving to
- freelist
-Content-Language: en-US
-To:     Mike Rapoport <rppt@linux.ibm.com>,
-        David Rientjes <rientjes@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Sudarshan Rajagopalan <quic_sudaraja@quicinc.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Suren Baghdasaryan <surenb@google.com>
-References: <cover.1649794059.git.quic_sudaraja@quicinc.com>
- <fb3c8c008994b2ed96f74b6b9698ff998b689bd2.1649794059.git.quic_sudaraja@quicinc.com>
- <20220412135912.93175db2ab4e83f4bb060dbf@linux-foundation.org>
- <6daaaf5c-529d-f3eb-7486-a72cabb6e396@google.com>
- <Ylc437iBoQ4AU6zT@linux.ibm.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <Ylc437iBoQ4AU6zT@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414122928.349126-1-bhupesh.sharma@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13.04.22 22:55, Mike Rapoport wrote:
-> On Tue, Apr 12, 2022 at 02:05:51PM -0700, David Rientjes wrote:
->> On Tue, 12 Apr 2022, Andrew Morton wrote:
->>
->>> On Tue, 12 Apr 2022 13:16:23 -0700 Sudarshan Rajagopalan <quic_sudaraja@quicinc.com> wrote:
->>>
->>>> Check if pfn is valid before or not before moving it to freelist.
->>>>
->>>> There are possible scenario where a pageblock can have partial physical
->>>> hole and partial part of System RAM. This happens when base address in RAM
->>>> partition table is not aligned to pageblock size.
->>>>
->>>> ...
->>>>
->>>>
->>>> Signed-off-by: Sudarshan Rajagopalan <quic_sudaraja@quicinc.com>
->>>> Fixes: 4c7b9896621be ("mm: remove pfn_valid_within() and CONFIG_HOLES_IN_ZONE")
->>>
->>> I made that 859a85ddf90e714092dea71a0e54c7b9896621be and added
->>> cc:stable.  I'll await reviewer input before proceeding further.
->>>
->>
->> Acked-by: David Rientjes <rientjes@google.com>
->>
->>>> --- a/mm/page_alloc.c
->>>> +++ b/mm/page_alloc.c
->>>> @@ -2521,6 +2521,11 @@ static int move_freepages(struct zone *zone,
->>>>  	int pages_moved = 0;
->>>>  
->>>>  	for (pfn = start_pfn; pfn <= end_pfn;) {
->>>> +		if (!pfn_valid(pfn)) {
->>>
->>> Readers will wonder how we can encounter an invalid pfn here.  A small
->>> comment might help clue them in.
->>>
->>
->> Sudarshan can correct me if I'm wrong, but this has to do with the 
->> pageblock alignment of the caller that assumes all pages in the range has 
->> an underlying struct page that we can access but that fails to hold true 
->> when we have a memory hole.  A comment would definitely help:
+On 2022-04-14 17:59:28, Bhupesh Sharma wrote:
+> As suggested by Bjorn during review of [1], the vdda-pll-supply' &
+> 'vdda-phy-supply' supplies denote the power for the bus and the
+> clock of the UFS PHY.
 > 
-> We do have a struct page for every page in a pageblock even if there is a
-> hole in the physical memory. If this is not the case, there is more
-> fundamental bug that should be fixed.
+> For pdx215 to have a functional UFS [..] safe to assume [..]
 
-Also, I dislike handling such a corner case in a way that affects all
-other sane cases. move_freepages() is also used for page isolation.
+By "functional" you are referring to sending a certain UFS command that
+accidentally wipes the bootloader [1] [2], turning the device into a
+_very_ expensive (+$1000) paperweight?
 
-I agree that this should be fixed differently, if possible.
+[1]: https://lore.kernel.org/lkml/20211111184630.605035-1-konrad.dybcio@somainline.org/
+[2]: https://github.com/kholk/kernel/commit/2e7a9ee1c91a016baa0b826a7752ec45663a0561
 
--- 
-Thanks,
+> In absence of the same 'make dtbs_check' leads to following warnings:
+> 
+> arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami-pdx215.dt.yaml:
+>  phy-wrapper@88e9000: 'vdda-phy-supply' is a required property
+> 
+> arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami-pdx215.dt.yaml:
+>  phy-wrapper@88e9000: 'vdda-pll-supply' is a required property
+> 
+> [1]. https://lore.kernel.org/lkml/20220228123019.382037-9-bhupesh.sharma@linaro.org/
+> 
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: konrad.dybcio@somainline.org
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> ---
+>  .../dts/qcom/sm8350-sony-xperia-sagami.dtsi   | 25 +++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi b/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi
+> index 90b13cbe2fa6..238ac9380ca2 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi
+> @@ -3,6 +3,7 @@
+>   * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
+>   */
+>  
+> +#include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+>  #include "sm8350.dtsi"
+>  #include "pm8350.dtsi"
+>  #include "pm8350b.dtsi"
+> @@ -75,6 +76,27 @@ ramoops@ffc00000 {
+>  	};
+>  };
+>  
+> +&apps_rsc {
+> +	pm8350-rpmh-regulators {
+> +		compatible = "qcom,pm8350-rpmh-regulators";
+> +		qcom,pmic-id = "b";
+> +
+> +		vreg_l1b_0p88: ldo1 {
+> +			regulator-name = "vreg_l1b_0p88";
+> +			regulator-min-microvolt = <912000>;
+> +			regulator-max-microvolt = <920000>;
+> +			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+> +		};
+> +
+> +		vreg_l6b_1p2: ldo6 {
+> +			regulator-name = "vreg_l6b_1p2";
+> +			regulator-min-microvolt = <1200000>;
+> +			regulator-max-microvolt = <1208000>;
+> +			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+> +		};
+> +	};
+> +};
+> +
+>  &adsp {
+>  	status = "okay";
+>  	firmware-name = "qcom/adsp.mbn";
+> @@ -256,4 +278,7 @@ &usb_1_hsphy {
+>  
+>  &usb_1_qmpphy {
+>  	status = "okay";
+> +
+> +	vdda-phy-supply = <&vreg_l6b_1p2>;
+> +	vdda-pll-supply = <&vreg_l1b_0p88>;
 
-David / dhildenb
+I'm probably understanding your patch wrong, but this is the USB phy,
+not the UFS phy?  The warning from dtbs_check on `phy-wrapper@88e9000`
+is also the `qmp-usb3-phy`, not the `qmp-ufs-phy` - seems this patch has
+little to do with UFS after all?
 
+>  };
+> -- 
+> 2.35.1
+> 
