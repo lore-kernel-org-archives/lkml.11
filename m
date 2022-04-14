@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 743D2C38A05
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A53C9C4708A
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:11:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345645AbiDNOKf (ORCPT
+        id S1345750AbiDNOKo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:10:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
+        Thu, 14 Apr 2022 10:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343549AbiDNN3e (ORCPT
+        with ESMTP id S245686AbiDNN3Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:29:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8AB01F61B;
-        Thu, 14 Apr 2022 06:24:35 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11C09AFACE;
+        Thu, 14 Apr 2022 06:23:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54B6860C1C;
-        Thu, 14 Apr 2022 13:24:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AD7FC385A1;
-        Thu, 14 Apr 2022 13:24:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B1A1B8296A;
+        Thu, 14 Apr 2022 13:23:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99778C385A5;
+        Thu, 14 Apr 2022 13:23:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942674;
-        bh=fLFdu69ZdmjCWTnbEimeUOpy+WkYLnMypeNvm/pjQjY=;
+        s=korg; t=1649942613;
+        bh=M4NwwRA7aPW8zS56+4VPaZu/LStxUlJo9SAWKUUMLCg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FfaTqw+p5GmcTphSl7Z80kzZjHee87ZywzE8HwtZbWa+Y1ilXbTX0zMW73vpHWNKH
-         3FyjVIvpTdWRV9j/4hkji744vlEV9B/8GAyqhQQ66jqcXetIwgzRZtiqAu3XLo4MEv
-         x8sMtMqvwNKU1ZxIhVmqXTbgDoX5jEmILWL4domg=
+        b=EoL3TQ3f3tRXHLa7uxWKks64frPpECDfQaGzvCEJERs5N7u87QdPE/tDAszz7ReSW
+         CUVkk3b/irWJQw0JYAdHzcuHKOwMotGNQ29VHUbXOiGz15LMsRvRMyLDNZBaqeDNp5
+         L9vWWFVLzQdZXJ96dqWZJXMjB7xVHfPG8B/c3MqE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 4.19 220/338] powerpc/lib/sstep: Fix sthcx instruction
-Date:   Thu, 14 Apr 2022 15:12:03 +0200
-Message-Id: <20220414110845.153897040@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 158/338] mxser: fix xmit_buf leak in activate when LSR == 0xff
+Date:   Thu, 14 Apr 2022 15:11:01 +0200
+Message-Id: <20220414110843.398494388@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -50,35 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: Jiri Slaby <jslaby@suse.cz>
 
-commit a633cb1edddaa643fadc70abc88f89a408fa834a upstream.
+[ Upstream commit cd3a4907ee334b40d7aa880c7ab310b154fd5cd4 ]
 
-Looks like there been a copy paste mistake when added the instruction
-'stbcx' twice and one was probably meant to be 'sthcx'. Changing to
-'sthcx' from 'stbcx'.
+When LSR is 0xff in ->activate() (rather unlike), we return an error.
+Provided ->shutdown() is not called when ->activate() fails, nothing
+actually frees the buffer in this case.
 
-Fixes: 350779a29f11 ("powerpc: Handle most loads and stores in instruction emulation code")
-Cc: stable@vger.kernel.org # v4.14+
-Reported-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220224162215.3406642-1-anders.roxell@linaro.org
+Fix this by properly freeing the buffer in a designated label. We jump
+there also from the "!info->type" if now too.
+
+Fixes: 6769140d3047 ("tty: mxser: use the tty_port_open method")
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20220124071430.14907-6-jslaby@suse.cz
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/lib/sstep.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/mxser.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
---- a/arch/powerpc/lib/sstep.c
-+++ b/arch/powerpc/lib/sstep.c
-@@ -2806,7 +2806,7 @@ int emulate_loadstore(struct pt_regs *re
- 			__put_user_asmx(op->val, ea, err, "stbcx.", cr);
- 			break;
- 		case 2:
--			__put_user_asmx(op->val, ea, err, "stbcx.", cr);
-+			__put_user_asmx(op->val, ea, err, "sthcx.", cr);
- 			break;
- #endif
- 		case 4:
+diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+index 8bc15cb67a58..88eb90361a89 100644
+--- a/drivers/tty/mxser.c
++++ b/drivers/tty/mxser.c
+@@ -861,6 +861,7 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
+ 	struct mxser_port *info = container_of(port, struct mxser_port, port);
+ 	unsigned long page;
+ 	unsigned long flags;
++	int ret;
+ 
+ 	page = __get_free_page(GFP_KERNEL);
+ 	if (!page)
+@@ -870,9 +871,9 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
+ 
+ 	if (!info->ioaddr || !info->type) {
+ 		set_bit(TTY_IO_ERROR, &tty->flags);
+-		free_page(page);
+ 		spin_unlock_irqrestore(&info->slock, flags);
+-		return 0;
++		ret = 0;
++		goto err_free_xmit;
+ 	}
+ 	info->port.xmit_buf = (unsigned char *) page;
+ 
+@@ -898,8 +899,10 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
+ 		if (capable(CAP_SYS_ADMIN)) {
+ 			set_bit(TTY_IO_ERROR, &tty->flags);
+ 			return 0;
+-		} else
+-			return -ENODEV;
++		}
++
++		ret = -ENODEV;
++		goto err_free_xmit;
+ 	}
+ 
+ 	/*
+@@ -944,6 +947,10 @@ static int mxser_activate(struct tty_port *port, struct tty_struct *tty)
+ 	spin_unlock_irqrestore(&info->slock, flags);
+ 
+ 	return 0;
++err_free_xmit:
++	free_page(page);
++	info->port.xmit_buf = NULL;
++	return ret;
+ }
+ 
+ /*
+-- 
+2.34.1
+
 
 
