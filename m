@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B21E9C4707A
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:49:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345442AbiDNNuP (ORCPT
+        id S1343680AbiDNNuY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:50:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56924 "EHLO
+        Thu, 14 Apr 2022 09:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344057AbiDNNaR (ORCPT
+        with ESMTP id S1344099AbiDNNaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:17 -0400
+        Thu, 14 Apr 2022 09:30:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D925297;
-        Thu, 14 Apr 2022 06:27:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 682821B6;
+        Thu, 14 Apr 2022 06:27:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC9426190F;
-        Thu, 14 Apr 2022 13:27:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D126EC385A5;
-        Thu, 14 Apr 2022 13:27:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 068286190F;
+        Thu, 14 Apr 2022 13:27:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16B14C385A5;
+        Thu, 14 Apr 2022 13:27:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942834;
-        bh=trNRxlt8eXTzXilYKstpkolEO2dx8sJ4butjGv4P88Y=;
+        s=korg; t=1649942878;
+        bh=cML5sl7w+/mfiwBUeIfZj6Aya5S1WL48P0FZVHONaYY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H5dxjCaRPmIIgJ7Q6el9NgRGEVBaYXjQs0GrsAV4RxquDGNeQvnDNoRbE8Ccx1WGv
-         V41s8vVktE9ghQpMVQPvEpYN15hfh4S15WZSeknEtT2ZDWIjOGL4cFq21TnxRjmzSO
-         E54coCEQ30gzQgO/kI2UmGW3SYsL7jjk8dBxKjlc=
+        b=1BlVQJVWMDAg3n7KhnEwCZ7N8fwEMeVA18cT7bbaSaRL/5ywRRsBURdGjYuN3KzGP
+         JitDWKeNUGGn+PrmSkAT3/3LU3iA05Lg/LpdHn4gNKBNoK74b7i59wr31TlUlNQwON
+         +WuXTrxBLwE4fj+DnDcj5JNPjFSA3+72pkyWRDl0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Price <anprice@redhat.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>
-Subject: [PATCH 4.19 241/338] gfs2: Make sure FITRIM minlen is rounded up to fs block size
-Date:   Thu, 14 Apr 2022 15:12:24 +0200
-Message-Id: <20220414110845.751135219@linuxfoundation.org>
+        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 295/338] NFS: swap-out must always use STABLE writes.
+Date:   Thu, 14 Apr 2022 15:13:18 +0200
+Message-Id: <20220414110847.283683250@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -49,42 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrew Price <anprice@redhat.com>
+From: NeilBrown <neilb@suse.de>
 
-commit 27ca8273fda398638ca994a207323a85b6d81190 upstream.
+[ Upstream commit c265de257f558a05c1859ee9e3fed04883b9ec0e ]
 
-Per fstrim(8) we must round up the minlen argument to the fs block size.
-The current calculation doesn't take into account devices that have a
-discard granularity and requested minlen less than 1 fs block, so the
-value can get shifted away to zero in the translation to fs blocks.
+The commit handling code is not safe against memory-pressure deadlocks
+when writing to swap.  In particular, nfs_commitdata_alloc() blocks
+indefinitely waiting for memory, and this can consume all available
+workqueue threads.
 
-The zero minlen passed to gfs2_rgrp_send_discards() then allows
-sb_issue_discard() to be called with nr_sects == 0 which returns -EINVAL
-and results in gfs2_rgrp_send_discards() returning -EIO.
+swap-out most likely uses STABLE writes anyway as COND_STABLE indicates
+that a stable write should be used if the write fits in a single
+request, and it normally does.  However if we ever swap with a small
+wsize, or gather unusually large numbers of pages for a single write,
+this might change.
 
-Make sure minlen is never < 1 fs block by taking the max of the
-requested minlen and the fs block size before comparing to the device's
-discard granularity and shifting to fs blocks.
+For safety, make it explicit in the code that direct writes used for swap
+must always use FLUSH_STABLE.
 
-Fixes: 076f0faa764ab ("GFS2: Fix FITRIM argument handling")
-Signed-off-by: Andrew Price <anprice@redhat.com>
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/rgrp.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/nfs/direct.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/fs/gfs2/rgrp.c
-+++ b/fs/gfs2/rgrp.c
-@@ -1406,7 +1406,8 @@ int gfs2_fitrim(struct file *filp, void
+diff --git a/fs/nfs/direct.c b/fs/nfs/direct.c
+index 41ff316cd6ad..6a4083d550c6 100644
+--- a/fs/nfs/direct.c
++++ b/fs/nfs/direct.c
+@@ -888,7 +888,7 @@ static const struct nfs_pgio_completion_ops nfs_direct_write_completion_ops = {
+  */
+ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
+ 					       struct iov_iter *iter,
+-					       loff_t pos)
++					       loff_t pos, int ioflags)
+ {
+ 	struct nfs_pageio_descriptor desc;
+ 	struct inode *inode = dreq->inode;
+@@ -896,7 +896,7 @@ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
+ 	size_t requested_bytes = 0;
+ 	size_t wsize = max_t(size_t, NFS_SERVER(inode)->wsize, PAGE_SIZE);
  
- 	start = r.start >> bs_shift;
- 	end = start + (r.len >> bs_shift);
--	minlen = max_t(u64, r.minlen,
-+	minlen = max_t(u64, r.minlen, sdp->sd_sb.sb_bsize);
-+	minlen = max_t(u64, minlen,
- 		       q->limits.discard_granularity) >> bs_shift;
+-	nfs_pageio_init_write(&desc, inode, FLUSH_COND_STABLE, false,
++	nfs_pageio_init_write(&desc, inode, ioflags, false,
+ 			      &nfs_direct_write_completion_ops);
+ 	desc.pg_dreq = dreq;
+ 	get_dreq(dreq);
+@@ -1042,11 +1042,13 @@ ssize_t nfs_file_direct_write(struct kiocb *iocb, struct iov_iter *iter,
+ 		dreq->iocb = iocb;
  
- 	if (end <= start || minlen > sdp->sd_max_rg_data)
+ 	if (swap) {
+-		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos);
++		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos,
++							    FLUSH_STABLE);
+ 	} else {
+ 		nfs_start_io_direct(inode);
+ 
+-		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos);
++		requested = nfs_direct_write_schedule_iovec(dreq, iter, pos,
++							    FLUSH_COND_STABLE);
+ 
+ 		if (mapping->nrpages) {
+ 			invalidate_inode_pages2_range(mapping,
+-- 
+2.35.1
+
 
 
