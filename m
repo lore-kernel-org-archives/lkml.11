@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE41C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6A6CC35274
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:20:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349162AbiDNOTV (ORCPT
+        id S1349102AbiDNOTG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:19:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36822 "EHLO
+        Thu, 14 Apr 2022 10:19:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245720AbiDNNiy (ORCPT
+        with ESMTP id S245671AbiDNNit (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:54 -0400
+        Thu, 14 Apr 2022 09:38:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F154FA775F;
-        Thu, 14 Apr 2022 06:33:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F749319C;
+        Thu, 14 Apr 2022 06:33:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B1A3B8296A;
-        Thu, 14 Apr 2022 13:33:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F199C385A9;
-        Thu, 14 Apr 2022 13:33:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5356FB82941;
+        Thu, 14 Apr 2022 13:33:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EAF8C385A1;
+        Thu, 14 Apr 2022 13:33:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943236;
-        bh=THp10zfbheMGkdsFb2ypKQPDgiD3uLbVdWmdaU/PPOQ=;
+        s=korg; t=1649943220;
+        bh=iJJPH4EVd/gES6Zj1SHkb43nH6P6k458cVE4ZYxJTME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zltmYsw4QQpikjHfHQXE8LghbYvGUSjPiD6bBUtJAH+P2pfDMnoQIAh7d1xxZkWsJ
-         buLnmOgvJKb59/hieVdbdXKAQhcoO5B7agHhNblJczUDyYviW4BK7CcvYnd8MajGtj
-         O+X9Zu1iqNN3F7SIfSObpcv3osZPwcnslIE7osKE=
+        b=ncMSAbaMI4Osa71SlvDR5c8oFtJR+Dzhq2sDv25/ply1QVZNcuEWpRaROkgohRmna
+         jTxSs0Qh138k12BpQpWv1nTHa1t3g1hN8SbjADtCSI8WuBsEhHd3Tb09vVsdYoxlql
+         2efkE2L13OZJuzFgsUUj2Flp+uiDhJ1St33m8FpE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5.4 082/475] xtensa: fix xtensa_wsr always writing 0
-Date:   Thu, 14 Apr 2022 15:07:47 +0200
-Message-Id: <20220414110857.449295004@linuxfoundation.org>
+        stable@vger.kernel.org, Vitaly Chikunov <vt@altlinux.org>,
+        Eric Biggers <ebiggers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.4 076/475] crypto: rsa-pkcs1pad - correctly get hash from source scatterlist
+Date:   Thu, 14 Apr 2022 15:07:41 +0200
+Message-Id: <20220414110857.281212744@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -48,38 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit a3d0245c58f962ee99d4440ea0eaf45fb7f5a5cc upstream.
+commit e316f7179be22912281ce6331d96d7c121fb2b17 upstream.
 
-The commit cad6fade6e78 ("xtensa: clean up WSR*/RSR*/get_sr/set_sr")
-replaced 'WSR' macro in the function xtensa_wsr with 'xtensa_set_sr',
-but variable 'v' in the xtensa_set_sr body shadowed the argument 'v'
-passed to it, resulting in wrong value written to debug registers.
+Commit c7381b012872 ("crypto: akcipher - new verify API for public key
+algorithms") changed akcipher_alg::verify to take in both the signature
+and the actual hash and do the signature verification, rather than just
+return the hash expected by the signature as was the case before.  To do
+this, it implemented a hack where the signature and hash are
+concatenated with each other in one scatterlist.
 
-Fix that by removing intermediate variable from the xtensa_set_sr
-macro body.
+Obviously, for this to work correctly, akcipher_alg::verify needs to
+correctly extract the two items from the scatterlist it is given.
+Unfortunately, it doesn't correctly extract the hash in the case where
+the signature is longer than the RSA key size, as it assumes that the
+signature's length is equal to the RSA key size.  This causes a prefix
+of the hash, or even the entire hash, to be taken from the *signature*.
 
-Cc: stable@vger.kernel.org
-Fixes: cad6fade6e78 ("xtensa: clean up WSR*/RSR*/get_sr/set_sr")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+(Note, the case of a signature longer than the RSA key size should not
+be allowed in the first place; a separate patch will fix that.)
+
+It is unclear whether the resulting scheme has any useful security
+properties.
+
+Fix this by correctly extracting the hash from the scatterlist.
+
+Fixes: c7381b012872 ("crypto: akcipher - new verify API for public key algorithms")
+Cc: <stable@vger.kernel.org> # v5.2+
+Reviewed-by: Vitaly Chikunov <vt@altlinux.org>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/include/asm/processor.h |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ crypto/rsa-pkcs1pad.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/xtensa/include/asm/processor.h
-+++ b/arch/xtensa/include/asm/processor.h
-@@ -225,8 +225,8 @@ extern unsigned long get_wchan(struct ta
- 
- #define xtensa_set_sr(x, sr) \
- 	({ \
--	 unsigned int v = (unsigned int)(x); \
--	 __asm__ __volatile__ ("wsr %0, "__stringify(sr) :: "a"(v)); \
-+	 __asm__ __volatile__ ("wsr %0, "__stringify(sr) :: \
-+			       "a"((unsigned int)(x))); \
- 	 })
- 
- #define xtensa_get_sr(sr) \
+--- a/crypto/rsa-pkcs1pad.c
++++ b/crypto/rsa-pkcs1pad.c
+@@ -494,7 +494,7 @@ static int pkcs1pad_verify_complete(stru
+ 			   sg_nents_for_len(req->src,
+ 					    req->src_len + req->dst_len),
+ 			   req_ctx->out_buf + ctx->key_size,
+-			   req->dst_len, ctx->key_size);
++			   req->dst_len, req->src_len);
+ 	/* Do the actual verification step. */
+ 	if (memcmp(req_ctx->out_buf + ctx->key_size, out_buf + pos,
+ 		   req->dst_len) != 0)
 
 
