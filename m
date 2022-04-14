@@ -2,151 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF387C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF561C4321E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344484AbiDNPNn (ORCPT
+        id S1344640AbiDNPN5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43152 "EHLO
+        Thu, 14 Apr 2022 11:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347318AbiDNN6p (ORCPT
+        with ESMTP id S1347351AbiDNN6q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:58:45 -0400
+        Thu, 14 Apr 2022 09:58:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6C924BEC
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:49:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CFE626AD9;
+        Thu, 14 Apr 2022 06:49:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2D03B82986
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 13:49:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03D85C385AA;
-        Thu, 14 Apr 2022 13:49:19 +0000 (UTC)
-Date:   Thu, 14 Apr 2022 14:49:16 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Topi Miettinen <toiwoton@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Lennart Poettering <lennart@poettering.net>,
-        Zbigniew =?utf-8?Q?J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>,
-        Szabolcs Nagy <szabolcs.nagy@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>, linux-mm@kvack.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-abi-devel@lists.sourceforge.net
-Subject: Re: [PATCH RFC 0/4] mm, arm64: In-kernel support for
- memory-deny-write-execute (MDWE)
-Message-ID: <YlgmXA49frnQKdaT@arm.com>
-References: <20220413134946.2732468-1-catalin.marinas@arm.com>
- <2a2becf1-fc19-a7da-deb7-1c12781d503d@gmail.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 221BDB82988;
+        Thu, 14 Apr 2022 13:49:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86B0BC385A9;
+        Thu, 14 Apr 2022 13:49:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649944167;
+        bh=oS0gUQkH3zcIiHXRBOZTmba3XwSHQXTt4emSZtFgwhY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lTPBf20Rnn2ZMnxuv9XVV8rCBdQU7Za2qV8NFEPEXFhMpSX/WHR3FrAlWFjg8OJyW
+         nGHPdAx+inICny6KI385pWQUnt8ipe5jk/7WbyXk1ZqvE0DcPpq2B86NrrmJN2P+r+
+         yC/grVqtkMKEY4aEFl8iJw1nGbe28Y17ZnQ6zHPA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, TCS Robot <tcs_robot@tencent.com>,
+        Haimin Zhang <tcs_kernel@tencent.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 418/475] jfs: prevent NULL deref in diFree
+Date:   Thu, 14 Apr 2022 15:13:23 +0200
+Message-Id: <20220414110906.759843958@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2a2becf1-fc19-a7da-deb7-1c12781d503d@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Topi,
+From: Haimin Zhang <tcs_kernel@tencent.com>
 
-On Wed, Apr 13, 2022 at 09:39:37PM +0300, Topi Miettinen wrote:
-> On 13.4.2022 16.49, Catalin Marinas wrote:
-> > The background to this is that systemd has a configuration option called
-> > MemoryDenyWriteExecute [1], implemented as a SECCOMP BPF filter. Its aim
-> > is to prevent a user task from inadvertently creating an executable
-> > mapping that is (or was) writeable. Since such BPF filter is stateless,
-> > it cannot detect mappings that were previously writeable but
-> > subsequently changed to read-only. Therefore the filter simply rejects
-> > any mprotect(PROT_EXEC). The side-effect is that on arm64 with BTI
-> > support (Branch Target Identification), the dynamic loader cannot change
-> > an ELF section from PROT_EXEC to PROT_EXEC|PROT_BTI using mprotect().
-> > For libraries, it can resort to unmapping and re-mapping but for the
-> > main executable it does not have a file descriptor. The original bug
-> > report in the Red Hat bugzilla - [2] - and subsequent glibc workaround
-> > for libraries - [3].
-> > 
-> > Add in-kernel support for such feature as a DENY_WRITE_EXEC personality
-> > flag, inherited on fork() and execve(). The kernel tracks a previously
-> > writeable mapping via a new VM_WAS_WRITE flag (64-bit only
-> > architectures).
+[ Upstream commit a53046291020ec41e09181396c1e829287b48d47 ]
 
-BTW, we can avoid the VM_WAS_WRITE tracking if we limit the check to the
-current permissions. It would allow mprotect(PROT_EXEC) only if the
-mapping is already executable. The mmap(PROT_WRITE|PROT_EXEC) would be
-rejected, as expected. The difference from the current BPF filter is
-that mprotect(PROT_EXEC|PROT_BTI) is allowed if the mapping was
-previously mmap(PROT_READ|PROT_EXEC).
+Add validation check for JFS_IP(ipimap)->i_imap to prevent a NULL deref
+in diFree since diFree uses it without do any validations.
+When function jfs_mount calls diMount to initialize fileset inode
+allocation map, it can fail and JFS_IP(ipimap)->i_imap won't be
+initialized. Then it calls diFreeSpecial to close fileset inode allocation
+map inode and it will flow into jfs_evict_inode. Function jfs_evict_inode
+just validates JFS_SBI(inode->i_sb)->ipimap, then calls diFree. diFree use
+JFS_IP(ipimap)->i_imap directly, then it will cause a NULL deref.
 
-I'm open to go in this direction if it fits the systemd requirements
-better. It's also less state to track in the kernel.
+Reported-by: TCS Robot <tcs_robot@tencent.com>
+Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
+Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/jfs/inode.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> > I went for a personality flag by analogy with the
-> > READ_IMPLIES_EXEC one. However, I'm happy to change it to a prctl() if
-> > we don't want more personality flags. A minor downside with the
-> > personality flag is that there is no way for the user to query which
-> > flags are supported, so in patch 3 I added an AT_FLAGS bit to advertise
-> > this.
-> 
-> With systemd there's a BPF construct to block personality changes
-> (LockPersonality=yes) but I think prctl() would be easier to lock down
-> irrevocably.
-
-The personality flag is not sticky, so one could inadvertently clear it
-without LockPersonality=yes. We could add a mask of sticky bits to
-sys_personality() (only for new flags), though we might as well go with
-a prctl(), we have more flexibility and finer-grained control if we want
-to expand this to memfd files.
-
-Would there be any reason to disable such behaviour for an application,
-once enabled? I don't think it's currently possible with the BPF filter
-but we can add it to a prctl().
-
-> > Posting this as an RFC to start a discussion and cc'ing some of the
-> > systemd guys and those involved in the earlier thread around the glibc
-> > workaround for dynamic libraries [4]. Before thinking of upstreaming
-> > this we'd need the systemd folk to buy into replacing the MDWE SECCOMP
-> > BPF filter with the in-kernel one.
-> 
-> As the author of this feature in systemd (also similar feature in Firejail),
-> I'd highly prefer in-kernel version to BPF protection. I'd definitely also
-> want to use this in place of BPF on x86_64 and other arches too.
-
-It is generic, so yes, it can be enabled for other architectures. A
-minor issue with the VM_WAS_WRITE flag is that we ran out of 32-bit vma
-flags. It could be expanded but not sure how much you care about MDWE on
-32-bit architectures. An alternative is to drop the VM_WAS_WRITE
-approach entirely, just use the current protection for the decision.
-
-> In-kernel version would probably allow covering pretty easily this case
-> (maybe it already does):
-> 
-> 	fd = memfd_create(...);
-> 	write(fd, malicious_code, sizeof(malicious_code));
-> 	mmap(..., PROT_EXEC, ..., fd);
-
-This series doesn't cover it.
-
-> Other memory W^X implementations include S.A.R.A [1] and SELinux
-> EXECMEM/EXECSTACK/EXECHEAP protections [2], [3]. SELinux checks
-> IS_PRIVATE(file_inode(file)) and vma->anon_vma != NULL, which might be
-> useful additions here too (or future extensions if you prefer).
-
-I had a quick look at SELinux and, IIUC, without the execmem permission
-it prevents any anonymous mmap(PROT_EXEC). We could probably do
-something similar here and check the file permission. I had an attempt
-but S_PRIVATE doesn't seem to be set on the memfd_create() allocated
-inode. I have to dig a bit more to see how to detect this. If we keep
-the check for all files, it won't be able to map any ELF text sections
-unless the binary is read-only.
-
-> [1] https://smeso.it/sara/
-> [2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/security/selinux/hooks.c#n3708
-> [3] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/security/selinux/hooks.c#n3787
-
+diff --git a/fs/jfs/inode.c b/fs/jfs/inode.c
+index d862cfc3d3a8..62c4a5450cda 100644
+--- a/fs/jfs/inode.c
++++ b/fs/jfs/inode.c
+@@ -146,12 +146,13 @@ void jfs_evict_inode(struct inode *inode)
+ 		dquot_initialize(inode);
+ 
+ 		if (JFS_IP(inode)->fileset == FILESYSTEM_I) {
++			struct inode *ipimap = JFS_SBI(inode->i_sb)->ipimap;
+ 			truncate_inode_pages_final(&inode->i_data);
+ 
+ 			if (test_cflag(COMMIT_Freewmap, inode))
+ 				jfs_free_zero_link(inode);
+ 
+-			if (JFS_SBI(inode->i_sb)->ipimap)
++			if (ipimap && JFS_IP(ipimap)->i_imap)
+ 				diFree(inode);
+ 
+ 			/*
 -- 
-Catalin
+2.35.1
+
+
+
