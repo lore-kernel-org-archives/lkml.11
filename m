@@ -2,179 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C4A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 02:33:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C8ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 02:34:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239501AbiDNCf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 22:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55114 "EHLO
+        id S239255AbiDNChO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 22:37:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239505AbiDNCfX (ORCPT
+        with ESMTP id S229671AbiDNChL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 22:35:23 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CAB53724
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 19:32:59 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id q12so3513193pgj.13
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 19:32:59 -0700 (PDT)
+        Wed, 13 Apr 2022 22:37:11 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9527DFCC;
+        Wed, 13 Apr 2022 19:34:48 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id md4so3822020pjb.4;
+        Wed, 13 Apr 2022 19:34:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YSNIpToEpKx9C/PikZnCWZV0FikRekKMo16pPMd1DpA=;
-        b=LGvyFYmBi//2J872dwC4BWvIgavMY42bnfS/6eXxFjyQAxgAIQmx/fj2cZ5NGgLQJ0
-         Vj71Y/5rxksooccCGRxuVyYKJy0Vi/ysD/idUzToiZUWPz9xP526Vjd43hTc3P20brja
-         hMzCaQeubXgiZec4rGfcnX6iqTHx06cDAqA4Xh7ssUrCqd9mXR9fnvZnt4QoZ2Se3lPk
-         g8nY1MnrV2CVGmaTfsV8k2bQAGmQUpjHcwKEvQx8Hn+kYp3uV3prZLcy/41Qt2+ZWt50
-         +GDObPXKuVEPcRlyzFFyTzZOxPL2HWNMJvafbWCfk6g4HkMqj9uHEcPDlsqjpetzgtnW
-         IZng==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SoQ7t3GysTvAyNktAhNf5bL8501+vtGlmJoH0biErTE=;
+        b=puW3ojoQg10vDzEtxIV4fzj4Ot9E6RGQVU9li4VMFoIVGdlKW39jCcf0JqKTux3bW4
+         w0Nf3l8gGLj/N3ZGcq4p+CSUJqhvh8zcaBJQmZir/UnaNMZ2fFEfI1JwW6KIhchCDUWb
+         I8C31NSsYaM5bQiKAgOjZNYjqnQdfXLGbqMqp2vavN9F1zhHJEFmcAqOIe5YxpIvMx4G
+         kbCsYH3YCffGDPItMZYj7YXAaWhcpHgf+vpAnTxz2FXJIdLykr0wlQ/BPCLJeTjPgsVB
+         reRFaGIPYqekxk5zJztKxJRLEoBYIwR6IJv5Pu+3bNdTERGUgNyIBKy9KDDWZG6y/wSA
+         KSIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YSNIpToEpKx9C/PikZnCWZV0FikRekKMo16pPMd1DpA=;
-        b=VXgUVApO8bAikPLbG9HMLLAZqABD/AjM78lDhO0sIHvsd4Z58kAbm4CIJIsIwXTSJ6
-         fAUSXPUlZBxgc26pXxSwyIeT1vF50TZVfMeDWYSO7odk9SgeyVKGuRLYIUTabXH2DiAM
-         +sP9ukxobXKd9sSHI7yruDKG8BPrTdz4GSEOt715KO0+d2uxBw4cuwENMHABTGN4m4Y6
-         oSWV7xS7fevgA8OZCvk93g5TRZR+Knuc1kmVTEvgeN/T36uZugXvEEl35pgoAf7g+euT
-         JgwxDKnM2sVocTk1xrLowNTcQmho8qEHxLTO7r6XTZvVaSj2Q4f0su2+pnh1HAPFWhfQ
-         lTbg==
-X-Gm-Message-State: AOAM531RHZSasRLXxnM6Jzdwkq9EbNnJZQEFc7rDqSAWWkKNlu2NMdus
-        0TvCop1Y9QrSXgNdmD9TOxDbZND2qcIhfFNuOZ5mRg==
-X-Google-Smtp-Source: ABdhPJyJ7+lq6DXzFoR+6irZCG4YAQlpZndZMI7bifxiTNpKl3Ag2MIF6bdalp4DUmMY3P/bAV7PO08efRdZqcY2MLQ=
-X-Received: by 2002:a05:6a02:283:b0:342:703e:1434 with SMTP id
- bk3-20020a056a02028300b00342703e1434mr522640pgb.74.1649903578582; Wed, 13 Apr
- 2022 19:32:58 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SoQ7t3GysTvAyNktAhNf5bL8501+vtGlmJoH0biErTE=;
+        b=Pzxd5ASTIhwlKniKzXv5xToCpQrt537uj/MsBaaw94uPA+3sQxzu23aZ419zk2IlMu
+         HUoanuwK5cNTxRoseGRskt38i1loYSm0Yn3ajIJElrodX35U869v6PCXuvGIELq9tRPE
+         0DDJ+m/m5rU72Ps3Myt6Gg1Uj/+MlNaKJB6aGPO9A0qlySgSuvoAparXAltMmv+NDaow
+         jxz/YEyOmERBNYTM/Hjp3QS3wocUlMW6m36ojjoi4pRF053QB1c2I5Uzy2NoZeAlV1iO
+         C0lQt47ULch9E8O0QIs7fragiVdN43sMViijXaqlHQCWmXG5eCxv4gpHWVfJC5WM+MXI
+         DKbw==
+X-Gm-Message-State: AOAM533w4uOaul3cNBAkU2SFNLGJXnz48whbFCVcUgAxESPVH3WjlpSQ
+        9HGhJVcBQmaCLvHUyyxs533Zzs8k70URRjk=
+X-Google-Smtp-Source: ABdhPJxcRr/CDaXT6LOYlxwkPbtPBcngxnqm+QIf17iaLISnfg0g+WXz4rRNecrSvlvgiixGpEifew==
+X-Received: by 2002:a17:902:c94b:b0:158:8c9e:84e9 with SMTP id i11-20020a170902c94b00b001588c9e84e9mr9932512pla.115.1649903688407;
+        Wed, 13 Apr 2022 19:34:48 -0700 (PDT)
+Received: from localhost.localdomain ([144.202.91.207])
+        by smtp.gmail.com with ESMTPSA id j3-20020a17090a3e0300b001cb68d28544sm4283517pjc.37.2022.04.13.19.34.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 19:34:47 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     sakari.ailus@linux.intel.com, mchehab@kernel.org
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH v2] media: i2c: dw9714: Disable the regulator when the driver fails to probe
+Date:   Thu, 14 Apr 2022 10:34:35 +0800
+Message-Id: <20220414023435.1710775-1-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220405194747.2386619-1-jane.chu@oracle.com> <20220405194747.2386619-4-jane.chu@oracle.com>
- <CAPcyv4jx=h+1QiB0NRRQrh1mHcD2TFQx4AH6JxnQDKukZ3KVZA@mail.gmail.com> <b511a483-4260-656a-ab04-2ba319e65ca7@oracle.com>
-In-Reply-To: <b511a483-4260-656a-ab04-2ba319e65ca7@oracle.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Wed, 13 Apr 2022 19:32:47 -0700
-Message-ID: <CAPcyv4jpwzMPKtzzc=DEbC340+zmzXkj+QtPVxfYbraskLKv8g@mail.gmail.com>
-Subject: Re: [PATCH v7 3/6] mce: fix set_mce_nospec to always unmap the whole page
-To:     Jane Chu <jane.chu@oracle.com>
-Cc:     david <david@fromorbit.com>, "Darrick J. Wong" <djwong@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Vishal L Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        device-mapper development <dm-devel@redhat.com>,
-        "Weiny, Ira" <ira.weiny@intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux NVDIMM <nvdimm@lists.linux.dev>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-xfs <linux-xfs@vger.kernel.org>, X86 ML <x86@kernel.org>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "dave.hansen@intel.com" <dave.hansen@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 4:36 PM Jane Chu <jane.chu@oracle.com> wrote:
->
-> On 4/11/2022 4:27 PM, Dan Williams wrote:
-> > On Tue, Apr 5, 2022 at 12:48 PM Jane Chu <jane.chu@oracle.com> wrote:
-> >>
-> >> The set_memory_uc() approach doesn't work well in all cases.
-> >> For example, when "The VMM unmapped the bad page from guest
-> >> physical space and passed the machine check to the guest."
-> >> "The guest gets virtual #MC on an access to that page.
-> >>   When the guest tries to do set_memory_uc() and instructs
-> >>   cpa_flush() to do clean caches that results in taking another
-> >>   fault / exception perhaps because the VMM unmapped the page
-> >>   from the guest."
-> >>
-> >> Since the driver has special knowledge to handle NP or UC,
-> >
-> > I think a patch is needed before this one to make this statement true? I.e.:
-> >
-> > diff --git a/drivers/acpi/nfit/mce.c b/drivers/acpi/nfit/mce.c
-> > index ee8d9973f60b..11641f55025a 100644
-> > --- a/drivers/acpi/nfit/mce.c
-> > +++ b/drivers/acpi/nfit/mce.c
-> > @@ -32,6 +32,7 @@ static int nfit_handle_mce(struct notifier_block
-> > *nb, unsigned long val,
-> >           */
-> >          mutex_lock(&acpi_desc_lock);
-> >          list_for_each_entry(acpi_desc, &acpi_descs, list) {
-> > +               unsigned int align = 1UL << MCI_MISC_ADDR_LSB(mce->misc);
-> >                  struct device *dev = acpi_desc->dev;
-> >                  int found_match = 0;
-> >
-> > @@ -63,8 +64,7 @@ static int nfit_handle_mce(struct notifier_block
-> > *nb, unsigned long val,
-> >
-> >                  /* If this fails due to an -ENOMEM, there is little we can do */
-> >                  nvdimm_bus_add_badrange(acpi_desc->nvdimm_bus,
-> > -                               ALIGN(mce->addr, L1_CACHE_BYTES),
-> > -                               L1_CACHE_BYTES);
-> > +                                       ALIGN(mce->addr, align), align);
-> >                  nvdimm_region_notify(nfit_spa->nd_region,
-> >                                  NVDIMM_REVALIDATE_POISON);
-> >
->
-> Dan, I tried the above change, and this is what I got after injecting 8
-> back-to-back poisons, then read them and received  SIGBUS/BUS_MCEERR_AR,
-> then repair via the v7 patch which works until this change is added.
->
-> [ 6240.955331] nfit ACPI0012:00: XXX, align = 100
-> [ 6240.960300] nfit ACPI0012:00: XXX, ALIGN(mce->addr,
-> L1_CACHE_BYTES)=1851600400, L1_CACHE_BYTES=40, ALIGN(mce->addr,
-> align)=1851600400
-> [..]
-> [ 6242.052277] nfit ACPI0012:00: XXX, align = 100
-> [ 6242.057243] nfit ACPI0012:00: XXX, ALIGN(mce->addr,
-> L1_CACHE_BYTES)=1851601000, L1_CACHE_BYTES=40, ALIGN(mce->addr,
-> align)=1851601000
-> [..]
-> [ 6244.917198] nfit ACPI0012:00: XXX, align = 1000
-> [ 6244.922258] nfit ACPI0012:00: XXX, ALIGN(mce->addr,
-> L1_CACHE_BYTES)=1851601200, L1_CACHE_BYTES=40, ALIGN(mce->addr,
-> align)=1851602000
-> [..]
->
-> All 8 poisons remain uncleared.
->
-> Without further investigation, I don't know why the failure.
-> Could we mark this change to a follow-on task?
+When the driver fails to probe, we will get the following splat:
 
-Perhaps a bit more debug before kicking this can down the road...
+[   59.305988] ------------[ cut here ]------------
+[   59.306417] WARNING: CPU: 2 PID: 395 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+[   59.310345] RIP: 0010:_regulator_put+0x3ec/0x4e0
+[   59.318362] Call Trace:
+[   59.318582]  <TASK>
+[   59.318765]  regulator_put+0x1f/0x30
+[   59.319058]  devres_release_group+0x319/0x3d0
+[   59.319420]  i2c_device_probe+0x766/0x940
 
-I'm worried that this means that the driver is not accurately tracking
-poison data For example, that last case the hardware is indicating a
-full page clobber, but the old code would only track poison from
-1851601200 to 1851601400 (i.e. the first 512 bytes from the base error
-address).
+Fix this by disabling the regulator in error handling.
 
-Oh... wait, I think there is a second bug here, that ALIGN should be
-ALIGN_DOWN(). Does this restore the result you expect?
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+---
+ drivers/media/i2c/dw9714.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/acpi/nfit/mce.c b/drivers/acpi/nfit/mce.c
-index ee8d9973f60b..d7a52238a741 100644
---- a/drivers/acpi/nfit/mce.c
-+++ b/drivers/acpi/nfit/mce.c
-@@ -63,8 +63,7 @@ static int nfit_handle_mce(struct notifier_block
-*nb, unsigned long val,
+diff --git a/drivers/media/i2c/dw9714.c b/drivers/media/i2c/dw9714.c
+index cd7008ad8f2f..8c5797ba57d4 100644
+--- a/drivers/media/i2c/dw9714.c
++++ b/drivers/media/i2c/dw9714.c
+@@ -183,6 +183,7 @@ static int dw9714_probe(struct i2c_client *client)
+ 	return 0;
+ 
+ err_cleanup:
++	regulator_disable(dw9714_dev->vcc);
+ 	v4l2_ctrl_handler_free(&dw9714_dev->ctrls_vcm);
+ 	media_entity_cleanup(&dw9714_dev->sd.entity);
+ 
+-- 
+2.25.1
 
-                /* If this fails due to an -ENOMEM, there is little we can do */
-                nvdimm_bus_add_badrange(acpi_desc->nvdimm_bus,
--                               ALIGN(mce->addr, L1_CACHE_BYTES),
--                               L1_CACHE_BYTES);
-+                                       ALIGN_DOWN(mce->addr, align), align);
-                nvdimm_region_notify(nfit_spa->nd_region,
-                                NVDIMM_REVALIDATE_POISON);
-
-
-> The driver knows a lot about how to clear poisons besides hardcoding
-> poison alignment to 0x40 bytes.
-
-It does, but the badblocks tracking should still be reliable, and if
-it's not reliable I expect there are cases where recovery_write() will
-not be triggered because the driver will not fail the
-dax_direct_access() attempt.
