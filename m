@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFFAC35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E118C47081
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:30:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351351AbiDNOax (ORCPT
+        id S1351310AbiDNOav (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
+        Thu, 14 Apr 2022 10:30:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245667AbiDNNit (ORCPT
+        with ESMTP id S245677AbiDNNiu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:49 -0400
+        Thu, 14 Apr 2022 09:38:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4072DA6E3E;
-        Thu, 14 Apr 2022 06:33:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1A4931B5;
+        Thu, 14 Apr 2022 06:33:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D36CA61CF4;
-        Thu, 14 Apr 2022 13:33:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E54CFC385AA;
-        Thu, 14 Apr 2022 13:33:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 496766122A;
+        Thu, 14 Apr 2022 13:33:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 562FFC385A5;
+        Thu, 14 Apr 2022 13:33:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943217;
-        bh=uFktpmXq//VwMEg/Xye+cAieCQG7ieCXEqG53n4shp0=;
+        s=korg; t=1649943222;
+        bh=lzt+dYuEk+H+dZZI2g9gX/4FVIcxFSKqNd+M1zj3V3U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lbEWXK+fKWCaTwzpEMrT3McqzFCs73+uOtJ24eDW07jxJ7DL2eZ0ylkJhGTbUN9Jv
-         TT06AYiJ7WPSMEZmxdSYx7MRXjx0bcixasnHiIRMqrTnaLGFuDN1zPihYxASvLfv4R
-         YDDzRfnGiwfzaZKg0Y7XX6ASfLPV1kqjSSTiIB8g=
+        b=YNcfT92IQWIWxFXcP05HPMeqwfAQt9AGU1lS7b4wSgCxPyizGs3gThtLZ7p2ZRwmx
+         9fNoxe8fRer9bmIm/iFrsckWfBLgc1Jx5REkct/US8X26xJX4WYhii+osnpC82oPqN
+         cLzPIKtAdkNXioJVDC796ghC9caNhcq1UQQaAhOQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Dirk=20M=C3=BCller?= <dmueller@suse.de>,
-        Paul Menzel <pmenzel@molgen.mpg.de>, Song Liu <song@kernel.org>
-Subject: [PATCH 5.4 075/475] lib/raid6/test: fix multiple definition linking error
-Date:   Thu, 14 Apr 2022 15:07:40 +0200
-Message-Id: <20220414110857.253378136@linuxfoundation.org>
+        stable@vger.kernel.org, Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Vitaly Chikunov <vt@altlinux.org>,
+        Eric Biggers <ebiggers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.4 077/475] crypto: rsa-pkcs1pad - restore signature length check
+Date:   Thu, 14 Apr 2022 15:07:42 +0200
+Message-Id: <20220414110857.309434279@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,38 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dirk Müller <dmueller@suse.de>
+From: Eric Biggers <ebiggers@google.com>
 
-commit a5359ddd052860bacf957e65fe819c63e974b3a6 upstream.
+commit d3481accd974541e6a5d6a1fb588924a3519c36e upstream.
 
-GCC 10+ defaults to -fno-common, which enforces proper declaration of
-external references using "extern". without this change a link would
-fail with:
+RSA PKCS#1 v1.5 signatures are required to be the same length as the RSA
+key size.  RFC8017 specifically requires the verifier to check this
+(https://datatracker.ietf.org/doc/html/rfc8017#section-8.2.2).
 
-  lib/raid6/test/algos.c:28: multiple definition of `raid6_call';
-  lib/raid6/test/test.c:22: first defined here
+Commit a49de377e051 ("crypto: Add hash param to pkcs1pad") changed the
+kernel to allow longer signatures, but didn't explain this part of the
+change; it seems to be unrelated to the rest of the commit.
 
-the pq.h header that is included already includes an extern declaration
-so we can just remove the redundant one here.
+Revert this change, since it doesn't appear to be correct.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Dirk Müller <dmueller@suse.de>
-Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Song Liu <song@kernel.org>
+We can be pretty sure that no one is relying on overly-long signatures
+(which would have to be front-padded with zeroes) being supported, given
+that they would have been broken since commit c7381b012872
+("crypto: akcipher - new verify API for public key algorithms").
+
+Fixes: a49de377e051 ("crypto: Add hash param to pkcs1pad")
+Cc: <stable@vger.kernel.org> # v4.6+
+Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
+Suggested-by: Vitaly Chikunov <vt@altlinux.org>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/raid6/test/test.c |    1 -
- 1 file changed, 1 deletion(-)
+ crypto/rsa-pkcs1pad.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/lib/raid6/test/test.c
-+++ b/lib/raid6/test/test.c
-@@ -19,7 +19,6 @@
- #define NDISKS		16	/* Including P and Q */
+--- a/crypto/rsa-pkcs1pad.c
++++ b/crypto/rsa-pkcs1pad.c
+@@ -537,7 +537,7 @@ static int pkcs1pad_verify(struct akciph
  
- const char raid6_empty_zero_page[PAGE_SIZE] __attribute__((aligned(PAGE_SIZE)));
--struct raid6_calls raid6_call;
+ 	if (WARN_ON(req->dst) ||
+ 	    WARN_ON(!req->dst_len) ||
+-	    !ctx->key_size || req->src_len < ctx->key_size)
++	    !ctx->key_size || req->src_len != ctx->key_size)
+ 		return -EINVAL;
  
- char *dataptrs[NDISKS];
- char data[NDISKS][PAGE_SIZE] __attribute__((aligned(PAGE_SIZE)));
+ 	req_ctx->out_buf = kmalloc(ctx->key_size + req->dst_len, GFP_KERNEL);
 
 
