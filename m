@@ -2,105 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB38DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:05:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 591C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 16:07:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234347AbiDNQGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 12:06:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56828 "EHLO
+        id S243393AbiDNQHk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 12:07:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349701AbiDNP5A (ORCPT
+        with ESMTP id S1351574AbiDNP5a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 11:57:00 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AA12197;
-        Thu, 14 Apr 2022 08:38:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=kH6ujGoL9etk6d7SqVYOo2pyqaz/8ZlPBQf0CoqEg68=; b=Oh6jCARzLKsg4PYNtSSV5THm2O
-        ldBW0UrCujjnxpsSKs0Y0+Gbtj6k3fyeYqaDCunqgh3pAF22qDYLd27vm03t7eIkC8oVwBUNq0cV4
-        Ald/PULQLxQGzviKQsVL3bPa9ufarOurPeYUj2vuTH6zRIMe352e2hycGGGmjj+MqTVSEb6otgYjt
-        MekoMBu1AHHSrhdoMu4blI7h5csyF1pb2J0lmrQjs8/YDbWcoQBFKQx+WtVEY7VDz1mzAui2Ly3Ey
-        bnt3LQkbTAwtYfR2A9Jc2VU+tkfHBw6yPbYMXxPU8YnauiiJTiVFqzgzEmejSx6QYdw3IPMbz1v7n
-        8TspuD2Q==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nf1Xp-00FFwW-A8; Thu, 14 Apr 2022 15:38:05 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0DA0F30027B;
-        Thu, 14 Apr 2022 17:38:02 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id DBEA631B90AC3; Thu, 14 Apr 2022 17:38:01 +0200 (CEST)
-Date:   Thu, 14 Apr 2022 17:38:01 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Alexander Potapenko <glider@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 38/48] objtool: kmsan: list KMSAN API functions as
- uaccess-safe
-Message-ID: <Ylg/2dqbL3t/EE65@hirez.programming.kicks-ass.net>
-References: <20220329124017.737571-1-glider@google.com>
- <20220329124017.737571-39-glider@google.com>
- <20220330084615.GH8939@worktop.programming.kicks-ass.net>
- <CAG_fn=UzshCuwbq7pZ93v7+eVUgFq1dZ4L_9nEWhYnotmyZtJg@mail.gmail.com>
+        Thu, 14 Apr 2022 11:57:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3753444A33;
+        Thu, 14 Apr 2022 08:42:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0718B82A70;
+        Thu, 14 Apr 2022 15:42:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB2E7C385A5;
+        Thu, 14 Apr 2022 15:42:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649950935;
+        bh=pkfByiWfFuRJ/KrgPwqFe3DcHz82RVQhum60vPKjzsE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VEUq2xRRQvXfQjrUUpTvzE4VNKsrXB42lRgtFqzWoREZO4Q9eCj+F0Fn1CVfV9Jg4
+         f7NAY9ondPJlN5WuXpVCw+z00pFi6mzQtkeGieRgUpiRR4wYQXfbfeEGKhmPqUXYkl
+         tE6gJg1yk4FJcsV9/thanwYuBcUNyLFtzwyS4zp0=
+Date:   Thu, 14 Apr 2022 17:42:12 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Waiman Long <longman@redhat.com>
+Cc:     john.p.donnelly@oracle.com,
+        chenguanyou <chenguanyou9338@gmail.com>, dave@stgolabs.net,
+        hdanton@sina.com, linux-kernel@vger.kernel.org,
+        mazhenhua@xiaomi.com, mingo@redhat.com, peterz@infradead.org,
+        quic_aiquny@quicinc.com, will@kernel.org, sashal@kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v5] locking/rwsem: Make handoff bit handling more
+ consistent
+Message-ID: <YlhA1IVb/MIox/Ik@kroah.com>
+References: <20211116012912.723980-1-longman@redhat.com>
+ <20220214154741.12399-1-chenguanyou@xiaomi.com>
+ <3f02975c-1a9d-be20-32cf-f1d8e3dfafcc@oracle.com>
+ <e873727e-22db-3330-015d-bd6581a2937a@redhat.com>
+ <31178c33-e25c-c3e8-35e2-776b5211200c@oracle.com>
+ <161c2e25-3d26-4dd7-d378-d1741f7bcca8@redhat.com>
+ <2b6ed542-b3e0-1a87-33ac-d52fc0e0339c@oracle.com>
+ <b3620b7b-c66a-65f8-b10b-c3669b2f82ec@redhat.com>
+ <Ylf78yGuXdXWugpn@kroah.com>
+ <d32d3036-a554-624b-0d3f-247539142273@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAG_fn=UzshCuwbq7pZ93v7+eVUgFq1dZ4L_9nEWhYnotmyZtJg@mail.gmail.com>
+In-Reply-To: <d32d3036-a554-624b-0d3f-247539142273@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 05:30:34PM +0200, Alexander Potapenko wrote:
-> On Wed, Mar 30, 2022 at 10:46 AM Peter Zijlstra <peterz@infradead.org>
-> wrote:
-> 
-> > On Tue, Mar 29, 2022 at 02:40:07PM +0200, Alexander Potapenko wrote:
-> > > KMSAN inserts API function calls in a lot of places (function entries
-> > > and exits, local variables, memory accesses), so they may get called
-> > > from the uaccess regions as well.
-> >
-> > That's insufficient. Explain how you did the right thing and made these
-> > functions actually safe to be called in this context.
-> >
+On Thu, Apr 14, 2022 at 11:18:23AM -0400, Waiman Long wrote:
+> On 4/14/22 06:48, Greg KH wrote:
+> > On Tue, Apr 12, 2022 at 01:04:05PM -0400, Waiman Long wrote:
+> > > The patch has already been in the tip tree. It may not be easy to add a
+> > > Fixes tag to it. Anyway, I will encourage stable tree maintainer to take it
+> > > as it does fix a problem as shown in your test.
+> > I have no idea what you want me to do here.  Please be explicit...
+> > 
+> I would like the stable trees to include commit 1ee326196c66
+> ("locking/rwsem: Always try to wake waiters in out_nolock path") after it is
+> merged into the mainline in the v5.19 merge window. It should be applied to
+> the stable trees that have incorporated the backport of commit d257cc8cb8d5
+> ("locking/rwsem: Make handoff bit handling more consistent") since this
+> commit seems to make the missed wakeup problem easier to show up.
 
-> As a result, none of KMSAN API functions perform userspace accesses, but
-> since they might be called from UACCESS regions they
-> use user_access_save/restore().
+Please let us know when this is merged into Linus's tree.  Nothing we
+can do until then and I'm not going to remember this in a few months
+anyway.
 
-^ That.. very good.
+thanks,
 
-Thanks!
+greg k-h
