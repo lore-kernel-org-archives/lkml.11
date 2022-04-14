@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1533C4321E
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B620C4167E
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347476AbiDNOv6 (ORCPT
+        id S1347845AbiDNOwR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
+        Thu, 14 Apr 2022 10:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343732AbiDNNn4 (ORCPT
+        with ESMTP id S1345330AbiDNNpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:43:56 -0400
+        Thu, 14 Apr 2022 09:45:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EF924951;
-        Thu, 14 Apr 2022 06:39:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32DDD2DE0;
+        Thu, 14 Apr 2022 06:43:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB5BCB829A3;
-        Thu, 14 Apr 2022 13:39:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14B8BC385A1;
-        Thu, 14 Apr 2022 13:39:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E43DBB828E6;
+        Thu, 14 Apr 2022 13:43:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B92AC385A5;
+        Thu, 14 Apr 2022 13:43:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943579;
-        bh=zFT/33gx2QpYPbSY/7LiF+3Gf+gZx34HbhjPo3288vU=;
+        s=korg; t=1649943807;
+        bh=xbI6SF3AS1uEAFxgbMH2vX6QKFyd3eXgDbqdslNprtQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0fycYHmxKEGO7vSXZXojet09xcnCwlemQ4LOrF0X8ENpR9QJT2G8WrU4QpshPLXjP
-         ZAKyr6tCAN2hOxce0Dr4f4weIsXIhQmvy5nA7mUhXtYvbYLJ7X/rCmF/OGzB1UNQTD
-         VCaavw3ItC9ibwLGkcZEJSZsF4ANeX000Zj3bQEQ=
+        b=xPlom1EY2fyyo5RBaDUfDh5oIxf/ZfD3mvj2vdh8RWJYsTqd9NCm79JCKEURSpFUI
+         K1EWlxL48FOKpzkCvkJvJKB501JZr8lOhpKQu5XYi0bk8N4T9pcDVqg9jj7Obka2pB
+         dxS491suJguHaraaLN+a8ubqO5wJPWcBPLaYqpk0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Paul Burton <paulburton@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        linux-mips@vger.kernel.org, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 205/475] mips: DEC: honor CONFIG_MIPS_FP_SUPPORT=n
-Date:   Thu, 14 Apr 2022 15:09:50 +0200
-Message-Id: <20220414110900.865986588@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 288/475] spi: tegra20: Use of_device_get_match_data()
+Date:   Thu, 14 Apr 2022 15:11:13 +0200
+Message-Id: <20220414110903.157658649@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -53,78 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-[ Upstream commit 97bf0395c226907e1a9b908511a35192bf1e09bb ]
+[ Upstream commit c9839acfcbe20ce43d363c2a9d0772472d9921c0 ]
 
-Include the DECstation interrupt handler in opting out of
-FPU support.
+Use of_device_get_match_data() to simplify the code.
 
-Fixes a linker error:
-
-mips-linux-ld: arch/mips/dec/int-handler.o: in function `fpu':
-(.text+0x148): undefined reference to `handle_fpe_int'
-
-Fixes: 183b40f992c8 ("MIPS: Allow FP support to be disabled")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Paul Burton <paulburton@kernel.org>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Maciej W. Rozycki <macro@orcam.me.uk>
-Cc: linux-mips@vger.kernel.org
-Acked-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Link: https://lore.kernel.org/r/20220315023138.2118293-1-chi.minghao@zte.com.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/dec/int-handler.S | 6 +++---
- arch/mips/dec/setup.c       | 3 ++-
- 2 files changed, 5 insertions(+), 4 deletions(-)
+ drivers/spi/spi-tegra20-slink.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/arch/mips/dec/int-handler.S b/arch/mips/dec/int-handler.S
-index a25ef822e725..5ed38e618019 100644
---- a/arch/mips/dec/int-handler.S
-+++ b/arch/mips/dec/int-handler.S
-@@ -131,7 +131,7 @@
- 		 */
- 		mfc0	t0,CP0_CAUSE		# get pending interrupts
- 		mfc0	t1,CP0_STATUS
--#ifdef CONFIG_32BIT
-+#if defined(CONFIG_32BIT) && defined(CONFIG_MIPS_FP_SUPPORT)
- 		lw	t2,cpu_fpu_mask
- #endif
- 		andi	t0,ST0_IM		# CAUSE.CE may be non-zero!
-@@ -139,7 +139,7 @@
+diff --git a/drivers/spi/spi-tegra20-slink.c b/drivers/spi/spi-tegra20-slink.c
+index 9b59539c8735..e6b12f78c8f0 100644
+--- a/drivers/spi/spi-tegra20-slink.c
++++ b/drivers/spi/spi-tegra20-slink.c
+@@ -1011,14 +1011,8 @@ static int tegra_slink_probe(struct platform_device *pdev)
+ 	struct resource		*r;
+ 	int ret, spi_irq;
+ 	const struct tegra_slink_chip_data *cdata = NULL;
+-	const struct of_device_id *match;
  
- 		beqz	t0,spurious
+-	match = of_match_device(tegra_slink_of_match, &pdev->dev);
+-	if (!match) {
+-		dev_err(&pdev->dev, "Error: No device match found\n");
+-		return -ENODEV;
+-	}
+-	cdata = match->data;
++	cdata = of_device_get_match_data(&pdev->dev);
  
--#ifdef CONFIG_32BIT
-+#if defined(CONFIG_32BIT) && defined(CONFIG_MIPS_FP_SUPPORT)
- 		 and	t2,t0
- 		bnez	t2,fpu			# handle FPU immediately
- #endif
-@@ -280,7 +280,7 @@ handle_it:
- 		j	dec_irq_dispatch
- 		 nop
- 
--#ifdef CONFIG_32BIT
-+#if defined(CONFIG_32BIT) && defined(CONFIG_MIPS_FP_SUPPORT)
- fpu:
- 		lw	t0,fpu_kstat_irq
- 		nop
-diff --git a/arch/mips/dec/setup.c b/arch/mips/dec/setup.c
-index 1fc8dffa8d1d..649b50ae5b1e 100644
---- a/arch/mips/dec/setup.c
-+++ b/arch/mips/dec/setup.c
-@@ -766,7 +766,8 @@ void __init arch_init_irq(void)
- 		dec_interrupt[DEC_IRQ_HALT] = -1;
- 
- 	/* Register board interrupts: FPU and cascade. */
--	if (dec_interrupt[DEC_IRQ_FPU] >= 0 && cpu_has_fpu) {
-+	if (IS_ENABLED(CONFIG_MIPS_FP_SUPPORT) &&
-+	    dec_interrupt[DEC_IRQ_FPU] >= 0 && cpu_has_fpu) {
- 		struct irq_desc *desc_fpu;
- 		int irq_fpu;
- 
+ 	master = spi_alloc_master(&pdev->dev, sizeof(*tspi));
+ 	if (!master) {
 -- 
 2.34.1
 
