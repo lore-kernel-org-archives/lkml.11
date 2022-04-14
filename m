@@ -2,73 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15185C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:23:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FABAC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:24:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237966AbiDNOZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
+        id S229821AbiDNOZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344028AbiDNNje (ORCPT
+        with ESMTP id S1344135AbiDNNj7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:39:34 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F9F1C6;
-        Thu, 14 Apr 2022 06:36:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=RtIzITOXCt3rbCs8YTplU39bL8FmkvrPa1PNdf4xnRY=; b=xshPJ5m+QfE5fHJ7T9haO0gQ7T
-        JbmiQfLDpbtq87bR7pK0TO413MUY3GiV4wntUqdwULUMs4qLLXv1BcK21008nkITGLC2cSNbaMIJ0
-        IitKrReeV4RwaL8hGwc6JZ/qVR3HQF8MiUJ17XvdGNrMEa0DHZWbyk4P9Y3Xz/nBcIMk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nezeL-00FpgQ-Bm; Thu, 14 Apr 2022 15:36:41 +0200
-Date:   Thu, 14 Apr 2022 15:36:41 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Wells Lu <wellslutw@gmail.com>, davem@davemloft.net,
-        robh+dt@kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        p.zabel@pengutronix.de, pabeni@redhat.com, krzk+dt@kernel.org,
-        roopa@nvidia.com, edumazet@google.com, wells.lu@sunplus.com
-Subject: Re: [PATCH net-next v8 2/2] net: ethernet: Add driver for Sunplus
- SP7021
-Message-ID: <Ylgjab6qLsrzKZKc@lunn.ch>
-References: <1649817118-14667-1-git-send-email-wellslutw@gmail.com>
- <1649817118-14667-3-git-send-email-wellslutw@gmail.com>
- <20220414141825.50eb8b6a@kernel.org>
+        Thu, 14 Apr 2022 09:39:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032271C6;
+        Thu, 14 Apr 2022 06:37:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9176661BA7;
+        Thu, 14 Apr 2022 13:37:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C9FEC385A5;
+        Thu, 14 Apr 2022 13:37:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649943454;
+        bh=RVi13gWGlxcg1glYZ5+Cq82yuOBQqoj/YktoICuySIM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CbfffoWByKfpijOFh5OTCFcm27TfJ+o+yxqGdBBcD5SUQ1w6QJmd8cCe6lIbCprXR
+         82aVOcDMbrTcuYzqdqgYi3QiJvv9A2tuKxALyY8qAuMrotjvd/VGo5IcNS/NIdNNpL
+         i3abac2d5AbOOniCXuyi1yWdoZ9CgmZALUh4xkFY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Frank Wunderlich <frank-w@public-files.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 134/475] arm64: dts: broadcom: Fix sata nodename
+Date:   Thu, 14 Apr 2022 15:08:39 +0200
+Message-Id: <20220414110858.899667983@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
+References: <20220414110855.141582785@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220414141825.50eb8b6a@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > +		/* Get mac-address from nvmem. */
-> > +		ret = spl2sw_nvmem_get_mac_address(&pdev->dev, port_np, mac_addr);
-> > +		if (ret) {
-> > +			dev_info(&pdev->dev, "Generate a random mac address!\n");
-> > +
-> > +			/* Generate a mac address using OUI of Sunplus Technology
-> > +			 * and random controller number.
-> > +			 */
-> > +			mac_addr[0] = 0xfc; /* OUI of Sunplus: fc:4b:bc */
-> > +			mac_addr[1] = 0x4b;
-> > +			mac_addr[2] = 0xbc;
-> > +			mac_addr[3] = get_random_int() % 256;
-> > +			mac_addr[4] = get_random_int() % 256;
-> > +			mac_addr[5] = get_random_int() % 256;
-> 
-> I don't think you can do that. Either you use your OUI and assign the
-> address at manufacture or you must use a locally administered address.
-> And if locally administered address is used it better be completely
-> random to lower the probability of collision to absolute minimum.
+From: Frank Wunderlich <frank-w@public-files.de>
 
-I commented about that in an earlier version of these patches. We
-probably need a quote from the 802.1 or 802.3 which says this is O.K.
+[ Upstream commit 55927cb44db43a57699fa652e2437a91620385dc ]
 
-	 Andrew
+After converting ahci-platform txt binding to yaml nodename is reported
+as not matching the standard:
+
+arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dt.yaml:
+ahci@663f2000: $nodename:0: 'ahci@663f2000' does not match '^sata(@.*)?$'
+
+Fix it to match binding.
+
+Fixes: ac9aae00f0fc ("arm64: dts: Add SATA3 AHCI and SATA3 PHY DT nodes for NS2")
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi b/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi
+index 39802066232e..edc1a8a4c4bc 100644
+--- a/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi
++++ b/arch/arm64/boot/dts/broadcom/northstar2/ns2.dtsi
+@@ -687,7 +687,7 @@
+ 			};
+ 		};
+ 
+-		sata: ahci@663f2000 {
++		sata: sata@663f2000 {
+ 			compatible = "brcm,iproc-ahci", "generic-ahci";
+ 			reg = <0x663f2000 0x1000>;
+ 			dma-coherent;
+-- 
+2.34.1
+
+
+
