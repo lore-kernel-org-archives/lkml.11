@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50692C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A0AC4707E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346475AbiDNN5R (ORCPT
+        id S1346460AbiDNN5M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
+        Thu, 14 Apr 2022 09:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344222AbiDNNbN (ORCPT
+        with ESMTP id S244857AbiDNN2L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:31:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AF5E6;
-        Thu, 14 Apr 2022 06:28:48 -0700 (PDT)
+        Thu, 14 Apr 2022 09:28:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20112A6E19;
+        Thu, 14 Apr 2022 06:21:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A58F7B82986;
-        Thu, 14 Apr 2022 13:28:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7C00C385A5;
-        Thu, 14 Apr 2022 13:28:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B304760BAF;
+        Thu, 14 Apr 2022 13:21:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C75EFC385A1;
+        Thu, 14 Apr 2022 13:21:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942926;
-        bh=PA6WpmV+SdEPk0yvNC0B4dfwcRXF6mvrHwXn3QEiDr4=;
+        s=korg; t=1649942463;
+        bh=h6oQkcpqY19ND5YQnkdbuJPchEgvOcBITGhiT6Rppqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CJq5RY/zleBj5mxuAXiqoVW7RirZmgqjFFxSt5ug6Oc1ttRaKlqQ9nO4iwjM9Kcts
-         xoN+XGpeqkZNbuoR0e2WXzRI5TYWiHZ+O+BIBEMy3jfxDypJXOaRo3sTVFWPTwHVXA
-         DLpwgXW6uI5D+4Rdp3D7s63LdcwHTTpfd/hJ46nE=
+        b=L/tbZaKNEPHWHhygz0NU94Ts5LE06bDoViE+6HDqDlJDYr/aX4hEpRA1U1Eyzm8rJ
+         m0W8rdw/6tT+ocY744FWoP2Gh/FDxqmItBwny/6/3Zk5e0pckaI+Q7yH9VbIRNb59g
+         nOYdRT5TzEIEOwYPl5dChqhj5f9XdCwcjJQLOVI4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jamie Bainbridge <jamie.bainbridge@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 310/338] qede: confirm skb is allocated before using
-Date:   Thu, 14 Apr 2022 15:13:33 +0200
-Message-Id: <20220414110847.704440823@linuxfoundation.org>
+Subject: [PATCH 4.19 144/338] power: supply: wm8350-power: Add missing free in free_charger_irq
+Date:   Thu, 14 Apr 2022 15:10:47 +0200
+Message-Id: <20220414110843.004518241@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,42 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 4e910dbe36508654a896d5735b318c0b88172570 ]
+[ Upstream commit 6dee930f6f6776d1e5a7edf542c6863b47d9f078 ]
 
-qede_build_skb() assumes build_skb() always works and goes straight
-to skb_reserve(). However, build_skb() can fail under memory pressure.
-This results in a kernel panic because the skb to reserve is NULL.
+In free_charger_irq(), there is no free for 'WM8350_IRQ_CHG_FAST_RDY'.
+Therefore, it should be better to add it in order to avoid the memory leak.
 
-Add a check in case build_skb() failed to allocate and return NULL.
-
-The NULL return is handled correctly in callers to qede_build_skb().
-
-Fixes: 8a8633978b842 ("qede: Add build_skb() support.")
-Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 14431aa0c5a4 ("power_supply: Add support for WM8350 PMU")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qede/qede_fp.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/power/supply/wm8350_power.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-index 9d5c2e31dfe9..6a1a7d37dfd7 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-@@ -731,6 +731,9 @@ qede_build_skb(struct qede_rx_queue *rxq,
- 	buf = page_address(bd->data) + bd->page_offset;
- 	skb = build_skb(buf, rxq->rx_buf_seg_size);
- 
-+	if (unlikely(!skb))
-+		return NULL;
-+
- 	skb_reserve(skb, pad);
- 	skb_put(skb, len);
- 
+diff --git a/drivers/power/supply/wm8350_power.c b/drivers/power/supply/wm8350_power.c
+index 33683b8477d2..4fa42d4a8a40 100644
+--- a/drivers/power/supply/wm8350_power.c
++++ b/drivers/power/supply/wm8350_power.c
+@@ -527,6 +527,7 @@ static void free_charger_irq(struct wm8350 *wm8350)
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_TO, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_END, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_START, wm8350);
++	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85, wm8350);
 -- 
-2.35.1
+2.34.1
 
 
 
