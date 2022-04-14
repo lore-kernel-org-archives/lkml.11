@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 209F6C3527A
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E31DC35296
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354923AbiDNOzT (ORCPT
+        id S1355159AbiDNO5q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43442 "EHLO
+        Thu, 14 Apr 2022 10:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344562AbiDNNuf (ORCPT
+        with ESMTP id S1345732AbiDNNyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:50:35 -0400
+        Thu, 14 Apr 2022 09:54:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B4717A8E;
-        Thu, 14 Apr 2022 06:44:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FAFAFACC;
+        Thu, 14 Apr 2022 06:45:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9DA461D29;
-        Thu, 14 Apr 2022 13:44:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 006EAC385A5;
-        Thu, 14 Apr 2022 13:44:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 939BB61D68;
+        Thu, 14 Apr 2022 13:45:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E28DC385A1;
+        Thu, 14 Apr 2022 13:45:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943862;
-        bh=MQ80TICDoU0k4gTgTnLQ3uHrBBGBTGfzc7zcAeNUXYA=;
+        s=korg; t=1649943912;
+        bh=T9M5uLIrosTZ0Ku7oTi//0OVu/Iky/OpEzhLMYGx4yA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OCYIBJpItyTWwSvroJAenFN3BzcoMo8hFudHbHBWTTNMVMXB0fSn3Sh1KIvdb+qAi
-         +/YRImVzdVUVUChh4bT4Hwf1MROso7tDpn92FW0ZjX3NRtCUGVxe7KrUNrlYr4QWGT
-         GhG+v4g4L0UwdPesTBE0KaI4/MOzvPQzkUn4X7jo=
+        b=hSoX2oPBgjGTFaHhuu+xrgz1uA+SPW5l/UAgPCxxS4A6wJkAnHYXXJo0l4PDWXoEl
+         YgSscF1CrcqoOwVkAPi9NXKKMyjRhvTPjMdWiB+xl9cvSVZPCBkwrFPNELJppMcBXE
+         iYlfY1riugbqNsFDpaYGciwWeATiC3mQldBmgTDw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 268/475] qlcnic: dcb: default to returning -EOPNOTSUPP
-Date:   Thu, 14 Apr 2022 15:10:53 +0200
-Message-Id: <20220414110902.607129562@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Quinn Tran <qutran@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.4 326/475] scsi: qla2xxx: Reduce false trigger to login
+Date:   Thu, 14 Apr 2022 15:11:51 +0200
+Message-Id: <20220414110904.210717401@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,81 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Quinn Tran <qutran@marvell.com>
 
-[ Upstream commit 1521db37f0d42334a88e8ff28198a27d1ed5cd7b ]
+commit d2646eed7b19a206912f49101178cbbaa507256c upstream.
 
-Clang static analysis reports this issue
-qlcnic_dcb.c:382:10: warning: Assigned value is
-  garbage or undefined
-  mbx_out = *val;
-          ^ ~~~~
+While a session is in the middle of a relogin, a late RSCN can be delivered
+from switch. RSCN trigger fabric scan where the scan logic can trigger
+another session login while a login is in progress.  Reduce the extra
+trigger to prevent multiple logins to the same session.
 
-val is set in the qlcnic_dcb_query_hw_capability() wrapper.
-If there is no query_hw_capability op in dcp, success is
-returned without setting the val.
-
-For this and similar wrappers, return -EOPNOTSUPP.
-
-Fixes: 14d385b99059 ("qlcnic: dcb: Query adapter DCB capabilities.")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220310092604.22950-10-njavali@marvell.com
+Fixes: bee8b84686c4 ("scsi: qla2xxx: Reduce redundant ADISC command for RSCNs")
+Cc: stable@vger.kernel.org
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/scsi/qla2xxx/qla_init.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
-index f4aa6331b367..0a9d24e86715 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
-@@ -52,7 +52,7 @@ static inline int qlcnic_dcb_get_hw_capability(struct qlcnic_dcb *dcb)
- 	if (dcb && dcb->ops->get_hw_capability)
- 		return dcb->ops->get_hw_capability(dcb);
+--- a/drivers/scsi/qla2xxx/qla_init.c
++++ b/drivers/scsi/qla2xxx/qla_init.c
+@@ -1557,7 +1557,8 @@ int qla24xx_fcport_handle_login(struct s
+ 	    fcport->conflict, fcport->last_rscn_gen, fcport->rscn_gen,
+ 	    fcport->login_gen, fcport->loop_id, fcport->scan_state);
  
--	return 0;
-+	return -EOPNOTSUPP;
- }
+-	if (fcport->scan_state != QLA_FCPORT_FOUND)
++	if (fcport->scan_state != QLA_FCPORT_FOUND ||
++	    fcport->disc_state == DSC_DELETE_PEND)
+ 		return 0;
  
- static inline void qlcnic_dcb_free(struct qlcnic_dcb *dcb)
-@@ -66,7 +66,7 @@ static inline int qlcnic_dcb_attach(struct qlcnic_dcb *dcb)
- 	if (dcb && dcb->ops->attach)
- 		return dcb->ops->attach(dcb);
+ 	if ((fcport->loop_id != FC_NO_LOOP_ID) &&
+@@ -1578,7 +1579,7 @@ int qla24xx_fcport_handle_login(struct s
+ 	if (vha->host->active_mode == MODE_TARGET)
+ 		return 0;
  
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static inline int
-@@ -75,7 +75,7 @@ qlcnic_dcb_query_hw_capability(struct qlcnic_dcb *dcb, char *buf)
- 	if (dcb && dcb->ops->query_hw_capability)
- 		return dcb->ops->query_hw_capability(dcb, buf);
- 
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static inline void qlcnic_dcb_get_info(struct qlcnic_dcb *dcb)
-@@ -90,7 +90,7 @@ qlcnic_dcb_query_cee_param(struct qlcnic_dcb *dcb, char *buf, u8 type)
- 	if (dcb && dcb->ops->query_cee_param)
- 		return dcb->ops->query_cee_param(dcb, buf, type);
- 
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static inline int qlcnic_dcb_get_cee_cfg(struct qlcnic_dcb *dcb)
-@@ -98,7 +98,7 @@ static inline int qlcnic_dcb_get_cee_cfg(struct qlcnic_dcb *dcb)
- 	if (dcb && dcb->ops->get_cee_cfg)
- 		return dcb->ops->get_cee_cfg(dcb);
- 
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static inline void qlcnic_dcb_aen_handler(struct qlcnic_dcb *dcb, void *msg)
--- 
-2.34.1
-
+-	if (fcport->flags & FCF_ASYNC_SENT) {
++	if (fcport->flags & (FCF_ASYNC_SENT | FCF_ASYNC_ACTIVE)) {
+ 		set_bit(RELOGIN_NEEDED, &vha->dpc_flags);
+ 		return 0;
+ 	}
 
 
