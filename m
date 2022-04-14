@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:22:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 050F1C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244276AbiDNNY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38402 "EHLO
+        id S244206AbiDNNZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244182AbiDNNWg (ORCPT
+        with ESMTP id S243917AbiDNNWs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:22:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D309391557;
-        Thu, 14 Apr 2022 06:18:00 -0700 (PDT)
+        Thu, 14 Apr 2022 09:22:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11D292D3C;
+        Thu, 14 Apr 2022 06:18:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79E7FB8296D;
-        Thu, 14 Apr 2022 13:17:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2191C385A1;
-        Thu, 14 Apr 2022 13:17:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2C4EDCE299A;
+        Thu, 14 Apr 2022 13:18:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44B7EC385A1;
+        Thu, 14 Apr 2022 13:18:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942278;
-        bh=t7k5Z8xW/UXhospe3ujYiUIvZzorl8/rIkYHU2jTO18=;
+        s=korg; t=1649942286;
+        bh=Uqxnof3RFEl1J1o46VoieEP3ip3K4RrQUrNbZwZbXh0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C45dLFKo0wYKblzD7tEBgjpfGXmiZ5aWHQ5yRFmW0mmilEXt0/NlxNZtjRRDWaKQ4
-         soRlIe5zyW1Njhpfm0J8kYbPXr7F4Jw7N01gcXYUEVv+OL3XvZ20NkKRDej4azgUEX
-         yioEEN0S7vajQS582izZR1sImDRlXeML+RHsXL5A=
+        b=fw+ud/MyctVhdve5ZCuDN/8A4jbc07lHbvvlI7ye8tlPxpfvb6WBB4C4s+f+Bf/09
+         mI5ZM8l/6JoLvUWvFo87JCSKKtdJS+XIJXksEH34NTi5IxeA1JvH4gLZl7t6W0ir1S
+         7uJp62fIh0QJFjnMEJmdsgapl/1ExAIJC/+rdKnE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Ranquet <granquet@baylibre.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        stable@vger.kernel.org, Brandon Wyman <bjwyman@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 079/338] clocksource/drivers/timer-of: Check return value of of_iomap in timer_of_base_init()
-Date:   Thu, 14 Apr 2022 15:09:42 +0200
-Message-Id: <20220414110841.147921739@linuxfoundation.org>
+Subject: [PATCH 4.19 082/338] hwmon: (pmbus) Add Vin unit off handling
+Date:   Thu, 14 Apr 2022 15:09:45 +0200
+Message-Id: <20220414110841.234389178@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -49,42 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Ranquet <granquet@baylibre.com>
+From: Brandon Wyman <bjwyman@gmail.com>
 
-[ Upstream commit 4467b8bad2401794fb89a0268c8c8257180bf60f ]
+[ Upstream commit a5436af598779219b375c1977555c82def1c35d0 ]
 
-of_base->base can either be iomapped using of_io_request_and_map() or
-of_iomap() depending whether or not an of_base->name has been set.
+If there is an input undervoltage fault, reported in STATUS_INPUT
+command response, there is quite likely a "Unit Off For Insufficient
+Input Voltage" condition as well.
 
-Thus check of_base->base against NULL as of_iomap() does not return a
-PTR_ERR() in case of error.
+Add a constant for bit 3 of STATUS_INPUT. Update the Vin limit
+attributes to include both bits in the mask for clearing faults.
 
-Fixes: 9aea417afa6b ("clocksource/drivers/timer-of: Don't request the resource by name")
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-Link: https://lore.kernel.org/r/20220307172656.4836-1-granquet@baylibre.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+If an input undervoltage fault occurs, causing a unit off for
+insufficient input voltage, but the unit is off bit is not cleared, the
+STATUS_WORD will not be updated to clear the input fault condition.
+Including the unit is off bit (bit 3) allows for the input fault
+condition to completely clear.
+
+Signed-off-by: Brandon Wyman <bjwyman@gmail.com>
+Link: https://lore.kernel.org/r/20220317232123.2103592-1-bjwyman@gmail.com
+Fixes: b4ce237b7f7d3 ("hwmon: (pmbus) Introduce infrastructure to detect sensors and limit registers")
+[groeck: Dropped unnecessary ()]
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/timer-of.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/hwmon/pmbus/pmbus.h      | 1 +
+ drivers/hwmon/pmbus/pmbus_core.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clocksource/timer-of.c b/drivers/clocksource/timer-of.c
-index 6e2cb3693ed8..82bb0d39e8af 100644
---- a/drivers/clocksource/timer-of.c
-+++ b/drivers/clocksource/timer-of.c
-@@ -164,9 +164,9 @@ static __init int timer_of_base_init(struct device_node *np,
- 	of_base->base = of_base->name ?
- 		of_io_request_and_map(np, of_base->index, of_base->name) :
- 		of_iomap(np, of_base->index);
--	if (IS_ERR(of_base->base)) {
--		pr_err("Failed to iomap (%s)\n", of_base->name);
--		return PTR_ERR(of_base->base);
-+	if (IS_ERR_OR_NULL(of_base->base)) {
-+		pr_err("Failed to iomap (%s:%s)\n", np->name, of_base->name);
-+		return of_base->base ? PTR_ERR(of_base->base) : -ENOMEM;
- 	}
- 
- 	return 0;
+diff --git a/drivers/hwmon/pmbus/pmbus.h b/drivers/hwmon/pmbus/pmbus.h
+index 1d24397d36ec..9d731de852c6 100644
+--- a/drivers/hwmon/pmbus/pmbus.h
++++ b/drivers/hwmon/pmbus/pmbus.h
+@@ -291,6 +291,7 @@ enum pmbus_fan_mode { percent = 0, rpm };
+ /*
+  * STATUS_VOUT, STATUS_INPUT
+  */
++#define PB_VOLTAGE_VIN_OFF		BIT(3)
+ #define PB_VOLTAGE_UV_FAULT		BIT(4)
+ #define PB_VOLTAGE_UV_WARNING		BIT(5)
+ #define PB_VOLTAGE_OV_WARNING		BIT(6)
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index d822aeab333d..bef28e955953 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -1337,7 +1337,7 @@ static const struct pmbus_limit_attr vin_limit_attrs[] = {
+ 		.reg = PMBUS_VIN_UV_FAULT_LIMIT,
+ 		.attr = "lcrit",
+ 		.alarm = "lcrit_alarm",
+-		.sbit = PB_VOLTAGE_UV_FAULT,
++		.sbit = PB_VOLTAGE_UV_FAULT | PB_VOLTAGE_VIN_OFF,
+ 	}, {
+ 		.reg = PMBUS_VIN_OV_WARN_LIMIT,
+ 		.attr = "max",
 -- 
 2.34.1
 
