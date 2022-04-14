@@ -2,180 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC1AC47093
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC786C433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344844AbiDNNon (ORCPT
+        id S1344899AbiDNNou (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:44:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53500 "EHLO
+        Thu, 14 Apr 2022 09:44:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245676AbiDNN3O (ORCPT
+        with ESMTP id S245723AbiDNN3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:29:14 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BC4AFAC8
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 06:23:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649942614; x=1681478614;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=NO3sfIaXbtW/daMNfOs46Z/HBgbjixeiUp7yO1HtmUY=;
-  b=KFGglyIPytLZGwL1JCmMBRRLXXlryP27prpz/Nl9rq8Boa30+jCz6/dk
-   ceQvASQI7hhgZw9NUBRCtPMK6cnwHKFHdGknraQN02d/Y6ve4xNTD0O07
-   O5l6lRmMueggYq3JWrPZYUOZ5BhTBcp2nN43RC2jbIm7g1pfqRu4+Bcjd
-   igRS1GmeagiVHkzEnB+qsXc8RpR0F8+p+ofFS/t4C13pwRQUDCc2fNp3z
-   ubuwZMI0sXnKt+R2V9MXlkWNbG/HFgZU8iWrOBi+YTDLp2jSA/ZszGEyX
-   FCjur/iRBUCRgkm3z8Rev168ByERh8WUnQlQ+o313/+LH10vqbhlHsoGO
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="287982868"
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="287982868"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:23:33 -0700
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="508404605"
-Received: from aviljane-mobl.ger.corp.intel.com (HELO [10.249.254.86]) ([10.249.254.86])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:23:30 -0700
-Message-ID: <28042cc2-be62-eeb7-35a7-f2e33c43bad5@linux.intel.com>
-Date:   Thu, 14 Apr 2022 15:23:26 +0200
+        Thu, 14 Apr 2022 09:29:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB40AFAF3;
+        Thu, 14 Apr 2022 06:23:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BDE72B8296A;
+        Thu, 14 Apr 2022 13:23:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07FD1C385A5;
+        Thu, 14 Apr 2022 13:23:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649942635;
+        bh=pFdRCSOxzPhEsyQeL9XSfBzfcCUGhXyUbPzLbsmmzLI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Qlacw90RbzTBjgvF+IckQnTjaaB9rqJJTWcYpOXVeYZwrzdmBEyJRt7umx3hPHMDY
+         4jQdQl6B21v4pnaMMeWdGEUfsIr3iHIi8Kfs6DnjNVmksrbmlc3ffuyrk6QNEgCJR/
+         nlNE0qfkqSOo2mjGU7xIheVvu1E8YPo1JuYkYx3M=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Richard Schleich <rs@noreya.tech>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 207/338] ARM: dts: bcm2837: Add the missing L1/L2 cache information
+Date:   Thu, 14 Apr 2022 15:11:50 +0200
+Message-Id: <20220414110844.788321697@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
+References: <20220414110838.883074566@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 1/5] drm/i915: instantiate ttm ranger manager for
- stolen memory
-Content-Language: en-US
-To:     Robert Beckett <bob.beckett@collabora.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Matthew Auld <matthew.auld@intel.com>, linux-kernel@vger.kernel.org
-References: <20220412193817.2098308-1-bob.beckett@collabora.com>
- <20220412193817.2098308-2-bob.beckett@collabora.com>
-From:   =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
-        <thomas.hellstrom@linux.intel.com>
-In-Reply-To: <20220412193817.2098308-2-bob.beckett@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Richard Schleich <rs@noreya.tech>
 
-On 4/12/22 21:38, Robert Beckett wrote:
-> prepare for ttm based stolen region by using ttm range manager
-> as the resource manager for stolen region.
->
-> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+[ Upstream commit bdf8762da268d2a34abf517c36528413906e9cd5 ]
 
-LGTM.
+This patch fixes the kernel warning
+"cacheinfo: Unable to detect cache hierarchy for CPU 0"
+for the bcm2837 on newer kernel versions.
 
-Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Signed-off-by: Richard Schleich <rs@noreya.tech>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+[florian: Align and remove comments matching property values]
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm/boot/dts/bcm2837.dtsi | 49 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+
+diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
+index beb6c502dadc..bcad098a7fcc 100644
+--- a/arch/arm/boot/dts/bcm2837.dtsi
++++ b/arch/arm/boot/dts/bcm2837.dtsi
+@@ -38,12 +38,26 @@
+ 		#size-cells = <0>;
+ 		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
+ 
++		/* Source for d/i-cache-line-size and d/i-cache-sets
++		 * https://developer.arm.com/documentation/ddi0500/e/level-1-memory-system
++		 * /about-the-l1-memory-system?lang=en
++		 *
++		 * Source for d/i-cache-size
++		 * https://magpi.raspberrypi.com/articles/raspberry-pi-3-specs-benchmarks
++		 */
+ 		cpu0: cpu@0 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a53";
+ 			reg = <0>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000d8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
+@@ -52,6 +66,13 @@
+ 			reg = <1>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
+@@ -60,6 +81,13 @@
+ 			reg = <2>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000e8>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
+@@ -68,6 +96,27 @@
+ 			reg = <3>;
+ 			enable-method = "spin-table";
+ 			cpu-release-addr = <0x0 0x000000f0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>; // 32KiB(size)/64(line-size)=512ways/4-way set
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
++			next-level-cache = <&l2>;
++		};
++
++		/* Source for cache-line-size + cache-sets
++		 * https://developer.arm.com/documentation/ddi0500
++		 * /e/level-2-memory-system/about-the-l2-memory-system?lang=en
++		 * Source for cache-size
++		 * https://datasheets.raspberrypi.com/cm/cm1-and-cm3-datasheet.pdf
++		 */
++		l2: l2-cache0 {
++			compatible = "cache";
++			cache-size = <0x80000>;
++			cache-line-size = <64>;
++			cache-sets = <512>; // 512KiB(size)/64(line-size)=8192ways/16-way set
++			cache-level = <2>;
+ 		};
+ 	};
+ };
+-- 
+2.34.1
 
 
 
-
-> ---
->   drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c |  6 ++--
->   drivers/gpu/drm/i915/intel_region_ttm.c      | 31 +++++++++++++++-----
->   2 files changed, 27 insertions(+), 10 deletions(-)
->
-> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-> index a10716f4e717..358f8a1a30ce 100644
-> --- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-> +++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-> @@ -58,11 +58,13 @@ i915_ttm_region(struct ttm_device *bdev, int ttm_mem_type)
->   	struct drm_i915_private *i915 = container_of(bdev, typeof(*i915), bdev);
->   
->   	/* There's some room for optimization here... */
-> -	GEM_BUG_ON(ttm_mem_type != I915_PL_SYSTEM &&
-> -		   ttm_mem_type < I915_PL_LMEM0);
-> +	GEM_BUG_ON(ttm_mem_type == I915_PL_GGTT);
-> +
->   	if (ttm_mem_type == I915_PL_SYSTEM)
->   		return intel_memory_region_lookup(i915, INTEL_MEMORY_SYSTEM,
->   						  0);
-> +	if (ttm_mem_type == I915_PL_STOLEN)
-> +		return i915->mm.stolen_region;
->   
->   	return intel_memory_region_lookup(i915, INTEL_MEMORY_LOCAL,
->   					  ttm_mem_type - I915_PL_LMEM0);
-> diff --git a/drivers/gpu/drm/i915/intel_region_ttm.c b/drivers/gpu/drm/i915/intel_region_ttm.c
-> index 62ff77445b01..7d49ea72e33f 100644
-> --- a/drivers/gpu/drm/i915/intel_region_ttm.c
-> +++ b/drivers/gpu/drm/i915/intel_region_ttm.c
-> @@ -49,7 +49,7 @@ void intel_region_ttm_device_fini(struct drm_i915_private *dev_priv)
->   
->   /*
->    * Map the i915 memory regions to TTM memory types. We use the
-> - * driver-private types for now, reserving TTM_PL_VRAM for stolen
-> + * driver-private types for now, reserving I915_PL_STOLEN for stolen
->    * memory and TTM_PL_TT for GGTT use if decided to implement this.
->    */
->   int intel_region_to_ttm_type(const struct intel_memory_region *mem)
-> @@ -58,11 +58,17 @@ int intel_region_to_ttm_type(const struct intel_memory_region *mem)
->   
->   	GEM_BUG_ON(mem->type != INTEL_MEMORY_LOCAL &&
->   		   mem->type != INTEL_MEMORY_MOCK &&
-> -		   mem->type != INTEL_MEMORY_SYSTEM);
-> +		   mem->type != INTEL_MEMORY_SYSTEM &&
-> +		   mem->type != INTEL_MEMORY_STOLEN_SYSTEM &&
-> +		   mem->type != INTEL_MEMORY_STOLEN_LOCAL);
->   
->   	if (mem->type == INTEL_MEMORY_SYSTEM)
->   		return TTM_PL_SYSTEM;
->   
-> +	if (mem->type == INTEL_MEMORY_STOLEN_SYSTEM ||
-> +	    mem->type == INTEL_MEMORY_STOLEN_LOCAL)
-> +		return I915_PL_STOLEN;
-> +
->   	type = mem->instance + TTM_PL_PRIV;
->   	GEM_BUG_ON(type >= TTM_NUM_MEM_TYPES);
->   
-> @@ -86,10 +92,16 @@ int intel_region_ttm_init(struct intel_memory_region *mem)
->   	int mem_type = intel_region_to_ttm_type(mem);
->   	int ret;
->   
-> -	ret = i915_ttm_buddy_man_init(bdev, mem_type, false,
-> -				      resource_size(&mem->region),
-> -				      mem->io_size,
-> -				      mem->min_page_size, PAGE_SIZE);
-> +	if (mem_type == I915_PL_STOLEN) {
-> +		ret = ttm_range_man_init(bdev, mem_type, false,
-> +					 resource_size(&mem->region) >> PAGE_SHIFT);
-> +		mem->is_range_manager = true;
-> +	} else {
-> +		ret = i915_ttm_buddy_man_init(bdev, mem_type, false,
-> +					      resource_size(&mem->region),
-> +					      mem->io_size,
-> +					      mem->min_page_size, PAGE_SIZE);
-> +	}
->   	if (ret)
->   		return ret;
->   
-> @@ -109,6 +121,7 @@ int intel_region_ttm_init(struct intel_memory_region *mem)
->   int intel_region_ttm_fini(struct intel_memory_region *mem)
->   {
->   	struct ttm_resource_manager *man = mem->region_private;
-> +	int mem_type = intel_region_to_ttm_type(mem);
->   	int ret = -EBUSY;
->   	int count;
->   
-> @@ -139,8 +152,10 @@ int intel_region_ttm_fini(struct intel_memory_region *mem)
->   	if (ret || !man)
->   		return ret;
->   
-> -	ret = i915_ttm_buddy_man_fini(&mem->i915->bdev,
-> -				      intel_region_to_ttm_type(mem));
-> +	if (mem_type == I915_PL_STOLEN)
-> +		ret = ttm_range_man_fini(&mem->i915->bdev, mem_type);
-> +	else
-> +		ret = i915_ttm_buddy_man_fini(&mem->i915->bdev, mem_type);
->   	GEM_WARN_ON(ret);
->   	mem->region_private = NULL;
->   
