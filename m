@@ -2,68 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:01:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 236B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 12:02:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241481AbiDNMEM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 08:04:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
+        id S242957AbiDNMEW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 08:04:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242936AbiDNMD7 (ORCPT
+        with ESMTP id S235513AbiDNMEQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 08:03:59 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2928326DF
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 05:01:35 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KfJ2J1BHPzfYkt;
-        Thu, 14 Apr 2022 20:00:56 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 14 Apr
- 2022 20:01:33 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] mm/vmscan: fix comment for current_may_throttle
-Date:   Thu, 14 Apr 2022 20:02:02 +0800
-Message-ID: <20220414120202.30082-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Thu, 14 Apr 2022 08:04:16 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EEEF07;
+        Thu, 14 Apr 2022 05:01:51 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 857641F46212
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649937710;
+        bh=hntinxdWLlrL2MROk7epPzvGxJX7H67N4tzPW+gYQl0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=mv0MYWvdjdLKrGD1VZV7IR6HjKrbyOTQjAt2fyhRmkjFEAihBrH53L0WqwFARMOon
+         U4cdhfFqIsJmCgLnACP+wozzR0bECnxuNso1XMJEFq1L3dhfD+T6AVKG+2cz4RkyT3
+         jWy+oNWdkm1qC346EitXku2BiVXzsv2qoqfT/jOsiawieP4UitS2LXarPWgL76IZhV
+         ObYiKHTQMhmn4gmCfCNqNXPth2+Sd7rht3dtaTVW7hnuiXNXiIdRjAMcmmBSkTSruI
+         +842o5Vu+Kuk7oJxacUQ7ujRbWSuRzij13Dvy3i65x5PTN8nrjLs2nfkxO+8YrysKg
+         Rh5tV5bVN4nmg==
+Message-ID: <264463b6-c8cd-f106-7e53-b5b0ded07110@collabora.com>
+Date:   Thu, 14 Apr 2022 14:01:47 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] mt76: mt7915: make read-only array ppet16_ppet8_ru3_ru0
+ static const
+Content-Language: en-US
+To:     Colin Ian King <colin.i.king@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220414095007.294746-1-colin.i.king@gmail.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220414095007.294746-1-colin.i.king@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 6d6435811c19 ("remove bdi_congested() and wb_congested() and
-related functions"), there is no congested backing device check anymore.
-Correct the comment accordingly.
+Il 14/04/22 11:50, Colin Ian King ha scritto:
+> Don't populate the read-only array ppet16_ppet8_ru3_ru0 on the stack but
+> instead make it static const. Also makes the object code a little smaller.
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- mm/vmscan.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index d4a7d2bd276d..6f96cf1eacb2 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -2334,8 +2334,7 @@ static unsigned int move_pages_to_lru(struct lruvec *lruvec,
- /*
-  * If a kernel thread (such as nfsd for loop-back mounts) services
-  * a backing device by writing to the page cache it sets PF_LOCAL_THROTTLE.
-- * In that case we should only throttle if the backing device it is
-- * writing to is congested.  In other cases it is safe to throttle.
-+ * In that case we should not throttle it otherwise it is safe to do so.
-  */
- static int current_may_throttle(void)
- {
--- 
-2.23.0
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
