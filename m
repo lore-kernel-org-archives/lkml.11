@@ -2,94 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15589C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FB6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231665AbiDNN1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
+        id S244415AbiDNN11 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:27:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244237AbiDNNXo (ORCPT
+        with ESMTP id S244183AbiDNNXo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:23:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE5799EF4;
-        Thu, 14 Apr 2022 06:18:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E9E7B8296A;
-        Thu, 14 Apr 2022 13:18:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5B5AC385AA;
-        Thu, 14 Apr 2022 13:18:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942314;
-        bh=AUvEkxJgWYupdOylQTuil4pIBi8f/1REK1n0Gy1EdMs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W/fMjbMs2NnmHKevzDCFaH0mAD2GIww2CngtFOXD6jazm90udbruoHyZf17g1dUH2
-         jpr4XqH8bhL3cr7+5rV2ABFmyyctWJXApDgTtB+xXI6CleeDjhnvA8/k8KVx0hsCtq
-         i9vNz4OAydpbWReVznZsX+wyE/rY6k8GclSKvvlk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Nishanth Menon <nm@ti.com>, Dave Gerlach <d-gerlach@ti.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 091/338] soc: ti: wkup_m3_ipc: Fix IRQ check in wkup_m3_ipc_probe
-Date:   Thu, 14 Apr 2022 15:09:54 +0200
-Message-Id: <20220414110841.489144903@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
-References: <20220414110838.883074566@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E47F939ED;
+        Thu, 14 Apr 2022 06:18:33 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2eafabbc80aso54530987b3.11;
+        Thu, 14 Apr 2022 06:18:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=VSPSHGLNryKTOTOge0ylfTJKLHsA725QG3K5z7xv3vQ=;
+        b=mzWrWwMEQ3pI8mP8YATBmRidCAoh3CfJ3ZEoKRvU/hHhk+epGF0cWiBIe+gMTfRG7M
+         JLofzUCSt7FOvDvWoAd0Cz4EJjHM+vtgdfOyvRV1Df6lpRDHn+ycrgprZg3GPWuVWXw/
+         zDqLZHVkl55JdcERRPvuilaE0ghuLJhV3jYRHp7aQEazFf0h+AZb/OY0BNm7FFikyUh8
+         2OFyH+OSRjSojLe4FzHaaEfUxSsSGF/T8sQZ+6AjO1r5Tk6/4ba7mnJt19a5ITEXX7ms
+         Ig8C1xutmBlhR42x9LIgohdBjS8wRUNKcPCywc2WDCV893IRcfLphbHWbvkYOZtem/KC
+         UJ3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=VSPSHGLNryKTOTOge0ylfTJKLHsA725QG3K5z7xv3vQ=;
+        b=hzWdlTmEd4mD9a+12mm17fULW07cK/ocaZ5HT0C1WXqkwnEbIFCnuAitnyUvUZw7H4
+         n8yJxurUfntrDMV6XpHTpf1fKRM3ne3otu8CWupdxlYzBqtHcqjXKz2I3iCzoZV8SNFF
+         ZQHglEnBkPIEOFwwHK4m8SNyWpEE4kPht5Fjl8uGdS/tcHnqaMPuG67OPJrLNgvfjzHO
+         zW1Ux3cIpcjSaUU7APaZedK5J2bjXZ0fMElpzJeO8GyHpenrdtz3af5Gv1aSIGbPeRoM
+         ZhktCPP3aPS48YlbmxMKNAo3fHs8iKQWtTAC4urdjA0bFy1+OK68NY1m+WvfRas7L2Ed
+         Cj0Q==
+X-Gm-Message-State: AOAM531YT/l3FjiBMCQGt8urDFAm9ZIZMO8wcNZJhPzHzIqJCjZ/710+
+        7h8F7HWmLhhitqPRiE26GjNzu/r1RGHaz2RTH6mhr9USvyM=
+X-Google-Smtp-Source: ABdhPJw7JUk3PaMO3ZTIH6MHWMnYDMymlZdf02YIpUqHKqDgK9Ke78x/au9ULwW+2UgR4ORl9VvEyHq2/PIbd6B/AXk=
+X-Received: by 2002:a0d:d702:0:b0:2ef:32f7:b800 with SMTP id
+ z2-20020a0dd702000000b002ef32f7b800mr1937878ywd.482.1649942312435; Thu, 14
+ Apr 2022 06:18:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <9e12d806c5554b4ed18c644f71f6662fcf0d0516.1649813822.git.lhjeff911@gmail.com>
+ <fdb1e0a6-62f9-c0a3-c1db-8857087701a1@redhat.com>
+In-Reply-To: <fdb1e0a6-62f9-c0a3-c1db-8857087701a1@redhat.com>
+From:   =?UTF-8?B?6YOt5Yqb6LGq?= <lhjeff911@gmail.com>
+Date:   Thu, 14 Apr 2022 21:16:15 +0800
+Message-ID: <CAGcXWkzZex-XTEoq8H5mc+3Y2BH=cphdpH-815Y+TAq812K=8g@mail.gmail.com>
+Subject: Re: [PATCH] spi: remove spin_lock_irq in the irq procress
+To:     Tom Rix <trix@redhat.com>
+Cc:     Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?B?5ZGC6Iqz6aiwTHVXZWxscw==?= <wells.lu@sunplus.com>,
+        "lh.kuo" <lh.kuo@sunplus.com>, nathan@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+Hi Tom :
 
-[ Upstream commit c3d66a164c726cc3b072232d3b6d87575d194084 ]
-
-platform_get_irq() returns negative error number instead 0 on failure.
-And the doc of platform_get_irq() provides a usage example:
-
-    int irq = platform_get_irq(pdev, 0);
-    if (irq < 0)
-        return irq;
-
-Fix the check of return value to catch errors correctly.
-
-Fixes: cdd5de500b2c ("soc: ti: Add wkup_m3_ipc driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Acked-by: Dave Gerlach <d-gerlach@ti.com>
-Link: https://lore.kernel.org/r/20220114062840.16620-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/soc/ti/wkup_m3_ipc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/soc/ti/wkup_m3_ipc.c b/drivers/soc/ti/wkup_m3_ipc.c
-index c1fda6acb670..8358b97505db 100644
---- a/drivers/soc/ti/wkup_m3_ipc.c
-+++ b/drivers/soc/ti/wkup_m3_ipc.c
-@@ -454,9 +454,9 @@ static int wkup_m3_ipc_probe(struct platform_device *pdev)
- 	}
- 
- 	irq = platform_get_irq(pdev, 0);
--	if (!irq) {
-+	if (irq < 0) {
- 		dev_err(&pdev->dev, "no irq resource\n");
--		return -ENXIO;
-+		return irq;
- 	}
- 
- 	ret = devm_request_irq(dev, irq, wkup_m3_txev_handler,
--- 
-2.34.1
+    This SPI driver only handles one transfer at a time.
+That's why locks are not needed.
 
 
+Li-hao Kuo
 
+Tom Rix <trix@redhat.com> =E6=96=BC 2022=E5=B9=B44=E6=9C=8813=E6=97=A5 =E9=
+=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=887:45=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+>
+> On 4/12/22 6:38 PM, Li-hao Kuo wrote:
+> > - remove spin_lock_irq and spin_unlock_irq in the irq funciton
+>
+> function
+>
+> I was expecting a statement on why is the lock is not needed.
+>
+> Could you add one ?
+>
+> Tom
+>
+> >
+> > Signed-off-by: Li-hao Kuo <lhjeff911@gmail.com>
+> > ---
+> >   drivers/spi/spi-sunplus-sp7021.c | 4 +---
+> >   1 file changed, 1 insertion(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/spi/spi-sunplus-sp7021.c b/drivers/spi/spi-sunplus=
+-sp7021.c
+> > index f989f7b..120623c 100644
+> > --- a/drivers/spi/spi-sunplus-sp7021.c
+> > +++ b/drivers/spi/spi-sunplus-sp7021.c
+> > @@ -199,8 +199,6 @@ static irqreturn_t sp7021_spi_master_irq(int irq, v=
+oid *dev)
+> >       if (tx_len =3D=3D 0 && total_len =3D=3D 0)
+> >               return IRQ_NONE;
+> >
+> > -     spin_lock_irq(&pspim->lock);
+> > -
+> >       rx_cnt =3D FIELD_GET(SP7021_RX_CNT_MASK, fd_status);
+> >       if (fd_status & SP7021_RX_FULL_FLAG)
+> >               rx_cnt =3D pspim->data_unit;
+> > @@ -239,7 +237,7 @@ static irqreturn_t sp7021_spi_master_irq(int irq, v=
+oid *dev)
+> >
+> >       if (isrdone)
+> >               complete(&pspim->isr_done);
+> > -     spin_unlock_irq(&pspim->lock);
+> > +
+> >       return IRQ_HANDLED;
+> >   }
+> >
+>
