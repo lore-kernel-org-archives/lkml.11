@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2202C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64FF7C41535
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350072AbiDNOxk (ORCPT
+        id S1344942AbiDNOzr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:53:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54410 "EHLO
+        Thu, 14 Apr 2022 10:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345084AbiDNNpF (ORCPT
+        with ESMTP id S1344666AbiDNNwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3032C26577;
-        Thu, 14 Apr 2022 06:41:42 -0700 (PDT)
+        Thu, 14 Apr 2022 09:52:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938A7326DA;
+        Thu, 14 Apr 2022 06:44:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0B3961D68;
-        Thu, 14 Apr 2022 13:41:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEB3EC385A1;
-        Thu, 14 Apr 2022 13:41:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3593B82968;
+        Thu, 14 Apr 2022 13:44:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D73BC385A1;
+        Thu, 14 Apr 2022 13:44:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943701;
-        bh=/zL59KZRSsOPmiteEbeTcjJdAPvwMkypNSTyMN0PYOU=;
+        s=korg; t=1649943870;
+        bh=KJVM8lmmOWqWU325e4Gw2XlSrizB3+aH08ELkkUoQLE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GfmUTbAl9hSq5R+ue2rxgN83sKBa4ISNpoSjaoxUU764NoNTrC5aSrbuxV5UXGqh7
-         krTifu3lfHyFua9GGh/THBO5+dacshQYy9M8Kgab/SdtgeXJ74ZmlCQXUb55HAuCKl
-         LxDe3I0V+0ez46X7QYj4YIlzKAEUlibtSWRSczr0=
+        b=UnpwGGYzkfcWiKPfELpXe/mB4Y5pb336TF86L3mnP4QK2nq1j+T0cBs42rSS7DRSX
+         j9KR7bnNKahr9SkRgv5TrG1nxeSMxBMd7jktWDNxMmYd9BB/zNQga6XGdgMF/sf2O4
+         vtVr0jrwslTvUNQRy6XYRf4yVhs3racl2OWM3v6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        stable@vger.kernel.org, Sven Auhagen <sven.auhagen@voleatech.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 249/475] staging: mt7621-dts: fix LEDs and pinctrl on GB-PC1 devicetree
-Date:   Thu, 14 Apr 2022 15:10:34 +0200
-Message-Id: <20220414110902.080844065@linuxfoundation.org>
+Subject: [PATCH 5.4 261/475] netfilter: nf_conntrack_tcp: preserve liberal flag in tcp options
+Date:   Thu, 14 Apr 2022 15:10:46 +0200
+Message-Id: <20220414110902.413840811@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -51,134 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 6256e18686158fa49e019297f990f1c1817aabf1 ]
+[ Upstream commit f2dd495a8d589371289981d5ed33e6873df94ecc ]
 
-Fix LED and pinctrl definitions on the GB-PC1 devicetree. Refer to the
-schematics of the device for more information.
+Do not reset IP_CT_TCP_FLAG_BE_LIBERAL flag in out-of-sync scenarios
+coming before the TCP window tracking, otherwise such connections will
+fail in the window check.
 
-LED fixes:
-- Change GPIO6 LED label from system to power as GPIO6 is connected to
-PLED.
-- Add default-on default-trigger to power LED.
-- Change GPIO8 LED label from status to system as GPIO8 is connected to
-SYS_LED.
-- Add disk-activity default-trigger to system LED.
-- Switch to the color:function naming scheme.
-- Remove lan1 and lan2 LEDs as they don't exist.
+Update tcp_options() to leave this flag in place and add a new helper
+function to reset the tcp window state.
 
-Pinctrl fixes:
-- Claim state_default node under pinctrl node.
-- Change pinctrl0 node name to state-default.
-- Change gpio node name to gpio-pinmux to respect
-Documentation/devicetree/bindings/pinctrl/ralink,rt2880-pinmux.yaml.
-- Sort pin groups alphabetically.
+Based on patch from Sven Auhagen.
 
-Misc fixes:
-- Fix formatting.
-- Use the status value "okay".
-- Define hexadecimal addresses in lower case.
-- Make hexadecimal addresses for memory easier to read.
-
-Link: https://github.com/ngiger/GnuBee_Docs/blob/master/GB-PCx/Documents/GB-PC1_V1.0_Schematic.pdf
-Tested-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Link: https://lore.kernel.org/r/20220311090320.3068-1-arinc.unal@arinc9.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c4832c7bbc3f ("netfilter: nf_ct_tcp: improve out-of-sync situation in TCP tracking")
+Tested-by: Sven Auhagen <sven.auhagen@voleatech.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/mt7621-dts/gbpc1.dts | 40 +++++++++++++---------------
- 1 file changed, 18 insertions(+), 22 deletions(-)
+ net/netfilter/nf_conntrack_proto_tcp.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/mt7621-dts/gbpc1.dts b/drivers/staging/mt7621-dts/gbpc1.dts
-index 1fb560ff059c..1713283e60d4 100644
---- a/drivers/staging/mt7621-dts/gbpc1.dts
-+++ b/drivers/staging/mt7621-dts/gbpc1.dts
-@@ -11,7 +11,8 @@
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
+index 848b137151c2..b8cc3339a249 100644
+--- a/net/netfilter/nf_conntrack_proto_tcp.c
++++ b/net/netfilter/nf_conntrack_proto_tcp.c
+@@ -354,8 +354,8 @@ static void tcp_options(const struct sk_buff *skb,
+ 				 length, buff);
+ 	BUG_ON(ptr == NULL);
  
- 	memory@0 {
- 		device_type = "memory";
--		reg = <0x0 0x1c000000>, <0x20000000 0x4000000>;
-+		reg = <0x00000000 0x1c000000>,
-+		      <0x20000000 0x04000000>;
- 	};
+-	state->td_scale =
+-	state->flags = 0;
++	state->td_scale = 0;
++	state->flags &= IP_CT_TCP_FLAG_BE_LIBERAL;
  
- 	chosen {
-@@ -37,24 +38,16 @@
- 	gpio-leds {
- 		compatible = "gpio-leds";
+ 	while (length > 0) {
+ 		int opcode=*ptr++;
+@@ -840,6 +840,16 @@ static bool nf_conntrack_tcp_established(const struct nf_conn *ct)
+ 	       test_bit(IPS_ASSURED_BIT, &ct->status);
+ }
  
--		system {
--			label = "gb-pc1:green:system";
-+		power {
-+			label = "green:power";
- 			gpios = <&gpio 6 GPIO_ACTIVE_LOW>;
-+			linux,default-trigger = "default-on";
- 		};
- 
--		status {
--			label = "gb-pc1:green:status";
-+		system {
-+			label = "green:system";
- 			gpios = <&gpio 8 GPIO_ACTIVE_LOW>;
--		};
--
--		lan1 {
--			label = "gb-pc1:green:lan1";
--			gpios = <&gpio 24 GPIO_ACTIVE_LOW>;
--		};
--
--		lan2 {
--			label = "gb-pc1:green:lan2";
--			gpios = <&gpio 25 GPIO_ACTIVE_LOW>;
-+			linux,default-trigger = "disk-activity";
- 		};
- 	};
- };
-@@ -94,9 +87,8 @@
- 
- 		partition@50000 {
- 			label = "firmware";
--			reg = <0x50000 0x1FB0000>;
-+			reg = <0x50000 0x1fb0000>;
- 		};
--
- 	};
- };
- 
-@@ -118,9 +110,12 @@
- };
- 
- &pinctrl {
--	state_default: pinctrl0 {
--		default_gpio: gpio {
--			groups = "wdt", "rgmii2", "uart3";
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&state_default>;
++static void nf_ct_tcp_state_reset(struct ip_ct_tcp_state *state)
++{
++	state->td_end		= 0;
++	state->td_maxend	= 0;
++	state->td_maxwin	= 0;
++	state->td_maxack	= 0;
++	state->td_scale		= 0;
++	state->flags		&= IP_CT_TCP_FLAG_BE_LIBERAL;
++}
 +
-+	state_default: state-default {
-+		gpio-pinmux {
-+			groups = "rgmii2", "uart3", "wdt";
- 			function = "gpio";
- 		};
- 	};
-@@ -129,12 +124,13 @@
- &switch0 {
- 	ports {
- 		port@0 {
-+			status = "okay";
- 			label = "ethblack";
--			status = "ok";
- 		};
-+
- 		port@4 {
-+			status = "okay";
- 			label = "ethblue";
--			status = "ok";
- 		};
- 	};
- };
+ /* Returns verdict for packet, or -1 for invalid. */
+ int nf_conntrack_tcp_packet(struct nf_conn *ct,
+ 			    struct sk_buff *skb,
+@@ -946,8 +956,7 @@ int nf_conntrack_tcp_packet(struct nf_conn *ct,
+ 			ct->proto.tcp.last_flags &= ~IP_CT_EXP_CHALLENGE_ACK;
+ 			ct->proto.tcp.seen[ct->proto.tcp.last_dir].flags =
+ 				ct->proto.tcp.last_flags;
+-			memset(&ct->proto.tcp.seen[dir], 0,
+-			       sizeof(struct ip_ct_tcp_state));
++			nf_ct_tcp_state_reset(&ct->proto.tcp.seen[dir]);
+ 			break;
+ 		}
+ 		ct->proto.tcp.last_index = index;
 -- 
 2.34.1
 
