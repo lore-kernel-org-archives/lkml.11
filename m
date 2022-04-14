@@ -2,236 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 691B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94187C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 08:57:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241271AbiDNI7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 04:59:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41942 "EHLO
+        id S241286AbiDNI7w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 04:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232467AbiDNI7e (ORCPT
+        with ESMTP id S241279AbiDNI7l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 04:59:34 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB78A674F7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 01:57:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649926630; x=1681462630;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=tLaRkQDxia82zDYbjT8YtujxT1/TuK3a5kx+Pr2IB8w=;
-  b=m/PgyYMPEvZ9no5PIadxOUr3aqV4/F+T54GRXpNeMm0ni39FmpJLTFVC
-   b3hsK2txwsx5Dj53elItDngPry1W/xExKeEO16+Y4/cTB7ZAyyp1PVFnD
-   0VWWcOQVRpKWGhVsFxXf0PNz2njRMB+ocZL7HJ5kc3zef4gJ/u6oD5rvb
-   JrwLkHW3lw7q9trXlO9EdOyibiXnaNEQSZkv8ZzJ6SkSCtOkVzeHSsNeo
-   jItdyrxM6aDi6dEq6B7tKGWeF4UF1et8zLKDfXyuyf+eQ9jbCmX068P+2
-   epk4QP9b/2G94yctlS/pyHeBUg89F7B8Ic7vqPWHHS85p84+EK2NkRgHh
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262328459"
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="262328459"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 01:57:10 -0700
-X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="573682710"
-Received: from xikunjia-mobl1.ccr.corp.intel.com ([10.254.215.168])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 01:57:08 -0700
-Message-ID: <d330a8942933e7c0fd4ea35b2c96948cd034aae2.camel@intel.com>
-Subject: Re: [PATCH v2 1/5] mm: demotion: Set demotion list differently
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Jagdish Gediya <jvgediya@linux.ibm.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, aneesh.kumar@linux.ibm.com,
-        baolin.wang@linux.alibaba.com, dave.hansen@linux.intel.com
-Date:   Thu, 14 Apr 2022 16:57:04 +0800
-In-Reply-To: <YlffwGJg/RWCYja7@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
-References: <20220413092206.73974-1-jvgediya@linux.ibm.com>
-         <20220413092206.73974-2-jvgediya@linux.ibm.com>
-         <4288cbad49690d7c4eb2b1d705eea01221ab8328.camel@intel.com>
-         <YlffwGJg/RWCYja7@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Thu, 14 Apr 2022 04:59:41 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642BB689BF;
+        Thu, 14 Apr 2022 01:57:15 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id h15-20020a17090a054f00b001cb7cd2b11dso5045824pjf.5;
+        Thu, 14 Apr 2022 01:57:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PtdPy5iIEOQcZoHnDSw0hgLztC3cDH19YHNzNyg9apQ=;
+        b=aFbdo82vr3djW557YX6je9lvRJYsV5O/9ZQFrW0drz/4ggQWtg9Iuz7+UQHR0lH9rF
+         6LnGlpny3SYoWrV3yX7J7046VUhDDh+zLUh5/zCckRIMaQHmG4GRXcIBy4LDZX4AWoNr
+         AGxEM33cXxOcgZgnNTXgyAyp8jNOOBFvFSegc4N8XZdVHhdQ3ADwP+xpMag8fvl+IeCK
+         5hM1vVWFo4R9rgbDzB19j/ixYCCon/N6TaeqO0NjN55jkv5iet4zG/rbmxcMi+5qpkkZ
+         at2FScNr2JpdYO856a777+p7JqDba2j0Gt7Eyopi0uEzRauDXX3Sgt8U58+gV/ugY+TW
+         dh0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PtdPy5iIEOQcZoHnDSw0hgLztC3cDH19YHNzNyg9apQ=;
+        b=fZ2Co1ONbRcFBOcpjoVQhYP6yae2sgs7RaFyckkCgrdJXq3YLrNsPVF63EEWiMyaWQ
+         DSIDkrO4gCCCqFutYe1SPt24eXkol3RdBeSZeGyf0eWuctZCddJ0MTdW26FFm+sJC6zR
+         uwTCjanBbL2C2PdFcEGx6xBVbZAabs76cmFYroTCvCkpCuE7AkmW6MUGxzSBG6tKu/8Z
+         gQCcbC1EaFbNDGhDn//KBPdrltkBt3/cajOoWWasClqBhH6E1uNyAaDD4EsSzInxITEp
+         jbdZs7GZVb3kZcbxLg5zWMwesHfG5xzlhztr/Tz3ujYpAZQ/8FtGF3oxbE6CcGuoPlzz
+         ILAQ==
+X-Gm-Message-State: AOAM533BoPwot63p/oJXYCl5j4gHa6Efl8JuoCUEXYfQpsVgwA9gMUfA
+        qEqY6QG9fV4IM7Qf2aR15XQ=
+X-Google-Smtp-Source: ABdhPJwRBr22PhiEYJRK6ncnt221HNdSddHEQ2APA92Yamavz6QvRQN5vUnY1Wr2TERt85f6dwVdcg==
+X-Received: by 2002:a17:902:ced2:b0:158:85e5:4c8e with SMTP id d18-20020a170902ced200b0015885e54c8emr12707893plg.92.1649926634976;
+        Thu, 14 Apr 2022 01:57:14 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id 21-20020a630115000000b00382a0895661sm1320168pgb.11.2022.04.14.01.57.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 01:57:14 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     dmitry.torokhov@gmail.com
+Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] input: omap4-keypad: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Thu, 14 Apr 2022 08:57:10 +0000
+Message-Id: <20220414085710.2541867-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-04-14 at 14:18 +0530, Jagdish Gediya wrote:
-> On Thu, Apr 14, 2022 at 03:09:42PM +0800, ying.huang@intel.com wrote:
-> > On Wed, 2022-04-13 at 14:52 +0530, Jagdish Gediya wrote:
-> > > Sharing used_targets between multiple nodes in a single
-> > > pass limits some of the opportunities for demotion target
-> > > sharing.
-> > > 
-> > > Don't share the used targets between multiple nodes in a
-> > > single pass, instead accumulate all the used targets in
-> > > source nodes shared by all pass, and reset 'used_targets'
-> > > to source nodes while finding demotion targets for any new
-> > > node.
-> > > 
-> > > This results into some more opportunities to share demotion
-> > > targets between multiple source nodes, e.g. with below NUMA
-> > > topology, where node 0 & 1 are cpu + dram nodes, node 2 & 3
-> > > are equally slower memory only nodes, and node 4 is slowest
-> > > memory only node,
-> > > 
-> > > available: 5 nodes (0-4)
-> > > node 0 cpus: 0 1
-> > > node 0 size: n MB
-> > > node 0 free: n MB
-> > > node 1 cpus: 2 3
-> > > node 1 size: n MB
-> > > node 1 free: n MB
-> > > node 2 cpus:
-> > > node 2 size: n MB
-> > > node 2 free: n MB
-> > > node 3 cpus:
-> > > node 3 size: n MB
-> > > node 3 free: n MB
-> > > node 4 cpus:
-> > > node 4 size: n MB
-> > > node 4 free: n MB
-> > > node distances:
-> > > node   0   1   2   3   4
-> > >   0:  10  20  40  40  80
-> > >   1:  20  10  40  40  80
-> > >   2:  40  40  10  40  80
-> > >   3:  40  40  40  10  80
-> > >   4:  80  80  80  80  10
-> > > 
-> > > The existing implementation gives below demotion targets,
-> > > 
-> > > node    demotion_target
-> > >  0              3, 2
-> > >  1              4
-> > >  2              X
-> > >  3              X
-> > >  4              X
-> > > 
-> > > With this patch applied, below are the demotion targets,
-> > > 
-> > > node    demotion_target
-> > >  0              3, 2
-> > >  1              3, 2
-> > >  2              4
-> > >  3              4
-> > >  4              X
-> > > 
-> > > e.g. with below NUMA topology, where node 0, 1 & 2 are
-> > > cpu + dram nodes and node 3 is slow memory node,
-> > > 
-> > > available: 4 nodes (0-3)
-> > > node 0 cpus: 0 1
-> > > node 0 size: n MB
-> > > node 0 free: n MB
-> > > node 1 cpus: 2 3
-> > > node 1 size: n MB
-> > > node 1 free: n MB
-> > > node 2 cpus: 4 5
-> > > node 2 size: n MB
-> > > node 2 free: n MB
-> > > node 3 cpus:
-> > > node 3 size: n MB
-> > > node 3 free: n MB
-> > > node distances:
-> > > node   0   1   2   3
-> > >   0:  10  20  20  40
-> > >   1:  20  10  20  40
-> > >   2:  20  20  10  40
-> > >   3:  40  40  40  10
-> > > 
-> > > The existing implementation gives below demotion targets,
-> > > 
-> > > node    demotion_target
-> > >  0              3
-> > >  1              X
-> > >  2              X
-> > >  3              X
-> > > 
-> > > With this patch applied, below are the demotion targets,
-> > > 
-> > > node    demotion_target
-> > >  0              3
-> > >  1              3
-> > >  2              3
-> > >  3              X
-> > > 
-> > 
-> > With the [PATCH v1], you have describe the demotion order changes for
-> > the following system, I guess there's no change with [PATCH v2]?
-> 
-> Yes, there is no change with v2.
-> 
-> > With below NUMA topology, where node 0 & 2 are cpu + dram
-> > nodes and node 1 & 3 are slow memory nodes,
-> > 
-> > available: 4 nodes (0-3)
-> > node 0 cpus: 0 1
-> > node 0 size: n MB
-> > node 0 free: n MB
-> > node 1 cpus:
-> > node 1 size: n MB
-> > node 1 free: n MB
-> > node 2 cpus: 2 3
-> > node 2 size: n MB
-> > node 2 free: n MB
-> > node 3 cpus:
-> > node 3 size: n MB
-> > node 3 free: n MB
-> > node distances:
-> > node   0   1   2   3
-> >   0:  10  40  20  80
-> >   1:  40  10  80  80
-> >   2:  20  80  10  40
-> >   3:  80  80  40  10
-> > 
-> > And, what is the demotion order for the following system with [PATCH
-> > v2]?
-> > 
-> > Node 0 & 2 are cpu + dram nodes and node 1 are slow
-> > memory node near node 0,
-> > 
-> > available: 3 nodes (0-2)
-> > node 0 cpus: 0 1
-> > node 0 size: n MB
-> > node 0 free: n MB
-> > node 1 cpus:
-> > node 1 size: n MB
-> > node 1 free: n MB
-> > node 2 cpus: 2 3
-> > node 2 size: n MB
-> > node 2 free: n MB
-> > node distances:
-> > node   0   1   2
-> >   0:  10  40  20
-> >   1:  40  10  80
-> >   2:  20  80  10
-> 
-> node 1 is demotion target for both node 0 and node 2 with this patch.
-> node 1 is demotion target only for node 0 with existing implementation,
-> however if node 1 is near to node 2 instead of node 0, still existing
-> implementation will give node 1 as demotion target only for node 0 which
-> is not the correct behavior.
-> 
-> for both the scenario, with this patch applied, node 1 will be demotion
-> target for both 0 and 2.
-> 
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Sounds good!  Thanks.
+Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
+pm_runtime_put_noidle. This change is just to simplify the code, no
+actual functional changes.
 
-Acked-by: "Huang, Ying" <ying.huang@intel.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/input/keyboard/omap4-keypad.c | 21 +++++++--------------
+ 1 file changed, 7 insertions(+), 14 deletions(-)
 
-> > Best Regards,
-> > Huang, Ying
-> > 
-> > 
-> > [snip]
-> > 
-> > 
-> > 
-> Best regards,
-> Jagdish
+diff --git a/drivers/input/keyboard/omap4-keypad.c b/drivers/input/keyboard/omap4-keypad.c
+index 43375b38ee59..df6ab8006807 100644
+--- a/drivers/input/keyboard/omap4-keypad.c
++++ b/drivers/input/keyboard/omap4-keypad.c
+@@ -179,11 +179,9 @@ static irqreturn_t omap4_keypad_irq_thread_fn(int irq, void *dev_id)
+ 	int error;
+ 	u64 keys;
+ 
+-	error = pm_runtime_get_sync(dev);
+-	if (error < 0) {
+-		pm_runtime_put_noidle(dev);
++	error = pm_runtime_resume_and_get(dev);
++	if (error < 0)
+ 		return IRQ_NONE;
+-	}
+ 
+ 	low = kbd_readl(keypad_data, OMAP4_KBD_FULLCODE31_0);
+ 	high = kbd_readl(keypad_data, OMAP4_KBD_FULLCODE63_32);
+@@ -207,11 +205,9 @@ static int omap4_keypad_open(struct input_dev *input)
+ 	struct device *dev = input->dev.parent;
+ 	int error;
+ 
+-	error = pm_runtime_get_sync(dev);
+-	if (error < 0) {
+-		pm_runtime_put_noidle(dev);
++	error = pm_runtime_resume_and_get(dev);
++	if (error < 0)
+ 		return error;
+-	}
+ 
+ 	disable_irq(keypad_data->irq);
+ 
+@@ -254,9 +250,7 @@ static void omap4_keypad_close(struct input_dev *input)
+ 	struct device *dev = input->dev.parent;
+ 	int error;
+ 
+-	error = pm_runtime_get_sync(dev);
+-	if (error < 0)
+-		pm_runtime_put_noidle(dev);
++	error = pm_runtime_resume_and_get(dev);
+ 
+ 	disable_irq(keypad_data->irq);
+ 	omap4_keypad_stop(keypad_data);
+@@ -392,10 +386,9 @@ static int omap4_keypad_probe(struct platform_device *pdev)
+ 	 * Enable clocks for the keypad module so that we can read
+ 	 * revision register.
+ 	 */
+-	error = pm_runtime_get_sync(dev);
++	error = pm_runtime_resume_and_get(dev);
+ 	if (error) {
+-		dev_err(dev, "pm_runtime_get_sync() failed\n");
+-		pm_runtime_put_noidle(dev);
++		dev_err(dev, "pm_runtime_resume_and_get() failed\n");
+ 		return error;
+ 	}
+ 
+-- 
+2.25.1
 
 
