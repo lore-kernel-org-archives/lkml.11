@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B675C35296
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B5EC35280
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 15:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354304AbiDNPSR (ORCPT
+        id S1353879AbiDNPSG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 11:18:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43274 "EHLO
+        Thu, 14 Apr 2022 11:18:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347731AbiDNN7a (ORCPT
+        with ESMTP id S1347729AbiDNN7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Apr 2022 09:59:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A05BCB59;
-        Thu, 14 Apr 2022 06:52:17 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A48BCB5A;
+        Thu, 14 Apr 2022 06:52:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 748A0B82997;
-        Thu, 14 Apr 2022 13:52:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB86AC385A1;
-        Thu, 14 Apr 2022 13:52:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EA1261E31;
+        Thu, 14 Apr 2022 13:52:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C362C385A5;
+        Thu, 14 Apr 2022 13:52:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649944335;
-        bh=f8xC2Rlv95bZARN2qMM9E+pHTgWfjbfKBlg/2vCQ0m8=;
+        s=korg; t=1649944337;
+        bh=/zLnqoUMxEH8yHfbu0ADd7ZyjFPhSQM7COh6dcT7lCI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fyaur+a5WBbAULw2QSx0ITUuxuj9DM9Y0fgErV8mvg2qehk/KViJ9e9as3GjhwTqV
-         rkM8aMNEnyGmNICondq9hKzSqXQqxc/gcGW9YQAH+vHlCMeI9WbNjnog2hBOKruP13
-         KNkydLqrFl3XuNStvA1EIfR3cpqwmIcvZHJJPSqo=
+        b=YEkFRM7ze25Npap6J0sH/IweokLpqmAORWqPxtNY7Yppey87AIU+yTfthK40lkc17
+         lottMsPn2hbEExYvFYj0h6Z6cK3ceLxeJsH1XKvIal7BYztO2TXJ7JwyiDQu56N1S7
+         7REIN7YrWR2a32Ub+/JGRcMPazlViL5CEBSicngs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Arthur Fabre <afabre@cloudflare.com>,
+        stable@vger.kernel.org, Lv Yunlong <lyl2019@mail.ustc.edu.cn>,
+        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 439/475] bpf: Support dual-stack sockets in bpf_tcp_check_syncookie
-Date:   Thu, 14 Apr 2022 15:13:44 +0200
-Message-Id: <20220414110907.348077408@linuxfoundation.org>
+Subject: [PATCH 5.4 440/475] drbd: Fix five use after free bugs in get_initial_state
+Date:   Thu, 14 Apr 2022 15:13:45 +0200
+Message-Id: <20220414110907.375047644@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,84 +51,339 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
 
-[ Upstream commit 2e8702cc0cfa1080f29fd64003c00a3e24ac38de ]
+[ Upstream commit aadb22ba2f656581b2f733deb3a467c48cc618f6 ]
 
-bpf_tcp_gen_syncookie looks at the IP version in the IP header and
-validates the address family of the socket. It supports IPv4 packets in
-AF_INET6 dual-stack sockets.
+In get_initial_state, it calls notify_initial_state_done(skb,..) if
+cb->args[5]==1. If genlmsg_put() failed in notify_initial_state_done(),
+the skb will be freed by nlmsg_free(skb).
+Then get_initial_state will goto out and the freed skb will be used by
+return value skb->len, which is a uaf bug.
 
-On the other hand, bpf_tcp_check_syncookie looks only at the address
-family of the socket, ignoring the real IP version in headers, and
-validates only the packet size. This implementation has some drawbacks:
+What's worse, the same problem goes even further: skb can also be
+freed in the notify_*_state_change -> notify_*_state calls below.
+Thus 4 additional uaf bugs happened.
 
-1. Packets are not validated properly, allowing a BPF program to trick
-   bpf_tcp_check_syncookie into handling an IPv6 packet on an IPv4
-   socket.
+My patch lets the problem callee functions: notify_initial_state_done
+and notify_*_state_change return an error code if errors happen.
+So that the error codes could be propagated and the uaf bugs can be avoid.
 
-2. Dual-stack sockets fail the checks on IPv4 packets. IPv4 clients end
-   up receiving a SYNACK with the cookie, but the following ACK gets
-   dropped.
+v2 reports a compilation warning. This v3 fixed this warning and built
+successfully in my local environment with no additional warnings.
+v2: https://lore.kernel.org/patchwork/patch/1435218/
 
-This patch fixes these issues by changing the checks in
-bpf_tcp_check_syncookie to match the ones in bpf_tcp_gen_syncookie. IP
-version from the header is taken into account, and it is validated
-properly with address family.
-
-Fixes: 399040847084 ("bpf: add helper to check for a valid SYN cookie")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Acked-by: Arthur Fabre <afabre@cloudflare.com>
-Link: https://lore.kernel.org/bpf/20220406124113.2795730-1-maximmi@nvidia.com
+Fixes: a29728463b254 ("drbd: Backport the "events2" command")
+Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ drivers/block/drbd/drbd_int.h          |  8 ++---
+ drivers/block/drbd/drbd_nl.c           | 41 ++++++++++++++++----------
+ drivers/block/drbd/drbd_state.c        | 18 +++++------
+ drivers/block/drbd/drbd_state_change.h |  8 ++---
+ 4 files changed, 42 insertions(+), 33 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 54c5e3c379f6..e16b2b5cda98 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -5824,24 +5824,33 @@ BPF_CALL_5(bpf_tcp_check_syncookie, struct sock *, sk, void *, iph, u32, iph_len
- 	if (!th->ack || th->rst || th->syn)
- 		return -ENOENT;
+diff --git a/drivers/block/drbd/drbd_int.h b/drivers/block/drbd/drbd_int.h
+index ddbf56014c51..6da7f5749a7c 100644
+--- a/drivers/block/drbd/drbd_int.h
++++ b/drivers/block/drbd/drbd_int.h
+@@ -1673,22 +1673,22 @@ struct sib_info {
+ };
+ void drbd_bcast_event(struct drbd_device *device, const struct sib_info *sib);
  
-+	if (unlikely(iph_len < sizeof(struct iphdr)))
-+		return -EINVAL;
-+
- 	if (tcp_synq_no_recent_overflow(sk))
- 		return -ENOENT;
+-extern void notify_resource_state(struct sk_buff *,
++extern int notify_resource_state(struct sk_buff *,
+ 				  unsigned int,
+ 				  struct drbd_resource *,
+ 				  struct resource_info *,
+ 				  enum drbd_notification_type);
+-extern void notify_device_state(struct sk_buff *,
++extern int notify_device_state(struct sk_buff *,
+ 				unsigned int,
+ 				struct drbd_device *,
+ 				struct device_info *,
+ 				enum drbd_notification_type);
+-extern void notify_connection_state(struct sk_buff *,
++extern int notify_connection_state(struct sk_buff *,
+ 				    unsigned int,
+ 				    struct drbd_connection *,
+ 				    struct connection_info *,
+ 				    enum drbd_notification_type);
+-extern void notify_peer_device_state(struct sk_buff *,
++extern int notify_peer_device_state(struct sk_buff *,
+ 				     unsigned int,
+ 				     struct drbd_peer_device *,
+ 				     struct peer_device_info *,
+diff --git a/drivers/block/drbd/drbd_nl.c b/drivers/block/drbd/drbd_nl.c
+index 5d52a2d32155..bfb00d3b091f 100644
+--- a/drivers/block/drbd/drbd_nl.c
++++ b/drivers/block/drbd/drbd_nl.c
+@@ -4630,7 +4630,7 @@ static int nla_put_notification_header(struct sk_buff *msg,
+ 	return drbd_notification_header_to_skb(msg, &nh, true);
+ }
  
- 	cookie = ntohl(th->ack_seq) - 1;
+-void notify_resource_state(struct sk_buff *skb,
++int notify_resource_state(struct sk_buff *skb,
+ 			   unsigned int seq,
+ 			   struct drbd_resource *resource,
+ 			   struct resource_info *resource_info,
+@@ -4672,16 +4672,17 @@ void notify_resource_state(struct sk_buff *skb,
+ 		if (err && err != -ESRCH)
+ 			goto failed;
+ 	}
+-	return;
++	return 0;
  
--	switch (sk->sk_family) {
--	case AF_INET:
--		if (unlikely(iph_len < sizeof(struct iphdr)))
-+	/* Both struct iphdr and struct ipv6hdr have the version field at the
-+	 * same offset so we can cast to the shorter header (struct iphdr).
-+	 */
-+	switch (((struct iphdr *)iph)->version) {
-+	case 4:
-+		if (sk->sk_family == AF_INET6 && ipv6_only_sock(sk))
- 			return -EINVAL;
+ nla_put_failure:
+ 	nlmsg_free(skb);
+ failed:
+ 	drbd_err(resource, "Error %d while broadcasting event. Event seq:%u\n",
+ 			err, seq);
++	return err;
+ }
  
- 		ret = __cookie_v4_check((struct iphdr *)iph, th, cookie);
- 		break;
+-void notify_device_state(struct sk_buff *skb,
++int notify_device_state(struct sk_buff *skb,
+ 			 unsigned int seq,
+ 			 struct drbd_device *device,
+ 			 struct device_info *device_info,
+@@ -4721,16 +4722,17 @@ void notify_device_state(struct sk_buff *skb,
+ 		if (err && err != -ESRCH)
+ 			goto failed;
+ 	}
+-	return;
++	return 0;
  
- #if IS_BUILTIN(CONFIG_IPV6)
--	case AF_INET6:
-+	case 6:
- 		if (unlikely(iph_len < sizeof(struct ipv6hdr)))
- 			return -EINVAL;
+ nla_put_failure:
+ 	nlmsg_free(skb);
+ failed:
+ 	drbd_err(device, "Error %d while broadcasting event. Event seq:%u\n",
+ 		 err, seq);
++	return err;
+ }
  
-+		if (sk->sk_family != AF_INET6)
-+			return -EINVAL;
-+
- 		ret = __cookie_v6_check((struct ipv6hdr *)iph, th, cookie);
- 		break;
- #endif /* CONFIG_IPV6 */
+-void notify_connection_state(struct sk_buff *skb,
++int notify_connection_state(struct sk_buff *skb,
+ 			     unsigned int seq,
+ 			     struct drbd_connection *connection,
+ 			     struct connection_info *connection_info,
+@@ -4770,16 +4772,17 @@ void notify_connection_state(struct sk_buff *skb,
+ 		if (err && err != -ESRCH)
+ 			goto failed;
+ 	}
+-	return;
++	return 0;
+ 
+ nla_put_failure:
+ 	nlmsg_free(skb);
+ failed:
+ 	drbd_err(connection, "Error %d while broadcasting event. Event seq:%u\n",
+ 		 err, seq);
++	return err;
+ }
+ 
+-void notify_peer_device_state(struct sk_buff *skb,
++int notify_peer_device_state(struct sk_buff *skb,
+ 			      unsigned int seq,
+ 			      struct drbd_peer_device *peer_device,
+ 			      struct peer_device_info *peer_device_info,
+@@ -4820,13 +4823,14 @@ void notify_peer_device_state(struct sk_buff *skb,
+ 		if (err && err != -ESRCH)
+ 			goto failed;
+ 	}
+-	return;
++	return 0;
+ 
+ nla_put_failure:
+ 	nlmsg_free(skb);
+ failed:
+ 	drbd_err(peer_device, "Error %d while broadcasting event. Event seq:%u\n",
+ 		 err, seq);
++	return err;
+ }
+ 
+ void notify_helper(enum drbd_notification_type type,
+@@ -4877,7 +4881,7 @@ void notify_helper(enum drbd_notification_type type,
+ 		 err, seq);
+ }
+ 
+-static void notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
++static int notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
+ {
+ 	struct drbd_genlmsghdr *dh;
+ 	int err;
+@@ -4891,11 +4895,12 @@ static void notify_initial_state_done(struct sk_buff *skb, unsigned int seq)
+ 	if (nla_put_notification_header(skb, NOTIFY_EXISTS))
+ 		goto nla_put_failure;
+ 	genlmsg_end(skb, dh);
+-	return;
++	return 0;
+ 
+ nla_put_failure:
+ 	nlmsg_free(skb);
+ 	pr_err("Error %d sending event. Event seq:%u\n", err, seq);
++	return err;
+ }
+ 
+ static void free_state_changes(struct list_head *list)
+@@ -4922,6 +4927,7 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
+ 	unsigned int seq = cb->args[2];
+ 	unsigned int n;
+ 	enum drbd_notification_type flags = 0;
++	int err = 0;
+ 
+ 	/* There is no need for taking notification_mutex here: it doesn't
+ 	   matter if the initial state events mix with later state chage
+@@ -4930,32 +4936,32 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
+ 
+ 	cb->args[5]--;
+ 	if (cb->args[5] == 1) {
+-		notify_initial_state_done(skb, seq);
++		err = notify_initial_state_done(skb, seq);
+ 		goto out;
+ 	}
+ 	n = cb->args[4]++;
+ 	if (cb->args[4] < cb->args[3])
+ 		flags |= NOTIFY_CONTINUES;
+ 	if (n < 1) {
+-		notify_resource_state_change(skb, seq, state_change->resource,
++		err = notify_resource_state_change(skb, seq, state_change->resource,
+ 					     NOTIFY_EXISTS | flags);
+ 		goto next;
+ 	}
+ 	n--;
+ 	if (n < state_change->n_connections) {
+-		notify_connection_state_change(skb, seq, &state_change->connections[n],
++		err = notify_connection_state_change(skb, seq, &state_change->connections[n],
+ 					       NOTIFY_EXISTS | flags);
+ 		goto next;
+ 	}
+ 	n -= state_change->n_connections;
+ 	if (n < state_change->n_devices) {
+-		notify_device_state_change(skb, seq, &state_change->devices[n],
++		err = notify_device_state_change(skb, seq, &state_change->devices[n],
+ 					   NOTIFY_EXISTS | flags);
+ 		goto next;
+ 	}
+ 	n -= state_change->n_devices;
+ 	if (n < state_change->n_devices * state_change->n_connections) {
+-		notify_peer_device_state_change(skb, seq, &state_change->peer_devices[n],
++		err = notify_peer_device_state_change(skb, seq, &state_change->peer_devices[n],
+ 						NOTIFY_EXISTS | flags);
+ 		goto next;
+ 	}
+@@ -4970,7 +4976,10 @@ static int get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
+ 		cb->args[4] = 0;
+ 	}
+ out:
+-	return skb->len;
++	if (err)
++		return err;
++	else
++		return skb->len;
+ }
+ 
+ int drbd_adm_get_initial_state(struct sk_buff *skb, struct netlink_callback *cb)
+diff --git a/drivers/block/drbd/drbd_state.c b/drivers/block/drbd/drbd_state.c
+index eeaa3b49b264..4dad4dd0ceb6 100644
+--- a/drivers/block/drbd/drbd_state.c
++++ b/drivers/block/drbd/drbd_state.c
+@@ -1537,7 +1537,7 @@ int drbd_bitmap_io_from_worker(struct drbd_device *device,
+ 	return rv;
+ }
+ 
+-void notify_resource_state_change(struct sk_buff *skb,
++int notify_resource_state_change(struct sk_buff *skb,
+ 				  unsigned int seq,
+ 				  struct drbd_resource_state_change *resource_state_change,
+ 				  enum drbd_notification_type type)
+@@ -1550,10 +1550,10 @@ void notify_resource_state_change(struct sk_buff *skb,
+ 		.res_susp_fen = resource_state_change->susp_fen[NEW],
+ 	};
+ 
+-	notify_resource_state(skb, seq, resource, &resource_info, type);
++	return notify_resource_state(skb, seq, resource, &resource_info, type);
+ }
+ 
+-void notify_connection_state_change(struct sk_buff *skb,
++int notify_connection_state_change(struct sk_buff *skb,
+ 				    unsigned int seq,
+ 				    struct drbd_connection_state_change *connection_state_change,
+ 				    enum drbd_notification_type type)
+@@ -1564,10 +1564,10 @@ void notify_connection_state_change(struct sk_buff *skb,
+ 		.conn_role = connection_state_change->peer_role[NEW],
+ 	};
+ 
+-	notify_connection_state(skb, seq, connection, &connection_info, type);
++	return notify_connection_state(skb, seq, connection, &connection_info, type);
+ }
+ 
+-void notify_device_state_change(struct sk_buff *skb,
++int notify_device_state_change(struct sk_buff *skb,
+ 				unsigned int seq,
+ 				struct drbd_device_state_change *device_state_change,
+ 				enum drbd_notification_type type)
+@@ -1577,10 +1577,10 @@ void notify_device_state_change(struct sk_buff *skb,
+ 		.dev_disk_state = device_state_change->disk_state[NEW],
+ 	};
+ 
+-	notify_device_state(skb, seq, device, &device_info, type);
++	return notify_device_state(skb, seq, device, &device_info, type);
+ }
+ 
+-void notify_peer_device_state_change(struct sk_buff *skb,
++int notify_peer_device_state_change(struct sk_buff *skb,
+ 				     unsigned int seq,
+ 				     struct drbd_peer_device_state_change *p,
+ 				     enum drbd_notification_type type)
+@@ -1594,7 +1594,7 @@ void notify_peer_device_state_change(struct sk_buff *skb,
+ 		.peer_resync_susp_dependency = p->resync_susp_dependency[NEW],
+ 	};
+ 
+-	notify_peer_device_state(skb, seq, peer_device, &peer_device_info, type);
++	return notify_peer_device_state(skb, seq, peer_device, &peer_device_info, type);
+ }
+ 
+ static void broadcast_state_change(struct drbd_state_change *state_change)
+@@ -1602,7 +1602,7 @@ static void broadcast_state_change(struct drbd_state_change *state_change)
+ 	struct drbd_resource_state_change *resource_state_change = &state_change->resource[0];
+ 	bool resource_state_has_changed;
+ 	unsigned int n_device, n_connection, n_peer_device, n_peer_devices;
+-	void (*last_func)(struct sk_buff *, unsigned int, void *,
++	int (*last_func)(struct sk_buff *, unsigned int, void *,
+ 			  enum drbd_notification_type) = NULL;
+ 	void *uninitialized_var(last_arg);
+ 
+diff --git a/drivers/block/drbd/drbd_state_change.h b/drivers/block/drbd/drbd_state_change.h
+index ba80f612d6ab..d5b0479bc9a6 100644
+--- a/drivers/block/drbd/drbd_state_change.h
++++ b/drivers/block/drbd/drbd_state_change.h
+@@ -44,19 +44,19 @@ extern struct drbd_state_change *remember_old_state(struct drbd_resource *, gfp_
+ extern void copy_old_to_new_state_change(struct drbd_state_change *);
+ extern void forget_state_change(struct drbd_state_change *);
+ 
+-extern void notify_resource_state_change(struct sk_buff *,
++extern int notify_resource_state_change(struct sk_buff *,
+ 					 unsigned int,
+ 					 struct drbd_resource_state_change *,
+ 					 enum drbd_notification_type type);
+-extern void notify_connection_state_change(struct sk_buff *,
++extern int notify_connection_state_change(struct sk_buff *,
+ 					   unsigned int,
+ 					   struct drbd_connection_state_change *,
+ 					   enum drbd_notification_type type);
+-extern void notify_device_state_change(struct sk_buff *,
++extern int notify_device_state_change(struct sk_buff *,
+ 				       unsigned int,
+ 				       struct drbd_device_state_change *,
+ 				       enum drbd_notification_type type);
+-extern void notify_peer_device_state_change(struct sk_buff *,
++extern int notify_peer_device_state_change(struct sk_buff *,
+ 					    unsigned int,
+ 					    struct drbd_peer_device_state_change *,
+ 					    enum drbd_notification_type type);
 -- 
 2.35.1
 
