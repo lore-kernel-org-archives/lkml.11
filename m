@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 462F9C38A05
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED76FC4707E
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343530AbiDNOzk (ORCPT
+        id S1346320AbiDNO4q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:55:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43448 "EHLO
+        Thu, 14 Apr 2022 10:56:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344678AbiDNNwe (ORCPT
+        with ESMTP id S1345589AbiDNNxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:52:34 -0400
+        Thu, 14 Apr 2022 09:53:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979E139B82;
-        Thu, 14 Apr 2022 06:44:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC726ABF6A;
+        Thu, 14 Apr 2022 06:44:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FC0761D73;
-        Thu, 14 Apr 2022 13:44:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90951C385A5;
-        Thu, 14 Apr 2022 13:44:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57F7161BA7;
+        Thu, 14 Apr 2022 13:44:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 651ABC385AA;
+        Thu, 14 Apr 2022 13:44:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943875;
-        bh=W5QWPyaHFRaq2b92HERDe8A1sPybpn53d6oBFD2u1T4=;
+        s=korg; t=1649943897;
+        bh=+CHxBjUPAssW2Q28/oiH/OK/B0WMnIHTpv9bWzb9PXQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YvuSuJzdYX73XfuU8znP8S+iVgLns6BveLE66iVGrKqUkydLHF2C5L/j5+w/GRIxk
-         EbKcTBAiDcrwI1UWSqhlzXqkM0BP6NdWqC6m86aPI756mi9TdZaVcWB3PiNjTvHlAa
-         pmFgWjeHudwwmGqJY83GEcBpVvQVSKinMxI2iAXk=
+        b=xQmVSmlQU4xbEj3riXHjpUkB6TaeB7EwCw7jsTAvZNilCZIJCy1Z2M5nns0qN+BED
+         3Qyk68w5EYmaov3MLPcMygHWz5CjOCCOqB5xq3t8TGf/rMX0BCyuZ+rcLqa7MdjKlY
+         ajbUBywE9weUtlGEkLFl+nBWqDWJJk5Jmp/NLP/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,9 +38,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Quinn Tran <qutran@marvell.com>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 314/475] scsi: qla2xxx: Fix stuck session in gpdb
-Date:   Thu, 14 Apr 2022 15:11:39 +0200
-Message-Id: <20220414110903.876141698@linuxfoundation.org>
+Subject: [PATCH 5.4 322/475] scsi: qla2xxx: Fix incorrect reporting of task management failure
+Date:   Thu, 14 Apr 2022 15:11:47 +0200
+Message-Id: <20220414110904.099377079@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -54,14 +54,16 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Quinn Tran <qutran@marvell.com>
 
-commit 725d3a0d31a51c0debf970011e05f585e805165b upstream.
+commit 58ca5999e0367d131de82a75257fbfd5aed0195d upstream.
 
-Fix stuck sessions in get port database. When a thread is in the process of
-re-establishing a session, a flag is set to prevent multiple threads /
-triggers from doing the same task. This flag was left on, where any attempt
-to relogin was locked out. Clear this flag, if the attempt has failed.
+User experienced no task management error while target device is responding
+with error. The RSP_CODE field in the status IOCB is in little endian.
+Driver assumes it's big endian and it picked up erroneous data.
 
-Link: https://lore.kernel.org/r/20220110050218.3958-4-njavali@marvell.com
+Convert the data back to big endian as is on the wire.
+
+Link: https://lore.kernel.org/r/20220310092604.22950-2-njavali@marvell.com
+Fixes: faef62d13463 ("[SCSI] qla2xxx: Fix Task Management command asynchronous handling")
 Cc: stable@vger.kernel.org
 Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
 Signed-off-by: Quinn Tran <qutran@marvell.com>
@@ -69,23 +71,18 @@ Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/scsi/qla2xxx/qla_isr.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -1314,9 +1314,9 @@ int qla24xx_async_gpdb(struct scsi_qla_h
- 	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT) ||
- 	    fcport->loop_id == FC_NO_LOOP_ID) {
- 		ql_log(ql_log_warn, vha, 0xffff,
--		    "%s: %8phC - not sending command.\n",
--		    __func__, fcport->port_name);
--		return rval;
-+		    "%s: %8phC online %d flags %x - not sending command.\n",
-+		    __func__, fcport->port_name, vha->flags.online, fcport->flags);
-+		goto done;
- 	}
- 
- 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
+--- a/drivers/scsi/qla2xxx/qla_isr.c
++++ b/drivers/scsi/qla2xxx/qla_isr.c
+@@ -1839,6 +1839,7 @@ qla24xx_tm_iocb_entry(scsi_qla_host_t *v
+ 		iocb->u.tmf.data = QLA_FUNCTION_FAILED;
+ 	} else if ((le16_to_cpu(sts->scsi_status) &
+ 	    SS_RESPONSE_INFO_LEN_VALID)) {
++		host_to_fcp_swap(sts->data, sizeof(sts->data));
+ 		if (le32_to_cpu(sts->rsp_data_len) < 4) {
+ 			ql_log(ql_log_warn, fcport->vha, 0x503b,
+ 			    "Async-%s error - hdl=%x not enough response(%d).\n",
 
 
