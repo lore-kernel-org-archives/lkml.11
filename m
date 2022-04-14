@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD8DC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F01CC43219
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355240AbiDNO6H (ORCPT
+        id S1355283AbiDNO6P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:58:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56934 "EHLO
+        Thu, 14 Apr 2022 10:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346042AbiDNNzZ (ORCPT
+        with ESMTP id S1345971AbiDNNzJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:55:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E42393EF;
-        Thu, 14 Apr 2022 06:45:40 -0700 (PDT)
+        Thu, 14 Apr 2022 09:55:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53815AFB37;
+        Thu, 14 Apr 2022 06:45:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FD78612E6;
-        Thu, 14 Apr 2022 13:45:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E996C385A1;
-        Thu, 14 Apr 2022 13:45:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10648B82969;
+        Thu, 14 Apr 2022 13:45:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51800C385A5;
+        Thu, 14 Apr 2022 13:45:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943939;
-        bh=NzYuvdptzYEU15AeBZX/QMowvTHlIzsvLfoKsENOWLY=;
+        s=korg; t=1649943928;
+        bh=ggUWkadcwAv/kiGV+jqCEr/Ql4n/s+bLxk9RbMd9vE0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rQYt8ib45Emankmjptoc+uFCcpE0LOs3s30cVHFQIigjyyWOycOJeGTdb9LgYMtO+
-         TIkdLoPg1NAk6a7I+3gtHP9RiwuQgKG4N7LkV9aHSIz8U8Cjk6wanp3Rm52/sofePZ
-         wKpyjlF0FOUiNz83n/0Ue+x67K5cTPJoO2UUzL/s=
+        b=EW650kuYSD6aVA+VGoYBVxiG3x2uxpMwM/Gd9GhLkI82aVu42N2AaWr2w+Q8cO4Wy
+         kMn8mNhH5OLyPkH3ViGlTFNb6KocJg5CStb1PLZ8eTcGJPq8ryIHn3JcB5nX+t1hAW
+         4oSQzRleU4jplES2ixEZNwInGtCy+chUmgjVTa+A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengsong Ke <kechengsong@huawei.com>,
-        Zhihao Cheng <chengzhihao1@huawei.com>,
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
         Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.4 335/475] ubifs: Fix read out-of-bounds in ubifs_wbuf_write_nolock()
-Date:   Thu, 14 Apr 2022 15:12:00 +0200
-Message-Id: <20220414110904.460068396@linuxfoundation.org>
+Subject: [PATCH 5.4 332/475] ubifs: Fix deadlock in concurrent rename whiteout and inode writeback
+Date:   Thu, 14 Apr 2022 15:11:57 +0200
+Message-Id: <20220414110904.377235434@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -52,107 +51,113 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-commit 4f2262a334641e05f645364d5ade1f565c85f20b upstream.
+commit afd427048047e8efdedab30e8888044e2be5aa9c upstream.
 
-Function ubifs_wbuf_write_nolock() may access buf out of bounds in
-following process:
+Following hung tasks:
+[   77.028764] task:kworker/u8:4    state:D stack:    0 pid:  132
+[   77.028820] Call Trace:
+[   77.029027]  schedule+0x8c/0x1b0
+[   77.029067]  mutex_lock+0x50/0x60
+[   77.029074]  ubifs_write_inode+0x68/0x1f0 [ubifs]
+[   77.029117]  __writeback_single_inode+0x43c/0x570
+[   77.029128]  writeback_sb_inodes+0x259/0x740
+[   77.029148]  wb_writeback+0x107/0x4d0
+[   77.029163]  wb_workfn+0x162/0x7b0
 
-ubifs_wbuf_write_nolock():
-  aligned_len = ALIGN(len, 8);   // Assume len = 4089, aligned_len = 4096
-  if (aligned_len <= wbuf->avail) ... // Not satisfy
-  if (wbuf->used) {
-    ubifs_leb_write()  // Fill some data in avail wbuf
-    len -= wbuf->avail;   // len is still not 8-bytes aligned
-    aligned_len -= wbuf->avail;
-  }
-  n = aligned_len >> c->max_write_shift;
-  if (n) {
-    n <<= c->max_write_shift;
-    err = ubifs_leb_write(c, wbuf->lnum, buf + written,
-                          wbuf->offs, n);
-    // n > len, read out of bounds less than 8(n-len) bytes
-  }
+[   92.390442] task:aa              state:D stack:    0 pid: 1506
+[   92.390448] Call Trace:
+[   92.390458]  schedule+0x8c/0x1b0
+[   92.390461]  wb_wait_for_completion+0x82/0xd0
+[   92.390469]  __writeback_inodes_sb_nr+0xb2/0x110
+[   92.390472]  writeback_inodes_sb_nr+0x14/0x20
+[   92.390476]  ubifs_budget_space+0x705/0xdd0 [ubifs]
+[   92.390503]  do_rename.cold+0x7f/0x187 [ubifs]
+[   92.390549]  ubifs_rename+0x8b/0x180 [ubifs]
+[   92.390571]  vfs_rename+0xdb2/0x1170
+[   92.390580]  do_renameat2+0x554/0x770
 
-, which can be catched by KASAN:
-  =========================================================
-  BUG: KASAN: slab-out-of-bounds in ecc_sw_hamming_calculate+0x1dc/0x7d0
-  Read of size 4 at addr ffff888105594ff8 by task kworker/u8:4/128
-  Workqueue: writeback wb_workfn (flush-ubifs_0_0)
-  Call Trace:
-    kasan_report.cold+0x81/0x165
-    nand_write_page_swecc+0xa9/0x160
-    ubifs_leb_write+0xf2/0x1b0 [ubifs]
-    ubifs_wbuf_write_nolock+0x421/0x12c0 [ubifs]
-    write_head+0xdc/0x1c0 [ubifs]
-    ubifs_jnl_write_inode+0x627/0x960 [ubifs]
-    wb_workfn+0x8af/0xb80
+, are caused by concurrent rename whiteout and inode writeback processes:
+	rename_whiteout(Thread 1)	        wb_workfn(Thread2)
+ubifs_rename
+  do_rename
+    lock_4_inodes (Hold ui_mutex)
+    ubifs_budget_space
+      make_free_space
+        shrink_liability
+	  __writeback_inodes_sb_nr
+	    bdi_split_work_to_wbs (Queue new wb work)
+					      wb_do_writeback(wb work)
+						__writeback_single_inode
+					          ubifs_write_inode
+					            LOCK(ui_mutex)
+							   ↑
+	      wb_wait_for_completion (Wait wb work) <-- deadlock!
 
-Function ubifs_wbuf_write_nolock() accepts that parameter 'len' is not 8
-bytes aligned, the 'len' represents the true length of buf (which is
-allocated in 'ubifs_jnl_xxx', eg. ubifs_jnl_write_inode), so
-ubifs_wbuf_write_nolock() must handle the length read from 'buf' carefully
-to write leb safely.
+Reproducer (Detail program in [Link]):
+  1. SYS_renameat2("/mp/dir/file", "/mp/dir/whiteout", RENAME_WHITEOUT)
+  2. Consume out of space before kernel(mdelay) doing budget for whiteout
 
-Fetch a reproducer in [Link].
+Fix it by doing whiteout space budget before locking ubifs inodes.
+BTW, it also fixes wrong goto tag 'out_release' in whiteout budget
+error handling path(It should at least recover dir i_size and unlock
+4 ubifs inodes).
 
-Fixes: 1e51764a3c2ac0 ("UBIFS: add new flash file system")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=214785
-Reported-by: Chengsong Ke <kechengsong@huawei.com>
+Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214733
 Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
 Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ubifs/io.c |   34 ++++++++++++++++++++++++++++++----
- 1 file changed, 30 insertions(+), 4 deletions(-)
+ fs/ubifs/dir.c |   25 +++++++++++++++----------
+ 1 file changed, 15 insertions(+), 10 deletions(-)
 
---- a/fs/ubifs/io.c
-+++ b/fs/ubifs/io.c
-@@ -846,16 +846,42 @@ int ubifs_wbuf_write_nolock(struct ubifs
- 	 */
- 	n = aligned_len >> c->max_write_shift;
- 	if (n) {
--		n <<= c->max_write_shift;
-+		int m = n - 1;
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -1330,6 +1330,7 @@ static int do_rename(struct inode *old_d
+ 
+ 	if (flags & RENAME_WHITEOUT) {
+ 		union ubifs_dev_desc *dev = NULL;
++		struct ubifs_budget_req wht_req;
+ 
+ 		dev = kmalloc(sizeof(union ubifs_dev_desc), GFP_NOFS);
+ 		if (!dev) {
+@@ -1351,6 +1352,20 @@ static int do_rename(struct inode *old_d
+ 		whiteout_ui->data = dev;
+ 		whiteout_ui->data_len = ubifs_encode_dev(dev, MKDEV(0, 0));
+ 		ubifs_assert(c, !whiteout_ui->dirty);
 +
- 		dbg_io("write %d bytes to LEB %d:%d", n, wbuf->lnum,
- 		       wbuf->offs);
--		err = ubifs_leb_write(c, wbuf->lnum, buf + written,
--				      wbuf->offs, n);
-+
-+		if (m) {
-+			/* '(n-1)<<c->max_write_shift < len' is always true. */
-+			m <<= c->max_write_shift;
-+			err = ubifs_leb_write(c, wbuf->lnum, buf + written,
-+					      wbuf->offs, m);
-+			if (err)
-+				goto out;
-+			wbuf->offs += m;
-+			aligned_len -= m;
-+			len -= m;
-+			written += m;
-+		}
-+
++		memset(&wht_req, 0, sizeof(struct ubifs_budget_req));
++		wht_req.dirtied_ino = 1;
++		wht_req.dirtied_ino_d = ALIGN(whiteout_ui->data_len, 8);
 +		/*
-+		 * The non-written len of buf may be less than 'n' because
-+		 * parameter 'len' is not 8 bytes aligned, so here we read
-+		 * min(len, n) bytes from buf.
++		 * To avoid deadlock between space budget (holds ui_mutex and
++		 * waits wb work) and writeback work(waits ui_mutex), do space
++		 * budget before ubifs inodes locked.
 +		 */
-+		n = 1 << c->max_write_shift;
-+		memcpy(wbuf->buf, buf + written, min(len, n));
-+		if (n > len) {
-+			ubifs_assert(c, n - len < 8);
-+			ubifs_pad(c, wbuf->buf + len, n - len);
++		err = ubifs_budget_space(c, &wht_req);
++		if (err) {
++			iput(whiteout);
++			goto out_release;
 +		}
-+
-+		err = ubifs_leb_write(c, wbuf->lnum, wbuf->buf, wbuf->offs, n);
- 		if (err)
- 			goto out;
- 		wbuf->offs += n;
- 		aligned_len -= n;
--		len -= n;
-+		len -= min(len, n);
- 		written += n;
  	}
+ 
+ 	lock_4_inodes(old_dir, new_dir, new_inode, whiteout);
+@@ -1425,16 +1440,6 @@ static int do_rename(struct inode *old_d
+ 	}
+ 
+ 	if (whiteout) {
+-		struct ubifs_budget_req wht_req = { .dirtied_ino = 1,
+-				.dirtied_ino_d = \
+-				ALIGN(ubifs_inode(whiteout)->data_len, 8) };
+-
+-		err = ubifs_budget_space(c, &wht_req);
+-		if (err) {
+-			iput(whiteout);
+-			goto out_release;
+-		}
+-
+ 		inc_nlink(whiteout);
+ 		mark_inode_dirty(whiteout);
  
 
 
