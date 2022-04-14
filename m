@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19008C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:03:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8259DC4321E
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236541AbiDNOEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:04:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56978 "EHLO
+        id S1348394AbiDNOEg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:04:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343576AbiDNN3h (ORCPT
+        with ESMTP id S1343642AbiDNN3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:29:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18D897B83;
-        Thu, 14 Apr 2022 06:24:45 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4817AFB37;
+        Thu, 14 Apr 2022 06:25:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3DAAAB8296A;
-        Thu, 14 Apr 2022 13:24:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85457C385A1;
-        Thu, 14 Apr 2022 13:24:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5120E61B18;
+        Thu, 14 Apr 2022 13:25:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ABA1C385A5;
+        Thu, 14 Apr 2022 13:25:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942682;
-        bh=/cj/JxLywpcxnb3dCuK6ANzvkDZZBNQFep7c2zxeNWE=;
+        s=korg; t=1649942704;
+        bh=y/6QWyHJQWMox/n6yuWOD0Hy6obv+LdOOes8hW9Ekn4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eLejhhfUY4K3naRSz3fZp6wFQrnLnahbkJG5ZgQpYx7/wlgi9W3QlXuLK/eSJ39+X
-         K1gRZPcnwdErXqef6PBXxrdRGonF56d2miNMkmh3z/KUv0CZn4qgeABvabpEsXsJJb
-         jMn6Wsv8Y8TqFHg8OLZumXQo24U2Z6OMkUNG2mPE=
+        b=vZeNGa8FmbXZ8FcHyTj42DhM1BPDoCBbL+hpq5lgfpFxjISCefvkZ0ilb2TufRA78
+         Q01we3nQ4e+5TN+yiREZwH36W2OEsXD+F9lRID0ink1RaOv6pnwRhSpo8pmtXg4flb
+         hmiDtsLN3iAEzwZJLxuu2Xn25EhFNQ/NYkYYypGw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
+        Manish Rangankar <mrangankar@marvell.com>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.19 223/338] scsi: qla2xxx: Fix stuck session in gpdb
-Date:   Thu, 14 Apr 2022 15:12:06 +0200
-Message-Id: <20220414110845.240278579@linuxfoundation.org>
+Subject: [PATCH 4.19 230/338] scsi: qla2xxx: Use correct feature type field during RFF_ID processing
+Date:   Thu, 14 Apr 2022 15:12:13 +0200
+Message-Id: <20220414110845.436867440@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,40 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Manish Rangankar <mrangankar@marvell.com>
 
-commit 725d3a0d31a51c0debf970011e05f585e805165b upstream.
+commit a7e05f7a1bcbe4ee055479242de46c5c16ab03b1 upstream.
 
-Fix stuck sessions in get port database. When a thread is in the process of
-re-establishing a session, a flag is set to prevent multiple threads /
-triggers from doing the same task. This flag was left on, where any attempt
-to relogin was locked out. Clear this flag, if the attempt has failed.
+During SNS Register FC-4 Features (RFF_ID) the initiator driver was sending
+incorrect type field for NVMe supported device. Use correct feature type
+field.
 
-Link: https://lore.kernel.org/r/20220110050218.3958-4-njavali@marvell.com
+Link: https://lore.kernel.org/r/20220310092604.22950-12-njavali@marvell.com
+Fixes: e374f9f59281 ("scsi: qla2xxx: Migrate switch registration commands away from mailbox interface")
 Cc: stable@vger.kernel.org
 Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
+Signed-off-by: Manish Rangankar <mrangankar@marvell.com>
 Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/scsi/qla2xxx/qla_gs.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -219,9 +219,9 @@ qla2x00_async_login(struct scsi_qla_host
- 	if (!vha->flags.online || (fcport->flags & FCF_ASYNC_SENT) ||
- 	    fcport->loop_id == FC_NO_LOOP_ID) {
- 		ql_log(ql_log_warn, vha, 0xffff,
--		    "%s: %8phC - not sending command.\n",
--		    __func__, fcport->port_name);
--		return rval;
-+		    "%s: %8phC online %d flags %x - not sending command.\n",
-+		    __func__, fcport->port_name, vha->flags.online, fcport->flags);
-+		goto done;
+--- a/drivers/scsi/qla2xxx/qla_gs.c
++++ b/drivers/scsi/qla2xxx/qla_gs.c
+@@ -691,8 +691,7 @@ qla2x00_rff_id(scsi_qla_host_t *vha, u8
+ 		return (QLA_SUCCESS);
  	}
  
- 	sp = qla2x00_get_sp(vha, fcport, GFP_KERNEL);
+-	return qla_async_rffid(vha, &vha->d_id, qlt_rff_id(vha),
+-	    FC4_TYPE_FCP_SCSI);
++	return qla_async_rffid(vha, &vha->d_id, qlt_rff_id(vha), type);
+ }
+ 
+ static int qla_async_rffid(scsi_qla_host_t *vha, port_id_t *d_id,
+@@ -744,7 +743,7 @@ static int qla_async_rffid(scsi_qla_host
+ 	ct_req->req.rff_id.port_id[1] = d_id->b.area;
+ 	ct_req->req.rff_id.port_id[2] = d_id->b.al_pa;
+ 	ct_req->req.rff_id.fc4_feature = fc4feature;
+-	ct_req->req.rff_id.fc4_type = fc4type;		/* SCSI - FCP */
++	ct_req->req.rff_id.fc4_type = fc4type;		/* SCSI-FCP or FC-NVMe */
+ 
+ 	sp->u.iocb_cmd.u.ctarg.req_size = RFF_ID_REQ_SIZE;
+ 	sp->u.iocb_cmd.u.ctarg.rsp_size = RFF_ID_RSP_SIZE;
 
 
