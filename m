@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A02EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:45:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 142F3C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229846AbiDNOr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:47:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54936 "EHLO
+        id S245521AbiDNOsL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:48:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345103AbiDNNpI (ORCPT
+        with ESMTP id S1345121AbiDNNpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:45:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750E29D4C6;
-        Thu, 14 Apr 2022 06:42:00 -0700 (PDT)
+        Thu, 14 Apr 2022 09:45:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA532DE0;
+        Thu, 14 Apr 2022 06:42:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2664BB828F4;
-        Thu, 14 Apr 2022 13:41:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ACB0C385A5;
-        Thu, 14 Apr 2022 13:41:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37F8461D29;
+        Thu, 14 Apr 2022 13:42:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4962DC385A5;
+        Thu, 14 Apr 2022 13:42:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943717;
-        bh=H3Dt4cJJwR/zpCWMq7h5pmwL4k+5EyFj/mhPC5rRNJU=;
+        s=korg; t=1649943757;
+        bh=zKQo7IiNDcL3fmJlkaGknPp8ckFjNKAzNI6WCfpsNHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0T6GTAJn44Pb9xY9d1D/nldgd3/dzSjwhUtwuBEUqAsT830zdIOtsUutfA0Lwto3J
-         ZWO2EiMB/Q3iTmEBRSm+KMMmedyl77Jw46PyFafCXfGQK4bXgRiMuOTEnfTMklbGrx
-         nxrAIaY8wlx5m7Vn5P+g8lXO4CStxYKKgq/3pfAQ=
+        b=k+sAH/G4DcLZ0748xkaJMPRFtYLVeKElm/0ZE578D9BLzUquP5ZRhIbq38HzNHeEP
+         5kQcFEy6dQSomJuH1RuwsEBp/utqg84XFbiO1gMUN8A4p94QLVDulreRVoFFMOIWFF
+         OfcNo8V3g7RTG2kBVc8V7eePVELUlJGj4HMlIt60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
+        stable@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 255/475] tty: hvc: fix return value of __setup handler
-Date:   Thu, 14 Apr 2022 15:10:40 +0200
-Message-Id: <20220414110902.246799352@linuxfoundation.org>
+Subject: [PATCH 5.4 271/475] net: dsa: bcm_sf2_cfp: fix an incorrect NULL check on list iterator
+Date:   Thu, 14 Apr 2022 15:10:56 +0200
+Message-Id: <20220414110902.690311050@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -55,48 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit 53819a0d97aace1425bb042829e3446952a9e8a9 ]
+[ Upstream commit 6da69b1da130e7d96766042750cd9f902e890eba ]
 
-__setup() handlers should return 1 to indicate that the boot option
-has been handled or 0 to indicate that it was not handled.
-Add a pr_warn() message if the option value is invalid and then
-always return 1.
+The bug is here:
+	return rule;
 
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: 86b40567b917 ("tty: replace strict_strtoul() with kstrtoul()")
-Cc: Jingoo Han <jg1.han@samsung.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Julian Wiedmann <jwi@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: linuxppc-dev@lists.ozlabs.org
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Link: https://lore.kernel.org/r/20220308024228.20477-1-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The list iterator value 'rule' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+is found.
+
+To fix the bug, return 'rule' when found, otherwise return NULL.
+
+Fixes: ae7a5aff783c7 ("net: dsa: bcm_sf2: Keep copy of inserted rules")
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220328032431.22538-1-xiam0nd.tong@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/hvc/hvc_iucv.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/dsa/bcm_sf2_cfp.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/hvc/hvc_iucv.c b/drivers/tty/hvc/hvc_iucv.c
-index 2af1e5751bd6..796fbff623f6 100644
---- a/drivers/tty/hvc/hvc_iucv.c
-+++ b/drivers/tty/hvc/hvc_iucv.c
-@@ -1470,7 +1470,9 @@ static int __init hvc_iucv_init(void)
-  */
- static	int __init hvc_iucv_config(char *val)
+diff --git a/drivers/net/dsa/bcm_sf2_cfp.c b/drivers/net/dsa/bcm_sf2_cfp.c
+index e15d18bb981e..5cc31118b97e 100644
+--- a/drivers/net/dsa/bcm_sf2_cfp.c
++++ b/drivers/net/dsa/bcm_sf2_cfp.c
+@@ -542,14 +542,14 @@ static void bcm_sf2_cfp_slice_ipv6(struct bcm_sf2_priv *priv,
+ static struct cfp_rule *bcm_sf2_cfp_rule_find(struct bcm_sf2_priv *priv,
+ 					      int port, u32 location)
  {
--	 return kstrtoul(val, 10, &hvc_iucv_devices);
-+	if (kstrtoul(val, 10, &hvc_iucv_devices))
-+		pr_warn("hvc_iucv= invalid parameter value '%s'\n", val);
-+	return 1;
+-	struct cfp_rule *rule = NULL;
++	struct cfp_rule *rule;
+ 
+ 	list_for_each_entry(rule, &priv->cfp.rules_list, next) {
+ 		if (rule->port == port && rule->fs.location == location)
+-			break;
++			return rule;
+ 	}
+ 
+-	return rule;
++	return NULL;
  }
  
- 
+ static int bcm_sf2_cfp_rule_cmp(struct bcm_sf2_priv *priv, int port,
 -- 
 2.34.1
 
