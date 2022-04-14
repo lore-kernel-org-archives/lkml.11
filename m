@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 246AFC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5282CC433FE
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:33:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352109AbiDNObz (ORCPT
+        id S1352284AbiDNOcJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47030 "EHLO
+        Thu, 14 Apr 2022 10:32:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344328AbiDNNkw (ORCPT
+        with ESMTP id S1344337AbiDNNk5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:40:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33828120;
-        Thu, 14 Apr 2022 06:38:27 -0700 (PDT)
+        Thu, 14 Apr 2022 09:40:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FBC4120;
+        Thu, 14 Apr 2022 06:38:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 987A5CE29B0;
-        Thu, 14 Apr 2022 13:38:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A96A4C385A1;
-        Thu, 14 Apr 2022 13:38:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE98F61BA7;
+        Thu, 14 Apr 2022 13:38:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8845C385A1;
+        Thu, 14 Apr 2022 13:38:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943504;
-        bh=WHqzE88lBVJT1xJ8LvBQh6M3R/S5kvHmeEmCJDIqYXU=;
+        s=korg; t=1649943512;
+        bh=pfgyiXwM06gCupNegwbTjuuuTwSKW806/KKM1t59/Rs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QnJQU2qgiBIM0liQO2+I+2fiYWAHrdghxYFXbkbI4Q4gwTefEs6iDsthRjZVgc8SD
-         aNJhv1AGnryAD4XDmub2wmjgeY+QvwBWxQ2LDVkLO55Yz2WXHdYGowOdLAadiXk64A
-         B8ZBt2/YULvVMbpWho2rREasoYbF9c0AAcMMzLVA=
+        b=owa2yUepbUy4wXmPRCoXkAQjvhJu/Ob704uXPneQlHORCxaM3iBNYDghqEX7my4qx
+         q/SNPfD5W73j6pMmLI4nkq6BfWdNPd7weqS7FSBF4zrYtyfVMJYxWlZ3GXikO04A7C
+         R/Q0rvpasMJ6fZ70rMTqRAULeZWLgQyidi9U/ics=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 138/475] ASoC: soc-compress: prevent the potentially use of null pointer
-Date:   Thu, 14 Apr 2022 15:08:43 +0200
-Message-Id: <20220414110859.010008924@linuxfoundation.org>
+Subject: [PATCH 5.4 131/475] ASoC: ti: davinci-i2s: Add check for clk_enable()
+Date:   Thu, 14 Apr 2022 15:08:36 +0200
+Message-Id: <20220414110858.815281096@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -54,61 +53,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit de2c6f98817fa5decb9b7d3b3a8a3ab864c10588 ]
+[ Upstream commit ed7c9fef11931fc5d32a83d68017ff390bf5c280 ]
 
-There is one call trace that snd_soc_register_card()
-->snd_soc_bind_card()->soc_init_pcm_runtime()
-->snd_soc_dai_compress_new()->snd_soc_new_compress().
-In the trace the 'codec_dai' transfers from card->dai_link,
-and we can see from the snd_soc_add_pcm_runtime() in
-snd_soc_bind_card() that, if value of card->dai_link->num_codecs
-is 0, then 'codec_dai' could be null pointer caused
-by index out of bound in 'asoc_rtd_to_codec(rtd, 0)'.
-And snd_soc_register_card() is called by various platforms.
-Therefore, it is better to add the check in the case of misusing.
-And because 'cpu_dai' has already checked in soc_init_pcm_runtime(),
-there is no need to check again.
-Adding the check as follow, then if 'codec_dai' is null,
-snd_soc_new_compress() will not pass through the check
-'if (playback + capture != 1)', avoiding the leftover use of
-'codec_dai'.
+As the potential failure of the clk_enable(),
+it should be better to check it and return error
+if fails.
 
-Fixes: 467fece ("ASoC: soc-dai: move snd_soc_dai_stream_valid() to soc-dai.c")
+Fixes: 5f9a50c3e55e ("ASoC: Davinci: McBSP: add device tree support for McBSP")
 Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/1634285633-529368-1-git-send-email-jiasheng@iscas.ac.cn
+Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+Link: https://lore.kernel.org/r/20220228031540.3571959-1-jiasheng@iscas.ac.cn
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-compress.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ sound/soc/ti/davinci-i2s.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/soc-compress.c b/sound/soc/soc-compress.c
-index 9e54d8ae6d2c..fec736c8c45f 100644
---- a/sound/soc/soc-compress.c
-+++ b/sound/soc/soc-compress.c
-@@ -872,12 +872,14 @@ int snd_soc_new_compress(struct snd_soc_pcm_runtime *rtd, int num)
- 	}
+diff --git a/sound/soc/ti/davinci-i2s.c b/sound/soc/ti/davinci-i2s.c
+index d89b5c928c4d..b2b2dcdb05d4 100644
+--- a/sound/soc/ti/davinci-i2s.c
++++ b/sound/soc/ti/davinci-i2s.c
+@@ -708,7 +708,9 @@ static int davinci_i2s_probe(struct platform_device *pdev)
+ 	dev->clk = clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(dev->clk))
+ 		return -ENODEV;
+-	clk_enable(dev->clk);
++	ret = clk_enable(dev->clk);
++	if (ret)
++		goto err_put_clk;
  
- 	/* check client and interface hw capabilities */
--	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
--	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
--		playback = 1;
--	if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
--	    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
--		capture = 1;
-+	if (codec_dai) {
-+		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_PLAYBACK) &&
-+		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_PLAYBACK))
-+			playback = 1;
-+		if (snd_soc_dai_stream_valid(codec_dai, SNDRV_PCM_STREAM_CAPTURE) &&
-+		    snd_soc_dai_stream_valid(cpu_dai,   SNDRV_PCM_STREAM_CAPTURE))
-+			capture = 1;
-+	}
- 
- 	/*
- 	 * Compress devices are unidirectional so only one of the directions
+ 	dev->dev = &pdev->dev;
+ 	dev_set_drvdata(&pdev->dev, dev);
+@@ -730,6 +732,7 @@ static int davinci_i2s_probe(struct platform_device *pdev)
+ 	snd_soc_unregister_component(&pdev->dev);
+ err_release_clk:
+ 	clk_disable(dev->clk);
++err_put_clk:
+ 	clk_put(dev->clk);
+ 	return ret;
+ }
 -- 
 2.34.1
 
