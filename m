@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0807EC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E26D2C3527C
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231266AbiDNOgA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
+        id S243826AbiDNOhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245520AbiDNNil (ORCPT
+        with ESMTP id S245262AbiDNNiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:38:41 -0400
+        Thu, 14 Apr 2022 09:38:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F73FA207F;
-        Thu, 14 Apr 2022 06:32:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBFF9F3A5;
+        Thu, 14 Apr 2022 06:31:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0F3C619DA;
-        Thu, 14 Apr 2022 13:32:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED4E1C385A1;
-        Thu, 14 Apr 2022 13:32:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A19DE61BA6;
+        Thu, 14 Apr 2022 13:31:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD58DC385A1;
+        Thu, 14 Apr 2022 13:31:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943155;
-        bh=VyPMBV7TTks1pk5+FCIN8TMQLHba/6ctFX8uhteFhYs=;
+        s=korg; t=1649943107;
+        bh=UxiJWQzOxUTKSG/tgEQ7ATLQBu5U6+KUi7zIDsnJIkM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WEzGhUxQW5vBGtXTQc0sfgABsAcxaLQAVeCkOy4VN4mZf22zqdFUr50SmNTvkyKVh
-         by7xdlfZnh+djW/miBtso1+ebcApbNxDsVfLA5Jadv8yfMd5tQoAzU90C03034yukT
-         5/rfDzAVa6DpGq4yZ01TOeNmci9O++G1TU7HOV9Y=
+        b=PmWX782I7jmUlzjoPlkxwTi1Dt3m1v6c6g13Y2Xc7cREvHHUdPUrYErUMfBHJ7QpL
+         p19KcncRYgZR7mr7BIY+C364Au1dyLNP7NOlEsEl5278GCOqQ7Oa6qIZP6r+RWgykI
+         G3o16KZE+U9mXi0sL+1YcLJdP+Ma4urRCQYuOPGc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.4 055/475] ALSA: cs4236: fix an incorrect NULL check on list iterator
-Date:   Thu, 14 Apr 2022 15:07:20 +0200
-Message-Id: <20220414110856.693356392@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.4 036/475] NFSD: prevent underflow in nfssvc_decode_writeargs()
+Date:   Thu, 14 Apr 2022 15:07:01 +0200
+Message-Id: <20220414110856.167378742@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -48,57 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 0112f822f8a6d8039c94e0bc9b264d7ffc5d4704 upstream.
+commit 184416d4b98509fb4c3d8fc3d6dc1437896cc159 upstream.
 
-The bug is here:
-	err = snd_card_cs423x_pnp(dev, card->private_data, pdev, cdev);
+Smatch complains:
 
-The list iterator value 'cdev' will *always* be set and non-NULL
-by list_for_each_entry(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty or no element
-is found.
+	fs/nfsd/nfsxdr.c:341 nfssvc_decode_writeargs()
+	warn: no lower bound on 'args->len'
 
-To fix the bug, use a new variable 'iter' as the list iterator,
-while use the original variable 'cdev' as a dedicated pointer
-to point to the found element. And snd_card_cs423x_pnp() itself
-has NULL check for cdev.
+Change the type to unsigned to prevent this issue.
 
 Cc: stable@vger.kernel.org
-Fixes: c2b73d1458014 ("ALSA: cs4236: cs4232 and cs4236 driver merge to solve PnP BIOS detection")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220327060822.4735-1-xiam0nd.tong@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/isa/cs423x/cs4236.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ fs/nfsd/nfsproc.c |    2 +-
+ fs/nfsd/xdr.h     |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/isa/cs423x/cs4236.c
-+++ b/sound/isa/cs423x/cs4236.c
-@@ -544,7 +544,7 @@ static int snd_cs423x_pnpbios_detect(str
- 	static int dev;
- 	int err;
- 	struct snd_card *card;
--	struct pnp_dev *cdev;
-+	struct pnp_dev *cdev, *iter;
- 	char cid[PNP_ID_LEN];
+--- a/fs/nfsd/nfsproc.c
++++ b/fs/nfsd/nfsproc.c
+@@ -230,7 +230,7 @@ nfsd_proc_write(struct svc_rqst *rqstp)
+ 	unsigned long cnt = argp->len;
+ 	unsigned int nvecs;
  
- 	if (pnp_device_is_isapnp(pdev))
-@@ -560,9 +560,11 @@ static int snd_cs423x_pnpbios_detect(str
- 	strcpy(cid, pdev->id[0].id);
- 	cid[5] = '1';
- 	cdev = NULL;
--	list_for_each_entry(cdev, &(pdev->protocol->devices), protocol_list) {
--		if (!strcmp(cdev->id[0].id, cid))
-+	list_for_each_entry(iter, &(pdev->protocol->devices), protocol_list) {
-+		if (!strcmp(iter->id[0].id, cid)) {
-+			cdev = iter;
- 			break;
-+		}
- 	}
- 	err = snd_cs423x_card_new(&pdev->dev, dev, &card);
- 	if (err < 0)
+-	dprintk("nfsd: WRITE    %s %d bytes at %d\n",
++	dprintk("nfsd: WRITE    %s %u bytes at %d\n",
+ 		SVCFH_fmt(&argp->fh),
+ 		argp->len, argp->offset);
+ 
+--- a/fs/nfsd/xdr.h
++++ b/fs/nfsd/xdr.h
+@@ -33,7 +33,7 @@ struct nfsd_readargs {
+ struct nfsd_writeargs {
+ 	svc_fh			fh;
+ 	__u32			offset;
+-	int			len;
++	__u32			len;
+ 	struct kvec		first;
+ };
+ 
 
 
