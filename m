@@ -2,133 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 05:39:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2330C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 05:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239897AbiDNFmW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 01:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58908 "EHLO
+        id S239917AbiDNFnd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 01:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239148AbiDNFmT (ORCPT
+        with ESMTP id S239889AbiDNFnb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 01:42:19 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8C73DDD9;
-        Wed, 13 Apr 2022 22:39:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649914795; x=1681450795;
-  h=from:to:cc:subject:date:message-id;
-  bh=zU+ic3t12YFwBKYTyaQfNpKvhtBinV5WV8Ejoc+WOpY=;
-  b=DUFqvKocVPwCaH7H1PbOR2qs5JU6t2shNifYp28Jkj6mN8DKiewgRwxP
-   Ns7pOpd8r9ETtgJsfjAW9disoUPOf3wlIXdAYcnGy98Id9PORkTnqWxJz
-   vsh6JKpTgtusNr6lzZPpEMxUK8CSesXGC7tZm6WbcYBD5TJN0NqOySsft
-   A=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 13 Apr 2022 22:39:54 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 13 Apr 2022 22:39:53 -0700
-X-QCInternal: smtphost
-Received: from mdalam-linux.qualcomm.com ([10.201.2.71])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 14 Apr 2022 11:09:40 +0530
-Received: by mdalam-linux.qualcomm.com (Postfix, from userid 466583)
-        id D033C229C7; Thu, 14 Apr 2022 11:09:38 +0530 (IST)
-From:   Md Sadre Alam <quic_mdalam@quicinc.com>
-To:     mani@kernel.org, miquel.raynal@bootlin.com, richard@nod.at,
-        vigneshr@ti.com, linux-mtd@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     konrad.dybcio@somainline.org, quic_srichara@quicinc.com,
-        quic_mdalam@quicinc.com
-Subject: [PATCH] mtd: rawnand: qcom: fix memory corruption that causes panic
-Date:   Thu, 14 Apr 2022 11:09:33 +0530
-Message-Id: <1649914773-22434-1-git-send-email-quic_mdalam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 14 Apr 2022 01:43:31 -0400
+Received: from mo-csw.securemx.jp (mo-csw1514.securemx.jp [210.130.202.153])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D968C4832C;
+        Wed, 13 Apr 2022 22:41:04 -0700 (PDT)
+Received: by mo-csw.securemx.jp (mx-mo-csw1514) id 23E5em7f017194; Thu, 14 Apr 2022 14:40:48 +0900
+X-Iguazu-Qid: 34trQigfs9xr9iyGU3
+X-Iguazu-QSIG: v=2; s=0; t=1649914848; q=34trQigfs9xr9iyGU3; m=6QxjmZsiG7UTivQvdF5fG5AwRycPM6hwoOZ4mSv5Jsg=
+Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
+        by relay.securemx.jp (mx-mr1512) id 23E5emnt009582
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 14 Apr 2022 14:40:48 +0900
+X-SA-MID: 2385299
+From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Cc:     linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, yuji2.ishikawa@toshiba.co.jp
+Subject: [PATCH v2 0/5] Visconti: Add Toshiba Visconti Video Input Interface driver
+Date:   Thu, 14 Apr 2022 14:35:23 +0900
+X-TSB-HOP2: ON
+Message-Id: <20220414053528.31460-1-yuji2.ishikawa@toshiba.co.jp>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch fixes a memory corruption that occurred in the
-nand_scan() path for Hynix nand device.
+This series is the Video Input Interface driver for Toshiba's ARM SoC, Visconti[0].
+This provides DT binding documentation, device driver, MAINTAINER fiels.
 
-On boot, for Hynix nand device will panic at a weird place:
-| Unable to handle kernel NULL pointer dereference at virtual
-  address 00000070
-| [00000070] *pgd=00000000
-| Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-| Modules linked in:
-| CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-01473-g13ae1769cfb0
-  #38
-| Hardware name: Generic DT based system
-| PC is at nandc_set_reg+0x8/0x1c
-| LR is at qcom_nandc_command+0x20c/0x5d0
-| pc : [<c088b74c>]    lr : [<c088d9c8>]    psr: 00000113
-| sp : c14adc50  ip : c14ee208  fp : c0cc970c
-| r10: 000000a3  r9 : 00000000  r8 : 00000040
-| r7 : c16f6a00  r6 : 00000090  r5 : 00000004  r4 :c14ee040
-| r3 : 00000000  r2 : 0000000b  r1 : 00000000  r0 :c14ee040
-| Flags: nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM Segment none
-| Control: 10c5387d  Table: 8020406a  DAC: 00000051
-| Register r0 information: slab kmalloc-2k start c14ee000 pointer offset
-  64 size 2048
-| Process swapper/0 (pid: 1, stack limit = 0x(ptrval))
-| nandc_set_reg from qcom_nandc_command+0x20c/0x5d0
-| qcom_nandc_command from nand_readid_op+0x198/0x1e8
-| nand_readid_op from hynix_nand_has_valid_jedecid+0x30/0x78
-| hynix_nand_has_valid_jedecid from hynix_nand_init+0xb8/0x454
-| hynix_nand_init from nand_scan_with_ids+0xa30/0x14a8
-| nand_scan_with_ids from qcom_nandc_probe+0x648/0x7b0
-| qcom_nandc_probe from platform_probe+0x58/0xac
+Best regards,
+Yuji
 
-The problem is that the nand_scan()'s qcom_nand_attach_chip callback
-is updating the nandc->max_cwperpage from 1 to 4.This causes the
-sg_init_table of clear_bam_transaction() in the driver's
-qcom_nandc_command() to memset much more than what was initially
-allocated by alloc_bam_transaction().
+[0]: https://toshiba.semicon-storage.com/ap-en/semiconductor/product/image-recognition-processors-visconti.html
 
-This patch will update nandc->max_cwperpage 1 to 4 after nand_scan()
-returns, and remove updating nandc->max_cwperpage from
-qcom_nand_attach_chip call back.
 
-Signed-off-by: Md Sadre Alam <quic_mdalam@quicinc.com>
-Signed-off-by: Sricharan R <quic_srichara@quicinc.com>
----
- drivers/mtd/nand/raw/qcom_nandc.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+  dt-bindings: media: platform: visconti: Add Toshiba Visconti Video Input Interface bindings
+    v1 -> v2:
+      - No update
 
-diff --git a/drivers/mtd/nand/raw/qcom_nandc.c b/drivers/mtd/nand/raw/qcom_nandc.c
-index 1a77542..aa3ec45 100644
---- a/drivers/mtd/nand/raw/qcom_nandc.c
-+++ b/drivers/mtd/nand/raw/qcom_nandc.c
-@@ -2652,9 +2652,6 @@ static int qcom_nand_attach_chip(struct nand_chip *chip)
- 
- 	mtd_set_ooblayout(mtd, &qcom_nand_ooblayout_ops);
- 
--	nandc->max_cwperpage = max_t(unsigned int, nandc->max_cwperpage,
--				     cwperpage);
--
- 	/*
- 	 * DATA_UD_BYTES varies based on whether the read/write command protects
- 	 * spare data with ECC too. We protect spare data by default, so we set
-@@ -2909,7 +2906,7 @@ static int qcom_nand_host_init_and_register(struct qcom_nand_controller *nandc,
- 	struct nand_chip *chip = &host->chip;
- 	struct mtd_info *mtd = nand_to_mtd(chip);
- 	struct device *dev = nandc->dev;
--	int ret;
-+	int ret, cwperpage;
- 
- 	ret = of_property_read_u32(dn, "reg", &host->cs);
- 	if (ret) {
-@@ -2955,6 +2952,9 @@ static int qcom_nand_host_init_and_register(struct qcom_nand_controller *nandc,
- 	if (ret)
- 		return ret;
- 
-+	cwperpage = mtd->writesize / NANDC_STEP_SIZE;
-+	nandc->max_cwperpage = max_t(unsigned int, nandc->max_cwperpage,
-+				     cwperpage);
- 	if (nandc->props->is_bam) {
- 		free_bam_transaction(nandc);
- 		nandc->bam_txn = alloc_bam_transaction(nandc);
+  media: platform: visconti: Add Toshiba Visconti Video Input Interface driver headers
+    v1 -> v2:
+      - moved driver headers to an individual patch
+
+  media: platform: visconti: Add Toshiba Visconti Video Input Interface driver body
+    v1 -> v2:
+      - moved driver sources to an individual patch
+   
+  media: platform: visconti: Add Toshiba VIIF image signal processor driver
+    v1 -> v2:
+      - moved image signal processor driver to an individual patch
+
+  MAINTAINERS: Add entries for Toshiba Visconti Video Input Interface
+    v1 -> v2:
+      - No update
+
+Change in V2:
+  - moved files into individual patches to decrease patch size
+
+Yuji Ishikawa (5):
+  dt-bindings: media: platform: visconti: Add Toshiba Visconti Video
+    Input Interface bindings
+  media: platform: visconti: Add Toshiba Visconti Video Input Interface
+    driver headers
+  media: platform: visconti: Add Toshiba Visconti Video Input Interface
+    driver body
+  media: platform: visconti: Add Toshiba VIIF image signal processor
+    driver
+  MAINTAINERS: Add entries for Toshiba Visconti Video Input Interface
+
+ .../bindings/media/toshiba,visconti-viif.yaml |  103 +
+ MAINTAINERS                                   |    2 +
+ drivers/media/platform/Kconfig                |    2 +
+ drivers/media/platform/Makefile               |    4 +
+ drivers/media/platform/visconti/Kconfig       |    9 +
+ drivers/media/platform/visconti/Makefile      |    9 +
+ drivers/media/platform/visconti/hwd_viif.c    | 2233 ++++++++++
+ drivers/media/platform/visconti/hwd_viif.h    | 1776 ++++++++
+ .../media/platform/visconti/hwd_viif_csi2rx.c |  767 ++++
+ .../platform/visconti/hwd_viif_internal.h     |  361 ++
+ .../media/platform/visconti/hwd_viif_l1isp.c  | 3769 +++++++++++++++++
+ .../media/platform/visconti/hwd_viif_reg.h    | 2802 ++++++++++++
+ drivers/media/platform/visconti/viif.c        | 2384 +++++++++++
+ drivers/media/platform/visconti/viif.h        |  134 +
+ include/uapi/linux/visconti_viif.h            | 1683 ++++++++
+ 15 files changed, 16038 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/toshiba,visconti-viif.yaml
+ create mode 100644 drivers/media/platform/visconti/Kconfig
+ create mode 100644 drivers/media/platform/visconti/Makefile
+ create mode 100644 drivers/media/platform/visconti/hwd_viif.c
+ create mode 100644 drivers/media/platform/visconti/hwd_viif.h
+ create mode 100644 drivers/media/platform/visconti/hwd_viif_csi2rx.c
+ create mode 100644 drivers/media/platform/visconti/hwd_viif_internal.h
+ create mode 100644 drivers/media/platform/visconti/hwd_viif_l1isp.c
+ create mode 100644 drivers/media/platform/visconti/hwd_viif_reg.h
+ create mode 100644 drivers/media/platform/visconti/viif.c
+ create mode 100644 drivers/media/platform/visconti/viif.h
+ create mode 100644 include/uapi/linux/visconti_viif.h
+
 -- 
-2.7.4
+2.17.1
+
 
