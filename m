@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B54E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E63AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:49:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344758AbiDNNte (ORCPT
+        id S1344807AbiDNNti (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:49:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56928 "EHLO
+        Thu, 14 Apr 2022 09:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344034AbiDNNaQ (ORCPT
+        with ESMTP id S1344073AbiDNNaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:30:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340882BA;
-        Thu, 14 Apr 2022 06:26:39 -0700 (PDT)
+        Thu, 14 Apr 2022 09:30:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAF1CF7;
+        Thu, 14 Apr 2022 06:27:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6D656190F;
-        Thu, 14 Apr 2022 13:26:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3E0FC385A1;
-        Thu, 14 Apr 2022 13:26:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 052D4B8296A;
+        Thu, 14 Apr 2022 13:27:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52C0DC385A5;
+        Thu, 14 Apr 2022 13:27:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942798;
-        bh=Y4PFYmdYR2WjNP0fkjHUgXF9wtFrae+g7GdxMfughyY=;
+        s=korg; t=1649942850;
+        bh=kG83fm/uw9f9FgbFT6dnBntrYvXbw3LuHcg8CbvN6tU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YV6vHqT3WhLVC6syri6ItLQGXSrpYwREr4nYriNw45YgBRbuOa+lgpY+ibDlYNhmb
-         v7SL95u0oQe5Sk6NfIHwrP5ZtV6FFbo9GBuzqYP9DwGJRHtst6eC0oGHzWQCEmO+tZ
-         BuwLMErAfWHM2V0B/A9WDkAMSYlRNUdlCKb31UGU=
+        b=B5tBBIvhN5WzktlcwsA2QsI3gD8+y4MSJJFBCdiMHqT1LzPoR8MuZqx5mP/m1wyEq
+         3LalH7EaB8pAd8UYek1OgzxySqc2l4oUZEkcav7kh1CuyDLIo9JQ2eWzey/uKPJtik
+         O7Sse7f/u9Os7nxC+YWf5ycaQepp+B6BS6iVpppM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Kiselev <bigunclemax@gmail.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 265/338] powerpc: dts: t104xrdb: fix phy type for FMAN 4/5
-Date:   Thu, 14 Apr 2022 15:12:48 +0200
-Message-Id: <20220414110846.432190790@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Huang Rui <ray.huang@amd.com>
+Subject: [PATCH 4.19 244/338] ACPI: CPPC: Avoid out of bounds access when parsing _CPC data
+Date:   Thu, 14 Apr 2022 15:12:27 +0200
+Message-Id: <20220414110845.836088561@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -52,47 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Kiselev <bigunclemax@gmail.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 17846485dff91acce1ad47b508b633dffc32e838 ]
+commit 40d8abf364bcab23bc715a9221a3c8623956257b upstream.
 
-T1040RDB has two RTL8211E-VB phys which requires setting
-of internal delays for correct work.
+If the NumEntries field in the _CPC return package is less than 2, do
+not attempt to access the "Revision" element of that package, because
+it may not be present then.
 
-Changing the phy-connection-type property to `rgmii-id`
-will fix this issue.
-
-Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
-Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211230151123.1258321-1-bigunclemax@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 337aadff8e45 ("ACPI: Introduce CPU performance controls using CPPC")
+BugLink: https://lore.kernel.org/lkml/20220322143534.GC32582@xsang-OptiPlex-9020/
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Huang Rui <ray.huang@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/boot/dts/fsl/t104xrdb.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/acpi/cppc_acpi.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-index 099a598c74c0..bfe1ed5be337 100644
---- a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
-@@ -139,12 +139,12 @@
- 		fman@400000 {
- 			ethernet@e6000 {
- 				phy-handle = <&phy_rgmii_0>;
--				phy-connection-type = "rgmii";
-+				phy-connection-type = "rgmii-id";
- 			};
- 
- 			ethernet@e8000 {
- 				phy-handle = <&phy_rgmii_1>;
--				phy-connection-type = "rgmii";
-+				phy-connection-type = "rgmii-id";
- 			};
- 
- 			mdio0: mdio@fc000 {
--- 
-2.35.1
-
+--- a/drivers/acpi/cppc_acpi.c
++++ b/drivers/acpi/cppc_acpi.c
+@@ -742,6 +742,11 @@ int acpi_cppc_processor_probe(struct acp
+ 	cpc_obj = &out_obj->package.elements[0];
+ 	if (cpc_obj->type == ACPI_TYPE_INTEGER)	{
+ 		num_ent = cpc_obj->integer.value;
++		if (num_ent <= 1) {
++			pr_debug("Unexpected _CPC NumEntries value (%d) for CPU:%d\n",
++				 num_ent, pr->id);
++			goto out_free;
++		}
+ 	} else {
+ 		pr_debug("Unexpected entry type(%d) for NumEntries\n",
+ 				cpc_obj->type);
 
 
