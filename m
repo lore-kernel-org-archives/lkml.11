@@ -2,162 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59ACBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 01:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35DA7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 01:40:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239449AbiDNBdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Apr 2022 21:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33454 "EHLO
+        id S239448AbiDNBms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Apr 2022 21:42:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbiDNBdl (ORCPT
+        with ESMTP id S229580AbiDNBmq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Apr 2022 21:33:41 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C400522F1;
-        Wed, 13 Apr 2022 18:31:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8077CCE27EB;
-        Thu, 14 Apr 2022 01:31:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 849B7C385A3;
-        Thu, 14 Apr 2022 01:31:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649899874;
-        bh=pXA3UcvmQhe78Hg2wD2xtbuY0R4lUU4THOixPj3r68Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=u++qsKMzV6jk9yB2AqTiqhYcOboL2TMX1glvdTxM+ZZuV40ix3zj7Z5NVRbaKq8oh
-         zO/LkfW63vSukVKzS2riw8V7/JSh24VvjQxi9EcS7zPtgEek91WxBC22N1+zFeaBns
-         hrArs1zAeWWpSbsljO2jibI8NDTzgT/UuQEX6AWxV852n6cVOlW9MsSC9l+da0BCp8
-         fj7xqjt/YCg9oQMPMbxGrBVkquwG9uwLVev3WBIx+Ws6ouvY0RGPMhl47TaVEYp5nw
-         Z6g4vaEFXPAQR7irwQJDL0d2Z9F00FXNQGGzgVaJsrQHn867iNXgabYjhf25rdiinH
-         DLx1ZtsJKeSOw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id E76A740407; Wed, 13 Apr 2022 22:31:11 -0300 (-03)
-Date:   Wed, 13 Apr 2022 22:31:11 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Alexey Bayduraev <alexey.bayduraev@gmail.com>
-Cc:     Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Subject: Re: [PATCH 1/3] perf record: Fix per-thread option.
-Message-ID: <Yld5X7sPshUEUgBT@kernel.org>
-References: <20220412062133.2546080-1-irogers@google.com>
- <e1ce0d93-88cc-af79-e67e-d3c79d166ca6@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e1ce0d93-88cc-af79-e67e-d3c79d166ca6@gmail.com>
-X-Url:  http://acmel.wordpress.com
+        Wed, 13 Apr 2022 21:42:46 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE0951D0DC
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 18:40:22 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id mm4-20020a17090b358400b001cb93d8b137so7930752pjb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Apr 2022 18:40:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1GTkIm7HStAc9gISyIdz9zOgOj80mUvQQlfaws8tnP8=;
+        b=zrIHDWNah59SopJx/pXT/znwLqBVjjm8ZR5vXA8K3E3FWIhSEfbP0LTyspbGwHYTVF
+         Py3Us8QAOBoxkm7fiR7mDKLn9r96kOmjcmThavue5Os3Cf+A/1lXSot6lNI2WkPR1+zv
+         WLpwC5hUI8uWTvslZeNFi2dElnURjicHNdluiU7mFcaFOwh5o18moHLfy0ZXGeU+y7EF
+         jTe9vNiMRw/TjjO/ER5aSiIsgrO34wUn7sRLm1N5MQeOYad9SbPZQ8IA2spZhZw89Z5Z
+         iLDQ5lszreHP/hj9hfHw8BhzHNXaAiAP2K0ouxwV0UZqvIdst6qD9RRqY2cSxCaqcBp3
+         jwPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=1GTkIm7HStAc9gISyIdz9zOgOj80mUvQQlfaws8tnP8=;
+        b=btBiWzvjKB3NuW5q103GzypYP2C4yOtX9qO8E10X+fOhefWxs4j/L+dcvAlQxpwYbD
+         VIwJ0KbdSb++Jgl1KLcwh44gjd7h0Ke82m29IJoun6Yap55nH2npyoK00JE6OvDMuIE9
+         q9RzG4gTGkZedc3idkUpViHeg8EhfNMqhO3MDPczwdst9CWdtPc0vLo1EJgR5Wdp0cZD
+         IYJPH5o9YoRC4iHliPJ9iKVCcFUPw3AuwonWphGPzfwCF73dW/yVoVRLY34pGEG10CVq
+         HerPFYDtJv8UuMJ8swUQk7zXC1Q/+qpONfpAu4tx7LPjq5QtYMFIJ6X6Thqkg46Duc7k
+         jdWw==
+X-Gm-Message-State: AOAM532AgCnxrU72Z2Csl6OjziTF31bde9rnRPjYebBxQQkvAMwuV6yc
+        mPviZYevEsxET8bA/sCho+/XLA==
+X-Google-Smtp-Source: ABdhPJzPpbeJLgJM0CyvcbCgUGx0PqKArxjGcoN8BWa16o+NJVMZdXfu6AFNf6Ey6eCq5yErlcywyQ==
+X-Received: by 2002:a17:902:d4c3:b0:158:a79e:9bf with SMTP id o3-20020a170902d4c300b00158a79e09bfmr4457768plg.40.1649900422092;
+        Wed, 13 Apr 2022 18:40:22 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id z23-20020aa79597000000b0050591e66508sm328567pfj.220.2022.04.13.18.40.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Apr 2022 18:40:21 -0700 (PDT)
+Date:   Wed, 13 Apr 2022 18:40:21 -0700 (PDT)
+X-Google-Original-Date: Wed, 13 Apr 2022 18:39:07 PDT (-0700)
+Subject:     Re: [PATCH] RISC-V: Add CONFIG_{NON,}PORTABLE
+In-Reply-To: <CAK8P3a0gqTNX7zNneE6NX1aXvnO77oY2nYyGK4KbwEYdFS8F9Q@mail.gmail.com>
+CC:     Arnd Bergmann <arnd@arndb.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Message-ID: <mhng-f3ab3915-9ccf-423a-9bf4-d49167b22f80@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Apr 13, 2022 at 04:42:07AM +0300, Alexey Bayduraev escreveu:
-> On 12.04.2022 09:21, Ian Rogers wrote:
-> 
-> > From: Alexey Bayduraev <alexey.bayduraev@gmail.com>
-> 
-> Thanks,
-> 
-> The tag
-> Signed-off-by: Alexey Bayduraev <alexey.bayduraev@gmail.com>
-> can be added to this patch.
+On Thu, 10 Mar 2022 10:59:42 PST (-0800), Arnd Bergmann wrote:
+> On Thu, Mar 10, 2022 at 6:08 PM Palmer Dabbelt <palmer@rivosinc.com> wrote:
+>>
+>> From: Palmer Dabbelt <palmer@rivosinc.com>
+>>
+>> The RISC-V port has collected a handful of options that are
+>> fundamentally non-portable.  To prevent users from shooting themselves
+>> in the foot, hide them all behind a config entry that explicitly calls
+>> out that non-portable binaries may be produced.
+>>
+>> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+>>
+>> ---
+>> This came up in the context of the no-M patch:
+>> https://lore.kernel.org/lkml/CAK8P3a3mzax-OiaxBcxM_RgKNsd6N8HW0odRmw38u2jKE5aYaQ@mail.gmail.com/
+>>
+>> I'm not sure I strictly need both PORTABLE and NONPORTABLE, but it's the
+>> only way I could come up with to force things like EFI.  I'll poke
+>> around Kconfig a bit more, but I figured this is going to lead to a
+>> discussion so it'd be better to just send this crusty version so we at
+>> least have something concrete to talk about.
+>>
+>> I've only given this a smoke test (ie, defconfig looks OK).  I'll go
+>> through all the configs if folks think this is the right way to go -- I
+>> figure it's better to have the discussion on a more focused patch than
+>> on that M patch, as this is really an orthogonal issue.
+>>
+>> I'm not really sure what the right option is here: I'm not selecting
+>> things like errata and basic drivers, but I could buy the argument that
+>> disabling those results in non-portable systems.  I am selecting EFI,
+>> that might not be strictly required now but it's the direction we're
+>> going so I figure we might as well start now.  I've also hidden 32BIT
+>> behind this, I could see that going either way but my guess is that
+>> users of 32-bit systems won't care about portable binaries.
+>
+> These are all things I would have suggested as well, sounds good.
+>
+>>  I'm also
+>> not sure if this should be tied to something like EMBEDDED or EXPERT.
+>
+> CONFIG_EMBEDDED is weird, it's better to avoid interacting with
+> it, because it tends to not do what one expects. Hiding it behind
+> CONFIG_EXPERT would make sense, but it's also a rather strong
+> guard, so it's probably better to leave it the way you have it.
+>
+>> My biggest worry with this is that users might get the feeling that
+>> current kernels will be compatible with new hardware, that's just not
+>> how RISC-V works.  I tried to write the help text indicating that, I'm
+>> not sure I like how it reads so I'll almost certainly take another shot
+>> at it (though suggestions are, of course, welcome).
+>>
+>> I'm also a bit worried that vendors might get the feeling we're not
+>> going to support systems that need modifications to these portablity
+>> requirements.  That's also not the case, as there's really no way for
+>> vendors to make sure their systems continue to run portable kernels
+>> aside from just releasing them publicly so we can test them.
+>> ---
+>>  arch/riscv/Kconfig | 28 ++++++++++++++++++++++++++--
+>>  1 file changed, 26 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+>> index 5adcbd9b5e88..de0916d7aca7 100644
+>> --- a/arch/riscv/Kconfig
+>> +++ b/arch/riscv/Kconfig
+>> @@ -9,6 +9,7 @@ config 64BIT
+>>
+>>  config 32BIT
+>>         bool
+>> +       depends on NONPORTABLE
+>
+> This 'depends on is in the wrong place, you need to move it below
+> ARCH_RV32I, or possibly rework that "Base ISA" choice statement
+> into something else.
+>
+>>  config RISCV
+>>         def_bool y
+>> @@ -485,6 +486,7 @@ config STACKPROTECTOR_PER_TASK
+>>
+>>  config PHYS_RAM_BASE_FIXED
+>>         bool "Explicitly specified physical RAM address"
+>> +       depends on NONPORTABLE
+>>         default n
+>>
+>>  config PHYS_RAM_BASE
+>> @@ -498,7 +500,7 @@ config PHYS_RAM_BASE
+>>
+>>  config XIP_KERNEL
+>>         bool "Kernel Execute-In-Place from ROM"
+>> -       depends on MMU && SPARSEMEM
+>> +       depends on MMU && SPARSEMEM && NONPORTABLE
+>>         # This prevents XIP from being enabled by all{yes,mod}config, which
+>>         # fail to build since XIP doesn't support large kernels.
+>>         depends on !COMPILE_TEST
+>> @@ -538,9 +540,31 @@ endmenu
+>>
+>>  config BUILTIN_DTB
+>>         bool
+>> -       depends on OF
+>> +       depends on OF && NONPORTABLE
+>>         default y if XIP_KERNEL
+>>
+>> +config NONPORTABLE
+>> +       bool "Allow configurations that result in non-portable kernels"
+>> +       help
+>> +         RISC-V kernel binaries are compatibile between all known systems
+>
+> typo: compatible
+>
+>> +         whenever possible, but there are some use cases that can only be
+>> +         satisfied by configurations that result in kernel binaries that are
+>> +         not portable between systems.
+>> +
+>> +         Selecting N does not guarntee kernels will be portable to all knows
+>
+> typo: guarantee
+>
+>> +         systems.  Selecting any of the options guarded by NONPORTABLE will
+>> +         result in kernel binaries that are unlikely to be portable between
+>> +         systems.
+>> +
+>> +         If unsure, say N.
+>> +
+>> +config PORTABLE
+>> +       bool
+>> +       default !NONPORTABLE
+>> +       select EFI
+>> +       select OF
+>> +       select MMU
+>
+> A nice trick I would use here is to make PORTABLE/NONPORTABLE
+> into a 'choice' statement that defaults to PORTABLE. That way, both
+> allnoconfig and allmodconfig/allyesconfig end up testing the portable case.
+>
+> Ideally both allnoconfig and allmodconfig would be able to boot the
+> same (virtual) machine, but getting to that point likely requires addressing
+> further issues.
+>
+> If someone can come up with a better naming system, the
+> portable/nonportable choice could even be integrated into the
+> "Base ISA" choice, giving the user a list of the possible targets,
+> like:
 
-Thanks, will add that to the cset,
+That's a really nice trick to know.  We're a lot farther from this than 
+making an allnoconfig build, at least some of that is the Kconfig.socs 
+brokenness.  IMO that's sort of just its own problem, and while it 
+should get fixed if I try to roll it up into this one we're going to get 
+the simple thing stuck on a bigger thing.
 
-Best regards,
-
-- Arnaldo
- 
-> Regards,
-> Alexey
-> 
-> > 
-> > Per-thread mode doesn't have specific CPUs for events, add checks for
-> > this case.
-> > 
-> > Minor fix to a pr_debug by Ian Rogers <irogers@google.com> to avoid an
-> > out of bound array access.
-> > 
-> > Reported-by: Ian Rogers <irogers@google.com>
-> > Fixes: 7954f71689f9 ("perf record: Introduce thread affinity and mmap masks")
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > ---
-> >  tools/perf/builtin-record.c | 22 +++++++++++++++++-----
-> >  1 file changed, 17 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
-> > index ba74fab02e62..069825c48d40 100644
-> > --- a/tools/perf/builtin-record.c
-> > +++ b/tools/perf/builtin-record.c
-> > @@ -989,8 +989,11 @@ static int record__thread_data_init_maps(struct record_thread *thread_data, stru
-> >  	struct mmap *overwrite_mmap = evlist->overwrite_mmap;
-> >  	struct perf_cpu_map *cpus = evlist->core.user_requested_cpus;
-> >  
-> > -	thread_data->nr_mmaps = bitmap_weight(thread_data->mask->maps.bits,
-> > -					      thread_data->mask->maps.nbits);
-> > +	if (cpu_map__is_dummy(cpus))
-> > +		thread_data->nr_mmaps = nr_mmaps;
-> > +	else
-> > +		thread_data->nr_mmaps = bitmap_weight(thread_data->mask->maps.bits,
-> > +						      thread_data->mask->maps.nbits);
-> >  	if (mmap) {
-> >  		thread_data->maps = zalloc(thread_data->nr_mmaps * sizeof(struct mmap *));
-> >  		if (!thread_data->maps)
-> > @@ -1007,16 +1010,17 @@ static int record__thread_data_init_maps(struct record_thread *thread_data, stru
-> >  		 thread_data->nr_mmaps, thread_data->maps, thread_data->overwrite_maps);
-> >  
-> >  	for (m = 0, tm = 0; m < nr_mmaps && tm < thread_data->nr_mmaps; m++) {
-> > -		if (test_bit(cpus->map[m].cpu, thread_data->mask->maps.bits)) {
-> > +		if (cpu_map__is_dummy(cpus) ||
-> > +		    test_bit(cpus->map[m].cpu, thread_data->mask->maps.bits)) {
-> >  			if (thread_data->maps) {
-> >  				thread_data->maps[tm] = &mmap[m];
-> >  				pr_debug2("thread_data[%p]: cpu%d: maps[%d] -> mmap[%d]\n",
-> > -					  thread_data, cpus->map[m].cpu, tm, m);
-> > +					  thread_data, perf_cpu_map__cpu(cpus, m).cpu, tm, m);
-> >  			}
-> >  			if (thread_data->overwrite_maps) {
-> >  				thread_data->overwrite_maps[tm] = &overwrite_mmap[m];
-> >  				pr_debug2("thread_data[%p]: cpu%d: ow_maps[%d] -> ow_mmap[%d]\n",
-> > -					  thread_data, cpus->map[m].cpu, tm, m);
-> > +					  thread_data, perf_cpu_map__cpu(cpus, m).cpu, tm, m);
-> >  			}
-> >  			tm++;
-> >  		}
-> > @@ -3329,6 +3333,9 @@ static void record__mmap_cpu_mask_init(struct mmap_cpu_mask *mask, struct perf_c
-> >  {
-> >  	int c;
-> >  
-> > +	if (cpu_map__is_dummy(cpus))
-> > +		return;
-> > +
-> >  	for (c = 0; c < cpus->nr; c++)
-> >  		set_bit(cpus->map[c].cpu, mask->bits);
-> >  }
-> > @@ -3680,6 +3687,11 @@ static int record__init_thread_masks(struct record *rec)
-> >  	if (!record__threads_enabled(rec))
-> >  		return record__init_thread_default_masks(rec, cpus);
-> >  
-> > +	if (cpu_map__is_dummy(cpus)) {
-> > +		pr_err("--per-thread option is mutually exclusive to parallel streaming mode.\n");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> >  	switch (rec->opts.threads_spec) {
-> >  	case THREAD_SPEC__CPU:
-> >  		ret = record__init_thread_cpu_masks(rec, cpus);
-> > 
-
--- 
-
-- Arnaldo
+> choice
+>       prompt "System type"
+>       default ARCH_RV64I
+>
+> config ARCH_RV64I
+>        bool "Generic portable RV64GC system"
+>        select 64BIT
+>        select EFI
+>        select OF
+>        select MMU
+>
+> config ARCH_RV64I_NONPORTABLE
+>         bool "Custom RV64I machine, nonportable"
+>         select 64BIT
+>         select MMU
+>
+> config ARCH_RV32I_NONPORTABLE
+>         bool "Custom RV64I machine, nonportable"
+>         select 64BIT
+>         select MMU
+>
+> config ARCH_RV64_NOMMU
+>         bool "Custom RV64I machine without MMU"
+>         select 64BIT
+>
+> endchoice
+>
+> Not sure if that is more or less confusing than what you have
+> here, just putting it out there as another way to handle the
+> top-level platform selection.
+>
+>          Arnd
