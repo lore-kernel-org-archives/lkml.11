@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D90AAC388F3
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 13:57:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345497AbiDNNxT (ORCPT
+        id S1345526AbiDNNx1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56790 "EHLO
+        Thu, 14 Apr 2022 09:53:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343594AbiDNN3j (ORCPT
+        with ESMTP id S1343498AbiDNN3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:29:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04AA39E9D5;
-        Thu, 14 Apr 2022 06:24:51 -0700 (PDT)
+        Thu, 14 Apr 2022 09:29:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B4EB95A3C;
+        Thu, 14 Apr 2022 06:24:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A18CBB82983;
-        Thu, 14 Apr 2022 13:24:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00189C385A5;
-        Thu, 14 Apr 2022 13:24:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A597B82984;
+        Thu, 14 Apr 2022 13:24:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83744C385A5;
+        Thu, 14 Apr 2022 13:24:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649942688;
-        bh=JSZWGaDDLQfuTSHDyFBGMcjYqYdEW8j/2u00b9MsXxQ=;
+        s=korg; t=1649942654;
+        bh=8eD3NBqN/q0rqhEJ4PrIDbklKcrEr68iBunmR+/7aRM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yVPvlvUFr4BCPjdM3emyGn9fB6aUc3w/d/e4BJIjkx1jIw/ZvyfKvccsLedlaE7a1
-         N9fQwYI/c5h9XLeH+zGH8ftnmxnYc3IEzVkkxU5kAkrsL8uvFzSeY3CoBHVB8XXwOR
-         nsY6rIfeIAsqd5Ow7zJengesH/L6kchex9FZswmo=
+        b=gy1FJe8RokNYsGpEfZHKdSiX3s0lgkhQS+BKEkQk6kiKbqfEHg9uo8yc1vLeVcwHY
+         805cXOErTrWO4l2otdfv0Hdirug++G/5lNk+rMgoAYGUtokqjdqHhooohkFdaI09Te
+         JovFTxNSkRUoeMTps33OUcyIZ0KVpAd68fnpDZNM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.19 224/338] scsi: qla2xxx: Fix warning for missing error code
-Date:   Thu, 14 Apr 2022 15:12:07 +0200
-Message-Id: <20220414110845.268097507@linuxfoundation.org>
+        =?UTF-8?q?Holger=20Hoffst=C3=A4tte?= 
+        <holger@applied-asynchrony.com>,
+        Paolo Valente <paolo.valente@linaro.org>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 196/338] Revert "Revert "block, bfq: honor already-setup queue merges""
+Date:   Thu, 14 Apr 2022 15:11:39 +0200
+Message-Id: <20220414110844.475505816@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110838.883074566@linuxfoundation.org>
 References: <20220414110838.883074566@linuxfoundation.org>
@@ -51,35 +52,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nilesh Javali <njavali@marvell.com>
+From: Paolo Valente <paolo.valente@linaro.org>
 
-commit 14cb838d245ae0d523b2f7804af5a02c22e79f5a upstream.
+[ Upstream commit 15729ff8143f8135b03988a100a19e66d7cb7ecd ]
 
-Fix smatch-reported warning message:
+A crash [1] happened to be triggered in conjunction with commit
+2d52c58b9c9b ("block, bfq: honor already-setup queue merges"). The
+latter was then reverted by commit ebc69e897e17 ("Revert "block, bfq:
+honor already-setup queue merges""). Yet, the reverted commit was not
+the one introducing the bug. In fact, it actually triggered a UAF
+introduced by a different commit, and now fixed by commit d29bd41428cf
+("block, bfq: reset last_bfqq_created on group change").
 
-drivers/scsi/qla2xxx/qla_target.c:3324 qlt_xmit_response() warn: missing error
-code 'res'
+So, there is no point in keeping commit 2d52c58b9c9b ("block, bfq:
+honor already-setup queue merges") out. This commit restores it.
 
-Link: https://lore.kernel.org/r/20220110050218.3958-12-njavali@marvell.com
-Fixes: 4a8f71014b4d ("scsi: qla2xxx: Fix unmap of already freed sgl")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[1] https://bugzilla.kernel.org/show_bug.cgi?id=214503
+
+Reported-by: Holger Hoffstätte <holger@applied-asynchrony.com>
+Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
+Link: https://lore.kernel.org/r/20211125181510.15004-1-paolo.valente@linaro.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_target.c |    1 +
- 1 file changed, 1 insertion(+)
+ block/bfq-iosched.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_target.c
-+++ b/drivers/scsi/qla2xxx/qla_target.c
-@@ -3216,6 +3216,7 @@ int qlt_xmit_response(struct qla_tgt_cmd
- 			"RESET-RSP online/active/old-count/new-count = %d/%d/%d/%d.\n",
- 			vha->flags.online, qla2x00_reset_active(vha),
- 			cmd->reset_count, qpair->chip_reset);
-+		res = 0;
- 		goto out_unmap_unlock;
- 	}
+diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+index dfd55037dc6f..a9f42df92ea3 100644
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2155,6 +2155,15 @@ bfq_setup_merge(struct bfq_queue *bfqq, struct bfq_queue *new_bfqq)
+ 	 * are likely to increase the throughput.
+ 	 */
+ 	bfqq->new_bfqq = new_bfqq;
++	/*
++	 * The above assignment schedules the following redirections:
++	 * each time some I/O for bfqq arrives, the process that
++	 * generated that I/O is disassociated from bfqq and
++	 * associated with new_bfqq. Here we increases new_bfqq->ref
++	 * in advance, adding the number of processes that are
++	 * expected to be associated with new_bfqq as they happen to
++	 * issue I/O.
++	 */
+ 	new_bfqq->ref += process_refs;
+ 	return new_bfqq;
+ }
+@@ -2214,6 +2223,10 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ {
+ 	struct bfq_queue *in_service_bfqq, *new_bfqq;
  
++	/* if a merge has already been setup, then proceed with that first */
++	if (bfqq->new_bfqq)
++		return bfqq->new_bfqq;
++
+ 	/*
+ 	 * Prevent bfqq from being merged if it has been created too
+ 	 * long ago. The idea is that true cooperating processes, and
+@@ -2228,9 +2241,6 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ 	if (bfq_too_late_for_merging(bfqq))
+ 		return NULL;
+ 
+-	if (bfqq->new_bfqq)
+-		return bfqq->new_bfqq;
+-
+ 	if (!io_struct || unlikely(bfqq == &bfqd->oom_bfqq))
+ 		return NULL;
+ 
+-- 
+2.34.1
+
 
 
