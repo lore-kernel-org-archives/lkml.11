@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18AA9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D2EAC433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Apr 2022 14:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352649AbiDNOcj (ORCPT
+        id S1352763AbiDNOco (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 10:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47186 "EHLO
+        Thu, 14 Apr 2022 10:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344412AbiDNNlR (ORCPT
+        with ESMTP id S1344432AbiDNNlY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 09:41:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B32D1C6;
-        Thu, 14 Apr 2022 06:38:52 -0700 (PDT)
+        Thu, 14 Apr 2022 09:41:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E8E120;
+        Thu, 14 Apr 2022 06:38:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 11F15612E6;
-        Thu, 14 Apr 2022 13:38:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E799C385A5;
-        Thu, 14 Apr 2022 13:38:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B58FB8296A;
+        Thu, 14 Apr 2022 13:38:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A73C4C385A1;
+        Thu, 14 Apr 2022 13:38:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649943531;
-        bh=z8ceBJzXnEoChGpm2Eswv6vTTVc0j3f+ya86GGzNJ2A=;
+        s=korg; t=1649943537;
+        bh=4VR1gNw0Ixkx5YMl7UBXLyrvvkfpFpFPgHBUp8qiyLY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fDd3K0XZXJCeSVmGGmO/UFs1rvj7blOcKhsDoZzl6Z+nyJ/7mmnjL3zqk/J5CxZZH
-         Q81nNKoJZrQWs9DylJWNPwZjpvEzeRcc1mf2h5nbOlskoK3sV2k7FbmIxye/hP+HIq
-         mxjfmMuXEK4RQAnzh37x8V/TbpOZ0FHHN3SuzkVw=
+        b=NsiaD2bJDWn8QfKEBhKsN/PGYqV9Jm1/HGJ6L598bNVzc+Q8atGtgWBcwSUDZihNE
+         ASzRZbA5GZhIqop75gye2Uhg4sta34VMrMQ4YTcV0G8nlUk4uY70GmClj7jVBq4PEU
+         XlSnVoVaikTas5qIVvjcxNlj/fo4hK6fVW2ul7gs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Thierry Reding <treding@nvidia.com>,
+        stable@vger.kernel.org, Yihang Li <liyihang6@hisilicon.com>,
+        Xiang Chen <chenxiang66@hisilicon.com>,
+        John Garry <john.garry@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 190/475] drm/tegra: Fix reference leak in tegra_dsi_ganged_probe
-Date:   Thu, 14 Apr 2022 15:09:35 +0200
-Message-Id: <20220414110900.447499475@linuxfoundation.org>
+Subject: [PATCH 5.4 192/475] scsi: hisi_sas: Change permission of parameter prot_mask
+Date:   Thu, 14 Apr 2022 15:09:37 +0200
+Message-Id: <20220414110900.503727036@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
 References: <20220414110855.141582785@linuxfoundation.org>
@@ -50,37 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Xiang Chen <chenxiang66@hisilicon.com>
 
-[ Upstream commit 221e3638feb8bc42143833c9a704fa89b6c366bb ]
+[ Upstream commit c4e070457a93705e56ed06b3910d9e5fe56d3be3 ]
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore. Add put_device() call to fix this.
+Currently the permission of parameter prot_mask is 0x0, which means that
+the member does not appear in sysfs. Change it as other module parameters
+to 0444 for world-readable.
 
-Fixes: e94236cde4d5 ("drm/tegra: dsi: Add ganged mode support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+[mkp: s/v3/v2/]
+
+Link: https://lore.kernel.org/r/1645703489-87194-2-git-send-email-john.garry@huawei.com
+Fixes: d6a9000b81be ("scsi: hisi_sas: Add support for DIF feature for v2 hw")
+Reported-by: Yihang Li <liyihang6@hisilicon.com>
+Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/tegra/dsi.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/tegra/dsi.c b/drivers/gpu/drm/tegra/dsi.c
-index a5d47e301c5f..13413d2b2602 100644
---- a/drivers/gpu/drm/tegra/dsi.c
-+++ b/drivers/gpu/drm/tegra/dsi.c
-@@ -1455,8 +1455,10 @@ static int tegra_dsi_ganged_probe(struct tegra_dsi *dsi)
- 		dsi->slave = platform_get_drvdata(gangster);
- 		of_node_put(np);
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index 13f314fa757e..a86aae52d94f 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -504,7 +504,7 @@ MODULE_PARM_DESC(intr_conv, "interrupt converge enable (0-1)");
  
--		if (!dsi->slave)
-+		if (!dsi->slave) {
-+			put_device(&gangster->dev);
- 			return -EPROBE_DEFER;
-+		}
+ /* permit overriding the host protection capabilities mask (EEDP/T10 PI) */
+ static int prot_mask;
+-module_param(prot_mask, int, 0);
++module_param(prot_mask, int, 0444);
+ MODULE_PARM_DESC(prot_mask, " host protection capabilities mask, def=0x0 ");
  
- 		dsi->slave->master = dsi;
- 	}
+ static bool auto_affine_msi_experimental;
 -- 
 2.34.1
 
