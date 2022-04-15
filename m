@@ -2,78 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E57CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 00:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCBDFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 00:02:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347874AbiDOAEe (ORCPT
+        id S1347885AbiDOAEw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 20:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
+        Thu, 14 Apr 2022 20:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347856AbiDOAEZ (ORCPT
+        with ESMTP id S1347867AbiDOAEd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 20:04:25 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927E885962;
-        Thu, 14 Apr 2022 17:01:58 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1649980917;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=740eiMaj1mMtgTIenrEzjJ/eAUZj68u7jwk/iuSKMgA=;
-        b=w26K1SB+vI3qaqMdu0othXCQB1y7ABS7GYKBiHyjn7Oq83TXcDjd1nQYCaEtHy+xgPM2wp
-        GsIYAeRN7r6m+9/Z7v8uqQDhugTRg+GPlcAUuoul5FPpn8AI9RG3IKCDqQzkdbFVSf5Awd
-        sdlg8ExeisaxNfQ/UzhP7myUs0ox6Pc=
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Tejun Heo <tj@kernel.org>, David Vernet <void@manifault.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Subject: [PATCH 4/4] MAINTAINERS: add corresponding kselftests to memcg entry
-Date:   Thu, 14 Apr 2022 17:01:33 -0700
-Message-Id: <20220415000133.3955987-5-roman.gushchin@linux.dev>
-In-Reply-To: <20220415000133.3955987-1-roman.gushchin@linux.dev>
-References: <20220415000133.3955987-1-roman.gushchin@linux.dev>
+        Thu, 14 Apr 2022 20:04:33 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DA1AAB5E
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 17:02:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=v2Dn6qtvKX9phF9c++5hboesgqNOkOUVB6NrTw92XNw=; b=qjfgI842dUFH+bNI1oFu9a4fJi
+        17/vob0IxmH8C1n6WdZhGqOstu6pL3DY33dsJ48tiDWfJEjHhxmaxNj+Gw273XjBGPCUhuotBzCBr
+        iNlqogqPRlmOFIM4Q4wsKow+BZzCDFnqt+ve9nOd8p8LcNAKn5ShUAIldrZL32xiWbhL7Qe3av3q5
+        5zDpaDra5C3dTfPhcQkBwULaN7QIGMcnY+SqIvtoZT/8ivzwqZFzSzUfH/n9kEenDYrW11qjGnKxO
+        nPTyHV8W8IOnWvVTgEJnmJTtDf6R+aD1xYoiBdlqZl1+gN4B+Ez/CnCUP8D9S+3PnA0UvZBW3fnbb
+        Bz/Bc6Cg==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nf9P8-005Bn5-Sb; Fri, 15 Apr 2022 00:01:39 +0000
+Message-ID: <292dcb6e-6f23-7e61-7927-5b6fe5911f97@infradead.org>
+Date:   Thu, 14 Apr 2022 17:01:31 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH -next V2] sound/oss/dmasound: fix 'dmasound_setup' defined
+ but not used
+Content-Language: en-US
+To:     Miles Chen <miles.chen@mediatek.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Takashi Iwai <tiwai@suse.de>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220414091940.2216-1-miles.chen@mediatek.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220414091940.2216-1-miles.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-List memory control and kernel memory control kselftests in the memory
-resource controller entry.
 
-Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Shakeel Butt <shakeelb@google.com>
-Cc: cgroups@vger.kernel.org
-Cc: linux-mm@kvack.org
----
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 44dabe0145ae..0dd3d276f330 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5030,6 +5030,8 @@ L:	linux-mm@kvack.org
- S:	Maintained
- F:	mm/memcontrol.c
- F:	mm/swap_cgroup.c
-+F:	tools/testing/selftests/cgroup/test_kmem.c
-+F:	tools/testing/selftests/cgroup/test_memcontrol.c
- 
- CORETEMP HARDWARE MONITORING DRIVER
- M:	Fenghua Yu <fenghua.yu@intel.com>
+On 4/14/22 02:19, Miles Chen wrote:
+> We observed: 'dmasound_setup' defined but not used error with
+> COMPILER=gcc ARCH=m68k DEFCONFIG=allmodconfig build.
+> 
+> Fix it by adding __maybe_unused to dmasound_setup.
+> 
+> Error(s):
+> sound/oss/dmasound/dmasound_core.c:1431:12: error: 'dmasound_setup' defined but not used [-Werror=unused-function]
+> 
+> Fixes: 9dd7c46346ca ("sound/oss/dmasound: fix build when drivers are mixed =y/=m")
+> Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+> Cc: Takashi Iwai <tiwai@suse.com>
+> 
+
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+
+Thanks.
+
+> ---
+> 
+> Change sinve v1:
+>  add fixes tag
+>  use __maybe_unused
+> 
+> ---
+>  sound/oss/dmasound/dmasound_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/sound/oss/dmasound/dmasound_core.c b/sound/oss/dmasound/dmasound_core.c
+> index 9c48f3a9e3d1..164335d3c200 100644
+> --- a/sound/oss/dmasound/dmasound_core.c
+> +++ b/sound/oss/dmasound/dmasound_core.c
+> @@ -1428,7 +1428,7 @@ void dmasound_deinit(void)
+>  		unregister_sound_dsp(sq_unit);
+>  }
+>  
+> -static int dmasound_setup(char *str)
+> +static int __maybe_unused dmasound_setup(char *str)
+>  {
+>  	int ints[6], size;
+>  
+
 -- 
-2.35.1
-
+~Randy
