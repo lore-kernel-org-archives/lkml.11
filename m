@@ -2,53 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47AF4C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:41:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE70C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351505AbiDOIoU (ORCPT
+        id S1351597AbiDOIoW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 04:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50964 "EHLO
+        Fri, 15 Apr 2022 04:44:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351475AbiDOIno (ORCPT
+        with ESMTP id S1351551AbiDOIno (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 15 Apr 2022 04:43:44 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF379BA314;
-        Fri, 15 Apr 2022 01:41:15 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1nfHVw-003EZz-Dy; Fri, 15 Apr 2022 18:41:14 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 15 Apr 2022 16:41:12 +0800
-Date:   Fri, 15 Apr 2022 16:41:12 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Yang Shen <shenyang39@huawei.com>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, wangzhou1@hisilicon.com,
-        liulongfang@huawei.com
-Subject: Re: [PATCH] crypto: hisilicon/sgl - align the hardware sgl dma
- address
-Message-ID: <YlkvqNppDAbe9nVh@gondor.apana.org.au>
-References: <20220409093309.55715-1-shenyang39@huawei.com>
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C1FBA316;
+        Fri, 15 Apr 2022 01:41:16 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KfqYQ5GBXz9sTl;
+        Fri, 15 Apr 2022 10:41:14 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id cnvaje_jr36M; Fri, 15 Apr 2022 10:41:14 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KfqYQ4P8Hz9sTc;
+        Fri, 15 Apr 2022 10:41:14 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 83BC98B778;
+        Fri, 15 Apr 2022 10:41:14 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id FbeYgdJuP9wg; Fri, 15 Apr 2022 10:41:14 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 685C18B764;
+        Fri, 15 Apr 2022 10:41:14 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 23F8f47P1535056
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 15 Apr 2022 10:41:04 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 23F8f4ch1535055;
+        Fri, 15 Apr 2022 10:41:04 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-integrity@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2] char: tpm: Prepare cleanup of powerpc's asm/prom.h
+Date:   Fri, 15 Apr 2022 10:40:59 +0200
+Message-Id: <a3188c216e3cc59b12c5ea3682e233733911475d.1650012003.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220409093309.55715-1-shenyang39@huawei.com>
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1650012058; l=1804; s=20211009; h=from:subject:message-id; bh=laEHdlAgAs/Q2svl9E1r8Ks4UkHqnLIbIE7RJWdkDX0=; b=Dl23TTptfZCDKMsY+HCUPjlD1Z4/HVOQLbOyXM1bmbDS9LWsPuu31yDRopWUQMAB09Osn9x5yZW5 e40RypkZAyU0LPYcfNRQ7OleWwEP2DcjB5IkSjCoLnvJ0UQr1U75
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 09, 2022 at 05:33:09PM +0800, Yang Shen wrote:
-> The hardware needs aligned sgl dma address. So expend the sgl_size to
-> align 64 bytes.
-> 
-> Signed-off-by: Yang Shen <shenyang39@huawei.com>
-> ---
->  drivers/crypto/hisilicon/sgl.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+powerpc's asm/prom.h brings some headers that it doesn't
+need itself.
 
-Patch applied.  Thanks.
+In order to clean it up in a further step, first clean all
+files that include asm/prom.h
+
+Some files don't need asm/prom.h at all. For those ones,
+just remove inclusion of asm/prom.h
+
+Some files don't need any of the items provided by asm/prom.h,
+but need some of the headers included by asm/prom.h. For those
+ones, add the needed headers that are brought by asm/prom.h at
+the moment, then remove asm/prom.h
+
+Some files really need asm/prom.h but also need some of the
+headers included by asm/prom.h. For those one, leave asm/prom.h
+but also add the needed headers so that they can be removed
+from asm/prom.h in a later step.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+v2: More detailed commit description
+---
+ drivers/char/tpm/tpm_atmel.h   | 2 --
+ drivers/char/tpm/tpm_ibmvtpm.c | 1 -
+ 2 files changed, 3 deletions(-)
+
+diff --git a/drivers/char/tpm/tpm_atmel.h b/drivers/char/tpm/tpm_atmel.h
+index ba37e77e8af3..959f7cce8301 100644
+--- a/drivers/char/tpm/tpm_atmel.h
++++ b/drivers/char/tpm/tpm_atmel.h
+@@ -26,8 +26,6 @@ struct tpm_atmel_priv {
+ 
+ #ifdef CONFIG_PPC64
+ 
+-#include <asm/prom.h>
+-
+ #define atmel_getb(priv, offset) readb(priv->iobase + offset)
+ #define atmel_putb(val, priv, offset) writeb(val, priv->iobase + offset)
+ #define atmel_request_region request_mem_region
+diff --git a/drivers/char/tpm/tpm_ibmvtpm.c b/drivers/char/tpm/tpm_ibmvtpm.c
+index 3af4c07a9342..1180cce7067a 100644
+--- a/drivers/char/tpm/tpm_ibmvtpm.c
++++ b/drivers/char/tpm/tpm_ibmvtpm.c
+@@ -20,7 +20,6 @@
+ #include <linux/spinlock.h>
+ #include <linux/interrupt.h>
+ #include <linux/wait.h>
+-#include <asm/prom.h>
+ 
+ #include "tpm.h"
+ #include "tpm_ibmvtpm.h"
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.35.1
+
