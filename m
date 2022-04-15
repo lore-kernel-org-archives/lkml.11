@@ -2,159 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A50C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:14:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB9E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354334AbiDOOQq (ORCPT
+        id S1354331AbiDOORB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 10:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
+        Fri, 15 Apr 2022 10:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236542AbiDOOQe (ORCPT
+        with ESMTP id S1354356AbiDOOQy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 10:16:34 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B43CEE1B
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 07:14:03 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id z8so8510524oix.3
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 07:14:03 -0700 (PDT)
+        Fri, 15 Apr 2022 10:16:54 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3214CF4AD
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 07:14:23 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id t12so7210227pll.7
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 07:14:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Ne77m8cZZW0R7+jQl5DIOLbM38uI8W7ZFAvs8zlnbN8=;
-        b=h1AEH94ksvbHDBFe3x+a7vmDgmwHtOTnxwprQwUj4X1Nmdvg1vWefYUVfwtkHjfOhv
-         HDBUNoMaooGxk+7pisSLbT50fMO43493JfXXGe1JkBL4xDXrK1H5O0Xq3Z0rI1Np2Gum
-         tGFZ+dFeiSq6PxqPTbRbrbbUyryHeeNaxHgPuJCF+jV80j6YnZG9lidImPuqYc4Fk1CU
-         b8X7OOSzA5dXiqW6pqu7vLlfMTGvQ3i/W/m7avQlpXvChMg8bwMZR+5/+kybThxsGnTj
-         HXopgsjM58efO1m+fJxy9vuEj+l0L6fRrn0ExSVCs/8UWenBQaE1wJhhUlcfW/LB9FL1
-         QD2A==
+        bh=W7pJ87MMKgb5DtroOsn6zX1k9Enz1UopIOm4KxB8CdU=;
+        b=cl6RaMXM2TAsZOMW89aMuGQgKEIMl7GsTFPcrv7gyNZd1WPR48gwuVCjmE3gnHj6MM
+         kx0a533ilutzRFYcLIfQtywqy5NCvd1VgNO9pK/tt5xuOHORBDeX9jKs5QGJjKGI5YO2
+         7VQURjVRDdga27AqW4x9aRdYTYzNcIQutvTEcNAjPflq22e+8XAzskHHnXwjWa6Yuzuq
+         ZCBe643HeK945voQ4oLhvyxW4gQ8gRuxCRnRv0OIN9CgPq11WfaGQSszlsHQpbwL/0An
+         lxWAIZPK0N+9PmGU/j5fXIM14NiJHnQmlUCoynlpBAMpF/ilxXatwHTfIbC6LjY0BODd
+         ZzYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Ne77m8cZZW0R7+jQl5DIOLbM38uI8W7ZFAvs8zlnbN8=;
-        b=aH4B4qBfG6YWxfbC0cDun944mg7EHdmCHXqD8RjeGzlRHFT617Cuz2Po92GFVAppUl
-         0H0EdWH3AETn9P1/rlH8Htrrx0HuQwv7TPOfTTQXenwswHqDLfSJHvVzhYK5egAdJIZn
-         49m4VD6gunmMtUQM3qgbS2FpvQ94Xqjv08bRZLaQdE8ymMyykyC1sy0V72bVuw16VBA9
-         u4pxR9knLZBWBI0HyZb5Z5nDn9Qc6jc4g6yGG3ebQfr/Y4CILz7NBM/tXSyv2zR9YpN9
-         z1iDuVwfrte1f19bSwFrkvpk15lZg+2OpqC+frobLKx9ukIyVPDZUDXriXIbbuhAze1d
-         rm9g==
-X-Gm-Message-State: AOAM5328FpGCmM1h3BN8YUlhUmBBVm1+SzNMzilAGnWuzD+1cAbqyoNy
-        zR5BlcGQp1vakzTISQ2Q2Qo=
-X-Google-Smtp-Source: ABdhPJzmIliimBoMo5RTzw1NZHdZ598Yqfbe2K4rgL5RQgz1CujBydm9kLuTJhT4SOwwYRnQKEfqmA==
-X-Received: by 2002:a05:6808:d4c:b0:2f8:d0d2:d06c with SMTP id w12-20020a0568080d4c00b002f8d0d2d06cmr1672959oik.285.1650032043019;
-        Fri, 15 Apr 2022 07:14:03 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14c:4c2:8a9b:dcc3:45ee:2581:b4cb])
-        by smtp.gmail.com with ESMTPSA id x1-20020a4ae781000000b00320d5d238efsm1156189oov.3.2022.04.15.07.14.00
+        bh=W7pJ87MMKgb5DtroOsn6zX1k9Enz1UopIOm4KxB8CdU=;
+        b=Eg5xvU3FJKt+bFZYOOxJB72hzuqLPR1oY5qfiPu+ZtJh7fRT8ig6U6bhH7opl6EFV4
+         +e0DMkvUCH0JItXB97mtUw9XTh1AMQxWs6HmAMglQebk92TOTI3cmGoNAVNl8iBaNl9O
+         QIy6c/b36W/1/4SAsdG58qLpP7uTdELstq+WFzivHLCXOcJOehEsjS1yl1uR+RiAav2k
+         Dp/OEPiHKKuRZQutMb03klPXEQg0rkD1ICDZ+ryhnfZiGA+hdiX/dsqsYxiMpY7DP3Qu
+         0iWXo4H6+u5mvfj1JR/sf634f4us1Ud22QdM29qnFbZJAE+mYqqpERRPBA7T6QLedaKZ
+         /TtQ==
+X-Gm-Message-State: AOAM5314mQRc8GSA46TTXTu+LwIXRCmPPWRQs/aN24Pq1A6uS5JeTaMH
+        /sshxdqHaikLZTphDt+OBmY1+w==
+X-Google-Smtp-Source: ABdhPJwIMENFkDtZsLGQMuu3vxL5lc0twYuZQL+N4DXflSHdA2RL1NFxd/fLLyIOwAIcuhK3MyNKZA==
+X-Received: by 2002:a17:90b:380f:b0:1c7:4403:4e72 with SMTP id mq15-20020a17090b380f00b001c744034e72mr4462158pjb.228.1650032063329;
+        Fri, 15 Apr 2022 07:14:23 -0700 (PDT)
+Received: from localhost.localdomain ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id n24-20020aa79058000000b0050612d0fe01sm3012707pfo.2.2022.04.15.07.14.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 07:14:02 -0700 (PDT)
-From:   Tales Lelo da Aparecida <tales.aparecida@gmail.com>
-To:     Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>,
-        Melissa Wen <melissa.srw@gmail.com>,
-        Haneen Mohammed <hamohammed.sa@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        andrealmeid@riseup.net
-Cc:     Tales Lelo da Aparecida <tales.aparecida@gmail.com>
-Subject: [PATCH v2 2/2] drm/vkms: return early if compose_plane fails
-Date:   Fri, 15 Apr 2022 08:13:00 -0300
-Message-Id: <20220415111300.61013-3-tales.aparecida@gmail.com>
+        Fri, 15 Apr 2022 07:14:22 -0700 (PDT)
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+To:     andrii.nakryiko@gmail.com
+Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "Andrii Nakryiko" <andrii@kernel.org>,
+        "Martin KaFai Lau" <kafai@fb.com>,
+        "Song Liu" <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        "KP Singh" <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
+Subject: [PATCH v2] bpf: Fix KASAN use-after-free Read in compute_effective_progs
+Date:   Fri, 15 Apr 2022 07:13:55 -0700
+Message-Id: <20220415141355.4329-1-tadeusz.struk@linaro.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220415111300.61013-1-tales.aparecida@gmail.com>
-References: <20220415111300.61013-1-tales.aparecida@gmail.com>
+In-Reply-To: <CAEf4BzbiVeQfhxEu908w2mU4d8+5kKeMknuvhzCXuxM9pJ1jmQ@mail.gmail.com>
+References: <CAEf4BzbiVeQfhxEu908w2mU4d8+5kKeMknuvhzCXuxM9pJ1jmQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Do not exit quietly from compose_plane. If any plane has an invalid
-map, propagate the error value upwards. While here, add log messages
-for the invalid index.
+Syzbot found a Use After Free bug in compute_effective_progs().
+The reproducer creates a number of BPF links, and causes a fault
+injected alloc to fail, while calling bpf_link_detach on them.
+Link detach triggers the link to be freed by bpf_link_free(),
+which calls __cgroup_bpf_detach() and update_effective_progs().
+If the memory allocation in this function fails, the function restores
+the pointer to the bpf_cgroup_link on the cgroup list, but the memory
+gets freed just after it returns. After this, every subsequent call to
+update_effective_progs() causes this already deallocated pointer to be
+dereferenced in prog_list_length(), and triggers KASAN UAF error.
 
-Signed-off-by: Tales Lelo da Aparecida <tales.aparecida@gmail.com>
+To fix this issue don't preserve the pointer to the prog or link in the
+list, but remove it and rearrange the effective table without
+shrinking it. The subsequent call to __cgroup_bpf_detach() or
+__cgroup_bpf_detach() will correct it.
+
+Cc: "Alexei Starovoitov" <ast@kernel.org>
+Cc: "Daniel Borkmann" <daniel@iogearbox.net>
+Cc: "Andrii Nakryiko" <andrii@kernel.org>
+Cc: "Martin KaFai Lau" <kafai@fb.com>
+Cc: "Song Liu" <songliubraving@fb.com>
+Cc: "Yonghong Song" <yhs@fb.com>
+Cc: "John Fastabend" <john.fastabend@gmail.com>
+Cc: "KP Singh" <kpsingh@kernel.org>
+Cc: <netdev@vger.kernel.org>
+Cc: <bpf@vger.kernel.org>
+Cc: <stable@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
+
+Link: https://syzkaller.appspot.com/bug?id=8ebf179a95c2a2670f7cf1ba62429ec044369db4
+Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
+Reported-by: <syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com>
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
 ---
- drivers/gpu/drm/vkms/vkms_composer.c | 30 ++++++++++++++++++----------
- 1 file changed, 20 insertions(+), 10 deletions(-)
+v2: Add a fall back path that removes a prog from the effective progs
+    table in case detach fails to allocate memory in compute_effective_progs().
+---
+ kernel/bpf/cgroup.c | 55 +++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 48 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/vkms/vkms_composer.c b/drivers/gpu/drm/vkms/vkms_composer.c
-index b47ac170108c..c0a3b53cd155 100644
---- a/drivers/gpu/drm/vkms/vkms_composer.c
-+++ b/drivers/gpu/drm/vkms/vkms_composer.c
-@@ -149,16 +149,16 @@ static void blend(void *vaddr_dst, void *vaddr_src,
- 	}
- }
+diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+index 128028efda64..5a64cece09f3 100644
+--- a/kernel/bpf/cgroup.c
++++ b/kernel/bpf/cgroup.c
+@@ -723,10 +723,8 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+ 	pl->link = NULL;
  
--static void compose_plane(struct vkms_composer *primary_composer,
--			  struct vkms_composer *plane_composer,
--			  void *vaddr_out)
-+static int compose_plane(struct vkms_composer *primary_composer,
-+			 struct vkms_composer *plane_composer,
-+			 void *vaddr_out)
- {
- 	struct drm_framebuffer *fb = &plane_composer->fb;
- 	void *vaddr;
- 	void (*pixel_blend)(const u8 *p_src, u8 *p_dst);
+ 	err = update_effective_progs(cgrp, atype);
+-	if (err)
+-		goto cleanup;
  
- 	if (WARN_ON(iosys_map_is_null(&plane_composer->map[0])))
--		return;
-+		return -EINVAL;
- 
- 	vaddr = plane_composer->map[0].vaddr;
- 
-@@ -168,6 +168,8 @@ static void compose_plane(struct vkms_composer *primary_composer,
- 		pixel_blend = &x_blend;
- 
- 	blend(vaddr_out, vaddr, primary_composer, plane_composer, pixel_blend);
+-	/* now can actually delete it from this cgroup list */
++	/* now can delete it from this cgroup list */
+ 	list_del(&pl->node);
+ 	kfree(pl);
+ 	if (list_empty(progs))
+@@ -735,12 +733,55 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+ 	if (old_prog)
+ 		bpf_prog_put(old_prog);
+ 	static_branch_dec(&cgroup_bpf_enabled_key[atype]);
+-	return 0;
 +
-+	return 0;
- }
++	if (!err)
++		return 0;
  
- static int compose_active_planes(void **vaddr_out,
-@@ -177,7 +179,7 @@ static int compose_active_planes(void **vaddr_out,
- 	struct drm_framebuffer *fb = &primary_composer->fb;
- 	struct drm_gem_object *gem_obj = drm_gem_fb_get_obj(fb, 0);
- 	const void *vaddr;
--	int i;
-+	int i, ret;
- 
- 	if (!*vaddr_out) {
- 		*vaddr_out = kzalloc(gem_obj->size, GFP_KERNEL);
-@@ -187,8 +189,10 @@ static int compose_active_planes(void **vaddr_out,
- 		}
- 	}
- 
--	if (WARN_ON(iosys_map_is_null(&primary_composer->map[0])))
-+	if (WARN_ON(iosys_map_is_null(&primary_composer->map[0]))) {
-+		DRM_DEBUG_DRIVER("Failed to compose. Invalid map in the primary plane.");
- 		return -EINVAL;
-+	}
- 
- 	vaddr = primary_composer->map[0].vaddr;
- 
-@@ -198,10 +202,16 @@ static int compose_active_planes(void **vaddr_out,
- 	 * planes should be in z-order and compose them associatively:
- 	 * ((primary <- overlay) <- cursor)
- 	 */
--	for (i = 1; i < crtc_state->num_active_planes; i++)
--		compose_plane(primary_composer,
--			      crtc_state->active_planes[i]->composer,
--			      *vaddr_out);
-+	for (i = 1; i < crtc_state->num_active_planes; i++) {
-+		ret = compose_plane(primary_composer,
-+				    crtc_state->active_planes[i]->composer,
-+				    *vaddr_out);
-+		if (ret) {
-+			DRM_DEBUG_DRIVER("Failed to compose. Invalid map in the active_planes[%d].",
-+					 i);
-+			return ret;
+ cleanup:
+-	/* restore back prog or link */
+-	pl->prog = old_prog;
+-	pl->link = link;
++	/*
++	 * If compute_effective_progs failed with -ENOMEM, i.e. alloc for
++	 * cgrp->bpf.inactive table failed, we can recover by removing
++	 * the detached prog from effective table and rearranging it.
++	 */
++	if (err == -ENOMEM) {
++		struct bpf_prog_array_item *item;
++		struct bpf_prog *prog_tmp, *prog_detach, *prog_last;
++		struct bpf_prog_array *array;
++		int index = 0, index_detach = -1;
++
++		array = cgrp->bpf.effective[atype];
++		item = &array->items[0];
++
++		if (prog)
++			prog_detach = prog;
++		else
++			prog_detach = link->link.prog;
++
++		if (!prog_detach)
++			return -EINVAL;
++
++		while ((prog_tmp = READ_ONCE(item->prog))) {
++			if (prog_tmp == prog_detach)
++				index_detach = index;
++			item++;
++			index++;
++			prog_last = prog_tmp;
 +		}
++
++		/* Check if we found what's needed for removing the prog */
++		if (index_detach == -1 || index_detach == index-1)
++			return -EINVAL;
++
++		/* Remove the last program in the array */
++		if (bpf_prog_array_delete_safe_at(array, index-1))
++			return -EINVAL;
++
++		/* and update the detached with the last just removed */
++		if (bpf_prog_array_update_at(array, index_detach, prog_last))
++			return -EINVAL;
++
++		err = 0;
 +	}
- 
- 	return 0;
+ 	return err;
  }
+ 
 -- 
 2.35.1
 
