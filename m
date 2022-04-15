@@ -2,135 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08967C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 06:45:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E30C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 06:45:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347059AbiDOGrt (ORCPT
+        id S1350681AbiDOGrx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 02:47:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59394 "EHLO
+        Fri, 15 Apr 2022 02:47:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350735AbiDOGrm (ORCPT
+        with ESMTP id S1350731AbiDOGrm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 15 Apr 2022 02:47:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F84BB0A4B
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 23:45:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650005111;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mVx9cF7b07Hlw+Jyd93aqAlgfIPY+0nd7PYc9dSwC+U=;
-        b=UfS9Q+8ugo+f7MBqWRAQh0wo+WSzO1qaYGF785YRZ/N+8duVdAgzSnJIpk4lhsLa9KWw+N
-        2D7BRUqrQLbyItApdzvp2Ntc1IH/q9VbJTnMHbW8K9LgeNySdo87Ii0OZez0ULB3s+vl3P
-        LVgvYRIHeszkZOTgfgIamck1FG1kNB4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-164-4Am9g_ddMfCYYooyATDL9w-1; Fri, 15 Apr 2022 02:45:05 -0400
-X-MC-Unique: 4Am9g_ddMfCYYooyATDL9w-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 283DB801E67;
-        Fri, 15 Apr 2022 06:45:05 +0000 (UTC)
-Received: from [10.72.13.171] (ovpn-13-171.pek2.redhat.com [10.72.13.171])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1C7E040CF8F6;
-        Fri, 15 Apr 2022 06:44:58 +0000 (UTC)
-Reply-To: Gavin Shan <gshan@redhat.com>
-Subject: Re: [PATCH v5 00/10] KVM: arm64: Add support for hypercall services
- selection
-To:     Raghavendra Rao Ananta <rananta@google.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Andrew Jones <drjones@redhat.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc:     kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Peter Shier <pshier@google.com>, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Will Deacon <will@kernel.org>, kvmarm@lists.cs.columbia.edu,
-        linux-arm-kernel@lists.infradead.org
-References: <20220407011605.1966778-1-rananta@google.com>
-From:   Gavin Shan <gshan@redhat.com>
-Message-ID: <92eb2304-9259-0461-247f-d3a4e5eb4fd5@redhat.com>
-Date:   Fri, 15 Apr 2022 14:44:55 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28EF4B0A53
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 23:45:14 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id v12so6492037plv.4
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 23:45:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ldV1uCjsScyMqnX29S2Mnzm56eDt6Wx9wkmuB11hEfM=;
+        b=rDb8Gh4XiSJ5bCNnQ/GtnJIzx5ChDSHZ4lV22jBcV+F9GyJoIkOE+UWgey1kEpy0gI
+         MTKaFOriP4KbyNke3RHlowF7AzZ8vUNcqA+TwvlHlayovLLg57TbgJXaNYd9fpE64GSZ
+         ABXn/A0Tx029H5JDtT1XMYUFDzq0jEaK9jWxYNCherEopNOslLePPx/F+lrjS9pBVK/A
+         9dpWjF77ljcGRCaQK7cvGyxJE/KLO5/lQq2+8MwZm4Q9PnjS1vEyAdD7UlP5UuCfx7RW
+         f+X1YiQzmVoG1vIaEQcymb5C98hqfNYIoFZUyzS8Jq2XoPr8jS+wGPmsTLuYAXyggK+m
+         Ji1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ldV1uCjsScyMqnX29S2Mnzm56eDt6Wx9wkmuB11hEfM=;
+        b=n8QBkQbJofYfq+8+AqitDvco/LFRKQnkOXImLSczfOO7rTFeKAJ789hd+nR8+6p2YK
+         G8ccrkBEHAtpnwnuCAPiFVjpSs96dxA+cZA5xmpaSv2I0IOgnyBe05oglV7PIT76BdIQ
+         8wz2a+ObqKzx4SC4HK7IR7s1mvKXYRyms+DuKv/wTCg9Veouozuw08JH7KLV8CTyHIoL
+         8V9KQopQo1fuVEXMypF+jEBqKVMKiZj+EHMPKUth7JW//ve+E7B7Q4FYGLwam2Zi7N66
+         zFd5isRVGDsBWZRinweBhjukHuFZETwLpDMtHL0JQMOrCb+xBgLotRU2Jl3gLMYTh+wY
+         G1BA==
+X-Gm-Message-State: AOAM533AhmjSDaCfdTS4kQfTtkGZJBYP5CJ+C1upLU+bEZJdg9JvcDkT
+        CRbcIG8oQunsJvtMEllXw3sLew==
+X-Google-Smtp-Source: ABdhPJyBEsq9NBxcUGHmvrk5wwfGZRmZAh1nf0tDGbK7Ic0lp5x83dUfzjLylmDxDhgTYThkApUAEw==
+X-Received: by 2002:a17:902:9309:b0:156:983d:2193 with SMTP id bc9-20020a170902930900b00156983d2193mr49846482plb.158.1650005113570;
+        Thu, 14 Apr 2022 23:45:13 -0700 (PDT)
+Received: from always-x1.bytedance.net ([61.120.150.70])
+        by smtp.gmail.com with ESMTPSA id d8-20020a056a00198800b004fab740dbe6sm1867385pfl.15.2022.04.14.23.45.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 23:45:12 -0700 (PDT)
+From:   zhenwei pi <pizhenwei@bytedance.com>
+To:     arei.gonglei@huawei.com, mst@redhat.com
+Cc:     jasowang@redhat.com, herbert@gondor.apana.org.au,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-crypto@vger.kernel.org, helei.sig11@bytedance.com,
+        davem@davemloft.net, zhenwei pi <pizhenwei@bytedance.com>
+Subject: [PATCH 0/4] virtio-crypto: Improve performance
+Date:   Fri, 15 Apr 2022 14:41:32 +0800
+Message-Id: <20220415064136.304661-1-pizhenwei@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20220407011605.1966778-1-rananta@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Raghavendra,
+Hi,
 
-On 4/7/22 9:15 AM, Raghavendra Rao Ananta wrote:
-> Continuing the discussion from [1], the series tries to add support
-> for the userspace to elect the hypercall services that it wishes
-> to expose to the guest, rather than the guest discovering them
-> unconditionally. The idea employed by the series was taken from
-> [1] as suggested by Marc Z.
-> 
-> In a broad sense, the concept is similar to the current implementation
-> of PSCI interface- create a 'firmware psuedo-register' to handle the
-> firmware revisions. The series extends this idea to all the other
-> hypercalls such as TRNG (True Random Number Generator), PV_TIME
-> (Paravirtualized Time), and PTP (Precision Time protocol).
-> 
-> For better categorization and future scaling, these firmware registers
-> are categorized based on the service call owners. Also, unlike the
-> existing firmware psuedo-registers, they hold the features supported
-> in the form of a bitmap.
-> 
-> During the VM initialization, the registers holds an upper-limit of
-> the features supported by each one of them. It's expected that the
-> userspace discover the features provided by each register via GET_ONE_REG,
-> and writeback the desired values using SET_ONE_REG. KVM allows this
-> modification only until the VM has started.
-> 
-> Some of the standard function-ids, such as ARM_SMCCC_VERSION_FUNC_ID,
-> need not be associated with a feature bit. For such ids, the series
-> introduced an allowed-list, hvc_func_default_allowed_list[], that holds
-> all such ids. As a result, the functions that are not elected by userspace,
-> or if they are not a part of this allowed-list, will be denied for when
-> the guests invoke them.
-> 
-> Older VMMs can simply ignore this interface and the hypercall services
-> will be exposed unconditionally to the guests, thus ensuring backward
-> compatibility.
-> 
+The main point of this series is to improve the performance for
+virtio crypto:
+- Use wait mechanism instead of busy polling for ctrl queue, this
+  reduces CPU and lock racing, it's possiable to create/destroy session
+  parallelly, QPS increases from ~40K/s to ~200K/s.
+- Enable retry on crypto engine to improve performance for data queue,
+  this allows the larger depth instead of 1.
+- Fix dst data length in akcipher service.
+- Other style fix.
 
-[...]
+lei he (2):
+  virtio-crypto: adjust dst_len at ops callback
+  virtio-crypto: enable retry for virtio-crypto-dev
 
-I rethinking about the design again and just get one question. Hopefully,
-someone have the answer for us. The newly added 3 pseudo registers and
-the existing ones like KVM_REG_ARM_PSCI_VERSION are all tied up with
-vcpu, instead of VM. I don't think it's correct. I'm not sure if VM-scoped
-pseudo registers aren't allowed by ARM architecture or the effort isn't
-worthy to support it.
+zhenwei pi (2):
+  virtio-crypto: wait ctrl queue instead of busy polling
+  virtio-crypto: move helpers into virtio_crypto_common.c
 
-These pseudo registers are introduced to present the available hypercalls,
-and then they can be disabled from userspace. In the implementation, these 3
-registers are vcpu scoped. It means that multiple vcpus can be asymmetric
-in terms of usable hypercalls. For example, ARM_SMCCC_TRNG hypercalls
-can be enabled on vcpu0, but disabled on vcpu1. I don't think it's expected.
+ drivers/crypto/virtio/Makefile                |   1 +
+ .../virtio/virtio_crypto_akcipher_algs.c      |  92 ++++++------
+ drivers/crypto/virtio/virtio_crypto_common.c  |  92 ++++++++++++
+ drivers/crypto/virtio/virtio_crypto_common.h  |  25 +++-
+ drivers/crypto/virtio/virtio_crypto_core.c    |  37 +----
+ .../virtio/virtio_crypto_skcipher_algs.c      | 134 ++++++++----------
+ 6 files changed, 222 insertions(+), 159 deletions(-)
+ create mode 100644 drivers/crypto/virtio/virtio_crypto_common.c
 
-On the other hand, the information stored in these 3 registers needs to
-be migrated through {GET,SET}_ONE_REG by VMM (QEMU). all the information
-stored in these 3 registers are all same on all vcpus, which is exactly
-as we expect. In migration circumstance, we're transporting identical
-information for all vcpus and it's unnecessary.
-
-Thanks,
-Gavin
-
-
+-- 
+2.20.1
 
