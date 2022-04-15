@@ -2,247 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61ECEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 09:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A414C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 09:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351931AbiDOJ6t (ORCPT
+        id S1351954AbiDOJ7E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 05:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60436 "EHLO
+        Fri, 15 Apr 2022 05:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344507AbiDOJ6r (ORCPT
+        with ESMTP id S1351938AbiDOJ66 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 05:58:47 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5321641F8B;
-        Fri, 15 Apr 2022 02:56:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650016579; x=1681552579;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=VrpavvN2et/QbhRDrwGN8VySKZUqco0Hd4HKgd+WwoA=;
-  b=GGjArlmbOWcTwfpRMxMoyk/MYW4H+J4tdZluFSzsiXMnVBaa+85m5/Hn
-   hCZUI3mzY/9O6NCtbaDZjXSydtDWVXJIdcnpuhT6p0QQcuL4FSHvAIrYh
-   2cTTu6Bnk5jxQMolHcWsCN6cN7OtEJ2MOD/okCOP7fdXU8meYRX9HgEja
-   E=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 15 Apr 2022 02:56:19 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 02:56:19 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 15 Apr 2022 02:56:18 -0700
-Received: from [10.239.133.9] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 15 Apr
- 2022 02:56:15 -0700
-Message-ID: <81aaa184-65f1-427a-5db8-da051f413845@quicinc.com>
-Date:   Fri, 15 Apr 2022 17:56:12 +0800
+        Fri, 15 Apr 2022 05:58:58 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EE3BA306;
+        Fri, 15 Apr 2022 02:56:27 -0700 (PDT)
+Received: from kwepemi100007.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KfsCR3BnwzfYvB;
+        Fri, 15 Apr 2022 17:55:47 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100007.china.huawei.com (7.221.188.115) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 15 Apr 2022 17:56:25 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Apr
+ 2022 17:56:25 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <axboe@kernel.dk>, <bvanassche@acm.org>,
+        <andriy.shevchenko@linux.intel.com>, <john.garry@huawei.com>,
+        <ming.lei@redhat.com>, <qiulaibin@huawei.com>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
+Subject: [PATCH -next RFC v3 2/8] blk-mq: call 'bt_wait_ptr()' later in blk_mq_get_tag()
+Date:   Fri, 15 Apr 2022 18:10:47 +0800
+Message-ID: <20220415101053.554495-3-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220415101053.554495-1-yukuai3@huawei.com>
+References: <20220415101053.554495-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v5 03/10] dt-bindings: arm: Adds CoreSight TPDM hardware
- definitions
-Content-Language: en-US
-To:     Mike Leach <mike.leach@linaro.org>
-CC:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        <coresight@lists.linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Tingwei Zhang <quic_tingweiz@quicinc.com>,
-        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
-        Tao Zhang <quic_taozha@quicinc.com>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        Hao Zhang <quic_hazha@quicinc.com>,
-        <linux-arm-msm@vger.kernel.org>
-References: <20220412125035.40312-1-quic_jinlmao@quicinc.com>
- <20220412125035.40312-4-quic_jinlmao@quicinc.com>
- <CAJ9a7VjZiYN6g+gPZRgc4fJQCJYcSXrdzRfT+kAiK0cwRfm+iA@mail.gmail.com>
-From:   Jinlong Mao <quic_jinlmao@quicinc.com>
-In-Reply-To: <CAJ9a7VjZiYN6g+gPZRgc4fJQCJYcSXrdzRfT+kAiK0cwRfm+iA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mike,
+bt_wait_ptr() will increase 'wait_index', however, if blk_mq_get_tag()
+get a tag successfully after bt_wait_ptr() is called and before
+sbitmap_prepare_to_wait() is called, then the 'ws' is skipped. This
+behavior might cause 8 waitqueues to be unbalanced.
 
-On 4/14/2022 11:22 PM, Mike Leach wrote:
-> Hi,
->
-> On Tue, 12 Apr 2022 at 13:51, Mao Jinlong <quic_jinlmao@quicinc.com> wrote:
->> Adds new coresight-tpdm.yaml file describing the bindings required
->> to define tpdm in the device trees.
->>
->> Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
->> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
->> ---
->>   .../bindings/arm/coresight-tpdm.yaml          | 99 +++++++++++++++++++
->>   .../devicetree/bindings/arm/coresight.txt     |  7 ++
->>   MAINTAINERS                                   |  1 +
->>   3 files changed, 107 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/arm/coresight-tpdm.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/arm/coresight-tpdm.yaml b/Documentation/devicetree/bindings/arm/coresight-tpdm.yaml
->> new file mode 100644
->> index 000000000000..05210e0fc262
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/arm/coresight-tpdm.yaml
->> @@ -0,0 +1,99 @@
->> +# SPDX-License-Identifier: GPL-2.0-only or BSD-2-Clause
->> +# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/arm/coresight-tpdm.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Trace, Profiling and Diagnostics Monitor - TPDM
->> +
->> +description: |
->> +  The TPDM or Monitor serves as data collection component for various dataset
->> +  types specified in the QPMDA spec. It covers Implementation defined ((ImplDef),
->> +  Basic Counts (BC), Tenure Counts (TC), Continuous Multi-Bit (CMB), and Discrete
->> +  Single Bit (DSB). It performs data collection in the data producing clock
->> +  domain and transfers it to the data collection time domain, generally ATB
->> +  clock domain.
->> +
->> +  The primary use case of the TPDM is to collect data from different data
->> +  sources and send it to a TPDA for packetization, timestamping, and funneling.
->> +
->> +maintainers:
->> +  - Suzuki K Poulose <suzuki.poulose@arm.com>
->> +  - Mathieu Poirier <mathieu.poirier@linaro.org>
->> +
-> These should be e-mail addresses of maintainers for this binding, not
-> the coresight sub-system.
-> See writing-schema.rst
-I will update.
->
->> +properties:
->> +  $nodename:
->> +    pattern: "^tpdm(@[0-9a-f]+)$"
->> +  compatible:
->> +    items:
->> +      - const: qcom,coresight-tpdm
->> +      - const: arm,primecell
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  clocks:
->> +    maxItems: 1
->> +
->> +  clock-names:
->> +   items:
->> +     - const: apb_pclk
->> +
->> +  out-ports:
->> +    description: |
->> +      Output connections from the TPDM to coresight funnle/tpda.
->> +    $ref: /schemas/graph.yaml#/properties/ports
->> +    properties:
->> +      port:
->> +        description: Output connection from the TPDM to coresight
->> +            funnel/tpda.
->> +        $ref: /schemas/graph.yaml#/properties/port
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - clocks
->> +  - clock-names
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  # minimum TPDM definition. TPDM connect to coresight funnel.
->> +  - |
->> +    tpdm@6980000 {
->> +      compatible = "qcom,coresight-tpdm", "arm,primecell";
->> +      reg = <0x6980000 0x1000>;
->> +
->> +      clocks = <&aoss_qmp>;
->> +      clock-names = "apb_pclk";
->> +
->> +      out-ports {
->> +        port {
->> +          tpdm_turing_out_funnel_turing: endpoint {
->> +            remote-endpoint =
->> +              <&funnel_turing_in_tpdm_turing>;
->> +          };
->> +        };
->> +      };
->> +    };
->> +  # minimum TPDM definition. TPDM connect to coresight TPDA.
->> +  - |
->> +    tpdm@684c000 {
->> +      compatible = "qcom,coresight-tpdm", "arm,primecell";
->> +      reg = <0x684c000 0x1000>;
->> +
->> +      clocks = <&aoss_qmp>;
->> +      clock-names = "apb_pclk";
->> +
->> +      out-ports {
->> +        port {
->> +          tpdm_prng_out_tpda_qdss: endpoint {
->> +            remote-endpoint =
->> +              <&tpda_qdss_in_tpdm_prng>;
->> +          };
->> +        };
->> +      };
->> +    };
->> +
->> +...
->> diff --git a/Documentation/devicetree/bindings/arm/coresight.txt b/Documentation/devicetree/bindings/arm/coresight.txt
->> index c68d93a35b6c..f7ce8af48574 100644
->> --- a/Documentation/devicetree/bindings/arm/coresight.txt
->> +++ b/Documentation/devicetree/bindings/arm/coresight.txt
->> @@ -52,6 +52,10 @@ its hardware characteristcs.
->>                          "arm,coresight-cti", "arm,primecell";
->>                          See coresight-cti.yaml for full CTI definitions.
->>
->> +               - Trace, Profiling and Diagnostics Monitor (TPDM):
->> +                       "qcom,coresight-tpdm", "arm,primecell";
->> +                       See coresight-tpdm.yaml for full TPDM definitions.
->> +
->>          * reg: physical base address and length of the register
->>            set(s) of the component.
->>
->> @@ -82,6 +86,9 @@ its hardware characteristcs.
->>   * Required properties for Coresight Cross Trigger Interface (CTI)
->>          See coresight-cti.yaml for full CTI definitions.
->>
->> +* Required properties for Trace, Profiling and Diagnostics Monitor (TPDM)
->> +       See coresight-tpdm.yaml for full TPDM definitions.
->> +
->>   * Required properties for devices that don't show up on the AMBA bus, such as
->>     non-configurable replicators and non-configurable funnels:
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index 61d9f114c37f..0d39bb37935d 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -1977,6 +1977,7 @@ T:        git git://git.kernel.org/pub/scm/linux/kernel/git/coresight/linux.git
->>   F:     Documentation/ABI/testing/sysfs-bus-coresight-devices-*
->>   F:     Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt
->>   F:     Documentation/devicetree/bindings/arm/coresight-cti.yaml
->> +F:     Documentation/devicetree/bindings/arm/coresight-tpdm.yaml
->>   F:     Documentation/devicetree/bindings/arm/coresight.txt
->>   F:     Documentation/devicetree/bindings/arm/ete.yaml
->>   F:     Documentation/devicetree/bindings/arm/trbe.yaml
->> --
->> 2.17.1
->>
-> With the above:
-> Reviewed by: Mike Leach <mike.leach@linaro.org>
+Move bt_wait_ptr() later should reduce the problem when the disk is
+under high io preesure.
+
+In the meantime, instead of calling bt_wait_ptr() during every loop,
+calling bt_wait_ptr() only if destination hw queue is changed, which
+should reduce the unfairness further.
+
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ block/blk-mq-tag.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/block/blk-mq-tag.c b/block/blk-mq-tag.c
+index 68ac23d0b640..5ad85063e91e 100644
+--- a/block/blk-mq-tag.c
++++ b/block/blk-mq-tag.c
+@@ -131,7 +131,7 @@ unsigned int blk_mq_get_tag(struct blk_mq_alloc_data *data)
+ {
+ 	struct blk_mq_tags *tags = blk_mq_tags_from_data(data);
+ 	struct sbitmap_queue *bt;
+-	struct sbq_wait_state *ws;
++	struct sbq_wait_state *ws = NULL;
+ 	DEFINE_SBQ_WAIT(wait);
+ 	unsigned int tag_offset;
+ 	int tag;
+@@ -155,7 +155,6 @@ unsigned int blk_mq_get_tag(struct blk_mq_alloc_data *data)
+ 	if (data->flags & BLK_MQ_REQ_NOWAIT)
+ 		return BLK_MQ_NO_TAG;
+ 
+-	ws = bt_wait_ptr(bt, data->hctx);
+ 	do {
+ 		struct sbitmap_queue *bt_prev;
+ 
+@@ -174,6 +173,8 @@ unsigned int blk_mq_get_tag(struct blk_mq_alloc_data *data)
+ 		if (tag != BLK_MQ_NO_TAG)
+ 			break;
+ 
++		if (!ws)
++			ws = bt_wait_ptr(bt, data->hctx);
+ 		sbitmap_prepare_to_wait(bt, ws, &wait, TASK_UNINTERRUPTIBLE);
+ 
+ 		tag = __blk_mq_get_tag(data, bt);
+@@ -199,10 +200,10 @@ unsigned int blk_mq_get_tag(struct blk_mq_alloc_data *data)
+ 		 * previous queue for compensating the wake up miss, so
+ 		 * other allocations on previous queue won't be starved.
+ 		 */
+-		if (bt != bt_prev)
++		if (bt != bt_prev) {
+ 			sbitmap_queue_wake_up(bt_prev);
+-
+-		ws = bt_wait_ptr(bt, data->hctx);
++			ws = bt_wait_ptr(bt, data->hctx);
++		}
+ 	} while (1);
+ 
+ 	sbitmap_finish_wait(bt, ws, &wait);
+-- 
+2.31.1
+
