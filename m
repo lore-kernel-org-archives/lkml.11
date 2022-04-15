@@ -2,78 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 04:16:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3373CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 04:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349378AbiDOETK (ORCPT
+        id S1349384AbiDOEV0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 00:19:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45598 "EHLO
+        Fri, 15 Apr 2022 00:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236647AbiDOES7 (ORCPT
+        with ESMTP id S236647AbiDOEVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 00:18:59 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646BFADD78;
-        Thu, 14 Apr 2022 21:16:32 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id w7so6442436pfu.11;
-        Thu, 14 Apr 2022 21:16:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=WgqlC4B3qMG6ofKgt8g9QvaVfZI34ggXxyBl7VbhHLg=;
-        b=P/IpudsYnejWS2lvqYoEgUnOKizBaXf77Gn5ZYBN1rqEVm5xHVioxZYzW3zHtxXOzo
-         59V/VciqOu/8jlwqqmrpszQksBGO981A6+oO1HEXqzDUc7i6+CT3iFlBGgIUV9j1oya7
-         KJmOdd3QzUYuOYmjnOQZQAFjjEALECy+UACbOwAGGhvtcrg79NYDKLkYOVdo7T8YDIYu
-         71VkgG7wZPwlErDuyz/XasXIpLYZVpUlFhLyaxuzQFWvkvQp936Zp47DlZ/yx7PWAeSb
-         YvtsaTIIoFz4DPNxiBkrCmdte8ItXFeYEqRE87svSISgdjz4VlCNbqIEIKg/g0uTWJi0
-         3jbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=WgqlC4B3qMG6ofKgt8g9QvaVfZI34ggXxyBl7VbhHLg=;
-        b=yHFPPGskwtKx1C9i0dW7FlhgWpA9NIIXLMUMi2tarj8PRwWj5jCZ3DnDi1yMq//QFm
-         27ZPT/gPJVAZHryABBwszubIEs17O6rna4Ty6Bg4PkvLypebbTyHZiuCJRTymKt3Lsbe
-         /fCO3bfrArCNDct6p4EnCO0w+XHmiTeaBQFu1dlBwA87dycNufw43OKZO/G6588MMquq
-         0J5TCjoIJNzxfrAKeVZqPKAaKg8qsQ+YQBU45lDuc4yY+Zn1ylSv+dpfZ4zqGYXBqHiB
-         oMKTG/wfYqiUDqP/fN68FUKZlO6Qrl5OA86dHgPduhkr+5lDoO9bVWYHl1MIq8rOolnz
-         6epQ==
-X-Gm-Message-State: AOAM532T5qhzvN99I2kizR4NQ+aMgYXRvUX6qlV6CFAVbGuYvb1BhJCY
-        P1Jkj8A46byykrd/Z784A8HztrXNJXk=
-X-Google-Smtp-Source: ABdhPJxxLUurtE78/45nmuvqeu+iiew/DF/lmVOe1GjZqC5ZelrZc6XlJ8DalKGlrN3davgP7s/LLA==
-X-Received: by 2002:a05:6a00:124f:b0:4fb:2608:78de with SMTP id u15-20020a056a00124f00b004fb260878demr6962862pfi.27.1649996191771;
-        Thu, 14 Apr 2022 21:16:31 -0700 (PDT)
-Received: from [192.168.255.10] ([203.205.141.117])
-        by smtp.gmail.com with ESMTPSA id r76-20020a632b4f000000b003820643e1c2sm3215535pgr.59.2022.04.14.21.16.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Apr 2022 21:16:31 -0700 (PDT)
-Message-ID: <541c7185-b131-157e-4589-940a9dee60c8@gmail.com>
-Date:   Fri, 15 Apr 2022 12:16:27 +0800
+        Fri, 15 Apr 2022 00:21:25 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50107ADD7E
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 21:18:57 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 13:18:48 +0900
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1649996335;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rl3sJ0XRlQIg8Gg43fwrBWpDvE8dJjHgrOhVyk/MSC8=;
+        b=aM+/T+HofxzaGmEWiEGC3Ssm5s2AGIukaI8iWQrdo4qauFuK+eJtUA/3zxmLBsKx+Lvnws
+        sW8O7sprEvwrfP5JOXbu07F1kIFPN7M8akoerStcHSwtLlOaiFvDsHeuaqVt25M5eXS4em
+        mC02Pw/6Q//DWiO06W7ilUoSVQ6hA8M=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
+To:     Miaohe Lin <linmiaohe@huawei.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Yang Shi <shy828301@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        naoya.horiguchi@nec.com,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH 4/3] mm, hugetlb, hwpoison: separate branch for free and
+ in-use hugepage
+Message-ID: <20220415041848.GA3034499@ik1-406-35019.vs.sakura.ne.jp>
+References: <20220408135323.1559401-1-naoya.horiguchi@linux.dev>
+ <20220408135323.1559401-2-naoya.horiguchi@linux.dev>
+ <5b665bcd-57f8-85ae-b0c4-c055875dbfff@oracle.com>
+ <20e677e5-01aa-f8c0-0ce1-bf33da58b7ec@huawei.com>
+ <20220415021233.GA3357039@hori.linux.bs1.fc.nec.co.jp>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.0
-Subject: Re: [PATCH 07/22] KVM: x86/mmu: split cpu_role from mmu_role
-Content-Language: en-US
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     seanjc@google.com,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>
-References: <20220414074000.31438-1-pbonzini@redhat.com>
- <20220414074000.31438-8-pbonzini@redhat.com>
-From:   Like Xu <like.xu.linux@gmail.com>
-Organization: Tencent
-In-Reply-To: <20220414074000.31438-8-pbonzini@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220415021233.GA3357039@hori.linux.bs1.fc.nec.co.jp>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/4/2022 3:39 pm, Paolo Bonzini wrote:
-> +	union kvm_mmu_role mmu_role = kvm_calc_shadow_npt_root_page_role(vcpu, &regs);;
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-WARNING: Statements terminations use 1 semicolon
+We know that HPageFreed pages should have page refcount 0, so
+get_page_unless_zero() always fails and returns 0.  So explicitly separate
+the branch based on page state for minor optimization and better readability.
+
+Suggested-by: Mike Kravetz <mike.kravetz@oracle.com>
+Suggested-by: Miaohe Lin <linmiaohe@huawei.com>
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+---
+ mm/hugetlb.c        | 4 +++-
+ mm/memory-failure.c | 4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index e38cbfdf3e61..3638f166e554 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -6786,7 +6786,9 @@ int get_hwpoison_huge_page(struct page *page, bool *hugetlb)
+ 	spin_lock_irq(&hugetlb_lock);
+ 	if (PageHeadHuge(page)) {
+ 		*hugetlb = true;
+-		if (HPageFreed(page) || HPageMigratable(page))
++		if (HPageFreed(page))
++			ret = 0;
++		else if (HPageMigratable(page))
+ 			ret = get_page_unless_zero(page);
+ 		else
+ 			ret = -EBUSY;
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index 5e3ad640f5bb..661079a37f29 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -1517,7 +1517,9 @@ int __get_huge_page_for_hwpoison(unsigned long pfn, int flags)
+ 	if (flags & MF_COUNT_INCREASED) {
+ 		ret = 1;
+ 		count_increased = true;
+-	} else if (HPageFreed(head) || HPageMigratable(head)) {
++	} else if (HPageFreed(head)) {
++		ret = 0;
++	} else if (HPageMigratable(head)) {
+ 		ret = get_page_unless_zero(head);
+ 		if (ret)
+ 			count_increased = true;
+-- 
+2.23.0
+
