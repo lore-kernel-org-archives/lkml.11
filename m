@@ -2,139 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70637C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:44:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88983C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:45:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347798AbiDOIrQ (ORCPT
+        id S1351455AbiDOIsO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 04:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58194 "EHLO
+        Fri, 15 Apr 2022 04:48:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230166AbiDOIrN (ORCPT
+        with ESMTP id S1351533AbiDOIrf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 04:47:13 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF77715FC9
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 01:44:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650012286; x=1681548286;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=rjIJ8FShmY1Rzg/XCd+K40jz/utdD1XpxIhRT9Owwmk=;
-  b=REO32IwiBkRbRFJr88XeNqxI0CYmQnxmNuKWtvdFFxy7tW5wojXX4sjg
-   xX2cfEArBBNI6n4ITgdBPzdp9zgvqky0R2RTXhw1QJw0oNTM4Jxxr01Nn
-   H+nw27L1NvxwfV1ij872Vt5kafGMJIbIBdkGtpa6PU6C27gL9OeaiSgQ4
-   rA7J5/oqxf6V8oGxVQ2+N0xw4KKf9GoJLw8SqcR8bbtHjAzqjmBh80A5u
-   JPO3wgr13PfSg8tFILpD9mXtYI/dqJtOz2ZJBdifI6zfqBiPfT2z83ZMb
-   Z9t5H6ho5H5clj+DF8hFtoCo5bD+9ZkWJ7bmgF41qK6TboTCY0bhVTYhO
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="288184504"
-X-IronPort-AV: E=Sophos;i="5.90,262,1643702400"; 
-   d="scan'208";a="288184504"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 01:44:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,262,1643702400"; 
-   d="scan'208";a="725699627"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 15 Apr 2022 01:44:24 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nfHZ2-0001mL-Ab;
-        Fri, 15 Apr 2022 08:44:24 +0000
-Date:   Fri, 15 Apr 2022 16:44:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Johannes Holland <johannes.holland@infineon.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [jarkko-tpmdd:master 3/3]
- drivers/char/tpm/tpm_tis_synquacer.c:89:32: sparse: sparse: incorrect type
- in argument 1 (different base types)
-Message-ID: <202204151656.q0kIOZbG-lkp@intel.com>
+        Fri, 15 Apr 2022 04:47:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 803F917E0B
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 01:45:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650012306;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UbLS45MxOVAnr1j0DEMaqGL/RKjN2qTV3wn5wivIOzo=;
+        b=CI5pICF/TbWjtLgGwnXpW+TnNjBaJSfJw6DNHeu1RY5h7RZGM942rggQ1wkMuYrg+hkRA8
+        MUNjq6TBi5onrHA4v6enlfCY//orAUP79d1BXp+I51pUboEJ8Iuh610cIilYZUX9N9xwJ+
+        /Nx0bLUSqU5N823m8O1rQrJztt22ICQ=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-571-ncjfo2W3Ob6oRpM3uj8-BQ-1; Fri, 15 Apr 2022 04:45:05 -0400
+X-MC-Unique: ncjfo2W3Ob6oRpM3uj8-BQ-1
+Received: by mail-wm1-f69.google.com with SMTP id i184-20020a1c3bc1000000b0038e4c5968b5so5816957wma.0
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 01:45:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=UbLS45MxOVAnr1j0DEMaqGL/RKjN2qTV3wn5wivIOzo=;
+        b=Qqggi41n124e3aD404HRKipoglPRfG/i/09QQm7WLIX1ne+pQTw0zX+Vj34ytl1kBl
+         tPiyeFpL78X5nfgRGV0d5NVJW9qah2eT/GK+S/dx4Q0+xOM2m7qyiiIZmP29/FuIS3Ml
+         n+7UgOi/e1DyXUbEDOPbVH1AoJ8Ot8iJMPSpjGEo/LRn5qoPwF1AGHGyw74dbodlqOgj
+         jayQcH63RrIpro6cMt8jw9BQwulNUNS+psXKikGZ5IDFYTxkmetm+1/e3FaQAQiAg0s4
+         ARdRfsCBd5k1K3+pyV5EFDjJtxjZu5OZuyCSD38HZzbwKqjOo/Rdbh85Vck26YZjP9JB
+         8aCw==
+X-Gm-Message-State: AOAM5318PNA7/o0kc5pOD8EQga7UPWzve++pbssmhZiehcBVNl0Jh41E
+        Zy4Vq99GKWpl9UzQLUNcZB4Lw5MSGg/ZkrVbXJ8M1tf9mbG+S7KZFU6nvf50wTjMuOiZ9zVfTVm
+        UA4xdhhaoj5zJlj+5wYv2KNhq
+X-Received: by 2002:a05:600c:4f88:b0:391:e34e:ca66 with SMTP id n8-20020a05600c4f8800b00391e34eca66mr768126wmq.16.1650012303795;
+        Fri, 15 Apr 2022 01:45:03 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxtZ3CsHMRHFsioNGpLaugIquRbj8GlmtB0g6ZbYpJjZi2MjwNik9eBG9L3OBpQkHXDtDgk7g==
+X-Received: by 2002:a05:600c:4f88:b0:391:e34e:ca66 with SMTP id n8-20020a05600c4f8800b00391e34eca66mr768102wmq.16.1650012303495;
+        Fri, 15 Apr 2022 01:45:03 -0700 (PDT)
+Received: from redhat.com ([2.53.138.98])
+        by smtp.gmail.com with ESMTPSA id f8-20020a5d64c8000000b0020784359295sm5084468wri.54.2022.04.15.01.45.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 01:45:02 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 04:44:58 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Oleksandr Tyshchenko <olekstysh@gmail.com>
+Cc:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        virtualization@lists.linux-foundation.org,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>, Julien Grall <julien@xen.org>,
+        Bertrand Marquis <bertrand.marquis@arm.com>,
+        Wei Chen <Wei.Chen@arm.com>, Henry Wang <Henry.Wang@arm.com>,
+        Kaly Xin <Kaly.Xin@arm.com>, Jiamei Xie <Jiamei.Xie@arm.com>,
+        Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>
+Subject: Re: [RFC PATCH 0/6] virtio: Solution to restrict memory access under
+ Xen using xen-virtio DMA ops layer
+Message-ID: <20220415044225-mutt-send-email-mst@kernel.org>
+References: <1649963973-22879-1-git-send-email-olekstysh@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1649963973-22879-1-git-send-email-olekstysh@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git master
-head:   b6e0cdb87bf37357489de1069d55bd59f008daeb
-commit: b6e0cdb87bf37357489de1069d55bd59f008daeb [3/3] tpm: Remove read16/read32/write32 calls from tpm_tis_phy_ops
-config: arc-randconfig-s032-20220414 (https://download.01.org/0day-ci/archive/20220415/202204151656.q0kIOZbG-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/commit/?id=b6e0cdb87bf37357489de1069d55bd59f008daeb
-        git remote add jarkko-tpmdd git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
-        git fetch --no-tags jarkko-tpmdd master
-        git checkout b6e0cdb87bf37357489de1069d55bd59f008daeb
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arc SHELL=/bin/bash drivers/char/tpm/
+On Thu, Apr 14, 2022 at 10:19:27PM +0300, Oleksandr Tyshchenko wrote:
+> From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+> 
+> Hello all.
+> 
+> The purpose of this RFC patch series is to add support for restricting memory access under Xen using specific
+> grant table based DMA ops layer. Patch series is based on Juergen Gross’ initial work [1] which implies using
+> grant references instead of raw guest physical addresses (GPA) for the virtio communications (some kind of
+> the software IOMMU).
+> 
+> The high level idea is to create new Xen’s grant table based DMA ops layer for the guest Linux whose main
+> purpose is to provide a special 64-bit DMA address which is formed by using the grant reference (for a page
+> to be shared with the backend) with offset and setting the highest address bit (this is for the backend to
+> be able to distinguish grant ref based DMA address from normal GPA). For this to work we need the ability
+> to allocate contiguous (consecutive) grant references for multi-page allocations. And the backend then needs
+> to offer VIRTIO_F_ACCESS_PLATFORM and VIRTIO_F_VERSION_1 feature bits (it must support virtio-mmio modern
+> transport for 64-bit addresses in the virtqueue).
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I'm not enough of a xen expert to review this, and I didn't get
+all patches, but I'm very happy to see that approach being
+taken. VIRTIO_F_ACCESS_PLATFORM and VIRTIO_F_VERSION_1 are
+exactly the way to declare not all of memory is accessible.
+Thanks!
 
+> Xen's grant mapping mechanism is the secure and safe solution to share pages between domains which proven
+> to work and works for years (in the context of traditional Xen PV drivers for example). So far, the foreign
+> mapping is used for the virtio backend to map and access guest memory. With the foreign mapping, the backend
+> is able to map arbitrary pages from the guest memory (or even from Dom0 memory). And as the result, the malicious
+> backend which runs in a non-trusted domain can take advantage of this. Instead, with the grant mapping
+> the backend is only allowed to map pages which were explicitly granted by the guest before and nothing else. 
+> According to the discussions in various mainline threads this solution would likely be welcome because it
+> perfectly fits in the security model Xen provides. 
+> 
+> What is more, the grant table based solution requires zero changes to the Xen hypervisor itself at least
+> with virtio-mmio and DT (in comparison, for example, with "foreign mapping + virtio-iommu" solution which would
+> require the whole new complex emulator in hypervisor in addition to new functionality/hypercall to pass IOVA
+> from the virtio backend running elsewhere to the hypervisor and translate it to the GPA before mapping into
+> P2M or denying the foreign mapping request if no corresponding IOVA-GPA mapping present in the IOMMU page table
+> for that particular device). We only need to update toolstack to insert a new "xen,dev-domid" property to
+> the virtio-mmio device node when creating a guest device-tree (this is an indicator for the guest to use grants
+> and the ID of Xen domain where the corresponding backend resides, it is used as an argument to the grant mapping
+> APIs). It worth mentioning that toolstack patch is based on non  upstreamed yet “Virtio support for toolstack
+> on Arm” series which is on review now [2].
+> 
+> Please note the following:
+> - Patch series only covers Arm and virtio-mmio (device-tree) for now. To enable the restricted memory access
+>   feature on Arm the following options should be set:
+>   CONFIG_XEN_VIRTIO = y
+>   CONFIG_XEN_HVM_VIRTIO_GRANT = y
+> - Some callbacks in xen-virtio DMA ops layer (map_sg/unmap_sg, etc) are not implemented yet as they are not
+>   needed/used in the first prototype
+> 
+> Patch series is rebased on Linux 5.18-rc2 tag and tested on Renesas Salvator-X board + H3 ES3.0 SoC (Arm64)
+> with standalone userspace (non-Qemu) virtio-mmio based virtio-disk backend running in Driver domain and Linux
+> guest running on existing virtio-blk driver (frontend). No issues were observed. Guest domain 'reboot/destroy'
+> use-cases work properly. I have also tested other use-cases such as assigning several virtio block devices
+> or a mix of virtio and Xen PV block devices to the guest. 
+> 
+> 1. Xen changes located at (last patch):
+> https://github.com/otyshchenko1/xen/commits/libxl_virtio_next
+> 2. Linux changes located at:
+> https://github.com/otyshchenko1/linux/commits/virtio_grant5
+> 3. virtio-disk changes located at:
+> https://github.com/otyshchenko1/virtio-disk/commits/virtio_grant
+> 
+> Any feedback/help would be highly appreciated.
+> 
+> [1] https://www.youtube.com/watch?v=IrlEdaIUDPk
+> [2] https://lore.kernel.org/xen-devel/1649442065-8332-1-git-send-email-olekstysh@gmail.com/
+> 
+> Juergen Gross (2):
+>   xen/grants: support allocating consecutive grants
+>   virtio: add option to restrict memory access under Xen
+> 
+> Oleksandr Tyshchenko (4):
+>   dt-bindings: xen: Add xen,dev-domid property description for
+>     xen-virtio layer
+>   virtio: Various updates to xen-virtio DMA ops layer
+>   arm/xen: Introduce xen_setup_dma_ops()
+>   arm/xen: Assign xen-virtio DMA ops for virtio devices in Xen guests
+> 
+>  .../devicetree/bindings/virtio/xen,dev-domid.yaml  |  39 +++
+>  arch/arm/include/asm/xen/xen-ops.h                 |   1 +
+>  arch/arm/mm/dma-mapping.c                          |   5 +-
+>  arch/arm/xen/enlighten.c                           |  11 +
+>  arch/arm64/include/asm/xen/xen-ops.h               |   1 +
+>  arch/arm64/mm/dma-mapping.c                        |   5 +-
+>  arch/x86/mm/init.c                                 |  15 +
+>  arch/x86/mm/mem_encrypt.c                          |   5 -
+>  arch/x86/xen/Kconfig                               |   9 +
+>  drivers/xen/Kconfig                                |  20 ++
+>  drivers/xen/Makefile                               |   1 +
+>  drivers/xen/grant-table.c                          | 238 +++++++++++++--
+>  drivers/xen/xen-virtio.c                           | 335 +++++++++++++++++++++
+>  include/xen/arm/xen-ops.h                          |  20 ++
+>  include/xen/grant_table.h                          |   4 +
+>  include/xen/xen-ops.h                              |  13 +
+>  16 files changed, 679 insertions(+), 43 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/virtio/xen,dev-domid.yaml
+>  create mode 100644 arch/arm/include/asm/xen/xen-ops.h
+>  create mode 100644 arch/arm64/include/asm/xen/xen-ops.h
+>  create mode 100644 drivers/xen/xen-virtio.c
+>  create mode 100644 include/xen/arm/xen-ops.h
+> 
+> -- 
+> 2.7.4
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/char/tpm/tpm_tis_synquacer.c:89:32: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned char [usertype] value @@     got unsigned char const [usertype] * @@
-   drivers/char/tpm/tpm_tis_synquacer.c:89:32: sparse:     expected unsigned char [usertype] value
-   drivers/char/tpm/tpm_tis_synquacer.c:89:32: sparse:     got unsigned char const [usertype] *
-   drivers/char/tpm/tpm_tis_synquacer.c:90:32: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned char [usertype] value @@     got unsigned char const [usertype] * @@
-   drivers/char/tpm/tpm_tis_synquacer.c:90:32: sparse:     expected unsigned char [usertype] value
-   drivers/char/tpm/tpm_tis_synquacer.c:90:32: sparse:     got unsigned char const [usertype] *
-   drivers/char/tpm/tpm_tis_synquacer.c:91:32: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned char [usertype] value @@     got unsigned char const [usertype] * @@
-   drivers/char/tpm/tpm_tis_synquacer.c:91:32: sparse:     expected unsigned char [usertype] value
-   drivers/char/tpm/tpm_tis_synquacer.c:91:32: sparse:     got unsigned char const [usertype] *
-   drivers/char/tpm/tpm_tis_synquacer.c:92:32: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned char [usertype] value @@     got unsigned char const [usertype] * @@
-   drivers/char/tpm/tpm_tis_synquacer.c:92:32: sparse:     expected unsigned char [usertype] value
-   drivers/char/tpm/tpm_tis_synquacer.c:92:32: sparse:     got unsigned char const [usertype] *
-   drivers/char/tpm/tpm_tis_synquacer.c:89:33: sparse: sparse: non size-preserving pointer to integer cast
-   drivers/char/tpm/tpm_tis_synquacer.c:90:33: sparse: sparse: non size-preserving pointer to integer cast
-   drivers/char/tpm/tpm_tis_synquacer.c:91:33: sparse: sparse: non size-preserving pointer to integer cast
-   drivers/char/tpm/tpm_tis_synquacer.c:92:33: sparse: sparse: non size-preserving pointer to integer cast
-
-vim +89 drivers/char/tpm/tpm_tis_synquacer.c
-
-    66	
-    67	static int tpm_tis_synquacer_write_bytes(struct tpm_tis_data *data, u32 addr,
-    68						 u16 len, const u8 *value,
-    69						 enum tpm_tis_io_mode io_mode)
-    70	{
-    71		struct tpm_tis_synquacer_phy *phy = to_tpm_tis_tcg_phy(data);
-    72		__le16 result_le16;
-    73		__le32 result_le32;
-    74		u16 result16;
-    75		u32 result32;
-    76	
-    77		switch (io_mode) {
-    78		case TPM_TIS_PHYS_8:
-    79			while (len--)
-    80				iowrite8(*value++, phy->iobase + addr);
-    81			break;
-    82		case TPM_TIS_PHYS_16:
-    83			return -EINVAL;
-    84		case TPM_TIS_PHYS_32:
-    85			/*
-    86			 * Due to the limitation of SPI controller on SynQuacer,
-    87			 * 16/32 bits access must be done in byte-wise and descending order.
-    88			 */
-  > 89			iowrite8(&value[3], phy->iobase + addr + 3);
-    90			iowrite8(&value[2], phy->iobase + addr + 2);
-    91			iowrite8(&value[1], phy->iobase + addr + 1);
-    92			iowrite8(&value[0], phy->iobase + addr);
-    93			break;
-    94		}
-    95	
-    96		return 0;
-    97	}
-    98	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
