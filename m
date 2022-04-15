@@ -2,100 +2,285 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70AEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 18:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 944CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 18:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345617AbiDOSMq (ORCPT
+        id S1345678AbiDOSOI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 14:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57862 "EHLO
+        Fri, 15 Apr 2022 14:14:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229847AbiDOSMl (ORCPT
+        with ESMTP id S229847AbiDOSOG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 14:12:41 -0400
-X-Greylist: delayed 159 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Apr 2022 11:10:11 PDT
-Received: from pi3.com.pl (pi3.com.pl [185.238.74.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC094EF69
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 11:10:10 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by pi3.com.pl (Postfix) with ESMTP id 782CF4C15D0;
-        Fri, 15 Apr 2022 20:10:09 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=pi3.com.pl; s=default;
-        t=1650046209; bh=vzriO2rukXRgX+LeFsQqW4sLbXnUJn11h/2sdhPYil8=;
-        h=Date:From:To:Subject:References:In-Reply-To:From;
-        b=ep/SBcmCQEu1xs5fptQXWG3I8hXdfsAc4KelRwSr1on+8a/VeeIYKC3GX4Kju0Kh6
-         wtQttTEvP6Yp7LCVq1qm0fRDYq7vcfdPpzwxWoKuFKPMDuqg6tKOxJjr93MpGyIuyO
-         1pDOfpdCEAKPAdiewbMLMkQzGLGwlfEMKFTFcSfkcU7iGZfGLT7lCsLNyWNWjCaDHq
-         EQzsn7Sofn+NZiAnkt/SkdwbN54XXy3IHLHRq1x2NJC6Es+q/fyt0WkZ78Z6vuDSM9
-         ivs+boW9K7gFQ353Wmb/AUzSbrpKnv3eU6hPUHY8MMGs/c6tHcaCdE9Wl4mROaCbHa
-         erA5MY2gX4yPg==
-X-Virus-Scanned: Debian amavisd-new at pi3.com.pl
-Received: from pi3.com.pl ([127.0.0.1])
-        by localhost (pi3.com.pl [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id yTX2jt2Pj4FN; Fri, 15 Apr 2022 20:10:06 +0200 (CEST)
-Received: by pi3.com.pl (Postfix, from userid 1000)
-        id 655DA4C15D1; Fri, 15 Apr 2022 20:10:06 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=pi3.com.pl; s=default;
-        t=1650046206; bh=vzriO2rukXRgX+LeFsQqW4sLbXnUJn11h/2sdhPYil8=;
-        h=Date:From:To:Subject:References:In-Reply-To:From;
-        b=Q8MKGo6PYl5zA9pVygaP6daC8VJIeV1Xx8Agb92no0ip7ZIyr4/7i7T/u+j4Ij0/B
-         IcJU748i1gUa1+h+dGv27CJzfKRz9cWXjKI4etjwbm9DImGtfmkln4aj8s7pdic4vb
-         FgvIUoP8G9Q2xB4Rr8eRzEBu4WmgD7PkiUSccHCQYDYIzkN0q7T8zVhnUpJlcZ2EGe
-         yk7SxsibA8qeVH17b14iePgYP2sLE8lp492/uKqtBRXPCN9Or4ffNP0aFQ4FTWeAUv
-         caszuHDM4yDG1RoiK5wDTviAxXzCUL0Yu+fhJJPzlHh67oSO3A3D/rV6Mki8vqJD0w
-         Yz3pm7lqeblTA==
-Date:   Fri, 15 Apr 2022 20:10:06 +0200
-From:   Adam Zabrocki <pi3@pi3.com.pl>
-To:     "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-kernel@vger.kernel.org, Solar Designer <solar@openwall.com>
-Subject: [PATCH] x86/kprobes: Fix KRETPROBES when CONFIG_KRETPROBE_ON_RETHOOK
- is set
-Message-ID: <20220415181006.GA14021@pi3.com.pl>
-References: <20220415180723.GA13921@pi3.com.pl>
+        Fri, 15 Apr 2022 14:14:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D9250079;
+        Fri, 15 Apr 2022 11:11:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA0E360B69;
+        Fri, 15 Apr 2022 18:11:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56FDDC385A4;
+        Fri, 15 Apr 2022 18:11:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650046296;
+        bh=jwi0PosNUVyFpkgorgWpNJaQhNUHV+XmZcnJ99lsu/M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iCux2JnnjimHonUQKM1R0X8Vvk/PR8AALKqRQVO1AG3X7w9qTvYKA23vjf8ycwAg5
+         5AEmzIzJnMDGD15oMFUU11HnnBr1FH9sRoZM8QSjDpJWr149NDY0dGS0Tn5VZ0AzLR
+         wHgmslI20wf0+9ZjJgV854QXTeCT5jzZpAw+DK30+dL0Se7CwU1UXv8R8H+YqTihhP
+         VwK7Xi/LqB7dX9V2fREbNNXDXEow00pryG64io6VfDXstaE2F992WrQ/zUUboR/l15
+         jCHsouAmrDN79a5xhoasNZ2iYD1TpgWEIjf2trQLRnx8yU+Hp0/jI6AetrESP45KuJ
+         fpmH+/WItIRQQ==
+Date:   Fri, 15 Apr 2022 19:19:33 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v2 1/1] iio: imu: bmi160: Make use of device properties
+Message-ID: <20220415191933.2d41dd6e@jic23-huawei>
+In-Reply-To: <20220414131804.25227-1-andriy.shevchenko@linux.intel.com>
+References: <20220414131804.25227-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220415180723.GA13921@pi3.com.pl>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[PATCH] x86/kprobes: Fix KRETPROBES when CONFIG_KRETPROBE_ON_RETHOOK is set
+On Thu, 14 Apr 2022 16:18:04 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-The recent kernel change "kprobes: Use rethook for kretprobe if possible",
-introduced a potential NULL pointer dereference bug in the KRETPROBE
-mechanism. The official Kprobes documentation defines that "Any or all
-handlers can be NULL". Unfortunately, there is a missing return handler
-verification to fulfill these requirements and can result in a NULL pointer
-dereference bug.
+> Convert the module to be property provider agnostic and allow
+> it to be used on non-OF platforms.
+> 
+> While at it, reuse temporary device pointer in the same function.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Gah.  Can't argue with the patch as it's definitely an improvement, but
+dev_name() was never the right thing to do if we couldn't get
+the part name more directly. That field is supposed to be a chip
+part number which dev_name is very unlikely to be!
 
-This patch adds such verification in kretprobe_rethook_handler() function.
+Ah well - it's userspace ABI so not much we can do about it now...
 
-Fixes: 73f9b911faa7 ("kprobes: Use rethook for kretprobe if possible")
-Signed-off-by: Adam Zabrocki <pi3@pi3.com.pl>
----
- kernel/kprobes.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hence applied to the togreg branch of iio.git.  Note I'll not
+be pushing that out as non rebasing for a few days so time
+for others to review if they wish.
 
-diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-index dbe57df2e199..dd58c0be9ce2 100644
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -2126,7 +2126,7 @@ static void kretprobe_rethook_handler(struct rethook_node *rh, void *data,
- 	struct kprobe_ctlblk *kcb;
- 
- 	/* The data must NOT be null. This means rethook data structure is broken. */
--	if (WARN_ON_ONCE(!data))
-+	if (WARN_ON_ONCE(!data) || !rp->handler)
- 		return;
- 
- 	__this_cpu_write(current_kprobe, &rp->kp);
+Thanks,
 
--- 
-pi3 (pi3ki31ny) - pi3 (at) itsec pl
-http://pi3.com.pl
+Jonathan
+
+> ---
+> v2: fixed subject to use proper part number in it
+>  drivers/iio/imu/bmi160/bmi160_core.c | 27 ++++++---------------------
+>  drivers/iio/imu/bmi160/bmi160_i2c.c  | 13 ++++++-------
+>  drivers/iio/imu/bmi160/bmi160_spi.c  | 18 +++++++++++-------
+>  3 files changed, 23 insertions(+), 35 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+> index 01336105792e..e7aec56ea136 100644
+> --- a/drivers/iio/imu/bmi160/bmi160_core.c
+> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
+> @@ -11,10 +11,9 @@
+>   */
+>  #include <linux/module.h>
+>  #include <linux/regmap.h>
+> -#include <linux/acpi.h>
+>  #include <linux/delay.h>
+>  #include <linux/irq.h>
+> -#include <linux/of_irq.h>
+> +#include <linux/property.h>
+>  #include <linux/regulator/consumer.h>
+>  
+>  #include <linux/iio/iio.h>
+> @@ -525,17 +524,6 @@ static const struct iio_info bmi160_info = {
+>  	.attrs = &bmi160_attrs_group,
+>  };
+>  
+> -static const char *bmi160_match_acpi_device(struct device *dev)
+> -{
+> -	const struct acpi_device_id *id;
+> -
+> -	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+> -	if (!id)
+> -		return NULL;
+> -
+> -	return dev_name(dev);
+> -}
+> -
+>  static int bmi160_write_conf_reg(struct regmap *regmap, unsigned int reg,
+>  				 unsigned int mask, unsigned int bits,
+>  				 unsigned int write_usleep)
+> @@ -647,18 +635,18 @@ int bmi160_enable_irq(struct regmap *regmap, bool enable)
+>  }
+>  EXPORT_SYMBOL(bmi160_enable_irq);
+>  
+> -static int bmi160_get_irq(struct device_node *of_node, enum bmi160_int_pin *pin)
+> +static int bmi160_get_irq(struct fwnode_handle *fwnode, enum bmi160_int_pin *pin)
+>  {
+>  	int irq;
+>  
+>  	/* Use INT1 if possible, otherwise fall back to INT2. */
+> -	irq = of_irq_get_byname(of_node, "INT1");
+> +	irq = fwnode_irq_get_byname(fwnode, "INT1");
+>  	if (irq > 0) {
+>  		*pin = BMI160_PIN_INT1;
+>  		return irq;
+>  	}
+>  
+> -	irq = of_irq_get_byname(of_node, "INT2");
+> +	irq = fwnode_irq_get_byname(fwnode, "INT2");
+>  	if (irq > 0)
+>  		*pin = BMI160_PIN_INT2;
+>  
+> @@ -688,7 +676,7 @@ static int bmi160_config_device_irq(struct iio_dev *indio_dev, int irq_type,
+>  		return -EINVAL;
+>  	}
+>  
+> -	open_drain = of_property_read_bool(dev->of_node, "drive-open-drain");
+> +	open_drain = device_property_read_bool(dev, "drive-open-drain");
+>  
+>  	return bmi160_config_pin(data->regmap, pin, open_drain, irq_mask,
+>  				 BMI160_NORMAL_WRITE_USLEEP);
+> @@ -872,9 +860,6 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
+>  	if (ret)
+>  		return ret;
+>  
+> -	if (!name && ACPI_HANDLE(dev))
+> -		name = bmi160_match_acpi_device(dev);
+> -
+>  	indio_dev->channels = bmi160_channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(bmi160_channels);
+>  	indio_dev->name = name;
+> @@ -887,7 +872,7 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
+>  	if (ret)
+>  		return ret;
+>  
+> -	irq = bmi160_get_irq(dev->of_node, &int_pin);
+> +	irq = bmi160_get_irq(dev_fwnode(dev), &int_pin);
+>  	if (irq > 0) {
+>  		ret = bmi160_setup_irq(indio_dev, irq, int_pin);
+>  		if (ret)
+> diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c b/drivers/iio/imu/bmi160/bmi160_i2c.c
+> index 26398614eddf..02f149d37b17 100644
+> --- a/drivers/iio/imu/bmi160/bmi160_i2c.c
+> +++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
+> @@ -8,10 +8,9 @@
+>   *      - 0x68 if SDO is pulled to GND
+>   *      - 0x69 if SDO is pulled to VDDIO
+>   */
+> -#include <linux/acpi.h>
+>  #include <linux/i2c.h>
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+> -#include <linux/of.h>
+>  #include <linux/regmap.h>
+>  
+>  #include "bmi160.h"
+> @@ -20,7 +19,7 @@ static int bmi160_i2c_probe(struct i2c_client *client,
+>  			    const struct i2c_device_id *id)
+>  {
+>  	struct regmap *regmap;
+> -	const char *name = NULL;
+> +	const char *name;
+>  
+>  	regmap = devm_regmap_init_i2c(client, &bmi160_regmap_config);
+>  	if (IS_ERR(regmap)) {
+> @@ -31,6 +30,8 @@ static int bmi160_i2c_probe(struct i2c_client *client,
+>  
+>  	if (id)
+>  		name = id->name;
+> +	else
+> +		name = dev_name(&client->dev);
+>  
+>  	return bmi160_core_probe(&client->dev, regmap, name, false);
+>  }
+> @@ -47,19 +48,17 @@ static const struct acpi_device_id bmi160_acpi_match[] = {
+>  };
+>  MODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);
+>  
+> -#ifdef CONFIG_OF
+>  static const struct of_device_id bmi160_of_match[] = {
+>  	{ .compatible = "bosch,bmi160" },
+>  	{ },
+>  };
+>  MODULE_DEVICE_TABLE(of, bmi160_of_match);
+> -#endif
+>  
+>  static struct i2c_driver bmi160_i2c_driver = {
+>  	.driver = {
+>  		.name			= "bmi160_i2c",
+> -		.acpi_match_table	= ACPI_PTR(bmi160_acpi_match),
+> -		.of_match_table		= of_match_ptr(bmi160_of_match),
+> +		.acpi_match_table	= bmi160_acpi_match,
+> +		.of_match_table		= bmi160_of_match,
+>  	},
+>  	.probe		= bmi160_i2c_probe,
+>  	.id_table	= bmi160_i2c_id,
+> diff --git a/drivers/iio/imu/bmi160/bmi160_spi.c b/drivers/iio/imu/bmi160/bmi160_spi.c
+> index 61389b41c6d9..24f7d75c7903 100644
+> --- a/drivers/iio/imu/bmi160/bmi160_spi.c
+> +++ b/drivers/iio/imu/bmi160/bmi160_spi.c
+> @@ -5,9 +5,8 @@
+>   * Copyright (c) 2016, Intel Corporation.
+>   *
+>   */
+> -#include <linux/acpi.h>
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+> -#include <linux/of.h>
+>  #include <linux/regmap.h>
+>  #include <linux/spi/spi.h>
+>  
+> @@ -17,6 +16,7 @@ static int bmi160_spi_probe(struct spi_device *spi)
+>  {
+>  	struct regmap *regmap;
+>  	const struct spi_device_id *id = spi_get_device_id(spi);
+> +	const char *name;
+>  
+>  	regmap = devm_regmap_init_spi(spi, &bmi160_regmap_config);
+>  	if (IS_ERR(regmap)) {
+> @@ -24,7 +24,13 @@ static int bmi160_spi_probe(struct spi_device *spi)
+>  			regmap);
+>  		return PTR_ERR(regmap);
+>  	}
+> -	return bmi160_core_probe(&spi->dev, regmap, id->name, true);
+> +
+> +	if (id)
+> +		name = id->name;
+> +	else
+> +		name = dev_name(&spi->dev);
+> +
+> +	return bmi160_core_probe(&spi->dev, regmap, name, true);
+>  }
+>  
+>  static const struct spi_device_id bmi160_spi_id[] = {
+> @@ -39,20 +45,18 @@ static const struct acpi_device_id bmi160_acpi_match[] = {
+>  };
+>  MODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);
+>  
+> -#ifdef CONFIG_OF
+>  static const struct of_device_id bmi160_of_match[] = {
+>  	{ .compatible = "bosch,bmi160" },
+>  	{ },
+>  };
+>  MODULE_DEVICE_TABLE(of, bmi160_of_match);
+> -#endif
+>  
+>  static struct spi_driver bmi160_spi_driver = {
+>  	.probe		= bmi160_spi_probe,
+>  	.id_table	= bmi160_spi_id,
+>  	.driver = {
+> -		.acpi_match_table	= ACPI_PTR(bmi160_acpi_match),
+> -		.of_match_table		= of_match_ptr(bmi160_of_match),
+> +		.acpi_match_table	= bmi160_acpi_match,
+> +		.of_match_table		= bmi160_of_match,
+>  		.name			= "bmi160_spi",
+>  	},
+>  };
 
