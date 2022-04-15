@@ -2,129 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9959C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73DDFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:08:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235413AbiDOPKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 11:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54302 "EHLO
+        id S1354853AbiDOPK5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 11:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354841AbiDOPJu (ORCPT
+        with ESMTP id S1350436AbiDOPKy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 11:09:50 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8E9CF4B0;
-        Fri, 15 Apr 2022 08:07:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1650035240; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/NRTmVUFKuE8CMESQAm4DH0fvEVp7eM4RIJTXRaTSSI=;
-        b=dbSqEuCyvoj2avoBIOZeoZYeD+m6qVjmB80MGk1eLm/4t3/fU5GFQR8WuXRw7lD2s6WQy/
-        wAZEF5D4gXqpcsazI8DHZ6rVHCCAP8B36cybPL8cS0/1dQPRuAfZxSlFRY/u9V6iCTDexR
-        eyRWsGoDHy22VKQHGyZmYhESb3boylQ=
-Date:   Fri, 15 Apr 2022 16:07:08 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v3 3/3] MIPS: Ingenic: Refresh USB nodes to match driver
- changes.
-To:     =?UTF-8?b?5ZGo55Cw5p2w?= <zhouyanjie@wanyeetech.com>
-Cc:     gregkh@linuxfoundation.org, hminas@synopsys.com,
-        robh+dt@kernel.org, krzk+dt@kernel.org, tsbogend@alpha.franken.de,
-        linux-usb@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        dragancecavac@yahoo.com, hns@goldelico.com,
-        dongsheng.qiu@ingenic.com, aric.pzqi@ingenic.com,
-        rick.tyliu@ingenic.com, sernia.zhou@foxmail.com,
-        zhenwenjin@gmail.com, reimu@sudomaker.com
-Message-Id: <WBZDAR.1ZU7BOCJE9S11@crapouillou.net>
-In-Reply-To: <1649964337-114337-4-git-send-email-zhouyanjie@wanyeetech.com>
-References: <1649964337-114337-1-git-send-email-zhouyanjie@wanyeetech.com>
-        <1649964337-114337-4-git-send-email-zhouyanjie@wanyeetech.com>
+        Fri, 15 Apr 2022 11:10:54 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97D3CF480;
+        Fri, 15 Apr 2022 08:08:25 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id l3-20020a05600c1d0300b0038ff89c938bso1617091wms.0;
+        Fri, 15 Apr 2022 08:08:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ErStW3rPOBKQARnIVZygQKZdzKxAEYlPsIaEFV3oKuQ=;
+        b=Zbldi1K2j3XC4xBsoSkaktwQvWO620FEFB+iiNBHyOLIEjACS/0GERXSy2lwNFPiXR
+         qTRxM2/rsg3EpPFI90bFFqjet4K5d7lDD19/NhR2JXETQvxBR7JBzgRyX/3cHzlx7pG9
+         nqxOhwS7KCgOyeZ6ABHyUMlYKxVkMUdVi0OCGDjw+qxdo0HG+CwUAQ5E/xzkruxMg8Qa
+         B9P/unGS9dZZb27aIBi9Q2HI26iG6D37HBFuLj8/mqaRaog4zZ4oyZQxEUZE4YRNJSti
+         Yfm9+sguMPFhpYQ8OQ6vN22S3xpKBbaAMwkBv+hARBrdGfjGqKBeG82FQJqueNpFYYJo
+         d8bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ErStW3rPOBKQARnIVZygQKZdzKxAEYlPsIaEFV3oKuQ=;
+        b=tBt2cXNFA2vghBZkIqgytHMUbmc14wUXuShjgZ6/W64nHgln27ionkRk9d+AXWu0la
+         s54lbGy7Bq8NN6BT1pDhlPxm2ZymA6pgEQ8T2fM0DcN/Aw9mTXtOsht+207uPwbGtuuh
+         Y4e3QeHV2EBwq9R5gXL7Zn08PuhFky61H1bEywj2bLDCdOerNKZY+EJFwbJcmQlY3LUc
+         NgX7NAIp7Wdd/kamIao/CvBMCE/jjEbjlvEj+vuGKKZTSaKAXqz+jO1N6WeDAtLTEHho
+         9vWYcw9eQU59BYiTKh96qQTaiSKLQIknEOHy1KLtf0uZL2SS5sc3xkQEPajlxdgYBRTr
+         dgxQ==
+X-Gm-Message-State: AOAM5315RW3MQYyrWivpNboCIIcwmZavc1JmN+2P16yHfR6+t5xldJFu
+        jpRbuKr4NBOoGWubJw8/Zzg=
+X-Google-Smtp-Source: ABdhPJxWrXcOoZ2hRBlIKf9Xl736VnNNYhhKCadEhBE45FqAjKq/+xORnk2Qa4GCEBd8VfBYwIIMFw==
+X-Received: by 2002:a05:600c:35c5:b0:390:9982:73ec with SMTP id r5-20020a05600c35c500b00390998273ecmr3724293wmq.196.1650035304472;
+        Fri, 15 Apr 2022 08:08:24 -0700 (PDT)
+Received: from ?IPV6:2001:b07:add:ec09:c399:bc87:7b6c:fb2a? ([2001:b07:add:ec09:c399:bc87:7b6c:fb2a])
+        by smtp.googlemail.com with ESMTPSA id l126-20020a1c2584000000b00387d4f35651sm8886451wml.10.2022.04.15.08.08.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Apr 2022 08:08:24 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <c7f75e03-2b9e-698f-0f2e-04c6c7bae892@redhat.com>
+Date:   Fri, 15 Apr 2022 17:08:21 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 096/104] KVM: TDX: Handle TDX PV rdmsr hypercall
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <684d96c4e2d7cfcc49c5cb482e54f582af50e09e.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <684d96c4e2d7cfcc49c5cb482e54f582af50e09e.1646422845.git.isaku.yamahata@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Zhou,
-
-
-Le ven., avril 15 2022 at 03:25:37 +0800, =E5=91=A8=E7=90=B0=E6=9D=B0 (Zhou=
- Yanjie)=20
-<zhouyanjie@wanyeetech.com> a =C3=A9crit :
-> Refresh USB nodes in the jz4780.dtsi, x1000.dtsi, and x1830.dtsi=20
-> files.
->=20
-> Signed-off-by: =E5=91=A8=E7=90=B0=E6=9D=B0 (Zhou Yanjie) <zhouyanjie@wany=
-eetech.com>
+On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
+> 
+> Wire up TDX PV rdmsr hypercall to the KVM backend function.
+> 
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 > ---
->=20
-> Notes:
->     v3:
->     New patch.
->=20
->  arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 +-
->  arch/mips/boot/dts/ingenic/x1000.dtsi  | 2 +-
->  arch/mips/boot/dts/ingenic/x1830.dtsi  | 2 +-
->  3 files changed, 3 insertions(+), 3 deletions(-)
->=20
-> diff --git a/arch/mips/boot/dts/ingenic/jz4780.dtsi=20
-> b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-> index b998301..c182a65 100644
-> --- a/arch/mips/boot/dts/ingenic/jz4780.dtsi
-> +++ b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-> @@ -577,7 +577,7 @@
->  	};
->=20
->  	otg: usb@13500000 {
-> -		compatible =3D "ingenic,jz4780-otg", "snps,dwc2";
-> +		compatible =3D "ingenic,jz4780-otg";
+>   arch/x86/kvm/vmx/tdx.c | 19 +++++++++++++++++++
+>   1 file changed, 19 insertions(+)
+> 
+> diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+> index cec2660206bd..dd7aaa28bf3a 100644
+> --- a/arch/x86/kvm/vmx/tdx.c
+> +++ b/arch/x86/kvm/vmx/tdx.c
+> @@ -1124,6 +1124,23 @@ static int tdx_emulate_mmio(struct kvm_vcpu *vcpu)
+>   	return 1;
+>   }
+>   
+> +static int tdx_emulate_rdmsr(struct kvm_vcpu *vcpu)
+> +{
+> +	u32 index = tdvmcall_p1_read(vcpu);
+> +	u64 data;
+> +
+> +	if (kvm_get_msr(vcpu, index, &data)) {
+> +		trace_kvm_msr_read_ex(index);
+> +		tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_INVALID_OPERAND);
+> +		return 1;
+> +	}
+> +	trace_kvm_msr_read(index, data);
+> +
+> +	tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
+> +	tdvmcall_set_return_val(vcpu, data);
+> +	return 1;
+> +}
+> +
+>   static int handle_tdvmcall(struct kvm_vcpu *vcpu)
+>   {
+>   	struct vcpu_tdx *tdx = to_tdx(vcpu);
+> @@ -1143,6 +1160,8 @@ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
+>   		return tdx_emulate_io(vcpu);
+>   	case EXIT_REASON_EPT_VIOLATION:
+>   		return tdx_emulate_mmio(vcpu);
+> +	case EXIT_REASON_MSR_READ:
+> +		return tdx_emulate_rdmsr(vcpu);
+>   	default:
+>   		break;
+>   	}
 
-Could you refresh my memory - why are the "snps,dwc2" fallback strings=20
-removed?
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 
-To me it seems like they should be here, since the OTG IP in Ingenic=20
-SoCs is derived from the DWC2 IP.
+and feel free to squash with the wrmsr one.
 
-Cheers,
--Paul
-
->  		reg =3D <0x13500000 0x40000>;
->=20
->  		interrupt-parent =3D <&intc>;
-> diff --git a/arch/mips/boot/dts/ingenic/x1000.dtsi=20
-> b/arch/mips/boot/dts/ingenic/x1000.dtsi
-> index 8bd27ede..343818a2 100644
-> --- a/arch/mips/boot/dts/ingenic/x1000.dtsi
-> +++ b/arch/mips/boot/dts/ingenic/x1000.dtsi
-> @@ -366,7 +366,7 @@
->  	};
->=20
->  	otg: usb@13500000 {
-> -		compatible =3D "ingenic,x1000-otg", "snps,dwc2";
-> +		compatible =3D "ingenic,x1000-otg";
->  		reg =3D <0x13500000 0x40000>;
->=20
->  		interrupt-parent =3D <&intc>;
-> diff --git a/arch/mips/boot/dts/ingenic/x1830.dtsi=20
-> b/arch/mips/boot/dts/ingenic/x1830.dtsi
-> index 2595df8..6aff19f 100644
-> --- a/arch/mips/boot/dts/ingenic/x1830.dtsi
-> +++ b/arch/mips/boot/dts/ingenic/x1830.dtsi
-> @@ -355,7 +355,7 @@
->  	};
->=20
->  	otg: usb@13500000 {
-> -		compatible =3D "ingenic,x1830-otg", "snps,dwc2";
-> +		compatible =3D "ingenic,x1830-otg";
->  		reg =3D <0x13500000 0x40000>;
->=20
->  		interrupt-parent =3D <&intc>;
-> --
-> 2.7.4
->=20
-
-
+Paolo
