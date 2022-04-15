@@ -2,291 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E39DC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 17:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA25C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 17:35:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242599AbiDORhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 13:37:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
+        id S243665AbiDORh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 13:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236394AbiDORhl (ORCPT
+        with ESMTP id S241652AbiDORhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 13:37:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8AF45AE2;
-        Fri, 15 Apr 2022 10:35:10 -0700 (PDT)
+        Fri, 15 Apr 2022 13:37:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1892E52E59;
+        Fri, 15 Apr 2022 10:35:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36605621A7;
-        Fri, 15 Apr 2022 17:35:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7E19C385A5;
-        Fri, 15 Apr 2022 17:35:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4A23B82E8D;
+        Fri, 15 Apr 2022 17:35:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50095C385A7;
+        Fri, 15 Apr 2022 17:35:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650044109;
-        bh=rL/Iu22dVqxNUTMaBt9ONG318iOM6T5p7OiX7xcE9tM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SfM1Ar+y5byq6boTrZL0fUNgD8iSEm/d9Va0V53tHamhgpmXk6OBqOjxbxL4pIy2s
-         9FlpgNCoRYI5VwZpIpt9JPZ6RZNQ8n7D6UZpeZZKPz6OITXit+ANcAMlbyX91tpM3n
-         TcYcxV12pWP/+yyWJTJNDnTdtCGHR/Zl/m7/r3al/y4M8G2h9djhA8K4wR/av116b8
-         yJyN4KCMqIsZkoYFle+uNGftNhRo4g5OH1DXusOhYldKokMXLlzftTDpSgtM7+L3Q0
-         UlQjDDfxPZyKkC9YrvwgFGda0tIL3kZhArXXgOnaQ8HoHBakAUTELzsWNCHUOmtks4
-         ywMqWMAat1uEw==
-Date:   Fri, 15 Apr 2022 18:43:05 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andrea Merello <andrea.merello@gmail.com>
-Cc:     mchehab+huawei@kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        lars@metafoo.de, robh+dt@kernel.org, andy.shevchenko@gmail.com,
-        matt.ranostay@konsulko.com, ardeleanalex@gmail.com,
-        jacopo@jmondi.org, Andrea Merello <andrea.merello@iit.it>
-Subject: Re: [v4 08/14] iio: imu: add Bosch Sensortec BNO055 core driver
-Message-ID: <20220415184305.03805452@jic23-huawei>
-In-Reply-To: <20220415130005.85879-9-andrea.merello@gmail.com>
-References: <20220415130005.85879-1-andrea.merello@gmail.com>
-        <20220415130005.85879-9-andrea.merello@gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        s=k20201202; t=1650044116;
+        bh=NPrGWJY2+pB2s2+LkmyQ4Z6jS31r4u+B6OdBspv9xGw=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=KXOdvc2h2TyoULPQhTsialNWWsR/RBbznma5YHiYT4MBRnUTxdS4U9yblSqXLFkAK
+         DSKJMUFTR5vJfcPh7babHlTcQrZ0Ohs2FkCbbxjFB1KsLuH6wyNxsKGXi23mb3r5d4
+         X8wusGaCGCqKuXxhTw1kK4XW0IK/BcfIG9I+rDpYakqy6IDlfL488Ve4t/izlfIvOT
+         9N0A2j0y259EozQ4tK6B7FJx64zc6frNsn1X6adCdpqlN9EmiPc81odPsTL8DziPjE
+         fqUq6FZ0WAb/HA+OOLEA5/gA6nF9j9zEu6jNRsx3ZK4Pezf34AuuzwN9cWCVQb2HEj
+         YWRagMMCiTMcg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id EA2945C04C8; Fri, 15 Apr 2022 10:35:15 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 10:35:15 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        rcu@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        rushikesh.s.kadam@intel.com, vineethrp@gmail.com, urezki@gmail.com
+Subject: Re: [PATCH v3] rcu/nocb: Add an option to offload all CPUs on boot
+Message-ID: <20220415173515.GL4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220415160224.1904505-1-joel@joelfernandes.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220415160224.1904505-1-joel@joelfernandes.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 15 Apr 2022 14:59:59 +0200
-Andrea Merello <andrea.merello@gmail.com> wrote:
+On Fri, Apr 15, 2022 at 04:02:24PM +0000, Joel Fernandes (Google) wrote:
+> From: Joel Fernandes <joel@joelfernandes.org>
 
-> From: Andrea Merello <andrea.merello@iit.it>
+Much better, thank you!
+
+> On systems with CONFIG_RCU_NOCB_CPU=y, there is no default mask provided
+> which ends up not offloading any CPU. This patch removes a dependency
+> from the bootloader having to know about RCU, about how many CPUs the
+> system has, and about how to provide the mask.
+
+The "about how many CPUs the system has" does not apply to current
+mainline, in which "rcu_nocbs=0-N" says to offload all CPUs.  It can be
+added back in for a backport to v5.10.  ;-)
+
+> With the new option enabled, all CPUs will be offloaded on boot.
 > 
-> This patch adds a core driver for the BNO055 IMU from Bosch. This IMU
-> can be connected via both serial and I2C busses; separate patches will
-> add support for them.
-> 
-> The driver supports "AMG" (Accelerometer, Magnetometer, Gyroscope) mode,
-> that provides raw data from the said internal sensors, and a couple of
-> "fusion" modes (i.e. the IMU also do calculations in order to provide
-> euler angles, quaternions, linear acceleration and gravity measurements).
-> 
-> In fusion modes the AMG data is still available (with some calibration
-> refinements done by the IMU), but certain settings such as low pass
-> filters cut-off frequency and sensors ranges are fixed, while in AMG mode
-> they can be customized; this is why AMG mode can still be interesting.
-> 
-> Signed-off-by: Andrea Merello <andrea.merello@iit.it>
-Hi Andrea,
+> Signed-off-by: Joel Fernandes <joel@joelfernandes.org>
 
-A few trivial things from me on this read through.
+I second Joel's call for testing and add to that a call for additional
+review.
 
-I haven't commented on a lot of the patches because I was happy with them.
-
-Other than the small changes requested from me, we mostly need to get
-device tree review of the binding and allow time for others to take
-another look.
-
-Thanks,
-
-Jonathan
-
+My thought is to queue this after some independent testing.
 
 > ---
+> v2 was forcing the option to override no_cbs=
+> v3 is back to v1 but with a config option defaulting to 'n'.
+> 
+>  Documentation/admin-guide/kernel-parameters.txt |  3 +++
+>  kernel/rcu/Kconfig                              | 13 +++++++++++++
+>  kernel/rcu/tree_nocb.h                          | 16 ++++++++++++++--
+>  3 files changed, 30 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index f5a27f067db9..7648a7dd335e 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -4398,6 +4398,9 @@
+>  			no-callback mode from boot but the mode may be
+>  			toggled at runtime via cpusets.
+>  
+> +			Note that this argument takes precedence over
+> +			the CONFIG_RCU_NOCB_CPU_DEFAULT_ALL option.
 
-...
+Very good, thank you!
 
-> +
-> +static int bno055_read_simple_chan(struct iio_dev *indio_dev,
-> +				   struct iio_chan_spec const *chan,
-> +				   int *val, int *val2, long mask)
-> +{
-> +	struct bno055_priv *priv = iio_priv(indio_dev);
-> +	__le16 raw_val;
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = regmap_bulk_read(priv->regmap, chan->address,
-> +				       &raw_val, sizeof(raw_val));
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = (s16)le16_to_cpu(raw_val);
-
-Hmm. I'd ever so slightly prefer
-
-sign_extend32(le16_to_cpu(raw_val), 15) as it makes it extremely clear
-what is going on and hopefully the compiler can do a good job
-of optimising it either way.  If you strongly prefer the current
-approach I'll cope :)
-
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		if (priv->operation_mode != BNO055_OPR_MODE_AMG) {
-> +			*val = 0;
-> +		} else {
-> +			ret = regmap_bulk_read(priv->regmap,
-> +					       chan->address +
-> +					       BNO055_REG_OFFSET_ADDR,
-> +					       &raw_val, sizeof(raw_val));
-> +			if (ret < 0)
-> +				return ret;
-> +			/*
-> +			 * IMU reports sensor offests; IIO wants correction
-> +			 * offset, thus we need the 'minus' here.
-> +			 */
-> +			*val = -(s16)le16_to_cpu(raw_val);
-> +		}
-> +		return IIO_VAL_INT;
-...
-
-> +}
-
-...
+Do we want to say the same about nohz_full?  Or am I misreading the
+code below?
 
 > +
-> +static int bno055_read_quaternion(struct iio_dev *indio_dev,
-> +				  struct iio_chan_spec const *chan,
-> +				  int size, int *vals, int *val_len,
-> +				  long mask)
-> +{
-> +	struct bno055_priv *priv = iio_priv(indio_dev);
-> +	__le16 raw_vals[4];
-> +	int i, ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (size < 4)
-> +			return -EINVAL;
-> +		ret = regmap_bulk_read(priv->regmap,
-> +				       BNO055_QUAT_DATA_W_LSB_REG,
-> +				       raw_vals, sizeof(raw_vals));
-> +		if (ret < 0)
-> +			return ret;
-> +		for (i = 0; i < 4; i++)
-> +			vals[i] = (s16)le16_to_cpu(raw_vals[i]);
-> +		*val_len = 4;
-> +		return IIO_VAL_INT_MULTIPLE;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* Table 3-31: 1 quaternion = 2^14 LSB */
-> +		if (size < 2)
-> +			return -EINVAL;
-> +		vals[0] = 14;
-> +		vals[1] = 1 << 14;
-This looks odd.  As you are using FRACTIONAL_LOG2, I think that should
-just be
-vals[0] = 1;
-vals[1] = 14;
+>  	rcu_nocb_poll	[KNL]
+>  			Rather than requiring that offloaded CPUs
+>  			(specified by rcu_nocbs= above) explicitly
+> diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
+> index bf8e341e75b4..2f8bd694ed85 100644
+> --- a/kernel/rcu/Kconfig
+> +++ b/kernel/rcu/Kconfig
+> @@ -223,6 +223,19 @@ config RCU_NOCB_CPU
+>  	  Say Y here if you need reduced OS jitter, despite added overhead.
+>  	  Say N here if you are unsure.
+>  
+> +config RCU_NOCB_CPU_DEFAULT_ALL
+> +	bool "Offload RCU callback processing from all CPUs by default"
+> +	depends on RCU_NOCB_CPU
 
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	default:
-> +		return -EINVAL;
+The needed dependency on RCU_EXPERT is provided transitively via
+RCU_NOCB_CPU, so this should be OK.  (To check, build a .config file,
+queue this patch, and do "make oldconfig".  If any questions are asked,
+a change is needed.)
+
+> +	default n
+> +	help
+> +	  Use this option to offload callback processing from all CPUs
+> +	  by default, in the absence of the rcu_nocbs boot parameter.
+
+And also in the absence of the nohz_full boot parameter, correct?
+
+> +	  This also avoids the need to use any boot parameters to achieve
+> +	  the effect of offloading all CPUs on boot.
+> +
+> +	  Say Y here if you want offload all CPUs by default on boot.
+> +	  Say N here if you are unsure.
+> +
+>  config TASKS_TRACE_RCU_READ_MB
+>  	bool "Tasks Trace RCU readers use memory barriers in user and idle"
+>  	depends on RCU_EXPERT
+> diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+> index eeafb546a7a0..673fa0d1f801 100644
+> --- a/kernel/rcu/tree_nocb.h
+> +++ b/kernel/rcu/tree_nocb.h
+> @@ -1165,12 +1165,21 @@ EXPORT_SYMBOL_GPL(rcu_nocb_cpu_offload);
+>  void __init rcu_init_nohz(void)
+>  {
+>  	int cpu;
+> -	bool need_rcu_nocb_mask = false;
+> +	bool need_rcu_nocb_mask = false, offload_all = false;
+
+Please use the extra line to perserve alphabetical order.  (I do know
+about inverse tree, though I have no idea why it is considered to be a
+good thing.)
+
+>  	struct rcu_data *rdp;
+>  
+> +#if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
+> +	if (!rcu_nocb_is_setup) {
+> +		need_rcu_nocb_mask = true;
+> +		offload_all = true;
 > +	}
-> +}
-> +
+> +#endif
 
-
-
-...
-
-> +
-> +static void bno055_clk_disable(void *arg)
-> +{
-> +	clk_disable_unprepare((struct clk *)arg);
-> +}
-
-Hopefully one day: https://lore.kernel.org/all/CAHp75VdH4vGr57v6tfkRuxh-3agRKO8C08+DH8dsB1HnPfnz5Q@mail.gmail.com/
-will get merged...  Until then, this is the best we can do.
+It would be nice to be able to use IS_ENABLED() here and below, but that
+is a separate issue.  For one thing, need_rcu_nocb_mask would need to
+be defined unconditionally.  So this is fine as it is for this patch.
 
 > +
-> +int bno055_probe(struct device *dev, struct regmap *regmap,
-> +		 int xfer_burst_break_thr, bool sw_reset)
-> +{
-> +	const struct firmware *caldata;
-See comment below. I think you need to set this to NULL here
+>  #if defined(CONFIG_NO_HZ_FULL)
+> -	if (tick_nohz_full_running && cpumask_weight(tick_nohz_full_mask))
+> +	if (tick_nohz_full_running && cpumask_weight(tick_nohz_full_mask)) {
+>  		need_rcu_nocb_mask = true;
+> +		offload_all = false; /* NO_HZ_FULL has its own mask. */
 
+This is good, and is also why I am asking for the addition of nohz_full
+above.
 
-> +
-> +	ret = regmap_read(priv->regmap, BNO055_CHIP_ID_REG, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (val != BNO055_CHIP_ID_MAGIC) {
-
-We've run into this a few times recently.  Traditionally IIO has been very
-restrictive on allowing drivers to probe if the Who Am I type values
-don't match.  That causes problems for backwards compatibility in
-device tree - e.g. (with made up compatible part number 055b :)
-compatible = "bosch,bno055b", "bosch,bno055"
-
-The viewpoint of the dt maintainers is that we should assume the
-dt is correct and at most warn about missmatched IDs before trying
-to carry on.  So to avoid hitting that again please relax this to a
-warning and cross your fingers after this point if it doesn't match.
-I'm fine on the firmware question because we know we are dealing
-with buggy firmware.  Ideally we'll get some working firmware
-additions at somepoint then we can just label the bad firmwares
-and assume one less bug in the ones that don't match :)
-
-> +		dev_err(dev, "Unrecognized chip ID 0x%x", val);
-> +		return -ENODEV;
 > +	}
+>  #endif /* #if defined(CONFIG_NO_HZ_FULL) */
+>  
+>  	if (need_rcu_nocb_mask) {
+> @@ -1191,6 +1200,9 @@ void __init rcu_init_nohz(void)
+>  		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, tick_nohz_full_mask);
+>  #endif /* #if defined(CONFIG_NO_HZ_FULL) */
+>  
+> +	if (offload_all)
+> +		cpumask_setall(rcu_nocb_mask);
 > +
-> +	/*
-> +	 * In case we haven't a HW reset pin, we can still reset the chip via
-> +	 * register write. This is probably nonsense in case we can't even
-> +	 * communicate with the chip or the chip isn't the one we expect (i.e.
-> +	 * we don't write to unknown chips), so we perform SW reset only after
-> +	 * chip magic ID check
-> +	 */
-> +	if (!priv->reset_gpio) {
-> +		ret = bno055_system_reset(priv);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-
-...
-
-> +	ret = regmap_bulk_read(priv->regmap, BNO055_UID_LOWER_REG,
-> +			       priv->uid, BNO055_UID_LEN);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/*
-> +	 * This has nothing to do with the IMU firmware, this is for sensor
-> +	 * calibration data.
-
-I'd not say what it isn't.  What it is will be enough.
-
-	/* Sensor calibration data */
-
-> +	 */
-> +	fw_name_buf = kasprintf(GFP_KERNEL,
-> +				BNO055_FW_UID_NAME,
-> +				BNO055_UID_LEN, priv->uid);
-> +	if (!fw_name_buf)
-> +		return -ENOMEM;
-> +
-> +	ret = request_firmware(&caldata, fw_name_buf, dev);
-> +	kfree(fw_name_buf);
-> +	if (ret)
-> +		ret = request_firmware(&caldata, BNO055_FW_GENERIC_NAME, dev);
-> +
-> +	if (ret)
-> +		dev_notice(dev, "Calibration file load failed. See instruction in kernel Documentation/iio/bno055.rst");
-
-If no calibration files are found, is caldata guaranteed to have been set to NULL?
-I'm not seeing that in the documentation, so even if it is true today it might not
-be in future and I think that leaves you referencing a variable that may not
-have been set.   Probably just set caldata_data = NULL where you define
-the local variable at top of this function.
-
-> +
-> +	if (caldata) {
-> +		caldata_data = caldata->data;
-> +		caldata_size = caldata->size;
-> +	}
-> +	ret = bno055_init(priv, caldata_data, caldata_size);
-> +	if (caldata)
-> +		release_firmware(caldata);
-> +	if (ret)
-> +		return ret;
-> +
-
+>  	if (!cpumask_subset(rcu_nocb_mask, cpu_possible_mask)) {
+>  		pr_info("\tNote: kernel parameter 'rcu_nocbs=', 'nohz_full', or 'isolcpus=' contains nonexistent CPUs.\n");
+>  		cpumask_and(rcu_nocb_mask, cpu_possible_mask,
+> -- 
+> 2.36.0.rc0.470.gd361397f0d-goog
+> 
