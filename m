@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:38:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3958C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242914AbiDOMkk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 08:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39650 "EHLO
+        id S243809AbiDOMkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 08:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353591AbiDOMjB (ORCPT
+        with ESMTP id S1345514AbiDOMj2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 08:39:01 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C5D6832D;
-        Fri, 15 Apr 2022 05:36:32 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0VA7Y1b1_1650026187;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VA7Y1b1_1650026187)
+        Fri, 15 Apr 2022 08:39:28 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE7F9C8BCE;
+        Fri, 15 Apr 2022 05:36:48 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R601e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0VA7Ug2g_1650026202;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VA7Ug2g_1650026202)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 15 Apr 2022 20:36:28 +0800
+          Fri, 15 Apr 2022 20:36:43 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -29,9 +29,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
         fannaihao@baidu.com, zhangjiachen.jaycee@bytedance.com
-Subject: [PATCH v9 08/21] cachefiles: document on-demand read mode
-Date:   Fri, 15 Apr 2022 20:36:01 +0800
-Message-Id: <20220415123614.54024-9-jefflexu@linux.alibaba.com>
+Subject: [PATCH v9 17/21] erofs: implement fscache-based metadata read
+Date:   Fri, 15 Apr 2022 20:36:10 +0800
+Message-Id: <20220415123614.54024-18-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220415123614.54024-1-jefflexu@linux.alibaba.com>
 References: <20220415123614.54024-1-jefflexu@linux.alibaba.com>
@@ -41,198 +41,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document new user interface introduced by on-demand read mode.
+Implement the data plane of reading metadata from primary data blob
+over fscache.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- .../filesystems/caching/cachefiles.rst        | 170 ++++++++++++++++++
- 1 file changed, 170 insertions(+)
+ fs/erofs/data.c    | 19 +++++++++++++++----
+ fs/erofs/fscache.c | 27 +++++++++++++++++++++++++++
+ 2 files changed, 42 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/filesystems/caching/cachefiles.rst b/Documentation/filesystems/caching/cachefiles.rst
-index 8bf396b76359..c10a16957141 100644
---- a/Documentation/filesystems/caching/cachefiles.rst
-+++ b/Documentation/filesystems/caching/cachefiles.rst
-@@ -28,6 +28,7 @@ Cache on Already Mounted Filesystem
+diff --git a/fs/erofs/data.c b/fs/erofs/data.c
+index 14b64d960541..bb9c1fd48c19 100644
+--- a/fs/erofs/data.c
++++ b/fs/erofs/data.c
+@@ -6,6 +6,7 @@
+  */
+ #include "internal.h"
+ #include <linux/prefetch.h>
++#include <linux/sched/mm.h>
+ #include <linux/dax.h>
+ #include <trace/events/erofs.h>
  
-  (*) Debugging.
+@@ -35,14 +36,20 @@ void *erofs_bread(struct erofs_buf *buf, struct inode *inode,
+ 	erofs_off_t offset = blknr_to_addr(blkaddr);
+ 	pgoff_t index = offset >> PAGE_SHIFT;
+ 	struct page *page = buf->page;
++	struct folio *folio;
++	unsigned int nofs_flag;
  
-+ (*) On-demand Read.
+ 	if (!page || page->index != index) {
+ 		erofs_put_metabuf(buf);
+-		page = read_cache_page_gfp(mapping, index,
+-				mapping_gfp_constraint(mapping, ~__GFP_FS));
+-		if (IS_ERR(page))
+-			return page;
++
++		nofs_flag = memalloc_nofs_save();
++		folio = read_cache_folio(mapping, index, NULL, NULL);
++		memalloc_nofs_restore(nofs_flag);
++		if (IS_ERR(folio))
++			return folio;
++
+ 		/* should already be PageUptodate, no need to lock page */
++		page = folio_file_page(folio, index);
+ 		buf->page = page;
+ 	}
+ 	if (buf->kmap_type == EROFS_NO_KMAP) {
+@@ -63,6 +70,10 @@ void *erofs_bread(struct erofs_buf *buf, struct inode *inode,
+ void *erofs_read_metabuf(struct erofs_buf *buf, struct super_block *sb,
+ 			 erofs_blk_t blkaddr, enum erofs_kmap_type type)
+ {
++	if (erofs_is_fscache_mode(sb))
++		return erofs_bread(buf, EROFS_SB(sb)->s_fscache->inode,
++				   blkaddr, type);
++
+ 	return erofs_bread(buf, sb->s_bdev->bd_inode, blkaddr, type);
+ }
  
+diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+index 066f68c062e2..3f00eb34ac35 100644
+--- a/fs/erofs/fscache.c
++++ b/fs/erofs/fscache.c
+@@ -58,7 +58,34 @@ static int erofs_fscache_read_folios(struct fscache_cookie *cookie,
+ 	return ret;
+ }
  
- Overview
-@@ -482,3 +483,172 @@ the control file.  For example::
- 	echo $((1|4|8)) >/sys/module/cachefiles/parameters/debug
- 
- will turn on all function entry debugging.
-+
-+
-+On-demand Read
-+==============
-+
-+When working in its original mode, cachefiles mainly serves as a local cache
-+for a remote networking fs - while in on-demand read mode, cachefiles can boost
-+the scenario where on-demand read semantics is needed, e.g. container image
-+distribution.
-+
-+The essential difference between these two modes is that, in original mode,
-+when a cache miss occurs, the netfs will fetch the data from the remote server
-+and then write it to the cache file.  With on-demand read mode, however,
-+fetching the data and writing it into the cache is delegated to a user daemon.
-+
-+``CONFIG_CACHEFILES_ONDEMAND`` should be enabled to support on-demand read mode.
-+
-+
-+Protocol Communication
-+----------------------
-+
-+The on-demand read mode relies on a simple protocol used for communication
-+between kernel and user daemon. The protocol can be modeled as::
-+
-+	kernel --[request]--> user daemon --[reply]--> kernel
-+
-+The cachefiles kernel module will send requests to the user daemon when needed.
-+The user daemon needs to poll on the devnode ('/dev/cachefiles') to check if
-+there's a pending request to be processed.  A POLLIN event will be returned
-+when there's a pending request.
-+
-+The user daemon then reads the devnode to fetch a request and process it
-+accordingly.  It is worth noting that each read only gets one request. When
-+finished processing the request, the user daemon needs to write the reply to
-+the devnode.
-+
-+Each request starts with a message header of the form::
-+
-+	struct cachefiles_msg {
-+		__u32 msg_id;
-+		__u32 opcode;
-+		__u32 len;
-+		__u32 object_id;
-+		__u8  data[];
++static int erofs_fscache_meta_readpage(struct file *data, struct page *page)
++{
++	int ret;
++	struct folio *folio = page_folio(page);
++	struct super_block *sb = folio_mapping(folio)->host->i_sb;
++	struct erofs_map_dev mdev = {
++		.m_deviceid = 0,
++		.m_pa = folio_pos(folio),
 +	};
 +
-+	where:
++	ret = erofs_map_dev(sb, &mdev);
++	if (ret)
++		goto out;
 +
-+	* ``msg_id`` is a unique ID identifying this request among all pending
-+	  requests.
++	ret = erofs_fscache_read_folios(mdev.m_fscache->cookie,
++			folio_mapping(folio), folio_pos(folio),
++			folio_size(folio), mdev.m_pa);
++	if (ret)
++		goto out;
 +
-+	* ``opcode`` indicates the type of this request.
++	folio_mark_uptodate(folio);
++out:
++	folio_unlock(folio);
++	return ret;
++}
 +
-+	* ``object_id`` is a unique ID identifying the cache file operated on.
-+
-+	* ``data`` indicates the payload of this request.
-+
-+	* ``len`` indicates the whole length of this request, including the
-+	  header and following type-specific payload.
-+
-+
-+Turn on On-demand Mode
-+----------------------
-+
-+An optional parameter is added to the "bind" command::
-+
-+	bind [ondemand]
-+
-+When the "bind" command takes without argument, it defaults to the original
-+mode.  When the "bind" command is given the "ondemand" argument, i.e.
-+"bind ondemand", on-demand read mode will be enabled.
-+
-+
-+The OPEN Request
-+----------------
-+
-+When the netfs opens a cache file for the first time, a request with the
-+CACHEFILES_OP_OPEN opcode, a.k.a an OPEN request will be sent to the user
-+daemon.  The payload format is of the form::
-+
-+	struct cachefiles_open {
-+		__u32 volume_key_size;
-+		__u32 cookie_key_size;
-+		__u32 fd;
-+		__u32 flags;
-+		__u8  data[];
-+	};
-+
-+	where:
-+
-+	* ``data`` contains the volume_key followed directly by the cookie_key.
-+	  The volume key is a NUL-terminated string; the cookie key is binary
-+	  data.
-+
-+	* ``volume_key_size`` indicates the size of the volume key in bytes.
-+
-+	* ``cookie_key_size`` indicates the size of the cookie key in bytes.
-+
-+	* ``fd`` indicates an anonymous fd referring to the cache file, through
-+	  which the user daemon can perform write/llseek file operations on the
-+	  cache file.
-+
-+
-+The user daemon is able to distinguish the requested cache file with the given
-+(volume_key, cookie_key) pair. Each cache file has a unique object_id, while it
-+may have multiple anonymous fds. The user daemon may duplicate anonymous fds
-+from the initial anonymous fd indicated by the @fd field through dup(). Thus
-+each object_id can be mapped to multiple anonymous fds, while the usr daemon
-+itself needs to maintain the mapping.
-+
-+With the given anonymous fd, the user daemon can fetch data and write it to the
-+cache file in the background, even when kernel has not triggered a cache miss
-+yet.
-+
-+The user daemon should complete the READ request by issuing a "copen" (complete
-+open) command on the devnode::
-+
-+	copen <msg_id>,<cache_size>
-+
-+	* ``msg_id`` must match the msg_id field of the previous OPEN request.
-+
-+	* When >= 0, ``cache_size`` indicates the size of the cache file;
-+	  when < 0, ``cache_size`` indicates the error code ecountered by the
-+	  user daemon.
-+
-+
-+The CLOSE Request
-+-----------------
-+
-+When a cookie withdrawn, a CLOSE request (opcode CACHEFILES_OP_CLOSE) will be
-+sent to the user daemon. It will notify the user daemon to close all anonymous
-+fds associated with the given object_id.  The CLOSE request has no extea
-+payload.
-+
-+
-+The READ Request
-+----------------
-+
-+When on-demand read mode is turned on, and a cache miss encountered, the kernel
-+will send a READ request (opcode CACHEFILES_OP_READ) to the user daemon. This
-+will tell the user daemon to fetch data of the requested file range. The payload
-+is of the form::
-+
-+	struct cachefiles_read {
-+		__u64 off;
-+		__u64 len;
-+	};
-+
-+	where:
-+
-+	* ``off`` indicates the starting offset of the requested file range.
-+
-+	* ``len`` indicates the length of the requested file range.
-+
-+
-+When receiving a READ request, the user daemon needs to fetch the data of the
-+requested file range, and then write it to the cache file identified by
-+object_id.
-+
-+To finish processing the READ request, the user daemon should reply with the
-+CACHEFILES_IOC_CREAD ioctl on one of the anonymous fds associated with the given
-+object_id in the READ request.  The ioctl is of the form::
-+
-+	ioctl(fd, CACHEFILES_IOC_CREAD, msg_id);
-+
-+	* ``fd`` is one of the anonymous fds associated with the given object_id
-+	  in the READ request.
-+
-+	* ``msg_id`` must match the msg_id field of the previous READ request.
+ static const struct address_space_operations erofs_fscache_meta_aops = {
++	.readpage = erofs_fscache_meta_readpage,
+ };
+ 
+ /*
 -- 
 2.27.0
 
