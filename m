@@ -2,188 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B22C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 03:39:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7216DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 03:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349116AbiDODmR (ORCPT
+        id S1349141AbiDODoK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 23:42:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41818 "EHLO
+        Thu, 14 Apr 2022 23:44:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241106AbiDODmN (ORCPT
+        with ESMTP id S1349127AbiDODoG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 23:42:13 -0400
+        Thu, 14 Apr 2022 23:44:06 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC3FA1C108;
-        Thu, 14 Apr 2022 20:39:42 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KfhqK2y9ZzgYgr;
-        Fri, 15 Apr 2022 11:37:49 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 260502CC9F;
+        Thu, 14 Apr 2022 20:41:39 -0700 (PDT)
+Received: from kwepemi100025.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kfhtz1knSzfYnm;
+        Fri, 15 Apr 2022 11:40:59 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100025.china.huawei.com (7.221.188.158) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 15 Apr 2022 11:39:38 +0800
-Message-ID: <d8c4f1fb-a020-9457-44e2-dc63982a9213@huawei.com>
-Date:   Fri, 15 Apr 2022 11:39:38 +0800
+ 15.1.2375.24; Fri, 15 Apr 2022 11:41:37 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Apr
+ 2022 11:41:36 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <axboe@kernel.dk>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
+Subject: [PATCH RESEND] blk-mq: fix possible creation failure for 'debugfs_dir'
+Date:   Fri, 15 Apr 2022 11:56:07 +0800
+Message-ID: <20220415035607.1836495-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH bpf-next v2 4/6] bpf, arm64: Impelment
- bpf_arch_text_poke() for arm64
-Content-Language: en-US
-To:     Hou Tao <houtao1@huawei.com>, <bpf@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-CC:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>
-References: <20220414162220.1985095-1-xukuohai@huawei.com>
- <20220414162220.1985095-5-xukuohai@huawei.com>
- <ba838451-1a96-2c83-9188-a994f45d7523@huawei.com>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <ba838451-1a96-2c83-9188-a994f45d7523@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemi500013.china.huawei.com (7.221.188.120)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/15/2022 10:34 AM, Hou Tao wrote:
-> Hi,
-> 
-> On 4/15/2022 12:22 AM, Xu Kuohai wrote:
->> Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
->> it to replace nop with jump, or replace jump with nop.
->>
->> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
->> Acked-by: Song Liu <songliubraving@fb.com>
->> ---
->>  arch/arm64/net/bpf_jit_comp.c | 52 +++++++++++++++++++++++++++++++++++
->>  1 file changed, 52 insertions(+)
->>
->> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
->> index 8ab4035dea27..1a1c3ea75ee2 100644
->> --- a/arch/arm64/net/bpf_jit_comp.c
->> +++ b/arch/arm64/net/bpf_jit_comp.c
->> @@ -9,6 +9,7 @@
->>  
->>  #include <linux/bitfield.h>
->>  #include <linux/bpf.h>
->> +#include <linux/memory.h>
->>  #include <linux/filter.h>
->>  #include <linux/printk.h>
->>  #include <linux/slab.h>
->> @@ -18,6 +19,7 @@
->>  #include <asm/cacheflush.h>
->>  #include <asm/debug-monitors.h>
->>  #include <asm/insn.h>
->> +#include <asm/patching.h>
->>  #include <asm/set_memory.h>
->>  
->>  #include "bpf_jit.h"
->> @@ -1529,3 +1531,53 @@ void bpf_jit_free_exec(void *addr)
->>  {
->>  	return vfree(addr);
->>  }
->> +
->> +static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
->> +			     void *addr, u32 *insn)
->> +{
->> +	if (!addr)
->> +		*insn = aarch64_insn_gen_nop();
->> +	else
->> +		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
->> +						    (unsigned long)addr,
->> +						    type);
->> +
->> +	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
->> +}
->> +
->> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
->> +		       void *old_addr, void *new_addr)
->> +{
->> +	int ret;
->> +	u32 old_insn;
->> +	u32 new_insn;
->> +	u32 replaced;
->> +	enum aarch64_insn_branch_type branch_type;
->> +
-> In bpf_arch_text_poke() of x86, it disables the poking of kernel module, can you
-> explain why it is OK to do so in arm64 ? Because there is no test cases for
-> fentry on linux kernel module, could you please add some tests for it ?
+'q->debugfs_dir' is created in blk_register_queue(), however, it's not
+removed in blk_unregister_queue() and is delayed to blk_release_queue().
+Thus it's possible that del_gendisk() is done and blk_release_queue()
+is not called yet, and in the mean time blk_register_queue() is called
+for the new device with the same name. In this case, kernel will
+compalin about creation failure for 'debugfs_dir' like following:
 
-Oops, I forget to check this condition. It's not safe to patch a ko
-without ko unloading disabled.
+debugfs: Directory 'nullb1' with parent 'block' already present!
 
-For arm64, the fentry is only patched by ftrace since the nop
-instruciton to be instrumented is not the first instruction, so
-bpf_text_poke() fails when comparing the old instruction (pointed to by
-the "old_addr") with the nop. Since the nop in fentry is reserved by
-ftrace, I dont think it's reasonable to patch the nop by another
-interface not provided by ftrace.
+Fix the problem by moving forward the removal of 'debgfs_dir' to
+blk_unregister_queue().
 
-Besides, for long jumps outside the range of 128MB, a single branch
-instruction is not sufficient, perhaps we could use ftrace trampoline or
-some other method to support long jumps.
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ block/blk-sysfs.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
->> +	if (poke_type == BPF_MOD_CALL)
->> +		branch_type = AARCH64_INSN_BRANCH_LINK;
->> +	else
->> +		branch_type = AARCH64_INSN_BRANCH_NOLINK;
->> +
->> +	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
->> +		return -EFAULT;
->> +
->> +	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
->> +		return -EFAULT;
->> +
->> +	mutex_lock(&text_mutex);
->> +	if (aarch64_insn_read(ip, &replaced)) {
->> +		ret = -EFAULT;
->> +		goto out;
->> +	}
->> +
->> +	if (replaced != old_insn) {
->> +		ret = -EFAULT;
->> +		goto out;
->> +	}
->> +
->> +	ret =  aarch64_insn_patch_text_nosync((void *)ip, new_insn);
->> +out:
->> +	mutex_unlock(&text_mutex);
->> +	return ret;
->> +}
-> 
-> .
+diff --git a/block/blk-sysfs.c b/block/blk-sysfs.c
+index 88bd41d4cb59..15fc3f0786e3 100644
+--- a/block/blk-sysfs.c
++++ b/block/blk-sysfs.c
+@@ -779,11 +779,6 @@ static void blk_release_queue(struct kobject *kobj)
+ 	if (queue_is_mq(q))
+ 		blk_mq_release(q);
+ 
+-	blk_trace_shutdown(q);
+-	mutex_lock(&q->debugfs_mutex);
+-	debugfs_remove_recursive(q->debugfs_dir);
+-	mutex_unlock(&q->debugfs_mutex);
+-
+ 	if (queue_is_mq(q))
+ 		blk_mq_debugfs_unregister(q);
+ 
+@@ -951,5 +946,11 @@ void blk_unregister_queue(struct gendisk *disk)
+ 
+ 	mutex_unlock(&q->sysfs_dir_lock);
+ 
++	blk_trace_shutdown(q);
++	mutex_lock(&q->debugfs_mutex);
++	blk_mq_debugfs_unregister_hctxs(q);
++	debugfs_remove_recursive(q->debugfs_dir);
++	mutex_unlock(&q->debugfs_mutex);
++
+ 	kobject_put(&disk_to_dev(disk)->kobj);
+ }
+-- 
+2.31.1
 
