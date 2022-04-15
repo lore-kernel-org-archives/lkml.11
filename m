@@ -2,118 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E83D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 06:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 06:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350561AbiDOGoE (ORCPT
+        id S1350577AbiDOGoO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 02:44:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
+        Fri, 15 Apr 2022 02:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243518AbiDOGoA (ORCPT
+        with ESMTP id S1350562AbiDOGoM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 02:44:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59D8AFADD;
-        Thu, 14 Apr 2022 23:41:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8867AB82BF0;
-        Fri, 15 Apr 2022 06:41:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA977C385A5;
-        Fri, 15 Apr 2022 06:41:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650004890;
-        bh=+L/HFWzltw7KDYz0FALc3guFX9clLm9cFM07Zin4qws=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U2xoJV98ppVR4dwd0IrPUHQTzHUazzXZ+C+DgBpQQR75KPLW4WYFNd6JDZEL6JCBc
-         w2nWV1/4a5WEGt99YbBCAtfxzoyk6NScThAh/KJNUtF5wp7GUw4Xa/uFGbluJTO1IG
-         Xsxs6pLSdShzdF+FyDC66IJsu1Ft7gBf1C/pPWGo=
-Date:   Fri, 15 Apr 2022 08:41:27 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Kartik <kkartik@nvidia.com>
-Cc:     ldewangan@nvidia.com, jirislaby@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: Re: [PATCH] serial: tegra: Correct error handling sequence
-Message-ID: <YlkTl/hyNDr9Nlwj@kroah.com>
-References: <1648112644-16950-1-git-send-email-kkartik@nvidia.com>
+        Fri, 15 Apr 2022 02:44:12 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270F9AFAE4;
+        Thu, 14 Apr 2022 23:41:44 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id 11so3927524edw.0;
+        Thu, 14 Apr 2022 23:41:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5H0NkTvkK9p/s/zFBLeQhRPlAabxLu86mDFZRjaQsXc=;
+        b=iyFOa4B+WwNsN+h+lDNBD7iDxm1raLPy02+uAnAc+XNZRX1w70gpAZqtygmAFeXjSg
+         1GUSmiurrP71xGOpLq2V4+8hSIuCzS5F96z6jeOIkzrISvWEEudwsgm6RzwwlnXcPG9a
+         qF7a2xTHOx8a5GiJsY9lEWF+Uho6ZA7vaNxdHeBlI/Wi9LjDuddeBUTS0lm0eGkImDje
+         Y7lTz1NSrxwSn3xQtTvCQRVjxClQi+Dz2ezWPmHqsU5nI68lMFWm74KyKRimhArp1eDN
+         1y8GQ2Z09zw3xJSYv4or3YzrTl19q7VEvrFUNdkgSWq3/gFIAakmfJp2mOKtJhlto7m3
+         0BhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5H0NkTvkK9p/s/zFBLeQhRPlAabxLu86mDFZRjaQsXc=;
+        b=Xm4y6PmYs+lspXFpVj8vE/WicT+iORkJhz34bEFRFNKJzgRf5HwmDN/8qqT9Sg4W6K
+         GFgTy9bQQQnB7HzvC22OHQtk5PqsSeras7//nCs4DqU4UN2rjfsiMFP2pMjk6tswO3sG
+         esBog/yYnpXDrLLj4beSAAGjkiCCTDbkFGYrVKHSDA1bQTZFcwfAtBjHWcGM/gvbG+TY
+         Efa/Sj1FUru6MauK6uIi32QLN/f1HJCIUvfo1EBdZ5MSDLIafZMeNBpaDYA5CNzC7m4A
+         I2lQvmbRPpoxCygRlrFpS/TBV928uL1Fi4fmQNybRpyBj8ia0u0V5mmRKptEKcEj4Wdl
+         Mkkg==
+X-Gm-Message-State: AOAM532tVHZPtPBd5HHRO78VFPdJyOuMum4Me8jvg+U4M+vEKk/1HX1f
+        iYSnbWxI5ZkWmDfyK9hcoOOSv7truu+0EKB/
+X-Google-Smtp-Source: ABdhPJxavdBJugZjTO5NWzDHmyFQ192W3DPA51QTlL3JUiZqLUMj0ftkoqVV6vkYR+MyGK8HDeanwQ==
+X-Received: by 2002:a05:6402:1385:b0:413:2bc6:4400 with SMTP id b5-20020a056402138500b004132bc64400mr6918217edv.94.1650004902841;
+        Thu, 14 Apr 2022 23:41:42 -0700 (PDT)
+Received: from anparri (host-79-52-64-69.retail.telecomitalia.it. [79.52.64.69])
+        by smtp.gmail.com with ESMTPSA id j23-20020a1709064b5700b006e87ae0c111sm1362808ejv.123.2022.04.14.23.41.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 23:41:41 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 08:41:33 +0200
+From:   Andrea Parri <parri.andrea@gmail.com>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH 1/6] hv_sock: Check hv_pkt_iter_first_raw()'s return
+ value
+Message-ID: <20220415064133.GA2961@anparri>
+References: <20220413204742.5539-1-parri.andrea@gmail.com>
+ <20220413204742.5539-2-parri.andrea@gmail.com>
+ <PH0PR21MB3025FA1943D74A31E47B7F8FD7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1648112644-16950-1-git-send-email-kkartik@nvidia.com>
+In-Reply-To: <PH0PR21MB3025FA1943D74A31E47B7F8FD7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 02:34:04PM +0530, Kartik wrote:
-> From: kartik <kkartik@nvidia.com>
+On Fri, Apr 15, 2022 at 03:33:23AM +0000, Michael Kelley (LINUX) wrote:
+> From: Andrea Parri (Microsoft) <parri.andrea@gmail.com> Sent: Wednesday, April 13, 2022 1:48 PM
+> > 
+> > The function returns NULL if the ring buffer has no enough space
+> > available for a packet descriptor.  The ring buffer's write_index
 > 
-> In the current error handling sequence the driver checks for break
-> error at the end.
+> The first sentence wording is a bit scrambled.  I think you mean the
+> ring buffer doesn't contain enough readable bytes to constitute a
+> packet descriptor.
+
+Indeed, replaced with your working.
+
+
+> > is in memory which is shared with the Hyper-V host, its value is
+> > thus subject to being changed at any time.
 > 
-> By handling the break error first, we can avoid a situation where the
-> driver keeps processing the errors which can be caused by an unhandled
-> break error.
-> 
-> Signed-off-by: kartik <kkartik@nvidia.com>
+> This second sentence is true, but I'm not making the connection
+> with the code change below.   Evidently, there is some previous
+> check made to ensure that enough bytes are available to be
+> received when hvs_stream_dequeue() is called, so we assumed that
+> NULL could never be returned?  I looked but didn't find such a check, 
+> so maybe I didn't look carefully enough.  But now we are assuming
+> that Hyper-V might have invalidated that previous check by 
+> subsequently changing the write_index in a bogus way?  So now, NULL
+> could be returned when previously we assumed it couldn't.
 
-I need a full, legal name that you use to sign documents with.  Is that
-this name?
+I think you're looking for hvs_stream_has_data().  (Previous checks
+apart, hvs_stream_dequeue() will "dereference" the pointer so...)
 
-> ---
->  drivers/tty/serial/serial-tegra.c | 26 +++++++++++++-------------
->  1 file changed, 13 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
-> index b6223fa..ba78a02 100644
-> --- a/drivers/tty/serial/serial-tegra.c
-> +++ b/drivers/tty/serial/serial-tegra.c
-> @@ -440,7 +440,19 @@ static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
->  	char flag = TTY_NORMAL;
->  
->  	if (unlikely(lsr & TEGRA_UART_LSR_ANY)) {
-> -		if (lsr & UART_LSR_OE) {
-> +		if (lsr & UART_LSR_BI) {
-> +			/*
-> +			 * Break error
-> +			 * If FIFO read error without any data, reset Rx FIFO
-> +			 */
-> +			if (!(lsr & UART_LSR_DR) && (lsr & UART_LSR_FIFOE))
-> +				tegra_uart_fifo_reset(tup, UART_FCR_CLEAR_RCVR);
-> +			if (tup->uport.ignore_status_mask & UART_LSR_BI)
-> +				return TTY_BREAK;
-> +			flag = TTY_BREAK;
-> +			tup->uport.icount.brk++;
-> +			dev_dbg(tup->uport.dev, "Got Break\n");
-> +		} else if (lsr & UART_LSR_OE) {
->  			/* Overrrun error */
->  			flag = TTY_OVERRUN;
->  			tup->uport.icount.overrun++;
-> @@ -454,18 +466,6 @@ static char tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
->  			flag = TTY_FRAME;
->  			tup->uport.icount.frame++;
->  			dev_dbg(tup->uport.dev, "Got frame errors\n");
-> -		} else if (lsr & UART_LSR_BI) {
-> -			/*
-> -			 * Break error
-> -			 * If FIFO read error without any data, reset Rx FIFO
-> -			 */
-> -			if (!(lsr & UART_LSR_DR) && (lsr & UART_LSR_FIFOE))
-> -				tegra_uart_fifo_reset(tup, UART_FCR_CLEAR_RCVR);
-> -			if (tup->uport.ignore_status_mask & UART_LSR_BI)
-> -				return TTY_BREAK;
-> -			flag = TTY_BREAK;
-> -			tup->uport.icount.brk++;
-> -			dev_dbg(tup->uport.dev, "Got Break\n");
->  		}
->  		uart_insert_char(&tup->uport, lsr, UART_LSR_OE, 0, flag);
->  	}
-
-What commit does this fix?
-
-thanks,
-
-greg k-h
+Thanks,
+  Andrea
