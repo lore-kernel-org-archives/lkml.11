@@ -2,174 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA163C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 03:53:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8CE4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 03:56:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349305AbiDOD4W (ORCPT
+        id S1347317AbiDOD7G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 23:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45732 "EHLO
+        Thu, 14 Apr 2022 23:59:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242764AbiDOD4R (ORCPT
+        with ESMTP id S237942AbiDOD7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 23:56:17 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656439F6D0;
-        Thu, 14 Apr 2022 20:53:50 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kfj9154GvzfYsy;
-        Fri, 15 Apr 2022 11:53:09 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- kwepemi500015.china.huawei.com (7.221.188.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 15 Apr 2022 11:53:47 +0800
-Received: from [10.67.111.205] (10.67.111.205) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 15 Apr 2022 11:53:47 +0800
-Subject: Re: [PATCH] perf llvm: Fix compile bpf failed to cope with latest
- llvm
-To:     Nick Desaulniers <ndesaulniers@google.com>
-CC:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andrii@kernel.org>, <kafai@fb.com>,
-        <songliubraving@fb.com>, <yhs@fb.com>, <john.fastabend@gmail.com>,
-        <kpsingh@kernel.org>, <nathan@kernel.org>, <trix@redhat.com>,
-        <ak@linux.intel.com>, <adrian.hunter@intel.com>,
-        <james.clark@arm.com>, <linux-perf-users@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <llvm@lists.linux.dev>
-References: <20220414134134.247912-1-yangjihong1@huawei.com>
- <CAKwvOdmZCS784R5myuA=MgSnxQfS6sPUsBKbbax_QN1fSMNzbQ@mail.gmail.com>
-From:   Yang Jihong <yangjihong1@huawei.com>
-Message-ID: <6d7635be-e694-0132-e2b2-e6816c34aa72@huawei.com>
-Date:   Fri, 15 Apr 2022 11:53:46 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        Thu, 14 Apr 2022 23:59:01 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0D3A56CC
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 20:56:33 -0700 (PDT)
+X-UUID: 02f24ce5f2d342ed88708e41b49d6325-20220415
+X-UUID: 02f24ce5f2d342ed88708e41b49d6325-20220415
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <kuyo.chang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 84804821; Fri, 15 Apr 2022 11:56:29 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 15 Apr 2022 11:56:28 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 15 Apr 2022 11:56:27 +0800
+Message-ID: <231503cb93caabb5fc0e1027423e971560493075.camel@mediatek.com>
+Subject: Re: [PATCH 1/1] [PATCH v3]sched/pelt: Fix the
+ attach_entity_load_avg calculate method
+From:   Kuyo Chang <kuyo.chang@mediatek.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+CC:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Ben Segall" <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        "Daniel Bristot de Oliveira" <bristot@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <wsd_upstream@mediatek.com>, Ingo Molnar <mingo@kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+Date:   Fri, 15 Apr 2022 11:56:27 +0800
+In-Reply-To: <YlgzTS+laNNvMukT@hirez.programming.kicks-ass.net>
+References: <20220414090229.342-1-kuyo.chang@mediatek.com>
+         <YlgzTS+laNNvMukT@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-In-Reply-To: <CAKwvOdmZCS784R5myuA=MgSnxQfS6sPUsBKbbax_QN1fSMNzbQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.205]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/14 23:57, Nick Desaulniers wrote:
-> On Thu, Apr 14, 2022 at 6:42 AM Yang Jihong <yangjihong1@huawei.com> wrote:
->>
->> Inline assembly used by asm/sysreg.h is incompatible with latest llvm,
-> 
-> With "latest" llvm makes it sound like LLVM has regressed. Has it? Or
-> have the headers changed in a way where now inline asm from a
-> different target (x86) than what's being targeted (BPF)? Perhaps
-> fixing that is simpler?
-> 
-> Clang will validate inline asm before LLVM drops unreferenced static
-> inline functions; this was a headache getting i386 building with
-> clang, but not insurmountable.
-> 
-According to the notes of samples/bpf/Makefile:
-"The reason is due to llvm change https://reviews.llvm.org/D87153
-where the CORE relocation global generation is moved from the beginning
-of target dependent optimization (llc) to the beginning
-of target independent optimization (opt).
+On Thu, 2022-04-14 at 16:44 +0200, Peter Zijlstra wrote:
+> I've taken the liberty of carrying over the tags from v2 and reworked
+> the Changelog a little.
 
-Since samples/bpf programs did not use vmlinux.h and its clang compilation
-uses native architecture, we need to adjust arch triple at opt level
-to do CORE relocation global generation properly. Otherwise, the above
-error will appear."
-I think opt and llvm-dis are introduced to solve another problem, that 
-is, the incompatibility of native architecture.
+Thank you for all your assistance.
 
->> If bpf C program include "linux/ptrace.h" (which is common), compile will fail:
->>
->>   # perf --debug verbose record -e bpf-output/no-inherit,name=evt/ \
->>                                -e ./perf_bpf_test.c/map:channel.event=evt/ ls
->>   [SNIP]
->>   /lib/modules/5.17/build/./arch/x86/include/asm/arch_hweight.h:20:7: error: invalid output constraint '=a' in asm
->>                            : "="REG_OUT (res)
->>                             ^
->>   /lib/modules/5.17/build/./arch/x86/include/asm/arch_hweight.h:48:7: error: invalid output constraint '=a' in asm
->>                            : "="REG_OUT (res)
->>                             ^
->>   In file included from /root/projects/perf-bpf/perf_bpf_test.c:2:
->>   In file included from /lib/modules/5.17/build/./include/linux/ptrace.h:6:
->>   In file included from /lib/modules/5.17/build/./include/linux/sched.h:12:
->>   In file included from /lib/modules/5.17/build/./arch/x86/include/asm/current.h:6:
->>   In file included from /lib/modules/5.17/build/./arch/x86/include/asm/percpu.h:27:
->>   In file included from /lib/modules/5.17/build/./include/linux/kernel.h:25:
->>   In file included from /lib/modules/5.17/build/./include/linux/math.h:6:
->>   /lib/modules/5.17.0/build/./arch/x86/include/asm/div64.h:85:28: error: invalid output constraint '=a' in asm
->>           asm ("mulq %2; divq %3" : "=a" (q)
->>   [SNIP]
->>   # cat /root/projects/perf-bpf/perf_bpf_test.c
->>   /************************ BEGIN **************************/
->>   #include <uapi/linux/bpf.h>
->>   #include <linux/ptrace.h>
->>   #include <linux/types.h>
->>   #define SEC(NAME) __attribute__((section(NAME), used))
->>
->>   struct bpf_map_def {
->>           unsigned int type;
->>           unsigned int key_size;
->>           unsigned int value_size;
->>           unsigned int max_entries;
->>   };
->>
->>   static int (*perf_event_output)(void *, struct bpf_map_def *, int, void *,
->>       unsigned long) = (void *)BPF_FUNC_perf_event_output;
->>
->>   struct bpf_map_def SEC("maps") channel = {
->>           .type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,
->>           .key_size = sizeof(int),
->>           .value_size = sizeof(__u32),
->>           .max_entries = __NR_CPUS__,
->>   };
->>
->>   #define MIN_BYTES 1024
->>
->>   SEC("func=vfs_read")
->>   int bpf_myprog(struct pt_regs *ctx)
->>   {
->>           long bytes = ctx->dx;
->>           if (bytes >= MIN_BYTES) {
->>                   perf_event_output(ctx, &channel, BPF_F_CURRENT_CPU,
->>                                     &bytes, sizeof(bytes));
->>           }
->>
->>           return 0;
->>   }
->>
->> char _license[] SEC("license") = "GPL";
->> int _version SEC("version") = LINUX_VERSION_CODE;
->> /************************* END ***************************/
->>
->> Compilation command is modified to be the same as that in samples/bpf/Makefile,
->> use clang | opt | llvm-dis | llc chain of commands to solve the problem.
->> see the comment in samples/bpf/Makefile.
->>
->> Modifications:
->> 1. Change "clang --target bpf" to chain of commands "clang | opt | llvm-dis | llc"
+> ---
+> Subject: sched/pelt: Fix attach_entity_load_avg() corner case
+> From: kuyo chang <kuyo.chang@mediatek.com>
+> Date: Thu, 14 Apr 2022 17:02:20 +0800
 > 
-> This will drop the --target flag. That will mess up the default target
-> triple, and can affect command line option feature detection.
+> From: kuyo chang <kuyo.chang@mediatek.com>
 > 
-opt add -mtriple=bpf-pc-linux flag,
-The complete command is as follows:
-clang -O2 -emit-llvm -Xclang -disable-llvm-passes -c $< -o - |
-opt -O2 -mtriple=bpf-pc-linux | $(LLVM_DIS) | \
-llc -march=bpf $(LLC_FLAGS) -filetype=obj -o $@
-
-This may be a problem. Currently, no simple method is found. Therefore, 
-refer to the processing method of samles/bpf/Makefile.
-
--- 
-Thanks,
-Jihong
+> The warning in cfs_rq_is_decayed() triggered:
+> 
+>     SCHED_WARN_ON(cfs_rq->avg.load_avg ||
+> 		  cfs_rq->avg.util_avg ||
+> 		  cfs_rq->avg.runnable_avg)
+> 
+> There exists a corner case in attach_entity_load_avg() which will
+> cause load_sum to be zero while load_avg will not be.
+> 
+> Consider se_weight is 88761 as per the sched_prio_to_weight[] table.
+> Further assume the get_pelt_divider() is 47742, this gives:
+> se->avg.load_avg is 1.
+> 
+> However, calculating load_sum results in 0:
+> 
+>   se->avg.load_sum = div_u64(se->avg.load_avg * se->avg.load_sum,
+> se_weight(se));
+>   se->avg.load_sum = 1*47742/88761 = 0.
+> 
+> Then enqueue_load_avg() adds this to the cfs_rq totals:
+> 
+>   cfs_rq->avg.load_avg += se->avg.load_avg;
+>   cfs_rq->avg.load_sum += se_weight(se) * se->avg.load_sum;
+> 
+> Resulting in load_avg being 1 with load_sum is 0, which will trigger
+> the WARN.
+> 
+> Fixes: f207934fb79d ("sched/fair: Align PELT windows between cfs_rq
+> and its se")
+> Signed-off-by: kuyo chang <kuyo.chang@mediatek.com>
+> [peterz: massage changelog]
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+> Tested-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+> Link: 
+> https://urldefense.com/v3/__https://lkml.kernel.org/r/20220414090229.342-1-kuyo.chang@mediatek.com__;!!CTRNKA9wMg0ARbw!35Im02xxIuUZdLYpPng37Yk7oVNJVJ1tfbu4XRzlq-6VhH3K29Por0gJCFlslT_CMgA$
+>  
+> ---
+>  kernel/sched/fair.c |   10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -3829,11 +3829,11 @@ static void attach_entity_load_avg(struc
+>  
+>  	se->avg.runnable_sum = se->avg.runnable_avg * divider;
+>  
+> -	se->avg.load_sum = divider;
+> -	if (se_weight(se)) {
+> -		se->avg.load_sum =
+> -			div_u64(se->avg.load_avg * se->avg.load_sum,
+> se_weight(se));
+> -	}
+> +	se->avg.load_sum = se->avg.load_avg * divider;
+> +	if (se_weight(se) < se->avg.load_sum)
+> +		se->avg.load_sum = div_u64(se->avg.load_sum,
+> se_weight(se));
+> +	else
+> +		se->avg.load_sum = 1;
+>  
+>  	enqueue_load_avg(cfs_rq, se);
+>  	cfs_rq->avg.util_avg += se->avg.util_avg;
 
