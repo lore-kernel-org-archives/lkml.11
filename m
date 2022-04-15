@@ -2,126 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A6E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 19:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ED1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 19:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350245AbiDOTXq (ORCPT
+        id S1347863AbiDOTbN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 15:23:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39000 "EHLO
+        Fri, 15 Apr 2022 15:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350795AbiDOTXf (ORCPT
+        with ESMTP id S231342AbiDOTbJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 15:23:35 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78447DE922;
-        Fri, 15 Apr 2022 12:20:54 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23FJKnKc041676;
-        Fri, 15 Apr 2022 14:20:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650050449;
-        bh=JqC+H9+Rev8gsZydzoz3H+tEXpC+wEOhrdCkvS2dOfw=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=MQkcy68uuwxTKnDBByF3zwzmmj16q7syVKm2RMi73i1YlUqr7OX78YlIMqHOzxjI8
-         qTt/zRyUwlwSAvheHNjwiDkI0Zj683z66Tc3njTPEqmmZRG0BYJghApnWgIh4hkvtz
-         CbeS1mypslJwWBRCTWxmXnT16YD9xcozdcnRcmEA=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23FJKn36054167
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 15 Apr 2022 14:20:49 -0500
-Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 15
- Apr 2022 14:20:48 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 15 Apr 2022 14:20:49 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23FJKnMX080301;
-        Fri, 15 Apr 2022 14:20:49 -0500
-Date:   Fri, 15 Apr 2022 14:20:48 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Georgi Vlaev <g-vlaev@ti.com>
-CC:     <ssantosh@kernel.org>, <mturquette@baylibre.com>,
-        <sboyd@kernel.org>, <robh+dt@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <vigneshr@ti.com>
-Subject: Re: [PATCH v2 2/2] clk: keystone: syscon-clk: Add support for AM62
- epwm-tbclk
-Message-ID: <20220415192048.mdkwqfs2ztz6vens@cherub>
-References: <20220415190343.6284-1-g-vlaev@ti.com>
- <20220415190343.6284-3-g-vlaev@ti.com>
+        Fri, 15 Apr 2022 15:31:09 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B15F86E2F
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 12:28:40 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id i24-20020a17090adc1800b001cd5529465aso7769451pjv.0
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 12:28:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eUrvYoxWcoMjJTRdZPr3oeY5u9guqwH3tZ5GuNaYx7U=;
+        b=Vk7K6fZTZFll6XtApMqs8xP7Hx85zIwyRZnCE1pIqG7nIULID4SYG9XOWr/uP6jwZK
+         vwrCZsK/OBjR3jl2xhkKNZpLUhtpz5sJ+6pQ/PPloPdoiZ7eSfUpGfTcVw3Rb94hd56R
+         XwGuzudWmlD5umOFSLHJ8ZPcNFaS8IIWiErOPHK7R2VLv8unWJX+Qc5XAuEv/LclBLNQ
+         mCBD7ZWAEB9Pqmc2jterTdMcY+VF1ebgZzUCcrpUKuhRdCfnc6qanUkG5d/DjYiAZy00
+         61yKqexpkyd7lIuK/qffNk41To6xqk6cfr29y0DJdHuhyrZbeyDOH8AWYx8G9pU3Dl26
+         YEwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eUrvYoxWcoMjJTRdZPr3oeY5u9guqwH3tZ5GuNaYx7U=;
+        b=F+b7gwc8lcvW01YsYIj0RBsiNsnRkkxl0JSL/tZ+9rQXvh4VOR8KJB1Du8bT9GGDVI
+         DJjpu4ZGMc07SFO5IZOfA6/Sy+h+nPwM8pZy/2rj2gdv1chO3ZVbXfcyZqHIMTXrtXJp
+         ikmKTXyrURdjmLz92ncRGX/djnwr2s/Dup0xeIYwQeGANrF5e8aNRTQEFJDyJnO3jsiA
+         B5LOl1NYGJw8uMyBv9RY2PNGva/UC2pz8o0BZfAKggMXvQY+Gp/wRN+ijW0FauG6aexi
+         3t/tTahOSPM8bnhoxKC8vS9oAQYSw+aDirgr+jNxi/CirhWbw+slvRwZ1GN940mDMwg6
+         772Q==
+X-Gm-Message-State: AOAM53115YOnvVHduO2IVng2ZaIumTbwFp/114PkbzxTuL17IN+LD2f2
+        JzKs9W8BFbqwWzN0dw1i67EXMx/xNF0Cew==
+X-Google-Smtp-Source: ABdhPJyr4wg4s6fJ6EJayU2i0zquccnP1F93DDXS5prnENGkdFFMS6YXwzru3Db+TnpBZMaEZiLhuQ==
+X-Received: by 2002:a17:902:ec81:b0:158:7eff:792f with SMTP id x1-20020a170902ec8100b001587eff792fmr570376plg.154.1650050919452;
+        Fri, 15 Apr 2022 12:28:39 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id nm5-20020a17090b19c500b001cb9ba78d39sm5375187pjb.9.2022.04.15.12.28.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 12:28:38 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 19:28:35 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     David Matlack <dmatlack@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Chao Peng <chao.p.peng@linux.intel.com>
+Subject: Re: [PATCH] KVM: x86/mmu: Add RET_PF_CONTINUE to eliminate bool+int*
+ "returns"
+Message-ID: <YlnHY1Du8jqYUFQM@google.com>
+References: <20220415005107.2221672-1-seanjc@google.com>
+ <CALzav=errSO8+EpeXE3F1CVbmttDqBigzJRGWc2UBU9=NLvtjw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220415190343.6284-3-g-vlaev@ti.com>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <CALzav=errSO8+EpeXE3F1CVbmttDqBigzJRGWc2UBU9=NLvtjw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22:03-20220415, Georgi Vlaev wrote:
-> AM62 has 3 instances of EPWM modules. Each EPWM module has
-> an EPWM TBCLKEN module input used to individually enable or
-> disable its EPWM time-base clock. The EPWM time-base clock
-> enable input comes from the CTRLMMR_EPWM_TB_CLKEN register
-> bits 0 to 2 in CTRL_MMR0 module (6.1.1.4.1.48 [1]). This
-> is virtually the same setup as in AM64 but with 3 instead
-> of 9 clock providers on AM62.
+On Fri, Apr 15, 2022, David Matlack wrote:
+> On Thu, Apr 14, 2022 at 5:51 PM Sean Christopherson <seanjc@google.com> wrote:
+> > diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
+> > index 1bff453f7cbe..c0e502b17ef7 100644
+> > --- a/arch/x86/kvm/mmu/mmu_internal.h
+> > +++ b/arch/x86/kvm/mmu/mmu_internal.h
+> > @@ -143,6 +143,7 @@ unsigned int pte_list_count(struct kvm_rmap_head *rmap_head);
+> >  /*
+> >   * Return values of handle_mmio_page_fault, mmu.page_fault, and fast_page_fault().
+> >   *
+> > + * RET_PF_CONTINUE: So far, so good, keep handling the page fault.
+> >   * RET_PF_RETRY: let CPU fault again on the address.
+> >   * RET_PF_EMULATE: mmio page fault, emulate the instruction directly.
+> >   * RET_PF_INVALID: the spte is invalid, let the real page fault path update it.
 > 
-> Update the driver with the 3 instances of clocks associated
-> to a new compatible: "ti,am62-epwm-tbclk".
-> 
-> [1] https://www.ti.com/lit/pdf/spruiv7
-> 
-> Signed-off-by: Georgi Vlaev <g-vlaev@ti.com>
-> Tested-by: Vignesh Raghavendra <vigneshr@ti.com>
-> ---
->  drivers/clk/keystone/syscon-clk.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
-> 
-> diff --git a/drivers/clk/keystone/syscon-clk.c b/drivers/clk/keystone/syscon-clk.c
-> index aae1a4076281..19198325b909 100644
-> --- a/drivers/clk/keystone/syscon-clk.c
-> +++ b/drivers/clk/keystone/syscon-clk.c
-> @@ -162,6 +162,13 @@ static const struct ti_syscon_gate_clk_data am64_clk_data[] = {
->  	{ /* Sentinel */ },
->  };
->  
-> +static const struct ti_syscon_gate_clk_data am62_clk_data[] = {
-> +	TI_SYSCON_CLK_GATE("epwm_tbclk0", 0x0, 0),
-> +	TI_SYSCON_CLK_GATE("epwm_tbclk1", 0x0, 1),
-> +	TI_SYSCON_CLK_GATE("epwm_tbclk2", 0x0, 2),
+> RET_PF_CONTINUE and RET_PF_INVALID are pretty similar, they both
+> indicate to the PF handler that it should keep going. What do you
+> think about taking this a step further and removing RET_PF_INVALID and
+> RET_PF_CONTINUE and using 0 instead?
 
-Reviewed-by: Nishanth Menon <nm@ti.com>
+RET_PF_INVALID is useful because it allows kvm_mmu_page_fault() to sanity check
+that the page fault handler didn't barf:
 
-Thanks for reordering.
+		r = kvm_mmu_do_page_fault(vcpu, cr2_or_gpa,
+					  lower_32_bits(error_code), false);
+		if (KVM_BUG_ON(r == RET_PF_INVALID, vcpu->kvm))
+			return -EIO;
 
-> +	{ /* Sentinel */ },
-> +};
-> +
->  static const struct of_device_id ti_syscon_gate_clk_ids[] = {
->  	{
->  		.compatible = "ti,am654-ehrpwm-tbclk",
-> @@ -171,6 +178,10 @@ static const struct of_device_id ti_syscon_gate_clk_ids[] = {
->  		.compatible = "ti,am64-epwm-tbclk",
->  		.data = &am64_clk_data,
->  	},
-> +	{
-> +		.compatible = "ti,am62-epwm-tbclk",
-> +		.data = &am62_clk_data,
-> +	},
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, ti_syscon_gate_clk_ids);
-> -- 
-> 2.30.2
+It's a bit odd that fast_page_fault() returns RET_PF_INVALID instead of RET_PF_CONTINUE,
+but at the same time the fault _is_ indeed invalid for fast handling.
+
+> That way we can replace:
 > 
+>   if (ret != RET_PF_CONTINUE)
+>           return r;
+> 
+> and
+> 
+>   if (ret != RET_PF_INVALID)
+>           return r;
+> 
+> with
+> 
+>   if (r)
+>           return r;
+> 
+> ?
 
--- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+We could actually do that now, at least for RET_PF_CONTINUE, but I deliberately
+avoided doing that so as to not take a hard dependency on the underlying value of
+RET_PF_CONTINUE.  KVM's magic "0 == exit to userspace, 1 == resume guest" logic
+is dangerous, e.g. it's caused real bugs in the past.  But in that case, the
+return value is multiplexed with -errno, i.e. there's a good reason for using
+magic values.
+
+For this code, there's no such requirement because the caller must convert the
+RET_PF_* return to the aforementioned magic returns.
+
+And the even bigger motivation was to discourage "if (r)" for this case because
+that suggests that this code _does_ utilize KVM's magic return value.  I actually
+wrote it that way at first and then got completely turned around and forgot what
+value was being returned :-)
+
+Heh, and thinking about it, I'd be tempted to assign RET_PF_CONTINUE a non-zero
+value if some debug Kconfig is enabled to really enforce that KVM explicitly checks
+for RET_PF_CONTINUE instead of assuming a non-zero value means "bail".
+
+> > @@ -151,9 +152,15 @@ unsigned int pte_list_count(struct kvm_rmap_head *rmap_head);
+> >   *
+> >   * Any names added to this enum should be exported to userspace for use in
+> >   * tracepoints via TRACE_DEFINE_ENUM() in mmutrace.h
+> 
+> Please add RET_PF_CONTINUE to mmutrace.h, e.g.
+> 
+>   TRACE_DEFINE_ENUM(RET_PF_CONTINUE);
+> 
+> It doesn't matter in practice (yet) since the trace enums are only
+> used for trace_fast_page_fault, which does not return RET_PF_CONTINUE.
+> But it would be good to keep it up to date.
+
+Drat, missed that.  Thanks!
