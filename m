@@ -2,295 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28287C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 20:09:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7597C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 20:09:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351212AbiDOULd (ORCPT
+        id S1348795AbiDOUMI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 16:11:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59776 "EHLO
+        Fri, 15 Apr 2022 16:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351201AbiDOULI (ORCPT
+        with ESMTP id S1351512AbiDOUMD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 16:11:08 -0400
+        Fri, 15 Apr 2022 16:12:03 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413CEDB4B2
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 13:08:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C25E13D19
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 13:09:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650053319; x=1681589319;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Q2HZAqyWTr9UkKMgXRNvffhCaeOGw+m6qpTfjr33qko=;
-  b=kYATqVuKDtGx019ID2uquj8sPoeB/7No7EU38NarZu1RKqKWKn6aos+C
-   G/OhpibBZkXTJx5dci4DN2n03KzgYPo13ipqvhXKTNn2GlgKiKHqmU+2H
-   oPgdZ9apqY6eNLcGL1I0KnB8wAbomA/VaCEIJ+X6L6Uy5D9KjQoQRXGP8
-   5ND5NkIUgI9rqlFfHRZIL8oPr+/NPCN5+fOx3cCsXp+tCS3D5wq5nygOV
-   10HPjiUxGDOmKMOVdEwLVvHqvMuah2/XlRge7LZrgluVyWH+FSx60vJxe
-   pLCFGYb1buMofxbd4/pzlkEySbhT6Q9TswVqXM9W+ZJAlIVFLEs21Xd8h
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="262078957"
+  t=1650053373; x=1681589373;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=0ttQiJt1wYBwYCOZIqR6JxxJqq6DPU7ZtHlhxqY2iRE=;
+  b=looe6i9sbA/7FqETt+iBvF99Kk9LiHHh94JSOUIgcsOhlN0qYjZJGttl
+   Onem4dvJzplFGKK9Il6tOQwnTumIl1le2BkrL20J5dInd+hv0NVldZg3J
+   oZ1CIZn3Ww0CWkUjw3DCDTxPa6cLMSmp1Tv9AZwNnJDJEovP4mW6QtH0s
+   VNmrIxnDGsQ32rSISSIDAecWb13erdhIPORCceoY6TZz39O4VsBKmrN0Y
+   Xk/WKRMGKsz+qOPx4io7V6MCSOhYIPq7KqMG6q3YQ46qQQexrQJU14G0m
+   d2JgrtqfpnlIVpL4tuPc2YGb5dTHC5X5m0kjtSSZP+C29+xRcinNM003t
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="262079163"
 X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
-   d="scan'208";a="262078957"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 13:08:11 -0700
+   d="scan'208";a="262079163"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 13:09:33 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
-   d="scan'208";a="574510718"
-Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.209.98.156])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 13:08:11 -0700
-From:   Russ Weight <russell.h.weight@intel.com>
-To:     mcgrof@kernel.org, rafael@kernel.org, linux-kernel@vger.kernel.org
-Cc:     trix@redhat.com, lgoncalv@redhat.com, yilun.xu@intel.com,
-        hao.wu@intel.com, matthew.gerlach@intel.com,
-        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
-        Russ Weight <russell.h.weight@intel.com>
-Subject: [PATCH v2 7/8] test_firmware: Error injection for firmware upload
-Date:   Fri, 15 Apr 2022 13:08:04 -0700
-Message-Id: <20220415200805.610339-8-russell.h.weight@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220415200805.610339-1-russell.h.weight@intel.com>
-References: <20220415200805.610339-1-russell.h.weight@intel.com>
+   d="scan'208";a="803626787"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 15 Apr 2022 13:09:31 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nfSG3-0002MU-9v;
+        Fri, 15 Apr 2022 20:09:31 +0000
+Date:   Sat, 16 Apr 2022 04:08:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jgunthorpe:vfio_kvm_no_group 2/11]
+ arch/powerpc/kvm/../../../virt/kvm/vfio.c:356:58: error: cast to pointer
+ from integer of different size
+Message-ID: <202204160410.A4xlb0e3-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add error injection capability to the test_firmware module specifically
-for firmware upload testing. Error injection instructions are transferred
-as the first part of the firmware payload. The format of an error
-injection string is similar to the error strings that may be read from
-the error sysfs node.
+tree:   https://github.com/jgunthorpe/linux vfio_kvm_no_group
+head:   0a779a04652d97c98d71a1538a37f89145dba9ed
+commit: c068aae365aaf0ecde7abf0842298c59d7ed0d9c [2/11] kvm/vfio: Reduce the scope of PPC #ifdefs
+config: powerpc-randconfig-c003-20220414 (https://download.01.org/0day-ci/archive/20220416/202204160410.A4xlb0e3-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/jgunthorpe/linux/commit/c068aae365aaf0ecde7abf0842298c59d7ed0d9c
+        git remote add jgunthorpe https://github.com/jgunthorpe/linux
+        git fetch --no-tags jgunthorpe vfio_kvm_no_group
+        git checkout c068aae365aaf0ecde7abf0842298c59d7ed0d9c
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash
 
-To inject the error "programming:hw-error", one would use the error
-injection string "inject:programming:hw-error" as the firmware payload:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-$ echo 1 > loading
-$ echo inject:programming:hw-error > data
-$ echo 0 > loading
-$ cat status
-idle
-$ cat error
-programming:hw-error
+All errors (new ones prefixed by >>):
 
-The first part of the error string is the progress state of the upload at
-the time of the error. The progress state would be one of the following:
-"preparing", "transferring", or "programming". The second part of the
-error string is one of the following: "hw-error", "timeout", "device-busy",
-"invalid-file-size", "read-write-error", "flash-wearout", and "user-abort".
+   arch/powerpc/kvm/../../../virt/kvm/vfio.c: In function 'kvm_vfio_set_group':
+>> arch/powerpc/kvm/../../../virt/kvm/vfio.c:356:58: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+     356 |                 return kvm_vfio_group_set_spapr_tce(dev, (void __user *)arg);
+         |                                                          ^
+   cc1: all warnings being treated as errors
 
-Note that all of the error strings except "user-abort" will fail without
-delay. The "user-abort" error will cause the firmware upload to stall at
-the requested progress state for up to 5 minutes to allow you to echo 1
-to the cancel sysfs node. It is this cancellation that causes the
-'user-abort" error. If the upload is not cancelled within the 5 minute
-time period, then the upload will complete without an error.
 
-Signed-off-by: Russ Weight <russell.h.weight@intel.com>
----
-v2:
-  - No changes from v1
----
- lib/test_firmware.c | 127 ++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 122 insertions(+), 5 deletions(-)
+vim +356 arch/powerpc/kvm/../../../virt/kvm/vfio.c
 
-diff --git a/lib/test_firmware.c b/lib/test_firmware.c
-index 2b8c56d7bf37..76115c1a2629 100644
---- a/lib/test_firmware.c
-+++ b/lib/test_firmware.c
-@@ -117,12 +117,18 @@ struct test_config {
- 			    struct device *device);
- };
- 
-+struct upload_inject_err {
-+	const char *prog;
-+	enum fw_upload_err err_code;
-+};
-+
- struct test_firmware_upload {
- 	char *name;
- 	struct list_head node;
- 	char *buf;
- 	size_t size;
- 	bool cancel_request;
-+	struct upload_inject_err inject;
- 	struct fw_upload *fwl;
- };
- 
-@@ -1067,20 +1073,105 @@ static void upload_release_all(void)
- 	test_fw_config->upload_name = NULL;
- }
- 
-+/*
-+ * This table is replicated from .../firmware_loader/sysfs_upload.c
-+ * and needs to be kept in sync.
-+ */
-+static const char * const fw_upload_err_str[] = {
-+	[FW_UPLOAD_ERR_NONE]	     = "none",
-+	[FW_UPLOAD_ERR_HW_ERROR]     = "hw-error",
-+	[FW_UPLOAD_ERR_TIMEOUT]	     = "timeout",
-+	[FW_UPLOAD_ERR_CANCELED]     = "user-abort",
-+	[FW_UPLOAD_ERR_BUSY]	     = "device-busy",
-+	[FW_UPLOAD_ERR_INVALID_SIZE] = "invalid-file-size",
-+	[FW_UPLOAD_ERR_RW_ERROR]     = "read-write-error",
-+	[FW_UPLOAD_ERR_WEAROUT]	     = "flash-wearout",
-+};
-+
-+static void upload_err_inject_error(struct test_firmware_upload *tst,
-+				    const u8 *p, const char *prog)
-+{
-+	enum fw_upload_err err;
-+
-+	for (err = FW_UPLOAD_ERR_NONE + 1; err < FW_UPLOAD_ERR_MAX; err++) {
-+		if (strncmp(p, fw_upload_err_str[err],
-+			    strlen(fw_upload_err_str[err])) == 0) {
-+			tst->inject.prog = prog;
-+			tst->inject.err_code = err;
-+			return;
-+		}
-+	}
-+}
-+
-+static void upload_err_inject_prog(struct test_firmware_upload *tst,
-+				   const u8 *p)
-+{
-+	static const char * const progs[] = {
-+		"preparing:", "transferring:", "programming:"
-+	};
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(progs); i++) {
-+		if (strncmp(p, progs[i], strlen(progs[i])) == 0) {
-+			upload_err_inject_error(tst, p + strlen(progs[i]),
-+						progs[i]);
-+			return;
-+		}
-+	}
-+}
-+
-+#define FIVE_MINUTES_MS	(5 * 60 * 1000)
-+static enum fw_upload_err
-+fw_upload_wait_on_cancel(struct test_firmware_upload *tst)
-+{
-+	int ms_delay;
-+
-+	for (ms_delay = 0; ms_delay < FIVE_MINUTES_MS; ms_delay += 100) {
-+		msleep(100);
-+		if (tst->cancel_request)
-+			return FW_UPLOAD_ERR_CANCELED;
-+	}
-+	return FW_UPLOAD_ERR_NONE;
-+}
-+
- static enum fw_upload_err test_fw_upload_prepare(struct fw_upload *fwl,
- 						 const u8 *data, u32 size)
- {
- 	struct test_firmware_upload *tst = fwl->dd_handle;
-+	enum fw_upload_err ret = FW_UPLOAD_ERR_NONE;
-+	const char *progress = "preparing:";
- 
- 	tst->cancel_request = false;
- 
--	if (!size || size > TEST_UPLOAD_MAX_SIZE)
--		return FW_UPLOAD_ERR_INVALID_SIZE;
-+	if (!size || size > TEST_UPLOAD_MAX_SIZE) {
-+		ret = FW_UPLOAD_ERR_INVALID_SIZE;
-+		goto err_out;
-+	}
-+
-+	if (strncmp(data, "inject:", strlen("inject:")) == 0)
-+		upload_err_inject_prog(tst, data + strlen("inject:"));
- 
- 	memset(tst->buf, 0, TEST_UPLOAD_MAX_SIZE);
- 	tst->size = size;
- 
--	return FW_UPLOAD_ERR_NONE;
-+	if (tst->inject.err_code == FW_UPLOAD_ERR_NONE ||
-+	    strncmp(tst->inject.prog, progress, strlen(progress)) != 0)
-+		return FW_UPLOAD_ERR_NONE;
-+
-+	if (tst->inject.err_code == FW_UPLOAD_ERR_CANCELED)
-+		ret = fw_upload_wait_on_cancel(tst);
-+	else
-+		ret = tst->inject.err_code;
-+
-+err_out:
-+	/*
-+	 * The cleanup op only executes if the prepare op succeeds.
-+	 * If the prepare op fails, it must do it's own clean-up.
-+	 */
-+	tst->inject.err_code = FW_UPLOAD_ERR_NONE;
-+	tst->inject.prog = NULL;
-+
-+	return ret;
- }
- 
- static enum fw_upload_err test_fw_upload_write(struct fw_upload *fwl,
-@@ -1088,6 +1179,7 @@ static enum fw_upload_err test_fw_upload_write(struct fw_upload *fwl,
- 					       u32 size, u32 *written)
- {
- 	struct test_firmware_upload *tst = fwl->dd_handle;
-+	const char *progress = "transferring:";
- 	u32 blk_size;
- 
- 	if (tst->cancel_request)
-@@ -1097,17 +1189,33 @@ static enum fw_upload_err test_fw_upload_write(struct fw_upload *fwl,
- 	memcpy(tst->buf + offset, data + offset, blk_size);
- 
- 	*written = blk_size;
--	return FW_UPLOAD_ERR_NONE;
-+
-+	if (tst->inject.err_code == FW_UPLOAD_ERR_NONE ||
-+	    strncmp(tst->inject.prog, progress, strlen(progress)) != 0)
-+		return FW_UPLOAD_ERR_NONE;
-+
-+	if (tst->inject.err_code == FW_UPLOAD_ERR_CANCELED)
-+		return fw_upload_wait_on_cancel(tst);
-+
-+	return tst->inject.err_code;
- }
- 
- static enum fw_upload_err test_fw_upload_complete(struct fw_upload *fwl)
- {
- 	struct test_firmware_upload *tst = fwl->dd_handle;
-+	const char *progress = "programming:";
- 
- 	if (tst->cancel_request)
- 		return FW_UPLOAD_ERR_CANCELED;
- 
--	return FW_UPLOAD_ERR_NONE;
-+	if (tst->inject.err_code == FW_UPLOAD_ERR_NONE ||
-+	    strncmp(tst->inject.prog, progress, strlen(progress)) != 0)
-+		return FW_UPLOAD_ERR_NONE;
-+
-+	if (tst->inject.err_code == FW_UPLOAD_ERR_CANCELED)
-+		return fw_upload_wait_on_cancel(tst);
-+
-+	return tst->inject.err_code;
- }
- 
- static void test_fw_upload_cancel(struct fw_upload *fwl)
-@@ -1117,11 +1225,20 @@ static void test_fw_upload_cancel(struct fw_upload *fwl)
- 	tst->cancel_request = true;
- }
- 
-+static void test_fw_cleanup(struct fw_upload *fwl)
-+{
-+	struct test_firmware_upload *tst = fwl->dd_handle;
-+
-+	tst->inject.err_code = FW_UPLOAD_ERR_NONE;
-+	tst->inject.prog = NULL;
-+}
-+
- static const struct fw_upload_ops upload_test_ops = {
- 	.prepare = test_fw_upload_prepare,
- 	.write = test_fw_upload_write,
- 	.poll_complete = test_fw_upload_complete,
- 	.cancel = test_fw_upload_cancel,
-+	.cleanup = test_fw_cleanup
- };
- 
- static ssize_t upload_register_store(struct device *dev,
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  338  
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  339  static int kvm_vfio_set_group(struct kvm_device *dev, long attr, u64 arg)
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  340  {
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  341  	int32_t __user *argp = (int32_t __user *)(unsigned long)arg;
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  342  	int32_t fd;
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  343  
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  344  	switch (attr) {
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  345  	case KVM_DEV_VFIO_GROUP_ADD:
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  346  		if (get_user(fd, argp))
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  347  			return -EFAULT;
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  348  		return kvm_vfio_group_add(dev, fd);
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  349  
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  350  	case KVM_DEV_VFIO_GROUP_DEL:
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  351  		if (get_user(fd, argp))
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  352  			return -EFAULT;
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  353  		return kvm_vfio_group_del(dev, fd);
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  354  
+26d16e3ba7292b Jason Gunthorpe 2022-03-30  355  	case KVM_DEV_VFIO_GROUP_SET_SPAPR_TCE:
+26d16e3ba7292b Jason Gunthorpe 2022-03-30 @356  		return kvm_vfio_group_set_spapr_tce(dev, (void __user *)arg);
+ec53500fae421e Alex Williamson 2013-10-30  357  	}
+ec53500fae421e Alex Williamson 2013-10-30  358  
+ec53500fae421e Alex Williamson 2013-10-30  359  	return -ENXIO;
+ec53500fae421e Alex Williamson 2013-10-30  360  }
+ec53500fae421e Alex Williamson 2013-10-30  361  
+
+:::::: The code at line 356 was first introduced by commit
+:::::: 26d16e3ba7292b7fce26d25a2ba8f44b8c28ffe3 kvm/vfio: Move KVM_DEV_VFIO_GROUP_* ioctls into functions
+
+:::::: TO: Jason Gunthorpe <jgg@nvidia.com>
+:::::: CC: Jason Gunthorpe <jgg@nvidia.com>
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
