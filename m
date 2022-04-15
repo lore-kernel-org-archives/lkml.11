@@ -2,84 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB676C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 10:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25ECCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 10:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352394AbiDOKwv (ORCPT
+        id S1352410AbiDOKw4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 06:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35220 "EHLO
+        Fri, 15 Apr 2022 06:52:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352399AbiDOKwk (ORCPT
+        with ESMTP id S1352397AbiDOKwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 06:52:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 807DE37A37;
-        Fri, 15 Apr 2022 03:50:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2539262254;
-        Fri, 15 Apr 2022 10:50:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7AEFEC385A8;
-        Fri, 15 Apr 2022 10:50:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650019811;
-        bh=7/ESHId8wX12eVYRQF0wmIv/Na6HJY/nO3fDu6peM40=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WFr90kb4/MXlxtBJWPh6lJ42nlxXlYKnfNOi8XzRTnbPXtNHswx6JdBqgJ9K7S/k7
-         WCnyiudTSqU4RyyiUxDxM2RWIJv5dkhpOGJwDT+1epn21C5UDBoMq8JAE87jdylpZU
-         1gzaC3tIoB8CrEG/SKQ2dl7JenDJEfFy1WO9fScFcsFIZW/oGh2LqiwZQr/ZlnQC35
-         nwXodFTpuMtyy9igtwoXeCbVYAzJ06oXrNKOdXDhgvdHKXCD7f7FCI7ERORdOjUuo2
-         mA5bEoVyQipe6iIyjsaeuqBVEpVPCmubCWkGMdMOpnhng85QN5yULL/60Hll1U08OK
-         9j2fphIvBQoYQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 58668E6D402;
-        Fri, 15 Apr 2022 10:50:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 15 Apr 2022 06:52:39 -0400
+Received: from mxout4.routing.net (mxout4.routing.net [IPv6:2a03:2900:1:a::9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760CF344DD;
+        Fri, 15 Apr 2022 03:50:10 -0700 (PDT)
+Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
+        by mxout4.routing.net (Postfix) with ESMTP id 90FCB10081B;
+        Fri, 15 Apr 2022 10:50:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
+        s=20200217; t=1650019807;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=rWSR2rltVSUqvyGXpreg4LKaYlPdzHCHZKQnQuzQnac=;
+        b=xUd3kNr59wxtB4msvT494ZDjLtPGFK2Eao5k2wCfFkX797f0ZGnEx7MqIRLZRGsNmeoq/W
+        HwUfWTLtSNjBicxyr4ZSq0QYmBhKX7lVsQkxLxOBpH7TAtpV4lw0IDwN+xALSspcFa/WeV
+        bLFQvXcg0Su6INsAnWX9cg51/g3bJew=
+Received: from localhost.localdomain (fttx-pool-217.61.153.244.bambit.de [217.61.153.244])
+        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 641E3100501;
+        Fri, 15 Apr 2022 10:50:06 +0000 (UTC)
+From:   Frank Wunderlich <linux@fw-web.de>
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] Add hdmi Support for BPI-R2-Pro
+Date:   Fri, 15 Apr 2022 12:49:48 +0200
+Message-Id: <20220415104951.27104-1-linux@fw-web.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] net: emaclite: Trivial code cleanup
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165001981135.26584.13278892661034431919.git-patchwork-notify@kernel.org>
-Date:   Fri, 15 Apr 2022 10:50:11 +0000
-References: <1649939831-14901-1-git-send-email-radhey.shyam.pandey@xilinx.com>
-In-Reply-To: <1649939831-14901-1-git-send-email-radhey.shyam.pandey@xilinx.com>
-To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        andrew@lunn.ch, michal.simek@xilinx.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        git@xilinx.com
+X-Mail-ID: 56e09033-23d0-4d9f-9f04-5ff42bb46aaa
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+From: Frank Wunderlich <frank-w@public-files.de>
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+This Series adds changes to Device  tree for Bananapi-R2-Pro to support
+HDMI output.
 
-On Thu, 14 Apr 2022 18:07:08 +0530 you wrote:
-> This patchset fix coding style issues, remove BUFFER_ALIGN
-> macro and also update copyright text.
-> 
-> 
-> I have to resend as earlier series didn't reach mailing list
-> due to some configuration issue.
-> 
-> [...]
+It is based on "drm/rockchip: RK356x VOP2 support"
+v10:
+https://patchwork.kernel.org/project/linux-rockchip/list/?series=630407
 
-Here is the summary with links:
-  - [net-next,1/3] net: emaclite: Fix coding style
-    https://git.kernel.org/netdev/net-next/c/945e659dffad
-  - [net-next,2/3] net: emaclite: Update copyright text to correct format
-    https://git.kernel.org/netdev/net-next/c/7ae7d494f626
-  - [net-next,3/3] net: emaclite: Remove custom BUFFER_ALIGN macro
-    https://git.kernel.org/netdev/net-next/c/7240bf6fb216
+Frank Wunderlich (3):
+  arm64: dts: rockchip: set display regulators to always-on on
+    BPI-R2-Pro
+  arm64: dts: rockchip: enable vop2 and hdmi tx on BPI-R2-Pro
+  arm64: dts: rockchip: enable the gpu on BPI-R2-Pro
 
-You are awesome, thank you!
+ .../boot/dts/rockchip/rk3568-bpi-r2-pro.dts   | 57 +++++++++++++++++++
+ 1 file changed, 57 insertions(+)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
