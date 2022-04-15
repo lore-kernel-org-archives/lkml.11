@@ -2,106 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB8EC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14259C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351381AbiDOI2x (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 04:28:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45868 "EHLO
+        id S242834AbiDOI3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 04:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230490AbiDOI2v (ORCPT
+        with ESMTP id S244865AbiDOI31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 04:28:51 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E004AFB35;
-        Fri, 15 Apr 2022 01:26:23 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 787FB1BF211;
-        Fri, 15 Apr 2022 08:26:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650011181;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kKojKZULnPE/wWjIpye1ilTyE1X2MJhejc5l4csXybI=;
-        b=eyakLyHQLwnmDg3QFRsBeVWxdYLaiRMfBgkqSYNyJ8w18zYfQe/rzoYSew7hsuaxFbbh3t
-        D3ANnDwMXwuBDdry+VBoxXei0xbk2gIqOIEUt4fnRmdCMYTAc1IK9wF4ZTKGxE1SZCA3ci
-        lNoTkfyU912659amNnzGFgRAx1Tdr3oDrAE5DIG06FsVTELhC2uzNdEyN8DxYgoFabwGz9
-        fIRDG5T+ngpImU8lhDgvP0UuA42Fe/+6IiKB84vp9GsZvnuDVopyQaS3I4FYaYHVnbW9YO
-        BvjQh/R8VvNSDzKTwvGfYMzJXp0u/W8HKsLllI2HxiqBVhLE+Gxbvhzh8ui9Ag==
-Date:   Fri, 15 Apr 2022 10:24:53 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 09/12] ARM: dts: r9a06g032: describe MII
- converter
-Message-ID: <20220415102453.1b5b3f77@fixe.home>
-In-Reply-To: <YlismVi8y3Vf6PZ0@lunn.ch>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
-        <20220414122250.158113-10-clement.leger@bootlin.com>
-        <YlismVi8y3Vf6PZ0@lunn.ch>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Fri, 15 Apr 2022 04:29:27 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AB9B3DDB
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 01:26:59 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id r66so6821979pgr.3
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 01:26:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IouwgSoOU5RLyMJuBmnkWSebHjJ6FolzaVbEFNDsszU=;
+        b=gTmvcqVWKjRoSWUlP6fJYRDMffX0KIawj4PuOOu801Wi/7rfmmcSGiH/BqjX+xIriT
+         +nq2k+bskAd6ELn0+sBm+a3TTq/DF/RxNvQtcZ2ZYxGWeNbhFrH0w7Xj66Hq6YbSh7Ls
+         xOZlEe+aipJWNgpkY2ZaBifeeD0SHr6tqi9VNoi5HKwONCBjHg3nEXJ94Pvr8CeiZfBn
+         FVdPLZjKFpJfp7eoNOVHUv5vsm8OVhX1JQuC5S0MyZwPBN1KoZvjFxbSw+ejQd7RBEq2
+         MWWeqibVdA1ug9lzdH+DA4fPTlCqRibLRvhX/zBXFTI9oD4bhezridMEKHTigA98IAWc
+         B7qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IouwgSoOU5RLyMJuBmnkWSebHjJ6FolzaVbEFNDsszU=;
+        b=1CT0DD1xo7ST3a8Q8W9uzphN3LtE6IrSZueo3GHZHbqTcoZJZ8bLFpIl3zmMHhvdZf
+         UOypP9y8hSXs71G+LLTccrJW8H1XAjiD0Oh8GoR21DpgLzVEWEWyC+OJDWXU7pTssBTT
+         6kWwX9RMcHj4OMI+fEITSeUqfw8p/auAjsl8YnhrdESJU24kwogrR1hjuMNm2GW5ZiHR
+         1GM1lGystROMB2UVB6olVCtn/ALEndONhQqbzASRYo48SlXgm1HGNhxD41CenfKLzLVr
+         MDwohfuKfkIu4//ZZIpID3q5mNo4ndjshDdPTIPcj4BUnNGwPKzg+VhdIuMKWb2JaytT
+         HirA==
+X-Gm-Message-State: AOAM532iVI2jiWzO2jFezEU7GXRWhq7EgSba/FrzJrybReIOyD29lfEl
+        Que2Y/XAqsyuIvLysc2dvM+xANjOmQdvHmknNsfKAg==
+X-Google-Smtp-Source: ABdhPJwi7VZhcsJ5DGv660Mg4AHf5r56+3E7RgA5pVgaieMZjLUNyxDVauEwklWTDsyiDy13rPq5P6cpr0CplOR4IGc=
+X-Received: by 2002:a63:1557:0:b0:39d:8460:2e07 with SMTP id
+ 23-20020a631557000000b0039d84602e07mr5680484pgv.344.1650011218652; Fri, 15
+ Apr 2022 01:26:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220415054219.38078-1-aajith@arista.com> <4586921d-5fc4-b63f-8264-a6fd63c592b6@gmail.com>
+In-Reply-To: <4586921d-5fc4-b63f-8264-a6fd63c592b6@gmail.com>
+From:   Arun Ajith S <aajith@arista.com>
+Date:   Fri, 15 Apr 2022 13:56:46 +0530
+Message-ID: <CAOvjArSb4avVaV25925z+e5eKW89Q6k+AsPSq1yS+kroG_a=ww@mail.gmail.com>
+Subject: Re: [PATCH net-next v5] net/ipv6: Introduce accept_unsolicited_na
+ knob to implement router-side changes for RFC9131
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        dsahern@kernel.org, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        pabeni@redhat.com, corbet@lwn.net, prestwoj@gmail.com,
+        gilligan@arista.com, noureddine@arista.com, gk@arista.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Fri, 15 Apr 2022 01:22:01 +0200,
-Andrew Lunn <andrew@lunn.ch> a =C3=A9crit :
+Sorry, it wasn't the mailer.
+The rst file in my patch was missing tabs.
+I have fixed it and verified the generated HTML is correct.
+I'll post v6 with the fix.
 
-> On Thu, Apr 14, 2022 at 02:22:47PM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
-> > Add the MII converter node which describes the MII converter that is
-> > present on the RZ/N1 SoC. =20
->=20
-> Do you have a board which actually uses this? I just noticed that
-> renesas,miic-cfg-mode is missing, it is a required property, but maybe
-> the board .dts file provides it?
->=20
->     Andrew
-
-Hi Andrew, yes, I have a board that defines and use that. The
-renesas,miic-cfg-mode actually configures the muxes that are present on
-the SoC. They allows to mux the various ethernet components (Sercos
-Controller, HSR Controller, Ethercat, GMAC1, RTOS-GMAC).
-All these muxes are actually controller by a single register
-CONVCTRL_MODE. You can actually see the muxes that are present in the
-manual [1] at Section 8 and the CONVCTRL_MODE possible values are listed
-on page 180.
-
-This seems to be something that is board dependent because the muxing
-controls the MII converter outputs which depends on the board layout.
-
-I'm open to any modification for this setup which does not really fit
-any abstraction that I may have seen.
-
-[1]
-https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-rzn1l-gr=
-oup-users-manual-system-introduction-multiplexing-electrical-and
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+On Fri, Apr 15, 2022 at 1:09 PM Bagas Sanjaya <bagasdotme@gmail.com> wrote:
+>
+> On 4/15/22 12:42, Arun Ajith S wrote:
+> > +accept_unsolicited_na - BOOLEAN
+> > +     Add a new neighbour cache entry in STALE state for routers on receiving an
+> > +     unsolicited neighbour advertisement with target link-layer address option
+> > +     specified. This is as per router-side behavior documented in RFC9131.
+> > +     This has lower precedence than drop_unsolicited_na.
+> > +
+> > +   ====   ======  ======  ==============================================
+> > +      drop   accept  fwding                   behaviour
+> > +      ----   ------  ------  ----------------------------------------------
+> > +         1        X       X  Drop NA packet and don't pass up the stack
+> > +         0        0       X  Pass NA packet up the stack, don't update NC
+> > +         0        1       0  Pass NA packet up the stack, don't update NC
+> > +         0        1       1  Pass NA packet up the stack, and add a STALE
+> > +                             NC entry
+> > +   ====   ======  ======  ==============================================
+> > +
+>
+> Hi,
+>
+> Building htmldocs with this patch, there are no more warnings from v4, but
+> I don't see the table above generated in the output. I guess due to
+> whitespace-mangling issues on your mailer, because the table syntax alignment
+> (the =-s) don't match the contents/cells.
+>
+> Thanks.
+>
+> --
+> An old man doll... just what I always wanted! - Clara
