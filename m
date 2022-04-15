@@ -2,228 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6AD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 21:31:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D5AC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 21:32:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355662AbiDOVeL (ORCPT
+        id S1354902AbiDOVe4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 17:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43172 "EHLO
+        Fri, 15 Apr 2022 17:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355444AbiDOVd4 (ORCPT
+        with ESMTP id S230476AbiDOVez (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 17:33:56 -0400
-Received: from sonic305-28.consmr.mail.ne1.yahoo.com (sonic305-28.consmr.mail.ne1.yahoo.com [66.163.185.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E1DDA0BC
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 14:31:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1650058285; bh=h32jrF2Zh2EvU2lSatcW64eAZi8X5he9uuICOJ6hcZ8=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=b8AkL3Lrw0NCDpk/+c9MUKVTG+Wu5VFRG5hAnHXVIEO0nCNzC3A0GzkJ/FH9PaZ0yfGlGsjd9jvkNuhGwlnXAT3uDMgQuT9kQv2GtFJsCe7XUYuNGmCXPVjHKQMaBqYFpqk2eGg2lSWNqrDpIMqqdjNmVS3FbHAHs+YSfrlMDp3t6c5SseEFkU40s7uTzbd1EI4WxblDII/R0jhZUG4ZDXU0cjvNOgoIvSQFGbKeNzJEv56E1AlZlA3nJLL+ClZbls8khY+lqQhrziirsrNhPS27oSkDXFS8gtiPQxYpjYSMsZyI28gI6xTxyi3zZ7iaZNH9Mc5W5LVJp5y/RmzcdQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1650058285; bh=N4aDelz+qBLB6Ic0r9ls8KE+iNmudrgppirdjkSwCPV=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=DBVrn1Y/4zHn7ol5s0FFqpQ27Ti05rbt9fTAz9Pv7H/W1PAO342wSn5sQeBCJsob6MjqPFOjdJPBmNdc2EwbsmNX0w2fesdaxv4VwNuIuwmYqTOjLUBNikjpVIAfAHNZqBJbju61AaQ0Y4Jwgyaf9+CSavYxkjqI46BQF5KBEWqZHhHNr+3ZHdhuwV1gNmDtaH4M5UCeLO7lS9r9xB/nWX6FcwewnX2XxbCTNk8QMDErEEqzTWRexRM4FX27CP5bbuY7l9GTvpzfBneYMZdBmFMi8v12GjhZDTLdxcc79rLgLg2PvHpUO6FurJ8RMQPJvy/A4geMCAu510wwBOZ41g==
-X-YMail-OSG: uQPn.E8VM1maRVLlJFdJ4xOiKzP3F51Rz6KRFkwTC1al8f7glB0nOLOu4XVc4rz
- YPPlLJ037ygS0BIhHK_oZ6DNGMAHm.GYW_eQtd4z0y9ZDnz65FBooQwakVAcnaI7U7woEF.UkT3P
- R394kyIOzWFfTLLgyqtgHw5hNBL8iCfVO8JinOl7m8.FM48mS5R.bbz.lGY5rZfSNlpbOC_wLx9i
- AuLDb7tu5ejOC2CJMzWsXXKb6lrqhftv61EL4D.7ntGSq964Qu2XSWb85RNSMHclnMs7T6kWTikt
- k31GRMxXfsdHFMrE2yCz87sp45GCNarzRoZEhjFJ5eh7TZdBGt9kgCbbETjnzPnbOPyu2GXYwFff
- I6B3j_Mp5TNQwTPCVIQcy6qgqlNUkuQJJNGTQzfbQjGCQj4l1fShh0kia8l4HysI9RhvRegLnM82
- mP_hbqigcF6kedh2mRIuhtA75c6DuHcRa75okrPG6t0haM7ZYwz.h8R2Xtb4kcL5GVymYU.mMeOu
- Z3_m34LG96QYSxOn4besQGjAY9f9LO49Fym0TV270cx5rzY4w2A.rhZH8bp5z7dLkpGrkBh2xIFj
- lxz18TM2ws.Np_eaJGeC0CkvWpiortvGAQXSbljDQKtvRGJOLztMMPfcQFS6t8axXYY4Z0212cy2
- CVBuBF7iIYEGupNwxd9ohczS_I78VZtBmU_Dg_jVram_TTy.orGjtRRVaOCN0YmvTGC1pMMmRpzf
- .kxzsZxg__FItKCBkjonQ9Mj7HU0QGPBnUk0zzmee.KwR9mMgI4vBQxdNliTfLL74hNBC8sVHZaS
- Znoir_GYHEfmtuS0Tn0RFM6wAElIiM6UF7NJ.BzcmwYeF3kHlEpoE7Y4DrHCrY3FrZJWWUDQwuSP
- SNUu_uGBJLjnK_LtpT9WKR883YaIMZ2zLXjoDvg2Q4zpE8n.ZCogR3neUuSVV3sZ51hUKzQtEJ7Q
- kkhqe6H5_pX624TE.kKJ4O3A6tT2lSygXZWpaep_bW3imJ5tWFaBnsGVWcQqc8cZ7s3LXi2TJbur
- ZLbMSfz36ByomiHsZitiympaIFC5pGJv_tQss63.tYE0UBr7RJ9TWia0p3fgtGgVkeg9myP63res
- jip0qqRTvMkuTjtFDatNA1oJBxV2Tt1.9uHaLR7uQdq4wosQhW8q42Gip.9V3wYgdrK7Ayu_C6F3
- KAaYXJKXrIhQmK_AT.Oim_WxVTToAfoxZuUl8ICX1MwHxd2FiCBibTsYHtxCc7iNfJ5AhCbbcWrF
- H3raon3Fpo9puNTxcr1YAE4jhkvb8kFsWczevnFrYwcOBAAxDZqoIpsyXHvhV.2mtcnkfJutlARo
- w.77FFzbljMPaqtPuMp6Of0x5Rch7nKMR3HDQKgoFm5ozpuN_rqSK5gx_29NiK02zA_i4GXG06yF
- Br_Q_5TUOEDaeIMjDu2MjmLsDpQqFgboKtE6XvSq9Y_wTu1FPppVg6UiBpnPL8VXeZFLefm_WW5W
- pDN4iXPeWK87.yGLQN6FBtuIqCj93gioivBzYl.Pjrn.Wheifk8hlGxJOOHMgTVlDeG2YO9p.Te7
- XFppbbODDrh4XcyaONk5A9f6.o1jOt390DyJfuooOvzvg.WJo8lTmPY_z.EYX9qfTH_dGsCIhDrf
- XrzYksL.NLJZfh6bz80ZuzNAdpn6quDbDQRgGbDYQ_49M4Lpaz7HmOULreCl3tT18dSTHdw65GlJ
- tPipgOLnSTKQb6rd8iKigNGIErgPOBkrUN8RGvYzWckqVgjrHjzGTaGoioiijEg1p.s64Bahat7K
- r9KTCglCSdLuN9uamCXYyvUnSTihCtcf6bOR7Fxr5XfGm5PdQeuSoGrhaMecXRp6Xdu2ROoAhbEy
- 1Ay46xt5gehytloQ8ylaUU16XjUguoGfpI9M2dlSZvnbOo4HYEKZfJ.p5U22ZTaAJSMApsFt7bwM
- xwvqhUDn2VfuMFSenC3BtGyG.2WyICr_4HSG2ljSaWo1KRWaUcKR6LIWQve0Ppc3U_HzmaUaz3uW
- KRfQZBeCNWmROLgCojQ28.wV1ZUf5iDE.d_evZfMd6.KADNY24zASwD.DL1LgwPgHSu4G7CRt6jB
- WgS_cyxEgg46aL4nZzeMjPc.gHqvM96GBi0PP1yX.jiLW9rMZiDJyjWMH7huO86og19UGA0Gkzx5
- rozWGGiCNqO6WuH9ucN1z.X9OK52x6GufteT79FcBbhdxr9iKqUQp5htwBIlcs6AW4oiZk_s8NX2
- SI1Wv8Lx8RNnqUOe_2n4OmdCYfl1rLk6jhcV0HuHcys9_mIFP_cakWgt7dWYMWf92sOg_CRkarnU
- JQuo-
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic305.consmr.mail.ne1.yahoo.com with HTTP; Fri, 15 Apr 2022 21:31:25 +0000
-Received: by hermes--canary-production-bf1-5f49dbcd6-hf9hx (VZM Hermes SMTP Server) with ESMTPA ID 13670bbd638f1f6033ad5ba33b62894a;
-          Fri, 15 Apr 2022 21:31:21 +0000 (UTC)
-From:   Casey Schaufler <casey@schaufler-ca.com>
-To:     casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
-        keescook@chromium.org, john.johansen@canonical.com,
-        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
-        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v34 26/29] Audit: Add record for multiple task security contexts
-Date:   Fri, 15 Apr 2022 14:17:58 -0700
-Message-Id: <20220415211801.12667-27-casey@schaufler-ca.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220415211801.12667-1-casey@schaufler-ca.com>
-References: <20220415211801.12667-1-casey@schaufler-ca.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 15 Apr 2022 17:34:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B7FAAC8B;
+        Fri, 15 Apr 2022 14:32:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AB7062185;
+        Fri, 15 Apr 2022 21:32:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ADA9C385A4;
+        Fri, 15 Apr 2022 21:32:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1650058343;
+        bh=3UWUcyacMiJlx7p1411HKtWv5JjN8giHOd5i3EG0zSU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JrZnPatO9LRi5eqCzk79CipiGJo5Y/fO7qwH9Qd+NPfbU1e/C3vo7TPs8SeoPNNBn
+         QBs9tMWzjWV+goiaCOE99AzqZXatzAUIhtMAy03dOsjf4od9MMdhDi8q6b4cPyAcf4
+         KHcD5FHBDK5ACrThpIUEFXS/39sgtHveD+V3oKUk=
+Date:   Fri, 15 Apr 2022 14:32:20 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Yu Zhao <yuzhao@google.com>
+Cc:     Justin Forbes <jforbes@fedoraproject.org>,
+        Stephen Rothwell <sfr@rothwell.id.au>,
+        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <21cnbao@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        Holger =?ISO-8859-1?Q?Hoffst=E4tte?= 
+        <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Subject: Re: [PATCH v10 08/14] mm: multi-gen LRU: support page table walks
+Message-Id: <20220415143220.cc37b0b0a368ed2bf2a821f8@linux-foundation.org>
+In-Reply-To: <CAOUHufYsjwMGMFCfYoh79rFZqwqS1jDihcBS9sHd-gBxEAD3Ug@mail.gmail.com>
+References: <20220407031525.2368067-1-yuzhao@google.com>
+        <20220407031525.2368067-9-yuzhao@google.com>
+        <20220411191621.0378467ad99ebc822d5ad005@linux-foundation.org>
+        <CAOUHufYeC=Kuu59BPL_48sM67CqACxH2wWy-SYGXpadgMDmY3w@mail.gmail.com>
+        <20220414185654.e7150bcbe859e0dd4b9c61af@linux-foundation.org>
+        <CAOUHufYy6yQS9ARN9C5+ODkopR+ez4TH3hZNZo4HtNHBExS1mA@mail.gmail.com>
+        <20220415121521.764a88dda55ae8c676ad26b0@linux-foundation.org>
+        <CAOUHufYsjwMGMFCfYoh79rFZqwqS1jDihcBS9sHd-gBxEAD3Ug@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Create a new audit record AUDIT_MAC_TASK_CONTEXTS.
-An example of the MAC_TASK_CONTEXTS (1420) record is:
+On Fri, 15 Apr 2022 14:11:32 -0600 Yu Zhao <yuzhao@google.com> wrote:
 
-    type=MAC_TASK_CONTEXTS[1420]
-    msg=audit(1600880931.832:113)
-    subj_apparmor=unconfined
-    subj_smack=_
+> >
+> > I grabbed
+> > https://kojipkgs.fedoraproject.org//packages/kernel/5.18.0/0.rc2.23.fc37/src/kernel-5.18.0-0.rc2.23.fc37.src.rpm
+> > and
+> 
+> Yes, Fedora/RHEL is one concrete example of the model I mentioned
+> above (experimental/stable). I added Justin, the Fedora kernel
+> maintainer, and he can further clarify.
+> 
+> If we don't want more VM_BUG_ONs, I'll remove them. But (let me
+> reiterate) it seems to me that just defeats the purpose of having
+> CONFIG_DEBUG_VM.
+> 
 
-When an audit event includes a AUDIT_MAC_TASK_CONTEXTS record
-the "subj=" field in other records in the event will be "subj=?".
-An AUDIT_MAC_TASK_CONTEXTS record is supplied when the system has
-multiple security modules that may make access decisions based
-on a subject security context.
+Well, I feel your pain.  It was never expected that VM_BUG_ON() would
+get subverted in this fashion.
 
-Functions are created to manage the skb list in the audit_buffer.
+We could create a new MM-developer-only assertion.  Might even call it
+MM_BUG_ON().  With compile-time enablement but perhaps not a runtime
+switch.
 
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
----
- include/uapi/linux/audit.h |  1 +
- kernel/audit.c             | 93 +++++++++++++++++++++++++++++++++++---
- 2 files changed, 88 insertions(+), 6 deletions(-)
+With nice simple semantics, please.  Like "it returns void" and "if you
+pass an expression with side-effects then you lose".  And "if you send
+a patch which produces warnings when CONFIG_MM_BUG_ON=n then you get to
+switch to windows95 for a month".
 
-diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
-index 8eda133ca4c1..af0aaccfaf57 100644
---- a/include/uapi/linux/audit.h
-+++ b/include/uapi/linux/audit.h
-@@ -143,6 +143,7 @@
- #define AUDIT_MAC_UNLBL_STCDEL	1417	/* NetLabel: del a static label */
- #define AUDIT_MAC_CALIPSO_ADD	1418	/* NetLabel: add CALIPSO DOI entry */
- #define AUDIT_MAC_CALIPSO_DEL	1419	/* NetLabel: del CALIPSO DOI entry */
-+#define AUDIT_MAC_TASK_CONTEXTS	1420	/* Multiple LSM task contexts */
- 
- #define AUDIT_FIRST_KERN_ANOM_MSG   1700
- #define AUDIT_LAST_KERN_ANOM_MSG    1799
-diff --git a/kernel/audit.c b/kernel/audit.c
-index 4d44c05053b0..8ed2d717c217 100644
---- a/kernel/audit.c
-+++ b/kernel/audit.c
-@@ -2175,8 +2175,61 @@ void audit_log_key(struct audit_buffer *ab, char *key)
- 		audit_log_format(ab, "(null)");
- }
- 
-+/**
-+ * audit_buffer_aux_new - Add an aux record buffer to the skb list
-+ * @ab: audit_buffer
-+ * @type: message type
-+ *
-+ * Aux records are allocated and added to the skb list of
-+ * the "main" record. The ab->skb is reset to point to the
-+ * aux record on its creation. When the aux record in complete
-+ * ab->skb has to be reset to point to the "main" record.
-+ * This allows the audit_log_ functions to be ignorant of
-+ * which kind of record it is logging to. It also avoids adding
-+ * special data for aux records.
-+ *
-+ * On success ab->skb will point to the new aux record.
-+ * Returns 0 on success, -ENOMEM should allocation fail.
-+ */
-+static int audit_buffer_aux_new(struct audit_buffer *ab, int type)
-+{
-+	WARN_ON(ab->skb != skb_peek(&ab->skb_list));
-+
-+	ab->skb = nlmsg_new(AUDIT_BUFSIZ, ab->gfp_mask);
-+	if (!ab->skb)
-+		goto err;
-+	if (!nlmsg_put(ab->skb, 0, 0, type, 0, 0))
-+		goto err;
-+	skb_queue_tail(&ab->skb_list, ab->skb);
-+
-+	audit_log_format(ab, "audit(%llu.%03lu:%u): ",
-+			 (unsigned long long)ab->stamp.ctime.tv_sec,
-+			 ab->stamp.ctime.tv_nsec/1000000,
-+			 ab->stamp.serial);
-+
-+	return 0;
-+
-+err:
-+	kfree_skb(ab->skb);
-+	ab->skb = skb_peek(&ab->skb_list);
-+	return -ENOMEM;
-+}
-+
-+/**
-+ * audit_buffer_aux_end - Switch back to the "main" record from an aux record
-+ * @ab: audit_buffer
-+ *
-+ * Restores the "main" audit record to ab->skb.
-+ */
-+static void audit_buffer_aux_end(struct audit_buffer *ab)
-+{
-+	ab->skb = skb_peek(&ab->skb_list);
-+}
-+
-+
- int audit_log_task_context(struct audit_buffer *ab)
- {
-+	int i;
- 	int error;
- 	struct lsmblob blob;
- 	struct lsmcontext context;
-@@ -2185,16 +2238,44 @@ int audit_log_task_context(struct audit_buffer *ab)
- 	if (!lsmblob_is_set(&blob))
- 		return 0;
- 
--	error = security_secid_to_secctx(&blob, &context, LSMBLOB_FIRST);
-+	if (!lsm_multiple_contexts()) {
-+		error = security_secid_to_secctx(&blob, &context,
-+						 LSMBLOB_FIRST);
-+		if (error) {
-+			if (error != -EINVAL)
-+				goto error_path;
-+			return 0;
-+		}
- 
--	if (error) {
--		if (error != -EINVAL)
-+		audit_log_format(ab, " subj=%s", context.context);
-+		security_release_secctx(&context);
-+	} else {
-+		/* Multiple LSMs provide contexts. Include an aux record. */
-+		audit_log_format(ab, " subj=?");
-+		error = audit_buffer_aux_new(ab, AUDIT_MAC_TASK_CONTEXTS);
-+		if (error)
- 			goto error_path;
--		return 0;
-+		for (i = 0; i < LSMBLOB_ENTRIES; i++) {
-+			if (blob.secid[i] == 0)
-+				continue;
-+			error = security_secid_to_secctx(&blob, &context, i);
-+			if (error) {
-+				audit_log_format(ab, "%ssubj_%s=?",
-+						 i ? " " : "",
-+						 lsm_slot_to_name(i));
-+				if (error != -EINVAL)
-+					audit_panic("error in audit_log_task_context");
-+			} else {
-+				audit_log_format(ab, "%ssubj_%s=%s",
-+						 i ? " " : "",
-+						 lsm_slot_to_name(i),
-+						 context.context);
-+				security_release_secctx(&context);
-+			}
-+		}
-+		audit_buffer_aux_end(ab);
- 	}
- 
--	audit_log_format(ab, " subj=%s", context.context);
--	security_release_secctx(&context);
- 	return 0;
- 
- error_path:
--- 
-2.35.1
+Let's leave the mglru assertions in place for now and let's think about
+creating something more suitable, with a view to switching mglru over
+to that at a later time.
 
+
+
+But really, none of this addresses the core problem: *_BUG_ON() often
+kills the kernel.  So guess what we just did?  We killed the user's
+kernel at the exact time when we least wished to do so: when they have
+a bug to report to us.  So the thing is self-defeating.
+
+It's much much better to WARN and to attempt to continue.  This makes
+it much more likely that we'll get to hear about the kernel flaw.
