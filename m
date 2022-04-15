@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD4AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 00:02:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ADA9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 00:02:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347847AbiDOAEX (ORCPT
+        id S1347879AbiDOAE3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 20:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
+        Thu, 14 Apr 2022 20:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347822AbiDOAET (ORCPT
+        with ESMTP id S1347839AbiDOAEW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 20:04:19 -0400
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94DF16350F;
-        Thu, 14 Apr 2022 17:01:52 -0700 (PDT)
+        Thu, 14 Apr 2022 20:04:22 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD8A6350F;
+        Thu, 14 Apr 2022 17:01:55 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1649980911;
+        t=1649980914;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Ka6qQQskUc/bYspKrrZopLIlbaTgRjrO9/vj2k3mAsU=;
-        b=wp05x2nDGuHhLPy+P4GdOWff81+K1abp8o5tuqik6xqDvkyZ/oSb8zPKoJdbJXS0z26MwT
-        P8Kj2Z2Ek+0hQqQeoTDsZjIeeOR1YxkTgZRXdeu3c4v4QGRVFLSqd6ohvg8jDYxZ+1lpKV
-        dcMTGqq4kL0n/Bxm/VAcnLYnUTbCP/c=
+        bh=hmYLxb1+mMr6jmOwnIg2k48EEFJdR9ToYiqAQACrt3M=;
+        b=nfzHyoF3QlG0i3ONCxWOVkP22GqWy34FQSUolZw34J6jzLgX3HnZJW//B8a7oIXF18S5Lj
+        6q+QBKlYxNFwuJhjmv06yLBxj6h0wbsU2Q7lC7w3ogchvkCNC4Pfke1EFRxtDGdTwuCZh+
+        8BDA/ZA6jVpPFrWjLd2z1e5nwQ6yOdw=
 From:   Roman Gushchin <roman.gushchin@linux.dev>
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Tejun Heo <tj@kernel.org>, David Vernet <void@manifault.com>,
@@ -35,10 +35,10 @@ Cc:     Tejun Heo <tj@kernel.org>, David Vernet <void@manifault.com>,
         Michal Hocko <mhocko@kernel.org>,
         Shakeel Butt <shakeelb@google.com>,
         Roman Gushchin <roman.gushchin@linux.dev>,
-        Chris Down <chris@chrisdown.name>
-Subject: [PATCH 2/4] kselftests: memcg: speed up the memory.high test
-Date:   Thu, 14 Apr 2022 17:01:31 -0700
-Message-Id: <20220415000133.3955987-3-roman.gushchin@linux.dev>
+        Zefan Li <lizefan.x@bytedance.com>
+Subject: [PATCH 3/4] MAINTAINERS: add corresponding kselftests to cgroup entry
+Date:   Thu, 14 Apr 2022 17:01:32 -0700
+Message-Id: <20220415000133.3955987-4-roman.gushchin@linux.dev>
 In-Reply-To: <20220415000133.3955987-1-roman.gushchin@linux.dev>
 References: <20220415000133.3955987-1-roman.gushchin@linux.dev>
 MIME-Version: 1.0
@@ -49,55 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After commit 0e4b01df8659 ("mm, memcg: throttle allocators when
-failing reclaim over memory.high") allocating memory over memory.high
-became very time consuming. But it's exactly what the memory.high
-test from cgroup kselftests is doing: it tries to allocate 100M with
-30M memory.high value. It takes forever to complete.
-
-In order to keep it passing (or failing) in a reasonable amount of
-time let's try to allocate only a little over 30M: 31M to be precise.
-
-With this change test_memcontrol finishes in a reasonable amount of
-time:
-  $ time ./test_memcontrol
-  ok 1 test_memcg_subtree_control
-  ok 2 test_memcg_current
-  ok 3 test_memcg_min
-  ok 4 test_memcg_low
-  ok 5 test_memcg_high
-  ok 6 test_memcg_max
-  ok 7 test_memcg_oom_events
-  ok 8 test_memcg_swap_max
-  ok 9 test_memcg_sock
-  ok 10 test_memcg_oom_group_leaf_events
-  ok 11 test_memcg_oom_group_parent_events
-  ok 12 test_memcg_oom_group_score_events
-
-  real	0m2.273s
-  user	0m0.064s
-  sys	0m0.739s
+List cgroup kselftests in the cgroup MAINTAINERS entry.
+These are tests covering core, freezer and cgroup.kill
+functionality.
 
 Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
-Cc: Chris Down <chris@chrisdown.name>
+Cc: Tejun Heo <tj@kernel.org>
+Cc: Zefan Li <lizefan.x@bytedance.com>
 Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: cgroups@vger.kernel.org
 ---
- tools/testing/selftests/cgroup/test_memcontrol.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/cgroup/test_memcontrol.c b/tools/testing/selftests/cgroup/test_memcontrol.c
-index 00b430e7f2a2..9c1f19fe2e37 100644
---- a/tools/testing/selftests/cgroup/test_memcontrol.c
-+++ b/tools/testing/selftests/cgroup/test_memcontrol.c
-@@ -607,7 +607,7 @@ static int test_memcg_high(const char *root)
- 	if (cg_write(memcg, "memory.high", "30M"))
- 		goto cleanup;
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d5731c03a485..44dabe0145ae 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4996,6 +4996,7 @@ F:	Documentation/admin-guide/cgroup-v1/
+ F:	Documentation/admin-guide/cgroup-v2.rst
+ F:	include/linux/cgroup*
+ F:	kernel/cgroup/
++F:	tools/testing/selftests/cgroup/
  
--	if (cg_run(memcg, alloc_anon, (void *)MB(100)))
-+	if (cg_run(memcg, alloc_anon, (void *)MB(31)))
- 		goto cleanup;
- 
- 	if (!cg_run(memcg, alloc_pagecache_50M_check, NULL))
+ CONTROL GROUP - BLOCK IO CONTROLLER (BLKIO)
+ M:	Tejun Heo <tj@kernel.org>
 -- 
 2.35.1
 
