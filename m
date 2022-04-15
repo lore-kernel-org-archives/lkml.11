@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6176CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 678C3C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:31:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353504AbiDOMdr (ORCPT
+        id S1353540AbiDOMdz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 08:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59996 "EHLO
+        Fri, 15 Apr 2022 08:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353824AbiDOMdW (ORCPT
+        with ESMTP id S1353840AbiDOMd0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 08:33:22 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF102F03F;
-        Fri, 15 Apr 2022 05:30:53 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id 11so4757131edw.0;
-        Fri, 15 Apr 2022 05:30:53 -0700 (PDT)
+        Fri, 15 Apr 2022 08:33:26 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520302F03F;
+        Fri, 15 Apr 2022 05:30:58 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id ks6so15187167ejb.1;
+        Fri, 15 Apr 2022 05:30:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3KCYsQY/y5IS+uLLSbczPyROpjTi5JnKwjdboy6JQyM=;
-        b=c8tJ2FSSPaEqVRtRhXYc8sgQTfYtNFcB6CTG3Ae0iCHlMVPDi0c3SICkTbZwepYo4p
-         xU3X93yaYi8aAlcXrdADKu2LXuxPn/GR7oL66fnPlgJa7OmOINJ/xEIQL+6hYZ8yUSoQ
-         7Xak+mMuwkZw1URcphJpYDVHc7+nXeWht2xleoSi85Cdjpf7ai9zz6uYmZNGppEYkvFL
-         aEG6B9HNWYFeXTxuwGQSdH8x7YqoiGZ719kpFy5Idm1Rx1wMNcnUOLyT/LzIulvfprEo
-         plYsODJ40dQzFvq11UTfXkDNAIZmPJ/Zxw9fHFQsIuJIA/bdMy2HR30antzmBYlQTAng
-         xF+g==
+        bh=7YEqjlB8bsXZ45gzNCMwH2JxmTxm4dwtRKumhhyyThw=;
+        b=T7ylaXjrwRyWiTc0Rk/AGiAUhp47Dwm32Ks4vuxph9an+0z1xHj59O1MX/r1Hx67px
+         8+EOa0zPfsbd+6OeFm/ZLRXrOmwVi1n/z4+OC6/ShauOZtv8ETJJ6UUxs8zdoMTpYvlv
+         f7d6Sa/nHrWnCc3tNiQD0aDmpEQfg3JLMAu3+0BAUPK9JynfpPu+cxUVCO1dR/fCVadO
+         z1XrXzFIxZ7GQUxqMlNe6nGA0eBdmoz6K/xJ7ayYwY2XLh5s2/4Oc7u6QgePCmUCS6yJ
+         HONc9MP2eI2HzyLJLql9Kmauz4rVI6HzYhE3fDEFu77+bIGGjvjumr7yEVn3LlsK/PEt
+         atTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3KCYsQY/y5IS+uLLSbczPyROpjTi5JnKwjdboy6JQyM=;
-        b=VJD+KLJSEFC0r13kFaEQwNk7tXUO1YiLKqUuAtdBMzV2t7E23EOWjUCJ909fVawzUf
-         M28qv/ipqPh8d2d720OkTDzsYwJGDzEroMooBSbyzlnJE/8mgQfEXrvRIB5va5t//EOA
-         3oIyJFWsqDXMWVr+SJGqFAs74yMjMcuRBi7j12ylslko1D3TWPdp+K3syXh2gm4P9k+h
-         2Wbmbj1dO6A/DAQsT/lMRP+x3wRJo81gBTNK0N5gbIZj5332i6roFjxcCOqUCEI+fDmG
-         soOAsc57nqnqQbgFnuUxNI3B8275VrolzLdQdvVQANUekJQ6m30HbvO7Zym6uzmnUzZh
-         v7Aw==
-X-Gm-Message-State: AOAM530EjQxoZmnWzhz/3Nww2nzJ5KGZs0tWH6Q1yRpaBtysTttu2ewW
-        Um+KGDu+Vu1t8v+IzuAWfvo=
-X-Google-Smtp-Source: ABdhPJz3mJeDYdvdKpfwwqP6ynW2oMh4u6NHyPRzN+YmogUpokwo+g9Jqk9X+ozi9dyyRi0vEERRww==
-X-Received: by 2002:a50:d592:0:b0:41d:6bae:bd36 with SMTP id v18-20020a50d592000000b0041d6baebd36mr7951369edi.221.1650025852122;
-        Fri, 15 Apr 2022 05:30:52 -0700 (PDT)
+        bh=7YEqjlB8bsXZ45gzNCMwH2JxmTxm4dwtRKumhhyyThw=;
+        b=8RmfgT+xq4jr7qUQo1NTNcKjGYMcMNOAzNDo3HNgCb1kUK5IAyJVVD4yz89AVOKZfV
+         JmXIC0t2IOOsfRd6uwn/+wyH981tutLaIs9D7Od9kmCO5Yd1/pMu9I2YXkxF2Il61U2+
+         74sY6t7pswaXpZoh8TMFx7XKWaAbd7Smdp/dep1MT1pUUKgO/rmcx9xsT1slNlDgn8LU
+         BQNKRT8e3Cb6tltqsz64B4Z9CCre0ZdrnxqJ8gk5JwtPfZGj49mfZ1eMVnlPoWOV4kp2
+         tGrNzs9Nli3LAxTA/SjGFfwC4DqzfT0hgpOxvqBBcdUeI+i8jnQBPpMDHqSoMTwz0FgK
+         vsGg==
+X-Gm-Message-State: AOAM532gCithooOotzcMo6snw6aWdIbXbJLwPXn4juuE79sd/NSHsVXj
+        6vl/lyo8eUb/KXvo5fsnA94=
+X-Google-Smtp-Source: ABdhPJyUUJDEq8iUjmbpZnPlBcAN+S98Ospicf2P4TBMAkg0qLhJ8vZC0xGS1LIiK4ovBtz3ZS4QfQ==
+X-Received: by 2002:a17:907:72d5:b0:6ec:abf:dc87 with SMTP id du21-20020a17090772d500b006ec0abfdc87mr5374442ejc.120.1650025856776;
+        Fri, 15 Apr 2022 05:30:56 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id bo14-20020a170906d04e00b006ce98d9c3e3sm1649533ejb.194.2022.04.15.05.30.50
+        by smtp.googlemail.com with ESMTPSA id bo14-20020a170906d04e00b006ce98d9c3e3sm1649533ejb.194.2022.04.15.05.30.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 05:30:51 -0700 (PDT)
+        Fri, 15 Apr 2022 05:30:56 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -86,11 +86,10 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         Mike Rapoport <rppt@kernel.org>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v4 05/18] net: dsa: mv88e6xxx: remove redundant check in mv88e6xxx_port_vlan()
-Date:   Fri, 15 Apr 2022 14:29:34 +0200
-Message-Id: <20220415122947.2754662-6-jakobkoschel@gmail.com>
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: [PATCH net-next v4 08/18] net: sparx5: Replace usage of found with dedicated list iterator variable
+Date:   Fri, 15 Apr 2022 14:29:37 +0200
+Message-Id: <20220415122947.2754662-9-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220415122947.2754662-1-jakobkoschel@gmail.com>
 References: <20220415122947.2754662-1-jakobkoschel@gmail.com>
@@ -100,38 +99,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-We know that "dev > dst->last_switch" in the "else" block.
-In other words, that "dev - dst->last_switch" is > 0.
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable instead of a
+found boolean [1].
 
-dsa_port_bridge_num_get(dp) can be 0, but the check
-"if (bridge_num + dst->last_switch != dev) continue", rewritten as
-"if (bridge_num != dev - dst->last_switch) continue", aka
-"if (bridge_num != something which cannot be 0) continue",
-makes it redundant to have the extra "if (!bridge_num) continue" logic,
-since a bridge_num of zero would have been skipped anyway.
+This removes the need to use a found variable and simply checking if
+the variable was set, can determine if the break/goto was hit.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 3 ---
- 1 file changed, 3 deletions(-)
+ .../microchip/sparx5/sparx5_mactable.c        | 25 +++++++++----------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 64f4fdd02902..b3aa0e5bc842 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1404,9 +1404,6 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
- 		list_for_each_entry(dp, &dst->ports, list) {
- 			unsigned int bridge_num = dsa_port_bridge_num_get(dp);
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+index a5837dbe0c7e..bb8d9ce79ac2 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+@@ -362,8 +362,7 @@ static void sparx5_mact_handle_entry(struct sparx5 *sparx5,
+ 				     unsigned char mac[ETH_ALEN],
+ 				     u16 vid, u32 cfg2)
+ {
+-	struct sparx5_mact_entry *mact_entry;
+-	bool found = false;
++	struct sparx5_mact_entry *mact_entry = NULL, *iter;
+ 	u16 port;
  
--			if (!bridge_num)
--				continue;
--
- 			if (bridge_num + dst->last_switch != dev)
- 				continue;
+ 	if (LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_ADDR_TYPE_GET(cfg2) !=
+@@ -378,28 +377,28 @@ static void sparx5_mact_handle_entry(struct sparx5 *sparx5,
+ 		return;
  
+ 	mutex_lock(&sparx5->mact_lock);
+-	list_for_each_entry(mact_entry, &sparx5->mact_entries, list) {
+-		if (mact_entry->vid == vid &&
+-		    ether_addr_equal(mac, mact_entry->mac)) {
+-			found = true;
+-			mact_entry->flags |= MAC_ENT_ALIVE;
+-			if (mact_entry->port != port) {
++	list_for_each_entry(iter, &sparx5->mact_entries, list) {
++		if (iter->vid == vid &&
++		    ether_addr_equal(mac, iter->mac)) {
++			iter->flags |= MAC_ENT_ALIVE;
++			if (iter->port != port) {
+ 				dev_warn(sparx5->dev, "Entry move: %d -> %d\n",
+-					 mact_entry->port, port);
+-				mact_entry->port = port;
+-				mact_entry->flags |= MAC_ENT_MOVED;
++					 iter->port, port);
++				iter->port = port;
++				iter->flags |= MAC_ENT_MOVED;
+ 			}
+ 			/* Entry handled */
++			mact_entry = iter;
+ 			break;
+ 		}
+ 	}
+ 	mutex_unlock(&sparx5->mact_lock);
+ 
+-	if (found && !(mact_entry->flags & MAC_ENT_MOVED))
++	if (mact_entry && !(mact_entry->flags & MAC_ENT_MOVED))
+ 		/* Present, not moved */
+ 		return;
+ 
+-	if (!found) {
++	if (!mact_entry) {
+ 		/* Entry not found - now add */
+ 		mact_entry = alloc_mact_entry(sparx5, mac, vid, port);
+ 		if (!mact_entry)
 -- 
 2.25.1
 
