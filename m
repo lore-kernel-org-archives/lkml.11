@@ -2,175 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B045C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EADF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:57:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354716AbiDOOxf (ORCPT
+        id S1354725AbiDOO7h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 10:53:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42572 "EHLO
+        Fri, 15 Apr 2022 10:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354704AbiDOOxc (ORCPT
+        with ESMTP id S1348301AbiDOO7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 10:53:32 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87EF9B2463
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 07:51:04 -0700 (PDT)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23FCYDfV029074;
-        Fri, 15 Apr 2022 14:50:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=aXEg0WRk+hLB1DNgV8lqX6PgqCnIisyZ50gFmublsIk=;
- b=sin7j+WulEodIwNiM+a9Jc7MoHqV2APeLboElXiBDLrOAhteFhr1p/0/mm9Kga2Fcl8S
- ypPOp7511ZkeDxEwCYDSUFTbF8LD6UFO13FTvsZSyxI5Uu3GIiG7X5Ij8rhN8sAsEbvz
- ZufCsjqP2jPoY2nrBRHTaJOIdm+/vcYlHPC8/Pr5c4seyZE2XfauuwoJ6LjxfGs3z8c4
- f780oiIr3FpjQS4DmhcQ+skbPt894vK7BOKdhZ8QyyvrLR+wkeQF/jXKO7+pSyAaKvBn
- x280nHRASaCA7ykCpZPC74q8FlVdlC8wbCRJp/u+l8OkoOpkjKy+MSbKCTa34fVMxuqh 3Q== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3fb1rsfdsm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 15 Apr 2022 14:50:11 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23FEkV2Y002558;
-        Fri, 15 Apr 2022 14:50:11 GMT
-Received: from nam04-dm6-obe.outbound.protection.outlook.com (mail-dm6nam08lp2049.outbound.protection.outlook.com [104.47.73.49])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fck15y1f8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 15 Apr 2022 14:50:11 +0000
+        Fri, 15 Apr 2022 10:59:36 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2088.outbound.protection.outlook.com [40.107.244.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6C3EA9;
+        Fri, 15 Apr 2022 07:57:07 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KtMK1lUzArPhD5nK3G9eKUiyD15IPjruLwwd6PNXgy/Fb3HURl2UlJKvnG7UzpmDSESi7Q4+9yN8NWBY6JUpxPqsHyD+JQAwLzxX/OCX2Cd1R2acUXXVUTACe94h6V9UlxKr9sWb6JAnFwBWW3UZEA2/a1jMbSbKW+8Ep1SneKQNd2ezx5ami6k9ZKRhjgEja4HkrTY9rEVXaaYksFEX+jbyz4DigQ9PFxc8sXnM9nUhvPf9q4O2jeg0L+JNgaDKrqITy+LptmlamtHPBoYnYNJgApWKLDbE+v37hPPngOzPU5WrneTKFrGf2Ut3VEAylSuoT8kMHRLk+N+42N2gCg==
+ b=OhcQdhZydir/xtfycffwLRgcRUbhe5ZgT7Uxm//wLmRkfdoqTi7hMub018lCem8l9UidpUBbkALi07go09HRTWriaRk7j2BA1H6N01oxXlyFhjlply+VNMvQ83YOrEboOHy29sbi+v+3LUJiM3l8LIU+gTJYazMUvK+pWjE/qoazmfwJHuq4Z/HItvHn2PW39sIHDHoBfggeSN3CjMl1pEROvzjWEZsFeOaJ1dBtb2LXL+xgyWjiG8exEzDNy3RWPOABf9MSATYxPvRq4JUo9iI4fAg6ithfd7DsN5DjCyReByxAPs1ef16yw4N3xJDvvQ5haNF9bGSImaJ3Uqp1Gw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aXEg0WRk+hLB1DNgV8lqX6PgqCnIisyZ50gFmublsIk=;
- b=Y9VcLSntlwFNne4Kh0KX55k3L7M9NhqbVCiJIU4UP+zwfsPvfNigGMR1LEBd4mGilUrwGeecMPMti6fTk1qixZ0ANfiQV63jGGMBkjQmnEbF4BFkQ4rhb/dCdF8ZMee5hYy2kAJzKGTNFfVDYWgLfjBINu9CNVqeOqwrRptCY3LWQwltSRaoAdKjbZ9j57s9CqyHbqOJWlXhdFT0FNo+T9zlm1ix/hBvOZy8cjr84lMdkT8+QlnWHhDoSHAUdsjvHll74lbWQyhfompbuLMZWer9hyLgczfZN2WuzzJZLAbEUFfZK8HXwAIrN4lvb3hhAh/yTWhEUIMiElYDLOLakQ==
+ bh=WlB9YJtcTZSrrRDSWiANCa+YPbH3Ui81E7IjteIOSmM=;
+ b=goGI0yNVnuDZee7WN+LJXGRYpNFTne1oyCua63GJF40Pmcn1vYcbBGezDP3bSAat1CZu3YfEgAkne++D8KjKiRJx2i8s9k+GwdvhCuI9UDE4IG9zcDGlFHyV8OZUFk7Rt7o7LAjkeTZPfTbEik6HlNLvrAWpb7U9M5tkArW3msmx/07+gZ3lIcltbHowAo0W2N/09/7bcI7sp1tpXbxAm21FJm1aqZF48fg7X+pdwfnkQm2pV0oWFGNCCCfy1GCzDMEUmBENLo7/kmQLvt92gXEqg7E+G/fwY96hCQOFkjoklvhiXXMTHBIvimKqgQaUEc3rmggYnwz5x+lrYR+Xsw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aXEg0WRk+hLB1DNgV8lqX6PgqCnIisyZ50gFmublsIk=;
- b=FmQhkYvUonw1qyYx8/ZJscHx7yAvl6zz0ltv7xLjr23fBqxgCd9UEI/Yi1VDpxf36LNm4/VVSgtvfoh1+ayaorbV0pr7lBdQwECn8XGhyqST3M3rPOZw8F22QSYEpHcKuicvyN1DzTH5OBk+/VnIMz6USEBzIHf/i/Yi4ftvVt4=
-Received: from CH2PR10MB4344.namprd10.prod.outlook.com (2603:10b6:610:af::19)
- by MN2PR10MB3502.namprd10.prod.outlook.com (2603:10b6:208:118::18) with
+ bh=WlB9YJtcTZSrrRDSWiANCa+YPbH3Ui81E7IjteIOSmM=;
+ b=yDtkKTiXq3hj9k50uqHrT7gnm+PNedqf/uw4gEChwg90Lt7aRCoRZUPIxi/+6KFwtKEqE0D+7p6Cm7CsSDHH230mZb7cAtGsqm9Pe8iKz1Fot6fYEFkXY/FQKlOnhonLj1JJ8ZRPygl7YD+Z9HQDCc0dNjD2soMVJqB9g46xaEw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3108.namprd12.prod.outlook.com (2603:10b6:408:40::20)
+ by PH0PR12MB5499.namprd12.prod.outlook.com (2603:10b6:510:d5::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Fri, 15 Apr
- 2022 14:50:09 +0000
-Received: from CH2PR10MB4344.namprd10.prod.outlook.com
- ([fe80::2143:b691:57c5:7643]) by CH2PR10MB4344.namprd10.prod.outlook.com
- ([fe80::2143:b691:57c5:7643%7]) with mapi id 15.20.5164.020; Fri, 15 Apr 2022
- 14:50:09 +0000
-From:   Qing Zhao <qing.zhao@oracle.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-CC:     Kees Cook <keescook@chromium.org>,
-        Bill Wendling <morbo@google.com>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Jose E. Marchesi" <jemarch@gnu.org>
-Subject: Re: toolchain mitigations plumbers session
-Thread-Topic: toolchain mitigations plumbers session
-Thread-Index: AQHYUEbqQRHvn8TmMUa7Bz+ctF1QuKzxD6SA
-Date:   Fri, 15 Apr 2022 14:50:09 +0000
-Message-ID: <3DE35A81-1FC6-4EC7-8F3A-B395B576644D@oracle.com>
-References: <CAKwvOdniB-+F37ygZhRytBGVFjwnukyOpmoiJTCeusMdb=6_=g@mail.gmail.com>
-In-Reply-To: <CAKwvOdniB-+F37ygZhRytBGVFjwnukyOpmoiJTCeusMdb=6_=g@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.120.23.2.7)
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 94af58f6-f0d8-42af-79b4-08da1eef3cde
-x-ms-traffictypediagnostic: MN2PR10MB3502:EE_
-x-microsoft-antispam-prvs: <MN2PR10MB3502859AA120B5623874984280EE9@MN2PR10MB3502.namprd10.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: iGolUEQdqY9Pf3pRVC3HujvHJIZmJ4ebBW+O7eu1j/7TIBA7J4BSiMVBEuZZ0zQoQxhPzy2bJCPU0geWJ6J2UG5e37nEr9iHPiYxY35Zo3iKroM4au/xWGq2qelmFWfUwOILvTWl5sCduBMts4u6sYkYKJFxnBkgbgsC8rMc8p8Gl9woooOmT71XTLvJ1Vi+qsqBIOQsbDV+NJtdoa0qiGGTJYCueQHp4HC7f8I8UGNnAwnQcUp70nbTxZdITHnciBmt/R27hv/i8FfMd18bcRrzUgFRZTG8HruvVNdCnTF53DYiTedzAEVEPEsNAVlbWMu3J6YeVAQ6DWw/LbLsisx0eovNZz80dJVh5aTqGUgg71R2K+29flm4tjFIqun3E7PibBgtBtYuzkGn0UKwnclNL2ZVe6Uy1Xa7OEyhEqCcyuV+ak6UFzI/ck9DiVq+NA93fOZ1YCJwVdcKb9s1xdU7qpg9+XXa0teBPUEj4/m6zci9yhKtGdcjUXxuPwlw1xPzMMbq8zv2aVdPxWtkebfajbeETs4yUH4I1YlwxZODYhEaKiM7Mcv7sGEeU9esTdnPxOwadaGOT/oZ7tnn9MPJYDAGyOVNbSxHFopjhrSk3/UWsXJw/uM5JyU/Zz83FnLeWfahsvVCFlQm1BBk9WiAxlLsuz9KgHtf6v0WDagX8HkMFCkhY3z4arFRTTXdqftm+2SMwZEbPAxLu78JOUkw96jfjq8QWpqWCMJkEnOMeW344czQga3RtVi/MWvf
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR10MB4344.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(5660300002)(122000001)(66556008)(4744005)(44832011)(38100700002)(8936002)(91956017)(8676002)(6916009)(66446008)(54906003)(33656002)(4326008)(66946007)(64756008)(66476007)(36756003)(316002)(6506007)(508600001)(86362001)(53546011)(71200400001)(76116006)(6486002)(6512007)(2616005)(2906002)(186003)(3480700007)(38070700005)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?aGcrMnhSRjg1eFhLOEtQVG9MdWhIWlRPRjMrekJDSGgzSG9OL1k2NHBCR2lm?=
- =?utf-8?B?SUQ5VkFsSHlxTHYvakY5Z1N4NGtZZUVVSVJwNEk1UkR6RzV5Vis1Z0ZjU2dk?=
- =?utf-8?B?c1hEejhpanNmY1BkN1haa0N3Y3hUQ0tIU0FLazBnQThUczIyczhzbzVNOVl6?=
- =?utf-8?B?eEU0bkphcC9FSEdxYVhVQ2kzOUgycklBcE1SM2dBWklOZkNIY3IrSkNva1BH?=
- =?utf-8?B?SGZlYXRZczVOY0pUYm1zS3Fhb2tQdEI5ZHhRdEc1OU05QUYxTkFTOUFQeTNi?=
- =?utf-8?B?MzVnV09kTi8xZEthd25pcEtpaUVuN3JBYTM3eTNKZnpmZS9BSUlHZU8rZE50?=
- =?utf-8?B?YzVXbGNvMU1ZVkFKSnQ2RlR0cXlNR1ZkWURub3hkV2c3K1ZRbWFUUDlGZW5m?=
- =?utf-8?B?d1VvWTVIUDJyZU9LR0tsSnJhWktCYUFQRnQ1N3NkVkNzVmVCajhsbitIM1lN?=
- =?utf-8?B?cVdWTFoyUHdwTUY3aDdkYStwT1plSTZaK1BMRnpVQkJaU1lwQUI0Ujh0N1VI?=
- =?utf-8?B?SWVyQm1XcFFyd0FoL2hDbExGNzJRbjhEVzhQN293WnBQdnE1YVFwSnNEOTBY?=
- =?utf-8?B?K1JMVkc5SnJwdFNSQ3NoeCtiZ3VNbUFxZDZhV2N1RThzeUtFRGlac3BkTjky?=
- =?utf-8?B?UmJ3bUhsK3A3NXl5VmFVeWxsZFNVNEk4MzlGYTExTmJySDFYRXlpRTh4TGFP?=
- =?utf-8?B?bE9jQjBZbXdZbFJOblZTODFmTVRBVEoxMDZ1WG5vemE3ZDFBdkJ2K0VMOUQ0?=
- =?utf-8?B?ZXFURVh1RjgvdU82UGJZU0I0RUtaaXBhOFVpNUMwdE9MbGdNSW04c2JRNFUx?=
- =?utf-8?B?UDRITml2ekl6M3RWNTVLTXNnRVpIdGM1UHFPM0JPTGJGVjVJWGw4MTh0SlRi?=
- =?utf-8?B?K0pxVEZwYUJQNVR4NmhtejdRV0pVd3QrRmNwcm1Vem8wcXI2dUhJUk0wcTVU?=
- =?utf-8?B?WXBDZEt6aGs3Yys3UDQrb2ZaSEp4YzdwZnAxMWZZY0xIZTNJbVdZYkkzcFVJ?=
- =?utf-8?B?Z3k4blNVbGFOZGxuaHFObnhacGE4Z3BpOXZ4dkJpeUtkRC9HVnV6NkpobEs5?=
- =?utf-8?B?TWZYTnBCRmJLQWlSTzA2ODNvZjdadHAxZXVDUzdLb0ZXOGQxT01ScVBoNm85?=
- =?utf-8?B?elFsaGRpeW8relk1a2dqZFhVUzZOcUtzaVVVaVRzSkFLWEREOFN3bVFkbGNZ?=
- =?utf-8?B?ZTZzemVRVjNjbGRYMkNUMWZNUjl6L3FzbW5TVUZhb092Smovdm40Q2Y4MXFo?=
- =?utf-8?B?WGFiU3JaYmRpakJqTjVBYnlhUHlkaUFvb2hYZFkxZDVQYVJUUXdqTU9yeEFr?=
- =?utf-8?B?NnZEdDBoaGUwdjRkOEcxaC9ERjdqcnR0R0todTVGMXA3M3k2WmZQTVhpTVhw?=
- =?utf-8?B?UVhnR3cwNlRMSVNFdVVtaTBHWGxCM0t4cU92TzBRWTVTM0d0T2hTVzJPbjdR?=
- =?utf-8?B?U2FtUWhPZnJ4Sk50b1dyT2JuQlN0WXhyMWcvMkI1akRnSXZTeHZOTllVWmRw?=
- =?utf-8?B?MFFGOC9TZnVvZXlraXlzWVdzM0REVXh1MGVGT1NvS2gxUkFxRS9tMFlKVStp?=
- =?utf-8?B?bjhOSGVYQW0vY01oUFVuWExoVlFDTlM5L0FOK2U2Z3VoL2drMS9LZlorSHNv?=
- =?utf-8?B?VjNWMkJ3SjI3Z0F1RU5oNDgrQ3RmQ0tQdVhPdzJYckFSLzlFN1lUZmpHWFpi?=
- =?utf-8?B?YmlHMnBEY2NSdzMvTVZITVB1OWFRMnErNnVkUUp2bXpHMEJuQ1RUczQxVTRO?=
- =?utf-8?B?Vk1QN0J6d1Vja2UyMllZUFdoWGtyUWFCcnpQT1lOVlRhYnlxSUtvTmpXeHg3?=
- =?utf-8?B?Nmk1WWxnT1g3TVF2dFFZLzBBT3VSOHJWT0c5MTNRUjlFQUl0eGlaazI5b3FK?=
- =?utf-8?B?QzFwZ24zQ1Vkb2pEY2tvQmdSKzZuVDZyeEtwS0xpK1ZSTnhPV3Y2TkIrTmlr?=
- =?utf-8?B?eHZSYS9ZRE1CZmFxRGoyVncyeTJlTlNBTUVDNlJEMytmVDJvM0JvdnloMGxx?=
- =?utf-8?B?VmV0TTl4R3hrWGNESE05V0lqTWFoZGdGZ1Vjb29UeWw0TU8vTC9qa3ZwQU5v?=
- =?utf-8?B?WThlaVIwNWs3WFdxK284bXlaSVkrWDZ5bnV3YUZxblg2UlliY2hxWkZoelgy?=
- =?utf-8?B?azJack1ITWZDL3p4TkFqVUZuUU5mbnBqUWxRQ0FJay9KcVJiazYrc0doTDRL?=
- =?utf-8?B?S01PVitYa2xUU1d0TTRiT2EwMWlKRU00am01SHdVWXFnUGk5OEZRVXFIT2JU?=
- =?utf-8?B?cWhLVTdIeXdZVlFLbkJDa2IrMUU4NXdMK3FFTWZFbXZQOEhPZDhsS0RlaHRM?=
- =?utf-8?B?Nm5SWkxpYXhUTGw4ZHNPaHYxOHpScStqci9ha1JyeWJaSzVqL083a1NKRUhN?=
- =?utf-8?Q?km0AA8Y+0FJ5ImGu4fFPTkwICsSuYIvYr+ITK?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <54CD3F1E1D5914479C63C6D80220F19F@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ 2022 14:57:04 +0000
+Received: from BN8PR12MB3108.namprd12.prod.outlook.com
+ ([fe80::a941:fe42:23a5:c501]) by BN8PR12MB3108.namprd12.prod.outlook.com
+ ([fe80::a941:fe42:23a5:c501%3]) with mapi id 15.20.5164.018; Fri, 15 Apr 2022
+ 14:57:04 +0000
+Date:   Fri, 15 Apr 2022 14:56:54 +0000
+From:   Yazen Ghannam <yazen.ghannam@amd.com>
+To:     bp@alien8.de, tony.luck@intel.com
+Cc:     "Luck, Tony" <tony.luck@intel.com>,
+        Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        x86@kernel.org, hpa@zytor.com,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Subject: Re: [PATCH v5 2/2] x86/mce: Add support for Extended Physical
+ Address MCA changes
+Message-ID: <YlmHtlKABn9W0pu5@yaz-ubuntu>
+References: <20220412154038.261750-1-Smita.KoralahalliChannabasappa@amd.com>
+ <20220412154038.261750-3-Smita.KoralahalliChannabasappa@amd.com>
+ <YlakNe012hhErszh@zn.tnic>
+ <YlbZ1k1cT1FVJj4W@yaz-ubuntu>
+ <YlbkCK9LU2KdXZUG@zn.tnic>
+ <YlbzbZO6AvxOqQb/@agluck-desk3.sc.intel.com>
+ <Ylb3/4oi6KAjdsJW@zn.tnic>
+ <YlcnN2q9ducdvsUZ@yaz-ubuntu>
+ <YlflJfyQR/j/eRkn@zn.tnic>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlflJfyQR/j/eRkn@zn.tnic>
+X-ClientProxiedBy: CH2PR17CA0025.namprd17.prod.outlook.com
+ (2603:10b6:610:53::35) To BN8PR12MB3108.namprd12.prod.outlook.com
+ (2603:10b6:408:40::20)
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9e300766-f173-4a56-ba4d-08da1ef03414
+X-MS-TrafficTypeDiagnostic: PH0PR12MB5499:EE_
+X-Microsoft-Antispam-PRVS: <PH0PR12MB54992EA8D466C0F18332AEF0F8EE9@PH0PR12MB5499.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: J4ktLKNrAIHltq2tnrYtOGGc9n/IxBjcnjq9bl854vQ2ytgk6o+y40rCCb8/m5dNwt+kYU9vddi+czDLB0hwPlgPnwk631FJCqKPQ+flzZ+LKFDpAnJ4piTW9D0XtzHdqiciKGzsCbsIgEJmWaxI3IedCGXcOi4gw6sZGXVyN8Q2+11GWAskdo9UN5PKhYEUYdkti9hMDtQxs7FbLF6gKrIkmChXZ14sQxtIkhbYPok1JeiPswLx2wBmb0mikFazDR7nLriMznLUCEBiN7bu1/CLKd/5pA3HoReEDp4Rktxbcm5DQqmbgpKZadvGPxJStcyyCBvUY89zlG4njB4OdlLI9CmUrsNasuZ0Ko0WUuXtWNoCMiRyTzAlh3BBmMxzZq9J0uyfOJLVgGSWOurG64ldHPn5NqO/FSWm+4oKXKpcGHKex9hOIcK+xU4h4FZwQzIUwWlWdoVoaKJbTgNTlxwKH/FCGSrhzVrmb3zqCUZJhoj7UF/NfkJGU+TERl9HX6kZZgQ6iYI9JiUWWeHgBFbOPfNRXJEEozj0UtYMObR6C3wZgNO9vzdSlRC/YeSg7U+wbtGzEFCcOazD9yySt2iwGEkCyjO3W32YVICRZ6N3av5EhEs+fJ04jHxIHxAMs4MHyGGUGzO3cnmzUyCCleGvPGaYPXL4ViPySQk9CeHoQozHjMyvpQrQ9xsP1ScjvzR92S03Mz0uy2o+VxlkLg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3108.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(86362001)(33716001)(38100700002)(8676002)(4326008)(6486002)(508600001)(44832011)(6666004)(5660300002)(316002)(66556008)(8936002)(66946007)(83380400001)(66476007)(26005)(186003)(2906002)(6506007)(9686003)(6512007)(54906003)(309714004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?R9gTJy1H/9HuerZ1NT8q1XEACy+r57Ib/ypBL+FxzBaO5PyF6KbDQqD6g5wU?=
+ =?us-ascii?Q?nZ9+grEet6ibb0qJJj6ytnaJ+yJUaLmK4xzzoz38gMkDcu+w7R9o/M0JFfJm?=
+ =?us-ascii?Q?t85OtaUaZipzj6hS8UchmcIyArMm7BMkOR7Mf1Z+04aJsOCMCB1X0fjbM/GI?=
+ =?us-ascii?Q?vqcHFFUopHRtD+ndElDCtJWiYtCl+CTxLP/5GXfqPTqFljyLj6zkz1xwRgZC?=
+ =?us-ascii?Q?Xp8+PbsTWyWB/gYcmlvstLAsgnW+SOLeXYZjcuVbkPqba89/sLym8A4ApBWi?=
+ =?us-ascii?Q?ci2BBVLbG/vIX6CBS/lc9Dp2BxvPrY2QbO3f7u/XxP/l30kRZij8Jkt+SlMu?=
+ =?us-ascii?Q?8b1B/ji9Hv/8wcPZ8G25OnWvUKa4D7rSVRLu9HADWzlYEZeC/eMOlCc8c1pw?=
+ =?us-ascii?Q?w7RrpOI77racGpwqUTX14o9PP66t5WfAeAJ4xHkmGwUHsuoFksA1ySFG4WUJ?=
+ =?us-ascii?Q?fyfDR7fjaFUOkhefXszPIRxM3QZXf/uNkIkOEyRhvqDI+XptuFE5HyJsVyqr?=
+ =?us-ascii?Q?9PxfXAItEYp4tbLOaE0CgC7Q0okYcjYCBnoJ9BUQ1TAfdroE3KV6pwJNhQoV?=
+ =?us-ascii?Q?ySRn8Pn81+uTbjoRmJ7adqaiIc4ETS1A0rScAcKyPf9h8V2t/FCkp+GgolUC?=
+ =?us-ascii?Q?eBPbSC8CuitwK0BvZfcwROIgWfRKF2hVimMKUCniFDg1kPbHSvJDUKvU1YBr?=
+ =?us-ascii?Q?Hhl7BBu378+MH+SubjP3r4LOTGIKysf+nhLWDqSoL+rqXBLpaEVHopdRyOIA?=
+ =?us-ascii?Q?oxP57Um5OuBXxKBilz5N17utZSQnefHPKUBKIxhnycXDxnQI5YVDOZMiq8vw?=
+ =?us-ascii?Q?2p9Dyz25H9BJXo6GkqhPYzWtEJMfSyMM8tmAXpIBS5RpD0k/Ig/hmQykGEZS?=
+ =?us-ascii?Q?g9F3IZpD4MdoJyJlPqMNnLpm7wD+ME0e9hmJbCWPu2W/5JjE3afh1TYbOLO5?=
+ =?us-ascii?Q?lWqn9vfDWgj6nRvxHkJ23G3OffQYTt1XGB9HNq14pLDrKX4Os6gQZDstZrds?=
+ =?us-ascii?Q?BmH/tia8FHAmbqFTjKhXghgHrFU6pX8k89kEoPha0YyATlL1jq9axpW1OpmR?=
+ =?us-ascii?Q?GDJoxerrMP+s1oCCxNYCeHu9MJ1k5tbzL9CsZEcejwOlUE9sq4dTt1oePguX?=
+ =?us-ascii?Q?jYG+J8Fr/15MlMu4KzGOtYm3wGDGSuNkz1dY4O4JkJHRAQWz1gayzL6cmgfu?=
+ =?us-ascii?Q?eBjosnLCQpyUQRbvwK4XfEZllAvca+kmoym6+Nh4ZwWs5IWKJh3QZqz4kfKn?=
+ =?us-ascii?Q?UOP6EPSI72n1wqyiHwRYTvE/3UHg+2glf0xNycHsysVTnFV9m+/1BMwLjdBx?=
+ =?us-ascii?Q?mzJSFnyFdGqnO+T5Z7xi6ogjICrR0jkRHgqRvifHHhpM6thttqHrs4h1iKbT?=
+ =?us-ascii?Q?PfODLZ6ulWOSKOnSfZXyLJX7XznQh4/9SriKwntlfu38ENGmTBADXku1Iv18?=
+ =?us-ascii?Q?UU9zq9nGfODT4tkmte2NpG8Vd7KK29yse8hupi3PiecmYsaWHSbkNavGxSuY?=
+ =?us-ascii?Q?1Ehyk7q7WL50KO/4S7iCCozIrLzWzbsrUkDk6qt1NNEgVKCjUW2l8kFMVe67?=
+ =?us-ascii?Q?g1T51civVTdVuMmy3AvA2PdzNDKCfpjb5c10arT8ojqm+XutSbkKhXbLQ69v?=
+ =?us-ascii?Q?lDOgpV7IVaqByHEq+jUicrbJRv8WvxHSsN81vRI+MNzdmJqG6UNOKNzdYRg8?=
+ =?us-ascii?Q?p6YD4p8mV4PeMlb3RUGJ8HbPzIz9/jyWM/8HNougENToyprsHIE6APHodPR9?=
+ =?us-ascii?Q?b0n7YX0EYw=3D=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e300766-f173-4a56-ba4d-08da1ef03414
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3108.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR10MB4344.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 94af58f6-f0d8-42af-79b4-08da1eef3cde
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Apr 2022 14:50:09.2794
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2022 14:57:04.2666
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: emUCdK+V/Y/D7vD+cW+cw+JBQEV0P4AjRtASK7De+ZbhEhYLyKzKfEt4TI4PY/qTkYgU6kgpH353lhAhLejmFA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3502
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
- definitions=2022-04-15_01:2022-04-14,2022-04-15 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 adultscore=0
- phishscore=0 mlxscore=0 suspectscore=0 malwarescore=0 mlxlogscore=702
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204150087
-X-Proofpoint-ORIG-GUID: ozwytIq-QdCU154lXIdCt4IH2gnTq_Yi
-X-Proofpoint-GUID: ozwytIq-QdCU154lXIdCt4IH2gnTq_Yi
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OYQfrlztNPD4fnHXg2QbTEmP73RSshxE2aERxQo4+dWGa35U6uzIoS/+X0J+WufuKQNLrO+UUo5yYdeRAiMkQg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5499
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGksIE5pY2ssDQoNCj4gT24gQXByIDE0LCAyMDIyLCBhdCA0OjMwIFBNLCBOaWNrIERlc2F1bG5p
-ZXJzIDxuZGVzYXVsbmllcnNAZ29vZ2xlLmNvbT4gd3JvdGU6DQo+IA0KPiBIaSBRaW5nLCBLZWVz
-LCBhbmQgQmlsbCwNCj4gSm9zZSBhbmQgSSBhcmUgY3VycmVudGx5IGluIHRoZSBwbGFubmluZyBw
-cm9jZXNzIHRvIHB1dCB0b2dldGhlciBhDQo+IEtlcm5lbCtUb29sY2hhaW4gbWljcm9jb25mZXJl
-bmNlIHRyYWNrIGF0IExpbnV4IFBsdW1iZXJzIENvbmZlcmVuY2UNCj4gdGhpcyB5ZWFyIChTZXB0
-IDEyLTE0KSBpbiBEdWJsaW4sIElyZWxhbmQuDQo+IA0KPiBXb3VsZCB5b3UgYWxsIGJlIGludGVy
-ZXN0ZWQgaW4gbGVhZGluZyBhbm90aGVyIHNlc3Npb24gb24NCj4ga2VybmVsK3Rvb2xjaGFpbiBj
-b2xsYWJvcmF0aW9uIGZvciBtaXRpZ2F0aW9ucz8gRG8geW91IHBsYW4gdG8gYXR0ZW5kDQo+IHBs
-dW1iZXJzIHRoaXMgeWVhciB3aGljaCB3aWxsIGJlIGluIHBlcnNvbj8NCg0KSeKAmWQgbG92ZSB0
-byBhdHRlbmQgIHBsdW1iZXJzIHRoaXMgeWVhciB0byBtZWV0IHBlb3BsZSBpbiBwZXJzb24hDQpC
-dXQgbm90IHN1cmUgd2hldGhlciB0aGVyZSB3aWxsIGJlIGVub3VnaCBuZXcsIGJpZyBzdHVmZiB0
-byByZXBvcnQgdGhpcyB5ZWFyIHNpbmNlIG1vc3RseSBidW5jaCBvZiBidWcgZml4ZXMgYW5kIG1p
-bm9yIA0KSW1wcm92ZW1lbnRzIHRvIHRoZSBwcmV2aW91cyB3b3JrLg0KDQpRaW5nDQoNCj4gLS0g
-DQo+IFRoYW5rcywNCj4gfk5pY2sgRGVzYXVsbmllcnMNCg0K
+On Thu, Apr 14, 2022 at 11:11:01AM +0200, Borislav Petkov wrote:
+> On Wed, Apr 13, 2022 at 07:40:39PM +0000, Yazen Ghannam wrote:
+> > I think the init logic breaks here. MCE now gets enabled before clearing old
+> > errors. So it's possible that the old errors get overwritten by new ones.
+> 
+> Err, I don't understand. CR4.MCE bit description has:
+> 
+> "Regardless of whether machine-check exceptions are enabled, the
+> processor records enabled-errors when they occur."
+> 
+> I'm guessing enabled errors are those for which the respective bits in
+> the MCi_CTL banks are set. And I think the CPU comes out of reset with
+> those bits set.
+> 
+> So the overwriting will happen regardless.
+> 
+> The only difference here is that "[s]etting MCE to 1 enables the
+> machine-check exception mechanism." So you'll get a #MC raised vs
+> shutdown on a fatal error.
+> 
+> Or am I missing an angle?
+>
+
+I agree with you about the CR4.MCE statement. But MCi_CTL needs to be set by
+system software. The reset value is '0' at least on AMD systems.
+
+Here's a example scenario.
+
+1) OS has fully booted.
+   a) MCi_CTL, MCG_CTL, CR4.MCE are all enabled.
+2) Fatal MCA error occurs causing hardware-initialzed reset. No OS handling.
+   a) MCA state info is warm reset persistent.
+   b) MCi_STATUS, MCi_ADDR, etc. have valid info.
+   c) MCi_CTL, MCG_CTL, CR4.MCE are all set to reset value: '0'.
+3) OS, or optionally BIOS, polls MCA banks and logs any valid errors.
+   a) Since MCi_CTL, etc. are cleared due to reset, any errors detected are
+      from before the reset.
+4) MCi_STATUS is cleared to discard old error information.
+5) MCA is initiliazed (MCi_CTL, MCG_CTL, CR4.MCE, etc.). Any error detected
+   now is a new error from this session.
+ 
+> > > @@ -1791,6 +1761,9 @@ static void __mcheck_cpu_check_banks(void)
+> > >  		if (!b->init)
+> > >  			continue;
+> > >  
+> > > +		wrmsrl(mca_msr_reg(i, MCA_CTL), b->ctl);
+> > > +		wrmsrl(mca_msr_reg(i, MCA_STATUS), 0);
+> > 
+> > Same idea here. STATUS should be cleared before turning on reporting in a bank
+> > using MCA_CTL.
+> 
+> Look at the current code. Called in this order:
+> 
+> __mcheck_cpu_init_clear_banks:
+>         wrmsrl(mca_msr_reg(i, MCA_CTL), b->ctl);
+>         wrmsrl(mca_msr_reg(i, MCA_STATUS), 0);
+> __mcheck_cpu_check_banks
+> 	rdmsrl(mca_msr_reg(i, MCA_CTL), msrval);
+>         b->init = !!msrval;
+> 
+> STATUS *is* cleared after MCA_CTL now too.
+> 
+> If this ordering is wrong - and it sounds like it is - then this needs
+> to be a separate patch and Cc: <stable@vger.kernel.org> and needs to go
+> in now.
+>
+
+I agree. The Intel SDM and AMD APM have the following procedure, in summary.
+
+1) Set MCG_CTL
+2) Set MCi_CTL for all banks
+3) Read MCi_STATUS and log valid errors.
+4) Clear MCi_STATUS
+5) Set CR4.MCE
+
+I don't know of a reason why STATUS needs to be cleared after MCi_CTL is set.
+The only thing I can think of is that enabling MCi_CTL may cause spurious info
+logged in MCi_STATUS, and that needs to be cleared out. I'm asking AMD folks
+about it.
+
+Of course, this contradicts the flow I outlined above, and also the flow given
+in the AMD Processor Programming Reference (PPR). I wonder if the
+architectural documents have gotten stale compared to current guidelines. I'm
+asking about this too.
+
+Tony,
+Do you have any thoughts on this?
+
+> > One downside though is that the system goes longer with CR4.MCE cleared. So
+> > there's greater risk of encountering a shutdown due to a machine check error.
+> 
+> Yeah, I don't think the couple of msecs matter.
+>
+
+Okay, yeah then maybe there should be another small patch to bring the init
+flow closer to x86 documentation.
+
+Thanks,
+Yazen
