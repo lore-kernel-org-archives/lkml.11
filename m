@@ -2,128 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73DDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:08:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E580C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354853AbiDOPK5 (ORCPT
+        id S1354868AbiDOPNq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 11:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55220 "EHLO
+        Fri, 15 Apr 2022 11:13:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350436AbiDOPKy (ORCPT
+        with ESMTP id S1354864AbiDOPNn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 11:10:54 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97D3CF480;
-        Fri, 15 Apr 2022 08:08:25 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id l3-20020a05600c1d0300b0038ff89c938bso1617091wms.0;
-        Fri, 15 Apr 2022 08:08:25 -0700 (PDT)
+        Fri, 15 Apr 2022 11:13:43 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1CF9D4CC
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:11:13 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id 12so7304433pll.12
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:11:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ErStW3rPOBKQARnIVZygQKZdzKxAEYlPsIaEFV3oKuQ=;
-        b=Zbldi1K2j3XC4xBsoSkaktwQvWO620FEFB+iiNBHyOLIEjACS/0GERXSy2lwNFPiXR
-         qTRxM2/rsg3EpPFI90bFFqjet4K5d7lDD19/NhR2JXETQvxBR7JBzgRyX/3cHzlx7pG9
-         nqxOhwS7KCgOyeZ6ABHyUMlYKxVkMUdVi0OCGDjw+qxdo0HG+CwUAQ5E/xzkruxMg8Qa
-         B9P/unGS9dZZb27aIBi9Q2HI26iG6D37HBFuLj8/mqaRaog4zZ4oyZQxEUZE4YRNJSti
-         Yfm9+sguMPFhpYQ8OQ6vN22S3xpKBbaAMwkBv+hARBrdGfjGqKBeG82FQJqueNpFYYJo
-         d8bg==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XpMI5o1rh+ASC743fTR6XcDs+QqXkiVRQcevUp4zbQE=;
+        b=Pw9QlbYBEdNuOSpCDdRCElWVqIH9UdeidruHkQv62YDy+yRw3YBIONulcDGLIEJDVs
+         Ch5Sistmn0s2JtIVfPTuBi3h6qeth8GDo4+SJ4aeyfMGqK5tfI8yc6OxhJyAaoqckGeQ
+         elSD03uyypngyXnD1dfEsXnJKNRco3mTL8g0+DF6/E2U4YbF8K1WWzhgTBmXEVbPXLko
+         6K5d6cS+ntxAuA05y9t19IyFMDcGX4jdQPKlCn+/ig8uCGzjOCQYtT16klslidzGHn0V
+         V0D+gY2DMs3uoK0fGvmYmPn3b/CI4GfmOAq3jNaALPweh9hTmVKPIR/gh8CrJV1o2C11
+         sggg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ErStW3rPOBKQARnIVZygQKZdzKxAEYlPsIaEFV3oKuQ=;
-        b=tBt2cXNFA2vghBZkIqgytHMUbmc14wUXuShjgZ6/W64nHgln27ionkRk9d+AXWu0la
-         s54lbGy7Bq8NN6BT1pDhlPxm2ZymA6pgEQ8T2fM0DcN/Aw9mTXtOsht+207uPwbGtuuh
-         Y4e3QeHV2EBwq9R5gXL7Zn08PuhFky61H1bEywj2bLDCdOerNKZY+EJFwbJcmQlY3LUc
-         NgX7NAIp7Wdd/kamIao/CvBMCE/jjEbjlvEj+vuGKKZTSaKAXqz+jO1N6WeDAtLTEHho
-         9vWYcw9eQU59BYiTKh96qQTaiSKLQIknEOHy1KLtf0uZL2SS5sc3xkQEPajlxdgYBRTr
-         dgxQ==
-X-Gm-Message-State: AOAM5315RW3MQYyrWivpNboCIIcwmZavc1JmN+2P16yHfR6+t5xldJFu
-        jpRbuKr4NBOoGWubJw8/Zzg=
-X-Google-Smtp-Source: ABdhPJxWrXcOoZ2hRBlIKf9Xl736VnNNYhhKCadEhBE45FqAjKq/+xORnk2Qa4GCEBd8VfBYwIIMFw==
-X-Received: by 2002:a05:600c:35c5:b0:390:9982:73ec with SMTP id r5-20020a05600c35c500b00390998273ecmr3724293wmq.196.1650035304472;
-        Fri, 15 Apr 2022 08:08:24 -0700 (PDT)
-Received: from ?IPV6:2001:b07:add:ec09:c399:bc87:7b6c:fb2a? ([2001:b07:add:ec09:c399:bc87:7b6c:fb2a])
-        by smtp.googlemail.com with ESMTPSA id l126-20020a1c2584000000b00387d4f35651sm8886451wml.10.2022.04.15.08.08.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Apr 2022 08:08:24 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <c7f75e03-2b9e-698f-0f2e-04c6c7bae892@redhat.com>
-Date:   Fri, 15 Apr 2022 17:08:21 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XpMI5o1rh+ASC743fTR6XcDs+QqXkiVRQcevUp4zbQE=;
+        b=SM4GkSsXtsy0Mi67C0T/JDUA+DsEu+HNPwxf4Ete7MCR8AvO7/kvaOKQqPIzOGM3Oy
+         W+SiMYFEFGJ/qucXhum/V7fPwYVIfttFCPNqOyyEX0gOr3mcHpgvu5XX47m4IW/k1JXJ
+         Om5W6IkNpK8NJ4dF+npoRgzftRyDXZAQ/WsTzwlAgFVBtLutd9IjuOLMTg16icLMBEu+
+         9GdYeuRr2n3rQ/+anfgcN50b6gPxEy53b9IWn7ylZmcD+FKzV8Sr+YbcsqufTuGTpqrr
+         ja33uariEpEIx391fww7qh0K6AaAGaQLgYJwCsmsO3K+3u/mMyaGKYitCorcgdC/H9C3
+         UcfA==
+X-Gm-Message-State: AOAM5312+MzEUvMiK9MvSDFpaQOzB7oP+FcSNOw2lFi6lxiFt6efUNfX
+        HP/13lEjQBQLtTUk3ecBfY8ALQ==
+X-Google-Smtp-Source: ABdhPJwRXN1RrezyBqEZ+IY/VFhjmhlZMehG7cvvOaL9gxMM5+8b7OuhIia8rfhpjyKECtKZUzAh/g==
+X-Received: by 2002:a17:902:7001:b0:158:43ba:56cc with SMTP id y1-20020a170902700100b0015843ba56ccmr29258356plk.135.1650035472580;
+        Fri, 15 Apr 2022 08:11:12 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id l22-20020a17090aaa9600b001ca7a005620sm4933327pjq.49.2022.04.15.08.11.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 08:11:11 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 15:11:08 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Zeng Guang <guang.zeng@intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Robert Hu <robert.hu@intel.com>,
+        Gao Chao <chao.gao@intel.com>, Marc Zyngier <maz@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH v8 7/9] KVM: Move kvm_arch_vcpu_precreate() under
+ kvm->lock
+Message-ID: <YlmLDFPtQeI5wIoI@google.com>
+References: <20220411090447.5928-1-guang.zeng@intel.com>
+ <20220411090447.5928-8-guang.zeng@intel.com>
+ <YlmIko9PbQMMKceU@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 096/104] KVM: TDX: Handle TDX PV rdmsr hypercall
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <684d96c4e2d7cfcc49c5cb482e54f582af50e09e.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <684d96c4e2d7cfcc49c5cb482e54f582af50e09e.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlmIko9PbQMMKceU@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
-> From: Isaku Yamahata <isaku.yamahata@intel.com>
+On Fri, Apr 15, 2022, Sean Christopherson wrote:
+> > It's safe to invoke kvm_arch_vcpu_precreate() within the protection of
+> > kvm->lock directly rather than take into account in the implementation for
+> > each architecture.
 > 
-> Wire up TDX PV rdmsr hypercall to the KVM backend function.
+> This absolutely needs to explain _why_ it's safe, e.g. only arm64, x86, and s390
+> have non-nop implementations and they're all simple and short with no tendrils
+> into other code that might take kvm->lock.
 > 
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-> ---
->   arch/x86/kvm/vmx/tdx.c | 19 +++++++++++++++++++
->   1 file changed, 19 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-> index cec2660206bd..dd7aaa28bf3a 100644
-> --- a/arch/x86/kvm/vmx/tdx.c
-> +++ b/arch/x86/kvm/vmx/tdx.c
-> @@ -1124,6 +1124,23 @@ static int tdx_emulate_mmio(struct kvm_vcpu *vcpu)
->   	return 1;
->   }
->   
-> +static int tdx_emulate_rdmsr(struct kvm_vcpu *vcpu)
-> +{
-> +	u32 index = tdvmcall_p1_read(vcpu);
-> +	u64 data;
-> +
-> +	if (kvm_get_msr(vcpu, index, &data)) {
-> +		trace_kvm_msr_read_ex(index);
-> +		tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_INVALID_OPERAND);
-> +		return 1;
-> +	}
-> +	trace_kvm_msr_read(index, data);
-> +
-> +	tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
-> +	tdvmcall_set_return_val(vcpu, data);
-> +	return 1;
-> +}
-> +
->   static int handle_tdvmcall(struct kvm_vcpu *vcpu)
->   {
->   	struct vcpu_tdx *tdx = to_tdx(vcpu);
-> @@ -1143,6 +1160,8 @@ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
->   		return tdx_emulate_io(vcpu);
->   	case EXIT_REASON_EPT_VIOLATION:
->   		return tdx_emulate_mmio(vcpu);
-> +	case EXIT_REASON_MSR_READ:
-> +		return tdx_emulate_rdmsr(vcpu);
->   	default:
->   		break;
->   	}
+> And as before, I suspect arm64 needs this protection, the vgic_initialized()
+> check looks racy.  Though it's hard to tell if doing the check under kvm->lock
+> actually fixes anything.
 
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+Ah, I bet this code in vgic_init() provides the necessary protection.
 
-and feel free to squash with the wrmsr one.
-
-Paolo
+	/* Are we also in the middle of creating a VCPU? */
+	if (kvm->created_vcpus != atomic_read(&kvm->online_vcpus))
+		return -EBUSY;
