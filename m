@@ -2,100 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12975C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:05:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A91AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:12:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351314AbiDOIID (ORCPT
+        id S1351331AbiDOIOy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 04:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44492 "EHLO
+        Fri, 15 Apr 2022 04:14:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235858AbiDOIIB (ORCPT
+        with ESMTP id S235107AbiDOIOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 04:08:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57A6A2046
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 01:05:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 68FCA61F95
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:05:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1757C385AD
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:05:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650009932;
-        bh=riuuKXnoQlBRBV7zO25zHcF/JWwq7zfPNr5mu3m9+jI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=tXi9Jj5fnDgYEJrim5xfcMUIa9y+5BF6p9ZqnM7Q/aJgxGpwJRTGeSeibe2Y5Ezn1
-         teTDfS5nnAyKMU/ta+74JyWSeLIP6b0vZEqt5zWkyIVFKM3+0swjJv18a2cSQWQWqq
-         IymLFV+D2iufYzMlVa94ag1HVsBOPhqflDvp4s7q4EBATTYae/zHKm9I0qr5DQXhq+
-         O3gLobRWXRaenBCExS0LOcP8DoW7qndV8GXQIUI6o8VBWak5jLP/LfgiimF9nZx3dj
-         ieTcO471WheCh1GtnDnM5PCMP6nnZ1RBHzqfHMvWEGdMx24LHCdlY8kPryIqMxlDej
-         +TVsRzXWf2zbQ==
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-e2442907a1so7524265fac.8
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 01:05:32 -0700 (PDT)
-X-Gm-Message-State: AOAM531C1pblVILATDEk+G1sy99aYEELZCX7N6XZ7gOco/tTypkCSZYQ
-        lQv1ZgG7MKr9YcTAtlf8k2eLHZOl6beqm4S6+Ok=
-X-Google-Smtp-Source: ABdhPJwa5+CpOCKoPK7GU76i17Qy9CqHOdE4RymA/6S6MbMw45+zBMAYYJTH6M4NHw/fG0dhmipO+89okOHPFS+WrVU=
-X-Received: by 2002:a05:6870:eaa5:b0:da:b3f:2b45 with SMTP id
- s37-20020a056870eaa500b000da0b3f2b45mr1000528oap.228.1650009931924; Fri, 15
- Apr 2022 01:05:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <Yk/8QExHlggU8KgC@gondor.apana.org.au> <YlVHSvkyUBXZPUr2@arm.com>
- <YlVJKjXkcHqkwyt4@gondor.apana.org.au> <YlVOTsaTVkBOxthG@arm.com>
- <YlVSBuEqMt2S1Gi6@gondor.apana.org.au> <YlVxGAHHD/j6lW3c@arm.com>
- <CAMj1kXGCR833rqKOetj8ykQ8XtDCWbszJYVtVKvLpDLWnM=B5w@mail.gmail.com>
- <YlaOIbSA7B/G9222@arm.com> <YlkV7NtatO7KFusX@gondor.apana.org.au>
- <CAMj1kXFW_zC-U5Ox9_=4gKCwWOmkR7wPNb6UQhiz8viNWTRU-w@mail.gmail.com> <YlkkGpVx8rhcsBot@gondor.apana.org.au>
-In-Reply-To: <YlkkGpVx8rhcsBot@gondor.apana.org.au>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Fri, 15 Apr 2022 10:05:21 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXH0x5Va7Wgs+mU1ONDwwsazOBuN4z4ihVzO2uG-n41Kbg@mail.gmail.com>
-Message-ID: <CAMj1kXH0x5Va7Wgs+mU1ONDwwsazOBuN4z4ihVzO2uG-n41Kbg@mail.gmail.com>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 15 Apr 2022 04:14:47 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E1A366AC;
+        Fri, 15 Apr 2022 01:12:18 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id 22so379506pfu.1;
+        Fri, 15 Apr 2022 01:12:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=V1TQqJ8Dwm+rkTp7MnC8Cpp/Mlay65J8IEUqFYwowU0=;
+        b=IoHFyoV/QMaWz5slv3dX8BWXMPwkrW8AOmkucgTgu9oEOFR9T1jbQ7lCV5zzzgcjD1
+         5Lvi0ZPc+3KsmwhyGygW48c5TaeNeHcCvItjnVIoV54QUU+yglZJqpXAL5J8WHquclUE
+         83t7e+ew1kTsla1lP6uSg3df/NT5SvzYCn+pZ33zqAX4E6zsPZxGs1UTUYFCSNZLj0HX
+         iXS9Z0QuXkNw/yqBNP/IqgENg8Qe0WUBtm7ESVwHv8FXUtv5p6OcYCy7tU0e/lOpqLFi
+         PriaBMITZiDucgPqwbeaxQw5B49/+OPiUjk6DLqOnTZTbTrBDzeD3IgL/qiu5lxt01Tl
+         Hefw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=V1TQqJ8Dwm+rkTp7MnC8Cpp/Mlay65J8IEUqFYwowU0=;
+        b=UXXtNKMuQ2BGEPA6pKH5rjtNRR2w08L6crHBdhKftChHleW72cYQygqopJ4bFH/Xut
+         GrcWLGLVydEYJpNUfFd7XJa5ynxEzjmrSRbwlbrciiVg052K4zXc7h7O5hipNCE5EqdD
+         h+LwUH5i5HYoUdaibPGFm+xclC84gcnkmFiWocALzjYh28G11qco05z/jqqNbtmHaMex
+         0+cPjCL/vxk48sz5tw6VmAfQv18ZzZu4PFfR4u3fyNZQmPE6O0hJohSRKUaILiln8ASf
+         ABV5+8EqOrctUdGiwXJT140EINtN5Dxo/PGUgR9BqWM8gUpy02lxWghjtGXNOlvKEQho
+         WWHA==
+X-Gm-Message-State: AOAM530jXYJmIL+oJvCTi5IMvEiLtgVywJv8cN5HO6G+ixS6df4FmUPz
+        6/bKSj50zY1EoJt5k3p7HvalG3DsxjTmOQ==
+X-Google-Smtp-Source: ABdhPJw4LGqz6LhFvkjeGdZOe+Ng0d6Qv/gkkbgVfLnFZ3lW4zTCWZ7c2+/mD8uJo4XEBoLqooqkDA==
+X-Received: by 2002:a63:4523:0:b0:399:1124:1574 with SMTP id s35-20020a634523000000b0039911241574mr5351198pga.609.1650010337684;
+        Fri, 15 Apr 2022 01:12:17 -0700 (PDT)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id 5-20020a631045000000b0039d942d18f0sm3790376pgq.48.2022.04.15.01.12.15
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 15 Apr 2022 01:12:17 -0700 (PDT)
+From:   Li-hao Kuo <lhjeff911@gmail.com>
+To:     broonie@kernel.org, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     wells.lu@sunplus.com, lh.kuo@sunplus.com, nathan@kernel.org,
+        trix@redhat.com, Li-hao Kuo <lhjeff911@gmail.com>
+Subject: [PATCH] spi: remove spin_lock_irq and variable in the irq procress
+Date:   Fri, 15 Apr 2022 16:12:04 +0800
+Message-Id: <f9991d6064d892d22ac7c2dfabe16309e9d03888.1650010304.git.lhjeff911@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 15 Apr 2022 at 09:52, Herbert Xu <herbert@gondor.apana.org.au> wrote:
->
-> On Fri, Apr 15, 2022 at 09:49:12AM +0200, Ard Biesheuvel wrote:
-> >
-> > I'm not sure I understand what would go wrong if that assumption no
-> > longer holds.
->
-> It's very simple, we don't do anything to the pointer returned
-> by kmalloc before returning it as a tfm or other object with
-> an alignment of CRYPTO_MINALIGN.  IOW if kmalloc starts returning
-> pointers that are not aligned to CRYPTO_MINALIGN then we'd be
-> lying to the compiler.
->
+remove spin_lock_irq spin_unlock_irq and variable in the irq funciton
 
-I guess that should be fixable. GIven that this is about padding
-rather than alignment, we could do something like
+Signed-off-by: Li-hao Kuo <lhjeff911@gmail.com>
+---
+ drivers/spi/spi-sunplus-sp7021.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-struct crypto_request {
-  union {
-      struct {
-        ... fields ...
-      };
-      u8 __padding[ARCH_DMA_MINALIGN];
-   };
-    void __ctx[]  __align(CRYPTO_MINALIGN);
-};
+diff --git a/drivers/spi/spi-sunplus-sp7021.c b/drivers/spi/spi-sunplus-sp7021.c
+index f989f7b..f1fa887 100644
+--- a/drivers/spi/spi-sunplus-sp7021.c
++++ b/drivers/spi/spi-sunplus-sp7021.c
+@@ -85,8 +85,6 @@ struct sp7021_spi_ctlr {
+ 	int s_irq;
+ 	struct clk *spi_clk;
+ 	struct reset_control *rstc;
+-	// irq spin lock
+-	spinlock_t lock;
+ 	// data xfer lock
+ 	struct mutex buf_lock;
+ 	struct completion isr_done;
+@@ -199,8 +197,6 @@ static irqreturn_t sp7021_spi_master_irq(int irq, void *dev)
+ 	if (tx_len == 0 && total_len == 0)
+ 		return IRQ_NONE;
+ 
+-	spin_lock_irq(&pspim->lock);
+-
+ 	rx_cnt = FIELD_GET(SP7021_RX_CNT_MASK, fd_status);
+ 	if (fd_status & SP7021_RX_FULL_FLAG)
+ 		rx_cnt = pspim->data_unit;
+@@ -239,7 +235,6 @@ static irqreturn_t sp7021_spi_master_irq(int irq, void *dev)
+ 
+ 	if (isrdone)
+ 		complete(&pspim->isr_done);
+-	spin_unlock_irq(&pspim->lock);
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -446,7 +441,6 @@ static int sp7021_spi_controller_probe(struct platform_device *pdev)
+ 	pspim->mode = mode;
+ 	pspim->ctlr = ctlr;
+ 	pspim->dev = dev;
+-	spin_lock_init(&pspim->lock);
+ 	mutex_init(&pspim->buf_lock);
+ 	init_completion(&pspim->isr_done);
+ 	init_completion(&pspim->slave_isr);
+-- 
+2.7.4
 
-And then hopefully, we can get rid of the padding once we fix drivers
-doing non-cache coherent inbound DMA into those structures.
