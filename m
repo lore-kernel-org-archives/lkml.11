@@ -2,190 +2,566 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 789F6C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83AF6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354462AbiDOOYV (ORCPT
+        id S1348424AbiDOOY2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 10:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50426 "EHLO
+        Fri, 15 Apr 2022 10:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354411AbiDOOXu (ORCPT
+        with ESMTP id S1354531AbiDOOXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 10:23:50 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C94E9319C
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 07:21:16 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id 12so8494807oix.12
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 07:21:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=qiIw/AH4fmkT1kJ7yC5BcueKb8y1i79msEv4+Nx2QYE=;
-        b=iCQm93R8dxN9ZMUPF7/q2kItqH8hGryG/F1Zcw+HAKEO1VlCeTromOmSkmE+UfGV36
-         BT0wrdfT5lyeD1qJK/Sv5E1BkQLbEVEfy2byNXOASToLF2VyL4bUMDRzf6VVFjiRd/Pk
-         Q3caUDv9c1rRuHipiiLYOzOA8JaCz9BZ9nOIIbNzuKp+kkVhuStSlEiVLlxE7cVJAzLL
-         goLBdpzXLRKNKbt/m3b40uYVqqts4oNSAvBJqCjIk7azu1pa97EDyx5xs6Z1t2YVLLti
-         9a7SLgaKSm/a+o+Cnm5hnlnEc5h1AjsywyfK2rolpT3OPk5VxLWWYdfLvi0Lzpxwq5bn
-         2gNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=qiIw/AH4fmkT1kJ7yC5BcueKb8y1i79msEv4+Nx2QYE=;
-        b=PdMJrkOwmQq9r1cQVVchuXxSxIAvoODPmI9MDVyD1jduuAKyvJa3fjoqvuu4YH85uW
-         343+eJJG3wBgGIoV1hPyuB2ZQInfngaQjWUYOXIy3EDdBujraOwTs/BJFtEZ653RqwuD
-         o8SG+pYLDW5bef8eqS+NEE3xvXRoTvdwxlzTC+rmDHPw7JXmHV5cwlCJq7ott5SfJ4I4
-         U1joKKdVZLoXg1XVgbfN9EAa7Fb+Uz/vPUbCyJM+aWnOmpYRi3G+7UC9UR4vrF/XOMSI
-         GS1gS1tDONf5xGL02nrGWfLOuS/D4VKMFAVBgMQYBS7Qk5UORSsRS+LF+u6HHTc5eyMW
-         +6+Q==
-X-Gm-Message-State: AOAM530i9H6k9GxqFxzGDjmWmtI+tR4N5Uv5EcDPW731aOJeHTXVCABU
-        NQqRONR/W578q+qqJ9HdWjQ=
-X-Google-Smtp-Source: ABdhPJzNnIcTF4Fxw1VVObX+Ccg+c1x746obLrERKhRvQpYJ657YF3MoeI9ppfKah1ZhTwI9rOfyjQ==
-X-Received: by 2002:a05:6808:128c:b0:2da:3751:7639 with SMTP id a12-20020a056808128c00b002da37517639mr1691286oiw.294.1650032476060;
-        Fri, 15 Apr 2022 07:21:16 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id p18-20020a056830131200b005ccf8ac6207sm1118827otq.80.2022.04.15.07.21.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 10:23:43 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED598F9B6;
         Fri, 15 Apr 2022 07:21:14 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Fri, 15 Apr 2022 07:21:12 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Peter Xu <peterx@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mike Rapoport <rppt@linux.vnet.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jerome Glisse <jglisse@redhat.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Alistair Popple <apopple@nvidia.com>
-Subject: Re: [PATCH v8 03/23] mm: Check against orig_pte for finish_fault()
-Message-ID: <20220415142112.GA2714323@roeck-us.net>
-References: <20220405014646.13522-1-peterx@redhat.com>
- <20220405014836.14077-1-peterx@redhat.com>
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 6BA195C01E6;
+        Fri, 15 Apr 2022 10:21:13 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Fri, 15 Apr 2022 10:21:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+         h=cc:cc:content-transfer-encoding:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1650032473; x=
+        1650118873; bh=xD4ZqIAlT7aLt1209ezWtLFjvsj32iTB7xRB9Q44zjQ=; b=d
+        +l9KXXtjxBMdYSX7LR/JNG7QNjZk8pOJnk7fiFVChhvQMKRsnTexciQ5YnC+n6TY
+        OAr/wFxC0MoPV7JEND2jd5rZFcTui19Jozs8EwLPKi5Il9Chf1CE0AI0mQIh1QU5
+        hIeVGlOuvUrqLPCFl9CiARRMe5lS5qCwU/vlK1r97BxwOm6AhDS8/9LhyeAuAFi7
+        Dafzd1vJKCopIsJ7ypjpZmhwc2shX4vWJQPCRjghsx6ZMT0Q1pEe+AjGYplz6wCe
+        +nG8iXNeTVpN4hCA/yIWpJI9HBu9tUI7Xi8fFciTayi8wAgzNYUPGn2xioaTX732
+        2SaffjGWgog0oFRuK57WQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+        1650032473; x=1650118873; bh=xD4ZqIAlT7aLt1209ezWtLFjvsj32iTB7xR
+        B9Q44zjQ=; b=FrALxWzPgoyenReMazEL94YNfsC8Lq97NR5bia+Srrq4EJKnKbw
+        D6ZDoYo+9ww4XYOz+7ioC8iAhCbjqou3TWDr/gtRlY2fPc14ROURLA8PpnLUJyEX
+        X8IG6ktkpnqnIgvV1GSufS+jOFJ6bp8yuLLukvYo/tiXSIM+98E2RPd4U29BLRMl
+        6L9tp+jcW0yuSBh2BC/UFAQQFmAwjydAcN8gazwxQRHdeCSwdBGS1hsnlPAbeMAX
+        XLeK0cB/E0O+o3SuX5kMHlGPm7mdfHHKRNCJqAWN77EXOc7MobZ+sRzp0SmKc5XQ
+        hD4q95E2aRrofFFuN4ZU/A8mBojX7s1jdgQ==
+X-ME-Sender: <xms:WX9ZYj1-EItTxiZI0yjZV3Wgtim2WiEJz-QPFA1-7NW-AFKyVS62EQ>
+    <xme:WX9ZYiGqopUoGMcRiz6VP50CWhAHOEG60GtbRL5LmxsubeSbXtVQ0WiC4Cb_Wl1Kx
+    RV7WX1Yphupn3uYHh4>
+X-ME-Received: <xmr:WX9ZYj5u6EboOF6e25M_UYsQp7e_zNAZo6Uh4MRZ0O4051B5HJ6ok6WeZN3caH4dVlCZewdVP5jU5EwRWEsBkHY8nXvg4YLmHddkqNM1YJQ6FdHJPH52hZPZF4p5Qu4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelhedgjeeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcu
+    rfgvthgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvg
+    hrnheptedvkeetleeuffffhfekteetffeggffgveehieelueefvddtueffveevlefhfeej
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshhvvg
+    hnsehsvhgvnhhpvghtvghrrdguvghv
+X-ME-Proxy: <xmx:WX9ZYo0QDq6Es60rSfjV58PK4_qQJD5bNmH89f3-jTyCMgXZMo5Ibw>
+    <xmx:WX9ZYmF-G4M64xNX-efPpz2UsjcJwmNmfnLNFy6L0lgwH54zG4PBvw>
+    <xmx:WX9ZYp-RkqZJQKAkxSVHIyCrx5vMjEL7sBhI5aF13dxuiJjNxFU0tQ>
+    <xmx:WX9ZYiF9EELdJtxP3uwaXmkaOMgI28wSb2U5kaUhLEoY4_E_J6S5Mg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 15 Apr 2022 10:21:11 -0400 (EDT)
+From:   Sven Peter <sven@svenpeter.dev>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Sven Peter <sven@svenpeter.dev>, Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Marc Zyngier <maz@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-nvme@lists.infradead.org
+Subject: [PATCH v2 4/6] soc: apple: Add SART driver
+Date:   Fri, 15 Apr 2022 16:20:53 +0200
+Message-Id: <20220415142055.30873-5-sven@svenpeter.dev>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+In-Reply-To: <20220415142055.30873-1-sven@svenpeter.dev>
+References: <20220415142055.30873-1-sven@svenpeter.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405014836.14077-1-peterx@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The NVMe co-processor on the Apple M1 uses a DMA address filter called
+SART for some DMA transactions. This adds a simple driver used to
+configure the memory regions from which DMA transactions are allowed.
 
-On Mon, Apr 04, 2022 at 09:48:36PM -0400, Peter Xu wrote:
-> We used to check against none pte in finish_fault(), with the assumption
-> that the orig_pte is always none pte.
-> 
-> This change prepares us to be able to call do_fault() on !none ptes.  For
-> example, we should allow that to happen for pte marker so that we can restore
-> information out of the pte markers.
-> 
-> Let's change the "pte_none" check into detecting changes since we fetched
-> orig_pte.  One trivial thing to take care of here is, when pmd==NULL for
-> the pgtable we may not initialize orig_pte at all in handle_pte_fault().
-> 
-> By default orig_pte will be all zeros however the problem is not all
-> architectures are using all-zeros for a none pte.  pte_clear() will be the
-> right thing to use here so that we'll always have a valid orig_pte value
-> for the whole handle_pte_fault() call.
-> 
-> Signed-off-by: Peter Xu <peterx@redhat.com>
+Unlike a real IOMMU, SART does not support any pagetables and can't be
+implemented inside the IOMMU subsystem using iommu_ops.
 
-This patch crashes pretty much all arm images in linux-next. Reverting it
-fixes the problem. Sample crash log and bisect results attached.
+It also can't be implemented using dma_map_ops since not all DMA
+transactions of the NVMe controller are filtered by SART.
+Instead, most buffers have to be registered using the integrated NVMe
+IOMMU and we can't have two separate dma_map_ops implementations for a
+single device.
 
-Guenter
-
+Co-developed-by: Hector Martin <marcan@marcan.st>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Signed-off-by: Sven Peter <sven@svenpeter.dev>
 ---
-[   11.232343] 8<--- cut here ---
-[   11.232564] Unable to handle kernel paging request at virtual address 88016664
-[   11.232735] [88016664] *pgd=41cfd811, *pte=00000000, *ppte=00000000
-[   11.233128] Internal error: Oops: 807 [#1] ARM
-[   11.233385] CPU: 0 PID: 1 Comm: swapper Not tainted 5.18.0-rc2-next-20220414 #1
-[   11.233564] Hardware name: Generic DT based system
-[   11.233695] PC is at cpu_arm926_set_pte_ext+0x2c/0x40
-[   11.233863] LR is at handle_mm_fault+0x4b0/0x11a8
-[   11.233963] pc : [<8010e60c>]    lr : [<802944ec>]    psr: 00000113
-[   11.234080] sp : 88015e20  ip : 88015e7c  fp : 00000492
-[   11.234179] r10: 00000000  r9 : 00000000  r8 : 81167e50
-[   11.234280] r7 : 00000000  r6 : 00000081  r5 : 7efffff1  r4 : 83034690
-[   11.234402] r3 : 00000043  r2 : 00000000  r1 : 00000000  r0 : 88016664
-[   11.234549] Flags: nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-[   11.234691] Control: 00093177  Table: 40004000  DAC: 00000053
-[   11.234816] Register r0 information: non-paged memory
-[   11.235031] Register r1 information: NULL pointer
-[   11.235127] Register r2 information: NULL pointer
-[   11.235219] Register r3 information: non-paged memory
-[   11.235316] Register r4 information: slab vm_area_struct start 83034688 data offset 8 pointer offset 0 allocated at vm_area_alloc+0x20/0x5c
-[   11.235825]     kmem_cache_alloc+0x1fc/0x21c
-[   11.235926]     vm_area_alloc+0x20/0x5c
-[   11.236007]     alloc_bprm+0xd0/0x298
-[   11.236082]     kernel_execve+0x34/0x194
-[   11.236159]     kernel_init+0x6c/0x138
-[   11.236235]     ret_from_fork+0x14/0x3c
-[   11.236330] Register r5 information: non-paged memory
-[   11.236432] Register r6 information: non-paged memory
-[   11.236529] Register r7 information: NULL pointer
-[   11.236620] Register r8 information: non-slab/vmalloc memory
-[   11.236741] Register r9 information: NULL pointer
-[   11.236833] Register r10 information: NULL pointer
-[   11.236926] Register r11 information: non-paged memory
-[   11.237023] Register r12 information: 2-page vmalloc region starting at 0x88014000 allocated at kernel_clone+0xa0/0x440
-[   11.237253] Process swapper (pid: 1, stack limit = 0x88014000)
-[   11.237388] Stack: (0x88015e20 to 0x88016000)
-[   11.237518] 5e20: ffffffff fffffffe 81d29be0 00000000 a0000193 00000000 81d2a1e8 00007f7e
-[   11.237670] 5e40: 816580a8 83034690 00000cc0 0007efff 7efff000 7efffff1 00000081 83199fb8
-[   11.237814] 5e60: 83199fb8 00000000 00000000 00000000 00000000 00000000 00000000 0a363e34
-[   11.237957] 5e80: 88015ea4 83034690 7efffff1 00002017 00000081 81f4dd00 00001fb8 00000000
-[   11.238100] 5ea0: 00000492 8028d160 00000000 81d29be0 00000001 00002017 80deedcc 81d29be0
-[   11.238241] 5ec0: 00000000 81f4dd00 7efffff1 88015f38 81f4dd60 00002017 00000000 8028d64c
-[   11.238383] 5ee0: 88015f38 00000000 00000000 7efffff1 81f4dd00 00000000 00000001 00000000
-[   11.238524] 5f00: 00000011 82d80800 00000001 7efffff1 81f4dd00 00000011 7efffff1 0000000b
-[   11.238666] 5f20: 82d80800 802ca218 88015f38 00000000 00000000 000001d3 80e0b43c 0a363e34
-[   11.238808] 5f40: 00000ffc 82d80800 81d73140 81d29be0 0000000b 802cb390 81d7315b 802ca0bc
-[   11.238950] 5f60: 8110c940 0000000c 82d80800 81d73140 8110c8b0 8110c93c 00000000 00000000
-[   11.239091] 5f80: 00000000 802cbf44 81107820 8110c8b0 00000000 00000000 00000000 80b05400
-[   11.239234] 5fa0: 00000000 80b05394 00000000 801000f8 00000000 00000000 00000000 00000000
-[   11.239376] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-[   11.239518] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
-[   11.239770] Code: e31300c0 03822e55 e3130003 13a02000 (e5802000)
-[   11.240097] ---[ end trace 0000000000000000 ]---
-[   11.240307] Kernel panic - not syncing: Fatal exception
+v1 -> v2:
+  - Added explanation why this can't be an IOMMU or dma_map_ops
+    implementation (Arnd Bergmann)
+  - Used non-relaxed accessors everwhere since the paths aren't
+    performance critical (Arnd Bergmann)
+  - Fixed errno return values to be negative (Arnd Bergmann)
+  - apple_sart_get -> devm_apple_sart_get to add put_device
+  - Disallow using the interface without CONFIG_APPLE_SART and
+    make all consumers hard-depend on that (Arnd Bergmann)
 
---
-# bad: [40354149f4d738dc3492d9998e45b3f02950369a] Add linux-next specific files for 20220414
-# good: [ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e] Linux 5.18-rc2
-git bisect start 'HEAD' 'v5.18-rc2'
-# good: [0f52e407eccb0f7ed62fdd8907b0042f4195159e] Merge branch 'drm-next' of git://git.freedesktop.org/git/drm/drm.git
-git bisect good 0f52e407eccb0f7ed62fdd8907b0042f4195159e
-# good: [22b1b3a579c91a6afa945711eac72ab740b8f8e4] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
-git bisect good 22b1b3a579c91a6afa945711eac72ab740b8f8e4
-# good: [cbb5c08b3182cb498f67fa547392191a1d5622dd] Merge branch 'next' of git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git
-git bisect good cbb5c08b3182cb498f67fa547392191a1d5622dd
-# good: [2acd94b759428825f0e8835fa24ad22c7b5c0e2c] Merge branch 'for-next/kspp' of git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git
-git bisect good 2acd94b759428825f0e8835fa24ad22c7b5c0e2c
-# bad: [d2d293faec99124d95590e88030ae3c8382fac7f] mm/shmem: persist uffd-wp bit across zapping for file-backed
-git bisect bad d2d293faec99124d95590e88030ae3c8382fac7f
-# good: [8cbcc910aec560e78e879cf82ed17e7e72d8a7d4] doc: update documentation for swap_activate and swap_rw
-git bisect good 8cbcc910aec560e78e879cf82ed17e7e72d8a7d4
-# good: [8c55a1ed1f9b95520b0307ba0ac6ff7f1aadfe9d] mm/page_alloc: simplify update of pgdat in wake_all_kswapds
-git bisect good 8c55a1ed1f9b95520b0307ba0ac6ff7f1aadfe9d
-# good: [3e68e467590511e2cf7f47194464a5512583f641] mm: hugetlb_vmemmap: cleanup CONFIG_HUGETLB_PAGE_FREE_VMEMMAP*
-git bisect good 3e68e467590511e2cf7f47194464a5512583f641
-# good: [3fb21f4e38824f4d8a183ffcccc03b357ad836d4] mm: mmap: register suitable readonly file vmas for khugepaged
-git bisect good 3fb21f4e38824f4d8a183ffcccc03b357ad836d4
-# bad: [fa600994916318341cf53e18769be547aa5975d2] mm: check against orig_pte for finish_fault()
-git bisect bad fa600994916318341cf53e18769be547aa5975d2
-# good: [1112411b72b5e9774897538260028a677d616779] fixup! mm: Introduce PTE_MARKER swap entry
-git bisect good 1112411b72b5e9774897538260028a677d616779
-# good: [1ae034d98f81a6cf8896b37c3dee9e099daeb3e7] mm: teach core mm about pte markers
-git bisect good 1ae034d98f81a6cf8896b37c3dee9e099daeb3e7
-# first bad commit: [fa600994916318341cf53e18769be547aa5975d2] mm: check against orig_pte for finish_fault()
+ MAINTAINERS                    |   1 +
+ drivers/soc/apple/Kconfig      |  11 ++
+ drivers/soc/apple/Makefile     |   3 +
+ drivers/soc/apple/sart.c       | 327 +++++++++++++++++++++++++++++++++
+ include/linux/soc/apple/sart.h |  57 ++++++
+ 5 files changed, 399 insertions(+)
+ create mode 100644 drivers/soc/apple/sart.c
+ create mode 100644 include/linux/soc/apple/sart.h
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1bc8b732f129..24b94c386f33 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1855,6 +1855,7 @@ F:	drivers/watchdog/apple_wdt.c
+ F:	include/dt-bindings/interrupt-controller/apple-aic.h
+ F:	include/dt-bindings/pinctrl/apple.h
+ F:	include/linux/apple-mailbox.h
++F:	include/linux/soc/apple/*
+ 
+ ARM/ARTPEC MACHINE SUPPORT
+ M:	Jesper Nilsson <jesper.nilsson@axis.com>
+diff --git a/drivers/soc/apple/Kconfig b/drivers/soc/apple/Kconfig
+index 9b8de31d6a8f..8c37ffd53fbd 100644
+--- a/drivers/soc/apple/Kconfig
++++ b/drivers/soc/apple/Kconfig
+@@ -17,6 +17,17 @@ config APPLE_PMGR_PWRSTATE
+ 	  controls for SoC devices. This driver manages them through the
+ 	  generic power domain framework, and also provides reset support.
+ 
++config APPLE_SART
++	tristate "Apple SART DMA address filter"
++	depends on ARCH_APPLE || COMPILE_TEST
++	default ARCH_APPLE
++	help
++	  Apple SART is a simple DMA address filter used on Apple SoCs such
++	  as the M1. It is usually required for the NVMe coprocessor which does
++	  not use a proper IOMMU.
++
++	  Say 'y' here if you have an Apple SoC.
++
+ endmenu
+ 
+ endif
+diff --git a/drivers/soc/apple/Makefile b/drivers/soc/apple/Makefile
+index c114e84667e4..c83c66317098 100644
+--- a/drivers/soc/apple/Makefile
++++ b/drivers/soc/apple/Makefile
+@@ -1,2 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-$(CONFIG_APPLE_PMGR_PWRSTATE)	+= apple-pmgr-pwrstate.o
++
++obj-$(CONFIG_APPLE_SART) += apple-sart.o
++apple-sart-y = sart.o
+diff --git a/drivers/soc/apple/sart.c b/drivers/soc/apple/sart.c
+new file mode 100644
+index 000000000000..986300e10aa8
+--- /dev/null
++++ b/drivers/soc/apple/sart.c
+@@ -0,0 +1,327 @@
++// SPDX-License-Identifier: GPL-2.0-only OR MIT
++/*
++ * Apple SART device driver
++ * Copyright (C) The Asahi Linux Contributors
++ *
++ * Apple SART is a simple address filter for some DMA transactions.
++ * Regions of physical memory must be added to the SART's allow
++ * list before any DMA can target these. Unlike a proper
++ * IOMMU no remapping can be done and special support in the
++ * consumer driver is required since not all DMA transactions of
++ * a single device are subject to SART filtering.
++ */
++
++#include <linux/soc/apple/sart.h>
++#include <linux/atomic.h>
++#include <linux/bits.h>
++#include <linux/bitfield.h>
++#include <linux/device.h>
++#include <linux/io.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/types.h>
++
++#define APPLE_SART_MAX_ENTRIES 16
++
++/* This is probably a bitfield but the exact meaning of each bit is unknown. */
++#define APPLE_SART_FLAGS_ALLOW 0xff
++
++/* SARTv2 registers */
++#define APPLE_SART2_CONFIG(idx)	      (0x00 + 4 * (idx))
++#define APPLE_SART2_CONFIG_FLAGS      GENMASK(31, 24)
++#define APPLE_SART2_CONFIG_SIZE	      GENMASK(23, 0)
++#define APPLE_SART2_CONFIG_SIZE_SHIFT 12
++#define APPLE_SART2_CONFIG_SIZE_MAX   GENMASK(23, 0)
++
++#define APPLE_SART2_PADDR(idx)	(0x40 + 4 * (idx))
++#define APPLE_SART2_PADDR_SHIFT 12
++
++/* SARTv3 registers */
++#define APPLE_SART3_CONFIG(idx) (0x00 + 4 * (idx))
++
++#define APPLE_SART3_PADDR(idx)	(0x40 + 4 * (idx))
++#define APPLE_SART3_PADDR_SHIFT 12
++
++#define APPLE_SART3_SIZE(idx)  (0x80 + 4 * (idx))
++#define APPLE_SART3_SIZE_SHIFT 12
++#define APPLE_SART3_SIZE_MAX   GENMASK(29, 0)
++
++struct apple_sart_ops {
++	void (*get_entry)(struct apple_sart *sart, int index, u8 *flags,
++			  phys_addr_t *paddr, size_t *size);
++	int (*set_entry)(struct apple_sart *sart, int index, u8 flags,
++			 phys_addr_t paddr, size_t size);
++};
++
++struct apple_sart {
++	struct device *dev;
++	void __iomem *regs;
++
++	const struct apple_sart_ops *ops;
++
++	unsigned long protected_entries;
++	unsigned long used_entries;
++};
++
++static void sart2_get_entry(struct apple_sart *sart, int index, u8 *flags,
++			    phys_addr_t *paddr, size_t *size)
++{
++	u32 cfg = readl(sart->regs + APPLE_SART2_CONFIG(index));
++	u32 paddr_ = readl(sart->regs + APPLE_SART2_PADDR(index));
++	u32 size_ = FIELD_GET(APPLE_SART2_CONFIG_SIZE, cfg);
++
++	*flags = FIELD_GET(APPLE_SART2_CONFIG_FLAGS, cfg);
++	*size = (size_t)size_ << APPLE_SART2_CONFIG_SIZE_SHIFT;
++	*paddr = (phys_addr_t)paddr_ << APPLE_SART2_PADDR_SHIFT;
++}
++
++static int sart2_set_entry(struct apple_sart *sart, int index, u8 flags,
++			   phys_addr_t paddr, size_t size)
++{
++	u32 cfg;
++
++	if (size & ((1 << APPLE_SART2_CONFIG_SIZE_SHIFT) - 1))
++		return -EINVAL;
++	if (paddr & ((1 << APPLE_SART2_PADDR_SHIFT) - 1))
++		return -EINVAL;
++
++	size >>= APPLE_SART2_CONFIG_SIZE_SHIFT;
++	paddr >>= APPLE_SART2_PADDR_SHIFT;
++
++	if (size > APPLE_SART2_CONFIG_SIZE_MAX)
++		return -EINVAL;
++
++	cfg = FIELD_PREP(APPLE_SART2_CONFIG_FLAGS, flags);
++	cfg |= FIELD_PREP(APPLE_SART2_CONFIG_SIZE, size);
++
++	writel(paddr, sart->regs + APPLE_SART2_PADDR(index));
++	writel(cfg, sart->regs + APPLE_SART2_CONFIG(index));
++
++	return 0;
++}
++
++static struct apple_sart_ops sart_ops_v2 = {
++	.get_entry = sart2_get_entry,
++	.set_entry = sart2_set_entry,
++};
++
++static void sart3_get_entry(struct apple_sart *sart, int index, u8 *flags,
++			    phys_addr_t *paddr, size_t *size)
++{
++	u32 paddr_ = readl(sart->regs + APPLE_SART3_PADDR(index));
++	u32 size_ = readl(sart->regs + APPLE_SART3_SIZE(index));
++
++	*flags = readl(sart->regs + APPLE_SART3_CONFIG(index));
++	*size = (size_t)size_ << APPLE_SART3_SIZE_SHIFT;
++	*paddr = (phys_addr_t)paddr_ << APPLE_SART3_PADDR_SHIFT;
++}
++
++static int sart3_set_entry(struct apple_sart *sart, int index, u8 flags,
++			   phys_addr_t paddr, size_t size)
++{
++	if (size & ((1 << APPLE_SART3_SIZE_SHIFT) - 1))
++		return -EINVAL;
++	if (paddr & ((1 << APPLE_SART3_PADDR_SHIFT) - 1))
++		return -EINVAL;
++
++	paddr >>= APPLE_SART3_PADDR_SHIFT;
++	size >>= APPLE_SART3_SIZE_SHIFT;
++
++	if (size > APPLE_SART3_SIZE_MAX)
++		return -EINVAL;
++
++	writel(paddr, sart->regs + APPLE_SART3_PADDR(index));
++	writel(size, sart->regs + APPLE_SART3_SIZE(index));
++	writel(flags, sart->regs + APPLE_SART3_CONFIG(index));
++
++	return 0;
++}
++
++static struct apple_sart_ops sart_ops_v3 = {
++	.get_entry = sart3_get_entry,
++	.set_entry = sart3_set_entry,
++};
++
++static int apple_sart_probe(struct platform_device *pdev)
++{
++	int i;
++	struct apple_sart *sart;
++	struct device *dev = &pdev->dev;
++
++	sart = devm_kzalloc(dev, sizeof(*sart), GFP_KERNEL);
++	if (!sart)
++		return -ENOMEM;
++
++	sart->dev = dev;
++	sart->ops = of_device_get_match_data(dev);
++
++	sart->regs = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(sart->regs))
++		return PTR_ERR(sart->regs);
++
++	for (i = 0; i < APPLE_SART_MAX_ENTRIES; ++i) {
++		u8 flags;
++		size_t size;
++		phys_addr_t paddr;
++
++		sart->ops->get_entry(sart, i, &flags, &paddr, &size);
++
++		if (!flags)
++			continue;
++
++		dev_dbg(sart->dev,
++			"SART bootloader entry: index %02d; flags: 0x%02x; paddr: %pa; size: 0x%zx\n",
++			i, flags, &paddr, size);
++		set_bit(i, &sart->protected_entries);
++	}
++
++	platform_set_drvdata(pdev, sart);
++	return 0;
++}
++
++struct apple_sart *devm_apple_sart_get(struct device *dev)
++{
++	struct device_node *sart_node;
++	struct platform_device *sart_pdev;
++	struct apple_sart *sart;
++	int ret;
++
++	sart_node = of_parse_phandle(dev->of_node, "apple,sart", 0);
++	if (!sart_node)
++		return ERR_PTR(-ENODEV);
++
++	sart_pdev = of_find_device_by_node(sart_node);
++	of_node_put(sart_node);
++
++	if (!sart_pdev)
++		return ERR_PTR(-ENODEV);
++
++	sart = dev_get_drvdata(&sart_pdev->dev);
++	if (!sart) {
++		put_device(&sart_pdev->dev);
++		return ERR_PTR(-EPROBE_DEFER);
++	}
++
++	ret = devm_add_action_or_reset(dev, (void (*)(void *))put_device,
++				       &sart_pdev->dev);
++	if (ret)
++		return ERR_PTR(ret);
++
++	device_link_add(dev, &sart_pdev->dev,
++			DL_FLAG_PM_RUNTIME | DL_FLAG_AUTOREMOVE_SUPPLIER);
++
++	return sart;
++}
++EXPORT_SYMBOL(devm_apple_sart_get);
++
++int apple_sart_add_allowed_region(struct apple_sart *sart, phys_addr_t paddr,
++				  size_t size)
++{
++	int i, ret;
++
++	for (i = 0; i < APPLE_SART_MAX_ENTRIES; ++i) {
++		if (test_bit(i, &sart->protected_entries))
++			continue;
++		if (test_and_set_bit(i, &sart->used_entries))
++			continue;
++
++		ret = sart->ops->set_entry(sart, i, APPLE_SART_FLAGS_ALLOW,
++					   paddr, size);
++		if (ret) {
++			dev_dbg(sart->dev,
++				"unable to set entry %d to [%pa, 0x%zx]\n",
++				i, &paddr, size);
++			clear_bit(i, &sart->used_entries);
++			return ret;
++		}
++
++		dev_dbg(sart->dev, "wrote [%pa, 0x%zx] to %d\n", &paddr, size,
++			i);
++		return 0;
++	}
++
++	dev_warn(sart->dev,
++		 "no free entries left to add [paddr: 0x%llx, size: 0x%zx]\n",
++		 paddr, size);
++
++	return -EBUSY;
++}
++EXPORT_SYMBOL(apple_sart_add_allowed_region);
++
++int apple_sart_remove_allowed_region(struct apple_sart *sart, phys_addr_t paddr,
++				     size_t size)
++{
++	int i;
++
++	dev_dbg(sart->dev,
++		"will remove [paddr: %pa, size: 0x%zx] from allowed regions\n",
++		&paddr, size);
++
++	for (i = 0; i < APPLE_SART_MAX_ENTRIES; ++i) {
++		u8 eflags;
++		size_t esize;
++		phys_addr_t epaddr;
++
++		if (test_bit(i, &sart->protected_entries))
++			continue;
++
++		sart->ops->get_entry(sart, i, &eflags, &epaddr, &esize);
++
++		if (epaddr != paddr || esize != size)
++			continue;
++
++		sart->ops->set_entry(sart, i, 0, 0, 0);
++
++		clear_bit(i, &sart->used_entries);
++		dev_dbg(sart->dev, "cleared entry %d\n", i);
++		return 0;
++	}
++
++	dev_warn(sart->dev, "entry [paddr: 0x%llx, size: 0x%zx] not found\n",
++		 paddr, size);
++
++	return -EINVAL;
++}
++EXPORT_SYMBOL(apple_sart_remove_allowed_region);
++
++static void apple_sart_shutdown(struct platform_device *pdev)
++{
++	struct apple_sart *sart = dev_get_drvdata(&pdev->dev);
++	int i;
++
++	for (i = 0; i < APPLE_SART_MAX_ENTRIES; ++i) {
++		if (test_bit(i, &sart->protected_entries))
++			continue;
++
++		sart->ops->set_entry(sart, i, 0, 0, 0);
++	}
++}
++
++static const struct of_device_id apple_sart_of_match[] = {
++	{
++		.compatible = "apple,t6000-sart",
++		.data = &sart_ops_v3,
++	},
++	{
++		.compatible = "apple,t8103-sart",
++		.data = &sart_ops_v2,
++	},
++	{}
++};
++MODULE_DEVICE_TABLE(of, apple_sart_of_match);
++
++static struct platform_driver apple_sart_driver = {
++	.driver = {
++		.name = "apple-sart",
++		.of_match_table = apple_sart_of_match,
++	},
++	.probe = apple_sart_probe,
++	.shutdown = apple_sart_shutdown,
++};
++module_platform_driver(apple_sart_driver);
++
++MODULE_LICENSE("Dual MIT/GPL");
++MODULE_AUTHOR("Sven Peter <sven@svenpeter.dev>");
++MODULE_DESCRIPTION("Apple SART driver");
+diff --git a/include/linux/soc/apple/sart.h b/include/linux/soc/apple/sart.h
+new file mode 100644
+index 000000000000..d24b2d9b505f
+--- /dev/null
++++ b/include/linux/soc/apple/sart.h
+@@ -0,0 +1,57 @@
++/* SPDX-License-Identifier: GPL-2.0-only OR MIT */
++/*
++ * Apple SART device driver
++ * Copyright (C) The Asahi Linux Contributors
++ *
++ * Apple SART is a simple address filter for DMA transactions.
++ * Regions of physical memory must be added to the SART's allow
++ * list before any DMA can target these. Unlike a proper
++ * IOMMU no remapping can be done.
++ */
++
++#ifndef _LINUX_SOC_APPLE_SART_H_
++#define _LINUX_SOC_APPLE_SART_H_
++
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/types.h>
++
++#if IS_ENABLED(CONFIG_APPLE_SART)
++
++struct apple_sart;
++
++/*
++ * Get a reference to the SART attached to dev.
++ *
++ * Looks for the phandle reference in apple,sart and returns a pointer
++ * to the corresponding apple_sart struct to be used with
++ * apple_sart_add_allowed_region and apple_sart_remove_allowed_region.
++ */
++struct apple_sart *devm_apple_sart_get(struct device *dev);
++
++/*
++ * Adds the region [paddr, paddr+size] to the DMA allow list.
++ *
++ * @sart: SART reference
++ * @paddr: Start address of the region to be used for DMA
++ * @size: Size of the region to be used for DMA.
++ */
++int apple_sart_add_allowed_region(struct apple_sart *sart, phys_addr_t paddr,
++				  size_t size);
++
++/*
++ * Removes the region [paddr, paddr+size] from the DMA allow list.
++ *
++ * Note that exact same paddr and size used for apple_sart_add_allowed_region
++ * have to be passed.
++ *
++ * @sart: SART reference
++ * @paddr: Start address of the region no longer used for DMA
++ * @size: Size of the region no longer used for DMA.
++ */
++int apple_sart_remove_allowed_region(struct apple_sart *sart, phys_addr_t paddr,
++				     size_t size);
++
++#endif /* IS_ENABLED(CONFIG_APPLE_SART) */
++
++#endif /* _LINUX_SOC_APPLE_SART_H_ */
+-- 
+2.25.1
+
