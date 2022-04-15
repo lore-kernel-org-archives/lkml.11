@@ -2,225 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86ECFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6279AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:33:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355445AbiDOPe7 (ORCPT
+        id S1355480AbiDOPgG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 11:34:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38378 "EHLO
+        Fri, 15 Apr 2022 11:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355369AbiDOPda (ORCPT
+        with ESMTP id S1355452AbiDOPfM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 11:33:30 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99597D8F49;
-        Fri, 15 Apr 2022 08:29:08 -0700 (PDT)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id AB7DBE000C;
-        Fri, 15 Apr 2022 15:29:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650036546;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0aL1gd4kAuc3u2gUbOpzUUJFI/u1xg+hRYW41JoQJHA=;
-        b=VRNTWd0FbZN8S3b+Hi+l50A1iGwIWAHrLeGC31ZQySA6P7ZN/BQVyb5RssgQCR+Yidv141
-        j2cTq4A5YVPZnwL2T07cpNsLeYi48ivU17pPaUkiXIKxxoJ06MvEGxnx7IGgPiEg2nDSYc
-        p/dmigViuvELgIKaeR0qz0TnBRxT3yXAO8cEs2zNUGUiIj2ihOtuTNJp2R//YUgGVR1oQj
-        BeGu2IbV266z9VHGtPQFmpFyPlgOftQtZRn7B1/FlX8H4YxSiyFefL3xsnnfWuzAl++lUL
-        FULFB3sG7AK+PL1vYpjzLq70aE0ArmroI2VA/scr8jOr+h0zAM3z9oC6BNYM8A==
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Cc:     Yong Deng <yong.deng@magewell.com>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v4 40/45] media: sun6i-csi: Only configure capture when streaming
-Date:   Fri, 15 Apr 2022 17:28:06 +0200
-Message-Id: <20220415152811.636419-41-paul.kocialkowski@bootlin.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220415152811.636419-1-paul.kocialkowski@bootlin.com>
-References: <20220415152811.636419-1-paul.kocialkowski@bootlin.com>
+        Fri, 15 Apr 2022 11:35:12 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740B93C712
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:29:58 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id u19so14532802lff.4
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:29:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=HL1TptI/3GtEHoAEr6jgXfR6NOOXBI/okx+jAapSegA=;
+        b=eGddImuMmSOl3LcNuqTpT7K9ZL8iCjmwgxofKW7ht3Uk3JRubmks2WiLlqpBXSr1qS
+         RK3VJXyuo6udZuS2bPlaPW49IjORlzh6jUv3jnHzDJ59AxdpiPxlJhRJ0YFcoacIYNKl
+         pipMBLfJayeC8olZ/1827EaP56sCpiMmFxux/Qe6aqPPZ5EgfEbm4Pzs1r8HhCgT3BEI
+         VOwXNdFHqmaPRfUexgZpgpCXwVuhmHy/N65russv34m6G3Nbm0waba56RK2Av9HSBa2Z
+         dOd6WfICrgB76klVBL3gnR1cW24uxPRZcDlssl6kzJl27NNNviM7cWTNcmbxxWHoa+4z
+         wlMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=HL1TptI/3GtEHoAEr6jgXfR6NOOXBI/okx+jAapSegA=;
+        b=a8jjgIZuLKJH4/RgHMCFdLBelR0Bfru0IewGpzhNypmK04E1Y5+O60Gmewk1Zpp9PR
+         H/+8IA54ILvxKMShdqZjjt4w5IwOS2vImxgXLKifttmZ5QbYXhtCoNdkrP8kdUD4fguN
+         zBb9EvWhOJccfTXdtDD+gQXlMfRkJewHuPpIrfv3noNLZMwlSU0oFEdY4l0OJacj7KUC
+         LWL+vzhcOR/bRdMbdiaHEZ2T8LxDpK+ndaVqeKACcle2EGfKIkNeW3mzItG1N9Io0l7h
+         UMNx90oZ06bb5VhOrAskN1A+DT1X7kaiB64xXyyRDa+v5N10h+BrA2U7UusfxRFxxum4
+         hsdg==
+X-Gm-Message-State: AOAM5339vhv2nWFxlwwUOuyi3fgw7JPuit3r8vEm2ag/5UvChADO9ELJ
+        yd0wmgaDiiwNylMh33IlNVg=
+X-Google-Smtp-Source: ABdhPJyrKcKa96eBJYqES8xrdpgPF+J4GHxlt596kf7yccL7/6Po/qumO4NBK1RNMWLXvzRCcCvcMw==
+X-Received: by 2002:a05:6512:3d28:b0:46d:d45:8f31 with SMTP id d40-20020a0565123d2800b0046d0d458f31mr5356989lfv.146.1650036596600;
+        Fri, 15 Apr 2022 08:29:56 -0700 (PDT)
+Received: from [192.168.1.7] ([212.22.223.21])
+        by smtp.gmail.com with ESMTPSA id k15-20020a2e92cf000000b002493cc687f3sm306793ljh.45.2022.04.15.08.29.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Apr 2022 08:29:56 -0700 (PDT)
+Subject: Re: [RFC PATCH 0/6] virtio: Solution to restrict memory access under
+ Xen using xen-virtio DMA ops layer
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        virtualization@lists.linux-foundation.org,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>, Julien Grall <julien@xen.org>,
+        Bertrand Marquis <bertrand.marquis@arm.com>,
+        Wei Chen <Wei.Chen@arm.com>, Henry Wang <Henry.Wang@arm.com>,
+        Kaly Xin <Kaly.Xin@arm.com>, Jiamei Xie <Jiamei.Xie@arm.com>,
+        =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>,
+        Christoph Hellwig <hch@infradead.org>
+References: <1649963973-22879-1-git-send-email-olekstysh@gmail.com>
+ <20220415044225-mutt-send-email-mst@kernel.org>
+From:   Oleksandr <olekstysh@gmail.com>
+Message-ID: <d179fc28-c64c-42aa-8402-789639781cbb@gmail.com>
+Date:   Fri, 15 Apr 2022 18:29:54 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20220415044225-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a streaming element to the capture state structure to know if the
-capture device is used or not. Only configure things related to output
-when streaming, including the output format, irq, state (dma buffer)
-and window configuration registers.
 
-After this change, it becomes possible to use the bridge without the
-capture device, which will be the case in the isp media flow.
+On 15.04.22 11:44, Michael S. Tsirkin wrote:
 
-Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
----
- .../sunxi/sun6i-csi/sun6i_csi_bridge.c        | 50 ++++++++++++-------
- .../sunxi/sun6i-csi/sun6i_csi_capture.c       | 11 +++-
- .../sunxi/sun6i-csi/sun6i_csi_capture.h       |  1 +
- 3 files changed, 41 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c
-index 27289d904d5c..8e9eded0df28 100644
---- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c
-+++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c
-@@ -338,6 +338,7 @@ sun6i_csi_bridge_configure_mipi_csi2(struct sun6i_csi_device *csi_dev)
- static void sun6i_csi_bridge_configure_format(struct sun6i_csi_device *csi_dev)
- {
- 	struct regmap *regmap = csi_dev->regmap;
-+	bool capture_streaming = csi_dev->capture.state.streaming;
- 	const struct sun6i_csi_bridge_format *bridge_format;
- 	const struct sun6i_csi_capture_format *capture_format;
- 	u32 mbus_code, field, pixelformat;
-@@ -353,26 +354,29 @@ static void sun6i_csi_bridge_configure_format(struct sun6i_csi_device *csi_dev)
- 	input_format = bridge_format->input_format;
- 	input_yuv_seq = bridge_format->input_yuv_seq;
- 
--	sun6i_csi_capture_format(csi_dev, &pixelformat, NULL);
-+	if (capture_streaming) {
-+		sun6i_csi_capture_format(csi_dev, &pixelformat, NULL);
- 
--	capture_format = sun6i_csi_capture_format_find(pixelformat);
--	if (WARN_ON(!capture_format))
--		return;
-+		capture_format = sun6i_csi_capture_format_find(pixelformat);
-+		if (WARN_ON(!capture_format))
-+			return;
- 
--	if (capture_format->input_format_raw)
--		input_format = SUN6I_CSI_INPUT_FMT_RAW;
-+		if (capture_format->input_format_raw)
-+			input_format = SUN6I_CSI_INPUT_FMT_RAW;
- 
--	if (capture_format->input_yuv_seq_invert)
--		input_yuv_seq = bridge_format->input_yuv_seq_invert;
-+		if (capture_format->input_yuv_seq_invert)
-+			input_yuv_seq = bridge_format->input_yuv_seq_invert;
- 
--	if (field == V4L2_FIELD_INTERLACED ||
--	    field == V4L2_FIELD_INTERLACED_TB ||
--	    field == V4L2_FIELD_INTERLACED_BT)
--		output_format = capture_format->output_format_field;
--	else
--		output_format = capture_format->output_format_frame;
-+		if (field == V4L2_FIELD_INTERLACED ||
-+		    field == V4L2_FIELD_INTERLACED_TB ||
-+		    field == V4L2_FIELD_INTERLACED_BT)
-+			output_format = capture_format->output_format_field;
-+		else
-+			output_format = capture_format->output_format_frame;
-+
-+		value |= SUN6I_CSI_CH_CFG_OUTPUT_FMT(output_format);
-+	}
- 
--	value |= SUN6I_CSI_CH_CFG_OUTPUT_FMT(output_format);
- 	value |= SUN6I_CSI_CH_CFG_INPUT_FMT(input_format);
- 	value |= SUN6I_CSI_CH_CFG_INPUT_YUV_SEQ(input_yuv_seq);
- 
-@@ -406,6 +410,7 @@ static int sun6i_csi_bridge_s_stream(struct v4l2_subdev *subdev, int on)
- 	struct sun6i_csi_device *csi_dev = v4l2_get_subdevdata(subdev);
- 	struct sun6i_csi_bridge *bridge = &csi_dev->bridge;
- 	struct media_entity *bridge_entity = &bridge->subdev.entity;
-+	bool capture_streaming = csi_dev->capture.state.streaming;
- 	struct device *dev = csi_dev->dev;
- 	struct sun6i_csi_bridge_source *source;
- 	struct v4l2_subdev *source_subdev;
-@@ -448,15 +453,20 @@ static int sun6i_csi_bridge_s_stream(struct v4l2_subdev *subdev, int on)
- 	/* Configure */
- 
- 	sun6i_csi_bridge_configure(csi_dev, source);
--	sun6i_csi_capture_configure(csi_dev);
-+
-+	if (capture_streaming)
-+		sun6i_csi_capture_configure(csi_dev);
- 
- 	/* State Update */
- 
--	sun6i_csi_capture_state_update(csi_dev);
-+	if (capture_streaming)
-+		sun6i_csi_capture_state_update(csi_dev);
- 
- 	/* Enable */
- 
--	sun6i_csi_bridge_irq_enable(csi_dev);
-+	if (capture_streaming)
-+		sun6i_csi_bridge_irq_enable(csi_dev);
-+
- 	sun6i_csi_bridge_enable(csi_dev);
- 
- 	ret = v4l2_subdev_call(source_subdev, video, s_stream, 1);
-@@ -466,7 +476,9 @@ static int sun6i_csi_bridge_s_stream(struct v4l2_subdev *subdev, int on)
- 	return 0;
- 
- disable:
--	sun6i_csi_bridge_irq_disable(csi_dev);
-+	if (capture_streaming)
-+		sun6i_csi_bridge_irq_disable(csi_dev);
-+
- 	sun6i_csi_bridge_disable(csi_dev);
- 
- 	pm_runtime_put(dev);
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-index f1581b877819..17145ce53395 100644
---- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-+++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-@@ -616,13 +616,17 @@ static int sun6i_csi_capture_start_streaming(struct vb2_queue *queue,
- 	if (ret < 0)
- 		goto error_state;
- 
-+	state->streaming = true;
-+
- 	ret = v4l2_subdev_call(subdev, video, s_stream, 1);
- 	if (ret && ret != -ENOIOCTLCMD)
--		goto error_media_pipeline;
-+		goto error_streaming;
- 
- 	return 0;
- 
--error_media_pipeline:
-+error_streaming:
-+	state->streaming = false;
-+
- 	media_pipeline_stop(&video_dev->entity);
- 
- error_state:
-@@ -634,11 +638,14 @@ static int sun6i_csi_capture_start_streaming(struct vb2_queue *queue,
- static void sun6i_csi_capture_stop_streaming(struct vb2_queue *queue)
- {
- 	struct sun6i_csi_device *csi_dev = vb2_get_drv_priv(queue);
-+	struct sun6i_csi_capture_state *state = &csi_dev->capture.state;
- 	struct video_device *video_dev = &csi_dev->capture.video_dev;
- 	struct v4l2_subdev *subdev = &csi_dev->bridge.subdev;
- 
- 	v4l2_subdev_call(subdev, video, s_stream, 0);
- 
-+	state->streaming = false;
-+
- 	media_pipeline_stop(&video_dev->entity);
- 
- 	sun6i_csi_capture_state_cleanup(csi_dev, true);
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
-index ceceb030aef6..29893cf96f6b 100644
---- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
-+++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
-@@ -44,6 +44,7 @@ struct sun6i_csi_capture_state {
- 	struct sun6i_csi_buffer		*complete;
- 
- 	unsigned int			sequence;
-+	bool				streaming;
- };
- 
- struct sun6i_csi_capture {
+Hello Michael
+
+
+
+> On Thu, Apr 14, 2022 at 10:19:27PM +0300, Oleksandr Tyshchenko wrote:
+>> From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+>>
+>> Hello all.
+>>
+>> The purpose of this RFC patch series is to add support for restricting memory access under Xen using specific
+>> grant table based DMA ops layer. Patch series is based on Juergen Gross’ initial work [1] which implies using
+>> grant references instead of raw guest physical addresses (GPA) for the virtio communications (some kind of
+>> the software IOMMU).
+>>
+>> The high level idea is to create new Xen’s grant table based DMA ops layer for the guest Linux whose main
+>> purpose is to provide a special 64-bit DMA address which is formed by using the grant reference (for a page
+>> to be shared with the backend) with offset and setting the highest address bit (this is for the backend to
+>> be able to distinguish grant ref based DMA address from normal GPA). For this to work we need the ability
+>> to allocate contiguous (consecutive) grant references for multi-page allocations. And the backend then needs
+>> to offer VIRTIO_F_ACCESS_PLATFORM and VIRTIO_F_VERSION_1 feature bits (it must support virtio-mmio modern
+>> transport for 64-bit addresses in the virtqueue).
+> I'm not enough of a xen expert to review this, and I didn't get
+> all patches, but I'm very happy to see that approach being
+> taken. VIRTIO_F_ACCESS_PLATFORM and VIRTIO_F_VERSION_1 are
+> exactly the way to declare not all of memory is accessible.
+> Thanks!
+
+I am happy to hear that! Thank you.
+
+
+Regarding the "all patches" I have already redirect missing ones, I hope 
+you and Christoph will get them.
+
+Sorry for the inconvenience.
+
+
+>
+>> Xen's grant mapping mechanism is the secure and safe solution to share pages between domains which proven
+>> to work and works for years (in the context of traditional Xen PV drivers for example). So far, the foreign
+>> mapping is used for the virtio backend to map and access guest memory. With the foreign mapping, the backend
+>> is able to map arbitrary pages from the guest memory (or even from Dom0 memory). And as the result, the malicious
+>> backend which runs in a non-trusted domain can take advantage of this. Instead, with the grant mapping
+>> the backend is only allowed to map pages which were explicitly granted by the guest before and nothing else.
+>> According to the discussions in various mainline threads this solution would likely be welcome because it
+>> perfectly fits in the security model Xen provides.
+>>
+>> What is more, the grant table based solution requires zero changes to the Xen hypervisor itself at least
+>> with virtio-mmio and DT (in comparison, for example, with "foreign mapping + virtio-iommu" solution which would
+>> require the whole new complex emulator in hypervisor in addition to new functionality/hypercall to pass IOVA
+>> from the virtio backend running elsewhere to the hypervisor and translate it to the GPA before mapping into
+>> P2M or denying the foreign mapping request if no corresponding IOVA-GPA mapping present in the IOMMU page table
+>> for that particular device). We only need to update toolstack to insert a new "xen,dev-domid" property to
+>> the virtio-mmio device node when creating a guest device-tree (this is an indicator for the guest to use grants
+>> and the ID of Xen domain where the corresponding backend resides, it is used as an argument to the grant mapping
+>> APIs). It worth mentioning that toolstack patch is based on non  upstreamed yet “Virtio support for toolstack
+>> on Arm” series which is on review now [2].
+>>
+>> Please note the following:
+>> - Patch series only covers Arm and virtio-mmio (device-tree) for now. To enable the restricted memory access
+>>    feature on Arm the following options should be set:
+>>    CONFIG_XEN_VIRTIO = y
+>>    CONFIG_XEN_HVM_VIRTIO_GRANT = y
+>> - Some callbacks in xen-virtio DMA ops layer (map_sg/unmap_sg, etc) are not implemented yet as they are not
+>>    needed/used in the first prototype
+>>
+>> Patch series is rebased on Linux 5.18-rc2 tag and tested on Renesas Salvator-X board + H3 ES3.0 SoC (Arm64)
+>> with standalone userspace (non-Qemu) virtio-mmio based virtio-disk backend running in Driver domain and Linux
+>> guest running on existing virtio-blk driver (frontend). No issues were observed. Guest domain 'reboot/destroy'
+>> use-cases work properly. I have also tested other use-cases such as assigning several virtio block devices
+>> or a mix of virtio and Xen PV block devices to the guest.
+>>
+>> 1. Xen changes located at (last patch):
+>> https://github.com/otyshchenko1/xen/commits/libxl_virtio_next
+>> 2. Linux changes located at:
+>> https://github.com/otyshchenko1/linux/commits/virtio_grant5
+>> 3. virtio-disk changes located at:
+>> https://github.com/otyshchenko1/virtio-disk/commits/virtio_grant
+>>
+>> Any feedback/help would be highly appreciated.
+>>
+>> [1] https://www.youtube.com/watch?v=IrlEdaIUDPk
+>> [2] https://lore.kernel.org/xen-devel/1649442065-8332-1-git-send-email-olekstysh@gmail.com/
+>>
+>> Juergen Gross (2):
+>>    xen/grants: support allocating consecutive grants
+>>    virtio: add option to restrict memory access under Xen
+>>
+>> Oleksandr Tyshchenko (4):
+>>    dt-bindings: xen: Add xen,dev-domid property description for
+>>      xen-virtio layer
+>>    virtio: Various updates to xen-virtio DMA ops layer
+>>    arm/xen: Introduce xen_setup_dma_ops()
+>>    arm/xen: Assign xen-virtio DMA ops for virtio devices in Xen guests
+>>
+>>   .../devicetree/bindings/virtio/xen,dev-domid.yaml  |  39 +++
+>>   arch/arm/include/asm/xen/xen-ops.h                 |   1 +
+>>   arch/arm/mm/dma-mapping.c                          |   5 +-
+>>   arch/arm/xen/enlighten.c                           |  11 +
+>>   arch/arm64/include/asm/xen/xen-ops.h               |   1 +
+>>   arch/arm64/mm/dma-mapping.c                        |   5 +-
+>>   arch/x86/mm/init.c                                 |  15 +
+>>   arch/x86/mm/mem_encrypt.c                          |   5 -
+>>   arch/x86/xen/Kconfig                               |   9 +
+>>   drivers/xen/Kconfig                                |  20 ++
+>>   drivers/xen/Makefile                               |   1 +
+>>   drivers/xen/grant-table.c                          | 238 +++++++++++++--
+>>   drivers/xen/xen-virtio.c                           | 335 +++++++++++++++++++++
+>>   include/xen/arm/xen-ops.h                          |  20 ++
+>>   include/xen/grant_table.h                          |   4 +
+>>   include/xen/xen-ops.h                              |  13 +
+>>   16 files changed, 679 insertions(+), 43 deletions(-)
+>>   create mode 100644 Documentation/devicetree/bindings/virtio/xen,dev-domid.yaml
+>>   create mode 100644 arch/arm/include/asm/xen/xen-ops.h
+>>   create mode 100644 arch/arm64/include/asm/xen/xen-ops.h
+>>   create mode 100644 drivers/xen/xen-virtio.c
+>>   create mode 100644 include/xen/arm/xen-ops.h
+>>
+>> -- 
+>> 2.7.4
+
 -- 
-2.35.2
+Regards,
+
+Oleksandr Tyshchenko
 
