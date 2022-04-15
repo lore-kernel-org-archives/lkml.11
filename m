@@ -2,68 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4B5AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 17:59:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE57C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 18:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345051AbiDOSCW (ORCPT
+        id S1345009AbiDOSFN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 14:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42332 "EHLO
+        Fri, 15 Apr 2022 14:05:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344138AbiDOSCS (ORCPT
+        with ESMTP id S1345070AbiDOSFF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 14:02:18 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C995C343
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 10:59:48 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id p10so15021777lfa.12
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 10:59:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=ZACS5WHiI7gChdgJhb6L8E+uQLLjhDmU2/Qe3HsDIMI=;
-        b=XQQwxdMI0ImldHNKxqFX00q9oRU1fpELODiuK1zpOXyGiFAA6kL6FzgSrRjxqWF2kr
-         G6KnStB6LrWLi5u2nj0ZFxquM++LK7WmvUJdKQXIS7lTDBZEGVDbsWTnZ5Eiuv10FaP8
-         KaPcpZxl1ajQdG7+9VV8k/GqAQt9XWrZv48TeiU+tE4JFodOiEXjZaxeIQwzbZ2+GcH/
-         q5C5ucF+7rf3V86RvyRv0EPmB2SNHtd3QqApleeTKWdssO7BHf0iPc/wHBYrC8XZ9xeX
-         gkyEeQSLF30o5vbg9vrQgQMtu1EnI4oQll6paq473qT5ZpAMAjbvCmuVCXOpZsx/Ogzw
-         NEWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=ZACS5WHiI7gChdgJhb6L8E+uQLLjhDmU2/Qe3HsDIMI=;
-        b=w9oLLTqCZ+UIz6KPUnEmTZK34ZWi4vln+m22rAKIVFaKjT0mX2wxPFN4/oyKXMTXv3
-         0icN06Y/3aB7WrKBa/ZQIixfZirBxk9j6nk4lOmR2YY0akoSSu19fu7JSV25Kv1Gyrez
-         QjOALUVuCtwgaWJ4fE2BvRJnb6hSyIX3NaJtucr0T1pnMj5nA8jdYQS9PoYIf+rT1y7I
-         cUGkl4bWD8VkxtgtRhKehefFxlnwnl/BzzOaQ9MxKGfpiDfll2rjbpTiDEReeWIrMYq6
-         1CzcnZb68Al3RH++5zrTLAyJ80TL04CTAs1LhR6CE4Zsyt/oti16QGjQuNxs1s7XnEra
-         crVw==
-X-Gm-Message-State: AOAM533gXsa7A6UtZOriMUSy4N5Oj+fSuPF0UTr5uieKoJVrdF3ZCU7v
-        UVNrqZBbnnaXd5GImJ8cVNfu+U81PlNJnKGUIbsHXaO5EdNlFA==
-X-Google-Smtp-Source: ABdhPJzF5rxX6OUHjiotcRapiD2RkG7bHsp2HuJ5fZGDPasXccrqlA8FxWBntopJ7Rrb4fF5JAPkvKMRINBnBQuqPTc=
-X-Received: by 2002:ac2:5223:0:b0:448:5100:e427 with SMTP id
- i3-20020ac25223000000b004485100e427mr111228lfl.87.1650045586873; Fri, 15 Apr
- 2022 10:59:46 -0700 (PDT)
+        Fri, 15 Apr 2022 14:05:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A76C97280;
+        Fri, 15 Apr 2022 11:02:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D46DEB82E24;
+        Fri, 15 Apr 2022 18:02:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C89A8C385A5;
+        Fri, 15 Apr 2022 18:02:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650045753;
+        bh=mE99LsDyoPP+38aCE5uDC5gBiHSUiziZZX9l14XmXo8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tCUGcNwUXJvt67vpLi/qpYwiXS3pFNhaa1Y4WkYz66Dvc7//DZk9Gs/tKqaSSrWiV
+         D22rCrHO+uaXm9NGUrObohQwt6Jc54xHasKgm5tLnP0xQvULrYLqBNOFVhW5oJqv+7
+         8czU+bbZuScEOWW6UsNGg2IZLeiCFbUwTuQC9T4Eq82XXrEcAXFWe7Dzf/CR6dNWb9
+         tPzElDo/WFaRtdzxps1sQsnKwpgNxNsE2b3rZYC0TJXJl74+QAYylxzahNiHLDCRKn
+         PSKwCIcVQJwOpVC+6QCiciMnLKWukooHfmEB3q72wwSH0tQR2Mpc/lfTlRECiEMpC6
+         Vf0XaQGLsnt4A==
+Date:   Fri, 15 Apr 2022 19:10:31 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
+Subject: Re: [PATCH v2 2/3] iio: imu: adis16480: Use temporary variable for
+ struct device
+Message-ID: <20220415191031.4cd40c35@jic23-huawei>
+In-Reply-To: <20220414131559.24694-2-andriy.shevchenko@linux.intel.com>
+References: <20220414131559.24694-1-andriy.shevchenko@linux.intel.com>
+        <20220414131559.24694-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Fri, 15 Apr 2022 10:59:35 -0700
-Message-ID: <CAKwvOd=_ihOghnaWCmGs3xx1Tyn4qaEpZ1bpXvbGJhjGJR2K-w@mail.gmail.com>
-Subject: plumbers session on drgn and GDB+poke?
-To:     osandov@fb.com, "Jose E. Marchesi" <jemarch@gnu.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Omar and Jose,
-Jose and I are currently in the planning process to put together a
-Kernel+Toolchain microconference track at Linux Plumbers Conference
-this year (Sept 12-14) in Dublin, Ireland.
+On Thu, 14 Apr 2022 16:15:58 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-We'd be curious if you both could lead a session on kernel debugging,
-and maybe show off drgn and GNU poke GDB integration?
--- 
-Thanks,
-~Nick Desaulniers
+> Use temporary variable for struct device to make code neater.
+>=20
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+> ---
+> v2: added tag (Nuno)
+>  drivers/iio/imu/adis16480.c | 46 ++++++++++++++++++-------------------
+>  1 file changed, 23 insertions(+), 23 deletions(-)
+>=20
+> diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+> index 68eed088cca6..287914016f28 100644
+> --- a/drivers/iio/imu/adis16480.c
+> +++ b/drivers/iio/imu/adis16480.c
+...
+
+> @@ -1216,12 +1217,12 @@ static const struct iio_info adis16480_info =3D {
+>  static int adis16480_stop_device(struct iio_dev *indio_dev)
+>  {
+>  	struct adis16480 *st =3D iio_priv(indio_dev);
+> +	struct device *dev =3D &st->adis.spi->dev;
+>  	int ret;
+> =20
+>  	ret =3D adis_write_reg_16(&st->adis, ADIS16480_REG_SLP_CNT, BIT(9));
+>  	if (ret)
+> -		dev_err(&indio_dev->dev,
+> -			"Could not power down device: %d\n", ret);
+> +		dev_err(dev, "Could not power down device: %d\n", ret);
+> =20
+
+Subtle but this is a functional change.  I think it's an improvement
+to use the spi dev, but if anyone sees this error message it will
+be different as a result, so ideally the patch description
+would have mentioned this.  Meh. It's trivial so I don't really care
+enough for a v3 or to modify it whilst applying :)
+
+So fine as is, but I thought I'd call it out anyway.
+
+Jonathan
