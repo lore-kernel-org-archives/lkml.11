@@ -2,163 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 311B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 13:52:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C0F6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 13:55:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354171AbiDONyv (ORCPT
+        id S1354188AbiDON5y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 09:54:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59400 "EHLO
+        Fri, 15 Apr 2022 09:57:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354157AbiDONyt (ORCPT
+        with ESMTP id S1354196AbiDON5a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 09:54:49 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8442DBC856;
-        Fri, 15 Apr 2022 06:52:20 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id i27so15466357ejd.9;
-        Fri, 15 Apr 2022 06:52:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=y9bMKIoMA4ZWyNr76PabwIny+psaRVtbI7l3QYKzBGY=;
-        b=WrfxT9w7Xdhji7RtpZX1oY7/s8uJg2kgLfnL3b6m8oCjCAI71ddOuNXAYx/YQpt+46
-         QSVQhfHGmfh+BJRtMzLFXhE+23lJfpf3/8mE59bikRDPbUzYp37yynqVA0cOsnduKfkf
-         Vdj4BHMWS6MkLiuSI8AUTwQfdzZInroEwhfSXmmMmMSda4JTUzanJDWfhIm1JrqzTlo0
-         GWMMjDbG9su97cr30EVxDw7rQCtt0/9ay4l6NOLMHRf14mp5Tw5bOzyYHnbqSj3Tp3sm
-         oksZnGQVbzJ7UVNJ11e/UAImQelQf+B6GuimWIea5h7geVMl7k/bvrAzQq8JWCLKRYlM
-         HqxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=y9bMKIoMA4ZWyNr76PabwIny+psaRVtbI7l3QYKzBGY=;
-        b=ausbNNtMRk22RAOkdpaWcQ2+UljbUlQ1TzaRpKfZ1z0evpHLyVkcmP+T7h/t3HNt17
-         Mvjx0BjwAz7fOTHt9Od7LtB3KAze9Vgnx2ZjSpJ1YdtRmFdLCch5Qe026QWQw7mmbzl2
-         gNf1OPx7T+FboXEQA9ZhPwq1+pR0F+M2aNjR0aqiorLUh10rc0IyO4zTG4nJ7714TLH2
-         v9LwGWlwfIdRqnMRa9k9qxAg6AzQ3/GmzLpopFD3phg78duYIpfiKZGMybPNX4zW6wbZ
-         3SiJT/wfr8o8/qVlEKVeXDn+J9FgaRNgUG40lbc3ArcsPdf1/EOIqpV5zdv3WZN8Ep3w
-         Bo/w==
-X-Gm-Message-State: AOAM531UTUCe/b0Iq8EXHOuFRsCZ5pABPMrFBV/RZx+n+FSNnDoL8d3Z
-        EginXjVkgmcaeRNfqOsA9oBieUlrjZQpEQ==
-X-Google-Smtp-Source: ABdhPJz0gleb4vbgpmjhsEr/g1gMmnuJZmdWwUakwBghvIs9O1+imICeQyCPgXNy4WFhjB+yVOJ2rw==
-X-Received: by 2002:a17:907:3da5:b0:6e8:c2c8:1f18 with SMTP id he37-20020a1709073da500b006e8c2c81f18mr6298391ejc.728.1650030738952;
-        Fri, 15 Apr 2022 06:52:18 -0700 (PDT)
-Received: from ?IPV6:2001:b07:add:ec09:c399:bc87:7b6c:fb2a? ([2001:b07:add:ec09:c399:bc87:7b6c:fb2a])
-        by smtp.googlemail.com with ESMTPSA id r29-20020a50c01d000000b00415fb0dc793sm2781482edb.47.2022.04.15.06.52.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Apr 2022 06:52:18 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <d95791fc-a278-9002-2f12-6aeaa1d1e47f@redhat.com>
-Date:   Fri, 15 Apr 2022 15:52:14 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 061/104] KVM: TDX: Finalize VM initialization
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        Fri, 15 Apr 2022 09:57:30 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256305581;
+        Fri, 15 Apr 2022 06:55:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650030901; x=1681566901;
+  h=to:cc:subject:references:date:mime-version:
+   content-transfer-encoding:from:message-id:in-reply-to;
+  bh=rnIvYvNkZSMlVf1curZVeeehjye1dFlSwJzy1pjQQ4A=;
+  b=LjIollzPWpojXfctNvSRs6aV5pa/IfK37H8+wQunCeuBb3S3LNhHUNys
+   Vb1V19gjb3qJuhMjht+TvRW1k+1W6ni+ozPPfv7MENW0VDTCzfOLGJ1XN
+   0c33Cgg8mp+a6baHdh+VvH8whbLybODaU0mpFRET/zXMtOks3ARkXKThp
+   ZUbJNH0z92TgI6Hvizf+h7a7DfXht2kD9kcg05bdjZjLb0SwgTR76N8jY
+   yPR8bodq0IqoX7D1dns3jcm+A/St50DMzX600LOyjAEbY5SA8X4A9EBQA
+   aEpmP/GZo2zfhZa4DZw3ZJAMfnYo6i/54KY7Tjaf3iN8PDSVZxnioLsrY
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="250454121"
+X-IronPort-AV: E=Sophos;i="5.90,262,1643702400"; 
+   d="scan'208";a="250454121"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 06:55:00 -0700
+X-IronPort-AV: E=Sophos;i="5.90,262,1643702400"; 
+   d="scan'208";a="662093589"
+Received: from fkchan-mobl1.amr.corp.intel.com (HELO hhuan26-mobl1.mshome.net) ([10.212.59.147])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-SHA; 15 Apr 2022 06:54:58 -0700
+Content-Type: text/plain; charset=iso-8859-15; format=flowed; delsp=yes
+To:     "Jarkko Sakkinen" <jarkko@kernel.org>, dave.hansen@linux.intel.com,
+        tglx@linutronix.de, bp@alien8.de, luto@kernel.org,
+        mingo@redhat.com, linux-sgx@vger.kernel.org, x86@kernel.org,
+        shuah@kernel.org, linux-kselftest@vger.kernel.org,
+        "Reinette Chatre" <reinette.chatre@intel.com>
+Cc:     seanjc@google.com, kai.huang@intel.com, cathy.zhang@intel.com,
+        cedric.xing@intel.com, haitao.huang@intel.com,
+        mark.shanahan@intel.com, vijay.dhanraj@intel.com, hpa@zytor.com,
         linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <83768bf0f786d24f49d9b698a45ba65441ef5ef0.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <83768bf0f786d24f49d9b698a45ba65441ef5ef0.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH V4 14/31] x86/sgx: Support VA page allocation without
+ reclaiming
+References: <cover.1649878359.git.reinette.chatre@intel.com> <0ab32196f5056b25c34fb89fcc4dc28a5d875d2e.1649878359.git.reinette.chatre@intel.com> <bf2fcc93babdbf541fffc6cc5f5756f391773a75.camel@kernel.org> <767b99c5-f28e-4b8f-5147-6e1d290ca5c6@intel.com>
+Date:   Fri, 15 Apr 2022 08:54:53 -0500
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
+From:   "Haitao Huang" <haitao.huang@linux.intel.com>
+Organization: Intel Corp
+Message-ID: <op.1kn59r1bwjvjmi@hhuan26-mobl1.mshome.net>
+In-Reply-To: <767b99c5-f28e-4b8f-5147-6e1d290ca5c6@intel.com>
+User-Agent: Opera Mail/1.0 (Win32)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
-> From: Isaku Yamahata <isaku.yamahata@intel.com>
-> 
-> To protect the initial contents of the guest TD, the TDX module measures
-> the guest TD during the build process as SHA-384 measurement.  The
-> measurement of the guest TD contents needs to be completed to make the
-> guest TD ready to run.
-> 
-> Add a new subcommand, KVM_TDX_FINALIZE_VM, for VM-scoped
-> KVM_MEMORY_ENCRYPT_OP to finalize the measurement and mark the TDX VM ready
-> to run.
-> 
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-> ---
->   arch/x86/include/uapi/asm/kvm.h       |  1 +
->   arch/x86/kvm/vmx/tdx.c                | 21 +++++++++++++++++++++
->   tools/arch/x86/include/uapi/asm/kvm.h |  1 +
->   3 files changed, 23 insertions(+)
-> 
-> diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
-> index 77f46260d868..943219a08fcd 100644
-> --- a/arch/x86/include/uapi/asm/kvm.h
-> +++ b/arch/x86/include/uapi/asm/kvm.h
-> @@ -534,6 +534,7 @@ enum kvm_tdx_cmd_id {
->   	KVM_TDX_INIT_VM,
->   	KVM_TDX_INIT_VCPU,
->   	KVM_TDX_INIT_MEM_REGION,
-> +	KVM_TDX_FINALIZE_VM,
->   
->   	KVM_TDX_CMD_NR_MAX,
->   };
-> diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-> index cd726c41d362..85d5f961d97e 100644
-> --- a/arch/x86/kvm/vmx/tdx.c
-> +++ b/arch/x86/kvm/vmx/tdx.c
-> @@ -1103,6 +1103,24 @@ static int tdx_init_mem_region(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
->   	return ret;
->   }
->   
-> +static int tdx_td_finalizemr(struct kvm *kvm)
-> +{
-> +	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
-> +	u64 err;
-> +
-> +	if (!is_td_initialized(kvm) || is_td_finalized(kvm_tdx))
-> +		return -EINVAL;
-> +
-> +	err = tdh_mr_finalize(kvm_tdx->tdr.pa);
-> +	if (WARN_ON_ONCE(err)) {
-> +		pr_tdx_error(TDH_MR_FINALIZE, err, NULL);
-> +		return -EIO;
-> +	}
-> +
-> +	kvm_tdx->finalized = true;
-> +	return 0;
-> +}
-> +
->   int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
->   {
->   	struct kvm_tdx_cmd tdx_cmd;
-> @@ -1123,6 +1141,9 @@ int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
->   	case KVM_TDX_INIT_MEM_REGION:
->   		r = tdx_init_mem_region(kvm, &tdx_cmd);
->   		break;
-> +	case KVM_TDX_FINALIZE_VM:
-> +		r = tdx_td_finalizemr(kvm);
-> +		break;
->   	default:
->   		r = -EINVAL;
->   		goto out;
-> diff --git a/tools/arch/x86/include/uapi/asm/kvm.h b/tools/arch/x86/include/uapi/asm/kvm.h
-> index 77f46260d868..943219a08fcd 100644
-> --- a/tools/arch/x86/include/uapi/asm/kvm.h
-> +++ b/tools/arch/x86/include/uapi/asm/kvm.h
-> @@ -534,6 +534,7 @@ enum kvm_tdx_cmd_id {
->   	KVM_TDX_INIT_VM,
->   	KVM_TDX_INIT_VCPU,
->   	KVM_TDX_INIT_MEM_REGION,
-> +	KVM_TDX_FINALIZE_VM,
->   
->   	KVM_TDX_CMD_NR_MAX,
->   };
+On Thu, 14 Apr 2022 11:30:34 -0500, Reinette Chatre  
+<reinette.chatre@intel.com> wrote:
 
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+> Hi Jarkko,
+>
+> On 4/14/2022 4:18 AM, Jarkko Sakkinen wrote:
+>> On Wed, 2022-04-13 at 14:10 -0700, Reinette Chatre wrote:
+>>> struct sgx_encl should be protected with the mutex
+>>> sgx_encl->lock. One exception is sgx_encl->page_cnt that
+>>> is incremented (in sgx_encl_grow()) when an enclave page
+>>> is added to the enclave. The reason the mutex is not held
+>>> is to allow the reclaimer to be called directly if there are
+>>> no EPC pages (in support of a new VA page) available at the time.
+>>>
+>>> Incrementing sgx_encl->page_cnt without sgc_encl->lock held
+>>> is currently (before SGX2) safe from concurrent updates because
+>>> all paths in which sgx_encl_grow() is called occur before
+>>> enclave initialization and are protected with an atomic
+>>> operation on SGX_ENCL_IOCTL.
+>>>
+>>> SGX2 includes support for dynamically adding pages after
+>>> enclave initialization where the protection of SGX_ENCL_IOCTL
+>>> is not available.
+>>>
+>>> Make direct reclaim of EPC pages optional when new VA pages
+>>> are added to the enclave. Essentially the existing "reclaim"
+>>> flag used when regular EPC pages are added to an enclave
+>>> becomes available to the caller when used to allocate VA pages
+>>> instead of always being "true".
+>>>
+>>> When adding pages without invoking the reclaimer it is possible
+>>> to do so with sgx_encl->lock held, gaining its protection against
+>>> concurrent updates to sgx_encl->page_cnt after enclave
+>>> initialization.
+>>>
+>>> No functional change.
+>>>
+>>> Reported-by: Haitao Huang <haitao.huang@intel.com>
+>>> Tested-by: Haitao Huang <haitao.huang@intel.com>
+>>> Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+>>
+>> Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+>
+> Thank you.
+>
+>>
+>> Nit: I don't think tested-by is in the right patch here. Maybe
+>> Haitao's tested-by should be moved into patch that actually adds
+>> support for EAUG? Not something I would NAK this patch, just
+>> wondering...
+>
+> Yes, that is a good point. While this is the bulk of the fix where
+> the new API is introduced, the test is only applicable when this API
+> is used and that is in "x86/sgx: Support adding of pages to an
+> initialized enclave". I will move the "Tested-by" to that patch.
+>
 
-Note however that errors should be passed back in the struct.
-
-Paolo
+You can also add my Tested-by for patches adding the new IOCTLs.
+Our team and I have tested EAUG on #PF,  modifying types and permissions  
+with Intel SGX SDK/PSW.
+Thanks
+Haitao
