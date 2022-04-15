@@ -2,79 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CA9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 01:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6251C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 01:10:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348372AbiDOBM1 (ORCPT
+        id S1348393AbiDOBMr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 21:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55890 "EHLO
+        Thu, 14 Apr 2022 21:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348363AbiDOBMX (ORCPT
+        with ESMTP id S1348410AbiDOBMh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 21:12:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14CE3B550
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 18:09:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F299621FF
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 01:09:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73E2AC385A1;
-        Fri, 15 Apr 2022 01:09:53 +0000 (UTC)
-Message-ID: <9e5ee1c3-ca80-f343-a1f5-66f3dd1c0727@linux-m68k.org>
-Date:   Fri, 15 Apr 2022 11:09:50 +1000
+        Thu, 14 Apr 2022 21:12:37 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58D73AA7B;
+        Thu, 14 Apr 2022 18:10:10 -0700 (PDT)
+Received: from kwepemi500003.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KfdRw2QDQzCr0W;
+        Fri, 15 Apr 2022 09:05:48 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500003.china.huawei.com (7.221.188.51) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 15 Apr 2022 09:10:07 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 15 Apr 2022 09:10:07 +0800
+Subject: Re: [PATCH -next 10/11] block, bfq: decrease
+ 'num_groups_with_pending_reqs' earlier
+From:   "yukuai (C)" <yukuai3@huawei.com>
+To:     Jan Kara <jack@suse.cz>
+CC:     <tj@kernel.org>, <axboe@kernel.dk>, <paolo.valente@linaro.org>,
+        <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+References: <20220305091205.4188398-1-yukuai3@huawei.com>
+ <20220305091205.4188398-11-yukuai3@huawei.com>
+ <20220413112816.fwobg4cp6ttpnpk6@quack3.lan>
+ <f3ed507a-7c85-cd69-3ad5-3e9c0e75c372@huawei.com>
+Message-ID: <ef7bad8c-b8dd-f625-330c-9a22e303844b@huawei.com>
+Date:   Fri, 15 Apr 2022 09:10:06 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [linux-stable-rc:queue/5.4 7091/9999]
- drivers/staging/comedi/drivers/comedi_isadma.c:25:17: error: implicit
- declaration of function 'claim_dma_lock'
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-References: <202204130751.lUeRF1y2-lkp@intel.com>
- <CAK8P3a3ow9EpNAyTU9n6zC8Rmw71vJ6oaRSCHmd1qU9Z_c3RuA@mail.gmail.com>
- <d5ffc004-f55c-c01e-3395-7983fb25e570@linux-m68k.org>
- <CAK8P3a29S9q=ZCGEx-1qxYciYB5=Jffkk9jx1+Gv91xvgtdA=g@mail.gmail.com>
-From:   Greg Ungerer <gerg@linux-m68k.org>
-In-Reply-To: <CAK8P3a29S9q=ZCGEx-1qxYciYB5=Jffkk9jx1+Gv91xvgtdA=g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <f3ed507a-7c85-cd69-3ad5-3e9c0e75c372@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 15/4/22 01:59, Arnd Bergmann wrote:
-> On Thu, Apr 14, 2022 at 4:16 PM Greg Ungerer <gerg@linux-m68k.org> wrote:
->> On 13/4/22 18:54, Arnd Bergmann wrote:
->>> On Wed, Apr 13, 2022 at 1:07 AM kernel test robot <lkp@intel.com> wrote:
->   >
->>> Greg (Ungerer), do you see any of these that are used on Coldfire?
->>> I can rule out most of them, but there are a few that are unclear to me.
+在 2022/04/13 19:40, yukuai (C) 写道:
+> 在 2022/04/13 19:28, Jan Kara 写道:
+>> On Sat 05-03-22 17:12:04, Yu Kuai wrote:
+>>> Currently 'num_groups_with_pending_reqs' won't be decreased when
+>>> the group doesn't have any pending requests, while some child group
+>>> still have pending requests. The decrement is delayed to when all the
+>>> child groups doesn't have any pending requests.
+>>>
+>>> For example:
+>>> 1) t1 issue sync io on root group, t2 and t3 issue sync io on the same
+>>> child group. num_groups_with_pending_reqs is 2 now.
+>>> 2) t1 stopped, num_groups_with_pending_reqs is still 2. io from t2 and
+>>> t3 still can't be handled concurrently.
+>>>
+>>> Fix the problem by decreasing 'num_groups_with_pending_reqs'
+>>> immediately upon the weights_tree removal of last bfqq of the group.
+>>>
+>>> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 >>
->> I think the cs89x0 driver may have been used on at least one platform
->> in the past. But nothing that is currently supported in mainline code.
->> So we can safely assume none of these are required for ColdFire platforms.
+>> So I'd find the logic easier to follow if you completely removed
+>> entity->in_groups_with_pending_reqs and did updates of
+>> bfqd->num_groups_with_pending_reqs like:
+>>
+>>     if (!bfqg->num_entities_with_pending_reqs++)
+>>         bfqd->num_groups_with_pending_reqs++;
+>>
+> Hi,
 > 
-> Ok, so even if this driver is used on coldfire, it only uses the ISA DMA
-> code path for actual ISA devices, not for the platform device code on
-> non-PC systems.
+> Indeed, this is an excellent idle, and much better than the way I did.
 > 
-> I think we can just remove arch/m68k/coldfire/dma.c and most of
-> arch/m68k/include/asm/dma.h then after dropping CONFIG_ISA_DMA_API,
-> leaving only the bits needed for CONFIG_GENERIC_ISA_DMA on Q40
-> and AMIGA.
+> Thanks,
+> Kuai
+> 
+>> and similarly on the remove side. And there would we literally two places
+>> (addition & removal from weight tree) that would need to touch these
+>> counters. Pretty obvious and all can be done in patch 9.
+>>
+>>                                 Honza
+Hi, Jan
 
-Yep, I think that is a good plan.
+I think with this change, we can count root_group while activating bfqqs
+that are under root_group, thus there is no need to modify
+for_each_entity(or fake bfq_sched_data) any more.
 
-Regards
-Greg
+The special case is that weight racing bfqqs are not inserted into
+weights tree, and I think this can be handled by adding a fake
+bfq_weight_counter for such bfqqs.
 
+What do you think ?
 
+Kuai
