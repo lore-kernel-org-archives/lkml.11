@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 144D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:54:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:54:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353802AbiDOM4f (ORCPT
+        id S1353834AbiDOM4k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 08:56:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54222 "EHLO
+        Fri, 15 Apr 2022 08:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243415AbiDOM4Z (ORCPT
+        with ESMTP id S1353483AbiDOM41 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 08:56:25 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B199CBF95F
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 05:53:55 -0700 (PDT)
+        Fri, 15 Apr 2022 08:56:27 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77155BF51A
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 05:53:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1650027235; x=1681563235;
+  t=1650027239; x=1681563239;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jpQn21lfBJqxHASJ0XDepMTCjpzWE4fmKlR+6b/wZig=;
-  b=0IFbNZH8WDXswEaNpK/Lr3rmE3jfbrE5rem4vgEu7YOYU2X9L5t75K+V
-   wNTXpl7kVc/LSswIMBtsRKpoL3fS37EVq0AVzgAiroAnE5IcmlMgB3C71
-   i+KGfXyZcXB2dnuYMuqQUrivYBM3vxVNlDJwtiP+mruukN5Up1h6SEyxd
-   +yEN2gkXnjHHGxF6iz2MuQB7jITdRkTz9g7JWCCsvEdKJbh6Hseq/dZw4
-   4l19NUOP6KeoXT6+F4qUYFganQj3w6tVCV3WK6kIHoo3CWqSMsQROIAA4
-   enaOqKtPM+0W6tR74zXnh3En2eQ8cOfi/jO4Gmr+oF9adflX8x7B+bRur
-   w==;
+  bh=RLw1mhSx4JnJWY7T9B+yYOnuF2rUPtAaGFAVz/XWDdQ=;
+  b=NDkzkC/qo4ldW/qfWKIyveB9/I2Hs4qKNcOWuSOZezqPX0JuOTYcKvkM
+   UTYkAfend0HcvJVnIq0GS+szTHVsFLXle21c96IHbA28jHipjspJY2zVQ
+   kH/QwoxgtKaGpUjcsvhuUFC8FY9uGlrXsrSrzjRFwR9PucpzuKO5Vk0k5
+   jTUByUYnvRO7HNEWgd/qZHG3N/ntg3qNjYBzQED4HyvJ9x40pO8ilpnBe
+   WxW8fEvY+MqPdfy9ZUJBT5i1dyMUYyLNMzZx/ApZTfzPEnLJ8zBUw2CL9
+   TitSVyJgtqdz+9Sw1FIkdOjJagZAN6bOYk1H5dAacYW6PjhWOwDizW4sv
+   g==;
 X-IronPort-AV: E=Sophos;i="5.90,262,1643698800"; 
-   d="scan'208";a="160220612"
+   d="scan'208";a="155680097"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Apr 2022 05:53:55 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Apr 2022 05:53:58 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 15 Apr 2022 05:53:54 -0700
+ 15.1.2375.17; Fri, 15 Apr 2022 05:53:58 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
  (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 15 Apr 2022 05:53:53 -0700
+ Transport; Fri, 15 Apr 2022 05:53:56 -0700
 From:   Conor Dooley <conor.dooley@microchip.com>
 To:     Palmer Dabbelt <palmer@dabbelt.com>
 CC:     Paul Walmsley <paul.walmsley@sifive.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
         <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
         Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v1 1/4] riscv: select peripheral drivers for polarfire soc
-Date:   Fri, 15 Apr 2022 13:52:19 +0100
-Message-ID: <20220415125221.2871991-2-conor.dooley@microchip.com>
+Subject: [PATCH v1 3/4] riscv: select vitesse phy driver for polarfire soc
+Date:   Fri, 15 Apr 2022 13:52:21 +0100
+Message-ID: <20220415125221.2871991-4-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220415125221.2871991-1-conor.dooley@microchip.com>
 References: <20220415125221.2871991-1-conor.dooley@microchip.com>
@@ -59,29 +59,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the SOC_MICROCHIP_POLARFIRE kconfig entry to select, where
-applicable, the supported drivers for the SoC.
+There is a Vitesse VSC8662 on the Icicle Kit, until a better option
+exists, select it in Kconfig.socs for SOC_MICROCHIP_POLARFIRE.
 
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+
 ---
- arch/riscv/Kconfig.socs | 4 ++++
- 1 file changed, 4 insertions(+)
+Palmer: You said to put in a comment, but I have no idea how Kconfig
+expects a mid line comment to look. kbuild didn't seem to complain about
+what I did, but lmk if that's not what you meant.
+---
+ arch/riscv/Kconfig.socs | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
-index 34592d00dde8..7f93c729d51c 100644
+index 7f93c729d51c..ff2b8b90db19 100644
 --- a/arch/riscv/Kconfig.socs
 +++ b/arch/riscv/Kconfig.socs
-@@ -3,6 +3,10 @@ menu "SoC selection"
- config SOC_MICROCHIP_POLARFIRE
- 	bool "Microchip PolarFire SoCs"
- 	select MCHP_CLK_MPFS
-+	select POLARFIRE_SOC_MAILBOX if MAILBOX
-+	select POLARFIRE_SOC_SYS_CTRL if MAILBOX
-+	select HW_RANDOM_POLARFIRE_SOC if POLARFIRE_SOC_SYS_CTRL
-+	select PCIE_MICROCHIP_HOST if PCI_MSI && OF
+@@ -8,6 +8,7 @@ config SOC_MICROCHIP_POLARFIRE
+ 	select HW_RANDOM_POLARFIRE_SOC if POLARFIRE_SOC_SYS_CTRL
+ 	select PCIE_MICROCHIP_HOST if PCI_MSI && OF
  	select SIFIVE_PLIC
++	select VITESSE_PHY # present on icicle kit
  	help
  	  This enables support for Microchip PolarFire SoC platforms.
+ 
 -- 
 2.35.2
 
