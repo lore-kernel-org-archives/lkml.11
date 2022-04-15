@@ -2,177 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41265C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 20:12:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15765C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 20:15:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352410AbiDOUOn (ORCPT
+        id S1351848AbiDOURl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 16:14:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
+        Fri, 15 Apr 2022 16:17:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232895AbiDOUOk (ORCPT
+        with ESMTP id S1351201AbiDOUR0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 16:14:40 -0400
-Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C09DD955
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 13:12:10 -0700 (PDT)
-Received: by mail-vs1-xe2e.google.com with SMTP id v133so4302005vsv.7
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 13:12:10 -0700 (PDT)
+        Fri, 15 Apr 2022 16:17:26 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C931F3A727;
+        Fri, 15 Apr 2022 13:14:56 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2ebf4b91212so92360807b3.8;
+        Fri, 15 Apr 2022 13:14:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=77JRexCHO+Dta+d2jV7L61UaG98jtgCgEk5PjH0Qclw=;
-        b=bSiip5XBN84sfc8EAMqB+8gWFrwJVQUR5v12Hj7kiLzo35u6nluGLhefFhs00QbZRR
-         HT4dBU715eLd92x4QRczO0YgkhjNxz3mbNszIssovkBmykUjqSngT3NhjHLZppusWtw2
-         3VOElStHDME19hWWY/06fkmPmCkj5TnXUWGNcJQXPiJhcRrGDX5PvA5W08q9+LL7+ZMB
-         C5beDV70lv/ySj0n0+lK3jQG8IwFVL1pffbX7W9VSy4IFCCsXe/mWHDHkdzqPIAHcSfV
-         qLrxfXPGfbXfENwPzH7NDV5JMI1paK0Thm/w2BDYLElxNTp4+B8HZdGbZSMnPMcpSwlV
-         c0rQ==
+        bh=QfGuix9eHPmBVHieE98IkajLKskzJOMJS9YG04aHQEc=;
+        b=iGv/flgytSZZleWCwY3NfgAeABaSuaArYoDgbbyezprnLZw33y0kzKJpeR9Gx9v9j8
+         yFRmIdUedGm0HRsRtV32in/5wzKY3OEwLQz0XdDCGaSuyHnCwh72egU+U4iwYcbW9th9
+         ZKICA5oZfdknC+kjfvqFyYCN3GWi4iRmsOk63DjRkDu+7T/iy/EytvEQwti6DLvBD5EM
+         qrgBDVWoJ/xAybNrqyt7gzEuEQiprAYuNDk0mr8bIFllnk7Bs/wkqO/jKC/DCEGuEmnx
+         evxd5S5zqC0gxcUIul8XvHC2vxr4NXxCVHg+Ns2XXdM+3Mz5FuN2MbmRBzdVzZtJIrjw
+         /TSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=77JRexCHO+Dta+d2jV7L61UaG98jtgCgEk5PjH0Qclw=;
-        b=g+OQIDPLt01O1K1rh1n+uVNGR/IbS7OH1dsg6ke4gHOCzwSqzx53CqfbzK+FD72kCx
-         vEYsQF50sMgk9jRrIf1PCoeBZXlWPFfHSJjvdHR4rscEVzrm3XNRG7UEPZGE4IoR2M7b
-         BXnphBwmtP8k9qPYloKPRPVjCf3Wr0Y3nqh0mmrUmHF+AAxP2BuRV/HQ4oAnjnNUUvue
-         /mIeeLjo3nJnRKlXWNoLnfMTBIgcLAi5D2rWjMkTaO4DmWpUIHe/EDzySVJ1fCVp6eM1
-         2NZ90aU6Kc+4/rk0PXtwpi9ysKmh1vqQUspJcpzlRhHaFts3UwKXc1WzB4QyoKHCE7ph
-         kiCA==
-X-Gm-Message-State: AOAM532XeXLq9i/RbOjqc/NggWswRH46houHjvlAauZ9beZcv8WPtEic
-        fVXKgIFnv4BnU2wSJr0txCYZVVrwIwyRodQ5gMdZPA==
-X-Google-Smtp-Source: ABdhPJykqcrKHyXgb08sa7ibqLGNVlW1gdYVPxs3ydRjRchU0Lalyvg1ICTkwCfmsXRhMCN3MYBNGKoe6YsDKcJnXHw=
-X-Received: by 2002:a05:6102:5cc:b0:320:9bd2:3823 with SMTP id
- v12-20020a05610205cc00b003209bd23823mr192562vsf.81.1650053529747; Fri, 15 Apr
- 2022 13:12:09 -0700 (PDT)
+        bh=QfGuix9eHPmBVHieE98IkajLKskzJOMJS9YG04aHQEc=;
+        b=GIRTo4EgQX8BgbcW5mrGfGh2vuOLmINIeAfDavAdO7Wgfoqq0WsC68S3ghqSNq//Nh
+         W47MeCBBtiLh828MxYVzOceyq4lOtX4m3I75OLegdx0cc0/T5eQqdN8XemxEoD/8cmBC
+         9BRMkGinYVB/17z1kf2H7sIMKEfcmoBHb8JPg39BCQLUJ2Cw6zR/C33FM0ohrejj6pFx
+         SwRl4mubmCWm9Kli/3MYypTvSQj/mDy8XZKXSUcaxvNlQVk0u42b/rEkQXzBKoGfJi1W
+         ZvpKtUONyAZjOrhp8KX90ksWJSVwYCejX7Xp1KsXQewUhowEd5P3/uDBdQzLIzZIQ32T
+         L4LQ==
+X-Gm-Message-State: AOAM530M6ebdzPDSzsdJhhu8OWtORJOdRUPVbl2Mg1DZCt7lRFA5DnZ2
+        fZnwe65ETFCxpsnBKS1wAfOrs1ohbOnj/TahYRE=
+X-Google-Smtp-Source: ABdhPJzcXxbnRTmhCv9tZrtZ2aIi9BPp22b40umIvHYfXdY0pL99IaBj4TVrT7UkE5UtWBG4pMeIorfwsGjNVX/TrWw=
+X-Received: by 2002:a81:3a8f:0:b0:2e8:7e2c:95a5 with SMTP id
+ h137-20020a813a8f000000b002e87e2c95a5mr589827ywa.241.1650053695984; Fri, 15
+ Apr 2022 13:14:55 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220407031525.2368067-1-yuzhao@google.com> <20220407031525.2368067-9-yuzhao@google.com>
- <20220411191621.0378467ad99ebc822d5ad005@linux-foundation.org>
- <CAOUHufYeC=Kuu59BPL_48sM67CqACxH2wWy-SYGXpadgMDmY3w@mail.gmail.com>
- <20220414185654.e7150bcbe859e0dd4b9c61af@linux-foundation.org>
- <CAOUHufYy6yQS9ARN9C5+ODkopR+ez4TH3hZNZo4HtNHBExS1mA@mail.gmail.com> <20220415121521.764a88dda55ae8c676ad26b0@linux-foundation.org>
-In-Reply-To: <20220415121521.764a88dda55ae8c676ad26b0@linux-foundation.org>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Fri, 15 Apr 2022 14:11:32 -0600
-Message-ID: <CAOUHufYsjwMGMFCfYoh79rFZqwqS1jDihcBS9sHd-gBxEAD3Ug@mail.gmail.com>
-Subject: Re: [PATCH v10 08/14] mm: multi-gen LRU: support page table walks
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Justin Forbes <jforbes@fedoraproject.org>
-Cc:     Stephen Rothwell <sfr@rothwell.id.au>,
-        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <21cnbao@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
+References: <20220413133731.242870-1-pgwipeout@gmail.com> <20220413133731.242870-2-pgwipeout@gmail.com>
+ <Ylhfr51RME+YAjOG@robh.at.kernel.org>
+In-Reply-To: <Ylhfr51RME+YAjOG@robh.at.kernel.org>
+From:   Peter Geis <pgwipeout@gmail.com>
+Date:   Fri, 15 Apr 2022 16:14:43 -0400
+Message-ID: <CAMdYzYpwKE3cCPZfDehnN0Lv1k7DstUh2y4PoEv6=6e6ejAtSQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/4] dt-bindings: pci: remove fallback from Rockchip
+ DesignWare binding
+To:     Rob Herring <robh@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Shawn Lin <shawn.lin@rock-chips.com>,
+        Simon Xue <xxm@rock-chips.com>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        PCI <linux-pci@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 1:15 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+On Thu, Apr 14, 2022 at 1:53 PM Rob Herring <robh@kernel.org> wrote:
 >
-> On Fri, 15 Apr 2022 00:25:45 -0600 Yu Zhao <yuzhao@google.com> wrote:
->
-> > On Thu, Apr 14, 2022 at 7:57 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> > >
-> > > On Thu, 14 Apr 2022 19:14:54 -0600 Yu Zhao <yuzhao@google.com> wrote:
-> > >
-> > > > On Mon, Apr 11, 2022 at 8:16 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> > > > >
-> > > > > On Wed,  6 Apr 2022 21:15:20 -0600 Yu Zhao <yuzhao@google.com> wrote:
-> > > > >
-> > > > > > +static void update_batch_size(struct lru_gen_mm_walk *walk, struct folio *folio,
-> > > > > > +                           int old_gen, int new_gen)
-> > > > > > +{
-> > > > > > +     int type = folio_is_file_lru(folio);
-> > > > > > +     int zone = folio_zonenum(folio);
-> > > > > > +     int delta = folio_nr_pages(folio);
-> > > > > > +
-> > > > > > +     VM_BUG_ON(old_gen >= MAX_NR_GENS);
-> > > > > > +     VM_BUG_ON(new_gen >= MAX_NR_GENS);
-> > > > >
-> > > > > General rule: don't add new BUG_ONs, because they crash the kenrel.
-> > > > > It's better to use WARN_ON or WARN_ON_ONCE then try to figure out a way
-> > > > > to keep the kernel limping along.  At least so the poor user can gather logs.
-> > > >
-> > > > These are VM_BUG_ONs, which are BUILD_BUG_ONs except for (mostly MM) developers.
-> > >
-> > > I'm told that many production builds enable runtime VM_BUG_ONning.
+> On Wed, Apr 13, 2022 at 09:37:28AM -0400, Peter Geis wrote:
+> > The snps,dw-pcie binds to a standalone driver.
+> > It is not fully compatible with the Rockchip implementation and causes a
+> > hang if it binds to the device.
 > >
-> > Nobody wants to debug VM in production. Some distros that offer both
-> > the latest/LTS kernels do enable CONFIG_DEBUG_VM in the former so the
-> > latter can have better test coverage when it becomes available. Do
-> > people use the former in production? Absolutely, otherwise we won't
-> > have enough test coverage. Are we supposed to avoid CONFIG_DEBUG_VM? I
-> > don't think so, because it defeats the purpose of those distros
-> > enabling it in the first place.
+> > Remove this binding as a valid fallback.
 > >
-> > The bottomline is that none of RHEL 8.5, SLES 15, Debian 11 enables
-> > CONFIG_DEBUG_VM.
+> > Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> > ---
+> >  Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml | 3 +--
+> >  1 file changed, 1 insertion(+), 2 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml b/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
+> > index 142bbe577763..8dc11fed8a3c 100644
+> > --- a/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
+> > +++ b/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
+> > @@ -32,7 +32,6 @@ properties:
+> >    compatible:
+> >      items:
+> >        - const: rockchip,rk3568-pcie
+> > -      - const: snps,dw-pcie
 >
-> I grabbed
-> https://kojipkgs.fedoraproject.org//packages/kernel/5.18.0/0.rc2.23.fc37/src/kernel-5.18.0-0.rc2.23.fc37.src.rpm
-> and
+> With this, you no longer need 'select' so please drop it too.
 
-Yes, Fedora/RHEL is one concrete example of the model I mentioned
-above (experimental/stable). I added Justin, the Fedora kernel
-maintainer, and he can further clarify.
+Thanks! Will do.
 
-If we don't want more VM_BUG_ONs, I'll remove them. But (let me
-reiterate) it seems to me that just defeats the purpose of having
-CONFIG_DEBUG_VM.
-
-> hp2:/home/akpm/yy> grep "DEBUG_VM[= ]" *.config
-> kernel-aarch64-debug-fedora.config:CONFIG_DEBUG_VM=y
-> kernel-aarch64-debug-rhel.config:# CONFIG_DEBUG_VM is not set
-> kernel-aarch64-fedora.config:CONFIG_DEBUG_VM=y
-> kernel-aarch64-rhel.config:# CONFIG_DEBUG_VM is not set
-> kernel-armv7hl-debug-fedora.config:CONFIG_DEBUG_VM=y
-> kernel-armv7hl-fedora.config:CONFIG_DEBUG_VM=y
-> kernel-armv7hl-lpae-debug-fedora.config:CONFIG_DEBUG_VM=y
-> kernel-armv7hl-lpae-fedora.config:CONFIG_DEBUG_VM=y
-> kernel-ppc64le-debug-fedora.config:CONFIG_DEBUG_VM=y
-> kernel-ppc64le-debug-rhel.config:CONFIG_DEBUG_VM=y
-> kernel-ppc64le-fedora.config:CONFIG_DEBUG_VM=y
-> kernel-ppc64le-rhel.config:# CONFIG_DEBUG_VM is not set
-> kernel-s390x-debug-fedora.config:CONFIG_DEBUG_VM=y
-> kernel-s390x-debug-rhel.config:CONFIG_DEBUG_VM=y
-> kernel-s390x-fedora.config:CONFIG_DEBUG_VM=y
-> kernel-s390x-rhel.config:# CONFIG_DEBUG_VM is not set
-> kernel-s390x-zfcpdump-rhel.config:# CONFIG_DEBUG_VM is not set
-> kernel-x86_64-debug-fedora.config:CONFIG_DEBUG_VM=y
-> kernel-x86_64-debug-rhel.config:CONFIG_DEBUG_VM=y
-> kernel-x86_64-fedora.config:CONFIG_DEBUG_VM=y
-> kernel-x86_64-rhel.config:# CONFIG_DEBUG_VM is not set
+>
+> >
+> >    reg:
+> >      items:
+> > @@ -110,7 +109,7 @@ examples:
+> >          #size-cells = <2>;
+> >
+> >          pcie3x2: pcie@fe280000 {
+> > -            compatible = "rockchip,rk3568-pcie", "snps,dw-pcie";
+> > +            compatible = "rockchip,rk3568-pcie";
+> >              reg = <0x3 0xc0800000 0x0 0x390000>,
+> >                    <0x0 0xfe280000 0x0 0x10000>,
+> >                    <0x3 0x80000000 0x0 0x100000>;
+> > --
+> > 2.25.1
+> >
+> >
