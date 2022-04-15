@@ -2,81 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83AF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:22:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5227C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:22:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348424AbiDOOY2 (ORCPT
+        id S1354517AbiDOOYc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 10:24:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51108 "EHLO
+        Fri, 15 Apr 2022 10:24:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354531AbiDOOXn (ORCPT
+        with ESMTP id S1354558AbiDOOXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 10:23:43 -0400
+        Fri, 15 Apr 2022 10:23:51 -0400
 Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED598F9B6;
-        Fri, 15 Apr 2022 07:21:14 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6BA195C01E6;
-        Fri, 15 Apr 2022 10:21:13 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141BC91576;
+        Fri, 15 Apr 2022 07:21:19 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 3D77F5C01E9;
+        Fri, 15 Apr 2022 10:21:18 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Fri, 15 Apr 2022 10:21:13 -0400
+  by compute4.internal (MEProxy); Fri, 15 Apr 2022 10:21:18 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
          h=cc:cc:content-transfer-encoding:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1650032473; x=
-        1650118873; bh=xD4ZqIAlT7aLt1209ezWtLFjvsj32iTB7xRB9Q44zjQ=; b=d
-        +l9KXXtjxBMdYSX7LR/JNG7QNjZk8pOJnk7fiFVChhvQMKRsnTexciQ5YnC+n6TY
-        OAr/wFxC0MoPV7JEND2jd5rZFcTui19Jozs8EwLPKi5Il9Chf1CE0AI0mQIh1QU5
-        hIeVGlOuvUrqLPCFl9CiARRMe5lS5qCwU/vlK1r97BxwOm6AhDS8/9LhyeAuAFi7
-        Dafzd1vJKCopIsJ7ypjpZmhwc2shX4vWJQPCRjghsx6ZMT0Q1pEe+AjGYplz6wCe
-        +nG8iXNeTVpN4hCA/yIWpJI9HBu9tUI7Xi8fFciTayi8wAgzNYUPGn2xioaTX732
-        2SaffjGWgog0oFRuK57WQ==
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1650032478; x=
+        1650118878; bh=mvu8/9aSBcdQRa62UjNuD4argEyya5ya0engXTPaPew=; b=O
+        GiKhjHhi8/Hkb5irh6VB4uWmpmJ8ryNPZ4P1KmVsoJQ3fYnluITE0LiKoKYnGR2y
+        pDsY7jNIESnPX7xJOpU5e2RXm93uUKWYfUJYTOHsYxyY2z3GqlGXClj4ll3h7ShB
+        DMh2mfO6JuvmcoKOMNDpv8yuNZNEtkCbBlAQ2JrNDK7Yz1/CB6mK7PAJIcNxDOrk
+        OocHKsdSl3u+pFcio/mBAB2lN0wi1u5X1E6ZVFUeFfwLXxbeYF7GJ3aDDV32Ewli
+        rhzU/OIBYRZXVRBghm8Vk5V3POd2kUXn37JJB28dy8IME21zlM4dbsw4R8uH3FdE
+        WZvftKHv4m6Nxf4N+WWMQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :from:from:in-reply-to:in-reply-to:message-id:mime-version
         :references:reply-to:sender:subject:subject:to:to:x-me-proxy
         :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1650032473; x=1650118873; bh=xD4ZqIAlT7aLt1209ezWtLFjvsj32iTB7xR
-        B9Q44zjQ=; b=FrALxWzPgoyenReMazEL94YNfsC8Lq97NR5bia+Srrq4EJKnKbw
-        D6ZDoYo+9ww4XYOz+7ioC8iAhCbjqou3TWDr/gtRlY2fPc14ROURLA8PpnLUJyEX
-        X8IG6ktkpnqnIgvV1GSufS+jOFJ6bp8yuLLukvYo/tiXSIM+98E2RPd4U29BLRMl
-        6L9tp+jcW0yuSBh2BC/UFAQQFmAwjydAcN8gazwxQRHdeCSwdBGS1hsnlPAbeMAX
-        XLeK0cB/E0O+o3SuX5kMHlGPm7mdfHHKRNCJqAWN77EXOc7MobZ+sRzp0SmKc5XQ
-        hD4q95E2aRrofFFuN4ZU/A8mBojX7s1jdgQ==
-X-ME-Sender: <xms:WX9ZYj1-EItTxiZI0yjZV3Wgtim2WiEJz-QPFA1-7NW-AFKyVS62EQ>
-    <xme:WX9ZYiGqopUoGMcRiz6VP50CWhAHOEG60GtbRL5LmxsubeSbXtVQ0WiC4Cb_Wl1Kx
-    RV7WX1Yphupn3uYHh4>
-X-ME-Received: <xmr:WX9ZYj5u6EboOF6e25M_UYsQp7e_zNAZo6Uh4MRZ0O4051B5HJ6ok6WeZN3caH4dVlCZewdVP5jU5EwRWEsBkHY8nXvg4YLmHddkqNM1YJQ6FdHJPH52hZPZF4p5Qu4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelhedgjeeiucetufdoteggodetrfdotf
+        1650032478; x=1650118878; bh=mvu8/9aSBcdQRa62UjNuD4argEyya5ya0en
+        gXTPaPew=; b=UzsNgoD1kbo2lpv1Wvxuy7dyIH7o5zviBxEweSpS5PTUM4AHo5H
+        UEfMZGfUXyeOrhPBnbsH/VZ8eJ/EYAoHTamiYIwATN18z2jExesiIxLtpAf52RvT
+        za9vYNcqx2zE8DYLBTrqNKfqPim9PV6U7G9hg2s9umuYhcrlXJt6ZPapF6SQ4+a5
+        wlr/Nk+1Q4m0CgCqGDkdNQnwwPJRbeZhoefyGl+/PGcGnv9+yiPAYnWztbsG9tVg
+        twChdqWlJsEt1ZW0OcQNwNOxPRL3DQ/yYuXLEljKu3KmncAg+mm9X2j6MPcT5iLt
+        ASTRWU0bHvN4uv1dJf9kFOBjP7HWB7F0qXQ==
+X-ME-Sender: <xms:Xn9ZYtTxrob7LfkVta1EB02j89wluIgD1vCO_CN3zThfEmhD5IFyEg>
+    <xme:Xn9ZYmyLJ5WxyR6d6vB317PoWepxJh6BKlP5uMTKwPgBBGwIZGZyu9Za9dg--eOU7
+    wg67buEKTniu5djm-0>
+X-ME-Received: <xmr:Xn9ZYi29CTBq9c6bubBVRTpFGl_eF3YF1yq1AM3xKKdgwAsajTDybczRPw5rzpvagfP9AxPkPsMSoOLxX4bXrEwtfgmoOVGoWP6_IC5ISSVZoh5Eneq19EpgA1JgKyc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelhedgjeejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcu
     rfgvthgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvg
-    hrnheptedvkeetleeuffffhfekteetffeggffgveehieelueefvddtueffveevlefhfeej
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshhvvg
-    hnsehsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:WX9ZYo0QDq6Es60rSfjV58PK4_qQJD5bNmH89f3-jTyCMgXZMo5Ibw>
-    <xmx:WX9ZYmF-G4M64xNX-efPpz2UsjcJwmNmfnLNFy6L0lgwH54zG4PBvw>
-    <xmx:WX9ZYp-RkqZJQKAkxSVHIyCrx5vMjEL7sBhI5aF13dxuiJjNxFU0tQ>
-    <xmx:WX9ZYiF9EELdJtxP3uwaXmkaOMgI28wSb2U5kaUhLEoY4_E_J6S5Mg>
+    hrnhepjefgjeefheeuiefgheehieekhfffgfetleeihefhtddutdegffdtjeekueffgeek
+    necuffhomhgrihhnpehgihhthhhusgdrtghomhenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgvnhesshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:Xn9ZYlBme-RCjRsKSDVm7aACM1OZNGwbmMfz2UJCmjZbr7nHI6dGbg>
+    <xmx:Xn9ZYmg0ehRMevJsVhwEsfpQ4L52978I5c_3reTosYBYuppofogNVA>
+    <xmx:Xn9ZYppc5INxTqCc3tQvUladYG5douFBvHlnsGHo9wFeqRcxJM6HhQ>
+    <xmx:Xn9ZYtQuaJXAVRUSRAxt9e9jubb0lQUSvsEb1eLd5_iU9RyPxAOMrA>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 15 Apr 2022 10:21:11 -0400 (EDT)
+ 15 Apr 2022 10:21:15 -0400 (EDT)
 From:   Sven Peter <sven@svenpeter.dev>
-To:     Arnd Bergmann <arnd@arndb.de>
+To:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>
 Cc:     Sven Peter <sven@svenpeter.dev>, Hector Martin <marcan@marcan.st>,
         Alyssa Rosenzweig <alyssa@rosenzweig.io>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Marc Zyngier <maz@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-nvme@lists.infradead.org
-Subject: [PATCH v2 4/6] soc: apple: Add SART driver
-Date:   Fri, 15 Apr 2022 16:20:53 +0200
-Message-Id: <20220415142055.30873-5-sven@svenpeter.dev>
+        Arnd Bergmann <arnd@arndb.de>, Marc Zyngier <maz@kernel.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org
+Subject: [PATCH v2 6/6] nvme-apple: Add initial Apple SoC NVMe driver
+Date:   Fri, 15 Apr 2022 16:20:55 +0200
+Message-Id: <20220415142055.30873-7-sven@svenpeter.dev>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20220415142055.30873-1-sven@svenpeter.dev>
 References: <20220415142055.30873-1-sven@svenpeter.dev>
@@ -86,482 +85,1686 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The NVMe co-processor on the Apple M1 uses a DMA address filter called
-SART for some DMA transactions. This adds a simple driver used to
-configure the memory regions from which DMA transactions are allowed.
+Apple SoCs such as the M1 come with an embedded NVMe controller that
+is not attached to any PCIe bus. Additionally, it doesn't conform
+to the NVMe specification and requires a bunch of changes to command
+submission and IOMMU configuration to work.
 
-Unlike a real IOMMU, SART does not support any pagetables and can't be
-implemented inside the IOMMU subsystem using iommu_ops.
-
-It also can't be implemented using dma_map_ops since not all DMA
-transactions of the NVMe controller are filtered by SART.
-Instead, most buffers have to be registered using the integrated NVMe
-IOMMU and we can't have two separate dma_map_ops implementations for a
-single device.
-
-Co-developed-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Hector Martin <marcan@marcan.st>
 Signed-off-by: Sven Peter <sven@svenpeter.dev>
 ---
 v1 -> v2:
-  - Added explanation why this can't be an IOMMU or dma_map_ops
-    implementation (Arnd Bergmann)
-  - Used non-relaxed accessors everwhere since the paths aren't
-    performance critical (Arnd Bergmann)
-  - Fixed errno return values to be negative (Arnd Bergmann)
-  - apple_sart_get -> devm_apple_sart_get to add put_device
-  - Disallow using the interface without CONFIG_APPLE_SART and
-    make all consumers hard-depend on that (Arnd Bergmann)
+  - Used non-relaxed accessors everywhere since there's no performance
+    difference (Arnd Bergmann)
+  - Added put_device/get_device to tie the nvme_ctrl device to the
+    platform device (Christoph Hellwig)
+  - Removed unneccesary include and DEBUG #define (Christoph Hellwig)
+  - Use nvme_is_write instead of custom #defines (Christoph Hellwig)
+  - Squashed follow-up commits into this one (Christoph Hellwig)
+  - Initialize cq_phase during queue allocation already to make it's
+    not interpreted as a full cq if anything before queue initialization
+    fails.
 
- MAINTAINERS                    |   1 +
- drivers/soc/apple/Kconfig      |  11 ++
- drivers/soc/apple/Makefile     |   3 +
- drivers/soc/apple/sart.c       | 327 +++++++++++++++++++++++++++++++++
- include/linux/soc/apple/sart.h |  57 ++++++
- 5 files changed, 399 insertions(+)
- create mode 100644 drivers/soc/apple/sart.c
- create mode 100644 include/linux/soc/apple/sart.h
+ MAINTAINERS                |    1 +
+ drivers/nvme/host/Kconfig  |   13 +
+ drivers/nvme/host/Makefile |    3 +
+ drivers/nvme/host/apple.c  | 1597 ++++++++++++++++++++++++++++++++++++
+ 4 files changed, 1614 insertions(+)
+ create mode 100644 drivers/nvme/host/apple.c
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 1bc8b732f129..24b94c386f33 100644
+index 24b94c386f33..438beb56e9b8 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -1855,6 +1855,7 @@ F:	drivers/watchdog/apple_wdt.c
- F:	include/dt-bindings/interrupt-controller/apple-aic.h
- F:	include/dt-bindings/pinctrl/apple.h
- F:	include/linux/apple-mailbox.h
-+F:	include/linux/soc/apple/*
+@@ -1849,6 +1849,7 @@ F:	drivers/i2c/busses/i2c-pasemi-core.c
+ F:	drivers/i2c/busses/i2c-pasemi-platform.c
+ F:	drivers/irqchip/irq-apple-aic.c
+ F:	drivers/mailbox/apple-mailbox.c
++F:	drivers/nvme/host/apple.c
+ F:	drivers/pinctrl/pinctrl-apple-gpio.c
+ F:	drivers/soc/apple/*
+ F:	drivers/watchdog/apple_wdt.c
+diff --git a/drivers/nvme/host/Kconfig b/drivers/nvme/host/Kconfig
+index d6d056963c06..877d2ec4ea9f 100644
+--- a/drivers/nvme/host/Kconfig
++++ b/drivers/nvme/host/Kconfig
+@@ -91,3 +91,16 @@ config NVME_TCP
+ 	  from https://github.com/linux-nvme/nvme-cli.
  
- ARM/ARTPEC MACHINE SUPPORT
- M:	Jesper Nilsson <jesper.nilsson@axis.com>
-diff --git a/drivers/soc/apple/Kconfig b/drivers/soc/apple/Kconfig
-index 9b8de31d6a8f..8c37ffd53fbd 100644
---- a/drivers/soc/apple/Kconfig
-+++ b/drivers/soc/apple/Kconfig
-@@ -17,6 +17,17 @@ config APPLE_PMGR_PWRSTATE
- 	  controls for SoC devices. This driver manages them through the
- 	  generic power domain framework, and also provides reset support.
- 
-+config APPLE_SART
-+	tristate "Apple SART DMA address filter"
+ 	  If unsure, say N.
++
++config NVME_APPLE
++	tristate "Apple ANS2 NVM Express host driver"
++	depends on OF && BLOCK
++	depends on APPLE_RTKIT && APPLE_SART
 +	depends on ARCH_APPLE || COMPILE_TEST
-+	default ARCH_APPLE
++	select NVME_CORE
 +	help
-+	  Apple SART is a simple DMA address filter used on Apple SoCs such
-+	  as the M1. It is usually required for the NVMe coprocessor which does
-+	  not use a proper IOMMU.
++	  This provides support for the NVMe controller embedded in Apple SoCs
++	  such as the M1.
 +
-+	  Say 'y' here if you have an Apple SoC.
-+
- endmenu
++	  To compile this driver as a module, choose M here: the
++	  module will be called nvme-apple.
+diff --git a/drivers/nvme/host/Makefile b/drivers/nvme/host/Makefile
+index 476c5c988496..a36ae1612059 100644
+--- a/drivers/nvme/host/Makefile
++++ b/drivers/nvme/host/Makefile
+@@ -8,6 +8,7 @@ obj-$(CONFIG_NVME_FABRICS)		+= nvme-fabrics.o
+ obj-$(CONFIG_NVME_RDMA)			+= nvme-rdma.o
+ obj-$(CONFIG_NVME_FC)			+= nvme-fc.o
+ obj-$(CONFIG_NVME_TCP)			+= nvme-tcp.o
++obj-$(CONFIG_NVME_APPLE)		+= nvme-apple.o
  
- endif
-diff --git a/drivers/soc/apple/Makefile b/drivers/soc/apple/Makefile
-index c114e84667e4..c83c66317098 100644
---- a/drivers/soc/apple/Makefile
-+++ b/drivers/soc/apple/Makefile
-@@ -1,2 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0-only
- obj-$(CONFIG_APPLE_PMGR_PWRSTATE)	+= apple-pmgr-pwrstate.o
+ nvme-core-y				:= core.o ioctl.o constants.o
+ nvme-core-$(CONFIG_TRACING)		+= trace.o
+@@ -25,3 +26,5 @@ nvme-rdma-y				+= rdma.o
+ nvme-fc-y				+= fc.o
+ 
+ nvme-tcp-y				+= tcp.o
 +
-+obj-$(CONFIG_APPLE_SART) += apple-sart.o
-+apple-sart-y = sart.o
-diff --git a/drivers/soc/apple/sart.c b/drivers/soc/apple/sart.c
++nvme-apple-y				+= apple.o
+diff --git a/drivers/nvme/host/apple.c b/drivers/nvme/host/apple.c
 new file mode 100644
-index 000000000000..986300e10aa8
+index 000000000000..0de5a1776712
 --- /dev/null
-+++ b/drivers/soc/apple/sart.c
-@@ -0,0 +1,327 @@
-+// SPDX-License-Identifier: GPL-2.0-only OR MIT
++++ b/drivers/nvme/host/apple.c
+@@ -0,0 +1,1597 @@
++// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * Apple SART device driver
-+ * Copyright (C) The Asahi Linux Contributors
++ * Apple ANS NVM Express device driver
++ * Copyright The Asahi Linux Contributors
 + *
-+ * Apple SART is a simple address filter for some DMA transactions.
-+ * Regions of physical memory must be added to the SART's allow
-+ * list before any DMA can target these. Unlike a proper
-+ * IOMMU no remapping can be done and special support in the
-+ * consumer driver is required since not all DMA transactions of
-+ * a single device are subject to SART filtering.
++ * Based on the pci.c NVM Express device driver
++ * Copyright (c) 2011-2014, Intel Corporation.
++ * and on the rdma.c NVMe over Fabrics RDMA host code.
++ * Copyright (c) 2015-2016 HGST, a Western Digital Company.
 + */
 +
-+#include <linux/soc/apple/sart.h>
-+#include <linux/atomic.h>
-+#include <linux/bits.h>
-+#include <linux/bitfield.h>
++#include <linux/async.h>
++#include <linux/blkdev.h>
++#include <linux/blk-mq.h>
 +#include <linux/device.h>
++#include <linux/dma-mapping.h>
++#include <linux/dmapool.h>
++#include <linux/interrupt.h>
++#include <linux/io-64-nonatomic-lo-hi.h>
 +#include <linux/io.h>
++#include <linux/iopoll.h>
++#include <linux/jiffies.h>
++#include <linux/mempool.h>
 +#include <linux/module.h>
 +#include <linux/of.h>
 +#include <linux/of_platform.h>
++#include <linux/once.h>
 +#include <linux/platform_device.h>
-+#include <linux/types.h>
++#include <linux/pm_domain.h>
++#include <linux/soc/apple/rtkit.h>
++#include <linux/soc/apple/sart.h>
++#include <linux/reset.h>
++#include <linux/time64.h>
 +
-+#define APPLE_SART_MAX_ENTRIES 16
++#include "nvme.h"
 +
-+/* This is probably a bitfield but the exact meaning of each bit is unknown. */
-+#define APPLE_SART_FLAGS_ALLOW 0xff
++#define APPLE_ANS_BOOT_TIMEOUT	  USEC_PER_SEC
++#define APPLE_ANS_MAX_QUEUE_DEPTH 64
 +
-+/* SARTv2 registers */
-+#define APPLE_SART2_CONFIG(idx)	      (0x00 + 4 * (idx))
-+#define APPLE_SART2_CONFIG_FLAGS      GENMASK(31, 24)
-+#define APPLE_SART2_CONFIG_SIZE	      GENMASK(23, 0)
-+#define APPLE_SART2_CONFIG_SIZE_SHIFT 12
-+#define APPLE_SART2_CONFIG_SIZE_MAX   GENMASK(23, 0)
++#define APPLE_ANS_COPROC_CPU_CONTROL	 0x44
++#define APPLE_ANS_COPROC_CPU_CONTROL_RUN BIT(4)
 +
-+#define APPLE_SART2_PADDR(idx)	(0x40 + 4 * (idx))
-+#define APPLE_SART2_PADDR_SHIFT 12
++#define APPLE_ANS_ACQ_DB  0x1004
++#define APPLE_ANS_IOCQ_DB 0x100c
 +
-+/* SARTv3 registers */
-+#define APPLE_SART3_CONFIG(idx) (0x00 + 4 * (idx))
++#define APPLE_ANS_MAX_PEND_CMDS_CTRL 0x1210
 +
-+#define APPLE_SART3_PADDR(idx)	(0x40 + 4 * (idx))
-+#define APPLE_SART3_PADDR_SHIFT 12
++#define APPLE_ANS_BOOT_STATUS	 0x1300
++#define APPLE_ANS_BOOT_STATUS_OK 0xde71ce55
 +
-+#define APPLE_SART3_SIZE(idx)  (0x80 + 4 * (idx))
-+#define APPLE_SART3_SIZE_SHIFT 12
-+#define APPLE_SART3_SIZE_MAX   GENMASK(29, 0)
++#define APPLE_ANS_UNKNOWN_CTRL	 0x24008
++#define APPLE_ANS_PRP_NULL_CHECK BIT(11)
 +
-+struct apple_sart_ops {
-+	void (*get_entry)(struct apple_sart *sart, int index, u8 *flags,
-+			  phys_addr_t *paddr, size_t *size);
-+	int (*set_entry)(struct apple_sart *sart, int index, u8 flags,
-+			 phys_addr_t paddr, size_t size);
++#define APPLE_ANS_LINEAR_SQ_CTRL 0x24908
++#define APPLE_ANS_LINEAR_SQ_EN	 BIT(0)
++
++#define APPLE_ANS_LINEAR_ASQ_DB	 0x2490c
++#define APPLE_ANS_LINEAR_IOSQ_DB 0x24910
++
++#define APPLE_NVMMU_NUM_TCBS	  0x28100
++#define APPLE_NVMMU_ASQ_TCB_BASE  0x28108
++#define APPLE_NVMMU_IOSQ_TCB_BASE 0x28110
++#define APPLE_NVMMU_TCB_INVAL	  0x28118
++#define APPLE_NVMMU_TCB_STAT	  0x28120
++
++/*
++ * This controller is a bit weird in the way command tags works: Both the
++ * admin and the IO queue share the same tag space. Additionally, tags
++ * cannot be higher than 0x40 which effectively limits the combined
++ * queue depth to 0x40. Instead of wasting half of that on the admin queue
++ * which gets much less traffic we instead reduce its size here.
++ * The controller also doesn't support async event such that no space must
++ * be reserved for NVME_NR_AEN_COMMANDS.
++ */
++#define APPLE_NVME_AQ_DEPTH	   2
++#define APPLE_NVME_AQ_MQ_TAG_DEPTH (APPLE_NVME_AQ_DEPTH - 1)
++
++/*
++ * These can be higher, but we need to ensure that any command doesn't
++ * require an sg allocation that needs more than a page of data.
++ */
++#define NVME_MAX_KB_SZ 4096
++#define NVME_MAX_SEGS  127
++
++/*
++ * This controller comes with an embedded IOMMU known as NVMMU.
++ * The NVMMU is pointed to an array of TCBs indexed by the command tag.
++ * Each command must be configured inside this structure before it's allowed
++ * to execute, including commands that don't require DMA transfers.
++ *
++ * An exception to this are Apple's vendor-specific commands (opcode 0xD8 on the
++ * admin queue): Those commands must still be added to the NVMMU but the DMA
++ * buffers cannot be represented as PRPs and must instead be allowed using SART.
++ *
++ * Programming the PRPs to the same values as those in the submission queue
++ * looks rather silly at first. This hardware is however designed for a kernel
++ * that runs the NVMMU code in a higher exception level than the NVMe driver.
++ * In that setting the NVMe driver first programs the submission queue entry
++ * and then executes a hypercall to the code that is allowed to program the
++ * NVMMU. The NVMMU driver then creates a shadow copy of the PRPs while
++ * verifying that they don't point to kernel text, data, pagetables, or similar
++ * protected areas before programming the TCB to point to this shadow copy.
++ * Since Linux doesn't do any of that we may as well just point both the queue
++ * and the TCB PRP pointer to the same memory.
++ */
++struct apple_nvmmu_tcb {
++	u8 opcode;
++
++#define APPLE_ANS_TCB_DMA_FROM_DEVICE BIT(0)
++#define APPLE_ANS_TCB_DMA_TO_DEVICE   BIT(1)
++	u8 dma_flags;
++
++	u8 command_id;
++	u8 _unk0;
++	u32 length;
++	u8 _unk1[16];
++	u64 prp1;
++	u64 prp2;
++	u8 _unk2[16];
++	u8 aes_iv[8];
++	u8 _aes_unk[64];
 +};
 +
-+struct apple_sart {
++/*
++ * The Apple NVMe controller only supports a single admin and a single IO queue
++ * which are both limited to 64 entries and share a single interrupt.
++ *
++ * The completion queue works as usual. The submission "queue" instead is
++ * an array indexed by the command tag on this hardware. Commands must also be
++ * present in the NVMMU's tcb array. They are triggered by writing their tag to
++ * a MMIO register.
++ */
++struct apple_nvme_queue {
++	struct nvme_command *sqes;
++	struct nvme_completion *cqes;
++	struct apple_nvmmu_tcb *tcbs;
++
++	dma_addr_t sq_dma_addr;
++	dma_addr_t cq_dma_addr;
++	dma_addr_t tcb_dma_addr;
++
++	u32 __iomem *sq_db;
++	u32 __iomem *cq_db;
++
++	u16 cq_head;
++	u8 cq_phase;
++
++	bool is_adminq;
++	bool enabled;
++};
++
++/*
++ * The apple_nvme_iod describes the data in an I/O.
++ *
++ * The sg pointer contains the list of PRP chunk allocations in addition
++ * to the actual struct scatterlist.
++ */
++struct apple_nvme_iod {
++	struct nvme_request req;
++	struct nvme_command cmd;
++	struct apple_nvme_queue *q;
++	int npages; /* In the PRP list. 0 means small pool in use */
++	int nents; /* Used in scatterlist */
++	dma_addr_t first_dma;
++	unsigned int dma_len; /* length of single DMA segment mapping */
++	struct scatterlist *sg;
++};
++
++struct apple_nvme {
 +	struct device *dev;
-+	void __iomem *regs;
 +
-+	const struct apple_sart_ops *ops;
++	void __iomem *mmio_coproc;
++	void __iomem *mmio_nvme;
 +
-+	unsigned long protected_entries;
-+	unsigned long used_entries;
-+};
++	struct device **pd_dev;
++	struct device_link **pd_link;
++	int pd_count;
 +
-+static void sart2_get_entry(struct apple_sart *sart, int index, u8 *flags,
-+			    phys_addr_t *paddr, size_t *size)
-+{
-+	u32 cfg = readl(sart->regs + APPLE_SART2_CONFIG(index));
-+	u32 paddr_ = readl(sart->regs + APPLE_SART2_PADDR(index));
-+	u32 size_ = FIELD_GET(APPLE_SART2_CONFIG_SIZE, cfg);
-+
-+	*flags = FIELD_GET(APPLE_SART2_CONFIG_FLAGS, cfg);
-+	*size = (size_t)size_ << APPLE_SART2_CONFIG_SIZE_SHIFT;
-+	*paddr = (phys_addr_t)paddr_ << APPLE_SART2_PADDR_SHIFT;
-+}
-+
-+static int sart2_set_entry(struct apple_sart *sart, int index, u8 flags,
-+			   phys_addr_t paddr, size_t size)
-+{
-+	u32 cfg;
-+
-+	if (size & ((1 << APPLE_SART2_CONFIG_SIZE_SHIFT) - 1))
-+		return -EINVAL;
-+	if (paddr & ((1 << APPLE_SART2_PADDR_SHIFT) - 1))
-+		return -EINVAL;
-+
-+	size >>= APPLE_SART2_CONFIG_SIZE_SHIFT;
-+	paddr >>= APPLE_SART2_PADDR_SHIFT;
-+
-+	if (size > APPLE_SART2_CONFIG_SIZE_MAX)
-+		return -EINVAL;
-+
-+	cfg = FIELD_PREP(APPLE_SART2_CONFIG_FLAGS, flags);
-+	cfg |= FIELD_PREP(APPLE_SART2_CONFIG_SIZE, size);
-+
-+	writel(paddr, sart->regs + APPLE_SART2_PADDR(index));
-+	writel(cfg, sart->regs + APPLE_SART2_CONFIG(index));
-+
-+	return 0;
-+}
-+
-+static struct apple_sart_ops sart_ops_v2 = {
-+	.get_entry = sart2_get_entry,
-+	.set_entry = sart2_set_entry,
-+};
-+
-+static void sart3_get_entry(struct apple_sart *sart, int index, u8 *flags,
-+			    phys_addr_t *paddr, size_t *size)
-+{
-+	u32 paddr_ = readl(sart->regs + APPLE_SART3_PADDR(index));
-+	u32 size_ = readl(sart->regs + APPLE_SART3_SIZE(index));
-+
-+	*flags = readl(sart->regs + APPLE_SART3_CONFIG(index));
-+	*size = (size_t)size_ << APPLE_SART3_SIZE_SHIFT;
-+	*paddr = (phys_addr_t)paddr_ << APPLE_SART3_PADDR_SHIFT;
-+}
-+
-+static int sart3_set_entry(struct apple_sart *sart, int index, u8 flags,
-+			   phys_addr_t paddr, size_t size)
-+{
-+	if (size & ((1 << APPLE_SART3_SIZE_SHIFT) - 1))
-+		return -EINVAL;
-+	if (paddr & ((1 << APPLE_SART3_PADDR_SHIFT) - 1))
-+		return -EINVAL;
-+
-+	paddr >>= APPLE_SART3_PADDR_SHIFT;
-+	size >>= APPLE_SART3_SIZE_SHIFT;
-+
-+	if (size > APPLE_SART3_SIZE_MAX)
-+		return -EINVAL;
-+
-+	writel(paddr, sart->regs + APPLE_SART3_PADDR(index));
-+	writel(size, sart->regs + APPLE_SART3_SIZE(index));
-+	writel(flags, sart->regs + APPLE_SART3_CONFIG(index));
-+
-+	return 0;
-+}
-+
-+static struct apple_sart_ops sart_ops_v3 = {
-+	.get_entry = sart3_get_entry,
-+	.set_entry = sart3_set_entry,
-+};
-+
-+static int apple_sart_probe(struct platform_device *pdev)
-+{
-+	int i;
 +	struct apple_sart *sart;
-+	struct device *dev = &pdev->dev;
++	struct apple_rtkit *rtk;
++	struct reset_control *reset;
 +
-+	sart = devm_kzalloc(dev, sizeof(*sart), GFP_KERNEL);
-+	if (!sart)
-+		return -ENOMEM;
++	struct dma_pool *prp_page_pool;
++	struct dma_pool *prp_small_pool;
++	mempool_t *iod_mempool;
 +
-+	sart->dev = dev;
-+	sart->ops = of_device_get_match_data(dev);
++	struct nvme_ctrl ctrl;
++	struct work_struct remove_work;
 +
-+	sart->regs = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(sart->regs))
-+		return PTR_ERR(sart->regs);
++	struct apple_nvme_queue adminq;
++	struct apple_nvme_queue ioq;
 +
-+	for (i = 0; i < APPLE_SART_MAX_ENTRIES; ++i) {
-+		u8 flags;
-+		size_t size;
-+		phys_addr_t paddr;
++	struct blk_mq_tag_set admin_tagset;
++	struct blk_mq_tag_set tagset;
 +
-+		sart->ops->get_entry(sart, i, &flags, &paddr, &size);
++	int irq;
++	spinlock_t lock;
++};
 +
-+		if (!flags)
-+			continue;
++static_assert(sizeof(struct nvme_command) == 64);
++static_assert(sizeof(struct apple_nvmmu_tcb) == 128);
 +
-+		dev_dbg(sart->dev,
-+			"SART bootloader entry: index %02d; flags: 0x%02x; paddr: %pa; size: 0x%zx\n",
-+			i, flags, &paddr, size);
-+		set_bit(i, &sart->protected_entries);
-+	}
-+
-+	platform_set_drvdata(pdev, sart);
-+	return 0;
++static inline struct apple_nvme *ctrl_to_apple_nvme(struct nvme_ctrl *ctrl)
++{
++	return container_of(ctrl, struct apple_nvme, ctrl);
 +}
 +
-+struct apple_sart *devm_apple_sart_get(struct device *dev)
++static inline struct apple_nvme *queue_to_apple_nvme(struct apple_nvme_queue *q)
 +{
-+	struct device_node *sart_node;
-+	struct platform_device *sart_pdev;
-+	struct apple_sart *sart;
++	if (q->is_adminq)
++		return container_of(q, struct apple_nvme, adminq);
++	else
++		return container_of(q, struct apple_nvme, ioq);
++}
++
++static unsigned int apple_nvme_queue_depth(struct apple_nvme_queue *q)
++{
++	if (q->is_adminq)
++		return APPLE_NVME_AQ_DEPTH;
++	else
++		return APPLE_ANS_MAX_QUEUE_DEPTH;
++}
++
++static void apple_nvme_rtkit_crashed(void *cookie)
++{
++	struct apple_nvme *anv = cookie;
++
++	dev_warn(anv->dev, "RTKit crashed; unable to recover without a reboot");
++	nvme_reset_ctrl(&anv->ctrl);
++}
++
++static int apple_nvme_sart_dma_setup(void *cookie,
++				     struct apple_rtkit_shmem *bfr)
++{
++	struct apple_nvme *anv = cookie;
 +	int ret;
 +
-+	sart_node = of_parse_phandle(dev->of_node, "apple,sart", 0);
-+	if (!sart_node)
-+		return ERR_PTR(-ENODEV);
++	if (bfr->iova)
++		return -EINVAL;
++	if (!bfr->size)
++		return -EINVAL;
 +
-+	sart_pdev = of_find_device_by_node(sart_node);
-+	of_node_put(sart_node);
++	bfr->buffer =
++		dma_alloc_coherent(anv->dev, bfr->size, &bfr->iova, GFP_KERNEL);
++	if (!bfr->buffer)
++		return -ENOMEM;
 +
-+	if (!sart_pdev)
-+		return ERR_PTR(-ENODEV);
-+
-+	sart = dev_get_drvdata(&sart_pdev->dev);
-+	if (!sart) {
-+		put_device(&sart_pdev->dev);
-+		return ERR_PTR(-EPROBE_DEFER);
++	ret = apple_sart_add_allowed_region(anv->sart, bfr->iova, bfr->size);
++	if (ret) {
++		dma_free_coherent(anv->dev, bfr->size, bfr->buffer, bfr->iova);
++		bfr->buffer = NULL;
++		return -ENOMEM;
 +	}
 +
-+	ret = devm_add_action_or_reset(dev, (void (*)(void *))put_device,
-+				       &sart_pdev->dev);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	device_link_add(dev, &sart_pdev->dev,
-+			DL_FLAG_PM_RUNTIME | DL_FLAG_AUTOREMOVE_SUPPLIER);
-+
-+	return sart;
++	return 0;
 +}
-+EXPORT_SYMBOL(devm_apple_sart_get);
 +
-+int apple_sart_add_allowed_region(struct apple_sart *sart, phys_addr_t paddr,
-+				  size_t size)
++static void apple_nvme_sart_dma_destroy(void *cookie,
++					struct apple_rtkit_shmem *bfr)
 +{
-+	int i, ret;
++	struct apple_nvme *anv = cookie;
 +
-+	for (i = 0; i < APPLE_SART_MAX_ENTRIES; ++i) {
-+		if (test_bit(i, &sart->protected_entries))
-+			continue;
-+		if (test_and_set_bit(i, &sart->used_entries))
-+			continue;
++	apple_sart_remove_allowed_region(anv->sart, bfr->iova, bfr->size);
++	dma_free_coherent(anv->dev, bfr->size, bfr->buffer, bfr->iova);
++}
 +
-+		ret = sart->ops->set_entry(sart, i, APPLE_SART_FLAGS_ALLOW,
-+					   paddr, size);
-+		if (ret) {
-+			dev_dbg(sart->dev,
-+				"unable to set entry %d to [%pa, 0x%zx]\n",
-+				i, &paddr, size);
-+			clear_bit(i, &sart->used_entries);
-+			return ret;
++static const struct apple_rtkit_ops apple_nvme_rtkit_ops = {
++	.crashed = apple_nvme_rtkit_crashed,
++	.shmem_setup = apple_nvme_sart_dma_setup,
++	.shmem_destroy = apple_nvme_sart_dma_destroy,
++};
++
++static void apple_nvmmu_inval(struct apple_nvme_queue *q, unsigned int tag)
++{
++	struct apple_nvme *anv = queue_to_apple_nvme(q);
++
++	writel(tag, anv->mmio_nvme + APPLE_NVMMU_TCB_INVAL);
++	if (readl(anv->mmio_nvme + APPLE_NVMMU_TCB_STAT))
++		dev_warn_ratelimited(anv->dev, "NVMMU TCB invalidation failed\n");
++}
++
++static void apple_nvme_submit_cmd(struct apple_nvme_queue *q,
++				  struct nvme_command *cmd)
++{
++	struct apple_nvme *anv = queue_to_apple_nvme(q);
++	u32 tag = nvme_tag_from_cid(cmd->common.command_id);
++	struct apple_nvmmu_tcb *tcb = &q->tcbs[tag];
++
++	tcb->opcode = cmd->common.opcode;
++	tcb->prp1 = cmd->common.dptr.prp1;
++	tcb->prp2 = cmd->common.dptr.prp2;
++	tcb->length = cmd->rw.length;
++	tcb->command_id = tag;
++
++	if (nvme_is_write(cmd))
++		tcb->dma_flags = APPLE_ANS_TCB_DMA_TO_DEVICE;
++	else
++		tcb->dma_flags = APPLE_ANS_TCB_DMA_FROM_DEVICE;
++
++	memcpy(&q->sqes[tag], cmd, sizeof(*cmd));
++
++	/*
++	 * This lock here doesn't make much sense at a first glace but
++	 * removing it will result in occasional missed completetion
++	 * interrupts even though the commands still appear on the CQ.
++	 * It's unclear why this happens but our best guess is that
++	 * there is a bug in the firmware triggered when a new command
++	 * is issued while we're inside the irq handler between the
++	 * NVMMU invalidation (and making the tag available again)
++	 * and the final CQ update.
++	 */
++	spin_lock_irq(&anv->lock);
++	writel(tag, q->sq_db);
++	spin_unlock_irq(&anv->lock);
++}
++
++/*
++ * From pci.c:
++ * Will slightly overestimate the number of pages needed.  This is OK
++ * as it only leads to a small amount of wasted memory for the lifetime of
++ * the I/O.
++ */
++static inline size_t apple_nvme_iod_alloc_size(void)
++{
++	const unsigned int nprps = DIV_ROUND_UP(
++		NVME_MAX_KB_SZ + NVME_CTRL_PAGE_SIZE, NVME_CTRL_PAGE_SIZE);
++	const int npages = DIV_ROUND_UP(8 * nprps, PAGE_SIZE - 8);
++	const size_t alloc_size = sizeof(__le64 *) * npages +
++				  sizeof(struct scatterlist) * NVME_MAX_SEGS;
++
++	return alloc_size;
++}
++
++static void **apple_nvme_iod_list(struct request *req)
++{
++	struct apple_nvme_iod *iod = blk_mq_rq_to_pdu(req);
++
++	return (void **)(iod->sg + blk_rq_nr_phys_segments(req));
++}
++
++static void apple_nvme_free_prps(struct apple_nvme *anv, struct request *req)
++{
++	const int last_prp = NVME_CTRL_PAGE_SIZE / sizeof(__le64) - 1;
++	struct apple_nvme_iod *iod = blk_mq_rq_to_pdu(req);
++	dma_addr_t dma_addr = iod->first_dma;
++	int i;
++
++	for (i = 0; i < iod->npages; i++) {
++		__le64 *prp_list = apple_nvme_iod_list(req)[i];
++		dma_addr_t next_dma_addr = prp_list[last_prp];
++
++		dma_pool_free(anv->prp_page_pool, prp_list, dma_addr);
++		dma_addr = next_dma_addr;
++	}
++}
++
++static void apple_nvme_unmap_data(struct apple_nvme *anv, struct request *req)
++{
++	struct apple_nvme_iod *iod = blk_mq_rq_to_pdu(req);
++
++	if (iod->dma_len) {
++		dma_unmap_page(anv->dev, iod->first_dma, iod->dma_len,
++			       rq_dma_dir(req));
++		return;
++	}
++
++	WARN_ON_ONCE(!iod->nents);
++
++	dma_unmap_sg(anv->dev, iod->sg, iod->nents, rq_dma_dir(req));
++	if (iod->npages == 0)
++		dma_pool_free(anv->prp_small_pool, apple_nvme_iod_list(req)[0],
++			      iod->first_dma);
++	else
++		apple_nvme_free_prps(anv, req);
++	mempool_free(iod->sg, anv->iod_mempool);
++}
++
++static void apple_nvme_print_sgl(struct scatterlist *sgl, int nents)
++{
++	int i;
++	struct scatterlist *sg;
++
++	for_each_sg(sgl, sg, nents, i) {
++		dma_addr_t phys = sg_phys(sg);
++
++		pr_warn("sg[%d] phys_addr:%pad offset:%d length:%d dma_address:%pad dma_length:%d\n",
++			i, &phys, sg->offset, sg->length, &sg_dma_address(sg),
++			sg_dma_len(sg));
++	}
++}
++
++static blk_status_t apple_nvme_setup_prps(struct apple_nvme *anv,
++					  struct request *req,
++					  struct nvme_rw_command *cmnd)
++{
++	struct apple_nvme_iod *iod = blk_mq_rq_to_pdu(req);
++	struct dma_pool *pool;
++	int length = blk_rq_payload_bytes(req);
++	struct scatterlist *sg = iod->sg;
++	int dma_len = sg_dma_len(sg);
++	u64 dma_addr = sg_dma_address(sg);
++	int offset = dma_addr & (NVME_CTRL_PAGE_SIZE - 1);
++	__le64 *prp_list;
++	void **list = apple_nvme_iod_list(req);
++	dma_addr_t prp_dma;
++	int nprps, i;
++
++	length -= (NVME_CTRL_PAGE_SIZE - offset);
++	if (length <= 0) {
++		iod->first_dma = 0;
++		goto done;
++	}
++
++	dma_len -= (NVME_CTRL_PAGE_SIZE - offset);
++	if (dma_len) {
++		dma_addr += (NVME_CTRL_PAGE_SIZE - offset);
++	} else {
++		sg = sg_next(sg);
++		dma_addr = sg_dma_address(sg);
++		dma_len = sg_dma_len(sg);
++	}
++
++	if (length <= NVME_CTRL_PAGE_SIZE) {
++		iod->first_dma = dma_addr;
++		goto done;
++	}
++
++	nprps = DIV_ROUND_UP(length, NVME_CTRL_PAGE_SIZE);
++	if (nprps <= (256 / 8)) {
++		pool = anv->prp_small_pool;
++		iod->npages = 0;
++	} else {
++		pool = anv->prp_page_pool;
++		iod->npages = 1;
++	}
++
++	prp_list = dma_pool_alloc(pool, GFP_ATOMIC, &prp_dma);
++	if (!prp_list) {
++		iod->first_dma = dma_addr;
++		iod->npages = -1;
++		return BLK_STS_RESOURCE;
++	}
++	list[0] = prp_list;
++	iod->first_dma = prp_dma;
++	i = 0;
++	for (;;) {
++		if (i == NVME_CTRL_PAGE_SIZE >> 3) {
++			__le64 *old_prp_list = prp_list;
++
++			prp_list = dma_pool_alloc(pool, GFP_ATOMIC, &prp_dma);
++			if (!prp_list)
++				goto free_prps;
++			list[iod->npages++] = prp_list;
++			prp_list[0] = old_prp_list[i - 1];
++			old_prp_list[i - 1] = prp_dma;
++			i = 1;
++		}
++		prp_list[i++] = dma_addr;
++		dma_len -= NVME_CTRL_PAGE_SIZE;
++		dma_addr += NVME_CTRL_PAGE_SIZE;
++		length -= NVME_CTRL_PAGE_SIZE;
++		if (length <= 0)
++			break;
++		if (dma_len > 0)
++			continue;
++		if (unlikely(dma_len < 0))
++			goto bad_sgl;
++		sg = sg_next(sg);
++		dma_addr = sg_dma_address(sg);
++		dma_len = sg_dma_len(sg);
++	}
++done:
++	cmnd->dptr.prp1 = sg_dma_address(iod->sg);
++	cmnd->dptr.prp2 = iod->first_dma;
++	return BLK_STS_OK;
++free_prps:
++	apple_nvme_free_prps(anv, req);
++	return BLK_STS_RESOURCE;
++bad_sgl:
++	WARN(DO_ONCE(apple_nvme_print_sgl, iod->sg, iod->nents),
++	     "Invalid SGL for payload:%d nents:%d\n", blk_rq_payload_bytes(req),
++	     iod->nents);
++	return BLK_STS_IOERR;
++}
++
++static blk_status_t apple_nvme_setup_prp_simple(struct apple_nvme *anv,
++						struct request *req,
++						struct nvme_rw_command *cmnd,
++						struct bio_vec *bv)
++{
++	struct apple_nvme_iod *iod = blk_mq_rq_to_pdu(req);
++	unsigned int offset = bv->bv_offset & (NVME_CTRL_PAGE_SIZE - 1);
++	unsigned int first_prp_len = NVME_CTRL_PAGE_SIZE - offset;
++
++	iod->first_dma = dma_map_bvec(anv->dev, bv, rq_dma_dir(req), 0);
++	if (dma_mapping_error(anv->dev, iod->first_dma))
++		return BLK_STS_RESOURCE;
++	iod->dma_len = bv->bv_len;
++
++	cmnd->dptr.prp1 = iod->first_dma;
++	if (bv->bv_len > first_prp_len)
++		cmnd->dptr.prp2 = iod->first_dma + first_prp_len;
++	return BLK_STS_OK;
++}
++
++static blk_status_t apple_nvme_map_data(struct apple_nvme *anv,
++					struct request *req,
++					struct nvme_command *cmnd)
++{
++	struct apple_nvme_iod *iod = blk_mq_rq_to_pdu(req);
++	blk_status_t ret = BLK_STS_RESOURCE;
++	int nr_mapped;
++
++	if (blk_rq_nr_phys_segments(req) == 1) {
++		struct bio_vec bv = req_bvec(req);
++
++		if (bv.bv_offset + bv.bv_len <= NVME_CTRL_PAGE_SIZE * 2)
++			return apple_nvme_setup_prp_simple(anv, req, &cmnd->rw,
++							   &bv);
++	}
++
++	iod->dma_len = 0;
++	iod->sg = mempool_alloc(anv->iod_mempool, GFP_ATOMIC);
++	if (!iod->sg)
++		return BLK_STS_RESOURCE;
++	sg_init_table(iod->sg, blk_rq_nr_phys_segments(req));
++	iod->nents = blk_rq_map_sg(req->q, req, iod->sg);
++	if (!iod->nents)
++		goto out_free_sg;
++
++	nr_mapped = dma_map_sg_attrs(anv->dev, iod->sg, iod->nents,
++				     rq_dma_dir(req), DMA_ATTR_NO_WARN);
++	if (!nr_mapped)
++		goto out_free_sg;
++
++	ret = apple_nvme_setup_prps(anv, req, &cmnd->rw);
++	if (ret != BLK_STS_OK)
++		goto out_unmap_sg;
++	return BLK_STS_OK;
++
++out_unmap_sg:
++	dma_unmap_sg(anv->dev, iod->sg, iod->nents, rq_dma_dir(req));
++out_free_sg:
++	mempool_free(iod->sg, anv->iod_mempool);
++	return ret;
++}
++
++static __always_inline void apple_nvme_unmap_rq(struct request *req)
++{
++	struct apple_nvme_iod *iod = blk_mq_rq_to_pdu(req);
++	struct apple_nvme *anv = queue_to_apple_nvme(iod->q);
++
++	if (blk_rq_nr_phys_segments(req))
++		apple_nvme_unmap_data(anv, req);
++}
++
++static void apple_nvme_complete_rq(struct request *req)
++{
++	apple_nvme_unmap_rq(req);
++	nvme_complete_rq(req);
++}
++
++static void apple_nvme_complete_batch(struct io_comp_batch *iob)
++{
++	nvme_complete_batch(iob, apple_nvme_unmap_rq);
++}
++
++static inline bool apple_nvme_cqe_pending(struct apple_nvme_queue *q)
++{
++	struct nvme_completion *hcqe = &q->cqes[q->cq_head];
++
++	return (READ_ONCE(hcqe->status) & 1) == q->cq_phase;
++}
++
++static inline struct blk_mq_tags *
++apple_nvme_queue_tagset(struct apple_nvme *anv, struct apple_nvme_queue *q)
++{
++	if (q->is_adminq)
++		return anv->admin_tagset.tags[0];
++	else
++		return anv->tagset.tags[0];
++}
++
++static inline void apple_nvme_handle_cqe(struct apple_nvme_queue *q,
++					 struct io_comp_batch *iob, u16 idx)
++{
++	struct apple_nvme *anv = queue_to_apple_nvme(q);
++	struct nvme_completion *cqe = &q->cqes[idx];
++	__u16 command_id = READ_ONCE(cqe->command_id);
++	struct request *req;
++
++	apple_nvmmu_inval(q, command_id);
++
++	req = nvme_find_rq(apple_nvme_queue_tagset(anv, q), command_id);
++	if (unlikely(!req)) {
++		dev_warn(anv->dev, "invalid id %d completed", command_id);
++		return;
++	}
++
++	if (!nvme_try_complete_req(req, cqe->status, cqe->result) &&
++	    !blk_mq_add_to_batch(req, iob, nvme_req(req)->status,
++				 apple_nvme_complete_batch))
++		apple_nvme_complete_rq(req);
++}
++
++static inline void apple_nvme_update_cq_head(struct apple_nvme_queue *q)
++{
++	u32 tmp = q->cq_head + 1;
++
++	if (tmp == apple_nvme_queue_depth(q)) {
++		q->cq_head = 0;
++		q->cq_phase ^= 1;
++	} else {
++		q->cq_head = tmp;
++	}
++}
++
++static bool apple_nvme_poll_cq(struct apple_nvme_queue *q,
++			       struct io_comp_batch *iob)
++{
++	bool found = false;
++
++	while (apple_nvme_cqe_pending(q)) {
++		found = true;
++
++		/*
++		 * load-load control dependency between phase and the rest of
++		 * the cqe requires a full read memory barrier
++		 */
++		dma_rmb();
++		apple_nvme_handle_cqe(q, iob, q->cq_head);
++		apple_nvme_update_cq_head(q);
++	}
++
++	if (found)
++		writel(q->cq_head, q->cq_db);
++
++	return found;
++}
++
++static bool apple_nvme_handle_cq(struct apple_nvme_queue *q, bool force)
++{
++	bool found;
++	DEFINE_IO_COMP_BATCH(iob);
++
++	if (!READ_ONCE(q->enabled) && !force)
++		return false;
++
++	found = apple_nvme_poll_cq(q, &iob);
++
++	if (!rq_list_empty(iob.req_list))
++		apple_nvme_complete_batch(&iob);
++
++	return found;
++}
++
++static irqreturn_t apple_nvme_irq(int irq, void *data)
++{
++	struct apple_nvme *anv = data;
++	bool handled = false;
++	unsigned long flags;
++
++	spin_lock_irqsave(&anv->lock, flags);
++	if (apple_nvme_handle_cq(&anv->ioq, false))
++		handled = true;
++	if (apple_nvme_handle_cq(&anv->adminq, false))
++		handled = true;
++	spin_unlock_irqrestore(&anv->lock, flags);
++
++	if (handled)
++		return IRQ_HANDLED;
++	return IRQ_NONE;
++}
++
++static int apple_nvme_create_cq(struct apple_nvme *anv)
++{
++	struct nvme_command c = {};
++
++	/*
++	 * Note: we (ab)use the fact that the prp fields survive if no data
++	 * is attached to the request.
++	 */
++	c.create_cq.opcode = nvme_admin_create_cq;
++	c.create_cq.prp1 = anv->ioq.cq_dma_addr;
++	c.create_cq.cqid = 1;
++	c.create_cq.qsize = APPLE_ANS_MAX_QUEUE_DEPTH - 1;
++	c.create_cq.cq_flags = NVME_QUEUE_PHYS_CONTIG | NVME_CQ_IRQ_ENABLED;
++	c.create_cq.irq_vector = 0;
++
++	return nvme_submit_sync_cmd(anv->ctrl.admin_q, &c, NULL, 0);
++}
++
++static int apple_nvme_remove_cq(struct apple_nvme *anv)
++{
++	struct nvme_command c = {};
++
++	c.delete_queue.opcode = nvme_admin_delete_cq;
++	c.delete_queue.qid = 1;
++
++	return nvme_submit_sync_cmd(anv->ctrl.admin_q, &c, NULL, 0);
++}
++
++static int apple_nvme_create_sq(struct apple_nvme *anv)
++{
++	struct nvme_command c = {};
++
++	/*
++	 * Note: we (ab)use the fact that the prp fields survive if no data
++	 * is attached to the request.
++	 */
++	c.create_sq.opcode = nvme_admin_create_sq;
++	c.create_sq.prp1 = anv->ioq.sq_dma_addr;
++	c.create_sq.sqid = 1;
++	c.create_sq.qsize = APPLE_ANS_MAX_QUEUE_DEPTH - 1;
++	c.create_sq.sq_flags = NVME_QUEUE_PHYS_CONTIG;
++	c.create_sq.cqid = 1;
++
++	return nvme_submit_sync_cmd(anv->ctrl.admin_q, &c, NULL, 0);
++}
++
++static int apple_nvme_remove_sq(struct apple_nvme *anv)
++{
++	struct nvme_command c = {};
++
++	c.delete_queue.opcode = nvme_admin_delete_sq;
++	c.delete_queue.qid = 1;
++
++	return nvme_submit_sync_cmd(anv->ctrl.admin_q, &c, NULL, 0);
++}
++
++static blk_status_t apple_nvme_queue_rq(struct blk_mq_hw_ctx *hctx,
++					const struct blk_mq_queue_data *bd)
++{
++	struct nvme_ns *ns = hctx->queue->queuedata;
++	struct apple_nvme_queue *q = hctx->driver_data;
++	struct apple_nvme *anv = queue_to_apple_nvme(q);
++	struct request *req = bd->rq;
++	struct apple_nvme_iod *iod = blk_mq_rq_to_pdu(req);
++	struct nvme_command *cmnd = &iod->cmd;
++	blk_status_t ret;
++
++	iod->npages = -1;
++	iod->nents = 0;
++
++	/*
++	 * We should not need to do this, but we're still using this to
++	 * ensure we can drain requests on a dying queue.
++	 */
++	if (unlikely(!READ_ONCE(q->enabled)))
++		return BLK_STS_IOERR;
++
++	if (!nvme_check_ready(&anv->ctrl, req, true))
++		return nvme_fail_nonready_command(&anv->ctrl, req);
++
++	ret = nvme_setup_cmd(ns, req);
++	if (ret)
++		return ret;
++
++	if (blk_rq_nr_phys_segments(req)) {
++		ret = apple_nvme_map_data(anv, req, cmnd);
++		if (ret)
++			goto out_free_cmd;
++	}
++
++	blk_mq_start_request(req);
++	apple_nvme_submit_cmd(q, cmnd);
++	return BLK_STS_OK;
++
++out_free_cmd:
++	nvme_cleanup_cmd(req);
++	return ret;
++}
++
++static int apple_nvme_init_hctx(struct blk_mq_hw_ctx *hctx, void *data,
++				unsigned int hctx_idx)
++{
++	hctx->driver_data = data;
++	return 0;
++}
++
++static int apple_nvme_init_request(struct blk_mq_tag_set *set,
++				   struct request *req, unsigned int hctx_idx,
++				   unsigned int numa_node)
++{
++	struct apple_nvme_queue *q = set->driver_data;
++	struct apple_nvme *anv = queue_to_apple_nvme(q);
++	struct apple_nvme_iod *iod = blk_mq_rq_to_pdu(req);
++	struct nvme_request *nreq = nvme_req(req);
++
++	iod->q = q;
++	nreq->ctrl = &anv->ctrl;
++	nreq->cmd = &iod->cmd;
++
++	return 0;
++}
++
++static void apple_nvme_disable(struct apple_nvme *anv, bool shutdown)
++{
++	u32 csts = readl(anv->mmio_nvme + NVME_REG_CSTS);
++	bool dead = false, freeze = false;
++	unsigned long flags;
++
++	if (apple_rtkit_is_crashed(anv->rtk))
++		dead = true;
++	if (!(csts & NVME_CSTS_RDY))
++		dead = true;
++	if (csts & NVME_CSTS_CFS)
++		dead = true;
++
++	if (anv->ctrl.state == NVME_CTRL_LIVE ||
++	    anv->ctrl.state == NVME_CTRL_RESETTING) {
++		freeze = true;
++		nvme_start_freeze(&anv->ctrl);
++	}
++
++	/*
++	 * Give the controller a chance to complete all entered requests if
++	 * doing a safe shutdown.
++	 */
++	if (!dead && shutdown && freeze)
++		nvme_wait_freeze_timeout(&anv->ctrl, NVME_IO_TIMEOUT);
++
++	nvme_stop_queues(&anv->ctrl);
++
++	if (!dead) {
++		if (READ_ONCE(anv->ioq.enabled)) {
++			apple_nvme_remove_sq(anv);
++			apple_nvme_remove_cq(anv);
 +		}
 +
-+		dev_dbg(sart->dev, "wrote [%pa, 0x%zx] to %d\n", &paddr, size,
-+			i);
-+		return 0;
++		if (shutdown)
++			nvme_shutdown_ctrl(&anv->ctrl);
++		nvme_disable_ctrl(&anv->ctrl);
 +	}
 +
-+	dev_warn(sart->dev,
-+		 "no free entries left to add [paddr: 0x%llx, size: 0x%zx]\n",
-+		 paddr, size);
++	WRITE_ONCE(anv->ioq.enabled, false);
++	WRITE_ONCE(anv->adminq.enabled, false);
++	mb(); /* ensure that nvme_queue_rq() sees that enabled is cleared */
++	nvme_stop_admin_queue(&anv->ctrl);
 +
-+	return -EBUSY;
++	/* last chance to complete any requests before nvme_cancel_request */
++	spin_lock_irqsave(&anv->lock, flags);
++	apple_nvme_handle_cq(&anv->ioq, true);
++	apple_nvme_handle_cq(&anv->adminq, true);
++	spin_unlock_irqrestore(&anv->lock, flags);
++
++	blk_mq_tagset_busy_iter(&anv->tagset, nvme_cancel_request, &anv->ctrl);
++	blk_mq_tagset_busy_iter(&anv->admin_tagset, nvme_cancel_request,
++				&anv->ctrl);
++	blk_mq_tagset_wait_completed_request(&anv->tagset);
++	blk_mq_tagset_wait_completed_request(&anv->admin_tagset);
++
++	/*
++	 * The driver will not be starting up queues again if shutting down so
++	 * must flush all entered requests to their failed completion to avoid
++	 * deadlocking blk-mq hot-cpu notifier.
++	 */
++	if (shutdown) {
++		nvme_start_queues(&anv->ctrl);
++		nvme_start_admin_queue(&anv->ctrl);
++	}
 +}
-+EXPORT_SYMBOL(apple_sart_add_allowed_region);
 +
-+int apple_sart_remove_allowed_region(struct apple_sart *sart, phys_addr_t paddr,
-+				     size_t size)
++static enum blk_eh_timer_return apple_nvme_timeout(struct request *req,
++						   bool reserved)
 +{
-+	int i;
++	struct apple_nvme_iod *iod = blk_mq_rq_to_pdu(req);
++	struct apple_nvme_queue *q = iod->q;
++	struct apple_nvme *anv = queue_to_apple_nvme(q);
++	unsigned long flags;
++	u32 csts = readl(anv->mmio_nvme + NVME_REG_CSTS);
 +
-+	dev_dbg(sart->dev,
-+		"will remove [paddr: %pa, size: 0x%zx] from allowed regions\n",
-+		&paddr, size);
-+
-+	for (i = 0; i < APPLE_SART_MAX_ENTRIES; ++i) {
-+		u8 eflags;
-+		size_t esize;
-+		phys_addr_t epaddr;
-+
-+		if (test_bit(i, &sart->protected_entries))
-+			continue;
-+
-+		sart->ops->get_entry(sart, i, &eflags, &epaddr, &esize);
-+
-+		if (epaddr != paddr || esize != size)
-+			continue;
-+
-+		sart->ops->set_entry(sart, i, 0, 0, 0);
-+
-+		clear_bit(i, &sart->used_entries);
-+		dev_dbg(sart->dev, "cleared entry %d\n", i);
-+		return 0;
++	if (anv->ctrl.state != NVME_CTRL_LIVE) {
++		/*
++		 * From rdma.c:
++		 * If we are resetting, connecting or deleting we should
++		 * complete immediately because we may block controller
++		 * teardown or setup sequence
++		 * - ctrl disable/shutdown fabrics requests
++		 * - connect requests
++		 * - initialization admin requests
++		 * - I/O requests that entered after unquiescing and
++		 *   the controller stopped responding
++		 *
++		 * All other requests should be cancelled by the error
++		 * recovery work, so it's fine that we fail it here.
++		 */
++		dev_warn(anv->dev,
++			 "I/O %d(aq:%d) timeout while not in live state\n",
++			 req->tag, q->is_adminq);
++		if (blk_mq_request_started(req) &&
++		    !blk_mq_request_completed(req)) {
++			nvme_req(req)->status = NVME_SC_HOST_ABORTED_CMD;
++			blk_mq_complete_request(req);
++		}
++		return BLK_EH_DONE;
 +	}
 +
-+	dev_warn(sart->dev, "entry [paddr: 0x%llx, size: 0x%zx] not found\n",
-+		 paddr, size);
++	/* check if we just missed an interrupt if we're still alive */
++	if (!apple_rtkit_is_crashed(anv->rtk) && !(csts & NVME_CSTS_CFS)) {
++		spin_lock_irqsave(&anv->lock, flags);
++		apple_nvme_handle_cq(q, false);
++		spin_unlock_irqrestore(&anv->lock, flags);
++		if (blk_mq_request_completed(req)) {
++			dev_warn(anv->dev,
++				 "I/O %d(aq:%d) timeout: completion polled\n",
++				 req->tag, q->is_adminq);
++			return BLK_EH_DONE;
++		}
++	}
 +
-+	return -EINVAL;
++	/*
++	 * aborting commands isn't supported which leaves a full reset as our
++	 * only option here
++	 */
++	dev_warn(anv->dev, "I/O %d(aq:%d) timeout: resetting controller\n",
++		 req->tag, q->is_adminq);
++	nvme_req(req)->flags |= NVME_REQ_CANCELLED;
++	apple_nvme_disable(anv, false);
++	nvme_reset_ctrl(&anv->ctrl);
++	return BLK_EH_DONE;
 +}
-+EXPORT_SYMBOL(apple_sart_remove_allowed_region);
 +
-+static void apple_sart_shutdown(struct platform_device *pdev)
++static int apple_nvme_poll(struct blk_mq_hw_ctx *hctx,
++			   struct io_comp_batch *iob)
 +{
-+	struct apple_sart *sart = dev_get_drvdata(&pdev->dev);
-+	int i;
++	struct apple_nvme_queue *q = hctx->driver_data;
++	struct apple_nvme *anv = queue_to_apple_nvme(q);
++	bool found;
++	unsigned long flags;
 +
-+	for (i = 0; i < APPLE_SART_MAX_ENTRIES; ++i) {
-+		if (test_bit(i, &sart->protected_entries))
-+			continue;
++	spin_lock_irqsave(&anv->lock, flags);
++	found = apple_nvme_poll_cq(q, iob);
++	spin_unlock_irqrestore(&anv->lock, flags);
 +
-+		sart->ops->set_entry(sart, i, 0, 0, 0);
-+	}
++	return found;
 +}
 +
-+static const struct of_device_id apple_sart_of_match[] = {
-+	{
-+		.compatible = "apple,t6000-sart",
-+		.data = &sart_ops_v3,
-+	},
-+	{
-+		.compatible = "apple,t8103-sart",
-+		.data = &sart_ops_v2,
-+	},
-+	{}
++static const struct blk_mq_ops apple_nvme_mq_admin_ops = {
++	.queue_rq = apple_nvme_queue_rq,
++	.complete = apple_nvme_complete_rq,
++	.init_hctx = apple_nvme_init_hctx,
++	.init_request = apple_nvme_init_request,
++	.timeout = apple_nvme_timeout,
 +};
-+MODULE_DEVICE_TABLE(of, apple_sart_of_match);
 +
-+static struct platform_driver apple_sart_driver = {
++static const struct blk_mq_ops apple_nvme_mq_ops = {
++	.queue_rq = apple_nvme_queue_rq,
++	.complete = apple_nvme_complete_rq,
++	.init_hctx = apple_nvme_init_hctx,
++	.init_request = apple_nvme_init_request,
++	.timeout = apple_nvme_timeout,
++	.poll = apple_nvme_poll,
++};
++
++static void apple_nvme_init_queue(struct apple_nvme_queue *q)
++{
++	unsigned int depth = apple_nvme_queue_depth(q);
++
++	q->cq_head = 0;
++	q->cq_phase = 1;
++	memset(q->tcbs, 0,
++	       APPLE_ANS_MAX_QUEUE_DEPTH * sizeof(struct apple_nvmmu_tcb));
++	memset(q->cqes, 0, depth * sizeof(struct nvme_completion));
++	WRITE_ONCE(q->enabled, true);
++	wmb(); /* ensure the first interrupt sees the initialization */
++}
++
++static void apple_nvme_reset_work(struct work_struct *work)
++{
++	unsigned int nr_io_queues = 1;
++	int ret;
++	u32 boot_status, aqa;
++	struct apple_nvme *anv =
++		container_of(work, struct apple_nvme, ctrl.reset_work);
++
++	if (anv->ctrl.state != NVME_CTRL_RESETTING) {
++		dev_warn(anv->dev, "ctrl state %d is not RESETTING\n",
++			 anv->ctrl.state);
++		ret = -ENODEV;
++		goto out;
++	}
++
++	/* there's unfortunately no known way to recover if RTKit crashed :( */
++	if (apple_rtkit_is_crashed(anv->rtk)) {
++		dev_err(anv->dev,
++			"RTKit has crashed without any way to recover.");
++		ret = -EIO;
++		goto out;
++	}
++
++	if (anv->ctrl.ctrl_config & NVME_CC_ENABLE)
++		apple_nvme_disable(anv, false);
++
++	/* RTKit must be shut down cleanly for the (soft)-reset to work */
++	if (apple_rtkit_is_running(anv->rtk)) {
++		dev_dbg(anv->dev, "Trying to shut down RTKit before reset.");
++		ret = apple_rtkit_shutdown(anv->rtk);
++		if (ret)
++			goto out;
++	}
++
++	writel(0, anv->mmio_coproc + APPLE_ANS_COPROC_CPU_CONTROL);
++
++	ret = reset_control_assert(anv->reset);
++	if (ret)
++		goto out;
++
++	ret = apple_rtkit_reinit(anv->rtk);
++	if (ret)
++		goto out;
++
++	ret = reset_control_deassert(anv->reset);
++	if (ret)
++		goto out;
++
++	writel(APPLE_ANS_COPROC_CPU_CONTROL_RUN,
++	       anv->mmio_coproc + APPLE_ANS_COPROC_CPU_CONTROL);
++	ret = apple_rtkit_boot(anv->rtk);
++	if (ret) {
++		dev_err(anv->dev, "ANS did not boot");
++		goto out;
++	}
++
++	ret = readl_poll_timeout(anv->mmio_nvme + APPLE_ANS_BOOT_STATUS,
++				 boot_status,
++				 boot_status == APPLE_ANS_BOOT_STATUS_OK,
++				 USEC_PER_MSEC, APPLE_ANS_BOOT_TIMEOUT);
++	if (ret) {
++		dev_err(anv->dev, "ANS did not initialize");
++		goto out;
++	}
++
++	dev_dbg(anv->dev, "ANS booted successfully.");
++
++	/*
++	 * Limit the max command size to prevent iod->sg allocations going
++	 * over a single page.
++	 */
++	anv->ctrl.max_hw_sectors = min_t(u32, NVME_MAX_KB_SZ << 1,
++					 dma_max_mapping_size(anv->dev) >> 9);
++	anv->ctrl.max_segments = NVME_MAX_SEGS;
++
++	/*
++	 * Enable NVMMU and linear submission queues.
++	 * While we could keep those disabled and pretend this is slightly
++	 * more common NVMe controller we'd still need some quirks (e.g.
++	 * sq entries will be 128 bytes) and Apple might drop support for
++	 * that mode in the future.
++	 */
++	writel(APPLE_ANS_LINEAR_SQ_EN,
++	       anv->mmio_nvme + APPLE_ANS_LINEAR_SQ_CTRL);
++
++	/* Allow as many pending command as possible for both queues */
++	writel(APPLE_ANS_MAX_QUEUE_DEPTH | (APPLE_ANS_MAX_QUEUE_DEPTH << 16),
++	       anv->mmio_nvme + APPLE_ANS_MAX_PEND_CMDS_CTRL);
++
++	/* Setup the NVMMU for the maximum admin and IO queue depth */
++	writel(APPLE_ANS_MAX_QUEUE_DEPTH - 1,
++	       anv->mmio_nvme + APPLE_NVMMU_NUM_TCBS);
++
++	/*
++	 * This is probably a chicken bit: without it all commands where any PRP
++	 * is set to zero (including those that don't use that field) fail and
++	 * the co-processor complains about "completed with err BAD_CMD-" or
++	 * a "NULL_PRP_PTR_ERR" in the syslog
++	 */
++	writel(readl(anv->mmio_nvme + APPLE_ANS_UNKNOWN_CTRL) &
++		       ~APPLE_ANS_PRP_NULL_CHECK,
++	       anv->mmio_nvme + APPLE_ANS_UNKNOWN_CTRL);
++
++	/* Setup the admin queue */
++	aqa = APPLE_NVME_AQ_DEPTH - 1;
++	aqa |= aqa << 16;
++	writel(aqa, anv->mmio_nvme + NVME_REG_AQA);
++	lo_hi_writeq(anv->adminq.sq_dma_addr, anv->mmio_nvme + NVME_REG_ASQ);
++	lo_hi_writeq(anv->adminq.cq_dma_addr, anv->mmio_nvme + NVME_REG_ACQ);
++
++	/* Setup NVMMU for both queues */
++	lo_hi_writeq(anv->adminq.tcb_dma_addr,
++		     anv->mmio_nvme + APPLE_NVMMU_ASQ_TCB_BASE);
++	lo_hi_writeq(anv->ioq.tcb_dma_addr,
++		     anv->mmio_nvme + APPLE_NVMMU_IOSQ_TCB_BASE);
++
++	anv->ctrl.sqsize =
++		APPLE_ANS_MAX_QUEUE_DEPTH - 1; /* 0's based queue depth */
++	anv->ctrl.cap = lo_hi_readq(anv->mmio_nvme + NVME_REG_CAP);
++
++	dev_dbg(anv->dev, "Enabling controller now");
++	ret = nvme_enable_ctrl(&anv->ctrl);
++	if (ret)
++		goto out;
++
++	dev_dbg(anv->dev, "Starting admin queue");
++	apple_nvme_init_queue(&anv->adminq);
++	nvme_start_admin_queue(&anv->ctrl);
++
++	if (!nvme_change_ctrl_state(&anv->ctrl, NVME_CTRL_CONNECTING)) {
++		dev_warn(anv->ctrl.device,
++			 "failed to mark controller CONNECTING\n");
++		ret = -ENODEV;
++		goto out;
++	}
++
++	ret = nvme_init_ctrl_finish(&anv->ctrl);
++	if (ret)
++		goto out;
++
++	dev_dbg(anv->dev, "Creating IOCQ");
++	ret = apple_nvme_create_cq(anv);
++	if (ret)
++		goto out;
++	dev_dbg(anv->dev, "Creating IOSQ");
++	ret = apple_nvme_create_sq(anv);
++	if (ret)
++		goto out_remove_cq;
++
++	apple_nvme_init_queue(&anv->ioq);
++	nr_io_queues = 1;
++	ret = nvme_set_queue_count(&anv->ctrl, &nr_io_queues);
++	if (ret)
++		goto out_remove_sq;
++	if (nr_io_queues != 1) {
++		ret = -ENXIO;
++		goto out_remove_sq;
++	}
++
++	anv->ctrl.queue_count = nr_io_queues + 1;
++
++	nvme_start_queues(&anv->ctrl);
++	nvme_wait_freeze(&anv->ctrl);
++	blk_mq_update_nr_hw_queues(&anv->tagset, 1);
++	nvme_unfreeze(&anv->ctrl);
++
++	if (!nvme_change_ctrl_state(&anv->ctrl, NVME_CTRL_LIVE)) {
++		dev_warn(anv->ctrl.device,
++			 "failed to mark controller live state\n");
++		ret = -ENODEV;
++		goto out_remove_sq;
++	}
++
++	nvme_start_ctrl(&anv->ctrl);
++
++	dev_dbg(anv->dev, "ANS boot and NVMe init completed.");
++	return;
++
++out_remove_sq:
++	apple_nvme_remove_sq(anv);
++out_remove_cq:
++	apple_nvme_remove_cq(anv);
++out:
++	dev_warn(anv->ctrl.device, "Reset failure status: %d\n", ret);
++	nvme_change_ctrl_state(&anv->ctrl, NVME_CTRL_DELETING);
++	nvme_get_ctrl(&anv->ctrl);
++	apple_nvme_disable(anv, false);
++	nvme_kill_queues(&anv->ctrl);
++	if (!queue_work(nvme_wq, &anv->remove_work))
++		nvme_put_ctrl(&anv->ctrl);
++}
++
++static void apple_nvme_remove_dead_ctrl_work(struct work_struct *work)
++{
++	struct apple_nvme *anv =
++		container_of(work, struct apple_nvme, remove_work);
++
++	nvme_put_ctrl(&anv->ctrl);
++	device_release_driver(anv->dev);
++}
++
++static int apple_nvme_reg_read32(struct nvme_ctrl *ctrl, u32 off, u32 *val)
++{
++	*val = readl(ctrl_to_apple_nvme(ctrl)->mmio_nvme + off);
++	return 0;
++}
++
++static int apple_nvme_reg_write32(struct nvme_ctrl *ctrl, u32 off, u32 val)
++{
++	writel(val, ctrl_to_apple_nvme(ctrl)->mmio_nvme + off);
++	return 0;
++}
++
++static int apple_nvme_reg_read64(struct nvme_ctrl *ctrl, u32 off, u64 *val)
++{
++	*val = lo_hi_readq(ctrl_to_apple_nvme(ctrl)->mmio_nvme + off);
++	return 0;
++}
++
++static int apple_nvme_get_address(struct nvme_ctrl *ctrl, char *buf, int size)
++{
++	struct device *dev = ctrl_to_apple_nvme(ctrl)->dev;
++
++	return snprintf(buf, size, "%s\n", dev_name(dev));
++}
++
++static void apple_nvme_free_ctrl(struct nvme_ctrl *ctrl)
++{
++	struct apple_nvme *anv = ctrl_to_apple_nvme(ctrl);
++
++	if (anv->ctrl.admin_q)
++		blk_put_queue(anv->ctrl.admin_q);
++	put_device(anv->dev);
++}
++
++static const struct nvme_ctrl_ops nvme_ctrl_ops = {
++	.name = "apple-nvme",
++	.module = THIS_MODULE,
++	.flags = 0,
++	.reg_read32 = apple_nvme_reg_read32,
++	.reg_write32 = apple_nvme_reg_write32,
++	.reg_read64 = apple_nvme_reg_read64,
++	.free_ctrl = apple_nvme_free_ctrl,
++	.get_address = apple_nvme_get_address,
++};
++
++static void apple_nvme_async_probe(void *data, async_cookie_t cookie)
++{
++	struct apple_nvme *anv = data;
++
++	flush_work(&anv->ctrl.reset_work);
++	flush_work(&anv->ctrl.scan_work);
++	nvme_put_ctrl(&anv->ctrl);
++}
++
++static int apple_nvme_alloc_tagsets(struct apple_nvme *anv)
++{
++	int ret;
++
++	anv->admin_tagset.ops = &apple_nvme_mq_admin_ops;
++	anv->admin_tagset.nr_hw_queues = 1;
++	anv->admin_tagset.queue_depth = APPLE_NVME_AQ_MQ_TAG_DEPTH;
++	anv->admin_tagset.timeout = NVME_ADMIN_TIMEOUT;
++	anv->admin_tagset.numa_node = NUMA_NO_NODE;
++	anv->admin_tagset.cmd_size = sizeof(struct apple_nvme_iod);
++	anv->admin_tagset.flags = BLK_MQ_F_NO_SCHED;
++	anv->admin_tagset.driver_data = &anv->adminq;
++
++	ret = blk_mq_alloc_tag_set(&anv->admin_tagset);
++	if (ret)
++		return ret;
++	ret = devm_add_action_or_reset(anv->dev,
++				       (void (*)(void *))blk_mq_free_tag_set,
++				       &anv->admin_tagset);
++	if (ret)
++		return ret;
++
++	anv->tagset.ops = &apple_nvme_mq_ops;
++	anv->tagset.nr_hw_queues = 1;
++	anv->tagset.nr_maps = 1;
++	/*
++	 * Tags are used as an index to the NVMMU and must be unique across
++	 * both queues. The admin queue gets the first APPLE_NVME_AQ_DEPTH which
++	 * must be marked as reserved in the IO queue.
++	 */
++	anv->tagset.reserved_tags = APPLE_NVME_AQ_DEPTH;
++	anv->tagset.queue_depth = APPLE_ANS_MAX_QUEUE_DEPTH - 1;
++	anv->tagset.timeout = NVME_IO_TIMEOUT;
++	anv->tagset.numa_node = NUMA_NO_NODE;
++	anv->tagset.cmd_size = sizeof(struct apple_nvme_iod);
++	anv->tagset.flags = BLK_MQ_F_SHOULD_MERGE;
++	anv->tagset.driver_data = &anv->ioq;
++
++	ret = blk_mq_alloc_tag_set(&anv->tagset);
++	if (ret)
++		return ret;
++	ret = devm_add_action_or_reset(
++		anv->dev, (void (*)(void *))blk_mq_free_tag_set, &anv->tagset);
++	if (ret)
++		return ret;
++
++	anv->ctrl.admin_tagset = &anv->admin_tagset;
++	anv->ctrl.tagset = &anv->tagset;
++
++	return 0;
++}
++
++static int apple_nvme_queue_alloc(struct apple_nvme *anv,
++				  struct apple_nvme_queue *q)
++{
++	unsigned int depth = apple_nvme_queue_depth(q);
++
++	q->cqes = dmam_alloc_coherent(anv->dev,
++				      depth * sizeof(struct nvme_completion),
++				      &q->cq_dma_addr, GFP_KERNEL);
++	if (!q->cqes)
++		return -ENOMEM;
++
++	q->sqes = dmam_alloc_coherent(anv->dev,
++				      depth * sizeof(struct nvme_command),
++				      &q->sq_dma_addr, GFP_KERNEL);
++	if (!q->sqes)
++		return -ENOMEM;
++
++	/*
++	 * We need the maximum queue depth here because the NVMMU only has a
++	 * single depth configuration shared between both queues.
++	 */
++	q->tcbs = dmam_alloc_coherent(anv->dev,
++				      APPLE_ANS_MAX_QUEUE_DEPTH *
++					      sizeof(struct apple_nvmmu_tcb),
++				      &q->tcb_dma_addr, GFP_KERNEL);
++	if (!q->tcbs)
++		return -ENOMEM;
++
++	/*
++	 * initialize phase to make sure the allocated and empty memory
++	 * doesn't look like a full cq already.
++	 */
++	q->cq_phase = 1;
++	return 0;
++}
++
++static void apple_nvme_detach_genpd(struct apple_nvme *anv)
++{
++	int i;
++
++	if (anv->pd_count <= 1)
++		return;
++
++	for (i = anv->pd_count - 1; i >= 0; i--) {
++		if (anv->pd_link[i])
++			device_link_del(anv->pd_link[i]);
++		if (!IS_ERR_OR_NULL(anv->pd_dev[i]))
++			dev_pm_domain_detach(anv->pd_dev[i], true);
++	}
++}
++
++static int apple_nvme_attach_genpd(struct apple_nvme *anv)
++{
++	struct device *dev = anv->dev;
++	int i;
++
++	anv->pd_count = of_count_phandle_with_args(
++		dev->of_node, "power-domains", "#power-domain-cells");
++	if (anv->pd_count <= 1)
++		return 0;
++
++	anv->pd_dev = devm_kcalloc(dev, anv->pd_count, sizeof(*anv->pd_dev),
++				   GFP_KERNEL);
++	if (!anv->pd_dev)
++		return -ENOMEM;
++
++	anv->pd_link = devm_kcalloc(dev, anv->pd_count, sizeof(*anv->pd_link),
++				    GFP_KERNEL);
++	if (!anv->pd_link)
++		return -ENOMEM;
++
++	for (i = 0; i < anv->pd_count; i++) {
++		anv->pd_dev[i] = dev_pm_domain_attach_by_id(dev, i);
++		if (IS_ERR(anv->pd_dev[i])) {
++			apple_nvme_detach_genpd(anv);
++			return PTR_ERR(anv->pd_dev[i]);
++		}
++
++		anv->pd_link[i] = device_link_add(dev, anv->pd_dev[i],
++						  DL_FLAG_STATELESS |
++						  DL_FLAG_PM_RUNTIME |
++						  DL_FLAG_RPM_ACTIVE);
++		if (!anv->pd_link[i]) {
++			apple_nvme_detach_genpd(anv);
++			return -EINVAL;
++		}
++	}
++
++	return 0;
++}
++
++static int apple_nvme_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct apple_nvme *anv;
++	int ret;
++
++	anv = devm_kzalloc(dev, sizeof(*anv), GFP_KERNEL);
++	if (!anv)
++		return -ENOMEM;
++
++	anv->dev = get_device(dev);
++	anv->adminq.is_adminq = true;
++	platform_set_drvdata(pdev, anv);
++
++	ret = apple_nvme_attach_genpd(anv);
++	if (ret < 0) {
++		dev_err_probe(dev, ret, "Failed to attach power domains");
++		goto put_dev;
++	}
++	if (dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64))) {
++		ret = -ENXIO;
++		goto put_dev;
++	}
++
++	anv->irq = platform_get_irq(pdev, 0);
++	if (anv->irq < 0) {
++		ret = anv->irq;
++		goto put_dev;
++	}
++	if (!anv->irq) {
++		ret = -ENXIO;
++		goto put_dev;
++	}
++
++	anv->mmio_coproc = devm_platform_ioremap_resource_byname(pdev, "ans");
++	if (IS_ERR(anv->mmio_coproc)) {
++		ret = PTR_ERR(anv->mmio_coproc);
++		goto put_dev;
++	}
++	anv->mmio_nvme = devm_platform_ioremap_resource_byname(pdev, "nvme");
++	if (IS_ERR(anv->mmio_nvme)) {
++		ret = PTR_ERR(anv->mmio_nvme);
++		goto put_dev;
++	}
++
++	anv->adminq.sq_db = anv->mmio_nvme + APPLE_ANS_LINEAR_ASQ_DB;
++	anv->adminq.cq_db = anv->mmio_nvme + APPLE_ANS_ACQ_DB;
++	anv->ioq.sq_db = anv->mmio_nvme + APPLE_ANS_LINEAR_IOSQ_DB;
++	anv->ioq.cq_db = anv->mmio_nvme + APPLE_ANS_IOCQ_DB;
++
++	anv->sart = devm_apple_sart_get(dev);
++	if (IS_ERR(anv->sart)) {
++		dev_err_probe(dev, PTR_ERR(anv->sart),
++			      "Failed to initialize SART");
++		goto put_dev;
++	}
++
++	anv->reset = devm_reset_control_array_get_exclusive(anv->dev);
++	if (IS_ERR(anv->reset)) {
++		dev_err_probe(dev, PTR_ERR(anv->reset),
++			      "Failed to get reset control");
++		goto put_dev;
++	}
++
++	INIT_WORK(&anv->ctrl.reset_work, apple_nvme_reset_work);
++	INIT_WORK(&anv->remove_work, apple_nvme_remove_dead_ctrl_work);
++	spin_lock_init(&anv->lock);
++
++	ret = apple_nvme_queue_alloc(anv, &anv->adminq);
++	if (ret)
++		goto put_dev;
++	ret = apple_nvme_queue_alloc(anv, &anv->ioq);
++	if (ret)
++		goto put_dev;
++
++	anv->prp_page_pool = dmam_pool_create("prp list page", anv->dev,
++					      NVME_CTRL_PAGE_SIZE,
++					      NVME_CTRL_PAGE_SIZE, 0);
++	if (!anv->prp_page_pool) {
++		ret = -ENOMEM;
++		goto put_dev;
++	}
++
++	anv->prp_small_pool =
++		dmam_pool_create("prp list 256", anv->dev, 256, 256, 0);
++	if (!anv->prp_small_pool) {
++		ret = -ENOMEM;
++		goto put_dev;
++	}
++
++	WARN_ON_ONCE(apple_nvme_iod_alloc_size() > PAGE_SIZE);
++	anv->iod_mempool =
++		mempool_create_kmalloc_pool(1, apple_nvme_iod_alloc_size());
++	if (!anv->iod_mempool) {
++		ret = -ENOMEM;
++		goto put_dev;
++	}
++	ret = devm_add_action_or_reset(
++		anv->dev, (void (*)(void *))mempool_destroy, anv->iod_mempool);
++	if (ret)
++		goto put_dev;
++
++	ret = apple_nvme_alloc_tagsets(anv);
++	if (ret)
++		goto put_dev;
++
++	ret = devm_request_irq(anv->dev, anv->irq, apple_nvme_irq, 0,
++			       "nvme-apple", anv);
++	if (ret) {
++		ret = dev_err_probe(dev, ret, "Failed to request IRQ");
++		goto put_dev;
++	}
++
++	anv->rtk =
++		devm_apple_rtkit_init(dev, anv, NULL, 0, &apple_nvme_rtkit_ops);
++	if (IS_ERR(anv->rtk)) {
++		dev_err_probe(dev, PTR_ERR(anv->rtk),
++			      "Failed to initialize RTKit");
++		goto put_dev;
++	}
++
++	ret = nvme_init_ctrl(&anv->ctrl, anv->dev, &nvme_ctrl_ops,
++			     NVME_QUIRK_SKIP_CID_GEN);
++	if (ret) {
++		dev_err_probe(dev, ret, "Failed to initialize nvme_ctrl");
++		goto put_dev;
++	}
++
++	anv->ctrl.admin_q = blk_mq_init_queue(&anv->admin_tagset);
++	if (IS_ERR(anv->ctrl.admin_q)) {
++		ret = -ENOMEM;
++		goto put_dev;
++	}
++
++	if (!blk_get_queue(anv->ctrl.admin_q)) {
++		nvme_start_admin_queue(&anv->ctrl);
++		blk_cleanup_queue(anv->ctrl.admin_q);
++		anv->ctrl.admin_q = NULL;
++		ret = -ENODEV;
++		goto put_dev;
++	}
++
++	nvme_reset_ctrl(&anv->ctrl);
++	async_schedule(apple_nvme_async_probe, anv);
++
++	return 0;
++
++put_dev:
++	put_device(anv->dev);
++	return ret;
++}
++
++static int apple_nvme_remove(struct platform_device *pdev)
++{
++	struct apple_nvme *anv = platform_get_drvdata(pdev);
++
++	nvme_change_ctrl_state(&anv->ctrl, NVME_CTRL_DELETING);
++	flush_work(&anv->ctrl.reset_work);
++	nvme_stop_ctrl(&anv->ctrl);
++	nvme_remove_namespaces(&anv->ctrl);
++	apple_nvme_disable(anv, true);
++	nvme_uninit_ctrl(&anv->ctrl);
++
++	if (apple_rtkit_is_running(anv->rtk))
++		apple_rtkit_shutdown(anv->rtk);
++
++	apple_nvme_detach_genpd(anv);
++
++	return 0;
++}
++
++static void apple_nvme_shutdown(struct platform_device *pdev)
++{
++	struct apple_nvme *anv = platform_get_drvdata(pdev);
++
++	apple_nvme_disable(anv, true);
++	if (apple_rtkit_is_running(anv->rtk))
++		apple_rtkit_shutdown(anv->rtk);
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int apple_nvme_resume(struct device *dev)
++{
++	struct apple_nvme *anv = dev_get_drvdata(dev);
++
++	return nvme_reset_ctrl(&anv->ctrl);
++}
++
++static int apple_nvme_suspend(struct device *dev)
++{
++	struct apple_nvme *anv = dev_get_drvdata(dev);
++	int ret = 0;
++
++	apple_nvme_disable(anv, true);
++
++	if (apple_rtkit_is_running(anv->rtk))
++		ret = apple_rtkit_shutdown(anv->rtk);
++
++	writel(0, anv->mmio_coproc + APPLE_ANS_COPROC_CPU_CONTROL);
++
++	return ret;
++}
++
++static const struct dev_pm_ops apple_nvme_pm_ops = {
++	.suspend	= apple_nvme_suspend,
++	.resume		= apple_nvme_resume,
++};
++#endif
++
++static const struct of_device_id apple_nvme_of_match[] = {
++	{ .compatible = "apple,nvme-ans2" },
++	{},
++};
++MODULE_DEVICE_TABLE(of, apple_nvme_of_match);
++
++static struct platform_driver apple_nvme_driver = {
 +	.driver = {
-+		.name = "apple-sart",
-+		.of_match_table = apple_sart_of_match,
++		.name = "nvme-apple",
++		.of_match_table = apple_nvme_of_match,
++#ifdef CONFIG_PM_SLEEP
++		.pm = &apple_nvme_pm_ops,
++#endif
 +	},
-+	.probe = apple_sart_probe,
-+	.shutdown = apple_sart_shutdown,
++	.probe = apple_nvme_probe,
++	.remove = apple_nvme_remove,
++	.shutdown = apple_nvme_shutdown,
 +};
-+module_platform_driver(apple_sart_driver);
++module_platform_driver(apple_nvme_driver);
 +
-+MODULE_LICENSE("Dual MIT/GPL");
 +MODULE_AUTHOR("Sven Peter <sven@svenpeter.dev>");
-+MODULE_DESCRIPTION("Apple SART driver");
-diff --git a/include/linux/soc/apple/sart.h b/include/linux/soc/apple/sart.h
-new file mode 100644
-index 000000000000..d24b2d9b505f
---- /dev/null
-+++ b/include/linux/soc/apple/sart.h
-@@ -0,0 +1,57 @@
-+/* SPDX-License-Identifier: GPL-2.0-only OR MIT */
-+/*
-+ * Apple SART device driver
-+ * Copyright (C) The Asahi Linux Contributors
-+ *
-+ * Apple SART is a simple address filter for DMA transactions.
-+ * Regions of physical memory must be added to the SART's allow
-+ * list before any DMA can target these. Unlike a proper
-+ * IOMMU no remapping can be done.
-+ */
-+
-+#ifndef _LINUX_SOC_APPLE_SART_H_
-+#define _LINUX_SOC_APPLE_SART_H_
-+
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/types.h>
-+
-+#if IS_ENABLED(CONFIG_APPLE_SART)
-+
-+struct apple_sart;
-+
-+/*
-+ * Get a reference to the SART attached to dev.
-+ *
-+ * Looks for the phandle reference in apple,sart and returns a pointer
-+ * to the corresponding apple_sart struct to be used with
-+ * apple_sart_add_allowed_region and apple_sart_remove_allowed_region.
-+ */
-+struct apple_sart *devm_apple_sart_get(struct device *dev);
-+
-+/*
-+ * Adds the region [paddr, paddr+size] to the DMA allow list.
-+ *
-+ * @sart: SART reference
-+ * @paddr: Start address of the region to be used for DMA
-+ * @size: Size of the region to be used for DMA.
-+ */
-+int apple_sart_add_allowed_region(struct apple_sart *sart, phys_addr_t paddr,
-+				  size_t size);
-+
-+/*
-+ * Removes the region [paddr, paddr+size] from the DMA allow list.
-+ *
-+ * Note that exact same paddr and size used for apple_sart_add_allowed_region
-+ * have to be passed.
-+ *
-+ * @sart: SART reference
-+ * @paddr: Start address of the region no longer used for DMA
-+ * @size: Size of the region no longer used for DMA.
-+ */
-+int apple_sart_remove_allowed_region(struct apple_sart *sart, phys_addr_t paddr,
-+				     size_t size);
-+
-+#endif /* IS_ENABLED(CONFIG_APPLE_SART) */
-+
-+#endif /* _LINUX_SOC_APPLE_SART_H_ */
++MODULE_LICENSE("GPL");
 -- 
 2.25.1
 
