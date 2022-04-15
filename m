@@ -2,105 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D0EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:21:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5583DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:21:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354418AbiDOOXf (ORCPT
+        id S1354546AbiDOOXt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 10:23:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50496 "EHLO
+        Fri, 15 Apr 2022 10:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354406AbiDOOXb (ORCPT
+        with ESMTP id S1354507AbiDOOXi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 10:23:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 069D29BBBE;
-        Fri, 15 Apr 2022 07:21:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2549662021;
-        Fri, 15 Apr 2022 14:21:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D91CC385A7;
-        Fri, 15 Apr 2022 14:20:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650032459;
-        bh=5dZZoj3pOKho1MGAkY4/NjwfVebCG/c1u6DOO+KCsXk=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=aoy5PBKEaK6SDewNMRsObqZAfJKPFcfrASqHE2kpJMp7JREmx1sEiZ4X+FB75LVS6
-         PhZNiB2msnvrXDu06lGbVejgoyTw34WBIzwIvaKTWwY4HPA+fp3EBEIb0X4lZ4el5d
-         L0ICSgERZD32oH6M+8F0b9q76UbbkifG13Z/mGWiuW4eZLJ8IPEw2V1oCuU6VRejlS
-         EBmS/bsRUh4LkfZn1q+VFrJyEmTd1ohjexn56o/7PXGKbEtsXw63qB5Dfa9TBInoBF
-         hs8AFmTSgP4xtVDtqHkGjgWB1DckUd+HnoWgoUbeQAGcGGXZCrfotNztQO6jVGAeam
-         kD8x4B7hPihgg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 1EA355C034B; Fri, 15 Apr 2022 07:20:59 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 07:20:59 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Paul =?iso-8859-1?Q?Heidekr=FCger?= <paul.heidekrueger@in.tum.de>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        llvm@lists.linux.dev, Marco Elver <elver@google.com>,
-        Charalampos Mainas <charalampos.mainas@gmail.com>,
-        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
-        "Jose E. Marchesi" <jemarch@gnu.org>
-Subject: Re: Dangerous addr to ctrl dependency transformation in
- fs/nfs/delegation.c::nfs_server_return_marked_delegations()?
-Message-ID: <20220415142059.GI4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <Yk7/T8BJITwz+Og1@Pauls-MacBook-Pro.local>
- <CAKwvOdkEULT_OOeaaCneJjbrE=O3kC8SMDs2thFa9gBfpuo2Jg@mail.gmail.com>
+        Fri, 15 Apr 2022 10:23:38 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87647986F3;
+        Fri, 15 Apr 2022 07:21:07 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 6AC8F5C01E0;
+        Fri, 15 Apr 2022 10:21:06 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Fri, 15 Apr 2022 10:21:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+         h=cc:cc:content-transfer-encoding:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1650032466; x=
+        1650118866; bh=Tkrx4UCsThsuuZmAg3jLgWOGXjOhgnkx7b8zjDQpi8A=; b=m
+        F+qBGKDwvkqMNuB5SL3EyoDyCLVEq3w1J7a8UVrzfBmMLg0BjUYA+SR1b6EdSpsQ
+        bxR/B44VBg+wM0qGWjOXLMJ7VVXsUUBxXPwwKeNzbObJg1eozP7CDgw9sz5NIUMr
+        zlfUq/vjoEY41UXQrukpiiegf5blrD1Zvcord9KgjXhWTCWvk3CNF4a7Mcz7zc5F
+        DH7D6FOTSnMujzp91aS3blgHe6FachcbK6Hyr8AF36y3cSNAue5a/0LdVilaZ/n6
+        uUwlnfi9P63BTRDsSSKkb0STBMdR15BL2hX1eNS0geKxjNRkk/OqguMSIwncW05o
+        EfhhyG/KZDsOuRxa6hGJQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+        1650032466; x=1650118866; bh=Tkrx4UCsThsuuZmAg3jLgWOGXjOhgnkx7b8
+        zjDQpi8A=; b=DhtEoNpgd280U4Fb4Oae++gtIs2iQwoqXpHV5fLHY6GsgZd08x0
+        Gke7HlZ0Ad+uIgKoPf9H8PLVySM7W27dhT7COSrcs12BLCkvjycez72S8DHJ7QHS
+        rtuOtsThjhKQezyaHCRkJHyP4cVxJ1ecFBF87Ct7OToQaWN5mxmnvxPW7cY+Erfo
+        V7Pc8lsL0F4+HX1k1ZwHuDrZw9DFv9rwPv5g3lVJZvbyt+ugsSu5KfFFMsuayjWZ
+        WvNxdHuTqRv0HebgRjPsfiGvidFeq5IPA0orF3Msi2Dm6iKm7OLou/YIQQvR/MhR
+        uN0pe7cWzAySDMERgPV4lkwIT8bj1bUnqFQ==
+X-ME-Sender: <xms:Un9ZYlzVRb6DlE30HqmEEFdrAv-IzjyAKmfwGo36sf36_pA0v9ALTg>
+    <xme:Un9ZYlScMoKtxmWZdH_sfLXap1NoOhWkdWD3X3VB-A1Xf3dOWqqZSs2GwWCllz9AL
+    j09nVzRfYU_D12pCLY>
+X-ME-Received: <xmr:Un9ZYvVf0NTdy-2KJx4rugHEG-keaRz1yn3SwAl3qBeP85g8gVGKhPJ5AWYlrFSHWoNWJq7xTxqptefVsTcAckArxaYPW5R2C4P1UiPxP77z-fBiBwemflB8Fbaaktw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelhedgjeeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcu
+    rfgvthgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvg
+    hrnhephfefffejvdekleeitdffiefhhfffveffieejteefhedutdfgffeftdejhedtteeh
+    necuffhomhgrihhnpeguvghvihgtvghtrhgvvgdrohhrghenucevlhhushhtvghrufhiii
+    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgvnhesshhvvghnphgvthgvrhdr
+    uggvvh
+X-ME-Proxy: <xmx:Un9ZYnhlrgNqxvC2RquyIMgEwI7VbTmFA_CF8LSxX9qCqbcfW8eMDg>
+    <xmx:Un9ZYnDIThdLARJLj33INVNZg1UYue4X1o7xj6TQbWQ3csxo0EHIrw>
+    <xmx:Un9ZYgKUxhwXbyBaxB8YjgQQrjljK0GXl304ufI3B06hRkW4YI1E4g>
+    <xmx:Un9ZYnyywMm_il80ln2cDeO2JkGuYNVUiPRLADsjkHR-BX6nYt54Gg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 15 Apr 2022 10:21:04 -0400 (EDT)
+From:   Sven Peter <sven@svenpeter.dev>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     Sven Peter <sven@svenpeter.dev>, Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Arnd Bergmann <arnd@arndb.de>, Keith Busch <kbusch@kernel.org>,
+        Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Marc Zyngier <maz@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-nvme@lists.infradead.org
+Subject: [PATCH v2 1/6] dt-bindings: iommu: Add Apple SART DMA address filter
+Date:   Fri, 15 Apr 2022 16:20:50 +0200
+Message-Id: <20220415142055.30873-2-sven@svenpeter.dev>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+In-Reply-To: <20220415142055.30873-1-sven@svenpeter.dev>
+References: <20220415142055.30873-1-sven@svenpeter.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKwvOdkEULT_OOeaaCneJjbrE=O3kC8SMDs2thFa9gBfpuo2Jg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 02:21:25PM -0700, Nick Desaulniers wrote:
-> On Thu, Apr 7, 2022 at 8:22 AM Paul Heidekrüger
-> <paul.heidekrueger@in.tum.de> wrote:
-> >
-> > Hi all,
-> >
-> > work on my dependency checker tool is progressing nicely, and it is
-> > flagging, what I believe is, a harmful addr to ctrl dependency
-> > transformation. For context, see [1] and [2]. I'm using the Clang
-> > compiler.
-> > [1]: https://linuxplumbersconf.org/event/7/contributions/821/attachments/598/1075/LPC_2020_--_Dependency_ordering.pdf
-> > [2]: https://lore.kernel.org/llvm/YXknxGFjvaB46d%2Fp@Pauls-MacBook-Pro/T/#u
-> 
-> Hi Paul,
-> Thanks for the report and your (and your team's) work on this tool.
-> Orthogonal to your report, Jose (cc'ed) and I are currently in the
-> planning process to put together a Kernel+Toolchain microconference
-> track at Linux Plumbers Conference [0] this year (Sept 12-14) in
-> Dublin, Ireland.  Would you or someone from your group be able and
-> interested in presenting more information about your work to an
-> audience of kernel and toolchain developers at such an event?
+Apple SoCs such as the M1 come with a simple DMA address filter called
+SART. Unlike a real IOMMU no pagetables can be configured but instead
+DMA transactions can be allowed for up to 16 paddr regions. The consumer
+also needs special support since not all DMA allocations have to be
+added to this filter.
 
-+1 on presenting at Plumbers!
+Signed-off-by: Sven Peter <sven@svenpeter.dev>
+---
+v1 -> v2:
+  - Moved to bindings/iommu since it is "Close enough to an IOMMU in
+    terms of its purpose" (Rob Herring)
 
-							Thanx, Paul
+ .../devicetree/bindings/iommu/apple,sart.yaml | 52 +++++++++++++++++++
+ MAINTAINERS                                   |  1 +
+ 2 files changed, 53 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/apple,sart.yaml
 
-> Would others be interested in such a topic? (What do they say in
-> Starship Troopers...?...Would you like to know more?)
-> 
-> [0] https://lpc.events/event/16/
-> -- 
-> Thanks,
-> ~Nick Desaulniers
+diff --git a/Documentation/devicetree/bindings/iommu/apple,sart.yaml b/Documentation/devicetree/bindings/iommu/apple,sart.yaml
+new file mode 100644
+index 000000000000..1524fa3094ef
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/apple,sart.yaml
+@@ -0,0 +1,52 @@
++# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iommu/apple,sart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Apple SART DMA address filter
++
++maintainers:
++  - Sven Peter <sven@svenpeter.dev>
++
++description:
++  Apple SART is a simple address filter for DMA transactions. Regions of
++  physical memory must be added to the SART's allow list before any
++  DMA can target these. Unlike a proper IOMMU no remapping can be done and
++  special support in the consumer driver is required since not all DMA
++  transactions of a single device are subject to SART filtering.
++
++  SART1 has first been used since at least the A11 (iPhone 8 and iPhone X)
++  and allows 36 bit of physical address space and filter entries with sizes
++  up to 24 bit.
++
++  SART2, first seen in A14 and M1, allows 36 bit of physical address space
++  and filter entry size up to 36 bit.
++
++  SART3, first seen in M1 Pro/Max, extends both the address space and filter
++  entry size to 42 bit.
++
++properties:
++  compatible:
++    enum:
++      - apple,t6000-sart
++      - apple,t8103-sart
++
++  reg:
++    maxItems: 1
++
++  power-domains:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    iommu@7bc50000 {
++      compatible = "apple,t8103-sart";
++      reg = <0x7bc50000 0x4000>;
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fd768d43e048..4961da640e82 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1836,6 +1836,7 @@ F:	Documentation/devicetree/bindings/arm/apple/*
+ F:	Documentation/devicetree/bindings/clock/apple,nco.yaml
+ F:	Documentation/devicetree/bindings/i2c/apple,i2c.yaml
+ F:	Documentation/devicetree/bindings/interrupt-controller/apple,*
++F:	Documentation/devicetree/bindings/iommu/apple,sart.yaml
+ F:	Documentation/devicetree/bindings/mailbox/apple,mailbox.yaml
+ F:	Documentation/devicetree/bindings/pci/apple,pcie.yaml
+ F:	Documentation/devicetree/bindings/pinctrl/apple,pinctrl.yaml
+-- 
+2.25.1
+
