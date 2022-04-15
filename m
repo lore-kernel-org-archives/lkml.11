@@ -2,121 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EC11C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 17:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5861C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 17:48:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343551AbiDORqn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 13:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35346 "EHLO
+        id S245708AbiDORu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 13:50:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245230AbiDORqk (ORCPT
+        with ESMTP id S237028AbiDORuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 13:46:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C832B7C4E;
-        Fri, 15 Apr 2022 10:44:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2ED3CB82E49;
-        Fri, 15 Apr 2022 17:44:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A38C4C385A4;
-        Fri, 15 Apr 2022 17:44:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650044648;
-        bh=lrCSsYksbzncOviQk3dUVWiQ8mHKA/HxHFi/7Dt223o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZpGtAMnFkcHPD8rEc9Bd+vacb2sQFH6p4ACXrTMQMf/DdPfkuat6OcYILEzuRnHFS
-         FDNwew7gMUoKeWkCSB92cVOwpnFekM8GcSt49FQzqDrAn/oLV3SJwS49HJo5pJeWD3
-         ud3x6vxR0LeLpAIucCD/7PyzI1flPk886i9KQpWSDUds2b9orWXfoOdNrQBHVAVehD
-         R8QqCShFgTRnqLbZfsErDDpCDiEUiARkk5UNsmAWCVyj70w2HPX+neRLoqtEI0txFx
-         f5ORQMwpjLlfHL57gLbCW378L00nYJZIcHBMyVfhjpA36jUu2eyb6apDgJrYPtxsQH
-         Uq/4OvcUIbGvQ==
-Date:   Fri, 15 Apr 2022 18:52:05 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V2] iio: gp2ap020a00f: Fix signedness bug
-Message-ID: <20220415185205.26a3d352@jic23-huawei>
-In-Reply-To: <1649985637-18854-1-git-send-email-baihaowen@meizu.com>
-References: <CAHp75VfbZhMvs7dHwadvNs6maPsBVOY3Mk5wkKSwZ1RANQQHDA@mail.gmail.com>
-        <1649985637-18854-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Fri, 15 Apr 2022 13:50:55 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73296BCB40
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 10:48:26 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id w19so747291lji.4
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 10:48:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=pxlOZRBuJWC6Ej+jZ14mKMuVx9qkJWEg3X0ZwZTkhPc=;
+        b=AGjh7x15wO41Vm7WZk3zze/8MHMZTgYGS5S5m/PUK7NM0u25WdnmOMU5S7AYGh+Yhu
+         qDAG4TaukWed4uzSQH6i5BnUIT5PQHU/O/6gsCCN77seEqq/adMEjId2KSQq2ozkwymU
+         bY5pqHKLvU4229uoaKMBL0Cg3oAEGl/tazNw2kNNB4d/V54Vr0FLf7533qnm/JP7jHVX
+         tghwr3seWFTq32gAp/B7rx9QmN+5xMLaezd0VHafXZpHs//2CSIYl7S1/POTMDNz8j+M
+         A6kxHYpmSV8JsNmpZ3CJDOVaoEKdIRmv2RWV2Uudy6pCbBmemj+X/5ZAZx5fyR3FaAvs
+         hejw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=pxlOZRBuJWC6Ej+jZ14mKMuVx9qkJWEg3X0ZwZTkhPc=;
+        b=T45I4h3zGR6fGJHN62CmArsCLlEU/VslveU/yprqxYZFHof4ijNrI9KD3ZJiJwoEJs
+         5VusuUYk+V4OehMnqRECcqAnyvzK4OZE1/KOp76wSAuKnhDV0XqPQ/4/+i4P/AgUZM59
+         NrXFko7ov9a2nOCHHeS7NAHyJVEncQsG7Jp04h2GYi7zaicxs2cgKb4sCHB5S/2BlgXi
+         l8xzQHgsvLJeVpB3JUSKRQoCyRO8c1HADknR7AJOydiQfcuvivvQ1e8TnAsJpJqmh3dc
+         XDeVfvwaLf/GNe9Ynx98/TuCW2M3aJC9PcZKQgRGp8l8eXuNDOQae7Yut8uGVfHW084+
+         IFBA==
+X-Gm-Message-State: AOAM530yx4sd4Da4FLe86ZlHsOF7AnPUOrZUngr+vm+R+5jzXWicbNeA
+        h7UZtvsrsNiYz/kBn2rszu/FtL7Gj/wc6dhGHSvyZm8xsw6wLw==
+X-Google-Smtp-Source: ABdhPJw/s+OvUlN+j11st5pHaviz8KqPPDcqLqJIqRUZcwXRtBQNT3E9aXGVOY5+ri72dswWY94BRsMwknx3r3fvgS4=
+X-Received: by 2002:a2e:8650:0:b0:24b:5309:352f with SMTP id
+ i16-20020a2e8650000000b0024b5309352fmr137955ljj.472.1650044904482; Fri, 15
+ Apr 2022 10:48:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Fri, 15 Apr 2022 10:48:13 -0700
+Message-ID: <CAKwvOdmwyFDYKMpq0dcvbq06drtZonpNJ3PqLx2RMBE00beHZA@mail.gmail.com>
+Subject: plumbers session on syscall wrapping and kernel header libc circular depdence?
+To:     Florian Weimer <fweimer@redhat.com>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Cc:     "Jose E. Marchesi" <jemarch@gnu.org>,
+        linux-toolchains@vger.kernel.org,
+        clang-built-linux <llvm@lists.linux.dev>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 15 Apr 2022 09:20:37 +0800
-Haowen Bai <baihaowen@meizu.com> wrote:
+Hi Florian, Arnd, and Masahiro,
+Jose and I are currently in the planning process to put together a
+Kernel+Toolchain microconference track at Linux Plumbers Conference
+this year (Sept 12-14) in Dublin, Ireland.
 
-> function gp2ap020a00f_get_thresh_reg() is unsigned but returning -EINVAL 
-> errcode, and thresh_reg_l is unsigned but receiving -EINVAL errcode. so 
-> we have to change u8 -> int.
-> 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Hi,
+Would you all be interested in a session (if you're planning on
+attending) discussing syscall wrapping for libc's and UAPI circular
+dependency on the libc?
 
-The return value is not checked in *read_event_val(), so if we actually got
--EINVAL (in reality we can't because the switch in *_get_thresh_reg*) always
-matches) then we'd use it to index an array (after performing some maths on
-the value).  So please also add a check that the return value is not
-negative in read_event_val()
-
-Same is true or write_event_val.
-
-
-Note that the bug here is probably the fact we return -EINVAL in the
-first place. We could just stop doing that but it would be non obvious
-when looking at the code that we couldn't get a failure to match in
-the switch statement - so fixing as you have done (plus the extra
-check I'm requesting) is probably the neatest solution.
-
+Masahiro and I were recently discussing the feasibility of building
+the kernel UAPI header tests with -nostdinc, but there are some
+interesting complications perhaps worth sharing with others?
+-- 
 Thanks,
-
-Jonathan
-
-
-> ---
-> V1->V2: s8 is not enough to hold an (arbitrary) error code. To be on the safe
-> side we need to use int
-> 
->  drivers/iio/light/gp2ap020a00f.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-> index b820041159f7..b0e62d3c6fa0 100644
-> --- a/drivers/iio/light/gp2ap020a00f.c
-> +++ b/drivers/iio/light/gp2ap020a00f.c
-> @@ -994,7 +994,7 @@ static irqreturn_t gp2ap020a00f_trigger_handler(int irq, void *data)
->  	return IRQ_HANDLED;
->  }
->  
-> -static u8 gp2ap020a00f_get_thresh_reg(const struct iio_chan_spec *chan,
-> +static int gp2ap020a00f_get_thresh_reg(const struct iio_chan_spec *chan,
->  					     enum iio_event_direction event_dir)
->  {
->  	switch (chan->type) {
-> @@ -1025,7 +1025,7 @@ static int gp2ap020a00f_write_event_val(struct iio_dev *indio_dev,
->  	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
->  	bool event_en = false;
->  	u8 thresh_val_id;
-> -	u8 thresh_reg_l;
-> +	int thresh_reg_l;
->  	int err = 0;
->  
->  	mutex_lock(&data->lock);
-> @@ -1082,7 +1082,7 @@ static int gp2ap020a00f_read_event_val(struct iio_dev *indio_dev,
->  				       int *val, int *val2)
->  {
->  	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
-> -	u8 thresh_reg_l;
-> +	int thresh_reg_l;
->  	int err = IIO_VAL_INT;
->  
->  	mutex_lock(&data->lock);
-
+~Nick Desaulniers
