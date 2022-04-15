@@ -2,184 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D2FEC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:48:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E8A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:48:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355637AbiDOPuc (ORCPT
+        id S1355647AbiDOPuj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 11:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
+        Fri, 15 Apr 2022 11:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355626AbiDOPuZ (ORCPT
+        with ESMTP id S1355626AbiDOPui (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 11:50:25 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F12986F1
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:47:56 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id x18so3247620wrc.0
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:47:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=z3NAus3DBQ3rA5abnaly1KYO3d+31BXc2jT1/06zaWU=;
-        b=gMVKNG8Sn7N8Cr8qoxwKxQEKVfdJZOjuX2zRtTioOhvs0ImnH98R2BnSStp58MnElU
-         xU/rsr8ge2E733Mmqp7rU5uPl09/PmmY1PGllmUdILYJIIEUhsBFePA1jE4pUxwMen1U
-         nXZWPrXahH1TwZ7LhU1BmHrDGHPMtYCt0p/Ndft70fMuyrKWJhR6O25NqXObJKrM52Dq
-         AYzHhOfe4aLMZgD9D7aR2DY4KAC2rQFYjlhuhj5PG8PbfkNdtLDGCX1z2vWI1S2NTZ2N
-         cUtpopQ1gU/hSKPaf7f8viiwkxxaX74ED9fon5Y5alcWwdJZUMEdh93XkuxiWiUmxTRk
-         qWdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=z3NAus3DBQ3rA5abnaly1KYO3d+31BXc2jT1/06zaWU=;
-        b=1mHiXiU3yt3j9o9SxeTdxvMPkqo3ERT08HTDG/D7vlxyQM88WyPbzZvpS0j+DVl0WB
-         NR4fWdKMFngsnBLkIY/gD1Vw2Xc2V+1DU/FaBF+BIQPgxXSNX99RyGnGnsvhyHjbvmBu
-         nBDMQYO5aJLRBr7LDfvbGNUk1+PlxpkPDSu9yp1vtm63H8Z3q08tJKfFMTtm5KpYtQ0y
-         OqKg14atkO74U0eM/yBN9nKwqbJdapLzYgZC6nFT8KaT1bir3tSpPbLye3+tz1WGNlsW
-         P8EQZ7Y6bc4t8bOgq9nhWnMxHAEcO5IXLLwTN7QOSwXd4cTdn1PhrLLh3Hh5diWLVTcw
-         QY2w==
-X-Gm-Message-State: AOAM533Lk8rrT+Xw4MRGya6BzfAKbGaKcx2XeU0vZp2++N9F85KOaw0m
-        kk2WL/8e4oQsel1+7kO96NHky1YhdXE=
-X-Google-Smtp-Source: ABdhPJyW2x2EFgqpv5A2q/Gy87tMC0ikN/Nmxu3gJ86Y5Z1liA26skS+/lodxtTsH/reQnsjkBwVFw==
-X-Received: by 2002:adf:cc88:0:b0:207:a46c:ad8d with SMTP id p8-20020adfcc88000000b00207a46cad8dmr5699598wrj.95.1650037674611;
-        Fri, 15 Apr 2022 08:47:54 -0700 (PDT)
-Received: from localhost.localdomain ([94.73.37.128])
-        by smtp.gmail.com with ESMTPSA id a7-20020adffb87000000b00207982c7f4dsm4349655wrr.67.2022.04.15.08.47.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 08:47:54 -0700 (PDT)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     emma@anholt.net
-Cc:     mripard@kernel.org, laurent.pinchart@ideasonboard.com,
-        airlied@linux.ie, daniel@ffwll.ch, p.zabel@pengutronix.de,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH v2 2/2] drm/vc4: hdmi: Remove vc4_hdmi_encoder.hdmi_monitor
-Date:   Fri, 15 Apr 2022 17:47:45 +0200
-Message-Id: <20220415154745.170597-3-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220415154745.170597-1-jose.exposito89@gmail.com>
-References: <20220415154745.170597-1-jose.exposito89@gmail.com>
+        Fri, 15 Apr 2022 11:50:38 -0400
+Received: from 6.mo560.mail-out.ovh.net (6.mo560.mail-out.ovh.net [87.98.165.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06B1986F1
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:48:09 -0700 (PDT)
+Received: from player788.ha.ovh.net (unknown [10.109.156.38])
+        by mo560.mail-out.ovh.net (Postfix) with ESMTP id C3B7E220EE
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 15:38:30 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player788.ha.ovh.net (Postfix) with ESMTPSA id 6317F29866F4A;
+        Fri, 15 Apr 2022 15:38:26 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-100R00314cd0484-1fc4-4138-bc82-0aa4ef2f9df0,
+                    77125C2C2681624F8512B69FC7A1C9B53E6602B4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 0/6] ASoC: remaining i2c_match_id i2c probe changes
+Date:   Fri, 15 Apr 2022 17:38:11 +0200
+Message-Id: <20220415153817.141364-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 10481565184974554758
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelhedgleefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejkeekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The vc4_hdmi_encoder.hdmi_monitor field was used to cache the value
-returned by drm_detect_hdmi_monitor() in order to avoid calling it
-multiple times.
+This series covers all the remaining changes to migrate
+sound/soc/codecs i2c probes to probe_new, where the const struct
+i2c_client * argument is still used. Instead of relying on the
+parameter passed in, i2c_match_id is used instead.
 
-Now that drm_detect_hdmi_monitor() has been replaced with
-drm_display_info.is_hdmi, there is no need to cache it in the driver
-encoder struct.
+With this set of patches, all the sound/soc/codecs i2c probes use the
+new probe definition.
 
-Remove vc4_hdmi_encoder.hdmi_monitor and use drm_display_info.is_hdmi
-instead.
+Stephen Kitt (6):
+  ASoC: ak*: use i2c_match_id and simple i2c probe
+  ASoC: alc56*: use i2c_match_id and simple i2c probe
+  ASoC: max980*: use i2c_match_id and simple i2c probe
+  ASoC: pcm186x: use i2c_match_id and simple i2c probe
+  ASoC: tas*: use i2c_match_id and simple i2c probe
+  ASoC: tlv320*: use i2c_match_id and simple i2c probe
 
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
----
- drivers/gpu/drm/vc4/vc4_hdmi.c | 17 ++++++-----------
- drivers/gpu/drm/vc4/vc4_hdmi.h |  1 -
- 2 files changed, 6 insertions(+), 12 deletions(-)
+ sound/soc/codecs/ak4613.c            | 10 +++++----
+ sound/soc/codecs/ak4642.c            |  8 ++++---
+ sound/soc/codecs/alc5623.c           | 24 +++++++++++----------
+ sound/soc/codecs/alc5632.c           | 20 +++++++++--------
+ sound/soc/codecs/max98088.c          | 21 +++++++++---------
+ sound/soc/codecs/max98090.c          | 23 ++++++++++----------
+ sound/soc/codecs/max98095.c          | 19 +++++++++--------
+ sound/soc/codecs/pcm186x-i2c.c       | 24 ++++++++++-----------
+ sound/soc/codecs/tas2562.c           | 25 +++++++++++-----------
+ sound/soc/codecs/tas571x.c           | 11 ++++++----
+ sound/soc/codecs/tas5720.c           | 21 +++++++++---------
+ sound/soc/codecs/tlv320adc3xxx.c     | 21 +++++++++---------
+ sound/soc/codecs/tlv320aic31xx.c     | 32 ++++++++++++++--------------
+ sound/soc/codecs/tlv320aic32x4-i2c.c | 11 ++++++----
+ 14 files changed, 145 insertions(+), 125 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index ecdb1ffc2023..9c73a211ae80 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -107,9 +107,9 @@ static bool vc4_hdmi_mode_needs_scrambling(const struct drm_display_mode *mode)
- static bool vc4_hdmi_is_full_range_rgb(struct vc4_hdmi *vc4_hdmi,
- 				       const struct drm_display_mode *mode)
- {
--	struct vc4_hdmi_encoder *vc4_encoder = &vc4_hdmi->encoder;
-+	struct drm_display_info *display = &vc4_hdmi->connector.display_info;
- 
--	return !vc4_encoder->hdmi_monitor ||
-+	return !display->is_hdmi ||
- 		drm_default_rgb_quant_range(mode) == HDMI_QUANTIZATION_RANGE_FULL;
- }
- 
-@@ -216,7 +216,6 @@ vc4_hdmi_connector_detect(struct drm_connector *connector, bool force)
- 
- 			if (edid) {
- 				cec_s_phys_addr_from_edid(vc4_hdmi->cec_adap, edid);
--				vc4_hdmi->encoder.hdmi_monitor = connector->display_info.is_hdmi;
- 				kfree(edid);
- 			}
- 		}
-@@ -242,7 +241,6 @@ static void vc4_hdmi_connector_destroy(struct drm_connector *connector)
- static int vc4_hdmi_connector_get_modes(struct drm_connector *connector)
- {
- 	struct vc4_hdmi *vc4_hdmi = connector_to_vc4_hdmi(connector);
--	struct vc4_hdmi_encoder *vc4_encoder = &vc4_hdmi->encoder;
- 	int ret = 0;
- 	struct edid *edid;
- 
-@@ -255,8 +253,6 @@ static int vc4_hdmi_connector_get_modes(struct drm_connector *connector)
- 		goto out;
- 	}
- 
--	vc4_encoder->hdmi_monitor = connector->display_info.is_hdmi;
--
- 	drm_connector_update_edid_property(connector, edid);
- 	ret = drm_add_edid_modes(connector, edid);
- 	kfree(edid);
-@@ -578,13 +574,12 @@ static void vc4_hdmi_set_infoframes(struct drm_encoder *encoder)
- static bool vc4_hdmi_supports_scrambling(struct drm_encoder *encoder,
- 					 struct drm_display_mode *mode)
- {
--	struct vc4_hdmi_encoder *vc4_encoder = to_vc4_hdmi_encoder(encoder);
- 	struct vc4_hdmi *vc4_hdmi = encoder_to_vc4_hdmi(encoder);
- 	struct drm_display_info *display = &vc4_hdmi->connector.display_info;
- 
- 	lockdep_assert_held(&vc4_hdmi->mutex);
- 
--	if (!vc4_encoder->hdmi_monitor)
-+	if (!display->is_hdmi)
- 		return false;
- 
- 	if (!display->hdmi.scdc.supported ||
-@@ -1147,7 +1142,7 @@ static void vc4_hdmi_encoder_post_crtc_enable(struct drm_encoder *encoder,
- {
- 	struct vc4_hdmi *vc4_hdmi = encoder_to_vc4_hdmi(encoder);
- 	struct drm_display_mode *mode = &vc4_hdmi->saved_adjusted_mode;
--	struct vc4_hdmi_encoder *vc4_encoder = to_vc4_hdmi_encoder(encoder);
-+	struct drm_display_info *display = &vc4_hdmi->connector.display_info;
- 	bool hsync_pos = mode->flags & DRM_MODE_FLAG_PHSYNC;
- 	bool vsync_pos = mode->flags & DRM_MODE_FLAG_PVSYNC;
- 	unsigned long flags;
-@@ -1168,7 +1163,7 @@ static void vc4_hdmi_encoder_post_crtc_enable(struct drm_encoder *encoder,
- 	HDMI_WRITE(HDMI_VID_CTL,
- 		   HDMI_READ(HDMI_VID_CTL) & ~VC4_HD_VID_CTL_BLANKPIX);
- 
--	if (vc4_encoder->hdmi_monitor) {
-+	if (display->is_hdmi) {
- 		HDMI_WRITE(HDMI_SCHEDULER_CONTROL,
- 			   HDMI_READ(HDMI_SCHEDULER_CONTROL) |
- 			   VC4_HDMI_SCHEDULER_CONTROL_MODE_HDMI);
-@@ -1195,7 +1190,7 @@ static void vc4_hdmi_encoder_post_crtc_enable(struct drm_encoder *encoder,
- 			  "!VC4_HDMI_SCHEDULER_CONTROL_HDMI_ACTIVE\n");
- 	}
- 
--	if (vc4_encoder->hdmi_monitor) {
-+	if (display->is_hdmi) {
- 		spin_lock_irqsave(&vc4_hdmi->hw_lock, flags);
- 
- 		WARN_ON(!(HDMI_READ(HDMI_SCHEDULER_CONTROL) &
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.h b/drivers/gpu/drm/vc4/vc4_hdmi.h
-index 1076faeab616..44977002445f 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.h
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.h
-@@ -11,7 +11,6 @@
- /* VC4 HDMI encoder KMS struct */
- struct vc4_hdmi_encoder {
- 	struct vc4_encoder base;
--	bool hdmi_monitor;
- };
- 
- static inline struct vc4_hdmi_encoder *
+
+base-commit: 5d763a740e5b24e4a2ca04317255e7e941876338
 -- 
-2.25.1
+2.27.0
 
