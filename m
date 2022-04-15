@@ -2,80 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44276C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:26:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB8EC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:26:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351372AbiDOI2b (ORCPT
+        id S1351381AbiDOI2x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 04:28:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44112 "EHLO
+        Fri, 15 Apr 2022 04:28:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230490AbiDOI20 (ORCPT
+        with ESMTP id S230490AbiDOI2v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 04:28:26 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8439AAB47;
-        Fri, 15 Apr 2022 01:25:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=3wN74fu5w+jCy3hi8iGGJYQXAXjvPWi0PsASSr2Y7Dc=; b=qB+tQbvLGYevQ0Oht3Gx0nbcRm
-        qdtuhUtZl9ToQzFaFI8dFYLvW4wMdTiO+uu5llhZGKwdake5TtTPjudt7yACs6bhOLM7jv+XQKPGU
-        nRwpmVKVigyKF2dgs5JKUdPHfFQGtHwD07owR+aC0YV3yOxRnfs9J8+g/IYO0P+eHL/cgexQ5gTty
-        TMtHlkrbyO00YbHKGphJQcP6RndiOaYIxd4vzwWaRx5JwzQR9vkoNdbFNVa9VDR1BZ0ia76rZoYl4
-        7IQdUjVcRsXKnaCi9tn0ijyAeCB2Lx0fhxKyascV4NxGh5zXKrVUH7v0k/xjQsnx/cf1cwJdRJPeh
-        zkVtm7Sg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nfHGu-00Fy61-OS; Fri, 15 Apr 2022 08:25:40 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 008BE3002DE;
-        Fri, 15 Apr 2022 10:25:39 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 95920202508B9; Fri, 15 Apr 2022 10:25:39 +0200 (CEST)
-Date:   Fri, 15 Apr 2022 10:25:39 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Like Xu <like.xu.linux@gmail.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, Like Xu <likexu@tencent.com>
-Subject: Re: [PATCH v3 09/11] perf: x86/core: Add interface to query
- perfmon_event_map[] directly
-Message-ID: <YlksA1gR0ehoU2VP@hirez.programming.kicks-ass.net>
-References: <20220411093537.11558-1-likexu@tencent.com>
- <20220411093537.11558-10-likexu@tencent.com>
+        Fri, 15 Apr 2022 04:28:51 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E004AFB35;
+        Fri, 15 Apr 2022 01:26:23 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 787FB1BF211;
+        Fri, 15 Apr 2022 08:26:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650011181;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kKojKZULnPE/wWjIpye1ilTyE1X2MJhejc5l4csXybI=;
+        b=eyakLyHQLwnmDg3QFRsBeVWxdYLaiRMfBgkqSYNyJ8w18zYfQe/rzoYSew7hsuaxFbbh3t
+        D3ANnDwMXwuBDdry+VBoxXei0xbk2gIqOIEUt4fnRmdCMYTAc1IK9wF4ZTKGxE1SZCA3ci
+        lNoTkfyU912659amNnzGFgRAx1Tdr3oDrAE5DIG06FsVTELhC2uzNdEyN8DxYgoFabwGz9
+        fIRDG5T+ngpImU8lhDgvP0UuA42Fe/+6IiKB84vp9GsZvnuDVopyQaS3I4FYaYHVnbW9YO
+        BvjQh/R8VvNSDzKTwvGfYMzJXp0u/W8HKsLllI2HxiqBVhLE+Gxbvhzh8ui9Ag==
+Date:   Fri, 15 Apr 2022 10:24:53 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 09/12] ARM: dts: r9a06g032: describe MII
+ converter
+Message-ID: <20220415102453.1b5b3f77@fixe.home>
+In-Reply-To: <YlismVi8y3Vf6PZ0@lunn.ch>
+References: <20220414122250.158113-1-clement.leger@bootlin.com>
+        <20220414122250.158113-10-clement.leger@bootlin.com>
+        <YlismVi8y3Vf6PZ0@lunn.ch>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411093537.11558-10-likexu@tencent.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 05:35:35PM +0800, Like Xu wrote:
-> From: Like Xu <likexu@tencent.com>
-> 
-> Currently, we have [intel|knc|p4|p6]_perfmon_event_map on the Intel
-> platforms and amd_[f17h]_perfmon_event_map on the AMD platforms.
-> 
-> Early clumsy KVM code or other potential perf_event users may have
-> hard-coded these perfmon_maps (e.g., arch/x86/kvm/svm/pmu.c), so
-> it would not make sense to program a common hardware event based
-> on the generic "enum perf_hw_id" once the two tables do not match.
-> 
-> Let's provide an interface for callers outside the perf subsystem to get
-> the counter config based on the perfmon_event_map currently in use,
-> and it also helps to save bytes.
-> 
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Signed-off-by: Like Xu <likexu@tencent.com>
+Le Fri, 15 Apr 2022 01:22:01 +0200,
+Andrew Lunn <andrew@lunn.ch> a =C3=A9crit :
 
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> On Thu, Apr 14, 2022 at 02:22:47PM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
+> > Add the MII converter node which describes the MII converter that is
+> > present on the RZ/N1 SoC. =20
+>=20
+> Do you have a board which actually uses this? I just noticed that
+> renesas,miic-cfg-mode is missing, it is a required property, but maybe
+> the board .dts file provides it?
+>=20
+>     Andrew
+
+Hi Andrew, yes, I have a board that defines and use that. The
+renesas,miic-cfg-mode actually configures the muxes that are present on
+the SoC. They allows to mux the various ethernet components (Sercos
+Controller, HSR Controller, Ethercat, GMAC1, RTOS-GMAC).
+All these muxes are actually controller by a single register
+CONVCTRL_MODE. You can actually see the muxes that are present in the
+manual [1] at Section 8 and the CONVCTRL_MODE possible values are listed
+on page 180.
+
+This seems to be something that is board dependent because the muxing
+controls the MII converter outputs which depends on the board layout.
+
+I'm open to any modification for this setup which does not really fit
+any abstraction that I may have seen.
+
+[1]
+https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-rzn1l-gr=
+oup-users-manual-system-introduction-multiplexing-electrical-and
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
