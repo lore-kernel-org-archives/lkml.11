@@ -2,138 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3136DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 06:06:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 06:10:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245230AbiDOGJI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 02:09:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
+        id S1344000AbiDOGNK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 02:13:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240302AbiDOGJG (ORCPT
+        with ESMTP id S240302AbiDOGNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 02:09:06 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E2FAAB74
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 23:06:37 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id g21so7526671iom.13
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 23:06:37 -0700 (PDT)
+        Fri, 15 Apr 2022 02:13:07 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C654A3C6
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 23:10:40 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id g20so8872901edw.6
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 23:10:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EjdPQf7qMEmsnQdH9Lsin89rXivDvbUmZSVyW8V6lRQ=;
-        b=erKpGsHFd5Sf9kS9SBDMU6QT8/q3BhnoONJ7PogKQu44iphr3NmgCTbUu+235pDAum
-         VEBQFxa9m9zXu1dqSlPlXwJ68Jx2bHdW2ql9b6ieFJ7EWjUsNzEO9RimzV/WWOTTOc/O
-         DltZ34da7CLDFx9Vx11twYDGL0VG7ea1pRLckFXvjgI7VZ//rPV5PyPR90uZ8TajWXoP
-         EOBLnKU7jpXCxt+j3XklhjfOB+yhUlj5a43BEe0GAzfghknM6GHrSQYLpYJaLmyDtLXZ
-         R+f4cWein/LjrsYMSqsAwnjgA1/IMCrkDnArIdnFrUn9xKnfqBW06l8cW8it9Wh50BJ8
-         KjOg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=yZK1aloE4NcRFJpUcMOYel3NphqGgMdnwyOVwX33QOs=;
+        b=U9+WVlHalxi7H57sau6QSkuKMv2MWHS/5P+S956ZjjyTuQ8RKfdBxh2bi1qbwLRlvd
+         skzz5aCDZ/89t4gIrBOoEn5oR9nrF0Z2SN34XZIYzLjgEU6WkeFSfBVUBZIKlw7T1+72
+         M2HWH5R44yVFealq9KxccsniB3k3MWu6vRCHfIb9outynu+V7mZQ+PimAHAN5uaBgE65
+         WEnroJrDIrCrnwMEaZQnrr3zUzMlw8io18/qbc+IhcGvKI7o+/EIJj0wE8yAxqks0xEY
+         rM2nAfs7AXMiOwuMIY3Zx/iic+z+pjUHURlwSjK/EewxyVO8g2pbXuq+Laj2gxrljd3e
+         0XbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EjdPQf7qMEmsnQdH9Lsin89rXivDvbUmZSVyW8V6lRQ=;
-        b=NvouA/TzCf7gGy4OOGjE44v2wxQb9MIxo2wwzBUqzH/T2pldYOyeDq2qnjls5DQEBU
-         sVDnpXipRGhf7n+xGPlAV9EMfvwa3rA3X0nCaegGhFwPf2djYI5Y7q1UJEz97oxUct6x
-         cFzp+iGAsTwxEQcmve+vvd9LgZlRQ1QJXRmdfDorfLIK6xSwBUbrZ4tAYtDoaQ9h/Fr0
-         T60919kjPXMwGD6JWmbxTiPaBFDGdwBqENVgHSDvzeyiTce1Vy/dSLAgmriqn9UmmNzv
-         vj8xwfep3xIk5wUTcjHZIOTdui9gQ3d2R5qfX0j3FG0AgSDdBQIIZ+69DV6y5spA9+jm
-         UlDQ==
-X-Gm-Message-State: AOAM5321+v/zsPVlTJAf0m5exDe61903OAN9ikUTfsHi3PneJZ/o73hS
-        d4hm3oGp67C3NgNipRO8ANYLCVaUyGcdBwtthFUxUw==
-X-Google-Smtp-Source: ABdhPJyjRqRUmRRe3KwbqxZCJb6fy3VByM/fYMcpxwZINn7YjR12Uuc+96kV22moycRPWDOAIcATyEFMgg6Uiu0fTSY=
-X-Received: by 2002:a05:6638:2402:b0:326:5418:f73a with SMTP id
- z2-20020a056638240200b003265418f73amr3094380jat.170.1650002796757; Thu, 14
- Apr 2022 23:06:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=yZK1aloE4NcRFJpUcMOYel3NphqGgMdnwyOVwX33QOs=;
+        b=vdK6U26rdnaCAGFUuBSzw0CEvsTZhKpXrUH6dxN8WkJUSHhaJ/i4Axa9uIeUNkav1t
+         Ah7w5c1UM9brcZR2v/J0cF++Uz7qf9Vqm6SmOR1hmm3UmUo82hK0MHjqsL8K1euBBGd8
+         ADrcAjmVFIuRizyEEdZ5ePxTi/6jrwI4Vx6loE9cXP8ng1Z2rUA9Fiih2pDSiLfSOvw+
+         5uhRrK+EdeVHK1bdn/wiHlyxtbXgy1WzbX16pcyHi54Xv+gFBe69ZITWcOLpkiZvEzeh
+         opsyBtmrUOCkXf8LPOjtCCLS+2cH/p+7kFGasguWIohVlKbJMWKNuxhNJD+eFLXv9/W2
+         0EGA==
+X-Gm-Message-State: AOAM5331oiDUQoZ9VG6LebQjylPNNiGaaQrENSOE6yneEk9rjsnKwT+K
+        LiTZyrEo+JOEe6Z+7pchCTU=
+X-Google-Smtp-Source: ABdhPJw9yVcZt1UgXVG9oF4OCzM62Pz8XY5umRDDqZPTpiME1PPpVjKX1pd8Y41igc0qGYA8HiDMyQ==
+X-Received: by 2002:aa7:c612:0:b0:41d:7ad7:4a4d with SMTP id h18-20020aa7c612000000b0041d7ad74a4dmr6668648edq.125.1650003038475;
+        Thu, 14 Apr 2022 23:10:38 -0700 (PDT)
+Received: from leap.localnet (host-79-43-11-75.retail.telecomitalia.it. [79.43.11.75])
+        by smtp.gmail.com with ESMTPSA id cq24-20020a056402221800b00420ad7d2dd0sm2142646edb.29.2022.04.14.23.10.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 23:10:36 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Haowen Bai <baihaowen@meizu.com>
+Cc:     Haowen Bai <baihaowen@meizu.com>, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V3] staging: rtl8192e: Fix signedness bug in rtllib_rx_assoc_resp()
+Date:   Fri, 15 Apr 2022 08:10:35 +0200
+Message-ID: <4370787.8F6SAcFxjW@leap>
+In-Reply-To: <16182197.geO5KgaWL5@leap>
+References: <20220415053116.GN3293@kadam> <1650001836-25956-1-git-send-email-baihaowen@meizu.com> <16182197.geO5KgaWL5@leap>
 MIME-Version: 1.0
-References: <20220415055916.28350-1-rex-bc.chen@mediatek.com> <20220415055916.28350-15-rex-bc.chen@mediatek.com>
-In-Reply-To: <20220415055916.28350-15-rex-bc.chen@mediatek.com>
-From:   Hsin-Yi Wang <hsinyi@google.com>
-Date:   Fri, 15 Apr 2022 14:06:10 +0800
-Message-ID: <CACb=7PXmA_n-xAb+ZkRJdTXu=Enbf6NbyxVa3VC1zmJwsrgQ1w@mail.gmail.com>
-Subject: Re: [PATCH V3 14/15] arm64: dts: mediatek: Add MediaTek CCI node for MT8183
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
-Cc:     rafael@kernel.org, Viresh Kumar <viresh.kumar@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, krzk+dt@kernel.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tim Chang <jia-wei.chang@mediatek.com>, roger.lu@mediatek.com,
-        Kevin Hilman <khilman@baylibre.com>,
-        angelogioacchino.delregno@collabora.com, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        "Andrew-sh . Cheng" <andrew-sh.cheng@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="ISO-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 1:59 PM Rex-BC Chen <rex-bc.chen@mediatek.com> wrote:
->
-> Add MediaTek CCI devfreq node for MT8183.
->
-> Signed-off-by: Andrew-sh.Cheng <andrew-sh.cheng@mediatek.com>
-> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> ---
->  arch/arm64/boot/dts/mediatek/mt8183-evb.dts    | 4 ++++
->  arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi | 4 ++++
->  arch/arm64/boot/dts/mediatek/mt8183.dtsi       | 7 +++++++
->  3 files changed, 15 insertions(+)
->
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-> index 8953dbf84f3e..7ac9864db9de 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-> +++ b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-> @@ -412,6 +412,10 @@
->
->  };
->
-> +&cci {
-> +       proc-supply = <&mt6358_vproc12_reg>;
-> +};
-> +
->  &cpu0 {
->         proc-supply = <&mt6358_vproc12_reg>;
->  };
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-> index 0f9480f91261..4786a32ee975 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-> @@ -230,6 +230,10 @@
->         status = "okay";
->  };
->
-> +&cci {
-> +       proc-supply = <&mt6358_vproc12_reg>;
-> +};
-> +
->  &cpu0 {
->         proc-supply = <&mt6358_vproc12_reg>;
->  };
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> index 4ae3305d16d2..334728413582 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-> @@ -280,6 +280,13 @@
->                 };
->         };
->
-> +       cci: cci {
-> +               compatible = "mediatek,mt8183-cci";
-> +               clocks = <&apmixedsys CLK_APMIXED_CCIPLL>;
-> +               clock-names = "cci_clock";
-> +               operating-points-v2 = <&cci_opp>;
+On venerd=EC 15 aprile 2022 08:06:17 CEST Fabio M. De Francesco wrote:
+> On venerd=EC 15 aprile 2022 07:50:36 CEST Haowen Bai wrote:
+> > The rtllib_rx_assoc_resp() function has a signedness bug because it's
+> > a declared as a u16 but it return -ENOMEM.  When you look at it more
+> > closely it returns a mix of error codes including 0xcafe, -ENOMEM, and
+> > a->status which is WLAN_STATUS_NOT_SUPPORTED_AUTH_ALG.  This is a mess.
+> >=20
+> > Clean it up to just return standard kernel error codes.  We can print
+> > out the a->status before returning a regular error code.  The printks
+> > in the caller need to be adjusted as well.
+>=20
+> This commit message suggested by Dan Carpenter is much better. The=20
+previous=20
+> one made me think that you were doing several different logical changes.
+>=20
+> >
+> > [snip]
+> > =20
+> >  static void rtllib_rx_auth_resp(struct rtllib_device *ieee, struct=20
+> sk_buff *skb)
+> >  {
+> > -	u16 errcode;
+> > +	int errcode;
+> >  	u8 *challenge;
+> >  	int chlen =3D 0;
+> >  	bool bSupportNmode =3D true, bHalfSupportNmode =3D false;
+> > @@ -2292,8 +2292,8 @@ static void rtllib_rx_auth_resp(struct=20
+> rtllib_device *ieee, struct sk_buff *skb)
+> >  	if (errcode) {
+> >  		ieee->softmac_stats.rx_auth_rs_err++;
+> >  		netdev_info(ieee->dev,
+> > -			    "Authentication response status code=20
+> 0x%x",
+> > -			    errcode);
+> > +			    "Authentication response status code %d",
+> > +			    le16_to_cpu(errcode));
+>=20
+> This is something that I'm still missing. Why do we need that call to=20
+> le16_to_cpu on "errcode"?
+>=20
+> "errcode" is returned by auth_parse()? I see that this function already=20
+> changes the endianness of the returned value.
 
-hi Rex,
+Sorry, I missed that you also changed auth_code().
 
-cci_opp is not defined in dts.
+=46abio
 
-> +       };
-> +
->         cpus {
->                 #address-cells = <1>;
->                 #size-cells = <0>;
-> --
-> 2.18.0
->
+>=20
+> Thanks,
+>=20
+> Fabio
+>=20
+>=20
+> >  		rtllib_associate_abort(ieee);
+> >  		return;
+> >  	}
+> > --=20
+> > 2.7.4
+> >=20
+> >=20
+> >=20
+>=20
+>=20
+>=20
+>=20
+>=20
+
+
+
+
