@@ -2,141 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF985C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC79C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:19:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353175AbiDOMSJ (ORCPT
+        id S1353196AbiDOMVc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 08:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47392 "EHLO
+        Fri, 15 Apr 2022 08:21:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353274AbiDOMR5 (ORCPT
+        with ESMTP id S241445AbiDOMVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 08:17:57 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83A04707F;
-        Fri, 15 Apr 2022 05:15:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650024929; x=1681560929;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2ffantDfDJF/384zKJkeiXccIRnCxuSDVGb4CQk+jZ0=;
-  b=Ies4O+s8AqZLnHEIZ0IJNPM6xfmPukfRgM85f9LxToE56MeaIh1KBdpu
-   TSGGT1njU1Ss+hw7bft5Ke9MaP382QymKYvuOSnSvm33IZvS3EU27uL5P
-   uJQ3WTq6ZodIhee57kXjd8jE2B1VDkjjrb+cw1tm5VYV1bYpRMy6swneO
-   TXh1YIBJOEucZX7OVG+Uo1owY9Swmzyb/AMlzMSP7sPrQD2emB6YotNpm
-   lOlsRpdlNF1cnnZJby+xEKcrEId1+C/A98rsOQNm2g9rNbOhi+s053gau
-   PoEsvUsv1uE+khi3heZdYls+I1WZr2K4Z0aX0IbQ5v8Hq8a4CmMRiOZo6
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="262587876"
-X-IronPort-AV: E=Sophos;i="5.90,262,1643702400"; 
-   d="scan'208";a="262587876"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 05:15:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,262,1643702400"; 
-   d="scan'208";a="553130943"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by orsmga007.jf.intel.com with ESMTP; 15 Apr 2022 05:15:21 -0700
-Date:   Fri, 15 Apr 2022 14:15:15 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Dmitrii Dolgov <9erthalion6@gmail.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Chenbo Feng <fengc@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Daniel Wagner <daniel.wagner@bmw-carit.de>,
-        Thomas Graf <tgraf@suug.ch>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH bpf-next 11/11] samples: bpf: xdpsock: fix
- -Wmaybe-uninitialized
-Message-ID: <Yllh08sX+ctbpNYg@boxer>
-References: <20220414223704.341028-1-alobakin@pm.me>
- <20220414223704.341028-12-alobakin@pm.me>
+        Fri, 15 Apr 2022 08:21:31 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5D9EBF969
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 05:19:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1C83BCE2C65
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 12:19:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15709C385A6;
+        Fri, 15 Apr 2022 12:18:56 +0000 (UTC)
+Date:   Fri, 15 Apr 2022 13:18:53 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
+ ARCH_KMALLOC_MINALIGN
+Message-ID: <YllirUEhaxCDaV3X@arm.com>
+References: <YlVJKjXkcHqkwyt4@gondor.apana.org.au>
+ <YlVOTsaTVkBOxthG@arm.com>
+ <YlVSBuEqMt2S1Gi6@gondor.apana.org.au>
+ <YlVxGAHHD/j6lW3c@arm.com>
+ <CAMj1kXGCR833rqKOetj8ykQ8XtDCWbszJYVtVKvLpDLWnM=B5w@mail.gmail.com>
+ <YlaOIbSA7B/G9222@arm.com>
+ <YlkV7NtatO7KFusX@gondor.apana.org.au>
+ <CAMj1kXFW_zC-U5Ox9_=4gKCwWOmkR7wPNb6UQhiz8viNWTRU-w@mail.gmail.com>
+ <YlkkGpVx8rhcsBot@gondor.apana.org.au>
+ <CAMj1kXH0x5Va7Wgs+mU1ONDwwsazOBuN4z4ihVzO2uG-n41Kbg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220414223704.341028-12-alobakin@pm.me>
+In-Reply-To: <CAMj1kXH0x5Va7Wgs+mU1ONDwwsazOBuN4z4ihVzO2uG-n41Kbg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 10:47:20PM +0000, Alexander Lobakin wrote:
-> Fix two sort-of-false-positives in the xdpsock userspace part:
+On Fri, Apr 15, 2022 at 10:05:21AM +0200, Ard Biesheuvel wrote:
+> On Fri, 15 Apr 2022 at 09:52, Herbert Xu <herbert@gondor.apana.org.au> wrote:
+> > On Fri, Apr 15, 2022 at 09:49:12AM +0200, Ard Biesheuvel wrote:
+> > > I'm not sure I understand what would go wrong if that assumption no
+> > > longer holds.
+> >
+> > It's very simple, we don't do anything to the pointer returned
+> > by kmalloc before returning it as a tfm or other object with
+> > an alignment of CRYPTO_MINALIGN.  IOW if kmalloc starts returning
+> > pointers that are not aligned to CRYPTO_MINALIGN then we'd be
+> > lying to the compiler.
 > 
-> samples/bpf/xdpsock_user.c: In function 'main':
-> samples/bpf/xdpsock_user.c:1531:47: warning: 'tv_usec' may be used uninitialized in this function [-Wmaybe-uninitialized]
->  1531 |                         pktgen_hdr->tv_usec = htonl(tv_usec);
->       |                                               ^~~~~~~~~~~~~~
-> samples/bpf/xdpsock_user.c:1500:26: note: 'tv_usec' was declared here
->  1500 |         u32 idx, tv_sec, tv_usec;
->       |                          ^~~~~~~
-> samples/bpf/xdpsock_user.c:1530:46: warning: 'tv_sec' may be used uninitialized in this function [-Wmaybe-uninitialized]
->  1530 |                         pktgen_hdr->tv_sec = htonl(tv_sec);
->       |                                              ^~~~~~~~~~~~~
-> samples/bpf/xdpsock_user.c:1500:18: note: 'tv_sec' was declared here
->  1500 |         u32 idx, tv_sec, tv_usec;
->       |                  ^~~~~~
+> I guess that should be fixable. GIven that this is about padding
+> rather than alignment, we could do something like
 > 
-> Both variables are always initialized when @opt_tstamp == true and
-> they're being used also only when @opt_tstamp == true. However, that
-> variable comes from the BSS and is being toggled from another
-> function. They can't be executed simultaneously to actually trigger
-> undefined behaviour, but purely technically it is a correct warning.
-> Just initialize them with zeroes.
+> struct crypto_request {
+>   union {
+>       struct {
+>         ... fields ...
+>       };
+>       u8 __padding[ARCH_DMA_MINALIGN];
+>    };
+>     void __ctx[]  __align(CRYPTO_MINALIGN);
+> };
 > 
-> Fixes: eb68db45b747 ("samples/bpf: xdpsock: Add timestamp for Tx-only operation")
-> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+> And then hopefully, we can get rid of the padding once we fix drivers
+> doing non-cache coherent inbound DMA into those structures.
 
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+But if we keep CRYPTO_MINALIGN as 128, don't we get the padding
+automatically?
 
-Magnus would tell you that you should fix this on libxdp side instead :)
+struct crypto_request {
+	...
+	void *__ctx[] CRYPTO_MINALIGN_ATTR;
+};
 
-> ---
->  samples/bpf/xdpsock_user.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-> index 399b999fcec2..1dc7ad5dbef4 100644
-> --- a/samples/bpf/xdpsock_user.c
-> +++ b/samples/bpf/xdpsock_user.c
-> @@ -1496,7 +1496,7 @@ static void rx_drop_all(void)
->  static int tx_only(struct xsk_socket_info *xsk, u32 *frame_nb,
->  		   int batch_size, unsigned long tx_ns)
->  {
-> -	u32 idx, tv_sec, tv_usec;
-> +	u32 idx, tv_sec = 0, tv_usec = 0;
->  	unsigned int i;
-> 
->  	while (xsk_ring_prod__reserve(&xsk->tx, batch_size, &idx) <
-> --
-> 2.35.2
-> 
-> 
+__alignof__(struct crypto_request) == 128;
+sizeof(struct crypto_request) == N * 128
+
+The same alignment and size is true for a structure like:
+
+struct crypto_alg {
+	...
+} CRYPTO_MINALIGN_ATTR;
+
+Any kmalloc() of sizeof(the above structures) will return a pointer
+aligned to 128, irrespective of what ARCH_KMALLOC_MINALIGN is.
+
+The problem is if you have a structure without any alignment attribute
+(just ABI default), making its sizeof() smaller than ARCH_DMA_MINALIGN.
+In this case kmalloc() could return a pointer aligned to something
+smaller. Is this the case in the crypto code today? I can see it uses
+the right alignment annotations already, no need for kmalloc() hacks.
+
+-- 
+Catalin
