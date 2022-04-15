@@ -2,123 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60AD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 13:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB2BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 13:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353984AbiDONal (ORCPT
+        id S1354009AbiDONdz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 09:30:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39502 "EHLO
+        Fri, 15 Apr 2022 09:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229982AbiDONai (ORCPT
+        with ESMTP id S1353987AbiDONdr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 09:30:38 -0400
-Received: from mail.parknet.co.jp (mail.parknet.co.jp [210.171.160.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CDC495C37E
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 06:28:10 -0700 (PDT)
-Received: from ibmpc.myhome.or.jp (server.parknet.ne.jp [210.171.168.39])
-        by mail.parknet.co.jp (Postfix) with ESMTPSA id 5436915F939;
-        Fri, 15 Apr 2022 22:28:10 +0900 (JST)
-Received: from devron.myhome.or.jp (foobar@devron.myhome.or.jp [192.168.0.3])
-        by ibmpc.myhome.or.jp (8.16.1/8.16.1/Debian-3) with ESMTPS id 23FDS9K7063447
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 15 Apr 2022 22:28:10 +0900
-Received: from devron.myhome.or.jp (foobar@localhost [127.0.0.1])
-        by devron.myhome.or.jp (8.16.1/8.16.1/Debian-3) with ESMTPS id 23FDS9jn130716
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 15 Apr 2022 22:28:09 +0900
-Received: (from hirofumi@localhost)
-        by devron.myhome.or.jp (8.16.1/8.16.1/Submit) id 23FDS8fs130713;
-        Fri, 15 Apr 2022 22:28:08 +0900
-From:   OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
-To:     Chung-Chiang Cheng <cccheng@synology.com>
-Cc:     linux-kernel@vger.kernel.org, kernel@cccheng.net,
-        shepjeng@gmail.com
-Subject: Re: [PATCH v3 2/3] fat: make ctime and mtime identical explicitly
-References: <20220415094518.380543-1-cccheng@synology.com>
-        <20220415094518.380543-2-cccheng@synology.com>
-Date:   Fri, 15 Apr 2022 22:28:08 +0900
-In-Reply-To: <20220415094518.380543-2-cccheng@synology.com> (Chung-Chiang
-        Cheng's message of "Fri, 15 Apr 2022 17:45:17 +0800")
-Message-ID: <87czhitr13.fsf@mail.parknet.co.jp>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/29.0.50 (gnu/linux)
+        Fri, 15 Apr 2022 09:33:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7969B66F92;
+        Fri, 15 Apr 2022 06:31:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F055B82E4B;
+        Fri, 15 Apr 2022 13:31:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B90EEC385A7;
+        Fri, 15 Apr 2022 13:31:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650029475;
+        bh=/ZCtmMVszBUufoJu4C6UHm7Mhkfsxw/fiIHMP8dVi/E=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=o4Y1yohBZSejrlEYmC5fyZ8CX6HrtD7mqZgGIBMd2G49stDJXVuJgtPqzlYQy03CH
+         9Qya6Cbi/plUbGnPdDzVJe22zkoTcJb8SDwg9BfwO4dENfMrjALwS67L83ZsObLnk4
+         m/NrLo5x3QR6KBB/8Qak+o/a2xzWukR0he0mn9mfv0eTnL940yhSQExBPpHwqVc6sa
+         MwkrfjMqQmMIDeaeNkEFI+LTphjlnKTHxCrkVZq8jZWsTddSEU7Eo4JYnGvSFqENe9
+         qPqjTvrcJEGcGfhA6KXrtb5BHYcYvq8zfu4rJeBBE4jdU8Ml6lpwh786V3PjBaLXoz
+         HHCCQRIAI1dAQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9C27EE6D402;
+        Fri, 15 Apr 2022 13:31:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] Bluetooth: hci_qca: Use del_timer_sync() before freeing
+From:   patchwork-bot+bluetooth@kernel.org
+Message-Id: <165002947563.30414.10092759086081874697.git-patchwork-notify@kernel.org>
+Date:   Fri, 15 Apr 2022 13:31:15 +0000
+References: <20220405100200.64f56e50@gandalf.local.home>
+In-Reply-To: <20220405100200.64f56e50@gandalf.local.home>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     linux-kernel@vger.kernel.org, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        ytkim@qca.qualcomm.com, tglx@linutronix.de, eric.dumazet@gmail.com,
+        linux-bluetooth@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Chung-Chiang Cheng <cccheng@synology.com> writes:
+Hello:
 
-> -	fat_truncate_time(dir, NULL, S_ATIME|S_MTIME);
-> +	fat_truncate_time(dir, NULL, S_ATIME|S_CTIME|S_MTIME);
+This patch was applied to bluetooth/bluetooth-next.git (master)
+by Marcel Holtmann <marcel@holtmann.org>:
 
-fat_truncate_time() updates i_ctime too. So S_CTIME should not be
-necessary here. And I think this is better to use only S_MTIME to tell
-this is the point of mtime update.
+On Tue, 5 Apr 2022 10:02:00 -0400 you wrote:
+> From: Steven Rostedt <rostedt@goodmis.org>
+> 
+> While looking at a crash report on a timer list being corrupted, which
+> usually happens when a timer is freed while still active. This is
+> commonly triggered by code calling del_timer() instead of
+> del_timer_sync() just before freeing.
+> 
+> [...]
 
-(And, in fat_truncate_time(), I think S_CTIME is not required, because
-we ignore ctime change, isn't it?)
+Here is the summary with links:
+  - [v2] Bluetooth: hci_qca: Use del_timer_sync() before freeing
+    https://git.kernel.org/bluetooth/bluetooth-next/c/373ae6de4361
 
-Or you are going to update mtime on rename, etc too?
-
-> +	/*
-> +	 * ctime and mtime share the same on-disk field, and should be
-> +	 * identical in memory.
-> +	 */
-> +	if (flags & (S_CTIME|S_MTIME)) {
->  		fat_truncate_mtime(sbi, now, &inode->i_mtime);
-> +		inode->i_ctime = inode->i_mtime;
-> +	}
-
-[...]
-
->  	clear_nlink(inode);
-> -	fat_truncate_time(inode, NULL, S_CTIME);
-> +	fat_truncate_time(inode, NULL, S_CTIME|S_MTIME);
-
-This is the point to update ctime. You want to affect ctime change to
-mtime? As I said in previous post, I think we are better to ignore ctime
-change, because it may become yet another incompatible behavior.
-
->  	fat_detach(inode);
->  out:
->  	mutex_unlock(&MSDOS_SB(sb)->s_lock);
-> @@ -415,7 +415,7 @@ static int msdos_unlink(struct inode *dir, struct dentry *dentry)
->  	if (err)
->  		goto out;
->  	clear_nlink(inode);
-> -	fat_truncate_time(inode, NULL, S_CTIME);
-> +	fat_truncate_time(inode, NULL, S_CTIME|S_MTIME);
-
-ditto
-
->  	fat_detach(inode);
->  out:
->  	mutex_unlock(&MSDOS_SB(sb)->s_lock);
-> @@ -550,7 +550,7 @@ static int do_msdos_rename(struct inode *old_dir, unsigned char *old_name,
->  		drop_nlink(new_inode);
->  		if (is_dir)
->  			drop_nlink(new_inode);
-> -		fat_truncate_time(new_inode, &ts, S_CTIME);
-> +		fat_truncate_time(new_inode, &ts, S_CTIME|S_MTIME);
-
-ditto
-
->  	}
->  out:
-
-[...]
-
-> @@ -981,7 +981,7 @@ static int vfat_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
->  		drop_nlink(new_inode);
->  		if (is_dir)
->  			drop_nlink(new_inode);
-> -		fat_truncate_time(new_inode, &ts, S_CTIME);
-> +		fat_truncate_time(new_inode, &ts, S_CTIME|S_MTIME);
-
-ditto
-
-Thanks.
+You are awesome, thank you!
 -- 
-OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
