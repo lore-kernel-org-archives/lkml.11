@@ -2,90 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8560AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 02:49:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E07C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 02:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344245AbiDOCvf (ORCPT
+        id S1348858AbiDOCvk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 22:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54604 "EHLO
+        Thu, 14 Apr 2022 22:51:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349114AbiDOCvQ (ORCPT
+        with ESMTP id S1348994AbiDOCvR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 22:51:16 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7DCB2449
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:48:43 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id c1so5859950qkf.13
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:48:43 -0700 (PDT)
+        Thu, 14 Apr 2022 22:51:17 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB22B368C
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:48:47 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id a10so5742202qvm.8
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:48:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DuvNiOMRUwwQNAgae4RO4Yy4c00pHQf9eI9auEdw3WU=;
-        b=cMwRXLbz/+KCr2KPo1BXciRxgs5UmkYQtzj2Cch1JQ1/he1OhcKzvHa7AmeyMK2GEr
-         pQ14VkXnV4xb+T46aiZM+gIj3naedd4fkxSJwxHevi5kiw6rTBh/hEZQ9Jf7J+ee8Awn
-         Zd4QAlmDqds78tLjDD4nnrss68DhU8CDksBhIbQb7SDvzSWqmA3Wiei623g1Ywe0I6hW
-         tBGhbgEl3dQjI+sZRp6+YE6GHS3ZITCew+FIBU7gVNjbW0HIXjgGHPxOvY4wLaP2QV7J
-         ZOWCJ1oSSTIJL5omAuhadPVoPkYrxZBEqIYeq9PP3RNLLr7QG94fTspiN0LtY4tiDNSd
-         WfmQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Jl8cA15AhHC5y4h+FeNERnQbKM+f37jdKRIZJGm/yhE=;
+        b=L1WFgpZkQlF23uXoOfCCxu1h881F8755tMZldHEjaZbD4Afdt+/aOmDAZyoSWO5Uys
+         TkkLFEGSZV4hhWg9ukWsCrTkJr6ImRLDrpI0OU+sqKadGebIDrEfgCXJZfy23Oe1f1ec
+         DF6r1vW8cPZQgbSOWLLdRYaypN5fyVcAdEh+w0VeKgr9pMXAvpH0Ks7oIN6B28/4Cpm4
+         NkN2qc6QerfhQyiQRe9DDLXm7qlz0vJgvbxhvClsHNy9ZqlGetQMXtyh4BXjnh+MibPA
+         7EVnR+sblEXvRNsNbER9r2sg8DOCLcqc8xgVu2Lusua4LqieYqm6sh1FiYTIuIbUUB2c
+         QTmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DuvNiOMRUwwQNAgae4RO4Yy4c00pHQf9eI9auEdw3WU=;
-        b=IzaIg5Pld4JXj1uqL4CS3Mp4tSme0E/L3s4jpZYgRq/UFvNeACKP7UIK3Fu63rhVBb
-         2kP4NH2z8JWLvPPNhOyXUkk1VXEkINEEVVne8gF91XM/u3Oron+TdGx7ebnqfvfyNfaz
-         Jghs+/f9953zkpuXR4ncZma4WcDyzZsNoFr4uOO06fs9f3/KGF7enosm/jtGLUFiftcW
-         PktwhJTImbLed6QEK/XYIhS//0PMms07ruBMOPdPnCttWuVEg97o29iOMUtAn5b0/MLj
-         GgHo/j77KWkrhnE+ioTkZZr99MGpTdBxSzfBskIjtQOR5r0anpVETggDS825Q+DxLbQx
-         8NFQ==
-X-Gm-Message-State: AOAM5330DAnQ/bK960XGidrVjJhyXhKlibC1aVXRMzFlFAogG7b7361/
-        yzX8l70EzuYcn3wKTJppnfY=
-X-Google-Smtp-Source: ABdhPJyD5NNq/9/AN7WV0PFPNsXoc2Vjsp3xcRpCH4w7V1D1Hl9Ri8Nv+u+Ins4Hy7BL8+iQEfxwrg==
-X-Received: by 2002:a37:c443:0:b0:69c:8386:f2e6 with SMTP id h3-20020a37c443000000b0069c8386f2e6mr3213525qkm.436.1649990922620;
-        Thu, 14 Apr 2022 19:48:42 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Jl8cA15AhHC5y4h+FeNERnQbKM+f37jdKRIZJGm/yhE=;
+        b=eha+hke6QKmOdfdfukpTGfB3OhPE8zinbAhidNbnm/GK8D2Z3G1j/kPrdhHFKC/fBk
+         ds29RixSoB8wsYyAlbZZgcusLf498b5+5MQS/oSK34/83m+B2PoC6512cHqpOm0hrtpI
+         ph5QhaHPNzrF+Q+Q+TKB+/v0g7RvMmxtUKHqGmo3cCCpFxYJSCa/Qy2O0xcUgNpzWyEE
+         YaF0MvPWkv8xj8oQJWL84/SZ8UD+B2mbdvnCYY/GVwEI6vLEIjaz/A+/1zwGm0pWC1KO
+         WjV/XzWkfGaGZFjBd69Z2+RkH2boZRWEvLMd4Pzo9AyOvTaUETS3pkATMgLaHjjobMgl
+         0R0A==
+X-Gm-Message-State: AOAM531uCqa16TkX/6DJL29BzH9sWnmep1evNzE+c2C5BgDBaI+DGKiS
+        z+rigBkY5W7O7bN0/OmDTjcO6/hJ8xfh1oKN
+X-Google-Smtp-Source: ABdhPJzlkp+L8XmPEEo671yAb3XgFN78LTs8FO4w3iGvK1FiTeC2Wf7DWE/jJh4wdVsqeqZyg+9bqw==
+X-Received: by 2002:a05:6214:622:b0:441:2825:c288 with SMTP id a2-20020a056214062200b004412825c288mr6051916qvx.79.1649990926337;
+        Thu, 14 Apr 2022 19:48:46 -0700 (PDT)
 Received: from jaehee-ThinkPad-X1-Extreme.lan ([2607:fb90:1b7a:2349:50b1:5db4:a2d5:7054])
-        by smtp.gmail.com with ESMTPSA id p7-20020a05620a22a700b0069c37e2c473sm1800085qkh.94.2022.04.14.19.48.40
+        by smtp.gmail.com with ESMTPSA id p7-20020a05620a22a700b0069c37e2c473sm1800085qkh.94.2022.04.14.19.48.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 19:48:41 -0700 (PDT)
+        Thu, 14 Apr 2022 19:48:45 -0700 (PDT)
 From:   Jaehee Park <jhpark1013@gmail.com>
 To:     Larry.Finger@lwfinger.net
 Cc:     phil@philpotter.co.uk, gregkh@linuxfoundation.org,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         outreachy@lists.linux.dev, jhpark1013@gmail.com
-Subject: [PATCH v2 0/6] staging: r8188eu: fix warnings reported by checkpatch
-Date:   Thu, 14 Apr 2022 22:48:31 -0400
-Message-Id: <cover.1649990500.git.jhpark1013@gmail.com>
+Subject: [PATCH v2 2/6] staging: r8188eu: remove spaces before tabs
+Date:   Thu, 14 Apr 2022 22:48:33 -0400
+Message-Id: <16fc136092cb89e6a819afe2de69edb96ca7c68a.1649990500.git.jhpark1013@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1649990500.git.jhpark1013@gmail.com>
+References: <cover.1649990500.git.jhpark1013@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These patches address style issues found by checkpatch in the
-core/rtw_mlme.c file.
+Delete spaces before tabs in the comments. Issue found with checkpatch.
+WARNING: please, no space before tabs
 
-changes in v2:
-- changed the first patch to from removing braces around single-lined 
-statements, to a patch that removes the entire if-statement (because it
-was redundant). The member within that statement is not being used so 
-this patch has been changed to a patch that removes this unused member.
-- the log of the third patch has edited.
+Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
+---
+ drivers/staging/r8188eu/core/rtw_mlme.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
+index aed868d1d47b..1620ca181bf7 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+@@ -567,8 +567,8 @@ static void rtw_add_network(struct adapter *adapter,
  
-Jaehee Park (6):
-  staging: r8188eu: remove unused member free_bss_buf
-  staging: r8188eu: remove spaces before tabs
-  staging: r8188eu: remove 'added by' author comments
-  staging: r8188eu: place constants on the right side of tests
-  staging: r8188eu: replace spaces with tabs
-  staging: r8188eu: correct typo in comments
-
- drivers/staging/r8188eu/include/rtw_mlme.h |  1 -
- drivers/staging/r8188eu/core/rtw_mlme.c    | 46 +++++++++-------------
- 2 files changed, 18 insertions(+), 29 deletions(-)
-
+ /* select the desired network based on the capability of the (i)bss. */
+ /*  check items:	(1) security */
+-/* 			(2) network_type */
+-/* 			(3) WMM */
++/*			(2) network_type */
++/*			(3) WMM */
+ /*			(4) HT */
+ /*			(5) others */
+ static bool rtw_is_desired_network(struct adapter *adapter, struct wlan_network *pnetwork)
+@@ -903,9 +903,9 @@ static struct sta_info *rtw_joinbss_update_stainfo(struct adapter *padapter, str
+ 			memset((u8 *)&psta->dot11txpn, 0, sizeof(union pn48));
+ 			memset((u8 *)&psta->dot11rxpn, 0, sizeof(union pn48));
+ 		}
+-		/* 	Commented by Albert 2012/07/21 */
+-		/* 	When doing the WPS, the wps_ie_len won't equal to 0 */
+-		/* 	And the Wi-Fi driver shouldn't allow the data packet to be tramsmitted. */
++		/*	Commented by Albert 2012/07/21 */
++		/*	When doing the WPS, the wps_ie_len won't equal to 0 */
++		/*	And the Wi-Fi driver shouldn't allow the data packet to be tramsmitted. */
+ 		if (padapter->securitypriv.wps_ie_len != 0) {
+ 			psta->ieee8021x_blocked = true;
+ 			padapter->securitypriv.wps_ie_len = 0;
+@@ -1628,8 +1628,8 @@ int rtw_restruct_wmm_ie(struct adapter *adapter, u8 *in_ie, u8 *out_ie, uint in_
+ /*  */
+ /*  Search by BSSID, */
+ /*  Return Value: */
+-/* 		-1		:if there is no pre-auth key in the  table */
+-/* 		>= 0		:if there is pre-auth key, and   return the entry id */
++/*		-1		:if there is no pre-auth key in the  table */
++/*		>= 0		:if there is pre-auth key, and   return the entry id */
+ /*  */
+ /*  */
+ 
 -- 
 2.25.1
 
