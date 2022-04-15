@@ -2,83 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E8A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6090DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355647AbiDOPuj (ORCPT
+        id S1355654AbiDOPur (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 11:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
+        Fri, 15 Apr 2022 11:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355626AbiDOPui (ORCPT
+        with ESMTP id S1355648AbiDOPuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 11:50:38 -0400
-Received: from 6.mo560.mail-out.ovh.net (6.mo560.mail-out.ovh.net [87.98.165.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06B1986F1
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:48:09 -0700 (PDT)
-Received: from player788.ha.ovh.net (unknown [10.109.156.38])
-        by mo560.mail-out.ovh.net (Postfix) with ESMTP id C3B7E220EE
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 15:38:30 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player788.ha.ovh.net (Postfix) with ESMTPSA id 6317F29866F4A;
-        Fri, 15 Apr 2022 15:38:26 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-100R00314cd0484-1fc4-4138-bc82-0aa4ef2f9df0,
-                    77125C2C2681624F8512B69FC7A1C9B53E6602B4) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 0/6] ASoC: remaining i2c_match_id i2c probe changes
-Date:   Fri, 15 Apr 2022 17:38:11 +0200
-Message-Id: <20220415153817.141364-1-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
+        Fri, 15 Apr 2022 11:50:44 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A137799EDD
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:48:15 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-ddfa38f1c1so8370423fac.11
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:48:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=q765IUBwbVRbiY7GCRp5aqTSZ9koQTZPRgD9rU6GYlQ=;
+        b=QmDl2ZbCxThSfQnoARLLm8ygLudpYKwsU5b5uTG/EHUM9ZQgVC5u/3fWrWAkePQDeA
+         9g+ThLsoU/HloYF3fZRBjTgs9T6YxC9rosDKJ3IxwoVeYCMu5udlhZb1p8IXJBf4eZcE
+         TYvI3TrZL9vMMVE9w6tp6d5NbDg+bUf8wnbv2uUEnbCjed63GR5FTf27z18NuQdJLGPv
+         1CSPuBa3bSDpIlxwRHBjOyQYinoO+OXQTEwVVRAc1pZ353AD2EUXfFL9Hq4QXazF7Syu
+         DHtDmV6ypjdMORqtaQToliODRqF82ZhA9f1hn7sTsoh+W6BiSGZfbDhaewEcq/j9C2LX
+         qTNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=q765IUBwbVRbiY7GCRp5aqTSZ9koQTZPRgD9rU6GYlQ=;
+        b=1KlNsicc6w5l5gEh6mkwZiZXW9jeW8+vagsdHXPhpSIrWmN0H7a04ezTxGnl8Km8Aa
+         t0pGGK6mAPLyo2BqdqLKflMJ49l8CSsZ2PD0eqHSpjO7n6vAjQFu3EpqDIhlAV1GjbL9
+         2dbY+33ZW1oLvuJmSix6cQG+sq2qpFwRxqGKHSxnSwqSzbF+0/xUgwGxQZVLl3orxcgt
+         H7c8gQAujmyxSW7U6/ROwaF8Q3eMfKCsUXWXk/8xV2A+PP4xeiPdUlFCLFQPE5zAr+8+
+         63kiDid7mo9aiWGygNw9gTgMhBRvJ7iivsLdZDE4ftcR2BF/E8fhARAn8KgxFX7bR/xH
+         PT6A==
+X-Gm-Message-State: AOAM533MnQh8VZ4VscFjEnYsO+tD3JH8iS1LsGQj4x9mg6N/E6lfIDNI
+        TcKeYkytnSUKiipdG1t/keE=
+X-Google-Smtp-Source: ABdhPJz0Qb+sYq3Yq8EPsahoB2T5DD2qiGBzIOps5tE8PDXLRrqMoVfMIpEdr7bT30wXdLczPcr6Kg==
+X-Received: by 2002:a05:6870:e3c1:b0:d7:2dc8:7fd0 with SMTP id y1-20020a056870e3c100b000d72dc87fd0mr1653590oad.104.1650037695002;
+        Fri, 15 Apr 2022 08:48:15 -0700 (PDT)
+Received: from ?IPV6:2603:8090:2005:39b3::100e? (2603-8090-2005-39b3-0000-0000-0000-100e.res6.spectrum.com. [2603:8090:2005:39b3::100e])
+        by smtp.gmail.com with ESMTPSA id q13-20020a4ab3cd000000b0032830efe365sm1222249ooo.43.2022.04.15.08.48.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Apr 2022 08:48:14 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Message-ID: <349ff644-e615-8a1a-c4b2-233bb81352ae@lwfinger.net>
+Date:   Fri, 15 Apr 2022 10:48:13 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 10481565184974554758
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelhedgleefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejkeekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 0/8] staging: r8188eu: fix and clean up some firmware
+ code
+Content-Language: en-US
+To:     Michael Straube <straube.linux@gmail.com>,
+        gregkh@linuxfoundation.org
+Cc:     phil@philpotter.co.uk, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+References: <20220415121023.11564-1-straube.linux@gmail.com>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <20220415121023.11564-1-straube.linux@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series covers all the remaining changes to migrate
-sound/soc/codecs i2c probes to probe_new, where the const struct
-i2c_client * argument is still used. Instead of relying on the
-parameter passed in, i2c_match_id is used instead.
+On 4/15/22 07:10, Michael Straube wrote:
+> This series fixes wrong size of struct rt_firmware_hdr in the first
+> patch and does some cleanups in rtl8188e_firmware_download() in the
+> other patches.
+> 
+> Tested on x86_64 with Inter-Tech DMG-02.
+> 
+> v3:
+> - Splitted the first patch into two separate patches.
+> - Added back logging the firmware version only once.
+> - Included the compile time check for size of rt_firmware from
+>    patch 8/8 of v2 in the patch that replaces the hardcoded size.
+> 
+> v2:
+> - Added a patch to check size of struct rt_firmware_hdr at compile time.
+> 
+> Michael Straube (8):
+>    staging: r8188eu: fix struct rt_firmware_hdr
+>    staging: r8188eu: convert u32 fields of rt_firmware_hdr to __le32
+>    staging: r8188eu: clean up comments in struct rt_firmware_hdr
+>    staging: r8188eu: rename fields of struct rt_firmware_hdr
+>    staging: r8188eu: use sizeof instead of hardcoded firmware header size
+>    staging: r8188eu: remove variables from rtl8188e_firmware_download()
+>    staging: r8188eu: use pr_info_once() to log the firmware version
+>    staging: r8188eu: check firmware header existence before access
+> 
+>   drivers/staging/r8188eu/core/rtw_fw.c | 79 ++++++++++-----------------
+>   1 file changed, 29 insertions(+), 50 deletions(-)
 
-With this set of patches, all the sound/soc/codecs i2c probes use the
-new probe definition.
+Most of this is fine, other than the removal of in-line comments in patch 3/8.
 
-Stephen Kitt (6):
-  ASoC: ak*: use i2c_match_id and simple i2c probe
-  ASoC: alc56*: use i2c_match_id and simple i2c probe
-  ASoC: max980*: use i2c_match_id and simple i2c probe
-  ASoC: pcm186x: use i2c_match_id and simple i2c probe
-  ASoC: tas*: use i2c_match_id and simple i2c probe
-  ASoC: tlv320*: use i2c_match_id and simple i2c probe
-
- sound/soc/codecs/ak4613.c            | 10 +++++----
- sound/soc/codecs/ak4642.c            |  8 ++++---
- sound/soc/codecs/alc5623.c           | 24 +++++++++++----------
- sound/soc/codecs/alc5632.c           | 20 +++++++++--------
- sound/soc/codecs/max98088.c          | 21 +++++++++---------
- sound/soc/codecs/max98090.c          | 23 ++++++++++----------
- sound/soc/codecs/max98095.c          | 19 +++++++++--------
- sound/soc/codecs/pcm186x-i2c.c       | 24 ++++++++++-----------
- sound/soc/codecs/tas2562.c           | 25 +++++++++++-----------
- sound/soc/codecs/tas571x.c           | 11 ++++++----
- sound/soc/codecs/tas5720.c           | 21 +++++++++---------
- sound/soc/codecs/tlv320adc3xxx.c     | 21 +++++++++---------
- sound/soc/codecs/tlv320aic31xx.c     | 32 ++++++++++++++--------------
- sound/soc/codecs/tlv320aic32x4-i2c.c | 11 ++++++----
- 14 files changed, 145 insertions(+), 125 deletions(-)
-
-
-base-commit: 5d763a740e5b24e4a2ca04317255e7e941876338
--- 
-2.27.0
+Larry
 
