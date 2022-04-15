@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 789D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 02:47:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F14C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 02:47:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348917AbiDOCuR (ORCPT
+        id S1348979AbiDOCuV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 22:50:17 -0400
+        Thu, 14 Apr 2022 22:50:21 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348840AbiDOCtz (ORCPT
+        with ESMTP id S1348863AbiDOCt4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 22:49:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EFF0AA8891
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:47:23 -0700 (PDT)
+        Thu, 14 Apr 2022 22:49:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0ABF1B1A86
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:47:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649990843;
+        s=mimecast20190719; t=1649990845;
         h=from:from:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=WVM+htEfNmHAQF7cqTufoGSsyBVU+M+E/RstzGcMmgg=;
-        b=halm7q+h23zViZI16tBJeytPvN1q7TPBnWH+xQbsYVg4Es6wvguFsPtgMVRhhUTfCOOJBP
-        q62yXCWpMYeAGMe3uOgUu5Sb6VM5OrltdqJ8l6lofqfxIzABJv4U0bQwMkFk11ZMbJwdJu
-        D1ayFpTO4LKuFL5vjweFlCGmLVTLCG0=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Jxh3o7JLPu4/eVSTPgqOXdqshCVuUH/u4kA7lEjb85U=;
+        b=P2u5B+1jsBoQFyaFkCYrB4EKyqmB/ApkN3EBduqWpchoQ8mAMFMIKSSlSr9Y+F0wzRxgdg
+        k+HFJzxAq/qzjWwRITV+V3YvvkBHfpX2pImgplbHu8VZOMhrFQPtOj3EdkiSIC/vTju5Tf
+        dIuB4Q3Zy4FOcJ5fN44H7cZVg668/ko=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-513-iaIPJJVTOhuC1W0Do6YdZA-1; Thu, 14 Apr 2022 22:47:19 -0400
-X-MC-Unique: iaIPJJVTOhuC1W0Do6YdZA-1
+ us-mta-602-83jz56xDNaySQCZg-O2lfQ-1; Thu, 14 Apr 2022 22:47:22 -0400
+X-MC-Unique: 83jz56xDNaySQCZg-O2lfQ-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2F2D03C01C06;
-        Fri, 15 Apr 2022 02:47:19 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0E659185A79C;
+        Fri, 15 Apr 2022 02:47:22 +0000 (UTC)
 Received: from dqiao.bos.com (unknown [10.22.8.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CE218440ADA;
-        Fri, 15 Apr 2022 02:47:18 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AAB56440ADC;
+        Fri, 15 Apr 2022 02:47:21 +0000 (UTC)
 From:   Donghai Qiao <dqiao@redhat.com>
 To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
         peterz@infradead.org, heying24@huawei.com,
@@ -46,9 +46,9 @@ To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
         rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
 Cc:     donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org,
         Donghai Qiao <dqiao@redhat.com>
-Subject: [PATCH 09/11] smp: replace smp_call_function_single_async with smp_xcall_private
-Date:   Thu, 14 Apr 2022 22:46:59 -0400
-Message-Id: <20220415024701.876364-10-dqiao@redhat.com>
+Subject: [PATCH 11/11] smp: modify up.c to adopt the same format of cross CPU call.
+Date:   Thu, 14 Apr 2022 22:47:01 -0400
+Message-Id: <20220415024701.876364-12-dqiao@redhat.com>
 In-Reply-To: <20220415024701.876364-1-dqiao@redhat.com>
 References: <20220415024701.876364-1-dqiao@redhat.com>
 Reply-To: dqiao@redhat.com
@@ -59,210 +59,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace smp_call_function_single_async with smp_xcall_private
-and modify all the invocations.
+Since smp.c has been changed to use the new interface, up.c should
+be changed to use the uniprocessor version of cross call as well.
+
+Also clean up the dead code which left out after applying the precedent
+patches of this patch set.
 
 Signed-off-by: Donghai Qiao <dqiao@redhat.com>
 ---
- arch/mips/kernel/process.c                      | 2 +-
- arch/mips/kernel/smp.c                          | 2 +-
- arch/s390/pci/pci_irq.c                         | 2 +-
- arch/x86/kernel/cpuid.c                         | 2 +-
- arch/x86/lib/msr-smp.c                          | 2 +-
- block/blk-mq.c                                  | 2 +-
- drivers/clocksource/ingenic-timer.c             | 2 +-
- drivers/cpuidle/coupled.c                       | 2 +-
- drivers/net/ethernet/cavium/liquidio/lio_core.c | 2 +-
- include/linux/smp.h                             | 3 ---
- kernel/debug/debug_core.c                       | 2 +-
- kernel/sched/core.c                             | 2 +-
- kernel/sched/fair.c                             | 2 +-
- net/core/dev.c                                  | 2 +-
- 14 files changed, 13 insertions(+), 16 deletions(-)
+ include/linux/smp.h |  7 ------
+ kernel/up.c         | 56 +++++++++++++++++++++++++++++++++------------
+ 2 files changed, 42 insertions(+), 21 deletions(-)
 
-diff --git a/arch/mips/kernel/process.c b/arch/mips/kernel/process.c
-index c2d5f4bfe1f3..5a63adccdcaf 100644
---- a/arch/mips/kernel/process.c
-+++ b/arch/mips/kernel/process.c
-@@ -745,7 +745,7 @@ static void raise_backtrace(cpumask_t *mask)
- 		}
- 
- 		csd = &per_cpu(backtrace_csd, cpu);
--		smp_call_function_single_async(cpu, csd);
-+		smp_xcall_private(cpu, csd, XCALL_TYPE_ASYNC);
- 	}
- }
- 
-diff --git a/arch/mips/kernel/smp.c b/arch/mips/kernel/smp.c
-index d5bb38bfaef5..6202e9c1ca0c 100644
---- a/arch/mips/kernel/smp.c
-+++ b/arch/mips/kernel/smp.c
-@@ -701,7 +701,7 @@ void tick_broadcast(const struct cpumask *mask)
- 
- 	for_each_cpu(cpu, mask) {
- 		csd = &per_cpu(tick_broadcast_csd, cpu);
--		smp_call_function_single_async(cpu, csd);
-+		smp_xcall_private(cpu, csd, XCALL_TYPE_ASYNC);
- 	}
- }
- 
-diff --git a/arch/s390/pci/pci_irq.c b/arch/s390/pci/pci_irq.c
-index 325c42c6ddb4..37724c600d51 100644
---- a/arch/s390/pci/pci_irq.c
-+++ b/arch/s390/pci/pci_irq.c
-@@ -212,7 +212,7 @@ static void zpci_handle_fallback_irq(void)
- 			continue;
- 
- 		INIT_CSD(&cpu_data->csd, zpci_handle_remote_irq, &cpu_data->scheduled);
--		smp_call_function_single_async(cpu, &cpu_data->csd);
-+		smp_xcall_private(cpu, &cpu_data->csd, XCALL_TYPE_ASYNC);
- 	}
- }
- 
-diff --git a/arch/x86/kernel/cpuid.c b/arch/x86/kernel/cpuid.c
-index 6f7b8cc1bc9f..3e75dfe07314 100644
---- a/arch/x86/kernel/cpuid.c
-+++ b/arch/x86/kernel/cpuid.c
-@@ -81,7 +81,7 @@ static ssize_t cpuid_read(struct file *file, char __user *buf,
- 		cmd.regs.eax = pos;
- 		cmd.regs.ecx = pos >> 32;
- 
--		err = smp_call_function_single_async(cpu, &csd);
-+		err = smp_xcall_private(cpu, &csd, XCALL_TYPE_ASYNC);
- 		if (err)
- 			break;
- 		wait_for_completion(&cmd.done);
-diff --git a/arch/x86/lib/msr-smp.c b/arch/x86/lib/msr-smp.c
-index 68170a28270f..8c6b85bdc2d3 100644
---- a/arch/x86/lib/msr-smp.c
-+++ b/arch/x86/lib/msr-smp.c
-@@ -178,7 +178,7 @@ int rdmsr_safe_on_cpu(unsigned int cpu, u32 msr_no, u32 *l, u32 *h)
- 	init_completion(&rv.done);
- 	rv.msr.msr_no = msr_no;
- 
--	err = smp_call_function_single_async(cpu, &csd);
-+	err = smp_xcall_private(cpu, &csd, XCALL_TYPE_ASYNC);
- 	if (!err) {
- 		wait_for_completion(&rv.done);
- 		err = rv.msr.err;
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index ed3ed86f7dd2..548960494d79 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -1062,7 +1062,7 @@ static void blk_mq_complete_send_ipi(struct request *rq)
- 	list = &per_cpu(blk_cpu_done, cpu);
- 	if (llist_add(&rq->ipi_list, list)) {
- 		INIT_CSD(&rq->csd, __blk_mq_complete_request_remote, rq);
--		smp_call_function_single_async(cpu, &rq->csd);
-+		smp_xcall_private(cpu, &rq->csd, XCALL_TYPE_ASYNC);
- 	}
- }
- 
-diff --git a/drivers/clocksource/ingenic-timer.c b/drivers/clocksource/ingenic-timer.c
-index 24ed0f1f089b..30e437679ca9 100644
---- a/drivers/clocksource/ingenic-timer.c
-+++ b/drivers/clocksource/ingenic-timer.c
-@@ -121,7 +121,7 @@ static irqreturn_t ingenic_tcu_cevt_cb(int irq, void *dev_id)
- 		csd = &per_cpu(ingenic_cevt_csd, timer->cpu);
- 		csd->info = (void *) &timer->cevt;
- 		csd->func = ingenic_per_cpu_event_handler;
--		smp_call_function_single_async(timer->cpu, csd);
-+		smp_xcall_private(timer->cpu, csd, XCALL_TYPE_ASYNC);
- 	}
- 
- 	return IRQ_HANDLED;
-diff --git a/drivers/cpuidle/coupled.c b/drivers/cpuidle/coupled.c
-index 74068742cef3..bec03fdc6edf 100644
---- a/drivers/cpuidle/coupled.c
-+++ b/drivers/cpuidle/coupled.c
-@@ -334,7 +334,7 @@ static void cpuidle_coupled_poke(int cpu)
- 	call_single_data_t *csd = &per_cpu(cpuidle_coupled_poke_cb, cpu);
- 
- 	if (!cpumask_test_and_set_cpu(cpu, &cpuidle_coupled_poke_pending))
--		smp_call_function_single_async(cpu, csd);
-+		smp_xcall_private(cpu, csd, XCALL_TYPE_ASYNC);
- }
- 
- /**
-diff --git a/drivers/net/ethernet/cavium/liquidio/lio_core.c b/drivers/net/ethernet/cavium/liquidio/lio_core.c
-index 73cb03266549..ae97533c7f8b 100644
---- a/drivers/net/ethernet/cavium/liquidio/lio_core.c
-+++ b/drivers/net/ethernet/cavium/liquidio/lio_core.c
-@@ -729,7 +729,7 @@ static void liquidio_napi_drv_callback(void *arg)
- 		napi_schedule_irqoff(&droq->napi);
- 	} else {
- 		INIT_CSD(&droq->csd, napi_schedule_wrapper, &droq->napi);
--		smp_call_function_single_async(droq->cpu_id, &droq->csd);
-+		smp_xcall_private(droq->cpu_id, &droq->csd, XCALL_TYPE_ASYNC);
- 	}
- }
- 
 diff --git a/include/linux/smp.h b/include/linux/smp.h
-index 673192e2192e..de9b850722b3 100644
+index f2e6c7a1be3d..1e29527123f8 100644
 --- a/include/linux/smp.h
 +++ b/include/linux/smp.h
-@@ -206,9 +206,6 @@ extern unsigned int total_cpus;
- int smp_call_function_single(int cpuid, smp_call_func_t func, void *info,
- 			     int wait);
+@@ -202,9 +202,6 @@ extern void __smp_call_single_queue(int cpu, struct llist_node *node);
+ /* total number of cpus in this system (may exceed NR_CPUS) */
+ extern unsigned int total_cpus;
  
--#define	smp_call_function_single_async(cpu, csd) \
--	smp_xcall_private(cpu, csd, XCALL_TYPE_ASYNC)
+-int smp_call_function_single(int cpuid, smp_call_func_t func, void *info,
+-			     int wait);
 -
  /*
   * Cpus stopping functions in panic. All have default weak definitions.
   * Architecture-dependent code may override them.
-diff --git a/kernel/debug/debug_core.c b/kernel/debug/debug_core.c
-index da06a5553835..cb69113251c9 100644
---- a/kernel/debug/debug_core.c
-+++ b/kernel/debug/debug_core.c
-@@ -264,7 +264,7 @@ void __weak kgdb_roundup_cpus(void)
- 			continue;
- 		kgdb_info[cpu].rounding_up = true;
- 
--		ret = smp_call_function_single_async(cpu, csd);
-+		ret = smp_xcall_private(cpu, csd, XCALL_TYPE_ASYNC);
- 		if (ret)
- 			kgdb_info[cpu].rounding_up = false;
- 	}
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 417355fbe32d..610e02b4c598 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -836,7 +836,7 @@ void hrtick_start(struct rq *rq, u64 delay)
- 	if (rq == this_rq())
- 		__hrtick_restart(rq);
- 	else
--		smp_call_function_single_async(cpu_of(rq), &rq->hrtick_csd);
-+		smp_xcall_private(cpu_of(rq), &rq->hrtick_csd, XCALL_TYPE_ASYNC);
+@@ -290,13 +287,9 @@ static inline void smp_send_stop(void) { }
+ static inline void up_smp_call_function(smp_call_func_t func, void *info)
+ {
  }
+-#define smp_call_function(func, info, wait) \
+-			(up_smp_call_function(func, info))
  
- #else
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index d4bd299d67ab..1b060a64cb93 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -10461,7 +10461,7 @@ static void kick_ilb(unsigned int flags)
- 	 * is idle. And the softirq performing nohz idle load balance
- 	 * will be run before returning from the IPI.
- 	 */
--	smp_call_function_single_async(ilb_cpu, &cpu_rq(ilb_cpu)->nohz_csd);
-+	smp_xcall_private(ilb_cpu, &cpu_rq(ilb_cpu)->nohz_csd, XCALL_TYPE_ASYNC);
+ static inline void smp_send_reschedule(int cpu) { }
+ #define smp_prepare_boot_cpu()			do {} while (0)
+-#define smp_call_function_many(mask, func, info, wait) \
+-			(up_smp_call_function(func, info))
+ static inline void call_function_init(void) { }
+ 
+ static inline void kick_all_cpus_sync(void) {  }
+diff --git a/kernel/up.c b/kernel/up.c
+index a38b8b095251..92c62c677e52 100644
+--- a/kernel/up.c
++++ b/kernel/up.c
+@@ -9,8 +9,7 @@
+ #include <linux/smp.h>
+ #include <linux/hypervisor.h>
+ 
+-int smp_call_function_single(int cpu, void (*func) (void *info), void *info,
+-				int wait)
++int smp_xcall(int cpu, void (*func) (void *info), void *info, unsigned int type)
+ {
+ 	unsigned long flags;
+ 
+@@ -23,37 +22,66 @@ int smp_call_function_single(int cpu, void (*func) (void *info), void *info,
+ 
+ 	return 0;
  }
+-EXPORT_SYMBOL(smp_call_function_single);
++EXPORT_SYMBOL(smp_xcall);
+ 
+-int smp_call_function_single_async(int cpu, struct __call_single_data *csd)
++int smp_xcall_cond(int cpu, smp_call_func_t func, void *info,
++		   smp_cond_func_t cond_func, unsigned int type)
++{
++	int ret = 0;
++
++	preempt_disable();
++	if (!cond_func || cond_func(0, info))
++		ret = smp_xcall(cpu, func, info, type);
++
++	preempt_enable();
++
++	return ret;
++}
++EXPORT_SYMBOL(smp_xcall_cond);
++
++void smp_xcall_mask(const struct cpumask *mask, smp_call_func_t func, void *info, unsigned int type)
+ {
+ 	unsigned long flags;
+ 
+-	local_irq_save(flags);
+-	csd->func(csd->info);
+-	local_irq_restore(flags);
++	if (!cpumask_test_cpu(0, mask))
++		return;
++
++	preempt_disable();
++	smp_xcall(cpu, func, info, type);
++	preempt_enable();
++}
++EXPORT_SYMBOL(smp_xcall_mask);
++
++int smp_xcall_private(int cpu, struct __call_single_data *csd, unsigned int type)
++{
++	preempt_disable();
++
++	if (csd->func != NULL)
++		smp_xcall(cpu, csd->func, csd->info, type);
++
++	preempt_enable();
++
+ 	return 0;
+ }
+-EXPORT_SYMBOL(smp_call_function_single_async);
++EXPORT_SYMBOL(smp_xcall_private);
  
  /*
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 8c6c08446556..0c8e18f6f53c 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5788,7 +5788,7 @@ static void net_rps_send_ipi(struct softnet_data *remsd)
- 		struct softnet_data *next = remsd->rps_ipi_next;
+  * Preemption is disabled here to make sure the cond_func is called under the
+  * same conditions in UP and SMP.
+  */
+-void on_each_cpu_cond_mask(smp_cond_func_t cond_func, smp_call_func_t func,
+-			   void *info, bool wait, const struct cpumask *mask)
++void smp_xcall_mask_cond(const struct cpumask *mask, smp_call_func_t func,
++			 void *info, smp_cond_func_t cond_func,
++			 unsigned int type)
+ {
+ 	unsigned long flags;
  
- 		if (cpu_online(remsd->cpu))
--			smp_call_function_single_async(remsd->cpu, &remsd->csd);
-+			smp_xcall_private(remsd->cpu, &remsd->csd, XCALL_TYPE_ASYNC);
- 		remsd = next;
+ 	preempt_disable();
+ 	if ((!cond_func || cond_func(0, info)) && cpumask_test_cpu(0, mask)) {
+-		local_irq_save(flags);
+-		func(info);
+-		local_irq_restore(flags);
++		smp_xcall(cpu, func, info, type);
  	}
- #endif
+ 	preempt_enable();
+ }
+-EXPORT_SYMBOL(on_each_cpu_cond_mask);
++EXPORT_SYMBOL(smp_xcall_mask_cond);
+ 
+ int smp_call_on_cpu(unsigned int cpu, int (*func)(void *), void *par, bool phys)
+ {
 -- 
 2.27.0
 
