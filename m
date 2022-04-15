@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B79C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:25:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 408FCC43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353315AbiDOM11 (ORCPT
+        id S1353376AbiDOM1h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 08:27:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53470 "EHLO
+        Fri, 15 Apr 2022 08:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353252AbiDOM1K (ORCPT
+        with ESMTP id S1353260AbiDOM1K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 15 Apr 2022 08:27:10 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B56AC12EA;
-        Fri, 15 Apr 2022 05:24:12 -0700 (PDT)
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED21C1C80;
+        Fri, 15 Apr 2022 05:24:19 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 732181F47DF9
+        with ESMTPSA id AFB501F47DF9
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1650025451;
-        bh=Bq4NmoaVsB4YvDD3gB8YAWRsceselSLBmwF7QkyDIDM=;
+        s=mail; t=1650025458;
+        bh=73ucGu/y9Fj2jgks6l90mU2E2Kbo6O9LHhb+jGSfg4k=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=SevoovC1ZA4EiKW+q4c0Baopfh0Bd5gO7cZnenEzwZrAkQ3wpY9NQn/Ivt3oRc1b6
-         A25/9rHtN/PEfU5ml8njuexOt0L7xQRtVCr2hTDpxVqWF2fNXqS/2+Ku+b78+0sBa8
-         lKlNN1oACrPoze1YfbLkurm3/Hl457jxNwjshC79EkpRMb2pdVCKcsRM+jlUwfgNg6
-         5jOimFoj6CN1F4gXymrw/RlsMIUxBxV0CZoIEeUgCZ07pw85cp+EVOaZ+UunYyvDDW
-         QjYP4BSIbDUq4PmSOb//j6CqMKZxbo8HPW1F5LFD0JiVbxNjFhMaUcZ56vRrFd6Nuf
-         rpsVUN619uYtA==
-Message-ID: <9fccbb92-1832-bf5d-7804-80dd481663fc@collabora.com>
-Date:   Fri, 15 Apr 2022 14:24:08 +0200
+        b=V91+vG3gf8C7ASUV3EFyUt6oMRQ2HlwZkXvGanr2aqYIb9/swBt4qAtm7LpvTKldX
+         pHrWJDwVAYlq+uFQXGjis4beVW5nKu0E2FekXFo35ZbVa2ffk3XrXYCwYBUgPqYSGq
+         6JYIscL7jDmQ6ao7Cke/OfRsTvPpwuv50j9lu8MDdHdbMYRpmtXeXG87Wjbx+GaydI
+         tAyX1N4SHeZx1dMlADkDpLxR0j8t+UrHrS0oHCUuSW4C7OjyLfneFHS0rKnZXtW3k6
+         nmhWbfjSEBD0oSWTFLC6yFUeqXy4T88n5p9fxoZzs6pTmQ7HxaexbYm6iYM/ckKK9e
+         eXNtZeyBUSBVA==
+Message-ID: <f478224a-d854-7900-6489-dd5aabdf7846@collabora.com>
+Date:   Fri, 15 Apr 2022 14:24:15 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH V3 11/15] cpufreq: mediatek: Link CCI device to CPU
+Subject: Re: [PATCH V3 06/15] cpufreq: mediatek: Move voltage limits to
+ platform data
 Content-Language: en-US
 To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
         viresh.kumar@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
@@ -46,10 +47,10 @@ Cc:     jia-wei.chang@mediatek.com, roger.lu@mediatek.com,
         linux-mediatek@lists.infradead.org,
         Project_Global_Chrome_Upstream_Group@mediatek.com
 References: <20220415055916.28350-1-rex-bc.chen@mediatek.com>
- <20220415055916.28350-12-rex-bc.chen@mediatek.com>
+ <20220415055916.28350-7-rex-bc.chen@mediatek.com>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220415055916.28350-12-rex-bc.chen@mediatek.com>
+In-Reply-To: <20220415055916.28350-7-rex-bc.chen@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -59,75 +60,16 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 Il 15/04/22 07:59, Rex-BC Chen ha scritto:
 > From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
 > 
-> In some MediaTek SoCs, like MT8183, CPU and CCI share the same power
-> supplies. Cpufreq needs to check if CCI devfreq exists and wait until
-> CCI devfreq ready before scaling frequency.
-> 
-> Before CCI devfreq is ready, we record the voltage when booting to
-> kernel and use the max(cpu target voltage, booting voltage) to
-> prevent cpufreq adjust to the lower voltage which will cause the CCI
-> crash because of high frequency and low voltage.
-> 
-> - Add is_ccifreq_ready() to link CCI device to CPI, and CPU will start
->    DVFS when CCI is ready.
-> - Add platform data for MT8183.
+> Voltages and shifts are defined as macros originally.
+> There are different requirements of these values for each MediaTek SoCs.
+> Therefore, we add the platform data and move these values into it.
 > 
 > Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
 > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 
-I am enthusiast to see that the solution that I've proposed was welcome!
-
-I only have one nit on this patch, check below:
-
-> ---
->   drivers/cpufreq/mediatek-cpufreq.c | 80 +++++++++++++++++++++++++++++-
->   1 file changed, 79 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
-> index d4c00237e862..dd3f739fede1 100644
-> --- a/drivers/cpufreq/mediatek-cpufreq.c
-> +++ b/drivers/cpufreq/mediatek-cpufreq.c
-
-..snip..
-
-> @@ -225,6 +251,14 @@ static int mtk_cpufreq_set_target(struct cpufreq_policy *policy,
->   	vproc = dev_pm_opp_get_voltage(opp);
->   	dev_pm_opp_put(opp);
->   
-> +	/*
-> +	 * If MediaTek cci is supported but is not ready, we will use the value
-> +	 * of max(target cpu voltage, booting voltage) to prevent high freqeuncy
-> +	 * low voltage crash.
-> +	 */
-> +	if (info->soc_data->ccifreq_supported && !is_ccifreq_ready(info))
-> +		vproc = max(vproc, info->vproc_on_boot);
-> +
->   	/*
->   	 * If the new voltage or the intermediate voltage is higher than the
->   	 * current voltage, scale up voltage first.
-
-..snip..
-
-> @@ -423,6 +484,13 @@ static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info, int cpu)
->   	if (ret)
->   		goto out_disable_mux_clock;
->   
-> +	info->vproc_on_boot = regulator_get_voltage(info->proc_reg);
-
-This result is used only if we use ccifreq, so this should be enclosed in an if
-condition: this will spare us some (yes, small) time on devices that don't use it.
-
-	if (info->soc_data->ccifreq_supported) {
-		info->vproc_on_boot = regulator_get_voltage(info->proc_reg);
-		if (info->vproc_on_boot < 0) {
-			dev_err(....
-			goto ..
-		}
-	}
-
-P.S.: While at it, since the maximum width is 100 columns, the dev_err() call fits,
-so don't break that line!
-
-After the requested change:
 
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
+
+
+
