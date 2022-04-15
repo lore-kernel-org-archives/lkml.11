@@ -2,109 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B8E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:22:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9AD0C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354549AbiDOOYy (ORCPT
+        id S1354406AbiDOOZQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 10:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51552 "EHLO
+        Fri, 15 Apr 2022 10:25:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354478AbiDOOYL (ORCPT
+        with ESMTP id S1354571AbiDOOZF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 10:24:11 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946DC69486;
-        Fri, 15 Apr 2022 07:21:33 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id bh17so15604390ejb.8;
-        Fri, 15 Apr 2022 07:21:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=08pfEuyLiFmPHxey+T5VgpFceM9bwO2n4GmdqLEQlVc=;
-        b=GB9aMwZ3gJcqu2BKR+IN+hR48poSHukDJxGnGzokdAQ+Lndz7ZjWILiFS1UAkXW89+
-         b6hROebMXuZrFMahuTLeIOJ8t7LAvpzCNRchpEhd5fwfJsRHaauwnmsmooEMWWXZ++yL
-         3lAHUOOo2gtYAmrvz2d3EWp2TbU/MmHdUlOdK3m6mO+Ey4GUGiF6z54UB7n67Tnoqs5/
-         wrwsfIHaKVqEziJRb3yKliqUcruYNIO6OKcOyA3Pf09hTTt85XGIL8Qajo8l5nAkZ8+q
-         SJuzDIl26VID/DK+VnlJ5RJP7FYSTMuvjN/FjEENDnxT7MceQMtbQgjAW22wLQZ8xFfT
-         2RDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=08pfEuyLiFmPHxey+T5VgpFceM9bwO2n4GmdqLEQlVc=;
-        b=SfVaBaVWMmMVwOlR3DtHBDSaPhgodI6fP1nYHZddVe0X1OS05Nu8oJSs0LrCapvoUw
-         rzJpKTkdMir2TvBRFsJN75wbN55W2gqccvdtV99gkgSNRRLKBnYjrWPGIpMNFSg+Cuqm
-         7ck9/kbY/EWRZDoQKwD9gaYUG7J5xjTv6+dWbcOVjtn9bxHKyv7QMbTjG6R7d/qTsq+m
-         PpVnJwrBJtQFMjO5UE+vhVyD6AkYQQW6BfApbguhw6mfXxXb+B1KiTJwqv5hLxaaDJ7p
-         9hpjgzRa0wbNEx16AVQEkFgAoDrYnC101SSYDtFi2a/dl5ynMAQKdLxyEHjbPp+qGF4v
-         KIog==
-X-Gm-Message-State: AOAM532z6NvRS4ipUorPtoQ9UdeFFbXh9U1YZM9qnbqigdTNbSlEIQDB
-        P37A3QO9acMihzOXGZcNYqM=
-X-Google-Smtp-Source: ABdhPJy6D30gSEs5AmXyDE2/N8v9BXaFZOLMA/lUKPgmI8twyUI3L/SzXSqGQganb+33NYwailZedw==
-X-Received: by 2002:a17:906:7746:b0:6ce:a12e:489f with SMTP id o6-20020a170906774600b006cea12e489fmr6298375ejn.551.1650032492096;
-        Fri, 15 Apr 2022 07:21:32 -0700 (PDT)
-Received: from ?IPV6:2001:b07:add:ec09:c399:bc87:7b6c:fb2a? ([2001:b07:add:ec09:c399:bc87:7b6c:fb2a])
-        by smtp.googlemail.com with ESMTPSA id er15-20020a056402448f00b0042110981d13sm2380526edb.48.2022.04.15.07.21.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Apr 2022 07:21:31 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <5fd8d6dd-07be-9bf1-1ad9-5536c4e40182@redhat.com>
-Date:   Fri, 15 Apr 2022 16:20:56 +0200
+        Fri, 15 Apr 2022 10:25:05 -0400
+Received: from out28-195.mail.aliyun.com (out28-195.mail.aliyun.com [115.124.28.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECDB7D1CCF;
+        Fri, 15 Apr 2022 07:22:25 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07483269|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0236375-0.00029974-0.976063;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047199;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=15;RT=15;SR=0;TI=SMTPD_---.NRMqfXs_1650032541;
+Received: from zhouyanjie-virtual-machine.localdomain(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.NRMqfXs_1650032541)
+          by smtp.aliyun-inc.com(33.32.109.194);
+          Fri, 15 Apr 2022 22:22:22 +0800
+From:   =?UTF-8?q?=E5=91=A8=E7=90=B0=E6=9D=B0=20=28Zhou=20Yanjie=29?= 
+        <zhouyanjie@wanyeetech.com>
+To:     broonie@kernel.org, robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     linux-spi@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        paul@crapouillou.net, contact@artur-rojek.eu,
+        dongsheng.qiu@ingenic.com, aric.pzqi@ingenic.com,
+        rick.tyliu@ingenic.com, sernia.zhou@foxmail.com,
+        zhenwenjin@gmail.com, reimu@sudomaker.com
+Subject: [PATCH 3/3] SPI: Ingenic: Add support for new Ingenic SoCs.
+Date:   Fri, 15 Apr 2022 22:22:08 +0800
+Message-Id: <1650032528-118220-4-git-send-email-zhouyanjie@wanyeetech.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1650032528-118220-1-git-send-email-zhouyanjie@wanyeetech.com>
+References: <1650032528-118220-1-git-send-email-zhouyanjie@wanyeetech.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 071/104] KVM: TDX: restore debug store when TD exit
-Content-Language: en-US
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
-        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <c7f81bd80af0f57ff2fabef24a218fb43c3d0e3c.1646422845.git.isaku.yamahata@intel.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <c7f81bd80af0f57ff2fabef24a218fb43c3d0e3c.1646422845.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
-> From: Isaku Yamahata <isaku.yamahata@intel.com>
-> 
-> Because debug store is clobbered, restore it on TD exit.
-> 
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-> ---
->   arch/x86/events/intel/ds.c | 1 +
->   arch/x86/kvm/vmx/tdx.c     | 1 +
->   2 files changed, 2 insertions(+)
-> 
-> diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
-> index 376cc3d66094..cdba4227ad3b 100644
-> --- a/arch/x86/events/intel/ds.c
-> +++ b/arch/x86/events/intel/ds.c
-> @@ -2256,3 +2256,4 @@ void perf_restore_debug_store(void)
->   
->   	wrmsrl(MSR_IA32_DS_AREA, (unsigned long)ds);
->   }
-> +EXPORT_SYMBOL_GPL(perf_restore_debug_store);
-> diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-> index 3cb2fbd1c12c..37cf7d43435d 100644
-> --- a/arch/x86/kvm/vmx/tdx.c
-> +++ b/arch/x86/kvm/vmx/tdx.c
-> @@ -620,6 +620,7 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
->   	tdx_vcpu_enter_exit(vcpu, tdx);
->   
->   	tdx_user_return_update_cache();
-> +	perf_restore_debug_store();
->   	tdx_restore_host_xsave_state(vcpu);
->   	tdx->host_state_need_restore = true;
->   
+1.Since it would be dangerous to specify a newer SoC's compatible
+  string as the fallback of an older SoC's compatible string, we
+  add support for the "ingenic,jz4775-spi" compatible string in
+  the driver.
 
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+  This will permit to support the JZ4775 by having:
+  compatible = "ingenic,jz4775-spi";
+
+  Instead of doing:
+  compatible = "ingenic,jz4775-spi", "ingenic,jz4780-spi";
+
+2.Add support for probing the spi-ingenic driver on the X1000 SoC
+  from Ingenic. From the X1000 SoC onwards, the maximum frequency
+  allowed by the SSI module of Ingenic SoCs has been changed from
+  54MHz to 50MHz. So "max_speed_hz" is introduced in "jz_soc_info"
+  to set different maximum frequency values.
+
+3.Add support for probing the spi-ingenic driver on the X2000 SoC
+  from Ingenic. The X2000 SoC has only one native chip select line,
+  so "max_native_cs" is introduced in "jz_soc_info" to set different
+  maximum number of native chip select lines.
+
+4.Because of the introduction of support for the X-series SoCs, the
+  current driver is not only applicable to the JZ-series SoCs, so
+  the description texts has been modified to avoid misunderstanding.
+
+Signed-off-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
+---
+ drivers/spi/Kconfig       |  4 ++--
+ drivers/spi/spi-ingenic.c | 42 +++++++++++++++++++++++++++++++++++++-----
+ 2 files changed, 39 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+index d2815eb..cca92a8 100644
+--- a/drivers/spi/Kconfig
++++ b/drivers/spi/Kconfig
+@@ -419,10 +419,10 @@ config SPI_IMX
+ 	  This enables support for the Freescale i.MX SPI controllers.
+ 
+ config SPI_INGENIC
+-	tristate "Ingenic JZ47xx SoCs SPI controller"
++	tristate "Ingenic SoCs SPI controller"
+ 	depends on MACH_INGENIC || COMPILE_TEST
+ 	help
+-	  This enables support for the Ingenic JZ47xx SoCs SPI controller.
++	  This enables support for the Ingenic SoCs SPI controller.
+ 
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called spi-ingenic.
+diff --git a/drivers/spi/spi-ingenic.c b/drivers/spi/spi-ingenic.c
+index 672e4ed..ff507c8 100644
+--- a/drivers/spi/spi-ingenic.c
++++ b/drivers/spi/spi-ingenic.c
+@@ -1,8 +1,9 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /*
+- * SPI bus driver for the Ingenic JZ47xx SoCs
++ * SPI bus driver for the Ingenic SoCs
+  * Copyright (c) 2017-2021 Artur Rojek <contact@artur-rojek.eu>
+  * Copyright (c) 2017-2021 Paul Cercueil <paul@crapouillou.net>
++ * Copyright (c) 2022 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
+  */
+ 
+ #include <linux/clk.h>
+@@ -52,6 +53,9 @@ struct jz_soc_info {
+ 	u32 bits_per_word_mask;
+ 	struct reg_field flen_field;
+ 	bool has_trendian;
++
++	unsigned int max_speed_hz;
++	unsigned int max_native_cs;
+ };
+ 
+ struct ingenic_spi {
+@@ -418,7 +422,7 @@ static int spi_ingenic_probe(struct platform_device *pdev)
+ 
+ 	if (of_property_read_u32(dev->of_node, "num-cs", &num_cs)) {
+ 		dev_warn(dev, "Number of chip select lines not specified.\n");
+-		num_cs = 2;
++		num_cs = pdata->max_native_cs;
+ 	}
+ 
+ 	platform_set_drvdata(pdev, ctlr);
+@@ -433,9 +437,9 @@ static int spi_ingenic_probe(struct platform_device *pdev)
+ 	ctlr->max_dma_len = SPI_INGENIC_FIFO_SIZE;
+ 	ctlr->bits_per_word_mask = pdata->bits_per_word_mask;
+ 	ctlr->min_speed_hz = 7200;
+-	ctlr->max_speed_hz = 54000000;
++	ctlr->max_speed_hz = pdata->max_speed_hz;
+ 	ctlr->use_gpio_descriptors = true;
+-	ctlr->max_native_cs = 2;
++	ctlr->max_native_cs = pdata->max_native_cs;
+ 	ctlr->num_chipselect = num_cs;
+ 	ctlr->dev.of_node = pdev->dev.of_node;
+ 
+@@ -459,17 +463,44 @@ static const struct jz_soc_info jz4750_soc_info = {
+ 	.bits_per_word_mask = SPI_BPW_RANGE_MASK(2, 17),
+ 	.flen_field = REG_FIELD(REG_SSICR1, 4, 7),
+ 	.has_trendian = false,
++
++	.max_speed_hz = 54000000,
++	.max_native_cs = 2,
+ };
+ 
+ static const struct jz_soc_info jz4780_soc_info = {
+ 	.bits_per_word_mask = SPI_BPW_RANGE_MASK(2, 32),
+ 	.flen_field = REG_FIELD(REG_SSICR1, 3, 7),
+ 	.has_trendian = true,
++
++	.max_speed_hz = 54000000,
++	.max_native_cs = 2,
++};
++
++static const struct jz_soc_info x1000_soc_info = {
++	.bits_per_word_mask = SPI_BPW_RANGE_MASK(2, 32),
++	.flen_field = REG_FIELD(REG_SSICR1, 3, 7),
++	.has_trendian = true,
++
++	.max_speed_hz = 50000000,
++	.max_native_cs = 2,
++};
++
++static const struct jz_soc_info x2000_soc_info = {
++	.bits_per_word_mask = SPI_BPW_RANGE_MASK(2, 32),
++	.flen_field = REG_FIELD(REG_SSICR1, 3, 7),
++	.has_trendian = true,
++
++	.max_speed_hz = 50000000,
++	.max_native_cs = 1,
+ };
+ 
+ static const struct of_device_id spi_ingenic_of_match[] = {
+ 	{ .compatible = "ingenic,jz4750-spi", .data = &jz4750_soc_info },
++	{ .compatible = "ingenic,jz4775-spi", .data = &jz4780_soc_info },
+ 	{ .compatible = "ingenic,jz4780-spi", .data = &jz4780_soc_info },
++	{ .compatible = "ingenic,x1000-spi", .data = &x1000_soc_info },
++	{ .compatible = "ingenic,x2000-spi", .data = &x2000_soc_info },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, spi_ingenic_of_match);
+@@ -483,7 +514,8 @@ static struct platform_driver spi_ingenic_driver = {
+ };
+ 
+ module_platform_driver(spi_ingenic_driver);
+-MODULE_DESCRIPTION("SPI bus driver for the Ingenic JZ47xx SoCs");
++MODULE_DESCRIPTION("SPI bus driver for the Ingenic SoCs");
+ MODULE_AUTHOR("Artur Rojek <contact@artur-rojek.eu>");
+ MODULE_AUTHOR("Paul Cercueil <paul@crapouillou.net>");
++MODULE_AUTHOR("周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>");
+ MODULE_LICENSE("GPL");
+-- 
+2.7.4
+
