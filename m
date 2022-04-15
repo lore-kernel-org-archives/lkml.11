@@ -2,135 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6087FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CF9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349968AbiDOO3G (ORCPT
+        id S1354429AbiDOObC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 10:29:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
+        Fri, 15 Apr 2022 10:31:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243424AbiDOO3D (ORCPT
+        with ESMTP id S243889AbiDOOa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 10:29:03 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4912662C8
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 07:26:35 -0700 (PDT)
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 8AA9B3F1D8
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 14:26:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1650032793;
-        bh=e3RLpJj2erPmdXlxjGIy8hlcTxe8lmbZHUTfXz0Qd8w=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=vWgmxyLmYq6DDAjwoujgT7Vy7BbAII6rCtDXFhGmRH3WFcQ7Y1tQ9EM2w2VjtMzvf
-         2ybUrr2e2BCqO6AgaCc77LwU9mALspMVxYXkc9MBVf1sbnWxRVRNkTyTlLd8U5b8P7
-         bkWTX33r1cO1ErHliDMUegNjqiASTX5nzLIj29Iqi21FCvh05guaYKIOR0rI2493gy
-         7Jk1BYcxt+FnCCyDMcb8wbk9M2WvsegH9PxyS+m4CtSKOxe0KqmM+vAR0LvVZOI4D/
-         r/g6vIWdu57gzkhUzai8Pcgg5Ffx72oCUi2I6Is2tcqBk7PUvjBsxMpopMvdRSIhkP
-         DHxdaYSN5Wp4w==
-Received: by mail-oo1-f72.google.com with SMTP id x63-20020a4a4142000000b003369bebf175so1490437ooa.1
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 07:26:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e3RLpJj2erPmdXlxjGIy8hlcTxe8lmbZHUTfXz0Qd8w=;
-        b=56uqN47O/2Wiop8dvTYba3scVd35ShMyMSX3hl4GtKL1b7S+G8cvMhwqjs08yPFKzW
-         4Mooz3fpFH/heNLPFNQV4sT5vBMGQ4Q8b/UzzWIk8OJ0dnZu5p4slQovjWk8rcCsHzGN
-         51YWSnfNj7gVlSe6+fkLNMhltMkjtKZYdclFfOzF0sgdfLQI2uarTXkqHZ1PTzKwkKwj
-         7VD0rYiI8rABkVegfx1Wq44X/ibNyuizy8HJXY1jur3cVZfhpjF15h+SjSXYTPtV7uPE
-         +pY3f2HeSYFLxhqbDr5VGqTpr3wT1zKoj+OEEDpwecvHCMRQ/3uLiWLR9CeD9zS26HAb
-         wdew==
-X-Gm-Message-State: AOAM533EssV5e8ueKaJyUX0OQR7QDqpEmec2JGC002ucMidafr+dCeB/
-        I9owMB8IiiycSKUr/5/ZezhrZEw21e49wY8vr4d48CZhkCg/MQd8+GWoRMTJUYJXq8ldLoJAj7h
-        SKKOziW3f+FF3kQtJBfxXF5xZMBYG5hI9hFkJX3OYusiQnxDfYQ3cNg3HQg==
-X-Received: by 2002:a05:6808:124c:b0:2f9:c7cf:146 with SMTP id o12-20020a056808124c00b002f9c7cf0146mr1655286oiv.54.1650032791025;
-        Fri, 15 Apr 2022 07:26:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzLRc42uKkOW9jRr8zGyO4TRYeWat9aikXqDx0Q0Pk1DISGwEXTIxuzl6vUfgU29zi70pptiplIF+LuV40c7wQ=
-X-Received: by 2002:a05:6808:124c:b0:2f9:c7cf:146 with SMTP id
- o12-20020a056808124c00b002f9c7cf0146mr1655264oiv.54.1650032790778; Fri, 15
- Apr 2022 07:26:30 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAAd53p4r1v_sN=8kv_fOx_VEb3k=4rU9iw52LfmEHO1crnms=g@mail.gmail.com>
- <20220414164134.GA751756@bhelgaas>
-In-Reply-To: <20220414164134.GA751756@bhelgaas>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Fri, 15 Apr 2022 22:26:19 +0800
-Message-ID: <CAAd53p6DX2C7KVRV=uu_mmPTTjE7=RsXfNPxjbOBLRbf-pXi5A@mail.gmail.com>
-Subject: Re: [PATCH V1] PCI/ASPM: Save/restore L1SS Capability for suspend/resume
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Vidya Sagar <vidyas@nvidia.com>,
-        "Kenneth R. Crudup" <kenny@panix.com>, bhelgaas@google.com,
-        lorenzo.pieralisi@arm.com, hkallweit1@gmail.com,
-        wangxiongfeng2@huawei.com, mika.westerberg@linux.intel.com,
-        chris.packham@alliedtelesis.co.nz, yangyicong@hisilicon.com,
-        treding@nvidia.com, jonathanh@nvidia.com, abhsahu@nvidia.com,
-        sagupta@nvidia.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kthota@nvidia.com,
-        mmaddireddy@nvidia.com, sagar.tv@gmail.com,
-        Ricky Wu <ricky_wu@realtek.com>,
-        Rajat Jain <rajatja@google.com>,
-        Prasad Malisetty <quic_pmaliset@quicinc.com>,
-        Victor Ding <victording@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 15 Apr 2022 10:30:59 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA3CA66C2
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 07:28:31 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 7EA765C004D;
+        Fri, 15 Apr 2022 10:28:30 -0400 (EDT)
+Received: from imap47 ([10.202.2.97])
+  by compute2.internal (MEProxy); Fri, 15 Apr 2022 10:28:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+         h=cc:cc:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm1; t=1650032910; x=1650119310; bh=5l
+        m0diIP9ieTGp9XEJrpPEXmdf/lB1SHrDoovn9aIv8=; b=k0nC3rM1eNEU89aqyn
+        6/O8pQom2q3VoLVUxyc0TjxqLbya+e3lItDAuSFw6eXP9dLsBL90ngojHOcsnqWN
+        rsIPttNvwTwhujf8ype3CO/7nMwrHYwlmsdHUNK1DGGhP/q4JMMpIT5vVaHYUGtx
+        R3Y9Nv0ao7ZlEgrdgWGSVUy7hzP7PVjmtQsjIg6/b0m8qlEOOW4FhXmWOupCRFwL
+        eM4WKTrkqj8IVwmJ6nRy6NPYHmJ+3hQe77PXppvdin48JBg9J15iAUsYxikCenhi
+        TKDUBUwYegdJdAfWlfKgyYVZjBmVoo0pL6EneLY+OTNuXtSbNN+ND0D7JuEGtpke
+        kAuw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1650032910; x=
+        1650119310; bh=5lm0diIP9ieTGp9XEJrpPEXmdf/lB1SHrDoovn9aIv8=; b=e
+        ijrk6Wkkk3qcNjTT08Mi2CTCr6PI56SzLkjALzUNWkDDofQKVQsGQ+1WFImpb3yG
+        EFSs3KFaUgz5TwFxxk0bBp734qMoJEVoRS2CUsDaP/5HrlHfu+821eW4HyIPy8Zg
+        bn+VQ3K/NxhO4wYnuPvulAoyUMUty6DQhfvfCHoV4Cs97bxlBoPuHpQlFnIPrQZb
+        NOtVGcKxvQcwNnfATaIWnygEYYoE4CpnhjQS2V31LRj3K+J4RRoHK1hOdBoINpmR
+        ShM1fpw86kdFP006oIdVN2qMje/kOq955jQFyklRYQtof5WLZV8emfvEnk6MBdxr
+        H9tBStXYuIyf7jj5ovhOQ==
+X-ME-Sender: <xms:DIFZYq5lYwIBoRvQ8dSpA-AolTJy5FoSyrjUgWUExfenrMwjcengwg>
+    <xme:DIFZYj67Cjr6__H_KakdyYGd6BzLjKiHfoIU0DSPqBJ0Cr_h9wW7MUnpguEyaUGm6
+    FvAgTD_pZFIRZPNbBI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudelhedgjeelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdfuvhgv
+    nhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrg
+    htthgvrhhnpefgieegieffuefhtedtjefgteejteefleefgfefgfdvvddtgffhffduhedv
+    feekffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hsvhgvnhesshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:DIFZYpfFU7M4PKuXP8zuPPolHy5nsmxeEOLs_OZaq_iolXEvsqaDkg>
+    <xmx:DIFZYnI3SPwUOg0yzAhtFFctyL0oHoWwQiuKWlziFp2sAol5yH2NTQ>
+    <xmx:DIFZYuLL64GzkvIPiRk4YM6fixhRYIxNbJ66sbQTAZfVeHTxcaNbSQ>
+    <xmx:DoFZYgCNKeun78FQd3agXAF3s-f6iWuXExEaevTtWRPXYolhpxrn3A>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id B8A0E27407D3; Fri, 15 Apr 2022 10:28:28 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-387-g7ea99c4045-fm-20220413.002-g7ea99c40
+Mime-Version: 1.0
+Message-Id: <f0c6c688-c3d6-45fa-8b0f-180faa4d1c46@www.fastmail.com>
+In-Reply-To: <36df696dacfffd52e79b471572de9893b52ad0d9.1649935679.git.robin.murphy@arm.com>
+References: <cover.1649935679.git.robin.murphy@arm.com>
+ <36df696dacfffd52e79b471572de9893b52ad0d9.1649935679.git.robin.murphy@arm.com>
+Date:   Fri, 15 Apr 2022 16:28:08 +0200
+From:   "Sven Peter" <sven@svenpeter.dev>
+To:     "Robin Murphy" <robin.murphy@arm.com>,
+        "Joerg Roedel" <joro@8bytes.org>, "Will Deacon" <will@kernel.org>
+Cc:     "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
+        mjrosato@linux.ibm.com, zhang.lyra@gmail.com, robdclark@gmail.com,
+        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org,
+        gerald.schaefer@linux.ibm.com,
+        "Lu Baolu" <baolu.lu@linux.intel.com>,
+        "Yong Wu" <yong.wu@mediatek.com>,
+        "Marek Szyprowski" <m.szyprowski@samsung.com>
+Subject: Re: [PATCH 06/13] iommu/dart: Clean up bus_set_iommu()
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 12:41 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+On Thu, Apr 14, 2022, at 14:42, Robin Murphy wrote:
+> Stop calling bus_set_iommu() since it's now unnecessary, and simplify
+> the probe failure path accordingly.
 >
-> On Wed, Apr 13, 2022 at 08:19:26AM +0800, Kai-Heng Feng wrote:
-> > On Wed, Apr 13, 2022 at 6:50 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > ...
->
-> > >   - For L1 PM Substates configuration, sec 5.5.4 says that both ports
-> > >     must be configured while ASPM L1 is disabled, but I don't think we
-> > >     currently guarantee this: we restore all the upstream component
-> > >     state first, and we don't know the ASPM state of the downstream
-> > >     one.  Maybe we need to:
-> > >
-> > >       * When restoring upstream component,
-> > >           + disable its ASPM
-> > >
-> > >       * When restoring downstream component,
-> > >           + disable its ASPM
-> > >           + restore upstream component's LTR, L1SS
-> > >           + restore downstream component's LTR, L1SS
-> > >           + restore upstream component's ASPM
-> > >           + restore downstream component's ASPM
-> >
-> > Right now L1SS isn't reprogrammed after S3, and that causes WD NVMe
-> > starts to spew lots of AER errors.
->
-> Right now we don't fully restore L1SS-related state after S3, so maybe
-> there's some inconsistency that leads to the AER errors.
->
-> Could you collect the "lspci -vv" state before and after S3 so we can
-> compare them?
->
-> > So yes please restore L1SS upon resume. Meanwhile I am asking vendor
-> > _why_ restoring L1SS is crucial for it to work.
-> >
-> > I also wonder what's the purpose of pcie_aspm_pm_state_change()? Can't
-> > we just restore ASPM bits like other configs?
->
-> Good question.  What's the context?  This is in the
-> pci_raw_set_power_state() path, not the pci_restore_state() path, so
-> seems like a separate discussion.
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-Because this patch alone doesn't restore T_PwrOn and LTR1.2_Threshold.
+Tested-by: Sven Peter <sven@svenpeter.dev>
+Reviewed-by: Sven Peter <sven@svenpeter.dev>
 
-So I forced the pcie_aspm_pm_state_change() calling path to eventually
-call aspm_calc_l1ss_info() which solved the problem for me.
+Can't wait until that saga is completed :)
 
-Let me investigate a bit further.
 
-Kai-Heng
-
->
-> Bjorn
+Sven
