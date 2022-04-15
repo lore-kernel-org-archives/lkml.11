@@ -2,54 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CFB5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:54:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D2E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:54:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353482AbiDOM41 (ORCPT
+        id S1353798AbiDOM4a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 08:56:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54220 "EHLO
+        Fri, 15 Apr 2022 08:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245333AbiDOM4Z (ORCPT
+        with ESMTP id S1345456AbiDOM4Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 15 Apr 2022 08:56:25 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED09BF51A
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 05:53:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B0F9BF967
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 05:53:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1650027235; x=1681563235;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=uyfcbJqga1kaQg0YBcWsxpMgI10Tfpa6pQWrGukY7QE=;
-  b=L6bD9P4ZVzXBZFmKs+VjukoUjrIpFh1uJOolDq5J0NFAj8zMoTTfFIpx
-   vUtClibF7tObU5oR0bIEQxLoxwA3voDcTx8wIySZGhLhmuFYYaf8A7QR1
-   UvWRVuKTuM8hvuwvnDHM6JdHePJHhWs/Y866Fb3tX6jF/wxFGRxMxQf2w
-   xJkxzS5vpp1y7jHgzhr4wrFki6SBx6p5IPGd4UilaUSQ0Fl1hyb3vVAVC
-   Brqj3NpwAmxUq6ycHOj8CWuiiycr/Sq7vWW9NC9WTO/PQ+RQgJ7aNpLMd
-   Kp2aSkqxEwQm4WCL7w66D9HF27woGcuX/8PWhUPhUwE+pvcJnWWYOlPKk
-   w==;
+  t=1650027237; x=1681563237;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=xD0I5xV7kWeZLBUmPepIj83tk4qE1jeszPPagX3C5ew=;
+  b=Bl2PLZ3OO6qbRWqWMPIhKlAnM/M1gXXqEGqjkHQbSYoXAk94sNhN2SPQ
+   faU6IqNBlJf12he+moQ1idxzb2HSJL5AS3bKPWWsh0kJ49fRsBGCpEuDi
+   iSOWaY1tFD+EjAUGXaHN44SK99SVh3ngQMzCKsTusYLE4pXuqJmaRkGdd
+   0LBXsBRh4cR/tkQfGXxPywIsas+vHJm+KVcjtkNwr69c1/W2/gNDdgdL8
+   E8AKC4OxhNgdQ6uvoqahWJgksacdsLHPSWU82KF0qN/0lH9y4o7qYi+nl
+   ZfDRghVaCs473PhJEyYyqtWJeaOqiryqh09xCvLFL8XM198AWsX4hP3fq
+   A==;
 X-IronPort-AV: E=Sophos;i="5.90,262,1643698800"; 
-   d="scan'208";a="160220602"
+   d="scan'208";a="169769320"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Apr 2022 05:53:54 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Apr 2022 05:53:56 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 15 Apr 2022 05:53:53 -0700
+ 15.1.2375.17; Fri, 15 Apr 2022 05:53:56 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
  (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 15 Apr 2022 05:53:52 -0700
+ Transport; Fri, 15 Apr 2022 05:53:55 -0700
 From:   Conor Dooley <conor.dooley@microchip.com>
 To:     Palmer Dabbelt <palmer@dabbelt.com>
 CC:     Paul Walmsley <paul.walmsley@sifive.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
         <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
         Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v1 0/4] polarfire soc kconfig/maintainers updates
-Date:   Fri, 15 Apr 2022 13:52:18 +0100
-Message-ID: <20220415125221.2871991-1-conor.dooley@microchip.com>
+Subject: [PATCH v1 2/4] riscv: config: enable the mailbox framework
+Date:   Fri, 15 Apr 2022 13:52:20 +0100
+Message-ID: <20220415125221.2871991-3-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.35.2
+In-Reply-To: <20220415125221.2871991-1-conor.dooley@microchip.com>
+References: <20220415125221.2871991-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -57,28 +59,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Palmer,
+Add the mailbox framework so that the system controller drivers get
+compiled for PolarFire SoC.
 
-As discussed, Kconfig.socs updated with the recently upstreamed drivers.
-I took the liberty of also adding them to the maintainers entry.
-The hwrng isnt in your tree, but was accepted today.
-As you suggested, I added the vitesse phy driver in the kconfig.socs
-entry - lmk if you don't like what I did with the comment.
-
-Thanks,
-Conor.
-
-Conor Dooley (4):
-  riscv: select peripheral drivers for polarfire soc
-  riscv: config: enable the mailbox framework
-  riscv: select vitesse phy driver for polarfire soc
-  MAINTAINERS: add polarfire rng, pci and clock drivers
-
- MAINTAINERS                  | 3 +++
- arch/riscv/Kconfig.socs      | 5 +++++
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
  arch/riscv/configs/defconfig | 1 +
- 3 files changed, 9 insertions(+)
+ 1 file changed, 1 insertion(+)
 
+diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+index 30e3017f22bc..e8472ffbb4dc 100644
+--- a/arch/riscv/configs/defconfig
++++ b/arch/riscv/configs/defconfig
+@@ -100,6 +100,7 @@ CONFIG_VIRTIO_PCI=y
+ CONFIG_VIRTIO_BALLOON=y
+ CONFIG_VIRTIO_INPUT=y
+ CONFIG_VIRTIO_MMIO=y
++CONFIG_MAILBOX=y
+ CONFIG_RPMSG_CHAR=y
+ CONFIG_RPMSG_VIRTIO=y
+ CONFIG_EXT4_FS=y
 -- 
 2.35.2
 
