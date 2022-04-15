@@ -2,64 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E12B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:37:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C580FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:37:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355435AbiDOPju (ORCPT
+        id S1355470AbiDOPj4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 11:39:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36984 "EHLO
+        Fri, 15 Apr 2022 11:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356283AbiDOPj2 (ORCPT
+        with ESMTP id S1356299AbiDOPj3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 11:39:28 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94983C712
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:36:58 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id i82-20020a1c3b55000000b0038ccb70e239so3330723wma.3
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:36:58 -0700 (PDT)
+        Fri, 15 Apr 2022 11:39:29 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728963DDD9
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:37:01 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id t1so11061985wra.4
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:37:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=bjsrGI6b0RLOajPWZ9Roh+05A2VIae/Wu/ntaXQOjlw=;
-        b=3wSns6Qsgrs4cf7sI/QmPRIbAuQFGeQOWy+IwaG4p/9G7wFu2NT3G9NIDox8GsYa83
-         lIW5eRDkq87Z8CCCA5g4ZABFIx+PXqihPJ7jJ7jd9wDZYLFNkMXHH5HGR66XCPF+9dTG
-         yBbvNBiJWOAM9LE0PerlZPkmCWGL5Ca6Ij+gCgK4iPuD2xWi2jTf4VeR6K0hBkuKstUA
-         eKhtkY7CUj6iRNbZBGBOx99przt0jbd2VdOJuWEFD6h94LZnJNuDAkyx1bSVjSteJyCP
-         +bftqFga/mY4fsJ8lJf2VOI9bkrKtnifVoc8pP8x+0fPRnZD60jCuzijfIPp+zGjyYwG
-         GFyw==
+        bh=xf7zHgQF0LLYfyyhuEnZersihES6pOQgkISOqNV5ZRE=;
+        b=xivuA2t3IqjLqIoQ9DSn1tMrItfP5C3kkoXLWvVqH9w2x08/1vOWwiFUeLyckHqQK7
+         vANKxFbdrzik52hMtA8dmDDfP8zN7cEsf9psBAV4fFw2IJW5Kvi4WRQ2n/bblCJuagqX
+         Fx2zCKxwYqijw8U0R9G7lFq7pqV1zofoFDnhFiXRcsiY7ce9odvnfWaF+Xl/pC+ND3BI
+         94009nqeRJk3aFoGdIfdNXKhsJVSntrjRHiXylMsry0pwSVWdSSy1imAEcESzwkERfWP
+         /NTB7H2oOoKDjiZnSwpJOA1R4z6V80qfUkxCKmYlepQLh57UdDOVMVKPzzPnAfsys7fJ
+         kb8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=bjsrGI6b0RLOajPWZ9Roh+05A2VIae/Wu/ntaXQOjlw=;
-        b=OSQaXhYiewQTJUdDWL/crZ2ndqer9Qstxtb2m/ogOVEBHHQCsxvajyYZPtE/Ga7F2J
-         zQId5hsdE9scVeCeNw38Ja1SM20a6dx1v/cFnImCW7yyeFiIxeL0jASkMrWva3zdOKHt
-         gxWLUL0e+ofOosjC3LMCGd/XqFDC8gEwzDrPPh+6CJ8a2WybYnABXTY1wtWxrzD12nDl
-         f22cMP8pW8uD+fTx66vFvvi+cksRZOfA1pRcyquIsxWQpaBssiB56KWBOikPWXvMRilM
-         7FGIDH+kuMlxLCpuJIqFq8kuGnvKfcnsg1HwEWfoONJF3lUM4yLbH/qCD8ibJGS9YHbf
-         +B7Q==
-X-Gm-Message-State: AOAM533AUYCx0+bE2qYPZXWTo7PuOBmcRgLD3pMI/sQY4Hhr+kpMci8z
-        gXN+BOv+vY0wLsg9s7cSrNUgeA==
-X-Google-Smtp-Source: ABdhPJys6pbLabTkeRziK+wc3YsUE7sp3OaYxjUErcU8DVV+dThnk4NTfuDDdx9muo/luGe71Ahcxg==
-X-Received: by 2002:a7b:c8cd:0:b0:38e:c2c1:5219 with SMTP id f13-20020a7bc8cd000000b0038ec2c15219mr3731923wml.151.1650037017310;
-        Fri, 15 Apr 2022 08:36:57 -0700 (PDT)
+        bh=xf7zHgQF0LLYfyyhuEnZersihES6pOQgkISOqNV5ZRE=;
+        b=vQjzbPVX9NgH19YFZyHO7ui4/sgK6ybWXmtn3JKuMefM7iKcjovVCWaTBb3XuoB8je
+         itb/IJFYFcN5thIvApI5w9nu+1xXUG18S4pgppNoDy6uTsanUVeiPyGuruLRImqAUVhy
+         Vpsrsnd7ZmXq6Ce4lfE4SD+cp+12d8oZwxGF3cNSQgIU4mi0elXDHAqm+V1DHmvWjkJT
+         5Nb5rva6gksHXhb5pJV2vlKxq/mutP6u4LpcnsISiuLdfwijLDW+T5oeg5VSXbeuZtAQ
+         Qh/3wqz75SVVaLzOLcJWDk83sJhH/Li1u9aFmFwvjNIlmWv6TUt/QNJ5BNzvv1NNzVjB
+         PEKA==
+X-Gm-Message-State: AOAM533Qsc+eGEUALpqGc2K/cInQl3aIq7j61fEJXv2EqjCld0sf2h95
+        d3V1BXadZE56Z7lh4CYe/eZAJg==
+X-Google-Smtp-Source: ABdhPJxQk5vHua4beVYxWbc+1z+j8NCqUCbLO9KGJcNxCFujTtigBhehGKkQbFGNgxlKqJVhVZebFA==
+X-Received: by 2002:a05:6000:1684:b0:209:7fda:e3a with SMTP id y4-20020a056000168400b002097fda0e3amr5705338wrd.709.1650037020002;
+        Fri, 15 Apr 2022 08:37:00 -0700 (PDT)
 Received: from localhost.localdomain ([88.160.162.107])
-        by smtp.gmail.com with ESMTPSA id c24-20020a7bc018000000b0038a18068cf5sm8459292wmb.15.2022.04.15.08.36.56
+        by smtp.gmail.com with ESMTPSA id c24-20020a7bc018000000b0038a18068cf5sm8459292wmb.15.2022.04.15.08.36.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 08:36:56 -0700 (PDT)
+        Fri, 15 Apr 2022 08:36:59 -0700 (PDT)
 From:   Fabien Parent <fparent@baylibre.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+To:     Lee Jones <lee.jones@linaro.org>,
         Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Fabien Parent <fparent@baylibre.com>, linux-input@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+Cc:     Fabien Parent <fparent@baylibre.com>,
+        linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/7] dt-bindings: input: mtk-pmic-keys: add MT6359 binding definition
-Date:   Fri, 15 Apr 2022 17:36:23 +0200
-Message-Id: <20220415153629.1817202-2-fparent@baylibre.com>
+Subject: [PATCH 3/7] mfd: mt6397-core: add resources for PMIC keys for MT6359
+Date:   Fri, 15 Apr 2022 17:36:25 +0200
+Message-Id: <20220415153629.1817202-4-fparent@baylibre.com>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220415153629.1817202-1-fparent@baylibre.com>
 References: <20220415153629.1817202-1-fparent@baylibre.com>
@@ -69,25 +67,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add binding definition for the support of the MT6359 keyboard driver.
+Add the MFD resources in order to be able to probe and use the keyboard
+driver for the MT6359 PMIC.
 
 Signed-off-by: Fabien Parent <fparent@baylibre.com>
 ---
- Documentation/devicetree/bindings/input/mtk-pmic-keys.txt | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/mfd/mt6397-core.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/input/mtk-pmic-keys.txt b/Documentation/devicetree/bindings/input/mtk-pmic-keys.txt
-index 9d00f2a8e13a..afe9062a4dc7 100644
---- a/Documentation/devicetree/bindings/input/mtk-pmic-keys.txt
-+++ b/Documentation/devicetree/bindings/input/mtk-pmic-keys.txt
-@@ -13,6 +13,7 @@ Required properties:
- 	- "mediatek,mt6397-keys"
- 	- "mediatek,mt6323-keys"
- 	- "mediatek,mt6358-keys"
-+	- "mediatek,mt6359-keys"
- - linux,keycodes: See Documentation/devicetree/bindings/input/input.yaml
+diff --git a/drivers/mfd/mt6397-core.c b/drivers/mfd/mt6397-core.c
+index bddb40054b9e..1a368ad08f58 100644
+--- a/drivers/mfd/mt6397-core.c
++++ b/drivers/mfd/mt6397-core.c
+@@ -54,6 +54,13 @@ static const struct resource mt6358_keys_resources[] = {
+ 	DEFINE_RES_IRQ_NAMED(MT6358_IRQ_HOMEKEY_R, "homekey_r"),
+ };
  
- Optional Properties:
++static const struct resource mt6359_keys_resources[] = {
++	DEFINE_RES_IRQ_NAMED(MT6359_IRQ_PWRKEY, "powerkey"),
++	DEFINE_RES_IRQ_NAMED(MT6359_IRQ_HOMEKEY, "homekey"),
++	DEFINE_RES_IRQ_NAMED(MT6359_IRQ_PWRKEY_R, "powerkey_r"),
++	DEFINE_RES_IRQ_NAMED(MT6359_IRQ_HOMEKEY_R, "homekey_r"),
++};
++
+ static const struct resource mt6323_keys_resources[] = {
+ 	DEFINE_RES_IRQ_NAMED(MT6323_IRQ_STATUS_PWRKEY, "powerkey"),
+ 	DEFINE_RES_IRQ_NAMED(MT6323_IRQ_STATUS_FCHRKEY, "homekey"),
+@@ -122,6 +129,12 @@ static const struct mfd_cell mt6359_devs[] = {
+ 		.of_compatible = "mediatek,mt6358-rtc",
+ 	},
+ 	{ .name = "mt6359-sound", },
++	{
++		.name = "mtk-pmic-keys",
++		.num_resources = ARRAY_SIZE(mt6359_keys_resources),
++		.resources = mt6359_keys_resources,
++		.of_compatible = "mediatek,mt6359-keys"
++	},
+ };
+ 
+ static const struct mfd_cell mt6397_devs[] = {
 -- 
 2.35.2
 
