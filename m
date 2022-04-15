@@ -2,82 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F95C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 17:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAE29C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 17:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344897AbiDOR6g (ORCPT
+        id S1344944AbiDOSBZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 13:58:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
+        Fri, 15 Apr 2022 14:01:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241675AbiDOR6e (ORCPT
+        with ESMTP id S240532AbiDOSBX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 13:58:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE9C2DA8A;
-        Fri, 15 Apr 2022 10:56:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE78F6230A;
-        Fri, 15 Apr 2022 17:56:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ECC5C385A4;
-        Fri, 15 Apr 2022 17:56:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650045365;
-        bh=T2xdRfkWG7nNM/RZqU/ytJtED300+Bj/aG4zjzKjp9s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZH+OdZtuE3tmQdhMbm8jS+TzG2OjOf0Cdx5nUetecJAZqkcx7r69WXw/1a76uZXB8
-         PThcRlIRIQfXM16pRROtFRehyzpxZ3K3/n5LmmXvdSVVKLB/djuFuNVZK/KXuT+rXO
-         vLj7dw+jV3E/Ncm2fRaCk42RAIpWNGisHLtCaOotpzotT20iCt3QT7JruqY7zeeukF
-         FNe2H1Vjse6kCj1YO4QN7CoFcFa0XmtFv7/Yws6qHKwjRZ8bLU0/Pu37eIrDkc4d5F
-         WAL8+kI516kmPERSnxVaxilJqYlTwyPGTYEq9IIYTijgBIDyn3+0LHPlnU/GdZ4yDS
-         Q+6E5m4bMemVw==
-Date:   Fri, 15 Apr 2022 19:04:03 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     "Sa, Nuno" <Nuno.Sa@analog.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>
-Subject: Re: [PATCH v1 1/3] iio: imu: adis16480: Make use of device
- properties
-Message-ID: <20220415190403.220b135d@jic23-huawei>
-In-Reply-To: <YlcBTfVdtp7nUhjR@smile.fi.intel.com>
-References: <20220413144124.72537-1-andriy.shevchenko@linux.intel.com>
-        <PH0PR03MB67867FD2A0043F5331D1C5E399EC9@PH0PR03MB6786.namprd03.prod.outlook.com>
-        <YlcBTfVdtp7nUhjR@smile.fi.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Fri, 15 Apr 2022 14:01:23 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4743DB493
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 10:58:53 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:6624:6d8d:f790:d5c]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nfQDZ-0004Kh-JT; Fri, 15 Apr 2022 19:58:49 +0200
+Message-ID: <afd1eeb8-0291-d891-c6f4-022f243a9a72@leemhuis.info>
+Date:   Fri, 15 Apr 2022 19:58:49 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: "dma-mapping: remove CONFIG_DMA_REMAP" causes AMD SME boot fail
+ #forregzbot
+Content-Language: en-US
+From:   Thorsten Leemhuis <linux@leemhuis.info>
+To:     regressions@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+References: <1648659326.eabkokyuym.none.ref@localhost>
+ <1648659326.eabkokyuym.none@localhost>
+ <9e3c47e0-6807-081d-feb7-ed7c5fe1d1f1@leemhuis.info>
+In-Reply-To: <9e3c47e0-6807-081d-feb7-ed7c5fe1d1f1@leemhuis.info>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1650045533;61358a03;
+X-HE-SMSGID: 1nfQDZ-0004Kh-JT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Apr 2022 19:58:53 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+TWIMC: this mail is primarily send for documentation purposes and for
+regzbot, my Linux kernel regression tracking bot. These mails usually
+contain '#forregzbot' in the subject, to make them easy to spot and filter.
 
-> On Wed, Apr 13, 2022 at 03:25:49PM +0000, Sa, Nuno wrote:
-> > > -----Original Message-----
-> > > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > > Sent: Wednesday, April 13, 2022 4:41 PM =20
->=20
-> ...
->=20
-> > You beat me to do this. I actually had planned to do this next week
-> > once I saw we already have fwnode_irq_get_byname(). Anyways...
-> >=20
-> > Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-> >=20
-> > (I will still give this a test next week) =20
->=20
-> Thanks!
->=20
-I'll wait to apply it until you confirm all was good (mind you I haven't
-read it yet :)
+#regzbot fixed-by: 4fe87e818ea492ade079cc0
 
-Thanks,
-
-Jonathan
+On 31.03.22 08:51, Thorsten Leemhuis wrote:
+> [TLDR: I'm adding the regression report below to regzbot, the Linux
+> kernel regression tracking bot; all text you find below is compiled from
+> a few templates paragraphs you might have encountered already already
+> from similar mails.]
+> 
+> Hi, this is your Linux kernel regression tracker. Sending this just to
+> the lists, as it's already handled.
+> 
+> On 30.03.22 19:51, Alex Xu (Hello71) wrote:
+>>
+>> After a recent kernel update, booting one of my machines causes it to 
+>> hang on a black screen. Pressing Lock keys on the USB keyboard does not 
+>> turn on the indicators, and the machine does not appear on the Ethernet 
+>> network. I don't have a serial port on this machine. I didn't try 
+>> netconsole, but I suspect it won't work.
+>>
+>> Setting mem_encrypt=0 seems to resolve the issue. Reverting f5ff79fddf0e 
+>> ("dma-mapping: remove CONFIG_DMA_REMAP") also appears to resolve the 
+>> issue.
+>>
+>> The machine in question has an AMD Ryzen 5 1600 and ASRock B450 Pro4.
+> 
+> To be sure below issue doesn't fall through the cracks unnoticed, I'm
+> adding it to regzbot, my Linux kernel regression tracking bot:
+> 
+> #regzbot ^introduced f5ff79fddf0e
+> #regzbot title dma: "dma-mapping: remove CONFIG_DMA_REMAP" causes AMD
+> SME boot fail
+> #regzbot ignore-activity
+> 
+> If it turns out this isn't a regression, free free to remove it from the
+> tracking by sending a reply to this thread containing a paragraph like
+> "#regzbot invalid: reason why this is invalid" (without the quotes).
+> 
+> Ciao, Thorsten
