@@ -2,129 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C51C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 02:37:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 02:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348746AbiDOCjv (ORCPT
+        id S1348748AbiDOCpV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 22:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59124 "EHLO
+        Thu, 14 Apr 2022 22:45:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240097AbiDOCjs (ORCPT
+        with ESMTP id S234772AbiDOCpT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 22:39:48 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8C94BB9B;
-        Thu, 14 Apr 2022 19:37:21 -0700 (PDT)
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KfgRN509VzQj6r;
-        Fri, 15 Apr 2022 10:35:28 +0800 (CST)
-Received: from [10.174.176.117] (10.174.176.117) by
- dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 15 Apr 2022 10:37:18 +0800
-Subject: Re: [PATCH bpf-next v2 0/6] bpf trampoline for arm64
-To:     Xu Kuohai <xukuohai@huawei.com>, <bpf@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-CC:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>
-References: <20220414162220.1985095-1-xukuohai@huawei.com>
-From:   Hou Tao <houtao1@huawei.com>
-Message-ID: <b9d38c43-a2a7-ae6d-79e1-51507103ef88@huawei.com>
-Date:   Fri, 15 Apr 2022 10:37:18 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Thu, 14 Apr 2022 22:45:19 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD57A0BFF
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:42:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649990572; x=1681526572;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=2+Y236hBP7nkfnh2vn34A03RyhdinQO05q3FqW+lPwk=;
+  b=PujQ85iFEy6qXd9lX7cHy+KP+N51c9a73e79yGKH8IfBwhG9vnhwGCvz
+   WZN0kVCAybVYWRLRtoWwaVGJHbXrGS85z1agb26x/9ExQvOpEe2Z57J1m
+   FWlaplSkAV/PN5fVWfiYfgwp7jcd3t+ig8yKdSM4sTFgGRlDWAPilYz4m
+   Jw+3cNZA2ZZmkXr4/QFcNGuP8CKS1eopyYhlz7A37x7Da+HejFa6yq0Zn
+   VCRsAYEcgRREx5egwlTPeefVpDRFvCUYSktIBzQFq+Moned+Gv18kouUY
+   u5H7xsntsJfXQx+270oMVBXetQ9ioG6wz/97q4Dsr/SUX8WIpplYpTUz9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="323523106"
+X-IronPort-AV: E=Sophos;i="5.90,261,1643702400"; 
+   d="scan'208";a="323523106"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 19:42:38 -0700
+X-IronPort-AV: E=Sophos;i="5.90,261,1643702400"; 
+   d="scan'208";a="527646181"
+Received: from ruiqifu-mobl.ccr.corp.intel.com ([10.254.213.123])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 19:42:34 -0700
+Message-ID: <bf23f05830db51bab3b06bac6e54d4743d37e955.camel@intel.com>
+Subject: Re: [PATCH 1/3] memory tiering: hot page selection with hint page
+ fault latency
+From:   "ying.huang@intel.com" <ying.huang@intel.com>
+To:     Jagdish Gediya <jvgediya@linux.ibm.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Michal Hocko <mhocko@suse.com>,
+        Rik van Riel <riel@surriel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
+        Wei Xu <weixugc@google.com>, osalvador <osalvador@suse.de>,
+        Shakeel Butt <shakeelb@google.com>,
+        Zhong Jiang <zhongjiang-ali@linux.alibaba.com>
+Date:   Fri, 15 Apr 2022 10:42:31 +0800
+In-Reply-To: <YlggP5Tub19gjF4g@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
+References: <20220408071222.219689-1-ying.huang@intel.com>
+         <20220408071222.219689-2-ying.huang@intel.com>
+         <YlggP5Tub19gjF4g@li-6e1fa1cc-351b-11b2-a85c-b897023bb5f3.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-In-Reply-To: <20220414162220.1985095-1-xukuohai@huawei.com>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.174.176.117]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500025.china.huawei.com (7.185.36.35)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi, Jagdish,
 
-On 4/15/2022 12:22 AM, Xu Kuohai wrote:
-> Add bpf trampoline support for arm64. Most of the logic is the same as
-> x86.
->
-> Tested on qemu, result:
->  #55 fentry_fexit:OK
->  #56 fentry_test:OK
->  #58 fexit_sleep:OK
->  #59 fexit_stress:OK
->  #60 fexit_test:OK
->  #67 get_func_args_test:OK
->  #68 get_func_ip_test:OK
->  #101 modify_return:OK
-bpf_struct_ops also depends on bpf trampoline, could you please also add the
-test results for bpf_struct_ops related tests case ?
->
-> v2:
-> - Add Song's ACK
-> - Change the multi-line comment in is_valid_bpf_tramp_flags() into net
->   style (patch 3)
-> - Fix a deadloop issue in ftrace selftest (patch 2)
-> - Replace pt_regs->x0 with pt_regs->orig_x0 in patch 1 commit message 
-> - Replace "bpf trampoline" with "custom trampoline" in patch 1, as
->   ftrace direct call is not only used by bpf trampoline.
->
-> v1: https://lore.kernel.org/bpf/20220413054959.1053668-1-xukuohai@huawei.com/
->
-> Xu Kuohai (6):
->   arm64: ftrace: Add ftrace direct call support
->   ftrace: Fix deadloop caused by direct call in ftrace selftest
->   bpf: Move is_valid_bpf_tramp_flags() to the public trampoline code
->   bpf, arm64: Impelment bpf_arch_text_poke() for arm64
->   bpf, arm64: bpf trampoline for arm64
->   selftests/bpf: Fix trivial typo in fentry_fexit.c
->
->  arch/arm64/Kconfig                            |   2 +
->  arch/arm64/include/asm/ftrace.h               |  10 +
->  arch/arm64/kernel/asm-offsets.c               |   1 +
->  arch/arm64/kernel/entry-ftrace.S              |  28 +-
->  arch/arm64/net/bpf_jit.h                      |  14 +-
->  arch/arm64/net/bpf_jit_comp.c                 | 390 +++++++++++++++++-
->  arch/x86/net/bpf_jit_comp.c                   |  20 -
->  include/linux/bpf.h                           |   5 +
->  kernel/bpf/bpf_struct_ops.c                   |   4 +-
->  kernel/bpf/trampoline.c                       |  35 +-
->  kernel/trace/trace_selftest.c                 |   4 +-
->  .../selftests/bpf/prog_tests/fentry_fexit.c   |   4 +-
->  12 files changed, 482 insertions(+), 35 deletions(-)
->
+On Thu, 2022-04-14 at 18:53 +0530, Jagdish Gediya wrote:
+> On Fri, Apr 08, 2022 at 03:12:20PM +0800, Huang Ying wrote:
+[snip]
+> > +
+> > +static int numa_hint_fault_latency(struct page *page)
+> > +{
+> > +	int last_time, time;
+> > +
+> > +	time = jiffies_to_msecs(jiffies);
+> > +	last_time = xchg_page_access_time(page, time);
+> > +
+> > +	return (time - last_time) & PAGE_ACCESS_TIME_MASK;
+> 
+> This code can possibly consider cold page as hot,
+> 
+> Assume,
+> 
+> LAST_CPUPID_SHIFT = 12
+> PAGE_ACCESS_TIME_BUCKETS = 0
+> sysctl_numa_balancing_hot_threshold = 1000
+> 
+> Assume while changing pte,
+> jiffies_to_msecs(jiffies) = 0xAABB0100
+> 
+> So value saved in page->flags will be lowest 12 bits of 0xAABB0100
+> which is 0x100.
+> 
+> Assume when numa_hint_fault_latency() gets called,
+> time = jiffies_to_msecs(jiffies) = 0xAACC0100
+> 
+> So, time = 0xAACC0100, and last_time = 0x100,
+> time - last_time = 0xAACC0100 - 0x100 = 0xAACC0000
+> 0xAACC0000 & PAGE_ACCESS_TIME_MASK = 0xAACC0000 & ((1 << 12) - 1) = 0
+> 
+> so the return value of this function is 0, the code will consider it as
+> hot page but it is cold page because actual difference is
+> 0xAACC0100 - 0xAABB0100 = 110000 ms
+> 
+
+Yes.  This is possible.
+
+> There may be more such scenarios. What do you think?
+
+The algorithm just works statistically correct.  That is, for really hot
+pages, their hint page fault latency will be short and we can promote it
+when they are accessed.  For cold pages, it's still possible for them to
+be identified as hot pages.  But the possibility is much lower than that
+of the hot pages.
+
+We can try to improve further here.  But as the first step, I want to
+keep the algorithm as simple as possible.  Then we can try improve it
+step by step and show benefit in each step to justify the further
+optimization.
+
+> > +}
+> > +
+
+Best Regards,
+Huang, Ying
+
 
