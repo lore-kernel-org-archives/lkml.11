@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0859BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 02:49:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF67C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 02:49:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348949AbiDOCvt (ORCPT
+        id S1349025AbiDOCvx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 22:51:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55496 "EHLO
+        Thu, 14 Apr 2022 22:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348989AbiDOCvR (ORCPT
+        with ESMTP id S1348826AbiDOCvU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 22:51:17 -0400
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A603CB645F
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:48:50 -0700 (PDT)
-Received: by mail-qv1-xf33.google.com with SMTP id x20so5734110qvl.10
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:48:50 -0700 (PDT)
+        Thu, 14 Apr 2022 22:51:20 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35933B53C2
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:48:54 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id 3so5895419qkj.5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:48:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5Mc5RpUXea4SRPDeY1qeGl0bCped7ZnWWdOYH5iSbns=;
-        b=h+6MCgqU+1gY93wXDbjOD3yeEt4oSm86gR8dYLMSQ5ontZUs7pHreKh6u8S9E7+8M9
-         rzG0d7uPGLmq0zgra31/y9DxTKn62SJryyXirRt3Q7dK9jOH0yvBCspl0TBcSVJNfmlr
-         MuIr3C0hjDCSAkJfpoqwHM4RMAOSUGmW1cJxCyNavW8QdOP5khWN1zvH0PLgKDau7UGA
-         z+nE60WMXRi2i8bHZextSl/Er27QHvLgmzISa14d9mhgbZ0llHrD6VduLHaMr4hqThWx
-         bsbGP98jLUCCfQf9DDIgM+lpDcfax6T+Buz7M2T53ylKiRt2O1SUFpmyuj7nDCgN4GQy
-         3law==
+        bh=CKsPSzbdQxvHGjzHjwaUIzUGXMHlds2Vm+4c+Y0wyWg=;
+        b=krNK/VQ+kVTKoPRnjaavol+6At8xRhgnz9BihNOArwhl5zTUEwXrg6CBipRyQsMU3c
+         Oze96XQ8+P7KgwrKHO7MQUUkMSX6LEFHaQ93qfRtN8/vhAxS9p4QwUQ7FIzhOURbD3wf
+         WX1JTHuCBh5IJv1v3UB8I1tWpqNJsWLqNpn/kaAH4sRQXLkgS0D7KT2/iagPiWawtCRn
+         TUz0XS2hwaujZlBDju61US1NswuEj2TKIG85ZXbgLg1GvwftbcL892kJtr1E7VcZh9Jk
+         1gHBC3AE+iyfzIhcCZoblhIpJBHAZbOjP++OVxuefX2AH+/dM4clcE5nJhoaU0XsFiPu
+         avww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5Mc5RpUXea4SRPDeY1qeGl0bCped7ZnWWdOYH5iSbns=;
-        b=iGNGNLruqiAHLW39U/ZB46QK+AeiuepMDZj/36/KI+O1xwa8B0EDW/WbapOm06aN51
-         UoBDr00fgc55eDNpzGeOemQOhkB5cxj1kA4w5Si9O/NHx8oWKOH45c77xnCXDTEueycr
-         bey5MKRTNOYTrLOSGAneNeNqKXO8r+kGsZLuvkJ7oKLFWvQ2jxzzvTFrCKf982AvUkha
-         PtYb4XmiwIjNyo672H+O1cPk+UP+GGlu9oK62BL/mOcqY/Lp1iX4bYWdqXVnMcQktcwF
-         JaaUGkb/SsXVrxAxISPt6mJmfg3BvDkSG7qPVVKxEBSeqh7pmxJcyx6q5k7wsiuW69qI
-         oj2g==
-X-Gm-Message-State: AOAM532WQ06ZBhAHuWoO94P3tl96Sl/K4Ef1Md5t8hwJXHqLGUUPqmK0
-        uXzU/+JKE7T+YrGwWd6gxsY=
-X-Google-Smtp-Source: ABdhPJxWU4j21dPv9kXNTFNN4dy5rZpviBfSXSQmwgLz0JoRPXD0oZQB6WvoXjkL+dmsgsJ2EgK+Cw==
-X-Received: by 2002:a05:6214:f01:b0:443:a990:4ea4 with SMTP id gw1-20020a0562140f0100b00443a9904ea4mr6125752qvb.42.1649990929819;
-        Thu, 14 Apr 2022 19:48:49 -0700 (PDT)
+        bh=CKsPSzbdQxvHGjzHjwaUIzUGXMHlds2Vm+4c+Y0wyWg=;
+        b=o63Xaac1SW2fVj7mbiDQIvqgKJ+FqxH07GKmghJRyWUmPxzOJqV7ZfEummlP9xvjNM
+         txHWBYHg7cRI2nQflWimodtafjAuyvMnUNtcTtcOzVcZa2ynUQWJP0x3aN3hJwYn5n8v
+         0Wt3sK+EKwgW0DpUTbXuhb4ExdFpOJ3FzB+4BUXL1NHUxmJC6GKI91SFvVl+67hNVc/Y
+         S5blXcdISPF+8M/5swY29sVZ9Vb6mLjzsXBalrtKLF4fcVKuP+8cjizbXSXk639m84ev
+         vhaabfNIbK6WW9IQIABdJEVAX8LRBs740o3Jr/mxd06y+GI5k6mL2Wdoi/GadK2xfmbX
+         kQtQ==
+X-Gm-Message-State: AOAM532Qx5J9+hfggN1LRDV5/giiJi9oNe62gTS1gISlsaR56ldo93LL
+        4sAIaBEI+gUIkM2tXqS1u3w=
+X-Google-Smtp-Source: ABdhPJxmlagFCkqQolzg6U7aFXJnV+1Lr8Si2ywcY/BsE5JOOXCI5SlzAXt1V03EuIhyQqPEFbzlRg==
+X-Received: by 2002:ae9:ef8a:0:b0:69c:1015:3383 with SMTP id d132-20020ae9ef8a000000b0069c10153383mr4222123qkg.492.1649990933357;
+        Thu, 14 Apr 2022 19:48:53 -0700 (PDT)
 Received: from jaehee-ThinkPad-X1-Extreme.lan ([2607:fb90:1b7a:2349:50b1:5db4:a2d5:7054])
-        by smtp.gmail.com with ESMTPSA id p7-20020a05620a22a700b0069c37e2c473sm1800085qkh.94.2022.04.14.19.48.48
+        by smtp.gmail.com with ESMTPSA id p7-20020a05620a22a700b0069c37e2c473sm1800085qkh.94.2022.04.14.19.48.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 19:48:49 -0700 (PDT)
+        Thu, 14 Apr 2022 19:48:52 -0700 (PDT)
 From:   Jaehee Park <jhpark1013@gmail.com>
 To:     Larry.Finger@lwfinger.net
 Cc:     phil@philpotter.co.uk, gregkh@linuxfoundation.org,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         outreachy@lists.linux.dev, jhpark1013@gmail.com
-Subject: [PATCH v2 4/6] staging: r8188eu: place constants on the right side of tests
-Date:   Thu, 14 Apr 2022 22:48:35 -0400
-Message-Id: <baa4d5259e2eb48da1dd71e1863b62a086312a7e.1649990500.git.jhpark1013@gmail.com>
+Subject: [PATCH v2 6/6] staging: r8188eu: correct typo in comments
+Date:   Thu, 14 Apr 2022 22:48:37 -0400
+Message-Id: <080ec2f68f6558af098918e3b8e69a2d3529cb3f.1649990500.git.jhpark1013@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1649990500.git.jhpark1013@gmail.com>
 References: <cover.1649990500.git.jhpark1013@gmail.com>
@@ -66,71 +66,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To comply with the linux coding style, place constants on the right
-side of the test in comparisons. Issue found with checkpatch.
-WARNING: Comparisons should place the constant on the right side of
-the test.
+Correct misspellings in the comments. Issue found with checkpatch.
 
 Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_mlme.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/staging/r8188eu/core/rtw_mlme.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-index bb9d595a90b9..d57f2ffa069e 100644
+index 38ae8be675c4..58c7d6cc4a3f 100644
 --- a/drivers/staging/r8188eu/core/rtw_mlme.c
 +++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-@@ -715,7 +715,7 @@ void rtw_surveydone_event_callback(struct adapter	*adapter, u8 *pbuf)
- 			set_fwstate(pmlmepriv, _FW_UNDER_LINKING);
- 			pmlmepriv->to_join = false;
- 			s_ret = rtw_select_and_join_from_scanned_queue(pmlmepriv);
--			if (_SUCCESS == s_ret) {
-+			if (s_ret == _SUCCESS) {
- 			     _set_timer(&pmlmepriv->assoc_timer, MAX_JOIN_TIMEOUT);
- 			} else if (s_ret == 2) { /* there is no need to wait for join */
- 				_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
-@@ -723,7 +723,8 @@ void rtw_surveydone_event_callback(struct adapter	*adapter, u8 *pbuf)
- 			} else {
- 				if (rtw_to_roaming(adapter) != 0) {
- 					if (--pmlmepriv->to_roaming == 0 ||
--					    _SUCCESS != rtw_sitesurvey_cmd(adapter, &pmlmepriv->assoc_ssid, 1, NULL, 0)) {
-+					    rtw_sitesurvey_cmd(adapter, &pmlmepriv->assoc_ssid,
-+							       1, NULL, 0) != _SUCCESS) {
- 						rtw_set_roaming(adapter, 0);
- 						rtw_free_assoc_resources(adapter, 1);
- 						rtw_indicate_disconnect(adapter);
-@@ -1964,7 +1965,7 @@ void rtw_issue_addbareq_cmd(struct adapter *padapter, struct xmit_frame *pxmitfr
- 		issued = (phtpriv->agg_enable_bitmap >> priority) & 0x1;
- 		issued |= (phtpriv->candidate_tid_bitmap >> priority) & 0x1;
+@@ -186,7 +186,7 @@ void _rtw_free_network_nolock(struct	mlme_priv *pmlmepriv, struct wlan_network *
+ /*
+ 	return the wlan_network with the matching addr
  
--		if (0 == issued) {
-+		if (issued == 0) {
- 			psta->htpriv.candidate_tid_bitmap |= BIT((u8)priority);
- 			rtw_addbareq_cmd(padapter, (u8)priority, pattrib->ra);
+-	Shall be calle under atomic context... to avoid possible racing condition...
++	Shall be called under atomic context... to avoid possible racing condition...
+ */
+ struct wlan_network *_rtw_find_network(struct __queue *scanned_queue, u8 *addr)
+ {
+@@ -322,7 +322,7 @@ void rtw_free_network_queue(struct adapter *dev, u8 isfreeall)
+ /*
+ 	return the wlan_network with the matching addr
+ 
+-	Shall be calle under atomic context... to avoid possible racing condition...
++	Shall be called under atomic context... to avoid possible racing condition...
+ */
+ struct	wlan_network *rtw_find_network(struct __queue *scanned_queue, u8 *addr)
+ {
+@@ -905,7 +905,7 @@ static struct sta_info *rtw_joinbss_update_stainfo(struct adapter *padapter, str
+ 			memset((u8 *)&psta->dot11rxpn, 0, sizeof(union pn48));
  		}
-@@ -1991,19 +1992,19 @@ void _rtw_roaming(struct adapter *padapter, struct wlan_network *tgt_network)
- 	else
- 		pnetwork = &pmlmepriv->cur_network;
+ 		/*	When doing the WPS, the wps_ie_len won't equal to 0 */
+-		/*	And the Wi-Fi driver shouldn't allow the data packet to be tramsmitted. */
++		/*	And the Wi-Fi driver shouldn't allow the data packet to be transmitted. */
+ 		if (padapter->securitypriv.wps_ie_len != 0) {
+ 			psta->ieee8021x_blocked = true;
+ 			padapter->securitypriv.wps_ie_len = 0;
+@@ -1299,7 +1299,7 @@ void rtw_stadel_event_callback(struct adapter *adapter, u8 *pbuf)
+ }
  
--	if (0 < rtw_to_roaming(padapter)) {
-+	if (rtw_to_roaming(padapter) > 0) {
- 		memcpy(&pmlmepriv->assoc_ssid, &pnetwork->network.Ssid, sizeof(struct ndis_802_11_ssid));
+ /*
+-* _rtw_join_timeout_handler - Timeout/faliure handler for CMD JoinBss
++* _rtw_join_timeout_handler - Timeout/failure handler for CMD JoinBss
+ * @adapter: pointer to struct adapter structure
+ */
+ void _rtw_join_timeout_handler (struct adapter *adapter)
+@@ -1334,7 +1334,7 @@ void _rtw_join_timeout_handler (struct adapter *adapter)
+ }
  
- 		pmlmepriv->assoc_by_bssid = false;
- 
- 		while (1) {
- 			do_join_r = rtw_do_join(padapter);
--			if (_SUCCESS == do_join_r) {
-+			if (do_join_r == _SUCCESS) {
- 				break;
- 			} else {
- 				pmlmepriv->to_roaming--;
- 
--				if (0 < pmlmepriv->to_roaming) {
-+				if (pmlmepriv->to_roaming > 0) {
- 					continue;
- 				} else {
- 					rtw_indicate_disconnect(padapter);
+ /*
+-* rtw_scan_timeout_handler - Timeout/Faliure handler for CMD SiteSurvey
++* rtw_scan_timeout_handler - Timeout/Failure handler for CMD SiteSurvey
+ * @adapter: pointer to struct adapter structure
+ */
+ void rtw_scan_timeout_handler (struct adapter *adapter)
 -- 
 2.25.1
 
