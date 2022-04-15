@@ -2,127 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26A29C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:16:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:18:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355781AbiDOQSl (ORCPT
+        id S1355787AbiDOQUm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 12:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55174 "EHLO
+        Fri, 15 Apr 2022 12:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355761AbiDOQSf (ORCPT
+        with ESMTP id S237533AbiDOQUk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 12:18:35 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C53097BA2;
-        Fri, 15 Apr 2022 09:16:07 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id s25so9944877edi.13;
-        Fri, 15 Apr 2022 09:16:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Mj8Kd2iaxdzZLtP+lkn5ZFqD1Z3Svx/w2u5MGhXQFl4=;
-        b=bI5nLF7gOH5fv+8CP/CcpZvHtE/YkpEJ7pdSo6kPPHCCY1r5/XqoNcnQ1uaxXY+dZP
-         yj0nBoF5wG4uOR3ic7tkxW+2Q7fON1wnFMlREAfAE3XIgGj6J/mluz9sK6iRhH/LR/34
-         ly3rUt0CTm5jYczR93kve/CY9CHWsfbVUwigeBqIUyIpSRVnlyhw0f02QvA1eqpDDn6Y
-         x1vyb4yjGlGvEMlnsWy7rUglQ1c8IYQ2YWWCdt/CPrAu55z70tFfAKeFNMe0XMmMV9Rz
-         /x+87a1EmR21GeZmbhXd5QMkf3FomJ+tmVuex1tGqZKJX13mvnbxBl/JPADUWhwqwtNM
-         sAdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Mj8Kd2iaxdzZLtP+lkn5ZFqD1Z3Svx/w2u5MGhXQFl4=;
-        b=Bc+g8kMDyLS1Y9VOjy/IzKpw9y1dhJhUCGNzB5hDWFdvC6eeaHXxHJEkmQxsBTSJGM
-         KxNbUGEzxLlVCO8Z4wxIJFDS7I8MP8YnTi4RFI68x0u0knYooXJ83J6OymOb5gcKkzmZ
-         i3iSGvW0OfoIrTyma9eAb6F1NdpaKf5fwzMhuI8JQhJ6aSfvT5B35KSPZsAzNuy6gVUo
-         SZ8US+LsUTm8bvyESZhTLe1WAW8UTXJhGfssAGKMfPJKYW2fgMvSspSciXDDgnqamxYs
-         wFlbUlQOJ+AvyUkc3MvkILrHUkZwZtruTVyNl50Bugto+suVd2VmwuXlJ2CWt0KjvL/3
-         t2Wg==
-X-Gm-Message-State: AOAM531AppofaXAeF9VdhMe8xTu/r794vMlqepmO/QuCPeM2RvOad0Ad
-        ElOCXt3fjdliT30BEolv8KgMk3Abu+b11cpU
-X-Google-Smtp-Source: ABdhPJyHwgUdfR3xOYg50OKEZyOpA7BGxyjG+xURtu5uCfd+kRod+JU/CISItj+ytt0oHpzfnDHFJA==
-X-Received: by 2002:a50:fc89:0:b0:41d:83d1:9df3 with SMTP id f9-20020a50fc89000000b0041d83d19df3mr8753484edq.19.1650039365812;
-        Fri, 15 Apr 2022 09:16:05 -0700 (PDT)
-Received: from anparri (host-79-52-64-69.retail.telecomitalia.it. [79.52.64.69])
-        by smtp.gmail.com with ESMTPSA id b7-20020a170906708700b006da8440d642sm1847640ejk.113.2022.04.15.09.16.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 09:16:05 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 18:16:02 +0200
-From:   Andrea Parri <parri.andrea@gmail.com>
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 4/6] hv_sock: Initialize send_buf in
- hvs_stream_enqueue()
-Message-ID: <20220415161602.GB47428@anparri>
-References: <20220413204742.5539-1-parri.andrea@gmail.com>
- <20220413204742.5539-5-parri.andrea@gmail.com>
- <PH0PR21MB3025F58A2536209ED3785F24D7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
- <20220415065041.GC2961@anparri>
- <PH0PR21MB302526F1483A6FC932AC55CFD7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
+        Fri, 15 Apr 2022 12:20:40 -0400
+Received: from 18.mo581.mail-out.ovh.net (18.mo581.mail-out.ovh.net [188.165.56.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECADD9D4EE
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 09:18:10 -0700 (PDT)
+Received: from player788.ha.ovh.net (unknown [10.109.146.163])
+        by mo581.mail-out.ovh.net (Postfix) with ESMTP id CC68E21373
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 15:38:59 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player788.ha.ovh.net (Postfix) with ESMTPSA id 6079629867051;
+        Fri, 15 Apr 2022 15:38:54 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-100R003578593f1-443d-463e-8331-d38840e060bb,
+                    77125C2C2681624F8512B69FC7A1C9B53E6602B4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 5/6] ASoC: tas*: use i2c_match_id and simple i2c probe
+Date:   Fri, 15 Apr 2022 17:38:16 +0200
+Message-Id: <20220415153817.141364-6-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220415153817.141364-1-steve@sk2.org>
+References: <20220415153817.141364-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR21MB302526F1483A6FC932AC55CFD7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 10489727957861238406
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelhedgleefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeejleelvdefieeiuddtfeevkeegueehkeekvdffgedvhedugeekgfejjeekgfeugeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejkeekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > > All fields are explicitly initialized, and in the data
-> > > array, only the populated bytes are copied to the ring buffer.  There should not
-> > > be any uninitialized values sent to the host.   Zeroing the memory ahead of
-> > > time certainly provides an extra protection (particularly against padding bytes,
-> > > but there can't be any since the layout of the data is part of the protocol with
-> > > Hyper-V).
-> > 
-> > Rather than keeping checking that...
-> 
-> The extra protection might be obtained by just zero'ing the header (i.e., the
-> bytes up to the 16 Kbyte data array).   I don't have a strong preference either
-> way, so up to you.
+As part of the ongoing i2c transition to the simple probe
+("probe_new"), this patch uses i2c_match_id to retrieve the
+driver_data for the probed device. The id parameter is thus no longer
+necessary and the simple probe can be used instead.
 
-A main reason behind this RFC is that I don't have either.  IIUC, you're
-suggesting something like (the compiled only):
+The i2c id tables are moved up before the probe function, as
+suggested by Wolfram Sang, except where the existing code already had
+a declaration for the of_device_id table.
 
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+---
+ sound/soc/codecs/tas2562.c | 25 +++++++++++++------------
+ sound/soc/codecs/tas571x.c | 11 +++++++----
+ sound/soc/codecs/tas5720.c | 21 +++++++++++----------
+ 3 files changed, 31 insertions(+), 26 deletions(-)
 
-diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
-index 092cadc2c866d..200f12c432863 100644
---- a/net/vmw_vsock/hyperv_transport.c
-+++ b/net/vmw_vsock/hyperv_transport.c
-@@ -234,7 +234,8 @@ static int __hvs_send_data(struct vmbus_channel *chan,
- {
- 	hdr->pkt_type = 1;
- 	hdr->data_size = to_write;
--	return vmbus_sendpacket(chan, hdr, sizeof(*hdr) + to_write,
-+	return vmbus_sendpacket(chan, hdr,
-+				offsetof(struct hvs_send_buf, data) + to_write,
- 				0, VM_PKT_DATA_INBAND, 0);
+diff --git a/sound/soc/codecs/tas2562.c b/sound/soc/codecs/tas2562.c
+index 10302552195e..e62a3da16aed 100644
+--- a/sound/soc/codecs/tas2562.c
++++ b/sound/soc/codecs/tas2562.c
+@@ -754,17 +754,27 @@ static int tas2562_parse_dt(struct tas2562_data *tas2562)
+ 	return ret;
  }
  
-@@ -658,6 +659,7 @@ static ssize_t hvs_stream_enqueue(struct vsock_sock *vsk, struct msghdr *msg,
- 	send_buf = kmalloc(sizeof(*send_buf), GFP_KERNEL);
- 	if (!send_buf)
- 		return -ENOMEM;
-+	memset(send_buf, 0, offsetof(struct hvs_send_buf, data));
+-static int tas2562_probe(struct i2c_client *client,
+-			 const struct i2c_device_id *id)
++static const struct i2c_device_id tas2562_id[] = {
++	{ "tas2562", TAS2562 },
++	{ "tas2563", TAS2563 },
++	{ "tas2564", TAS2564 },
++	{ "tas2110", TAS2110 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, tas2562_id);
++
++static int tas2562_probe(struct i2c_client *client)
+ {
+ 	struct device *dev = &client->dev;
+ 	struct tas2562_data *data;
+ 	int ret;
++	const struct i2c_device_id *id;
  
- 	/* Reader(s) could be draining data from the channel as we write.
- 	 * Maximize bandwidth, by iterating until the channel is found to be
+ 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+ 	if (!data)
+ 		return -ENOMEM;
+ 
++	id = i2c_match_id(tas2562_id, client);
+ 	data->client = client;
+ 	data->dev = &client->dev;
+ 	data->model_id = id->driver_data;
+@@ -792,15 +802,6 @@ static int tas2562_probe(struct i2c_client *client,
+ 
+ }
+ 
+-static const struct i2c_device_id tas2562_id[] = {
+-	{ "tas2562", TAS2562 },
+-	{ "tas2563", TAS2563 },
+-	{ "tas2564", TAS2564 },
+-	{ "tas2110", TAS2110 },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(i2c, tas2562_id);
+-
+ #ifdef CONFIG_OF
+ static const struct of_device_id tas2562_of_match[] = {
+ 	{ .compatible = "ti,tas2562", },
+@@ -817,7 +818,7 @@ static struct i2c_driver tas2562_i2c_driver = {
+ 		.name = "tas2562",
+ 		.of_match_table = of_match_ptr(tas2562_of_match),
+ 	},
+-	.probe = tas2562_probe,
++	.probe_new = tas2562_probe,
+ 	.id_table = tas2562_id,
+ };
+ 
+diff --git a/sound/soc/codecs/tas571x.c b/sound/soc/codecs/tas571x.c
+index a3e682376946..dd289774efb2 100644
+--- a/sound/soc/codecs/tas571x.c
++++ b/sound/soc/codecs/tas571x.c
+@@ -774,9 +774,9 @@ static struct snd_soc_dai_driver tas571x_dai = {
+ };
+ 
+ static const struct of_device_id tas571x_of_match[] __maybe_unused;
++static const struct i2c_device_id tas571x_i2c_id[];
+ 
+-static int tas571x_i2c_probe(struct i2c_client *client,
+-			     const struct i2c_device_id *id)
++static int tas571x_i2c_probe(struct i2c_client *client)
+ {
+ 	struct tas571x_private *priv;
+ 	struct device *dev = &client->dev;
+@@ -791,8 +791,11 @@ static int tas571x_i2c_probe(struct i2c_client *client,
+ 	of_id = of_match_device(tas571x_of_match, dev);
+ 	if (of_id)
+ 		priv->chip = of_id->data;
+-	else
++	else {
++		const struct i2c_device_id *id =
++			i2c_match_id(tas571x_i2c_id, client);
+ 		priv->chip = (void *) id->driver_data;
++	}
+ 
+ 	priv->mclk = devm_clk_get(dev, "mclk");
+ 	if (IS_ERR(priv->mclk) && PTR_ERR(priv->mclk) != -ENOENT) {
+@@ -914,7 +917,7 @@ static struct i2c_driver tas571x_i2c_driver = {
+ 		.name = "tas571x",
+ 		.of_match_table = of_match_ptr(tas571x_of_match),
+ 	},
+-	.probe = tas571x_i2c_probe,
++	.probe_new = tas571x_i2c_probe,
+ 	.remove = tas571x_i2c_remove,
+ 	.id_table = tas571x_i2c_id,
+ };
+diff --git a/sound/soc/codecs/tas5720.c b/sound/soc/codecs/tas5720.c
+index 9ff644ddb470..17034abef568 100644
+--- a/sound/soc/codecs/tas5720.c
++++ b/sound/soc/codecs/tas5720.c
+@@ -633,12 +633,19 @@ static struct snd_soc_dai_driver tas5720_dai[] = {
+ 	},
+ };
+ 
+-static int tas5720_probe(struct i2c_client *client,
+-			 const struct i2c_device_id *id)
++static const struct i2c_device_id tas5720_id[] = {
++	{ "tas5720", TAS5720 },
++	{ "tas5722", TAS5722 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, tas5720_id);
++
++static int tas5720_probe(struct i2c_client *client)
+ {
+ 	struct device *dev = &client->dev;
+ 	struct tas5720_data *data;
+ 	const struct regmap_config *regmap_config;
++	const struct i2c_device_id *id;
+ 	int ret;
+ 	int i;
+ 
+@@ -646,6 +653,7 @@ static int tas5720_probe(struct i2c_client *client,
+ 	if (!data)
+ 		return -ENOMEM;
+ 
++	id = i2c_match_id(tas5720_id, client);
+ 	data->tas5720_client = client;
+ 	data->devtype = id->driver_data;
+ 
+@@ -704,13 +712,6 @@ static int tas5720_probe(struct i2c_client *client,
+ 	return 0;
+ }
+ 
+-static const struct i2c_device_id tas5720_id[] = {
+-	{ "tas5720", TAS5720 },
+-	{ "tas5722", TAS5722 },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(i2c, tas5720_id);
+-
+ #if IS_ENABLED(CONFIG_OF)
+ static const struct of_device_id tas5720_of_match[] = {
+ 	{ .compatible = "ti,tas5720", },
+@@ -725,7 +726,7 @@ static struct i2c_driver tas5720_i2c_driver = {
+ 		.name = "tas5720",
+ 		.of_match_table = of_match_ptr(tas5720_of_match),
+ 	},
+-	.probe = tas5720_probe,
++	.probe_new = tas5720_probe,
+ 	.id_table = tas5720_id,
+ };
+ 
 -- 
+2.27.0
 
-Let me queue this for further testing/review...
-
-Thanks,
-  Andrea
