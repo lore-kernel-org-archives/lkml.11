@@ -2,179 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:40:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3040EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354616AbiDOOnJ (ORCPT
+        id S1354623AbiDOOoI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 10:43:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33332 "EHLO
+        Fri, 15 Apr 2022 10:44:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354712AbiDOOm6 (ORCPT
+        with ESMTP id S1354601AbiDOOoG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 10:42:58 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF213700F;
-        Fri, 15 Apr 2022 07:40:24 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 974ECE000B;
-        Fri, 15 Apr 2022 14:40:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650033622;
+        Fri, 15 Apr 2022 10:44:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2789B13E3D
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 07:41:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650033696;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zanZazVS+F6yO9Vb+0jek4QpQxEnTAcQmwRfYFhBd+k=;
-        b=XvjgWF12omvcB0S9wdZocsVRAM1fWYoHiR3MF0fsHo3P2MRQFyfstVNy00SFVoUnaYfNn5
-        DHTXUF6jawn9JnEU+1oqAbtBVncahboURiQbPA8my6MYgJfBtZa7dJYGANrQGdr2VlYBUO
-        h6jCzl9nA6Oc98wTw2G+Nthu3s1C5LycIA7OUXethKZt4aeXqiQzdpThwIS3Giy5cuXfJW
-        7fgNfwBtv3eQ3VWNQqBJe43/w+CMLSJuooTGyXCGiaStd+/42BLmNRw5wWflmuNrJUnDS7
-        IXLGtSXkRqiUo9FnvBUtdVr8XG8qvaPy51ebNxVCCOqaHDI+dbpqhktihqA2oA==
-Date:   Fri, 15 Apr 2022 16:38:53 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 09/12] ARM: dts: r9a06g032: describe MII
- converter
-Message-ID: <20220415163853.683c0b6d@fixe.home>
-In-Reply-To: <Yll+Tpnwo5410B9H@lunn.ch>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
-        <20220414122250.158113-10-clement.leger@bootlin.com>
-        <YlismVi8y3Vf6PZ0@lunn.ch>
-        <20220415102453.1b5b3f77@fixe.home>
-        <Yll+Tpnwo5410B9H@lunn.ch>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        bh=jsmgM+RDRJDk3yHAlqd8lnGUO25Xqh02oFdvyoZSv2Q=;
+        b=hWdwSSOqvaEX3cLjciHypIpDRgOG3SH65/VznCQ2mI+NLJOgUK4ODHXtft+b28woAIw2kc
+        zQ6sj5+3aHvnQvtSn32Rxe1XYNIcR3yIq0YAECenPBlNQ6HLhib6/Xy/FUlj3TsL+Dek/Q
+        M59mRCSkauzIA5NSa8mMtVqw3mOPZvU=
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
+ [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-107-C4m3Wy18OqSd_1EV-NXcoQ-1; Fri, 15 Apr 2022 10:41:35 -0400
+X-MC-Unique: C4m3Wy18OqSd_1EV-NXcoQ-1
+Received: by mail-il1-f200.google.com with SMTP id f18-20020a926a12000000b002be48b02bc6so4916393ilc.17
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 07:41:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jsmgM+RDRJDk3yHAlqd8lnGUO25Xqh02oFdvyoZSv2Q=;
+        b=lRGSLxagBSqrZsWsBIg0hsEX+MHWqbq0CyOBXUsTT6UAbzOyvdydFEW9CRLvDI9aoP
+         FCjCviNd4VcAVdyfRWJzZLv27WShBHllOtBdJA25euUC6fk1D0j75YViAeH4nI4ZYNIV
+         7wZ931zebSkMDoPZIKNVBKyiF9cP6dYvI24po62hthBCfHfAPTnnBrq/IQvLDTNKe5FL
+         1w3kP/WwOdqJIVonTjkDohieiWR6whqOJks5zvf2mCCY6GPz/JWte2fmKcbefKqfIbmK
+         p6xchdpcQFPfF2yGDrk36vuv6nyKXgP834tHwxuEfs8oRYZwqFZsN0jSHjWX3Mh1j9Ge
+         UozA==
+X-Gm-Message-State: AOAM530wftfUq6UYX26k1PwiuYJCpBHqQNUz9TsfCTCKg+1wc9vhvwS+
+        0tfQsgBgO7UVmtUsa/Oihv/nOslmd38MZV/8YKVzwUXaxC+pbXJSEeysGlIQ6euGL7gMc7wehGR
+        VoHyhaF+VfFLZw/dSVRPedLaG
+X-Received: by 2002:a5d:898b:0:b0:649:5bbb:7d95 with SMTP id m11-20020a5d898b000000b006495bbb7d95mr3390051iol.107.1650033693223;
+        Fri, 15 Apr 2022 07:41:33 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyi/ftPRXkOoOtjpmO6YbvgDrApgkxpy4yAA8CnVZCUkL/q0VApIsfENMpezvDJdpQNn/DW4A==
+X-Received: by 2002:a5d:898b:0:b0:649:5bbb:7d95 with SMTP id m11-20020a5d898b000000b006495bbb7d95mr3390030iol.107.1650033692816;
+        Fri, 15 Apr 2022 07:41:32 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id g14-20020a92dd8e000000b002ca7bbf5179sm2691142iln.53.2022.04.15.07.41.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 07:41:31 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 10:41:29 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mike Rapoport <rppt@linux.vnet.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Alistair Popple <apopple@nvidia.com>
+Subject: Re: [PATCH v8 03/23] mm: Check against orig_pte for finish_fault()
+Message-ID: <YlmEGW8/vNi4lx88@xz-m1.local>
+References: <20220405014646.13522-1-peterx@redhat.com>
+ <20220405014836.14077-1-peterx@redhat.com>
+ <20220415142112.GA2714323@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220415142112.GA2714323@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Fri, 15 Apr 2022 16:16:46 +0200,
-Andrew Lunn <andrew@lunn.ch> a =C3=A9crit :
+On Fri, Apr 15, 2022 at 07:21:12AM -0700, Guenter Roeck wrote:
+> Hi,
 
-> On Fri, Apr 15, 2022 at 10:24:53AM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
-> > Le Fri, 15 Apr 2022 01:22:01 +0200,
-> > Andrew Lunn <andrew@lunn.ch> a =C3=A9crit :
-> >  =20
-> > > On Thu, Apr 14, 2022 at 02:22:47PM +0200, Cl=C3=A9ment L=C3=A9ger wro=
-te: =20
-> > > > Add the MII converter node which describes the MII converter that is
-> > > > present on the RZ/N1 SoC.   =20
-> > >=20
-> > > Do you have a board which actually uses this? I just noticed that
-> > > renesas,miic-cfg-mode is missing, it is a required property, but maybe
-> > > the board .dts file provides it?
-> > >=20
-> > >     Andrew =20
-> >=20
-> > Hi Andrew, yes, I have a board that defines and use that. =20
->=20
-> Great. Do you plan to mainline it? It is always nice to see a user.
+Hi, Guenter,
 
-Although we are working on a specific customer board, we will probably
-try to mailine this support for the RZ/N1D-DB.
+> 
+> On Mon, Apr 04, 2022 at 09:48:36PM -0400, Peter Xu wrote:
+> > We used to check against none pte in finish_fault(), with the assumption
+> > that the orig_pte is always none pte.
+> > 
+> > This change prepares us to be able to call do_fault() on !none ptes.  For
+> > example, we should allow that to happen for pte marker so that we can restore
+> > information out of the pte markers.
+> > 
+> > Let's change the "pte_none" check into detecting changes since we fetched
+> > orig_pte.  One trivial thing to take care of here is, when pmd==NULL for
+> > the pgtable we may not initialize orig_pte at all in handle_pte_fault().
+> > 
+> > By default orig_pte will be all zeros however the problem is not all
+> > architectures are using all-zeros for a none pte.  pte_clear() will be the
+> > right thing to use here so that we'll always have a valid orig_pte value
+> > for the whole handle_pte_fault() call.
+> > 
+> > Signed-off-by: Peter Xu <peterx@redhat.com>
+> 
+> This patch crashes pretty much all arm images in linux-next. Reverting it
+> fixes the problem. Sample crash log and bisect results attached.
 
->=20
-> > The
-> > renesas,miic-cfg-mode actually configures the muxes that are present on
-> > the SoC. They allows to mux the various ethernet components (Sercos
-> > Controller, HSR Controller, Ethercat, GMAC1, RTOS-GMAC).
-> > All these muxes are actually controller by a single register
-> > CONVCTRL_MODE. You can actually see the muxes that are present in the
-> > manual [1] at Section 8 and the CONVCTRL_MODE possible values are listed
-> > on page 180.
-> >=20
-> > This seems to be something that is board dependent because the muxing
-> > controls the MII converter outputs which depends on the board layout. =
-=20
->=20
-> Does it also mux the MDIO lines as well?
+Sorry for the issue, and thanks for reporting and bisecting.
 
-Nope, the MDIO lines are muxed using the pinctrl driver.
+It's already reported by Marek and this problematic patch will be replaced
+by this one (already updated in -mm, but may land -next later I think):
 
->=20
-> We might want to consider the name 'mux'. Linux already has the
-> concept of a mux, e.g. an MDIO mux, and i2c mux etc. These muxes have
-> one master device, which with the aid of the mux you can connect to
-> multiple busses. And at runtime you flip the mux as needed to access
-> the devices on the multiple slave busses. For MDIO you typically see
-> this when you have multiple Ethernet switch, each has its own slave
-> MDIO bus, and you use the mux to connect the single SOC MDIO bus
-> master to the various slave busses as needed to perform a bus
-> transaction. I2C is similar, you can have multiple SFPs, either with
-> there own IC2 bus, connected via a mux to a single I2C bus controller
-> on the SoC.
->=20
-> I've not looked at the data sheet yet, but it sounds like it operates
-> in a different way, so we might want to avoid 'mux'.
+https://lore.kernel.org/all/Ylb9rXJyPm8%2Fao8f@xz-m1.local/
 
-Indeed, Let's not refer to it as mux in the code at all. If using your
-proposal below, I guess we could avoid that.
+Thanks,
 
->=20
-> > I'm open to any modification for this setup which does not really fit
-> > any abstraction that I may have seen.
-> >=20
-> > [1]
-> > https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-rzn1=
-l-group-users-manual-system-introduction-multiplexing-electrical-and =20
->=20
-> O.K, looking at figure 8.1.
->=20
-> What the user wants to express is something like:
->=20
-> Connect MI_CONV5 to SECOS PORTA
-> Connect MI_CONV4 to ETHCAT PORTB
-> Connect MI_CONV3 to SWITCH PORTC
-> Connect MI_CONV2 to SWITCH PORTD
->=20
-> plus maybe
->=20
-> Connect SWITCH PORTIN to RTOS
+> 
+> Guenter
+> 
+> ---
+> [   11.232343] 8<--- cut here ---
+> [   11.232564] Unable to handle kernel paging request at virtual address 88016664
+> [   11.232735] [88016664] *pgd=41cfd811, *pte=00000000, *ppte=00000000
+> [   11.233128] Internal error: Oops: 807 [#1] ARM
+> [   11.233385] CPU: 0 PID: 1 Comm: swapper Not tainted 5.18.0-rc2-next-20220414 #1
+> [   11.233564] Hardware name: Generic DT based system
+> [   11.233695] PC is at cpu_arm926_set_pte_ext+0x2c/0x40
+> [   11.233863] LR is at handle_mm_fault+0x4b0/0x11a8
+> [   11.233963] pc : [<8010e60c>]    lr : [<802944ec>]    psr: 00000113
+> [   11.234080] sp : 88015e20  ip : 88015e7c  fp : 00000492
+> [   11.234179] r10: 00000000  r9 : 00000000  r8 : 81167e50
+> [   11.234280] r7 : 00000000  r6 : 00000081  r5 : 7efffff1  r4 : 83034690
+> [   11.234402] r3 : 00000043  r2 : 00000000  r1 : 00000000  r0 : 88016664
+> [   11.234549] Flags: nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+> [   11.234691] Control: 00093177  Table: 40004000  DAC: 00000053
+> [   11.234816] Register r0 information: non-paged memory
+> [   11.235031] Register r1 information: NULL pointer
+> [   11.235127] Register r2 information: NULL pointer
+> [   11.235219] Register r3 information: non-paged memory
+> [   11.235316] Register r4 information: slab vm_area_struct start 83034688 data offset 8 pointer offset 0 allocated at vm_area_alloc+0x20/0x5c
+> [   11.235825]     kmem_cache_alloc+0x1fc/0x21c
+> [   11.235926]     vm_area_alloc+0x20/0x5c
+> [   11.236007]     alloc_bprm+0xd0/0x298
+> [   11.236082]     kernel_execve+0x34/0x194
+> [   11.236159]     kernel_init+0x6c/0x138
+> [   11.236235]     ret_from_fork+0x14/0x3c
+> [   11.236330] Register r5 information: non-paged memory
+> [   11.236432] Register r6 information: non-paged memory
+> [   11.236529] Register r7 information: NULL pointer
+> [   11.236620] Register r8 information: non-slab/vmalloc memory
+> [   11.236741] Register r9 information: NULL pointer
+> [   11.236833] Register r10 information: NULL pointer
+> [   11.236926] Register r11 information: non-paged memory
+> [   11.237023] Register r12 information: 2-page vmalloc region starting at 0x88014000 allocated at kernel_clone+0xa0/0x440
+> [   11.237253] Process swapper (pid: 1, stack limit = 0x88014000)
+> [   11.237388] Stack: (0x88015e20 to 0x88016000)
+> [   11.237518] 5e20: ffffffff fffffffe 81d29be0 00000000 a0000193 00000000 81d2a1e8 00007f7e
+> [   11.237670] 5e40: 816580a8 83034690 00000cc0 0007efff 7efff000 7efffff1 00000081 83199fb8
+> [   11.237814] 5e60: 83199fb8 00000000 00000000 00000000 00000000 00000000 00000000 0a363e34
+> [   11.237957] 5e80: 88015ea4 83034690 7efffff1 00002017 00000081 81f4dd00 00001fb8 00000000
+> [   11.238100] 5ea0: 00000492 8028d160 00000000 81d29be0 00000001 00002017 80deedcc 81d29be0
+> [   11.238241] 5ec0: 00000000 81f4dd00 7efffff1 88015f38 81f4dd60 00002017 00000000 8028d64c
+> [   11.238383] 5ee0: 88015f38 00000000 00000000 7efffff1 81f4dd00 00000000 00000001 00000000
+> [   11.238524] 5f00: 00000011 82d80800 00000001 7efffff1 81f4dd00 00000011 7efffff1 0000000b
+> [   11.238666] 5f20: 82d80800 802ca218 88015f38 00000000 00000000 000001d3 80e0b43c 0a363e34
+> [   11.238808] 5f40: 00000ffc 82d80800 81d73140 81d29be0 0000000b 802cb390 81d7315b 802ca0bc
+> [   11.238950] 5f60: 8110c940 0000000c 82d80800 81d73140 8110c8b0 8110c93c 00000000 00000000
+> [   11.239091] 5f80: 00000000 802cbf44 81107820 8110c8b0 00000000 00000000 00000000 80b05400
+> [   11.239234] 5fa0: 00000000 80b05394 00000000 801000f8 00000000 00000000 00000000 00000000
+> [   11.239376] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> [   11.239518] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
+> [   11.239770] Code: e31300c0 03822e55 e3130003 13a02000 (e5802000)
+> [   11.240097] ---[ end trace 0000000000000000 ]---
+> [   11.240307] Kernel panic - not syncing: Fatal exception
+> 
+> --
+> # bad: [40354149f4d738dc3492d9998e45b3f02950369a] Add linux-next specific files for 20220414
+> # good: [ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e] Linux 5.18-rc2
+> git bisect start 'HEAD' 'v5.18-rc2'
+> # good: [0f52e407eccb0f7ed62fdd8907b0042f4195159e] Merge branch 'drm-next' of git://git.freedesktop.org/git/drm/drm.git
+> git bisect good 0f52e407eccb0f7ed62fdd8907b0042f4195159e
+> # good: [22b1b3a579c91a6afa945711eac72ab740b8f8e4] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
+> git bisect good 22b1b3a579c91a6afa945711eac72ab740b8f8e4
+> # good: [cbb5c08b3182cb498f67fa547392191a1d5622dd] Merge branch 'next' of git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git
+> git bisect good cbb5c08b3182cb498f67fa547392191a1d5622dd
+> # good: [2acd94b759428825f0e8835fa24ad22c7b5c0e2c] Merge branch 'for-next/kspp' of git://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git
+> git bisect good 2acd94b759428825f0e8835fa24ad22c7b5c0e2c
+> # bad: [d2d293faec99124d95590e88030ae3c8382fac7f] mm/shmem: persist uffd-wp bit across zapping for file-backed
+> git bisect bad d2d293faec99124d95590e88030ae3c8382fac7f
+> # good: [8cbcc910aec560e78e879cf82ed17e7e72d8a7d4] doc: update documentation for swap_activate and swap_rw
+> git bisect good 8cbcc910aec560e78e879cf82ed17e7e72d8a7d4
+> # good: [8c55a1ed1f9b95520b0307ba0ac6ff7f1aadfe9d] mm/page_alloc: simplify update of pgdat in wake_all_kswapds
+> git bisect good 8c55a1ed1f9b95520b0307ba0ac6ff7f1aadfe9d
+> # good: [3e68e467590511e2cf7f47194464a5512583f641] mm: hugetlb_vmemmap: cleanup CONFIG_HUGETLB_PAGE_FREE_VMEMMAP*
+> git bisect good 3e68e467590511e2cf7f47194464a5512583f641
+> # good: [3fb21f4e38824f4d8a183ffcccc03b357ad836d4] mm: mmap: register suitable readonly file vmas for khugepaged
+> git bisect good 3fb21f4e38824f4d8a183ffcccc03b357ad836d4
+> # bad: [fa600994916318341cf53e18769be547aa5975d2] mm: check against orig_pte for finish_fault()
+> git bisect bad fa600994916318341cf53e18769be547aa5975d2
+> # good: [1112411b72b5e9774897538260028a677d616779] fixup! mm: Introduce PTE_MARKER swap entry
+> git bisect good 1112411b72b5e9774897538260028a677d616779
+> # good: [1ae034d98f81a6cf8896b37c3dee9e099daeb3e7] mm: teach core mm about pte markers
+> git bisect good 1ae034d98f81a6cf8896b37c3dee9e099daeb3e7
+> # first bad commit: [fa600994916318341cf53e18769be547aa5975d2] mm: check against orig_pte for finish_fault()
+> 
 
-Yes, that is correct.
+-- 
+Peter Xu
 
->=20
-> So i guess i would express the DT bindings like this, 5 values, and
-> let the driver then try to figure out the value you need to put in the
-> register, or return -EINVAL. For DT bindings we try to avoid magic
-> values which get written into registers. We prefer a higher level
-> description, and then let the driver figure out how to actually
-> implement that.
-
-Ok, looks like a more flexible way to doing it. Let's go with something
-like this:
-
-renesas,miic-port-connection =3D <PORTIN_GMAC2>, <MAC2>, <SWITCH_PORTC>,
-<SWITCH_PORTB>, <SWITCH_PORTA>;
-
-
-
-
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
