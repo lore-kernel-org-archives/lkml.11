@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD3FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 02:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 02:47:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348833AbiDOCt7 (ORCPT
+        id S1348844AbiDOCuC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 22:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53956 "EHLO
+        Thu, 14 Apr 2022 22:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344245AbiDOCtn (ORCPT
+        with ESMTP id S1346205AbiDOCto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 22:49:43 -0400
+        Thu, 14 Apr 2022 22:49:44 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 958D3A76DD
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05204A76F2
         for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:47:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649990835;
+        s=mimecast20190719; t=1649990836;
         h=from:from:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MEYTec9+iGj5h+qL2OeaWmto9MUGUie1Nbyb8EyhLHs=;
-        b=We2QPPZ4sb8RJ2A89B7Iu1XCGhoNPjONXDg9B/PWa2AAfsDY6GEKkDsQilFCCk6EOoJrbL
-        9fUsnyppkMiJUvZ0hksUa7gKHDlCMl/ym4nAKvYT3/BTe1CmYmK3veJHofrdQO08fMRZur
-        pmA8yfdB7K3bW/fQwCPWjZlW5krl2yU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=oaQc6WR24ukuwvxlivtqeU+OrGyMhQdvgNTcYOVeUVU=;
+        b=QphLWqkxZ61rkpVW0cVEoBGUZWoP0lz6zebLS+dnlb63kV1Yc7ec46mvThzYy3iwGJXbtZ
+        XaiM02XZfrExC/lsPp7UMI+KnGOsGeMLRg3VUj4KqfupAytn6CICoQzQcrooyYqRlekKGA
+        cSx9GEtBz9vGE3zn5Fv5edjat/xXRws=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-382-2UQYjMJ9N0aUnvxoZ2QkMA-1; Thu, 14 Apr 2022 22:47:12 -0400
-X-MC-Unique: 2UQYjMJ9N0aUnvxoZ2QkMA-1
+ us-mta-534-KQfow5ewOoe-aaO0srpjWQ-1; Thu, 14 Apr 2022 22:47:15 -0400
+X-MC-Unique: KQfow5ewOoe-aaO0srpjWQ-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D0EC785A5BC;
-        Fri, 15 Apr 2022 02:47:11 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 600493803511;
+        Fri, 15 Apr 2022 02:47:14 +0000 (UTC)
 Received: from dqiao.bos.com (unknown [10.22.8.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AEDB6440ADA;
-        Fri, 15 Apr 2022 02:47:10 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0ADD3440ADC;
+        Fri, 15 Apr 2022 02:47:14 +0000 (UTC)
 From:   Donghai Qiao <dqiao@redhat.com>
 To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
         peterz@infradead.org, heying24@huawei.com,
@@ -46,9 +46,9 @@ To:     akpm@linux-foundation.org, sfr@canb.auug.org.au, arnd@arndb.de,
         rdunlap@infradead.org, tglx@linutronix.de, gor@linux.ibm.com
 Cc:     donghai.w.qiao@gmail.com, linux-kernel@vger.kernel.org,
         Donghai Qiao <dqiao@redhat.com>
-Subject: [PATCH 03/11] smp: eliminate SCF_WAIT and SCF_RUN_LOCAL
-Date:   Thu, 14 Apr 2022 22:46:53 -0400
-Message-Id: <20220415024701.876364-4-dqiao@redhat.com>
+Subject: [PATCH 05/11] smp: replace smp_call_function_single_async() with smp_xcall_private()
+Date:   Thu, 14 Apr 2022 22:46:55 -0400
+Message-Id: <20220415024701.876364-6-dqiao@redhat.com>
 In-Reply-To: <20220415024701.876364-1-dqiao@redhat.com>
 References: <20220415024701.876364-1-dqiao@redhat.com>
 Reply-To: dqiao@redhat.com
@@ -59,113 +59,234 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit a32a4d8a815c ("smp: Run functions concurrently in
-smp_call_function_many_cond()") was to improve the concurrent
-of the cross call execution between local and remote. The change
-in smp_call_function_many_cond() did what was intended, but the
-new macro SCF_WAIT and SCF_RUN_LOCAL and the code around them
-to handle local call were not unnecessary because the modified
-function smp_call_function_many() was able to handle the local
-cross call. So these two macros can be eliminated and the code
-implemented around that can be removed as well.
+Replaced smp_call_function_single_async() with smp_xcall_private()
+and also extended smp_xcall_private() to support one CPU synchronous
+call with preallocated csd structures.
 
-Also this patch fixed a issue of a comparison between an integer
-and a unsigned integer in smp_call_function_many_cond().
-
-The changes with this patch and the changes made in subsequent
-patches will eventually help eliminate the set of on_each_cpu*
-functions.
+Ideally, the new interface smp_xcall() should be able to do what
+smp_call_function_single_async() does. Because the csd is provided
+and maintained by the callers, it exposes the risk of corrupting
+the call_single_queue[cpu] linked list if the clents menipulate
+their csd inappropriately. On the other hand, there should have no
+noticeable performance advantage to provide preallocated csd for
+cross call kernel consumers. Thus, in the long run, the consumers
+should change to not use this type of preallocated csd.
 
 Signed-off-by: Donghai Qiao <dqiao@redhat.com>
 ---
- kernel/smp.c | 32 +++++++-------------------------
- 1 file changed, 7 insertions(+), 25 deletions(-)
+ include/linux/smp.h |   3 +-
+ kernel/smp.c        | 163 +++++++++++++++++++++-----------------------
+ 2 files changed, 81 insertions(+), 85 deletions(-)
 
+diff --git a/include/linux/smp.h b/include/linux/smp.h
+index 12d6efef34f7..8a234e707f10 100644
+--- a/include/linux/smp.h
++++ b/include/linux/smp.h
+@@ -206,7 +206,8 @@ int smp_call_function_single(int cpuid, smp_call_func_t func, void *info,
+ void on_each_cpu_cond_mask(smp_cond_func_t cond_func, smp_call_func_t func,
+ 			   void *info, bool wait, const struct cpumask *mask);
+ 
+-int smp_call_function_single_async(int cpu, struct __call_single_data *csd);
++#define	smp_call_function_single_async(cpu, csd) \
++	smp_xcall_private(cpu, csd, XCALL_TYPE_ASYNC)
+ 
+ /*
+  * Cpus stopping functions in panic. All have default weak definitions.
 diff --git a/kernel/smp.c b/kernel/smp.c
-index 6183a3586329..3f9bc5ae7180 100644
+index 42ecaf960963..aef913b54f81 100644
 --- a/kernel/smp.c
 +++ b/kernel/smp.c
-@@ -787,23 +787,13 @@ int smp_call_function_any(const struct cpumask *mask,
+@@ -429,41 +429,6 @@ void __smp_call_single_queue(int cpu, struct llist_node *node)
+ 		send_call_function_single_ipi(cpu);
  }
- EXPORT_SYMBOL_GPL(smp_call_function_any);
  
 -/*
-- * Flags to be used as scf_flags argument of smp_call_function_many_cond().
-- *
-- * %SCF_WAIT:		Wait until function execution is completed
-- * %SCF_RUN_LOCAL:	Run also locally if local cpu is set in cpumask
+- * Insert a previously allocated call_single_data_t element
+- * for execution on the given CPU. data must already have
+- * ->func, ->info, and ->flags set.
 - */
--#define SCF_WAIT	(1U << 0)
--#define SCF_RUN_LOCAL	(1U << 1)
+-static int generic_exec_single(int cpu, struct __call_single_data *csd)
+-{
+-	if (cpu == smp_processor_id()) {
+-		smp_call_func_t func = csd->func;
+-		void *info = csd->info;
+-		unsigned long flags;
 -
- static void smp_call_function_many_cond(const struct cpumask *mask,
- 					smp_call_func_t func, void *info,
--					unsigned int scf_flags,
-+					bool wait,
- 					smp_cond_func_t cond_func)
- {
- 	int cpu, last_cpu, this_cpu = smp_processor_id();
- 	struct call_function_data *cfd;
--	bool wait = scf_flags & SCF_WAIT;
- 	bool run_remote = false;
- 	bool run_local = false;
- 	int nr_cpus = 0;
-@@ -829,14 +819,14 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
- 	WARN_ON_ONCE(!in_task());
- 
- 	/* Check if we need local execution. */
--	if ((scf_flags & SCF_RUN_LOCAL) && cpumask_test_cpu(this_cpu, mask))
-+	if (cpumask_test_cpu(this_cpu, mask))
- 		run_local = true;
- 
- 	/* Check if we need remote execution, i.e., any CPU excluding this one. */
- 	cpu = cpumask_first_and(mask, cpu_online_mask);
- 	if (cpu == this_cpu)
- 		cpu = cpumask_next_and(cpu, mask, cpu_online_mask);
--	if (cpu < nr_cpu_ids)
-+	if ((unsigned int)cpu < nr_cpu_ids)
- 		run_remote = true;
- 
- 	if (run_remote) {
-@@ -911,12 +901,8 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
-  * @mask: The set of cpus to run on (only runs on online subset).
-  * @func: The function to run. This must be fast and non-blocking.
-  * @info: An arbitrary pointer to pass to the function.
-- * @wait: Bitmask that controls the operation. If %SCF_WAIT is set, wait
-- *        (atomically) until function has completed on other CPUs. If
-- *        %SCF_RUN_LOCAL is set, the function will also be run locally
-- *        if the local CPU is set in the @cpumask.
-- *
-- * If @wait is true, then returns once @func has returned.
-+ * @wait: If wait is true, the call will not return until func()
-+ *        has completed on other CPUs.
+-		/*
+-		 * We can unlock early even for the synchronous on-stack case,
+-		 * since we're doing this from the same CPU..
+-		 */
+-		csd_lock_record(csd);
+-		csd_unlock(csd);
+-		local_irq_save(flags);
+-		func(info);
+-		csd_lock_record(NULL);
+-		local_irq_restore(flags);
+-		return 0;
+-	}
+-
+-	if ((unsigned)cpu >= nr_cpu_ids || !cpu_online(cpu)) {
+-		csd_unlock(csd);
+-		return -ENXIO;
+-	}
+-
+-	__smp_call_single_queue(cpu, &csd->node.llist);
+-
+-	return 0;
+-}
+-
+ /**
+  * generic_smp_call_function_single_interrupt - Execute SMP IPI callbacks
   *
-  * You must not call this function with disabled interrupts or from a
-  * hardware interrupt handler or from a bottom half handler. Preemption
-@@ -925,7 +911,7 @@ static void smp_call_function_many_cond(const struct cpumask *mask,
- void smp_call_function_many(const struct cpumask *mask,
- 			    smp_call_func_t func, void *info, bool wait)
- {
--	smp_call_function_many_cond(mask, func, info, wait * SCF_WAIT, NULL);
-+	smp_call_function_many_cond(mask, func, info, wait, NULL);
+@@ -661,52 +626,6 @@ int smp_call_function_single(int cpu, smp_call_func_t func, void *info,
  }
- EXPORT_SYMBOL(smp_call_function_many);
+ EXPORT_SYMBOL(smp_call_function_single);
  
-@@ -1061,13 +1047,9 @@ void __init smp_init(void)
- void on_each_cpu_cond_mask(smp_cond_func_t cond_func, smp_call_func_t func,
- 			   void *info, bool wait, const struct cpumask *mask)
- {
--	unsigned int scf_flags = SCF_RUN_LOCAL;
+-/**
+- * smp_call_function_single_async() - Run an asynchronous function on a
+- * 			         specific CPU.
+- * @cpu: The CPU to run on.
+- * @csd: Pre-allocated and setup data structure
+- *
+- * Like smp_call_function_single(), but the call is asynchonous and
+- * can thus be done from contexts with disabled interrupts.
+- *
+- * The caller passes his own pre-allocated data structure
+- * (ie: embedded in an object) and is responsible for synchronizing it
+- * such that the IPIs performed on the @csd are strictly serialized.
+- *
+- * If the function is called with one csd which has not yet been
+- * processed by previous call to smp_call_function_single_async(), the
+- * function will return immediately with -EBUSY showing that the csd
+- * object is still in progress.
+- *
+- * NOTE: Be careful, there is unfortunately no current debugging facility to
+- * validate the correctness of this serialization.
+- *
+- * Return: %0 on success or negative errno value on error
+- */
+-int smp_call_function_single_async(int cpu, struct __call_single_data *csd)
+-{
+-	int err = 0;
 -
--	if (wait)
--		scf_flags |= SCF_WAIT;
- 
- 	preempt_disable();
--	smp_call_function_many_cond(mask, func, info, scf_flags, cond_func);
-+	smp_call_function_many_cond(mask, func, info, wait, cond_func);
- 	preempt_enable();
+-	preempt_disable();
+-
+-	if (csd->node.u_flags & CSD_FLAG_LOCK) {
+-		err = -EBUSY;
+-		goto out;
+-	}
+-
+-	csd->node.u_flags = CSD_FLAG_LOCK;
+-	smp_wmb();
+-
+-	err = generic_exec_single(cpu, csd);
+-
+-out:
+-	preempt_enable();
+-
+-	return err;
+-}
+-EXPORT_SYMBOL_GPL(smp_call_function_single_async);
+-
+ /*
+  * smp_call_function_any - Run a function on any of the given cpus
+  * @mask: The mask of cpus it can run on.
+@@ -1251,16 +1170,92 @@ EXPORT_SYMBOL(smp_xcall_mask_cond);
+  * Because the call is asynchonous with a preallocated csd structure, thus
+  * it can be called from contexts with disabled interrupts.
+  *
+- * Parameters
++ * Ideally this functionality should be part of smp_xcall_mask_cond().
++ * Because the csd is provided and maintained by the callers, merging this
++ * functionality into smp_xcall_mask_cond() will result in some extra
++ * complications in it. Before there is better way to facilitate all
++ * kinds of xcall, let's still handle this case with a separate function.
++ *
++ * The bit CSD_FLAG_LOCK will be set to csd->node.u_flags only if the
++ * xcall is made as type CSD_TYPE_SYNC or CSD_TYPE_ASYNC.
+  *
++ * Parameters:
+  * cpu:   Must be a positive value less than nr_cpu_id.
+  * csd:   The private csd provided by the caller.
+- *
+  * Others: see smp_xcall().
++ *
++ * Return: %0 on success or negative errno value on error.
++ *
++ * The following comments are from smp_call_function_single_async():
++ *
++ *    The call is asynchronous and can thus be done from contexts with
++ *    disabled interrupts. If the function is called with one csd which
++ *    has not yet been processed by previous call, the function will
++ *    return immediately with -EBUSY showing that the csd object is
++ *    still in progress.
++ *
++ *    NOTE: Be careful, there is unfortunately no current debugging
++ *    facility to validate the correctness of this serialization.
+  */
+ int smp_xcall_private(int cpu, call_single_data_t *csd, unsigned int flags)
+ {
+-	return 0;
++	int err = 0;
++
++	if ((unsigned int)cpu >= nr_cpu_ids || !cpu_online(cpu)) {
++		pr_warn("cpu ID must be a positive number < nr_cpu_ids and must be currently online\n");
++		return -EINVAL;
++	}
++
++	if (csd == NULL) {
++		pr_warn("csd must not be NULL\n");
++		return -EINVAL;
++	}
++
++	preempt_disable();
++	if (csd->node.u_flags & CSD_FLAG_LOCK) {
++		err = -EBUSY;
++		goto out;
++	}
++
++	/*
++	 * CSD_FLAG_LOCK is set for CSD_TYPE_SYNC or CSD_TYPE_ASYNC only.
++	 */
++	if ((flags & ~(CSD_TYPE_SYNC | CSD_TYPE_ASYNC)) == 0)
++		csd->node.u_flags = CSD_FLAG_LOCK | flags;
++	else
++		csd->node.u_flags = flags;
++
++	if (cpu == smp_processor_id()) {
++		smp_call_func_t func = csd->func;
++		void *info = csd->info;
++		unsigned long flags;
++
++		/*
++		 * We can unlock early even for the synchronous on-stack case,
++		 * since we're doing this from the same CPU..
++		 */
++		csd_lock_record(csd);
++		csd_unlock(csd);
++		local_irq_save(flags);
++		func(info);
++		csd_lock_record(NULL);
++		local_irq_restore(flags);
++		goto out;
++	}
++
++	/*
++	 * Ensure the flags are visible before the csd
++	 * goes to the queue.
++	 */
++	smp_wmb();
++
++	__smp_call_single_queue(cpu, &csd->node.llist);
++
++	if (flags & CSD_TYPE_SYNC)
++		csd_lock_wait(csd);
++out:
++	preempt_enable();
++	return err;
  }
- EXPORT_SYMBOL(on_each_cpu_cond_mask);
+ EXPORT_SYMBOL(smp_xcall_private);
+ 
 -- 
 2.27.0
 
