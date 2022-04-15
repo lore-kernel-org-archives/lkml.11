@@ -2,36 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A05F3C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 19:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03316C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 19:09:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239685AbiDOTLW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 15:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47522 "EHLO
+        id S1348966AbiDOTL1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 15:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232623AbiDOTLJ (ORCPT
+        with ESMTP id S1348542AbiDOTLL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 15:11:09 -0400
+        Fri, 15 Apr 2022 15:11:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9B6DB2E1;
-        Fri, 15 Apr 2022 12:08:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9FADB2CB;
+        Fri, 15 Apr 2022 12:08:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 371B061BB8;
-        Fri, 15 Apr 2022 19:08:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F7C9C385A4;
-        Fri, 15 Apr 2022 19:08:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0CAE61BB8;
+        Fri, 15 Apr 2022 19:08:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FA50C385A5;
+        Fri, 15 Apr 2022 19:08:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650049716;
-        bh=o4MX8UK2Ayi2FU0PSYzgH1W7goqrO0bs8RfgMd3gAVQ=;
+        s=k20201202; t=1650049720;
+        bh=QNhkR5f2VwsmRJLjyIIeuyQ3Ro0/ZTlpiHVGueu8khw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cweHab1Gdg6zDAzegVfOlAcwLW0ZwyDacOnsclAJlJquxFoXV6FmDWc3aQd5lF7UK
-         BCj2JeCoOaAm0MV5HhGtowfZX5F/tpn4QARtoxmMlDxgFzQr3KWzQOHH9Zv6W34+Ez
-         uNkS2GjiA9M5zDb41OTuhdLm6hl1safKJ+7xyYZyNWUPI8UwsntYxXmlul+LZVXL5/
-         6TLKtRMfgV0r8kxWTabiWAdVZHYscdPBqfySCuuha7mxFzQ9t60jFezg3F9f+tqhsV
-         mFqTtjcCEbIr4trxsLK8ztpzsoa9De11Z2III0lnWhLbz2LgR9UQpK60LlFOKjysH2
-         SxpHeGecr7ioA==
+        b=RzXW0JUf3FmmvjCkNLPg6xeSiQ00FCdgqtRjSiv750sCreQXBhr+haJGO3gaKecxK
+         Ut63sQ0/8xIkmtE1di1uclIYjE3djP8GM/NAZvEmiQ50vNroamDnR8EJhVyHC90mAX
+         DCjvBvyeNWljHEVX3CqMYuSlRG8rajCE4XkjMSePx9n1RQV1NZMCyYIazZvPVRo+0I
+         GHgXCH+MAp6nGOF2EU4Ezu3OBddS8QZSxKM+2+OKfJ2EOMkezjpNIdTE3XnvMI4AIT
+         BkT+aUHhioeRJQGiWGOXv1o/Fi2wCjLqpTFlNLS+zZ+1bOC9ECLuRExRrZ8wlP2c6J
+         beDpycOtgITAA==
 From:   Bjorn Helgaas <helgaas@kernel.org>
 To:     Richard Henderson <rth@twiddle.net>,
         Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
@@ -49,9 +50,9 @@ Cc:     linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
         linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH 3/7] net: remove comments that mention obsolete __SLOW_DOWN_IO
-Date:   Fri, 15 Apr 2022 14:08:13 -0500
-Message-Id: <20220415190817.842864-4-helgaas@kernel.org>
+Subject: [PATCH 5/7] powerpc: Remove unused SLOW_DOWN_IO definition
+Date:   Fri, 15 Apr 2022 14:08:15 -0500
+Message-Id: <20220415190817.842864-6-helgaas@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220415190817.842864-1-helgaas@kernel.org>
 References: <20220415190817.842864-1-helgaas@kernel.org>
@@ -63,55 +64,26 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Bjorn Helgaas <bhelgaas@google.com>
 
+Remove unused SLOW_DOWN_IO definition.
+
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- drivers/atm/nicstarmac.c                     | 5 -----
- drivers/net/ethernet/dec/tulip/winbond-840.c | 2 --
- drivers/net/ethernet/natsemi/natsemi.c       | 2 --
- 3 files changed, 9 deletions(-)
+ arch/powerpc/include/asm/io.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/atm/nicstarmac.c b/drivers/atm/nicstarmac.c
-index e0dda9062e6b..791f69a07ddf 100644
---- a/drivers/atm/nicstarmac.c
-+++ b/drivers/atm/nicstarmac.c
-@@ -14,11 +14,6 @@ typedef void __iomem *virt_addr_t;
+diff --git a/arch/powerpc/include/asm/io.h b/arch/powerpc/include/asm/io.h
+index fee979d3a1aa..c5a5f7c9b231 100644
+--- a/arch/powerpc/include/asm/io.h
++++ b/arch/powerpc/include/asm/io.h
+@@ -38,8 +38,6 @@ extern struct pci_dev *isa_bridge_pcidev;
+ #define SIO_CONFIG_RA	0x398
+ #define SIO_CONFIG_RD	0x399
  
- #define CYCLE_DELAY 5
- 
--/*
--   This was the original definition
--#define osp_MicroDelay(microsec) \
--    do { int _i = 4*microsec; while (--_i > 0) { __SLOW_DOWN_IO; }} while (0)
--*/
- #define osp_MicroDelay(microsec) {unsigned long useconds = (microsec); \
-                                   udelay((useconds));}
- /*
-diff --git a/drivers/net/ethernet/dec/tulip/winbond-840.c b/drivers/net/ethernet/dec/tulip/winbond-840.c
-index 86b1d23eba83..1db19463fd46 100644
---- a/drivers/net/ethernet/dec/tulip/winbond-840.c
-+++ b/drivers/net/ethernet/dec/tulip/winbond-840.c
-@@ -474,8 +474,6 @@ static int w840_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
-    No extra delay is needed with 33Mhz PCI, but future 66Mhz access may need
-    a delay.  Note that pre-2.0.34 kernels had a cache-alignment bug that
-    made udelay() unreliable.
--   The old method of using an ISA access as a delay, __SLOW_DOWN_IO__, is
--   deprecated.
- */
- #define eeprom_delay(ee_addr)	ioread32(ee_addr)
- 
-diff --git a/drivers/net/ethernet/natsemi/natsemi.c b/drivers/net/ethernet/natsemi/natsemi.c
-index 82a22711ce45..50bca486a244 100644
---- a/drivers/net/ethernet/natsemi/natsemi.c
-+++ b/drivers/net/ethernet/natsemi/natsemi.c
-@@ -989,8 +989,6 @@ static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
-    No extra delay is needed with 33Mhz PCI, but future 66Mhz access may need
-    a delay.  Note that pre-2.0.34 kernels had a cache-alignment bug that
-    made udelay() unreliable.
--   The old method of using an ISA access as a delay, __SLOW_DOWN_IO__, is
--   deprecated.
- */
- #define eeprom_delay(ee_addr)	readl(ee_addr)
- 
+-#define SLOW_DOWN_IO
+-
+ /* 32 bits uses slightly different variables for the various IO
+  * bases. Most of this file only uses _IO_BASE though which we
+  * define properly based on the platform
 -- 
 2.25.1
 
