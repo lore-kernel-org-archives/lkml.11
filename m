@@ -2,99 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50399C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 20:03:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3429FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 20:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350393AbiDOUF3 (ORCPT
+        id S1350577AbiDOUGE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 16:05:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47678 "EHLO
+        Fri, 15 Apr 2022 16:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350369AbiDOUFZ (ORCPT
+        with ESMTP id S1350369AbiDOUGB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 16:05:25 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6301AD103
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 13:02:55 -0700 (PDT)
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1nfS91-0004ix-Km; Fri, 15 Apr 2022 22:02:15 +0200
-Message-ID: <2231070a-85ed-94d3-7467-dcdd8822ad56@pengutronix.de>
-Date:   Fri, 15 Apr 2022 22:02:06 +0200
+        Fri, 15 Apr 2022 16:06:01 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130F2AD100;
+        Fri, 15 Apr 2022 13:03:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1650053010; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:references; bh=X8XqTX5Aa+xTio1ILtRRVmNUUVfRikfaXwMfFs7ihhg=;
+        b=unBceM8U0rPwtfJS1oOhnosDflzBeEUkwZOraybpOPDlXlgDIRhOYTF8O3hePf+Fcn38Jm
+        g5/G8Dpm4UTyyRPnmeqj70/eeHeqJAeXGkHYGZnfJ0ta0xGGF4Sr2KfrqR9jZgLQw4xV6p
+        wgsMwHWRfL7iYf602cQV8wG5oa94/X8=
+From:   Paul Cercueil <paul@crapouillou.net>
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH] brcmfmac: Remove #ifdef guards for PM related functions
+Date:   Fri, 15 Apr 2022 21:03:22 +0100
+Message-Id: <20220415200322.7511-1-paul@crapouillou.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [EXT] [PATCH v6 4/4] KEYS: trusted: Introduce support for NXP
- CAAM-based trusted keys
-Content-Language: en-US
-To:     Pankaj Gupta <pankaj.gupta@nxp.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        James Bottomley <jejb@linux.ibm.com>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Cc:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        David Gstir <david@sigma-star.at>,
-        "tharvey@gateworks.com" <tharvey@gateworks.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Horia Geanta <horia.geanta@nxp.com>,
-        Aymen Sghaier <aymen.sghaier@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Jan Luebbe <j.luebbe@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Franck Lenormand <franck.lenormand@nxp.com>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-References: <20220316164335.1720255-1-a.fatoum@pengutronix.de>
- <20220316164335.1720255-5-a.fatoum@pengutronix.de>
- <DU2PR04MB863008D8958A5F7599C88949951D9@DU2PR04MB8630.eurprd04.prod.outlook.com>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <DU2PR04MB863008D8958A5F7599C88949951D9@DU2PR04MB8630.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Pankaj,
+Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros to
+handle the .suspend/.resume callbacks.
 
-On 28.03.22 12:46, Pankaj Gupta wrote:
-> If the structure "struct keyblob_info", is used in patch 3/4, then below use for CAAM specific macros
-> will not be needed to be set in this file/function.
+These macros allow the suspend and resume functions to be automatically
+dropped by the compiler when CONFIG_SUSPEND is disabled, without having
+to use #ifdef guards. The advantage is then that these functions are not
+conditionally compiled.
 
-Yes, I moved the output size computation into the previous patch.
+Some other functions not directly called by the .suspend/.resume
+callbacks, but still related to PM were also taken outside #ifdef
+guards.
 
-> If the structure "struct keyblob_info", is used in patch 3/4, then below line of code will not be needed.
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ .../broadcom/brcm80211/brcmfmac/bcmsdh.c      | 44 +++++++------------
+ .../broadcom/brcm80211/brcmfmac/sdio.c        |  5 +--
+ .../broadcom/brcm80211/brcmfmac/sdio.h        | 16 -------
+ 3 files changed, 19 insertions(+), 46 deletions(-)
 
-It must be set regardless. How else would the trusted key core know how big
-the blob is.
-
-> If the structure "struct keyblob_info", is used in patch 3/4, then below line of code will not be needed.
-> 
->> +       p->key_len = length - CAAM_BLOB_OVERHEAD;
-
-Likewise.
-
-Cheers,
-Ahmad
-
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+index ac02244a6fdf..a8cf5a570101 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+@@ -784,7 +784,6 @@ void brcmf_sdiod_sgtable_alloc(struct brcmf_sdio_dev *sdiodev)
+ 	sdiodev->txglomsz = sdiodev->settings->bus.sdio.txglomsz;
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+ static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
+ {
+ 	sdiodev->freezer = kzalloc(sizeof(*sdiodev->freezer), GFP_KERNEL);
+@@ -833,7 +832,8 @@ static void brcmf_sdiod_freezer_off(struct brcmf_sdio_dev *sdiodev)
+ 
+ bool brcmf_sdiod_freezing(struct brcmf_sdio_dev *sdiodev)
+ {
+-	return atomic_read(&sdiodev->freezer->freezing);
++	return IS_ENABLED(CONFIG_PM_SLEEP) &&
++		atomic_read(&sdiodev->freezer->freezing);
+ }
+ 
+ void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev)
+@@ -847,24 +847,16 @@ void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev)
+ 
+ void brcmf_sdiod_freezer_count(struct brcmf_sdio_dev *sdiodev)
+ {
+-	atomic_inc(&sdiodev->freezer->thread_count);
++	if (IS_ENABLED(CONFIG_PM_SLEEP))
++		atomic_inc(&sdiodev->freezer->thread_count);
+ }
+ 
+ void brcmf_sdiod_freezer_uncount(struct brcmf_sdio_dev *sdiodev)
+ {
+-	atomic_dec(&sdiodev->freezer->thread_count);
+-}
+-#else
+-static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
+-{
+-	return 0;
++	if (IS_ENABLED(CONFIG_PM_SLEEP))
++		atomic_dec(&sdiodev->freezer->thread_count);
+ }
+ 
+-static void brcmf_sdiod_freezer_detach(struct brcmf_sdio_dev *sdiodev)
+-{
+-}
+-#endif /* CONFIG_PM_SLEEP */
+-
+ int brcmf_sdiod_remove(struct brcmf_sdio_dev *sdiodev)
+ {
+ 	sdiodev->state = BRCMF_SDIOD_DOWN;
+@@ -873,7 +865,8 @@ int brcmf_sdiod_remove(struct brcmf_sdio_dev *sdiodev)
+ 		sdiodev->bus = NULL;
+ 	}
+ 
+-	brcmf_sdiod_freezer_detach(sdiodev);
++	if (IS_ENABLED(CONFIG_PM_SLEEP))
++		brcmf_sdiod_freezer_detach(sdiodev);
+ 
+ 	/* Disable Function 2 */
+ 	sdio_claim_host(sdiodev->func2);
+@@ -949,9 +942,11 @@ int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev)
+ 		goto out;
+ 	}
+ 
+-	ret = brcmf_sdiod_freezer_attach(sdiodev);
+-	if (ret)
+-		goto out;
++	if (IS_ENABLED(CONFIG_PM_SLEEP)) {
++		ret = brcmf_sdiod_freezer_attach(sdiodev);
++		if (ret)
++			goto out;
++	}
+ 
+ 	/* try to attach to the target device */
+ 	sdiodev->bus = brcmf_sdio_probe(sdiodev);
+@@ -1124,7 +1119,6 @@ void brcmf_sdio_wowl_config(struct device *dev, bool enabled)
+ 	sdiodev->wowl_enabled = enabled;
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+ static int brcmf_ops_sdio_suspend(struct device *dev)
+ {
+ 	struct sdio_func *func;
+@@ -1199,11 +1193,9 @@ static int brcmf_ops_sdio_resume(struct device *dev)
+ 	return ret;
+ }
+ 
+-static const struct dev_pm_ops brcmf_sdio_pm_ops = {
+-	.suspend	= brcmf_ops_sdio_suspend,
+-	.resume		= brcmf_ops_sdio_resume,
+-};
+-#endif	/* CONFIG_PM_SLEEP */
++static DEFINE_SIMPLE_DEV_PM_OPS(brcmf_sdio_pm_ops,
++				brcmf_ops_sdio_suspend,
++				brcmf_ops_sdio_resume);
+ 
+ static struct sdio_driver brcmf_sdmmc_driver = {
+ 	.probe = brcmf_ops_sdio_probe,
+@@ -1212,9 +1204,7 @@ static struct sdio_driver brcmf_sdmmc_driver = {
+ 	.id_table = brcmf_sdmmc_ids,
+ 	.drv = {
+ 		.owner = THIS_MODULE,
+-#ifdef CONFIG_PM_SLEEP
+-		.pm = &brcmf_sdio_pm_ops,
+-#endif	/* CONFIG_PM_SLEEP */
++		.pm = pm_sleep_ptr(&brcmf_sdio_pm_ops),
+ 		.coredump = brcmf_dev_coredump,
+ 	},
+ };
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+index 55285cad527f..d34797a214ba 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -4020,15 +4020,14 @@ brcmf_sdio_probe_attach(struct brcmf_sdio *bus)
+ 	 */
+ 	brcmf_sdiod_sgtable_alloc(sdiodev);
+ 
+-#ifdef CONFIG_PM_SLEEP
+ 	/* wowl can be supported when KEEP_POWER is true and (WAKE_SDIO_IRQ
+ 	 * is true or when platform data OOB irq is true).
+ 	 */
+-	if ((sdio_get_host_pm_caps(sdiodev->func1) & MMC_PM_KEEP_POWER) &&
++	if (IS_ENABLED(CONFIG_PM_SLEEP) &&
++	    (sdio_get_host_pm_caps(sdiodev->func1) & MMC_PM_KEEP_POWER) &&
+ 	    ((sdio_get_host_pm_caps(sdiodev->func1) & MMC_PM_WAKE_SDIO_IRQ) ||
+ 	     (sdiodev->settings->bus.sdio.oob_irq_supported)))
+ 		sdiodev->bus_if->wowl_supported = true;
+-#endif
+ 
+ 	if (brcmf_sdio_kso_init(bus)) {
+ 		brcmf_err("error enabling KSO\n");
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
+index 15d2c02fa3ec..47351ff458ca 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
+@@ -346,26 +346,10 @@ int brcmf_sdiod_abort(struct brcmf_sdio_dev *sdiodev, struct sdio_func *func);
+ void brcmf_sdiod_sgtable_alloc(struct brcmf_sdio_dev *sdiodev);
+ void brcmf_sdiod_change_state(struct brcmf_sdio_dev *sdiodev,
+ 			      enum brcmf_sdiod_state state);
+-#ifdef CONFIG_PM_SLEEP
+ bool brcmf_sdiod_freezing(struct brcmf_sdio_dev *sdiodev);
+ void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev);
+ void brcmf_sdiod_freezer_count(struct brcmf_sdio_dev *sdiodev);
+ void brcmf_sdiod_freezer_uncount(struct brcmf_sdio_dev *sdiodev);
+-#else
+-static inline bool brcmf_sdiod_freezing(struct brcmf_sdio_dev *sdiodev)
+-{
+-	return false;
+-}
+-static inline void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev)
+-{
+-}
+-static inline void brcmf_sdiod_freezer_count(struct brcmf_sdio_dev *sdiodev)
+-{
+-}
+-static inline void brcmf_sdiod_freezer_uncount(struct brcmf_sdio_dev *sdiodev)
+-{
+-}
+-#endif /* CONFIG_PM_SLEEP */
+ 
+ int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev);
+ int brcmf_sdiod_remove(struct brcmf_sdio_dev *sdiodev);
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.35.1
+
