@@ -2,93 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EF69C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 03:23:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F23FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 03:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349072AbiDODZt (ORCPT
+        id S1349088AbiDODjD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 23:25:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
+        Thu, 14 Apr 2022 23:39:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349043AbiDODZo (ORCPT
+        with ESMTP id S241106AbiDODjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 23:25:44 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0779D4F0;
-        Thu, 14 Apr 2022 20:23:17 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R881e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VA5Gud0_1649992993;
-Received: from localhost.localdomain(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0VA5Gud0_1649992993)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 15 Apr 2022 11:23:14 +0800
-From:   Tianchen Ding <dtcccc@linux.alibaba.com>
-To:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH] scsi: ses: Fix out-of-bound write at ses_enclosure_data_process()
-Date:   Fri, 15 Apr 2022 11:23:13 +0800
-Message-Id: <20220415032313.94991-1-dtcccc@linux.alibaba.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        Thu, 14 Apr 2022 23:39:01 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6A475227;
+        Thu, 14 Apr 2022 20:36:34 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id bg9so6364346pgb.9;
+        Thu, 14 Apr 2022 20:36:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2Ro17QGxtHVWnLXeBVe0SlNl98KKA0TueGG/iwSk7MY=;
+        b=SoNomD0cPYQQFNOaKEr2DrGdxVcL1rCNw2q2SbcogDpRWoNOD71hlheS04wpKHj+TU
+         MuVD2tAz8sUeyGjquJBq3YDEC1ghetmuUJr1Ej1HYD9NfXZQqzuN9fPncVWNpH8WQM41
+         e756f7xMs1S0FFufoTX4yGlhx1Br3jf+5miO1GNgMObnsR1pywvGXoqys6uikcjMTqoQ
+         Y8vgBmYJMW2CDeTHwB0bfKYDgwrVB+yJYSa7CmHwmRUWHFGNNslcvi8Hfxso+0zcyjxT
+         0bydlTvQappxG3dTZfMXcWkTxC7dh1lnx4Z4DwgZLA+hh3FxfM+GZRv7PtRAjqIlXkos
+         ZSUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2Ro17QGxtHVWnLXeBVe0SlNl98KKA0TueGG/iwSk7MY=;
+        b=VMukzMKsIWklv1jdCBZwAJ7GmsiWvA3btyPLzm9KIYyvGG02KTRg8mK4iilM3YZRa6
+         YGrRn5FUf5QRreCJR1jpmjy37vzvIl2e1cZRMTTzmmsv2eM/z7ZklDCEyRZuaHDL7TsL
+         Rr8sZNLPdOdQsfI+nAyLfrXg2MxVt/Xa9YBZkuct9sMoHVNFzaN6RNlFRmb7CLHaYovt
+         hJWoMnhjzUSEoMcw7CODNQjygntCydix6zAZ1oYdVLysO+qbMUytD6i/6hvyfmuzu+ka
+         MDV039ThFSC2sLOq0Bxo+Hr2KaGGQ/ySM3xYWnWfqR+SmkryhcFffZPWSEF4Fhi2ckQC
+         SdkQ==
+X-Gm-Message-State: AOAM533WW8843nOEIKIB5gFN8o2oX1wV0/PvjjXCBCk43a5Fluh5X4YT
+        ZTm/BwMbK9UkyqqxNYSfLXU=
+X-Google-Smtp-Source: ABdhPJwBh8uY0NWxqCUopeD7zL0l2WitRXJ6DQ6vCt2+LVV4O9VF2VVYF3EAxr5uSFKtBT3PqlL1zA==
+X-Received: by 2002:a63:f641:0:b0:3a2:cea2:bcf with SMTP id u1-20020a63f641000000b003a2cea20bcfmr764898pgj.506.1649993793693;
+        Thu, 14 Apr 2022 20:36:33 -0700 (PDT)
+Received: from localhost.localdomain ([2001:288:7001:2708:15e8:72d0:44ea:4d07])
+        by smtp.gmail.com with ESMTPSA id p8-20020aa78608000000b005082c3cbfd2sm1187165pfn.218.2022.04.14.20.36.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 20:36:33 -0700 (PDT)
+From:   Jui-Tse Huang <juitse.huang@gmail.com>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Huaixin Chang <changhuaixin@linux.alibaba.com>,
+        Beata Michalska <beata.michalska@arm.com>,
+        Chun-Hung Tseng <henrybear327@gmail.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jui-Tse Huang <juitse.huang@gmail.com>,
+        Ching-Chun Huang <jserv@ccns.ncku.edu.tw>
+Subject: [PATCH] docs/scheduler: fix unit error
+Date:   Fri, 15 Apr 2022 11:36:18 +0800
+Message-Id: <20220415033618.15655-1-juitse.huang@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Our modified KFENCE reported a memory corruption:
+The unit mentioned in the documentation of scheduler statistics is
+outdated which may mislead the readers.
 
-[   52.584914] BUG: KFENCE: memory corruption in ses_enclosure_data_process+0x24b/0x310 [ses]
+The unit of statistics that is reported by /proc/schedstat is modified
+to nanosecond, and the unit of statistics that is reported by
+/proc/PID/schedstat is provided as well to make the context consistent.
 
-[   52.584917] Corrupted memory at 0xffff88982de06ff0 [ 0x00 . . . . . . . . . . . . . . . ] (in kfence-#1624698):
-[   52.607212]  ses_enclosure_data_process+0x24b/0x310 [ses]
-[   52.607215]  ses_intf_add+0x444/0x542 [ses]
-[   52.621369]  class_interface_register+0x110/0x120
-[   52.621373]  ses_init+0x13/0x1000 [ses]
-[   52.621377]  do_one_initcall+0x41/0x1c0
-[   52.621380]  do_init_module+0x5c/0x260
-[   52.621382]  __do_sys_finit_module+0xb1/0x110
-[   52.621386]  do_syscall_64+0x2d/0x40
-[   52.621388]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+The rq_cpu_time and the rq_sched_info.run_delay of a run queue, and the
+sched_info.run_delay of a task are all updated based on the clock of the
+run queue, while the se.sum_exec_runtime of a task is updated based on
+the clock_task of the run queue of the task. Both the clock and
+clock_task are relied on the return value of the function sched_clock()
+which is in the unit of nanosecond.
 
-[   52.621393] kfence-#1624698 [0xffff88982de06fc0-0xffff88982de06fe0, size=33, cache=kmalloc-64] allocated by task 1033:
-[   52.670344]  ses_enclosure_data_process+0x2ae/0x310 [ses]
-[   52.670347]  ses_intf_add+0x444/0x542 [ses]
-[   52.670353]  class_interface_register+0x110/0x120
-[   52.688165]  ses_init+0x13/0x1000 [ses]
-[   52.688169]  do_one_initcall+0x41/0x1c0
-[   52.688172]  do_init_module+0x5c/0x260
-[   52.688174]  __do_sys_finit_module+0xb1/0x110
-[   52.688177]  do_syscall_64+0x2d/0x40
-[   52.688179]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-This is because we check desc_ptr >= buf + page7_len first but then
-write '\0' to desc_ptr[len+4], while this address may be out of bound.
-
-Fixes: 21fab1d0595e ("[SCSI] ses: update enclosure data on hot add")
-Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
+Signed-off-by: Jui-Tse Huang <juitse.huang@gmail.com>
 ---
- drivers/scsi/ses.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ Documentation/scheduler/sched-stats.rst | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/ses.c b/drivers/scsi/ses.c
-index 0a1734f34587..06b991e27c84 100644
---- a/drivers/scsi/ses.c
-+++ b/drivers/scsi/ses.c
-@@ -559,11 +559,11 @@ static void ses_enclosure_data_process(struct enclosure_device *edev,
- 			struct enclosure_component *ecomp;
+diff --git a/Documentation/scheduler/sched-stats.rst b/Documentation/scheduler/sched-stats.rst
+index dd9b99a025f7..03c062915998 100644
+--- a/Documentation/scheduler/sched-stats.rst
++++ b/Documentation/scheduler/sched-stats.rst
+@@ -56,9 +56,9 @@ Next two are try_to_wake_up() statistics:
  
- 			if (desc_ptr) {
--				if (desc_ptr >= buf + page7_len) {
-+				len = (desc_ptr[2] << 8) + desc_ptr[3];
-+				desc_ptr += 4;
-+				if (desc_ptr + len > buf + page7_len) {
- 					desc_ptr = NULL;
- 				} else {
--					len = (desc_ptr[2] << 8) + desc_ptr[3];
--					desc_ptr += 4;
- 					/* Add trailing zero - pushes into
- 					 * reserved space */
- 					desc_ptr[len] = '\0';
+ Next three are statistics describing scheduling latency:
+ 
+-     7) sum of all time spent running by tasks on this processor (in jiffies)
++     7) sum of all time spent running by tasks on this processor (in nanoseconds)
+      8) sum of all time spent waiting to run by tasks on this processor (in
+-        jiffies)
++        nanoseconds)
+      9) # of timeslices run on this cpu
+ 
+ 
+@@ -155,8 +155,8 @@ schedstats also adds a new /proc/<pid>/schedstat file to include some of
+ the same information on a per-process level.  There are three fields in
+ this file correlating for that process to:
+ 
+-     1) time spent on the cpu
+-     2) time spent waiting on a runqueue
++     1) time spent on the cpu (in nanoseconds)
++     2) time spent waiting on a runqueue (in nanoseconds)
+      3) # of timeslices run on this cpu
+ 
+ A program could be easily written to make use of these extra fields to
 -- 
-2.33.0
+2.25.1
 
