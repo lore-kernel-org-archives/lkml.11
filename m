@@ -2,179 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A8F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21845C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355968AbiDOQr3 (ORCPT
+        id S1352755AbiDOQtB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 12:47:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48380 "EHLO
+        Fri, 15 Apr 2022 12:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355979AbiDOQrX (ORCPT
+        with ESMTP id S236184AbiDOQs5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 12:47:23 -0400
-X-Greylist: delayed 47487 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Apr 2022 09:44:53 PDT
-Received: from na01-obe.outbound.protection.outlook.com (unknown [52.101.57.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DE124951;
-        Fri, 15 Apr 2022 09:44:53 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cuWep0dyRr/OL12M3YoIETAmuJbiezVEFI53sGYEg6oTTMqgUiKla1BiDCADDgiCVUK9BZOJyvY9P/O9PUDCZva7JZvFRa5Bq5UvBmHBVLNHZjAJZm82Rkr5mkK9cwQ2HKfeaUyzTqbNBCBJ/ICoeXquwZXMtVvmR8U1w722JPC+FOQkS5JV+ZH56w1YUxvMmyM5416Acb7bS/gMn7OJpV3CuTERp2vXw/iUR3OQzX4csHXoFFBdAn6Bvb+/bXGTLQeByCx5QBveg6NBgxG37DSGKOKlOiJjIr+gB+LYe/XthXi7yw/oL1ZM0LhdCtkMFCV7SStq4AjCsU1LATJ4Vg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HYNpJjm/jne0HL73swP6S6943rvp+b2Qz37p9hfTQzM=;
- b=FNs56WAZY4TrifjKS4igHqN7WVhWx5P9jKQFKTCgZh002n45u8BBvN0+6gfhSKg+3xFMz+YZr6BEW848gx29IMfGWSuxXIrUW3G7bv0MGkqXdyd/PLFToYrtHUpSSkQgyS+K0in7/gZCtRgK4oBqaWvKHnazedG0XKYEVsVYJasrMyVLUdNKf0xLJnw9RW/cNY2+HB2KNcWd5g2NNydyJV/YN5oglm1D5l5erCK3P7Hd6hUNpjRQXKOYLpLYmuwHkr6TYSipCk88qCUvl9UldZtVGs/NMcsYtdO3rOAHeXaCXCBEuH3hY/sjtzfRK8+XTe/OHwP4klq0pL4FQ8169g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HYNpJjm/jne0HL73swP6S6943rvp+b2Qz37p9hfTQzM=;
- b=EDuhr5xwXnuvJLJZHxMp2tl4dhQ3w6SjymMSmTxeFAQdzTlqA9wgv4prWkmkKGzgf7O4tnOtV9iV0TTN6HVJ8k8RROiddJBHmHFQbs32SiLoGy+MlE3D8QSGhbIC1m8tL7hHbr8qNzGm96FyVkS3t3ZISYrOlTVNF95XpXjiNOU=
-Received: from PH0PR21MB3025.namprd21.prod.outlook.com (2603:10b6:510:d2::21)
- by SA1PR21MB2068.namprd21.prod.outlook.com (2603:10b6:806:1c3::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.6; Fri, 15 Apr
- 2022 16:44:50 +0000
-Received: from PH0PR21MB3025.namprd21.prod.outlook.com
- ([fe80::ac09:6e1b:de72:2b2f]) by PH0PR21MB3025.namprd21.prod.outlook.com
- ([fe80::ac09:6e1b:de72:2b2f%9]) with mapi id 15.20.5186.010; Fri, 15 Apr 2022
- 16:44:50 +0000
-From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To:     Andrea Parri <parri.andrea@gmail.com>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [RFC PATCH 6/6] Drivers: hv: vmbus: Refactor the ring-buffer
- iterator functions
-Thread-Topic: [RFC PATCH 6/6] Drivers: hv: vmbus: Refactor the ring-buffer
- iterator functions
-Thread-Index: AQHYT3fNSP/rWeVvYk6P66NWBULOUKzwUztwgAA60oCAAJ6bgIAAAP3Q
-Date:   Fri, 15 Apr 2022 16:44:50 +0000
-Message-ID: <PH0PR21MB3025ECBC7D7102B539A7705AD7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
-References: <20220413204742.5539-1-parri.andrea@gmail.com>
- <20220413204742.5539-7-parri.andrea@gmail.com>
- <PH0PR21MB302516C5334076716966B7EED7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
- <20220415070031.GE2961@anparri> <20220415162811.GA47513@anparri>
-In-Reply-To: <20220415162811.GA47513@anparri>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=fa73a567-3147-45ed-8a40-c3aa28b6497a;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-04-15T16:31:43Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 67ea02be-8e0d-483d-e29c-08da1eff423b
-x-ms-traffictypediagnostic: SA1PR21MB2068:EE_
-x-ms-exchange-atpmessageproperties: SA|SL
-x-microsoft-antispam-prvs: <SA1PR21MB20687CABD919E3C755F68AC5D7EE9@SA1PR21MB2068.namprd21.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: AElJhhJ30Ht8p+YlDmCXb2wQcus3Zc5OcwCe23ismhzJT8HAfEAw5k+0IkQbn68pirG8zP8yC7FR3Y+2d1mXIU5pPKaDkLAxt4c8VtxmFGL3e1MxQoUpBjbAqMri4fXYo2h8+g0rpFBC2GLZMBJAXPYGjaBFf0Kordj6o58jaMoqeRt/qxdT+AaiO02xxQ3brOLYYCEIPnMPKbhAWEvrCDUrcP+ph6hQ6jz3lozj7p0x0wO5xNst+nHyQTEN486/ne4BqolT2FxnsEjJaY0yvhWjRzKmXP1SD5Fxoi/QeSZNOr+omoDBDvYQ3OPzgDPgKtXgBUitCPVRy2bO+2uLP6MUPywktx95aVvMPb+06YZBkmX4W9Lu30Nyi3J+0UYJ9DqOkQeDrOa3mbF2MaXtXeSj83VlSsGIrcVFLSs2p8Qb+SiJceXV4NkrCKXIu2lCFxAuJoDKKPhxTWZK98z2D65w/svBIVgaS4pKLnAbHXVjail5ikh7JzKgoXKnap5qyINFtOxi4nPu5eOM0k61Zqj7ix+H5iZbM7+bHT8mTDKWyj08YRC4Xs0rgsIBoiORPfTIC/svd32l+0wptLdF9GWvqL1/194WeCHFsNQAL8Kz+wjk5flh5KH4jK4GV5lpFIqbVYf2Zfp5XHpaLhkq2hgzDUElqzxa25Dco1ri9tUBF74Jn6xoj9kdOd3Xbaiix8lL3MKyizSvn8MA2kIqOlp/u8mp7cNLrclUkEZrI5l/VkGXATCbPy+VJx57eDHY
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR21MB3025.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(66556008)(71200400001)(82950400001)(508600001)(9686003)(2906002)(316002)(76116006)(122000001)(6916009)(54906003)(82960400001)(38070700005)(66946007)(4326008)(8676002)(66446008)(64756008)(66476007)(52536014)(7696005)(6506007)(8936002)(7416002)(33656002)(5660300002)(86362001)(8990500004)(10290500003)(38100700002)(55016003)(186003)(26005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?uFQSh/UuTtjU2J1xpTzb9ozPmLRcji/4wxIPl8+CzgI+PDWKbFVZQu53neVV?=
- =?us-ascii?Q?ParzMjjLBSjApEhAJnrqWyvDGg9QPUcXwXaJj80AgYzmIV2gowvDIWE6LlZQ?=
- =?us-ascii?Q?v1qJr/UomMtufjj+mHUqS10PLEdqNx4zhzFw5aDw4Go163oWYXbQGDnVikRe?=
- =?us-ascii?Q?+ClFoXsv/rB7FGRdeqTGqdB82OoE0N9aQ3A8l0/7PQ/BbBTr5zRBpGCvh88M?=
- =?us-ascii?Q?okzt6XsWXYx03nKk5LzfwwLkN6nZWmhSkFjDyW317Y4OnRlpkhdbeNX2XN5k?=
- =?us-ascii?Q?VhSGcSJeZnSuqi9luOSGP3zXp789CplrpCfH3sMtJ3SdshYPE3d9PcQLm1WF?=
- =?us-ascii?Q?Cv/b/wCxCvOiqmQPnL2trAtfd93bHMQW2QWYnvzdapVgpdk/uh/Yd3tA2nnf?=
- =?us-ascii?Q?+EoJkKqeTQ4LMo8TlzumMy5azNrGHsPD1s/6c4kTV2MYB+6dKl4avdpOvxFk?=
- =?us-ascii?Q?ILhx4jleboDHNCS3pAmZqNlBtwcq44RCLpUWB4ci/Gpr+Jnn97HB3Snw2qcI?=
- =?us-ascii?Q?GNbdn7BNIJJ+KtGm4U5AyWyxsFvL/2kOGsNl0cX360p5L3QGc8norjae2wrz?=
- =?us-ascii?Q?ke+HtTEX2ia4ephn1/cdfcHSoPvFbeuMgwP7Ya4l7ZjpEUrKVrjVMwwV7K9D?=
- =?us-ascii?Q?t/TFeskZ4YYc30eu5d6xFF0hbbTR+7tYr0vKbwnPQzDk3j5CW9XhvqX4bL5F?=
- =?us-ascii?Q?pYxvNiccMhkToESwPfi9GhwPCj2yy1CdzkVoQ3xpAm4BA4liwVUfMyVRiA/O?=
- =?us-ascii?Q?0dpSwwaaNfAosVjUSc6S7QDSaUGg8JEBW5sloEm2cbTLi0u9YrSppFKEiB7R?=
- =?us-ascii?Q?Y7SSoJtbZJX97SLGv3jocd4s7/XOBy8WXIi3j0uzxXZDGkhcNEcU6xbpk9ui?=
- =?us-ascii?Q?wuS8Z5GW6uPmh/IbUGZ7VR+zjS6Sc8ngdXn2Hwd16XX9FKLauIy3g55wKT+Z?=
- =?us-ascii?Q?3RhYjvsE2MsVGT4x32OwwRJVVY92AnOQPtW9zOqO0+xgKRVU7kEznGWORGhS?=
- =?us-ascii?Q?+KCATA/0wvT9gXLRd5sB5ZQDfEbLWV9Ev77FQmxjxwOaHwOucSQfYziib3ag?=
- =?us-ascii?Q?r8brzJoh6vzenPEhgpD2NtqEgIrMQeRrfc5z0qzKuqBlwhtBwz8WOXhetong?=
- =?us-ascii?Q?uQLfL+CmkNIZ8iVLvReMFW/SMH2hm3zhU+LMBac4Sme5jEZSqnmXMOQWf6v5?=
- =?us-ascii?Q?qPGycKx3zMbByHDyK/VDTkg4MpscaICKDiXw3Dh+ZvlxYVikKXVvFjFjcFu7?=
- =?us-ascii?Q?QFxgSEGborb/rCI1v/bcXjPvip4RA/SBgJ84/0bCemE9lkkPeg/gDKQBBPop?=
- =?us-ascii?Q?xJ/aaghPSJYCoK4Foxy1MfPKyhnUzV+j/rCY55rIh/hiChuFclUuZLdIwtKV?=
- =?us-ascii?Q?KDm0Gxue67WZDo61xbdMR6z+GVncuf6KKK7ESfe0WEWKOwzLEjscyVq3B2Cd?=
- =?us-ascii?Q?+HwgmnOebsRBULBH8Dm/7uZHgkARTbjhUTrTCOReyXQiRWxoHsZsXnu2kju5?=
- =?us-ascii?Q?57Pj903XjnO4pc8lNHv9dYSNZ/7D/81+V4WJa2OlEyC90SLJ0EgcEME2ISZT?=
- =?us-ascii?Q?8fwsEnGgDIs50jllIio63qhTjxTWwap/RLT5WPfdZAoFYw9K/MAde3SVurvX?=
- =?us-ascii?Q?AMKZt/8DXOkIAfkAm0NYH6fQzbSu2XYSOxfDOfBUJT9LPw+ARezshHnHpY3y?=
- =?us-ascii?Q?MH8pbnv2tZV5LT1oXyeg5fpJlgKFeSnnQzZ+uQOv1HA8FQbM6y/b2S96qJF0?=
- =?us-ascii?Q?QauKIH6ZlrYFGDypGHOUH2ikYnTXxMc=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR21MB3025.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 67ea02be-8e0d-483d-e29c-08da1eff423b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Apr 2022 16:44:50.2711
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lvr/w26F2JAZijcwZwDTuIqfcpfZNejgtWT4Bq5lnhsJcJ0yUHbcIM1SRQWPuiCZph7XGjs/mv1FQmT/M5GZJDGjptUkfh9jIYpf0+AkTYU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR21MB2068
+        Fri, 15 Apr 2022 12:48:57 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6284396A8
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 09:46:27 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id n18so7521915plg.5
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 09:46:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ItPn/AcYuP2hdhsdSFglkfktyf1iLOm6R95lIRQYTZY=;
+        b=JS96M1iHtXQEhUuFoqlaiZ2VRIlhckrTO6Ij+BqZyqgaE8i/vjuqr3iwPAM31Qe1pU
+         nVGCc2V86N2/l3lhhwmPjSe+1NSVhGrWzLgz01qOgzQpML3gf0R2zensKqD9EirmUpcE
+         keaKxzUHNn1xgI6Ls/PKoYT1oVMsK2wrQheR4OS/uc8dFCOVM6IsONgT2L0PgunTiA35
+         5DalFyKEsd6ZwfsEeVL0Cycuepa9OKvPgJQPsWST2LX9Dr2+MNc4Hb4I83m7qtMnvHiK
+         Ypti60XVTPZP+yryoYLh3SP85K+fLvWwD5h709bL4SEOMSDO1MXhHVCnYGWETmkkQaqc
+         eRRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=ItPn/AcYuP2hdhsdSFglkfktyf1iLOm6R95lIRQYTZY=;
+        b=fRaU4FujzysbmDlDKVGqtWwQe7FA7BLSYDD+HygyWTnTUTqwKIkgpCYuIn5YZBst+f
+         I/kkfgO/TqjyvaFxyW9w6W55gyqdnjylJBG/Hg9UTa5IU6yOCW3b8afXfWSBaFMzSjV5
+         5MiRGUDD0oHdQIx6DJ26+1t6RxnMB8COJ2S7ddjUyr5zQU9A5VY6z2tVOXW6j4ydddFw
+         0jf6SxTHKfLEdOzzi6XPYoi4hSZ/F9DcTd3w3E9J82mheOIbQ4ue5NUNxu55u1Q/GF4S
+         R3ewrZvYwV9dzHLYcaOq/QMG0ZQSEYzMZF6NHk6D+dEoAxsNoH6d7ixdEeL6TxhyX9tZ
+         r1MA==
+X-Gm-Message-State: AOAM532ia+hZhyhT78Ok7lLxjErMaJN/F5FHpdUN35tREanK67VvWYJA
+        iUAGxLqBQYrgEf/VTFaThYeb4w==
+X-Google-Smtp-Source: ABdhPJyj45WdgDS2kp+bLcsEYoXnZD1J4gN7xaPkEirpU1SwtjNOLeYhYjs838zc/dCSPVG7lSSoPw==
+X-Received: by 2002:a17:90b:3882:b0:1cd:41c1:712a with SMTP id mu2-20020a17090b388200b001cd41c1712amr5110813pjb.72.1650041187144;
+        Fri, 15 Apr 2022 09:46:27 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id d16-20020a056a00245000b004f7728a4346sm3584771pfj.79.2022.04.15.09.46.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 09:46:26 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 09:46:26 -0700 (PDT)
+X-Google-Original-Date: Fri, 15 Apr 2022 09:46:08 PDT (-0700)
+Subject:     Re: [PATCH v3 1/7] asm-generic: ticket-lock: New generic ticket-based spinlock
+In-Reply-To: <1e26726b-721e-7197-8834-8aff2b4c4bc3@redhat.com>
+CC:     Arnd Bergmann <arnd@arndb.de>, heiko@sntech.de, guoren@kernel.org,
+        shorne@gmail.com, peterz@infradead.org, mingo@redhat.com,
+        Will Deacon <will@kernel.org>, boqun.feng@gmail.com,
+        jonas@southpole.se, stefan.kristiansson@saunalahti.fi,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, macro@orcam.me.uk,
+        Greg KH <gregkh@linuxfoundation.org>,
+        sudipm.mukherjee@gmail.com, wangkefeng.wang@huawei.com,
+        jszhang@kernel.org, linux-csky@vger.kernel.org,
+        linux-kernel@vger.kernel.org, openrisc@lists.librecores.org,
+        linux-riscv@lists.infradead.org, linux-arch@vger.kernel.org
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     longman@redhat.com
+Message-ID: <mhng-f4d144dd-b6ed-4f3f-bfc3-6dc29fab14e4@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrea Parri <parri.andrea@gmail.com> Sent: Friday, April 15, 2022 9:=
-28 AM
->=20
-> On Fri, Apr 15, 2022 at 09:00:31AM +0200, Andrea Parri wrote:
-> > > > @@ -470,7 +471,6 @@ struct vmpacket_descriptor *hv_pkt_iter_first_r=
-aw(struct
-> > > > vmbus_channel *channel)
-> > > >
-> > > >  	return (struct vmpacket_descriptor *)(hv_get_ring_buffer(rbi) + r=
-bi-
-> > > > >priv_read_index);
-> > > >  }
-> > > > -EXPORT_SYMBOL_GPL(hv_pkt_iter_first_raw);
-> > >
-> > > Does hv_pkt_iter_first_raw() need to be retained at all as a
-> > > separate function?  I think after these changes, the only caller
-> > > is hv_pkt_iter_first(), in which case the code could just go
-> > > inline in hv_pkt_iter_first().  Doing that combining would
-> > > also allow the elimination of the duplicate call to
-> > > hv_pkt_iter_avail().
->=20
-> Back to this, can you clarify what you mean by "the elimination of..."?
-> After moving the function "inline", hv_pkt_iter_avail() would be called
-> in to check for a non-NULL descriptor (in the inline function) and later
-> in the computation of bytes_avail.
+On Thu, 14 Apr 2022 18:27:12 PDT (-0700), longman@redhat.com wrote:
+> On 4/14/22 18:02, Palmer Dabbelt wrote:
+>> From: Peter Zijlstra <peterz@infradead.org>
+>>
+>> This is a simple, fair spinlock.  Specifically it doesn't have all the
+>> subtle memory model dependencies that qspinlock has, which makes it more
+>> suitable for simple systems as it is more likely to be correct.  It is
+>> implemented entirely in terms of standard atomics and thus works fine
+>> without any arch-specific code.
+>>
+>> This replaces the existing asm-generic/spinlock.h, which just errored
+>> out on SMP systems.
+>>
+>> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+>> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+>> ---
+>>   include/asm-generic/spinlock.h       | 85 +++++++++++++++++++++++++---
+>>   include/asm-generic/spinlock_types.h | 17 ++++++
+>>   2 files changed, 94 insertions(+), 8 deletions(-)
+>>   create mode 100644 include/asm-generic/spinlock_types.h
+>>
+>> diff --git a/include/asm-generic/spinlock.h b/include/asm-generic/spinlock.h
+>> index adaf6acab172..ca829fcb9672 100644
+>> --- a/include/asm-generic/spinlock.h
+>> +++ b/include/asm-generic/spinlock.h
+>> @@ -1,12 +1,81 @@
+>>   /* SPDX-License-Identifier: GPL-2.0 */
+>> -#ifndef __ASM_GENERIC_SPINLOCK_H
+>> -#define __ASM_GENERIC_SPINLOCK_H
+>> +
+>>   /*
+>> - * You need to implement asm/spinlock.h for SMP support. The generic
+>> - * version does not handle SMP.
+>> + * 'Generic' ticket-lock implementation.
+>> + *
+>> + * It relies on atomic_fetch_add() having well defined forward progress
+>> + * guarantees under contention. If your architecture cannot provide this, stick
+>> + * to a test-and-set lock.
+>> + *
+>> + * It also relies on atomic_fetch_add() being safe vs smp_store_release() on a
+>> + * sub-word of the value. This is generally true for anything LL/SC although
+>> + * you'd be hard pressed to find anything useful in architecture specifications
+>> + * about this. If your architecture cannot do this you might be better off with
+>> + * a test-and-set.
+>> + *
+>> + * It further assumes atomic_*_release() + atomic_*_acquire() is RCpc and hence
+>> + * uses atomic_fetch_add() which is SC to create an RCsc lock.
+>> + *
+>> + * The implementation uses smp_cond_load_acquire() to spin, so if the
+>> + * architecture has WFE like instructions to sleep instead of poll for word
+>> + * modifications be sure to implement that (see ARM64 for example).
+>> + *
+>>    */
+>> -#ifdef CONFIG_SMP
+>> -#error need an architecture specific asm/spinlock.h
+>> -#endif
+>>
+>> -#endif /* __ASM_GENERIC_SPINLOCK_H */
+>> +#ifndef __ASM_GENERIC_TICKET_LOCK_H
+>> +#define __ASM_GENERIC_TICKET_LOCK_H
+> It is not conventional to use a macro name that is different from the
+> header file name.
 
-I was thinking something like this:
+Sorry, that was just a mistake: I renamed the header, but forgot to 
+rename the guard.  I'll likely send a v4 due to Boqun's questions, I'll 
+fix this as well.
 
-bytes_avail =3D hv_pkt_iter_avail(rbi);
-if (bytes_avail < sizeof(struct vmpacket_descriptor))
-	return NULL;
-bytes_avail =3D min(rbi->pkt_buffer_size, bytes_avail);
+>> +
+>> +#include <linux/atomic.h>
+>> +#include <asm-generic/spinlock_types.h>
+>> +
+>> +static __always_inline void arch_spin_lock(arch_spinlock_t *lock)
+>> +{
+>> +	u32 val = atomic_fetch_add(1<<16, lock); /* SC, gives us RCsc */
+>> +	u16 ticket = val >> 16;
+>> +
+>> +	if (ticket == (u16)val)
+>> +		return;
+>> +
+>> +	atomic_cond_read_acquire(lock, ticket == (u16)VAL);
+>> +}
+>> +
+>> +static __always_inline bool arch_spin_trylock(arch_spinlock_t *lock)
+>> +{
+>> +	u32 old = atomic_read(lock);
+>> +
+>> +	if ((old >> 16) != (old & 0xffff))
+>> +		return false;
+>> +
+>> +	return atomic_try_cmpxchg(lock, &old, old + (1<<16)); /* SC, for RCsc */
+>> +}
+>> +
+>> +static __always_inline void arch_spin_unlock(arch_spinlock_t *lock)
+>> +{
+>> +	u16 *ptr = (u16 *)lock + IS_ENABLED(CONFIG_CPU_BIG_ENDIAN);
+>> +	u32 val = atomic_read(lock);
+>> +
+>> +	smp_store_release(ptr, (u16)val + 1);
+>> +}
+>> +
+>> +static __always_inline int arch_spin_is_locked(arch_spinlock_t *lock)
+>> +{
+>> +	u32 val = atomic_read(lock);
+>> +
+>> +	return ((val >> 16) != (val & 0xffff));
+>> +}
+>> +
+>> +static __always_inline int arch_spin_is_contended(arch_spinlock_t *lock)
+>> +{
+>> +	u32 val = atomic_read(lock);
+>> +
+>> +	return (s16)((val >> 16) - (val & 0xffff)) > 1;
+>> +}
+>> +
+>> +static __always_inline int arch_spin_value_unlocked(arch_spinlock_t lock)
+>> +{
+>> +	return !arch_spin_is_locked(&lock);
+>> +}
+>> +
+>> +#include <asm/qrwlock.h>
+>> +
+>> +#endif /* __ASM_GENERIC_TICKET_LOCK_H */
+>> diff --git a/include/asm-generic/spinlock_types.h b/include/asm-generic/spinlock_types.h
+>> new file mode 100644
+>> index 000000000000..e56ddb84d030
+>> --- /dev/null
+>> +++ b/include/asm-generic/spinlock_types.h
+>> @@ -0,0 +1,17 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +
+>> +#ifndef __ASM_GENERIC_TICKET_LOCK_TYPES_H
+>> +#define __ASM_GENERIC_TICKET_LOCK_TYPES_H
+>> +
+>> +#include <linux/types.h>
+>> +typedef atomic_t arch_spinlock_t;
+>> +
+>> +/*
+>> + * qrwlock_types depends on arch_spinlock_t, so we must typedef that before the
+>> + * include.
+>> + */
+>> +#include <asm/qrwlock_types.h>
+>
+> I believe that if you guard the include line by
+>
+> #ifdef CONFIG_QUEUED_RWLOCK
+> #include <asm/qrwlock_types.h>
+> #endif
+>
+> You may not need to do the hack in patch 5.
 
-desc =3D (struct vmpacket_descriptor *)(hv_get_ring_buffer(rbi) + rbi->priv=
-_read_index);
+Yes, and we actually had it that way the first time around (specifically 
+the ARCH_USES_QUEUED_RWLOCKS, but IIUC that's the same here).  The goal 
+was to avoid adding the ifdef to the asm-generic code and instead keep 
+the oddness in arch/riscv, it's only there for that one commit (and just 
+so we can split out the spinlock conversion from the rwlock conversion, 
+in case there's a bug and these need to be bisected later).
 
-And for that matter, hv_pkt_iter_avail() is now only called in one place.
-It's a judgment call whether to keep it as a separate helper function vs.
-inlining it in hv_pkt_iter_first() as well.  I'm OK either way.
+I'd also considered renaming qrwlock* to rwlock*, which would avoid the 
+ifdef and make it a touch easier to override the rwlock implementation, 
+but that didn't seem useful enough to warrant the diff.  These all seem 
+a bit more coupled than I expected them to be (both 
+{spin,qrw}lock{,_types}.h and the bits in linux/), I looked into 
+cleaning that up a bit but it seemed like too much for just the one 
+patch set.
 
+> You can also directly use the <asm-generic/qrwlock_types.h> line without
+> importing it to include/asm.
 
-Michael
+Yes, along with qrwlock.h (which has some unnecessary #include shims in 
+a handful of arch dirs).  That's going to make the patch set bigger, 
+I'll include it in the v4.
 
-
+Thanks!
