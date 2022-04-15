@@ -2,101 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E591EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 06:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F89AC43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 06:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350470AbiDOGeF (ORCPT
+        id S1350486AbiDOGeM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 02:34:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
+        Fri, 15 Apr 2022 02:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350458AbiDOGd4 (ORCPT
+        with ESMTP id S1350458AbiDOGeH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 02:33:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21F45BE52;
-        Thu, 14 Apr 2022 23:31:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81CB5B8282C;
-        Fri, 15 Apr 2022 06:31:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 981C2C385A6;
-        Fri, 15 Apr 2022 06:31:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650004286;
-        bh=vNvTyZfr+G0pyUo1bitL8R5ZCYiZCbBy0L86pD4L9zg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Y95mTntUPcQegNJbDJWA4bBSmAn2sSaDxOHc56ExScPJYvpvNbZ571XWuBqUjfcXG
-         mYAl+lcETjSs9XwYcXZ+otSKnKPbP75hNLd+gLZHbQrG3zlJ1Sq4p2vpbocXxfOaiR
-         mPv7EywZ2DvLLoFjVgikn+Lmyg50EFtiOBsVJgUA=
-Date:   Fri, 15 Apr 2022 08:31:23 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "D. Starke" <daniel.starke@siemens.com>
-Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 16/20] tty: n_gsm: fix invalid command/response bit check
- for UI/UIH frames
-Message-ID: <YlkRO6fAPCuWyT1Y@kroah.com>
-References: <20220414094225.4527-1-daniel.starke@siemens.com>
- <20220414094225.4527-16-daniel.starke@siemens.com>
+        Fri, 15 Apr 2022 02:34:07 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49255BE52;
+        Thu, 14 Apr 2022 23:31:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=ejdrnRYNKs4esI1C9c6WhifXIFEiNkcchRuMuxtqQTI=; b=nGhJ36i37YrSYAJH5s45qfv5zb
+        Uz8IC8hT6E0pMSVBASG1693ZtpIoJL4GpwQsdNmJIl3s8hq1giBBrc4QdoQ5zc3BZkk3PKL2MKV7e
+        e/GU+o1cQiTRSurkOHyJypC0BQeGhfehS97EMEHZ8Zv8nzdMqJbqvrElUDQAxhHzfgLOmGbj8m8C0
+        WmiWXIh9rxGyoq+ygXLKegSFd2oBajiIc8phBN2SdZ9mOHXegB5XFYsgRMameAtajEfadX1uPhpxg
+        hm8Ytn6KQrtlR8lEdlChxFCLtHYsq+lqSemuCNrkocsGHzhjO6UwiIBPs9lIGasBuO8OPXBfB9M4Q
+        2py8GPQw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nfFUZ-0090bP-GN; Fri, 15 Apr 2022 06:31:39 +0000
+Date:   Thu, 14 Apr 2022 23:31:39 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Song Liu <song@kernel.org>
+Cc:     bpf@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kernel-team@fb.com, akpm@linux-foundation.org,
+        rick.p.edgecombe@intel.com, hch@infradead.org,
+        imbrenda@linux.ibm.com, mcgrof@kernel.org
+Subject: Re: [PATCH v3 bpf RESEND 1/4] vmalloc: replace VM_NO_HUGE_VMAP with
+ VM_ALLOW_HUGE_VMAP
+Message-ID: <YlkRS36hKDkPtbBN@infradead.org>
+References: <20220414195914.1648345-1-song@kernel.org>
+ <20220414195914.1648345-2-song@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220414094225.4527-16-daniel.starke@siemens.com>
+In-Reply-To: <20220414195914.1648345-2-song@kernel.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 02:42:21AM -0700, D. Starke wrote:
-> From: Daniel Starke <daniel.starke@siemens.com>
-> 
-> n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-> See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-> The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-> the newer 27.010 here. Chapter 5.4.3.1 states the CR bit in UI and UIH
-> frames shall always be set 1 by the initiator and 0 by the responder.
+On Thu, Apr 14, 2022 at 12:59:11PM -0700, Song Liu wrote:
+> +void *vmalloc_huge(unsigned long size)
+> +{
+> +	return __vmalloc_node_range(size, 1, VMALLOC_START, VMALLOC_END,
+> +				    GFP_KERNEL, PAGE_KERNEL, VM_ALLOW_HUGE_VMAP,
+> +				    NUMA_NO_NODE, __builtin_return_address(0));
+> +}
+> +EXPORT_SYMBOL_GPL(vmalloc_huge);
 
-This has nothing to do with the change you made here.
+It seems like this one isn't actually used in this series, so I'd
+suggest to drop it.
 
+> +
+> +/**
+> + * __vmalloc_huge - allocate virtually contiguous memory, allow huge pages
+> + * @size:      allocation size
+> + * @gfp_mask:  flags for the page level allocator
+> + *
+> + * Allocate enough pages to cover @size from the page level
+>   * allocator and map them into contiguous kernel virtual space.
+> + * If @size is greater than or equal to PMD_SIZE, allow using
+> + * huge pages for the memory
+>   *
+>   * Return: pointer to the allocated memory or %NULL on error
+>   */
+> -void *vmalloc_no_huge(unsigned long size)
+> +void *__vmalloc_huge(unsigned long size, gfp_t gfp_mask)
 
-> Currently, gsm_queue() has a pre-processor gated (excluded) check which
-> treats all frames that conform to the standard as malformed frames.
-> Remove this optional code to avoid confusion and possible breaking changes
-> in case that someone includes it.
+And I'd just rename this vmalloc_huge.
 
-Again, nothing to do with the code change.
+Otherwise looks good:
 
-> 
-> Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-
-This "fixes" nothing :(
-
-> Cc: stable@vger.kernel.org
-
-How is commenting out unused code a stable backport requirement?
-
-> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-> ---
->  drivers/tty/n_gsm.c | 4 ----
->  1 file changed, 4 deletions(-)
-> 
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index e9a7d9483c1f..f4ec48c0d6d7 100644
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -1896,10 +1896,6 @@ static void gsm_queue(struct gsm_mux *gsm)
->  	case UI|PF:
->  	case UIH:
->  	case UIH|PF:
-> -#if 0
-> -		if (cr)
-> -			goto invalid;
-> -#endif
-
-All you are doing is cleaning up dead code.  Not a big deal, and not
-worth all the text above to confuse people :(
-
-thanks,
-
-greg k-h
+Reviewed-by: Christoph Hellwig <hch@lst.de>
