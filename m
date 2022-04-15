@@ -2,206 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B54F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE53C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:45:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354671AbiDOOsP (ORCPT
+        id S1354678AbiDOOsY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 10:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38520 "EHLO
+        Fri, 15 Apr 2022 10:48:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349538AbiDOOsN (ORCPT
+        with ESMTP id S235565AbiDOOsT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 10:48:13 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D0673041;
-        Fri, 15 Apr 2022 07:45:43 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4Kfzdy335Jz9sSM;
-        Fri, 15 Apr 2022 16:45:42 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 9mbAjV4qM4Qw; Fri, 15 Apr 2022 16:45:42 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4Kfzdp4PxQz9sSk;
-        Fri, 15 Apr 2022 16:45:34 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 848F08B778;
-        Fri, 15 Apr 2022 16:45:34 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id NgRjy0GRUqZz; Fri, 15 Apr 2022 16:45:34 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 607AF8B764;
-        Fri, 15 Apr 2022 16:45:34 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 23FEjOGo1546420
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 15 Apr 2022 16:45:25 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 23FEjO9Z1546418;
-        Fri, 15 Apr 2022 16:45:24 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Steve Capper <steve.capper@arm.com>,
-        Will Deacon <will.deacon@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        stable@vger.kernel.org
-Subject: [PATCH v10] mm, hugetlbfs: Allow for "high" userspace addresses
-Date:   Fri, 15 Apr 2022 16:45:13 +0200
-Message-Id: <ab847b6edb197bffdfe189e70fb4ac76bfe79e0d.1650033747.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
+        Fri, 15 Apr 2022 10:48:19 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7CC73041
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 07:45:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=QWxdhbL8bXm/fNhn6GXmwt668iO5RiNBagKq9feE/Fo=; b=W72ZZbjGfB/fnnZ02Pihi6NHkn
+        lrIO5UceziNVJjvzdRS0PYq8kLQoAK4Nu7zkrC94GwEA6j6J8UkSOIrhn4/+Ov76aGj3L+uOBmGor
+        33xN1DmIGjgc1QrGRRBImTYhAr5iz8osT03d8vhGH339njujF5sp2EqEh2GSCAh9r4dy1MFeqYnvn
+        1ciFtQbbdtTMBgrPFtAAGfJInAY0CXnWy7lm6NwpBKX88N6w/q1rrB6BkD5R6cJYvq3M6m0QgWfMy
+        k4IqwvWONH8AsfDUiSd4ly6HumNXofrhxV4XYxnWDlmgOfxmKjX7fx3tR+lLFsbRuHidSALWfyYZw
+        mM/BlECQ==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nfNCg-005Ppn-1C; Fri, 15 Apr 2022 14:45:42 +0000
+Message-ID: <34f3fe4a-7d75-d007-2b22-54d44f49a435@infradead.org>
+Date:   Fri, 15 Apr 2022 07:45:36 -0700
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1650033912; l=5323; s=20211009; h=from:subject:message-id; bh=UmgUWoLLpDMHfdawGtDAuWyrltDOfRI1GH+FVVOxo0s=; b=jc9wGSeCXlZyTKtt24uXrhkzxYCCyUB/mjZFb7pPsd9hRVA6kOZcYPdiXGEkcWMHzY02bV4KweGx 1wvlcPPJBOZsbvlhxGFm5MLjQJfBpf8vfLwUZ7pGcd6U/m9jx8bG
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3] sound/oss/dmasound: fix build when drivers are mixed
+ =y/=m
+Content-Language: en-US
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+        kernel test robot <lkp@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, Takashi Iwai <tiwai@suse.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+References: <20220405234118.24830-1-rdunlap@infradead.org>
+ <20220415134852.GA2271702@roeck-us.net>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220415134852.GA2271702@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a fix for commit f6795053dac8 ("mm: mmap: Allow for "high"
-userspace addresses") for hugetlb.
 
-This patch adds support for "high" userspace addresses that are
-optionally supported on the system and have to be requested via a hint
-mechanism ("high" addr parameter to mmap).
 
-Architectures such as powerpc and x86 achieve this by making changes to
-their architectural versions of hugetlb_get_unmapped_area() function.
-However, arm64 uses the generic version of that function.
+On 4/15/22 06:48, Guenter Roeck wrote:
+> On Tue, Apr 05, 2022 at 04:41:18PM -0700, Randy Dunlap wrote:
+>> When CONFIG_DMASOUND_ATARI=m and CONFIG_DMASOUND_Q40=y (or vice versa),
+>> dmasound_core.o can be built without dmasound_deinit() being defined,
+>> causing a build error:
+>>
+>> ERROR: modpost: "dmasound_deinit" [sound/oss/dmasound/dmasound_atari.ko] undefined!
+>>
+>> Modify dmasound_core.c and dmasound.h so that dmasound_deinit() is
+>> always available.
+>>
+>> The mixed modes (=y/=m) also mean that several variables and structs
+>> have to be declared in all cases.
+>>
+>> Suggested-by: Arnd Bergmann <arnd@arndb.de>
+>> Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Link: lore.kernel.org/r/202204032138.EFT9qGEd-lkp@intel.com
+>> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+>> Cc: Jaroslav Kysela <perex@perex.cz>
+>> Cc: Takashi Iwai <tiwai@suse.com>
+>> Cc: alsa-devel@alsa-project.org
+>> ---
+> 
+> m68k:allmodconfig fails to build with this patch in the tree.
+> 
+> Error log:
+> sound/oss/dmasound/dmasound_core.c:1431:12: error: 'dmasound_setup' defined but not used
+> 
+> ... because __setup() is empty if MODULE is defined.
+> 
+> Guenter
 
-So take into account arch_get_mmap_base() and arch_get_mmap_end() in
-hugetlb_get_unmapped_area(). To allow that, move those two macros
-out of mm/mmap.c into include/linux/sched/mm.h
+Takashi has already merged a patch for this from Miles Chen.
 
-If these macros are not defined in architectural code then they default
-to (TASK_SIZE) and (base) so should not introduce any behavioural
-changes to architectures that do not define them.
+thanks.
 
-For the time being, only ARM64 is affected by this change.
-
-From Catalin (ARM64):
-  We should have fixed hugetlb_get_unmapped_area() as well when we
-added support for 52-bit VA. The reason for commit f6795053dac8 was to
-prevent normal mmap() from returning addresses above 48-bit by default
-as some user-space had hard assumptions about this.
-
-It's a slight ABI change if you do this for hugetlb_get_unmapped_area()
-but I doubt anyone would notice. It's more likely that the current
-behaviour would cause issues, so I'd rather have them consistent.
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: Steve Capper <steve.capper@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Fixes: f6795053dac8 ("mm: mmap: Allow for "high" userspace addresses")
-Cc: <stable@vger.kernel.org> # 5.0.x
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Acked-by: Andrew Morton <akpm@linux-foundation.org>
----
-Resending the patch as standalone so that is can be merged via mm tree in 5.18 and stable.
-
-v10:
-- Moved as first patch of the series so that it can be applied
-separately as a flag and be easily applied back on stable.
-- Added text from Catalin explaining why it is a fixup.
----
- fs/hugetlbfs/inode.c     | 9 +++++----
- include/linux/sched/mm.h | 8 ++++++++
- mm/mmap.c                | 8 --------
- 3 files changed, 13 insertions(+), 12 deletions(-)
-
-diff --git a/fs/hugetlbfs/inode.c b/fs/hugetlbfs/inode.c
-index 99c7477cee5c..dd3a088db11d 100644
---- a/fs/hugetlbfs/inode.c
-+++ b/fs/hugetlbfs/inode.c
-@@ -206,7 +206,7 @@ hugetlb_get_unmapped_area_bottomup(struct file *file, unsigned long addr,
- 	info.flags = 0;
- 	info.length = len;
- 	info.low_limit = current->mm->mmap_base;
--	info.high_limit = TASK_SIZE;
-+	info.high_limit = arch_get_mmap_end(addr);
- 	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
- 	info.align_offset = 0;
- 	return vm_unmapped_area(&info);
-@@ -222,7 +222,7 @@ hugetlb_get_unmapped_area_topdown(struct file *file, unsigned long addr,
- 	info.flags = VM_UNMAPPED_AREA_TOPDOWN;
- 	info.length = len;
- 	info.low_limit = max(PAGE_SIZE, mmap_min_addr);
--	info.high_limit = current->mm->mmap_base;
-+	info.high_limit = arch_get_mmap_base(addr, current->mm->mmap_base);
- 	info.align_mask = PAGE_MASK & ~huge_page_mask(h);
- 	info.align_offset = 0;
- 	addr = vm_unmapped_area(&info);
-@@ -237,7 +237,7 @@ hugetlb_get_unmapped_area_topdown(struct file *file, unsigned long addr,
- 		VM_BUG_ON(addr != -ENOMEM);
- 		info.flags = 0;
- 		info.low_limit = current->mm->mmap_base;
--		info.high_limit = TASK_SIZE;
-+		info.high_limit = arch_get_mmap_end(addr);
- 		addr = vm_unmapped_area(&info);
- 	}
- 
-@@ -251,6 +251,7 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
- 	struct mm_struct *mm = current->mm;
- 	struct vm_area_struct *vma;
- 	struct hstate *h = hstate_file(file);
-+	const unsigned long mmap_end = arch_get_mmap_end(addr);
- 
- 	if (len & ~huge_page_mask(h))
- 		return -EINVAL;
-@@ -266,7 +267,7 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
- 	if (addr) {
- 		addr = ALIGN(addr, huge_page_size(h));
- 		vma = find_vma(mm, addr);
--		if (TASK_SIZE - len >= addr &&
-+		if (mmap_end - len >= addr &&
- 		    (!vma || addr + len <= vm_start_gap(vma)))
- 			return addr;
- 	}
-diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-index a80356e9dc69..1ad1f4bfa025 100644
---- a/include/linux/sched/mm.h
-+++ b/include/linux/sched/mm.h
-@@ -136,6 +136,14 @@ static inline void mm_update_next_owner(struct mm_struct *mm)
- #endif /* CONFIG_MEMCG */
- 
- #ifdef CONFIG_MMU
-+#ifndef arch_get_mmap_end
-+#define arch_get_mmap_end(addr)	(TASK_SIZE)
-+#endif
-+
-+#ifndef arch_get_mmap_base
-+#define arch_get_mmap_base(addr, base) (base)
-+#endif
-+
- extern void arch_pick_mmap_layout(struct mm_struct *mm,
- 				  struct rlimit *rlim_stack);
- extern unsigned long
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 3aa839f81e63..313b57d55a63 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -2117,14 +2117,6 @@ unsigned long vm_unmapped_area(struct vm_unmapped_area_info *info)
- 	return addr;
- }
- 
--#ifndef arch_get_mmap_end
--#define arch_get_mmap_end(addr)	(TASK_SIZE)
--#endif
--
--#ifndef arch_get_mmap_base
--#define arch_get_mmap_base(addr, base) (base)
--#endif
--
- /* Get an address range which is currently unmapped.
-  * For shmat() with addr=0.
-  *
 -- 
-2.35.1
-
+~Randy
