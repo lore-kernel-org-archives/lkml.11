@@ -2,103 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2022CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 07:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E241C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 07:41:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351147AbiDOHli (ORCPT
+        id S1351153AbiDOHnd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 03:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55138 "EHLO
+        Fri, 15 Apr 2022 03:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351162AbiDOHlc (ORCPT
+        with ESMTP id S237208AbiDOHnb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 03:41:32 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B4F4B1F8;
-        Fri, 15 Apr 2022 00:39:05 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id bg9so6725703pgb.9;
-        Fri, 15 Apr 2022 00:39:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7Z7mILpiEbIhXnxkIbIQrTgZVr/aE/tpgfsOP60J5fQ=;
-        b=Ek/ooZ8zbGOpq4ldLwkfi6X2KgZZv1HnzYWGJx53dOVtA2RnkzoFq8zSKz79lYnl9P
-         f3jNoGwOxUruO3I2wH4hFmEHqV5a0OnfwYJWFFN0lzo0RB7hL3WEPXMgABIx9K8k93Up
-         Br/YK5YtXXUAaxQdLDEp7rUVapHh4pccxlM74DotEOP7p1zeCoiTCbNxB1eV8DOvUA/D
-         C+slidK0jKPCwqw09Rn5/QoHQzWrlfQnRtQGALkEovDUZ1ZOR53/2cusntn1keEvYN6j
-         ndzUiUWPAge7IwdrArw3d0O2aaZX3deH5MGNwfz6iz0ewBrSf+1A4NgvyjK4LEtZZGJd
-         usEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7Z7mILpiEbIhXnxkIbIQrTgZVr/aE/tpgfsOP60J5fQ=;
-        b=APtBI3OypXhmT3fxB//SXnrnqyJtVWAGpJvF4pV61sFIyObUKYfBU9/7Xq2hbPMrN0
-         GXfaja0dAVinE22jxLGifxphEdbljclvKBlhQv9gpPHB7yAvq38NDzBp28M6Ck+9+Nk0
-         hDOobMoU4DT9IdJveWlo5Ba9uBmiVHXLffATi998L5JxZDCng/4RRK7A0em5Q57r1tgs
-         NMa1tnTnHcK8eRAboT+DVQ9zQ2MG35dnBFbgK9UpbXGujEhntMqH3EXUyHDhnnqdkpm3
-         F3NBNPhvHvTsX9CO/t+rJDLmqjdJ17/BV3nCZEfmgtKGJQksAq3uDYrxpCEAnoIa/mlc
-         qdcA==
-X-Gm-Message-State: AOAM531tRCE3kMy1KXl6TMpp/ReMtHaRnyI4mK8WHNpg8lC1n7o4Ntoj
-        DBZ0qd/6vVYalh9bAATgRfU=
-X-Google-Smtp-Source: ABdhPJx/mFPNudIZ2y6RfMDEwj4GDSKSQpBB7GQigl3sdT8UsSdsiuEBHlCdzEa+tF35zyGcTAiJoA==
-X-Received: by 2002:a63:a804:0:b0:398:e7d7:29ab with SMTP id o4-20020a63a804000000b00398e7d729abmr5294823pgf.138.1650008344416;
-        Fri, 15 Apr 2022 00:39:04 -0700 (PDT)
-Received: from [192.168.43.80] (subs32-116-206-28-30.three.co.id. [116.206.28.30])
-        by smtp.gmail.com with ESMTPSA id y8-20020aa78f28000000b00508225493ddsm1925680pfr.80.2022.04.15.00.39.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Apr 2022 00:39:03 -0700 (PDT)
-Message-ID: <4586921d-5fc4-b63f-8264-a6fd63c592b6@gmail.com>
-Date:   Fri, 15 Apr 2022 14:38:58 +0700
+        Fri, 15 Apr 2022 03:43:31 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7061C201AE;
+        Fri, 15 Apr 2022 00:41:04 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23F7eu9T047654;
+        Fri, 15 Apr 2022 02:40:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1650008456;
+        bh=1egII1TAo0KWjN3/Um+MWMVix8RR4bOccjOJCc7zNxE=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=buw+nqZ+txbHusAcgmFNC/j87hpkK/SGY3YskqrKeMrSGU6MZAOLe+kuBs+Ukz1Jf
+         BVi+nNyzXnIcfdHD6UFbKD7tz9jbRrAxylA1DZlakoIlJuQpfxhzVHNwQfA/7xma+M
+         OkjmYjF5AI2lwQt7/QIX68wbUYXxyh/F16LIGxow=
+Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23F7euk7114015
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 15 Apr 2022 02:40:56 -0500
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 15
+ Apr 2022 02:40:56 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 15 Apr 2022 02:40:56 -0500
+Received: from [10.250.235.115] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23F7eqQt027060;
+        Fri, 15 Apr 2022 02:40:53 -0500
+Message-ID: <83d5773d-d699-59e1-4d7d-e1ce85286702@ti.com>
+Date:   Fri, 15 Apr 2022 13:10:51 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH net-next v5] net/ipv6: Introduce accept_unsolicited_na
- knob to implement router-side changes for RFC9131
+Subject: Re: [PATCH] arm64: dts: ti: k3-am64-mcu: explicitly assign UART base
+ clock rates
 Content-Language: en-US
-To:     Arun Ajith S <aajith@arista.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, dsahern@kernel.org,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
-        corbet@lwn.net, prestwoj@gmail.com, gilligan@arista.com,
-        noureddine@arista.com, gk@arista.com
-References: <20220415054219.38078-1-aajith@arista.com>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20220415054219.38078-1-aajith@arista.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20220411121108.63436-1-matthias.schiffer@ew.tq-group.com>
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+In-Reply-To: <20220411121108.63436-1-matthias.schiffer@ew.tq-group.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/15/22 12:42, Arun Ajith S wrote:
-> +accept_unsolicited_na - BOOLEAN
-> +	Add a new neighbour cache entry in STALE state for routers on receiving an
-> +	unsolicited neighbour advertisement with target link-layer address option
-> +	specified. This is as per router-side behavior documented in RFC9131.
-> +	This has lower precedence than drop_unsolicited_na.
-> +
-> +   ====   ======  ======  ==============================================
-> +	 drop   accept  fwding                   behaviour
-> +	 ----   ------  ------  ----------------------------------------------
-> +	    1        X       X  Drop NA packet and don't pass up the stack
-> +	    0        0       X  Pass NA packet up the stack, don't update NC
-> +	    0        1       0  Pass NA packet up the stack, don't update NC
-> +	    0        1       1  Pass NA packet up the stack, and add a STALE
-> +	                        NC entry
-> +   ====   ======  ======  ==============================================
-> +
 
-Hi,
 
-Building htmldocs with this patch, there are no more warnings from v4, but
-I don't see the table above generated in the output. I guess due to
-whitespace-mangling issues on your mailer, because the table syntax alignment
-(the =-s) don't match the contents/cells. 
+On 11/04/22 5:41 pm, Matthias Schiffer wrote:
+> We found that (at least some versions of) the sci-fw do not assign the
+> expected base clock rate of 48 MHz for the UARTs in the MCU domain,
+> leading to incorrect baud rates when used from Linux. Use
+> assigned-clock-rates to fix this issue.
+> 
+> Fixes: 8abae9389bdb ("arm64: dts: ti: Add support for AM642 SoC")
+> Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> ---
+> 
+> I'm not sure if this is the best fix. Should the clock-frequency
+> property simply be removed, so the frequency is queried from the clock
+> driver instead?
+> 
 
-Thanks.
+I think its better to drop clock-frequency. Driver can setup DLL/DLH to
+get appropriate baudrate as per frequency queried from clock driver
 
--- 
-An old man doll... just what I always wanted! - Clara
+>  arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi b/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
+> index 2bb5c9ff172c..69b0f127eea5 100644
+> --- a/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
+> +++ b/arch/arm64/boot/dts/ti/k3-am64-mcu.dtsi
+> @@ -15,6 +15,8 @@ mcu_uart0: serial@4a00000 {
+>  		power-domains = <&k3_pds 149 TI_SCI_PD_EXCLUSIVE>;
+>  		clocks = <&k3_clks 149 0>;
+>  		clock-names = "fclk";
+> +		assigned-clocks = <&k3_clks 149 0>;
+> +		assigned-clock-rates = <48000000>;
+>  	};
+>  
+>  	mcu_uart1: serial@4a10000 {
+> @@ -26,6 +28,8 @@ mcu_uart1: serial@4a10000 {
+>  		power-domains = <&k3_pds 160 TI_SCI_PD_EXCLUSIVE>;
+>  		clocks = <&k3_clks 160 0>;
+>  		clock-names = "fclk";
+> +		assigned-clocks = <&k3_clks 160 0>;
+> +		assigned-clock-rates = <48000000>;
+>  	};
+>  
+>  	mcu_i2c0: i2c@4900000 {
