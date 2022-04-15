@@ -2,109 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F71C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE34BC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353654AbiDOMoe (ORCPT
+        id S1353700AbiDOMpC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 08:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46124 "EHLO
+        Fri, 15 Apr 2022 08:45:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354494AbiDOMny (ORCPT
+        with ESMTP id S1351470AbiDOMpA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 08:43:54 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98B2253;
-        Fri, 15 Apr 2022 05:41:25 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 21so9848059edv.1;
-        Fri, 15 Apr 2022 05:41:25 -0700 (PDT)
+        Fri, 15 Apr 2022 08:45:00 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82809263A
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 05:42:32 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id v12so7055147plv.4
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 05:42:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=PjAOnK4TaThM2zy9QVRf0RiQ0dd/kY5ZjwiE2UMge0w=;
-        b=ZCBW3amw8qVo6miVAAhkjAXu/tGK59gJc9d8egCRoPu4Sd0hFyT0C+jwgcaB5brIhH
-         e3m5jnX7gjDd7EHc1iTYxSigi/Sybz6qr1NMAfAL8T+68QljsXBr5DKYxXPZKOla4V/g
-         rc3bEcnmrl1MSEEjxfq5/7z2ZkmxfWsNq6vo6YO78aULLZx1n2g7wcLYsmWPi3XfFsGF
-         SJf9dzkmsUxiaNDzKVsjmyxCtrd6XveG7HvSjk66K6YIV0iEGElRh/osjgP2eMxYTe2P
-         XdFcbxrCT5U/hHJDXL5v9DxIFI3iG6/zdSJjtkqtOWr85hZOH2M6HhFAQrL9V6c7KVPZ
-         WCtw==
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:in-reply-to:references:subject:message-id:date
+         :mime-version:content-transfer-encoding;
+        bh=Y5lAtzXMg+ppnAbSv6Q3GxiwRfJLdMdWeI1FfICWONs=;
+        b=o9fimpV6GpiP3IeJuO1eZov9gqi31/QclX7nLI3lfbAW776Q5//E67iXr7kMcV+uaF
+         1WA583e0yHlyPzanmTt/VgrhVUYQtqSpaedKTpXuusp1y4gO9TKpWiksCCqO/CZTi052
+         UqYxbayNcHMPdqsOI+H4yi/3jk+Q603ErV7f94mnYeFr8BNQmSJUyZcdxHckYeHRdfWi
+         g2IQQYaP4wKxEy/+W83yEcCbPNqfwS8s1nKJq5zU8QQCkK2JuoVqghI+DCbvMByVk9/M
+         ry7x0pkr+XlhEddS9+MgnU2sX9vwqdnsdoSC+3YYj6N5nzUBnKsrCbJRkf1/WQKqqb2B
+         cXcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=PjAOnK4TaThM2zy9QVRf0RiQ0dd/kY5ZjwiE2UMge0w=;
-        b=kkZkAkxmVD71aFxrYfhmOF5Crl4dSvwUu2w3zD6MkEucWSG+pb2vDRik2Hyii6ELua
-         gDGiwb+XadXhG9UAGpc0wRfEQzh+Py1U+OyaW3rzQUysRbJsa2iidReUlLT+w9ucYXXR
-         y8lCsit4dVnNgK/rqbnisZ2oXiSfpOTq90y6O9Zib/+XT5p1xMr7F6KWXA28H5/4p/bS
-         7wgADukzCliARnwfpKLSExx05sAUFu22GunWalFxDjQM4ssUO2LuUlhbHVeso2AelNgP
-         DbHe3t/aj/PhCk6grETT6Y/He3XXCywiVI/2jSu0RnoUQ/ZH0lFInIaUXdRWj0+K8wmO
-         yP9A==
-X-Gm-Message-State: AOAM533Ke+7v5bzW2Ezq4SaElnm8wje0FJEr6FavzG4rI+6GSxgZHEzP
-        x/r1ZlwVm5iEDC3+t01p9Ac=
-X-Google-Smtp-Source: ABdhPJxVpxx3wHYt7tHVMVU6Szae55b/THeuz+OQ6KP+h2UTFsL4byiRseG/cNIQfA+XWpKXQMi6rw==
-X-Received: by 2002:a05:6402:27c7:b0:41b:51ca:f542 with SMTP id c7-20020a05640227c700b0041b51caf542mr8170865ede.149.1650026484337;
-        Fri, 15 Apr 2022 05:41:24 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm1693634ejb.143.2022.04.15.05.41.22
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
+         :message-id:date:mime-version:content-transfer-encoding;
+        bh=Y5lAtzXMg+ppnAbSv6Q3GxiwRfJLdMdWeI1FfICWONs=;
+        b=C7q9xQ/gpDnoD0x4ogfOYdSrWoIh202XE0Q2jR1xD4Jqpz58yYVBz2cy0O7eyo4X7v
+         96PKyB6Oae/psj3u1Smc5YszWbgkUu53WaKdccGZkBCi8ylTV/aX6M4gM2lzLC5AXc6H
+         BAJPbPHo5t6lUmiTHt4SHLIpouZKHKTOZ++itVM1WtuljmqggXdCs0N84f5DtThRDRJj
+         hcLwX13KSdQcM8eHvJkA3HIWQv+Yc1dvAdOAdRxnCABj0Iuao+N5fBAm2pWBxN7aaoG+
+         9LsiI83WABODTdrguFGI3K7EacstCUbYt3p7Rr+B7/rfZiINdyye4ZRs7V3zs1i6fpAv
+         LK/w==
+X-Gm-Message-State: AOAM530yYtesnJw8RachDpN18WXsWKINvWfNsJkYyTibJ76r0MufQhvh
+        GeQhAZSr0p5Tq/sBRfx0YWuNl9XKzYXkqg==
+X-Google-Smtp-Source: ABdhPJzwIlw9dEPKGbvN1RvyT9uWP90pu1Rx1isjkrAsInbNbT0uMnb24qKjYAMYi5vH86TpAnkLMA==
+X-Received: by 2002:a17:90a:5407:b0:1bf:43ce:f11b with SMTP id z7-20020a17090a540700b001bf43cef11bmr3999585pjh.31.1650026551772;
+        Fri, 15 Apr 2022 05:42:31 -0700 (PDT)
+Received: from [127.0.1.1] (cpe-72-132-29-68.dc.res.rr.com. [72.132.29.68])
+        by smtp.gmail.com with ESMTPSA id j13-20020a056a00130d00b004f1025a4361sm2987102pfu.202.2022.04.15.05.42.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 05:41:23 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 15:41:21 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>
-Subject: Re: [PATCH net-next 06/12] net: dsa: rzn1-a5psw: add Renesas RZ/N1
- advanced 5 port switch driver
-Message-ID: <20220415124121.pls4bhfwv3azpbmf@skbuf>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
- <20220414122250.158113-7-clement.leger@bootlin.com>
- <20220414144709.tpxiiaiy2hu4n7fd@skbuf>
- <20220415113453.1a076746@fixe.home>
- <20220415105503.ztl4zhoyua2qzelt@skbuf>
- <20220415142857.525ccd2d@fixe.home>
+        Fri, 15 Apr 2022 05:42:31 -0700 (PDT)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     khazhy@google.com
+Cc:     linux-kernel@vger.kernel.org, bvanassche@acm.org,
+        linux-block@vger.kernel.org
+In-Reply-To: <20220414224056.2875681-1-khazhy@google.com>
+References: <20220408234707.2562835-1-khazhy@google.com> <20220414224056.2875681-1-khazhy@google.com>
+Subject: Re: [PATCH v2] block/compat_ioctl: fix range check in BLKGETSIZE
+Message-Id: <165002655078.10530.5825902345538532925.b4-ty@kernel.dk>
+Date:   Fri, 15 Apr 2022 06:42:30 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220415142857.525ccd2d@fixe.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 02:28:57PM +0200, Clément Léger wrote:
-> > Most things as seen by a DSA switch driver are implicitly serialized by
-> > the rtnl_mutex anyway. 
+On Thu, 14 Apr 2022 15:40:56 -0700, Khazhismel Kumykov wrote:
+> kernel ulong and compat_ulong_t may not be same width. Use type directly
+> to eliminate mismatches.
 > 
-> Is there a list of the functions that are protected by the RTNL lock
-> without having to deep dive in the whole stacks ? That would be really
-> useful to remove useless locking from my driver. But I guess I'll have
-> to look at other drivers to see that.
+> This would result in truncation rather than EFBIG for 32bit mode for
+> large disks.
+> 
+> 
+> [...]
 
-No, there isn't, but in Documentation/networking/dsa/dsa.rst we do have
-a list of dsa_switch_ops functions which used to be comprehensive
-(but now needs to be updated again due to development that happened in
-the meantime). I suppose that if you do a thorough job of documenting
-the synchronization rules, you could add that information to this file.
-This would be similar to how we have the "struct net_device synchronization
-rules" section in Documentation/networking/netdevices.rst.
+Applied, thanks!
+
+[1/1] block/compat_ioctl: fix range check in BLKGETSIZE
+      commit: ccf16413e520164eb718cf8b22a30438da80ff23
+
+Best regards,
+-- 
+Jens Axboe
+
+
