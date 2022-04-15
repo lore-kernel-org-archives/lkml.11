@@ -2,89 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2280C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:44:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FE25C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:44:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355901AbiDOQqe (ORCPT
+        id S1355926AbiDOQqj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 12:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45700 "EHLO
+        Fri, 15 Apr 2022 12:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355902AbiDOQqc (ORCPT
+        with ESMTP id S1355918AbiDOQqf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 12:46:32 -0400
-X-Greylist: delayed 3352 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Apr 2022 09:44:02 PDT
-Received: from 3.mo550.mail-out.ovh.net (3.mo550.mail-out.ovh.net [46.105.60.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261F4DB4AB
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 09:44:01 -0700 (PDT)
-Received: from player760.ha.ovh.net (unknown [10.109.156.39])
-        by mo550.mail-out.ovh.net (Postfix) with ESMTP id D8AFE24077
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 16:06:38 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player760.ha.ovh.net (Postfix) with ESMTPSA id 489F02986A8B4;
-        Fri, 15 Apr 2022 16:06:34 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-101G0043b24d311-889e-4edd-ac59-8ff49a2d3389,
-                    77125C2C2681624F8512B69FC7A1C9B53E6602B4) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH v2 0/7] ASoC: remaining i2c_match_id i2c probe changes
-Date:   Fri, 15 Apr 2022 18:06:06 +0200
-Message-Id: <20220415160613.148882-1-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
+        Fri, 15 Apr 2022 12:46:35 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6786DCE23;
+        Fri, 15 Apr 2022 09:44:05 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id k5so14785420lfg.9;
+        Fri, 15 Apr 2022 09:44:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iBWwF27MwSuL5C7aP5ZZTL4T7IqFoYwfQe6tUlw2pWI=;
+        b=TkVr8aTJFS9IbJCuBrXCpGEPamxYbyEAMjEiJu0qXzB9gw4xbchJ8On8xUp6zkdSHX
+         WOA/TmTPa3pnldsg+uUpMzSQ4UMHROtPuaxMDZZftMNRw5B+GUNr9UGGgFlXmuRxpiqm
+         kFOB5il2AXyWD19g/EQrck/K0nQTTyytvYBNKvNXQrpJg6qClcEAmmkGdC/hzFpDKlni
+         /iv9VUDudkTEgw4vtPlsES43r2Ji7ln9dEz7i+Ad94DKFjiuM3S2Sdovq/F752kul4Sz
+         WolbRwGQwtcTdGVtBDMG7UOVU1XCgu7NXDbJIDhZdfz9I0s8v79w1PG5Smq61ivAHwMr
+         Kr/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iBWwF27MwSuL5C7aP5ZZTL4T7IqFoYwfQe6tUlw2pWI=;
+        b=mWXuli9AIaFqg7M/osNuDvH9qoxKlmU/OTiGbIvRKVXv4AtvGYDCSMaidvcfTfi1bw
+         0xLHO++2NIAKiP0PpZ+b05jPwReywFHXtKLYKw5UN8Wrgj/WENP/GSK0PKVto4PV1uxB
+         lFdSNHdPZ0qW7ooSio7i05l5wav/Odg4UEobfk6aFoq1xhJqQHG1aXLVhFo1T/E0ZoPo
+         uyBo2FGOZ0PUI8o9OhIl/nVmfGlq4eVduaoTxkEjjQ6Hl8nycrdp2nctJHiyQCm4CsAR
+         C1d05Dvamtb2144BOLa8wUTopKN0qTGCwM8x5C98yYoiBN7H/aOk+70hs9SWT7Uvn6DR
+         pHoA==
+X-Gm-Message-State: AOAM530Mx0oMU/9ykBZP7TW3NtnmR/Bv5agZ32L6cQGwngWzMWlZDFk2
+        qKPe28Uezf57cxYST1jDpNdizltLlew=
+X-Google-Smtp-Source: ABdhPJzGuwNvorSCO5VVz/QXWE6SE1/vY+Z2IZvVpYBCS+XgK0zpRShss1brS9/434H4FFsuCPrOIA==
+X-Received: by 2002:a05:6512:686:b0:46e:c9cf:7112 with SMTP id t6-20020a056512068600b0046ec9cf7112mr3065146lfe.662.1650041043829;
+        Fri, 15 Apr 2022 09:44:03 -0700 (PDT)
+Received: from nergzd-desktop.localdomain ([194.39.226.133])
+        by smtp.gmail.com with ESMTPSA id h22-20020a056512339600b0046bc4ceaeb6sm383787lfg.27.2022.04.15.09.44.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 09:44:03 -0700 (PDT)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH v3 0/4] Add support for Silicon Mitus SM5703 MFD
+Date:   Fri, 15 Apr 2022 19:43:51 +0300
+Message-Id: <20220415164356.25165-1-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 10956694945620592262
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelhedgleekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejiedtrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series covers all the remaining changes to migrate
-sound/soc/codecs i2c probes to probe_new, where the const struct
-i2c_client * argument is still used. Instead of relying on the
-parameter passed in, i2c_match_id is used instead.
+This series adds support for Silicon Mitus SM5703 MFD and the
+appropriate device-tree bindings. This only adds support for the
+regulator module, leaving room for other modules implemented in
+future (code for other modules is really not ready for submission
+right now). Silicon Mitus SM5703 is used on various mobile phones,
+mostly Samsung Galaxy (J5 (2015, 2016), On7, J7 (2015, 2016) ...).
 
-With this set of patches, all the sound/soc/codecs i2c probes use the
-new probe definition.
+v2:
+- mfd bindings: add "SM5703" to the title
+- mfd bindings: indent the example
+- regulators/Makefile: sort alphabetically
+v3:
+- mfd bindings: fix an error in example: there should be no 
+newline between #size-cells and #address-cells and the node
 
-Changes since v1: two missing files were added.
+Markuss Broks (4):
+  dt-bindings: regulator: Add bindings for Silicon Mitus SM5703
+    regulators
+  dt-bindings: mfd: Add bindings for Silicon Mitus SM5703 MFD
+  mfd: sm5703: Add support for SM5703 MFD
+  regulator: sm5703-regulator: Add regulators support for SM5703 MFD
 
-Stephen Kitt (7):
-  ASoC: ak*: use i2c_match_id and simple i2c probe
-  ASoC: alc56*: use i2c_match_id and simple i2c probe
-  ASoC: max980*: use i2c_match_id and simple i2c probe
-  ASoC: pcm186x: use i2c_match_id and simple i2c probe
-  ASoC: tas*: use i2c_match_id and simple i2c probe
-  ASoC: tlv320*: use i2c_match_id and simple i2c probe
-  ASoC: tpa6130: use i2c_match_id and simple i2c probe
+ .../bindings/mfd/siliconmitus,sm5703.yaml     |  91 ++++++++++
+ .../siliconmitus,sm5703-regulator.yaml        |  48 ++++++
+ MAINTAINERS                                   |   8 +
+ drivers/mfd/Kconfig                           |  12 ++
+ drivers/mfd/Makefile                          |   1 +
+ drivers/mfd/sm5703.c                          |  81 +++++++++
+ drivers/regulator/Kconfig                     |   7 +
+ drivers/regulator/Makefile                    |   1 +
+ drivers/regulator/sm5703-regulator.c          | 162 ++++++++++++++++++
+ include/linux/mfd/sm5703.h                    | 105 ++++++++++++
+ 10 files changed, 516 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
+ create mode 100644 Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
+ create mode 100644 drivers/mfd/sm5703.c
+ create mode 100644 drivers/regulator/sm5703-regulator.c
+ create mode 100644 include/linux/mfd/sm5703.h
 
- sound/soc/codecs/ak4613.c            | 10 +++++----
- sound/soc/codecs/ak4642.c            |  8 ++++---
- sound/soc/codecs/alc5623.c           | 24 +++++++++++----------
- sound/soc/codecs/alc5632.c           | 20 +++++++++--------
- sound/soc/codecs/max98088.c          | 21 +++++++++---------
- sound/soc/codecs/max98090.c          | 23 ++++++++++----------
- sound/soc/codecs/max98095.c          | 19 +++++++++--------
- sound/soc/codecs/pcm186x-i2c.c       | 24 ++++++++++-----------
- sound/soc/codecs/tas2562.c           | 25 +++++++++++-----------
- sound/soc/codecs/tas571x.c           | 11 ++++++----
- sound/soc/codecs/tas5720.c           | 21 +++++++++---------
- sound/soc/codecs/tlv320adc3xxx.c     | 21 +++++++++---------
- sound/soc/codecs/tlv320aic31xx.c     | 32 ++++++++++++++--------------
- sound/soc/codecs/tlv320aic32x4-i2c.c | 11 ++++++----
- sound/soc/codecs/tlv320aic3x-i2c.c   | 25 +++++++++++-----------
- sound/soc/codecs/tpa6130a2.c         | 19 +++++++++--------
- 16 files changed, 168 insertions(+), 146 deletions(-)
-
-
-base-commit: 5d763a740e5b24e4a2ca04317255e7e941876338
 -- 
-2.27.0
+2.35.1
 
