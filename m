@@ -2,153 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2EDDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 660ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350188AbiDOM3w (ORCPT
+        id S1353335AbiDOMb6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 08:29:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
+        Fri, 15 Apr 2022 08:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232685AbiDOM3q (ORCPT
+        with ESMTP id S234532AbiDOMbx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 08:29:46 -0400
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB70BC1C9D;
-        Fri, 15 Apr 2022 05:27:18 -0700 (PDT)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 14F649200B3; Fri, 15 Apr 2022 14:27:18 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 10D1692009E;
-        Fri, 15 Apr 2022 13:27:18 +0100 (BST)
-Date:   Fri, 15 Apr 2022 13:27:17 +0100 (BST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-cc:     a@bhelgaas, Palmer Dabbelt <palmer@dabbelt.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] PCI: Avoid handing out address 0 to devices
-In-Reply-To: <20220414232328.GA770621@bhelgaas>
-Message-ID: <alpine.DEB.2.21.2204150118240.9383@angie.orcam.me.uk>
-References: <20220414232328.GA770621@bhelgaas>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Fri, 15 Apr 2022 08:31:53 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD94B1FB
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 05:29:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650025764; x=1681561764;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+5cP0nVMRluUUW9TwVdDj5Aa+5bddYAwN4kFENnsPQA=;
+  b=Bl8MbRXzoA18ajSPScNpkvU4g/pLyrpDnNdOVvn9/1wz/nvooOwsfJvJ
+   xD6HYyiJPyjo2I/ICCGuhG+1HE/FndHx0kMT8hyvw91zjAPosiRURbShi
+   h/rs3lgRR+ajZ6o44xy2ERpKeIMJfKxrkSXC6kOXJNYSSzJTjdptWRokE
+   o2pXxw5plH7LeOLvZGdOw0zEgEGRqvmF9f3lgYZkGC8YomNleTOPkkPsV
+   NZuUqT5Hubr/NHzL47tiv0lrUrG8rHqdo2LC/SJx4PgaMduPcT+43LxY3
+   62hNYBbX9chub3MCkr4akR5IE4UbxuKIveE7Zc9pBitl4eFyqb6ittAbP
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="323589413"
+X-IronPort-AV: E=Sophos;i="5.90,262,1643702400"; 
+   d="scan'208";a="323589413"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 05:29:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,262,1643702400"; 
+   d="scan'208";a="527381119"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 15 Apr 2022 05:29:22 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nfL4j-0001w9-Dp;
+        Fri, 15 Apr 2022 12:29:21 +0000
+Date:   Fri, 15 Apr 2022 20:29:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Brijesh Singh <brijesh.singh@amd.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        x86@kernel.org, Borislav Petkov <bp@suse.de>
+Subject: [tip:x86/sev 43/49] drivers/virt/coco/sevguest/sevguest.c:579:17:
+ sparse: sparse: incorrect type in argument 1 (different address spaces)
+Message-ID: <202204152027.aJdnJRgJ-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022, Bjorn Helgaas wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/sev
+head:   101826e02ac6c829bf4e768295e79ae9c37b4b2a
+commit: fce96cf0443083e37455eff8f78fd240c621dae3 [43/49] virt: Add SEV-SNP guest driver
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220415/202204152027.aJdnJRgJ-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?id=fce96cf0443083e37455eff8f78fd240c621dae3
+        git remote add tip https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git
+        git fetch --no-tags tip x86/sev
+        git checkout fce96cf0443083e37455eff8f78fd240c621dae3
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/virt/coco/sevguest/
 
-> > > > > > Address 0 is treated specially however in many places, for
-> > > > > > example in `pci_iomap_range' and `pci_iomap_wc_range' we
-> > > > > > require that the start address is non-zero, and even if we
-> > > > > > let such an address through, then individual device drivers
-> > > > > > could reject a request to handle a device at such an
-> > > > > > address, such as in `uart_configure_port'.  Consequently
-> > > > > > given devices configured as shown above only one is actually
-> > > > > > usable:
-> > > > > 
-> > > > > pci_iomap_range() tests the resource start, i.e., the CPU
-> > > > > address.  I guess the implication is that on RISC-V, the
-> > > > > CPU-side port address is the same as the PCI bus port address?
-> > > > 
-> > > >  Umm, for all systems I came across except x86, which have
-> > > >  native port I/O access machine instructions, a port I/O
-> > > >  resource records PCI bus addresses of the device rather than
-> > > >  its CPU addresses, which encode the location of an MMIO window
-> > > >  the PCI port I/O space is accessed through.
-> > > 
-> > > My point is only that it is not necessary for the PCI bus address
-> > > and the struct resource address, i.e., the argument to inb(), to
-> > > be the same.
-> > 
-> >  Sure, but I have yet to see a system where it is the case.
-> > 
-> >  Also in principle peer PCI buses could have their own port I/O
-> >  address spaces each mapped via distinct MMIO windows in the CPU
-> >  address space, but I haven't heard of such a system.  That of
-> >  course doesn't mean there's no such system in existence.
-> 
-> They do exist, but are probably rare.  Even on x86 where multiple host
-> bridges are now fairly common, and the hardware probably supports a
-> separate 64K port space for each, the ones I've seen split up a single
-> 64K I/O port space so each bridge only gets a fraction of it.  I'm not
-> sure Linux would even support multiple spaces.  I do know ia64
-> supports multiple port spaces (see __ia64_mk_io_addr()), so we could
-> have something like this:
-> 
->   pci_bus 0000:00: root bus resource [io  0x0000-0xffff]
->   pci_bus 0001:00: root bus resource [io  0x10000-0x1ffff] (bus address [0x0000-0xffff])
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
- Yeah, I guess if anything, it *had* to be IA64!
 
- Conversely Alpha systems decode the full 32-bit address range for port 
-I/O and happily assign I/O bars beyond 64K in their firmware, however as 
-a uniform address space even across several peer PCI buses.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/virt/coco/sevguest/sevguest.c:579:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got struct snp_secrets_page_layout *[assigned] layout @@
+   drivers/virt/coco/sevguest/sevguest.c:579:17: sparse:     expected void volatile [noderef] __iomem *addr
+   drivers/virt/coco/sevguest/sevguest.c:579:17: sparse:     got struct snp_secrets_page_layout *[assigned] layout
 
- As to x86 systems as I mentioned they have native port I/O access machine
-instructions and they only support 16-bit addressing, so I wouldn't expect 
-more than one 64K of port I/O space implemented with them.  There is no 
-problem at the CPU bus level of course with presenting port I/O addresses 
-beyond 64K and as a matter of interest the original 80386 CPU did make use 
-of them internally for communicating with the 80387 FPU, just because they 
-cannot be produced with machine code and therefore a programmer could not 
-interfere with the CPU-to-FPU communication protocol.  Port I/O locations
-0x800000f8 through 0x800000ff were actually used in that protocol[1][2].
+vim +579 drivers/virt/coco/sevguest/sevguest.c
 
-> I guess the question is whether we want to reserve port 0 and MMIO
-> address 0 as being "invalid".  That makes the first space smaller than
-> the others, but it's not *much* smaller and it's an unlikely
-> configuration to begin with.
+   504	
+   505	static int __init snp_guest_probe(struct platform_device *pdev)
+   506	{
+   507		struct snp_secrets_page_layout *layout;
+   508		struct snp_guest_platform_data *data;
+   509		struct device *dev = &pdev->dev;
+   510		struct snp_guest_dev *snp_dev;
+   511		struct miscdevice *misc;
+   512		int ret;
+   513	
+   514		if (!dev->platform_data)
+   515			return -ENODEV;
+   516	
+   517		data = (struct snp_guest_platform_data *)dev->platform_data;
+   518		layout = (__force void *)ioremap_encrypted(data->secrets_gpa, PAGE_SIZE);
+   519		if (!layout)
+   520			return -ENODEV;
+   521	
+   522		ret = -ENOMEM;
+   523		snp_dev = devm_kzalloc(&pdev->dev, sizeof(struct snp_guest_dev), GFP_KERNEL);
+   524		if (!snp_dev)
+   525			goto e_unmap;
+   526	
+   527		ret = -EINVAL;
+   528		snp_dev->vmpck = get_vmpck(vmpck_id, layout, &snp_dev->os_area_msg_seqno);
+   529		if (!snp_dev->vmpck) {
+   530			dev_err(dev, "invalid vmpck id %d\n", vmpck_id);
+   531			goto e_unmap;
+   532		}
+   533	
+   534		/* Verify that VMPCK is not zero. */
+   535		if (is_vmpck_empty(snp_dev)) {
+   536			dev_err(dev, "vmpck id %d is null\n", vmpck_id);
+   537			goto e_unmap;
+   538		}
+   539	
+   540		platform_set_drvdata(pdev, snp_dev);
+   541		snp_dev->dev = dev;
+   542		snp_dev->layout = layout;
+   543	
+   544		/* Allocate the shared page used for the request and response message. */
+   545		snp_dev->request = alloc_shared_pages(sizeof(struct snp_guest_msg));
+   546		if (!snp_dev->request)
+   547			goto e_unmap;
+   548	
+   549		snp_dev->response = alloc_shared_pages(sizeof(struct snp_guest_msg));
+   550		if (!snp_dev->response)
+   551			goto e_free_request;
+   552	
+   553		ret = -EIO;
+   554		snp_dev->crypto = init_crypto(snp_dev, snp_dev->vmpck, VMPCK_KEY_LEN);
+   555		if (!snp_dev->crypto)
+   556			goto e_free_response;
+   557	
+   558		misc = &snp_dev->misc;
+   559		misc->minor = MISC_DYNAMIC_MINOR;
+   560		misc->name = DEVICE_NAME;
+   561		misc->fops = &snp_guest_fops;
+   562	
+   563		/* initial the input address for guest request */
+   564		snp_dev->input.req_gpa = __pa(snp_dev->request);
+   565		snp_dev->input.resp_gpa = __pa(snp_dev->response);
+   566	
+   567		ret =  misc_register(misc);
+   568		if (ret)
+   569			goto e_free_response;
+   570	
+   571		dev_info(dev, "Initialized SNP guest driver (using vmpck_id %d)\n", vmpck_id);
+   572		return 0;
+   573	
+   574	e_free_response:
+   575		free_shared_pages(snp_dev->response, sizeof(struct snp_guest_msg));
+   576	e_free_request:
+   577		free_shared_pages(snp_dev->request, sizeof(struct snp_guest_msg));
+   578	e_unmap:
+ > 579		iounmap(layout);
+   580		return ret;
+   581	}
+   582	
 
- Unfortunately just as IRQ 0 is considered special and barring the 8254 
-special exception for PC-style legacy junk it means "no IRQ", similarly 
-I/O port or MMIO address 0 is considered "no device" in several places.  
-One I have identified as noted above is `uart_configure_port':
-
-	/*
-	 * If there isn't a port here, don't do anything further.
-	 */
-	if (!port->iobase && !port->mapbase && !port->membase)
-		return;
-
-So even if we let address 0 through it will be rejected downstream here 
-and there and the device won't work.
-
-> But at the same time, it adds another slightly weird special case in
-> the already full-of-special-cases alloc code, and I'm somewhat averse
-> to things like that.
-
- I can sympathise with that.
-
-> We do have the IORESOURCE_UNSET flag bit that could possibly be used
-> in pci_iomap_range() instead of testing for "!start".  Or maybe
-> there's a way to allocate address 0 instead of special-casing the
-> allocator?  Just thinking out loud here.
-
- I have discovered it with an 8250-compatible UART option card and when I 
-patched up `pci_iomap_range' to let address 0 through, I have learnt the 
-hard way it is not going to work, as described above.  And I think the 
-special semantics of bus address 0 has been there with us since forever, 
-so I dare not change it as people surely have relied on it.
-
- I could see if the parport_pc driver for the parallel port option card I
-now have installed instead would be happy with one of its decode ranges 
-set to 0, but I'm not sure if there's any value in such a check given my 
-observation.
-
- We're still doing better with my proposal than systems that have a legacy 
-southbridge do, as we're only losing one increment of the BAR decode range 
-rather than 4K of the I/O port address space that those systems do.
-
-References:
-
-[1] "Intel386 DX Microprocessor High Performance 32-bit CHMOS
-    Microprocessor with Integrated Memory Management", Intel Corporation, 
-    Order Number: 231630-010, December 1992, Section 5.2.4 "Address Bus 
-    (BE0# through BE3#, A2 through A31)", p.63
-
-[2] same, Table 5-11 "Numeric Coprocessor Port Addresses", p.94
-
-  Maciej
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
