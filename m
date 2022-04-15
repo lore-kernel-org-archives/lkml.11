@@ -2,128 +2,745 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3941C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56343C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 12:47:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353745AbiDOMqD (ORCPT
+        id S1353769AbiDOMtf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 08:46:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47546 "EHLO
+        Fri, 15 Apr 2022 08:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241937AbiDOMqA (ORCPT
+        with ESMTP id S243415AbiDOMtc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 08:46:00 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9439AC31D7;
-        Fri, 15 Apr 2022 05:43:31 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3E09CE0005;
-        Fri, 15 Apr 2022 12:43:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650026610;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8erFvk+2hjel+P0tYw+hz99use+hgo7ZwPscCOBWUUI=;
-        b=O4r486fzPea8x95LEc66uX+VfbejUeNr3S9jo6emAvz/RAciWQTeIoLsBKasizdh1s5Hx+
-        PTMlexfVy0fQsijFnKOcoZz58EaQFcqrwxyC8VzGwQlFsJ/4+AnoikyAIlkrgWTTUVb96Y
-        083jY2EzKumwc11wphcnozz/t3ou6xO9E6ubaLTWQ42Oxtwz1dK0opxkLtOzefLsKXIE6j
-        4yYc2Ap2Tndz/D4Kw5cThhJzRPXR0UMoSEQRL2V0UnYOu0lcy8eYop1Ul+ao88VEIgHIvV
-        zVpP+qIegCingWUaCxiPz2tUMrUrWhC9Cd6wNFeKs73f15Vx1GaYQZA8XOhWxQ==
-Date:   Fri, 15 Apr 2022 14:42:02 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 07/12] net: dsa: rzn1-a5psw: add statistics
- support
-Message-ID: <20220415144202.64b6c3b4@fixe.home>
-In-Reply-To: <20220414173444.iymkyes7iu4jifte@skbuf>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
-        <20220414122250.158113-8-clement.leger@bootlin.com>
-        <20220414173444.iymkyes7iu4jifte@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Fri, 15 Apr 2022 08:49:32 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4BBC90DF;
+        Fri, 15 Apr 2022 05:46:57 -0700 (PDT)
+X-UUID: 6f24afeb89f54a3695d39614541aa7ed-20220415
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:bd7f9eb7-58ce-41ae-9d7d-f5e65d1025e3,OB:0,LO
+        B:10,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:53
+X-CID-INFO: VERSION:1.1.4,REQID:bd7f9eb7-58ce-41ae-9d7d-f5e65d1025e3,OB:0,LOB:
+        10,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:53
+X-CID-META: VersionHash:faefae9,CLOUDID:93dbe2ef-da02-41b4-b6df-58f4ccd36682,C
+        OID:706a576dedef,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,Fi
+        le:nil,QS:0,BEC:nil
+X-UUID: 6f24afeb89f54a3695d39614541aa7ed-20220415
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <johnson.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 517416927; Fri, 15 Apr 2022 20:46:54 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 15 Apr 2022 20:46:53 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 15 Apr
+ 2022 20:46:53 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 15 Apr 2022 20:46:53 +0800
+Message-ID: <6bce3e554dc0c5585dfbbd18a54f51567bbcacca.camel@mediatek.com>
+Subject: Re: [PATCH v2 2/2] PM / devfreq: mediatek: Introduce MediaTek CCI
+ devfreq driver
+From:   Johnson Wang <johnson.wang@mediatek.com>
+To:     Chanwoo Choi <cwchoi00@gmail.com>, <cw00.choi@samsung.com>,
+        <krzk+dt@kernel.org>, <robh+dt@kernel.org>,
+        <kyungmin.park@samsung.com>
+CC:     <khilman@kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <jia-wei.chang@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Fri, 15 Apr 2022 20:46:53 +0800
+In-Reply-To: <bd1c9dcc-987a-8214-1a1a-095053dd7242@gmail.com>
+References: <20220408052150.22536-1-johnson.wang@mediatek.com>
+         <20220408052150.22536-3-johnson.wang@mediatek.com>
+         <bd1c9dcc-987a-8214-1a1a-095053dd7242@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Thu, 14 Apr 2022 20:34:44 +0300,
-Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
+Hi Chanwoo,
 
-> On Thu, Apr 14, 2022 at 02:22:45PM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
-> > Add per-port statistics. This support requries to add a stat lock since
-> > statistics are stored in two 32 bits registers, the hi part one being
-> > global and latched when accessing the lo part.
-> >=20
-> > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
-> > --- =20
->=20
-> I think for new drivers Jakub will also want to see the more specific
-> and less free-form get_stats64, get_eth_mac_stats, get_eth_phy_stats,
-> get_eth_ctrl_stats ops implemented. Your counters should map nicely over
-> these.
-
-Ok, I'll implement these callbacks !
-
->=20
-> >  drivers/net/dsa/rzn1_a5psw.c | 101 +++++++++++++++++++++++++++++++++++
-> >  drivers/net/dsa/rzn1_a5psw.h |   2 +
-> >  2 files changed, 103 insertions(+)
-> >=20
-> > diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
-> > index 5bee999f7050..7ab7d9054427 100644
-> > --- a/drivers/net/dsa/rzn1_a5psw.c
-> > +++ b/drivers/net/dsa/rzn1_a5psw.c
-> > @@ -16,6 +16,59 @@
-> > =20
-> >  #include "rzn1_a5psw.h"
-> > =20
-> > +struct a5psw_stats {
-> > +	u16 offset;
-> > +	const char *name;
+On Thu, 2022-04-14 at 06:43 +0900, Chanwoo Choi wrote:
+> Hi Johnson,
+> 
+> On 22. 4. 8. 14:21, Johnson Wang wrote:
+> > We introduce a devfreq driver for the MediaTek Cache Coherent
+> > Interconnect
+> > (CCI) used by some MediaTek SoCs.
+> > 
+> > In this driver, we use the passive devfreq driver to get target
+> > frequencies
+> > and adjust voltages accordingly. In MT8183 and MT8186, the MediaTek
+> > CCI
+> > is supplied by the same regulators with the little core CPUs.
+> > 
+> > Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> > Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> > ---
+> > This patch depends on "devfreq-testing"[1].
+> > [1]
+> > https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/log/?h=devfreq-testing__;!!CTRNKA9wMg0ARbw!zTRf894peuWDE_-MUuTihqu6mp5fA1rmQ3R8UK5a_bgILjAleHCI9z9QAk55ohfaw880$
+> >  
+> > ---
+> >   drivers/devfreq/Kconfig           |  10 +
+> >   drivers/devfreq/Makefile          |   1 +
+> >   drivers/devfreq/mtk-cci-devfreq.c | 479
+> > ++++++++++++++++++++++++++++++
+> >   3 files changed, 490 insertions(+)
+> >   create mode 100644 drivers/devfreq/mtk-cci-devfreq.c
+> > 
+> > diff --git a/drivers/devfreq/Kconfig b/drivers/devfreq/Kconfig
+> > index 87eb2b837e68..d985597f343f 100644
+> > --- a/drivers/devfreq/Kconfig
+> > +++ b/drivers/devfreq/Kconfig
+> > @@ -120,6 +120,16 @@ config ARM_TEGRA_DEVFREQ
+> >   	  It reads ACTMON counters of memory controllers and adjusts
+> > the
+> >   	  operating frequencies and voltages with OPP support.
+> >   
+> > +config ARM_MEDIATEK_CCI_DEVFREQ
+> > +	tristate "MEDIATEK CCI DEVFREQ Driver"
+> > +	depends on ARM_MEDIATEK_CPUFREQ
+> > +	select DEVFREQ_GOV_PASSIVE
+> > +	help
+> > +	  This adds a devfreq driver for MediaTek Cache Coherent
+> > Interconnect
+> > +	  which is shared the same regulators with the cpu cluster. It
+> > can track
+> > +	  buck voltages and update a proper CCI frequency. Use the
+> > notification
+> > +	  to get the regulator status.
+> > +
+> >   config ARM_RK3399_DMC_DEVFREQ
+> >   	tristate "ARM RK3399 DMC DEVFREQ Driver"
+> >   	depends on (ARCH_ROCKCHIP && HAVE_ARM_SMCCC) || \
+> > diff --git a/drivers/devfreq/Makefile b/drivers/devfreq/Makefile
+> > index 0b6be92a25d9..bf40d04928d0 100644
+> > --- a/drivers/devfreq/Makefile
+> > +++ b/drivers/devfreq/Makefile
+> > @@ -11,6 +11,7 @@ obj-$(CONFIG_DEVFREQ_GOV_PASSIVE)	+=
+> > governor_passive.o
+> >   obj-$(CONFIG_ARM_EXYNOS_BUS_DEVFREQ)	+= exynos-bus.o
+> >   obj-$(CONFIG_ARM_IMX_BUS_DEVFREQ)	+= imx-bus.o
+> >   obj-$(CONFIG_ARM_IMX8M_DDRC_DEVFREQ)	+= imx8m-ddrc.o
+> > +obj-$(CONFIG_ARM_MEDIATEK_CCI_DEVFREQ)	+= mtk-cci-devfreq.o
+> >   obj-$(CONFIG_ARM_RK3399_DMC_DEVFREQ)	+= rk3399_dmc.o
+> >   obj-$(CONFIG_ARM_SUN8I_A33_MBUS_DEVFREQ)	+= sun8i-a33-mbus.o
+> >   obj-$(CONFIG_ARM_TEGRA_DEVFREQ)		+= tegra30-devfreq.o
+> > diff --git a/drivers/devfreq/mtk-cci-devfreq.c
+> > b/drivers/devfreq/mtk-cci-devfreq.c
+> > new file mode 100644
+> > index 000000000000..53a28e2c88bd
+> > --- /dev/null
+> > +++ b/drivers/devfreq/mtk-cci-devfreq.c
+> > @@ -0,0 +1,479 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> > +/*
+> > + * Copyright (C) 2022 MediaTek Inc.
+> > + */
+> > +
+> > +#include <linux/clk.h>
+> > +#include <linux/devfreq.h>
+> > +#include <linux/minmax.h>
+> > +#include <linux/module.h>
+> > +#include <linux/of.h>
+> > +#include <linux/of_device.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/pm_opp.h>
+> > +#include <linux/regulator/consumer.h>
+> > +
+> > +struct mtk_ccifreq_platform_data {
+> > +	int min_volt_shift;
+> > +	int max_volt_shift;
+> > +	int proc_max_volt;
+> > +	int sram_min_volt;
+> > +	int sram_max_volt;
 > > +};
 > > +
-> > +#define STAT_DESC(_offset, _name) {.offset =3D _offset, .name =3D _nam=
-e}
+> > +struct mtk_ccifreq_drv {
+> > +	struct device *cci_dev;
+> > +	struct devfreq *devfreq;
+> > +	struct regulator *proc_reg;
+> > +	struct regulator *sram_reg;
+> > +	struct clk *cci_clk;
+> > +	struct clk *inter_clk;
+> > +	int inter_voltage;
+> > +	int old_voltage;
+> > +	unsigned long old_freq;
+> > +	bool need_voltage_tracking;
+> > +	/* Avoid race condition for regulators between notify and
+> > policy */
+> > +	struct mutex reg_lock;
+> > +	struct notifier_block opp_nb;
+> > +	const struct mtk_ccifreq_platform_data *soc_data;
+> > +};
 > > +
-> > +static const struct a5psw_stats a5psw_stats[] =3D {
-> > +	STAT_DESC(0x868, "aFrameTransmitted"),
-> > +	STAT_DESC(0x86C, "aFrameReceived"),
-> > +	STAT_DESC(0x870, "aFrameCheckSequenceErrors"),
-> > +	STAT_DESC(0x874, "aAlignmentErrors"),
-> > +	STAT_DESC(0x878, "aOctetsTransmitted"),
-> > +	STAT_DESC(0x87C, "aOctetsReceived"),
-> > +	STAT_DESC(0x880, "aTxPAUSEMACCtrlFrames"),
-> > +	STAT_DESC(0x884, "aRxPAUSEMACCtrlFrames"), =20
->=20
-> What does the "a" stand for?
+> > +static int mtk_ccifreq_voltage_tracking(struct mtk_ccifreq_drv
+> > *drv,
+> > +					int new_voltage)
+> > +{
+> 
+> mtk_ccifreq_voltage_tracking() function is only used in 
+> mtk_ccifreq_set_voltage and mtk_ccifreq_set_voltage function doesn't 
+> contain the long codes. I recommend that move 
+> mtk_ccifreq_voltage_tracking code into mtk_ccifreq_set_voltage.
 
-That's a mystery :/ I tried to be a normal person and copy/pasted these
-from the datasheet ;)
+Thanks for your review.
+I will try to modify it in the next version.
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+> > +	const struct mtk_ccifreq_platform_data *soc_data = drv-
+> > >soc_data;
+> > +	struct device *dev = drv->cci_dev;
+> > +	struct regulator *proc_reg = drv->proc_reg;
+> > +	struct regulator *sram_reg = drv->sram_reg;
+> > +	int old_voltage, old_vsram, new_vsram, vsram, voltage, ret;
+> > +
+> > +	old_voltage = regulator_get_voltage(proc_reg);
+> > +	if (old_voltage < 0) {
+> > +		dev_err(dev, "invalid vproc value: %d\n", old_voltage);
+> > +		return old_voltage;
+> > +	}
+> > +
+> > +	old_vsram = regulator_get_voltage(sram_reg);
+> > +	if (old_vsram < 0) {
+> > +		dev_err(dev, "invalid vsram value: %d\n", old_vsram);
+> > +		return old_vsram;
+> > +	}
+> > +
+> > +	new_vsram = clamp(new_voltage + soc_data->min_volt_shift,
+> > +			  soc_data->sram_min_volt, soc_data-
+> > >sram_max_volt);
+> > +
+> > +	do {
+> > +		if (old_voltage <= new_voltage) {
+> > +			vsram = clamp(old_voltage + soc_data-
+> > >max_volt_shift,
+> > +				      soc_data->sram_min_volt,
+> > new_vsram);
+> > +			ret = regulator_set_voltage(sram_reg, vsram,
+> > +						    soc_data-
+> > >sram_max_volt);
+> > +			if (ret)
+> > +				return ret;
+> > +
+> > +			if (vsram == soc_data->sram_max_volt ||
+> > +			    new_vsram == soc_data->sram_min_volt)
+> > +				voltage = new_voltage;
+> > +			else
+> > +				voltage = vsram - soc_data-
+> > >min_volt_shift;
+> > +
+> > +			ret = regulator_set_voltage(proc_reg, voltage,
+> > +						    soc_data-
+> > >proc_max_volt);
+> > +			if (ret) {
+> > +				regulator_set_voltage(sram_reg,
+> > old_vsram,
+> > +						      soc_data-
+> > >sram_max_volt);
+> > +				return ret;
+> > +			}
+> > +		} else if (old_voltage > new_voltage) {
+> > +			voltage = max(new_voltage,
+> > +				      old_vsram - soc_data-
+> > >max_volt_shift);
+> > +			ret = regulator_set_voltage(proc_reg, voltage,
+> > +						    soc_data-
+> > >proc_max_volt);
+> > +			if (ret)
+> > +				return ret;
+> > +
+> > +			if (voltage == new_voltage)
+> > +				vsram = new_vsram;
+> > +			else
+> > +				vsram = max(new_vsram,
+> > +					    voltage + soc_data-
+> > >min_volt_shift);
+> > +
+> > +			ret = regulator_set_voltage(sram_reg, vsram,
+> > +						    soc_data-
+> > >sram_max_volt);
+> > +			if (ret) {
+> > +				regulator_set_voltage(proc_reg,
+> > old_voltage,
+> > +						      soc_data-
+> > >proc_max_volt);
+> > +				return ret;
+> > +			}
+> > +		}
+> > +
+> > +		old_voltage = voltage;
+> > +		old_vsram = vsram;
+> > +	} while (voltage != new_voltage || vsram != new_vsram);
+> 
+> It is dangerous if regulator h/w have  the issue, it might be never 
+> finished. Need to check the maximum loop or do other way for
+> preventing 
+> the inifinite loop.
+
+I will add an iteration limit to avoid the infinite loop.
+Thanks for reminding me.
+
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int mtk_ccifreq_set_voltage(struct mtk_ccifreq_drv *drv,
+> > int voltage)
+> > +{
+> > +	int ret;
+> > +
+> > +	if (drv->need_voltage_tracking)
+> 
+> You can change this code as following without
+> 'need_voltage_tracking' 
+> variable. It is more simple.
+> 
+> 	if (drv->sram_reg)
+
+I will follow your suggestion here in the next version.
+
+> 
+> 
+> > +		ret = mtk_ccifreq_voltage_tracking(drv, voltage);
+> > +	else
+> > +		ret = regulator_set_voltage(drv->proc_reg, voltage,
+> > +					    drv->soc_data-
+> > >proc_max_volt);
+> > +
+> > +	if (!ret)
+> > +		drv->old_voltage = voltage;
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static int mtk_ccifreq_target(struct device *dev, unsigned long
+> > *freq,
+> > +			      u32 flags)
+> > +{
+> > +	struct mtk_ccifreq_drv *drv = dev_get_drvdata(dev);
+> > +	struct clk *cci_pll = clk_get_parent(drv->cci_clk);
+> > +	struct dev_pm_opp *opp;
+> > +	unsigned long opp_rate;
+> > +	int voltage, old_voltage, inter_voltage, target_voltage, ret;
+> > +
+> > +	if (!drv)
+> > +		return -EINVAL;
+> > +
+> > +	if (drv->old_freq == *freq)
+> > +		return 0;
+> > +
+> > +	inter_voltage = drv->inter_voltage;
+> > +
+> > +	opp_rate = *freq;
+> > +	opp = devfreq_recommended_opp(dev, &opp_rate, 1);
+> > +	if (IS_ERR(opp)) {
+> > +		dev_err(dev, "failed to find opp for freq: %ld\n",
+> > opp_rate);
+> > +		return PTR_ERR(opp);
+> > +	}
+> > +	voltage = dev_pm_opp_get_voltage(opp);
+> > +	dev_pm_opp_put(opp);
+> > +
+> > +	old_voltage = drv->old_voltage;
+> > +	if (old_voltage == 0)
+> > +		old_voltage = regulator_get_voltage(drv->proc_reg);
+> > +	if (old_voltage < 0) {
+> > +		dev_err(dev, "invalid vproc value: %d\n", old_voltage);
+> > +		return old_voltage;
+> > +	}
+> 
+> It should be checked on target? I think that you get the voltage on 
+> pr obe only once and then handle the old_voltage value in 
+> mtk_ccifreq_set_voltage when voltage is changed.
+> 
+
+Yes, we actually did some experiments on target.
+
+> > +
+> > +	mutex_lock(&drv->reg_lock);
+> > +
+> > +	/* scale up: set voltage first then freq. */
+> > +	target_voltage = max(inter_voltage, voltage);
+> > +	if (old_voltage <= target_voltage) {
+> 
+> you can use drv->old_voltage without 'old_voltage' local variable
+> if you do as my comment above.
+
+We keep original voltage before adjusting the voltage. If there are
+some errors while switching clock, we can restore the voltage.
+That's why we use 'old_voltage' local variable here.
+ 
+> 
+> > +		ret = mtk_ccifreq_set_voltage(drv, target_voltage);
+> > +		if (ret) {
+> > +			dev_err(dev, "failed to scale up voltage\n");
+> > +			goto out_restore_voltage;
+> > +		}
+> > +	}
+> > +
+> > +	/* switch the cci clock to intermediate clock source. */
+> > +	ret = clk_set_parent(drv->cci_clk, drv->inter_clk);
+> > +	if (ret) {
+> > +		dev_err(dev, "failed to re-parent cci clock\n");
+> > +		goto out_restore_voltage;
+> > +	}
+> > +
+> > +	/* set the original clock to target rate. */
+> > +	ret = clk_set_rate(cci_pll, *freq);
+> > +	if (ret) {
+> > +		dev_err(dev, "failed to set cci pll rate: %d\n", ret);
+> > +		clk_set_parent(drv->cci_clk, cci_pll);
+> > +		goto out_restore_voltage;
+> > +	}
+> > +
+> > +	/* switch the cci clock back to the original clock source. */
+> > +	ret = clk_set_parent(drv->cci_clk, cci_pll);
+> > +	if (ret) {
+> > +		dev_err(dev, "failed to re-parent cci clock\n");
+> > +		mtk_ccifreq_set_voltage(drv, inter_voltage);
+> > +		goto out_unlock;
+> > +	}
+> > +
+> > +	/*
+> > +	 * If the new voltage is lower than the intermediate voltage or
+> > the
+> > +	 * original voltage, scale down to the new voltage.
+> > +	 */
+> > +	if (voltage < inter_voltage || voltage < old_voltage) {
+> > +		ret = mtk_ccifreq_set_voltage(drv, voltage);
+> > +		if (ret) {
+> > +			dev_err(dev, "failed to scale down voltage\n");
+> > +			goto out_unlock;
+> > +		}
+> > +	}
+> > +
+> > +	drv->old_freq = *freq;
+> > +	mutex_unlock(&drv->reg_lock);
+> > +
+> > +	return 0;
+> > +
+> > +out_restore_voltage:
+> > +	mtk_ccifreq_set_voltage(drv, old_voltage);
+> > +
+> > +out_unlock:
+> > +	mutex_unlock(&drv->reg_lock);
+> > +	return ret;
+> > +}
+> > +
+> > +static int mtk_ccifreq_opp_notifier(struct notifier_block *nb,
+> > +				    unsigned long event, void *data)
+> > +{
+> > +	struct dev_pm_opp *opp = data;
+> > +	struct mtk_ccifreq_drv *drv;
+> > +	unsigned long freq, volt;
+> > +
+> > +	drv = container_of(nb, struct mtk_ccifreq_drv, opp_nb);
+> > +
+> > +	if (event == OPP_EVENT_ADJUST_VOLTAGE) {
+> > +		freq = dev_pm_opp_get_freq(opp);
+> > +
+> > +		mutex_lock(&drv->reg_lock);
+> > +		/* current opp item is changed */
+> > +		if (freq == drv->old_freq) {
+> > +			volt = dev_pm_opp_get_voltage(opp);
+> > +			mtk_ccifreq_set_voltage(drv, volt);
+> 
+> I have a question. Is it no problem? Change the voltage
+> without any clock change? If voltage is lower than required voltage 
+> level from the specific clock, I think it might be hung.
+> 
+
+This OPP notification is only sent from our SVS driver to adjust the
+voltage at the same frequency for power-saving purpose.
+
+Our chip design basically knows the margin of the voltage at every
+frequencies and promises that the adjustment of voltage here will never
+causes system crash.
+
+> > +		}
+> > +		mutex_unlock(&drv->reg_lock); > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static struct devfreq_dev_profile mtk_ccifreq_profile = {
+> > +	.target = mtk_ccifreq_target,
+> > +};
+> > +
+> > +static int mtk_ccifreq_probe(struct platform_device *pdev)
+> > +{
+> > +	struct device *cci_dev = &pdev->dev;
+> > +	struct mtk_ccifreq_drv *drv;
+> > +	struct devfreq_passive_data *passive_data;
+> > +	struct dev_pm_opp *opp;
+> > +	unsigned long rate, opp_volt;
+> > +	int ret;
+> > +
+> > +	drv = devm_kzalloc(cci_dev, sizeof(*drv), GFP_KERNEL);
+> > +	if (!drv)
+> > +		return -ENOMEM;
+> > +
+> > +	drv->cci_dev = cci_dev;
+> > +	drv->soc_data = (const struct mtk_ccifreq_platform_data *)
+> > +				of_device_get_match_data(&pdev->dev);
+> > +	mutex_init(&drv->reg_lock);
+> > +	platform_set_drvdata(pdev, drv);
+> > +
+> > +	drv->cci_clk = devm_clk_get(cci_dev, "cci");
+> > +	if (IS_ERR(drv->cci_clk)) {
+> > +		ret = PTR_ERR(drv->cci_clk);
+> > +		return dev_err_probe(cci_dev, ret,
+> > +				     "failed to get cci clk: %d\n",
+> > ret);
+> > +	}
+> > +
+> > +	drv->inter_clk = devm_clk_get(cci_dev, "intermediate");
+> > +	if (IS_ERR(drv->inter_clk)) {
+> > +		ret = PTR_ERR(drv->inter_clk);
+> > +		dev_err_probe(cci_dev, ret,
+> > +			      "failed to get intermediate clk: %d\n",
+> > ret);
+> > +		goto out_free_resources;
+> > +	}
+> > +
+> > +	drv->proc_reg = devm_regulator_get_optional(cci_dev, "proc");
+> 
+> nitpick. How about using 'cci' name instead of 'proc'?
+> Actually, it is difficult to understand the meaning of 'proc' name.
+
+'proc' is processor in short.
+This regulator is shared with cpufreq driver, not specific to CCI.
+In my opinion, CCI driver shouldn't rename it unless cpufreq driver
+changes it first. 
+
+> 
+> > +	if (IS_ERR(drv->proc_reg)) {
+> > +		ret = PTR_ERR(drv->proc_reg);
+> > +		dev_err_probe(cci_dev, ret,
+> > +			      "failed to get proc regulator: %d\n",
+> > ret);
+> > +		goto out_free_resources;
+> > +	}
+> > +
+> > +	ret = regulator_enable(drv->proc_reg);
+> > +	if (ret) {
+> > +		dev_err(cci_dev, "failed to enable proc regulator\n");
+> > +		goto out_free_resources;
+> > +	}
+> > +
+> > +	drv->sram_reg = regulator_get_optional(cci_dev, "sram");
+> > +	if (IS_ERR(drv->sram_reg))
+> > +		drv->sram_reg = NULL;
+> > +	else {
+> > +		ret = regulator_enable(drv->sram_reg);
+> > +		if (ret) {
+> > +			dev_err(cci_dev, "failed to enable sram
+> > regulator\n");
+> > +			goto out_free_resources;
+> > +		}
+> > +	}
+> > +
+> > +	ret = clk_prepare_enable(drv->cci_clk);
+> > +	if (ret)
+> > +		goto out_free_resources;
+> > +
+> > +	ret = clk_prepare_enable(drv->inter_clk);
+> > +	if (ret)
+> > +		goto out_disable_cci_clk;
+> > +
+> > +	drv->need_voltage_tracking = (drv->sram_reg != NULL);
+> 
+> As I commented in mtk_ccifreq_set_voltage, you don't need to use 
+> 'need_voltage_tracking". Instead just use 'drv->sram_reg direclty.
+
+I will modify it in the next version.
+
+> 
+> > +
+> > +	ret = dev_pm_opp_of_add_table(cci_dev);
+> > +	if (ret) {
+> > +		dev_err(cci_dev, "failed to add opp table: %d\n", ret);
+> > +		goto out_disable_inter_clk;
+> > +	}
+> > +
+> > +	rate = clk_get_rate(drv->inter_clk);
+> > +	opp = dev_pm_opp_find_freq_ceil(cci_dev, &rate);
+> > +	if (IS_ERR(opp)) {
+> > +		ret = PTR_ERR(opp);
+> > +		dev_err(cci_dev, "failed to get intermediate opp:
+> > %d\n", ret);
+> > +		goto out_remove_opp_table;
+> > +	}
+> > +	drv->inter_voltage = dev_pm_opp_get_voltage(opp);
+> > +	dev_pm_opp_put(opp);
+> > +
+> > +	rate = U32_MAX;
+> > +	opp = dev_pm_opp_find_freq_floor(drv->cci_dev, &rate);
+> > +	if (IS_ERR(opp)) {
+> > +		dev_err(cci_dev, "failed to get opp\n");
+> > +		ret = PTR_ERR(opp);
+> > +		goto out_remove_opp_table;
+> > +	}
+> > +
+> > +	opp_volt = dev_pm_opp_get_voltage(opp);
+> > +	dev_pm_opp_put(opp);
+> > +	ret = mtk_ccifreq_set_voltage(drv, opp_volt);
+> > +	if (ret) {
+> > +		dev_err(cci_dev, "failed to scale to highest voltage
+> > %lu in proc_reg\n",
+> > +			opp_volt);
+> > +		goto out_remove_opp_table;
+> > +	}
+> > +
+> > +	passive_data = devm_kzalloc(cci_dev,
+> > +				    sizeof(struct
+> > devfreq_passive_data),
+> > +				    GFP_KERNEL);
+> > +	if (!passive_data) {
+> > +		ret = -ENOMEM;
+> > +		goto out_remove_opp_table;
+> > +	}
+> > +
+> > +	passive_data->parent_type = CPUFREQ_PARENT_DEV;
+> > +	drv->devfreq = devm_devfreq_add_device(cci_dev,
+> > +					       &mtk_ccifreq_profile,
+> > +					       DEVFREQ_GOV_PASSIVE,
+> > +					       passive_data);
+> > +	if (IS_ERR(drv->devfreq)) {
+> > +		ret = -EPROBE_DEFER;
+> > +		dev_err(cci_dev, "failed to add devfreq device: %d\n",
+> > +			PTR_ERR(drv->devfreq));
+> > +		goto out_remove_opp_table;
+> > +	}
+> > +
+> > +	drv->opp_nb.notifier_call = mtk_ccifreq_opp_notifier;
+> > +	ret = dev_pm_opp_register_notifier(cci_dev, &drv->opp_nb);
+> > +	if (ret) {
+> > +		dev_err(cci_dev, "failed to register opp notifier:
+> > %d\n", ret);
+> > +		goto out_remove_devfreq_device;
+> > +	}
+> > +	return 0;
+> > +
+> > +out_remove_devfreq_device:
+> > +	devm_devfreq_remove_device(cci_dev, drv->devfreq);
+> > +
+> > +out_remove_opp_table:
+> > +	dev_pm_opp_of_remove_table(cci_dev);
+> > +
+> > +out_disable_inter_clk:
+> > +	clk_disable_unprepare(drv->inter_clk);
+> > +
+> > +out_disable_cci_clk:
+> > +	clk_disable_unprepare(drv->cci_clk);
+> > +
+> > +out_free_resources:
+> > +	if (regulator_is_enabled(drv->proc_reg))
+> > +		regulator_disable(drv->proc_reg);
+> > +	if (drv->sram_reg && regulator_is_enabled(drv->sram_reg))
+> > +		regulator_disable(drv->sram_reg);
+> > +
+> > +	if (!IS_ERR(drv->proc_reg))
+> > +		regulator_put(drv->proc_reg);
+> > +	if (!IS_ERR(drv->sram_reg))
+> > +		regulator_put(drv->sram_reg);
+> > +	if (!IS_ERR(drv->cci_clk))
+> > +		clk_put(drv->cci_clk);
+> > +	if (!IS_ERR(drv->inter_clk))
+> > +		clk_put(drv->inter_clk);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static int mtk_ccifreq_remove(struct platform_device *pdev)
+> > +{
+> > +	struct device *cci_dev = &pdev->dev;
+> > +	struct mtk_ccifreq_drv *drv;
+> > +
+> > +	drv = platform_get_drvdata(pdev);
+> > +
+> > +	dev_pm_opp_unregister_notifier(cci_dev, &drv->opp_nb);
+> > +	dev_pm_opp_of_remove_table(cci_dev);
+> > +	clk_disable_unprepare(drv->inter_clk);
+> > +	clk_disable_unprepare(drv->cci_clk);
+> > +	regulator_disable(drv->proc_reg);
+> > +	if (!IS_ERR(drv->sram_reg))
+> 
+> Better to use the following code.
+> 	if (drv->sram_reg)
+
+I will modify it in the next version.
+
+> 
+> > +		regulator_disable(drv->sram_reg);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static const struct mtk_ccifreq_platform_data mt8183_platform_data
+> > = {
+> > +	.min_volt_shift = 100000,
+> > +	.max_volt_shift = 200000,
+> > +	.proc_max_volt = 1150000,
+> > +	.sram_min_volt = 0,
+> > +	.sram_max_volt = 1150000,
+> > +};
+> > +
+> > +static const struct mtk_ccifreq_platform_data mt8186_platform_data
+> > = {
+> > +	.min_volt_shift = 100000,
+> > +	.max_volt_shift = 250000,
+> > +	.proc_max_volt = 1118750,
+> > +	.sram_min_volt = 850000,
+> > +	.sram_max_volt = 1118750,
+> > +};
+> > +
+> > +static const struct of_device_id mtk_ccifreq_machines[] = {
+> > +	{ .compatible = "mediatek,mt8183-cci", .data =
+> > &mt8183_platform_data },
+> > +	{ .compatible = "mediatek,mt8186-cci", .data =
+> > &mt8186_platform_data },
+> > +	{ },
+> > +};
+> > +MODULE_DEVICE_TABLE(of, mtk_ccifreq_machines);
+> > +
+> > +static struct platform_driver mtk_ccifreq_platdrv = {
+> > +	.probe	= mtk_ccifreq_probe,
+> > +	.remove	= mtk_ccifreq_remove,
+> > +	.driver = {
+> > +		.name = "mtk-ccifreq",
+> > +		.of_match_table = of_match_ptr(mtk_ccifreq_machines),
+> > +	},
+> > +};
+> > +
+> > +static int __init mtk_ccifreq_platdrv_init(void)
+> > +{
+> > +	return platform_driver_register(&mtk_ccifreq_platdrv);
+> > +}
+> > +module_init(mtk_ccifreq_platdrv_init)
+> > +
+> > +static void __exit mtk_ccifreq_platdrv_exit(void)
+> > +{
+> > +	platform_driver_unregister(&mtk_ccifreq_platdrv);
+> > +}
+> > +module_exit(mtk_ccifreq_platdrv_exit)
+> > +
+> > +MODULE_DESCRIPTION("MediaTek CCI devfreq driver");
+> > +MODULE_AUTHOR("Jia-Wei Chang <jia-wei.chang@mediatek.com>");
+> > +MODULE_LICENSE("GPL v2");
+> 
+> 
+
+BRs,
+Johnson Wang
+
