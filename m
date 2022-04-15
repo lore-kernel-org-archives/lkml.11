@@ -2,109 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E84E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 05:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C17BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 05:07:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242867AbiDOFJl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 01:09:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35214 "EHLO
+        id S1346652AbiDOFJw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 01:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351395AbiDOFFp (ORCPT
+        with ESMTP id S1350463AbiDOFEA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 01:05:45 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1596DC12D3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 21:57:56 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id i27so13595495ejd.9
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 21:57:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Deay7jAmMyRkDMzIjU7u06qBsjafRlssFVmGBUZbhvw=;
-        b=YQ6/ULXIqpRb6u2jK1rgfGvE2zKp6qNt/qMH3C4USife7fpyw4LLsmAcimJDnKOe4t
-         Mknnm8W7b4si5hzaJWBPPgdNQeJy2y9pZpGRXyU03ZJ9UWdf87vYVI9++NpwSPER2iO4
-         d/flzGZ/3HQGZaf9+YLJepv64IEmekwR29w82r0+umht7DvATM5oSoEtRlkQ/1xszB/G
-         IBBs+tok9EgAEcCNkzZGBuOMttHK6F3H7pFcHIOBBsYxD0LcGL7XYYXRoASiXGzV/JUG
-         UqL3mzraRklxEXvdVLpBTN/iPApA586HvYoDhXKdokmtrnrxrJw61Gsy87S2n3YgR40Q
-         6axw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Deay7jAmMyRkDMzIjU7u06qBsjafRlssFVmGBUZbhvw=;
-        b=vI+4NcQnhPUR9XLe9y7K7jTkhbcgO33itmRevLMGFg2Zz5LB6VAdE0DKX0m+Ze96RV
-         ihdM9VgJmfgyrYv1GE0ZlMEz1LyfZ8kyWpOypDsqRrDxwN86DA8g0A46yOt3GubmSJig
-         GaBGbko1jgsMFUdY/3bg4wmosWxDPjvVRWsSWHN9ffrEg78JbwfE1iPjZ+N5J61kpI0V
-         z00HM3/XmnJwvSyM+wf6JU1JaE+ZT6ZFfdAHqm+wgOMwfHOOy9XUTsoXxz0k9yFiQn7Z
-         SZMZQdHjxn5dcy8cdfNjAjzVgR96ipJvI5oGk7aoLbZJfxXG2a9JealzDTDFzx1w3oTi
-         84Fg==
-X-Gm-Message-State: AOAM533qimdA4KAKonqRwciSjrAaH8izGO+A/Eo0EtJ02yWQ9PHSfK8A
-        h0z0eSKQVI7d5sTiAuhQ96qnd5+WvQw=
-X-Google-Smtp-Source: ABdhPJxT+h0/uUni34qZRuQ/eKcZmKWVus9qXtZAnF8iOUd5G35juUA2O0IghxZcuE5B4CBxO9GVZQ==
-X-Received: by 2002:a17:907:724c:b0:6e8:59c1:914c with SMTP id ds12-20020a170907724c00b006e859c1914cmr5180940ejc.172.1649998675372;
-        Thu, 14 Apr 2022 21:57:55 -0700 (PDT)
-Received: from leap.localnet (host-79-43-11-75.retail.telecomitalia.it. [79.43.11.75])
-        by smtp.gmail.com with ESMTPSA id p14-20020aa7cc8e000000b0040f13865fa9sm2017964edt.3.2022.04.14.21.57.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 21:57:54 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Larry.Finger@lwfinger.net, Jaehee Park <jhpark1013@gmail.com>
-Cc:     phil@philpotter.co.uk, gregkh@linuxfoundation.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev, jhpark1013@gmail.com
-Subject: Re: [PATCH v2 4/6] staging: r8188eu: place constants on the right side of tests
-Date:   Fri, 15 Apr 2022 06:57:52 +0200
-Message-ID: <2300552.NG923GbCHz@leap>
-In-Reply-To: <baa4d5259e2eb48da1dd71e1863b62a086312a7e.1649990500.git.jhpark1013@gmail.com>
-References: <cover.1649990500.git.jhpark1013@gmail.com> <baa4d5259e2eb48da1dd71e1863b62a086312a7e.1649990500.git.jhpark1013@gmail.com>
+        Fri, 15 Apr 2022 01:04:00 -0400
+X-Greylist: delayed 466 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Apr 2022 21:56:05 PDT
+Received: from cstnet.cn (smtp83.cstnet.cn [159.226.251.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D34E1BAB9C
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 21:56:05 -0700 (PDT)
+Received: by ajax-webmail-APP-09 (Coremail) ; Fri, 15 Apr 2022 12:47:22
+ +0800 (GMT+08:00)
+X-Originating-IP: [124.16.96.42]
+Date:   Fri, 15 Apr 2022 12:47:22 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   =?UTF-8?B?5r2Y5bqG6ZyW?= <panqinglin2020@iscas.ac.cn>
+To:     "Anup Patel" <apatel@ventanamicro.com>
+Cc:     "Palmer Dabbelt" <palmer@dabbelt.com>,
+        "Paul Walmsley" <paul.walmsley@sifive.com>,
+        "Alexandre Ghiti" <alexandre.ghiti@canonical.com>,
+        "Atish Patra" <atishp@atishpatra.org>,
+        "Alistair Francis" <Alistair.Francis@wdc.com>,
+        "Anup Patel" <anup@brainfault.org>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        "Mayuresh Chitale" <mchitale@ventanamicro.com>
+Subject: Re: [PATCH] RISC-V: mm: Fix set_satp_mode() for platform not having
+ Sv57
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn cnic.cn
+In-Reply-To: <20220412033335.1384230-1-apatel@ventanamicro.com>
+References: <20220412033335.1384230-1-apatel@ventanamicro.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="ISO-8859-1"
+Message-ID: <4c4c7a.17284.1802b8c14cc.Coremail.panqinglin2020@iscas.ac.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: swCowADX38_b+FhiWqMBAA--.17675W
+X-CM-SenderInfo: 5sdq1xpqjox0asqsiq5lvft2wodfhubq/1tbiCQoRDF02bFOQ6AAA
+        sy
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On venerd=EC 15 aprile 2022 04:48:35 CEST Jaehee Park wrote:
-> To comply with the linux coding style, place constants on the right
-> side of the test in comparisons. Issue found with checkpatch.
-> WARNING: Comparisons should place the constant on the right side of
-> the test.
->=20
-> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
-> ---
->  drivers/staging/r8188eu/core/rtw_mlme.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
->=20
-> diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/
-r8188eu/core/rtw_mlme.c
-> index bb9d595a90b9..d57f2ffa069e 100644
-> --- a/drivers/staging/r8188eu/core/rtw_mlme.c
-> +++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-> @@ -715,7 +715,7 @@ void rtw_surveydone_event_callback(struct adapter=09
-*adapter, u8 *pbuf)
->  			set_fwstate(pmlmepriv, _FW_UNDER_LINKING);
->  			pmlmepriv->to_join =3D false;
->  			s_ret =3D=20
-rtw_select_and_join_from_scanned_queue(pmlmepriv);
-> -			if (_SUCCESS =3D=3D s_ret) {
-> +			if (s_ret =3D=3D _SUCCESS) {
->  			     _set_timer(&pmlmepriv->assoc_timer,=20
-MAX_JOIN_TIMEOUT);
->  			} else if (s_ret =3D=3D 2) { /* there is no need=20
-to wait for join */
->  				_clr_fwstate_(pmlmepriv,=20
-_FW_UNDER_LINKING);
-
-As Pavel pointed out, "s_ret" can not ever be equal to '2'; this could have=
-=20
-been an opportunity to remove a couple of lines of dead code and add one=20
-more patch to your series.
-
-Thanks,
-
-=46abio
-
-
-
-
+SGkgQW51cCwKCiZndDsgCiZndDsgV2hlbiBTdjU3IGlzIG5vdCBhdmFpbGFibGUgdGhlIHNhdHAu
+TU9ERSB0ZXN0IGluIHNldF9zYXRwX21vZGUoKSB3aWxsCiZndDsgZmFpbCBhbmQgbGVhZCB0byBw
+Z2RpciByZS1wcm9ncmFtbWluZyBmb3IgU3Y0OC4gVGhlIHBnZGlyIHJlLXByb2dyYW1taW5nCiZn
+dDsgd2lsbCBmYWlsIGFzIHdlbGwgZHVlIHRvIHByZS1leGlzdGluZyBwZ2RpciBlbnRyeSB1c2Vk
+IGZvciBTdjU3IGFuZCBhcwomZ3Q7IGEgcmVzdWx0IGtlcm5lbCBmYWlscyB0byBib290IG9uIFJJ
+U0MtViBwbGF0Zm9ybSBub3QgaGF2aW5nIFN2NTcuCiZndDsgCiZndDsgVG8gZml4IGFib3ZlIGlz
+c3VlLCB3ZSBzaG91bGQgY2xlYXIgdGhlIHBnZGlyIG1lbW9yeSBpbiBzZXRfc2F0cF9tb2RlKCkK
+Jmd0OyBiZWZvcmUgcmUtcHJvZ3JhbW1pbmcuCiZndDsgCiZndDsgRml4ZXM6IDAxMWYwOWQxMjA1
+MiAoInJpc2N2OiBtbTogU2V0IHN2NTcgb24gZGVmYXVsdGx5IikKJmd0OyBSZXBvcnRlZC1ieTog
+TWF5dXJlc2ggQ2hpdGFsZSA8bWNoaXRhbGVAdmVudGFuYW1pY3JvLmNvbT4KJmd0OyBTaWduZWQt
+b2ZmLWJ5OiBBbnVwIFBhdGVsIDxhcGF0ZWxAdmVudGFuYW1pY3JvLmNvbT4KJmd0OyAtLS0KJmd0
+OyAgYXJjaC9yaXNjdi9tbS9pbml0LmMgfCAxICsKJmd0OyAgMSBmaWxlIGNoYW5nZWQsIDEgaW5z
+ZXJ0aW9uKCspCiZndDsgCiZndDsgZGlmZiAtLWdpdCBhL2FyY2gvcmlzY3YvbW0vaW5pdC5jIGIv
+YXJjaC9yaXNjdi9tbS9pbml0LmMKJmd0OyBpbmRleCA5NTM1YmVhODY4OGMuLmIwNzkzZGMwYzI5
+MSAxMDA2NDQKJmd0OyAtLS0gYS9hcmNoL3Jpc2N2L21tL2luaXQuYwomZ3Q7ICsrKyBiL2FyY2gv
+cmlzY3YvbW0vaW5pdC5jCiZndDsgQEAgLTcxOCw2ICs3MTgsNyBAQCBzdGF0aWMgX19pbml0IHZv
+aWQgc2V0X3NhdHBfbW9kZSh2b2lkKQomZ3Q7ICAJCWlmICghY2hlY2tfbDQpIHsKJmd0OyAgCQkJ
+ZGlzYWJsZV9wZ3RhYmxlX2w1KCk7CiZndDsgIAkJCWNoZWNrX2w0ID0gdHJ1ZTsKJmd0OyArCQkJ
+bWVtc2V0KGVhcmx5X3BnX2RpciwgMCwgUEFHRV9TSVpFKTsKJmd0OyAgCQkJZ290byByZXRyeTsK
+Jmd0OyAgCQl9CiZndDsgIAkJZGlzYWJsZV9wZ3RhYmxlX2w0KCk7CiZndDsgLS0gCgoKSSBmaW5k
+IGl0IHRoYXQgdGhlIHNldF9zYXRwX21vZGUgZnVuY3Rpb24gaXMgaW4gLmluaXQudGV4dCBzZWN0
+aW9uIHdoaWNoIGJlZ2lucyBhdCAweDgwODAwMDAwLgpBbmQgaXRzIHBnZF9pbmRleCBpbiBib3Ro
+IFN2NDggYW5kIFN2NTcgd2lsbCBiZSAwLiBTbyBpdCBtYXkgbm90IGJlIG5lY2Vzc2FyeSB0byBj
+bGVhciB0aGUgCmVhcmx5X3BnX2RpciB3aGVuIHRoZSBrZXJuZWwgZmluZCBTdjU3IGlzIG5vdCBz
+dXBwb3J0ZWQ/IEFuZCBtYXkgSSBnZXQgdGhlIHN0ZXBzIG9mIHJlcHJvZHVjdGlvbgpmcm9tIHlv
+dT8KIApZb3VycywKUWluZ2xpbgo8L2FwYXRlbEB2ZW50YW5hbWljcm8uY29tPjwvbWNoaXRhbGVA
+dmVudGFuYW1pY3JvLmNvbT4=
