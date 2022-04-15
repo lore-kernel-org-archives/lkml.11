@@ -2,101 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 994C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 00:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D29EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 00:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348303AbiDOBBE (ORCPT
+        id S1348315AbiDOBBH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 21:01:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
+        Thu, 14 Apr 2022 21:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348275AbiDOBA6 (ORCPT
+        with ESMTP id S1348285AbiDOBA7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 21:00:58 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26906B91B7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 17:58:31 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id k62so101268pgd.2
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 17:58:31 -0700 (PDT)
+        Thu, 14 Apr 2022 21:00:59 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D8EB91B6
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 17:58:33 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id 125so6166555pgc.11
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 17:58:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nivLXuALlDwZeTeyTShIS0npp9UwNHyhe5LyhEGbsc0=;
-        b=kFQYbYQs4nKlAoV4Qnt5y82rIon3SBCqqdy2FFOMcp5eA1+6CMzfmv17aqRfLeuqCd
-         nHX9AYJtLzEWIpkncGyy7Fgsrr5YEu4Bh+ShPtYgQ4HXJXXcCjA9698rJAHeE0FYVkAF
-         NFfRZv12a2o1qEDhG7Q+3kZaKME+8BbmEHsow=
+        bh=6RfMGdKt6sT3pinBO9IrFwb5LdGvY5fx5UYNrjOQN9M=;
+        b=QUiN9agZBCx+JMm2nV8wmIiDfq2R5CV9L/WWd5BOUKROTJsP+ECGlANoqFKYxztSPt
+         Ufa5T3uTXygzI2EdQx07WtuFtCteR+GAXfmE7jwlZf6ewzHDEIvdv92ANG6/iIdU8/X7
+         xuf791aM7WXod9YiZfpje2sxurBCWhuUj2YOs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nivLXuALlDwZeTeyTShIS0npp9UwNHyhe5LyhEGbsc0=;
-        b=muXY7v6lV856oBwYUIhg3TOOcGZm+/qswZkFHkEkLP/OWXQujg9X41CBvgTdKWBc1Z
-         kgHeX1YwTGdFIG8qAN4J3Z1Eno+HDASG22TiabBO1R0L4h3w1T23ju9Js7BqTxrv+/KE
-         tn9si1uiMAWk0AbJu8BCZwRmgoNhir7yvwIT8nrDK1laI9+ONJIQwLd6XapUdXlVR6xZ
-         MP8ZAQFrDlsYrUEbStibNGBs538B8H7BvJ+4gzCWHM+hyMyw3BdimJnjrRi97CShutAw
-         wJmtFgJosvv8MXaPlVVko8Vf6RAdSmr0CFHIUhFG6DBDCeQyAG3djiyOs1X/dyxnc+e7
-         Nrlg==
-X-Gm-Message-State: AOAM5321HpyE528W25XoKA+7uv0gjofTiv7K9kJrBDkpw3pQgbi2x4M1
-        74USuEEmk/1nB1WDDsjZIBXMPA==
-X-Google-Smtp-Source: ABdhPJxMW6DDQ/+8KjI8q0QY302MBkgPITxHqt8bk7gZFm2Gnr9CY/LpE6g2GhkUvZxl7WwDmgXm/A==
-X-Received: by 2002:a63:5c43:0:b0:39d:5e18:9d98 with SMTP id n3-20020a635c43000000b0039d5e189d98mr4386181pgm.145.1649984310604;
-        Thu, 14 Apr 2022 17:58:30 -0700 (PDT)
+        bh=6RfMGdKt6sT3pinBO9IrFwb5LdGvY5fx5UYNrjOQN9M=;
+        b=Xv5EwLCUKawv8ppKhXMr92d/DH56LyCQuV5DBeXXDHhXN9dekdxeAfmhuA/zVbHcEK
+         1Qgpq8oJV1k/gD2zo/OZXQn67NiSeAI6drOGUJ7HuReaCCWlq/b18ZD32hkBNxLR7pxL
+         OrlASQempc0Yn+4+uUqY4jsKx16KYu+8sETmHU/hFMy20Vz0nYYDBS0WzMHoWSIAWC8E
+         CwvNdhXylMeKuCiFP55+GyupRFdwdNWDje81RGfSm4IqrEgdv61N+iGy6kXHm1ohVMLd
+         M5abMJuTGeUF94v8rmcOyPuo6BMER3XwPDp3Vm4kR/3VBL+gYZuG9BJPHwjXWd0N8f+0
+         9MOg==
+X-Gm-Message-State: AOAM530gcMHrLiuwmoz2YxP2KLgrp+rXxIbR78u796GXZF5VTbH0tvA9
+        w+01BN65iWDat8M5q4gQQ17bTA==
+X-Google-Smtp-Source: ABdhPJwgCOw+24ZdVI9uQ3hL6YBLZPeoQOXYUcxZ5CfZ5gHXXZWp3SoY7w7t7knho8uZFaLhh7ExcQ==
+X-Received: by 2002:a05:6a00:bd1:b0:4fa:a5d7:c082 with SMTP id x17-20020a056a000bd100b004faa5d7c082mr6372675pfu.85.1649984312895;
+        Thu, 14 Apr 2022 17:58:32 -0700 (PDT)
 Received: from smtp.gmail.com ([2620:15c:202:201:e3e0:734:f81a:d2c1])
-        by smtp.gmail.com with ESMTPSA id f4-20020aa79d84000000b00505f920ffb8sm996704pfq.179.2022.04.14.17.58.29
+        by smtp.gmail.com with ESMTPSA id f4-20020aa79d84000000b00505f920ffb8sm996704pfq.179.2022.04.14.17.58.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Apr 2022 17:58:30 -0700 (PDT)
+        Thu, 14 Apr 2022 17:58:32 -0700 (PDT)
 From:   Stephen Boyd <swboyd@chromium.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Georgi Djakov <djakov@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
         linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
         Doug Anderson <dianders@chromium.org>,
         Alex Elder <elder@linaro.org>,
         Taniya Das <quic_tdas@quicinc.com>,
-        Mike Tipton <quic_mdtipton@quicinc.com>,
-        Georgi Djakov <djakov@kernel.org>
-Subject: [PATCH 3/2] arm64: dts: qcom: sc7180: Remove ipa interconnect node
-Date:   Thu, 14 Apr 2022 17:58:26 -0700
-Message-Id: <20220415005828.1980055-1-swboyd@chromium.org>
+        Mike Tipton <quic_mdtipton@quicinc.com>
+Subject: [PATCH 5/2] dt-bindings: interconnect: Remove sc7180/sdx55 ipa compatibles
+Date:   Thu, 14 Apr 2022 17:58:28 -0700
+Message-Id: <20220415005828.1980055-3-swboyd@chromium.org>
 X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
-In-Reply-To: <20220412220033.1273607-1-swboyd@chromium.org>
+In-Reply-To: <20220415005828.1980055-1-swboyd@chromium.org>
 References: <20220412220033.1273607-1-swboyd@chromium.org>
+ <20220415005828.1980055-1-swboyd@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This device node is unused now that we've removed the driver that
-consumed it in the kernel. Drop the unused node to save some space.
+These interconnects are modeled as clks, not interconnects, therefore
+remove the compatibles from the binding as they're unused.
 
 Cc: Alex Elder <elder@linaro.org>
 Cc: Taniya Das <quic_tdas@quicinc.com>
 Cc: Mike Tipton <quic_mdtipton@quicinc.com>
-Cc: Georgi Djakov <djakov@kernel.org>
 Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 ---
- arch/arm64/boot/dts/qcom/sc7180.dtsi | 7 -------
- 1 file changed, 7 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-index e1c46b80f14a..1ff96ef30e3f 100644
---- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-@@ -1421,13 +1421,6 @@ mmss_noc: interconnect@1740000 {
- 			qcom,bcm-voters = <&apps_bcm_voter>;
- 		};
- 
--		ipa_virt: interconnect@1e00000 {
--			compatible = "qcom,sc7180-ipa-virt";
--			reg = <0 0x01e00000 0 0x1000>;
--			#interconnect-cells = <2>;
--			qcom,bcm-voters = <&apps_bcm_voter>;
--		};
--
- 		ipa: ipa@1e40000 {
- 			compatible = "qcom,sc7180-ipa";
- 
+I don't know who should apply this. Probably whoever takes the dtsi
+patches, Bjorn?, because otherwise dt_bindings_check will fail.
+
+ Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml b/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml
+index 5a911be0c2ea..ab859150c7f7 100644
+--- a/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml
++++ b/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml
+@@ -31,7 +31,6 @@ properties:
+       - qcom,sc7180-config-noc
+       - qcom,sc7180-dc-noc
+       - qcom,sc7180-gem-noc
+-      - qcom,sc7180-ipa-virt
+       - qcom,sc7180-mc-virt
+       - qcom,sc7180-mmss-noc
+       - qcom,sc7180-npu-noc
+@@ -68,7 +67,6 @@ properties:
+       - qcom,sdm845-mem-noc
+       - qcom,sdm845-mmss-noc
+       - qcom,sdm845-system-noc
+-      - qcom,sdx55-ipa-virt
+       - qcom,sdx55-mc-virt
+       - qcom,sdx55-mem-noc
+       - qcom,sdx55-system-noc
 -- 
 https://chromeos.dev
 
