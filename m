@@ -2,109 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF8D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:47:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9E9C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355977AbiDOQtn (ORCPT
+        id S1356000AbiDOQ5I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 12:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57912 "EHLO
+        Fri, 15 Apr 2022 12:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355970AbiDOQtk (ORCPT
+        with ESMTP id S1355982AbiDOQ5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 12:49:40 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37DD2DD966;
-        Fri, 15 Apr 2022 09:47:11 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id E9570C0006;
-        Fri, 15 Apr 2022 16:47:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650041229;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kqx76FGCWY9T5n5gaf7tqiaERTtvIFYRxivjOi7DJAY=;
-        b=VQQ8Xiqp2cyrNI9GijO8dGgMuIEA9uZZMevCeq4Kk4x41bLZRA4yZrXc5DNgKVzCtFfSEf
-        V9pEhQLWxgPvK9g47UAZ4O8MOwn29FgqNbhuF5GyiM3ZyXRCq0HWRWBdIiVqq18+Q5i8BY
-        lLxadXlbVEES0uc4EVOh5cJh/d7L9hRAO+NOtk6eVoYz1VAyboG1o0hyo0PrgLwUXR0iaZ
-        FSeWqsFaz1rBbC7L1I0V6d9MzrrWLEqOwz//c/Epv0LQYy5Z9idsu1KU6YPb+Qd7/XqPoR
-        L/ihZTkUgUcRS8DvD3BSzcNp5ApDefEBGWY9w/US9S1fe8ez5tEKPQXu8GK84A==
-Date:   Fri, 15 Apr 2022 18:45:41 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 09/12] ARM: dts: r9a06g032: describe MII
- converter
-Message-ID: <20220415184541.0a6928f5@fixe.home>
-In-Reply-To: <YlmbIjoIZ8Xb4Kh/@lunn.ch>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
-        <20220414122250.158113-10-clement.leger@bootlin.com>
-        <YlismVi8y3Vf6PZ0@lunn.ch>
-        <20220415102453.1b5b3f77@fixe.home>
-        <Yll+Tpnwo5410B9H@lunn.ch>
-        <20220415163853.683c0b6d@fixe.home>
-        <YlmLWv4Hsm2uk8pa@lunn.ch>
-        <20220415172954.64e53086@fixe.home>
-        <YlmbIjoIZ8Xb4Kh/@lunn.ch>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Fri, 15 Apr 2022 12:57:05 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FD59FC6;
+        Fri, 15 Apr 2022 09:54:36 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id 123-20020a1c1981000000b0038b3616a71aso5343041wmz.4;
+        Fri, 15 Apr 2022 09:54:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=m2WR8HeVZxDMPBsJ2wi+S56OzUuDecjD2lzSbt+tO8w=;
+        b=VpDcNv+xkhUuiD56GQAFJE4kWQUHnRxn/E0B5nRoT6txv3OM8MbEsJzh/Peu7zhHA0
+         QfUmruhvzc0cgHLn9fClRghbsmuxW8Fqvr2vJYBOEZn3AfUd64WSe2pjDXocyVyXDsI+
+         jYNGSeFzUOpGbTAfmZ9CRc4EVmDM0AfKViOwctjYIVl1o3fqfhHKeZrcM18RiONa1MWg
+         Wg4H6ILuWaQA2o8VIm6hgmybNJmeJdP0tPXHAn7OvrB2wjp2Lc8sXq806kuDxwGXz+aa
+         5kWKhJIO3IzAT96eDAJYsMTJtgn8B0k6rmBB3eo4fXYxWfFE32irfxMqmFxFMIgEAN1H
+         8U3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=m2WR8HeVZxDMPBsJ2wi+S56OzUuDecjD2lzSbt+tO8w=;
+        b=rgUEZ+R35Nwl7j0R2NUHCQF7nsyXU73MWZOj0p5jrFMf+m9H6d3132i/oyxQR7BKsM
+         itCxqWRyDJKQD4pl1MTOwXmd9KTtASsNtxH4MYj2enB9/w+KbYYjSG8so3IFmgleokXX
+         YXwkxg7HgXsoCGVfLdfizrDH7kEaS7lWuJYiqKWHH4GXR1FTcE5YFaWA6iMzC/yfG+rX
+         IEpIMQN06P0+S2bWX9vjwlvWUTlrCIQCyMR0acnWN7ar/sVSW0XKZmHwGMHpydtd9rTl
+         goysFatgtH7q/4ZHBfW0fx6ntI4cN3KErIlAhmdOR7vc70TGjXQVrIo3APON6jrNduPl
+         QqjQ==
+X-Gm-Message-State: AOAM530RYDUY3Y8XpaYfRrIpjH/ikoChogQQVH95Uw7N0tX70EFRGJOn
+        kPgmOy9s9yD6b/AAdgdFXqA=
+X-Google-Smtp-Source: ABdhPJwOhR+ihYnd0JcIhDD0h1nkAp7TumgzKKg+StEsNj+Xbp7B+PvUsidGOx/u4dEqslH2IO/+5A==
+X-Received: by 2002:a05:600c:511b:b0:392:36fd:6728 with SMTP id o27-20020a05600c511b00b0039236fd6728mr1323882wms.93.1650041674598;
+        Fri, 15 Apr 2022 09:54:34 -0700 (PDT)
+Received: from ?IPV6:2001:b07:add:ec09:c399:bc87:7b6c:fb2a? ([2001:b07:add:ec09:c399:bc87:7b6c:fb2a])
+        by smtp.googlemail.com with ESMTPSA id f7-20020a1c3807000000b0038ffac6f752sm4681294wma.45.2022.04.15.09.54.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Apr 2022 09:54:34 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <26d74179-55fb-b70b-8a29-67e26a032abe@redhat.com>
+Date:   Fri, 15 Apr 2022 18:54:27 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 017/104] KVM: TDX: Add helper functions to print
+ TDX SEAMCALL error
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <7d89296e776b125b75762c040879c16afa7b6da6.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <7d89296e776b125b75762c040879c16afa7b6da6.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Fri, 15 Apr 2022 18:19:46 +0200,
-Andrew Lunn <andrew@lunn.ch> a =C3=A9crit :
+On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
+> 
+> Add helper functions to print out errors from the TDX module in a uniform
+> manner.
+> 
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> ---
+>   arch/x86/kvm/Makefile        |  2 +-
+>   arch/x86/kvm/vmx/seamcall.h  |  2 ++
+>   arch/x86/kvm/vmx/tdx_error.c | 22 ++++++++++++++++++++++
+>   3 files changed, 25 insertions(+), 1 deletion(-)
+>   create mode 100644 arch/x86/kvm/vmx/tdx_error.c
 
-> > I think it would be good to modify it like this:
-> >=20
-> > eth-miic@44030000 {
-> >     ...
-> >   converters {
-> >     mii_conv0: mii-conv@0 {
-> >       // Even if useless, maybe keeping it for the sake of coherency
-> >       renesas,miic-input =3D <MIIC_GMAC1>;
-> >       reg =3D <0>;
-> >     }; =20
->=20
-> This is not a 'bus', so using reg, and @0, etc is i think wrong.  You
-> just have a collection of properties.
+When rebasing against tip/x86/tdx,  the new .c file needs to include 
+asm/tdx.h.
 
-Agreed, but this is the same thing that is done for DSA ports (at least
-I think). It uses reg which describe the port number, this is not a
-real bus per se, it only refer to port indices.
+Paolo
 
-But if you think this should not be done like this, what do you propose
-then ? These nodes are also reference from "pcs-handle" properties in
-switch to retrieve the PCS. Would you suggest using something like
-pcs-handle =3D <&eth_miic port_index> and remove the nodes then ?
+> diff --git a/arch/x86/kvm/Makefile b/arch/x86/kvm/Makefile
+> index e8f83a7d0dc3..3d6550c73fb5 100644
+> --- a/arch/x86/kvm/Makefile
+> +++ b/arch/x86/kvm/Makefile
+> @@ -24,7 +24,7 @@ kvm-$(CONFIG_KVM_XEN)	+= xen.o
+>   kvm-intel-y		+= vmx/vmx.o vmx/vmenter.o vmx/pmu_intel.o vmx/vmcs12.o \
+>   			   vmx/evmcs.o vmx/nested.o vmx/posted_intr.o vmx/main.o
+>   kvm-intel-$(CONFIG_X86_SGX_KVM)	+= vmx/sgx.o
+> -kvm-intel-$(CONFIG_INTEL_TDX_HOST)	+= vmx/tdx.o vmx/seamcall.o
+> +kvm-intel-$(CONFIG_INTEL_TDX_HOST)	+= vmx/tdx.o vmx/seamcall.o vmx/tdx_error.o
+>   
+>   kvm-amd-y		+= svm/svm.o svm/vmenter.o svm/pmu.o svm/nested.o svm/avic.o svm/sev.o
+>   
+> diff --git a/arch/x86/kvm/vmx/seamcall.h b/arch/x86/kvm/vmx/seamcall.h
+> index 604792e9a59f..5ac419cd8e27 100644
+> --- a/arch/x86/kvm/vmx/seamcall.h
+> +++ b/arch/x86/kvm/vmx/seamcall.h
+> @@ -16,6 +16,8 @@ struct tdx_module_output;
+>   u64 kvm_seamcall(u64 op, u64 rcx, u64 rdx, u64 r8, u64 r9, u64 r10,
+>   		struct tdx_module_output *out);
+>   
+> +void pr_tdx_error(u64 op, u64 error_code, const struct tdx_module_output *out);
+> +
+>   #endif /* !__ASSEMBLY__ */
+>   
+>   #endif	/* CONFIG_INTEL_TDX_HOST */
+> diff --git a/arch/x86/kvm/vmx/tdx_error.c b/arch/x86/kvm/vmx/tdx_error.c
+> new file mode 100644
+> index 000000000000..61ed855d1188
+> --- /dev/null
+> +++ b/arch/x86/kvm/vmx/tdx_error.c
+> @@ -0,0 +1,22 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* functions to record TDX SEAMCALL error */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/bug.h>
+> +
+> +#include "tdx_ops.h"
+> +
+> +void pr_tdx_error(u64 op, u64 error_code, const struct tdx_module_output *out)
+> +{
+> +	if (!out) {
+> +		pr_err_ratelimited("SEAMCALL[%lld] failed: 0x%llx\n",
+> +				op, error_code);
+> +		return;
+> +	}
+> +
+> +	pr_err_ratelimited(
+> +		"SEAMCALL[%lld] failed: 0x%llx "
+> +		"RCX 0x%llx, RDX 0x%llx, R8 0x%llx, R9 0x%llx, R10 0x%llx, R11 0x%llx\n",
+> +		op, error_code,
+> +		out->rcx, out->rdx, out->r8, out->r9, out->r10, out->r11);
+> +}
 
-Thanks,
-
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
