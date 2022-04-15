@@ -2,227 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D51FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 10:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76241C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 10:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352451AbiDOK41 (ORCPT
+        id S1352462AbiDOK6K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 06:56:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
+        Fri, 15 Apr 2022 06:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350131AbiDOK4X (ORCPT
+        with ESMTP id S1352460AbiDOK5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 06:56:23 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83937AACA8
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 03:53:55 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id 125so7025376pgc.11
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 03:53:55 -0700 (PDT)
+        Fri, 15 Apr 2022 06:57:35 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6289A997E;
+        Fri, 15 Apr 2022 03:55:07 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id t25so9531311edt.9;
+        Fri, 15 Apr 2022 03:55:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=v25j9pVEhbMktYwFx92BN9tsBGsH4edaYFgugzwOmUg=;
-        b=JF6Lff8ej65NV8siYjJEr1UptUhgsK9nkctiMIF6kYuiLMwCctA6LfpEnOUDjMP1k/
-         jtsvMSfv+ZNGSJobTkvFny2Yq3SrjOr1ML2JcKGhWcsIWaKTVS+7Arv6eQGw/St1Akz2
-         Qk9QtAg2a1vmCriFGXLP0AcXB2zSNXdJmllBpt5NTWbpKP6mfwxrX+yoy0evrF82WMAd
-         jmaYnZMAUO3zH/ulivIy3e4QZQpEoR/wtq0oWM2HtZVTjDiLlnQ0Es0z+I+1/BWd90/k
-         WVJFKPidBKmubDP6Yl0gjAg+cTe1lFZW89P6Ql4+bjxpAUakgfP3ZIJ8jCVSEtOXQikg
-         RIrQ==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=UUtTcqZyJwTdSzX5eM/u3FCZPLdu3PueAl2mLvqky+A=;
+        b=Hk/dooej2THMRuDz/XHpl8tN3a/98thg7292OnwN82tYBrC8bdky2FS5hKAQV41EJ+
+         KGndc61G7SYNGPTqBevzKlMEClgCFI2BE15kNy//uDDY/FR6SyTA7X42CIc6bWznde4c
+         mSCarlFDSDzdgiX52bjRG9P5S71USb2K816HKEKNnOpzahJ556qoiuBDBfShKpQi+fQs
+         iya+wdKsMWO6l3928C6lR33eLtoZDAEbzbzv3Bklh3Sy2tBXw6hStyKjxTO6dSQrkNiv
+         T/KiF7W3UnaV6c/wJhCH6zNTzf3O0IDedbCVLosCpRZzIzTmOn17OtF+X9Sb7V2rh8Z9
+         on0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=v25j9pVEhbMktYwFx92BN9tsBGsH4edaYFgugzwOmUg=;
-        b=0NBLV2GyMTtgi4h5hKXswVAxF/0oWbN3O2LL9FPkGtlWkyf+A6UAhKe/h4sNb2JTok
-         JCLvxeKa1Pu5yOi9Mr2tpPTuFaFP1du0m93uXSq2Wf+GWqspDnSTO59nNTXJSwvIqUC2
-         fXNM/54pzDWkAZAkLrkBRHb4M8Mk8Qe7n/bNVtQfV53StkkKmBKgY8zWEcdmZOHtbEn5
-         dURLsphKqfZf4YdlYHCpcCbvpHvZvbvi23hNtSY5NjIkUf+T/bpu7Ju6tp1zNrfyM4fI
-         DbUPmtAHEczg1kNnjulcgj3KmOI5BDCT6UtBECEBepJzGGOVkdfxpY+82rahjQBB9Qdf
-         a1Ow==
-X-Gm-Message-State: AOAM530bmszFY+YrB514R4EB1/49Bf0mWsYai32BLw09WWAFtLJ8RQ1k
-        48GHvo2w+QYLCtaGq0xem961xg==
-X-Google-Smtp-Source: ABdhPJxWIf7LR4JpBEFnUEq+V6Xq/jXOi/zsLN03YsTXVQIlDSn8WU1ApikzlPvI8wLmMMMs86txcQ==
-X-Received: by 2002:a65:5b84:0:b0:398:fd62:6497 with SMTP id i4-20020a655b84000000b00398fd626497mr5861213pgr.179.1650020034979;
-        Fri, 15 Apr 2022 03:53:54 -0700 (PDT)
-Received: from [10.76.15.169] ([61.120.150.70])
-        by smtp.gmail.com with ESMTPSA id mq6-20020a17090b380600b001c6357f146csm9572238pjb.12.2022.04.15.03.53.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Apr 2022 03:53:54 -0700 (PDT)
-Message-ID: <eba72a32-aa94-0d9c-b927-a9e6b965ca44@bytedance.com>
-Date:   Fri, 15 Apr 2022 18:50:19 +0800
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=UUtTcqZyJwTdSzX5eM/u3FCZPLdu3PueAl2mLvqky+A=;
+        b=GmfXnfVXkHwE9SzHyV6i0aUEdYMXGrPeY7dNIB3ZD78uunZC/HRf83B2NwZe6p3Ghe
+         jHQJ62M9vBBEb+S9VV5HSFXkBA/0NadG2qozX3mNCALwWCEXiNzWOOLLiWt7PmcTqPC+
+         wyMHcf1+QjvEpxt53u9+GFEwSma/jZfydOUqVGSSiImh1kWhYLMkoobZ0cFLepbBsVcL
+         9BRNe5s/gtfSUFu66PlqTg7R8RjeJ7SEMuXHCtcPOWvIyyq0Je3EmyfgW6s/TuaLSC39
+         urTAhXh0jq+/+s++o6Pt8I0ExTscuGQIaD+JskovlPploI9E3DwfnMgVrJq54Eq6yIfK
+         QNSw==
+X-Gm-Message-State: AOAM531sn/JeguaMDvlgaNOsRztrKHCR0ggnAXN87VTui/mECVs6RhMg
+        QXdfdHFaRMVElYlg8Lcsx3g=
+X-Google-Smtp-Source: ABdhPJyMhX3xvAA8R6o3gdopJREKWoYcIV0cEbauhIguwnYIOMDzmL4cEzVs6yJp290IVHYkTw4D/Q==
+X-Received: by 2002:a05:6402:2881:b0:41d:8c32:917 with SMTP id eg1-20020a056402288100b0041d8c320917mr7718756edb.328.1650020106098;
+        Fri, 15 Apr 2022 03:55:06 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id i22-20020a1709063c5600b006e8a8a48baesm1591913ejg.99.2022.04.15.03.55.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 03:55:05 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 13:55:03 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Subject: Re: [PATCH net-next 06/12] net: dsa: rzn1-a5psw: add Renesas RZ/N1
+ advanced 5 port switch driver
+Message-ID: <20220415105503.ztl4zhoyua2qzelt@skbuf>
+References: <20220414122250.158113-1-clement.leger@bootlin.com>
+ <20220414122250.158113-7-clement.leger@bootlin.com>
+ <20220414144709.tpxiiaiy2hu4n7fd@skbuf>
+ <20220415113453.1a076746@fixe.home>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: Re: [PATCH 1/4] virtio-crypto: wait ctrl queue instead of busy
- polling
-Content-Language: en-US
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     arei.gonglei@huawei.com, jasowang@redhat.com,
-        herbert@gondor.apana.org.au, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-crypto@vger.kernel.org, helei.sig11@bytedance.com,
-        davem@davemloft.net
-References: <20220415064136.304661-1-pizhenwei@bytedance.com>
- <20220415064136.304661-2-pizhenwei@bytedance.com>
- <20220415042555-mutt-send-email-mst@kernel.org>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <20220415042555-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220415113453.1a076746@fixe.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/15/22 16:41, Michael S. Tsirkin wrote:
->> diff --git a/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c b/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
->> index f3ec9420215e..bf7c1aa4be37 100644
->> --- a/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
->> +++ b/drivers/crypto/virtio/virtio_crypto_akcipher_algs.c
->> @@ -102,107 +102,100 @@ static int virtio_crypto_alg_akcipher_init_session(struct virtio_crypto_akcipher
->>   {
->>   	struct scatterlist outhdr_sg, key_sg, inhdr_sg, *sgs[3];
->>   	struct virtio_crypto *vcrypto = ctx->vcrypto;
->> +	struct virtio_crypto_ctrl_request *vc_ctrl_req = NULL;
+On Fri, Apr 15, 2022 at 11:34:53AM +0200, Clément Léger wrote:
+> Le Thu, 14 Apr 2022 17:47:09 +0300,
+> Vladimir Oltean <olteanv@gmail.com> a écrit :
+> > > later (vlan, etc).
+> > > 
+> > > Suggested-by: Laurent Gonzales <laurent.gonzales@non.se.com>
+> > > Suggested-by: Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>
+> > > Suggested-by: Phil Edworthy <phil.edworthy@renesas.com>  
+> > 
+> > Suggested? What did they suggest? "You should write a driver"?
+> > We have a Co-developed-by: tag, maybe it's more appropriate here?
 > 
-> this is initialized down the road, I think you can skip = NULL here.
+> This driver was written from scratch but some ideas (port isolation
+> using pattern matcher) was inspired from a previous driver. I thought it
+> would be nice to give them credit for that.
 > 
-OK.
->>   	uint8_t *pkey;
->> -	unsigned int inlen;
->> -	int err;
->> +	int err = -ENOMEM;
-> 
-> I would assign this in the single case where this value is used.
-> 
-OK
->>   	unsigned int num_out = 0, num_in = 0;
->> +	int node = dev_to_node(&vcrypto->vdev->dev);
->>   
-> are you sure it is
-> better to allocate close to device and not to current node
-> which is the default?
->
-Also with this part:
-  /* Internal representation of a data virtqueue */
-@@ -65,11 +66,6 @@ struct virtio_crypto {
-  	/* Maximum size of per request */
-  	u64 max_size;
+> [...]
 
--	/* Control VQ buffers: protected by the ctrl_lock */
--	struct virtio_crypto_op_ctrl_req ctrl;
--	struct virtio_crypto_session_input input;
--	struct virtio_crypto_inhdr ctrl_status;
--
-  	unsigned long status;
-  	atomic_t ref_count;
+Ok, in that case I don't really know how to mark sources of inspiration
+in the commit message, maybe your approach is fine.
 
-Orignally virtio crypto driver allocates ctrl&input&ctrl_status 
-per-device, and protects this with ctrl_lock. This is the reason why the 
-control queue reaches the bottleneck of performance. I'll append this in 
-the next version in commit message.
-
-Instead of the single request buffer, declare struct 
-virtio_crypto_ctrl_request {
-         struct virtio_crypto_op_ctrl_req ctrl;
-         struct virtio_crypto_session_input input;
-         struct virtio_crypto_inhdr ctrl_status;
-	... }
-
-The motivation of this change is to allocate buffer from the same node 
-with device during control queue operations.
-
+> > >  obj-y				+= hirschmann/
+> > >  obj-y				+= microchip/
+> > > diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
+> > > new file mode 100644
+> > > index 000000000000..5bee999f7050
+> > > --- /dev/null
+> > > +++ b/drivers/net/dsa/rzn1_a5psw.c
+> > > @@ -0,0 +1,676 @@
+> > > +// SPDX-License-Identifier: GPL-2.0-only
+> > > +/*
+> > > + * Copyright (C) 2022 Schneider-Electric
+> > > + *
+> > > + * Clément Léger <clement.leger@bootlin.com>
+> > > + */
+> > > +
+> > > +#include <linux/clk.h>
+> > > +#include <linux/etherdevice.h>
+> > > +#include <linux/kernel.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/of.h>
+> > > +#include <linux/of_mdio.h>
+> > > +#include <net/dsa.h>
+> > > +#include <uapi/linux/if_bridge.h>  
+> > 
+> > Why do you need to include this header?
 > 
->>   	pkey = kmemdup(key, keylen, GFP_ATOMIC);
->>   	if (!pkey)
->>   		return -ENOMEM;
->>   
->> -	spin_lock(&vcrypto->ctrl_lock);
->> -	memcpy(&vcrypto->ctrl.header, header, sizeof(vcrypto->ctrl.header));
->> -	memcpy(&vcrypto->ctrl.u, para, sizeof(vcrypto->ctrl.u));
->> -	vcrypto->input.status = cpu_to_le32(VIRTIO_CRYPTO_ERR);
->> +	vc_ctrl_req = kzalloc_node(sizeof(*vc_ctrl_req), GFP_KERNEL, node);
->> +	if (!vc_ctrl_req)
->> +		goto out;
-> 
-> do you need to allocate it with kzalloc?
-> is anything wrong with just keeping it part of device?
-> even if yes this change is better split in a separate patch, would make the patch smaller.
-Because there are padding field in 
-virtio_crypto_op_ctrl_req&virtio_crypto_session_input, I suppose the 
-original version also needs to clear padding field.
-So I use kzalloc to make sure that the padding field gets cleared.
-If this is reasonable, to separate this patch is OK to me, or I append 
-this reason into commit message and comments in code.
+> It defines BR_STATE_* but I guess linux/if_bridge.h does include it.
 
->> +
->> +void virtcrypto_ctrlq_callback(struct virtqueue *vq)
->> +{
->> +	struct virtio_crypto *vcrypto = vq->vdev->priv;
->> +	struct virtio_crypto_ctrl_request *vc_ctrl_req;
->> +	unsigned long flags;
->> +	unsigned int len;
->> +
->> +	spin_lock_irqsave(&vcrypto->ctrl_lock, flags);
->> +	do {
->> +		virtqueue_disable_cb(vq);
->> +		while ((vc_ctrl_req = virtqueue_get_buf(vq, &len)) != NULL) {
-> 
-> 
-> you really need to break out of this loop if vq is broken,
-> virtqueue_get_buf will keep returning NULL in this case.
-> 
-I'm a little confused here, if virtqueue_get_buf return NULL, this loop 
-will break. Could you please give me more hints?
-> 
->> +			spin_unlock_irqrestore(&vcrypto->ctrl_lock, flags);
->> +			if (vc_ctrl_req->ctrl_cb)
->> +				vc_ctrl_req->ctrl_cb(vc_ctrl_req);
->> +			spin_lock_irqsave(&vcrypto->ctrl_lock, flags);
->> +		}
->> +		if (unlikely(virtqueue_is_broken(vq)))
->> +			break;
->> +	} while (!virtqueue_enable_cb(vq));
->> +	spin_unlock_irqrestore(&vcrypto->ctrl_lock, flags);
-> 
-> speaking of which existing code does not handle vq broken case
-> all that well but it looks like this patch makes it a bit worse.
-> want to try fixing? basically report an error ...
-> 
->if virtqueue is broken, I can print log.
+Yes.
 
->> diff --git a/drivers/crypto/virtio/virtio_crypto_core.c b/drivers/crypto/virtio/virtio_crypto_core.c
->> index c6f482db0bc0..e668d4b1bc6a 100644
->> --- a/drivers/crypto/virtio/virtio_crypto_core.c
->> +++ b/drivers/crypto/virtio/virtio_crypto_core.c
->> @@ -73,7 +73,7 @@ static int virtcrypto_find_vqs(struct virtio_crypto *vi)
->>   		goto err_names;
->>   
->>   	/* Parameters for control virtqueue */
->> -	callbacks[total_vqs - 1] = NULL;
->> +	callbacks[total_vqs - 1] = virtcrypto_ctrlq_callback;
->>   	names[total_vqs - 1] = "controlq";
->>   
->>   	/* Allocate/initialize parameters for data virtqueues */
->> diff --git a/drivers/crypto/virtio/virtio_crypto_skcipher_algs.c b/drivers/crypto/virtio/virtio_crypto_skcipher_algs.c
->> index a618c46a52b8..b8999dab3e66 100644
->> --- a/drivers/crypto/virtio/virtio_crypto_skcipher_algs.c
->> +++ b/drivers/crypto/virtio/virtio_crypto_skcipher_algs.c
->> +	err = 0;
->> +out:
->> +	kfree_sensitive(vc_ctrl_req);
+> > > +static void a5psw_port_pattern_set(struct a5psw *a5psw, int port, int pattern,
+> > > +				   bool enable)
+> > > +{
+> > > +	u32 rx_match = 0;
+> > > +
+> > > +	if (enable)
+> > > +		rx_match |= A5PSW_RXMATCH_CONFIG_PATTERN(pattern);
+> > > +
+> > > +	a5psw_reg_rmw(a5psw, A5PSW_RXMATCH_CONFIG(port),
+> > > +		      A5PSW_RXMATCH_CONFIG_PATTERN(pattern), rx_match);
+> > > +}
+> > > +
+> > > +static void a5psw_port_mgmtfwd_set(struct a5psw *a5psw, int port, bool enable)  
+> > 
+> > Some explanation on what "management forward" means/does?
 > 
-> it is interesting that you use kfree_sensitive here. why is that?
-> is there in fact anything sensitive here? if yes this is a security
-> improvement and might need its own patch, or at least documentation.
->
+> I'll probably rename that cpu_port_forward to match the dsa naming.
+> It'll actually isolate the port from other ports by only forwarding the
+> packets to the CPU port.
 
-OK, kfree is good enough here, I'll fix this.
+You could probably do without a rename by just adding a comment that
+says that it enables forwarding only towards the management port.
 
+> > Please implement .shutdown too, it's non-optional.
+> 
+> Hum, platform_shutdown does seems to check for the .shutdown callback:
+> 
+> static void platform_shutdown(struct device *_dev)
+> {
+> 	struct platform_device *dev = to_platform_device(_dev);
+> 	struct platform_driver *drv;
+> 
+> 	if (!_dev->driver)
+> 		return;
+> 
+> 	drv = to_platform_driver(_dev->driver);
+> 	if (drv->shutdown)
+> 		drv->shutdown(dev);
+> }
+> 
+> Is there some documentation specifying that this is mandatory ?
+> If so, should I just set it to point to an empty shutdown function then
+> ?
 
-Thanks a lot!
+I meant that for a DSA switch driver is mandatory to call dsa_switch_shutdown()
+from your ->shutdown method, otherwise subtle things break, sorry for being unclear.
 
+Please blindly copy-paste the odd pattern that all other DSA drivers use
+in ->shutdown and ->remove (with the platform_set_drvdata(dev, NULL) calls),
+like a normal person :)
 
--- 
-zhenwei pi
+> > > + * @reg_lock: Lock for register read-modify-write operation  
+> > 
+> > Interesting concept. Generally we see higher-level locking schemes
+> > (i.e. a rmw lock won't really ensure much in terms of consistency of
+> > settings if that's the only thing that serializes concurrent thread
+> > accesses to some register).
+> 
+> Agreed, this does not guarantee consistency of settings but guarantees
+> that rmw modifications are atomic between devices. I wasn't sure about
+> the locking guarantee that I could have. After looking at other
+> drivers, I guess I will switch to something more common such as using
+> a global mutex for register accesses.
+
+LOL, that isn't better...
+
+Ideally locking would be done per functionality that the hardware can
+perform independently (like lookup table access, VLAN table access,
+forwarding domain control, PTP block, link state control, etc).
+You don't want to artificially serialize unrelated stuff.
+A "read-modify-write" lock would similarly artificially serialize
+unrelated stuff for you, even if you intend it to only serialize
+something entirely different.
+
+Most things as seen by a DSA switch driver are implicitly serialized by
+the rtnl_mutex anyway. Some things aren't (->port_fdb_add, ->port_fdb_del).
+There is a point to be made about adding locks for stuff that is
+implicitly serialized by the rtnl_mutex, since you can't really test
+their effectiveness. This makes it more difficult for the driver writer
+to make the right decision about locking, since in some cases, the
+serialization given by the rtnl_mutex isn't something fundamental and
+may be removed, to reduce contention on that lock. In that case, it is
+always a nice surprise to find a backup locking scheme in converted
+drivers. With the mention that said backup locking scheme was never
+really tested, so it may be that it needs further work anyway.
+
+> > The selftests don't cover nearly enough, but just to make sure that they
+> > pass for your switch, when you use 2 switch ports as h1 and h2 (hosts),
+> > and 2 ports as swp1 and swp2? There's surprisingly little that you do on
+> > .port_bridge_join, I need to study the code more.
+> 
+> Port isolation is handled by using a pattern matcher which is enabled
+> for each port at setup. If set, the port packet will only be forwarded
+> to the CPU port. When bridging is needed, the pattern matching is
+> disabled and thus, the packets are forwarded between all the ports that
+> are enabled in the bridge.
+
+Is there some public documentation for this pattern matcher?
