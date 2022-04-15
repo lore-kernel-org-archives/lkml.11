@@ -2,203 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56FEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 05:26:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 184C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 05:30:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345676AbiDOF21 (ORCPT
+        id S1344340AbiDOFdT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 01:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48336 "EHLO
+        Fri, 15 Apr 2022 01:33:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344144AbiDOF2Y (ORCPT
+        with ESMTP id S231758AbiDOFdP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 01:28:24 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DB99E9C5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 22:25:56 -0700 (PDT)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23ENRDGL031505;
-        Fri, 15 Apr 2022 05:25:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=gWQyNHQjE61cOMMwpRilDQHzk0flXtKMkJ8/c3W0LR4=;
- b=onKssbEI5HCrskrIjyTMH3ZQAMfv3eLkZ/Td+GnvD4GY9mhU4GCWh5XiDTpofpJK0wPM
- e+IVjFThnrYuIwevoIIHvDmI/BRt2rFqywjO/ZBNDBaiBu0e4sbWEXZGpqY+m2O2n1Me
- uoAl5xECTMJAhONHtWf4aWQYR3jgtzb+KM0yj75msUhMy0jh/IC4Z8vGaH8JtB5t5CK4
- LmT9qC1itWe9Rkwc5GXHS1ZodVGOr6Rror/znIsQTxPAGSAJ/1WLJgCbQWzAQjFbHLXg
- J55AzdWtzpxrRhikpGRk49ANS6HkkpStLZtQ0QJ2Tf+fELldxB7XsQTY0J808meYGt0d YQ== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3fb1rsekua-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 15 Apr 2022 05:25:27 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23F5Lfv9025989;
-        Fri, 15 Apr 2022 05:25:26 GMT
-Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2044.outbound.protection.outlook.com [104.47.56.44])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3fb0k63jgk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 15 Apr 2022 05:25:26 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lRFU1u0TBMJmoeAT6cIJ/pKw2gmydeMRyLTyXJZjL3C291z3FPDJZTwOlSJqURta+XtOKOGF115b8JepBvGHHBDofC6qwXttnrlXtXfpvF1dH23pOla7PnT2T4uj2PgTmUI3UgvXCj2SY2OH4pdmC5I9Rd0LzvXDnGl8mslsCUNhGOz1drlkcnqVL0maeforscKLac5rizHT9jQ27zBbnUoU+RsYmnaZBxD/yCTXg+5tmBqjSwRCVAb3tKCzsxjE3qBlAukdDWYIH39zx1E9ofLbRsBUoOoa8Q9d6gUrloV2dTUUacoBBQ0nQDCyzZ8RSG1NzjIW4devvx+RiNc1cg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gWQyNHQjE61cOMMwpRilDQHzk0flXtKMkJ8/c3W0LR4=;
- b=jxanO/WYyoev1aArtjYF4VhfdavySB2Yi5aQ6SXBO9iXERr7Wowr+e2mVDRb6Ayqce2HzHYtHdTx8OhwK9r+g6w7JI/+5GZilGsZfKRAtiF83xi6Pt+U+uyfALJmh7APg1GzwyL8IUeZ/q+x7rgMNoyfHUA6WmEe4BffgAV7BcUQdDVkTtDNex4XxnYOuCAfSkUa/yuD/NCsJEQaRrmTO/yX2Z0xWNWO3mgxrP5I/i6Q+xtcS8gW0md3qbqxnCxz7SznWTZvC9uEoc39//a6LzWiFc37x7hdn7v+Zk2bUZxUjNaG+q5NU+hD312MpvLasmz7fbb3PKJjyy7qoiKKSg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gWQyNHQjE61cOMMwpRilDQHzk0flXtKMkJ8/c3W0LR4=;
- b=qkLRNhXpWnI2yCgR96JMBveao1YfGAXVt1gsRaZ2LC3I9C+OiDMEE7FUn1wv7nrfI+UDVGbuUHSW1A9nEqAC2tU4t3XnaAlhXpLuM7DqK3skdB5pG+i755E0tu0g5yKesXwI8+RhJ4OGUAbeCoUZEKqA0U0Edl4ahp0c7isSa+Q=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CO1PR10MB4483.namprd10.prod.outlook.com
- (2603:10b6:303:98::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Fri, 15 Apr
- 2022 05:25:24 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::b5d5:7b39:ca2d:1b87]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::b5d5:7b39:ca2d:1b87%5]) with mapi id 15.20.5144.022; Fri, 15 Apr 2022
- 05:25:24 +0000
-Date:   Fri, 15 Apr 2022 08:25:02 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     gregkh@linuxfoundation.org, davem@davemloft.net, len.baker@gmx.com,
-        dave@stgolabs.net, edumazet@google.com,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2] staging: rtl8192e: Fix signedness bug in
- rtllib_rx_assoc_resp()
-Message-ID: <20220415052502.GE12805@kadam>
-References: <1649988571-19923-1-git-send-email-baihaowen@meizu.com>
+        Fri, 15 Apr 2022 01:33:15 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F1D9BB9A
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 22:30:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650000648; x=1681536648;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=uCHRMsxHF68JkYa1yHxrB+DiPaz40XRfbZFKLlB4rkQ=;
+  b=Rz3C3lwZufDz4rkEj+eY9+nkgewOWOv/JgB1Mx+uTPucNGifFmEshEic
+   GD8MBgzcf/NvZgl7AktNJeebPwJfYc5Bi6NtwZhl43WlUlDLRYTQxE+ln
+   JrUFpWrA9Appz3YKdU0CusXAM2gQHgOYN+m5Cm/OoVOKi9OfVhPxNZGKB
+   gOYHTw1QQymgX+AgmOXqCJq816RdQrcIMpEA6rAiD8nMACENsTMZS6dnL
+   bqSvK7yW/KDoJZNy99nwKmif4POcRmiqLzb4Q6d/YpHvAdJYLJdr/ebXD
+   IWuKB4f4syFlCehLBmpNALjrq4NtaQygm1ojtgCasxEur6paSSvhqloxy
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="244983013"
+X-IronPort-AV: E=Sophos;i="5.90,261,1643702400"; 
+   d="scan'208";a="244983013"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 22:30:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,261,1643702400"; 
+   d="scan'208";a="612684615"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 14 Apr 2022 22:30:46 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nfEXd-0001ZN-Ru;
+        Fri, 15 Apr 2022 05:30:45 +0000
+Date:   Fri, 15 Apr 2022 13:30:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Haneen Mohammed <hamohammed.sa@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Sean Paul <seanpaul@chromium.org>,
+        Dominik Behr <dbehr@chromium.org>,
+        =?iso-8859-1?Q?St=E9phane?= Marchesin <marcheu@chromium.org>
+Subject: [jsarha:backport/cros-v4.14-intel-audio 5196/9999]
+ include/drm/drm_print.h:217:2: error: this statement may fall through
+Message-ID: <202204151349.1jkLAiYB-lkp@intel.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1649988571-19923-1-git-send-email-baihaowen@meizu.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: MR1P264CA0075.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:501:3f::17) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: db7194ab-fd79-497a-b372-08da1ea057c8
-X-MS-TrafficTypeDiagnostic: CO1PR10MB4483:EE_
-X-Microsoft-Antispam-PRVS: <CO1PR10MB4483D8243F94218126E97B218EEE9@CO1PR10MB4483.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sw+yIWkBcxI+0//TDfKhmzVpHBI6nofqyNURVBmXFY6xK93ehExKltbkleiMG09qFZ2pTYjmbjt1WvSti+YTnUwcqH98J+LoERohgwkgzYQC+zF9lEWObS+3u+ArTCCYSy3RFOfO/9gYlF+WgXqxK7Imdfj3Qv1liAJLXLobtlTCX82g18rhwRohPRaNxZdraCx9aGsXTh1WAcE3V0g1Tq918HFZaw8456RrXiiViJ1js6t5SSwRSCVGYTrfB2+r0ZIRvYpLpdIdP/I365dgIk3SAaYnxzVGQ7afe9ovZO6orFvGVq53rcfB0Mo9k3xCP5RdASYSPhO2uUI2wPXBqxjPXEZL95a+PF/KojjgFmaQdM9R0IOsbZvIonxaulvDnsD02rm753k/hrVnPAaj7jaU2pUWbsXF4uuez2eZIpoRsQXFBRjoq8hEyidOoUclxH1bcwpJ2YKBtY8sXO2S32+JOw+SPojD2iZhvXMlsoYv/e2facaVGja9UjZcx6Ss1+HYr1lW6E1zW7Q1zuK73P0ClngLr10ZKNSnC79Hi2EOMs6EbwOxwq3f0LPS9PO6JCBUbWbju5v6vxIwCNv9Ex1Mhb2An8abwmUQOXwklOoMKltXqHGKIHMgvnyz4SQvI5SxFr6uLRV9kO01FiB85vi5bjFHu8tGyXyqK34/7NFH3zL/6xAEgF7QrOtPLFt5MTN3xNrq2TyUphLN9vPJqw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(38350700002)(33716001)(83380400001)(186003)(1076003)(316002)(8936002)(26005)(52116002)(8676002)(6916009)(38100700002)(6486002)(6666004)(9686003)(508600001)(5660300002)(44832011)(6506007)(86362001)(33656002)(6512007)(66476007)(66946007)(66556008)(2906002)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0vuEvtMZ3Wngh/M6ujhz7dz7kGjYn8uvLJh2q2JNSdCsdkqo7VK/U0ZVsJYL?=
- =?us-ascii?Q?YdHdUmAJU2POfuzwKgRvB1jYrqx/n3eSInBNL6ZNE8iItbJIifV1tqVyuXTc?=
- =?us-ascii?Q?shiy73WxS47e+zfhic7QtY6XtRCZgSNHUDNJZBQ4+61fpo2RE8BDvRqUmVN9?=
- =?us-ascii?Q?2Cs6A0Zf6Ww91ZumsoXfvQspVPJhOa9D+wBxd+8glw9ipzNueYnRIBEPBFSn?=
- =?us-ascii?Q?458KXiPrrFUvSIRpNW6dH8kpZ+AhCZPlCsYz9oBC3ho6E6f0R6y0D8hthjBk?=
- =?us-ascii?Q?zt1LPBpc60ipNMvNbvrB+LetXkLilHwETz8MAMjC5qirr1btl0C5daPUdKXA?=
- =?us-ascii?Q?MLEzPexWR/nuK2sWYXh3iCkK4wc+LBYkRHgLTDPMc+hptNSlHnkwcO4TkUUr?=
- =?us-ascii?Q?rWfr3hH9RUY1D4HlnUuin0SxGtvABwp6+Kz4Socm7fe4J/5uRuA14tY5zWxg?=
- =?us-ascii?Q?kNoAwS3jqC/qZVczWgVWJvjG317osEP0sv7Ka3N2LphLcQqy+fS/+vV36D2T?=
- =?us-ascii?Q?Z8SIWlMTS1XsdHrL2c2t4xKqp/rCaMWuo+WbZV20kSZkMiwAaF/A155LQ/Yp?=
- =?us-ascii?Q?1JMxfiCyHd/OG+/KiRx15bmhb5kDB00jcZcH8zEyJBITtHwI2yvUo4urCf6f?=
- =?us-ascii?Q?CKzN4V3pGBCJfmChOtEHBIHol4D4XPPkxKVBNAdNYOM1cp5J1uAGKxWQKwrS?=
- =?us-ascii?Q?3EhWcvMlz3m/nVWfnK34rj/OdgYemXFi86IKBemYiswkvHxy8Q+/rhahr+Pq?=
- =?us-ascii?Q?I+yZFDf+IRicTSGznAb5YYZCAbjHnlE0F48FVYDN+zP8i0MJW8lQL43EaTG4?=
- =?us-ascii?Q?R0y/wIOfBWODRh2P0EjZ7rIorc9sB34Ye0jye3LuPF9gryIKGsuIFB4lrmod?=
- =?us-ascii?Q?bpnW/2Rj/T2cnlGZbKv85bzI0MEekGCnxqmKXWlq4FFazieCcCbFIYMUcVf3?=
- =?us-ascii?Q?AVFyVu/CmVF3p2+lZbF4pj2aU/lLQCJHObvONkIpW5qcJzZZfmLVxHPi80Wc?=
- =?us-ascii?Q?4BC3sFgR4XzrR/SESly6vruwnZWpXXAWTQN1p5p9kdAuSTS3MP6fgkik8ROz?=
- =?us-ascii?Q?O3BatETIBf0vuqie0PlK1EG2QsgU7T/rAnVx1CAIz8l+EeG4iWgIIhRkNnPr?=
- =?us-ascii?Q?ZW71oX7spBsfzo8zwTfB1pgluKP7HAoDsyFcbmxDKbWgLDJEENzECt3Uy1t/?=
- =?us-ascii?Q?mVBt0U3bQkFyzyeVwpJDKTC6HCS9TKTMp+WQZQiFzUUAhXtyf/+BR2k1N/EG?=
- =?us-ascii?Q?60ug034AAcxTBi+Utxx/0uBetTj56LOtcphTTV2xqeFN5KVxwrFH2eIWw1Tl?=
- =?us-ascii?Q?7ojCohvz/mOzMHV+oUTbc+jxG3R6mehTv1TI6uIWL1PsAVPY9WWJq3Jku4qh?=
- =?us-ascii?Q?b02GnUDiCg4JiHMB/TTW9TC79iX8Yh4H1PZ+n9tbZUBbg4w0H5A3s6u/Ygyw?=
- =?us-ascii?Q?iAFvFYxa++/5M0yV6OF7sKhaS+vV2qScmwtNPQszzlUAtZeLgLVukOpiqcL8?=
- =?us-ascii?Q?PIgiZHXwY32hLPYWTAhvTVItyq4Bs8xEZU0OCGD2howCoJMPHttJ20FV8fJh?=
- =?us-ascii?Q?oiUyArGW+D16WYGjEfwJ6t/pRTyBezo6JlXgfaGKgpVghOhPFXCq7l2yN+/m?=
- =?us-ascii?Q?aIHG02DaegO6p3BrWjLTSCtFrm1mvCDJi0NIxMsI6XUTX1/Qe4M4XG6/IqfL?=
- =?us-ascii?Q?mXGLIKdlt2LEMbcvXBnWyfeQHUGCTyVSOzQd71ww0tpH0E31W0KscXhjMolT?=
- =?us-ascii?Q?yegw1NhEIzp380M2hE4bqfA6401HX6Q=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: db7194ab-fd79-497a-b372-08da1ea057c8
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2022 05:25:24.4592
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CuB/OFNzWkKKCRxUpAH6EVfivrhxHKDE/6SRQMkkc38bRhDsmhCa1smNwCdTNOj6CuyWkaKsTMscfnWNRs1ldAV/7RESPIWoowm0+jTQwKU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4483
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.858
- definitions=2022-04-15_01:2022-04-14,2022-04-15 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0
- malwarescore=0 mlxlogscore=999 spamscore=0 adultscore=0 phishscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204150032
-X-Proofpoint-ORIG-GUID: 7ucyCvKkeub4UH_y0nTaYbvgXSmGUZns
-X-Proofpoint-GUID: 7ucyCvKkeub4UH_y0nTaYbvgXSmGUZns
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 10:09:31AM +0800, Haowen Bai wrote:
-> function rtllib_rx_assoc_resp () unsigned errcode receive auth_parse()'s
-> errcode -ENOMEM.
-> 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> ---
-> V1->V2: reduce return random value; print its own error message.
-> 
->  drivers/staging/rtl8192e/rtllib_softmac.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
-> index 82bf05eb1cbf..8a0961e64a8c 100644
-> --- a/drivers/staging/rtl8192e/rtllib_softmac.c
-> +++ b/drivers/staging/rtl8192e/rtllib_softmac.c
-> @@ -1764,7 +1764,7 @@ static void rtllib_softmac_check_all_nets(struct rtllib_device *ieee)
->  	spin_unlock_irqrestore(&ieee->lock, flags);
->  }
->  
-> -static inline u16 auth_parse(struct net_device *dev, struct sk_buff *skb,
-> +static inline s16 auth_parse(struct net_device *dev, struct sk_buff *skb,
+Hi Haneen,
 
-Could you make this an int instead of s16.  s16 is always a bit weird.
+FYI, the error/warning still remains.
 
->  			     u8 **challenge, int *chlen)
->  {
->  	struct rtllib_authentication *a;
-> @@ -1773,7 +1773,7 @@ static inline u16 auth_parse(struct net_device *dev, struct sk_buff *skb,
->  	if (skb->len <  (sizeof(struct rtllib_authentication) -
->  	    sizeof(struct rtllib_info_element))) {
->  		netdev_dbg(dev, "invalid len in auth resp: %d\n", skb->len);
-> -		return 0xcafe;
-> +		return -EINVAL;
->  	}
->  	*challenge = NULL;
->  	a = (struct rtllib_authentication *) skb->data;
-> @@ -1787,7 +1787,7 @@ static inline u16 auth_parse(struct net_device *dev, struct sk_buff *skb,
->  				return -ENOMEM;
->  		}
->  	}
-> -	return le16_to_cpu(a->status);
-> +	return a->status;
+tree:   https://github.com/jsarha/linux backport/cros-v4.14-intel-audio
+head:   ed5b3159902598be61b23ef22a235d9b1eaa9ad8
+commit: 27e31e8e0e7a44982813ec603246138eee221bd4 [5196/9999] BACKPORT: drm: Move debug macros out of drmP.h
+config: i386-randconfig-a011-20220411 (https://download.01.org/0day-ci/archive/20220415/202204151349.1jkLAiYB-lkp@intel.com/config)
+compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
+reproduce (this is a W=1 build):
+        # https://github.com/jsarha/linux/commit/27e31e8e0e7a44982813ec603246138eee221bd4
+        git remote add jsarha https://github.com/jsarha/linux
+        git fetch --no-tags jsarha backport/cros-v4.14-intel-audio
+        git checkout 27e31e8e0e7a44982813ec603246138eee221bd4
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/i915/
 
-But then just say:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-	if (a->status) {
-		netdev_info(ieee->dev, "blah blah failed");
-		return -EINVAL;
-	}
+All errors (new ones prefixed by >>):
 
-	return 0;
+   In file included from include/drm/drm_mm.h:49:0,
+                    from include/drm/drmP.h:73,
+                    from drivers/gpu/drm/i915/i915_drv.h:47,
+                    from drivers/gpu/drm/i915/intel_drv.h:33,
+                    from drivers/gpu/drm/i915/intel_cdclk.c:24:
+   drivers/gpu/drm/i915/intel_cdclk.c: In function 'pnv_get_cdclk':
+>> include/drm/drm_print.h:217:2: error: this statement may fall through [-Werror=implicit-fallthrough=]
+     drm_printk(KERN_ERR, DRM_UT_NONE, fmt, ##__VA_ARGS__)
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/gpu/drm/i915/intel_cdclk.c:318:3: note: in expansion of macro 'DRM_ERROR'
+      DRM_ERROR("Unknown pnv display core clock 0x%04x\n", gcfgc);
+      ^~~~~~~~~
+   drivers/gpu/drm/i915/intel_cdclk.c:319:2: note: here
+     case GC_DISPLAY_CLOCK_133_MHZ_PNV:
+     ^~~~
+   cc1: all warnings being treated as errors
 
-If you look up what a->status is, it can only be
-WLAN_STATUS_NOT_SUPPORTED_AUTH_ALG which is not worth preserving really.
 
-regards,
-dan carpenter
+vim +217 include/drm/drm_print.h
 
+   186	
+   187	#define _DRM_PRINTK(once, level, fmt, ...)				\
+   188		do {								\
+   189			printk##once(KERN_##level "[" DRM_NAME "] " fmt,	\
+   190				     ##__VA_ARGS__);				\
+   191		} while (0)
+   192	
+   193	#define DRM_INFO(fmt, ...)						\
+   194		_DRM_PRINTK(, INFO, fmt, ##__VA_ARGS__)
+   195	#define DRM_NOTE(fmt, ...)						\
+   196		_DRM_PRINTK(, NOTICE, fmt, ##__VA_ARGS__)
+   197	#define DRM_WARN(fmt, ...)						\
+   198		_DRM_PRINTK(, WARNING, fmt, ##__VA_ARGS__)
+   199	
+   200	#define DRM_INFO_ONCE(fmt, ...)						\
+   201		_DRM_PRINTK(_once, INFO, fmt, ##__VA_ARGS__)
+   202	#define DRM_NOTE_ONCE(fmt, ...)						\
+   203		_DRM_PRINTK(_once, NOTICE, fmt, ##__VA_ARGS__)
+   204	#define DRM_WARN_ONCE(fmt, ...)						\
+   205		_DRM_PRINTK(_once, WARNING, fmt, ##__VA_ARGS__)
+   206	
+   207	/**
+   208	 * Error output.
+   209	 *
+   210	 * \param fmt printf() like format string.
+   211	 * \param arg arguments
+   212	 */
+   213	#define DRM_DEV_ERROR(dev, fmt, ...)					\
+   214		drm_dev_printk(dev, KERN_ERR, DRM_UT_NONE, __func__, " *ERROR*",\
+   215			       fmt, ##__VA_ARGS__)
+   216	#define DRM_ERROR(fmt, ...)						\
+ > 217		drm_printk(KERN_ERR, DRM_UT_NONE, fmt,	##__VA_ARGS__)
+   218	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
