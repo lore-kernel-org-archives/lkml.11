@@ -2,100 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A1B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D57C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355566AbiDOPkT (ORCPT
+        id S1355563AbiDOPk1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 11:40:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55572 "EHLO
+        Fri, 15 Apr 2022 11:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355927AbiDOPiR (ORCPT
+        with ESMTP id S1355516AbiDOPkG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 11:38:17 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5205D3B287;
-        Fri, 15 Apr 2022 08:35:41 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso12065866pju.1;
-        Fri, 15 Apr 2022 08:35:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9bXHH0l+tz0VBMaePEudc9a7Sz7QmbB3aIYivqju7Dw=;
-        b=L9phSgW4sQxIe2PQ24Ubkjg8xsBECRdeYaJibMQ6FXnZNlB5Od0qbuGoGCvXqHpqpz
-         vDFWUL+tJwDODl+g7lox8Vyg+0TyPZxKKyGhk0Tyg7qQFu0raX1/+H5fTQ6t2kGKsUZC
-         v8zI4kj3YZMlps2LThodMhXmJ+JOW+07BnGwOhrO7XESGUj/qK3u2jhFPCbIAKWey4DN
-         gjwBgZwy3zd1qnasenZvs/QLjlVBVu2m8CmSXQSi8F0CjmVbnYW3HPGZ3NYQGz60vTUI
-         Mb4zIQgJsXsmDUpG3A5+gdo8P+E223LVxwf/CtRE88n5z8uULkCMnUnkmBKpHcfQO1lM
-         2ojA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9bXHH0l+tz0VBMaePEudc9a7Sz7QmbB3aIYivqju7Dw=;
-        b=wF1jqHGZeZtVwa9ZdFj+O+EsQ9FsBzByRyW1URvHweLDnY182u70kk1x/UYI8MX3jk
-         3MOBTUFOQhbE9zCwKozWc+4rnlNOb8H1m7epzacoIluDoaxbo2F3kzakn7DfRqUT+Z8C
-         MZ5Td88WEBaDZJIy5+1eIPTSjE8B5oCwtCTohCZkgUkKsLwN0VGacAA8PH0nGX5+F3fg
-         VcFDz1wvb3uqalqWGLjB2BEf1Xf2BKIFY6WXFLxxVf+0KG7DcgrIKovhvldjufgygHS7
-         nGTMDEMjbyqM5ZSS+cVUwnxcbwF7OwJ6A4N989i3V+pVIwjSL2NwnlGTnEmwPPSkWz3X
-         GARw==
-X-Gm-Message-State: AOAM530reV9dluRD/7ZVNo6QHt9XAL4v+YLJZjlqgpRe2nOVK7HdQ0A8
-        9iSOOmqyAnpKnTaBCRBafPM=
-X-Google-Smtp-Source: ABdhPJyXbKEnVBoHg+gPIRp8ZyglmrYLkX+7u+E/WwxXb5Ep7LCaFTbFx98GwgE9//2MtlmcWFJdUg==
-X-Received: by 2002:a17:902:e9d3:b0:158:8521:1e8f with SMTP id 19-20020a170902e9d300b0015885211e8fmr18865907plk.82.1650036940787;
-        Fri, 15 Apr 2022 08:35:40 -0700 (PDT)
-Received: from [192.168.1.249] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id j6-20020aa79286000000b004fdf02851eesm3193421pfa.4.2022.04.15.08.35.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Apr 2022 08:35:39 -0700 (PDT)
-Message-ID: <51328779-1a28-ef82-6847-47e45018647b@gmail.com>
-Date:   Fri, 15 Apr 2022 08:35:38 -0700
+        Fri, 15 Apr 2022 11:40:06 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D743C72F;
+        Fri, 15 Apr 2022 08:37:17 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id ED909240006;
+        Fri, 15 Apr 2022 15:37:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1650037035;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=kXBDK8xo31Siszz9mdQu0RpXYIzmlLJyUEJsWA4vLkA=;
+        b=JBhAze1ahVizW7R+goEcOR/IGfDIuv6Y3R8FisdEI09kZT8Tx81cDJIx9cUuiRpWdWc1eI
+        wynmFiji49Jmv+S6xfgFMhNJBF9l79sggXq2K40rl20ZKNLB2k2DYhvQPNwVw51/TJ7q/E
+        fagPCbQ+CplZz2d0FT9y/Fr/z3ioNZkPyXPnINbHJLkuf28n2ph6sSXvITgQIxn9tVhDP5
+        Ut/bQoDvp+J6vVY4gKE9pwFcWoPm681B3uTWhwktYK/wPzw+QkxbUUMTh6B6cYoD5uoIDG
+        oHlzA/RK36FlbXF4AbXwGoXm+ifYyg9LSIbkiz6f4lYPFCwKL7W2vnZ0z8YQ1g==
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+Cc:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH v3 0/4] Allwinner A31/A83T MIPI CSI-2 and A31 ISP / ISP Driver
+Date:   Fri, 15 Apr 2022 17:37:04 +0200
+Message-Id: <20220415153708.637804-1-paul.kocialkowski@bootlin.com>
+X-Mailer: git-send-email 2.35.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 5.4 000/475] 5.4.189-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220414110855.141582785@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220414110855.141582785@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This new version is an offspring from the big "Allwinner A31/A83T
+MIPI CSI-2 Support and A31 ISP Support" series, which was split into
+individual series for better clarity and handling.
 
+This part only concerns the introduction of the new ISP driver.
 
-On 4/14/2022 6:06 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.189 release.
-> There are 475 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Sat, 16 Apr 2022 11:07:54 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.189-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+Changes since all-in-one v2:
+- Updated Kconfig to follow the latest media-wide changes;
+- Reworked async subdev handling with a dedicated structure holding the
+  corresponding source to avoid matching in the driver;
+- Switched to clock-managed regmap mmio;
+- Used helper to get a single enabled link for an entity's pad, to replace
+  source selection at link_validate time and select the remote source at
+  stream on time instead;
+- Added mutex for mbus format serialization;
+- Used endpoint-base instead of video-interface for "internal" endpoints
+  in device-tree schema;
+- Added TODO with unstaging requirements;
+- Various cosmetic cleanups;
+- Updated copyright years;
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+Paul Kocialkowski (4):
+  dt-bindings: media: Add Allwinner A31 ISP bindings documentation
+  dt-bindings: media: sun6i-a31-csi: Add ISP output port
+  staging: media: Add support for the Allwinner A31 ISP
+  MAINTAINERS: Add entry for the Allwinner A31 ISP driver
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+ .../media/allwinner,sun6i-a31-csi.yaml        |  14 +
+ .../media/allwinner,sun6i-a31-isp.yaml        | 117 +++
+ MAINTAINERS                                   |   9 +
+ drivers/staging/media/sunxi/Kconfig           |   1 +
+ drivers/staging/media/sunxi/Makefile          |   1 +
+ drivers/staging/media/sunxi/sun6i-isp/Kconfig |  15 +
+ .../staging/media/sunxi/sun6i-isp/Makefile    |   4 +
+ .../staging/media/sunxi/sun6i-isp/TODO.txt    |   6 +
+ .../staging/media/sunxi/sun6i-isp/sun6i_isp.c | 556 +++++++++++++
+ .../staging/media/sunxi/sun6i-isp/sun6i_isp.h |  85 ++
+ .../media/sunxi/sun6i-isp/sun6i_isp_capture.c | 749 ++++++++++++++++++
+ .../media/sunxi/sun6i-isp/sun6i_isp_capture.h |  78 ++
+ .../media/sunxi/sun6i-isp/sun6i_isp_params.c  | 573 ++++++++++++++
+ .../media/sunxi/sun6i-isp/sun6i_isp_params.h  |  52 ++
+ .../media/sunxi/sun6i-isp/sun6i_isp_proc.c    | 578 ++++++++++++++
+ .../media/sunxi/sun6i-isp/sun6i_isp_proc.h    |  66 ++
+ .../media/sunxi/sun6i-isp/sun6i_isp_reg.h     | 275 +++++++
+ .../sunxi/sun6i-isp/uapi/sun6i-isp-config.h   |  43 +
+ 18 files changed, 3222 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
+ create mode 100644 drivers/staging/media/sunxi/sun6i-isp/Kconfig
+ create mode 100644 drivers/staging/media/sunxi/sun6i-isp/Makefile
+ create mode 100644 drivers/staging/media/sunxi/sun6i-isp/TODO.txt
+ create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp.c
+ create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp.h
+ create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_capture.c
+ create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_capture.h
+ create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_params.c
+ create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_params.h
+ create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_proc.c
+ create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_proc.h
+ create mode 100644 drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_reg.h
+ create mode 100644 drivers/staging/media/sunxi/sun6i-isp/uapi/sun6i-isp-config.h
+
 -- 
-Florian
+2.35.2
+
