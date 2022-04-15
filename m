@@ -2,133 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB584C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 22:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83043C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 22:01:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356264AbiDOWD7 (ORCPT
+        id S1356301AbiDOWEH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 18:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40572 "EHLO
+        Fri, 15 Apr 2022 18:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234408AbiDOWD5 (ORCPT
+        with ESMTP id S231476AbiDOWEB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 18:03:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF87729CBB;
-        Fri, 15 Apr 2022 15:01:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B6F7B8311C;
-        Fri, 15 Apr 2022 22:01:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0D90C385A4;
-        Fri, 15 Apr 2022 22:01:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650060085;
-        bh=3nAlILfONam3A1vF12+Z//hbMZsSoLMl3r4snyjFDkg=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=R5ACtTmRa1lWffZNP40CcYwujsVyYLvLu7t4cuSkHx/zaTDgutlQ4iwTl0T+OF46E
-         KTk2+o63Z5vwr6TH66atXLG4sAjRb/3Fu3/lo+Yd3s4T2y408M4g5eshPM00FXsruY
-         gnQywd9MCBBru4u0+hmOTmRr5Sf6fOH6A8aUY3iN3hikuJ5hZX6mYNnkvR8sfqbHJZ
-         6cwdJQMOfy9nf5UrBix4ZArxlSXSr5cEKNoGxqL5AE9/8QMWl5q0TSv2lORkNvm+eu
-         0mpduXkufAAx6byB3UeBLcqIFKHPEHxW+sH7kFA7AyIzaxOVMzTIUGBGsnuhnJ9rtg
-         ul349pv5wZ/2g==
-Date:   Fri, 15 Apr 2022 15:01:24 -0700 (PDT)
-From:   Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
-To:     Oleksandr Tyshchenko <olekstysh@gmail.com>
-cc:     xen-devel@lists.xenproject.org,
-        virtualization@lists.linux-foundation.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Julien Grall <julien@xen.org>, Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>
-Subject: Re: [RFC PATCH 3/6] dt-bindings: xen: Add xen,dev-domid property
- description for xen-virtio layer
-In-Reply-To: <1649963973-22879-4-git-send-email-olekstysh@gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2204151300130.915916@ubuntu-linux-20-04-desktop>
-References: <1649963973-22879-1-git-send-email-olekstysh@gmail.com> <1649963973-22879-4-git-send-email-olekstysh@gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Fri, 15 Apr 2022 18:04:01 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33B62A278;
+        Fri, 15 Apr 2022 15:01:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650060091; x=1681596091;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=4jrQfGzOOz8NYN3WWxiP4ysiHxJPzuBRgwyiKBFv+oo=;
+  b=DrD8wg5aUCfBgemjiurqYSfVJ2uJzxi6AmMwDysWkH+8Olz1HSpO0RZA
+   jkLcfWxDG+3iMNlg3Qg92m+nAzca5N67Spk0EgeP8a2EjsfxDjWOuiiUS
+   GUUn9/WA3KnQvxKCXEUB3DKAlWQAxcrxA9su7ifWj4vNks5y89aR4wwZ2
+   HrgZvAFcyxwNrozPg8m5/TQR0YSSzp36COpvYP38Q5xm9RVekb6yR+S9H
+   9CONNJ4H2j3/J64cc1UipvoO+kBGCzYknYO+D9QZzUjGBAQ32QLeB+8Y+
+   EtJJl/+w2XhEtKjZtiGzLG/zeU4K8n+dQ6gjrzxSqstbftjRhKe8ue+vR
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="288303530"
+X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
+   d="scan'208";a="288303530"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 15:01:30 -0700
+X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
+   d="scan'208";a="612949090"
+Received: from smashtou-mobl1.amr.corp.intel.com (HELO skuppusw-desk1.amr.corp.intel.com) ([10.212.128.210])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 15:01:29 -0700
+From:   Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org
+Subject: [PATCH v3 1/4] x86/tdx: Add tdx_mcall_tdreport() API support
+Date:   Fri, 15 Apr 2022 15:01:06 -0700
+Message-Id: <20220415220109.282834-2-sathyanarayanan.kuppuswamy@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220415220109.282834-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <20220415220109.282834-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022, Oleksandr Tyshchenko wrote:
-> From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-> 
-> Introduce Xen specific binding for the virtio-mmio device to be used
-> by Xen virtio support driver in a subsequent commit.
-> 
-> This binding specifies the ID of Xen domain where the corresponding
-> device (backend) resides. This is needed for the option to restrict
-> memory access using Xen grant mappings to work.
-> 
-> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-> ---
->  .../devicetree/bindings/virtio/xen,dev-domid.yaml  | 39 ++++++++++++++++++++++
->  1 file changed, 39 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/virtio/xen,dev-domid.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/virtio/xen,dev-domid.yaml b/Documentation/devicetree/bindings/virtio/xen,dev-domid.yaml
-> new file mode 100644
-> index 00000000..78be993
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/virtio/xen,dev-domid.yaml
-> @@ -0,0 +1,39 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/virtio/xen,dev-domid.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Xen specific binding for the virtio device
-> +
-> +maintainers:
-> +  - Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-> +
-> +select: true
-> +
-> +description:
-> +  This binding specifies the ID of Xen domain where the corresponding device
-> +  (backend) resides. This is needed for the option to restrict memory access
-> +  using Xen grant mappings to work.
-> +
-> +  Note that current and generic "iommus" bindings are mutually exclusive, since
-> +  the restricted memory access model on Xen behaves as a kind of software IOMMU.
+In TDX guest, attestation is mainly used to verify the trustworthiness
+of a TD to the 3rd party key servers. First step in attestation process
+is to get the TDREPORT data and the generated data is further used in
+subsequent steps of the attestation process. TDREPORT data contains
+details like TDX module version information, measurement of the TD,
+along with a TD-specified nonce
 
-I don't think that this last statement is necessary or fully accurate, so
-I would remove it. Other than that, this looks good to me.
+Add a wrapper function (tdx_mcall_tdreport()) to get the TDREPORT from
+the TDX Module.
 
+More details about the TDREPORT TDCALL can be found in TDX Guest-Host
+Communication Interface (GHCI) for Intel TDX 1.5, section titled
+"TDCALL [MR.REPORT]".
 
-> +properties:
-> +  xen,dev-domid:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description:
-> +      Should contain the ID of device's domain.
+Steps involved in attestation process can be found in TDX Guest-Host
+Communication Interface (GHCI) for Intel TDX 1.5, section titled
+"TD attestation"
 
-Maybe better as:
-"The domid (domain ID) of the domain where the device (backend) is running"
+This API will be mainly used by the attestation driver. Attestation
+driver support will be added by upcoming patches.
 
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+---
+ arch/x86/coco/tdx/tdx.c    | 46 ++++++++++++++++++++++++++++++++++++++
+ arch/x86/include/asm/tdx.h |  2 ++
+ 2 files changed, 48 insertions(+)
 
+diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+index 03deb4d6920d..3e409b618d3f 100644
+--- a/arch/x86/coco/tdx/tdx.c
++++ b/arch/x86/coco/tdx/tdx.c
+@@ -11,10 +11,12 @@
+ #include <asm/insn.h>
+ #include <asm/insn-eval.h>
+ #include <asm/pgtable.h>
++#include <asm/io.h>
+ 
+ /* TDX module Call Leaf IDs */
+ #define TDX_GET_INFO			1
+ #define TDX_GET_VEINFO			3
++#define TDX_GET_REPORT			4
+ #define TDX_ACCEPT_PAGE			6
+ 
+ /* TDX hypercall Leaf IDs */
+@@ -34,6 +36,10 @@
+ #define VE_GET_PORT_NUM(e)	((e) >> 16)
+ #define VE_IS_IO_STRING(e)	((e) & BIT(4))
+ 
++/* TDX Module call error codes */
++#define TDCALL_RETURN_CODE_MASK		0xffffffff00000000
++#define TDCALL_RETURN_CODE(a)		((a) & TDCALL_RETURN_CODE_MASK)
++
+ /*
+  * Wrapper for standard use of __tdx_hypercall with no output aside from
+  * return code.
+@@ -98,6 +104,46 @@ static inline void tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
+ 		panic("TDCALL %lld failed (Buggy TDX module!)\n", fn);
+ }
+ 
++/*
++ * tdx_mcall_tdreport() - Generate TDREPORT_STRUCT using TDCALL.
++ *
++ * @data        : Address of 1024B aligned data to store
++ *                TDREPORT_STRUCT.
++ * @reportdata  : Address of 64B aligned report data
++ *
++ * return 0 on success or failure error number.
++ */
++long tdx_mcall_tdreport(void *data, void *reportdata)
++{
++	u64 ret;
++
++	/*
++	 * Check for a valid TDX guest to ensure this API is only
++	 * used by TDX guest platform. Also make sure "data" and
++	 * "reportdata" pointers are valid.
++	 */
++	if (!data || !reportdata || !cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
++		return -EINVAL;
++
++	/*
++	 * Pass the physical address of user generated reportdata
++	 * and the physical address of out pointer to store the
++	 * TDREPORT data to the TDX module to generate the
++	 * TD report. Generated data contains measurements/configuration
++	 * data of the TD guest. More info about ABI can be found in TDX
++	 * Guest-Host-Communication Interface (GHCI), sec titled
++	 * "TDG.MR.REPORT".
++	 */
++	ret = __tdx_module_call(TDX_GET_REPORT, virt_to_phys(data),
++				virt_to_phys(reportdata), 0, 0, NULL);
++
++	if (ret)
++		return TDCALL_RETURN_CODE(ret);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(tdx_mcall_tdreport);
++
+ static u64 get_cc_mask(void)
+ {
+ 	struct tdx_module_output out;
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index 020c81a7c729..a151f69dd6ef 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -67,6 +67,8 @@ void tdx_safe_halt(void);
+ 
+ bool tdx_early_handle_ve(struct pt_regs *regs);
+ 
++long tdx_mcall_tdreport(void *data, void *reportdata);
++
+ #else
+ 
+ static inline void tdx_early_init(void) { };
+-- 
+2.25.1
 
-> +additionalProperties: true
-> +
-> +examples:
-> +  - |
-> +    virtio_block@3000 {
-> +            compatible = "virtio,mmio";
-> +            reg = <0x3000 0x100>;
-> +            interrupts = <41>;
-> +
-> +            /* The device is located in Xen domain with ID 1 */
-> +            xen,dev-domid = <1>;
-> +    };
-> -- 
-> 2.7.4
-> 
