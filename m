@@ -2,154 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D30C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 05:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E84E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 05:07:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349742AbiDOFJe (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 01:09:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
+        id S242867AbiDOFJl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 01:09:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352179AbiDOFGk (ORCPT
+        with ESMTP id S1351395AbiDOFFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 01:06:40 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD015E14A
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 22:01:22 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id g11-20020a056602072b00b00645cc0735d7so4264604iox.1
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 22:01:22 -0700 (PDT)
+        Fri, 15 Apr 2022 01:05:45 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1596DC12D3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 21:57:56 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id i27so13595495ejd.9
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 21:57:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Deay7jAmMyRkDMzIjU7u06qBsjafRlssFVmGBUZbhvw=;
+        b=YQ6/ULXIqpRb6u2jK1rgfGvE2zKp6qNt/qMH3C4USife7fpyw4LLsmAcimJDnKOe4t
+         Mknnm8W7b4si5hzaJWBPPgdNQeJy2y9pZpGRXyU03ZJ9UWdf87vYVI9++NpwSPER2iO4
+         d/flzGZ/3HQGZaf9+YLJepv64IEmekwR29w82r0+umht7DvATM5oSoEtRlkQ/1xszB/G
+         IBBs+tok9EgAEcCNkzZGBuOMttHK6F3H7pFcHIOBBsYxD0LcGL7XYYXRoASiXGzV/JUG
+         UqL3mzraRklxEXvdVLpBTN/iPApA586HvYoDhXKdokmtrnrxrJw61Gsy87S2n3YgR40Q
+         6axw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=ni5AtDp+T7iui1KdKfLMn+bmCrXjxGB6n+GUU8WNh/A=;
-        b=vwleSk3PeUhLLnmHChJDLYgDzQzq8s4o2+JVyxwYMZbaPnJmhhgkGA6n3wfFLpc6XD
-         RpGj7assLtD5NxnZWWAYbEa4owP1qOnnWd9DZQG01S+TFLezyt5juGvyxruabxAsbMrI
-         lv2SA5+98aAbYjMPcD8xQqVRGkwZmULGzSCLuYSWPBOw1sV91AIGgOc0Yjqd9BGCEorV
-         86G5Iz+pXmQgZxI2+EG6pUR8MktI3xFkJRYqDcSpC41YPUkKuFNir98L52naChl9jZzd
-         UoejMfOmQDuTJN2SAcz5SE98kM84ULm/av5KKoaLabmOnwAyu4/s21zaWVraIsna8wAl
-         TJQw==
-X-Gm-Message-State: AOAM531FJqznBZSBKXSID9hF4NzsElC+nwCzLcyUNRvQ9MyPacKp/yCt
-        Te9M6EzQlRFbWy/sz1JQLYaaHQV1TifKWJHJwwEXna7VMvuq
-X-Google-Smtp-Source: ABdhPJzXyz13wQlKrcYp2dUDjnAyGWsH0ud/S2YFWKrrUSHXjVcQNgmcM0NOwMN5WvYupic0tQQOLwD9LQ+gdTjNdntXnkbLw2Z6
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Deay7jAmMyRkDMzIjU7u06qBsjafRlssFVmGBUZbhvw=;
+        b=vI+4NcQnhPUR9XLe9y7K7jTkhbcgO33itmRevLMGFg2Zz5LB6VAdE0DKX0m+Ze96RV
+         ihdM9VgJmfgyrYv1GE0ZlMEz1LyfZ8kyWpOypDsqRrDxwN86DA8g0A46yOt3GubmSJig
+         GaBGbko1jgsMFUdY/3bg4wmosWxDPjvVRWsSWHN9ffrEg78JbwfE1iPjZ+N5J61kpI0V
+         z00HM3/XmnJwvSyM+wf6JU1JaE+ZT6ZFfdAHqm+wgOMwfHOOy9XUTsoXxz0k9yFiQn7Z
+         SZMZQdHjxn5dcy8cdfNjAjzVgR96ipJvI5oGk7aoLbZJfxXG2a9JealzDTDFzx1w3oTi
+         84Fg==
+X-Gm-Message-State: AOAM533qimdA4KAKonqRwciSjrAaH8izGO+A/Eo0EtJ02yWQ9PHSfK8A
+        h0z0eSKQVI7d5sTiAuhQ96qnd5+WvQw=
+X-Google-Smtp-Source: ABdhPJxT+h0/uUni34qZRuQ/eKcZmKWVus9qXtZAnF8iOUd5G35juUA2O0IghxZcuE5B4CBxO9GVZQ==
+X-Received: by 2002:a17:907:724c:b0:6e8:59c1:914c with SMTP id ds12-20020a170907724c00b006e859c1914cmr5180940ejc.172.1649998675372;
+        Thu, 14 Apr 2022 21:57:55 -0700 (PDT)
+Received: from leap.localnet (host-79-43-11-75.retail.telecomitalia.it. [79.43.11.75])
+        by smtp.gmail.com with ESMTPSA id p14-20020aa7cc8e000000b0040f13865fa9sm2017964edt.3.2022.04.14.21.57.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 21:57:54 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Larry.Finger@lwfinger.net, Jaehee Park <jhpark1013@gmail.com>
+Cc:     phil@philpotter.co.uk, gregkh@linuxfoundation.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev, jhpark1013@gmail.com
+Subject: Re: [PATCH v2 4/6] staging: r8188eu: place constants on the right side of tests
+Date:   Fri, 15 Apr 2022 06:57:52 +0200
+Message-ID: <2300552.NG923GbCHz@leap>
+In-Reply-To: <baa4d5259e2eb48da1dd71e1863b62a086312a7e.1649990500.git.jhpark1013@gmail.com>
+References: <cover.1649990500.git.jhpark1013@gmail.com> <baa4d5259e2eb48da1dd71e1863b62a086312a7e.1649990500.git.jhpark1013@gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a02:2410:0:b0:323:fb30:183c with SMTP id
- f16-20020a022410000000b00323fb30183cmr2893332jaa.2.1649998881301; Thu, 14 Apr
- 2022 22:01:21 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 22:01:21 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000332b2105dcaa4d7a@google.com>
-Subject: [syzbot] general protection fault in __dentry_path (2)
-From:   syzbot <syzbot+5c550b7ec6a56f70c32d@syzkaller.appspotmail.com>
-To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="ISO-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On venerd=EC 15 aprile 2022 04:48:35 CEST Jaehee Park wrote:
+> To comply with the linux coding style, place constants on the right
+> side of the test in comparisons. Issue found with checkpatch.
+> WARNING: Comparisons should place the constant on the right side of
+> the test.
+>=20
+> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
+> ---
+>  drivers/staging/r8188eu/core/rtw_mlme.c | 13 +++++++------
+>  1 file changed, 7 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/
+r8188eu/core/rtw_mlme.c
+> index bb9d595a90b9..d57f2ffa069e 100644
+> --- a/drivers/staging/r8188eu/core/rtw_mlme.c
+> +++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+> @@ -715,7 +715,7 @@ void rtw_surveydone_event_callback(struct adapter=09
+*adapter, u8 *pbuf)
+>  			set_fwstate(pmlmepriv, _FW_UNDER_LINKING);
+>  			pmlmepriv->to_join =3D false;
+>  			s_ret =3D=20
+rtw_select_and_join_from_scanned_queue(pmlmepriv);
+> -			if (_SUCCESS =3D=3D s_ret) {
+> +			if (s_ret =3D=3D _SUCCESS) {
+>  			     _set_timer(&pmlmepriv->assoc_timer,=20
+MAX_JOIN_TIMEOUT);
+>  			} else if (s_ret =3D=3D 2) { /* there is no need=20
+to wait for join */
+>  				_clr_fwstate_(pmlmepriv,=20
+_FW_UNDER_LINKING);
 
-syzbot found the following issue on:
+As Pavel pointed out, "s_ret" can not ever be equal to '2'; this could have=
+=20
+been an opportunity to remove a couple of lines of dead code and add one=20
+more patch to your series.
 
-HEAD commit:    d12d7e1cfe38 Add linux-next specific files for 20220411
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=120d568f700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=58fcaf7d8df169a6
-dashboard link: https://syzkaller.appspot.com/bug?extid=5c550b7ec6a56f70c32d
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17903a8f700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17f03688f00000
+Thanks,
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+5c550b7ec6a56f70c32d@syzkaller.appspotmail.com
-
-L1TF CPU bug present and SMT on, data leak possible. See CVE-2018-3646 and https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/l1tf.html for details.
-general protection fault, probably for non-canonical address 0xdffffc000000000a: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000050-0x0000000000000057]
-CPU: 1 PID: 3586 Comm: syz-executor395 Not tainted 5.18.0-rc1-next-20220411-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__dentry_path+0x215/0x740 fs/d_path.c:342
-Code: be 09 31 ff 41 89 ed 41 83 e5 01 44 89 ee e8 22 fe 96 ff 45 85 ed 75 ce e8 f8 fb 96 ff 48 8b 44 24 20 89 6c 24 18 48 c1 e8 03 <42> 80 3c 30 00 0f 85 d2 04 00 00 48 8b 44 24 10 83 e5 01 89 6c 24
-RSP: 0018:ffffc9000376fc30 EFLAGS: 00010206
-RAX: 000000000000000a RBX: ffffffff8ba14680 RCX: 0000000000000000
-RDX: ffff888025001d40 RSI: ffffffff81e30a28 RDI: 0000000000000003
-RBP: 0000000000000a8c R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff81e309e5 R11: 0000000000000001 R12: 0000000000000fff
-R13: 0000000000000000 R14: dffffc0000000000 R15: ffff88805610cfff
-FS:  000055555682c300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000561836ba9d20 CR3: 000000001d922000 CR4: 00000000003526e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- dentry_path_raw+0xc2/0x110 fs/d_path.c:367
- kvm_uevent_notify_change.part.0+0x215/0x450 arch/x86/kvm/../../../virt/kvm/kvm_main.c:5492
- kvm_uevent_notify_change arch/x86/kvm/../../../virt/kvm/kvm_main.c:5459 [inline]
- kvm_destroy_vm arch/x86/kvm/../../../virt/kvm/kvm_main.c:1198 [inline]
- kvm_put_kvm+0xf7/0xb70 arch/x86/kvm/../../../virt/kvm/kvm_main.c:1264
- kvm_dev_ioctl_create_vm arch/x86/kvm/../../../virt/kvm/kvm_main.c:4795 [inline]
- kvm_dev_ioctl+0x85d/0x1c70 arch/x86/kvm/../../../virt/kvm/kvm_main.c:4811
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl fs/ioctl.c:856 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f8a6670d009
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffded420398 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f8a6670d009
-RDX: 0000000000000000 RSI: 000000000000ae01 RDI: 0000000000000003
-RBP: 00007f8a666d0ff0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f8a666d1080
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__dentry_path+0x215/0x740 fs/d_path.c:342
-Code: be 09 31 ff 41 89 ed 41 83 e5 01 44 89 ee e8 22 fe 96 ff 45 85 ed 75 ce e8 f8 fb 96 ff 48 8b 44 24 20 89 6c 24 18 48 c1 e8 03 <42> 80 3c 30 00 0f 85 d2 04 00 00 48 8b 44 24 10 83 e5 01 89 6c 24
-RSP: 0018:ffffc9000376fc30 EFLAGS: 00010206
-RAX: 000000000000000a RBX: ffffffff8ba14680 RCX: 0000000000000000
-RDX: ffff888025001d40 RSI: ffffffff81e30a28 RDI: 0000000000000003
-RBP: 0000000000000a8c R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff81e309e5 R11: 0000000000000001 R12: 0000000000000fff
-R13: 0000000000000000 R14: dffffc0000000000 R15: ffff88805610cfff
-FS:  000055555682c300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000561836ba0d90 CR3: 000000001d922000 CR4: 00000000003526f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	be 09 31 ff 41       	mov    $0x41ff3109,%esi
-   5:	89 ed                	mov    %ebp,%ebp
-   7:	41 83 e5 01          	and    $0x1,%r13d
-   b:	44 89 ee             	mov    %r13d,%esi
-   e:	e8 22 fe 96 ff       	callq  0xff96fe35
-  13:	45 85 ed             	test   %r13d,%r13d
-  16:	75 ce                	jne    0xffffffe6
-  18:	e8 f8 fb 96 ff       	callq  0xff96fc15
-  1d:	48 8b 44 24 20       	mov    0x20(%rsp),%rax
-  22:	89 6c 24 18          	mov    %ebp,0x18(%rsp)
-  26:	48 c1 e8 03          	shr    $0x3,%rax
-* 2a:	42 80 3c 30 00       	cmpb   $0x0,(%rax,%r14,1) <-- trapping instruction
-  2f:	0f 85 d2 04 00 00    	jne    0x507
-  35:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
-  3a:	83 e5 01             	and    $0x1,%ebp
-  3d:	89                   	.byte 0x89
-  3e:	6c                   	insb   (%dx),%es:(%rdi)
-  3f:	24                   	.byte 0x24
+=46abio
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+
