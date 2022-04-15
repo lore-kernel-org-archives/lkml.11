@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE46C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 11:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 045F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 11:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352969AbiDOMBS (ORCPT
+        id S1353004AbiDOMBU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 08:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33454 "EHLO
+        Fri, 15 Apr 2022 08:01:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352952AbiDOMAE (ORCPT
+        with ESMTP id S1344977AbiDOMAF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 08:00:04 -0400
+        Fri, 15 Apr 2022 08:00:05 -0400
 Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [5.144.164.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80F6B2474;
-        Fri, 15 Apr 2022 04:57:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28036A94D7;
+        Fri, 15 Apr 2022 04:57:20 -0700 (PDT)
 Received: from localhost.localdomain (abxj52.neoplus.adsl.tpnet.pl [83.9.3.52])
-        by m-r2.th.seeweb.it (Postfix) with ESMTPA id EBFD03F691;
-        Fri, 15 Apr 2022 13:57:16 +0200 (CEST)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPA id 8FB703F73B;
+        Fri, 15 Apr 2022 13:57:18 +0200 (CEST)
 From:   Konrad Dybcio <konrad.dybcio@somainline.org>
 To:     ~postmarketos/upstreaming@lists.sr.ht
 Cc:     martin.botka@somainline.org,
@@ -29,14 +29,11 @@ Cc:     martin.botka@somainline.org,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Anton Vorontsov <anton@enomsg.org>,
-        Colin Cross <ccross@android.com>,
-        Tony Luck <tony.luck@intel.com>, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 22/23] ARM: dts: qcom-msm8974-rhine: Add pstore node
-Date:   Fri, 15 Apr 2022 13:56:32 +0200
-Message-Id: <20220415115633.575010-23-konrad.dybcio@somainline.org>
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 23/23] ARM: dts: qcom-msm8974*: Remove unnecessary include
+Date:   Fri, 15 Apr 2022 13:56:33 +0200
+Message-Id: <20220415115633.575010-24-konrad.dybcio@somainline.org>
 X-Mailer: git-send-email 2.35.2
 In-Reply-To: <20220415115633.575010-1-konrad.dybcio@somainline.org>
 References: <20220415115633.575010-1-konrad.dybcio@somainline.org>
@@ -46,40 +43,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add pstore node to allow for retrieving crash logs.
+gpio.h is already included in the SoC DTSI. Don't include it again.
 
 Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 ---
- .../boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts                 | 1 -
+ arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts         | 1 -
+ arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi            | 1 -
+ arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts               | 1 -
+ arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts | 1 -
+ 5 files changed, 5 deletions(-)
 
+diff --git a/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts b/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts
+index 7ae0b15e50f9..2b9c5a87b014 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-fairphone-fp2.dts
+@@ -1,7 +1,6 @@
+ #include "qcom-msm8974.dtsi"
+ #include "qcom-pm8841.dtsi"
+ #include "qcom-pm8941.dtsi"
+-#include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+ 
+diff --git a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
+index 52b3f055e834..9493886a5c0d 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
+@@ -2,7 +2,6 @@
+ #include "qcom-msm8974.dtsi"
+ #include "qcom-pm8841.dtsi"
+ #include "qcom-pm8941.dtsi"
+-#include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+ 
 diff --git a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-index 15beb9df3631..91082d31f3c6 100644
+index 91082d31f3c6..1d21de46f85c 100644
 --- a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
 +++ b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-@@ -49,6 +49,22 @@ volume-up {
- 			linux,code = <KEY_VOLUMEUP>;
- 		};
- 	};
-+
-+	reserved-memory {
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges;
-+
-+		ramoops@3e8e0000 {
-+			compatible = "ramoops";
-+			reg = <0x3e8e0000 0x200000>;
-+
-+			console-size = <0x100000>;
-+			record-size = <0x10000>;
-+			ftrace-size = <0x10000>;
-+			pmsg-size = <0x80000>;
-+		};
-+	};
- };
+@@ -2,7 +2,6 @@
+ #include "qcom-msm8974.dtsi"
+ #include "qcom-pm8841.dtsi"
+ #include "qcom-pm8941.dtsi"
+-#include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
  
- &blsp1_i2c2 {
+diff --git a/arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts b/arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts
+index 7c7ad9e7baa6..312bb6989682 100644
+--- a/arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts
++++ b/arch/arm/boot/dts/qcom-msm8974pro-samsung-klte.dts
+@@ -1,7 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include "qcom-msm8974pro.dtsi"
+ #include "qcom-pma8084.dtsi"
+-#include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+ #include <dt-bindings/leds/common.h>
+diff --git a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
+index 465d01da9d69..34aed41856a6 100644
+--- a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
++++ b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
+@@ -1,7 +1,6 @@
+ #include "qcom-msm8974pro.dtsi"
+ #include "qcom-pm8841.dtsi"
+ #include "qcom-pm8941.dtsi"
+-#include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+ 
 -- 
 2.35.2
 
