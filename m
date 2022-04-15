@@ -2,191 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E85BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 01:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 196E3C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 01:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348342AbiDOBOP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 21:14:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57764 "EHLO
+        id S236207AbiDOBRd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 21:17:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232065AbiDOBOO (ORCPT
+        with ESMTP id S231893AbiDOBRb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 21:14:14 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B942360A90
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 18:11:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649985107; x=1681521107;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=C2mIQ72UPAr8Sb4G9EkFvFHUqFVYOorjTHs5Rfr0HAE=;
-  b=T0IJuVGRVAIohphvz8g1yg9J47LE87YL6WkcdCbNl4mDMBqOu+xmdDV1
-   9NLhzZ5L3MCm7KMOk1p/2pktSAciajYevtERZkBR4BRozBoR6t4RPlmdG
-   vKnHZ68uJvOoksuNJQFo5WrvfTqZ2AcFjwu1yU8n7tAbwd1bddEzihcH9
-   eoL13eHX/aqHjJNfmby7A/75zrwxIIv+5+XdxOVLp0ZiPy65dWO67GvK0
-   Oxb9OZUWPjgCkCZ8QI0Wd/YpcBie1V4wf99LxEMys/FLeyIXMMfj5RjTS
-   x61Y3yOnRhlZKMtTZyYFoCloSeKNOopahRUr/s74a08dVUBNVyDuEGxA3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="323512491"
-X-IronPort-AV: E=Sophos;i="5.90,261,1643702400"; 
-   d="scan'208";a="323512491"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 18:11:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,261,1643702400"; 
-   d="scan'208";a="527623018"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 14 Apr 2022 18:11:46 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nfAUz-0001Mv-FI;
-        Fri, 15 Apr 2022 01:11:45 +0000
-Date:   Fri, 15 Apr 2022 09:10:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:dev.2022.04.12a] BUILD SUCCESS
- 846285fc50b26e9bbf9cb6608907172cb2af4ec0
-Message-ID: <6258c61c.agCBcohJhZwBkQRW%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 14 Apr 2022 21:17:31 -0400
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D70941FB4;
+        Thu, 14 Apr 2022 18:15:03 -0700 (PDT)
+Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
+  by mx.socionext.com with ESMTP; 15 Apr 2022 10:15:02 +0900
+Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
+        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id BBCD32058B50;
+        Fri, 15 Apr 2022 10:15:02 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Fri, 15 Apr 2022 10:15:02 +0900
+Received: from [10.212.183.90] (unknown [10.212.183.90])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id 9E59EB6389;
+        Fri, 15 Apr 2022 10:15:01 +0900 (JST)
+Subject: Re: [PATCH] dt-bindings: thermal: uniphier: Use unevaluatedProperties
+ and common bindings
+To:     Rob Herring <robh@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <1649317533-21139-1-git-send-email-hayashi.kunihiko@socionext.com>
+ <YlccxAQ9adSZh22F@robh.at.kernel.org>
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Message-ID: <c16ca6b1-0363-7ddc-6736-3de738d7e5a5@socionext.com>
+Date:   Fri, 15 Apr 2022 10:15:01 +0900
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <YlccxAQ9adSZh22F@robh.at.kernel.org>
+Content-Type: text/plain; charset=iso-2022-jp; format=flowed; delsp=yes
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.04.12a
-branch HEAD: 846285fc50b26e9bbf9cb6608907172cb2af4ec0  rcu: Make normal polling GP be more precise about sequence numbers
+Hi Rob,
 
-elapsed time: 2839m
+On 2022/04/14 3:56, Rob Herring wrote:
+> On Thu, Apr 07, 2022 at 04:45:33PM +0900, Kunihiko Hayashi wrote:
+>> This adds common bindings thermal-sensor.yaml and this is preferred for
+>> unevaluatedProperties instead of additionalProperties.
+>>
+>> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+>> ---
+>>   .../bindings/thermal/socionext,uniphier-thermal.yaml         | 5 ++++-
+>>   1 file changed, 4 insertions(+), 1 deletion(-)
+>>
+>> diff --git
+> a/Documentation/devicetree/bindings/thermal/socionext,uniphier-thermal.yam
+> l
+> b/Documentation/devicetree/bindings/thermal/socionext,uniphier-thermal.yam
+> l
+>> index c5b25ce44956..537c93da1397 100644
+>> ---
+> a/Documentation/devicetree/bindings/thermal/socionext,uniphier-thermal.yam
+> l
+>> +++
+> b/Documentation/devicetree/bindings/thermal/socionext,uniphier-thermal.yam
+> l
+>> @@ -14,6 +14,9 @@ description: |
+>>   maintainers:
+>>     - Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+>>   
+>> +allOf:
+>> +  - $ref: "thermal-sensor.yaml#"
+> 
+> No advantage to adding this as this schema still has to define the value
+> for "#thermal-sensor-cells".
+I see. Certainly it's not time to add the common schema yet.
+I withdraw this patch.
 
-configs tested: 112
-configs skipped: 3
+Thank you,
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-mips                           ci20_defconfig
-arm                        cerfcube_defconfig
-sh                   sh7770_generic_defconfig
-powerpc                       maple_defconfig
-xtensa                         virt_defconfig
-m68k                       m5475evb_defconfig
-arm                        shmobile_defconfig
-arm                        oxnas_v6_defconfig
-sh                           se7721_defconfig
-arc                            hsdk_defconfig
-riscv                            allmodconfig
-arc                     nsimosci_hs_defconfig
-powerpc                   motionpro_defconfig
-arc                     haps_hs_smp_defconfig
-parisc                           alldefconfig
-arm                            zeus_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220414
-arm                  randconfig-c002-20220413
-ia64                             allmodconfig
-ia64                             allyesconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                          randconfig-a003
-i386                          randconfig-a005
-i386                          randconfig-a001
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-riscv                randconfig-r042-20220413
-arc                  randconfig-r043-20220413
-s390                 randconfig-r044-20220413
-arc                  randconfig-r043-20220414
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
-
-clang tested configs:
-x86_64                        randconfig-c007
-powerpc              randconfig-c003-20220414
-arm                  randconfig-c002-20220414
-i386                          randconfig-c001
-powerpc                        icon_defconfig
-powerpc                 mpc836x_mds_defconfig
-powerpc                      obs600_defconfig
-arm                      tct_hammer_defconfig
-powerpc                     tqm5200_defconfig
-arm                        multi_v5_defconfig
-mips                           mtx1_defconfig
-arm                        spear3xx_defconfig
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a013
-i386                          randconfig-a015
-i386                          randconfig-a011
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-hexagon              randconfig-r041-20220414
-hexagon              randconfig-r045-20220414
-riscv                randconfig-r042-20220414
-s390                 randconfig-r044-20220414
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+---
+Best Regards
+Kunihiko Hayashi
