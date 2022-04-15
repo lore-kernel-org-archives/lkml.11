@@ -2,123 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BBDBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 13:45:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EDC0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 13:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354145AbiDONsZ (ORCPT
+        id S1354121AbiDONuY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 09:48:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54946 "EHLO
+        Fri, 15 Apr 2022 09:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235290AbiDONsV (ORCPT
+        with ESMTP id S231714AbiDONuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 09:48:21 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B05F18385;
-        Fri, 15 Apr 2022 06:45:51 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A45F9C0011;
-        Fri, 15 Apr 2022 13:45:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1650030349;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=r5e/ituSe4Bvmn7/ipiIp9xLyWhKGgopzYJiAYxoSB0=;
-        b=dP1/xN0GlD+5NO3uXdngygB6HWCd34pEyuj2uJZuOjEhCjNV8KDx/W6DPiiCDOqogfDQqV
-        DmuZrWkzeibO1RY6xPNIXlHafkYusP16Mw5fhuJEM2RKlPCTUd7Ysw24zp4lbQvZiqKj5Y
-        APIDQs52Lr/5dCbwI2iwQ7wcVPBv3cKPgbz51JA368MmF/XLK6pDNMq1Xj++bDH82Vy/ys
-        16bqIrZe+CurQqZG/ji7Gx9s7sS4DFvQXUqMpLLXSJt1yxAJZNgzuUtKIw/tCVzzFfaZBw
-        UNjrh1QHY1OwWY6iCBmpi5uds62SenhMsbzgdOv784fwRMQ3P5qd48Iyl75K7Q==
-Date:   Fri, 15 Apr 2022 15:44:20 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 07/12] net: dsa: rzn1-a5psw: add statistics
- support
-Message-ID: <20220415154420.128a0fca@fixe.home>
-In-Reply-To: <Yll1IsIYKHC/n+sg@lunn.ch>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
-        <20220414122250.158113-8-clement.leger@bootlin.com>
-        <YlirO7VrfyUH33rV@lunn.ch>
-        <20220415140402.76822543@fixe.home>
-        <Yll1IsIYKHC/n+sg@lunn.ch>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Fri, 15 Apr 2022 09:50:19 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FB565781;
+        Fri, 15 Apr 2022 06:47:51 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id 123-20020a1c1981000000b0038b3616a71aso5063856wmz.4;
+        Fri, 15 Apr 2022 06:47:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KXO/l3FSGWDrDqwa/0eH/dKJsxtplbG+tIXvun5zSGE=;
+        b=qr1RBX5veH1GCCAYc2JmM4hx4rhhOOiNuYmU9MrEzWPm7JRbTDuqPKbTi2JDq6Tjx+
+         5eCjAvoidj0hYWxIIVyNBRQhRmA8bVZk+mwylb7Nn+/VL+G2Bb6CeMxcB0xl2zMgmjMa
+         ghIDkWIfGaauDdZZcInfvXjA13WoDC1y8pajxDTgMH9IX2iHOG8qkTGEkD+Drd7RV8pJ
+         X9BA6W1FnwKCIdSmt8SJTe4xJtMbjpyxvipcGPvzrUQBThKVJRDpXuFO8JzxsRseJsLJ
+         j/QE+E4aY2/KyjE51tkB6CqYhSiNZNP1vNeWN6SceZelZeHRDuLFLakg53rFMF8Y9f3u
+         rWyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KXO/l3FSGWDrDqwa/0eH/dKJsxtplbG+tIXvun5zSGE=;
+        b=oZkbZKYzOGhNPfB0pdgtuM1FRN7n7m9tn5PllsZHSP1DgT3YwhQLOiUT/AOkKSJcoB
+         hwg4vgoELl/jXoTpftwx7ITll+Inat5JX5zxt/QjW685y8//dQNZC9RVRLIsZHd9bxz4
+         y0IuMoX59qXGVad6SfkhUefxhhCT681CX2bbEx/shm7HrTiBMQvQVx1zZU8imxoZpuYl
+         amdtihiLEFI8DUCu6qTUgjdgyZVja14/ca9q4w5Pdkqrb6vUdtpmFFX/l36kVnOrFOov
+         17dU4UBT0Bf5XtgBz92z+s3gf0KFM/vkTGcSfanu5Z7T/9zDHqPkV5ORkkKZrD8IonoW
+         PfZA==
+X-Gm-Message-State: AOAM531KvsnLMRqh+y34On8DDwI2vgSQb7DbmuBqCjUBLVKrxUHsLUU6
+        2MWEXvaTgTuymVV2VIPYtTE=
+X-Google-Smtp-Source: ABdhPJzAKMJiWEFR3eJAclRq57YPGgqZpnUCP3Jbla8O5GCz6ljTaUyDg0Pt14Aqcd2Mu1KBPOCD7g==
+X-Received: by 2002:a05:600c:1989:b0:38c:b8b3:8fa8 with SMTP id t9-20020a05600c198900b0038cb8b38fa8mr3520134wmq.18.1650030469660;
+        Fri, 15 Apr 2022 06:47:49 -0700 (PDT)
+Received: from ?IPV6:2001:b07:add:ec09:c399:bc87:7b6c:fb2a? ([2001:b07:add:ec09:c399:bc87:7b6c:fb2a])
+        by smtp.googlemail.com with ESMTPSA id v188-20020a1cacc5000000b0038e9c60f0e7sm4937499wme.28.2022.04.15.06.47.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Apr 2022 06:47:49 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <8e20d9af-bbe3-ad57-e131-4107f4b16051@redhat.com>
+Date:   Fri, 15 Apr 2022 15:47:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 024/104] KVM: TDX: create/destroy VM structure
+Content-Language: en-US
+To:     Isaku Yamahata <isaku.yamahata@gmail.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <36805b6b6b668669d5205183c338a4020df584dd.1646422845.git.isaku.yamahata@intel.com>
+ <aa6afd32-8892-dc8d-3804-3d85dcb0b867@redhat.com>
+ <20220408005116.GB2864606@ls.amr.corp.intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220408005116.GB2864606@ls.amr.corp.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Fri, 15 Apr 2022 15:37:38 +0200,
-Andrew Lunn <andrew@lunn.ch> a =C3=A9crit :
+On 4/8/22 02:51, Isaku Yamahata wrote:
+>> Please rename the function to explain what it does, for example
+>> tdx_mmu_release_hkid.
+> In the patch 021/104,  you suggested flush_shadow_all_private().
+> Which do you prefer? flush_shadow_all_private or tdx_mmu_release_hkid.
 
-> > > > +static void a5psw_get_ethtool_stats(struct dsa_switch *ds, int por=
-t,
-> > > > +				    uint64_t *data)
-> > > > +{
-> > > > +	struct a5psw *a5psw =3D ds->priv;
-> > > > +	u32 reg_lo, reg_hi;
-> > > > +	unsigned int u;
-> > > > +
-> > > > +	for (u =3D 0; u < ARRAY_SIZE(a5psw_stats); u++) {
-> > > > +		/* A5PSW_STATS_HIWORD is global and thus, access must be
-> > > > +		 * exclusive
-> > > > +		 */   =20
-> > >=20
-> > > Could you explain that a bit more. The RTNL lock will prevent two
-> > > parallel calls to this function. =20
-> >=20
-> > Ok, I wasn't sure of the locking applicable here. =20
->=20
-> In general, RTNL protects you for any user space management like
-> operation on the driver. In this case, if you look in net/ethtool, you
-> will find the IOCTL handler code takes RTNL before calling into the
-> main IOCTL dispatcher. If you want to be paranoid/document the
-> assumption, you can add an ASSERT_RTNL().
+vt_mmu_prezap should become vt_flush_shadow_all_private.
 
-Ok, I'll look at the call stack in details to see what locking is
-applied.
+tdx_mmu_prezap should be come tdx_mmu_release_hkid.
 
->=20
-> The semantics for some of the other statistics Vladimir requested can
-> be slightly different. One of them is in atomic context, because a
-> spinlock is held. But i don't remember if RTNL is also held. This is
-> less of an issue for your switch, since it uses MMIO, however many
-> switches need to perform blocking IO over MDIO, SPI, IC2 etc to get
-> stats, which you cannot do in atomic context. So they end up returning
-> cached values.
->=20
-> Look in the mailing list for past discussion for details.
-
-Ok, thanks,
-
->=20
->     Andrew
-
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Paolo
