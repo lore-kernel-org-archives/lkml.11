@@ -2,127 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BAD3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 02:31:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24FC7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 02:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348679AbiDOCdk (ORCPT
+        id S1348700AbiDOCdv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 22:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45486 "EHLO
+        Thu, 14 Apr 2022 22:33:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233911AbiDOCdh (ORCPT
+        with ESMTP id S1348680AbiDOCds (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 22:33:37 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C982C109
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:31:11 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23F02vpN006615;
-        Fri, 15 Apr 2022 02:31:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=pp1; bh=BTVLfpS91OirTYAOYzIAt9vxE2todQVU1COH8xR5O98=;
- b=S4DlMbboEz9B8oNrMOy2trrT+A4WgYlPwLU6MDJ/2GPMDRSfPIPLelbgqzs/IwDZwX+U
- /FM8p1e0YUNIlm93qmb7qsLzVWqivCiS6xX5odmOiJt6KiWm+u+Rj33HSNhFVhmvFw5m
- KZNpfRuANBJhBnr1ltih5t6XA56j4gkHapTL/WdqA61nr88Ad/5Y8+HoFFOsmFLOWvwy
- +Hgt3XB0BRlHnSVjN4kN9m+vYbYxQsZLrkHz9+uFRMgXf+Jv/k5YwKsPBhMklZN4PoSe
- 23900oAVeZjzraSVIN84ckep9ppsM5wf8/Xuoh5GHWMpn4oeKev4tg9PHVKhd2QOUmMy 6A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fefh5khdj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 15 Apr 2022 02:31:09 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23F2DG70017060;
-        Fri, 15 Apr 2022 02:31:08 GMT
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fefh5khd0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 15 Apr 2022 02:31:08 +0000
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23F2HKr5011055;
-        Fri, 15 Apr 2022 02:31:07 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma01wdc.us.ibm.com with ESMTP id 3fb1s9k6hu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 15 Apr 2022 02:31:07 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23F2V64L7603048
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 15 Apr 2022 02:31:06 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AEA81AC065;
-        Fri, 15 Apr 2022 02:31:06 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 37BC2AC066;
-        Fri, 15 Apr 2022 02:31:06 +0000 (GMT)
-Received: from localhost (unknown [9.160.168.34])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTPS;
-        Fri, 15 Apr 2022 02:31:06 +0000 (GMT)
-From:   Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
-To:     mst@redhat.com
-Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, mopsfelder@gmail.com,
-        Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
-Subject: [PATCH] virtio-pci: Remove wrong address verification in vp_del_vqs()
-Date:   Thu, 14 Apr 2022 23:30:02 -0300
-Message-Id: <20220415023002.49805-1-muriloo@linux.ibm.com>
-X-Mailer: git-send-email 2.35.1
-Content-Type: text/plain; charset="utf-8"
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: i7D--CHoAlxlyPvxrRP4niCQF1_Y5ckp
-X-Proofpoint-ORIG-GUID: BVrEAblPwSmqC0-6Y1Q2V8AopluEdRV5
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Thu, 14 Apr 2022 22:33:48 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 381163153C;
+        Thu, 14 Apr 2022 19:31:21 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KfgKs4kLqz1HBVc;
+        Fri, 15 Apr 2022 10:30:41 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 15 Apr 2022 10:31:19 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Apr
+ 2022 10:31:19 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <vburru@marvell.com>, <aayarekar@marvell.com>,
+        <sburla@marvell.com>, <davem@davemloft.net>
+Subject: [PATCH -next] octeon_ep: fix error return code in octep_probe()
+Date:   Fri, 15 Apr 2022 10:39:57 +0800
+Message-ID: <20220415023957.1117879-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-14_07,2022-04-14_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
- malwarescore=0 adultscore=0 priorityscore=1501 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 impostorscore=0 phishscore=0
- mlxlogscore=948 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204150011
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GCC 12 enhanced -Waddress when comparing array address to null [0],
-which warns:
+If register_netdev() fails , it should return error
+code in octep_probe().
 
-    drivers/virtio/virtio_pci_common.c: In function ‘vp_del_vqs’:
-    drivers/virtio/virtio_pci_common.c:257:29: warning: the comparison will always evaluate as ‘true’ for the pointer operand in ‘vp_dev->msix_affinity_masks + (sizetype)((long unsigned int)i * 256)’ must not be NULL [-Waddress]
-      257 |                         if (vp_dev->msix_affinity_masks[i])
-          |                             ^~~~~~
-
-In fact, the verification is comparing the result of a pointer
-arithmetic, the address "msix_affinity_masks + i", which will always
-evaluate to true.
-
-Under the hood, free_cpumask_var() calls kfree(), which is safe to pass
-NULL, not requiring non-null verification.  So remove the verification
-to make compiler happy (happy compiler, happy life).
-
-[0] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102103
-
-Signed-off-by: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
+Fixes: 862cd659a6fb ("octeon_ep: Add driver framework and device initialization")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/virtio/virtio_pci_common.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/marvell/octeon_ep/octep_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
-index d724f676608b..5046efcffb4c 100644
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -254,8 +254,7 @@ void vp_del_vqs(struct virtio_device *vdev)
+diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+index 5d39c857ea41..f2af5ebffcf1 100644
+--- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
++++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+@@ -1071,7 +1071,8 @@ static int octep_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	octep_get_mac_addr(octep_dev, octep_dev->mac_addr);
+ 	eth_hw_addr_set(netdev, octep_dev->mac_addr);
  
- 	if (vp_dev->msix_affinity_masks) {
- 		for (i = 0; i < vp_dev->msix_vectors; i++)
--			if (vp_dev->msix_affinity_masks[i])
--				free_cpumask_var(vp_dev->msix_affinity_masks[i]);
-+			free_cpumask_var(vp_dev->msix_affinity_masks[i]);
+-	if (register_netdev(netdev)) {
++	err = register_netdev(netdev);
++	if (err) {
+ 		dev_err(&pdev->dev, "Failed to register netdev\n");
+ 		goto register_dev_err;
  	}
- 
- 	if (vp_dev->msix_enabled) {
 -- 
-2.35.1
+2.25.1
 
