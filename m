@@ -2,199 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53ED1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 09:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73EA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 09:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351808AbiDOJni (ORCPT
+        id S1351811AbiDOJoc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 05:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59384 "EHLO
+        Fri, 15 Apr 2022 05:44:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351795AbiDOJne (ORCPT
+        with ESMTP id S245712AbiDOJo1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 05:43:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4933C92D09
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 02:41:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650015664;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=h/1JCepYENbf71BepdLs1YbkeOFNfXucyH17mK6yMh0=;
-        b=P4YlSyiZVt5WyIPAO7FzLhswtB7xChoRCqtA5Hg5jqYVnkdQSRDobbMB2ocz3+zGvWFxy+
-        qwcImrDfgi9YVctRJeBU0ZQ5A1Pj79LQw6Nv+aDj9fegHhef2kBYyiqAL5TYGd72evopKg
-        VFhgFi2jnQkCkTtOei0AcwtM1kdFLzU=
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
- [209.85.210.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-490-lvksoOZINKWxiqL-kL0lJQ-1; Fri, 15 Apr 2022 05:41:03 -0400
-X-MC-Unique: lvksoOZINKWxiqL-kL0lJQ-1
-Received: by mail-pf1-f200.google.com with SMTP id j185-20020a62c5c2000000b0050822009f1bso3052874pfg.23
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 02:41:02 -0700 (PDT)
+        Fri, 15 Apr 2022 05:44:27 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3DB8AC040;
+        Fri, 15 Apr 2022 02:41:59 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso11438554pju.1;
+        Fri, 15 Apr 2022 02:41:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=Lt5Azs8UE62t7hvUqRmpYoBuvvMq0qHOp5jSW71Q4WI=;
+        b=it9+AZgUreEGNbOCqj3mjB3EWh1Pv2by2M4d4we2/EWRVJsB18V3G3SWiaPRj/+IPZ
+         9Pswfro3J0nLvxN2vTrSLTQSDb6HJ4Iqna9DljB1Thpw4CN6nmH7ClgiL/SlK7hDljqs
+         D0KZRdVEi/8ssbEVZyPx42ntrWNTBLwfg8skrLztkgyoDUS9OmtryIcnVDmkUklSr7qh
+         2y3CWXID/mY5ccp5nZa5uccv813RMJEiL5fUTTUBvvgtNB9MJn2KNsuke0GJxa9a3jb6
+         X9kYWf04GUHRfxfkZejDcn5fvpfNRZvRMBjD7S9ANYKHEwRP2B4lT7BRcB9a/MuoUq3X
+         MlLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=h/1JCepYENbf71BepdLs1YbkeOFNfXucyH17mK6yMh0=;
-        b=Qs0jfWBRsRPhdLPztrfdZkU6sk6CbRBOb+z2v0BuNgI62cm/rcFe0Uc45U+IHqK1rB
-         Y7f/g6dzKUrgMcTu4sFHLZoAg9r3i30vjVmc4bATJAnvEDR4sEWoDo1AVpxiFHqBP4b8
-         0LG9Y/iWhOhZmI47KJ3FFoCMmDw0008b+dTuqbdBOHwPP1GtQXyrIhEb57urIqMZqA/r
-         kXKWsg1G5EXDsm/IDBwwl/iSa+2pftTOdYhPePtRtjsZYU051OuoMq01vekNQiWNENDa
-         fobNB4umELCtKpYJtgigOkWu2ph9opU0E4VtPtFiq1hDorgwgnuRtZfpYd1S1hb5MVgf
-         cvTQ==
-X-Gm-Message-State: AOAM5325ux6gDep4erewp3OsMHkmzCX34hogQDmBR0CGg4AVhZxJTJ2x
-        7zl1UyVfqlnyMi/dm/M2SHWZ+b0NeSJfuHWmw2b5X7siQy8ZkMmv0OxQUtrBXBw34oLl5rLj3es
-        8c7lzUPImphMdksuRvq4ZzIo5
-X-Received: by 2002:a63:1b20:0:b0:382:70f9:dc24 with SMTP id b32-20020a631b20000000b0038270f9dc24mr5565804pgb.485.1650015661931;
-        Fri, 15 Apr 2022 02:41:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyQDFG3xXhNMasYOz+54LcHe6OLSQeA86AaCczvVXkLHAleqFPwF0nDj11Z+KebJClfH8oefA==
-X-Received: by 2002:a63:1b20:0:b0:382:70f9:dc24 with SMTP id b32-20020a631b20000000b0038270f9dc24mr5565778pgb.485.1650015661542;
-        Fri, 15 Apr 2022 02:41:01 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id k13-20020aa7820d000000b004fa72a52040sm2267691pfi.172.2022.04.15.02.40.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 02:41:00 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 17:37:35 +0800
-From:   Coiby Xu <coxu@redhat.com>
-To:     Baoquan He <bhe@redhat.com>
-Cc:     kexec@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
-        Michal Suchanek <msuchanek@suse.de>,
-        Dave Young <dyoung@redhat.com>, Will Deacon <will@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Mimi Zohar <zohar@linux.ibm.com>, Chun-Yi Lee <jlee@suse.com>,
-        stable@kernel.org, open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 1/4] kexec: clean up arch_kexec_kernel_verify_sig
-Message-ID: <20220415093735.74eusyuuboa32aqs@Rk>
-References: <20220414014344.228523-1-coxu@redhat.com>
- <20220414014344.228523-2-coxu@redhat.com>
- <YleYmZAAnF5aOan3@MiWiFi-R3L-srv>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <YleYmZAAnF5aOan3@MiWiFi-R3L-srv>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Lt5Azs8UE62t7hvUqRmpYoBuvvMq0qHOp5jSW71Q4WI=;
+        b=7IGjnyq6s0t7VnBqSHtlp5pIS5HmhfVZpVJBjKM6eYlTbUoc+wwgoEhevXAY47UCxw
+         nzWNClztV/gly5V1o8zOGGrOjGm8NXH5EC4qcRYyVcLL6EM1Y7zNsC/idElQWZo4se2G
+         6LhUuDmYVn1cVP5uGoE2B/BjYG6/ea2mRwXgOaJwtzA/QUlyX8JZAoJPKww7EfaRazII
+         VvLd2av7gemWzkNXPJFkciyxIA/F2y9Bc397SS2Qg77WCsK8LDFypi1/HhInP/F7INrM
+         Y2JW+afm02KXO5jmPVPsJ5V9PVZ3rXCh63ATXJs7kTjiEf57s1mS8v/AQre5PSjQlV7E
+         nUug==
+X-Gm-Message-State: AOAM530GWBhI/feGm/LGtzNyavY2OdhsYJ6OsNUAWreIl+poExCZGpRi
+        14GE5/miGlHllUvIJqF0SfY=
+X-Google-Smtp-Source: ABdhPJzIMuvlYSnmyMEevTCPhzSlyTu/WcAj1C9nr9Vs4FS75fbUHZGIYT3pGgEEf3pteAr1Qf5u8g==
+X-Received: by 2002:a17:902:b70c:b0:156:16f0:cbfe with SMTP id d12-20020a170902b70c00b0015616f0cbfemr50796482pls.152.1650015719087;
+        Fri, 15 Apr 2022 02:41:59 -0700 (PDT)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id m13-20020a62a20d000000b004fe0ce6d7a1sm2278502pff.193.2022.04.15.02.41.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 15 Apr 2022 02:41:58 -0700 (PDT)
+From:   Wells Lu <wellslutw@gmail.com>
+To:     linus.walleij@linaro.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     wells.lu@sunplus.com, Wells Lu <wellslutw@gmail.com>
+Subject: [PATCH] pinctrl: Fix an error in pin-function table of SP7021
+Date:   Fri, 15 Apr 2022 17:41:28 +0800
+Message-Id: <1650015688-19774-1-git-send-email-wellslutw@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 11:44:25AM +0800, Baoquan He wrote:
->On 04/14/22 at 09:43am, Coiby Xu wrote:
->> Currently there is no arch-specific implementation of
->> arch_kexec_kernel_verify_sig. Even if we want to add an implementation
->> for an architecture in the future, we can simply use "(struct
->> kexec_file_ops*)->verify_sig". So clean it up.
->>
->> Suggested-by: Eric W. Biederman <ebiederm@xmission.com>
->> Cc: stable@kernel.org
->
->It should be not worth noticing stable kernel that a clean up patch need
->be back ported.
+The first valid item of pin-function table should
+start from the third item. The first two items,
+due to historical and compatible reasons, should
+be dummy items.
 
-Thanks for the suggestion! For the 2nd and 3rd patch, I'll add prerequisite
-info,
+The two dummy items were removed accidentally in
+initial submission. This fix adds them back.
 
-Cc: stable@kernel.org # 34d5960af253: kexec: clean up arch_kexec_kernel_verify_sig
+Signed-off-by: Wells Lu <wellslutw@gmail.com>
+---
+ drivers/pinctrl/sunplus/sppctl_sp7021.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-and 
-
-Cc: stable@kernel.org # 34d5960af253: kexec: clean up arch_kexec_kernel_verify_sig
-Cc: stable@kernel.org # 83b7bb2d49ae: kexec, KEYS: make the code in bzImage64_verify_sig generic
-
-respectively.
-
->
->Otherwise this looks good to me,
->
->Acked-by: Baoquan He <bhe@redhat.com>
-
-Thanks for reviewing the patch!
-
->
->> Reviewed-by: Michal Suchanek <msuchanek@suse.de>
->> Signed-off-by: Coiby Xu <coxu@redhat.com>
->> ---
->>  include/linux/kexec.h |  4 ----
->>  kernel/kexec_file.c   | 34 +++++++++++++---------------------
->>  2 files changed, 13 insertions(+), 25 deletions(-)
->>
->> diff --git a/include/linux/kexec.h b/include/linux/kexec.h
->> index 58d1b58a971e..413235c6c797 100644
->> --- a/include/linux/kexec.h
->> +++ b/include/linux/kexec.h
->> @@ -202,10 +202,6 @@ int arch_kexec_apply_relocations(struct purgatory_info *pi,
->>  				 const Elf_Shdr *relsec,
->>  				 const Elf_Shdr *symtab);
->>  int arch_kimage_file_post_load_cleanup(struct kimage *image);
->> -#ifdef CONFIG_KEXEC_SIG
->> -int arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
->> -				 unsigned long buf_len);
->> -#endif
->>  int arch_kexec_locate_mem_hole(struct kexec_buf *kbuf);
->>
->>  extern int kexec_add_buffer(struct kexec_buf *kbuf);
->> diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
->> index 8347fc158d2b..3720435807eb 100644
->> --- a/kernel/kexec_file.c
->> +++ b/kernel/kexec_file.c
->> @@ -89,25 +89,6 @@ int __weak arch_kimage_file_post_load_cleanup(struct kimage *image)
->>  	return kexec_image_post_load_cleanup_default(image);
->>  }
->>
->> -#ifdef CONFIG_KEXEC_SIG
->> -static int kexec_image_verify_sig_default(struct kimage *image, void *buf,
->> -					  unsigned long buf_len)
->> -{
->> -	if (!image->fops || !image->fops->verify_sig) {
->> -		pr_debug("kernel loader does not support signature verification.\n");
->> -		return -EKEYREJECTED;
->> -	}
->> -
->> -	return image->fops->verify_sig(buf, buf_len);
->> -}
->> -
->> -int __weak arch_kexec_kernel_verify_sig(struct kimage *image, void *buf,
->> -					unsigned long buf_len)
->> -{
->> -	return kexec_image_verify_sig_default(image, buf, buf_len);
->> -}
->> -#endif
->> -
->>  /*
->>   * arch_kexec_apply_relocations_add - apply relocations of type RELA
->>   * @pi:		Purgatory to be relocated.
->> @@ -184,13 +165,24 @@ void kimage_file_post_load_cleanup(struct kimage *image)
->>  }
->>
->>  #ifdef CONFIG_KEXEC_SIG
->> +static int kexec_image_verify_sig(struct kimage *image, void *buf,
->> +		unsigned long buf_len)
->> +{
->> +	if (!image->fops || !image->fops->verify_sig) {
->> +		pr_debug("kernel loader does not support signature verification.\n");
->> +		return -EKEYREJECTED;
->> +	}
->> +
->> +	return image->fops->verify_sig(buf, buf_len);
->> +}
->> +
->>  static int
->>  kimage_validate_signature(struct kimage *image)
->>  {
->>  	int ret;
->>
->> -	ret = arch_kexec_kernel_verify_sig(image, image->kernel_buf,
->> -					   image->kernel_buf_len);
->> +	ret = kexec_image_verify_sig(image, image->kernel_buf,
->> +			image->kernel_buf_len);
->>  	if (ret) {
->>
->>  		if (IS_ENABLED(CONFIG_KEXEC_SIG_FORCE)) {
->> --
->> 2.34.1
->>
->
-
+diff --git a/drivers/pinctrl/sunplus/sppctl_sp7021.c b/drivers/pinctrl/sunplus/sppctl_sp7021.c
+index 9748345..cd65776 100644
+--- a/drivers/pinctrl/sunplus/sppctl_sp7021.c
++++ b/drivers/pinctrl/sunplus/sppctl_sp7021.c
+@@ -419,7 +419,15 @@ static const struct sppctl_grp sp7021grps_prbp[] = {
+ 	EGRP("PROBE_PORT2", 2, pins_prp2),
+ };
+ 
++/*
++ * Due to compatible reason, the first valid item should start at the third
++ * position of the array. Please keep the first two items of the table
++ * no use (dummy).
++ */
+ const struct sppctl_func sppctl_list_funcs[] = {
++	FNCN("", pinmux_type_fpmx, 0x00, 0, 0),
++	FNCN("", pinmux_type_fpmx, 0x00, 0, 0),
++
+ 	FNCN("L2SW_CLK_OUT",        pinmux_type_fpmx, 0x00, 0, 7),
+ 	FNCN("L2SW_MAC_SMI_MDC",    pinmux_type_fpmx, 0x00, 8, 7),
+ 	FNCN("L2SW_LED_FLASH0",     pinmux_type_fpmx, 0x01, 0, 7),
 -- 
-Best regards,
-Coiby
+2.7.4
 
