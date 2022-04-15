@@ -2,119 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1220BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C1DDC43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351622AbiDOIxK (ORCPT
+        id S1351623AbiDOIz1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 04:53:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34072 "EHLO
+        Fri, 15 Apr 2022 04:55:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351544AbiDOIxB (ORCPT
+        with ESMTP id S229460AbiDOIzZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 04:53:01 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F346B82E6;
-        Fri, 15 Apr 2022 01:50:34 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: aferraris)
-        with ESMTPSA id 684331F47DD6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1650012632;
-        bh=qJ1psTuJGHQwoRp08D0s9aPEEp7dXucZN9uyn4vkW2U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R92ppw2xMQBaPq2XBYdHITM9Qn9ensz/3XCBDC5FwQVVIaigQG+EWX+3OQzWUbiPr
-         EWMBYGC/mN4wDMukmdgjK+zhFtsW+alOdcE7SFCzcfP85NIBTMPjMUOrMq73Q/QxRG
-         O9S3HbWYF40mogsqYKqBBqjy3oIFUYYB9CUBnutbGzqhdgNum3jCk5HXNm4jnXDvCc
-         G1efsrq8uKiQQilQSLSRrxmJQ+SF3Ged2rmqgUYINICFwtKjhKEbwuMJFRkyw0aWLm
-         ErRNt6YANY1rQSkw4BhFnqlqFfRKb6UHJ0/TMEV8179Fq0SHcXJQQBG1Z6QF7w58KO
-         0+l5RC6nDPXdg==
-From:   Arnaud Ferraris <arnaud.ferraris@collabora.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+        Fri, 15 Apr 2022 04:55:25 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8814B644D;
+        Fri, 15 Apr 2022 01:52:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=6RJ/VwGJTUKSN4pEDxbLWHdkQvJ3lWAEWFoDyQeUEzY=; b=0h+2I4Mp2CKd9ThVYlQmFspKuM
+        EhcO/UJG+h5+jVA8X7gRiiqEibxwSptVfDVrf8sZb4wt5xLVfB42duZd8yFG0yMFHBmoU0W5cmJWB
+        yjA2uW9YarvyUuf8ZREIT4pb50/oZFJ70XqI8r+DsmO5i80cTCwzEP/IQhCKmmQXI3dDSnRvB1O5P
+        K4+DluIrkyWN0VURAQvURZaHO8ak3Omw/tIhkP1bzLs+3TdWw3n6uVOpJSgRbTgDHXooqGLLD7g3p
+        kDGU9IN7/s5RHSRWkEzHFoF7q1JeAPX1XJNLNCqI8dNMZJEuvZybbyHaXS4xJ4DHR39X1588Sbb6n
+        cDrYiZ5g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58272)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nfHh1-0005SZ-66; Fri, 15 Apr 2022 09:52:38 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nfHgx-00057u-IP; Fri, 15 Apr 2022 09:52:35 +0100
+Date:   Fri, 15 Apr 2022 09:52:35 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com
-Subject: [PATCH 2/2] iio: stk3310: Export near level property for proximity sensor
-Date:   Fri, 15 Apr 2022 10:50:18 +0200
-Message-Id: <20220415085018.35063-3-arnaud.ferraris@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220415085018.35063-1-arnaud.ferraris@collabora.com>
-References: <20220415085018.35063-1-arnaud.ferraris@collabora.com>
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        Laurent Gonzales <laurent.gonzales@non.se.com>,
+        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Subject: Re: [PATCH net-next 06/12] net: dsa: rzn1-a5psw: add Renesas RZ/N1
+ advanced 5 port switch driver
+Message-ID: <YlkyU7jRAi5037up@shell.armlinux.org.uk>
+References: <20220414122250.158113-1-clement.leger@bootlin.com>
+ <20220414122250.158113-7-clement.leger@bootlin.com>
+ <YlgbUiXzHa0UNRK+@shell.armlinux.org.uk>
+ <20220415104029.5e52080b@fixe.home>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220415104029.5e52080b@fixe.home>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This makes the value from which an object should be considered "near"
-available to userspace. This hardware-dependent value should be set
-in the device-tree.
+On Fri, Apr 15, 2022 at 10:40:29AM +0200, Clément Léger wrote:
+> Le Thu, 14 Apr 2022 14:02:10 +0100,
+> "Russell King (Oracle)" <linux@armlinux.org.uk> a écrit :
+> 
+> > On Thu, Apr 14, 2022 at 02:22:44PM +0200, Clément Léger wrote:
+> > > Add Renesas RZ/N1 advanced 5 port switch driver. This switch handles 5
+> > > ports including 1 CPU management port. A MDIO bus is also exposed by
+> > > this switch and allows to communicate with PHYs connected to the ports.
+> > > Each switch port (except for the CPU management ports) are connected to
+> > > the MII converter.
+> > > 
+> > > This driver include basic bridging support, more support will be added
+> > > later (vlan, etc).  
+> > 
+> > This patch looks to me like it needs to be updated...
+> 
+> Hi Russell,
+> 
+> When you say so, do you expect the VLAN support to be included ?
 
-Signed-off-by: Arnaud Ferraris <arnaud.ferraris@collabora.com>
----
- drivers/iio/light/stk3310.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+I was referring to the use of .phylink_validate rather than
+.phylink_get_caps - all but one DSA driver have been recently updated
+to use the latter, and the former should now only be used in
+exceptional circumstances.
 
-diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-index 1d02dfbc29d1..7792456323ef 100644
---- a/drivers/iio/light/stk3310.c
-+++ b/drivers/iio/light/stk3310.c
-@@ -106,6 +106,7 @@ struct stk3310_data {
- 	struct mutex lock;
- 	bool als_enabled;
- 	bool ps_enabled;
-+	uint32_t ps_near_level;
- 	u64 timestamp;
- 	struct regmap *regmap;
- 	struct regmap_field *reg_state;
-@@ -135,6 +136,25 @@ static const struct iio_event_spec stk3310_events[] = {
- 	},
- };
- 
-+static ssize_t stk3310_read_near_level(struct iio_dev *indio_dev,
-+				       uintptr_t priv,
-+				       const struct iio_chan_spec *chan,
-+				       char *buf)
-+{
-+	struct stk3310_data *data = iio_priv(indio_dev);
-+
-+	return sprintf(buf, "%u\n", data->ps_near_level);
-+}
-+
-+static const struct iio_chan_spec_ext_info stk3310_ext_info[] = {
-+	{
-+		.name = "nearlevel",
-+		.shared = IIO_SEPARATE,
-+		.read = stk3310_read_near_level,
-+	},
-+	{ /* sentinel */ }
-+};
-+
- static const struct iio_chan_spec stk3310_channels[] = {
- 	{
- 		.type = IIO_LIGHT,
-@@ -151,6 +171,7 @@ static const struct iio_chan_spec stk3310_channels[] = {
- 			BIT(IIO_CHAN_INFO_INT_TIME),
- 		.event_spec = stk3310_events,
- 		.num_event_specs = ARRAY_SIZE(stk3310_events),
-+		.ext_info = stk3310_ext_info,
- 	}
- };
- 
-@@ -581,6 +602,11 @@ static int stk3310_probe(struct i2c_client *client,
- 	data = iio_priv(indio_dev);
- 	data->client = client;
- 	i2c_set_clientdata(client, indio_dev);
-+
-+	if (device_property_read_u32(&client->dev, "proximity-near-level",
-+				     &data->ps_near_level))
-+		data->ps_near_level = 0;
-+
- 	mutex_init(&data->lock);
- 
- 	ret = stk3310_regmap_init(data);
+Thanks.
+
 -- 
-2.35.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
