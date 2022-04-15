@@ -2,69 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD9E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 07:41:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B0D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 07:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351168AbiDOHnk (ORCPT
+        id S1351169AbiDOHoI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 03:43:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58468 "EHLO
+        Fri, 15 Apr 2022 03:44:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237208AbiDOHni (ORCPT
+        with ESMTP id S237208AbiDOHoF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 03:43:38 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BECC205D7
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 00:41:09 -0700 (PDT)
+        Fri, 15 Apr 2022 03:44:05 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856F724BD5
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 00:41:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=22/MeM8DHvIlm1VjYFivjPtNxFqsJDkoFPpSUaTCabw=; b=n7HlJ0LVCgs7INX4luwsXHE/N9
-        J+ouMADVcoFqy0MluSInQNX2dz8+EPmKs6jKSmQ9atGr4CDsIHa0hrje/Lwla+CKPPB4a3CdT8pMh
-        ED0H/CUoZeLvzlI0v5DAaudte8zghtVrvOwDg8lKTeNjBITMbWFxm/F8HqGjebxB+CdULoPUOe8aF
-        Qy34eIDQedoFtFSTeW0Ccu4Lofzb+he+3kE7h9f0YxCUMS6d1gbu1lrbO1b3OxwScilh1kvBoMJgY
-        eMtoo7opVaKeiN2CHd18xY04U4SGhUfvzhYAVygsBfukGjhh7phv2kRktkBpXeOa5x0+eCT5e9ZIc
-        Mi0Ij3bQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nfGZX-00FwGG-Gu; Fri, 15 Apr 2022 07:40:51 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 94F2F3001AE;
-        Fri, 15 Apr 2022 09:40:49 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 44E6E2025D913; Fri, 15 Apr 2022 09:40:49 +0200 (CEST)
-Date:   Fri, 15 Apr 2022 09:40:49 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Sami Tolvanen <samitolvanen@google.com>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        "Jose E. Marchesi" <jemarch@gnu.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: plumbers talk on kCFI, BTI, & IBT?
-Message-ID: <Ylkhgeyeolh1AO1y@hirez.programming.kicks-ass.net>
-References: <CAKwvOdkyMyE0ZRUU9Rh4qTxpOseD=fydo-FB9kdd7zRo7nVreg@mail.gmail.com>
+        bh=xanSGgJ3nmtzvbbdp9vVuGDNU57I0ihEAXyIecrf4bA=; b=lps71QQUamaHvR3jlBRw+n3uyM
+        JFgM5Skqngi7JHyRil4qKMmAEM5LFTvcWctJCRRUKTHITWjByEaRjFXlI1QFwKwfDznzrnq/lmskY
+        ehCLULfMu+QaORULxHxFRPom6cawrtOvL6VeWCdLRS1vsaXUEDq/mTvEhVnvx0flpxmqzBiwKSAX3
+        LmQI65ZSeNYRW47jHR4TI91hvxdPBP9a+ni/rg4MKnyPzCdRkLG2CLrX55JwN8keJFvMvbjNu1uEU
+        DrvFdR6Ne1c+TOm7uYaONr2V++soK+q3+FnvCW2LW7BjSo6SkR3egrhx72Jv82FoBDGRaXaU2ABV7
+        CtfGLRrg==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nfGaG-009Cis-7P; Fri, 15 Apr 2022 07:41:36 +0000
+Date:   Fri, 15 Apr 2022 00:41:36 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Oleksandr Tyshchenko <olekstysh@gmail.com>
+Cc:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        virtualization@lists.linux-foundation.org,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>, Julien Grall <julien@xen.org>,
+        Bertrand Marquis <bertrand.marquis@arm.com>,
+        Wei Chen <Wei.Chen@arm.com>, Henry Wang <Henry.Wang@arm.com>,
+        Kaly Xin <Kaly.Xin@arm.com>, Jiamei Xie <Jiamei.Xie@arm.com>,
+        Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>
+Subject: Re: [RFC PATCH 0/6] virtio: Solution to restrict memory access under
+ Xen using xen-virtio DMA ops layer
+Message-ID: <YlkhsH4zqly/BykB@infradead.org>
+References: <1649963973-22879-1-git-send-email-olekstysh@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKwvOdkyMyE0ZRUU9Rh4qTxpOseD=fydo-FB9kdd7zRo7nVreg@mail.gmail.com>
+In-Reply-To: <1649963973-22879-1-git-send-email-olekstysh@gmail.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 02:28:08PM -0700, Nick Desaulniers wrote:
-> Hi Sami, Peter, Joao, and Mark,
-> Jose and I are currently in the planning process to put together a
-> Kernel+Toolchain microconference track at Linux Plumbers Conference
-> this year (Sept 12-14) in Dublin, Ireland.  Would you all be
-> interested in a session on Control Flow Integrity in the kernel?
-> Mitigations in hardware, software, or both might be of interest to
-> discuss more in person?
-
-Yeah, I think a session on CFI in general would be good to have.
+I can only see three out of 6 patches on the linux-arm-kernel list,
+which makes reviewing this impossible.  Also please Cc me directly
+on any series doing crazy things with dma ops.  Thanks!
