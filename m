@@ -2,116 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 563FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 04:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAEFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 04:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349396AbiDOEVw (ORCPT
+        id S1349413AbiDOEbz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 00:21:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46914 "EHLO
+        Fri, 15 Apr 2022 00:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236647AbiDOEVt (ORCPT
+        with ESMTP id S1349402AbiDOEbv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 00:21:49 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E26E237
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 21:19:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649996361; x=1681532361;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=vPpXIcfyh/mU0Fbs0W1R/5/8eNPVnQlfmhfymOXQLD0=;
-  b=TIGhIH+rnZbAZLVAXmgWAmVUnaEpsFJ/RnuOuSuLY8HMvnJ07ZydFYPw
-   0uRchU5nBXf766iMG1vhFAUAfbvXHUtkZ9ljegelAJqHu3+JTwlrTGluy
-   fstEQh4y4IgFKyNzdNym3nv8cHADHLWiaohPi1PZbOKfaskBmMeVLkcdC
-   29R5N00OgNMHFt9vncJFjsF4HE5dxVx9+gYimmshrmxzFIN03DTKQItEA
-   mjE4rdU291PuKjt6Vbgq+pNvFUOUrB3tP6wU0D/iP1n1ero+5S6A5mTxJ
-   wnqjPnGczLHH77i6ZBN8WClmau/TcDBWUResNnO7RRtpHJ4qnsgYBDq10
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="349525636"
-X-IronPort-AV: E=Sophos;i="5.90,261,1643702400"; 
-   d="scan'208";a="349525636"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 21:19:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,261,1643702400"; 
-   d="scan'208";a="527161406"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 14 Apr 2022 21:19:18 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nfDQU-0001Vn-41;
-        Fri, 15 Apr 2022 04:19:18 +0000
-Date:   Fri, 15 Apr 2022 12:18:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     kbuild-all@lists.01.org,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        linux-kernel@vger.kernel.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: [cxl:pending 20/22] drivers/cxl/core/suspend.c:8:6: warning: no
- previous prototype for 'cxl_mem_active'
-Message-ID: <202204151219.KoL7lvcZ-lkp@intel.com>
+        Fri, 15 Apr 2022 00:31:51 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C458EB
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 21:29:20 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id u15so13490067ejf.11
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 21:29:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=FgxYdQH4K38jxNj0/3LE0gePenpz/atsMgD0HUgrDoY=;
+        b=e4jXfgsF5YlWiMUmnnB0B+djmpAX1cPH6imE207G8QL6ayEIlZBgagLfXWWwnJDJzv
+         FW5NzNeum50fDZBq4cYUXPV9R9VXWci0YOwdipH3e6iHXVGAHUFxy10UgqvhrtijONJY
+         jHWeW9ht6IjUVmu6r7WtuH2LKQ/KB2jekSCBi0XUQlHA3sCCf9Ztk0dD1xmQsJlZX9P5
+         rvoBGyE2xUkSy2Iihndwf/vd+tPVNMS//QsL4icjiHBJfinxfkRZRmewG9+Z+3Y8rxjD
+         oZsyf3064cyeh8/lMjDebuvCEOv9IIumzIA5qFb1Z9U4tYdJUm7bKKqn7cV7Sq/UwBCW
+         H5vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=FgxYdQH4K38jxNj0/3LE0gePenpz/atsMgD0HUgrDoY=;
+        b=QC+Yw7EAQBrlUeCDmJHjVnL5zt1G9twAcqAq79WY7+Or0VTNOSZ7Aa6EkwNCGEAwV+
+         2sjL7TdRwmdoOEDvzBKSRrW5uu8TVJ2A+nQIKCXNYC5iZiTfu86OoAs73dwDo836ZxjX
+         VGaPk8SoH0kH0aqdosMfrMStdoxHn9JnVnhNjQTqTqmwd5fibQ8ydPRGhISlrvts3hvc
+         C/CT1T7a9iinbIkFQ6GvvgGf1565Ab1LkOpfex22WW5PYkNa0+hHdP259EV2p3/5fKjD
+         I3ts8xV6OjMnn/ZOspmziooYMB/SCuNPCISvI2c9kNRECugthk1vblRWUXjwkvho4gJf
+         iSGw==
+X-Gm-Message-State: AOAM5317NSVyLyljWpV1ZlGOGp2lI16pcbEFp4SkpbReVJi4xxSdFHW9
+        UTvyOewZcjuS4t9UwzvEh6g=
+X-Google-Smtp-Source: ABdhPJxhIdWVi5QikpsHemiGrQkXmL48dWqnyIk/NRWOmMCNgUvcg7ZoWvSluufqF+Nb/7co/OrUKQ==
+X-Received: by 2002:a17:906:7943:b0:6df:e5b3:6553 with SMTP id l3-20020a170906794300b006dfe5b36553mr4892245ejo.398.1649996959018;
+        Thu, 14 Apr 2022 21:29:19 -0700 (PDT)
+Received: from leap.localnet (host-79-43-11-75.retail.telecomitalia.it. [79.43.11.75])
+        by smtp.gmail.com with ESMTPSA id e35-20020a056402332300b004209638cb94sm1960352eda.6.2022.04.14.21.29.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Apr 2022 21:29:17 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Larry.Finger@lwfinger.net, Jaehee Park <jhpark1013@gmail.com>
+Cc:     phil@philpotter.co.uk, gregkh@linuxfoundation.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev, jhpark1013@gmail.com,
+        Pavel Skripkin <paskripkin@gmail.com>
+Subject: Re: [PATCH v2 1/6] staging: r8188eu: remove unused member free_bss_buf
+Date:   Fri, 15 Apr 2022 06:29:15 +0200
+Message-ID: <3608313.MHq7AAxBmi@leap>
+In-Reply-To: <e41e0d3b62395d04f41d6934074074c431e7aacc.1649990500.git.jhpark1013@gmail.com>
+References: <cover.1649990500.git.jhpark1013@gmail.com> <e41e0d3b62395d04f41d6934074074c431e7aacc.1649990500.git.jhpark1013@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="ISO-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git pending
-head:   4f497e0dd3530981f8c897d5d47ee880b62baefb
-commit: fcf0b70f7e80f49f323cc21b8a497a24151d9c28 [20/22] PM: CXL: Disable suspend
-config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220415/202204151219.KoL7lvcZ-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git/commit/?id=fcf0b70f7e80f49f323cc21b8a497a24151d9c28
-        git remote add cxl https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git
-        git fetch --no-tags cxl pending
-        git checkout fcf0b70f7e80f49f323cc21b8a497a24151d9c28
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash drivers/cxl/core/
+On venerd=EC 15 aprile 2022 04:48:32 CEST Jaehee Park wrote:
+> The free_bss_buf member of pmlmepriv is unused. Remove all related
+> lines.
+>=20
+> Suggested-by: Pavel Skripkin <paskripkin@gmail.com>
+> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
+> ---
+>  drivers/staging/r8188eu/include/rtw_mlme.h | 1 -
+>  drivers/staging/r8188eu/core/rtw_mlme.c    | 7 -------
+>  2 files changed, 8 deletions(-)
+>=20
+> diff --git a/drivers/staging/r8188eu/include/rtw_mlme.h b/drivers/
+staging/r8188eu/include/rtw_mlme.h
+> index 1dc1fbf049af..0f03ac43079c 100644
+> --- a/drivers/staging/r8188eu/include/rtw_mlme.h
+> +++ b/drivers/staging/r8188eu/include/rtw_mlme.h
+> @@ -319,7 +319,6 @@ struct mlme_priv {
+>  	struct list_head *pscanned;
+>  	struct __queue free_bss_pool;
+>  	struct __queue scanned_queue;
+> -	u8 *free_bss_buf;
+>  	u8	key_mask; /* use to restore wep key after hal_init */
+>  	u32	num_of_scanned;
+> =20
+> diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/
+r8188eu/core/rtw_mlme.c
+> index 3e9882f89f76..aed868d1d47b 100644
+> --- a/drivers/staging/r8188eu/core/rtw_mlme.c
+> +++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+> @@ -61,7 +61,6 @@ static int _rtw_init_mlme_priv(struct adapter=20
+*padapter)
+>  		res =3D _FAIL;
+>  		goto exit;
+>  	}
+> -	pmlmepriv->free_bss_buf =3D pbuf;
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Hi Jaehee,
 
-All warnings (new ones prefixed by >>):
+"pmlmepriv->free_bss_buf" is assigned with "pbuf". The latter is a pointer=
+=20
+to virtually contiguous memory which was allocated by vmalloc() or=20
+vzalloc() (I didn't check, but the vfree() in _rtw_free_mlme_priv() tells=20
+me that indeed it was).
 
->> drivers/cxl/core/suspend.c:8:6: warning: no previous prototype for 'cxl_mem_active' [-Wmissing-prototypes]
-       8 | bool cxl_mem_active(void)
-         |      ^~~~~~~~~~~~~~
->> drivers/cxl/core/suspend.c:13:6: warning: no previous prototype for 'cxl_mem_active_inc' [-Wmissing-prototypes]
-      13 | void cxl_mem_active_inc(void)
-         |      ^~~~~~~~~~~~~~~~~~
->> drivers/cxl/core/suspend.c:19:6: warning: no previous prototype for 'cxl_mem_active_dec' [-Wmissing-prototypes]
-      19 | void cxl_mem_active_dec(void)
-         |      ^~~~~~~~~~~~~~~~~~
+>  	pnetwork =3D (struct wlan_network *)pbuf;
+> =20
+> @@ -109,13 +108,7 @@ void rtw_free_mlme_priv_ie_data(struct mlme_priv=20
+*pmlmepriv)
+> =20
+>  void _rtw_free_mlme_priv(struct mlme_priv *pmlmepriv)
+>  {
+> -
+>  	rtw_free_mlme_priv_ie_data(pmlmepriv);
+> -
+> -	if (pmlmepriv) {
+> -		vfree(pmlmepriv->free_bss_buf);
+> -	}
+
+Therefore, here you are causing a memory leak, which is something you=20
+should avoid :)=20
+
+Why did you delete that call to vfree()?=20
+
+I think that you are misunderstanding what Pavel said. Even if it were true=
+=20
+that the code makes no use of that region of memory (again, I didn't=20
+check), nevertheless, that memory was allocated somewhere and its address=20
+is now in "pmlmepriv->free_bss_buf".
+
+If you can confirm that this memory is allocated for no purpose you should=
+=20
+also remove the call to vmalloc() / vzalloc().
+
+Thanks,
+
+=46abio M. De Francesco =20
+
+> -
+>  }
+> =20
+>  struct	wlan_network *_rtw_alloc_network(struct	mlme_priv *pmlmepriv)/*=20
+_queue *free_queue) */
+> --=20
+> 2.25.1
+>
 
 
-vim +/cxl_mem_active +8 drivers/cxl/core/suspend.c
-
-     7	
-   > 8	bool cxl_mem_active(void)
-     9	{
-    10		return atomic_read(&mem_active) != 0;
-    11	}
-    12	
-  > 13	void cxl_mem_active_inc(void)
-    14	{
-    15		atomic_inc(&mem_active);
-    16	}
-    17	EXPORT_SYMBOL_NS_GPL(cxl_mem_active_inc, CXL);
-    18	
-  > 19	void cxl_mem_active_dec(void)
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
