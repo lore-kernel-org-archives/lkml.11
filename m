@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2202C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 07:24:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EADFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 07:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351029AbiDOH0p (ORCPT
+        id S1351038AbiDOH0s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 03:26:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57480 "EHLO
+        Fri, 15 Apr 2022 03:26:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242720AbiDOH0h (ORCPT
+        with ESMTP id S1351026AbiDOH0p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 03:26:37 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEEDB7C59
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 00:24:10 -0700 (PDT)
+        Fri, 15 Apr 2022 03:26:45 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD596B7C68
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 00:24:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650007450; x=1681543450;
+  t=1650007457; x=1681543457;
   h=date:from:to:cc:subject:message-id:mime-version:
    content-transfer-encoding;
-  bh=Pvn6D9bBNXlRCo9waKPuVoneNXTxendhT5EySvHF7sM=;
-  b=GwDTuu7GW8ubfV+B7rykmx/SDWZ6umVeq0/Cknw1a6HAsobs6Z6xblqA
-   jiWH9Eym3xT4yJI2fyB/dX6pniHpkOOXN7DzfdVVIZWNZ90zihcXTFQ+P
-   tCOst2FgK0BzALQIsz2GgXONGfhkS2Dz6x+wIguWw0JTZZD+ObLvxs1wY
-   b16ZEwBamUS5IRVh1fMOh48USl9//38OKqUnaBsYQoczvKo269taca6zO
-   Z2rEEwKVp3V7Wljx0w05VkeeQUD/d4/j7Eb6pKZeoGAwrg2BycLmTTgXk
-   kDBuj206BkJ/POF3BN0YUf4qZFIfq5vCYhtHXQHFuM6kZTPCLoqEpkS6j
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="262554453"
+  bh=jUmVIyeDXIAjcJLpIyHmb4mUDJwYOguDMN52Q5YyxdY=;
+  b=ROuVlcSWDNEgKO4bSKcgxu0YskTixUqOqlkepxjtFnibUJ5YrnYdfKiK
+   QycAe+uPc/9ady00r8Xq4s83QawrQneReJdsqD9dZUaK1ihukXauGbgod
+   457kzUriN3mggB1DKEsOEtSsa+NE+ymzGCRCISZ2Hniygtrl11XCUtmTy
+   dEAOIAGtqAE6Is7uGCMiiYT6jECLVq+yrsDVlYGAoHBFeg0si7uhEnjmB
+   OEtZmw/38G+TMxaVQtjdIbOrZf9ugQrgnbIclOcbFtYmyqnretcDQ0G1W
+   ouwD09ymhv7JYqz7Yp+ftOJbKHs0ZV+f9hL/C9blrypXfFw+J/MhNcohA
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="243042832"
 X-IronPort-AV: E=Sophos;i="5.90,262,1643702400"; 
-   d="scan'208";a="262554453"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 00:24:09 -0700
+   d="scan'208";a="243042832"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 00:24:10 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,262,1643702400"; 
-   d="scan'208";a="574238178"
+   d="scan'208";a="560485295"
 Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 15 Apr 2022 00:24:08 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 15 Apr 2022 00:24:08 -0700
 Received: from kbuild by 3abc53900bec with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nfGJL-0001i2-Rl;
+        id 1nfGJL-0001he-KW;
         Fri, 15 Apr 2022 07:24:07 +0000
-Date:   Fri, 15 Apr 2022 15:23:26 +0800
+Date:   Fri, 15 Apr 2022 15:23:10 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "x86-ml" <x86@kernel.org>
 Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:core/core] BUILD SUCCESS
- 75d8cce128c516fe6cf4b8683e8fe1a59e919902
-Message-ID: <62591d6e.vkQY6ONhkv2hzOIT%lkp@intel.com>
+Subject: [tip:smp/core] BUILD SUCCESS
+ d308077e5e4dc8c93f97f5ebc70274e7c7a92d49
+Message-ID: <62591d5e.UXk1rCYGUqSAsX9O%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -58,12 +58,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git core/core
-branch HEAD: 75d8cce128c516fe6cf4b8683e8fe1a59e919902  lib/irq_poll: Prevent softirq pending leak in irq_poll_cpu_dead()
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git smp/core
+branch HEAD: d308077e5e4dc8c93f97f5ebc70274e7c7a92d49  cpu/hotplug: Initialise all cpuhp_cpu_state structs earlier
 
-elapsed time: 2113m
+elapsed time: 2112m
 
-configs tested: 127
+configs tested: 132
 configs skipped: 3
 
 The following configs have been built successfully.
@@ -125,10 +125,10 @@ h8300                            allyesconfig
 xtensa                           allyesconfig
 arc                                 defconfig
 sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
 parisc                              defconfig
+s390                             allmodconfig
 parisc                           allyesconfig
+s390                                defconfig
 s390                             allyesconfig
 sparc                               defconfig
 i386                             allyesconfig
@@ -153,6 +153,9 @@ i386                          randconfig-a016
 x86_64                        randconfig-a006
 x86_64                        randconfig-a004
 x86_64                        randconfig-a002
+arc                  randconfig-r043-20220413
+s390                 randconfig-r044-20220413
+riscv                randconfig-r042-20220413
 arc                  randconfig-r043-20220414
 riscv                    nommu_virt_defconfig
 riscv                          rv32_defconfig
@@ -189,8 +192,8 @@ arm                       mainstone_defconfig
 arm                       netwinder_defconfig
 mips                        workpad_defconfig
 i386                          randconfig-a002
-i386                          randconfig-a006
 i386                          randconfig-a004
+i386                          randconfig-a006
 x86_64                        randconfig-a005
 x86_64                        randconfig-a003
 x86_64                        randconfig-a001
@@ -199,6 +202,8 @@ x86_64                        randconfig-a014
 x86_64                        randconfig-a016
 hexagon              randconfig-r041-20220414
 hexagon              randconfig-r045-20220414
+hexagon              randconfig-r041-20220413
+hexagon              randconfig-r045-20220413
 riscv                randconfig-r042-20220414
 s390                 randconfig-r044-20220414
 
