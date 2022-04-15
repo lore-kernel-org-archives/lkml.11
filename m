@@ -2,64 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01849C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5D1C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:50:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351533AbiDOIwP (ORCPT
+        id S1351581AbiDOIxD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 04:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33610 "EHLO
+        Fri, 15 Apr 2022 04:53:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232347AbiDOIwM (ORCPT
+        with ESMTP id S1351535AbiDOIxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 04:52:12 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0461C1EEFA
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 01:49:43 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R901e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VA6o-rv_1650012574;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VA6o-rv_1650012574)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 15 Apr 2022 16:49:40 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     jaegeuk@kernel.org
-Cc:     chao@kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] f2fs: Fix signedness bugs in f2fs_gc_pinned_control functions
-Date:   Fri, 15 Apr 2022 16:49:31 +0800
-Message-Id: <20220415084931.49880-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Fri, 15 Apr 2022 04:53:01 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3764B716B;
+        Fri, 15 Apr 2022 01:50:33 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: aferraris)
+        with ESMTPSA id E68C91F40F07
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1650012632;
+        bh=PDQk8Hg2XmGeAhw+vnz6Kqr/MRl2sSD13MWqXSmdmNo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UMDiPpPUWC58PDk3Ald6Q8jESPJJaxacE4uElQPWCA8xsZB6J+MR/PQSFaRb9X11P
+         DtqzRHJQjNanGilRwpQaH4FK2ZYiWEKAi63lduqP7YfAiriI1KFtEWW60Qw2VB7ZXc
+         Gbid5KxQQSm6HjaaJfpJ3Zc5QwNNCcE3sg/5vuJKs4WCj90FWi90VJu5Ro5NdCL0sF
+         ZvwajPcFBH6r4AVh8dSCL+3vhyI3xo8UHAdU4IhFF9U1VPXWCjaeqExQZQWX9ZtQ3u
+         7f121pc+UWNxAiNi9DZGmGqSv3BI4ShUrZQcdC8UHpnUFrWWIQr1SvYtgXs9EfBrKr
+         H2ngczZ8zqCvg==
+From:   Arnaud Ferraris <arnaud.ferraris@collabora.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com
+Subject: [PATCH 1/2] dt-bindings: iio: light: stk33xx: Add proximity-near-level
+Date:   Fri, 15 Apr 2022 10:50:17 +0200
+Message-Id: <20220415085018.35063-2-arnaud.ferraris@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220415085018.35063-1-arnaud.ferraris@collabora.com>
+References: <20220415085018.35063-1-arnaud.ferraris@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following smatch warning:
+This allows exporting the value from which userspace should assert an
+object is "near".
 
-fs/f2fs/gc.c:688 f2fs_gc_pinned_control() warn: signedness bug returning
-'(-16)'.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: Arnaud Ferraris <arnaud.ferraris@collabora.com>
 ---
- fs/f2fs/gc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/iio/light/stk33xx.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
-index 34c097a7821d..4c8ce02a815b 100644
---- a/fs/f2fs/gc.c
-+++ b/fs/f2fs/gc.c
-@@ -679,7 +679,7 @@ static void f2fs_unpin_all_sections(struct f2fs_sb_info *sbi, bool enable)
- 	DIRTY_I(sbi)->enable_pin_section = enable;
- }
+diff --git a/Documentation/devicetree/bindings/iio/light/stk33xx.yaml b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
+index f92bf7b2b7f0..f6e22dc9814a 100644
+--- a/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
++++ b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
+@@ -13,6 +13,9 @@ maintainers:
+ description: |
+   Ambient light and proximity sensor over an i2c interface.
  
--static bool f2fs_gc_pinned_control(struct inode *inode, int gc_type,
-+static int f2fs_gc_pinned_control(struct inode *inode, int gc_type,
- 							unsigned int segno)
- {
- 	if (!f2fs_is_pinned_file(inode))
++allOf:
++  - $ref: ../common.yaml#
++
+ properties:
+   compatible:
+     enum:
+@@ -26,6 +29,8 @@ properties:
+   interrupts:
+     maxItems: 1
+ 
++  proximity-near-level: true
++
+ required:
+   - compatible
+   - reg
+@@ -44,6 +49,7 @@ examples:
+         stk3310@48 {
+                 compatible = "sensortek,stk3310";
+                 reg = <0x48>;
++                proximity-near-level = <25>;
+                 interrupt-parent = <&gpio1>;
+                 interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
+         };
 -- 
-2.20.1.7.g153144c
+2.35.1
 
