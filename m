@@ -2,342 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03E75C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:44:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A8F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355967AbiDOQq7 (ORCPT
+        id S1355968AbiDOQr3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 12:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
+        Fri, 15 Apr 2022 12:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355935AbiDOQqn (ORCPT
+        with ESMTP id S1355979AbiDOQrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 12:46:43 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AAEDCE1C;
-        Fri, 15 Apr 2022 09:44:13 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id k5so14785888lfg.9;
-        Fri, 15 Apr 2022 09:44:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Zu1iv2slDEmPJIqcluQVGAP7gHAtNvDuvYomfYWCtOo=;
-        b=XJnzKvcEbwQTBUvIdcQAcanquh0RHMH4OM5MQbeDVm6itSgT9ZDsXY7Hww5GA7QpNU
-         K4MirQ1ivPf7YHt3EThgl6Woc3d5pUy0pl53nlWq59qDoExqQQ/WU0jupyzSpDvrEULE
-         T3AAexGMtySZ2hZtG0xYU7qKN1YK6vsWYYFT9PVnh5SVopEmABfMG7fZ/jeuqTlw6ie3
-         SCgZdZRNm101+O/wkpfU9inyHj2gtON64FBJWVigiiC0awhe5+tsTwqrVXh+7XDk8BTD
-         UssRYOqDMtiEAFsxnoM1uNz9PXEKHetgQJRPnO5ZeP2pDBrvbci4iB2kOd5auoN58Sy9
-         TdjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Zu1iv2slDEmPJIqcluQVGAP7gHAtNvDuvYomfYWCtOo=;
-        b=L1o3qOp90dg1pdN0cSzuOIr+GSa9MZR51tIwpEImFYwKENqtuskf4iFm20gYpgAIm2
-         iNTUq9/kFJPlmz7wtX3kjC7QYStm9CA6muZfatoCQ1dtgS947j10RSL9vVmPK37XD1QV
-         2lL2cPwOMBDKgYm86mzxVqebGXXR5O4urSoiTLPLRSkh5kS6jOEQSnn8tpQp7x1yJj/z
-         CnhUwVFaeagUlLJYpDMWYDMhdy7AT1Mzb0ToTaBHXnwYFlnziOYFoX2awx3SnbcImIc7
-         AH33m5tTc2c5ClPZbjrFyg3Qook1nyxlnhB2XtdNepAR9J3vN3N8fwV2Vm1yiROaJDv+
-         eQ0w==
-X-Gm-Message-State: AOAM532d6FKexkj7B16ATDBt9rfndNAGrZTO2YUFG3TKbU0QXL8cX7Sc
-        AVU/wpMMmUIcM7N/2AsYl+mMLTxaFCA=
-X-Google-Smtp-Source: ABdhPJyGGCzH8nXBA3wc4qEfF2vTc/dg8mQ7Z7wqVXbMW3LC8ikTPmW/e6gaY42HPZ+QtvdWuHoBaw==
-X-Received: by 2002:a05:6512:3713:b0:46d:9dd:1d9e with SMTP id z19-20020a056512371300b0046d09dd1d9emr5525057lfr.408.1650041051940;
-        Fri, 15 Apr 2022 09:44:11 -0700 (PDT)
-Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id h22-20020a056512339600b0046bc4ceaeb6sm383787lfg.27.2022.04.15.09.44.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 09:44:11 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org
-Subject: [PATCH v3 3/4] mfd: sm5703: Add support for SM5703 MFD
-Date:   Fri, 15 Apr 2022 19:43:54 +0300
-Message-Id: <20220415164356.25165-4-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220415164356.25165-1-markuss.broks@gmail.com>
-References: <20220415164356.25165-1-markuss.broks@gmail.com>
+        Fri, 15 Apr 2022 12:47:23 -0400
+X-Greylist: delayed 47487 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Apr 2022 09:44:53 PDT
+Received: from na01-obe.outbound.protection.outlook.com (unknown [52.101.57.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DE124951;
+        Fri, 15 Apr 2022 09:44:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cuWep0dyRr/OL12M3YoIETAmuJbiezVEFI53sGYEg6oTTMqgUiKla1BiDCADDgiCVUK9BZOJyvY9P/O9PUDCZva7JZvFRa5Bq5UvBmHBVLNHZjAJZm82Rkr5mkK9cwQ2HKfeaUyzTqbNBCBJ/ICoeXquwZXMtVvmR8U1w722JPC+FOQkS5JV+ZH56w1YUxvMmyM5416Acb7bS/gMn7OJpV3CuTERp2vXw/iUR3OQzX4csHXoFFBdAn6Bvb+/bXGTLQeByCx5QBveg6NBgxG37DSGKOKlOiJjIr+gB+LYe/XthXi7yw/oL1ZM0LhdCtkMFCV7SStq4AjCsU1LATJ4Vg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HYNpJjm/jne0HL73swP6S6943rvp+b2Qz37p9hfTQzM=;
+ b=FNs56WAZY4TrifjKS4igHqN7WVhWx5P9jKQFKTCgZh002n45u8BBvN0+6gfhSKg+3xFMz+YZr6BEW848gx29IMfGWSuxXIrUW3G7bv0MGkqXdyd/PLFToYrtHUpSSkQgyS+K0in7/gZCtRgK4oBqaWvKHnazedG0XKYEVsVYJasrMyVLUdNKf0xLJnw9RW/cNY2+HB2KNcWd5g2NNydyJV/YN5oglm1D5l5erCK3P7Hd6hUNpjRQXKOYLpLYmuwHkr6TYSipCk88qCUvl9UldZtVGs/NMcsYtdO3rOAHeXaCXCBEuH3hY/sjtzfRK8+XTe/OHwP4klq0pL4FQ8169g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HYNpJjm/jne0HL73swP6S6943rvp+b2Qz37p9hfTQzM=;
+ b=EDuhr5xwXnuvJLJZHxMp2tl4dhQ3w6SjymMSmTxeFAQdzTlqA9wgv4prWkmkKGzgf7O4tnOtV9iV0TTN6HVJ8k8RROiddJBHmHFQbs32SiLoGy+MlE3D8QSGhbIC1m8tL7hHbr8qNzGm96FyVkS3t3ZISYrOlTVNF95XpXjiNOU=
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com (2603:10b6:510:d2::21)
+ by SA1PR21MB2068.namprd21.prod.outlook.com (2603:10b6:806:1c3::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.6; Fri, 15 Apr
+ 2022 16:44:50 +0000
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::ac09:6e1b:de72:2b2f]) by PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::ac09:6e1b:de72:2b2f%9]) with mapi id 15.20.5186.010; Fri, 15 Apr 2022
+ 16:44:50 +0000
+From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To:     Andrea Parri <parri.andrea@gmail.com>
+CC:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [RFC PATCH 6/6] Drivers: hv: vmbus: Refactor the ring-buffer
+ iterator functions
+Thread-Topic: [RFC PATCH 6/6] Drivers: hv: vmbus: Refactor the ring-buffer
+ iterator functions
+Thread-Index: AQHYT3fNSP/rWeVvYk6P66NWBULOUKzwUztwgAA60oCAAJ6bgIAAAP3Q
+Date:   Fri, 15 Apr 2022 16:44:50 +0000
+Message-ID: <PH0PR21MB3025ECBC7D7102B539A7705AD7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
+References: <20220413204742.5539-1-parri.andrea@gmail.com>
+ <20220413204742.5539-7-parri.andrea@gmail.com>
+ <PH0PR21MB302516C5334076716966B7EED7EE9@PH0PR21MB3025.namprd21.prod.outlook.com>
+ <20220415070031.GE2961@anparri> <20220415162811.GA47513@anparri>
+In-Reply-To: <20220415162811.GA47513@anparri>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=fa73a567-3147-45ed-8a40-c3aa28b6497a;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-04-15T16:31:43Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 67ea02be-8e0d-483d-e29c-08da1eff423b
+x-ms-traffictypediagnostic: SA1PR21MB2068:EE_
+x-ms-exchange-atpmessageproperties: SA|SL
+x-microsoft-antispam-prvs: <SA1PR21MB20687CABD919E3C755F68AC5D7EE9@SA1PR21MB2068.namprd21.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: AElJhhJ30Ht8p+YlDmCXb2wQcus3Zc5OcwCe23ismhzJT8HAfEAw5k+0IkQbn68pirG8zP8yC7FR3Y+2d1mXIU5pPKaDkLAxt4c8VtxmFGL3e1MxQoUpBjbAqMri4fXYo2h8+g0rpFBC2GLZMBJAXPYGjaBFf0Kordj6o58jaMoqeRt/qxdT+AaiO02xxQ3brOLYYCEIPnMPKbhAWEvrCDUrcP+ph6hQ6jz3lozj7p0x0wO5xNst+nHyQTEN486/ne4BqolT2FxnsEjJaY0yvhWjRzKmXP1SD5Fxoi/QeSZNOr+omoDBDvYQ3OPzgDPgKtXgBUitCPVRy2bO+2uLP6MUPywktx95aVvMPb+06YZBkmX4W9Lu30Nyi3J+0UYJ9DqOkQeDrOa3mbF2MaXtXeSj83VlSsGIrcVFLSs2p8Qb+SiJceXV4NkrCKXIu2lCFxAuJoDKKPhxTWZK98z2D65w/svBIVgaS4pKLnAbHXVjail5ikh7JzKgoXKnap5qyINFtOxi4nPu5eOM0k61Zqj7ix+H5iZbM7+bHT8mTDKWyj08YRC4Xs0rgsIBoiORPfTIC/svd32l+0wptLdF9GWvqL1/194WeCHFsNQAL8Kz+wjk5flh5KH4jK4GV5lpFIqbVYf2Zfp5XHpaLhkq2hgzDUElqzxa25Dco1ri9tUBF74Jn6xoj9kdOd3Xbaiix8lL3MKyizSvn8MA2kIqOlp/u8mp7cNLrclUkEZrI5l/VkGXATCbPy+VJx57eDHY
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR21MB3025.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(66556008)(71200400001)(82950400001)(508600001)(9686003)(2906002)(316002)(76116006)(122000001)(6916009)(54906003)(82960400001)(38070700005)(66946007)(4326008)(8676002)(66446008)(64756008)(66476007)(52536014)(7696005)(6506007)(8936002)(7416002)(33656002)(5660300002)(86362001)(8990500004)(10290500003)(38100700002)(55016003)(186003)(26005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?uFQSh/UuTtjU2J1xpTzb9ozPmLRcji/4wxIPl8+CzgI+PDWKbFVZQu53neVV?=
+ =?us-ascii?Q?ParzMjjLBSjApEhAJnrqWyvDGg9QPUcXwXaJj80AgYzmIV2gowvDIWE6LlZQ?=
+ =?us-ascii?Q?v1qJr/UomMtufjj+mHUqS10PLEdqNx4zhzFw5aDw4Go163oWYXbQGDnVikRe?=
+ =?us-ascii?Q?+ClFoXsv/rB7FGRdeqTGqdB82OoE0N9aQ3A8l0/7PQ/BbBTr5zRBpGCvh88M?=
+ =?us-ascii?Q?okzt6XsWXYx03nKk5LzfwwLkN6nZWmhSkFjDyW317Y4OnRlpkhdbeNX2XN5k?=
+ =?us-ascii?Q?VhSGcSJeZnSuqi9luOSGP3zXp789CplrpCfH3sMtJ3SdshYPE3d9PcQLm1WF?=
+ =?us-ascii?Q?Cv/b/wCxCvOiqmQPnL2trAtfd93bHMQW2QWYnvzdapVgpdk/uh/Yd3tA2nnf?=
+ =?us-ascii?Q?+EoJkKqeTQ4LMo8TlzumMy5azNrGHsPD1s/6c4kTV2MYB+6dKl4avdpOvxFk?=
+ =?us-ascii?Q?ILhx4jleboDHNCS3pAmZqNlBtwcq44RCLpUWB4ci/Gpr+Jnn97HB3Snw2qcI?=
+ =?us-ascii?Q?GNbdn7BNIJJ+KtGm4U5AyWyxsFvL/2kOGsNl0cX360p5L3QGc8norjae2wrz?=
+ =?us-ascii?Q?ke+HtTEX2ia4ephn1/cdfcHSoPvFbeuMgwP7Ya4l7ZjpEUrKVrjVMwwV7K9D?=
+ =?us-ascii?Q?t/TFeskZ4YYc30eu5d6xFF0hbbTR+7tYr0vKbwnPQzDk3j5CW9XhvqX4bL5F?=
+ =?us-ascii?Q?pYxvNiccMhkToESwPfi9GhwPCj2yy1CdzkVoQ3xpAm4BA4liwVUfMyVRiA/O?=
+ =?us-ascii?Q?0dpSwwaaNfAosVjUSc6S7QDSaUGg8JEBW5sloEm2cbTLi0u9YrSppFKEiB7R?=
+ =?us-ascii?Q?Y7SSoJtbZJX97SLGv3jocd4s7/XOBy8WXIi3j0uzxXZDGkhcNEcU6xbpk9ui?=
+ =?us-ascii?Q?wuS8Z5GW6uPmh/IbUGZ7VR+zjS6Sc8ngdXn2Hwd16XX9FKLauIy3g55wKT+Z?=
+ =?us-ascii?Q?3RhYjvsE2MsVGT4x32OwwRJVVY92AnOQPtW9zOqO0+xgKRVU7kEznGWORGhS?=
+ =?us-ascii?Q?+KCATA/0wvT9gXLRd5sB5ZQDfEbLWV9Ev77FQmxjxwOaHwOucSQfYziib3ag?=
+ =?us-ascii?Q?r8brzJoh6vzenPEhgpD2NtqEgIrMQeRrfc5z0qzKuqBlwhtBwz8WOXhetong?=
+ =?us-ascii?Q?uQLfL+CmkNIZ8iVLvReMFW/SMH2hm3zhU+LMBac4Sme5jEZSqnmXMOQWf6v5?=
+ =?us-ascii?Q?qPGycKx3zMbByHDyK/VDTkg4MpscaICKDiXw3Dh+ZvlxYVikKXVvFjFjcFu7?=
+ =?us-ascii?Q?QFxgSEGborb/rCI1v/bcXjPvip4RA/SBgJ84/0bCemE9lkkPeg/gDKQBBPop?=
+ =?us-ascii?Q?xJ/aaghPSJYCoK4Foxy1MfPKyhnUzV+j/rCY55rIh/hiChuFclUuZLdIwtKV?=
+ =?us-ascii?Q?KDm0Gxue67WZDo61xbdMR6z+GVncuf6KKK7ESfe0WEWKOwzLEjscyVq3B2Cd?=
+ =?us-ascii?Q?+HwgmnOebsRBULBH8Dm/7uZHgkARTbjhUTrTCOReyXQiRWxoHsZsXnu2kju5?=
+ =?us-ascii?Q?57Pj903XjnO4pc8lNHv9dYSNZ/7D/81+V4WJa2OlEyC90SLJ0EgcEME2ISZT?=
+ =?us-ascii?Q?8fwsEnGgDIs50jllIio63qhTjxTWwap/RLT5WPfdZAoFYw9K/MAde3SVurvX?=
+ =?us-ascii?Q?AMKZt/8DXOkIAfkAm0NYH6fQzbSu2XYSOxfDOfBUJT9LPw+ARezshHnHpY3y?=
+ =?us-ascii?Q?MH8pbnv2tZV5LT1oXyeg5fpJlgKFeSnnQzZ+uQOv1HA8FQbM6y/b2S96qJF0?=
+ =?us-ascii?Q?QauKIH6ZlrYFGDypGHOUH2ikYnTXxMc=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR21MB3025.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 67ea02be-8e0d-483d-e29c-08da1eff423b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Apr 2022 16:44:50.2711
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lvr/w26F2JAZijcwZwDTuIqfcpfZNejgtWT4Bq5lnhsJcJ0yUHbcIM1SRQWPuiCZph7XGjs/mv1FQmT/M5GZJDGjptUkfh9jIYpf0+AkTYU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR21MB2068
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Silicon Mitus SM5703 is a multi-function device, meant to be
-used in mobile devices. It has several modules: LDO, BUCK regulators,
-charger circuit, flash LED driver, a fuel gauge for monitoring the battery
-and a MUIC USB switcher. The MUIC and fuel gauge parts are separate in that
-they use separate i2c lines to communicate with the device, while charger
-circuit, LED driver and regulators are on the main i2c line the device is
-controlled with.
+From: Andrea Parri <parri.andrea@gmail.com> Sent: Friday, April 15, 2022 9:=
+28 AM
+>=20
+> On Fri, Apr 15, 2022 at 09:00:31AM +0200, Andrea Parri wrote:
+> > > > @@ -470,7 +471,6 @@ struct vmpacket_descriptor *hv_pkt_iter_first_r=
+aw(struct
+> > > > vmbus_channel *channel)
+> > > >
+> > > >  	return (struct vmpacket_descriptor *)(hv_get_ring_buffer(rbi) + r=
+bi-
+> > > > >priv_read_index);
+> > > >  }
+> > > > -EXPORT_SYMBOL_GPL(hv_pkt_iter_first_raw);
+> > >
+> > > Does hv_pkt_iter_first_raw() need to be retained at all as a
+> > > separate function?  I think after these changes, the only caller
+> > > is hv_pkt_iter_first(), in which case the code could just go
+> > > inline in hv_pkt_iter_first().  Doing that combining would
+> > > also allow the elimination of the duplicate call to
+> > > hv_pkt_iter_avail().
+>=20
+> Back to this, can you clarify what you mean by "the elimination of..."?
+> After moving the function "inline", hv_pkt_iter_avail() would be called
+> in to check for a non-NULL descriptor (in the inline function) and later
+> in the computation of bytes_avail.
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- MAINTAINERS                |   8 +++
- drivers/mfd/Kconfig        |  12 +++++
- drivers/mfd/Makefile       |   1 +
- drivers/mfd/sm5703.c       |  81 ++++++++++++++++++++++++++++
- include/linux/mfd/sm5703.h | 105 +++++++++++++++++++++++++++++++++++++
- 5 files changed, 207 insertions(+)
- create mode 100644 drivers/mfd/sm5703.c
- create mode 100644 include/linux/mfd/sm5703.h
+I was thinking something like this:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2a83ac6bfa4d..d3eef171eb8c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17886,6 +17886,14 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev
- F:	include/linux/srcu*.h
- F:	kernel/rcu/srcu*.c
- 
-+SM5703 MFD DRIVER
-+M:	Markuss Broks <markuss.broks@gmail.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
-+F:	Documentation/devicetree/bindings/regulator/siliconmitus,sm5703-regulator.yaml
-+F:	drivers/mfd/sm5703.c
-+F:	drivers/regulator/sm5703-regulator.c
-+
- SMACK SECURITY MODULE
- M:	Casey Schaufler <casey@schaufler-ca.com>
- L:	linux-security-module@vger.kernel.org
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index e0d2fcb10a0c..e553a8db24c2 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -1223,6 +1223,18 @@ config MFD_SM501
- 	  interface. The device may be connected by PCI or local bus with
- 	  varying functions enabled.
- 
-+config MFD_SM5703
-+	tristate "Silicon Mitus SM5703 MFD"
-+	depends on I2C
-+	select MFD_CORE
-+	select REGMAP_I2C
-+	help
-+	  This is the core driver for the Silicon Mitus SM5703 multi-function
-+	  device. This device is meant to be used in phones and it has numerous
-+	  modules, including LED controller, regulators, fuel gauge, MUIC and
-+	  charger circuit. It also support muxing a serial interface over USB
-+	  data lines.
-+
- config MFD_SM501_GPIO
- 	bool "Export GPIO via GPIO layer"
- 	depends on MFD_SM501 && GPIOLIB
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index df1ecc4a4c95..3278069d3461 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -275,3 +275,4 @@ rsmu-i2c-objs			:= rsmu_core.o rsmu_i2c.o
- rsmu-spi-objs			:= rsmu_core.o rsmu_spi.o
- obj-$(CONFIG_MFD_RSMU_I2C)	+= rsmu-i2c.o
- obj-$(CONFIG_MFD_RSMU_SPI)	+= rsmu-spi.o
-+obj-$(CONFIG_MFD_SM5703)	+= sm5703.o
-diff --git a/drivers/mfd/sm5703.c b/drivers/mfd/sm5703.c
-new file mode 100644
-index 000000000000..0eb6f257f109
---- /dev/null
-+++ b/drivers/mfd/sm5703.c
-@@ -0,0 +1,81 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <linux/err.h>
-+#include <linux/delay.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/i2c.h>
-+#include <linux/mfd/core.h>
-+#include <linux/mfd/sm5703.h>
-+#include <linux/module.h>
-+#include <linux/of_device.h>
-+#include <linux/regmap.h>
-+
-+static const struct mfd_cell sm5703_devs[] = {
-+	{
-+		.name = "sm5703-regulator",
-+		.of_compatible = "siliconmitus,sm5703-regulator",
-+	},
-+};
-+
-+static const struct regmap_config sm5703_regmap_config = {
-+	.reg_bits	= 8,
-+	.val_bits	= 8,
-+};
-+
-+static int sm5703_i2c_probe(struct i2c_client *i2c,
-+			    const struct i2c_device_id *id)
-+{
-+	struct sm5703_dev *sm5703;
-+	struct device *dev = &i2c->dev;
-+	unsigned int dev_id;
-+	int ret;
-+
-+	sm5703 = devm_kzalloc(dev, sizeof(*sm5703), GFP_KERNEL);
-+	if (!sm5703)
-+		return -ENOMEM;
-+
-+	i2c_set_clientdata(i2c, sm5703);
-+	sm5703->dev = dev;
-+
-+	sm5703->regmap = devm_regmap_init_i2c(i2c, &sm5703_regmap_config);
-+	if (IS_ERR(sm5703->regmap))
-+		return dev_err_probe(dev, PTR_ERR(sm5703->regmap),
-+				     "Failed to allocate the register map\n");
-+
-+	sm5703->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
-+	if (IS_ERR(sm5703->reset_gpio))
-+		return dev_err_probe(dev, PTR_ERR(sm5703->reset_gpio), "Cannot get reset GPIO\n");
-+
-+	gpiod_set_value_cansleep(sm5703->reset_gpio, 1);
-+	msleep(20);
-+
-+	ret = regmap_read(sm5703->regmap, SM5703_DEVICE_ID, &dev_id);
-+	if (ret)
-+		return dev_err_probe(dev, -ENODEV, "Device not found\n");
-+
-+	ret = devm_mfd_add_devices(sm5703->dev, -1, sm5703_devs,
-+				   ARRAY_SIZE(sm5703_devs), NULL, 0, NULL);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to add child devices\n");
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id sm5703_of_match[] = {
-+	{ .compatible = "siliconmitus,sm5703-mfd", },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, sm5703_of_match);
-+
-+static struct i2c_driver sm5703_driver = {
-+	.driver = {
-+		.name = "sm5703",
-+		.of_match_table = sm5703_of_match,
-+	},
-+	.probe = sm5703_i2c_probe,
-+};
-+module_i2c_driver(sm5703_driver);
-+
-+MODULE_DESCRIPTION("Silicon Mitus SM5703 multi-function device driver");
-+MODULE_AUTHOR("Markuss Broks <markuss.broks@gmail.com>");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/mfd/sm5703.h b/include/linux/mfd/sm5703.h
-new file mode 100644
-index 000000000000..c62affa0d3f1
---- /dev/null
-+++ b/include/linux/mfd/sm5703.h
-@@ -0,0 +1,105 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+
-+#ifndef _SM5703_H
-+#define _SM5703_H
-+
-+struct sm5703_dev {
-+	struct device *dev;
-+	struct regmap *regmap;
-+	struct gpio_desc *reset_gpio;
-+};
-+
-+// Regulator-related defines
-+
-+#define SM5703_REG_LDO1				0x1A
-+#define SM5703_REG_LDO2				0x1B
-+#define SM5703_REG_LDO3				0x1C
-+#define SM5703_LDO_EN				BIT(3)
-+#define SM5703_LDO_VOLT_MASK			0x7
-+#define SM5703_BUCK_VOLT_MASK			0x1F
-+#define SM5703_REG_USBLDO12			0x1C
-+#define SM5703_REG_EN_USBLDO1			BIT(6)
-+#define SM5703_REG_EN_USBLDO2			BIT(7)
-+#define SM5703_REG_BUCK				0x1D
-+#define SM5703_REG_EN_BUCK			BIT(6)
-+#define SM5703_USBLDO_MICROVOLT			4800000
-+#define SM5703_VBUS_MICROVOLT			5000000
-+
-+// Fuel-Gauge-related defines
-+
-+#define SM5703_FG_REG_DEVICE_ID			0x00
-+#define SM5703_FG_REG_CNTL			0x01
-+#define SM5703_FG_REG_INTFG			0x02
-+#define SM5703_FG_REG_INTFG_MASK		0x03
-+#define SM5703_FG_REG_STATUS			0x04
-+#define SM5703_FG_REG_SOC			0x05
-+#define SM5703_FG_REG_OCV			0x06
-+#define SM5703_FG_REG_VOLTAGE			0x07
-+#define SM5703_FG_REG_CURRENT			0x08
-+#define SM5703_FG_REG_TEMPERATURE		0x09
-+#define SM5703_FG_REG_CURRENT_EST		0x85
-+#define SM5703_FG_REG_FG_OP_STATUS		0x10
-+
-+// Flash LED driver-related defines
-+
-+#define SM5703_FLEDCNTL1			0x14
-+#define SM5703_FLEDCNTL2			0x15
-+#define SM5703_FLEDCNTL3			0x16
-+#define SM5703_FLEDCNTL4			0x17
-+#define SM5703_FLEDCNTL5			0x18
-+#define SM5703_FLEDCNTL6			0x19
-+
-+#define SM5703_FLEDEN_MASK			0x03
-+#define SM5703_FLEDEN_DISABLE			0x00
-+#define SM5703_FLEDEN_MOVIE_MODE		0x01
-+#define SM5703_FLEDEN_FLASH_MODE		0x02
-+#define SM5703_FLEDEN_EXTERNAL			0x03
-+
-+#define SM5703_IFLED_MASK			0x1F
-+#define SM5703_IMLED_MASK			0x1F
-+
-+// Charger-related, IRQ and device ID defines
-+
-+#define SM5703_REG_CNTL				0x0C
-+#define SM5703_VBUSCNTL				0x0D
-+#define SM5703_CHGCNTL1				0x0E
-+#define SM5703_CHGCNTL2				0x0F
-+#define SM5703_CHGCNTL3				0x10
-+#define SM5703_CHGCNTL4				0x11
-+#define SM5703_CHGCNTL5				0x12
-+#define SM5703_CHGCNTL6				0x13
-+#define SM5703_OTGCURRENTCNTL			0x60
-+#define SM5703_Q3LIMITCNTL			0x66
-+#define SM5703_DEVICE_ID			0x1E
-+#define SM5703_OPERATION_MODE			0x07
-+#define SM5703_OPERATION_MODE_MASK		0x07
-+
-+#define SM5703_OPERATION_MODE_SUSPEND		0x00
-+#define SM5703_OPERATION_MODE_CHARGING_OFF	0x04
-+#define SM5703_OPERATION_MODE_CHARGING_ON	0x05
-+#define SM5703_OPERATION_MODE_FLASH_BOOST_MODE	0x06
-+#define SM5703_OPERATION_MODE_USB_OTG_MODE	0x07
-+
-+#define SM5703_BSTOUT				0x0F
-+#define SM5703_BSTOUT_MASK			0x0F
-+#define SM5703_BSTOUT_SHIFT			0
-+
-+#define SM5703_BSTOUT_4P5			0x05
-+#define SM5703_BSTOUT_5P0			0x0A
-+#define SM5703_BSTOUT_5P1			0x0B
-+
-+#define SM5703_IRQ_STATUS1			0x08
-+#define SM5703_IRQ_STATUS2			0x09
-+#define SM5703_IRQ_STATUS3			0x0A
-+#define SM5703_IRQ_STATUS4			0x0B
-+#define SM5703_IRQ_STATUS5			0x6B
-+
-+#define SM5703_STATUS1_OTGFAIL			0x80
-+#define SM5703_STATUS3_DONE			0x08
-+#define SM5703_STATUS3_TOPOFF			0x04
-+#define SM5703_STATUS3_CHGON			0x01
-+#define SM5703_STATUS5_VBUSOVP			0x80
-+#define SM5703_STATUS5_VBUSUVLO			0x40
-+#define SM5703_STATUS5_VBUSOK			0x20
-+
-+#endif
--- 
-2.35.1
+bytes_avail =3D hv_pkt_iter_avail(rbi);
+if (bytes_avail < sizeof(struct vmpacket_descriptor))
+	return NULL;
+bytes_avail =3D min(rbi->pkt_buffer_size, bytes_avail);
+
+desc =3D (struct vmpacket_descriptor *)(hv_get_ring_buffer(rbi) + rbi->priv=
+_read_index);
+
+And for that matter, hv_pkt_iter_avail() is now only called in one place.
+It's a judgment call whether to keep it as a separate helper function vs.
+inlining it in hv_pkt_iter_first() as well.  I'm OK either way.
+
+
+Michael
+
 
