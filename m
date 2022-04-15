@@ -2,144 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E51C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:41:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2280C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355900AbiDOQoP (ORCPT
+        id S1355901AbiDOQqe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 12:44:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43998 "EHLO
+        Fri, 15 Apr 2022 12:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237892AbiDOQoN (ORCPT
+        with ESMTP id S1355902AbiDOQqc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 12:44:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E525DAFE0;
-        Fri, 15 Apr 2022 09:41:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6944B807E7;
-        Fri, 15 Apr 2022 16:41:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 841CDC385A5;
-        Fri, 15 Apr 2022 16:41:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650040901;
-        bh=XITfwtrWiieCoPbYwSITipPQbv166TbyJPrWPrM5rDc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=h+76pOD44SMOeceROMgajM3K40gLojwH6erAiXPhSENdIKQfCtBnuCTOPALpxzClz
-         qPTt2IUKFncH4RM2J4WJ1N0RLicBRABf6HqDTYJLTT4XZmoo1+qdiMISRXhmKykT0L
-         DbpcFDllr3mtKb4ONsdU5uhh/xcMXL1Ziwhpf0juknwX4VRpxpGJCcTm6XznENMME/
-         IUeMQ6OweLJnx//Tr3ShseTdcSCfvC/xNbH5ubuWfSRPRKlGY/9QdTue4dDlB2U+9h
-         G6wR/HmVFTlINYZIJ9rYKqHiWLnSGCD0I+v8qxIho66+aCTHEkKHVeiIvtukVlfVKu
-         K422AcxsZaPyw==
-Date:   Fri, 15 Apr 2022 17:49:38 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andrea Merello <andrea.merello@gmail.com>
-Cc:     mchehab+huawei@kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        lars@metafoo.de, robh+dt@kernel.org, andy.shevchenko@gmail.com,
-        matt.ranostay@konsulko.com, ardeleanalex@gmail.com,
-        jacopo@jmondi.org, Andrea Merello <andrea.merello@iit.it>
-Subject: Re: [v4 13/14] iio: imu: add BNO055 I2C driver
-Message-ID: <20220415174938.51c81082@jic23-huawei>
-In-Reply-To: <20220415130005.85879-14-andrea.merello@gmail.com>
-References: <20220415130005.85879-1-andrea.merello@gmail.com>
-        <20220415130005.85879-14-andrea.merello@gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Fri, 15 Apr 2022 12:46:32 -0400
+X-Greylist: delayed 3352 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Apr 2022 09:44:02 PDT
+Received: from 3.mo550.mail-out.ovh.net (3.mo550.mail-out.ovh.net [46.105.60.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261F4DB4AB
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 09:44:01 -0700 (PDT)
+Received: from player760.ha.ovh.net (unknown [10.109.156.39])
+        by mo550.mail-out.ovh.net (Postfix) with ESMTP id D8AFE24077
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 16:06:38 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player760.ha.ovh.net (Postfix) with ESMTPSA id 489F02986A8B4;
+        Fri, 15 Apr 2022 16:06:34 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-101G0043b24d311-889e-4edd-ac59-8ff49a2d3389,
+                    77125C2C2681624F8512B69FC7A1C9B53E6602B4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH v2 0/7] ASoC: remaining i2c_match_id i2c probe changes
+Date:   Fri, 15 Apr 2022 18:06:06 +0200
+Message-Id: <20220415160613.148882-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 10956694945620592262
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelhedgleekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejiedtrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 15 Apr 2022 15:00:04 +0200
-Andrea Merello <andrea.merello@gmail.com> wrote:
+This series covers all the remaining changes to migrate
+sound/soc/codecs i2c probes to probe_new, where the const struct
+i2c_client * argument is still used. Instead of relying on the
+parameter passed in, i2c_match_id is used instead.
 
-> From: Andrea Merello <andrea.merello@iit.it>
-> 
-> This path adds an I2C driver for communicating to a BNO055 IMU via I2C
-> bus and it enables the BNO055 core driver to work in this scenario.
-> 
-> Signed-off-by: Andrea Merello <andrea.merello@iit.it>
-One trivial comment inline.
+With this set of patches, all the sound/soc/codecs i2c probes use the
+new probe definition.
 
-...
-> diff --git a/drivers/iio/imu/bno055/Makefile b/drivers/iio/imu/bno055/Makefile
-> index 20128b1a1afc..20f911aad94b 100644
-> --- a/drivers/iio/imu/bno055/Makefile
-> +++ b/drivers/iio/imu/bno055/Makefile
-> @@ -2,5 +2,6 @@
->  
->  obj-$(CONFIG_BOSCH_BNO055_IIO) += bno055.o
->  obj-$(CONFIG_BOSCH_BNO055_SERIAL) += bno055_ser.o
-> +obj-$(CONFIG_BOSCH_BNO055_I2C) += bno055_i2c.o
->  
->  CFLAGS_bno055_ser.o := -I$(src)
-> diff --git a/drivers/iio/imu/bno055/bno055_i2c.c b/drivers/iio/imu/bno055/bno055_i2c.c
-> new file mode 100644
-> index 000000000000..d59bb4e661be
-> --- /dev/null
-> +++ b/drivers/iio/imu/bno055/bno055_i2c.c
-> @@ -0,0 +1,56 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Support for I2C-interfaced Bosch BNO055 IMU.
-> + *
-> + * Copyright (C) 2021-2022 Istituto Italiano di Tecnologia
-> + * Electronic Design Laboratory
-> + * Written by Andrea Merello <andrea.merello@iit.it>
-> + */
-> +
-> +#include <linux/i2c.h>
-> +#include <linux/module.h>
-Please add an include of
-mod_devicetable.h for the struct of_device_id etc definitions
+Changes since v1: two missing files were added.
 
-> +#include <linux/regmap.h>
-> +
-> +#include "bno055.h"
-> +
-> +#define BNO055_I2C_XFER_BURST_BREAK_THRESHOLD 3 /* FIXME */
-> +
-> +static int bno055_i2c_probe(struct i2c_client *client)
-> +{
-> +	struct regmap *regmap;
-> +
-> +	regmap = devm_regmap_init_i2c(client, &bno055_regmap_config);
-> +	if (IS_ERR(regmap))
-> +		return dev_err_probe(&client->dev, PTR_ERR(regmap),
-> +				     "Unable to init register map");
-> +
-> +	return bno055_probe(&client->dev, regmap,
-> +			    BNO055_I2C_XFER_BURST_BREAK_THRESHOLD, true);
-> +}
-> +
-> +static const struct i2c_device_id bno055_i2c_id[] = {
-> +	{"bno055", 0},
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, bno055_i2c_id);
-> +
-> +static const struct of_device_id __maybe_unused bno055_i2c_of_match[] = {
-> +	{ .compatible = "bosch,bno055" },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, bno055_i2c_of_match);
-> +
-> +static struct i2c_driver bno055_driver = {
-> +	.driver = {
-> +		.name = "bno055-i2c",
-> +		.of_match_table = of_match_ptr(bno055_i2c_of_match),
-> +	},
-> +	.probe_new = bno055_i2c_probe,
-> +	.id_table = bno055_i2c_id,
-> +};
-> +module_i2c_driver(bno055_driver);
-> +
-> +MODULE_AUTHOR("Andrea Merello");
-> +MODULE_DESCRIPTION("Bosch BNO055 I2C interface");
-> +MODULE_IMPORT_NS(IIO_BNO055);
-> +MODULE_LICENSE("GPL");
+Stephen Kitt (7):
+  ASoC: ak*: use i2c_match_id and simple i2c probe
+  ASoC: alc56*: use i2c_match_id and simple i2c probe
+  ASoC: max980*: use i2c_match_id and simple i2c probe
+  ASoC: pcm186x: use i2c_match_id and simple i2c probe
+  ASoC: tas*: use i2c_match_id and simple i2c probe
+  ASoC: tlv320*: use i2c_match_id and simple i2c probe
+  ASoC: tpa6130: use i2c_match_id and simple i2c probe
+
+ sound/soc/codecs/ak4613.c            | 10 +++++----
+ sound/soc/codecs/ak4642.c            |  8 ++++---
+ sound/soc/codecs/alc5623.c           | 24 +++++++++++----------
+ sound/soc/codecs/alc5632.c           | 20 +++++++++--------
+ sound/soc/codecs/max98088.c          | 21 +++++++++---------
+ sound/soc/codecs/max98090.c          | 23 ++++++++++----------
+ sound/soc/codecs/max98095.c          | 19 +++++++++--------
+ sound/soc/codecs/pcm186x-i2c.c       | 24 ++++++++++-----------
+ sound/soc/codecs/tas2562.c           | 25 +++++++++++-----------
+ sound/soc/codecs/tas571x.c           | 11 ++++++----
+ sound/soc/codecs/tas5720.c           | 21 +++++++++---------
+ sound/soc/codecs/tlv320adc3xxx.c     | 21 +++++++++---------
+ sound/soc/codecs/tlv320aic31xx.c     | 32 ++++++++++++++--------------
+ sound/soc/codecs/tlv320aic32x4-i2c.c | 11 ++++++----
+ sound/soc/codecs/tlv320aic3x-i2c.c   | 25 +++++++++++-----------
+ sound/soc/codecs/tpa6130a2.c         | 19 +++++++++--------
+ 16 files changed, 168 insertions(+), 146 deletions(-)
+
+
+base-commit: 5d763a740e5b24e4a2ca04317255e7e941876338
+-- 
+2.27.0
 
