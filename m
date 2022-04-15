@@ -2,464 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A115C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 06:02:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47BF4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 06:04:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350572AbiDOGCm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 02:02:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48928 "EHLO
+        id S238041AbiDOGGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 02:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350202AbiDOGB7 (ORCPT
+        with ESMTP id S230295AbiDOGGg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 02:01:59 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB569BC31;
-        Thu, 14 Apr 2022 22:59:30 -0700 (PDT)
-X-UUID: accbd458eeeb4af3872c65f2786997c5-20220415
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:bce763e2-326a-4d72-b0fc-0fe29f6ec5d2,OB:0,LO
-        B:60,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:95
-X-CID-INFO: VERSION:1.1.4,REQID:bce763e2-326a-4d72-b0fc-0fe29f6ec5d2,OB:0,LOB:
-        60,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:95
-X-CID-META: VersionHash:faefae9,CLOUDID:38143aa9-d103-4e36-82b9-b0e86991b3df,C
-        OID:FAIL,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil,Q
-        S:0,BEC:nil
-X-UUID: accbd458eeeb4af3872c65f2786997c5-20220415
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 614829644; Fri, 15 Apr 2022 13:59:21 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 15 Apr 2022 13:59:21 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 15 Apr
- 2022 13:59:20 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 15 Apr 2022 13:59:20 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <matthias.bgg@gmail.com>
-CC:     <jia-wei.chang@mediatek.com>, <roger.lu@mediatek.com>,
-        <hsinyi@google.com>, <khilman@baylibre.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        "Andrew-sh . Cheng" <andrew-sh.cheng@mediatek.com>
-Subject: [PATCH V3 13/15] arm64: dts: mediatek: Add opp table and clock property for MT8183 cpufreq
-Date:   Fri, 15 Apr 2022 13:59:14 +0800
-Message-ID: <20220415055916.28350-14-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220415055916.28350-1-rex-bc.chen@mediatek.com>
-References: <20220415055916.28350-1-rex-bc.chen@mediatek.com>
+        Fri, 15 Apr 2022 02:06:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A65A94CA
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 23:04:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BB6161EF4
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 06:04:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1625C385AB
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 06:04:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650002647;
+        bh=CfFBFrsOrM1D6QuDY5JL6c2VKraxHdnJ8iQxVuMosgw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=rQq1sZ4J1sg22E9oqdhg4EJn8neJLzquXI+ZjaLeifOERti0Wc+sHK1ca9AEuAedm
+         amy5K2gapC1d/YsBm8lKYZa4FJlvxfvg2uMYXZW+FECTSlN5rRK7n46i4eYJiT8dUP
+         NtiYz25I/4SLS+ajSx8TMqQAykzYQpMyTAcuLWze4mw13G0A4DVOegWZUDW0M2S/tI
+         uzeS54JMWY8wDnTklfomrz11JZpKfoakRJTc9X4u3F2pgMPd0kcfv1uydJuck6C97z
+         CHIcWL2MuEdFh32B9IwZ2OpEt+7syLJujcZiPCe8uAwUQ8XxGWdZKvFcfl9sbse5l2
+         wrEusSELhVbcw==
+Received: by mail-oi1-f178.google.com with SMTP id w127so7600737oig.10
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 23:04:07 -0700 (PDT)
+X-Gm-Message-State: AOAM5320qMOarSF12xHRn9dWtAT1WnQ1WfI1AJpL9FrsboACXl1csYwS
+        cdohbWdmB2Q0a/EoG4Ch57ynRv1FrjZqQHiHqzM=
+X-Google-Smtp-Source: ABdhPJz2xwpnXQaQcae68WnDv78hot7NwSWZe+t2TtHgLprVUTWzxwQZi9+tdzNS0HtyfFS5Ou/0nwNdizG5ZHLSuiQ=
+X-Received: by 2002:a05:6808:1596:b0:2f7:5d89:eec7 with SMTP id
+ t22-20020a056808159600b002f75d89eec7mr1017334oiw.228.1650002646826; Thu, 14
+ Apr 2022 23:04:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <Yk/6ts5sVDMDpKj3@arm.com> <Yk/8QExHlggU8KgC@gondor.apana.org.au>
+ <YlVHSvkyUBXZPUr2@arm.com> <YlVJKjXkcHqkwyt4@gondor.apana.org.au>
+ <YlVOTsaTVkBOxthG@arm.com> <YlVSBuEqMt2S1Gi6@gondor.apana.org.au>
+ <YlVxGAHHD/j6lW3c@arm.com> <CAMj1kXGCR833rqKOetj8ykQ8XtDCWbszJYVtVKvLpDLWnM=B5w@mail.gmail.com>
+ <YlaOIbSA7B/G9222@arm.com> <CAHk-=wjr9-n7vHiVdm-L-KX4kXWyY45++8jenFA1QV5oc=yhZg@mail.gmail.com>
+ <Ylh61CCMkESmurIp@arm.com> <CAHk-=wjwupOLq3xh8z02CpXe8-=Lb_z0kXXQJYQ5YaQPpi3MiA@mail.gmail.com>
+In-Reply-To: <CAHk-=wjwupOLq3xh8z02CpXe8-=Lb_z0kXXQJYQ5YaQPpi3MiA@mail.gmail.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Fri, 15 Apr 2022 08:03:54 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXGA4NH-Kg6rWRq2kUAsefwrOGUqTp47aFQTeaQoSB_1Cg@mail.gmail.com>
+Message-ID: <CAMj1kXGA4NH-Kg6rWRq2kUAsefwrOGUqTp47aFQTeaQoSB_1Cg@mail.gmail.com>
+Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-- Add cpufreq opp table.
-- Add MediaTek cci opp table.
-- Add property of opp table and clock fro cpufreq.
+On Fri, 15 Apr 2022 at 00:26, Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Thu, Apr 14, 2022 at 12:49 PM Catalin Marinas
+> <catalin.marinas@arm.com> wrote:
+> >
+> > It's a lot worse, ARCH_KMALLOC_MINALIGN is currently 128 bytes on arm64.
+> > I want to at least get it down to 64 with this series while preserving
+> > the current kmalloc() semantics.
+>
+> So here's a thought - maybe we could do the reverse of GFP_DMA, and
+> add a flag to the places that want small allocations and know they
+> don't need DMA?
+>
+> Because even 64 bytes is _huge_ for those small allocations. And 128
+> bytes is just insane.
+>
+> Maybe we don't have a ton of them, but I just checked my desktop, and
+> if my laptop had 17k 8-byte allocation, on my desktop it's currently
+> sitting at 43k of them. And I've got a lot of 16- and 32-byte ones
+> too:
+>
+>   kmalloc-32         51529  51712     32  128    1 :
+>   kmalloc-16         45056  45056     16  256    1 :
+>   kmalloc-8          43008  43008      8  512    1 :
+>
+> Don't ask me what they are. It's probably fairly easy to find out, and
+> it's probably something silly like sysfs private pointer data or
+> whatever.
+>
+> If I did my math right, with a 128-byte minimum allocation, that is
+> 16MB of wasted memory.
+>
+> Yeah, yeah, I've got 64GB or RAM in this thing, and there are things
+> that take a lot more memory than the above (mem_map etc), and 64MB is
+> peanuts at just 0.1% of RAM.
+>
 
-Signed-off-by: Andrew-sh.Cheng <andrew-sh.cheng@mediatek.com>
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/mt8183-evb.dts |  32 +++
- arch/arm64/boot/dts/mediatek/mt8183.dtsi    | 270 ++++++++++++++++++++
- 2 files changed, 302 insertions(+)
+Actually, I think the impact on D-cache efficiency is a much bigger
+concern, although I don't have any data to back that up. On arm64,
+every 8 byte allocation takes up an entire cacheline, pushing out
+other data that we could meaningfully keep there. And the doubling to
+128 that is unnecessary on most arm64 systems probably has an
+additional negative effect, as it means those allocations are heavily
+skewed to use even indexes into the cache sets, causing extra
+contention.
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-index f3fd3cca23e9..8953dbf84f3e 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8183-evb.dts
-@@ -412,6 +412,38 @@
- 
- };
- 
-+&cpu0 {
-+	proc-supply = <&mt6358_vproc12_reg>;
-+};
-+
-+&cpu1 {
-+	proc-supply = <&mt6358_vproc12_reg>;
-+};
-+
-+&cpu2 {
-+	proc-supply = <&mt6358_vproc12_reg>;
-+};
-+
-+&cpu3 {
-+	proc-supply = <&mt6358_vproc12_reg>;
-+};
-+
-+&cpu4 {
-+	proc-supply = <&mt6358_vproc11_reg>;
-+};
-+
-+&cpu5 {
-+	proc-supply = <&mt6358_vproc11_reg>;
-+};
-+
-+&cpu6 {
-+	proc-supply = <&mt6358_vproc11_reg>;
-+};
-+
-+&cpu7 {
-+	proc-supply = <&mt6358_vproc11_reg>;
-+};
-+
- &uart0 {
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-index 4b08691ed39e..4ae3305d16d2 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -42,6 +42,244 @@
- 		rdma1 = &rdma1;
- 	};
- 
-+	cluster0_opp: cluster_opp_table0 {
-+		compatible = "operating-points-v2";
-+		opp-shared;
-+		opp0_00 {
-+			opp-hz = /bits/ 64 <793000000>;
-+			opp-microvolt = <650000>;
-+			required-opps = <&opp2_00>;
-+		};
-+		opp0_01 {
-+			opp-hz = /bits/ 64 <910000000>;
-+			opp-microvolt = <687500>;
-+			required-opps = <&opp2_01>;
-+		};
-+		opp0_02 {
-+			opp-hz = /bits/ 64 <1014000000>;
-+			opp-microvolt = <718750>;
-+			required-opps = <&opp2_02>;
-+		};
-+		opp0_03 {
-+			opp-hz = /bits/ 64 <1131000000>;
-+			opp-microvolt = <756250>;
-+			required-opps = <&opp2_03>;
-+		};
-+		opp0_04 {
-+			opp-hz = /bits/ 64 <1248000000>;
-+			opp-microvolt = <800000>;
-+			required-opps = <&opp2_04>;
-+		};
-+		opp0_05 {
-+			opp-hz = /bits/ 64 <1326000000>;
-+			opp-microvolt = <818750>;
-+			required-opps = <&opp2_05>;
-+		};
-+		opp0_06 {
-+			opp-hz = /bits/ 64 <1417000000>;
-+			opp-microvolt = <850000>;
-+			required-opps = <&opp2_06>;
-+		};
-+		opp0_07 {
-+			opp-hz = /bits/ 64 <1508000000>;
-+			opp-microvolt = <868750>;
-+			required-opps = <&opp2_07>;
-+		};
-+		opp0_08 {
-+			opp-hz = /bits/ 64 <1586000000>;
-+			opp-microvolt = <893750>;
-+			required-opps = <&opp2_08>;
-+		};
-+		opp0_09 {
-+			opp-hz = /bits/ 64 <1625000000>;
-+			opp-microvolt = <906250>;
-+			required-opps = <&opp2_09>;
-+		};
-+		opp0_10 {
-+			opp-hz = /bits/ 64 <1677000000>;
-+			opp-microvolt = <931250>;
-+			required-opps = <&opp2_10>;
-+		};
-+		opp0_11 {
-+			opp-hz = /bits/ 64 <1716000000>;
-+			opp-microvolt = <943750>;
-+			required-opps = <&opp2_11>;
-+		};
-+		opp0_12 {
-+			opp-hz = /bits/ 64 <1781000000>;
-+			opp-microvolt = <975000>;
-+			required-opps = <&opp2_12>;
-+		};
-+		opp0_13 {
-+			opp-hz = /bits/ 64 <1846000000>;
-+			opp-microvolt = <1000000>;
-+			required-opps = <&opp2_13>;
-+		};
-+		opp0_14 {
-+			opp-hz = /bits/ 64 <1924000000>;
-+			opp-microvolt = <1025000>;
-+			required-opps = <&opp2_14>;
-+		};
-+		opp0_15 {
-+			opp-hz = /bits/ 64 <1989000000>;
-+			opp-microvolt = <1050000>;
-+			required-opps = <&opp2_15>;
-+		};	};
-+
-+	cluster1_opp: cluster_opp_table1 {
-+		compatible = "operating-points-v2";
-+		opp-shared;
-+		opp1_00 {
-+			opp-hz = /bits/ 64 <793000000>;
-+			opp-microvolt = <700000>;
-+			required-opps = <&opp2_00>;
-+		};
-+		opp1_01 {
-+			opp-hz = /bits/ 64 <910000000>;
-+			opp-microvolt = <725000>;
-+			required-opps = <&opp2_01>;
-+		};
-+		opp1_02 {
-+			opp-hz = /bits/ 64 <1014000000>;
-+			opp-microvolt = <750000>;
-+			required-opps = <&opp2_02>;
-+		};
-+		opp1_03 {
-+			opp-hz = /bits/ 64 <1131000000>;
-+			opp-microvolt = <775000>;
-+			required-opps = <&opp2_03>;
-+		};
-+		opp1_04 {
-+			opp-hz = /bits/ 64 <1248000000>;
-+			opp-microvolt = <800000>;
-+			required-opps = <&opp2_04>;
-+		};
-+		opp1_05 {
-+			opp-hz = /bits/ 64 <1326000000>;
-+			opp-microvolt = <825000>;
-+			required-opps = <&opp2_05>;
-+		};
-+		opp1_06 {
-+			opp-hz = /bits/ 64 <1417000000>;
-+			opp-microvolt = <850000>;
-+			required-opps = <&opp2_06>;
-+		};
-+		opp1_07 {
-+			opp-hz = /bits/ 64 <1508000000>;
-+			opp-microvolt = <875000>;
-+			required-opps = <&opp2_07>;
-+		};
-+		opp1_08 {
-+			opp-hz = /bits/ 64 <1586000000>;
-+			opp-microvolt = <900000>;
-+			required-opps = <&opp2_08>;
-+		};
-+		opp1_09 {
-+			opp-hz = /bits/ 64 <1625000000>;
-+			opp-microvolt = <912500>;
-+			required-opps = <&opp2_09>;
-+		};
-+		opp1_10 {
-+			opp-hz = /bits/ 64 <1677000000>;
-+			opp-microvolt = <931250>;
-+			required-opps = <&opp2_10>;
-+		};
-+		opp1_11 {
-+			opp-hz = /bits/ 64 <1716000000>;
-+			opp-microvolt = <950000>;
-+			required-opps = <&opp2_11>;
-+		};
-+		opp1_12 {
-+			opp-hz = /bits/ 64 <1781000000>;
-+			opp-microvolt = <975000>;
-+			required-opps = <&opp2_12>;
-+		};
-+		opp1_13 {
-+			opp-hz = /bits/ 64 <1846000000>;
-+			opp-microvolt = <1000000>;
-+			required-opps = <&opp2_13>;
-+		};
-+		opp1_14 {
-+			opp-hz = /bits/ 64 <1924000000>;
-+			opp-microvolt = <1025000>;
-+			required-opps = <&opp2_14>;
-+		};
-+		opp1_15 {
-+			opp-hz = /bits/ 64 <1989000000>;
-+			opp-microvolt = <1050000>;
-+			required-opps = <&opp2_15>;
-+		};
-+	};
-+
-+	cci_opp: opp_table2 {
-+		compatible = "operating-points-v2";
-+		opp-shared;
-+		opp2_00: opp-273000000 {
-+			opp-hz = /bits/ 64 <273000000>;
-+			opp-microvolt = <650000>;
-+		};
-+		opp2_01: opp-338000000 {
-+			opp-hz = /bits/ 64 <338000000>;
-+			opp-microvolt = <687500>;
-+		};
-+		opp2_02: opp-403000000 {
-+			opp-hz = /bits/ 64 <403000000>;
-+			opp-microvolt = <718750>;
-+		};
-+		opp2_03: opp-463000000 {
-+			opp-hz = /bits/ 64 <463000000>;
-+			opp-microvolt = <756250>;
-+		};
-+		opp2_04: opp-546000000 {
-+			opp-hz = /bits/ 64 <546000000>;
-+			opp-microvolt = <800000>;
-+		};
-+		opp2_05: opp-624000000 {
-+			opp-hz = /bits/ 64 <624000000>;
-+			opp-microvolt = <818750>;
-+		};
-+		opp2_06: opp-689000000 {
-+			opp-hz = /bits/ 64 <689000000>;
-+			opp-microvolt = <850000>;
-+		};
-+		opp2_07: opp-767000000 {
-+			opp-hz = /bits/ 64 <767000000>;
-+			opp-microvolt = <868750>;
-+		};
-+		opp2_08: opp-845000000 {
-+			opp-hz = /bits/ 64 <845000000>;
-+			opp-microvolt = <893750>;
-+		};
-+		opp2_09: opp-871000000 {
-+			opp-hz = /bits/ 64 <871000000>;
-+			opp-microvolt = <906250>;
-+		};
-+		opp2_10: opp-923000000 {
-+			opp-hz = /bits/ 64 <923000000>;
-+			opp-microvolt = <931250>;
-+		};
-+		opp2_11: opp-962000000 {
-+			opp-hz = /bits/ 64 <962000000>;
-+			opp-microvolt = <943750>;
-+		};
-+		opp2_12: opp-1027000000 {
-+			opp-hz = /bits/ 64 <1027000000>;
-+			opp-microvolt = <975000>;
-+		};
-+		opp2_13: opp-1092000000 {
-+			opp-hz = /bits/ 64 <1092000000>;
-+			opp-microvolt = <1000000>;
-+		};
-+		opp2_14: opp-1144000000 {
-+			opp-hz = /bits/ 64 <1144000000>;
-+			opp-microvolt = <1025000>;
-+		};
-+		opp2_15: opp-1196000000 {
-+			opp-hz = /bits/ 64 <1196000000>;
-+			opp-microvolt = <1050000>;
-+		};
-+	};
-+
- 	cpus {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
-@@ -85,6 +323,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <741>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP0>;
-+			clocks = <&mcucfg CLK_MCU_MP0_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
- 			dynamic-power-coefficient = <84>;
- 			#cooling-cells = <2>;
- 		};
-@@ -96,6 +338,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <741>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP0>;
-+			clocks = <&mcucfg CLK_MCU_MP0_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
- 			dynamic-power-coefficient = <84>;
- 			#cooling-cells = <2>;
- 		};
-@@ -107,6 +353,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <741>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP0>;
-+			clocks = <&mcucfg CLK_MCU_MP0_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
- 			dynamic-power-coefficient = <84>;
- 			#cooling-cells = <2>;
- 		};
-@@ -118,6 +368,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <741>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP0>;
-+			clocks = <&mcucfg CLK_MCU_MP0_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
- 			dynamic-power-coefficient = <84>;
- 			#cooling-cells = <2>;
- 		};
-@@ -129,6 +383,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <1024>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP1>;
-+			clocks = <&mcucfg CLK_MCU_MP2_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster1_opp>;
- 			dynamic-power-coefficient = <211>;
- 			#cooling-cells = <2>;
- 		};
-@@ -140,6 +398,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <1024>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP1>;
-+			clocks = <&mcucfg CLK_MCU_MP2_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster1_opp>;
- 			dynamic-power-coefficient = <211>;
- 			#cooling-cells = <2>;
- 		};
-@@ -151,6 +413,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <1024>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP1>;
-+			clocks = <&mcucfg CLK_MCU_MP2_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster1_opp>;
- 			dynamic-power-coefficient = <211>;
- 			#cooling-cells = <2>;
- 		};
-@@ -162,6 +428,10 @@
- 			enable-method = "psci";
- 			capacity-dmips-mhz = <1024>;
- 			cpu-idle-states = <&CPU_SLEEP &CLUSTER_SLEEP1>;
-+			clocks = <&mcucfg CLK_MCU_MP2_SEL>,
-+				 <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster1_opp>;
- 			dynamic-power-coefficient = <211>;
- 			#cooling-cells = <2>;
- 		};
--- 
-2.18.0
+> Maybe nobody cares. But I really feel bad about that kind of egregious
+> waste. The mem_map[] array may be big, it may use 1.5% of the memory I
+> have, but at least it *does* something.
+>
+> And it could be that if I have 150k of those smallish allocations, a
+> server with lots of active users might have millions. Not having
+> looked at where they come from, maybe that isn't the case, but it
+> *might* be.
+>
+> Maybe adding something like a
+>
+>         static int warn_every_1k = 0;
+>         WARN_ON(size < 32 && (1023 & ++warn_every_1k));
+>
+> to kmalloc() would give us a statistical view of "lots of these small
+> allocations" thing, and we could add GFP_NODMA to them. There probably
+> aren't that many places that have those small allocations, and it's
+> certainly safer to annotate "this is not for DMA" than have the
+> requirement that all DMA allocations must be marked.
+>
+> Then just teach kmalloc() something like
+>
+>         align = (gfp_flags & __GFP_NODMA) ? 8 : 128;
+>
+> on arm.
+>
 
+Sounds like a lot of churn as well, tbh. But perhaps there are a few
+hot spots that we can fix that would alleviate the bulk of the issue,
+who knows?
