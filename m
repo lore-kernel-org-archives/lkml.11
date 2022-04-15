@@ -2,171 +2,270 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B50DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ECDCC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 08:03:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351281AbiDOIDl (ORCPT
+        id S1351297AbiDOIGM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 04:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41592 "EHLO
+        Fri, 15 Apr 2022 04:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232094AbiDOIDk (ORCPT
+        with ESMTP id S244921AbiDOIGJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 04:03:40 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E691BE92
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 01:01:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650009672; x=1681545672;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=a8cON1p7+imR+9puTkrCUQtOlIXRgTjtDJOaCsdMXzc=;
-  b=dVd+SD3SPsIiyB8JMuel0IUuwHtyiGWlwqrCn5Ddbg88U/4K0W5v62wT
-   L6WgKeb/BrhJ8a31YcXx2HL6W3fVOB2Xh/fCMJbBbjRaRrFmZ8nGhQ146
-   YRQ93SABjVCPLYb6qwb+xjwSAE2hj0aLVHAYyg40Z72h98fZ9D2TGQt/1
-   MZIMq3bCuDNLutk73Bh+pCy25s5RdPL38KM2+n1e6LMKmhwKPQaonIdog
-   Yp7JrO9RSRBIOClcBBfYu73Py6Whxkibd+rX2yiwGYcJJ23FaMVXV0FGE
-   JHPZ0Qzq40bwjvVw7Z7kqJYfB1rxFgOtJgEi1PPRc2cSQZZxsL254PXjp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="262869485"
-X-IronPort-AV: E=Sophos;i="5.90,262,1643702400"; 
-   d="scan'208";a="262869485"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 01:01:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,262,1643702400"; 
-   d="scan'208";a="527211445"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 15 Apr 2022 01:01:11 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nfGtC-0001kj-9F;
-        Fri, 15 Apr 2022 08:01:10 +0000
-Date:   Fri, 15 Apr 2022 16:01:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/sev] BUILD SUCCESS
- 101826e02ac6c829bf4e768295e79ae9c37b4b2a
-Message-ID: <62592640.+7339l2dzFnrl80g%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Fri, 15 Apr 2022 04:06:09 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A0159A61;
+        Fri, 15 Apr 2022 01:03:40 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23F83J9P130367;
+        Fri, 15 Apr 2022 03:03:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1650009799;
+        bh=NTy+10/rvDVv3oXf+hx+iRizmeAw7E8r66BdzQEdhq4=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=lsgpdF1FJ4rrxua3gRmJL4ijFC0xjqwg+yoeNRIs7RAZg7aCcKfkFLO+rKrxvK3jZ
+         pCCSHj1sbaeeuTEvQbhDXS5kBoaxp+4lMVDtD5UKa0XQr1Nw22H2SVTD/98dPFF7cI
+         uZ1W7QA7Gv4Zv+e8s/Eo3mNXBigRf3xqzicj7G80=
+Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23F83J0n002373
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 15 Apr 2022 03:03:19 -0500
+Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 15
+ Apr 2022 03:03:19 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 15 Apr 2022 03:03:19 -0500
+Received: from [10.250.235.115] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23F83Fn4088810;
+        Fri, 15 Apr 2022 03:03:16 -0500
+Message-ID: <b0ae635f-461f-be80-ebff-a548c9dd66af@ti.com>
+Date:   Fri, 15 Apr 2022 13:33:14 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 2/2] rtc: Introduce ti-k3-rtc
+Content-Language: en-US
+To:     Nishanth Menon <nm@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alessandro Zummo <a.zummo@towertech.it>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
+References: <20220412073138.25027-1-nm@ti.com>
+ <20220412073138.25027-3-nm@ti.com>
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+In-Reply-To: <20220412073138.25027-3-nm@ti.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/sev
-branch HEAD: 101826e02ac6c829bf4e768295e79ae9c37b4b2a  virt: sevguest: Fix bool function returning negative value
+Hi,
 
-elapsed time: 837m
+On 12/04/22 1:01 pm, Nishanth Menon wrote:
+> +/**
+> + * k3rtc_fence  - Ensure a register sync took place between the two domains
+> + * @priv:      pointer to priv data
+> + *
+> + * Return: 0 if the sync took place, else returns -ETIMEDOUT
+> + */
+> +static int k3rtc_fence(struct ti_k3_rtc *priv)
+> +{
+> +	u32 timeout = priv->sync_timeout_us;
+> +	u32 mask = K3RTC_RD_PEND_BIT | K3RTC_WR_PEND_BIT;
+> +	u32 val = 0;
+> +
+> +	while (timeout--) {
+> +		val = k3rtc_readl(priv, REG_K3RTC_SYNCPEND);
+> +		if (!(val & mask))
+> +			return 0;
+> +		usleep_range(1, 2);
+> +	}
 
-configs tested: 92
-configs skipped: 3
+readl_poll_timeout() ?
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> +
+> +	pr_err("RTC Fence timeout: 0x%08x\n", val);
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-sparc                       sparc64_defconfig
-sh                          rsk7264_defconfig
-mips                           xway_defconfig
-xtensa                       common_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220414
-ia64                             allmodconfig
-ia64                             allyesconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-alpha                               defconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allmodconfig
-mips                             allyesconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-arc                  randconfig-r043-20220415
-s390                 randconfig-r044-20220415
-riscv                randconfig-r042-20220415
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
+Can we use dev_err()?  Provides better indication of the driver throwing
+error.
 
-clang tested configs:
-x86_64                        randconfig-c007
-powerpc              randconfig-c003-20220414
-arm                  randconfig-c002-20220414
-i386                          randconfig-c001
-powerpc                 mpc8313_rdb_defconfig
-powerpc                      acadia_defconfig
-powerpc                      obs600_defconfig
-arm                      tct_hammer_defconfig
-powerpc                     tqm5200_defconfig
-arm                        multi_v5_defconfig
-mips                           mtx1_defconfig
-arm                        spear3xx_defconfig
-arm                        vexpress_defconfig
-arm                          collie_defconfig
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-hexagon              randconfig-r045-20220415
-hexagon              randconfig-r041-20220415
-hexagon              randconfig-r041-20220414
-hexagon              randconfig-r045-20220414
+> +	return -ETIMEDOUT;
+> +}
+> +
+> +static inline int k3rtc_check_unlocked(struct ti_k3_rtc *priv)
+> +{
+> +	u32 val;
+> +
+> +	val = k3rtc_readl(priv, REG_K3RTC_GENERAL_CTL);
+> +	return (val & K3RTC_UNLOCK_BIT) ? 0 : 1;
+> +}
+> +
+> +static int k3rtc_unlock_rtc(struct ti_k3_rtc *priv)
+> +{
+> +	u32 timeout = priv->sync_timeout_us;
+> +	int ret;
+> +
+> +	ret = k3rtc_check_unlocked(priv);
+> +	if (!ret)
+> +		return ret;
+> +
+> +	k3rtc_writel(priv, REG_K3RTC_KICK0, K3RTC_KICK0_UNLOCK_VALUE);
+> +	k3rtc_writel(priv, REG_K3RTC_KICK1, K3RTC_KICK1_UNLOCK_VALUE);
+> +
+> +	/* Skip fence since we are going to check the unlock bit as fence */
+> +	while (timeout--) {
+> +		ret = k3rtc_check_unlocked(priv);
+> +		if (!ret)
+> +			return ret;
+> +		usleep_range(1, 2);
+> +	}
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+readl_poll_timeout() ?
+
+> +
+> +	return -ETIMEDOUT;
+> +}
+> +
+> +static int k3rtc_configure(struct device *dev)
+> +{
+> +	int ret;
+> +	u32 ctl;
+> +	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
+> +
+> +	/*
+> +	 * HWBUG: The compare statemachine is broken if the RTC module
+> +	 * is NOT unlocked in under one second of boot - which is pretty long
+> +	 * time from the perspective of Linux driver (module load, u-boot
+> +	 * shell all can take much longer than this.
+> +	 *
+> +	 * In such occurrence, it is assumed that the RTC module is un-usable
+> +	 */
+> +	if (priv->soc->unlock_irq_erratum) {
+> +		ret = k3rtc_check_unlocked(priv);
+> +		/* If there is an error OR if we are locked, return error */
+> +		if (ret) {
+> +			dev_err(dev, HW_ERR "Erratum i2327 unlock QUIRK! Cannot operate!!\n");
+> +			return -EFAULT;
+> +		}
+> +	} else {
+> +		/* May Need to explicitly unlock first time */
+> +		ret = k3rtc_unlock_rtc(priv);
+> +		if (ret) {
+> +			dev_err(dev, "Failed to unlock(%d)!\n", ret);
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	/* Enable Shadow register sync on 32k clk boundary */
+> +	ctl = k3rtc_readl(priv, REG_K3RTC_GENERAL_CTL);
+> +	ctl |= K3RTC_O32K_OSC_DEP_EN_BIT;
+> +	k3rtc_writel(priv, REG_K3RTC_GENERAL_CTL, ctl);
+> +
+> +	/*
+> +	 * Wait at least 2 clk sync time before proceeding further programming.
+> +	 * This ensures that the 32k based sync is active.
+> +	 */
+> +	usleep_range(priv->sync_timeout_us, priv->sync_timeout_us + 5);
+> +
+> +	/* We need to ensure fence here to make sure sync here */
+> +	ret = k3rtc_fence(priv);
+> +	if (ret) {
+> +		dev_err(dev, "Failed fence osc_dep enable(%d) - is 32k clk working?!\n",
+> +			ret);
+> +		return ret;
+> +	}
+> +
+> +	/* Lets just make sure we get consistent time value */
+> +	ctl &= ~K3RTC_CNT_FMODE_MASK;
+> +	/*
+> +	 * FMODE setting: Reading lower seconds will freeze value on higher
+> +	 * seconds. This also implies that we must *ALWAYS* read lower seconds
+> +	 * prior to reading higher seconds
+> +	 */
+> +	ctl |= K3RTC_CNT_FMODE_S_CNT_VALUE;
+> +	k3rtc_writel(priv, REG_K3RTC_GENERAL_CTL, ctl);
+> +
+> +	/* Clear any spurious IRQ sources if any */
+> +	k3rtc_writel(priv, REG_K3RTC_IRQSTATUS_SYS,
+> +		     K3RTC_EVENT_ON_OFF_BIT | K3RTC_EVENT_OFF_ON_BIT);
+> +	/* Disable all IRQs */
+> +	k3rtc_writel(priv, REG_K3RTC_IRQENABLE_CLR_SYS,
+> +		     K3RTC_EVENT_ON_OFF_BIT | K3RTC_EVENT_OFF_ON_BIT);
+> +
+> +	/* And.. Let us Sync the writes in */
+> +	ret = k3rtc_fence(priv);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to fence(%d)!\n", ret);
+> +		return ret;
+
+nit: this can be dropped as next statement will return error code anyway
+
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+
+[...]
+
+> +
+> +static const struct ti_k3_rtc_soc_data ti_k3_am62_data = {
+> +	.unlock_irq_erratum = true,
+> +};
+> +
+> +static const struct of_device_id ti_k3_rtc_of_match_table[] = {
+> +	{.compatible = "ti,am62-rtc", .data = &ti_k3_am62_data},
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, ti_k3_rtc_of_match_table);
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int ti_k3_rtc_suspend(struct device *dev)
+
+ __maybe_unused preferred instead of #ifdef for better compile coverage
+but upto you.
+
+> +{
+> +	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
+> +
+> +	if (device_may_wakeup(dev))
+> +		enable_irq_wake(priv->irq);
+> +	return 0;
+> +}
+> +
+> +static int ti_k3_rtc_resume(struct device *dev)
+> +{
+> +	struct ti_k3_rtc *priv = dev_get_drvdata(dev);
+> +
+> +	if (device_may_wakeup(dev))
+> +		disable_irq_wake(priv->irq);
+> +	return 0;
+> +}
+> +#endif
+> +
+> +static SIMPLE_DEV_PM_OPS(ti_k3_rtc_pm_ops, ti_k3_rtc_suspend, ti_k3_rtc_resume);
+> +
+> +static struct platform_driver ti_k3_rtc_driver = {
+> +	.probe = ti_k3_rtc_probe,
+> +	.driver = {
+> +		   .name = "rtc-ti-k3",
+> +		   .of_match_table = ti_k3_rtc_of_match_table,
+> +		   .pm = &ti_k3_rtc_pm_ops,
+> +		   },
+Extra tab?
+
+> +};
+> +module_platform_driver(ti_k3_rtc_driver);
+> +
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("TI K3 RTC driver");
+> +MODULE_AUTHOR("Nishanth Menon");
+> +MODULE_ALIAS("platform:rtc-ti-k3");
+> -- 2.31.1
