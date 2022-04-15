@@ -2,97 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EF1EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD2BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:32:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354528AbiDOOfO (ORCPT
+        id S1354544AbiDOOfR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 10:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55322 "EHLO
+        Fri, 15 Apr 2022 10:35:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344879AbiDOOfL (ORCPT
+        with ESMTP id S1354467AbiDOOfN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 10:35:11 -0400
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E6F32E6BC;
-        Fri, 15 Apr 2022 07:32:43 -0700 (PDT)
-Received: by mail-oi1-f180.google.com with SMTP id r85so3353028oie.7;
-        Fri, 15 Apr 2022 07:32:43 -0700 (PDT)
+        Fri, 15 Apr 2022 10:35:13 -0400
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEA52E6BC;
+        Fri, 15 Apr 2022 07:32:44 -0700 (PDT)
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-ddfa38f1c1so8212679fac.11;
+        Fri, 15 Apr 2022 07:32:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=PWkFmsh5Xu4+fKnCCwdt0tVV4sCcc9ioI4xTfndA/mQ=;
-        b=uRbEX1smBihFX6vWqUoftP9cvyM7tZs1s86jC4+u2D6RKOgRY7Sg4ehNBG3yHaEr+N
-         zp+7KjP5E5NLLOSv3x4c9e9iYtHX+qRIEf8jPwK1pOup685X/kMRTnIZdOcnaM8riyN/
-         V9htAquK3GFg9Ue9Yw5A/9Xtib2IxBs9iaAHZ0u1DFOkOlp/hI9KWgqDtv0cMooDr7pD
-         7f5S1Bp6aDCdZEUsfjWvBiD2BQkFEvZ60Uk1T+lZXfvBqX/3N6OB3lTpEZlPg0wy4c4A
-         yPudZJG4vR/ZudGZguB3Ztk1x1hSez23IdkwADBagIVZyBaqUMpA2GJ7upQcV96o2YfU
-         OiUw==
-X-Gm-Message-State: AOAM533aEMldptddOKRh5+k6WfBTkcTbHjYel7D8MjXaHULSZlBdtCep
-        SgUcxIbi8kEVGbeg4S5/bw==
-X-Google-Smtp-Source: ABdhPJyIHQEfmVJhe8R8epLhEwBEi+YFfcMZyMoMZDbG+RnujEOdN/75D+3Psr7DA3LmCirjREEBtw==
-X-Received: by 2002:a05:6808:199d:b0:2fa:2f20:7212 with SMTP id bj29-20020a056808199d00b002fa2f207212mr1742895oib.251.1650033162752;
-        Fri, 15 Apr 2022 07:32:42 -0700 (PDT)
+        bh=lbNCJKTZYftED6nJP7xJB0YB8KniXXh2gE8PdNUGElw=;
+        b=AYTA5XquIe4BE89aDG6iofq8xdojzmh56SZpijhy9a1hwdzPz1qgzRF7Ot/TZXXpne
+         K1UggUNzdRGD7gF3baLIJ0lsZ23kBF8IivEIgEjQlB5DFFJdTrM5hylniyr/oG0fieVD
+         M36p8xa08yvL4xcFn9plmOU3MmH64li0dKS+NvxT5Pr1yoctKihuW0LBXdTd7jxLR8N2
+         GwCRUIZRr8BGtsL4CcNvuW6Uc55Od2NTTt12QBQ0mQC4Hh5grpmEA27avhQsPrPgv8rN
+         TLJ8J1qStL9j/v4a/uijQ39MC99OTzB0KWBSoApMq6zUlWIraLqeYVIkAyf3go9WC1Yp
+         NvUg==
+X-Gm-Message-State: AOAM531QNDavm5yGFVNEOuwRYTEiks7uWeE8yS/QhYOyWe/4mrAXh3ch
+        iSzuiAZj7YgAOvuckuE5Ow==
+X-Google-Smtp-Source: ABdhPJwRpfaOMjkZ+7Xx+M8ZEg1DeCSRF0lXPpuofoYKaeq05NhtGS9O2aRewKCJCA6W90xxlw3rzA==
+X-Received: by 2002:a05:6870:600a:b0:d7:4895:75be with SMTP id t10-20020a056870600a00b000d7489575bemr1482571oaa.35.1650033163767;
+        Fri, 15 Apr 2022 07:32:43 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id z3-20020a056830290300b005b2316db9c9sm1105553otu.30.2022.04.15.07.32.42
+        by smtp.gmail.com with ESMTPSA id m22-20020a9d73d6000000b006028f49a6fcsm1138070otk.4.2022.04.15.07.32.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 07:32:42 -0700 (PDT)
-Received: (nullmailer pid 251786 invoked by uid 1000);
+        Fri, 15 Apr 2022 07:32:43 -0700 (PDT)
+Received: (nullmailer pid 251791 invoked by uid 1000);
         Fri, 15 Apr 2022 14:32:41 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Markuss Broks <markuss.broks@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>, phone-devel@vger.kernel.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Lee Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220415110014.7384-3-markuss.broks@gmail.com>
-References: <20220415110014.7384-1-markuss.broks@gmail.com> <20220415110014.7384-3-markuss.broks@gmail.com>
-Subject: Re: [PATCH v2 2/4] dt-bindings: mfd: Add bindings for Silicon Mitus SM5703 MFD
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc:     robh+dt@kernel.org, sebastian.hesselbarth@gmail.com,
+        andrew@lunn.ch, devicetree@vger.kernel.org, krzk+dt@kernel.org,
+        ulf.hansson@linaro.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, gregory.clement@bootlin.com,
+        linux-mmc@vger.kernel.org
+In-Reply-To: <20220414230603.567049-5-chris.packham@alliedtelesis.co.nz>
+References: <20220414230603.567049-1-chris.packham@alliedtelesis.co.nz> <20220414230603.567049-5-chris.packham@alliedtelesis.co.nz>
+Subject: Re: [PATCH 4/4] dt-bindings: mmc: convert sdhci-dove to JSON schema
 Date:   Fri, 15 Apr 2022 09:32:41 -0500
-Message-Id: <1650033161.773468.251785.nullmailer@robh.at.kernel.org>
+Message-Id: <1650033161.801334.251790.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 15 Apr 2022 14:00:11 +0300, Markuss Broks wrote:
-> This patch adds device-tree bindings for the Silicon Mitus
-> SM5703 MFD.
+On Fri, 15 Apr 2022 11:06:03 +1200, Chris Packham wrote:
+> Convert the sdhci-dove binding to JSON schema.
 > 
-> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
 > ---
->  .../bindings/mfd/siliconmitus,sm5703.yaml     | 96 +++++++++++++++++++
->  1 file changed, 96 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
+>  .../bindings/mmc/marvell,dove-sdhci.yaml      | 38 +++++++++++++++++++
+>  .../devicetree/bindings/mmc/sdhci-dove.txt    | 14 -------
+>  2 files changed, 38 insertions(+), 14 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/mmc/marvell,dove-sdhci.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/mmc/sdhci-dove.txt
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-yamllint warnings/errors:
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-dtschema/dtc warnings/errors:
-schemas/regulator/siliconmitus,sm5703-regulator.yaml: ignoring, error parsing file
-Error: Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.example.dts:28.39-40 syntax error
-FATAL ERROR: Unable to parse input tree
-make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.example.dtb] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1401: dt_binding_check] Error 2
+Full log is available here: https://patchwork.ozlabs.org/patch/
 
-doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/
+sdio-host@90000: $nodename:0: 'sdio-host@90000' does not match '^mmc(@.*)?$'
+	arch/arm/boot/dts/dove-cubox.dtb
+	arch/arm/boot/dts/dove-cubox-es.dtb
+	arch/arm/boot/dts/dove-d2plug.dtb
+	arch/arm/boot/dts/dove-d3plug.dtb
+	arch/arm/boot/dts/dove-dove-db.dtb
+	arch/arm/boot/dts/dove-sbc-a510.dtb
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+sdio-host@90000: interrupts: [[36], [38]] is too long
+	arch/arm/boot/dts/dove-cubox.dtb
+	arch/arm/boot/dts/dove-cubox-es.dtb
+	arch/arm/boot/dts/dove-d2plug.dtb
+	arch/arm/boot/dts/dove-d3plug.dtb
+	arch/arm/boot/dts/dove-dove-db.dtb
+	arch/arm/boot/dts/dove-sbc-a510.dtb
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+sdio-host@90000: Unevaluated properties are not allowed ('interrupts', 'clocks', 'non-removable', 'bus-width' were unexpected)
+	arch/arm/boot/dts/dove-d2plug.dtb
 
-pip3 install dtschema --upgrade
+sdio-host@90000: Unevaluated properties are not allowed ('interrupts', 'clocks', 'non-removable', 'vmmc-supply', 'reset-gpio' were unexpected)
+	arch/arm/boot/dts/dove-sbc-a510.dtb
 
-Please check and re-submit.
+sdio-host@90000: Unevaluated properties are not allowed ('interrupts', 'clocks', 'non-removable' were unexpected)
+	arch/arm/boot/dts/dove-d3plug.dtb
+
+sdio-host@90000: Unevaluated properties are not allowed ('interrupts', 'clocks' were unexpected)
+	arch/arm/boot/dts/dove-cubox.dtb
+	arch/arm/boot/dts/dove-cubox-es.dtb
+	arch/arm/boot/dts/dove-dove-db.dtb
+
+sdio-host@92000: $nodename:0: 'sdio-host@92000' does not match '^mmc(@.*)?$'
+	arch/arm/boot/dts/dove-cubox.dtb
+	arch/arm/boot/dts/dove-cubox-es.dtb
+	arch/arm/boot/dts/dove-d2plug.dtb
+	arch/arm/boot/dts/dove-d3plug.dtb
+	arch/arm/boot/dts/dove-dove-db.dtb
+	arch/arm/boot/dts/dove-sbc-a510.dtb
+
+sdio-host@92000: interrupts: [[35], [37]] is too long
+	arch/arm/boot/dts/dove-cubox.dtb
+	arch/arm/boot/dts/dove-cubox-es.dtb
+	arch/arm/boot/dts/dove-d2plug.dtb
+	arch/arm/boot/dts/dove-d3plug.dtb
+	arch/arm/boot/dts/dove-dove-db.dtb
+	arch/arm/boot/dts/dove-sbc-a510.dtb
+
+sdio-host@92000: Unevaluated properties are not allowed ('interrupts', 'clocks', 'cd-gpios' were unexpected)
+	arch/arm/boot/dts/dove-cubox-es.dtb
+
+sdio-host@92000: Unevaluated properties are not allowed ('interrupts', 'clocks', 'non-removable', 'bus-width' were unexpected)
+	arch/arm/boot/dts/dove-d2plug.dtb
+	arch/arm/boot/dts/dove-d3plug.dtb
+
+sdio-host@92000: Unevaluated properties are not allowed ('interrupts', 'clocks', 'vmmc-supply', 'wp-gpios' were unexpected)
+	arch/arm/boot/dts/dove-sbc-a510.dtb
+
+sdio-host@92000: Unevaluated properties are not allowed ('interrupts', 'clocks' were unexpected)
+	arch/arm/boot/dts/dove-cubox.dtb
+	arch/arm/boot/dts/dove-dove-db.dtb
 
