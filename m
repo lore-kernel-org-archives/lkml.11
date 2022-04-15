@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76266C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 09:42:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4287BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 09:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351824AbiDOJox (ORCPT
+        id S1351835AbiDOJo4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 05:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33562 "EHLO
+        Fri, 15 Apr 2022 05:44:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233838AbiDOJov (ORCPT
+        with ESMTP id S1351815AbiDOJow (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 05:44:51 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A019BAC056;
-        Fri, 15 Apr 2022 02:42:22 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 09:42:19 -0000
+        Fri, 15 Apr 2022 05:44:52 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA62AC042;
+        Fri, 15 Apr 2022 02:42:23 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 09:42:21 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650015741;
+        s=2020; t=1650015742;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TzfZgH2CpYL1WXpv7y3pqSWAMrDt8KsmWhxyBSsv7e4=;
-        b=4fZMWsd7dScKZvzIA0nuWdtRbT8Rm4HssOnMjP83EH5ikwxFoX1+/HUex/U2mgp3aOp09b
-        NzA2StEX4rDrsCSQjDb1W43+rLkf+Go3OwYQ2y3i65vjoe6/SSBeBAZ66LLoS85ASmi3Vf
-        gMp9i2SyI3rxJRuu5NCmWQ17kbHSRJXit46BO5mKCrWMwsSqWlpVC1dEzhSI3fZSG+pdGg
-        3ObYL/Sl8IAM+oVwRoVHRqd2FXp1jtxr6OyBOQDAPvGiIP4iQNiVYAy8iKY8P3LkkJTqzo
-        qIry9OcuFZfMijENYK9KZZJPoCO4d1MwjAjDM4S/yAE7Dkmv2l/6AkvrbM2kbw==
+        bh=OaWHcjI5jzSN+btLdV7n53XabIHh5QmAWpRah4D530Q=;
+        b=TYCS/5tQUUepLaVDvKZBUm5an8Vfd7DOBIfbCHVTotatqJMg/qiE4SfQ+nluZbeTaZnqKx
+        guOyhfUSEZj6UJTJCcIIwRZI6q+dV0dAK0j5NsdtdmzKn5XAtin6vC0+nNJ3UMZDLthgbd
+        pel0OPj3i/hpG21NicDED6/IfMuKLHjthk749Vk6qrozwN/+jVkTs26BueMtS9HJw+kJOx
+        J+fD/oIg+pZ48W+TEtunpY/aeWeVU1+OwsmmIq3v4I+GKBE5Cq/wlinE3MpTuBwX4LREa8
+        XnjTW7m+8RFC1CUTcMErO9dCwGxzpuQZ2hSBO0RKKzzXIabOCZWAL9kPAVxtNg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650015741;
+        s=2020e; t=1650015742;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TzfZgH2CpYL1WXpv7y3pqSWAMrDt8KsmWhxyBSsv7e4=;
-        b=Oh9Fatgm2Hn4SMAKGmFveiqA78ZEZ5ZU8AFCdHu+YZajhHjw/I/+uYvc/4JA3gu5JRlrhN
-        eBWQqvMkiN+fybAw==
+        bh=OaWHcjI5jzSN+btLdV7n53XabIHh5QmAWpRah4D530Q=;
+        b=kgJ7GxorN7KCcZ8OppF3/DUR/xqUGeZAN/MJe1Qrt2rgA/SoxLHrPgOX/Kq7kJsSh6DSFo
+        8yuDEywmtT0htnCw==
 From:   "tip-bot2 for Brian Gerst" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] x86/asm: Merge load_gs_index()
+Subject: [tip: x86/core] ELF: Remove elf_core_copy_kernel_regs()
 Cc:     Brian Gerst <brgerst@gmail.com>, Borislav Petkov <bp@suse.de>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
+        Andy Lutomirski <luto@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220325153953.162643-5-brgerst@gmail.com>
-References: <20220325153953.162643-5-brgerst@gmail.com>
+In-Reply-To: <20220325153953.162643-3-brgerst@gmail.com>
+References: <20220325153953.162643-3-brgerst@gmail.com>
 MIME-Version: 1.0
-Message-ID: <165001573943.4207.9341858824402363883.tip-bot2@tip-bot2>
+Message-ID: <165001574130.4207.13922320216714992747.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,65 +64,87 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     203d8919a9eda5d1bc68ac3cd7637588334c9dc1
-Gitweb:        https://git.kernel.org/tip/203d8919a9eda5d1bc68ac3cd7637588334c9dc1
+Commit-ID:     9554e908fb5d02e48a681d1eca180225bf109e83
+Gitweb:        https://git.kernel.org/tip/9554e908fb5d02e48a681d1eca180225bf109e83
 Author:        Brian Gerst <brgerst@gmail.com>
-AuthorDate:    Fri, 25 Mar 2022 11:39:53 -04:00
+AuthorDate:    Fri, 25 Mar 2022 11:39:51 -04:00
 Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Thu, 14 Apr 2022 14:15:54 +02:00
+CommitterDate: Thu, 14 Apr 2022 14:08:26 +02:00
 
-x86/asm: Merge load_gs_index()
+ELF: Remove elf_core_copy_kernel_regs()
 
-Merge the 32- and 64-bit implementations of load_gs_index().
+x86-32 was the last architecture that implemented separate user and
+kernel registers.
 
 Signed-off-by: Brian Gerst <brgerst@gmail.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 Acked-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/20220325153953.162643-5-brgerst@gmail.com
+Acked-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220325153953.162643-3-brgerst@gmail.com
 ---
- arch/x86/include/asm/segment.h       | 7 -------
- arch/x86/include/asm/special_insns.h | 7 ++++---
- 2 files changed, 4 insertions(+), 10 deletions(-)
+ arch/powerpc/kernel/fadump.c               |  2 +-
+ arch/powerpc/platforms/powernv/opal-core.c |  2 +-
+ include/linux/elfcore.h                    |  9 ---------
+ kernel/kexec_core.c                        |  2 +-
+ 4 files changed, 3 insertions(+), 12 deletions(-)
 
-diff --git a/arch/x86/include/asm/segment.h b/arch/x86/include/asm/segment.h
-index 617b366..2e7890d 100644
---- a/arch/x86/include/asm/segment.h
-+++ b/arch/x86/include/asm/segment.h
-@@ -350,13 +350,6 @@ static inline void __loadsegment_fs(unsigned short value)
- #define savesegment(seg, value)				\
- 	asm("mov %%" #seg ",%0":"=r" (value) : : "memory")
+diff --git a/arch/powerpc/kernel/fadump.c b/arch/powerpc/kernel/fadump.c
+index 65562c4..4c09c66 100644
+--- a/arch/powerpc/kernel/fadump.c
++++ b/arch/powerpc/kernel/fadump.c
+@@ -752,7 +752,7 @@ u32 *__init fadump_regs_to_elf_notes(u32 *buf, struct pt_regs *regs)
+ 	 * FIXME: How do i get PID? Do I really need it?
+ 	 * prstatus.pr_pid = ????
+ 	 */
+-	elf_core_copy_kernel_regs(&prstatus.pr_reg, regs);
++	elf_core_copy_regs(&prstatus.pr_reg, regs);
+ 	buf = append_elf_note(buf, CRASH_CORE_NOTE_NAME, NT_PRSTATUS,
+ 			      &prstatus, sizeof(prstatus));
+ 	return buf;
+diff --git a/arch/powerpc/platforms/powernv/opal-core.c b/arch/powerpc/platforms/powernv/opal-core.c
+index b97bc17..adcb1a1 100644
+--- a/arch/powerpc/platforms/powernv/opal-core.c
++++ b/arch/powerpc/platforms/powernv/opal-core.c
+@@ -112,7 +112,7 @@ static void __init fill_prstatus(struct elf_prstatus *prstatus, int pir,
+ 			  struct pt_regs *regs)
+ {
+ 	memset(prstatus, 0, sizeof(struct elf_prstatus));
+-	elf_core_copy_kernel_regs(&(prstatus->pr_reg), regs);
++	elf_core_copy_regs(&(prstatus->pr_reg), regs);
  
--/*
-- * x86-32 user GS accessors.  This is ugly and could do with some cleaning up.
-- */
--#ifdef CONFIG_X86_32
--# define load_gs_index(v)		loadsegment(gs, (v))
--#endif	/* X86_32 */
--
- #endif /* !__ASSEMBLY__ */
- #endif /* __KERNEL__ */
- 
-diff --git a/arch/x86/include/asm/special_insns.h b/arch/x86/include/asm/special_insns.h
-index 68c257a..45b18eb 100644
---- a/arch/x86/include/asm/special_insns.h
-+++ b/arch/x86/include/asm/special_insns.h
-@@ -184,14 +184,15 @@ static inline void wbinvd(void)
- 	native_wbinvd();
+ 	/*
+ 	 * Overload PID with PIR value.
+diff --git a/include/linux/elfcore.h b/include/linux/elfcore.h
+index f8e206e..346a8b5 100644
+--- a/include/linux/elfcore.h
++++ b/include/linux/elfcore.h
+@@ -84,15 +84,6 @@ static inline void elf_core_copy_regs(elf_gregset_t *elfregs, struct pt_regs *re
+ #endif
  }
  
--#ifdef CONFIG_X86_64
- 
- static inline void load_gs_index(unsigned int selector)
- {
-+#ifdef CONFIG_X86_64
- 	native_load_gs_index(selector);
+-static inline void elf_core_copy_kernel_regs(elf_gregset_t *elfregs, struct pt_regs *regs)
+-{
+-#ifdef ELF_CORE_COPY_KERNEL_REGS
+-	ELF_CORE_COPY_KERNEL_REGS((*elfregs), regs);
+-#else
+-	elf_core_copy_regs(elfregs, regs);
+-#endif
 -}
 -
-+#else
-+	loadsegment(gs, selector);
- #endif
-+}
- 
- #endif /* CONFIG_PARAVIRT_XXL */
- 
+ static inline int elf_core_copy_task_regs(struct task_struct *t, elf_gregset_t* elfregs)
+ {
+ #if defined (ELF_CORE_COPY_TASK_REGS)
+diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
+index 68480f7..be4b54c 100644
+--- a/kernel/kexec_core.c
++++ b/kernel/kexec_core.c
+@@ -1078,7 +1078,7 @@ void crash_save_cpu(struct pt_regs *regs, int cpu)
+ 		return;
+ 	memset(&prstatus, 0, sizeof(prstatus));
+ 	prstatus.common.pr_pid = current->pid;
+-	elf_core_copy_kernel_regs(&prstatus.pr_reg, regs);
++	elf_core_copy_regs(&prstatus.pr_reg, regs);
+ 	buf = append_elf_note(buf, KEXEC_CORE_NOTE_NAME, NT_PRSTATUS,
+ 			      &prstatus, sizeof(prstatus));
+ 	final_note(buf);
