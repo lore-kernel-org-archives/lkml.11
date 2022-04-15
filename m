@@ -2,199 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26098C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:01:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC7DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355586AbiDOQD7 (ORCPT
+        id S1355687AbiDOQFH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 12:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42628 "EHLO
+        Fri, 15 Apr 2022 12:05:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349398AbiDOQDx (ORCPT
+        with ESMTP id S1355691AbiDOQFE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 12:03:53 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C849D0EE
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 09:01:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650038485; x=1681574485;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=iU32Nth3Vpx4ScnrV9cfqu6DrMgNq7G4TYDO0DOA9XI=;
-  b=KZnsSvRpfb5gk3x/5zE2OHpZNd1h+7uRn2GErb46ZItFYC2qD70xuLWw
-   C5YM+GMl4eJ+dDdUNgJMu07Ug3G+0X/QopJ28Y08DcP3u2iYM2xLmh7Sw
-   3qXDgpactPrFaWMXDNqqR8kpaomHFCUVCKmDgpjLx3HsFan1W/m0xgyXd
-   vusNkjEGBkFuxWKjF/9MEMjTIm7j519EqJBD41sGQestsC4nY8ryesLm8
-   YnnIi1gA3t3c0binQO3uyvki8Tzqvhgm3xJ8c9MJ0oVQBOHKMrVjsYQWi
-   PiCsiHmLFaUOrAZG8wtFe6k8jOh75HVO++RF27ec0t02qgRj3yzUQejo2
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="288238669"
-X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
-   d="scan'208";a="288238669"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 09:00:59 -0700
-X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
-   d="scan'208";a="553197301"
-Received: from gkcarda-mobl2.amr.corp.intel.com (HELO [10.251.1.179]) ([10.251.1.179])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 09:00:57 -0700
-Message-ID: <8eeb08ec-4836-cf7d-2285-8ed74ccfc1cb@linux.intel.com>
-Date:   Fri, 15 Apr 2022 11:00:48 -0500
+        Fri, 15 Apr 2022 12:05:04 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814E89D4CB
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 09:02:35 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id a10so6714047qvm.8
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 09:02:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+DljWZKXAubVXqG1Ro0omqGdweveuV0cYgdZ65EqJ9s=;
+        b=w/T5XzJUgWoGLquTxc3I8nvLvpbyCUQti/1pvnZJaqrBJghV4AuwUl1UM2MqzhauZm
+         35gJC1bZ0ZbQcrJ4wSvSUoYUt2xjKnv6RQ6CbDkltUmFo36Jg0fArEv07L0Dvz8aT5Gb
+         lPL+2udLzxV+RB6W714RhFqkMqsMLwSSirWD4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+DljWZKXAubVXqG1Ro0omqGdweveuV0cYgdZ65EqJ9s=;
+        b=zD4qARYgJURqtn/mNBrTEG5mvFpECFa/Xdtt/ts5TM82qdKDFBHZE/wLz4BphbDehz
+         PSR8emb7eJpKJFMSeZIcNC70Jj8oUNBGURFeRaIZ0HTeTbCY1XzDFrb62TtCS//kBTy2
+         +kjpBRE+UWNXTsEGP1zgLEaz8YDI5jB+XlhEx7BHbT7aV/5OziW0IFdz3ey4n0mmSaIT
+         1ZbXuUVxcD0+4KC5RPtW6fnRgTUEbiYDKAL2CJRF//pxxhnZXdGuZyCgc45qCo5fF7lq
+         XTAvc0VniFoChWGtTq1Sfwh3v2Yuvyrh54opt4zonVGWtgThE443UQRQ05GAnCAo8bhb
+         qX8w==
+X-Gm-Message-State: AOAM532Y0/l8YGNEA1utSp/04lBEZNLJ7ODTdorjls2E1AsCH2PSgwZX
+        cp5w8mf3358poo63Z1xdqKlmwefblnBc6w==
+X-Google-Smtp-Source: ABdhPJwAzENcYv4aGYA8ZMIaha5k+ZD1mGr5UPM81CPNKLxpqywnC9WqLy4bR8wR5pAcj+CpJgOeLA==
+X-Received: by 2002:a05:6214:d62:b0:446:2e4a:1f30 with SMTP id 2-20020a0562140d6200b004462e4a1f30mr5910873qvs.74.1650038554384;
+        Fri, 15 Apr 2022 09:02:34 -0700 (PDT)
+Received: from joelboxx.c.googlers.com.com (228.221.150.34.bc.googleusercontent.com. [34.150.221.228])
+        by smtp.gmail.com with ESMTPSA id bl22-20020a05620a1a9600b00680da570a5dsm2699890qkb.61.2022.04.15.09.02.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 09:02:33 -0700 (PDT)
+From:   "Joel Fernandes (Google)" <joel@joelfernandes.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Joel Fernandes <joel@joelfernandes.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>, rcu@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        rushikesh.s.kadam@intel.com, vineethrp@gmail.com, urezki@gmail.com
+Subject: [PATCH v3] rcu/nocb: Add an option to offload all CPUs on boot
+Date:   Fri, 15 Apr 2022 16:02:24 +0000
+Message-Id: <20220415160224.1904505-1-joel@joelfernandes.org>
+X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: out-of-bounds access in sound/soc/sof/topology.c
-Content-Language: en-US
-To:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Jaska Uimonen <jaska.uimonen@linux.intel.com>,
-        =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Takashi Iwai <tiwai@suse.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Mark Brown <broonie@kernel.org>,
-        Ricardo Ribalda <ribalda@chromium.org>,
-        sound-open-firmware@alsa-project.org
-References: <Ylk5o3EC/hyX5UQ0@google.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <Ylk5o3EC/hyX5UQ0@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks Sergey for this email.
+From: Joel Fernandes <joel@joelfernandes.org>
 
-On 4/15/22 04:23, Sergey Senozhatsky wrote:
-> Hi,
-> 
-> I'm running 5.10.111 LTS, so if this has been fixed already then we definitely
-> want to cherry pick the fix for -stable.
-> 
-> 
-> Anonymous union in this struct is of zero size
-> 
-> /* generic control data */
-> struct sof_ipc_ctrl_data {
->         struct sof_ipc_reply rhdr;
->         uint32_t comp_id;
-> 
->         /* control access and data type */
->         uint32_t type;          /**< enum sof_ipc_ctrl_type */
->         uint32_t cmd;           /**< enum sof_ipc_ctrl_cmd */
->         uint32_t index;         /**< control index for comps > 1 control */
-> 
->         /* control data - can either be appended or DMAed from host */
->         struct sof_ipc_host_buffer buffer;
->         uint32_t num_elems;     /**< in array elems or bytes for data type */
->         uint32_t elems_remaining;       /**< elems remaining if sent in parts */
-> 
->         uint32_t msg_index;     /**< for large messages sent in parts */
-> 
->         /* reserved for future use */
->         uint32_t reserved[6];
-> 
->         /* control data - add new types if needed */
->         union {
->                 /* channel values can be used by volume type controls */
->                 struct sof_ipc_ctrl_value_chan chanv[0];
->                 /* component values used by routing controls like mux, mixer */
->                 struct sof_ipc_ctrl_value_comp compv[0];
->                 /* data can be used by binary controls */
->                 struct sof_abi_hdr data[0];
->         };
-> } __packed;
-> 
-> sof_ipc_ctrl_value_chan and sof_ipc_ctrl_value_comp are of the same
-> size - 8 bytes, while sof_abi_hdr is much larger - _at least_ 32 bytes
-> (`__u32 data[0]` in sof_abi_hdr suggest that there should be more
-> payload after header). But they all contribute 0 to sizeof(sof_ipc_ctrl_data).
-> 
-> Now control data allocations looks as follows
-> 
-> 	scontrol->size = struct_size(scontrol->control_data, chanv,
-> 				     le32_to_cpu(mc->num_channels));
-> 	scontrol->control_data = kzalloc(scontrol->size, GFP_KERNEL);
-> 
-> Which is sizeof(sof_ipc_ctrl_data) + mc->num_channels * sizeof(sof_ipc_ctrl_value_chan)
-> 
-> For some reason it uses sizeof(sof_ipc_ctrl_value_chan), which is not
-> the largest member of the union.
-> 
-> And this is where the problem is: in order to make control->data.FOO loads
-> and stores legal we need mc->num_channels to be of at least 4. So that
-> 
->    sizeof(sof_ipc_ctrl_data) + mc->num_channels * sizeof(sof_ipc_ctrl_value_chan)
-> 
->                 92           +        4         *            8
-> 
-> will be the same as
-> 
->    sizeof(sof_ipc_ctrl_data) + sizeof(sof_abi_hdr).
-> 
->                 92           +           32
-> 
-> Otherwise scontrol->control_data->data.FOO will access nearby/foreign
-> slab object.
-> 
-> And there is at least one such memory access. In sof_get_control_data().
-> 
-> 	wdata[i].pdata = wdata[i].control->control_data->data;
-> 	*size += wdata[i].pdata->size;
-> 
-> pdata->size is at offset 8, but if, say, mc->num_channels == 1 then
-> we allocate only 8 bytes for pdata, so pdata->size is 4 bytes outside
-> of allocated slab object.
-> 
-> Thoughts?
+On systems with CONFIG_RCU_NOCB_CPU=y, there is no default mask provided
+which ends up not offloading any CPU. This patch removes a dependency
+from the bootloader having to know about RCU, about how many CPUs the
+system has, and about how to provide the mask.
 
-The SOF contributors who wrote that code are all on an extended Easter week-end or vacation so we'll need more time to provide a definitive answer.
+With the new option enabled, all CPUs will be offloaded on boot.
 
-I am far from an expert on the topology, but I note that the 'data' field is only used for binary controls, where we use the maximum possible size for a control, without any arithmetic involving channels. It makes sense to me, the binary data does not have any defined structure, it's just a bunch of bytes provided as is to the firmware.
+Signed-off-by: Joel Fernandes <joel@joelfernandes.org>
+---
+v2 was forcing the option to override no_cbs=
+v3 is back to v1 but with a config option defaulting to 'n'.
 
-static int sof_ipc3_control_load_bytes(struct snd_sof_dev *sdev, struct snd_sof_control *scontrol)
-{
-	struct sof_ipc_ctrl_data *cdata;
-	int ret;
+ Documentation/admin-guide/kernel-parameters.txt |  3 +++
+ kernel/rcu/Kconfig                              | 13 +++++++++++++
+ kernel/rcu/tree_nocb.h                          | 16 ++++++++++++++--
+ 3 files changed, 30 insertions(+), 2 deletions(-)
 
-	scontrol->ipc_control_data = kzalloc(scontrol->max_size, GFP_KERNEL);
-	if (!scontrol->ipc_control_data)
-		return -ENOMEM;
-
-
-In other cases, such as volumes and enums, the 'data' field doesn't seem to be used but we do use the channel information for volume and enums.
-
-static int sof_ipc3_control_load_volume(struct snd_sof_dev *sdev, struct snd_sof_control *scontrol)
-{
-	struct sof_ipc_ctrl_data *cdata;
-	int i;
-
-	/* init the volume get/put data */
-	scontrol->size = struct_size(cdata, chanv, scontrol->num_channels);
-
-	scontrol->ipc_control_data = kzalloc(scontrol->size, GFP_KERNEL);
-
-
-static int sof_ipc3_control_load_enum(struct snd_sof_dev *sdev, struct snd_sof_control *scontrol)
-{
-	struct sof_ipc_ctrl_data *cdata;
-
-	/* init the enum get/put data */
-	scontrol->size = struct_size(cdata, chanv, scontrol->num_channels);
-
-	scontrol->ipc_control_data = kzalloc(scontrol->size, GFP_KERNEL);
-	if (!scontrol->ipc_control_data)
-
-
-Given that we have two ways of allocating the memory, I am not sure there is a problem, but I could be wrong.
-
-I checked the v5.10.111 code and I see the same code, with the max_size being used for sof_control_load_bytes() and no channel-based arithmetic.
-
-Can I ask how you found out about this problem, is this the result of a warning/error reported by a software tool or based on your reviews of the code?
-
-Thanks
--Pierre
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index f5a27f067db9..7648a7dd335e 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -4398,6 +4398,9 @@
+ 			no-callback mode from boot but the mode may be
+ 			toggled at runtime via cpusets.
+ 
++			Note that this argument takes precedence over
++			the CONFIG_RCU_NOCB_CPU_DEFAULT_ALL option.
++
+ 	rcu_nocb_poll	[KNL]
+ 			Rather than requiring that offloaded CPUs
+ 			(specified by rcu_nocbs= above) explicitly
+diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
+index bf8e341e75b4..2f8bd694ed85 100644
+--- a/kernel/rcu/Kconfig
++++ b/kernel/rcu/Kconfig
+@@ -223,6 +223,19 @@ config RCU_NOCB_CPU
+ 	  Say Y here if you need reduced OS jitter, despite added overhead.
+ 	  Say N here if you are unsure.
+ 
++config RCU_NOCB_CPU_DEFAULT_ALL
++	bool "Offload RCU callback processing from all CPUs by default"
++	depends on RCU_NOCB_CPU
++	default n
++	help
++	  Use this option to offload callback processing from all CPUs
++	  by default, in the absence of the rcu_nocbs boot parameter.
++	  This also avoids the need to use any boot parameters to achieve
++	  the effect of offloading all CPUs on boot.
++
++	  Say Y here if you want offload all CPUs by default on boot.
++	  Say N here if you are unsure.
++
+ config TASKS_TRACE_RCU_READ_MB
+ 	bool "Tasks Trace RCU readers use memory barriers in user and idle"
+ 	depends on RCU_EXPERT
+diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+index eeafb546a7a0..673fa0d1f801 100644
+--- a/kernel/rcu/tree_nocb.h
++++ b/kernel/rcu/tree_nocb.h
+@@ -1165,12 +1165,21 @@ EXPORT_SYMBOL_GPL(rcu_nocb_cpu_offload);
+ void __init rcu_init_nohz(void)
+ {
+ 	int cpu;
+-	bool need_rcu_nocb_mask = false;
++	bool need_rcu_nocb_mask = false, offload_all = false;
+ 	struct rcu_data *rdp;
+ 
++#if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
++	if (!rcu_nocb_is_setup) {
++		need_rcu_nocb_mask = true;
++		offload_all = true;
++	}
++#endif
++
+ #if defined(CONFIG_NO_HZ_FULL)
+-	if (tick_nohz_full_running && cpumask_weight(tick_nohz_full_mask))
++	if (tick_nohz_full_running && cpumask_weight(tick_nohz_full_mask)) {
+ 		need_rcu_nocb_mask = true;
++		offload_all = false; /* NO_HZ_FULL has its own mask. */
++	}
+ #endif /* #if defined(CONFIG_NO_HZ_FULL) */
+ 
+ 	if (need_rcu_nocb_mask) {
+@@ -1191,6 +1200,9 @@ void __init rcu_init_nohz(void)
+ 		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, tick_nohz_full_mask);
+ #endif /* #if defined(CONFIG_NO_HZ_FULL) */
+ 
++	if (offload_all)
++		cpumask_setall(rcu_nocb_mask);
++
+ 	if (!cpumask_subset(rcu_nocb_mask, cpu_possible_mask)) {
+ 		pr_info("\tNote: kernel parameter 'rcu_nocbs=', 'nohz_full', or 'isolcpus=' contains nonexistent CPUs.\n");
+ 		cpumask_and(rcu_nocb_mask, cpu_possible_mask,
+-- 
+2.36.0.rc0.470.gd361397f0d-goog
 
