@@ -2,35 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 09:45:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53EB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 09:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350758AbiDOJrz (ORCPT
+        id S1351861AbiDOJr6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 05:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38746 "EHLO
+        Fri, 15 Apr 2022 05:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235242AbiDOJru (ORCPT
+        with ESMTP id S233315AbiDOJru (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 15 Apr 2022 05:47:50 -0400
 Received: from synology.com (mail.synology.com [211.23.38.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ECA378901
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 02:45:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FFE6D979
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 02:45:21 -0700 (PDT)
 From:   Chung-Chiang Cheng <cccheng@synology.com>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synology.com; s=123;
-        t=1650015920; bh=Lf5M/7owMt0p8F5u9OJM+aS4FoUeFmgJQU0yNRZHPFw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Di1AIj7cUfAYBEoSUGvadGfJocVDFulCIY219fAZY/ST5ZWsPxzmS9VimRra1c5eW
-         JKo9u4R7LXUdpfSWRpz2iWFUwdhRPbLb/jXqn4kjIIU5yKl6wqLatp9/XXkhQiLzjg
-         5WX244smaLmdNQs9Cihppil4XAACMAtfRz5kUQTE=
+        t=1650015920; bh=n41AnKVpmXRGqTKFvbN45dUP3voF1ZcCyZmjVvQa2SY=;
+        h=From:To:Cc:Subject:Date;
+        b=RDJcNkfp+/IlHtXzqp6nt3EmXg8kxHDswJWNKysDzjYtwo6rl0R6rqp4au0NNqw29
+         yWQ2Ppvw/3xWaGkSoSv+gY+FM3RssUKGn2xoZNfDIkQ7bcSUlSBk8qU0pOX0dpJ3+4
+         o4VUYEQsoUpaVEQ0zuzCBRMv9tWO6uaINCCeHa6Q=
 To:     hirofumi@mail.parknet.co.jp
 Cc:     linux-kernel@vger.kernel.org, kernel@cccheng.net,
         shepjeng@gmail.com, Chung-Chiang Cheng <cccheng@synology.com>
-Subject: [PATCH v3 3/3] fat: report creation time in statx
-Date:   Fri, 15 Apr 2022 17:45:18 +0800
-Message-Id: <20220415094518.380543-3-cccheng@synology.com>
-In-Reply-To: <20220415094518.380543-1-cccheng@synology.com>
-References: <20220415094518.380543-1-cccheng@synology.com>
+Subject: [PATCH v3 1/3] fat: split fat_truncate_time() into separate functions
+Date:   Fri, 15 Apr 2022 17:45:16 +0800
+Message-Id: <20220415094518.380543-1-cccheng@synology.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Synology-MCP-Status: no
@@ -41,96 +39,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-creation time is no longer mixed with change time. Add a in-memory
-field for it, and report it in statx if supported.
+Separate fat_truncate_time() to each timestamps for later creation time
+work.
+
+This patch does not introduce any functional changes, it's merely
+refactoring change.
 
 Signed-off-by: Chung-Chiang Cheng <cccheng@synology.com>
 ---
- fs/fat/fat.h   |  1 +
- fs/fat/file.c  | 14 +++++++++++---
- fs/fat/inode.c | 12 ++++++++++--
- 3 files changed, 22 insertions(+), 5 deletions(-)
+ fs/fat/fat.h  |  6 +++++
+ fs/fat/misc.c | 72 ++++++++++++++++++++++++++++++++-------------------
+ 2 files changed, 52 insertions(+), 26 deletions(-)
 
 diff --git a/fs/fat/fat.h b/fs/fat/fat.h
-index 508b4f2a1ffb..e4409ee82ea9 100644
+index 02d4d4234956..508b4f2a1ffb 100644
 --- a/fs/fat/fat.h
 +++ b/fs/fat/fat.h
-@@ -126,6 +126,7 @@ struct msdos_inode_info {
- 	struct hlist_node i_fat_hash;	/* hash by i_location */
- 	struct hlist_node i_dir_hash;	/* hash by i_logstart */
- 	struct rw_semaphore truncate_lock; /* protect bmap against truncate */
-+	struct timespec64 i_crtime;	/* File creation (birth) time */
- 	struct inode vfs_inode;
- };
+@@ -446,6 +446,12 @@ extern void fat_time_fat2unix(struct msdos_sb_info *sbi, struct timespec64 *ts,
+ 			      __le16 __time, __le16 __date, u8 time_cs);
+ extern void fat_time_unix2fat(struct msdos_sb_info *sbi, struct timespec64 *ts,
+ 			      __le16 *time, __le16 *date, u8 *time_cs);
++extern void fat_truncate_atime(struct msdos_sb_info *sbi, struct timespec64 *ts,
++			       struct timespec64 *atime);
++extern void fat_truncate_crtime(struct msdos_sb_info *sbi, struct timespec64 *ts,
++				struct timespec64 *crtime);
++extern void fat_truncate_mtime(struct msdos_sb_info *sbi, struct timespec64 *ts,
++			       struct timespec64 *mtime);
+ extern int fat_truncate_time(struct inode *inode, struct timespec64 *now,
+ 			     int flags);
+ extern int fat_update_time(struct inode *inode, struct timespec64 *now,
+diff --git a/fs/fat/misc.c b/fs/fat/misc.c
+index 91ca3c304211..c87df64f8b2b 100644
+--- a/fs/fat/misc.c
++++ b/fs/fat/misc.c
+@@ -282,16 +282,49 @@ static inline struct timespec64 fat_timespec64_trunc_10ms(struct timespec64 ts)
+ 	return ts;
+ }
  
-diff --git a/fs/fat/file.c b/fs/fat/file.c
-index 178c1dde3488..7a4f617d4928 100644
---- a/fs/fat/file.c
-+++ b/fs/fat/file.c
-@@ -399,13 +399,21 @@ int fat_getattr(struct user_namespace *mnt_userns, const struct path *path,
- 		struct kstat *stat, u32 request_mask, unsigned int flags)
++/*
++ * truncate atime to 24 hour granularity (00:00:00 in local timezone)
++ */
++void fat_truncate_atime(struct msdos_sb_info *sbi, struct timespec64 *ts,
++			struct timespec64 *atime)
++{
++	/* to localtime */
++	time64_t seconds = ts->tv_sec - fat_tz_offset(sbi);
++	s32 remainder;
++
++	div_s64_rem(seconds, SECS_PER_DAY, &remainder);
++	/* to day boundary, and back to unix time */
++	seconds = seconds + fat_tz_offset(sbi) - remainder;
++
++	*atime = (struct timespec64){ seconds, 0 };
++}
++
++/*
++ * truncate creation time with appropriate granularity:
++ *   msdos - 2 seconds
++ *   vfat  - 10 milliseconds
++ */
++void fat_truncate_crtime(struct msdos_sb_info *sbi, struct timespec64 *ts,
++			 struct timespec64 *crtime)
++{
++	if (sbi->options.isvfat)
++		*crtime = fat_timespec64_trunc_10ms(*ts);
++	else
++		*crtime = fat_timespec64_trunc_2secs(*ts);
++}
++
++/*
++ * truncate mtime to 2 second granularity
++ */
++void fat_truncate_mtime(struct msdos_sb_info *sbi, struct timespec64 *ts,
++			struct timespec64 *mtime)
++{
++	*mtime = fat_timespec64_trunc_2secs(*ts);
++}
++
+ /*
+  * truncate the various times with appropriate granularity:
+- *   root inode:
+- *     all times always 0
+- *   all other inodes:
+- *     mtime - 2 seconds
+- *     ctime
+- *       msdos - 2 seconds
+- *       vfat  - 10 milliseconds
+- *     atime - 24 hours (00:00:00 in local timezone)
++ *   all times in root node are always 0
+  */
+ int fat_truncate_time(struct inode *inode, struct timespec64 *now, int flags)
  {
- 	struct inode *inode = d_inode(path->dentry);
-+	struct msdos_sb_info *sbi = MSDOS_SB(inode->i_sb);
-+
- 	generic_fillattr(mnt_userns, inode, stat);
--	stat->blksize = MSDOS_SB(inode->i_sb)->cluster_size;
-+	stat->blksize = sbi->cluster_size;
- 
--	if (MSDOS_SB(inode->i_sb)->options.nfs == FAT_NFS_NOSTALE_RO) {
-+	if (sbi->options.nfs == FAT_NFS_NOSTALE_RO) {
- 		/* Use i_pos for ino. This is used as fileid of nfs. */
--		stat->ino = fat_i_pos_read(MSDOS_SB(inode->i_sb), inode);
-+		stat->ino = fat_i_pos_read(sbi, inode);
+@@ -306,25 +339,12 @@ int fat_truncate_time(struct inode *inode, struct timespec64 *now, int flags)
+ 		ts = current_time(inode);
  	}
-+
-+	if (sbi->options.isvfat && request_mask & STATX_BTIME) {
-+		stat->result_mask |= STATX_BTIME;
-+		stat->btime = MSDOS_I(inode)->i_crtime;
-+	}
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(fat_getattr);
-diff --git a/fs/fat/inode.c b/fs/fat/inode.c
-index f2ac55cd4ea4..23fac3181fa7 100644
---- a/fs/fat/inode.c
-+++ b/fs/fat/inode.c
-@@ -568,10 +568,14 @@ int fat_fill_inode(struct inode *inode, struct msdos_dir_entry *de)
  
- 	fat_time_fat2unix(sbi, &inode->i_mtime, de->time, de->date, 0);
- 	inode->i_ctime = inode->i_mtime;
--	if (sbi->options.isvfat)
-+	if (sbi->options.isvfat) {
- 		fat_time_fat2unix(sbi, &inode->i_atime, 0, de->adate, 0);
--	else
-+		fat_time_fat2unix(sbi, &MSDOS_I(inode)->i_crtime, de->ctime,
-+				  de->cdate, de->ctime_cs);
-+	} else {
- 		fat_truncate_atime(sbi, &inode->i_mtime, &inode->i_atime);
-+		fat_truncate_crtime(sbi, &inode->i_mtime, &MSDOS_I(inode)->i_crtime);
-+	}
+-	if (flags & S_ATIME) {
+-		/* to localtime */
+-		time64_t seconds = now->tv_sec - fat_tz_offset(sbi);
+-		s32 remainder;
+-
+-		div_s64_rem(seconds, SECS_PER_DAY, &remainder);
+-		/* to day boundary, and back to unix time */
+-		seconds = seconds + fat_tz_offset(sbi) - remainder;
+-
+-		inode->i_atime = (struct timespec64){ seconds, 0 };
+-	}
+-	if (flags & S_CTIME) {
+-		if (sbi->options.isvfat)
+-			inode->i_ctime = fat_timespec64_trunc_10ms(*now);
+-		else
+-			inode->i_ctime = fat_timespec64_trunc_2secs(*now);
+-	}
++	if (flags & S_ATIME)
++		fat_truncate_atime(sbi, now, &inode->i_atime);
++	if (flags & S_CTIME)
++		fat_truncate_crtime(sbi, now, &inode->i_ctime);
+ 	if (flags & S_MTIME)
+-		inode->i_mtime = fat_timespec64_trunc_2secs(*now);
++		fat_truncate_mtime(sbi, now, &inode->i_mtime);
  
  	return 0;
  }
-@@ -756,6 +760,8 @@ static struct inode *fat_alloc_inode(struct super_block *sb)
- 	ei->i_logstart = 0;
- 	ei->i_attrs = 0;
- 	ei->i_pos = 0;
-+	ei->i_crtime.tv_sec = 0;
-+	ei->i_crtime.tv_nsec = 0;
- 
- 	return &ei->vfs_inode;
- }
-@@ -887,6 +893,8 @@ static int __fat_write_inode(struct inode *inode, int wait)
- 			  &raw_entry->date, NULL);
- 	if (sbi->options.isvfat) {
- 		__le16 atime;
-+		fat_time_unix2fat(sbi, &MSDOS_I(inode)->i_crtime, &raw_entry->ctime,
-+				  &raw_entry->cdate, &raw_entry->ctime_cs);
- 		fat_time_unix2fat(sbi, &inode->i_atime, &atime,
- 				  &raw_entry->adate, NULL);
- 	}
 -- 
 2.34.1
 
