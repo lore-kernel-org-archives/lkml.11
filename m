@@ -2,161 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B07A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 01:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A38A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 01:27:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348411AbiDOBZl (ORCPT
+        id S1348425AbiDOB3v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 21:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50046 "EHLO
+        Thu, 14 Apr 2022 21:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343588AbiDOBZh (ORCPT
+        with ESMTP id S243739AbiDOB3t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 21:25:37 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1600A66C96;
-        Thu, 14 Apr 2022 18:23:11 -0700 (PDT)
-Received: from kwepemi100012.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Kfdkx3d7PzCqw6;
-        Fri, 15 Apr 2022 09:18:49 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- kwepemi100012.china.huawei.com (7.221.188.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 15 Apr 2022 09:23:09 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
- (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Apr
- 2022 09:23:08 +0800
-From:   Zhihao Cheng <chengzhihao1@huawei.com>
-To:     <viro@zeniv.linux.org.uk>, <torvalds@linux-foundation.org>,
-        <hch@lst.de>
-CC:     <linux-fsdevel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>
-Subject: [PATCH] fs-writeback: Flush plug before next iteration in wb_writeback()
-Date:   Fri, 15 Apr 2022 09:37:35 +0800
-Message-ID: <20220415013735.1610091-1-chengzhihao1@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 14 Apr 2022 21:29:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 39A396E35C
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 18:27:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649986040;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=38ilKsA+Bz5y6ZbyDlwPueFS6EFR/hQD87Mrty+58Zw=;
+        b=FAznv87/Ppt8u8qENzshxA3M8NdY00REWozzODIMuzJyqgMdaePIWvohvowOUHZJKhPgTu
+        s8Y1ijbowkXXbf9zmkwA9yfi4RiqmjAPPAOzZSLDlSEn0NqcUGixqTgGkNSm4wJfJtVThC
+        pn1weyQogdr/vPBgHwRgQjved9i15oY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-515-IFhh3HIZNkiHc7ebYSdlzA-1; Thu, 14 Apr 2022 21:27:17 -0400
+X-MC-Unique: IFhh3HIZNkiHc7ebYSdlzA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0A4C9800B21;
+        Fri, 15 Apr 2022 01:27:16 +0000 (UTC)
+Received: from [10.22.18.93] (unknown [10.22.18.93])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 43B00111D78E;
+        Fri, 15 Apr 2022 01:27:12 +0000 (UTC)
+Message-ID: <1e26726b-721e-7197-8834-8aff2b4c4bc3@redhat.com>
+Date:   Thu, 14 Apr 2022 21:27:12 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 1/7] asm-generic: ticket-lock: New generic ticket-based
+ spinlock
+Content-Language: en-US
+To:     Palmer Dabbelt <palmer@rivosinc.com>,
+        Arnd Bergmann <arnd@arndb.de>, heiko@sntech.de,
+        guoren@kernel.org, shorne@gmail.com
+Cc:     peterz@infradead.org, mingo@redhat.com,
+        Will Deacon <will@kernel.org>, boqun.feng@gmail.com,
+        jonas@southpole.se, stefan.kristiansson@saunalahti.fi,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
+        macro@orcam.me.uk, Greg KH <gregkh@linuxfoundation.org>,
+        sudipm.mukherjee@gmail.com, wangkefeng.wang@huawei.com,
+        jszhang@kernel.org, linux-csky@vger.kernel.org,
+        linux-kernel@vger.kernel.org, openrisc@lists.librecores.org,
+        linux-riscv@lists.infradead.org, linux-arch@vger.kernel.org
+References: <20220414220214.24556-1-palmer@rivosinc.com>
+ <20220414220214.24556-2-palmer@rivosinc.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <20220414220214.24556-2-palmer@rivosinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 505a666ee3fc ("writeback: plug writeback in wb_writeback() and
-writeback_inodes_wb()") has us holding a plug during wb_writeback, which
-may cause a potential ABBA dead lock:
+On 4/14/22 18:02, Palmer Dabbelt wrote:
+> From: Peter Zijlstra <peterz@infradead.org>
+>
+> This is a simple, fair spinlock.  Specifically it doesn't have all the
+> subtle memory model dependencies that qspinlock has, which makes it more
+> suitable for simple systems as it is more likely to be correct.  It is
+> implemented entirely in terms of standard atomics and thus works fine
+> without any arch-specific code.
+>
+> This replaces the existing asm-generic/spinlock.h, which just errored
+> out on SMP systems.
+>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+> ---
+>   include/asm-generic/spinlock.h       | 85 +++++++++++++++++++++++++---
+>   include/asm-generic/spinlock_types.h | 17 ++++++
+>   2 files changed, 94 insertions(+), 8 deletions(-)
+>   create mode 100644 include/asm-generic/spinlock_types.h
+>
+> diff --git a/include/asm-generic/spinlock.h b/include/asm-generic/spinlock.h
+> index adaf6acab172..ca829fcb9672 100644
+> --- a/include/asm-generic/spinlock.h
+> +++ b/include/asm-generic/spinlock.h
+> @@ -1,12 +1,81 @@
+>   /* SPDX-License-Identifier: GPL-2.0 */
+> -#ifndef __ASM_GENERIC_SPINLOCK_H
+> -#define __ASM_GENERIC_SPINLOCK_H
+> +
+>   /*
+> - * You need to implement asm/spinlock.h for SMP support. The generic
+> - * version does not handle SMP.
+> + * 'Generic' ticket-lock implementation.
+> + *
+> + * It relies on atomic_fetch_add() having well defined forward progress
+> + * guarantees under contention. If your architecture cannot provide this, stick
+> + * to a test-and-set lock.
+> + *
+> + * It also relies on atomic_fetch_add() being safe vs smp_store_release() on a
+> + * sub-word of the value. This is generally true for anything LL/SC although
+> + * you'd be hard pressed to find anything useful in architecture specifications
+> + * about this. If your architecture cannot do this you might be better off with
+> + * a test-and-set.
+> + *
+> + * It further assumes atomic_*_release() + atomic_*_acquire() is RCpc and hence
+> + * uses atomic_fetch_add() which is SC to create an RCsc lock.
+> + *
+> + * The implementation uses smp_cond_load_acquire() to spin, so if the
+> + * architecture has WFE like instructions to sleep instead of poll for word
+> + * modifications be sure to implement that (see ARM64 for example).
+> + *
+>    */
+> -#ifdef CONFIG_SMP
+> -#error need an architecture specific asm/spinlock.h
+> -#endif
+>   
+> -#endif /* __ASM_GENERIC_SPINLOCK_H */
+> +#ifndef __ASM_GENERIC_TICKET_LOCK_H
+> +#define __ASM_GENERIC_TICKET_LOCK_H
+It is not conventional to use a macro name that is different from the 
+header file name.
+> +
+> +#include <linux/atomic.h>
+> +#include <asm-generic/spinlock_types.h>
+> +
+> +static __always_inline void arch_spin_lock(arch_spinlock_t *lock)
+> +{
+> +	u32 val = atomic_fetch_add(1<<16, lock); /* SC, gives us RCsc */
+> +	u16 ticket = val >> 16;
+> +
+> +	if (ticket == (u16)val)
+> +		return;
+> +
+> +	atomic_cond_read_acquire(lock, ticket == (u16)VAL);
+> +}
+> +
+> +static __always_inline bool arch_spin_trylock(arch_spinlock_t *lock)
+> +{
+> +	u32 old = atomic_read(lock);
+> +
+> +	if ((old >> 16) != (old & 0xffff))
+> +		return false;
+> +
+> +	return atomic_try_cmpxchg(lock, &old, old + (1<<16)); /* SC, for RCsc */
+> +}
+> +
+> +static __always_inline void arch_spin_unlock(arch_spinlock_t *lock)
+> +{
+> +	u16 *ptr = (u16 *)lock + IS_ENABLED(CONFIG_CPU_BIG_ENDIAN);
+> +	u32 val = atomic_read(lock);
+> +
+> +	smp_store_release(ptr, (u16)val + 1);
+> +}
+> +
+> +static __always_inline int arch_spin_is_locked(arch_spinlock_t *lock)
+> +{
+> +	u32 val = atomic_read(lock);
+> +
+> +	return ((val >> 16) != (val & 0xffff));
+> +}
+> +
+> +static __always_inline int arch_spin_is_contended(arch_spinlock_t *lock)
+> +{
+> +	u32 val = atomic_read(lock);
+> +
+> +	return (s16)((val >> 16) - (val & 0xffff)) > 1;
+> +}
+> +
+> +static __always_inline int arch_spin_value_unlocked(arch_spinlock_t lock)
+> +{
+> +	return !arch_spin_is_locked(&lock);
+> +}
+> +
+> +#include <asm/qrwlock.h>
+> +
+> +#endif /* __ASM_GENERIC_TICKET_LOCK_H */
+> diff --git a/include/asm-generic/spinlock_types.h b/include/asm-generic/spinlock_types.h
+> new file mode 100644
+> index 000000000000..e56ddb84d030
+> --- /dev/null
+> +++ b/include/asm-generic/spinlock_types.h
+> @@ -0,0 +1,17 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +
+> +#ifndef __ASM_GENERIC_TICKET_LOCK_TYPES_H
+> +#define __ASM_GENERIC_TICKET_LOCK_TYPES_H
+> +
+> +#include <linux/types.h>
+> +typedef atomic_t arch_spinlock_t;
+> +
+> +/*
+> + * qrwlock_types depends on arch_spinlock_t, so we must typedef that before the
+> + * include.
+> + */
+> +#include <asm/qrwlock_types.h>
 
-    wb_writeback		fat_file_fsync
-blk_start_plug(&plug)
-for (;;) {
-  iter i-1: some reqs have been added into plug->mq_list  // LOCK A
-  iter i:
-    progress = __writeback_inodes_wb(wb, work)
-    . writeback_sb_inodes // fat's bdev
-    .   __writeback_single_inode
-    .   . generic_writepages
-    .   .   __block_write_full_page
-    .   .   . . 	    __generic_file_fsync
-    .   .   . . 	      sync_inode_metadata
-    .   .   . . 	        writeback_single_inode
-    .   .   . . 		  __writeback_single_inode
-    .   .   . . 		    fat_write_inode
-    .   .   . . 		      __fat_write_inode
-    .   .   . . 		        sync_dirty_buffer	// fat's bdev
-    .   .   . . 			  lock_buffer(bh)	// LOCK B
-    .   .   . . 			    submit_bh
-    .   .   . . 			      blk_mq_get_tag	// LOCK A
-    .   .   . trylock_buffer(bh)  // LOCK B
-    .   .   .   redirty_page_for_writepage
-    .   .   .     wbc->pages_skipped++
-    .   .   --wbc->nr_to_write
-    .   wrote += write_chunk - wbc.nr_to_write  // wrote > 0
-    .   requeue_inode
-    .     redirty_tail_locked
-    if (progress)    // progress > 0
-      continue;
-  iter i+1:
-      queue_io
-      // similar process with iter i, infinite for-loop !
-}
-blk_finish_plug(&plug)   // flush plug won't be called
+I believe that if you guard the include line by
 
-Above process triggers a hungtask like:
-[  399.044861] INFO: task bb:2607 blocked for more than 30 seconds.
-[  399.046824]       Not tainted 5.18.0-rc1-00005-gefae4d9eb6a2-dirty
-[  399.051539] task:bb              state:D stack:    0 pid: 2607 ppid:
-2426 flags:0x00004000
-[  399.051556] Call Trace:
-[  399.051570]  __schedule+0x480/0x1050
-[  399.051592]  schedule+0x92/0x1a0
-[  399.051602]  io_schedule+0x22/0x50
-[  399.051613]  blk_mq_get_tag+0x1d3/0x3c0
-[  399.051640]  __blk_mq_alloc_requests+0x21d/0x3f0
-[  399.051657]  blk_mq_submit_bio+0x68d/0xca0
-[  399.051674]  __submit_bio+0x1b5/0x2d0
-[  399.051708]  submit_bio_noacct+0x34e/0x720
-[  399.051718]  submit_bio+0x3b/0x150
-[  399.051725]  submit_bh_wbc+0x161/0x230
-[  399.051734]  __sync_dirty_buffer+0xd1/0x420
-[  399.051744]  sync_dirty_buffer+0x17/0x20
-[  399.051750]  __fat_write_inode+0x289/0x310
-[  399.051766]  fat_write_inode+0x2a/0xa0
-[  399.051783]  __writeback_single_inode+0x53c/0x6f0
-[  399.051795]  writeback_single_inode+0x145/0x200
-[  399.051803]  sync_inode_metadata+0x45/0x70
-[  399.051856]  __generic_file_fsync+0xa3/0x150
-[  399.051880]  fat_file_fsync+0x1d/0x80
-[  399.051895]  vfs_fsync_range+0x40/0xb0
-[  399.051929]  __x64_sys_fsync+0x18/0x30
+#ifdef CONFIG_QUEUED_RWLOCK
+#include <asm/qrwlock_types.h>
+#endif
 
-In my test, 'need_resched()' (which is imported by 590dca3a71 "fs-writeback:
-unplug before cond_resched in writeback_sb_inodes") in function
-'writeback_sb_inodes()' seldom comes true, unless cond_resched() is deleted
-from write_cache_pages().
+You may not need to do the hack in patch 5.
 
-Fix it by flush plug before next iteration in wb_writeback().
+You can also directly use the <asm-generic/qrwlock_types.h> line without 
+importing it to include/asm.
 
-Goto Link to find a reproducer.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215837
-Cc: stable@vger.kernel.org # v4.3
-Reported-by: Zhihao Cheng <chengzhihao1@huawei.com>
----
- fs/fs-writeback.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
-
-diff --git a/fs/fs-writeback.c b/fs/fs-writeback.c
-index 591fe9cf1659..e524c0a1749c 100644
---- a/fs/fs-writeback.c
-+++ b/fs/fs-writeback.c
-@@ -2036,8 +2036,21 @@ static long wb_writeback(struct bdi_writeback *wb,
- 		 * mean the overall work is done. So we keep looping as long
- 		 * as made some progress on cleaning pages or inodes.
- 		 */
--		if (progress)
-+		if (progress) {
-+			/*
-+			 * The progress may be false postive in page redirty
-+			 * case (which is caused by failing to get buffer head
-+			 * lock), which will requeue dirty inodes and start
-+			 * next writeback iteration, and other tasks maybe
-+			 * stuck for getting tags for new requests. So, flush
-+			 * plug to schedule requests holding tags.
-+			 *
-+			 * The code can be removed after buffer head
-+			 * disappering from linux.
-+			 */
-+			blk_flush_plug(current->plug, false);
- 			continue;
-+		}
- 		/*
- 		 * No more inodes for IO, bail
- 		 */
--- 
-2.31.1
+Cheers,
+Longman
 
