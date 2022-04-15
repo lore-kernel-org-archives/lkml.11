@@ -2,80 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA35C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 10:00:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC48C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 10:02:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352037AbiDOKDX (ORCPT
+        id S1352066AbiDOKFB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 06:03:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37000 "EHLO
+        Fri, 15 Apr 2022 06:05:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352066AbiDOKCk (ORCPT
+        with ESMTP id S231634AbiDOKE5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 06:02:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E329AAAB56;
-        Fri, 15 Apr 2022 03:00:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ECD062201;
-        Fri, 15 Apr 2022 10:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D7A57C385A8;
-        Fri, 15 Apr 2022 10:00:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650016811;
-        bh=CDk4q1xKExpAlT2WGfJQ10vodrCVHgZYkhwHkVy3ZxQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=f5f7kGOs47lFudJo9RQl7n2MMbuJkvYlyR8x7wqwqaVquelAJztJBmazMwv0tcQ1X
-         nNpv51VkzFiM32QoYJoRyeInfTDJgZGgbhhyS5nKv0ZsHOGHhVs1p9iyyulBETqekv
-         B7ffeJVQKXeU7V3MIAWtnUIPG0TjoLI5b7HLTKRhcL0OIuKdFE8x80bGHvjNwmYJOu
-         iWvpQQql72A/C9PeCwUrRTL9FjB8F+8XBDKtvqt25Pj1FTJYKodY9b/d4Ej+GQU1Ig
-         m3g1zKu6zN28BVRQrydlw3OZHO0S0Se4uGJBZEYvPrhBNWjZ+r1GBiK/C+5gkq4voh
-         nKFFo6hIpemmg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BC5ABEAC096;
-        Fri, 15 Apr 2022 10:00:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 15 Apr 2022 06:04:57 -0400
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19316BB08A
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 03:02:28 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 18:03:05 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1650016946;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=l24SRURrZaOrna4LFT1+c4+6yM66QDm3iL5iU6iEqm4=;
+        b=oPTcnvzL0dwOgR4bzD6k9/ZTKFj2jRMGsds+bT1fsJMJ1EHhZbT0MthNTIb8hMENs04fOK
+        os/HPIqY0SE4keuIX+k26bhGdKHgmXp6K3twKJD+VE9EH36LhBmSi+o+1pxV2UHueiPRTx
+        GGBKOlAS1zjF4vBWHBxYm4JvRPx1kfw=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Tao Zhou <tao.zhou@linux.dev>
+To:     Vincent Guittot <vincent.guittot@linaro.org>,
+        Tao Zhou <tao.zhou@linux.dev>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>
+Subject: Re: [PATCH V1 RESEND]: sched/fair: Revise comment about lb decision
+ matrix
+Message-ID: <YllC2VNdu5dmnrbb@geo.homenetwork>
+References: <20220415022246.14902-1-tao.zhou@linux.dev>
+ <CAKfTPtAbxAerbV-LBcpm_qHAphhD3uU47k0hu=DDX3k6LS-Aow@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Patch net] net: phy: LAN937x: added PHY_POLL_CABLE_TEST flag
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165001681176.2816.12195717687887060765.git-patchwork-notify@kernel.org>
-Date:   Fri, 15 Apr 2022 10:00:11 +0000
-References: <20220413071409.13530-1-arun.ramadoss@microchip.com>
-In-Reply-To: <20220413071409.13530-1-arun.ramadoss@microchip.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        prasanna.vengateshan@microchip.com, pabeni@redhat.com,
-        kuba@kernel.org, davem@davemloft.net, linux@armlinux.org.uk,
-        hkallweit1@gmail.com, andrew@lunn.ch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKfTPtAbxAerbV-LBcpm_qHAphhD3uU47k0hu=DDX3k6LS-Aow@mail.gmail.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Fri, Apr 15, 2022 at 10:32:09AM +0200,
+Vincent Guittot wrote:
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Wed, 13 Apr 2022 12:44:09 +0530 you wrote:
-> Added the phy_poll_cable_test flag for the lan937x phy driver.
-> Tested using command -  ethtool --cable-test <dev>
+> On Fri, 15 Apr 2022 at 04:22, Tao Zhou <tao.zhou@linux.dev> wrote:
+> >
+> > If busiest group type is group_misfit_task, the local
+> > group type must be group_has_spare according to below
+> > code in update_sd_pick_busiest():
+> >
+> > if (sgs->group_type == group_misfit_task &&
+> >     (!capacity_greater(capacity_of(env->dst_cpu), sg->sgc->max_capacity) ||
+> >      sds->local_stat.group_type != group_has_spare))
+> >          return false;
+> >
+> > group type imbalanced and overloaded and fully_busy are filtered in here.
+> > misfit and asym are filtered before in update_sg_lb_stats().
 > 
-> Fixes: 680baca546f2 ("net: phy: added the LAN937x phy support")
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> The behavior has changed with
+> cad68e552e77 ("sched/fair: Consider misfit tasks when load-balancing")
+> But we haven't updated the matrix
 > 
-> [...]
+> Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
 
-Here is the summary with links:
-  - [net] net: phy: LAN937x: added PHY_POLL_CABLE_TEST flag
-    https://git.kernel.org/netdev/net/c/6f06aa6b2fd7
+I send a version just now but forget to change the version number.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks,
+Tao
 
-
+> > So, change the decision matrix to:
+> >
+> > busiest \ local has_spare fully_busy misfit asym imbalanced overloaded
+> > has_spare        nr_idle   balanced   N/A    N/A  balanced   balanced
+> > fully_busy       nr_idle   nr_idle    N/A    N/A  balanced   balanced
+> > misfit_task      force     N/A        N/A    N/A  *N/A*      *N/A*
+> > asym_packing     force     force      N/A    N/A  force      force
+> > imbalanced       force     force      N/A    N/A  force      force
+> > overloaded       force     force      N/A    N/A  force      avg_load
+> >
+> > Fixes: 0b0695f2b34a ("sched/fair: Rework load_balance()")
+> > Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+> > Signed-off-by: Tao Zhou <tao.zhou@linux.dev>
+> > ---
+> >
+> > v1 changelog:
+> > (1) Send to MAINTAINERS/REVIEWS get from `./scripts/get_maintainer.pl`
+> >     suggested by Dietmar Eggemann.
+> > (2) Based on v5.18-rc2
+> >
+> >
+> >  kernel/sched/fair.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> > index d4bd299d67ab..b8c67e7c8cf3 100644
+> > --- a/kernel/sched/fair.c
+> > +++ b/kernel/sched/fair.c
+> > @@ -9495,7 +9495,7 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
+> >   * busiest \ local has_spare fully_busy misfit asym imbalanced overloaded
+> >   * has_spare        nr_idle   balanced   N/A    N/A  balanced   balanced
+> >   * fully_busy       nr_idle   nr_idle    N/A    N/A  balanced   balanced
+> > - * misfit_task      force     N/A        N/A    N/A  force      force
+> > + * misfit_task      force     N/A        N/A    N/A  N/A        N/A
+> >   * asym_packing     force     force      N/A    N/A  force      force
+> >   * imbalanced       force     force      N/A    N/A  force      force
+> >   * overloaded       force     force      N/A    N/A  force      avg_load
+> > --
+> > 2.35.2
+> >
