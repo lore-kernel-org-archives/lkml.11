@@ -2,123 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7597C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 20:09:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B26CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 20:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348795AbiDOUMI (ORCPT
+        id S1351662AbiDOUON (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 16:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32998 "EHLO
+        Fri, 15 Apr 2022 16:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351512AbiDOUMD (ORCPT
+        with ESMTP id S1348933AbiDOUOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 16:12:03 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C25E13D19
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 13:09:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650053373; x=1681589373;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=0ttQiJt1wYBwYCOZIqR6JxxJqq6DPU7ZtHlhxqY2iRE=;
-  b=looe6i9sbA/7FqETt+iBvF99Kk9LiHHh94JSOUIgcsOhlN0qYjZJGttl
-   Onem4dvJzplFGKK9Il6tOQwnTumIl1le2BkrL20J5dInd+hv0NVldZg3J
-   oZ1CIZn3Ww0CWkUjw3DCDTxPa6cLMSmp1Tv9AZwNnJDJEovP4mW6QtH0s
-   VNmrIxnDGsQ32rSISSIDAecWb13erdhIPORCceoY6TZz39O4VsBKmrN0Y
-   Xk/WKRMGKsz+qOPx4io7V6MCSOhYIPq7KqMG6q3YQ46qQQexrQJU14G0m
-   d2JgrtqfpnlIVpL4tuPc2YGb5dTHC5X5m0kjtSSZP+C29+xRcinNM003t
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="262079163"
-X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
-   d="scan'208";a="262079163"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 13:09:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
-   d="scan'208";a="803626787"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 15 Apr 2022 13:09:31 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nfSG3-0002MU-9v;
-        Fri, 15 Apr 2022 20:09:31 +0000
-Date:   Sat, 16 Apr 2022 04:08:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jgunthorpe:vfio_kvm_no_group 2/11]
- arch/powerpc/kvm/../../../virt/kvm/vfio.c:356:58: error: cast to pointer
- from integer of different size
-Message-ID: <202204160410.A4xlb0e3-lkp@intel.com>
+        Fri, 15 Apr 2022 16:14:09 -0400
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D024CD7905
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 13:11:39 -0700 (PDT)
+Received: by mail-il1-x129.google.com with SMTP id y5so5364474ilg.4
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 13:11:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=0h4kOw13GPXSZXPL1aFf+vHZzuFNnu2SrOyKDVhlRIA=;
+        b=NlhPZwWCO7FasxaGZw/zJ09wLrjrr7u1BX1PCAWm9lk+27gpfhHcbV8F1yi2OAQAeM
+         x76MUCMVaJxluw5Rkb2kNQtgksV9v7BP7p3jJNjQv4LONZLzoHA8iXPqTHGZ9FMg4aWs
+         cAd74g+dn65csQAY0aCQzKINt37eihgLEm5gnZv68kVe8VuLXKTO+SgQlw6zuy7cJks4
+         LTa0omUHRU7t4tZ8XyMMLsoMGNelEs+PbRIiWvtlobkSUQfpksDDsy2FYIAHtOS+0Rtd
+         bk5pZk9Q1Pi9d6yN4zOHNWVuwym8wWlfMC49tnyH+a2Mu2Y1SZkxZUX4DaPDah5zfjR3
+         G9bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0h4kOw13GPXSZXPL1aFf+vHZzuFNnu2SrOyKDVhlRIA=;
+        b=o2bGcGv/u+2iymgdOn6rWMseuuAOPT24IGFpNvH2mtXrzf1lNqeG5KKbW+YhYRn5zG
+         dudToD0R8vXxBJd6f9bnn0hU4PIcDmZ0qJH1h8k8nGcCmTrKV94N34SgjpHxAuNBSuZ/
+         B+D85z8mwhlMQ/uqnLZUsttBFrUWbKV1vKjsyZ/NyzA3mMqatBtsReh7hRSMaRV/+KvH
+         zE8pKTiApIupw4r6WW3AwuJEg/KX1y8Mp3yXgCiL69NOcWSITI36nieBUHUM2gEa67eH
+         ZcHhcE4yideaMr4PRAgpwV50x61uPqqC3IEbWPytJDUutyEzf/22FkNxl9qB4DjBygWp
+         cK4A==
+X-Gm-Message-State: AOAM530QyEO+5JRoTf7ImDsQaHZZTdmll+p8e9NCC6jQvDOptYLwPMB6
+        FeBVo9YXHyUHb1A2BWhFCG2z3A==
+X-Google-Smtp-Source: ABdhPJyTBoYl3cMDgpDoRgLgnManLiP13mZe+WlzTYZ9CFELNXvXNBHNOWQZnOFkuViPHCIJuHoTIQ==
+X-Received: by 2002:a05:6e02:1445:b0:2ca:becb:94fd with SMTP id p5-20020a056e02144500b002cabecb94fdmr200511ilo.98.1650053499173;
+        Fri, 15 Apr 2022 13:11:39 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id w20-20020a056e0213f400b002cac6dfd465sm3107473ilj.69.2022.04.15.13.11.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Apr 2022 13:11:38 -0700 (PDT)
+Message-ID: <efd1815f-54fd-3035-4583-a74601ccce71@linaro.org>
+Date:   Fri, 15 Apr 2022 15:11:37 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 3/2] arm64: dts: qcom: sc7180: Remove ipa interconnect
+ node
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        Doug Anderson <dianders@chromium.org>,
+        Taniya Das <quic_tdas@quicinc.com>,
+        Mike Tipton <quic_mdtipton@quicinc.com>,
+        Georgi Djakov <djakov@kernel.org>
+References: <20220412220033.1273607-1-swboyd@chromium.org>
+ <20220415005828.1980055-1-swboyd@chromium.org>
+From:   Alex Elder <elder@linaro.org>
+In-Reply-To: <20220415005828.1980055-1-swboyd@chromium.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jgunthorpe/linux vfio_kvm_no_group
-head:   0a779a04652d97c98d71a1538a37f89145dba9ed
-commit: c068aae365aaf0ecde7abf0842298c59d7ed0d9c [2/11] kvm/vfio: Reduce the scope of PPC #ifdefs
-config: powerpc-randconfig-c003-20220414 (https://download.01.org/0day-ci/archive/20220416/202204160410.A4xlb0e3-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jgunthorpe/linux/commit/c068aae365aaf0ecde7abf0842298c59d7ed0d9c
-        git remote add jgunthorpe https://github.com/jgunthorpe/linux
-        git fetch --no-tags jgunthorpe vfio_kvm_no_group
-        git checkout c068aae365aaf0ecde7abf0842298c59d7ed0d9c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash
+On 4/14/22 7:58 PM, Stephen Boyd wrote:
+> This device node is unused now that we've removed the driver that
+> consumed it in the kernel. Drop the unused node to save some space.
+> 
+> Cc: Alex Elder <elder@linaro.org>
+> Cc: Taniya Das <quic_tdas@quicinc.com>
+> Cc: Mike Tipton <quic_mdtipton@quicinc.com>
+> Cc: Georgi Djakov <djakov@kernel.org>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Looks good to me.
 
-All errors (new ones prefixed by >>):
-
-   arch/powerpc/kvm/../../../virt/kvm/vfio.c: In function 'kvm_vfio_set_group':
->> arch/powerpc/kvm/../../../virt/kvm/vfio.c:356:58: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
-     356 |                 return kvm_vfio_group_set_spapr_tce(dev, (void __user *)arg);
-         |                                                          ^
-   cc1: all warnings being treated as errors
+Reviewed-by: Alex Elder <elder@linaro.org>
 
 
-vim +356 arch/powerpc/kvm/../../../virt/kvm/vfio.c
+> ---
+>   arch/arm64/boot/dts/qcom/sc7180.dtsi | 7 -------
+>   1 file changed, 7 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+> index e1c46b80f14a..1ff96ef30e3f 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+> @@ -1421,13 +1421,6 @@ mmss_noc: interconnect@1740000 {
+>   			qcom,bcm-voters = <&apps_bcm_voter>;
+>   		};
+>   
+> -		ipa_virt: interconnect@1e00000 {
+> -			compatible = "qcom,sc7180-ipa-virt";
+> -			reg = <0 0x01e00000 0 0x1000>;
+> -			#interconnect-cells = <2>;
+> -			qcom,bcm-voters = <&apps_bcm_voter>;
+> -		};
+> -
+>   		ipa: ipa@1e40000 {
+>   			compatible = "qcom,sc7180-ipa";
+>   
 
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  338  
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  339  static int kvm_vfio_set_group(struct kvm_device *dev, long attr, u64 arg)
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  340  {
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  341  	int32_t __user *argp = (int32_t __user *)(unsigned long)arg;
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  342  	int32_t fd;
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  343  
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  344  	switch (attr) {
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  345  	case KVM_DEV_VFIO_GROUP_ADD:
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  346  		if (get_user(fd, argp))
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  347  			return -EFAULT;
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  348  		return kvm_vfio_group_add(dev, fd);
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  349  
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  350  	case KVM_DEV_VFIO_GROUP_DEL:
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  351  		if (get_user(fd, argp))
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  352  			return -EFAULT;
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  353  		return kvm_vfio_group_del(dev, fd);
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  354  
-26d16e3ba7292b Jason Gunthorpe 2022-03-30  355  	case KVM_DEV_VFIO_GROUP_SET_SPAPR_TCE:
-26d16e3ba7292b Jason Gunthorpe 2022-03-30 @356  		return kvm_vfio_group_set_spapr_tce(dev, (void __user *)arg);
-ec53500fae421e Alex Williamson 2013-10-30  357  	}
-ec53500fae421e Alex Williamson 2013-10-30  358  
-ec53500fae421e Alex Williamson 2013-10-30  359  	return -ENXIO;
-ec53500fae421e Alex Williamson 2013-10-30  360  }
-ec53500fae421e Alex Williamson 2013-10-30  361  
-
-:::::: The code at line 356 was first introduced by commit
-:::::: 26d16e3ba7292b7fce26d25a2ba8f44b8c28ffe3 kvm/vfio: Move KVM_DEV_VFIO_GROUP_* ioctls into functions
-
-:::::: TO: Jason Gunthorpe <jgg@nvidia.com>
-:::::: CC: Jason Gunthorpe <jgg@nvidia.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
