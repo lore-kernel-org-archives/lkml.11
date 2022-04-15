@@ -2,116 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41117C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E8CC433FE
 	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 02:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348555AbiDOCJB (ORCPT
+        id S1348568AbiDOCME (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 22:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47746 "EHLO
+        Thu, 14 Apr 2022 22:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236718AbiDOCJA (ORCPT
+        with ESMTP id S236718AbiDOCMA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 22:09:00 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87B7B193F3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:06:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649988393; x=1681524393;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Awyr725UZAI8FTXsrb+MwtwKfF/cERrxUkbIXF3VrjE=;
-  b=kejIoOy/Yl3D8r211MeFxh7G9iwukT6t/h9reOzZocYFzdNtXwagiHe4
-   bnUj+iVnHbhvppSpaM+a9cU6GnR0RPb4wq0IA8gdKXmFXxp3gzhCgDlHx
-   EcKRNziMNToJ9H2vPlQn7Mvv59CvgS/Mut70KCbfLueyOh+y2kGq6/8n9
-   x9RXEM18pO+T5oADULyv+YTjwi7SOuGIIg/rWCLPQRyTxu2FggJpuNMwK
-   Kpzk8ER+rl881kVhpTWGDEUsYvJZavAerR8z2M+HwCxKBdqvOSHJnIHjO
-   sPyX39sxgHZo5sB3x4OKEndmzxQJfXdD1546tyAYgUAOF/2WbDaft/Wj7
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10317"; a="243660375"
-X-IronPort-AV: E=Sophos;i="5.90,261,1643702400"; 
-   d="scan'208";a="243660375"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 19:06:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,261,1643702400"; 
-   d="scan'208";a="591405344"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 14 Apr 2022 19:06:31 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nfBLy-0001PV-JQ;
-        Fri, 15 Apr 2022 02:06:30 +0000
-Date:   Fri, 15 Apr 2022 10:05:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bean Huo <beanhuo@micron.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Avri Altman <avri.altman@wdc.com>
-Subject: drivers/scsi/ufs/ufshpb.c:335:25: sparse: sparse: incorrect type in
- assignment (different base types)
-Message-ID: <202204150904.vrT7zPxT-lkp@intel.com>
+        Thu, 14 Apr 2022 22:12:00 -0400
+Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FDEEE0E3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 19:09:33 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id B95EA560CD5;
+        Fri, 15 Apr 2022 02:09:32 +0000 (UTC)
+Received: from pdx1-sub0-mail-a254.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 2B575560FEB;
+        Fri, 15 Apr 2022 02:09:32 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1649988572; a=rsa-sha256;
+        cv=none;
+        b=ej0QQefeNcxxoi7XPekYKjR12ktfDgwIe6oGfvsXK6SBF9a7v4U4ozSYcTv1N0K/67Jjol
+        Hrg3gdP980QNj47N4RnJDQKDLQmJjfoqAwXSskvyDdsvt2SfcXWTJc6VPy23+BN0ihv1by
+        MOcneCLnitVkS7CJfqiJizOBES21ylg8xZCmyaEgiidl8ARGr1ESbSa1KWuBud/u7eP5TN
+        7vBbq8hmlxshxwvzhk9QzhS/U9UkhOqQ3/iCJxnhVoRR6dkeNgiEdvl6IW0fgVAnwW/ae9
+        /op3++UW31z9XsjuCldbGUmmLHJzBO+d44XpoS/0Y8rrqMgjR0Veb1A0MzrLHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1649988572;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=y/CtK1gEBEC/Kw2WPYqZH9dnFhfpNqnlY6v92/MuI4o=;
+        b=xXg0jzihQP537jJO5GB8hiVAK2axmKC8Q88F8bW2WStimubn20rVkLZ7nWEYWiilLzfT/F
+        ZcfsyU8zQDKaDKbMPe+qi9mNUEcTerrCzZGDbniElxgUHuz1JG3Th3G5VXuiW3ZJinl1gt
+        hINU2r33rNkZMcGD8NBhPxz8Q28eFmyw0Jd+ziK9UOV51PSJaJyS0ClyBP4JD3vJs/0aCK
+        EKf4+2amM8QYWd0LN8Efad9yVu3vld6m6sw2HEtqrWj8bayl0Nu0LE4n9AoZlXo4iTNxZQ
+        HKy30vmA4VsLilKq/TA6QnLTSIBuZkl3WBr3fyj7J8RRH2v4upvAqbsj6guftg==
+ARC-Authentication-Results: i=1;
+        rspamd-b69d6888c-26779;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from pdx1-sub0-mail-a254.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.106.158.161 (trex/6.7.1);
+        Fri, 15 Apr 2022 02:09:32 +0000
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Well-Made-Scare: 66490a1a1715cb50_1649988572538_3954983236
+X-MC-Loop-Signature: 1649988572538:2937066910
+X-MC-Ingress-Time: 1649988572538
+Received: from offworld (unknown [104.36.29.107])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a254.dreamhost.com (Postfix) with ESMTPSA id 4KffsQ67gQz21;
+        Thu, 14 Apr 2022 19:09:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1649988571;
+        bh=i8OD/SgEbmNj3IrkAtgDlN9p2e7lNCpA2O2Cn1jCdQw=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=O0jSIqTKFTMJCN2KiuWEkdAiRmALylGK3IKhrkKs7fSOdnx3v2SasLIMZQjnn8xMl
+         oHV7dtDZ6EGfWczw3KzGX/XUuGrsd/L6Yqt3Wy6XyCO3Zjp9RWnTxMQC6m+GHnvSsA
+         u7omsklgN+8P+OTY9Y+yZK6Jc5sz4yHjP0YuS2HS23tIuYq4uE5Bn9EgpGROEqOYTb
+         OkiQUZRhLYJJOxYJpCk58NwCdpCw1G+mxZ3WOcWcgNpoDDwO3uZhV4KOYjgV3oxq4w
+         AKNVISOoO0ZoVBLKwkeczBTB/eEOzyImO2pUGrpCK7JdUwt5QYqE7yUNf+l0MSHdVv
+         VPElCLxWMhxIg==
+Date:   Thu, 14 Apr 2022 19:09:27 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Peng Liu <liupeng256@huawei.com>
+Cc:     mike.kravetz@oracle.com, david@redhat.com,
+        akpm@linux-foundation.org, yaozhenguo1@gmail.com,
+        baolin.wang@linux.alibaba.com, songmuchun@bytedance.com,
+        liuyuntao10@huawei.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/4] hugetlb: Fix wrong use of nr_online_nodes
+Message-ID: <20220415020927.x7ylevbd5uaevfyt@offworld>
+Mail-Followup-To: Peng Liu <liupeng256@huawei.com>, mike.kravetz@oracle.com,
+        david@redhat.com, akpm@linux-foundation.org, yaozhenguo1@gmail.com,
+        baolin.wang@linux.alibaba.com, songmuchun@bytedance.com,
+        liuyuntao10@huawei.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <20220413032915.251254-1-liupeng256@huawei.com>
+ <20220413032915.251254-2-liupeng256@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220413032915.251254-2-liupeng256@huawei.com>
+User-Agent: NeoMutt/20201120
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   a19944809fe9942e6a96292490717904d0690c21
-commit: 63522bf3aced0a782b59f0314dbad5cdc8b14c59 scsi: ufs: core: Add L2P entry swap quirk for Micron UFS
-date:   8 months ago
-config: powerpc-randconfig-s032-20220414 (https://download.01.org/0day-ci/archive/20220415/202204150904.vrT7zPxT-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=63522bf3aced0a782b59f0314dbad5cdc8b14c59
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 63522bf3aced0a782b59f0314dbad5cdc8b14c59
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/scsi/ufs/
+On Wed, 13 Apr 2022, Peng Liu wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+>Certain systems are designed to have sparse/discontiguous nodes. In
+>this case, nr_online_nodes can not be used to walk through numa node.
+>Also, a valid node may be greater than nr_online_nodes.
+>
+>However, in hugetlb, it is assumed that nodes are contiguous. Recheck
+>all the places that use nr_online_nodes, and repair them one by one.
+>
+>Suggested-by: David Hildenbrand <david@redhat.com>
+>Fixes: 4178158ef8ca ("hugetlbfs: fix issue of preallocation of gigantic pages can't work")
+>Fixes: b5389086ad7b ("hugetlbfs: extend the definition of hugepages parameter to support node allocation")
+>Fixes: e79ce9832316 ("hugetlbfs: fix a truncation issue in hugepages parameter")
+>Fixes: f9317f77a6e0 ("hugetlb: clean up potential spectre issue warnings")
+>Signed-off-by: Peng Liu <liupeng256@huawei.com>
+>Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+>Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
 
+Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
 
-sparse warnings: (new ones prefixed by >>)
-   drivers/scsi/ufs/ufshpb.c:335:27: sparse: sparse: cast from restricted __be64
->> drivers/scsi/ufs/ufshpb.c:335:25: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __be64 [usertype] ppn_tmp @@     got unsigned long long [usertype] @@
-   drivers/scsi/ufs/ufshpb.c:335:25: sparse:     expected restricted __be64 [usertype] ppn_tmp
-   drivers/scsi/ufs/ufshpb.c:335:25: sparse:     got unsigned long long [usertype]
+... but
 
-vim +335 drivers/scsi/ufs/ufshpb.c
+>---
+> mm/hugetlb.c | 12 ++++++------
+> 1 file changed, 6 insertions(+), 6 deletions(-)
+>
+>diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+>index b34f50156f7e..5b5a2a5a742f 100644
+>--- a/mm/hugetlb.c
+>+++ b/mm/hugetlb.c
+>@@ -2979,7 +2979,7 @@ int __alloc_bootmem_huge_page(struct hstate *h, int nid)
+>	struct huge_bootmem_page *m = NULL; /* initialize for clang */
+>	int nr_nodes, node;
+>
+>-	if (nid != NUMA_NO_NODE && nid >= nr_online_nodes)
+>+	if (nid != NUMA_NO_NODE && !node_online(nid))
 
-   324	
-   325	static void
-   326	ufshpb_set_hpb_read_to_upiu(struct ufs_hba *hba, struct ufshpb_lu *hpb,
-   327				    struct ufshcd_lrb *lrbp, u32 lpn, __be64 ppn,
-   328				    u8 transfer_len, int read_id)
-   329	{
-   330		unsigned char *cdb = lrbp->cmd->cmnd;
-   331		__be64 ppn_tmp = ppn;
-   332		cdb[0] = UFSHPB_READ;
-   333	
-   334		if (hba->dev_quirks & UFS_DEVICE_QUIRK_SWAP_L2P_ENTRY_FOR_HPB_READ)
- > 335			ppn_tmp = swab64(ppn);
-   336	
-   337		/* ppn value is stored as big-endian in the host memory */
-   338		memcpy(&cdb[6], &ppn_tmp, sizeof(__be64));
-   339		cdb[14] = transfer_len;
-   340		cdb[15] = read_id;
-   341	
-   342		lrbp->cmd->cmd_len = UFS_CDB_SIZE;
-   343	}
-   344	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+afaict null_blk could also use this, actually the whole thing wants a
+helper - node_valid()?
