@@ -2,103 +2,291 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51247C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 17:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E39DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 17:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240163AbiDORgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 13:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43294 "EHLO
+        id S242599AbiDORhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 13:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236394AbiDORga (ORCPT
+        with ESMTP id S236394AbiDORhl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 13:36:30 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB7D5A586
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 10:34:00 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id i24-20020a17090adc1800b001cd5529465aso7576943pjv.0
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 10:34:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Cj4lHoJbdVe7/yfpNvTK/X4gKN0yimHzFNu70ixPoFc=;
-        b=bQ9Uoq6f8ua+HQMVChR2hvHq9zh8N2X02Qsfy6gnUjzbOW0BA5UUuqextBMPbux0x6
-         LOllMaVWds3+HMLb7Njk5gRa3V59cOgxRtCYiPPwq9aU5piIU38CeW9cTiMt81t+h2+Q
-         s1tGV4SSdieISroNVa6qnTONweMP4/miOMFfA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Cj4lHoJbdVe7/yfpNvTK/X4gKN0yimHzFNu70ixPoFc=;
-        b=iB0WZBuJEQwORXq3aGRLIUBAV6fXyk8+XbN5rm2BZHW39rSCUz2oQvxHvPM1zHvkTn
-         oMG2WPjEXn7KiKZ1NlAqhRAhjpIZqH08awGBW5iH3OMc5AJzGhrEQVBEFl55pcX+30lD
-         5l37MypbKn3XFbhhjAfKEe2ZEujq6aUKfH1BllKgeMwAcoy3dortvc11MKAKWXQcaO1Q
-         beX0/gaSLi7WGsWg9B+7bU1O28+G/eMdR4oIUsGM3XqpMXKA8kQvS/gfsZereTqCzOzU
-         6V8i78N3vLGPBtqXv8QxuO4sQxIjSrvY522Al9vSox3KKYaBqqxAcBEBlFMlcALP25Ai
-         TFYg==
-X-Gm-Message-State: AOAM5329vMRINLWO3yceU7ucyJkcj8qH+NzGCLqxvN57b2lsQexCHnsv
-        xps5kQTMNjcEJJpqZzbellVVmw==
-X-Google-Smtp-Source: ABdhPJwGOIhdA72t4m1dL+juRKEBgpxoxbvjv/BaxNXuLioe9WQxNbkB2mNutNprB9Fue+CuZ/dZsQ==
-X-Received: by 2002:a17:903:2052:b0:158:c6aa:b96 with SMTP id q18-20020a170903205200b00158c6aa0b96mr206943pla.140.1650044039760;
-        Fri, 15 Apr 2022 10:33:59 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d16-20020a056a00245000b004f771b48736sm3571711pfj.194.2022.04.15.10.33.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 10:33:59 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 10:33:58 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Qing Zhao <qing.zhao@oracle.com>, Bill Wendling <morbo@google.com>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Jose E. Marchesi" <jemarch@gnu.org>
-Subject: Re: toolchain mitigations plumbers session
-Message-ID: <202204151024.DFDBF9DD6@keescook>
-References: <CAKwvOdniB-+F37ygZhRytBGVFjwnukyOpmoiJTCeusMdb=6_=g@mail.gmail.com>
- <3DE35A81-1FC6-4EC7-8F3A-B395B576644D@oracle.com>
- <CAKwvOd=CqOfd=zprWQPYoddgnGPJMb_sdk2Eut9DZNJq_fFJ-w@mail.gmail.com>
+        Fri, 15 Apr 2022 13:37:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8AF45AE2;
+        Fri, 15 Apr 2022 10:35:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 36605621A7;
+        Fri, 15 Apr 2022 17:35:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7E19C385A5;
+        Fri, 15 Apr 2022 17:35:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650044109;
+        bh=rL/Iu22dVqxNUTMaBt9ONG318iOM6T5p7OiX7xcE9tM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SfM1Ar+y5byq6boTrZL0fUNgD8iSEm/d9Va0V53tHamhgpmXk6OBqOjxbxL4pIy2s
+         9FlpgNCoRYI5VwZpIpt9JPZ6RZNQ8n7D6UZpeZZKPz6OITXit+ANcAMlbyX91tpM3n
+         TcYcxV12pWP/+yyWJTJNDnTdtCGHR/Zl/m7/r3al/y4M8G2h9djhA8K4wR/av116b8
+         yJyN4KCMqIsZkoYFle+uNGftNhRo4g5OH1DXusOhYldKokMXLlzftTDpSgtM7+L3Q0
+         UlQjDDfxPZyKkC9YrvwgFGda0tIL3kZhArXXgOnaQ8HoHBakAUTELzsWNCHUOmtks4
+         ywMqWMAat1uEw==
+Date:   Fri, 15 Apr 2022 18:43:05 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andrea Merello <andrea.merello@gmail.com>
+Cc:     mchehab+huawei@kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        lars@metafoo.de, robh+dt@kernel.org, andy.shevchenko@gmail.com,
+        matt.ranostay@konsulko.com, ardeleanalex@gmail.com,
+        jacopo@jmondi.org, Andrea Merello <andrea.merello@iit.it>
+Subject: Re: [v4 08/14] iio: imu: add Bosch Sensortec BNO055 core driver
+Message-ID: <20220415184305.03805452@jic23-huawei>
+In-Reply-To: <20220415130005.85879-9-andrea.merello@gmail.com>
+References: <20220415130005.85879-1-andrea.merello@gmail.com>
+        <20220415130005.85879-9-andrea.merello@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKwvOd=CqOfd=zprWQPYoddgnGPJMb_sdk2Eut9DZNJq_fFJ-w@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 10:17:46AM -0700, Nick Desaulniers wrote:
-> On Fri, Apr 15, 2022 at 7:50 AM Qing Zhao <qing.zhao@oracle.com> wrote:
-> >
-> > Hi, Nick,
-> >
-> > > On Apr 14, 2022, at 4:30 PM, Nick Desaulniers <ndesaulniers@google.com> wrote:
-> > >
-> > > Hi Qing, Kees, and Bill,
-> > > Jose and I are currently in the planning process to put together a
-> > > Kernel+Toolchain microconference track at Linux Plumbers Conference
-> > > this year (Sept 12-14) in Dublin, Ireland.
-> > >
-> > > Would you all be interested in leading another session on
-> > > kernel+toolchain collaboration for mitigations? Do you plan to attend
-> > > plumbers this year which will be in person?
-> >
-> > I’d love to attend  plumbers this year to meet people in person!
-> > But not sure whether there will be enough new, big stuff to report this year since mostly bunch of bug fixes and minor
-> > Improvements to the previous work.
+On Fri, 15 Apr 2022 14:59:59 +0200
+Andrea Merello <andrea.merello@gmail.com> wrote:
+
+> From: Andrea Merello <andrea.merello@iit.it>
 > 
-> No worries; it doesn't need to be a presentation, or just one person
-> presenting.  I think a quick review of newly developed features from
-> various authors, then a discussion with consumers (kernel developers)
-> would be beneficial.
+> This patch adds a core driver for the BNO055 IMU from Bosch. This IMU
+> can be connected via both serial and I2C busses; separate patches will
+> add support for them.
+> 
+> The driver supports "AMG" (Accelerometer, Magnetometer, Gyroscope) mode,
+> that provides raw data from the said internal sensors, and a couple of
+> "fusion" modes (i.e. the IMU also do calculations in order to provide
+> euler angles, quaternions, linear acceleration and gravity measurements).
+> 
+> In fusion modes the AMG data is still available (with some calibration
+> refinements done by the IMU), but certain settings such as low pass
+> filters cut-off frequency and sensors ranges are fixed, while in AMG mode
+> they can be customized; this is why AMG mode can still be interesting.
+> 
+> Signed-off-by: Andrea Merello <andrea.merello@iit.it>
+Hi Andrea,
 
-Yeah, this kind of overview is what I've been doing the last few years
-(with Qing last year):
+A few trivial things from me on this read through.
 
-https://outflux.net/slides/2021/lpc/compiler-security-features.pdf
-https://outflux.net/slides/2020/lpc/gcc-and-clang-security-feature-parity.pdf
-https://outflux.net/slides/2019/lpc/gcc-and-clang.pdf
+I haven't commented on a lot of the patches because I was happy with them.
 
--- 
-Kees Cook
+Other than the small changes requested from me, we mostly need to get
+device tree review of the binding and allow time for others to take
+another look.
+
+Thanks,
+
+Jonathan
+
+
+> ---
+
+...
+
+> +
+> +static int bno055_read_simple_chan(struct iio_dev *indio_dev,
+> +				   struct iio_chan_spec const *chan,
+> +				   int *val, int *val2, long mask)
+> +{
+> +	struct bno055_priv *priv = iio_priv(indio_dev);
+> +	__le16 raw_val;
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = regmap_bulk_read(priv->regmap, chan->address,
+> +				       &raw_val, sizeof(raw_val));
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = (s16)le16_to_cpu(raw_val);
+
+Hmm. I'd ever so slightly prefer
+
+sign_extend32(le16_to_cpu(raw_val), 15) as it makes it extremely clear
+what is going on and hopefully the compiler can do a good job
+of optimising it either way.  If you strongly prefer the current
+approach I'll cope :)
+
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		if (priv->operation_mode != BNO055_OPR_MODE_AMG) {
+> +			*val = 0;
+> +		} else {
+> +			ret = regmap_bulk_read(priv->regmap,
+> +					       chan->address +
+> +					       BNO055_REG_OFFSET_ADDR,
+> +					       &raw_val, sizeof(raw_val));
+> +			if (ret < 0)
+> +				return ret;
+> +			/*
+> +			 * IMU reports sensor offests; IIO wants correction
+> +			 * offset, thus we need the 'minus' here.
+> +			 */
+> +			*val = -(s16)le16_to_cpu(raw_val);
+> +		}
+> +		return IIO_VAL_INT;
+...
+
+> +}
+
+...
+
+> +
+> +static int bno055_read_quaternion(struct iio_dev *indio_dev,
+> +				  struct iio_chan_spec const *chan,
+> +				  int size, int *vals, int *val_len,
+> +				  long mask)
+> +{
+> +	struct bno055_priv *priv = iio_priv(indio_dev);
+> +	__le16 raw_vals[4];
+> +	int i, ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (size < 4)
+> +			return -EINVAL;
+> +		ret = regmap_bulk_read(priv->regmap,
+> +				       BNO055_QUAT_DATA_W_LSB_REG,
+> +				       raw_vals, sizeof(raw_vals));
+> +		if (ret < 0)
+> +			return ret;
+> +		for (i = 0; i < 4; i++)
+> +			vals[i] = (s16)le16_to_cpu(raw_vals[i]);
+> +		*val_len = 4;
+> +		return IIO_VAL_INT_MULTIPLE;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		/* Table 3-31: 1 quaternion = 2^14 LSB */
+> +		if (size < 2)
+> +			return -EINVAL;
+> +		vals[0] = 14;
+> +		vals[1] = 1 << 14;
+This looks odd.  As you are using FRACTIONAL_LOG2, I think that should
+just be
+vals[0] = 1;
+vals[1] = 14;
+
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+
+
+
+...
+
+> +
+> +static void bno055_clk_disable(void *arg)
+> +{
+> +	clk_disable_unprepare((struct clk *)arg);
+> +}
+
+Hopefully one day: https://lore.kernel.org/all/CAHp75VdH4vGr57v6tfkRuxh-3agRKO8C08+DH8dsB1HnPfnz5Q@mail.gmail.com/
+will get merged...  Until then, this is the best we can do.
+
+> +
+> +int bno055_probe(struct device *dev, struct regmap *regmap,
+> +		 int xfer_burst_break_thr, bool sw_reset)
+> +{
+> +	const struct firmware *caldata;
+See comment below. I think you need to set this to NULL here
+
+
+> +
+> +	ret = regmap_read(priv->regmap, BNO055_CHIP_ID_REG, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (val != BNO055_CHIP_ID_MAGIC) {
+
+We've run into this a few times recently.  Traditionally IIO has been very
+restrictive on allowing drivers to probe if the Who Am I type values
+don't match.  That causes problems for backwards compatibility in
+device tree - e.g. (with made up compatible part number 055b :)
+compatible = "bosch,bno055b", "bosch,bno055"
+
+The viewpoint of the dt maintainers is that we should assume the
+dt is correct and at most warn about missmatched IDs before trying
+to carry on.  So to avoid hitting that again please relax this to a
+warning and cross your fingers after this point if it doesn't match.
+I'm fine on the firmware question because we know we are dealing
+with buggy firmware.  Ideally we'll get some working firmware
+additions at somepoint then we can just label the bad firmwares
+and assume one less bug in the ones that don't match :)
+
+> +		dev_err(dev, "Unrecognized chip ID 0x%x", val);
+> +		return -ENODEV;
+> +	}
+> +
+> +	/*
+> +	 * In case we haven't a HW reset pin, we can still reset the chip via
+> +	 * register write. This is probably nonsense in case we can't even
+> +	 * communicate with the chip or the chip isn't the one we expect (i.e.
+> +	 * we don't write to unknown chips), so we perform SW reset only after
+> +	 * chip magic ID check
+> +	 */
+> +	if (!priv->reset_gpio) {
+> +		ret = bno055_system_reset(priv);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+
+...
+
+> +	ret = regmap_bulk_read(priv->regmap, BNO055_UID_LOWER_REG,
+> +			       priv->uid, BNO055_UID_LEN);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/*
+> +	 * This has nothing to do with the IMU firmware, this is for sensor
+> +	 * calibration data.
+
+I'd not say what it isn't.  What it is will be enough.
+
+	/* Sensor calibration data */
+
+> +	 */
+> +	fw_name_buf = kasprintf(GFP_KERNEL,
+> +				BNO055_FW_UID_NAME,
+> +				BNO055_UID_LEN, priv->uid);
+> +	if (!fw_name_buf)
+> +		return -ENOMEM;
+> +
+> +	ret = request_firmware(&caldata, fw_name_buf, dev);
+> +	kfree(fw_name_buf);
+> +	if (ret)
+> +		ret = request_firmware(&caldata, BNO055_FW_GENERIC_NAME, dev);
+> +
+> +	if (ret)
+> +		dev_notice(dev, "Calibration file load failed. See instruction in kernel Documentation/iio/bno055.rst");
+
+If no calibration files are found, is caldata guaranteed to have been set to NULL?
+I'm not seeing that in the documentation, so even if it is true today it might not
+be in future and I think that leaves you referencing a variable that may not
+have been set.   Probably just set caldata_data = NULL where you define
+the local variable at top of this function.
+
+> +
+> +	if (caldata) {
+> +		caldata_data = caldata->data;
+> +		caldata_size = caldata->size;
+> +	}
+> +	ret = bno055_init(priv, caldata_data, caldata_size);
+> +	if (caldata)
+> +		release_firmware(caldata);
+> +	if (ret)
+> +		return ret;
+> +
+
