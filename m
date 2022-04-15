@@ -2,109 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E35AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 18:15:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C71C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 18:21:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346316AbiDOSST (ORCPT
+        id S1344642AbiDOSXt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 14:18:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33762 "EHLO
+        Fri, 15 Apr 2022 14:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243489AbiDOSSR (ORCPT
+        with ESMTP id S230166AbiDOSXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 14:18:17 -0400
-Received: from pi3.com.pl (pi3.com.pl [185.238.74.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 917F04B41A
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 11:15:48 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by pi3.com.pl (Postfix) with ESMTP id 3C1F24C0436;
-        Fri, 15 Apr 2022 20:07:28 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=pi3.com.pl; s=default;
-        t=1650046048; bh=zLysKOD7SEPDfDn1t54Xs5F15NmXU5k3wNqVbtBerHI=;
-        h=Date:From:To:Subject:From;
-        b=Pmlsxxf07GUXIZo7ET1/wXHU/7cpf+LnmelB4mV9w/nZvVR9a3RQ/Zo5eopYwk7RJ
-         +T581GqsI7+PEOLOOMgYRSSZ1gEwVbKQHlnpNsrRg+SQSKBCAcNPGGN0P8aYTVs1fD
-         Nc2+BExgbZCQcslypwHsJN6ADimFt1PHyqpxZ6b5v7fbodtG15If/28CaR/eg53HjC
-         fKZI/jAvi2HGnF8AgKamu79hOy42xEpvu6ot+5Mxt99PA+fkTGqlByiv5XZTDy8g/B
-         C+l3euDF4gjVUIWLlQ0sLXa0GczCxoniDmnLCXPhw6AVBCaORyt1hFFUSHhTMrBQgr
-         0+Y1QO/m9vfpg==
-X-Virus-Scanned: Debian amavisd-new at pi3.com.pl
-Received: from pi3.com.pl ([127.0.0.1])
-        by localhost (pi3.com.pl [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id yGxsOm2WkxrC; Fri, 15 Apr 2022 20:07:23 +0200 (CEST)
-Received: by pi3.com.pl (Postfix, from userid 1000)
-        id D91204C1566; Fri, 15 Apr 2022 20:07:23 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=pi3.com.pl; s=default;
-        t=1650046043; bh=zLysKOD7SEPDfDn1t54Xs5F15NmXU5k3wNqVbtBerHI=;
-        h=Date:From:To:Subject:From;
-        b=hSm9Xinf3ljrsjHcccmjqm1Yvnu8PA0SD1hjcEZ1B0IVlGjXQEyWC3VhNv6PQVfvG
-         1MW4OBDK5aWDW+BRnAIJ5qvkBrcq1Oa9myYcHc68nQoxiBFdedWX8ypn7JvsgEKcaX
-         aV0CPnfe2+CBADTaRAfmcYTCZmJaCepR+3aUxuebnfW5owat35nl32VeJ5sQIBPxlJ
-         INJgKIYVGIXmfuxKeCmvFWY5UgH2qCoNoY770t0t/o2Is7TlCQqg3NRV0e2+OuzkG1
-         Xmg8/QfmVWsknNPwZ8Y87e0G/WMrPPxpr+Euz26WQiU28PYopyZ5YVYOBHLrECi/a+
-         4rJm7ntlyjlfQ==
-Date:   Fri, 15 Apr 2022 20:07:23 +0200
-From:   Adam Zabrocki <pi3@pi3.com.pl>
-To:     "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-kernel@vger.kernel.org, Solar Designer <solar@openwall.com>
-Subject: KRETPROBES are broken since the commit 73f9b911faa7
-Message-ID: <20220415180723.GA13921@pi3.com.pl>
+        Fri, 15 Apr 2022 14:23:46 -0400
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBE3A8CDB1
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 11:21:17 -0700 (PDT)
+Received: by mail-ot1-x336.google.com with SMTP id o20-20020a9d7194000000b005cb20cf4f1bso5791314otj.7
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 11:21:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sm8DSCIeMC6YuTy9deusE25jUiKvOwY3HtepIUMUjaA=;
+        b=AeojTpXTTI3PAeqfCB4sVmZ3FJX9rlQ35P3Z6A2SPsBqrYuL6mStUlK1jmTtDzeUDg
+         GoMR/UihMx51mH539Ivg9EYwYrzZJFXOvA5S/OzTXlS4f6vak4yvV6lLLMJaIOpRIvIN
+         MBl1B8F5FHW3NJZKU2IzkhFxEqYID733KgeR79Rvv+BpD/FESAwBbMV67/I8AyIYOPwc
+         q3ayexTCyEeakVugv04xej536AD9mRpX+eMmG1S4yiX5bboRnlMLkrjrJiOH8SnP109m
+         2iKy/jQFJQZ0/6xQgxjmACDTsXJo7DG+isNphpKOfQIVpEhUfVL72lyAwRPpneI90iOu
+         l3Uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sm8DSCIeMC6YuTy9deusE25jUiKvOwY3HtepIUMUjaA=;
+        b=fVANkDO4zmhEjXOfk1hq13kxgtB4a54jFMQaA2oRqHSXayEnEg/SwQes7jjuCCvmFp
+         cdFDGzarjGyU53QNcTGB/C9hgwODkuDURSX93nPfW8vh3XN0Fno7EOiAb7kogWYDqkQs
+         4yEb0RyXL0fsFwsnoVxAKXUTjuCoVXWIgTV2QdBxiqPzzjedwX5L0El+iWK5RfSU3xDp
+         QCEXqNyyl/lw5RFNGSZrWi3wvR+qRKiucn1TY58rB74GcHPpWl/R6nfdwpXv1HvnS1D7
+         Zx6OhTUNlH4GZIKKxLB+sdBKSI4RXauVGU6bKd6yft0PFCu0mvOXx8b672Z4/6TZLj7u
+         gyGQ==
+X-Gm-Message-State: AOAM53175XQ5iu8Dqi1nhY5VNAZ6z5Sya3addBM1XDreJ52YDCsUdpNF
+        qT/aHfxhIB+28AjGhyYaiJM=
+X-Google-Smtp-Source: ABdhPJwo0WGvkFrC84zXYCfOA6ncaJO1ft/Yn11zS61rS4Jw3IoXDc+bU0rl6jIQu+nRBg3s43kmUA==
+X-Received: by 2002:a9d:58c3:0:b0:5e6:d8f7:c18c with SMTP id s3-20020a9d58c3000000b005e6d8f7c18cmr151853oth.364.1650046877063;
+        Fri, 15 Apr 2022 11:21:17 -0700 (PDT)
+Received: from localhost.localdomain ([2804:14c:4c2:8a9b:dcc3:45ee:2581:b4cb])
+        by smtp.gmail.com with ESMTPSA id t22-20020a4a8256000000b003332a0402f5sm1367127oog.23.2022.04.15.11.21.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 11:21:16 -0700 (PDT)
+From:   Tales Lelo da Aparecida <tales.aparecida@gmail.com>
+To:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        andrealmeid@riseup.net
+Cc:     Tales Lelo da Aparecida <tales.aparecida@gmail.com>
+Subject: [PATCH] drm/amd/display: make hubp1_wait_pipe_read_start() static
+Date:   Fri, 15 Apr 2022 15:20:14 -0300
+Message-Id: <20220415182014.278652-1-tales.aparecida@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+It's a local function, let's make it static.
 
-The recent KRETPROBE kernel changes introduced a potential NULL pointer
-dereference bug when return handler is not set. The root of the problem
-are the following commits related to "kprobes: Use rethook for kretprobe
-if possible":
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f3a112c0c40dd96d53c8bdf3ea8d94d528f3b7b8
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=73f9b911faa74ac5107879de05c9489c419f41bb
+Signed-off-by: Tales Lelo da Aparecida <tales.aparecida@gmail.com>
+---
+ drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hubp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-When user sets up a KRETPROBE, kernel eventually ends up here:
-
-static void kretprobe_rethook_handler(struct rethook_node *rh, void *data,
-                      struct pt_regs *regs)
-{
-    struct kretprobe *rp = (struct kretprobe *)data;
-    struct kretprobe_instance *ri;
-    struct kprobe_ctlblk *kcb;
-
-    /* The data must NOT be null. This means rethook data structure is broken. */
-    if (WARN_ON_ONCE(!data))
-        return;
-
-    __this_cpu_write(current_kprobe, &rp->kp);
-    kcb = get_kprobe_ctlblk();
-    kcb->kprobe_status = KPROBE_HIT_ACTIVE;
-
-    ri = container_of(rh, struct kretprobe_instance, node);
-    rp->handler(ri, regs);
-
-    __this_cpu_write(current_kprobe, NULL);
-}
-NOKPROBE_SYMBOL(kretprobe_rethook_handler);
-
-Unfortunately, rp->handler is not verified against NULL. If user does not
-set up a return handler, KRETPROBE shouldn't call it (that's the defined
-behavior in the documentation, quoting "Any or all handlers can be NULL").
-However, kretprobe_rethook_handler function does not enforce such behavior.
-
-I'm going to send a patch for it in a reply to this message.
-
-Thanks,
-Adam
-
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hubp.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hubp.c
+index fbff6beb78be..3a7f76e2c598 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hubp.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hubp.c
+@@ -1316,7 +1316,7 @@ void hubp1_set_flip_int(struct hubp *hubp)
+  *
+  * @hubp: hubp struct reference.
+  */
+-void hubp1_wait_pipe_read_start(struct hubp *hubp)
++static void hubp1_wait_pipe_read_start(struct hubp *hubp)
+ {
+ 	struct dcn10_hubp *hubp1 = TO_DCN10_HUBP(hubp);
+ 
 -- 
-pi3 (pi3ki31ny) - pi3 (at) itsec pl
-http://pi3.com.pl
+2.35.1
 
