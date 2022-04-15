@@ -2,152 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF963C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7155FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:54:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355657AbiDOPyw (ORCPT
+        id S1355668AbiDOP4m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 11:54:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35486 "EHLO
+        Fri, 15 Apr 2022 11:56:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237241AbiDOPyt (ORCPT
+        with ESMTP id S237241AbiDOP4k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 11:54:49 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF26986EC
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:52:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650037940; x=1681573940;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=tC5qLnh8Yt30+1cGEb1nTlHlaTfRwNg9SJar/Qqlna8=;
-  b=F8CwcivNvqMQVKtmhNtCKfoB8PjDGvtdhtp/jh0JqfJBdbvpaxd20D0E
-   KiwKMLNnKqQ1Sb+uETRRYcEKjXCyBvBzP08/gvIgGYV71BwgQAWFj4Tho
-   vczfpcf5ExLZZU03QAlK12Mh+GdSYJd/5rfuoYbHvLKXTTW0jpL9AbjLR
-   IPluvBsAEjpplOZrFxNBidThWoGq1p0Gr2CP2Y6Z35rGye8/dBiDZ5nKg
-   3Qa+Eq2XTUqUGonPIEyq84yT/iy2fnJ6mMHBps5rpjEPigQ/cLKh2PmH9
-   ry7GK194mQu0D0YlhRhA7lFQDcEtwprGAhQ0HVk/VajFECemMkokqfVNt
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="288237309"
-X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
-   d="scan'208";a="288237309"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 08:52:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
-   d="scan'208";a="508976448"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 15 Apr 2022 08:52:18 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nfOF7-00026r-Rz;
-        Fri, 15 Apr 2022 15:52:17 +0000
-Date:   Fri, 15 Apr 2022 23:52:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: kernel/sched/core.c:5220:20: error: no previous prototype for
- 'task_sched_runtime'
-Message-ID: <202204152357.8KB5syUr-lkp@intel.com>
+        Fri, 15 Apr 2022 11:56:40 -0400
+X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Apr 2022 08:54:11 PDT
+Received: from 2.mo550.mail-out.ovh.net (2.mo550.mail-out.ovh.net [178.32.119.250])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25A99A9A1
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:54:11 -0700 (PDT)
+Received: from player788.ha.ovh.net (unknown [10.111.172.22])
+        by mo550.mail-out.ovh.net (Postfix) with ESMTP id 4CE16244A5
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 15:38:54 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player788.ha.ovh.net (Postfix) with ESMTPSA id C468929867034;
+        Fri, 15 Apr 2022 15:38:48 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-100R003c521644e-f40f-40d5-87c4-68faa529c824,
+                    77125C2C2681624F8512B69FC7A1C9B53E6602B4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH 4/6] ASoC: pcm186x: use i2c_match_id and simple i2c probe
+Date:   Fri, 15 Apr 2022 17:38:15 +0200
+Message-Id: <20220415153817.141364-5-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220415153817.141364-1-steve@sk2.org>
+References: <20220415153817.141364-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 10488320585173665414
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelhedgleefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeejleelvdefieeiuddtfeevkeegueehkeekvdffgedvhedugeekgfejjeekgfeugeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejkeekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   028192fea1de083f4f12bfb1eb7c4d7beb5c8ecd
-commit: 4ff8f2ca6ccd9e0cc5665d09f86d631b3ae3a14c sched/headers: Reorganize, clean up and optimize kernel/sched/sched.h dependencies
-date:   7 weeks ago
-config: x86_64-sof-customedconfig-edison-defconfig (https://download.01.org/0day-ci/archive/20220415/202204152357.8KB5syUr-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4ff8f2ca6ccd9e0cc5665d09f86d631b3ae3a14c
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 4ff8f2ca6ccd9e0cc5665d09f86d631b3ae3a14c
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+As part of the ongoing i2c transition to the simple probe
+("probe_new"), this patch uses i2c_match_id to retrieve the
+driver_data for the probed device. The id parameter is thus no longer
+necessary and the simple probe can be used instead.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The i2c id table is moved up before the probe function, as suggested
+by Wolfram Sang.
 
-All errors (new ones prefixed by >>):
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+---
+ sound/soc/codecs/pcm186x-i2c.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-   kernel/sched/core.c:3516:6: error: no previous prototype for 'sched_set_stop_task' [-Werror=missing-prototypes]
-    3516 | void sched_set_stop_task(int cpu, struct task_struct *stop)
-         |      ^~~~~~~~~~~~~~~~~~~
->> kernel/sched/core.c:5220:20: error: no previous prototype for 'task_sched_runtime' [-Werror=missing-prototypes]
-    5220 | unsigned long long task_sched_runtime(struct task_struct *p)
-         |                    ^~~~~~~~~~~~~~~~~~
->> kernel/sched/core.c:8931:6: error: no previous prototype for 'idle_task_exit' [-Werror=missing-prototypes]
-    8931 | void idle_task_exit(void)
-         |      ^~~~~~~~~~~~~~
->> kernel/sched/core.c:9164:5: error: no previous prototype for 'sched_cpu_activate' [-Werror=missing-prototypes]
-    9164 | int sched_cpu_activate(unsigned int cpu)
-         |     ^~~~~~~~~~~~~~~~~~
->> kernel/sched/core.c:9209:5: error: no previous prototype for 'sched_cpu_deactivate' [-Werror=missing-prototypes]
-    9209 | int sched_cpu_deactivate(unsigned int cpu)
-         |     ^~~~~~~~~~~~~~~~~~~~
->> kernel/sched/core.c:9284:5: error: no previous prototype for 'sched_cpu_starting' [-Werror=missing-prototypes]
-    9284 | int sched_cpu_starting(unsigned int cpu)
-         |     ^~~~~~~~~~~~~~~~~~
->> kernel/sched/core.c:9305:5: error: no previous prototype for 'sched_cpu_wait_empty' [-Werror=missing-prototypes]
-    9305 | int sched_cpu_wait_empty(unsigned int cpu)
-         |     ^~~~~~~~~~~~~~~~~~~~
->> kernel/sched/core.c:9347:5: error: no previous prototype for 'sched_cpu_dying' [-Werror=missing-prototypes]
-    9347 | int sched_cpu_dying(unsigned int cpu)
-         |     ^~~~~~~~~~~~~~~
->> kernel/sched/core.c:9370:13: error: no previous prototype for 'sched_init_smp' [-Werror=missing-prototypes]
-    9370 | void __init sched_init_smp(void)
-         |             ^~~~~~~~~~~~~~
->> kernel/sched/core.c:9431:13: error: no previous prototype for 'sched_init' [-Werror=missing-prototypes]
-    9431 | void __init sched_init(void)
-         |             ^~~~~~~~~~
-   cc1: all warnings being treated as errors
---
->> kernel/sched/fair.c:10634:6: error: no previous prototype for 'nohz_balance_enter_idle' [-Werror=missing-prototypes]
-   10634 | void nohz_balance_enter_idle(int cpu)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
---
-   In file included from kernel/sched/build_utility.c:79:
->> kernel/sched/loadavg.c:245:6: error: no previous prototype for 'calc_load_nohz_start' [-Werror=missing-prototypes]
-     245 | void calc_load_nohz_start(void)
-         |      ^~~~~~~~~~~~~~~~~~~~
->> kernel/sched/loadavg.c:258:6: error: no previous prototype for 'calc_load_nohz_remote' [-Werror=missing-prototypes]
-     258 | void calc_load_nohz_remote(struct rq *rq)
-         |      ^~~~~~~~~~~~~~~~~~~~~
->> kernel/sched/loadavg.c:263:6: error: no previous prototype for 'calc_load_nohz_stop' [-Werror=missing-prototypes]
-     263 | void calc_load_nohz_stop(void)
-         |      ^~~~~~~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
-
-
-vim +/task_sched_runtime +5220 kernel/sched/core.c
-
-6075620b0590ea kernel/sched/core.c Giovanni Gherdovich 2016-08-05  5214  
-c5f8d99585d7b5 kernel/sched.c      Hidetoshi Seto      2009-03-31  5215  /*
-c5f8d99585d7b5 kernel/sched.c      Hidetoshi Seto      2009-03-31  5216   * Return accounted runtime for the task.
-c5f8d99585d7b5 kernel/sched.c      Hidetoshi Seto      2009-03-31  5217   * In case the task is currently running, return the runtime plus current's
-c5f8d99585d7b5 kernel/sched.c      Hidetoshi Seto      2009-03-31  5218   * pending runtime that have not been accounted yet.
-c5f8d99585d7b5 kernel/sched.c      Hidetoshi Seto      2009-03-31  5219   */
-c5f8d99585d7b5 kernel/sched.c      Hidetoshi Seto      2009-03-31 @5220  unsigned long long task_sched_runtime(struct task_struct *p)
-c5f8d99585d7b5 kernel/sched.c      Hidetoshi Seto      2009-03-31  5221  {
-eb58075149b7f0 kernel/sched/core.c Peter Zijlstra      2015-07-31  5222  	struct rq_flags rf;
-c5f8d99585d7b5 kernel/sched.c      Hidetoshi Seto      2009-03-31  5223  	struct rq *rq;
-6e998916dfe327 kernel/sched/core.c Stanislaw Gruszka   2014-11-12  5224  	u64 ns;
-c5f8d99585d7b5 kernel/sched.c      Hidetoshi Seto      2009-03-31  5225  
-
-:::::: The code at line 5220 was first introduced by commit
-:::::: c5f8d99585d7b5b7e857fabf8aefd0174903a98c posixtimers, sched: Fix posix clock monotonicity
-
-:::::: TO: Hidetoshi Seto <seto.hidetoshi@jp.fujitsu.com>
-:::::: CC: Ingo Molnar <mingo@elte.hu>
-
+diff --git a/sound/soc/codecs/pcm186x-i2c.c b/sound/soc/codecs/pcm186x-i2c.c
+index f8382b74391d..932c8d41c3ea 100644
+--- a/sound/soc/codecs/pcm186x-i2c.c
++++ b/sound/soc/codecs/pcm186x-i2c.c
+@@ -22,9 +22,18 @@ static const struct of_device_id pcm186x_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, pcm186x_of_match);
+ 
+-static int pcm186x_i2c_probe(struct i2c_client *i2c,
+-			     const struct i2c_device_id *id)
++static const struct i2c_device_id pcm186x_i2c_id[] = {
++	{ "pcm1862", PCM1862 },
++	{ "pcm1863", PCM1863 },
++	{ "pcm1864", PCM1864 },
++	{ "pcm1865", PCM1865 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, pcm186x_i2c_id);
++
++static int pcm186x_i2c_probe(struct i2c_client *i2c)
+ {
++	const struct i2c_device_id *id = i2c_match_id(pcm186x_i2c_id, i2c);
+ 	const enum pcm186x_type type = (enum pcm186x_type)id->driver_data;
+ 	int irq = i2c->irq;
+ 	struct regmap *regmap;
+@@ -36,17 +45,8 @@ static int pcm186x_i2c_probe(struct i2c_client *i2c,
+ 	return pcm186x_probe(&i2c->dev, type, irq, regmap);
+ }
+ 
+-static const struct i2c_device_id pcm186x_i2c_id[] = {
+-	{ "pcm1862", PCM1862 },
+-	{ "pcm1863", PCM1863 },
+-	{ "pcm1864", PCM1864 },
+-	{ "pcm1865", PCM1865 },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(i2c, pcm186x_i2c_id);
+-
+ static struct i2c_driver pcm186x_i2c_driver = {
+-	.probe		= pcm186x_i2c_probe,
++	.probe_new	= pcm186x_i2c_probe,
+ 	.id_table	= pcm186x_i2c_id,
+ 	.driver		= {
+ 		.name	= "pcm186x",
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.27.0
+
