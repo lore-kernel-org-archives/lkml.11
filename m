@@ -2,113 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E80FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 20:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41265C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 20:12:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352355AbiDOUOb (ORCPT
+        id S1352410AbiDOUOn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 16:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
+        Fri, 15 Apr 2022 16:14:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237521AbiDOUO3 (ORCPT
+        with ESMTP id S232895AbiDOUOk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 16:14:29 -0400
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A8D8D9E90
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 13:12:00 -0700 (PDT)
-Received: by mail-il1-x133.google.com with SMTP id r7so5361564iln.9
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 13:12:00 -0700 (PDT)
+        Fri, 15 Apr 2022 16:14:40 -0400
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C09DD955
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 13:12:10 -0700 (PDT)
+Received: by mail-vs1-xe2e.google.com with SMTP id v133so4302005vsv.7
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 13:12:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=mvSvqL6kka2POoPBqEb30mmz0+bGVlzGfy1i76kGDWo=;
-        b=KHmK/mR3OenLbbhdRJrv7vZgpxAk+wqETTeIrklldo8PgCRpB0ZlXiw3Ex1EQ7W5R5
-         +INqFK6Sitv97z+TGDHnr1otCc5rpELvfn6IP03xTpPSO6+Rk+Brwn1nSGDDHfFyKlNT
-         FjRb5Y0ECvnCqUqUJBEcbtI3+duCZKmMO4ib1vV3qR9R6LscshyTNrDZerz1mArENyHK
-         moag6jI1MfIsnmvDd7CWFCam+7FrYNT013kUp2KDYjmN6QcCdirA59aQnBY267k6gpr2
-         rtUMwXZvBz7SgU/4jjx/c8LaUrpSRvGKQoSzO7xTvdB8Ifuv0qFPgWNMnSNAIx8jGLEe
-         kPhA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=77JRexCHO+Dta+d2jV7L61UaG98jtgCgEk5PjH0Qclw=;
+        b=bSiip5XBN84sfc8EAMqB+8gWFrwJVQUR5v12Hj7kiLzo35u6nluGLhefFhs00QbZRR
+         HT4dBU715eLd92x4QRczO0YgkhjNxz3mbNszIssovkBmykUjqSngT3NhjHLZppusWtw2
+         3VOElStHDME19hWWY/06fkmPmCkj5TnXUWGNcJQXPiJhcRrGDX5PvA5W08q9+LL7+ZMB
+         C5beDV70lv/ySj0n0+lK3jQG8IwFVL1pffbX7W9VSy4IFCCsXe/mWHDHkdzqPIAHcSfV
+         qLrxfXPGfbXfENwPzH7NDV5JMI1paK0Thm/w2BDYLElxNTp4+B8HZdGbZSMnPMcpSwlV
+         c0rQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=mvSvqL6kka2POoPBqEb30mmz0+bGVlzGfy1i76kGDWo=;
-        b=1FTlJZv6KkuAb8vc4H89aaS2tL7Y5rpLcsJr/yoYOMMLUCtb/ntgWGGCliQXbzDP7Y
-         0OuIyn5uJkn8u8iG5LUkccG2WL2oipEgBUa9Qvgq2AczZ3H84JfazHo9VTKly7qJ+ZOS
-         xBt/N1Gi2LJZ8j88kf4NEVSG1DGrCdqygOzKp4sM5CBwDaeOljFW8Xc5X8t3u1m0WML/
-         e0Cy3led6bXci37jx/xy6up9C9rWtsXkg/YKJroNrwbx5Sxj7KKSViX1NES/z5aveOkB
-         xwkEeaSVaJtSvzGJ0ObvSlLrxsNLX4WltOhPtinleGwTEDM+DEtDTKYC6hLrFxrdnXiE
-         PeUg==
-X-Gm-Message-State: AOAM532W43D8XvLgWP1JXpDAMW8aU0N6Hda1C228KcZilyeHG2p1bBsJ
-        BcAVvRWNU2UcDzs9I5lo5LtDig==
-X-Google-Smtp-Source: ABdhPJyf88LAbPDLTrhasaJVEAZlbWp27gqQVF5Z4wtsCIb65knob6t8ZSUmSnlF8h4vKxQGET8r7g==
-X-Received: by 2002:a05:6e02:1a28:b0:2cc:244:f516 with SMTP id g8-20020a056e021a2800b002cc0244f516mr191882ile.181.1650053519561;
-        Fri, 15 Apr 2022 13:11:59 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id h24-20020a6bfb18000000b006497692016bsm3459029iog.15.2022.04.15.13.11.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Apr 2022 13:11:59 -0700 (PDT)
-Message-ID: <1da896f9-a86e-4e2b-ff36-bd0a4c8d819b@linaro.org>
-Date:   Fri, 15 Apr 2022 15:11:58 -0500
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=77JRexCHO+Dta+d2jV7L61UaG98jtgCgEk5PjH0Qclw=;
+        b=g+OQIDPLt01O1K1rh1n+uVNGR/IbS7OH1dsg6ke4gHOCzwSqzx53CqfbzK+FD72kCx
+         vEYsQF50sMgk9jRrIf1PCoeBZXlWPFfHSJjvdHR4rscEVzrm3XNRG7UEPZGE4IoR2M7b
+         BXnphBwmtP8k9qPYloKPRPVjCf3Wr0Y3nqh0mmrUmHF+AAxP2BuRV/HQ4oAnjnNUUvue
+         /mIeeLjo3nJnRKlXWNoLnfMTBIgcLAi5D2rWjMkTaO4DmWpUIHe/EDzySVJ1fCVp6eM1
+         2NZ90aU6Kc+4/rk0PXtwpi9ysKmh1vqQUspJcpzlRhHaFts3UwKXc1WzB4QyoKHCE7ph
+         kiCA==
+X-Gm-Message-State: AOAM532XeXLq9i/RbOjqc/NggWswRH46houHjvlAauZ9beZcv8WPtEic
+        fVXKgIFnv4BnU2wSJr0txCYZVVrwIwyRodQ5gMdZPA==
+X-Google-Smtp-Source: ABdhPJykqcrKHyXgb08sa7ibqLGNVlW1gdYVPxs3ydRjRchU0Lalyvg1ICTkwCfmsXRhMCN3MYBNGKoe6YsDKcJnXHw=
+X-Received: by 2002:a05:6102:5cc:b0:320:9bd2:3823 with SMTP id
+ v12-20020a05610205cc00b003209bd23823mr192562vsf.81.1650053529747; Fri, 15 Apr
+ 2022 13:12:09 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 4/2] ARM: dts: qcom: sdx55: Remove ipa interconnect node
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        Doug Anderson <dianders@chromium.org>,
-        Taniya Das <quic_tdas@quicinc.com>,
-        Mike Tipton <quic_mdtipton@quicinc.com>,
-        Georgi Djakov <djakov@kernel.org>
-References: <20220412220033.1273607-1-swboyd@chromium.org>
- <20220415005828.1980055-1-swboyd@chromium.org>
- <20220415005828.1980055-2-swboyd@chromium.org>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <20220415005828.1980055-2-swboyd@chromium.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220407031525.2368067-1-yuzhao@google.com> <20220407031525.2368067-9-yuzhao@google.com>
+ <20220411191621.0378467ad99ebc822d5ad005@linux-foundation.org>
+ <CAOUHufYeC=Kuu59BPL_48sM67CqACxH2wWy-SYGXpadgMDmY3w@mail.gmail.com>
+ <20220414185654.e7150bcbe859e0dd4b9c61af@linux-foundation.org>
+ <CAOUHufYy6yQS9ARN9C5+ODkopR+ez4TH3hZNZo4HtNHBExS1mA@mail.gmail.com> <20220415121521.764a88dda55ae8c676ad26b0@linux-foundation.org>
+In-Reply-To: <20220415121521.764a88dda55ae8c676ad26b0@linux-foundation.org>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Fri, 15 Apr 2022 14:11:32 -0600
+Message-ID: <CAOUHufYsjwMGMFCfYoh79rFZqwqS1jDihcBS9sHd-gBxEAD3Ug@mail.gmail.com>
+Subject: Re: [PATCH v10 08/14] mm: multi-gen LRU: support page table walks
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Justin Forbes <jforbes@fedoraproject.org>
+Cc:     Stephen Rothwell <sfr@rothwell.id.au>,
+        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <21cnbao@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/14/22 7:58 PM, Stephen Boyd wrote:
-> This device node is unused now that we've removed the driver that
-> consumed it in the kernel. Drop the unused node to save some space.
+On Fri, Apr 15, 2022 at 1:15 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+>
+> On Fri, 15 Apr 2022 00:25:45 -0600 Yu Zhao <yuzhao@google.com> wrote:
+>
+> > On Thu, Apr 14, 2022 at 7:57 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+> > >
+> > > On Thu, 14 Apr 2022 19:14:54 -0600 Yu Zhao <yuzhao@google.com> wrote:
+> > >
+> > > > On Mon, Apr 11, 2022 at 8:16 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+> > > > >
+> > > > > On Wed,  6 Apr 2022 21:15:20 -0600 Yu Zhao <yuzhao@google.com> wrote:
+> > > > >
+> > > > > > +static void update_batch_size(struct lru_gen_mm_walk *walk, struct folio *folio,
+> > > > > > +                           int old_gen, int new_gen)
+> > > > > > +{
+> > > > > > +     int type = folio_is_file_lru(folio);
+> > > > > > +     int zone = folio_zonenum(folio);
+> > > > > > +     int delta = folio_nr_pages(folio);
+> > > > > > +
+> > > > > > +     VM_BUG_ON(old_gen >= MAX_NR_GENS);
+> > > > > > +     VM_BUG_ON(new_gen >= MAX_NR_GENS);
+> > > > >
+> > > > > General rule: don't add new BUG_ONs, because they crash the kenrel.
+> > > > > It's better to use WARN_ON or WARN_ON_ONCE then try to figure out a way
+> > > > > to keep the kernel limping along.  At least so the poor user can gather logs.
+> > > >
+> > > > These are VM_BUG_ONs, which are BUILD_BUG_ONs except for (mostly MM) developers.
+> > >
+> > > I'm told that many production builds enable runtime VM_BUG_ONning.
+> >
+> > Nobody wants to debug VM in production. Some distros that offer both
+> > the latest/LTS kernels do enable CONFIG_DEBUG_VM in the former so the
+> > latter can have better test coverage when it becomes available. Do
+> > people use the former in production? Absolutely, otherwise we won't
+> > have enough test coverage. Are we supposed to avoid CONFIG_DEBUG_VM? I
+> > don't think so, because it defeats the purpose of those distros
+> > enabling it in the first place.
+> >
+> > The bottomline is that none of RHEL 8.5, SLES 15, Debian 11 enables
+> > CONFIG_DEBUG_VM.
+>
+> I grabbed
+> https://kojipkgs.fedoraproject.org//packages/kernel/5.18.0/0.rc2.23.fc37/src/kernel-5.18.0-0.rc2.23.fc37.src.rpm
+> and
 
-Look good.
+Yes, Fedora/RHEL is one concrete example of the model I mentioned
+above (experimental/stable). I added Justin, the Fedora kernel
+maintainer, and he can further clarify.
 
-Reviewed-by: Alex Elder <elder@linaro.org>
+If we don't want more VM_BUG_ONs, I'll remove them. But (let me
+reiterate) it seems to me that just defeats the purpose of having
+CONFIG_DEBUG_VM.
 
-> Cc: Alex Elder <elder@linaro.org>
-> Cc: Taniya Das <quic_tdas@quicinc.com>
-> Cc: Mike Tipton <quic_mdtipton@quicinc.com>
-> Cc: Georgi Djakov <djakov@kernel.org>
-> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> ---
->   arch/arm/boot/dts/qcom-sdx55.dtsi | 7 -------
->   1 file changed, 7 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/qcom-sdx55.dtsi b/arch/arm/boot/dts/qcom-sdx55.dtsi
-> index d455795da44c..f1e12a112cd0 100644
-> --- a/arch/arm/boot/dts/qcom-sdx55.dtsi
-> +++ b/arch/arm/boot/dts/qcom-sdx55.dtsi
-> @@ -275,13 +275,6 @@ system_noc: interconnect@162c000 {
->   			qcom,bcm-voters = <&apps_bcm_voter>;
->   		};
->   
-> -		ipa_virt: interconnect@1e00000 {
-> -			compatible = "qcom,sdx55-ipa-virt";
-> -			reg = <0x01e00000 0x100000>;
-> -			#interconnect-cells = <1>;
-> -			qcom,bcm-voters = <&apps_bcm_voter>;
-> -		};
-> -
->   		qpic_bam: dma-controller@1b04000 {
->   			compatible = "qcom,bam-v1.7.0";
->   			reg = <0x01b04000 0x1c000>;
-
+> hp2:/home/akpm/yy> grep "DEBUG_VM[= ]" *.config
+> kernel-aarch64-debug-fedora.config:CONFIG_DEBUG_VM=y
+> kernel-aarch64-debug-rhel.config:# CONFIG_DEBUG_VM is not set
+> kernel-aarch64-fedora.config:CONFIG_DEBUG_VM=y
+> kernel-aarch64-rhel.config:# CONFIG_DEBUG_VM is not set
+> kernel-armv7hl-debug-fedora.config:CONFIG_DEBUG_VM=y
+> kernel-armv7hl-fedora.config:CONFIG_DEBUG_VM=y
+> kernel-armv7hl-lpae-debug-fedora.config:CONFIG_DEBUG_VM=y
+> kernel-armv7hl-lpae-fedora.config:CONFIG_DEBUG_VM=y
+> kernel-ppc64le-debug-fedora.config:CONFIG_DEBUG_VM=y
+> kernel-ppc64le-debug-rhel.config:CONFIG_DEBUG_VM=y
+> kernel-ppc64le-fedora.config:CONFIG_DEBUG_VM=y
+> kernel-ppc64le-rhel.config:# CONFIG_DEBUG_VM is not set
+> kernel-s390x-debug-fedora.config:CONFIG_DEBUG_VM=y
+> kernel-s390x-debug-rhel.config:CONFIG_DEBUG_VM=y
+> kernel-s390x-fedora.config:CONFIG_DEBUG_VM=y
+> kernel-s390x-rhel.config:# CONFIG_DEBUG_VM is not set
+> kernel-s390x-zfcpdump-rhel.config:# CONFIG_DEBUG_VM is not set
+> kernel-x86_64-debug-fedora.config:CONFIG_DEBUG_VM=y
+> kernel-x86_64-debug-rhel.config:CONFIG_DEBUG_VM=y
+> kernel-x86_64-fedora.config:CONFIG_DEBUG_VM=y
+> kernel-x86_64-rhel.config:# CONFIG_DEBUG_VM is not set
