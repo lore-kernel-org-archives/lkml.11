@@ -2,92 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 877A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBFE3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355302AbiDOQ1w (ORCPT
+        id S1355823AbiDOQ2e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 12:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34780 "EHLO
+        Fri, 15 Apr 2022 12:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355856AbiDOQ1k (ORCPT
+        with ESMTP id S242633AbiDOQ23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 12:27:40 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FCB4419B8
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 09:25:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650039911; x=1681575911;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=B36/RaVcjkCRny+oxQ/PTFetPsrjjelekUyEPUIGMKk=;
-  b=GKywbCRQEQ7MrGuRII131L462RsGaaYOjqQMifmWTirq5jZfk3kwcIju
-   BYL/bd79PymFn77qzBoeVAYHqbrZqx8LmeOP6xeqSJzBXS2E9Bo3D3ipd
-   3irfwJlAFJDjjUQIknn/PsoGUeRac1tQDNvAEpdFN/Te4nKODHuI2agn1
-   06H63Mg79tjoF2FQtWTNcHnj2OESfwp3jRajX8Xqzp2L1XuE0NBpIOt1i
-   rJv3ogdq6EzzXbIoE6oM9AIPr8S9bLPRsbIHgU74SuyolWaQFvT2X7m0K
-   0lUY5kNw/Urg8oTEqtrfXIjPyQDyjIfGDZy7za0ALHVfLS5CicFKIKvLF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="262934888"
-X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
-   d="scan'208";a="262934888"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 09:23:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,263,1643702400"; 
-   d="scan'208";a="508985464"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 15 Apr 2022 09:23:21 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nfOjA-000297-Ma;
-        Fri, 15 Apr 2022 16:23:20 +0000
-Date:   Sat, 16 Apr 2022 00:22:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jpoimboe:objtool-run 19/35] vmlinux.o: warning: objtool:
- exit_to_user_mode+0x10: call to static_key_count.constprop.0() leaves
- .noinstr.text section
-Message-ID: <202204160031.TT2073NX-lkp@intel.com>
+        Fri, 15 Apr 2022 12:28:29 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E885568339
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 09:26:00 -0700 (PDT)
+Received: from localhost.localdomain ([37.4.249.94]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis)
+ id 1N5W4y-1nzgmd3Vda-01715x; Fri, 15 Apr 2022 18:25:49 +0200
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maxime Ripard <maxime@cerno.tech>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>
+Subject: [PATCH 2/2] drm/panel/raspberrypi-touchscreen: Initialise the bridge in prepare
+Date:   Fri, 15 Apr 2022 18:25:13 +0200
+Message-Id: <20220415162513.42190-3-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220415162513.42190-1-stefan.wahren@i2se.com>
+References: <20220415162513.42190-1-stefan.wahren@i2se.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:mKSLJHmAOiI+EmXgsdiCyuseqCHBZtLatfo/N7D6PmccbTLK4ti
+ Ba7N26Tk7cBKRSQPbQrnqkyX9sByH3UV9FgLrl+L8YJ7QsKBQvAx9HJQloPXrZsgOmYTDF8
+ dF6xye4+mMOpV0UGTkwpyT8rGOgb0s/09HeP3yUiftLApNa9crzWn3UJqbD+uoOSUj2780n
+ 7V2Zy55TEFyU/UocePIig==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:xUBDiT9w8cw=:HCyXnQJeqGcKF6G9DjUnjZ
+ puX20Htbf7204KArWKbAoFx/HcC5UPx+FBalFYJiEK8pTuto7NdgY4/knjK3l9bZ6qwXrXCj1
+ BQIAREi7obMoWI4CEYflM82gDjQMOJvKuWglQEcde+l3cmZs5wAjvpcR3D7WINy4+LqcW0hYC
+ CZLUl9eQwldHTrhRw6Z0SbmObaYTrOPQ7/AYpS520pzlNN8iufzfREJEFO+7ItkFAMiXC9UMN
+ hzOeXRdzWP42TYAiWNV4uP/1Gs36IT8sPeVVFSrkHpVWmzlZsKv3DQiaTPPi7G5mXHhCwoHMX
+ PftdrCbEDbfhC96psisWdGJY5LOFdfh1Sbqjp7DIeYJvXTNBKOQIzlt9yCM+sQHfkByzLw/Ol
+ 7XMtuiK5T/keHJHQyeB6ukhljuky8155WO9ZEQ5KQ4g8olxtfSNnO/UJjyiOzqSnUljHjbqVY
+ rNXbudlCJvb5IziKP9Dlsu0sbiF//IXmS1nDB2BDfstqtx6syKQeVpgTJ4JxUzlkjfdTkwqiR
+ ihmROGi7faeOUl2up5HCsRi5KKkMP/AmCMW1SzuZIRK7gRqpeW9hlEFpam5xADFjaqkci9wze
+ b0iS2g8fmytzcNwLaGMzoQNUDac2vTMqZN/cxkczSa8g5tqFT1VTpbZ9eTgnGItHTUKbtJEAu
+ 17ZXKRM9cPtV+LAOhJoI5AQXXpufq1l0vC7uVaCShimBXGxcFHI5xnJOsf4AdyPT13k0afyag
+ ghG6Z9xbC6vkkRye
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git objtool-run
-head:   b8646d8664875281b48db7752d3dc7880b7561e1
-commit: f2bec70312f62ef4f1ea21c134d9def627182ad3 [19/35] objtool: Don't print parentheses in function addresses
-config: x86_64-randconfig-a006 (https://download.01.org/0day-ci/archive/20220416/202204160031.TT2073NX-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git/commit/?id=f2bec70312f62ef4f1ea21c134d9def627182ad3
-        git remote add jpoimboe https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git
-        git fetch --no-tags jpoimboe objtool-run
-        git checkout f2bec70312f62ef4f1ea21c134d9def627182ad3
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The panel has a prepare call which is before video starts, and an
+enable call which is after.
+The Toshiba bridge should be configured before video, so move
+the relevant power and initialisation calls to prepare.
 
-All warnings (new ones prefixed by >>):
+Fixes: 2f733d6194bd ("drm/panel: Add support for the Raspberry Pi 7" Touchscreen.")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-   vmlinux.o: warning: objtool: __do_fast_syscall_32+0x1b: call to static_key_count.constprop.0() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: do_syscall_64+0xc: call to static_key_count.constprop.0() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: do_int80_syscall_32+0x1b: call to static_key_count.constprop.0() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: enter_from_user_mode+0x18: call to __kcsan_check_access() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: syscall_enter_from_user_mode+0x1d: call to __kcsan_check_access() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare+0x18: call to __kcsan_check_access() leaves .noinstr.text section
->> vmlinux.o: warning: objtool: exit_to_user_mode+0x10: call to static_key_count.constprop.0() leaves .noinstr.text section
->> vmlinux.o: warning: objtool: syscall_exit_to_user_mode+0x29: call to static_key_count.constprop.0() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: irqentry_enter_from_user_mode+0x18: call to __kcsan_check_access() leaves .noinstr.text section
->> vmlinux.o: warning: objtool: irqentry_exit_to_user_mode+0x17: call to static_key_count.constprop.0() leaves .noinstr.text section
-
+diff --git a/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c b/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
+index 1f805eb8fdb5..145047e19394 100644
+--- a/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
++++ b/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
+@@ -265,7 +265,7 @@ static int rpi_touchscreen_noop(struct drm_panel *panel)
+ 	return 0;
+ }
+ 
+-static int rpi_touchscreen_enable(struct drm_panel *panel)
++static int rpi_touchscreen_prepare(struct drm_panel *panel)
+ {
+ 	struct rpi_touchscreen *ts = panel_to_ts(panel);
+ 	int i;
+@@ -295,6 +295,13 @@ static int rpi_touchscreen_enable(struct drm_panel *panel)
+ 	rpi_touchscreen_write(ts, DSI_STARTDSI, 0x01);
+ 	msleep(100);
+ 
++	return 0;
++}
++
++static int rpi_touchscreen_enable(struct drm_panel *panel)
++{
++	struct rpi_touchscreen *ts = panel_to_ts(panel);
++
+ 	/* Turn on the backlight. */
+ 	rpi_touchscreen_i2c_write(ts, REG_PWM, 255);
+ 
+@@ -349,7 +356,7 @@ static int rpi_touchscreen_get_modes(struct drm_panel *panel,
+ static const struct drm_panel_funcs rpi_touchscreen_funcs = {
+ 	.disable = rpi_touchscreen_disable,
+ 	.unprepare = rpi_touchscreen_noop,
+-	.prepare = rpi_touchscreen_noop,
++	.prepare = rpi_touchscreen_prepare,
+ 	.enable = rpi_touchscreen_enable,
+ 	.get_modes = rpi_touchscreen_get_modes,
+ };
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
