@@ -2,235 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7907C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:39:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A1BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:40:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355331AbiDOPld (ORCPT
+        id S1354518AbiDOPnV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 11:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40620 "EHLO
+        Fri, 15 Apr 2022 11:43:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355314AbiDOPlU (ORCPT
+        with ESMTP id S244491AbiDOPnO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 11:41:20 -0400
-Received: from 4.mo575.mail-out.ovh.net (4.mo575.mail-out.ovh.net [46.105.59.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA3D50464
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:38:50 -0700 (PDT)
-Received: from player788.ha.ovh.net (unknown [10.110.115.29])
-        by mo575.mail-out.ovh.net (Postfix) with ESMTP id C888A2343A
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 15:38:48 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player788.ha.ovh.net (Postfix) with ESMTPSA id 3BDC829867006;
-        Fri, 15 Apr 2022 15:38:43 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-100R003ae2f5d48-d3a3-4e50-baca-c251b8c8e9d3,
-                    77125C2C2681624F8512B69FC7A1C9B53E6602B4) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: [PATCH 3/6] ASoC: max980*: use i2c_match_id and simple i2c probe
-Date:   Fri, 15 Apr 2022 17:38:14 +0200
-Message-Id: <20220415153817.141364-4-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220415153817.141364-1-steve@sk2.org>
-References: <20220415153817.141364-1-steve@sk2.org>
+        Fri, 15 Apr 2022 11:43:14 -0400
+Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com [209.85.219.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B5392338;
+        Fri, 15 Apr 2022 08:40:46 -0700 (PDT)
+Received: by mail-yb1-f181.google.com with SMTP id z33so15077894ybh.5;
+        Fri, 15 Apr 2022 08:40:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=siQwI8deKdhHuH3vRXoSE7cu7PIu6L4/ZKF1nngalP8=;
+        b=lJted+6nzCX/TmPSEV27OEVQ+FB0znDWFH+ESkGqvymGUsFAlNeIsiY8r8n7/u7iTf
+         klMFOUQPp+GZaIgziXQxVBZ20AY3gwikjNLsskuhKsRIAtUFrmJKd87/AnPa3WjA9eGS
+         k+g0muoLaKKNtcffZ6rusJ0Z+E5gDGNv3qz3Tfq2aJ5LEv+Xp5TYQPKdtlgedJ1Bae+t
+         FRovKjOFdfYqmTFLviU8dvACxA4hMDjI0MIQmQHbdnjeajUXw0LyP/jtL8iQ/nrpGtlE
+         OqPvwzRkH+YTaO3AhxHA+SR73Vi/v1Rl2C6DOwcZMNUbiK+HgcNz3HjeWlmn3FZTB518
+         tC4Q==
+X-Gm-Message-State: AOAM532MJ4X+SVM6efcQapXoJ4B4fO0YO00+v2X2Uw2Tx4hP7JNtLtD2
+        ZTujW+wRu6jWrrbfHcEMmjGAy4nTn0SMs9tml8c=
+X-Google-Smtp-Source: ABdhPJxW2Py97UUCGXi4mm+J3kzUaSrm2VZ814zQbxslS3B6faAjoAZXHccBUUiOJ56uqCFyhUQzMtJDS6hFu4QYUsI=
+X-Received: by 2002:a25:ac9b:0:b0:641:3c32:bee7 with SMTP id
+ x27-20020a25ac9b000000b006413c32bee7mr5453873ybi.633.1650037245392; Fri, 15
+ Apr 2022 08:40:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 10486631734977201798
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelhedgleefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeejleelvdefieeiuddtfeevkeegueehkeekvdffgedvhedugeekgfejjeekgfeugeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejkeekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+References: <20220408184844.22829-1-andriy.shevchenko@linux.intel.com>
+ <20220408184844.22829-4-andriy.shevchenko@linux.intel.com>
+ <CAJZ5v0jnyg6n-1QRmVg1tjzu3szsG3DYqYTXAbobbKwkFhTreg@mail.gmail.com>
+ <YlcUMNe5gDsEca4f@smile.fi.intel.com> <YlcVFRQ9wJIH+sjI@smile.fi.intel.com>
+ <YldE6L7MbgS0NXQY@paasikivi.fi.intel.com> <YlgdGb/vKfdCXXx1@smile.fi.intel.com>
+In-Reply-To: <YlgdGb/vKfdCXXx1@smile.fi.intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Fri, 15 Apr 2022 17:40:34 +0200
+Message-ID: <CAJZ5v0gHROpQqWXOh6fZo4k-=1_w0x9=e0fQBvU4TrShwRFiFA@mail.gmail.com>
+Subject: Re: [PATCH v6 4/5] device property: Constify fwnode_handle_get()
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Len Brown <lenb@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As part of the ongoing i2c transition to the simple probe
-("probe_new"), this patch uses i2c_match_id to retrieve the
-driver_data for the probed device. The id parameter is thus no longer
-necessary and the simple probe can be used instead.
+On Thu, Apr 14, 2022 at 3:09 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Thu, Apr 14, 2022 at 12:47:20AM +0300, Sakari Ailus wrote:
+> > On Wed, Apr 13, 2022 at 09:23:17PM +0300, Andy Shevchenko wrote:
+> > > On Wed, Apr 13, 2022 at 09:19:28PM +0300, Andy Shevchenko wrote:
+> > > > On Wed, Apr 13, 2022 at 08:10:22PM +0200, Rafael J. Wysocki wrote:
+> > > > > On Fri, Apr 8, 2022 at 8:49 PM Andy Shevchenko
+> > > > > <andriy.shevchenko@linux.intel.com> wrote:
+>
+> ...
+>
+> > > > > > -struct fwnode_handle *fwnode_handle_get(struct fwnode_handle *fwnode)
+> > > > > > +struct fwnode_handle *fwnode_handle_get(const struct fwnode_handle *fwnode)
+> > > > > >  {
+> > > >
+> > > > > >         if (!fwnode_has_op(fwnode, get))
+> > > > > >                 return fwnode;
+> > > >
+> > > > ^^^^, so it needs a casting, but then we have to comment why is so.
+> > >
+> > > Note, it means that the fwnode parameter either invalid or has no given option.
+> > > It's not a problem to drop casting in the first case, but the second one should
+> > > be justified and Sakari wants to be sure that the initial container is not
+> > > const, which seems can't be achieved even with the original code.
+> >
+> > I wonder if I'm missing something. The fwnode argument originally was not
+> > const here.
+>
+> Yes, and our discussion went to the direction of what const qualifier implies
+> here. I assume that the const means that we do not modify the fwnode object,
+> while its container is another story which we have no influence on. You, if
+> I read your messages correctly, insisting that const here implies that the
+> container object is const as well.
+>
+> Reading current implementation I see now, that with children APIs we have
+> two pointers passed, while with parent APIs only a single one. In children
+> API due to above is easy to use const qualifier for the first argument.
+> Parent APIs missed that and hence have this problem that we can't constify
+> their parameters.
+>
+> to_of_node() expects const parameter while returns non-const container.
+> Is it a subtle issue there? (I believe it should be consistent then)
 
-In the context of an i2c probe, i2c_match_id with the module id table
-and the probed client never returns null, so removing the null check
-on the i2c_device_id pointer is safe.
+This is fine AFAICS.
 
-The i2c id tables are moved up before the probe function, as
-suggested by Wolfram Sang.
+The const parameter means that to_of_node() will not update the memory
+pointed to by it, which is correct.
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
----
- sound/soc/codecs/max98088.c | 21 +++++++++++----------
- sound/soc/codecs/max98090.c | 23 ++++++++++++-----------
- sound/soc/codecs/max98095.c | 19 ++++++++++---------
- 3 files changed, 33 insertions(+), 30 deletions(-)
+The value returned by it may be used by its caller in whatever way
+they like, because the caller has no obligation to preserve the memory
+pointed to by it, unless they've also received that pointer with the
+const qualifier, but then they need to know how it is related to the
+to_of_node() return value and what to do with it.
 
-diff --git a/sound/soc/codecs/max98088.c b/sound/soc/codecs/max98088.c
-index 429717d4ac5a..5ef2e1279ee7 100644
---- a/sound/soc/codecs/max98088.c
-+++ b/sound/soc/codecs/max98088.c
-@@ -1737,11 +1737,18 @@ static const struct snd_soc_component_driver soc_component_dev_max98088 = {
- 	.non_legacy_dai_naming	= 1,
- };
- 
--static int max98088_i2c_probe(struct i2c_client *i2c,
--			      const struct i2c_device_id *id)
-+static const struct i2c_device_id max98088_i2c_id[] = {
-+       { "max98088", MAX98088 },
-+       { "max98089", MAX98089 },
-+       { }
-+};
-+MODULE_DEVICE_TABLE(i2c, max98088_i2c_id);
-+
-+static int max98088_i2c_probe(struct i2c_client *i2c)
- {
-        struct max98088_priv *max98088;
-        int ret;
-+       const struct i2c_device_id *id;
- 
-        max98088 = devm_kzalloc(&i2c->dev, sizeof(struct max98088_priv),
- 			       GFP_KERNEL);
-@@ -1757,6 +1764,7 @@ static int max98088_i2c_probe(struct i2c_client *i2c,
- 		if (PTR_ERR(max98088->mclk) == -EPROBE_DEFER)
- 			return PTR_ERR(max98088->mclk);
- 
-+	id = i2c_match_id(max98088_i2c_id, i2c);
-        max98088->devtype = id->driver_data;
- 
-        i2c_set_clientdata(i2c, max98088);
-@@ -1767,13 +1775,6 @@ static int max98088_i2c_probe(struct i2c_client *i2c,
-        return ret;
- }
- 
--static const struct i2c_device_id max98088_i2c_id[] = {
--       { "max98088", MAX98088 },
--       { "max98089", MAX98089 },
--       { }
--};
--MODULE_DEVICE_TABLE(i2c, max98088_i2c_id);
--
- #if defined(CONFIG_OF)
- static const struct of_device_id max98088_of_match[] = {
- 	{ .compatible = "maxim,max98088" },
-@@ -1788,7 +1789,7 @@ static struct i2c_driver max98088_i2c_driver = {
- 		.name = "max98088",
- 		.of_match_table = of_match_ptr(max98088_of_match),
- 	},
--	.probe  = max98088_i2c_probe,
-+	.probe_new = max98088_i2c_probe,
- 	.id_table = max98088_i2c_id,
- };
- 
-diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
-index b45ec35cd63c..4058e147413c 100644
---- a/sound/soc/codecs/max98090.c
-+++ b/sound/soc/codecs/max98090.c
-@@ -2529,8 +2529,14 @@ static const struct regmap_config max98090_regmap = {
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--static int max98090_i2c_probe(struct i2c_client *i2c,
--				 const struct i2c_device_id *i2c_id)
-+static const struct i2c_device_id max98090_i2c_id[] = {
-+	{ "max98090", MAX98090 },
-+	{ "max98091", MAX98091 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, max98090_i2c_id);
-+
-+static int max98090_i2c_probe(struct i2c_client *i2c)
- {
- 	struct max98090_priv *max98090;
- 	const struct acpi_device_id *acpi_id;
-@@ -2552,7 +2558,9 @@ static int max98090_i2c_probe(struct i2c_client *i2c,
- 			return -EINVAL;
- 		}
- 		driver_data = acpi_id->driver_data;
--	} else if (i2c_id) {
-+	} else {
-+		const struct i2c_device_id *i2c_id =
-+			i2c_match_id(max98090_i2c_id, i2c);
- 		driver_data = i2c_id->driver_data;
- 	}
- 
-@@ -2659,13 +2667,6 @@ static const struct dev_pm_ops max98090_pm = {
- 	SET_SYSTEM_SLEEP_PM_OPS(NULL, max98090_resume)
- };
- 
--static const struct i2c_device_id max98090_i2c_id[] = {
--	{ "max98090", MAX98090 },
--	{ "max98091", MAX98091 },
--	{ }
--};
--MODULE_DEVICE_TABLE(i2c, max98090_i2c_id);
--
- #ifdef CONFIG_OF
- static const struct of_device_id max98090_of_match[] = {
- 	{ .compatible = "maxim,max98090", },
-@@ -2690,7 +2691,7 @@ static struct i2c_driver max98090_i2c_driver = {
- 		.of_match_table = of_match_ptr(max98090_of_match),
- 		.acpi_match_table = ACPI_PTR(max98090_acpi_match),
- 	},
--	.probe  = max98090_i2c_probe,
-+	.probe_new = max98090_i2c_probe,
- 	.shutdown = max98090_i2c_shutdown,
- 	.remove = max98090_i2c_remove,
- 	.id_table = max98090_i2c_id,
-diff --git a/sound/soc/codecs/max98095.c b/sound/soc/codecs/max98095.c
-index 4977b00ddf5f..7bca99fa61b5 100644
---- a/sound/soc/codecs/max98095.c
-+++ b/sound/soc/codecs/max98095.c
-@@ -2106,11 +2106,17 @@ static const struct snd_soc_component_driver soc_component_dev_max98095 = {
- 	.non_legacy_dai_naming	= 1,
- };
- 
--static int max98095_i2c_probe(struct i2c_client *i2c,
--			     const struct i2c_device_id *id)
-+static const struct i2c_device_id max98095_i2c_id[] = {
-+	{ "max98095", MAX98095 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, max98095_i2c_id);
-+
-+static int max98095_i2c_probe(struct i2c_client *i2c)
- {
- 	struct max98095_priv *max98095;
- 	int ret;
-+	const struct i2c_device_id *id;
- 
- 	max98095 = devm_kzalloc(&i2c->dev, sizeof(struct max98095_priv),
- 				GFP_KERNEL);
-@@ -2126,6 +2132,7 @@ static int max98095_i2c_probe(struct i2c_client *i2c,
- 		return ret;
- 	}
- 
-+	id = i2c_match_id(max98095_i2c_id, i2c);
- 	max98095->devtype = id->driver_data;
- 	i2c_set_clientdata(i2c, max98095);
- 	max98095->pdata = i2c->dev.platform_data;
-@@ -2136,12 +2143,6 @@ static int max98095_i2c_probe(struct i2c_client *i2c,
- 	return ret;
- }
- 
--static const struct i2c_device_id max98095_i2c_id[] = {
--	{ "max98095", MAX98095 },
--	{ }
--};
--MODULE_DEVICE_TABLE(i2c, max98095_i2c_id);
--
- #ifdef CONFIG_OF
- static const struct of_device_id max98095_of_match[] = {
- 	{ .compatible = "maxim,max98095", },
-@@ -2155,7 +2156,7 @@ static struct i2c_driver max98095_i2c_driver = {
- 		.name = "max98095",
- 		.of_match_table = of_match_ptr(max98095_of_match),
- 	},
--	.probe  = max98095_i2c_probe,
-+	.probe_new = max98095_i2c_probe,
- 	.id_table = max98095_i2c_id,
- };
- 
--- 
-2.27.0
+IOW, to_of_node() has no information on its caller's obligations with
+respect to the memory pointed to by its argument, so it is OK for it
+to return a non-const result.  Moreover, if it had done otherwise, it
+might have created an obligation for the caller that didn't exist
+before.
 
+> This patch and the followed one can be moved without understanding why
+> we need the non-const parameter there.
+
+I'm not sure what you mean here, sorry.
