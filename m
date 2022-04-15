@@ -2,110 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:01:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 249C9C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 15:02:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354777AbiDOPD7 (ORCPT
+        id S1354802AbiDOPEa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 11:03:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48966 "EHLO
+        Fri, 15 Apr 2022 11:04:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354788AbiDOPD4 (ORCPT
+        with ESMTP id S1354794AbiDOPEZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 11:03:56 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51786AACB5
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:01:28 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id u17-20020a05600c211100b0038eaf4cdaaeso7920502wml.1
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:01:28 -0700 (PDT)
+        Fri, 15 Apr 2022 11:04:25 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A571B7C5B
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:01:57 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id mp16-20020a17090b191000b001cb5efbcab6so11966019pjb.4
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 08:01:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=j0vnaKGxmv5JfYEKM5Bm4tqmu20hS3lgUguCbFOzoU8=;
-        b=Aw60U+AxFr5ae1fP0IpaNSJWX8/bPiZtH5VfPVop0FZHr53WY4hZXtXAKPJSArfPH2
-         xgqe8qUM1DokOD7cJ31F4vPKVi/+TwWnS/gs2irgt5pOdTJ+cEvBg+EVJWYPF7KJkUHw
-         hUKFd+cF+Dsmig+l+9a5MELvhWloS44Ll+O7A1NZ8jVHnnLWfWdffFNqfwwaMlEt6nmv
-         No3laHS1zcgC3hzCKVfw2Tz2YPMr3Tht0yzi6+Z2TaX0VkkuCUrIBGFjNeKSHdaWBua4
-         L6Uk6pke8jRiD6YK5bKtH8snkjGDeGED5F0DSOhhGnJPBtnYSQu2WUAV/uaTPOHBOtxS
-         4j4A==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Az4fGj41zOdvkfI9EKM24+0aqWRfUg0i44LnNLGYmEM=;
+        b=n/ITxv/qMhJcXJbybE8llTliBfr1k8JJIzO2zL/ZNTGbt7v3hjI7fWhhJSpIUOVn8o
+         cdpZ7SRiz3M7qD56Hi5kGz9SkKdxY/KMLZCJ8j67oaob5VkwDiq2VOxG3cFQ+7Ch/HgV
+         hjgtWwVDObmDvtJS1lgGc3HBH2SQcHLt5+TArE9Rp9VHezDXcP60FMj902nhDtQZbK+M
+         OuHowPFzQaF1UZT0qECi+VRyyR4Rap2D+F3YMxwT3HUQtmEAYMR2BPJ5TJgeYAFX9qx1
+         W3q5OUtLUZcL2lj0yylPC2tJZ2hJZt4XrDP6mjpFxhvUg3ZrEA1s6bJbvISQixv1MGNO
+         T+Qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=j0vnaKGxmv5JfYEKM5Bm4tqmu20hS3lgUguCbFOzoU8=;
-        b=q89SUA2nupjkpH8yX9RqwpJukR8SGbJVJxqsgFz9SwsIUgsF5WsosvtWcUxbFAGXCK
-         rkPdEbUh9DVsxwBQ+u9OkcrWANu6PWcrfi9rAObd5SlSc3RU6Go/SbKXuN+eLQ/mBU5z
-         cUu0A72jRivU7vS2WWsTa3IM9dMyMd4V9vLTW7BYXZG5qqNlha3B97MjzoHNpucTu1cr
-         y/f8QRhmdxQKadkBLOwcw5+WeDbQIc/DK0HxEq1jyL67kCH1BqlenPujTOOM3hM3YR/L
-         pkGR3SKrgPozgM1QSCjc6aL5Zh3bKi8IgNth6v+sMtBXGia4td4LtchKMba9r3JorGi/
-         g5BQ==
-X-Gm-Message-State: AOAM530d+dX/r6a3P+999nUuO9Bn6QTaBvetEYSO+wqPHJ0HPI7H3tBp
-        KiNnVYc1QKgZXM7k0viz9lLyGoUDSRz/Ng==
-X-Google-Smtp-Source: ABdhPJyIDFZhXfMb5NDUQ+PJx1ThOwc70zKh0UxZUkNz38TTnVnb/WRpbNmjQV4mVGVHF6LWMRQkIQ==
-X-Received: by 2002:a1c:1981:0:b0:392:4dd9:b5ec with SMTP id 123-20020a1c1981000000b003924dd9b5ecmr591483wmz.149.1650034886920;
-        Fri, 15 Apr 2022 08:01:26 -0700 (PDT)
-Received: from localhost.localdomain ([88.160.162.107])
-        by smtp.gmail.com with ESMTPSA id n2-20020a5d6b82000000b0020a7e34ef20sm1579664wrx.47.2022.04.15.08.01.26
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Az4fGj41zOdvkfI9EKM24+0aqWRfUg0i44LnNLGYmEM=;
+        b=KRqCt7SMru92Qj0WoPi3ru5vYRUn04Ijqh+tm/JQMuo7Z2rEkSRLODLRNp1SZC7QWG
+         LmB4F4A7fAJ3HapVsEKOZy0ztdQ4hD53MHTGhY4YeqTaoIavAi/J3zO22/c7CIZh2m9O
+         XEBJFacxw8NTF9pIJkx/JRfLy3PYWBJM9Oayqg+J9s+FVFUuhq8qh0wFdxho03IkNz9c
+         P6X3GE0EoGsLyVMY96ZekBzQPmtSooZdiABhsbH6vWRg6o4qsB07yU7i1OakTD7nhXqv
+         Vwn+izTzCt5WKTX2m+E4sImRr4DDWx9g9AwLx+25Q5w2olkxK9uu2eZo2sLOWnt0O5fE
+         DW/Q==
+X-Gm-Message-State: AOAM532ntdWQdnlYwakbrZBBfqBvI+V9HGTLqU6GFR/x4niad6zN8xam
+        I/rpUIyLkIhQYj73IMspkz2avg==
+X-Google-Smtp-Source: ABdhPJymh7kAEgYCaObPRMje0xl3Oiwg/sQm394mC6KLFbzt8LkrelPDymNdNsDi4naPj3WzojXOIQ==
+X-Received: by 2002:a17:90b:3a82:b0:1cb:9ba8:56a5 with SMTP id om2-20020a17090b3a8200b001cb9ba856a5mr4641840pjb.16.1650034916361;
+        Fri, 15 Apr 2022 08:01:56 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id v4-20020a622f04000000b005057a24d478sm3162719pfv.121.2022.04.15.08.01.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 08:01:26 -0700 (PDT)
-From:   Fabien Parent <fparent@baylibre.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     Fabien Parent <fparent@baylibre.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 4/4] arm64: defconfig: enable some mt6360 PMIC drivers
-Date:   Fri, 15 Apr 2022 17:00:03 +0200
-Message-Id: <20220415150003.1793063-5-fparent@baylibre.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220415150003.1793063-1-fparent@baylibre.com>
-References: <20220415150003.1793063-1-fparent@baylibre.com>
+        Fri, 15 Apr 2022 08:01:55 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 15:01:52 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Zeng Guang <guang.zeng@intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Robert Hu <robert.hu@intel.com>,
+        Gao Chao <chao.gao@intel.com>
+Subject: Re: [PATCH v8 8/9] KVM: x86: Allow userspace set maximum VCPU id for
+ VM
+Message-ID: <YlmI4N1erENL9HyV@google.com>
+References: <20220411090447.5928-1-guang.zeng@intel.com>
+ <20220411090447.5928-9-guang.zeng@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411090447.5928-9-guang.zeng@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable the charger and regulator driver for the
-MT6360 PMIC. These drivers are essential for
-some MediaTek MT8195 based boards to boot properly.
+On Mon, Apr 11, 2022, Zeng Guang wrote:
+> @@ -11180,6 +11192,9 @@ int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
+>  	struct page *page;
+>  	int r;
+>  
+> +	if (vcpu->vcpu_id >= vcpu->kvm->arch.max_vcpu_ids)
 
-Signed-off-by: Fabien Parent <fparent@baylibre.com>
----
-v3: no changes
-v2: no changes
+This belongs in pre-create.
 
- arch/arm64/configs/defconfig | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 1e521f17cb39..3848246f6727 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -565,6 +565,7 @@ CONFIG_SYSCON_REBOOT_MODE=y
- CONFIG_BATTERY_SBS=m
- CONFIG_BATTERY_BQ27XXX=y
- CONFIG_BATTERY_MAX17042=m
-+CONFIG_CHARGER_MT6360=m
- CONFIG_CHARGER_BQ25890=m
- CONFIG_CHARGER_BQ25980=m
- CONFIG_SENSORS_ARM_SCMI=y
-@@ -625,6 +626,7 @@ CONFIG_MFD_EXYNOS_LPASS=m
- CONFIG_MFD_HI6421_PMIC=y
- CONFIG_MFD_HI655X_PMIC=y
- CONFIG_MFD_MAX77620=y
-+CONFIG_MFD_MT6360=y
- CONFIG_MFD_MT6397=y
- CONFIG_MFD_SPMI_PMIC=y
- CONFIG_MFD_RK808=y
-@@ -645,6 +647,7 @@ CONFIG_REGULATOR_MAX8973=y
- CONFIG_REGULATOR_MP8859=y
- CONFIG_REGULATOR_MT6358=y
- CONFIG_REGULATOR_MT6359=y
-+CONFIG_REGULATOR_MT6360=y
- CONFIG_REGULATOR_MT6397=y
- CONFIG_REGULATOR_PCA9450=y
- CONFIG_REGULATOR_PF8X00=y
--- 
-2.35.2
-
+> +		return -EINVAL;
+> +
+>  	vcpu->arch.last_vmentry_cpu = -1;
+>  	vcpu->arch.regs_avail = ~0;
+>  	vcpu->arch.regs_dirty = ~0;
