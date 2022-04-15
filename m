@@ -2,196 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50BBEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EF1EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 14:32:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354746AbiDOOeO (ORCPT
+        id S1354528AbiDOOfO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 10:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50500 "EHLO
+        Fri, 15 Apr 2022 10:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354759AbiDOOeI (ORCPT
+        with ESMTP id S1344879AbiDOOfL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 10:34:08 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 898A3D3AFE;
-        Fri, 15 Apr 2022 07:31:28 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23FATHme003966;
-        Fri, 15 Apr 2022 07:31:04 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=kQa1/fI8r7R7SSHsQpLYhMScAwHxIdb1Nb1bGo1gqx0=;
- b=Afq0MHl7Xpci6PQQ9l675E2A1zsFgbLddECZrB7QNaYhD02et4wtN9i9Ud7kuEbyR8HT
- TVepFMwmmGl1IPUFotfDA1pgy8OfGQERkECoA6fvxni4qS7kq1j3nGVJHmvvNZkEgxA0
- l41GotYQ6PlGPhGSnWoH67qFMDyb8hrmantjJWGvcDbu+mRNvwC1TLSNuwD+HgTy/TU2
- 94j+aPPGsrmN82O2nqJd27PXzfHgHMDL72C37HyqhzRU6bVShweOKoeR/XtyvfGAeldc
- ko3e3t50mc3hXOK1uUBy2TYG3CptFcikZmLTZynM3WowE11XZA53XzT5usN8Z8hEvH1r nw== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3fdw7ej6kx-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 15 Apr 2022 07:31:03 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 15 Apr
- 2022 07:31:01 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 15 Apr 2022 07:31:01 -0700
-Received: from localhost.localdomain (unknown [10.110.150.250])
-        by maili.marvell.com (Postfix) with ESMTP id 8EB5B3F706C;
-        Fri, 15 Apr 2022 07:31:01 -0700 (PDT)
-From:   Piyush Malgujar <pmalgujar@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <cchavva@marvell.com>, Piyush Malgujar <pmalgujar@marvell.com>,
-        "Damian Eppel" <deppel@marvell.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH] Marvell MDIO clock related changes.
-Date:   Fri, 15 Apr 2022 07:30:26 -0700
-Message-ID: <20220415143026.11088-1-pmalgujar@marvell.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: bE6rxzjobvtJfhLz4qN_-LMDzm6fWtav
-X-Proofpoint-ORIG-GUID: bE6rxzjobvtJfhLz4qN_-LMDzm6fWtav
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-15_05,2022-04-15_01,2022-02-23_01
+        Fri, 15 Apr 2022 10:35:11 -0400
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E6F32E6BC;
+        Fri, 15 Apr 2022 07:32:43 -0700 (PDT)
+Received: by mail-oi1-f180.google.com with SMTP id r85so3353028oie.7;
+        Fri, 15 Apr 2022 07:32:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=PWkFmsh5Xu4+fKnCCwdt0tVV4sCcc9ioI4xTfndA/mQ=;
+        b=uRbEX1smBihFX6vWqUoftP9cvyM7tZs1s86jC4+u2D6RKOgRY7Sg4ehNBG3yHaEr+N
+         zp+7KjP5E5NLLOSv3x4c9e9iYtHX+qRIEf8jPwK1pOup685X/kMRTnIZdOcnaM8riyN/
+         V9htAquK3GFg9Ue9Yw5A/9Xtib2IxBs9iaAHZ0u1DFOkOlp/hI9KWgqDtv0cMooDr7pD
+         7f5S1Bp6aDCdZEUsfjWvBiD2BQkFEvZ60Uk1T+lZXfvBqX/3N6OB3lTpEZlPg0wy4c4A
+         yPudZJG4vR/ZudGZguB3Ztk1x1hSez23IdkwADBagIVZyBaqUMpA2GJ7upQcV96o2YfU
+         OiUw==
+X-Gm-Message-State: AOAM533aEMldptddOKRh5+k6WfBTkcTbHjYel7D8MjXaHULSZlBdtCep
+        SgUcxIbi8kEVGbeg4S5/bw==
+X-Google-Smtp-Source: ABdhPJyIHQEfmVJhe8R8epLhEwBEi+YFfcMZyMoMZDbG+RnujEOdN/75D+3Psr7DA3LmCirjREEBtw==
+X-Received: by 2002:a05:6808:199d:b0:2fa:2f20:7212 with SMTP id bj29-20020a056808199d00b002fa2f207212mr1742895oib.251.1650033162752;
+        Fri, 15 Apr 2022 07:32:42 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id z3-20020a056830290300b005b2316db9c9sm1105553otu.30.2022.04.15.07.32.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 07:32:42 -0700 (PDT)
+Received: (nullmailer pid 251786 invoked by uid 1000);
+        Fri, 15 Apr 2022 14:32:41 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Markuss Broks <markuss.broks@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>, phone-devel@vger.kernel.org,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Lee Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220415110014.7384-3-markuss.broks@gmail.com>
+References: <20220415110014.7384-1-markuss.broks@gmail.com> <20220415110014.7384-3-markuss.broks@gmail.com>
+Subject: Re: [PATCH v2 2/4] dt-bindings: mfd: Add bindings for Silicon Mitus SM5703 MFD
+Date:   Fri, 15 Apr 2022 09:32:41 -0500
+Message-Id: <1650033161.773468.251785.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch includes following support related to MDIO Clock:
+On Fri, 15 Apr 2022 14:00:11 +0300, Markuss Broks wrote:
+> This patch adds device-tree bindings for the Silicon Mitus
+> SM5703 MFD.
+> 
+> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+> ---
+>  .../bindings/mfd/siliconmitus,sm5703.yaml     | 96 +++++++++++++++++++
+>  1 file changed, 96 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.yaml
+> 
 
-1) clock gating:
-The purpose of this change is to apply clock gating for MDIO clock when there is no transaction happening.
-This will stop the MDC clock toggling in idle scenario.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-2) Marvell MDIO clock frequency attribute change:
-This MDIO change provides an option for user to have the bus speed set to their needs which is otherwise set
-to default(3.125 MHz). In case someone needs to use this attribute, they have to add an extra attribute clock-freq
-in the mdio entry in their DTS and this driver will support the rest.
+yamllint warnings/errors:
 
-The changes are made in a way that the clock will set to the nearest possible value based on the clock calculation
-and required frequency from DTS. Below are some possible values:
-default:3.125 MHz
-Max:16.67 MHz
+dtschema/dtc warnings/errors:
+schemas/regulator/siliconmitus,sm5703-regulator.yaml: ignoring, error parsing file
+Error: Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.example.dts:28.39-40 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:364: Documentation/devicetree/bindings/mfd/siliconmitus,sm5703.example.dtb] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1401: dt_binding_check] Error 2
 
-These changes has been verified internally with Marvell SoCs 9x and 10x series.
+doc reference errors (make refcheckdocs):
 
-Signed-off-by: Piyush Malgujar <pmalgujar@marvell.com>
-Signed-off-by: Damian Eppel <deppel@marvell.com>
----
- drivers/net/mdio/mdio-cavium.h  |  1 +
- drivers/net/mdio/mdio-thunder.c | 65 +++++++++++++++++++++++++++++++++
- 2 files changed, 66 insertions(+)
+See https://patchwork.ozlabs.org/patch/
 
-diff --git a/drivers/net/mdio/mdio-cavium.h b/drivers/net/mdio/mdio-cavium.h
-index a2245d436f5dae4d6424b7c7bfca0aa969a3b3ad..ed4c48d8a38bd80e6a169f7a6d90c1f2a0daccfc 100644
---- a/drivers/net/mdio/mdio-cavium.h
-+++ b/drivers/net/mdio/mdio-cavium.h
-@@ -92,6 +92,7 @@ struct cavium_mdiobus {
- 	struct mii_bus *mii_bus;
- 	void __iomem *register_base;
- 	enum cavium_mdiobus_mode mode;
-+	u32 clk_freq;
- };
- 
- #ifdef CONFIG_CAVIUM_OCTEON_SOC
-diff --git a/drivers/net/mdio/mdio-thunder.c b/drivers/net/mdio/mdio-thunder.c
-index 822d2cdd2f3599025f3e79d4243337c18114c951..642d08aff3f7f849102992a891790e900b111d5c 100644
---- a/drivers/net/mdio/mdio-thunder.c
-+++ b/drivers/net/mdio/mdio-thunder.c
-@@ -19,6 +19,46 @@ struct thunder_mdiobus_nexus {
- 	struct cavium_mdiobus *buses[4];
- };
- 
-+#define _calc_clk_freq(_phase) (100000000U / (2 * (_phase)))
-+#define _calc_sample(_phase) (2 * (_phase) - 3)
-+
-+#define PHASE_MIN 3
-+#define PHASE_DFLT 16
-+#define DFLT_CLK_FREQ _calc_clk_freq(PHASE_DFLT)
-+#define MAX_CLK_FREQ _calc_clk_freq(PHASE_MIN)
-+
-+static inline u32 _config_clk(u32 req_freq, u32 *phase, u32 *sample)
-+{
-+	unsigned int p;
-+	u32 freq = 0, freq_prev;
-+
-+	for (p = PHASE_MIN; p < PHASE_DFLT; p++) {
-+		freq_prev = freq;
-+		freq = _calc_clk_freq(p);
-+
-+		if (req_freq >= freq)
-+			break;
-+	}
-+
-+	if (p == PHASE_DFLT)
-+		freq = DFLT_CLK_FREQ;
-+
-+	if (p == PHASE_MIN || p == PHASE_DFLT)
-+		goto out;
-+
-+	/* Check which clock value from the identified range
-+	 * is closer to the requested value
-+	 */
-+	if ((freq_prev - req_freq) < (req_freq - freq)) {
-+		p = p - 1;
-+		freq = freq_prev;
-+	}
-+out:
-+	*phase = p;
-+	*sample = _calc_sample(p);
-+	return freq;
-+}
-+
- static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
- 				     const struct pci_device_id *ent)
- {
-@@ -59,6 +99,8 @@ static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
- 		struct mii_bus *mii_bus;
- 		struct cavium_mdiobus *bus;
- 		union cvmx_smix_en smi_en;
-+		union cvmx_smix_clk smi_clk;
-+		u32 req_clk_freq;
- 
- 		/* If it is not an OF node we cannot handle it yet, so
- 		 * exit the loop.
-@@ -87,6 +129,29 @@ static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
- 		bus->register_base = nexus->bar0 +
- 			r.start - pci_resource_start(pdev, 0);
- 
-+		smi_clk.u64 = oct_mdio_readq(bus->register_base + SMI_CLK);
-+		smi_clk.s.clk_idle = 1;
-+
-+		if (!of_property_read_u32(node, "clock-freq", &req_clk_freq)) {
-+			u32 phase, sample;
-+
-+			dev_info(&pdev->dev, "requested bus clock frequency=%d\n",
-+				 req_clk_freq);
-+
-+			 bus->clk_freq = _config_clk(req_clk_freq,
-+						     &phase, &sample);
-+
-+			 smi_clk.s.phase = phase;
-+			 smi_clk.s.sample_hi = (sample >> 4) & 0x1f;
-+			 smi_clk.s.sample = sample & 0xf;
-+		} else {
-+			bus->clk_freq = DFLT_CLK_FREQ;
-+		}
-+
-+		oct_mdio_writeq(smi_clk.u64, bus->register_base + SMI_CLK);
-+		dev_info(&pdev->dev, "bus clock frequency set to %d\n",
-+			 bus->clk_freq);
-+
- 		smi_en.u64 = 0;
- 		smi_en.s.en = 1;
- 		oct_mdio_writeq(smi_en.u64, bus->register_base + SMI_EN);
--- 
-2.17.1
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
