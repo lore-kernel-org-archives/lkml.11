@@ -2,120 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDFDEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 23:32:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D6E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 23:34:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356569AbiDOXer (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 19:34:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35280 "EHLO
+        id S233369AbiDOXhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 19:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356578AbiDOXem (ORCPT
+        with ESMTP id S230282AbiDOXhT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 19:34:42 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DA07246D;
-        Fri, 15 Apr 2022 16:32:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Maymh2MrV1jISeToWbYmaZRo07zKhpb63QtPmZTv7xg=; b=e6NCa/1p/FL935pR/uKS7VVL9i
-        NxQnlxKWSJ+Ta17K4gYFWJzNJxaihd8RTbIG62Xl/cDePuFPsB30gWB0IcujU2gd2gfIoljv8kQWO
-        a4vkc0OuVSydPevgNNt6rL2VgEbG29LDZ1FfJZ57cwqVmS5EKHamBYm8UIT3i5D8R9KlKtcVG+ble
-        STvluOBWwYBbjHwrFiqkAnABEhloL7s/LtsDqOchuG+G1mM7EccYDiMhrFJe8oDuHSMfsmaQ8X2ZO
-        ulDAhPZJC0uuEEiyM3RkXZI1CV+mIrNhruJHvBcWrbnL/74JsnfYmPNwQUGQEobNYpz1o7MRUgG+O
-        UT4DzE+g==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nfVP8-00Gbuq-8e; Fri, 15 Apr 2022 23:31:06 +0000
-Date:   Sat, 16 Apr 2022 00:31:06 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Jesse Barnes <jsbarnes@google.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Yu Zhao <yuzhao@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Justin Forbes <jforbes@fedoraproject.org>,
-        Stephen Rothwell <sfr@rothwell.id.au>,
-        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <21cnbao@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>, Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
-        <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Subject: Re: [page-reclaim] Re: [PATCH v10 08/14] mm: multi-gen LRU: support
- page table walks
-Message-ID: <YloAOrA6+8Yov57h@casper.infradead.org>
-References: <CAOUHufYeC=Kuu59BPL_48sM67CqACxH2wWy-SYGXpadgMDmY3w@mail.gmail.com>
- <20220414185654.e7150bcbe859e0dd4b9c61af@linux-foundation.org>
- <CAOUHufYy6yQS9ARN9C5+ODkopR+ez4TH3hZNZo4HtNHBExS1mA@mail.gmail.com>
- <20220415121521.764a88dda55ae8c676ad26b0@linux-foundation.org>
- <CAOUHufYsjwMGMFCfYoh79rFZqwqS1jDihcBS9sHd-gBxEAD3Ug@mail.gmail.com>
- <20220415143220.cc37b0b0a368ed2bf2a821f8@linux-foundation.org>
- <CAHk-=whvkRTVBhAamt0kYyp925jk_+g7T0CyPke_FbCWGQ1VvA@mail.gmail.com>
- <CAOUHufZ4KrjFTYH8wtwMGd9AriZfZtO4GhbiK1SuNbY31VTT9w@mail.gmail.com>
- <CAHk-=whneDk3Jde3J+O-fD32VjaK+fDf9+P6jgDtr2qyo0iu2w@mail.gmail.com>
- <CAJmaN=mJKAhRjDHbsLrqyK_uvuysx596jEcTwV2fwx4UOe4oow@mail.gmail.com>
+        Fri, 15 Apr 2022 19:37:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3605940E59;
+        Fri, 15 Apr 2022 16:34:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDB69B82CE7;
+        Fri, 15 Apr 2022 23:34:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EF28C385A8;
+        Fri, 15 Apr 2022 23:34:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650065686;
+        bh=H8TG9TaTkxthyp0a78kt3dMEbKUO8m3PltS7yJt03Lk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=gIDIFML52510OKuQReILMZhX3fFpruAsOz8I2y/UUWSS/XA9np+igAuQ9J71VVmaI
+         yc8pvY+JCT6UUVSGrSR28Ayfzg/8ReygDBjTJSLAShxwB5Q1Qo9/MOMFj3FAGgFIFR
+         b+quTWnBobJaTM9heJhVac+VBoK7X8aOPkPesZjtk8Sw8CgLhMwjtdcnPb2R0zdM+R
+         b0IRTjA8BaIlnt3lHEL4f2tkElrFZItoG10MxYNsonfzToHNWoxA30Y2vSy9nx+Wsv
+         Spv7lDZszmOJuMuhvCckvgwOwqBC0cMLNzx3iUNLR2OxRTtmfNwJJFOnS20TCvMtzG
+         A0718dSkj3OuA==
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2ebf4b91212so95347557b3.8;
+        Fri, 15 Apr 2022 16:34:46 -0700 (PDT)
+X-Gm-Message-State: AOAM533UrQlHQSa+Mhg0xgFELEHrKjqqmCWoghMhVlH/knn2FAWhiuBE
+        chXG7QpxApc4ACMRS4jIvSh6RtzQ2blyiRGoRHI=
+X-Google-Smtp-Source: ABdhPJzFi4avB4LXxfU1+vAL7RiFsHM0NYSgX5xmyngsW8isXQE/FvZ8UGsTCkZUMTOvj9iYRuUPlvo38P1Pwkh32Ek=
+X-Received: by 2002:a81:688:0:b0:2ec:239:d1e with SMTP id 130-20020a810688000000b002ec02390d1emr1124694ywg.211.1650065685677;
+ Fri, 15 Apr 2022 16:34:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJmaN=mJKAhRjDHbsLrqyK_uvuysx596jEcTwV2fwx4UOe4oow@mail.gmail.com>
+References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-4-alobakin@pm.me>
+In-Reply-To: <20220414223704.341028-4-alobakin@pm.me>
+From:   Song Liu <song@kernel.org>
+Date:   Fri, 15 Apr 2022 16:34:34 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6_9nq6wesTwDbpV50euq=ubqdLdfVkc9-pNOnGevXs1Q@mail.gmail.com>
+Message-ID: <CAPhsuW6_9nq6wesTwDbpV50euq=ubqdLdfVkc9-pNOnGevXs1Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 03/11] tools, bpf: fix bpftool build with !CONFIG_BPF_EVENTS
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Dmitrii Dolgov <9erthalion6@gmail.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Chenbo Feng <fengc@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Daniel Wagner <daniel.wagner@bmw-carit.de>,
+        Thomas Graf <tgraf@suug.ch>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        linux-perf-users@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 04:24:14PM -0700, Jesse Barnes wrote:
-> On Fri, Apr 15, 2022 at 4:04 PM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> > And for ordinary users, a WARN_ON_ONCE() is about a million times
-> > better, becasue:
-> >
-> >  - the machine will hopefully continue working, so they can report the warning
-> >
-> >  - even when they don't notice them, distros tend to have automated
-> > reporting infrastructure
-> >
-> > That's why I absolutely *DETEST* those stupid BUG_ON() cases - they
-> > will often kill the machine with nasty locks held, resulting in a
-> > completely undebuggable thing that never gets reported.
-> >
-> > Yes, you can be careful and only put BUG_ON() in places where recovery
-> > is possible. But even then, they have no actual _advantages_ over just
-> > a WARN_ON_ONCE.
-> 
-> Generally agreed, and not to belabor this relatively small issue, but in some
-> environments like cloud or managed client deployments, a crash can actually
-> be preferable so we can get a dump, reboot the machine, and get things going
-> again for the application or user, then debug offline.  So having the
-> flexibility to
-> do that in those situations is helpful.  And there, a full crash dump is better
-> than just a log report with the WARN info, since debugging may be easier with
-> all the kernel memory.
+On Thu, Apr 14, 2022 at 3:45 PM Alexander Lobakin <alobakin@pm.me> wrote:
+>
+> Fix the following error when building bpftool:
+>
+>   CLANG   profiler.bpf.o
+>   CLANG   pid_iter.bpf.o
+> skeleton/profiler.bpf.c:18:21: error: invalid application of 'sizeof' to an incomplete type 'struct bpf_perf_event_value'
+>         __uint(value_size, sizeof(struct bpf_perf_event_value));
+>                            ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:13:39: note: expanded from macro '__uint'
+>                                       ^~~
+> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helper_defs.h:7:8: note: forward declaration of 'struct bpf_perf_event_value'
+> struct bpf_perf_event_value;
+>        ^
+>
+> struct bpf_perf_event_value is being used in the kernel only when
+> CONFIG_BPF_EVENTS is enabled, so it misses a BTF entry then.
+> Emit the type unconditionally to fix the problem.
+>
+> Fixes: 47c09d6a9f67 ("bpftool: Introduce "prog profile" command")
+> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 
-But for those situations, don't you set panic_on_warn anyway?
+Acked-by: Song Liu <songliubraving@fb.com>
+
+> ---
+>  kernel/bpf/syscall.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 34fdf27d14cf..dd8284a60a8e 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -4286,6 +4286,7 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+>                 goto out;
+>         case BPF_PROG_TYPE_PERF_EVENT:
+>         case BPF_PROG_TYPE_TRACEPOINT:
+> +               BTF_TYPE_EMIT(struct bpf_perf_event_value);
+>                 if (attr->link_create.attach_type != BPF_PERF_EVENT) {
+>                         ret = -EINVAL;
+>                         goto out;
+> --
+> 2.35.2
+>
+>
