@@ -2,160 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D673C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:05:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6022C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 16:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355724AbiDOQHc (ORCPT
+        id S1355708AbiDOQJb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 12:07:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45446 "EHLO
+        Fri, 15 Apr 2022 12:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355698AbiDOQH1 (ORCPT
+        with ESMTP id S239368AbiDOQJ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 12:07:27 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6C4522FC;
-        Fri, 15 Apr 2022 09:04:57 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id bh17so16049764ejb.8;
-        Fri, 15 Apr 2022 09:04:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=112dwm8QpeyoKYHzXDlM/vsE5hIZxIAtes3nuwV/SSo=;
-        b=q1bzqzL3lBdyltYHc9DTIT5JLPdLODWLZph8x8M5S6Lrx38YGPco66753ypyqSZHdS
-         TsBVCJ5EpLAbAmZd7rn35rz5+5MFo5cmcPhwTg2EsuyzzljP5OF0i5quSN5Bq79dJupT
-         XxChUcD2MsVarL7yLizfAjcN3B0NTqgueTBK61H9jo+fIJq2L7zfnVfyEtuLdKfBrIhL
-         iDzvx73Aqc0XvRiY1AXXQbSKFoZMT0Gp0iczLfr/jN0opuxhWCDc6rZaQadXhtc1zVzT
-         V6fOjszCUEV1CJPEyDoo3WVMYNJOQYRIdd2ngW2MNMxLobrauU5wyg1fn/2XkaL6GqdW
-         ZQzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=112dwm8QpeyoKYHzXDlM/vsE5hIZxIAtes3nuwV/SSo=;
-        b=bpzv/9rAOTway6XtxAJ9OiD2W1UsZv4UGvvj4vYu0UNxwdJuytBYcHGI4KIBuPjDIJ
-         ZULMXiur7n7ce0JTi2N5lwi0BTFT6YVt505LBxJ2/Oqi1DSCrF24fwodcjFiTr8Li9Ap
-         x5II0WE5hSak2iMnnxF4GgaH3pkvvo/I4TnfKqWzB93oLKJvB/dEuCMO6NJI1f8xn03l
-         uYJ8a/qPQgWXdJG178s6SomwXT0Xfvu7wqIzsxEgWhJ5lBMlBEzbTnzihE2/0xotCvFg
-         /MeJY4NEQEaZ7r8wG5aY/bH8V7A0l8oJRSrO+gFe0tyfjE1nvCSOzc8juCwnblXSPUNO
-         rESA==
-X-Gm-Message-State: AOAM532xIJ76AaRlsWEtlBKlsbj4HGA8wXFvk5c7OF1aLnuylpsz5RUn
-        X8zyIfeNaeRg5pYIJwRxCGI=
-X-Google-Smtp-Source: ABdhPJw48aM/ILhX7ieEo4E/2JT/l4q8QZCfn54tMQSw+A5qviAhPCWJlSaz9aHJH2xpZA3vw595cw==
-X-Received: by 2002:a17:907:6e88:b0:6da:8f01:7a8f with SMTP id sh8-20020a1709076e8800b006da8f017a8fmr6648623ejc.619.1650038696267;
-        Fri, 15 Apr 2022 09:04:56 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id r18-20020a05640251d200b0041d1600ab09sm3036190edd.54.2022.04.15.09.04.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 09:04:55 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 19:04:52 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Colin Ian King <colin.king@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Xu Wang <vulab@iscas.ac.cn>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
-        Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: Re: [PATCH net-next v4 07/18] net: dsa: Replace usage of found with
- dedicated list iterator variable
-Message-ID: <20220415160452.z4m4j3sulcteqggs@skbuf>
-References: <20220415122947.2754662-1-jakobkoschel@gmail.com>
- <20220415122947.2754662-8-jakobkoschel@gmail.com>
+        Fri, 15 Apr 2022 12:09:28 -0400
+Received: from 10.mo550.mail-out.ovh.net (10.mo550.mail-out.ovh.net [178.32.96.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EF438A307
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 09:06:59 -0700 (PDT)
+Received: from player760.ha.ovh.net (unknown [10.111.172.135])
+        by mo550.mail-out.ovh.net (Postfix) with ESMTP id 8D26D24153
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 16:06:57 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player760.ha.ovh.net (Postfix) with ESMTPSA id 489522986A932;
+        Fri, 15 Apr 2022 16:06:50 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-101G0043f5dd12a-890b-4a28-832d-898a6081a301,
+                    77125C2C2681624F8512B69FC7A1C9B53E6602B4) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Wolfram Sang <wsa@kernel.org>, linux-kernel@vger.kernel.org,
+        Stephen Kitt <steve@sk2.org>
+Subject: [PATCH v2 3/7] ASoC: max980*: use i2c_match_id and simple i2c probe
+Date:   Fri, 15 Apr 2022 18:06:09 +0200
+Message-Id: <20220415160613.148882-4-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220415160613.148882-1-steve@sk2.org>
+References: <20220415160613.148882-1-steve@sk2.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220415122947.2754662-8-jakobkoschel@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 10962042969681856134
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudelhedgleekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeejleelvdefieeiuddtfeevkeegueehkeekvdffgedvhedugeekgfejjeekgfeugeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejiedtrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 02:29:36PM +0200, Jakob Koschel wrote:
-> To move the list iterator variable into the list_for_each_entry_*()
-> macro in the future it should be avoided to use the list iterator
-> variable after the loop body.
-> 
-> To *never* use the list iterator variable after the loop it was
-> concluded to use a separate iterator variable instead of a
-> found boolean [1].
-> 
-> This removes the need to use a found variable and simply checking if
-> the variable was set, can determine if the break/goto was hit.
-> 
-> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-> ---
+As part of the ongoing i2c transition to the simple probe
+("probe_new"), this patch uses i2c_match_id to retrieve the
+driver_data for the probed device. The id parameter is thus no longer
+necessary and the simple probe can be used instead.
 
-I absolutely hate the robotic commit message, but the change looks like
-it works, so:
+In the context of an i2c probe, i2c_match_id with the module id table
+and the probed client never returns null, so removing the null check
+on the i2c_device_id pointer is safe.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+The i2c id tables are moved up before the probe function, as
+suggested by Wolfram Sang.
 
->  net/dsa/dsa.c | 11 +++++------
->  1 file changed, 5 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-> index 89c6c86e746f..645522c4dd4a 100644
-> --- a/net/dsa/dsa.c
-> +++ b/net/dsa/dsa.c
-> @@ -112,22 +112,21 @@ const struct dsa_device_ops *dsa_find_tagger_by_name(const char *buf)
->  
->  const struct dsa_device_ops *dsa_tag_driver_get(int tag_protocol)
->  {
-> -	struct dsa_tag_driver *dsa_tag_driver;
-> +	struct dsa_tag_driver *dsa_tag_driver = NULL, *iter;
->  	const struct dsa_device_ops *ops;
-> -	bool found = false;
->  
->  	request_module("%s%d", DSA_TAG_DRIVER_ALIAS, tag_protocol);
->  
->  	mutex_lock(&dsa_tag_drivers_lock);
-> -	list_for_each_entry(dsa_tag_driver, &dsa_tag_drivers_list, list) {
-> -		ops = dsa_tag_driver->ops;
-> +	list_for_each_entry(iter, &dsa_tag_drivers_list, list) {
-> +		ops = iter->ops;
->  		if (ops->proto == tag_protocol) {
-> -			found = true;
-> +			dsa_tag_driver = iter;
->  			break;
->  		}
->  	}
->  
-> -	if (found) {
-> +	if (dsa_tag_driver) {
->  		if (!try_module_get(dsa_tag_driver->owner))
->  			ops = ERR_PTR(-ENOPROTOOPT);
->  	} else {
-> -- 
-> 2.25.1
-> 
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+---
+ sound/soc/codecs/max98088.c | 21 +++++++++++----------
+ sound/soc/codecs/max98090.c | 23 ++++++++++++-----------
+ sound/soc/codecs/max98095.c | 19 ++++++++++---------
+ 3 files changed, 33 insertions(+), 30 deletions(-)
+
+diff --git a/sound/soc/codecs/max98088.c b/sound/soc/codecs/max98088.c
+index 429717d4ac5a..5ef2e1279ee7 100644
+--- a/sound/soc/codecs/max98088.c
++++ b/sound/soc/codecs/max98088.c
+@@ -1737,11 +1737,18 @@ static const struct snd_soc_component_driver soc_component_dev_max98088 = {
+ 	.non_legacy_dai_naming	= 1,
+ };
+ 
+-static int max98088_i2c_probe(struct i2c_client *i2c,
+-			      const struct i2c_device_id *id)
++static const struct i2c_device_id max98088_i2c_id[] = {
++       { "max98088", MAX98088 },
++       { "max98089", MAX98089 },
++       { }
++};
++MODULE_DEVICE_TABLE(i2c, max98088_i2c_id);
++
++static int max98088_i2c_probe(struct i2c_client *i2c)
+ {
+        struct max98088_priv *max98088;
+        int ret;
++       const struct i2c_device_id *id;
+ 
+        max98088 = devm_kzalloc(&i2c->dev, sizeof(struct max98088_priv),
+ 			       GFP_KERNEL);
+@@ -1757,6 +1764,7 @@ static int max98088_i2c_probe(struct i2c_client *i2c,
+ 		if (PTR_ERR(max98088->mclk) == -EPROBE_DEFER)
+ 			return PTR_ERR(max98088->mclk);
+ 
++	id = i2c_match_id(max98088_i2c_id, i2c);
+        max98088->devtype = id->driver_data;
+ 
+        i2c_set_clientdata(i2c, max98088);
+@@ -1767,13 +1775,6 @@ static int max98088_i2c_probe(struct i2c_client *i2c,
+        return ret;
+ }
+ 
+-static const struct i2c_device_id max98088_i2c_id[] = {
+-       { "max98088", MAX98088 },
+-       { "max98089", MAX98089 },
+-       { }
+-};
+-MODULE_DEVICE_TABLE(i2c, max98088_i2c_id);
+-
+ #if defined(CONFIG_OF)
+ static const struct of_device_id max98088_of_match[] = {
+ 	{ .compatible = "maxim,max98088" },
+@@ -1788,7 +1789,7 @@ static struct i2c_driver max98088_i2c_driver = {
+ 		.name = "max98088",
+ 		.of_match_table = of_match_ptr(max98088_of_match),
+ 	},
+-	.probe  = max98088_i2c_probe,
++	.probe_new = max98088_i2c_probe,
+ 	.id_table = max98088_i2c_id,
+ };
+ 
+diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
+index b45ec35cd63c..4058e147413c 100644
+--- a/sound/soc/codecs/max98090.c
++++ b/sound/soc/codecs/max98090.c
+@@ -2529,8 +2529,14 @@ static const struct regmap_config max98090_regmap = {
+ 	.cache_type = REGCACHE_RBTREE,
+ };
+ 
+-static int max98090_i2c_probe(struct i2c_client *i2c,
+-				 const struct i2c_device_id *i2c_id)
++static const struct i2c_device_id max98090_i2c_id[] = {
++	{ "max98090", MAX98090 },
++	{ "max98091", MAX98091 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, max98090_i2c_id);
++
++static int max98090_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct max98090_priv *max98090;
+ 	const struct acpi_device_id *acpi_id;
+@@ -2552,7 +2558,9 @@ static int max98090_i2c_probe(struct i2c_client *i2c,
+ 			return -EINVAL;
+ 		}
+ 		driver_data = acpi_id->driver_data;
+-	} else if (i2c_id) {
++	} else {
++		const struct i2c_device_id *i2c_id =
++			i2c_match_id(max98090_i2c_id, i2c);
+ 		driver_data = i2c_id->driver_data;
+ 	}
+ 
+@@ -2659,13 +2667,6 @@ static const struct dev_pm_ops max98090_pm = {
+ 	SET_SYSTEM_SLEEP_PM_OPS(NULL, max98090_resume)
+ };
+ 
+-static const struct i2c_device_id max98090_i2c_id[] = {
+-	{ "max98090", MAX98090 },
+-	{ "max98091", MAX98091 },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(i2c, max98090_i2c_id);
+-
+ #ifdef CONFIG_OF
+ static const struct of_device_id max98090_of_match[] = {
+ 	{ .compatible = "maxim,max98090", },
+@@ -2690,7 +2691,7 @@ static struct i2c_driver max98090_i2c_driver = {
+ 		.of_match_table = of_match_ptr(max98090_of_match),
+ 		.acpi_match_table = ACPI_PTR(max98090_acpi_match),
+ 	},
+-	.probe  = max98090_i2c_probe,
++	.probe_new = max98090_i2c_probe,
+ 	.shutdown = max98090_i2c_shutdown,
+ 	.remove = max98090_i2c_remove,
+ 	.id_table = max98090_i2c_id,
+diff --git a/sound/soc/codecs/max98095.c b/sound/soc/codecs/max98095.c
+index 4977b00ddf5f..7bca99fa61b5 100644
+--- a/sound/soc/codecs/max98095.c
++++ b/sound/soc/codecs/max98095.c
+@@ -2106,11 +2106,17 @@ static const struct snd_soc_component_driver soc_component_dev_max98095 = {
+ 	.non_legacy_dai_naming	= 1,
+ };
+ 
+-static int max98095_i2c_probe(struct i2c_client *i2c,
+-			     const struct i2c_device_id *id)
++static const struct i2c_device_id max98095_i2c_id[] = {
++	{ "max98095", MAX98095 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, max98095_i2c_id);
++
++static int max98095_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct max98095_priv *max98095;
+ 	int ret;
++	const struct i2c_device_id *id;
+ 
+ 	max98095 = devm_kzalloc(&i2c->dev, sizeof(struct max98095_priv),
+ 				GFP_KERNEL);
+@@ -2126,6 +2132,7 @@ static int max98095_i2c_probe(struct i2c_client *i2c,
+ 		return ret;
+ 	}
+ 
++	id = i2c_match_id(max98095_i2c_id, i2c);
+ 	max98095->devtype = id->driver_data;
+ 	i2c_set_clientdata(i2c, max98095);
+ 	max98095->pdata = i2c->dev.platform_data;
+@@ -2136,12 +2143,6 @@ static int max98095_i2c_probe(struct i2c_client *i2c,
+ 	return ret;
+ }
+ 
+-static const struct i2c_device_id max98095_i2c_id[] = {
+-	{ "max98095", MAX98095 },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(i2c, max98095_i2c_id);
+-
+ #ifdef CONFIG_OF
+ static const struct of_device_id max98095_of_match[] = {
+ 	{ .compatible = "maxim,max98095", },
+@@ -2155,7 +2156,7 @@ static struct i2c_driver max98095_i2c_driver = {
+ 		.name = "max98095",
+ 		.of_match_table = of_match_ptr(max98095_of_match),
+ 	},
+-	.probe  = max98095_i2c_probe,
++	.probe_new = max98095_i2c_probe,
+ 	.id_table = max98095_i2c_id,
+ };
+ 
+-- 
+2.27.0
+
