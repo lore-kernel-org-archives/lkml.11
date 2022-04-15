@@ -2,125 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF9A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 09:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 09:45:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351859AbiDOJpF (ORCPT
+        id S1350758AbiDOJrz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 05:45:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33584 "EHLO
+        Fri, 15 Apr 2022 05:47:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351817AbiDOJow (ORCPT
+        with ESMTP id S235242AbiDOJru (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 05:44:52 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D214AC046;
-        Fri, 15 Apr 2022 02:42:24 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 09:42:22 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1650015743;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q9+MlWfHo9/S6kJXuWo/hH/+hng49XBvdtfu0dGm548=;
-        b=iphcZZckLezsEvEUUDub36z0aAdZ/OO0SYHKMPMIrkGlabbXmPYmQiWkcAN0Q6/YETic77
-        nwHsAdaT9oyFPQhIcm+nyo4H/CEAHIcXj6gMkCfA5ow200DMFdTVrmzYa/V0y9Ovl0zA/M
-        5tBljdsO2rXMts3xpG0bty2K2tb8zKjWpBxtqEeGwSGSc5iBYxzefEFGeCDYvdP18SFqzp
-        QLl3F0tifaAEB2L93o1wLj2HGfXz+cwzD+OTr3dPAuZMmLZhyeIJh/fl/LSfjbXZvBgku/
-        hM2/9uCP931bxx1HhCOiGM8LYyp3oGx0simpOX0KGQT2cZvlciO5Bk38DqkrTg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1650015743;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q9+MlWfHo9/S6kJXuWo/hH/+hng49XBvdtfu0dGm548=;
-        b=mlTwPucv0yOMmeK33XfjAKyCS/l2nCJdaodErlgk5VtS25wHRxqwBGgbZBmxvwXUb4x+4o
-        O0W6GG8i9sAWH4DQ==
-From:   "tip-bot2 for Brian Gerst" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] x86/32: Simplify ELF_CORE_COPY_REGS
-Cc:     Brian Gerst <brgerst@gmail.com>, Borislav Petkov <bp@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Lutomirski <luto@kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220325153953.162643-2-brgerst@gmail.com>
-References: <20220325153953.162643-2-brgerst@gmail.com>
+        Fri, 15 Apr 2022 05:47:50 -0400
+Received: from synology.com (mail.synology.com [211.23.38.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ECA378901
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 02:45:22 -0700 (PDT)
+From:   Chung-Chiang Cheng <cccheng@synology.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synology.com; s=123;
+        t=1650015920; bh=Lf5M/7owMt0p8F5u9OJM+aS4FoUeFmgJQU0yNRZHPFw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Di1AIj7cUfAYBEoSUGvadGfJocVDFulCIY219fAZY/ST5ZWsPxzmS9VimRra1c5eW
+         JKo9u4R7LXUdpfSWRpz2iWFUwdhRPbLb/jXqn4kjIIU5yKl6wqLatp9/XXkhQiLzjg
+         5WX244smaLmdNQs9Cihppil4XAACMAtfRz5kUQTE=
+To:     hirofumi@mail.parknet.co.jp
+Cc:     linux-kernel@vger.kernel.org, kernel@cccheng.net,
+        shepjeng@gmail.com, Chung-Chiang Cheng <cccheng@synology.com>
+Subject: [PATCH v3 3/3] fat: report creation time in statx
+Date:   Fri, 15 Apr 2022 17:45:18 +0800
+Message-Id: <20220415094518.380543-3-cccheng@synology.com>
+In-Reply-To: <20220415094518.380543-1-cccheng@synology.com>
+References: <20220415094518.380543-1-cccheng@synology.com>
 MIME-Version: 1.0
-Message-ID: <165001574217.4207.12557873929669073141.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Synology-MCP-Status: no
+X-Synology-Spam-Flag: no
+X-Synology-Spam-Status: score=0, required 6, WHITELIST_FROM_ADDRESS 0
+X-Synology-Virus-Status: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/core branch of tip:
+creation time is no longer mixed with change time. Add a in-memory
+field for it, and report it in statx if supported.
 
-Commit-ID:     f5d9283ecb33329073033029fe427155aa0abfb1
-Gitweb:        https://git.kernel.org/tip/f5d9283ecb33329073033029fe427155aa0abfb1
-Author:        Brian Gerst <brgerst@gmail.com>
-AuthorDate:    Fri, 25 Mar 2022 11:39:50 -04:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Tue, 12 Apr 2022 15:42:59 +02:00
-
-x86/32: Simplify ELF_CORE_COPY_REGS
-
-GS is now always a user segment, so there is no difference between user
-and kernel registers.
-
-Signed-off-by: Brian Gerst <brgerst@gmail.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Acked-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/20220325153953.162643-2-brgerst@gmail.com
+Signed-off-by: Chung-Chiang Cheng <cccheng@synology.com>
 ---
- arch/x86/include/asm/elf.h | 15 ++-------------
- 1 file changed, 2 insertions(+), 13 deletions(-)
+ fs/fat/fat.h   |  1 +
+ fs/fat/file.c  | 14 +++++++++++---
+ fs/fat/inode.c | 12 ++++++++++--
+ 3 files changed, 22 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/include/asm/elf.h b/arch/x86/include/asm/elf.h
-index 29fea18..cb0ff10 100644
---- a/arch/x86/include/asm/elf.h
-+++ b/arch/x86/include/asm/elf.h
-@@ -116,7 +116,7 @@ extern unsigned int vdso32_enabled;
-  * now struct_user_regs, they are different)
-  */
+diff --git a/fs/fat/fat.h b/fs/fat/fat.h
+index 508b4f2a1ffb..e4409ee82ea9 100644
+--- a/fs/fat/fat.h
++++ b/fs/fat/fat.h
+@@ -126,6 +126,7 @@ struct msdos_inode_info {
+ 	struct hlist_node i_fat_hash;	/* hash by i_location */
+ 	struct hlist_node i_dir_hash;	/* hash by i_logstart */
+ 	struct rw_semaphore truncate_lock; /* protect bmap against truncate */
++	struct timespec64 i_crtime;	/* File creation (birth) time */
+ 	struct inode vfs_inode;
+ };
  
--#define ELF_CORE_COPY_REGS_COMMON(pr_reg, regs)	\
-+#define ELF_CORE_COPY_REGS(pr_reg, regs)	\
- do {						\
- 	pr_reg[0] = regs->bx;			\
- 	pr_reg[1] = regs->cx;			\
-@@ -128,6 +128,7 @@ do {						\
- 	pr_reg[7] = regs->ds;			\
- 	pr_reg[8] = regs->es;			\
- 	pr_reg[9] = regs->fs;			\
-+	savesegment(gs, pr_reg[10]);		\
- 	pr_reg[11] = regs->orig_ax;		\
- 	pr_reg[12] = regs->ip;			\
- 	pr_reg[13] = regs->cs;			\
-@@ -136,18 +137,6 @@ do {						\
- 	pr_reg[16] = regs->ss;			\
- } while (0);
+diff --git a/fs/fat/file.c b/fs/fat/file.c
+index 178c1dde3488..7a4f617d4928 100644
+--- a/fs/fat/file.c
++++ b/fs/fat/file.c
+@@ -399,13 +399,21 @@ int fat_getattr(struct user_namespace *mnt_userns, const struct path *path,
+ 		struct kstat *stat, u32 request_mask, unsigned int flags)
+ {
+ 	struct inode *inode = d_inode(path->dentry);
++	struct msdos_sb_info *sbi = MSDOS_SB(inode->i_sb);
++
+ 	generic_fillattr(mnt_userns, inode, stat);
+-	stat->blksize = MSDOS_SB(inode->i_sb)->cluster_size;
++	stat->blksize = sbi->cluster_size;
  
--#define ELF_CORE_COPY_REGS(pr_reg, regs)	\
--do {						\
--	ELF_CORE_COPY_REGS_COMMON(pr_reg, regs);\
--	pr_reg[10] = get_user_gs(regs);		\
--} while (0);
--
--#define ELF_CORE_COPY_KERNEL_REGS(pr_reg, regs)	\
--do {						\
--	ELF_CORE_COPY_REGS_COMMON(pr_reg, regs);\
--	savesegment(gs, pr_reg[10]);		\
--} while (0);
--
- #define ELF_PLATFORM	(utsname()->machine)
- #define set_personality_64bit()	do { } while (0)
+-	if (MSDOS_SB(inode->i_sb)->options.nfs == FAT_NFS_NOSTALE_RO) {
++	if (sbi->options.nfs == FAT_NFS_NOSTALE_RO) {
+ 		/* Use i_pos for ino. This is used as fileid of nfs. */
+-		stat->ino = fat_i_pos_read(MSDOS_SB(inode->i_sb), inode);
++		stat->ino = fat_i_pos_read(sbi, inode);
+ 	}
++
++	if (sbi->options.isvfat && request_mask & STATX_BTIME) {
++		stat->result_mask |= STATX_BTIME;
++		stat->btime = MSDOS_I(inode)->i_crtime;
++	}
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(fat_getattr);
+diff --git a/fs/fat/inode.c b/fs/fat/inode.c
+index f2ac55cd4ea4..23fac3181fa7 100644
+--- a/fs/fat/inode.c
++++ b/fs/fat/inode.c
+@@ -568,10 +568,14 @@ int fat_fill_inode(struct inode *inode, struct msdos_dir_entry *de)
  
+ 	fat_time_fat2unix(sbi, &inode->i_mtime, de->time, de->date, 0);
+ 	inode->i_ctime = inode->i_mtime;
+-	if (sbi->options.isvfat)
++	if (sbi->options.isvfat) {
+ 		fat_time_fat2unix(sbi, &inode->i_atime, 0, de->adate, 0);
+-	else
++		fat_time_fat2unix(sbi, &MSDOS_I(inode)->i_crtime, de->ctime,
++				  de->cdate, de->ctime_cs);
++	} else {
+ 		fat_truncate_atime(sbi, &inode->i_mtime, &inode->i_atime);
++		fat_truncate_crtime(sbi, &inode->i_mtime, &MSDOS_I(inode)->i_crtime);
++	}
+ 
+ 	return 0;
+ }
+@@ -756,6 +760,8 @@ static struct inode *fat_alloc_inode(struct super_block *sb)
+ 	ei->i_logstart = 0;
+ 	ei->i_attrs = 0;
+ 	ei->i_pos = 0;
++	ei->i_crtime.tv_sec = 0;
++	ei->i_crtime.tv_nsec = 0;
+ 
+ 	return &ei->vfs_inode;
+ }
+@@ -887,6 +893,8 @@ static int __fat_write_inode(struct inode *inode, int wait)
+ 			  &raw_entry->date, NULL);
+ 	if (sbi->options.isvfat) {
+ 		__le16 atime;
++		fat_time_unix2fat(sbi, &MSDOS_I(inode)->i_crtime, &raw_entry->ctime,
++				  &raw_entry->cdate, &raw_entry->ctime_cs);
+ 		fat_time_unix2fat(sbi, &inode->i_atime, &atime,
+ 				  &raw_entry->adate, NULL);
+ 	}
+-- 
+2.34.1
+
