@@ -2,102 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 294ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 17:40:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41540C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 17:43:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240532AbiDORmp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 13:42:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55102 "EHLO
+        id S244541AbiDORp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 13:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243665AbiDORmg (ORCPT
+        with ESMTP id S243665AbiDORp5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 13:42:36 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D2C5C369;
-        Fri, 15 Apr 2022 10:40:05 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23FHe20X130102;
-        Fri, 15 Apr 2022 12:40:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650044402;
-        bh=kaZ6Nxqiacg38fVMqIk7hdcjqcvJLSzaBMBHEm/y8Vc=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=itdH7JQUJ+w8UIxkM+bDMYJF9a3CWCIV1odpgLrX+a0x8l2+vdpGlVgu7Np8lqNL1
-         HNeBfhIehcN18VM1M0RGejhvbug2SkawhSNoBhaCVYNm0BPEHaIbNmG13jfDpr/kUZ
-         9/1lIbJvdh8cyUTsh/qZcqaE0Ogrs3CEYnblqoIA=
-Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23FHe11W098273
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 15 Apr 2022 12:40:01 -0500
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 15
- Apr 2022 12:40:00 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 15 Apr 2022 12:40:00 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23FHe0vM069602;
-        Fri, 15 Apr 2022 12:40:00 -0500
-Date:   Fri, 15 Apr 2022 12:40:00 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Georgi Vlaev <g-vlaev@ti.com>
-CC:     <ssantosh@kernel.org>, <mturquette@baylibre.com>,
-        <sboyd@kernel.org>, <robh+dt@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, Vignesh Raghavendra <vigneshr@ti.com>
-Subject: Re: [PATCH 2/2] dt-bindings: clock: ehrpwm: Add AM62 specific
- compatible
-Message-ID: <20220415174000.cnnmolsaktl7ghye@jurist>
-References: <20220415134142.12141-1-g-vlaev@ti.com>
- <20220415134142.12141-3-g-vlaev@ti.com>
+        Fri, 15 Apr 2022 13:45:57 -0400
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F3FB7C4E
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 10:43:26 -0700 (PDT)
+Received: from imladris.surriel.com ([96.67.55.152])
+        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <riel@shelob.surriel.com>)
+        id 1nfPyU-00005a-H1; Fri, 15 Apr 2022 13:43:14 -0400
+Message-ID: <2bff92c8080441550416d481d719aa26ebd2e47b.camel@surriel.com>
+Subject: Re: [PATCH v4 bpf 1/4] vmalloc: replace VM_NO_HUGE_VMAP with
+ VM_ALLOW_HUGE_VMAP
+From:   Rik van Riel <riel@surriel.com>
+To:     Song Liu <song@kernel.org>, bpf@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, kernel-team@fb.com,
+        akpm@linux-foundation.org, rick.p.edgecombe@intel.com,
+        hch@infradead.org, imbrenda@linux.ibm.com, mcgrof@kernel.org,
+        Christoph Hellwig <hch@lst.de>
+Date:   Fri, 15 Apr 2022 13:43:13 -0400
+In-Reply-To: <20220415164413.2727220-2-song@kernel.org>
+References: <20220415164413.2727220-1-song@kernel.org>
+         <20220415164413.2727220-2-song@kernel.org>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-JHt/Js2fL2sMaIIVT/FN"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220415134142.12141-3-g-vlaev@ti.com>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Sender: riel@shelob.surriel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16:41-20220415, Georgi Vlaev wrote:
-> Introduce AM62 specific compatible for EPWM time-base
-> sub-module clock. The time-base clock setup is identical
-> to AM64. The only difference is AM62 provides 3 time-base
-> clocks instead of the 9 found in AM64.
-> 
-> Signed-off-by: Georgi Vlaev <g-vlaev@ti.com>
-> Tested-by: Vignesh Raghavendra <vigneshr@ti.com>
 
-Reviewed-by: Nishanth Menon <nm@ti.com>
+--=-JHt/Js2fL2sMaIIVT/FN
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Fri, 2022-04-15 at 09:44 -0700, Song Liu wrote:
+>=20
+> Fixes: fac54e2bfb5b ("x86/Kconfig: Select HAVE_ARCH_HUGE_VMALLOC with
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 HAVE_ARCH_HUGE_VMAP"=
+)
+> Link:
+> https://lore.kernel.org/netdev/14444103-d51b-0fb3-ee63-c3f182f0b546@molge=
+n.mpg.de/
+> "
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Signed-off-by: Song Liu <song@kernel.org>
 
-That said, please re-org the patches. Bindings come before the driver
-changes :)
+Reviewed-by: Rik van Riel <riel@surriel.com>
 
-> ---
->  .../devicetree/bindings/clock/ti,am654-ehrpwm-tbclk.yaml         | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/clock/ti,am654-ehrpwm-tbclk.yaml b/Documentation/devicetree/bindings/clock/ti,am654-ehrpwm-tbclk.yaml
-> index 9b537bc876b5..66765116aff5 100644
-> --- a/Documentation/devicetree/bindings/clock/ti,am654-ehrpwm-tbclk.yaml
-> +++ b/Documentation/devicetree/bindings/clock/ti,am654-ehrpwm-tbclk.yaml
-> @@ -15,6 +15,7 @@ properties:
->        - enum:
->            - ti,am654-ehrpwm-tbclk
->            - ti,am64-epwm-tbclk
-> +          - ti,am62-epwm-tbclk
->        - const: syscon
->  
->    "#clock-cells":
-> -- 
-> 2.30.2
-> 
+--=20
+All Rights Reversed.
 
--- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+--=-JHt/Js2fL2sMaIIVT/FN
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEKR73pCCtJ5Xj3yADznnekoTE3oMFAmJZrrEACgkQznnekoTE
+3oPzPwf/S4QLbls0JXyAHaxYf0wp8jsqRi8kyRfTzTBxnlYxgo/ZEKwouZIr4DuI
+RYQ3pixp0bFIQuMVlwEqk9DllZIC/wMgY23xOtXLsXQDABLEVzkgAuE9rAwTMgzc
+1u96joK5BvtRGsw2nhOPJ/9HS845VEmjg9paYADV7Hji4I+rVmMqDgAj65foLOXw
+/MR/KsFuFzhdH+/QHa5orFpQ3siEE6w8nwD6PL31hjVMr4SsKBzyCcifPQLUMSMS
+DhFAa5C3y3A46cL/sAI4habJ7QX6fFs6ha5RWL/F4cTb2fNYbM5gTw2vqMPfRtfw
+ois/WPX8s3mh7dlQJHyrmGZj/eEWGQ==
+=TGwA
+-----END PGP SIGNATURE-----
+
+--=-JHt/Js2fL2sMaIIVT/FN--
