@@ -2,116 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C84C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 01:15:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1615C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Apr 2022 01:17:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239926AbiDOBSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Apr 2022 21:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34402 "EHLO
+        id S243585AbiDOBT4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Apr 2022 21:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231893AbiDOBR6 (ORCPT
+        with ESMTP id S231893AbiDOBTx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Apr 2022 21:17:58 -0400
-Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F7B7CDD2
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 18:15:32 -0700 (PDT)
-Received: by mail-vk1-xa2a.google.com with SMTP id r130so1758321vkr.10
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Apr 2022 18:15:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sqQ5iSXHRChMtfKt3RIiTUV6la+/DUpLnLLVZuKBh7Q=;
-        b=oviqlwgsbsf/uMOiFPTaRFR184BPOabtCsqvs6xHtrlZpVbO4wKVB0eo7OE3eF6N/f
-         WoaWM5yeZZLbX4bTnkrRStEi99QdeKS6Z3yPjXlEJ8thMjBN2y6vtiXz9+r5waIlarMi
-         PEuJDrqRxDNGWEvZtqcjJ6wDZjHCrtXjyW8RCewvZZTM8b8ewk2aMLxst08o3jkmgvHj
-         dBaMIEPKx2pirgP/PA/oNB8wvUGcKYkBWFZi8QlKZ5MZdK/U1NzAv8EWY+L7ieWQPXio
-         KQeZRRy2WP6HjteGasYoS9ndZF9Muc0bdCZWEfz9K4vzCapbUgbZygSvSEc1A6iW2EBz
-         SL8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sqQ5iSXHRChMtfKt3RIiTUV6la+/DUpLnLLVZuKBh7Q=;
-        b=4omK45oFptnD9PnunLjFVjeCrF99ZqKX6btY80EaS2Dtx10Lm4Qeh3IiaYtmel4gQ0
-         BaDkdlLPeIsArkJ972HpLQwDU6iAJMabsJNesIfSNe0N1lKlpAO/kt0YNZ2W9YHxH7Li
-         GCy+hL8QAQWjZ/f4EIzQvx4PHhME++gHeYn7Gxl6en+Owd41sFAkiPo582q5pUCd+DvF
-         AMjPvJHorrn1UIBMWSOtsFwrgWjQibigsGGSLisXW0fl7EtBsR+KgvcNJgszKEzAIHpC
-         WKTxLOQjFp1dcO8o9Dv8CE5DAGy/iN7iXRwU76uE5UnpKnuqHQixMDOPC3avX2Wsz93p
-         kW7Q==
-X-Gm-Message-State: AOAM5306zh7EmptQh4XohnzdhfzG8teNBted4Y7Mc1FYuV/Sn+WeZmoU
-        gJ+VWekmVTWNzctpykljErHNka+AjrFkZm8M3iMX+Q==
-X-Google-Smtp-Source: ABdhPJwvGDjSCKwPleIWn79rkQzoHHhv5ROws7qejBtcO8EAQjqcBUMU+Hjaa8vtashbeHOejWBcqwTJDS8z7VZov/8=
-X-Received: by 2002:a1f:314b:0:b0:331:fff6:a89e with SMTP id
- x72-20020a1f314b000000b00331fff6a89emr2454874vkx.26.1649985331160; Thu, 14
- Apr 2022 18:15:31 -0700 (PDT)
+        Thu, 14 Apr 2022 21:19:53 -0400
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 335C79027F;
+        Thu, 14 Apr 2022 18:17:27 -0700 (PDT)
+Received: from unknown (HELO kinkan2-ex.css.socionext.com) ([172.31.9.52])
+  by mx.socionext.com with ESMTP; 15 Apr 2022 10:17:26 +0900
+Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
+        by kinkan2-ex.css.socionext.com (Postfix) with ESMTP id A23162058443;
+        Fri, 15 Apr 2022 10:17:26 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Fri, 15 Apr 2022 10:17:26 +0900
+Received: from [10.212.183.90] (unknown [10.212.183.90])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id A9E54B62B7;
+        Fri, 15 Apr 2022 10:17:25 +0900 (JST)
+Subject: Re: [PATCH] dt-bindings: interrrupt-controller: uniphier-aidet: Use
+ unevaluatedProperties
+To:     Rob Herring <robh@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <1649317664-21391-1-git-send-email-hayashi.kunihiko@socionext.com>
+ <Ylcf0QOBAne6fKQr@robh.at.kernel.org>
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Message-ID: <2005f406-0117-b0eb-cc4b-2a921cf6528c@socionext.com>
+Date:   Fri, 15 Apr 2022 10:17:25 +0900
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20220407031525.2368067-1-yuzhao@google.com> <20220407031525.2368067-9-yuzhao@google.com>
- <20220411191621.0378467ad99ebc822d5ad005@linux-foundation.org>
-In-Reply-To: <20220411191621.0378467ad99ebc822d5ad005@linux-foundation.org>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Thu, 14 Apr 2022 19:14:54 -0600
-Message-ID: <CAOUHufYeC=Kuu59BPL_48sM67CqACxH2wWy-SYGXpadgMDmY3w@mail.gmail.com>
-Subject: Re: [PATCH v10 08/14] mm: multi-gen LRU: support page table walks
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Stephen Rothwell <sfr@rothwell.id.au>,
-        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <21cnbao@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <Ylcf0QOBAne6fKQr@robh.at.kernel.org>
+Content-Type: text/plain; charset=iso-2022-jp; format=flowed; delsp=yes
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 8:16 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Wed,  6 Apr 2022 21:15:20 -0600 Yu Zhao <yuzhao@google.com> wrote:
->
-> > +static void update_batch_size(struct lru_gen_mm_walk *walk, struct folio *folio,
-> > +                           int old_gen, int new_gen)
-> > +{
-> > +     int type = folio_is_file_lru(folio);
-> > +     int zone = folio_zonenum(folio);
-> > +     int delta = folio_nr_pages(folio);
-> > +
-> > +     VM_BUG_ON(old_gen >= MAX_NR_GENS);
-> > +     VM_BUG_ON(new_gen >= MAX_NR_GENS);
->
-> General rule: don't add new BUG_ONs, because they crash the kenrel.
-> It's better to use WARN_ON or WARN_ON_ONCE then try to figure out a way
-> to keep the kernel limping along.  At least so the poor user can gather logs.
+Hi Rob,
 
-These are VM_BUG_ONs, which are BUILD_BUG_ONs except for (mostly MM) developers.
+On 2022/04/14 4:09, Rob Herring wrote:
+> On Thu, Apr 07, 2022 at 04:47:44PM +0900, Kunihiko Hayashi wrote:
+>> This refers common bindings, so this is preferred for
+>> unevaluatedProperties instead of additionalProperties.
+>>
+>> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+>> ---
+>>   .../bindings/interrupt-controller/socionext,uniphier-aidet.yaml | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git
+> a/Documentation/devicetree/bindings/interrupt-controller/socionext,uniphie
+> r-aidet.yaml
+> b/Documentation/devicetree/bindings/interrupt-controller/socionext,uniphie
+> r-aidet.yaml
+>> index f89ebde76dab..77f2d58a9c3f 100644
+>> ---
+> a/Documentation/devicetree/bindings/interrupt-controller/socionext,uniphie
+> r-aidet.yaml
+>> +++
+> b/Documentation/devicetree/bindings/interrupt-controller/socionext,uniphie
+> r-aidet.yaml
+>> @@ -49,7 +49,7 @@ required:
+>>     - interrupt-controller
+>>     - '#interrupt-cells'
+>>   
+>> -additionalProperties: false
+>> +unevaluatedProperties: false
+> 
+> As mentioned elsewhere, not necessary here.
+
+Yes, I withdraw this patch for the same reason.
+
+Thank you,
+
+---
+Best Regards
+Kunihiko Hayashi
