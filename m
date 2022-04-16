@@ -2,112 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D212C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7BABC433F5
 	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229884AbiDPCWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60976 "EHLO
+        id S229525AbiDPCWu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229769AbiDPCWT (ORCPT
+        with ESMTP id S229873AbiDPCWd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:22:19 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1439C58E75;
-        Fri, 15 Apr 2022 19:19:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ZM3lfs/b3lAESP5zz9nLnOwj5qAuBZLAI/rah4e2ykc=; b=H4gURL8nIMUmE4/AHGNEwndQpZ
-        NhOsASQcw8Lf8fWI3xWKAh8K2mecRE3TlV41+ua+9MCy+wgYxN0tBPBaP5mFbUl+UGiUZ3hTYz6xK
-        4gmxUjA11Pv2NOoPAsxowiJPNXRwP9nxJKbOXAkMTazILTit3v9CrWfn/AV7oPdsoEWijZJcm9++0
-        BG56SlV78tDkfVdhZXD84QVKIcljHBv25fYECsMMmuKd6vL0/y0T+lZ/UWkTtf4PmDiWRAPZK1Cv5
-        F4rUu6rEHY8ctjs6b4JGjDj7IT5+nGd9R8UwgdPbhBGXRAJyCtMB29Cp4kVRV5SVvauy6NNLBGlGc
-        ll1zE/Gg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nfXSu-00BuX1-Sd; Sat, 16 Apr 2022 01:43:09 +0000
-Date:   Fri, 15 Apr 2022 18:43:08 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Song Liu <song@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     bpf <bpf@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        Christoph Hellwig <hch@infradead.org>, imbrenda@linux.ibm.com
-Subject: Re: [PATCH v4 bpf 0/4] vmalloc: bpf: introduce VM_ALLOW_HUGE_VMAP
-Message-ID: <YlofLKtItUgYfRpX@bombadil.infradead.org>
-References: <20220415164413.2727220-1-song@kernel.org>
- <YlnCBqNWxSm3M3xB@bombadil.infradead.org>
- <CAPhsuW6LY8g6SZpW0CBOe22FUd2e3oSq4RW1GDxZoPmHYBqwvw@mail.gmail.com>
- <YlofA8u760BE8e0B@bombadil.infradead.org>
+        Fri, 15 Apr 2022 22:22:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F6F259A5C
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:20:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650075602;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WHdkIGOQ4zsXGJMmIQm5BnGhIzeJfdILazCRmHTjv9o=;
+        b=Itj6UmryGVlGsZCDpuFP5eolcQGeqHyYiUUM18a7ivRvEukXJkUp0SBnk/5naAKMxfDfdg
+        3ZWiQYH77kSK8g6pIYAH+1pUsK1pISesH4uKeeW74/EJyEz9uU8AVqWAwux4vV1jRuZQwH
+        xTETAPU/WxXdsx3s5RqFL//QMGRP5Dc=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-241-5ZrlfmDYOhG_DXlc3WHTKQ-1; Fri, 15 Apr 2022 21:07:55 -0400
+X-MC-Unique: 5ZrlfmDYOhG_DXlc3WHTKQ-1
+Received: by mail-qt1-f197.google.com with SMTP id u29-20020a05622a199d00b002e06ae2f56cso6118328qtc.12
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 18:07:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WHdkIGOQ4zsXGJMmIQm5BnGhIzeJfdILazCRmHTjv9o=;
+        b=k5xFtcnJwv/Yxm+V8qwY3KgZPiziITKdkRqMdPnRJ602vFbB5N2BeIPLJFAT/WQsoX
+         UkJF+xTDaw6aPwSTd8uzbnf0RQzvsPqXyluuauBWYPEVFuBQrOxLLzvQBvItKGh310ht
+         KGhgwQp7KBJlMwGUM2F3ms44L8XmyizTGX+P8WpSX00M2xt5joEpiTUMKTavnIG6aCn9
+         Qd7xDl2EoueSCqQoyBHGCMUM0OSAB5bXFp8GTH+ucOQ53VAkh737l4+WKH0IiMeer9xj
+         xkljNlmUnZEYMOOJkOBcSOg3ip1D7PX6Iy0oaprKDLCqKGUwsucQfEc31xgUvcFGP9/M
+         qgMw==
+X-Gm-Message-State: AOAM530c1wWD3dw9fZ+SNFg58YWx7ySzxQGvz1+EyqNqQVaxyXakUBO/
+        la66PZLf5uGUZrCJIaFZRPuY9S4ya66tep71f8DEhKCoss2DWzfVlBZTF+fS5K9y/n+PHbwVuzJ
+        mOXgjN0w42OYZYZNQLiWi9lOA
+X-Received: by 2002:a05:622a:52:b0:2e2:3248:c8 with SMTP id y18-20020a05622a005200b002e2324800c8mr1114942qtw.519.1650071274681;
+        Fri, 15 Apr 2022 18:07:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzj92WtHRvw4w/rYZujE+e7lZkDtI6tiDDmPcrT25yaw625DfNGxLnrtxheCc/JrQKWUfZT+w==
+X-Received: by 2002:a05:622a:52:b0:2e2:3248:c8 with SMTP id y18-20020a05622a005200b002e2324800c8mr1114931qtw.519.1650071274442;
+        Fri, 15 Apr 2022 18:07:54 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::45])
+        by smtp.gmail.com with ESMTPSA id k66-20020a37ba45000000b0069c5adb2f2fsm3321870qkf.6.2022.04.15.18.07.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 18:07:53 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 18:07:50 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
+Cc:     mark.rutland@arm.com, broonie@kernel.org, ardb@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v1 0/9] arm64: livepatch: Use DWARF Call Frame
+ Information for frame pointer validation
+Message-ID: <20220416010750.cuf7tf5dgd434kac@treble>
+References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
+ <20220407202518.19780-1-madvenka@linux.microsoft.com>
+ <20220408002147.pk7clzruj6sawj7z@treble>
+ <15a22f4b-f04a-15e1-8f54-5b3147d8df7d@linux.microsoft.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YlofA8u760BE8e0B@bombadil.infradead.org>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+In-Reply-To: <15a22f4b-f04a-15e1-8f54-5b3147d8df7d@linux.microsoft.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 06:42:27PM -0700, Luis Chamberlain wrote:
-> On Fri, Apr 15, 2022 at 06:34:16PM -0700, Song Liu wrote:
-> > On Fri, Apr 15, 2022 at 12:05 PM Luis Chamberlain <mcgrof@kernel.org> wrote:
-> > >
-> > > On Fri, Apr 15, 2022 at 09:44:09AM -0700, Song Liu wrote:
-> > > > Changes v3 => v4:
-> > > > 1. Fix __weak module_alloc_huge; remove unused vmalloc_huge; rename
-> > > >    __vmalloc_huge => vmalloc_huge. (Christoph Hellwig)
-> > > > 2. Use vzalloc (as it was before vmalloc_no_huge) and clean up comments in
-> > > >    kvm_s390_pv_alloc_vm.
-> > > >
-> > > > Changes v2 => v3:
-> > > > 1. Use __vmalloc_huge in alloc_large_system_hash.
-> > > > 2. Use EXPORT_SYMBOL_GPL for new functions. (Christoph Hellwig)
-> > > > 3. Add more description about the issues and changes.(Christoph Hellwig,
-> > > >    Rick Edgecombe).
-> > > >
-> > > > Changes v1 => v2:
-> > > > 1. Add vmalloc_huge(). (Christoph Hellwig)
-> > > > 2. Add module_alloc_huge(). (Christoph Hellwig)
-> > > > 3. Add Fixes tag and Link tag. (Thorsten Leemhuis)
-> > > >
-> > > > Enabling HAVE_ARCH_HUGE_VMALLOC on x86_64 and use it for bpf_prog_pack has
-> > > > caused some issues [1], as many users of vmalloc are not yet ready to
-> > > > handle huge pages. To enable a more smooth transition to use huge page
-> > > > backed vmalloc memory, this set replaces VM_NO_HUGE_VMAP flag with an new
-> > > > opt-in flag, VM_ALLOW_HUGE_VMAP. More discussions about this topic can be
-> > > > found at [2].
-> > > >
-> > > > Patch 1 removes VM_NO_HUGE_VMAP and adds VM_ALLOW_HUGE_VMAP.
-> > > > Patch 2 uses VM_ALLOW_HUGE_VMAP in bpf_prog_pack.
-> > > >
-> > > > [1] https://lore.kernel.org/lkml/20220204185742.271030-1-song@kernel.org/
-> > > > [2] https://lore.kernel.org/linux-mm/20220330225642.1163897-1-song@kernel.org/
-> > >
-> > > Looks good except for that I think this should just wait for v5.19. The
-> > > fixes are so large I can't see why this needs to be rushed in other than
-> > > the first assumptions of the optimizations had some flaws addressed here.
+On Mon, Apr 11, 2022 at 12:18:13PM -0500, Madhavan T. Venkataraman wrote:
+> > There are actually several similarities between your new format and ORC,
+> > which is also an objtool-created DWARF alternative.  It would be
+> > interesting to see if they could be combined somehow.
 > > 
-> > We need these changes to fix issues like [3]. Note that there might
-> > still be some
-> > undiscovered issues with huge page backed vmalloc memory on powerpc, which
-> > had HAVE_ARCH_HUGE_VMALLOC enabled since the 5.15 kernel. As we
-> > agreed, the new opt-in flag is a safer approach here. We probably should have
-> > 1/4 and 2/4 back ported to stable. Therefore, I think shipping this
-> > set now would
-> > give us a more reliable 5.18 release.
-> > 
-> > Does this make sense?
 > 
-> Yes absolutely, but that sounds like that optimization should just be
-> reverted completely from v5.18 isntead then no? Or if one can skip the
-> optimizations for v5.18 with a small patch, and then enable for v5.19.
+> I will certainly look into it. So, if I decide to merge the two, I might want
+> to make a minor change to the ORC structure. Would that be OK with you?
 
-In any case it is up to Linus, I already chimed in with my opinion.
+Yes, in fact I would expect it, since ORC is quite x86-specific at the
+moment.  So it would need some abstractions to make it more multi-arch
+friendly.
 
-  Luis
+-- 
+Josh
+
