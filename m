@@ -2,125 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD53C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 10:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C98BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 10:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231577AbiDPKye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 06:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45924 "EHLO
+        id S231564AbiDPLAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 07:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231547AbiDPKyW (ORCPT
+        with ESMTP id S231315AbiDPLAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 06:54:22 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FCD3AA72;
-        Sat, 16 Apr 2022 03:51:50 -0700 (PDT)
-Received: from kwepemi100006.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KgVPb1LDvzgYsg;
-        Sat, 16 Apr 2022 18:51:47 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100006.china.huawei.com (7.221.188.165) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 16 Apr 2022 18:51:49 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 16 Apr 2022 18:51:48 +0800
-From:   Weili Qian <qianweili@huawei.com>
-To:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-        <wangzhou1@hisilicon.com>, <liulongfang@huawei.com>,
-        Weili Qian <qianweili@huawei.com>
-Subject: [PATCH 4/4] crypto: hisilicon/qm - remove hisi_qm_get_free_qp_num()
-Date:   Sat, 16 Apr 2022 18:45:59 +0800
-Message-ID: <20220416104559.10826-5-qianweili@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220416104559.10826-1-qianweili@huawei.com>
-References: <20220416104559.10826-1-qianweili@huawei.com>
+        Sat, 16 Apr 2022 07:00:08 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 435425A0AB
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 03:57:37 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id n17so6969426ljc.11
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 03:57:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6jmuQhxjlZyaiauhW3ksOezxG0CdP/I9NiSXgA9JK6A=;
+        b=p9igy0WaKtSgvuM+Vgjvowr4iI6JukewIbViqym/RUaHaxUjLNcApkK1uFMcKOYB+K
+         zMhSO3mN62uEcOSXDNzz0T1385ojs0ofa/sbBx66yOUepc5GHMdOPCkmVE8vU7fCQTc8
+         oXwEMaz9+PEhKLqr2+4PaRyDX2VOODXplZWMLp5AXIPEJl2/GzdEZ0HUoB7ets+eu9mU
+         wdXn4/fU/EE5ML+U+Hcsor+qwOYHJ6f+32uWmYsIGzVmCRApvmCRou/nwAiVwohR9gvL
+         RTTJoarhVenZx9XiB47cgm1wHEatLKcQRFh1j/SZsGJSZ9BXurXsFE8l5tBI8i5YM5E9
+         DjIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6jmuQhxjlZyaiauhW3ksOezxG0CdP/I9NiSXgA9JK6A=;
+        b=jjzsR/YuSs9CCbVr7FdMwtME+CNI50mUgVWvllnq0hWVLsCsrGueJ19t6BgIEKmpmw
+         mOK4l/DAStZWO4gbN7nwfU9a5f7Msjc68HOR+O6CEVDxBqRMaZMUg9XVot5C8RiwCR8F
+         abx+KXmvlLNBjLH/6aQg2Q7E3kZCn6wGF6tv0a1niA2Lu8kiO2nxIwKKDwyQSIeX62M/
+         y9/hRpcoGWOuZ2amUCDuCYnDNEZXWgTSGDdKFOJ9JWSH+TKOvXfSvZdCQjJmmIiyaLt1
+         1+oPa4ZUXO+2abClqNzoq6Vbs3f3vcnBpOrCFz/aGXVXUCg19a5VER/Hb1/0ckc6mdZL
+         6yuA==
+X-Gm-Message-State: AOAM530GO0btBNx9Fjksss8yMRFpDOmBY/J2rJCFoum2RnmOs9J4xAum
+        /7WAPPpywW/FMOPbkT8VYLg=
+X-Google-Smtp-Source: ABdhPJzQyR4FP3VLblv2z4wiz/PPqJ2Ndjvb20TUlZYYDW6Pceo9/rpNrzinvXXid0O+WFh9VOyHeA==
+X-Received: by 2002:a2e:9101:0:b0:24b:27c:c210 with SMTP id m1-20020a2e9101000000b0024b027cc210mr1858659ljg.134.1650106655322;
+        Sat, 16 Apr 2022 03:57:35 -0700 (PDT)
+Received: from [192.168.1.11] ([94.103.225.17])
+        by smtp.gmail.com with ESMTPSA id r18-20020a19da12000000b0047022f82509sm239361lfg.238.2022.04.16.03.57.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 16 Apr 2022 03:57:34 -0700 (PDT)
+Message-ID: <5d9181be-0a02-0623-7741-1d4352d62610@gmail.com>
+Date:   Sat, 16 Apr 2022 13:57:33 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] staging: rtl8712: fix uninit-value "data" and "mac"
+Content-Language: en-US
+To:     Wang Cheng <wanngchenng@gmail.com>
+Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
+        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+References: <20220414141223.qwiznrwgjyywngfg@ppc.localdomain>
+ <68484555-f763-bc42-eb4c-9cea2ee8dadb@gmail.com>
+ <20220415095741.3zfuztivtgidvpqc@ppc.localdomain>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20220415095741.3zfuztivtgidvpqc@ppc.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hisi_qm_get_free_qp_num() is to get the free queue number on the function.
-It is a simple function and is only called by
-hisi_qm_get_available_instances().
+Hi Wang,
 
-This patch modifies to get the free queue directly in
-hisi_qm_get_available_instances(), and remove hisi_qm_get_free_qp_num().
+On 4/15/22 12:57, Wang Cheng wrote:
+> Hi Pavel, thx for your review.
+> 
+> Sorry, this patch is just confined to fixing uninit-values with
+> modifying the original code as less as possible. It sounds good to
+> refactor r8712_usbctrl_vendorreq() with better API.
+> 
 
-Signed-off-by: Weili Qian <qianweili@huawei.com>
----
- drivers/crypto/hisilicon/qm.c | 28 +++++++++-------------------
- include/linux/hisi_acc_qm.h   |  1 -
- 2 files changed, 9 insertions(+), 20 deletions(-)
+I understand your idea, but this will just hide the real problem until 
+syzbot hit it in different place. So, I believe, it's better to fix the 
+root case instead of hiding local cases.
 
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index f708a632a2f5..cd4c146340dd 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -3051,9 +3051,17 @@ static void qm_qp_event_notifier(struct hisi_qp *qp)
- 	wake_up_interruptible(&qp->uacce_q->wait);
- }
- 
-+ /* This function returns free number of qp in qm. */
- static int hisi_qm_get_available_instances(struct uacce_device *uacce)
- {
--	return hisi_qm_get_free_qp_num(uacce->priv);
-+	struct hisi_qm *qm = uacce->priv;
-+	int ret;
-+
-+	down_read(&qm->qps_lock);
-+	ret = qm->qp_num - qm->qp_in_used;
-+	up_read(&qm->qps_lock);
-+
-+	return ret;
- }
- 
- static void hisi_qm_set_hw_reset(struct hisi_qm *qm, int offset)
-@@ -3365,24 +3373,6 @@ void hisi_qm_wait_task_finish(struct hisi_qm *qm, struct hisi_qm_list *qm_list)
- }
- EXPORT_SYMBOL_GPL(hisi_qm_wait_task_finish);
- 
--/**
-- * hisi_qm_get_free_qp_num() - Get free number of qp in qm.
-- * @qm: The qm which want to get free qp.
-- *
-- * This function return free number of qp in qm.
-- */
--int hisi_qm_get_free_qp_num(struct hisi_qm *qm)
--{
--	int ret;
--
--	down_read(&qm->qps_lock);
--	ret = qm->qp_num - qm->qp_in_used;
--	up_read(&qm->qps_lock);
--
--	return ret;
--}
--EXPORT_SYMBOL_GPL(hisi_qm_get_free_qp_num);
--
- static void hisi_qp_memory_uninit(struct hisi_qm *qm, int num)
- {
- 	struct device *dev = &qm->pdev->dev;
-diff --git a/include/linux/hisi_acc_qm.h b/include/linux/hisi_acc_qm.h
-index 46974d641af1..545f58432412 100644
---- a/include/linux/hisi_acc_qm.h
-+++ b/include/linux/hisi_acc_qm.h
-@@ -436,7 +436,6 @@ int hisi_qm_stop(struct hisi_qm *qm, enum qm_stop_reason r);
- int hisi_qm_start_qp(struct hisi_qp *qp, unsigned long arg);
- int hisi_qm_stop_qp(struct hisi_qp *qp);
- int hisi_qp_send(struct hisi_qp *qp, const void *msg);
--int hisi_qm_get_free_qp_num(struct hisi_qm *qm);
- void hisi_qm_debug_init(struct hisi_qm *qm);
- void hisi_qm_debug_regs_clear(struct hisi_qm *qm);
- int hisi_qm_sriov_enable(struct pci_dev *pdev, int max_vfs);
--- 
-2.33.0
 
+
+
+With regards,
+Pavel Skripkin
