@@ -2,158 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE3A2C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:04:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B02C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:05:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229610AbiDPCHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:07:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33742 "EHLO
+        id S229760AbiDPCHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:07:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbiDPCGD (ORCPT
+        with ESMTP id S229614AbiDPCGB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:06:03 -0400
-Received: from out203-205-251-60.mail.qq.com (out203-205-251-60.mail.qq.com [203.205.251.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D8F6D4E5
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 18:58:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1650074332;
-        bh=CriwDWtOWAQX5VANr5fAIAkGQbBAnagbCEroVjZL5xE=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=NTRnOIaHyemr/JoHOXrNcIwV+urI6oIdsGlqBmMV7bxymwyVaIdf0dcpXbodWKjI1
-         6bmhN6NuqwVtHhxsdJoJjJUncKPGcBWgbbxn+XfgWDl3v99oZsz47JRo3i3VdMAkkb
-         BnFNbS5f/wrLjxHneUqI730/6Vm3QDb4qQY0HjzI=
-Received: from [IPv6:240e:362:47d:9500:6527:51dc:8ce2:179e] ([240e:362:47d:9500:6527:51dc:8ce2:179e])
-        by newxmesmtplogicsvrszc7.qq.com (NewEsmtp) with SMTP
-        id AD38087B; Sat, 16 Apr 2022 09:43:19 +0800
-X-QQ-mid: xmsmtpt1650073399tvl7nvia6
-Message-ID: <tencent_8EC09A26D25C1A263AE207952230B789D409@qq.com>
-X-QQ-XMAILINFO: NY3HYYTs4gYSrO+zHxGJ/iwzNSjLXu9vUBN6PnZHIBGTm9jqMKPbKBgmf1wIfN
-         fUnS32uHdLgy3E17MQn5nFZSjeuCUdYakAG0ji4xpE2GYKNVYpdnhhiMAyVYLaYzjVramRVd2o6T
-         PBKHwjgnLhPCmooQY8Laqj4OEKZkrHDUYaNs6LU0sl3pPhLu9tkGtd7ookVkvph0+UidYKAunvTl
-         z64mBPOAzGtjKjINLBHRpyPODP9pwo///ZZYbqaX/8sZ9yXWUo65C/WPy8YoOlqhnHs8VqUSMZLP
-         h7/QcFSpSabezlKuABc/Wc/pjNosbHwzpDVAWJ9XolbEH93SZPppBI5AMRueJubQh+/vV6hHOKHR
-         Y+AFXbM4k/ES7/0nxIZfWygx2H4lW7tefGlAaGII6lLDYSSHCqfjVpmrGKkY0Zd2TU6QlpNrSD7O
-         7QWzcDuxN6wQUBngabozrXDxiyeXEpoclQka7rTkMp3+/5Euph5yL1mqelcqQunVwmuPTv1w+iUz
-         WxAGWWWQkwg/8dzxw/NdUDUzSo5OWhYFlYkxLLzlDLZMUMIehLrrF0+gLFfGbzUkF5RS7a8q3IJb
-         8lrJzBymc56Fn/tztPziAJBerWZxZ3+c8tF7zcBjUZP9dSZNb2blYQZw+VVvxDTb5igATok3q35O
-         6PIQGZkUpGXIW5e0/M9ZEfI1eTTEzcQ2lopQigFZnhNAZ3lu/1+4jc8P1v8uJC/hezPlSX1BKFvi
-         y6O5YlLO9pbmg+Zu0uqrecPrFhfwamuTbcuYhgHZyxEY6aPA64xzsL7ESon5Rrz4jL1z08ULC3CU
-         xNAp8smcjAtTgyp37Z+QYLn5SKilhvPcZx5jn3ME9bKAuWX6oh4QE/+ASY50DPki7FRfUaqp60rk
-         63jl0c74ddlK+VrqzWWIu0WF629TKIDoj/id2Z1rgmyE8kz20Viyu9zOXNU+hmCMecUiG/Xh/ZsB
-         y5FqaZTq2OEsJN4wfz7Q==
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-To:     Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc:     Fenghua Yu <fenghua.yu@intel.com>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        jean-philippe <jean-philippe@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Dave Hansen <dave.hansen@intel.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-References: <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
- <f439dde5-0eaa-52e4-9cf7-2ed1f62ea07f@intel.com>
- <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
- <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
- <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
- <YlWBkyGeb2ZOGLKl@fyu1.sc.intel.com>
- <tencent_A9458C6CEBAADD361DA765356477B00E920A@qq.com>
- <tencent_8B6D7835F62688B4CD069C0EFC41B308B407@qq.com>
- <YllADL6uMoLllzQo@fyu1.sc.intel.com>
- <99bcb9f5-4776-9c40-a776-cdecfa9e1010@foxmail.com>
- <YllN/OmjpYdT1tO9@otcwcpicx3.sc.intel.com>
- <tencent_CD35B6A6FBB48186B38EF641F088BAED1407@qq.com>
- <20220415140002.7c12b0d2@jacob-builder>
-From:   "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
-X-OQ-MSGID: <df95e2ad-4010-cd9c-094b-8b816419951a@foxmail.com>
-Date:   Sat, 16 Apr 2022 09:43:07 +0800
+        Fri, 15 Apr 2022 22:06:01 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354692194;
+        Fri, 15 Apr 2022 18:59:22 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 91AF53202184;
+        Fri, 15 Apr 2022 21:59:18 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Fri, 15 Apr 2022 21:59:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1650074358; x=
+        1650160758; bh=DsIZSVRAwE42Gn8ZixFtjn0uMkrlMndqIZ6G0Y5AI/4=; b=v
+        ofQvzTSJzQ9MkUg0exyz/hODYtwDf1fGYIm3zRStBhNtrkRlgowagO+bOWO8cUzh
+        q23DqehxcTwcrRlb4RfTk3fZO7kOhZWcRyzVf3KmVDHn3eRXjFIaBV9WLcCWbq2a
+        RU3rEmvtfGNhsbbC2LlpCuOzV2RXVIDhLCJXJ87rCIxE4KuofTPeNiJrHYVNhDsR
+        2bn378XD2Mn48LTLZMYMIc2snNQ6XeI8eIiLsvTSf09OdL67+q1WmtqZgxqA4AUn
+        QpzkdfOdaXX3ccjSqaUyqKyCfE/yDYKNctOEUoTXgr+hgnpcAXUWXNN93gZ57NZf
+        5SMLiqXmGRi2gSn/lDJyQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1650074358; x=1650160758; bh=DsIZSVRAwE42G
+        n8ZixFtjn0uMkrlMndqIZ6G0Y5AI/4=; b=bYVuTgUYBsQTNnlxU5US0jyiPBbXZ
+        mFG6lTqRrEr42liDgqrarHGFmcWTM3tAAE/8WhCz2EsgxzGoMFti1oHtWF64G3Ss
+        yrDzkMM5P3QgAeixj3hzJwfqda2x2KBtcTqjHRXxOzLIj8Y0Avio6yaJblorrK0Z
+        hS/JXCOtbLwu2ERmhWfDJagU3nMqUNctjRzGax38Shhk1yu43esCLMHYAUBzeU3w
+        2sBADRZJGDwuLDdo73dbxjpSJQLN50TL4hHfUHTc9qYXy9TWSmCPRWBpIfneQdDr
+        MMTNowdfCXZTHpc7mqr6nHzjPEYLK+trxeIGkIZ0mO66rmNll7p5zWeZA==
+X-ME-Sender: <xms:9SJaYvpc2lX9S77Y_psFb_TnC2je-Wlk1MQe_tfJyC7_IPLiPFALYw>
+    <xme:9SJaYppO8Ie-u9jC4_2nnMypdN9K32jQZk4WBnZ0E0IH8--zOEoMENqikEnDB2ExS
+    H3woy9YAY-C6rcb0A>
+X-ME-Received: <xmr:9SJaYsMrSMF-8DAbhBq7N3BcxdY-2JM88babmgpCyWtpYOf-95uQhD94IyAVSY4zj2dlSqUK7kvvis1sjTHoWyxJLelH2YcLHTFhp7WwN3AcM7PE78Az6XCE-A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeliedggeejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepuffvfhfhkffffgggjggtgfesthejredttdefjeenucfhrhhomhepufgrmhhu
+    vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
+    ftrfgrthhtvghrnhepffeigfelvdfgtdetleduveevgfdutdeiuddtveetvdfhffejlefh
+    heetjeetvdelnecuffhomhgrihhnpeguvghvihgtvghtrhgvvgdrohhrghenucevlhhush
+    htvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsrghmuhgvlhesshhh
+    ohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:9SJaYi5As9kW734rNq9qWZhgGxtOhnvlUmZL_v-yrLAXRFHVFcrGMQ>
+    <xmx:9SJaYu5rpwcaHozDnmeQ0KRPrMDDeBN-VLpR3VTrQ_RUfKcJ04HUJA>
+    <xmx:9SJaYqhkjxHh8wMLMpeP9SJtZstFEHq2IJ6gblbyz0Gtug3ilQuXeA>
+    <xmx:9iJaYhqU14ncJuMjdwFgtppOKgNv_VuguB75Be41zWPEUje1WYVizg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 15 Apr 2022 21:59:16 -0400 (EDT)
+Subject: Re: [PATCH v3 1/4] dt-bindings: media: Add Allwinner A31 ISP bindings
+ documentation
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+References: <20220415153708.637804-1-paul.kocialkowski@bootlin.com>
+ <20220415153708.637804-2-paul.kocialkowski@bootlin.com>
+From:   Samuel Holland <samuel@sholland.org>
+Message-ID: <19aa74b7-0096-87c5-ef2c-9a135ad5505a@sholland.org>
+Date:   Fri, 15 Apr 2022 20:59:13 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20220415140002.7c12b0d2@jacob-builder>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220415153708.637804-2-paul.kocialkowski@bootlin.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 4/15/22 10:37 AM, Paul Kocialkowski wrote:
+> This introduces YAML bindings documentation for the Allwinner A31 Image
+> Signal Processor (ISP).
+> 
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> ---
+>  .../media/allwinner,sun6i-a31-isp.yaml        | 117 ++++++++++++++++++
+>  1 file changed, 117 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
+> new file mode 100644
+> index 000000000000..ffca216b841f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
+> @@ -0,0 +1,117 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/media/allwinner,sun6i-a31-isp.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Allwinner A31 Image Signal Processor Driver (ISP) Device Tree Bindings
+> +
+> +maintainers:
+> +  - Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - allwinner,sun6i-a31-isp
+> +      - allwinner,sun8i-v3s-isp
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    items:
+> +      - description: Bus Clock
+> +      - description: Module Clock
+> +      - description: DRAM Clock
+> +
+> +  clock-names:
+> +    items:
+> +      - const: bus
+> +      - const: mod
+> +      - const: ram
+> +
+> +  resets:
+> +    maxItems: 1
+> +
+> +  ports:
+> +    $ref: /schemas/graph.yaml#/properties/ports
+> +
+> +    properties:
+> +      port@0:
+> +        $ref: /schemas/graph.yaml#/$defs/port-base
+> +        description: CSI0 input port
+> +
+> +        properties:
+> +          reg:
+> +            const: 0
+> +
+> +          endpoint:
+> +            $ref: /schemas/graph.yaml#/$defs/endpoint-base
+> +            unevaluatedProperties: false
+> +
+> +        additionalProperties: false
+> +
+> +      port@1:
+> +        $ref: /schemas/graph.yaml#/$defs/port-base
+> +        description: CSI1 input port
+> +
+> +        properties:
+> +          reg:
+> +            const: 0
 
+Should be "const: 1".
 
-On 2022/4/16 上午5:00, Jacob Pan wrote:
-> Hi zhangfei.gao@foxmail.com,
->
-> On Fri, 15 Apr 2022 19:52:03 +0800, "zhangfei.gao@foxmail.com"
-> <zhangfei.gao@foxmail.com> wrote:
->
->>>>> A PASID might be still used even though it is freed on mm exit.
->>>>>
->>>>> process A:
->>>>> 	sva_bind();
->>>>> 	ioasid_alloc() = N; // Get PASID N for the mm
->>>>> 	fork(): // spawn process B
->>>>> 	exit();
->>>>> 	ioasid_free(N);
->>>>>
->>>>> process B:
->>>>> 	device uses PASID N -> failure
->>>>> 	sva_unbind();
->>>>>
->>>>> Dave Hansen suggests to take a refcount on the mm whenever binding the
->>>>> PASID to a device and drop the refcount on unbinding. The mm won't be
->>>>> dropped if the PASID is still bound to it.
->>>>>
->>>>> Fixes: 701fac40384f ("iommu/sva: Assign a PASID to mm on PASID
->>>>> allocation and free it on mm exit")
->>>>>
-> Is process A's mm intended to be used by process B? Or you really should
-> use PASID N on process B's mm? If the latter, it may work for a while until
-> B changes mapping.
->
-> It seems you are just extending the life of a defunct mm?
+Otherwise,
+Reviewed-by: Samuel Holland <samuel@sholland.org>
 
- From nginx code, the master process init resources, then fork daemon 
-process to take over,
-then master process exit by itself.
-
-src/core/nginx.c
-main
-ngx_ssl_init(log);    -> openssl engine -> bind_fn -> sva_bind()
-ngx_daemon(cycle->log)
-
-src/os/unix/ngx_daemon.c
-ngx_daemon(ngx_log_t *log)
-{
-      int  fd;
-
-      switch (fork()) {
-      case -1:
-          ngx_log_error(NGX_LOG_EMERG, log, ngx_errno, "fork() failed");
-          return NGX_ERROR;
-
-      case 0:
-         // the fork daemon process
-          break;
-
-      default:
-        // master process directly exit, and release mm as well as ioasid
-          exit(0);
-      }
-
-       // only daemon process
-
-Thanks
-
->
-> Thanks,
->
-> Jacob
+> +
+> +          endpoint:
+> +            $ref: /schemas/graph.yaml#/$defs/endpoint-base
+> +            unevaluatedProperties: false
+> +
+> +        additionalProperties: false
+> +
+> +    anyOf:
+> +      - required:
+> +        - port@0
+> +      - required:
+> +        - port@1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - clock-names
+> +  - resets
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/clock/sun8i-v3s-ccu.h>
+> +    #include <dt-bindings/reset/sun8i-v3s-ccu.h>
+> +
+> +    isp: isp@1cb8000 {
+> +        compatible = "allwinner,sun8i-v3s-isp";
+> +        reg = <0x01cb8000 0x1000>;
+> +        interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
+> +        clocks = <&ccu CLK_BUS_CSI>,
+> +             <&ccu CLK_CSI1_SCLK>,
+> +             <&ccu CLK_DRAM_CSI>;
+> +        clock-names = "bus", "mod", "ram";
+> +        resets = <&ccu RST_BUS_CSI>;
+> +
+> +        ports {
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +
+> +            port@0 {
+> +                reg = <0>;
+> +
+> +                isp_in_csi0: endpoint {
+> +                    remote-endpoint = <&csi0_out_isp>;
+> +                };
+> +            };
+> +        };
+> +    };
+> +
+> +...
+> 
 
