@@ -2,173 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EE8BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA90C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:48:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231807AbiDPLlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 07:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54294 "EHLO
+        id S231818AbiDPLv3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 07:51:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiDPLlK (ORCPT
+        with ESMTP id S230449AbiDPLv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 07:41:10 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3DD73F327;
-        Sat, 16 Apr 2022 04:38:38 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:6624:6d8d:f790:d5c]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nfgl9-0000mk-RE; Sat, 16 Apr 2022 13:38:35 +0200
-Message-ID: <c6b80014-846d-cd90-7e67-d72959ffabe1@leemhuis.info>
-Date:   Sat, 16 Apr 2022 13:38:35 +0200
+        Sat, 16 Apr 2022 07:51:28 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D8781118;
+        Sat, 16 Apr 2022 04:48:54 -0700 (PDT)
+Received: from localhost.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxv9cgrVpiHp0lAA--.17905S3;
+        Sat, 16 Apr 2022 19:48:50 +0800 (CST)
+From:   Ze Zhang <zhangze@loongson.cn>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Shuah Khan <shuah@kernel.org>
+Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Qing Zhang <zhangqing@loongson.cn>,
+        Ze Zhang <zhangze@loongson.cn>
+Subject: [PATCH 2/2] selftests/ftrace: add mips support for kprobe args syntax tests
+Date:   Sat, 16 Apr 2022 19:48:48 +0800
+Message-Id: <20220416114848.25288-2-zhangze@loongson.cn>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220416114848.25288-1-zhangze@loongson.cn>
+References: <20220416114848.25288-1-zhangze@loongson.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: fscache corruption in Linux 5.17?
-Content-Language: en-US
-To:     Max Kellermann <mk@cm4all.com>, dhowells@redhat.com
-Cc:     linux-cachefs@redhat.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-References: <YlWWbpW5Foynjllo@rabbit.intern.cm-ag>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <YlWWbpW5Foynjllo@rabbit.intern.cm-ag>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1650109118;7865a6ba;
-X-HE-SMSGID: 1nfgl9-0000mk-RE
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9Dxv9cgrVpiHp0lAA--.17905S3
+X-Coremail-Antispam: 1UD129KBjvdXoWrZr1kJw1UGryDKrWktF4xWFg_yoW3KFXE9a
+        4Iy3s7CrWUZFyqqr48tr15Crs5G39rWr1xtrWDXryrtryUXw45tayDCFykGF4fWa93XFy2
+        yanrZr4Svw4jgjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb6xFF20E14v26ryj6rWUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUGwA2048vs2IY02
+        0Ec7CjxVAFwI0_JFI_Gr1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xv
+        wVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwA2z4
+        x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26F4UJVW0owAS
+        0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2
+        IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0
+        Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxGrwCFx2
+        IqxVCFs4IE7xkEbVWUJVW8JwCFI7km07C267AKxVWUXVWUAwC20s026c02F40E14v26r1j
+        6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64
+        vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+        Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0x
+        vEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUsqXdUUUUU=
+X-CM-SenderInfo: x2kd0wt2h6z05rqj20fqof0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[TLDR: I'm adding the regression report below to regzbot, the Linux
-kernel regression tracking bot; all text you find below is compiled from
-a few templates paragraphs you might have encountered already already
-from similar mails.]
+This is the mips variant of commit <3990b5baf225> ("selftests/ftrace:
+Add s390 support for kprobe args tests").
 
-Hi, this is your Linux kernel regression tracker. CCing the regression
-mailing list, as it should be in the loop for all regressions, as
-explained here:
-https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
+Signed-off-by: Ze Zhang <zhangze@loongson.cn>
+---
+ .../selftests/ftrace/test.d/kprobe/kprobe_args_syntax.tc      | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-On 12.04.22 17:10, Max Kellermann wrote:
-> Hi David,
-> 
-> two weeks ago, I updated a cluster of web servers to Linux kernel
-> 5.17.1 (5.16.x previously) which includes your rewrite of the fscache
-> code.
-> 
-> In the last few days, there were numerous complaints about broken
-> WordPress installations after WordPress was updated.  There were
-> PHP syntax errors everywhere.
-> 
-> Indeed there were broken PHP files, but the interesting part is: those
-> corruptions were only on one of the web servers; the others were fine,
-> the file contents were only broken on one of the servers.
-> 
-> File size and time stamp and everyhing in "stat" is identical, just
-> the file contents are corrupted; it looks like a mix of old and new
-> contents.  The corruptions always started at multiples of 4096 bytes.
-> 
-> An example diff:
-> 
->  --- ok/wp-includes/media.php    2022-04-06 05:51:50.000000000 +0200
->  +++ broken/wp-includes/media.php    2022-04-06 05:51:50.000000000 +0200
->  @@ -5348,7 +5348,7 @@
->                  /**
->                   * Filters the threshold for how many of the first content media elements to not lazy-load.
->                   *
->  -                * For these first content media elements, the `loading` attribute will be omitted. By default, this is the case
->  +                * For these first content media elements, the `loading` efault, this is the case
->                   * for only the very first content media element.
->                   *
->                   * @since 5.9.0
->  @@ -5377,3 +5377,4 @@
->   
->          return $content_media_count;
->   }
->  +^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@
-> 
-> The corruption can be explained by WordPress commit
-> https://github.com/WordPress/WordPress/commit/07855db0ee8d5cff2 which
-> makes the file 31 bytes longer (185055 -> 185086).  The "broken" web
-> server sees the new contents until offset 184320 (= 45 * 4096), but
-> sees the old contents from there on; followed by 31 null bytes
-> (because the kernel reads past the end of the cache?).
-> 
-> All web servers mount a storage via NFSv3 with fscache.
-> 
-> My suspicion is that this is caused by a fscache regression in Linux
-> 5.17.  What do you think?
-> 
-> What can I do to debug this further, is there any information you
-> need?  I don't know much about how fscache works internally and how to
-> obtain information.
-
-Thx for the report. Maybe a bisection is what's needed here, but lets
-see what David says, maybe he has a idea already.
-
-To be sure below issue doesn't fall through the cracks unnoticed, I'm
-adding it to regzbot, my Linux kernel regression tracking bot:
-
-#regzbot ^introduced v5.16..v5.17
-#regzbot title fscache: file contents are corrupted
-#regzbot ignore-activity
-
-If it turns out this isn't a regression, free free to remove it from the
-tracking by sending a reply to this thread containing a paragraph like
-"#regzbot invalid: reason why this is invalid" (without the quotes).
-
-Reminder for developers: when fixing the issue, please add a 'Link:'
-tags pointing to the report (the mail quoted above) using
-lore.kernel.org/r/, as explained in
-'Documentation/process/submitting-patches.rst' and
-'Documentation/process/5.Posting.rst'. Regzbot needs them to
-automatically connect reports with fixes, but they are useful in
-general, too.
-
-I'm sending this to everyone that got the initial report, to make
-everyone aware of the tracking. I also hope that messages like this
-motivate people to directly get at least the regression mailing list and
-ideally even regzbot involved when dealing with regressions, as messages
-like this wouldn't be needed then. And don't worry, if I need to send
-other mails regarding this regression only relevant for regzbot I'll
-send them to the regressions lists only (with a tag in the subject so
-people can filter them away). With a bit of luck no such messages will
-be needed anyway.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I'm getting a lot of
-reports on my table. I can only look briefly into most of them and lack
-knowledge about most of the areas they concern. I thus unfortunately
-will sometimes get things wrong or miss something important. I hope
-that's not the case here; if you think it is, don't hesitate to tell me
-in a public reply, it's in everyone's interest to set the public record
-straight.
-
+diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_syntax.tc b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_syntax.tc
+index 47d84b5cb6ca..d4662c8cf407 100644
+--- a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_syntax.tc
++++ b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_syntax.tc
+@@ -36,6 +36,10 @@ s390*)
+   GOODREG=%r2
+   BADREG=%s2
+ ;;
++mips*)
++  GOODREG=%r4
++  BADREG=%r12
++;;
+ *)
+   echo "Please implement other architecture here"
+   exit_untested
 -- 
-Additional information about regzbot:
+2.20.1
 
-If you want to know more about regzbot, check out its web-interface, the
-getting start guide, and the references documentation:
-
-https://linux-regtracking.leemhuis.info/regzbot/
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
-
-The last two documents will explain how you can interact with regzbot
-yourself if your want to.
-
-Hint for reporters: when reporting a regression it's in your interest to
-CC the regression list and tell regzbot about the issue, as that ensures
-the regression makes it onto the radar of the Linux kernel's regression
-tracker -- that's in your interest, as it ensures your report won't fall
-through the cracks unnoticed.
-
-Hint for developers: you normally don't need to care about regzbot once
-it's involved. Fix the issue as you normally would, just remember to
-include 'Link:' tag in the patch descriptions pointing to all reports
-about the issue. This has been expected from developers even before
-regzbot showed up for reasons explained in
-'Documentation/process/submitting-patches.rst' and
-'Documentation/process/5.Posting.rst'.
