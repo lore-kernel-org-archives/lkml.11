@@ -2,117 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC6D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:38:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A265C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:41:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbiDPClS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:41:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58300 "EHLO
+        id S230058AbiDPCnq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229948AbiDPClQ (ORCPT
+        with ESMTP id S230041AbiDPCnp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:41:16 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BECF5FAB
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:38:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650076726; x=1681612726;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=GKVEggq5ZRJNyTM5MZu33LkwSh12SsTFfmrQhoZ5KhM=;
-  b=d5mkVu1SouReb1u9t48tLHALjw7q/0AiZcXCllLnZPE7+omjWKpUY2bR
-   rL4RGDF3a+6QTrcDszDKOHJJtvZ9jAYCEyxnvib7sqgxvAQ89WTGp8r2K
-   r4YYoOhcQSuSq4enBV+HWS/EtGaibqBS8jVipO7VmPgGorVxcuh/MCA6+
-   VYm3IzppqngJe/anX01xBGLs7Sg6hK/ja/8l94TPc37b/dkW15ZIfBdei
-   ght8lUX7xPSPxNHKY/Cqtvl60ebSfgqmqnW2S8L94zlLWzH1fYCIIrGrp
-   nsFgvg5/u1qYXtnVviH+BRUANKdXrKhktrN/608dNYfYhWE7CX8xAg2HT
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="260859900"
-X-IronPort-AV: E=Sophos;i="5.90,264,1643702400"; 
-   d="scan'208";a="260859900"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 19:38:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,264,1643702400"; 
-   d="scan'208";a="591819248"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 15 Apr 2022 19:38:44 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nfYKh-0002gL-OI;
-        Sat, 16 Apr 2022 02:38:43 +0000
-Date:   Sat, 16 Apr 2022 10:38:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [avpatel:riscv_ipi_imp_v6 22/25] arch/riscv/kernel/smp.c:166:50:
- sparse: sparse: incorrect type in argument 4 (different address spaces)
-Message-ID: <202204161023.uhBiZbYE-lkp@intel.com>
+        Fri, 15 Apr 2022 22:43:45 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F626DEA9
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:41:14 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KgFPl2pQPzgYdp;
+        Sat, 16 Apr 2022 09:06:03 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Apr 2022 09:06:04 +0800
+Subject: Re: [PATCH 4/3] mm, hugetlb, hwpoison: separate branch for free and
+ in-use hugepage
+To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     Yang Shi <shy828301@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        <naoya.horiguchi@nec.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>
+References: <20220408135323.1559401-1-naoya.horiguchi@linux.dev>
+ <20220408135323.1559401-2-naoya.horiguchi@linux.dev>
+ <5b665bcd-57f8-85ae-b0c4-c055875dbfff@oracle.com>
+ <20e677e5-01aa-f8c0-0ce1-bf33da58b7ec@huawei.com>
+ <20220415021233.GA3357039@hori.linux.bs1.fc.nec.co.jp>
+ <20220415041848.GA3034499@ik1-406-35019.vs.sakura.ne.jp>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <a26624a2-937d-435b-b866-97c1bedb4894@huawei.com>
+Date:   Sat, 16 Apr 2022 09:06:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220415041848.GA3034499@ik1-406-35019.vs.sakura.ne.jp>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/avpatel/linux.git riscv_ipi_imp_v6
-head:   e487c9bc7306965b9292bbf33f2803873c8469df
-commit: 4036f0abdcb31af010a56029747a02a7b21874d2 [22/25] RISC-V: Treat IPIs as normal Linux IRQs
-config: riscv-randconfig-s031-20220414 (https://download.01.org/0day-ci/archive/20220416/202204161023.uhBiZbYE-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/avpatel/linux/commit/4036f0abdcb31af010a56029747a02a7b21874d2
-        git remote add avpatel https://github.com/avpatel/linux.git
-        git fetch --no-tags avpatel riscv_ipi_imp_v6
-        git checkout 4036f0abdcb31af010a56029747a02a7b21874d2
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/ kernel/
+On 2022/4/15 12:18, Naoya Horiguchi wrote:
+> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+> 
+> We know that HPageFreed pages should have page refcount 0, so
+> get_page_unless_zero() always fails and returns 0.  So explicitly separate
+> the branch based on page state for minor optimization and better readability.
+> 
+> Suggested-by: Mike Kravetz <mike.kravetz@oracle.com>
+> Suggested-by: Miaohe Lin <linmiaohe@huawei.com>
+> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+> ---
+>  mm/hugetlb.c        | 4 +++-
+>  mm/memory-failure.c | 4 +++-
+>  2 files changed, 6 insertions(+), 2 deletions(-)
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks!
 
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
 
-sparse warnings: (new ones prefixed by >>)
->> arch/riscv/kernel/smp.c:166:50: sparse: sparse: incorrect type in argument 4 (different address spaces) @@     expected void [noderef] __percpu *percpu_dev_id @@     got int * @@
-   arch/riscv/kernel/smp.c:166:50: sparse:     expected void [noderef] __percpu *percpu_dev_id
-   arch/riscv/kernel/smp.c:166:50: sparse:     got int *
+> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+> index e38cbfdf3e61..3638f166e554 100644
+> --- a/mm/hugetlb.c
+> +++ b/mm/hugetlb.c
+> @@ -6786,7 +6786,9 @@ int get_hwpoison_huge_page(struct page *page, bool *hugetlb)
+>  	spin_lock_irq(&hugetlb_lock);
+>  	if (PageHeadHuge(page)) {
+>  		*hugetlb = true;
+> -		if (HPageFreed(page) || HPageMigratable(page))
+> +		if (HPageFreed(page))
+> +			ret = 0;
+> +		else if (HPageMigratable(page))
+>  			ret = get_page_unless_zero(page);
+>  		else
+>  			ret = -EBUSY;
+> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+> index 5e3ad640f5bb..661079a37f29 100644
+> --- a/mm/memory-failure.c
+> +++ b/mm/memory-failure.c
+> @@ -1517,7 +1517,9 @@ int __get_huge_page_for_hwpoison(unsigned long pfn, int flags)
+>  	if (flags & MF_COUNT_INCREASED) {
+>  		ret = 1;
+>  		count_increased = true;
+> -	} else if (HPageFreed(head) || HPageMigratable(head)) {
+> +	} else if (HPageFreed(head)) {
+> +		ret = 0;
+> +	} else if (HPageMigratable(head)) {
+>  		ret = get_page_unless_zero(head);
+>  		if (ret)
+>  			count_increased = true;
+> 
 
-vim +166 arch/riscv/kernel/smp.c
-
-   151	
-   152	void riscv_ipi_set_virq_range(int virq, int nr)
-   153	{
-   154		int i, err;
-   155	
-   156		if (WARN_ON(ipi_virq_base))
-   157			return;
-   158	
-   159		WARN_ON(nr < IPI_MAX);
-   160		nr_ipi = min(nr, IPI_MAX);
-   161		ipi_virq_base = virq;
-   162	
-   163		/* Request IPIs */
-   164		for (i = 0; i < nr_ipi; i++) {
-   165			err = request_percpu_irq(ipi_virq_base + i, handle_IPI,
- > 166						 "IPI", &ipi_virq_base);
-   167			WARN_ON(err);
-   168	
-   169			ipi_desc[i] = irq_to_desc(ipi_virq_base + i);
-   170			irq_set_status_flags(ipi_virq_base + i, IRQ_HIDDEN);
-   171		}
-   172	
-   173		/* Enabled IPIs for boot CPU immediately */
-   174		riscv_ipi_enable();
-   175	}
-   176	EXPORT_SYMBOL_GPL(riscv_ipi_set_virq_range);
-   177	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
