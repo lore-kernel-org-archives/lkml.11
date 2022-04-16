@@ -2,105 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE97AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 08:41:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D20E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 08:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230393AbiDPInq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 04:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44094 "EHLO
+        id S230397AbiDPIoO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 04:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiDPIno (ORCPT
+        with ESMTP id S230405AbiDPIoG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 04:43:44 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F409D0C0;
-        Sat, 16 Apr 2022 01:41:12 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id ks6so18957231ejb.1;
-        Sat, 16 Apr 2022 01:41:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=E99i9KfZnvDFyInCLoxSb8FAUQAIuI0Z0u1omhSERko=;
-        b=Qy774tUpKair7a4f/6Rx1rQWcKlFZ+TZAscac0Pu8BLdi4T/olgDPPRqV1maGru7P9
-         iEqKeAs4BayjYsDSfrSKYFDE2WHkJKw4YFhGbZiTFs1sWDZ88iRksXFPcq7PfD611YgM
-         AOjkpmXoIj7TfiLBMoLUcBIzcez4+zRcS9QudcSxe8LfxVQ3ja4FCKhXnKAECk1fvfow
-         2Su2YCZZ0yu6/xbopQndcPpFMcLaKrs+e/if+bFKbFh1Y9Md9a7w/9lRsCYIIauwIZ/L
-         cWu5z7zWzs3JNyjJl8d8280SF6lR5LkeCeWwGLJgfJt++KQ1CqzRs00YZN7D2H6N0SgA
-         XE4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E99i9KfZnvDFyInCLoxSb8FAUQAIuI0Z0u1omhSERko=;
-        b=Q+qYV6CUZa91h/Q168jOrZOKvlwlp7j8Z0oUdMVoEkHghYHjQ/a/Bb1tjrSMtoj1b5
-         64DVAIeBwnVKqnOdx0gsxCRjD2D3Q1FmQO97VIjHUQ3k9B7C8IYy1WhL7YWXGK8mdEy3
-         6mAlrG+tONCellHlDqsCSvAj/EsAz94A/B8O0wOydkOG4sWu1pzaKZw86fjIHmcZ0Bs8
-         NWspGjqMv91wC9PK6/fhPq7f0GymobjL5wXoofcMNucMwQNHdT5NemQ105fXkI18+KIf
-         kMm+0mmgWOAW1vTO1YfmImz2eqLH4TaAKCC+RPN4eWL+eX2XCG8EHB9JFObQqe2sAmJT
-         VWiw==
-X-Gm-Message-State: AOAM530ruV/C5p+QZ6BcEsWjKVetKYkp1hLGWz18MNI6JaqhTRe2oFJa
-        StqwMf9tETLlVlDWUyBd174uFs+JLWf/tOGMlRE=
-X-Google-Smtp-Source: ABdhPJx9bvIrfc/rPOMmJL6ENIXjQD1s6MME5iCACgZQ40zGyEKBznjW8WNpUQtwGQr41ovsEG6z/Nu2hqaxuoMVUis=
-X-Received: by 2002:a17:907:628e:b0:6d9:c6fa:6168 with SMTP id
- nd14-20020a170907628e00b006d9c6fa6168mr2058302ejc.132.1650098471243; Sat, 16
- Apr 2022 01:41:11 -0700 (PDT)
+        Sat, 16 Apr 2022 04:44:06 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3A649D0E6
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 01:41:33 -0700 (PDT)
+Received: from kwepemi500005.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KgRVX024wzfYlv;
+        Sat, 16 Apr 2022 16:40:51 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ kwepemi500005.china.huawei.com (7.221.188.179) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Apr 2022 16:41:31 +0800
+Received: from localhost.localdomain (10.67.164.66) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Apr 2022 16:41:31 +0800
+From:   Qi Liu <liuqi115@huawei.com>
+To:     <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>
+CC:     <coresight@lists.linaro.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linuxarm@huawei.com>,
+        <Jonathan_Lucas@mentor.com>
+Subject: [PATCH v5 0/2] Add support for UltraSoc System Memory Buffer
+Date:   Sat, 16 Apr 2022 16:39:51 +0800
+Message-ID: <20220416083953.52610-1-liuqi115@huawei.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-References: <20220415130005.85879-1-andrea.merello@gmail.com>
-In-Reply-To: <20220415130005.85879-1-andrea.merello@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sat, 16 Apr 2022 11:40:35 +0300
-Message-ID: <CAHp75VfmJV4ON7r+cp+CrKrOgU99v=q0ZmrCV4jCC=Aj0q=pDw@mail.gmail.com>
-Subject: Re: [v4 00/14] Add support for Bosch BNO055 IMU
-To:     Andrea Merello <andrea.merello@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        jmondi <jacopo@jmondi.org>,
-        Andrea Merello <andrea.merello@iit.it>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 4:00 PM Andrea Merello <andrea.merello@gmail.com> wrote:
->
-> From: Andrea Merello <andrea.merello@iit.it>
->
-> This series (tries to) add support for Bosch BNO055 IMU to Linux IIO
-> subsystem. It is made up several patches:
->
->   1/13 to 7/12: add some IIO modifiers, and their documentation, to the IIO
->                 core layer, in order to being able to expose the linear
->                 acceleration and Euler angles among standard attributes.
->                 Also update the IIO event monitor tool
->
->   7/13: fix binary attributes didn't work with IIO
->
->   8/13 to 11/13: add the core IIO BNO055 driver and documentation for sysfs
->                  attributes and DT bindings
->
->   12/13: adds serdev BNO055 driver to actually use the IMU via serial line
->
->   13/13: adds I2C BNO055 driver to actually use the IMU via I2C wiring
->
->   14/13: add a documentation file that describe the bno055 driver and
->          specifically the calibration
+Add support for UltraSoc System Memory Buffer.
 
-Thanks for a new version.
-So far I have noticed the issues with more than one patch:
-1) missed commit message;
-2) non-imperative mode of speaking in the commit messages.
+Change since v4:
+- Add a simple document of SMB driver according to Suzuki's comment.
+- Address the comments from Suzuki.
+- https://lore.kernel.org/linux-arm-kernel/20220128061755.31909-1-liuqi115@huawei.com/
 
-Please, take your time to refresh the Submitting Patches documentation
-and fix your series accordingly.
+Change since v3:
+- Modify the file header according to community specifications.
+- Address the comments from Mathieu.
+- Link:https://lore.kernel.org/linux-arm-kernel/20211118110016.40398-1-liuqi115@huawei.com/
+Change since v2:
+- Move ultrasoc driver to drivers/hwtracing/coresight.
+- Link:https://lists.linaro.org/pipermail/coresight/2021-November/007310.html
+
+Change since v1:
+- Drop the document of UltraSoc according to Mathieu's comment.
+- Add comments to explain some private hardware settings.
+- Address the comments from Mathieu.
+- Link: https://lists.linaro.org/pipermail/coresight/2021-August/006842.html
+
+Change since RFC:
+- Move driver to drivers/hwtracing/coresight/ultrasoc.
+- Remove ultrasoc-axi-com.c, as AXI-COM doesn't need to be configured in
+  basic tracing function.
+- Remove ultrasoc.c as SMB does not need to register with the ultrasoc core.
+- Address the comments from Mathieu and Suzuki.
+- Link: https://lists.linaro.org/pipermail/coresight/2021-June/006535.html
+
+Qi Liu (2):
+  drivers/coresight: Add UltraSoc System Memory Buffer driver
+  Documentation: Add document for UltraSoc SMB drivers
+
+ .../trace/coresight/ultrasoc-smb.rst          |  79 +++
+ drivers/hwtracing/coresight/Kconfig           |  10 +
+ drivers/hwtracing/coresight/Makefile          |   1 +
+ drivers/hwtracing/coresight/ultrasoc-smb.c    | 643 ++++++++++++++++++
+ drivers/hwtracing/coresight/ultrasoc-smb.h    | 106 +++
+ 5 files changed, 839 insertions(+)
+ create mode 100644 Documentation/trace/coresight/ultrasoc-smb.rst
+ create mode 100644 drivers/hwtracing/coresight/ultrasoc-smb.c
+ create mode 100644 drivers/hwtracing/coresight/ultrasoc-smb.h
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.24.0
+
