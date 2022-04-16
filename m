@@ -2,93 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F309BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 10:50:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 693F7C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 10:51:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231517AbiDPKxV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 06:53:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45360 "EHLO
+        id S231531AbiDPKyT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 06:54:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231504AbiDPKxU (ORCPT
+        with ESMTP id S231504AbiDPKyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 06:53:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37EB2DA9D;
-        Sat, 16 Apr 2022 03:50:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F24660EAE;
-        Sat, 16 Apr 2022 10:50:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DDB2C385A1;
-        Sat, 16 Apr 2022 10:50:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650106247;
-        bh=RkB4upXvMfxDGFkSumlo2MiPEu9CpWUwg3tw+DZmoGM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=b3hXolKKzF+4UV49YK/QRUPRjCXqtbpPxgpJ2zDGQ3Ho/DEAciItTNbrv18gCLPLC
-         cv4SI9lk/df6HiVqJ4Tw9FBlItBWr8Rcf+hqotAR4De+izxzfcEA5uO1TlB/rzpe0c
-         Ygd28Z3uWZqNeDlEqkhr1LVAvgAQaXgnDwpjkRqvTX9AwMgNZQc/3yRqtj05Mnjggi
-         1MRgJ/eTqM97UXm/egHMXINhgeDiFfdLAdZIJ+uwqD6XXLXbiK3yW+klCekD14i2fW
-         txqhHnzN7dycEKE65G8adbfarjHE9NE+DvnfO9g3pmYrRYgqw3aBocnicQ3ltJNgzU
-         G7+H555PzeCoA==
-Date:   Sat, 16 Apr 2022 11:58:46 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andreas Klinger <ak@it-klinger.de>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/1] iio: proximity: ping: Replace OF specific code
- by device_get_match_data()
-Message-ID: <20220416115846.4f6be506@jic23-huawei>
-In-Reply-To: <20220413183421.20427-1-andriy.shevchenko@linux.intel.com>
-References: <20220413183421.20427-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 16 Apr 2022 06:54:17 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C093A5CF;
+        Sat, 16 Apr 2022 03:51:45 -0700 (PDT)
+Received: from kwepemi100008.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KgVJV3RRMzCr5w;
+        Sat, 16 Apr 2022 18:47:22 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100008.china.huawei.com (7.221.188.57) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Apr 2022 18:51:43 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Apr 2022 18:51:43 +0800
+From:   Weili Qian <qianweili@huawei.com>
+To:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <wangzhou1@hisilicon.com>, <liulongfang@huawei.com>,
+        Weili Qian <qianweili@huawei.com>
+Subject: [PATCH 0/4] crypto: hisilicon/qm - misc fixes
+Date:   Sat, 16 Apr 2022 18:45:55 +0800
+Message-ID: <20220416104559.10826-1-qianweili@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Apr 2022 21:34:21 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+This patchset removes some unused functions and sets the unused outside
+qm.c functons to static.
 
-> Instead of calling the OF specific API, use device_get_match_data().
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Applied.
+Weili Qian (4):
+  crypto: hisilicon/qm - remove unused function declaration
+  crypto: hisilicon/qm - set function with static
+  crypto: hisilicon/qm - replace hisi_qm_release_qp() with
+    hisi_qm_free_qps()
+  crypto: hisilicon/qm - remove hisi_qm_get_free_qp_num()
 
-Thanks,
+ drivers/crypto/hisilicon/qm.c             | 37 ++++++++---------------
+ drivers/crypto/hisilicon/zip/zip_crypto.c |  2 +-
+ include/linux/hisi_acc_qm.h               |  5 ---
+ 3 files changed, 13 insertions(+), 31 deletions(-)
 
-Jonathan
-
-> ---
->  drivers/iio/proximity/ping.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/proximity/ping.c b/drivers/iio/proximity/ping.c
-> index 24a97d41e115..d56e037378de 100644
-> --- a/drivers/iio/proximity/ping.c
-> +++ b/drivers/iio/proximity/ping.c
-> @@ -29,9 +29,8 @@
->  #include <linux/err.h>
->  #include <linux/gpio/consumer.h>
->  #include <linux/kernel.h>
-> +#include <linux/mod_devicetable.h>
->  #include <linux/module.h>
-> -#include <linux/of.h>
-> -#include <linux/of_device.h>
->  #include <linux/platform_device.h>
->  #include <linux/property.h>
->  #include <linux/sched.h>
-> @@ -288,7 +287,7 @@ static int ping_probe(struct platform_device *pdev)
->  
->  	data = iio_priv(indio_dev);
->  	data->dev = dev;
-> -	data->cfg = of_device_get_match_data(dev);
-> +	data->cfg = device_get_match_data(dev);
->  
->  	mutex_init(&data->lock);
->  	init_completion(&data->rising);
+-- 
+2.33.0
 
