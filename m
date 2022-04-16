@@ -2,153 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 108FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 08:01:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87D07C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 08:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230281AbiDPID4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 04:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42398 "EHLO
+        id S230242AbiDPIQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 04:16:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230305AbiDPIDs (ORCPT
+        with ESMTP id S229436AbiDPIQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 04:03:48 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A1B100E29;
-        Sat, 16 Apr 2022 01:01:15 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id k5so17041743lfg.9;
-        Sat, 16 Apr 2022 01:01:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MXlAdpQLGQGUUo4/nFrsdLnsJFw/wYKXZIo/9dWMKPs=;
-        b=GlWDVh4mGOslT9x+9Cf/M39/Uru7iSzMMGf0MsIHsJOECxtBIQEKSiOhQ6d5pbdf4j
-         0Q4ZSqwrihtygT0jrukCM2I5zVYNwWIr+kQ9Vt/kp3uXZwNjlTgFSu1injKGGeDyIW7w
-         l1qnOjTfmeatmweRiq24gZCi7q6JE9tLgmNi0SvW/Up+I0yjZLEIR58qIBBomdv5S+On
-         o6HQSqmfwHSo2KYKzD3onll3iGoNhgFDBt+GBdRV0h5xCFZ7DjwqXq/3/TE9n4v7T1+2
-         1jE2ZhXcJvn5NewsRez8HY/igateUo1vk+AZ087w895RzKsn83MZsPgSNi2LQnx9IZo6
-         xO2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MXlAdpQLGQGUUo4/nFrsdLnsJFw/wYKXZIo/9dWMKPs=;
-        b=3AjgWXLADfJDv+on13NN3zfZ47SZfUsp17pNBe7w//lEtWWxzNUgzz0VddMAXpb0HE
-         T0EK+G3fhpD9yZ+xYN8dOK1JWd3PubTEmmp0L3LypROMNIzFpck8EX4M8+K/fDxrGP6t
-         K1xJGRcHocCafbGOBNNjWS/fE5KFELlr1KqgozvnwQSkbpQf92G/FB5PsTATTLvYJpo5
-         /afb3mHAvEFGhAQW2I2gLEeR9m3Cf93yXZ2VRxSJNPuwCVmbybfYctNZPB44ukVfJOFo
-         ZLJQ+/WRQHsukEZ7nzMevMFXsuY8OhpYfxNE1pwq3Gls16C5tzScV9Bp9gjHtt0RQ/wk
-         sYyQ==
-X-Gm-Message-State: AOAM533FHeMdhLJw31EoD4cX2ivBL1srpuBbDxO8YuM2EJTLggq1LB2J
-        5Pq7JXUFwCBbNcbtKPSpNdgt99RgsR6fdA==
-X-Google-Smtp-Source: ABdhPJz6CVXoHDhAV9Gyik5pPZg9sjhX0loL8jq9bIV8r8fjCmT8MZhcpEDiC1lO6R2UIgUS5k4BJQ==
-X-Received: by 2002:a05:6512:3c87:b0:46c:fde0:5d2e with SMTP id h7-20020a0565123c8700b0046cfde05d2emr1683544lfv.525.1650096073460;
-        Sat, 16 Apr 2022 01:01:13 -0700 (PDT)
-Received: from mobilestation (ip1.ibrae.ac.ru. [91.238.191.1])
-        by smtp.gmail.com with ESMTPSA id t25-20020a19dc19000000b0044a16b068c7sm593375lfg.117.2022.04.16.01.01.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Apr 2022 01:01:11 -0700 (PDT)
-Date:   Sat, 16 Apr 2022 11:01:09 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Joe Perches <joe@perches.com>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/16] PCI: dwc: Add more verbose link-up message
-Message-ID: <20220416080109.pqnuojor6lewltr3@mobilestation>
-References: <20220324013734.18234-1-Sergey.Semin@baikalelectronics.ru>
- <20220324013734.18234-4-Sergey.Semin@baikalelectronics.ru>
- <8569d431ce4e1d64ae271f0498c7a0395d2c5c7e.camel@perches.com>
+        Sat, 16 Apr 2022 04:16:22 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E533D49F2F
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 01:13:50 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KgQvH1KjMzXxvH;
+        Sat, 16 Apr 2022 16:13:47 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 16 Apr
+ 2022 16:13:48 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>
+CC:     <minchan@kernel.org>, <hannes@cmpxchg.org>, <mhocko@suse.com>,
+        <hughd@google.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
+Subject: [PATCH] mm/madvise: fix potential pte_unmap_unlock pte error
+Date:   Sat, 16 Apr 2022 16:14:16 +0800
+Message-ID: <20220416081416.23304-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8569d431ce4e1d64ae271f0498c7a0395d2c5c7e.camel@perches.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 04:31:53PM -0700, Joe Perches wrote:
-> On Thu, 2022-03-24 at 04:37 +0300, Serge Semin wrote:
-> > Printing just "link up" isn't that much informative especially when it
-> > comes to working with the PCI Express bus. Even if the link is up, due to
-> > multiple reasons the bus performance can degrade to slower speeds or to
-> > narrower width than both Root Port and its partner is capable of. In that
-> > case it would be handy to know the link specifications as early as
-> > possible. So let's add a more verbose message to the busy-wait link-state
-> > method, which will contain the link speed generation and the PCIe bus
-> > width in case if the link up state is discovered. Otherwise an error will
-> > be printed to the system log.
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > ---
-> >  drivers/pci/controller/dwc/pcie-designware.c | 22 +++++++++++++++-----
-> >  1 file changed, 17 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-> []
-> > @@ -528,14 +528,26 @@ int dw_pcie_wait_for_link(struct dw_pcie *pci)
-> >  
-> >  	/* Check if the link is up or not */
-> >  	for (retries = 0; retries < LINK_WAIT_MAX_RETRIES; retries++) {
-> > -		if (dw_pcie_link_up(pci)) {
-> > -			dev_info(pci->dev, "Link up\n");
-> > -			return 0;
-> > -		}
-> > +		if (dw_pcie_link_up(pci))
-> > +			break;
-> > +
-> >  		usleep_range(LINK_WAIT_USLEEP_MIN, LINK_WAIT_USLEEP_MAX);
-> >  	}
-> >  
-> > -	dev_info(pci->dev, "Phy link never came up\n");
-> > +	if (retries < LINK_WAIT_MAX_RETRIES) {
-> > +		u32 offset, val;
-> > +
-> > +		offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
-> > +		val = dw_pcie_readw_dbi(pci, offset + PCI_EXP_LNKSTA);
-> > +
-> > +		dev_info(pci->dev, "PCIe Gen.%u x%u link up\n",
-> > +			 FIELD_GET(PCI_EXP_LNKSTA_CLS, val),
-> > +			 FIELD_GET(PCI_EXP_LNKSTA_NLW, val));
-> > +
-> > +		return 0;
-> > +	}
-> > +
-> > +	dev_err(pci->dev, "Phy link never came up\n");
-> >  
-> >  	return -ETIMEDOUT;
-> >  }
-> 
+We can't assume pte_offset_map_lock will return same orig_pte value. So
+it's necessary to reacquire the orig_pte or pte_unmap_unlock will unmap
+the stale pte.
 
-> IMO: it's generally bette to test the error condition and unindent
-> the typical return.
+Fixes: 9c276cc65a58 ("mm: introduce MADV_COLD")
+Fixes: 854e9ed09ded ("mm: support madvise(MADV_FREE)")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ mm/madvise.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Absolutely right. Thanks for noticing that. No idea why I haven't done
-the way you said 'cause it seems neater, more maintainable than what I
-suggested here.
+diff --git a/mm/madvise.c b/mm/madvise.c
+index ec03a76244b7..4d6592488b51 100644
+--- a/mm/madvise.c
++++ b/mm/madvise.c
+@@ -437,12 +437,12 @@ static int madvise_cold_or_pageout_pte_range(pmd_t *pmd,
+ 			if (split_huge_page(page)) {
+ 				unlock_page(page);
+ 				put_page(page);
+-				pte_offset_map_lock(mm, pmd, addr, &ptl);
++				orig_pte = pte_offset_map_lock(mm, pmd, addr, &ptl);
+ 				break;
+ 			}
+ 			unlock_page(page);
+ 			put_page(page);
+-			pte = pte_offset_map_lock(mm, pmd, addr, &ptl);
++			orig_pte = pte = pte_offset_map_lock(mm, pmd, addr, &ptl);
+ 			pte--;
+ 			addr -= PAGE_SIZE;
+ 			continue;
+@@ -653,12 +653,12 @@ static int madvise_free_pte_range(pmd_t *pmd, unsigned long addr,
+ 			if (split_huge_page(page)) {
+ 				unlock_page(page);
+ 				put_page(page);
+-				pte_offset_map_lock(mm, pmd, addr, &ptl);
++				orig_pte = pte_offset_map_lock(mm, pmd, addr, &ptl);
+ 				goto out;
+ 			}
+ 			unlock_page(page);
+ 			put_page(page);
+-			pte = pte_offset_map_lock(mm, pmd, addr, &ptl);
++			orig_pte = pte = pte_offset_map_lock(mm, pmd, addr, &ptl);
+ 			pte--;
+ 			addr -= PAGE_SIZE;
+ 			continue;
+-- 
+2.23.0
 
--Sergey
-
-> 
-> 	if (retries >= LINK_WAIT_MAX_RETRIES) {
-> 		dev_err(pci->dev, "Phy link never came up\n");
-> 		return -ETIMEDOUT;
-> 	}
-> 
-> 	offset = ...
-> 	val = ...
-> 	dev_info(...)
-> 
-> 	return 0;
-> }
-> 
