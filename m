@@ -2,174 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09867C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:02:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E446C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229508AbiDPCFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60356 "EHLO
+        id S229543AbiDPCFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiDPCEi (ORCPT
+        with ESMTP id S229477AbiDPCEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:04:38 -0400
-Received: from mail-oa1-x42.google.com (mail-oa1-x42.google.com [IPv6:2001:4860:4864:20::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E871342FE;
-        Fri, 15 Apr 2022 18:54:02 -0700 (PDT)
-Received: by mail-oa1-x42.google.com with SMTP id 586e51a60fabf-e2a00f2cc8so9417551fac.4;
-        Fri, 15 Apr 2022 18:54:02 -0700 (PDT)
+        Fri, 15 Apr 2022 22:04:42 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711DD137B27;
+        Fri, 15 Apr 2022 18:54:08 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id u18so11727039eda.3;
+        Fri, 15 Apr 2022 18:54:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=5Les2UL23YeIevDhG3Z2Qgn1FSs69ezvIqCdvr/g4ho=;
-        b=X3pmP/83JNw068wUc0Dwc/eB1hfDmcO0c7h4P4CWTRPTAL9Lwi/6sNoDY75uG413G4
-         u2Ac+RYGI4qc8tjzxtrBNe+ZmwHZ3JvQSl68DtyM0QcLoMW8cF4XbiFCBc/b2jtXxAvg
-         czslVbtiqNZg3f+gAuSFakzhJRLu0q+WjfDr+or82OnN2qakZxO9vmcgaaiaxH6p7a1i
-         EetP7YF73mPGYAEFAOB26josOoVQuyXIuM9H93FI0sZigrGMYUwfaNeRxspjwbR4Xo1s
-         njR/j1fNgzalQdZZkJN+QoozaLKI4rR8G47kaRFhQv+kuQuvdbzN7mN9tqnuOwrkMlP6
-         QuYg==
+        bh=2Bf9ok3qqr2tkNhXNTndNo5u+WE3bYamPKOf2o8UuHw=;
+        b=XjCVFe5nIUhZlq4sKzILLAUdIcxaTYQDznCGjtGrbpXRwwYQ3M8wUeCXPgk46XJoD3
+         7XUMZmoK8UrtKecT8Y4P1PpUGnksBn1GcIkLrYuB5duFNp4tu+okUQL5HFRmNCfKaXgi
+         AROzOsRZwhOvzwFhvzB5+VEakpDbJgKQpIyqZBU/mdmOVForkW8DJxB77ZwkUU6mLgTV
+         xNMz+I9FdONbz1R7D9cLrbg1hjv1pyfrumrlSK/pq9FtBDXN0GuLtcFYw5uhO4X8xWWL
+         baktCX0XpEarzZNDA0oFU7Z6Y3n6t38iYUYym5XOLmYW1oRVzJN8q5QFZI9sHQ+FGdXm
+         1cvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=5Les2UL23YeIevDhG3Z2Qgn1FSs69ezvIqCdvr/g4ho=;
-        b=fFUU9dlTfPhgFYhiZCK3ZF7ATbDAf+tEwiICQRHdeADouXf5iz28sTCliD5nPMK94m
-         e83Qh01IITk5plnHTQuMpPxSCfYrY4ovn7IG0yDhC445RuR/iegtRLVMGD4N3QiwQ6JX
-         JUyHYriejEfmdhbP6jji2K8kSJCT7iidS5BEg4SjfATKiuTcxZSI+hmdw1muJgdA7rhY
-         CeZOTCMeqEy5UFFWtuAjdbOL6kKJaxa1jDS5Ly3iI0xa/Oz6jP51tX/32AgXX1bsJeJj
-         OtfldqkwivQrd+CEuQs/MidO/ni+xdtVL/aBIdDBZHKrM78nssm4sfrnCTRdcMlLEUYC
-         NxdQ==
-X-Gm-Message-State: AOAM532vJ0hDTC7XEmRkID+mZAuEy53sxcA5egW6BILGvYGhB1vP4/a4
-        ryMXsU7P6SOkr+4xqH14bDaAuP2M/X+c/A==
-X-Google-Smtp-Source: ABdhPJykxiXYmn1N3ukz/dW55wNY1Lgeg6tCAhkCY9X2N73Pqr000lp0esog3uKXrWyO9G0bDcFVRw==
-X-Received: by 2002:a17:90b:164f:b0:1c7:8d27:91fc with SMTP id il15-20020a17090b164f00b001c78d2791fcmr6869325pjb.228.1650069643984;
-        Fri, 15 Apr 2022 17:40:43 -0700 (PDT)
-Received: from localhost.localdomain (c-73-241-94-58.hsd1.ca.comcast.net. [73.241.94.58])
-        by smtp.gmail.com with ESMTPSA id b10-20020a056a00114a00b004f784ba5e6asm4222482pfm.17.2022.04.15.17.40.41
+        bh=2Bf9ok3qqr2tkNhXNTndNo5u+WE3bYamPKOf2o8UuHw=;
+        b=FHS/PIQDOKCgzj3NyhOVkTZB+gFmcUJLhMBheywsFt5npsFNzGrhlQP/lVeLcdqnfv
+         WEG1Zy3lNKj5owIFU/ze06AfUeP9sEk0VbiDOGx4AZ87DIkmAHW8PxwghKr6KxEMbprC
+         7fvbcQulxtk6uN/u5APMBBHPLxoAAQB+fa+mNnii0P1hKrww0no1pERRum1ZDH4ndTpG
+         eTE21D055VFpIPuHOeVi5WvvMOBABE/xdad0URsb5cflszbxkeDiWS6lv0JVW8Qz86t2
+         57Qty+SQHLde7Fi7mgG7wcqYoJWNRfxYM37q0e8G5ReZPzKQtNaYLZdTgAXM06jDNpkQ
+         +SBw==
+X-Gm-Message-State: AOAM531V2QHH+spQiyqjHhmfORBHhn94ihRcoARS8gGz1gM500HnJhwR
+        ElQR2sObC8MNKJnykihLA3Ept/zwjptvfw==
+X-Google-Smtp-Source: ABdhPJzVIQW3hTUxtbFojN9M9UGqtaIuMj0zU3SmMQ6W/p3T3CkqpwCpZtc9yxr9eRL4LR0bx7nWAA==
+X-Received: by 2002:a5d:48d0:0:b0:207:a861:dcc9 with SMTP id p16-20020a5d48d0000000b00207a861dcc9mr1022300wrs.490.1650071963568;
+        Fri, 15 Apr 2022 18:19:23 -0700 (PDT)
+Received: from alaa-emad ([197.57.90.163])
+        by smtp.gmail.com with ESMTPSA id x3-20020a5d6b43000000b001e317fb86ecsm4998374wrw.57.2022.04.15.18.19.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 17:40:43 -0700 (PDT)
-From:   Ryan Lee <ryan.lee.analog@gmail.com>
-To:     lgirdwood@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
-        krzk+dt@kernel.org, perex@perex.cz, tiwai@suse.com,
-        srinivas.kandagatla@linaro.org, ckeepax@opensource.cirrus.com,
-        tanureal@opensource.cirrus.com, cy_huang@richtek.com,
-        pierre-louis.bossart@linux.intel.com,
-        drhodes@opensource.cirrus.com, pbrobinson@gmail.com,
-        hdegoede@redhat.com, lukas.bulwahn@gmail.com, stephan@gerhold.net,
-        arnd@arndb.de, ryan.lee.analog@gmail.com,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ryans.lee@analog.com
-Subject: [PATCH 1/2] ASoC: dt-bindings: max98396: add amplifier driver
-Date:   Fri, 15 Apr 2022 17:40:23 -0700
-Message-Id: <20220416004024.210418-1-ryan.lee.analog@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 15 Apr 2022 18:19:23 -0700 (PDT)
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+To:     outreachy@lists.linux.dev
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ira.weiny@intel.com,
+        eng.alaamohamedsoliman.am@gmail.com
+Subject: [PATCH v2] intel: igb: igb_ethtool.c: Convert kmap() to kmap_local_page()
+Date:   Sat, 16 Apr 2022 03:19:20 +0200
+Message-Id: <20220416011920.5380-1-eng.alaamohamedsoliman.am@gmail.com>
+X-Mailer: git-send-email 2.35.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ryan Lee <ryans.lee@analog.com>
+The use of kmap() is being deprecated in favor of kmap_local_page()
+where it is feasible.
 
-This patch adds dt-bindings information for Analog Devices MAX98396
-and MAX98397 Smart Amplifier.
+With kmap_local_page(), the mapping is per thread, CPU local and not
+globally visible.
 
-Signed-off-by: Ryan Lee <ryans.lee@analog.com>
+Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
 ---
- .../bindings/sound/adi,max98396.yaml          | 84 +++++++++++++++++++
- 1 file changed, 84 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/sound/adi,max98396.yaml
+changes in V2:
+	fix kunmap_local path value to be address
+---
+ drivers/net/ethernet/intel/igb/igb_ethtool.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/sound/adi,max98396.yaml b/Documentation/devicetree/bindings/sound/adi,max98396.yaml
-new file mode 100644
-index 000000000000..4aee32f43ad1
---- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/adi,max98396.yaml
-@@ -0,0 +1,84 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/adi,max98396.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices MAX98396 Speaker Amplifier Device Tree Bindings
-+
-+maintainers:
-+  - Ryan Lee <ryans.lee@analog.com>
-+
-+description:
-+  The MAX98396 is a mono Class-DG speaker amplifier with I/V sense.
-+  The device provides a PCM interface for audio data and a standard
-+  I2C interface for control data communication.
-+  The MAX98397 is a variant of MAX98396 with wide input supply range.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,max98396
-+      - adi,max98397
-+  reg:
-+    maxItems: 1
-+    description: I2C address of the device.
-+
-+  adi,vmon-slot-no:
-+    description: slot number of the voltage sense monitor
-+    minimum: 0
-+    maximum: 15
-+    default: 0
-+
-+  adi,imon-slot-no:
-+    description: slot number of the current sense monitor
-+    minimum: 0
-+    maximum: 15
-+    default: 0
-+
-+  adi,spkfb-slot-no:
-+    description: slot number of speaker DSP monitor
-+    minimum: 0
-+    maximum: 15
-+    default: 0
-+
-+  adi,interleave-mode:
-+    type: boolean
-+    description: For cases where a single combined channel for the I/V sense data is not sufficient,
-+                the device can also be configured to share a single data output channel on alternating frames.
-+                In this configuration, the current and voltage data will be frame interleaved on a single output channel.
-+    default: false
-+
-+  reset-gpios:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        max98396: amplifier@39 {
-+            compatible = "adi,max98396";
-+            reg = <0x39>;
-+            adi,vmon-slot-no = <0>;
-+            adi,imon-slot-no = <1>;
-+            adi,interleave-mode = <0>;
-+            reset-gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
-+        };
-+        max98397: amplifier@3c {
-+            compatible = "adi,max98397";
-+            reg = <0x3c>;
-+            adi,vmon-slot-no = <0>;
-+            adi,imon-slot-no = <1>;
-+            adi,interleave-mode = <0>;
-+            reset-gpios = <&gpio 4 GPIO_ACTIVE_LOW>;
-+        };
-+    };
-+
+diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+index 2a5782063f4c..c14fc871dd41 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
++++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+@@ -1798,14 +1798,14 @@ static int igb_check_lbtest_frame(struct igb_rx_buffer *rx_buffer,
+ 
+ 	frame_size >>= 1;
+ 
+-	data = kmap(rx_buffer->page);
++	data = kmap_local_page(rx_buffer->page);
+ 
+ 	if (data[3] != 0xFF ||
+ 	    data[frame_size + 10] != 0xBE ||
+ 	    data[frame_size + 12] != 0xAF)
+ 		match = false;
+ 
+-	kunmap(rx_buffer->page);
++	kunmap_local(data);
+ 
+ 	return match;
+ }
 -- 
-2.25.1
+2.35.2
 
