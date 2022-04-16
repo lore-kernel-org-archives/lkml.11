@@ -2,66 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C100C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D67BEC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229885AbiDPC3y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:29:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54688 "EHLO
+        id S229938AbiDPCcP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229865AbiDPC3w (ORCPT
+        with ESMTP id S229876AbiDPCcO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:29:52 -0400
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4004013FBB
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:27:22 -0700 (PDT)
-Received: by mail-pj1-f72.google.com with SMTP id oo16-20020a17090b1c9000b001c6d21e8c04so3386285pjb.4
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:27:22 -0700 (PDT)
+        Fri, 15 Apr 2022 22:32:14 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE7E5E16E;
+        Fri, 15 Apr 2022 19:29:41 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id hu11so7501669qvb.7;
+        Fri, 15 Apr 2022 19:29:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UWFJae0wB3i/+AjUHp0kgcY6gHCBjSvEexFbtOZL7cw=;
+        b=N1gzaNMpjSVHF43xt8VTC6Pq6l2GGjFsGQ2QmCg0hWKpuUjwH6vK2ITiQVZ/tbemQ6
+         qTh57IrnV2xB7nCCB1+4ZkXhgIjGuXRLEAc7THqwNOEjvZGrbASW0kHxuNjZqxNE1dys
+         9BJc/J77Ux1wsq0Y6ot5Ue0Nhymb+lTik1oXUfm6SRUKGu9FvUny3MNn5TXgmQbLlgQw
+         cUHoYnw/bOS0YKjN9PTgYjtVl1DedARYXGIVXk0OYIZGJm4EIw2LP3n60vQaBcQJodmD
+         FoOjiZdxyr/vyroCOZRG8JtnGDIKfP44EVw/uKWZXBA+EPPv9krPQ5Jq4nggSsYucc4N
+         +dQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=8WNW6xnn5WEdwMXXGl1X4Ei9BJ1HBZW0NfGnSnzGVrg=;
-        b=btbJ7ghzw/3XQGMvSNPtPHfSHpN5M9Pd6qCnpe1Fs8MmR0wG4uiouTRuhXvSlU9jPR
-         DrZbxQaCeLjIQNzAGdiMizOTH25T9L+bZ9ZXEEIMBcfAKUD1dG74sPGTbsuOioGU/397
-         gZ8SxvnTV8WSPAWBqwr8Ggp8+UyPlB++ahQ4lGryMVn8x4NQiATC4sG8pGf2s/viCPuw
-         PDM5iq1iDlS8ZssJo2MXcGmmHD6rXylRUHSyTEi/f7UEvboPbmb9wEoFroJqLQRl4tEJ
-         srcL5xj5ip2trA3XRReTRwOm5BhhT5gY7duGcxmJjlOxaeGzrlgROo+/OQoOQv7AuMwx
-         xrYA==
-X-Gm-Message-State: AOAM533L8bAbGxRlNJpxXLmLN82t/Mv75uwmh7UDRHTyof5Eg/H1C3yg
-        bAHQ9VBooZqY7Ubb0v5U/AjZs7nd86wuxQDQtabwHxrGzRFW
-X-Google-Smtp-Source: ABdhPJxU8xVrbxVLJm6ZtxISjYbhf8cF/m4bWgxr8XQeEFHMGolZo6xy3PrzbfX8OsTl4ZoQYrTmnoRjpkblAe5GIYJk2iCrNI6N
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=UWFJae0wB3i/+AjUHp0kgcY6gHCBjSvEexFbtOZL7cw=;
+        b=qpGN5Z4ivIf6dAdpS80CxL4/Ke8aMJySlD8RxhxnvecrUngPALwpfMU6UcPe4uevuf
+         aNolPcTv8uF1yw7W6O6yPQ03STZYb/tP3MsYy5ReOCfELJoJULo1NRV9xsJ+JcPIqraF
+         SJr4dcfoiNPQyymioQf0Qvm2z3n/MvF1UhPx0vyyNy4PPoytSc2DKpN8fJ8M1ZTnoZpP
+         PRCJGWzT9vQFkNLFQOcEL00fXvJaOFifBKJzphrZPmmQuep0UH3kAD5VlNy0cRRevqvI
+         vW+18Zj5770NNSIeSdVniA8VXvWD5gZiv5vYek06YkDzGxF+JrGYfWTrgO+4+gj1qG2u
+         t7WQ==
+X-Gm-Message-State: AOAM531MJemXTDIiAqr/Z4TM5mvC/d8XwnZVGOJPCw/VyJxSyatztETJ
+        JTUGd1mbW0r6YMhymuCSizMGuPO2lRA=
+X-Google-Smtp-Source: ABdhPJy7+O0d1TAWEptQEO1FaQlgJslFZTjGjF/ZuzHuNoQrVP6vRz/HM02MSWZFO67NeYN6B+T6Aw==
+X-Received: by 2002:a05:6a00:14d2:b0:50a:48f0:881a with SMTP id w18-20020a056a0014d200b0050a48f0881amr1390703pfu.36.1650069653526;
+        Fri, 15 Apr 2022 17:40:53 -0700 (PDT)
+Received: from balhae.roam.corp.google.com ([2607:fb90:461:36d2:dba1:7530:2cda:19b1])
+        by smtp.gmail.com with ESMTPSA id j9-20020a056a00130900b004f73df40914sm3913537pfu.82.2022.04.15.17.40.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 17:40:52 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
+        Michael Petlan <mpetlan@redhat.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>,
+        Song Liu <songliubraving@fb.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org
+Subject: [PATCH 0/3] perf tools: Tidy up symbol end fixup (v3)
+Date:   Fri, 15 Apr 2022 17:40:45 -0700
+Message-Id: <20220416004048.1514900-1-namhyung@kernel.org>
+X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
 MIME-Version: 1.0
-X-Received: by 2002:a5e:c00f:0:b0:64c:7199:468e with SMTP id
- u15-20020a5ec00f000000b0064c7199468emr521514iol.161.1650069971675; Fri, 15
- Apr 2022 17:46:11 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 17:46:11 -0700
-In-Reply-To: <20220415234011.1489-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000842d0b05dcbadae4@google.com>
-Subject: Re: [syzbot] possible deadlock in blkcg_deactivate_policy
-From:   syzbot <syzbot+b9e4c31d0a1efb34cb03@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello,
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+This work is a follow-up of Ian's previous one at
+  https://lore.kernel.org/all/20220412154817.2728324-1-irogers@google.com/
 
-Reported-and-tested-by: syzbot+b9e4c31d0a1efb34cb03@syzkaller.appspotmail.com
+Fixing up more symbol ends as introduced in:
+  https://lore.kernel.org/lkml/20220317135536.805-1-mpetlan@redhat.com/
 
-Tested on:
+it caused perf annotate to run into memory limits - every symbol holds
+all the disassembled code in the annotation, and so making symbols
+ends further away dramatically increased memory usage (40MB to >1GB).
 
-commit:         b9b4c79e Merge tag 'sound-5.18-rc3' of git://git.kerne..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
-kernel config:  https://syzkaller.appspot.com/x/.config?x=eb177500e563582f
-dashboard link: https://syzkaller.appspot.com/bug?extid=b9e4c31d0a1efb34cb03
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=11b965c0f00000
+Modify the symbol end fixup logic so that special kernel cases aren't
+applied in the common case.
 
-Note: testing is done by a robot and is best-effort only.
+v3 changes)
+ * rename is_kernel to is_kallsyms
+ * move the logic to generic function
+ * remove arch-specific functions
+
+Thanks,
+Namhyung
+
+
+Namhyung Kim (3):
+  perf symbol: Pass is_kallsyms to symbols__fixup_end()
+  perf symbol: Update symbols__fixup_end()
+  perf symbol: Remove arch__symbols__fixup_end()
+
+ tools/perf/arch/arm64/util/machine.c   | 21 ---------------
+ tools/perf/arch/powerpc/util/Build     |  1 -
+ tools/perf/arch/powerpc/util/machine.c | 25 -----------------
+ tools/perf/arch/s390/util/machine.c    | 16 -----------
+ tools/perf/util/symbol-elf.c           |  2 +-
+ tools/perf/util/symbol.c               | 37 +++++++++++++++++++-------
+ tools/perf/util/symbol.h               |  3 +--
+ 7 files changed, 29 insertions(+), 76 deletions(-)
+ delete mode 100644 tools/perf/arch/powerpc/util/machine.c
+
+
+base-commit: 41204da4c16071be9090940b18f566832d46becc
+-- 
+2.36.0.rc0.470.gd361397f0d-goog
+
