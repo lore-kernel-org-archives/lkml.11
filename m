@@ -2,171 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 980B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 16:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB59AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 16:50:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232619AbiDPQve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 12:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33102 "EHLO
+        id S232622AbiDPQwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 12:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230215AbiDPQvc (ORCPT
+        with ESMTP id S232626AbiDPQwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 12:51:32 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E833EBBF;
-        Sat, 16 Apr 2022 09:48:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650127739; x=1681663739;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FRSApa93qf26an3ztDlnFEZ03B94VG7Q1j0FckBB3sg=;
-  b=FLTK+EBh0hnDgaPERHN3s1/Ag8/jH6m/E6qvhS1GHixMzWORCPsfVauH
-   6Y8/vYLgtgQ2rEGM9GVhozBWHSQxHtIT8wOkb6wKi+BsnuRQZLo6+GY5B
-   8pAvzUYJ342mixpDzx1zomOpoCjbqQVqfc0/yy/59rSFZERlqtPcTSn1i
-   vv7bj+xZXtry66oN6SdR+GajKWOihGqxAT0HLjCbBtX6ntMHBfyPstev1
-   MZD0m95VZhRVbUYQ4UDDbgoBLn2iG1yUQoz+uTlxpvhSG6YkwFoRFAESh
-   5whAm2mbQ6e5N+hSnVHkpoEaRw0/NcKrtkOPVcYTgTUe14BcVY6LW0Tgs
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="349756409"
-X-IronPort-AV: E=Sophos;i="5.90,264,1643702400"; 
-   d="scan'208";a="349756409"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2022 09:48:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,264,1643702400"; 
-   d="scan'208";a="574878515"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by orsmga008.jf.intel.com with ESMTP; 16 Apr 2022 09:48:54 -0700
-Date:   Sun, 17 Apr 2022 00:41:23 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Nava kishore Manne <nava.manne@xilinx.com>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
-        michal.simek@xilinx.com, linux-fpga@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        git@xilinx.com
-Subject: Re: [PATCH v4 5/5] fpga: fpga-region: fix kernel-doc formatting
- issues
-Message-ID: <20220416164123.GE301222@yilunxu-OptiPlex-7050>
-References: <20220416133719.3382895-1-nava.manne@xilinx.com>
- <20220416133719.3382895-6-nava.manne@xilinx.com>
+        Sat, 16 Apr 2022 12:52:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886EE2DA92;
+        Sat, 16 Apr 2022 09:49:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32F6CB8068A;
+        Sat, 16 Apr 2022 16:49:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E72A1C385AE;
+        Sat, 16 Apr 2022 16:49:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650127796;
+        bh=qmUgUDofYI1jD2rLu9hnpnW6IkiX3GQmx1xSkVNgS3w=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=hyzfAeUwY+XIxJY5TXKlmUfb1LddqrE1CWOExDZ4k/u4Km7jCOzQGL+5eKyRUSHLL
+         qdVuT8DUIiznLBzVkMSCdi9b1QkLnq4BcA4gelELChGLbl5ZBVDr4DVvvP58MdyZ2w
+         pAod1nOAXuEdfDThbO+6LwNZS0mvBJOX4dTWfaC80vKoAhtZGyUXL9QKDpCWKXXGNq
+         2SlPOHTs9VepSoe07bcpRyrti5Cua7hqYlzCwdxQJg4rGgNLHG/wcwOdyPB6DfcbrI
+         ZTJW+qkkNRvqVSjDazlkn3yQoHFHWJ4KvWrcy+/iC9qdR9iiix4o3Lj+JoElAHOSZA
+         EiKFldU2Leysw==
+Received: by mail-vs1-f47.google.com with SMTP id i34so8373917vsv.6;
+        Sat, 16 Apr 2022 09:49:56 -0700 (PDT)
+X-Gm-Message-State: AOAM530542UotODzB76lRDPjHnwOPc4GP5eBxb7ftf9yWX7NZ7bu/6kg
+        wu0Kw3NzR96sNW9zVGjPhaW6IrZzVKnRFYIStJc=
+X-Google-Smtp-Source: ABdhPJwipWUHJGVYg3G9YqlCYWyULpwS8q2oCbq6rdTlaCM+02oXS/mNA7AoQvfY8ATUS0Y3Fps/fH6ZLKhSWSYgb9Y=
+X-Received: by 2002:a67:ec04:0:b0:32a:4a53:172f with SMTP id
+ d4-20020a67ec04000000b0032a4a53172fmr463677vso.59.1650127795835; Sat, 16 Apr
+ 2022 09:49:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220416133719.3382895-6-nava.manne@xilinx.com>
+References: <20220412034957.1481088-1-guoren@kernel.org> <YlbwOG46mCR8Q5tJ@tardis>
+In-Reply-To: <YlbwOG46mCR8Q5tJ@tardis>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Sun, 17 Apr 2022 00:49:44 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTRws6RqKmJHBdKsycWSkFgYna_MocJ+qp3Z9r1v7mQzsg@mail.gmail.com>
+Message-ID: <CAJF2gTRws6RqKmJHBdKsycWSkFgYna_MocJ+qp3Z9r1v7mQzsg@mail.gmail.com>
+Subject: Re: [PATCH V2 0/3] riscv: atomic: Optimize AMO instructions usage
+To:     Boqun Feng <boqun.feng@gmail.com>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Palmer Dabbelt <palmer@dabbelt.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 16, 2022 at 07:07:19PM +0530, Nava kishore Manne wrote:
-> To fix below kernel-doc warnings this patch does the following
-> ->Replaced Return\Returns with 'Return:' keyword.
-> ->Added 'Return' description For __init of_fpga_region_init()' API.
-> ->Added description for 'child_regions_with_firmware()' API.
-> 
-> warning: No description found for return value of
-> 'of_fpga_region_find'.
-> warning: No description found for return value of
-> 'of_fpga_region_get_bridges'.
-> warning: missing initial short description on line:
-> * child_regions_with_firmware
-> warning: No description found for return value of
-> 'child_regions_with_firmware'.
-> warning: No description found for return value of
-> 'of_fpga_region_notify_pre_apply'.
-> warning: No description found for return value of
-> 'of_fpga_region_notify'.
-> warning: No description found for return value of
-> 'of_fpga_region_init'.
-> 
-> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+Hi Boqun,
 
-Acked-by: Xu Yilun <yilun.xu@intel.com>
+On Wed, Apr 13, 2022 at 11:46 PM Boqun Feng <boqun.feng@gmail.com> wrote:
+>
+> [Cc Andrea]
+>
+> On Tue, Apr 12, 2022 at 11:49:54AM +0800, guoren@kernel.org wrote:
+> > From: Guo Ren <guoren@linux.alibaba.com>
+> >
+> > These patch series contain one cleanup and some optimizations for
+> > atomic operations.
+> >
+>
+> Seems to me that you are basically reverting 5ce6c1f3535f
+> ("riscv/atomic: Strengthen implementations with fences"). That commit
+> fixed an memory ordering issue, could you explain why the issue no
+> longer needs a fix?
 
-> ---
-> Changes for v2:
->                 -Replaced s/@return:/Return:/
-> Changes for v3:
->                -Updated commit description.
-> Changes for v4:
->                -Updated commit description.
-> 
->  drivers/fpga/of-fpga-region.c | 16 +++++++++-------
->  1 file changed, 9 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/fpga/of-fpga-region.c b/drivers/fpga/of-fpga-region.c
-> index 50b83057c048..9e330a2c0a1b 100644
-> --- a/drivers/fpga/of-fpga-region.c
-> +++ b/drivers/fpga/of-fpga-region.c
-> @@ -28,7 +28,7 @@ MODULE_DEVICE_TABLE(of, fpga_region_of_match);
->   *
->   * Caller will need to put_device(&region->dev) when done.
->   *
-> - * Returns FPGA Region struct or NULL
-> + * Return: FPGA Region struct or NULL
->   */
->  static struct fpga_region *of_fpga_region_find(struct device_node *np)
->  {
-> @@ -80,7 +80,7 @@ static struct fpga_manager *of_fpga_region_get_mgr(struct device_node *np)
->   * Caller should call fpga_bridges_put(&region->bridge_list) when
->   * done with the bridges.
->   *
-> - * Return 0 for success (even if there are no bridges specified)
-> + * Return: 0 for success (even if there are no bridges specified)
->   * or -EBUSY if any of the bridges are in use.
->   */
->  static int of_fpga_region_get_bridges(struct fpga_region *region)
-> @@ -139,13 +139,13 @@ static int of_fpga_region_get_bridges(struct fpga_region *region)
->  }
->  
->  /**
-> - * child_regions_with_firmware
-> + * child_regions_with_firmware - Used to check the child region info.
->   * @overlay: device node of the overlay
->   *
->   * If the overlay adds child FPGA regions, they are not allowed to have
->   * firmware-name property.
->   *
-> - * Return 0 for OK or -EINVAL if child FPGA region adds firmware-name.
-> + * Return: 0 for OK or -EINVAL if child FPGA region adds firmware-name.
->   */
->  static int child_regions_with_firmware(struct device_node *overlay)
->  {
-> @@ -184,7 +184,7 @@ static int child_regions_with_firmware(struct device_node *overlay)
->   * Given an overlay applied to an FPGA region, parse the FPGA image specific
->   * info in the overlay and do some checking.
->   *
-> - * Returns:
-> + * Return:
->   *   NULL if overlay doesn't direct us to program the FPGA.
->   *   fpga_image_info struct if there is an image to program.
->   *   error code for invalid overlay.
-> @@ -279,7 +279,7 @@ static struct fpga_image_info *of_fpga_region_parse_ov(
->   * If the checks fail, overlay is rejected and does not get added to the
->   * live tree.
->   *
-> - * Returns 0 for success or negative error code for failure.
-> + * Return: 0 for success or negative error code for failure.
->   */
->  static int of_fpga_region_notify_pre_apply(struct fpga_region *region,
->  					   struct of_overlay_notify_data *nd)
-> @@ -339,7 +339,7 @@ static void of_fpga_region_notify_post_remove(struct fpga_region *region,
->   * This notifier handles programming an FPGA when a "firmware-name" property is
->   * added to an fpga-region.
->   *
-> - * Returns NOTIFY_OK or error if FPGA programming fails.
-> + * Return: NOTIFY_OK or error if FPGA programming fails.
->   */
->  static int of_fpga_region_notify(struct notifier_block *nb,
->  				 unsigned long action, void *arg)
-> @@ -446,6 +446,8 @@ static struct platform_driver of_fpga_region_driver = {
->  /**
->   * of_fpga_region_init - init function for fpga_region class
->   * Creates the fpga_region class and registers a reconfig notifier.
-> + *
-> + * Return: 0 on success, negative error code otherwise.
->   */
->  static int __init of_fpga_region_init(void)
->  {
-> -- 
-> 2.25.1
+I'm not reverting the prior patch, just optimizing it.
+
+In RISC-V =E2=80=9CA=E2=80=9D Standard Extension for Atomic Instructions sp=
+ec, it said:
+If only the aq bit is set, the atomic memory operation is treated as
+an acquire access, i.e., no following memory operations on this RISC-V
+hart can be observed to take place before the acquire memory
+operation.
+-                       "       amoswap.w %0, %2, %1\n"                 \
+-                       RISCV_ACQUIRE_BARRIER                           \
++                       "       amoswap.w.aq %0, %2, %1\n"              \
+So RISCV_ACQUIRE_BARRIER is "fence r, rw" and "fence r" is over
+constraints to protect amoswap.w. Here using amoswap.w.aq is more
+proper.
+
+If only the rl bit is set, the atomic memory operation is treated as a
+release access, i.e., the release memory operation cannot be observed
+to take place before any earlier memory operations on this RISC-V
+hart.
+-                       RISCV_RELEASE_BARRIER                           \
+-                       "       amoswap.w %0, %2, %1\n"                 \
++                       "       amoswap.w.rl %0, %2, %1\n"              \
+So RISCV_RELEASE_BARRIER is "fence rw, w" and "fence ,w" is over
+constraints to protect amoswap.w. Here using amoswap.w.rl is more
+proper.
+
+If both the aq and rl bits are set, the atomic memory operation is
+sequentially consistent and cannot be observed to happen before any
+earlier memory operations or after any later memory operations in the
+same RISC-V hart and to the same address domain.
+                "0:     lr.w     %[p],  %[c]\n"
+                "       sub      %[rc], %[p], %[o]\n"
+                "       bltz     %[rc], 1f\n".
+-               "       sc.w.rl  %[rc], %[rc], %[c]\n"
++               "       sc.w.aqrl %[rc], %[rc], %[c]\n"
+                "       bnez     %[rc], 0b\n"
+-               "       fence    rw, rw\n"
+                "1:\n"
+So .rl + fence rw, rw is over constraints, only using sc.w.aqrl is more pro=
+per.
+
+>
+> Regards,
+> Boqun
+>
+> > Changes in V2:
+> >  - Fixup LR/SC memory barrier semantic problems which pointed by
+> >    Rutland
+> >  - Combine patches into one patchset series
+> >  - Separate AMO optimization & LRSC optimization for convenience
+> >    patch review
+> >
+> > Guo Ren (3):
+> >   riscv: atomic: Cleanup unnecessary definition
+> >   riscv: atomic: Optimize acquire and release for AMO operations
+> >   riscv: atomic: Optimize memory barrier semantics of LRSC-pairs
+> >
+> >  arch/riscv/include/asm/atomic.h  | 70 ++++++++++++++++++++++++++++++--
+> >  arch/riscv/include/asm/cmpxchg.h | 42 +++++--------------
+> >  2 files changed, 76 insertions(+), 36 deletions(-)
+> >
+> > --
+> > 2.25.1
+> >
+
+
+
+--
+Best Regards
+ Guo Ren
+
+ML: https://lore.kernel.org/linux-csky/
