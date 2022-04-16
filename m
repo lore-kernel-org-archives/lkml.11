@@ -2,426 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51895C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 08:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA13C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 09:02:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230483AbiDPI7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 04:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59516 "EHLO
+        id S230501AbiDPJEk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 05:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbiDPI7k (ORCPT
+        with ESMTP id S230460AbiDPJEg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 04:59:40 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9BAF24BF4;
-        Sat, 16 Apr 2022 01:57:04 -0700 (PDT)
-X-UUID: c2a3943bebe2475b8ac6bd249eef874a-20220416
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:e017eed6-b7a1-4a55-b492-565caafd024b,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:80
-X-CID-INFO: VERSION:1.1.4,REQID:e017eed6-b7a1-4a55-b492-565caafd024b,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:80
-X-CID-META: VersionHash:faefae9,CLOUDID:0196edef-da02-41b4-b6df-58f4ccd36682,C
-        OID:5bd5cd07fb94,Recheck:0,SF:13|15|28|16|19|48,TC:nil,Content:0,EDM:-3,Fi
-        le:nil,QS:0,BEC:nil
-X-UUID: c2a3943bebe2475b8ac6bd249eef874a-20220416
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <powen.kao@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 21673653; Sat, 16 Apr 2022 16:56:57 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Sat, 16 Apr 2022 16:56:56 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 16 Apr 2022 16:56:56 +0800
-From:   Po-Wen Kao <powen.kao@mediatek.com>
-To:     Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Ingo Molnar" <mingo@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <wsd_upstream@mediatek.com>, <peter.wang@mediatek.com>,
-        <stanley.chu@mediatek.com>, <powen.kao@mediatek.com>,
-        <alice.chao@mediatek.com>, <chun-hung.wu@mediatek.com>,
-        <cc.chou@mediatek.com>, <chaotian.jing@mediatek.com>,
-        <jiajie.hao@mediatek.com>, <linux-scsi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Subject: [PATCH 1/1] scsi: ufs: add clock-scalable property for clk scaling
-Date:   Sat, 16 Apr 2022 16:56:44 +0800
-Message-ID: <20220416085649.5660-1-powen.kao@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Sat, 16 Apr 2022 05:04:36 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE00C1066E2;
+        Sat, 16 Apr 2022 02:02:04 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id d9so7850437qvm.4;
+        Sat, 16 Apr 2022 02:02:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=OHIHH7LBjO7n3w0TkyTvZ+CHhZPHMYRUZ96K/VbT0E0=;
+        b=iEN3ZCVaS/t/rWCo/X/zbmS+TjDfAMD6Cpvna9HLhP+x6o6ZYla5+H0GhKvSS5rkNP
+         8ikamagqu15rha3O9npox2er4Nlo0Hn7ck8poWqBP/q72eCOKEY/dfZt4n41DYaOXrMp
+         EDwEY8QW0e7FKJ8/isjurvCHIKVg+t8SYaanJRsQ2GTh/Xk7Tk9iTdHIqZ2hnCIihenU
+         q+gEjJfKEWbPvQw1Pk47xBBn46/Sof/bvznKDvCqWTND5RbtxfUHpVMZ9XA0YrWq9JBj
+         OR9G+IgS/PA/CTIH4SeRb1oG9054zyGVN9LGAXNtVnduvG9YGfhtywCIy+He6L9mMd9g
+         mbvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=OHIHH7LBjO7n3w0TkyTvZ+CHhZPHMYRUZ96K/VbT0E0=;
+        b=Yygr/ux+MpKZ0QyThc9rYdSV7tTiZ4ZqA+WDLq7M1l3GkQcXoOZmhvQ57a9QNrxc+z
+         AzLJ2HlK0q40RWTulLT4JldJUv0Y/3FFHSmmaKhotrqa2oO110lwjeDefQ+JJhvuWHcy
+         h59GWcmoerUWnI6Cp3pYn3CE+Qn2Ira3xnwxlVdmfqT+5DMGwF87YocDPkeuQ8k9VQeM
+         RvZB/GDlKogNL27IuzIlwdBXHPsE20ANEKiQMCJlrgproxxe9T5D2LAXTwrqRI1/RsME
+         xDyGhpTiEzbCwupLYroDKyPQgNa5vtbkxlX8OlK8iqJaMIogQPn2WJ9shydp3fCiYaAE
+         Wu8A==
+X-Gm-Message-State: AOAM530W1KAQ1lwmeJBZGWbHM/c4tL9RxYXf6uPBNpEplZw/QAhRi4Ei
+        qHf8hD+RByC0ZWliHejqUzYpd0fYb6xg8Bcx
+X-Google-Smtp-Source: ABdhPJwpTvo4039/1P9AMC+MpCNIKVZR96KS8e9MCcSnpiwoRZMepeQPw0q+y1JNs/94Sh5JjUSMwQ==
+X-Received: by 2002:a05:6214:e4a:b0:444:28a7:9fb7 with SMTP id o10-20020a0562140e4a00b0044428a79fb7mr1733610qvc.30.1650099724058;
+        Sat, 16 Apr 2022 02:02:04 -0700 (PDT)
+Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
+        by smtp.gmail.com with ESMTPSA id o6-20020a05622a044600b002e1b9be8e6fsm4258085qtx.36.2022.04.16.02.02.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Apr 2022 02:02:03 -0700 (PDT)
+From:   Peter Geis <pgwipeout@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>
+Cc:     linux-rockchip@lists.infradead.org,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Subject: [PATCH v4 1/4] arm64: dts: rockchip: add usb3 support to rk3568-evb1-v10
+Date:   Sat, 16 Apr 2022 05:01:56 -0400
+Message-Id: <20220416090159.596930-2-pgwipeout@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220416090159.596930-1-pgwipeout@gmail.com>
+References: <20220416090159.596930-1-pgwipeout@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In clk scaling, clk_set_rate is invoked to set dedicated PLL clk rate
-on scale up and down. On some MTK platform, scaling is only possible
-by switching parent of a mux, therefore we introduce a new
-"clock-scalable" property to gain fine control over which clock rate can
-be scaled by calling clk_set_rate. If a clock is defined as non-scalable,
-clk_set_rate won't be invoked while clki->current_rate is still updated
-if min/max freq is defined. Customized clk operation may be embedded in
-pre/post change of hba->vops->clk_scale_notify.
+From: Michael Riesch <michael.riesch@wolfvision.net>
 
-All clocks in dts without "clock-scalable" property defined are assumed
-scalable and works as usual. There is no neeed to make change on existing
-dts.
+The Rockchip RK3568 EVB1 features one USB 3.0 device-only
+(USB 2.0 OTG) port and one USB 3.0 host-only port.
+Activate the USB 3.0 controller nodes and phy nodes in the
+device tree.
 
-To specify scalable property, one may define dts as follow
-
-&ufshci {
-    clocks =
-        <clk1>,
-        <clk2>,
-        ...
-        <clkn>;
-
-    clock-names =
-        "clk1",
-        "clk2",
-        ...
-        "clkn";
-
-    freq-table-hz =
-        <1000 2000>,
-        <0 0>,
-        ...
-        <0 0>;
-
-    clock-scalable =
-        <0
-         0
-         ...
-         0
-        >;
-};
-
-Signed-off-by: Po-Wen Kao <powen.kao@mediatek.com>
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
 ---
- drivers/scsi/ufs/ufshcd-pltfrm.c | 99 ++++++++++++++++++++++++--------
- drivers/scsi/ufs/ufshcd.c        | 52 +++++++----------
- drivers/scsi/ufs/ufshcd.h        |  2 +
- include/trace/events/ufs.h       | 16 +++---
- 4 files changed, 105 insertions(+), 64 deletions(-)
+ .../boot/dts/rockchip/rk3568-evb1-v10.dts     | 46 +++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
-diff --git a/drivers/scsi/ufs/ufshcd-pltfrm.c b/drivers/scsi/ufs/ufshcd-pltfrm.c
-index 87975d1a21c8..757ba2ef2a4c 100644
---- a/drivers/scsi/ufs/ufshcd-pltfrm.c
-+++ b/drivers/scsi/ufs/ufshcd-pltfrm.c
-@@ -18,6 +18,59 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts b/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
+index a794a0ea5c70..622be8be9813 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
+@@ -103,6 +103,18 @@ vcc5v0_usb_host: vcc5v0-usb-host {
+ 		vin-supply = <&vcc5v0_usb>;
+ 	};
  
- #define UFSHCD_DEFAULT_LANES_PER_DIRECTION		2
- 
-+/**
-+ * ufshcd_get_clk_u32_array - Resolve property in dts to u32 array with
-+ * shape check.
-+ * @hba: per-adapter instance
-+ * @propname: name of property
-+ * @cols: column count
-+ * @rows: calculated row count with given cols
-+ * @array: u32 array pointer of property data with propname
-+ */
-+static int ufshcd_get_clk_u32_array(struct ufs_hba *hba, const char *propname,
-+				    size_t cols, size_t *rows, u32 **array)
-+{
-+	struct device *dev = hba->dev;
-+	struct device_node *np = dev->of_node;
-+	int len = 0, ret = 0;
-+	int _rows = 0;
++	vcc5v0_usb_otg: vcc5v0-usb-otg {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc5v0_usb_otg_en>;
++		regulator-name = "vcc5v0_usb_otg";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&vcc5v0_usb>;
++	};
 +
-+	if (!of_get_property(np, propname, &len)) {
-+		ret = -EINVAL;
-+		dev_warn(dev, "%s property not specified.\n", propname);
-+		goto out;
-+	}
-+
-+	len = len / sizeof(**array);
-+	_rows = len / cols;
-+	if (len % cols != 0 || !cols || !_rows) {
-+		dev_warn(dev, "%s property define error.\n", propname);
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	*array = devm_kcalloc(dev, len, sizeof(**array), GFP_KERNEL);
-+	if (!*array) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+
-+	ret = of_property_read_u32_array(np, propname, *array, len);
-+
-+	if (ret) {
-+		dev_err(dev, "%s: error reading array %d\n",
-+			propname, ret);
-+		goto out;
-+	}
-+
-+	*rows = _rows;
-+
-+	return 0;
-+out:
-+	devm_kfree(dev, *array);
-+	return ret;
-+}
-+
- static int ufshcd_parse_clock_info(struct ufs_hba *hba)
- {
- 	int ret = 0;
-@@ -27,13 +80,14 @@ static int ufshcd_parse_clock_info(struct ufs_hba *hba)
- 	struct device_node *np = dev->of_node;
- 	char *name;
- 	u32 *clkfreq = NULL;
-+	u32 *scalable = NULL;
- 	struct ufs_clk_info *clki;
--	int len = 0;
- 	size_t sz = 0;
- 
- 	if (!np)
- 		goto out;
- 
-+	/* clock-names */
- 	cnt = of_property_count_strings(np, "clock-names");
- 	if (!cnt || (cnt == -EINVAL)) {
- 		dev_info(dev, "%s: Unable to find clocks, assuming enabled\n",
-@@ -47,37 +101,29 @@ static int ufshcd_parse_clock_info(struct ufs_hba *hba)
- 	if (cnt <= 0)
- 		goto out;
- 
--	if (!of_get_property(np, "freq-table-hz", &len)) {
--		dev_info(dev, "freq-table-hz property not specified\n");
-+	/* clock-scalable (optional) */
-+	ret = ufshcd_get_clk_u32_array(hba, "clock-scalable", 1, &sz, &scalable);
-+	if (ret) {
-+		dev_warn(dev, "Optional property %s load failed. Assume all clocks scalable.\n",
-+			 "clock-scalable");
-+	} else if (sz != cnt) {
-+		dev_err(dev, "%s len mismatch\n", "clock-scalable");
-+		ret = -EINVAL;
- 		goto out;
- 	}
- 
--	if (len <= 0)
-+	/* freq-table-hz */
-+	ret = ufshcd_get_clk_u32_array(hba, "freq-table-hz", 2, &sz, &clkfreq);
-+	if (ret) {
-+		dev_err(dev, "Property %s load failed.", "freq-table-hz");
- 		goto out;
--
--	sz = len / sizeof(*clkfreq);
--	if (sz != 2 * cnt) {
-+	} else if (sz != cnt) {
- 		dev_err(dev, "%s len mismatch\n", "freq-table-hz");
- 		ret = -EINVAL;
- 		goto out;
- 	}
- 
--	clkfreq = devm_kcalloc(dev, sz, sizeof(*clkfreq),
--			       GFP_KERNEL);
--	if (!clkfreq) {
--		ret = -ENOMEM;
--		goto out;
--	}
--
--	ret = of_property_read_u32_array(np, "freq-table-hz",
--			clkfreq, sz);
--	if (ret && (ret != -EINVAL)) {
--		dev_err(dev, "%s: error reading array %d\n",
--				"freq-table-hz", ret);
--		return ret;
--	}
--
--	for (i = 0; i < sz; i += 2) {
-+	for (i = 0; i < cnt * 2; i += 2) {
- 		ret = of_property_read_string_index(np,
- 				"clock-names", i/2, (const char **)&name);
- 		if (ret)
-@@ -92,6 +138,7 @@ static int ufshcd_parse_clock_info(struct ufs_hba *hba)
- 		clki->min_freq = clkfreq[i];
- 		clki->max_freq = clkfreq[i+1];
- 		clki->name = devm_kstrdup(dev, name, GFP_KERNEL);
-+		clki->scalable = scalable ? !!scalable[i / 2] : true;
- 		if (!clki->name) {
- 			ret = -ENOMEM;
- 			goto out;
-@@ -99,11 +146,13 @@ static int ufshcd_parse_clock_info(struct ufs_hba *hba)
- 
- 		if (!strcmp(name, "ref_clk"))
- 			clki->keep_link_active = true;
--		dev_dbg(dev, "%s: min %u max %u name %s\n", "freq-table-hz",
--				clki->min_freq, clki->max_freq, clki->name);
-+		dev_dbg(dev, "clk %s: scalable(%u), min(%u), max(%u)\n",
-+			clki->name, clki->scalable, clki->min_freq, clki->max_freq);
- 		list_add_tail(&clki->list, &hba->clk_list_head);
- 	}
- out:
-+	devm_kfree(dev, scalable);
-+	devm_kfree(dev, clkfreq);
- 	return ret;
- }
- 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index eea5af5fa166..295f8a314f37 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -950,6 +950,7 @@ static bool ufshcd_is_unipro_pa_params_tuning_req(struct ufs_hba *hba)
- static int ufshcd_set_clk_freq(struct ufs_hba *hba, bool scale_up)
- {
- 	int ret = 0;
-+	u32 target_rate = 0;
- 	struct ufs_clk_info *clki;
- 	struct list_head *head = &hba->clk_list_head;
- 
-@@ -958,41 +959,27 @@ static int ufshcd_set_clk_freq(struct ufs_hba *hba, bool scale_up)
- 
- 	list_for_each_entry(clki, head, list) {
- 		if (!IS_ERR_OR_NULL(clki->clk)) {
--			if (scale_up && clki->max_freq) {
--				if (clki->curr_freq == clki->max_freq)
--					continue;
--
--				ret = clk_set_rate(clki->clk, clki->max_freq);
--				if (ret) {
--					dev_err(hba->dev, "%s: %s clk set rate(%dHz) failed, %d\n",
--						__func__, clki->name,
--						clki->max_freq, ret);
--					break;
--				}
--				trace_ufshcd_clk_scaling(dev_name(hba->dev),
--						"scaled up", clki->name,
--						clki->curr_freq,
--						clki->max_freq);
-+			target_rate = scale_up ? clki->max_freq : clki->min_freq;
- 
--				clki->curr_freq = clki->max_freq;
-+			if (!target_rate || clki->curr_freq == target_rate)
-+				continue;
- 
--			} else if (!scale_up && clki->min_freq) {
--				if (clki->curr_freq == clki->min_freq)
--					continue;
-+			if (!clki->scalable)
-+				goto skip;
- 
--				ret = clk_set_rate(clki->clk, clki->min_freq);
--				if (ret) {
--					dev_err(hba->dev, "%s: %s clk set rate(%dHz) failed, %d\n",
--						__func__, clki->name,
--						clki->min_freq, ret);
--					break;
--				}
--				trace_ufshcd_clk_scaling(dev_name(hba->dev),
--						"scaled down", clki->name,
--						clki->curr_freq,
--						clki->min_freq);
--				clki->curr_freq = clki->min_freq;
-+			ret = clk_set_rate(clki->clk, target_rate);
-+			if (ret) {
-+				dev_err(hba->dev, "%s: %s clk set rate(%dHz) failed, %d\n",
-+					__func__, clki->name,
-+					target_rate, ret);
-+				break;
- 			}
-+skip:
-+			trace_ufshcd_clk_scaling(dev_name(hba->dev),
-+						 clki->name, scale_up,
-+						 clki->curr_freq,
-+						 target_rate);
-+			clki->curr_freq = target_rate;
- 		}
- 		dev_dbg(hba->dev, "%s: clk: %s, rate: %lu\n", __func__,
- 				clki->name, clk_get_rate(clki->clk));
-@@ -8364,6 +8351,8 @@ static int ufshcd_init_clocks(struct ufs_hba *hba)
- 			ufshcd_parse_dev_ref_clk_freq(hba, clki->clk);
- 
- 		if (clki->max_freq) {
-+			if (!clki->scalable)
-+				goto skip;
- 			ret = clk_set_rate(clki->clk, clki->max_freq);
- 			if (ret) {
- 				dev_err(hba->dev, "%s: %s clk set rate(%dHz) failed, %d\n",
-@@ -8371,6 +8360,7 @@ static int ufshcd_init_clocks(struct ufs_hba *hba)
- 					clki->max_freq, ret);
- 				goto out;
- 			}
-+skip:
- 			clki->curr_freq = clki->max_freq;
- 		}
- 		dev_dbg(dev, "%s: clk: %s, rate: %lu\n", __func__,
-diff --git a/drivers/scsi/ufs/ufshcd.h b/drivers/scsi/ufs/ufshcd.h
-index 1637f5cc1420..eaa3d6c5b9ab 100644
---- a/drivers/scsi/ufs/ufshcd.h
-+++ b/drivers/scsi/ufs/ufshcd.h
-@@ -260,6 +260,7 @@ struct ufs_dev_cmd {
-  * @keep_link_active: indicates that the clk should not be disabled if
- 		      link is active
-  * @enabled: variable to check against multiple enable/disable
-+ * @scalable: indicates if clk is scalable in clk scaling
-  */
- struct ufs_clk_info {
- 	struct list_head list;
-@@ -270,6 +271,7 @@ struct ufs_clk_info {
- 	u32 curr_freq;
- 	bool keep_link_active;
- 	bool enabled;
-+	bool scalable;
+ 	vcc3v3_lcd0_n: vcc3v3-lcd0-n {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc3v3_lcd0_n";
+@@ -136,6 +148,14 @@ regulator-state-mem {
+ 	};
  };
  
- enum ufs_notify_change_status {
-diff --git a/include/trace/events/ufs.h b/include/trace/events/ufs.h
-index 599739ee7b20..780c964e52c2 100644
---- a/include/trace/events/ufs.h
-+++ b/include/trace/events/ufs.h
-@@ -103,30 +103,30 @@ TRACE_EVENT(ufshcd_clk_gating,
++&combphy0 {
++	status = "okay";
++};
++
++&combphy1 {
++	status = "okay";
++};
++
+ &cpu0 {
+ 	cpu-supply = <&vdd_cpu>;
+ };
+@@ -507,6 +527,9 @@ usb {
+ 		vcc5v0_usb_host_en: vcc5v0_usb_host_en {
+ 			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
++		vcc5v0_usb_otg_en: vcc5v0_usb_otg_en {
++			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
+ 	};
+ };
  
- TRACE_EVENT(ufshcd_clk_scaling,
+@@ -568,6 +591,11 @@ &usb_host0_ohci {
+ 	status = "okay";
+ };
  
--	TP_PROTO(const char *dev_name, const char *state, const char *clk,
--		u32 prev_state, u32 curr_state),
-+	TP_PROTO(const char *dev_name, const char *clk,
-+		 bool up, u32 prev_state, u32 curr_state),
++&usb_host0_xhci {
++	extcon = <&usb2phy0>;
++	status = "okay";
++};
++
+ &usb_host1_ehci {
+ 	status = "okay";
+ };
+@@ -576,6 +604,24 @@ &usb_host1_ohci {
+ 	status = "okay";
+ };
  
--	TP_ARGS(dev_name, state, clk, prev_state, curr_state),
-+	TP_ARGS(dev_name, clk, up, prev_state, curr_state),
- 
- 	TP_STRUCT__entry(
- 		__string(dev_name, dev_name)
--		__string(state, state)
- 		__string(clk, clk)
-+		__field(bool, up)
- 		__field(u32, prev_state)
- 		__field(u32, curr_state)
- 	),
- 
- 	TP_fast_assign(
- 		__assign_str(dev_name, dev_name);
--		__assign_str(state, state);
- 		__assign_str(clk, clk);
-+		__entry->up = up;
- 		__entry->prev_state = prev_state;
- 		__entry->curr_state = curr_state;
- 	),
- 
--	TP_printk("%s: %s %s from %u to %u Hz",
--		__get_str(dev_name), __get_str(state), __get_str(clk),
--		__entry->prev_state, __entry->curr_state)
-+	TP_printk("%s: scaled %s %s from %u to %u Hz",
-+		  __get_str(dev_name), __entry->up ? "up" : "down", __get_str(clk),
-+		  __entry->prev_state, __entry->curr_state)
- );
- 
- TRACE_EVENT(ufshcd_auto_bkops_state,
++&usb_host1_xhci {
++	status = "okay";
++};
++
++&usb2phy0 {
++	status = "okay";
++};
++
++&usb2phy0_host {
++	phy-supply = <&vcc5v0_usb_host>;
++	status = "okay";
++};
++
++&usb2phy0_otg {
++	vbus-supply = <&vcc5v0_usb_otg>;
++	status = "okay";
++};
++
+ &usb2phy1 {
+ 	status = "okay";
+ };
 -- 
-2.18.0
+2.25.1
 
