@@ -2,193 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D452FC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 16:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD2B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 16:34:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232552AbiDPQf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 12:35:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50228 "EHLO
+        id S232558AbiDPQhZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 12:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230112AbiDPQfy (ORCPT
+        with ESMTP id S232556AbiDPQhR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 12:35:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE5D3B2B1;
-        Sat, 16 Apr 2022 09:33:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF41460DCA;
-        Sat, 16 Apr 2022 16:33:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD3D8C385A3;
-        Sat, 16 Apr 2022 16:33:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650126801;
-        bh=yh2F/q93aCsWp0FLnBhPO/VFXr1ot352TPPIXtctmdc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=G9ONQqSpSIO/WWvRN8m/btnSFTrlMN/cx25ZBsAZLrth8eBKU3w2C/Cg0hPVib3ki
-         mWaUCnKXviAbKIbC5rWw7oMtkR1WK/eRp56/8iMIjaBs68RDEMHWzP8t88arwM33SR
-         xsISRC3EUKBI4QMgRaYcPl0Ks/eAfkwZhXX7ehCEuGdSHjzJTtEbYGSRyiyD1+/d12
-         oL5MNWo74yiuMCg95MwT6mGOqNKCeU1GZj0UsvVOlvArTG9Diw3gkxsq4hO8lZOo8f
-         SlHAnZUcHeW6yoAu714FFukJ9PtZsU/0/AR7UJJUx55jy5TL0y9mmhmE5yRBjYF+oy
-         K2/bAcM+tS6FA==
-Date:   Sat, 16 Apr 2022 17:41:18 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     dan@dlrobertson.com, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 5/9] iio: accel: bma400: Add separate channel for
- step counter
-Message-ID: <20220416174118.13f787be@jic23-huawei>
-In-Reply-To: <20220411203133.19929-6-jagathjog1996@gmail.com>
-References: <20220411203133.19929-1-jagathjog1996@gmail.com>
-        <20220411203133.19929-6-jagathjog1996@gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 16 Apr 2022 12:37:17 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A5DF0A;
+        Sat, 16 Apr 2022 09:34:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1650126882; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w9/FAC8Z5gAmmI9gbu3oEtXUZTvFVNJbIuuy5fMe1ds=;
+        b=Q87IUL2WHqAgSNCHIRolTQ15nDpeBxyLuTY4MpL0/tMalB7nYJiiPJ0dWOHZeBGy/YEgId
+        f70Cj1on4xPfg/xT6mn3X+B83cxSp1ZJpnbdB+QGy3KauXGTj/NfEG3qREOQwiisoIgoxW
+        ollpzdJyBI460j1Fssn0R6QMsv9m0b8=
+Date:   Sat, 16 Apr 2022 17:34:31 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v3 1/3] dt-bindings: dwc2: Add bindings for new Ingenic
+ SoCs.
+To:     =?UTF-8?b?5ZGo55Cw5p2w?= <zhouyanjie@wanyeetech.com>
+Cc:     gregkh@linuxfoundation.org, hminas@synopsys.com,
+        robh+dt@kernel.org, krzk+dt@kernel.org, tsbogend@alpha.franken.de,
+        linux-usb@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        dragancecavac@yahoo.com, hns@goldelico.com,
+        dongsheng.qiu@ingenic.com, aric.pzqi@ingenic.com,
+        rick.tyliu@ingenic.com, sernia.zhou@foxmail.com,
+        zhenwenjin@gmail.com, reimu@sudomaker.com
+Message-Id: <J1YFAR.2881WOMSYUZM2@crapouillou.net>
+In-Reply-To: <1649964337-114337-2-git-send-email-zhouyanjie@wanyeetech.com>
+References: <1649964337-114337-1-git-send-email-zhouyanjie@wanyeetech.com>
+        <1649964337-114337-2-git-send-email-zhouyanjie@wanyeetech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Apr 2022 02:01:29 +0530
-Jagath Jog J <jagathjog1996@gmail.com> wrote:
+Hi Zhou,
 
-> Added channel for step counter which can be enable or disable
-> through the sysfs interface.
-> 
-> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+Le ven., avril 15 2022 at 03:25:35 +0800, =E5=91=A8=E7=90=B0=E6=9D=B0 (Zhou=
+ Yanjie)=20
+<zhouyanjie@wanyeetech.com> a =C3=A9crit :
+> Add the dwc2 bindings for the JZ4775 SoC, the JZ4780 SoC, the X1000
+> SoC, the X1600 SoC, the X1700 SoC, the X1830 SoC, and the X2000 SoC
+> from Ingenic.
+>=20
+> Signed-off-by: =E5=91=A8=E7=90=B0=E6=9D=B0 (Zhou Yanjie) <zhouyanjie@wany=
+eetech.com>
+> Acked-by: Rob Herring <robh@kernel.org>
 > ---
->  drivers/iio/accel/bma400.h      |  1 +
->  drivers/iio/accel/bma400_core.c | 48 ++++++++++++++++++++++++++++++---
->  2 files changed, 45 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
-> index a7482a66b36b..52f9ea95de81 100644
-> --- a/drivers/iio/accel/bma400.h
-> +++ b/drivers/iio/accel/bma400.h
-> @@ -53,6 +53,7 @@
->  #define BMA400_STEP_CNT1_REG        0x16
->  #define BMA400_STEP_CNT3_REG        0x17
->  #define BMA400_STEP_STAT_REG        0x18
-> +#define BMA400_STEP_INT_MSK	    BIT(0)
->  
->  /*
->   * Read-write configuration registers
-> diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-> index b7b2b67aef31..c8f147163d3c 100644
-> --- a/drivers/iio/accel/bma400_core.c
-> +++ b/drivers/iio/accel/bma400_core.c
-> @@ -20,6 +20,8 @@
->  #include <linux/regmap.h>
->  #include <linux/regulator/consumer.h>
->  
-> +#include <asm/unaligned.h>
-> +
->  #include <linux/iio/iio.h>
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/trigger.h>
-> @@ -67,6 +69,7 @@ struct bma400_data {
->  	int oversampling_ratio;
->  	int scale;
->  	struct iio_trigger *trig;
-> +	int steps_enabled;
->  	/* Correct time stamp alignment */
->  	struct {
->  		__le16 buff[3];
-> @@ -201,6 +204,12 @@ static const struct iio_chan_spec bma400_channels[] = {
->  			.endianness = IIO_LE,
->  		},
->  	},
-> +	{
-> +		.type = IIO_STEPS,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-> +				      BIT(IIO_CHAN_INFO_ENABLE),
-> +		.scan_index = -1, /* No buffer support */
-> +	},
->  	IIO_CHAN_SOFT_TIMESTAMP(4),
->  };
->  
-> @@ -705,13 +714,28 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
->  {
->  	struct bma400_data *data = iio_priv(indio_dev);
->  	int ret;
-> +	u8 steps_raw[3];
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_PROCESSED:
-> -		mutex_lock(&data->mutex);
-> -		ret = bma400_get_temp_reg(data, val, val2);
-> -		mutex_unlock(&data->mutex);
-> -		return ret;
-> +		switch (chan->type) {
-> +		case IIO_TEMP:
-> +			mutex_lock(&data->mutex);
-> +			ret = bma400_get_temp_reg(data, val, val2);
-> +			mutex_unlock(&data->mutex);
-> +			return ret;
-> +		case IIO_STEPS:
-> +			mutex_lock(&data->mutex);
-> +			ret = regmap_bulk_read(data->regmap, BMA400_STEP_CNT0_REG,
-> +					       &steps_raw, sizeof(steps_raw));
+>=20
+> Notes:
+>     v1->v2:
+>     Add Rob Herring's Acked-by.
+>=20
+>     v2->v3:
+>     No change.
+>=20
+>  Documentation/devicetree/bindings/usb/dwc2.yaml | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/usb/dwc2.yaml=20
+> b/Documentation/devicetree/bindings/usb/dwc2.yaml
+> index 4cebce6..c6e8c0b 100644
+> --- a/Documentation/devicetree/bindings/usb/dwc2.yaml
+> +++ b/Documentation/devicetree/bindings/usb/dwc2.yaml
+> @@ -17,6 +17,13 @@ properties:
+>      oneOf:
+>        - const: brcm,bcm2835-usb
+>        - const: hisilicon,hi6220-usb
+> +      - const: ingenic,jz4775-otg
+> +      - const: ingenic,jz4780-otg
+> +      - const: ingenic,x1000-otg
 
-Bulk read to a non DMA safe buffer. Similar fix to before needed.
-Or given this is a slow path, just use a local kmalloc() for the buffer.
+The driver handles the JZ4775, JZ4780 and X1000 the exact same way.=20
+Maybe the latter two should use the JZ4775 string as the fallback? Do=20
+you know if the IP cores are any different?
 
-The reality is you are probably fine today without such care, but last
-time we discussed this the conclusion was that it would be a perfectly
-valid optimisation in regmap to return to requiring DMA safe buffers
-for bulk accesses.
+> +      - const: ingenic,x1600-otg
+> +      - const: ingenic,x1700-otg
+> +      - const: ingenic,x1830-otg
 
-> +			mutex_unlock(&data->mutex);
-> +			if (ret)
-> +				return ret;
-> +			*val = get_unaligned_le24(steps_raw);
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
->  	case IIO_CHAN_INFO_RAW:
->  		mutex_lock(&data->mutex);
->  		ret = bma400_get_accel_reg(data, chan, val);
-> @@ -752,6 +776,9 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
->  
->  		*val = data->oversampling_ratio;
->  		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_ENABLE:
-> +		*val = data->steps_enabled;
-> +		return IIO_VAL_INT;
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -817,6 +844,17 @@ static int bma400_write_raw(struct iio_dev *indio_dev,
->  		ret = bma400_set_accel_oversampling_ratio(data, val);
->  		mutex_unlock(&data->mutex);
->  		return ret;
-> +	case IIO_CHAN_INFO_ENABLE:
-> +		if (data->steps_enabled == val)
-> +			return 0;
-> +
-> +		mutex_lock(&data->mutex);
-> +		ret = regmap_update_bits(data->regmap, BMA400_INT_CONFIG1_REG,
-> +					 BMA400_STEP_INT_MSK,
-> +					 FIELD_PREP(BMA400_STEP_INT_MSK, !!val));
+Same here (and btw, first time I hear about the X1600 and X1700 ;))
 
-Why the lock for this one?
+Cheers,
+-Paul
 
-> +		mutex_unlock(&data->mutex);
-> +		data->steps_enabled = val;
-> +		return ret;
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -833,6 +871,8 @@ static int bma400_write_raw_get_fmt(struct iio_dev *indio_dev,
->  		return IIO_VAL_INT_PLUS_MICRO;
->  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
->  		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_ENABLE:
-> +		return IIO_VAL_INT;
->  	default:
->  		return -EINVAL;
->  	}
+> +      - const: ingenic,x2000-otg
+>        - items:
+>            - const: rockchip,rk3066-usb
+>            - const: snps,dwc2
+> --
+> 2.7.4
+>=20
+
 
