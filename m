@@ -2,121 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B736C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 21:21:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 100BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 22:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231443AbiDPVXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 17:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56522 "EHLO
+        id S229775AbiDPWUQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 18:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231486AbiDPVX3 (ORCPT
+        with ESMTP id S229450AbiDPWUO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 17:23:29 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA0C2458F
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 14:20:55 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id t13so12293360pgn.8
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 14:20:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=Dq+xhlV8ArSu2UejpBmVOFKT+aSiPfM12i4eY7jeTgA=;
-        b=d32BG1VG4X9CPx5WhgzJSzeTD2F6LQhNi0rWBOwy7HLoA0+v9S7a2GiQorZiR0Nqup
-         pAPxPDM0YT3XUANBr0jbD5k53O9Iazp7A5/lQQjwv1Qe3uSTX07Ka9C5zbW/kbwut3hG
-         WDXgE8qEP9IbHdQCDGw6yviNyZL1xORCxeWg0=
+        Sat, 16 Apr 2022 18:20:14 -0400
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2E9E6D;
+        Sat, 16 Apr 2022 15:17:41 -0700 (PDT)
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-e5bdd14b59so1531796fac.11;
+        Sat, 16 Apr 2022 15:17:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Dq+xhlV8ArSu2UejpBmVOFKT+aSiPfM12i4eY7jeTgA=;
-        b=6sAYF5wnxYQZCpFZ1qor8pg6D6SSt/5Wp1Ra3MFKfB9WTOvbdnoctZPPcr6//TPmOC
-         Nk79K9tvHJhnLUd5SyVrX/0XgZTANWq9xEHIw4BjcX/JkHTPsei8DVbhdsV+5JfyYuxu
-         kKEB9J2TeL8AMpPZEX4B5XGDzeg2w3Tjr1abPkAZlQWSCnUbcwhueCcNuuFl/YWwuoyl
-         XEr0GFUbzvdw4ufXoGbMv2E0F9v/Y/juRYjh24wApX8nE5cUyo1XECt2JU6JKpqmtR2u
-         K2d09MuurJUuIzGutECJVSBBHkz5Ld5ziUdvtvDqPgW85Ly/67/EbLhnVc3mFPKALyvL
-         DAhQ==
-X-Gm-Message-State: AOAM5324ezPFKjE8Kr8UL3KwsFPZjq5JG5tg+7dnkpoe+NsiTfdoL1ND
-        7RnhexldC0UJw46yYMBg4f9y/A==
-X-Google-Smtp-Source: ABdhPJxVJM6WbMiw/foVB0PGcvedJTuFvntFSCxHLudMacOuSNlqmlsbcef9x62hi1J6i53zd7ypeA==
-X-Received: by 2002:a63:7e4b:0:b0:3a5:6636:5b94 with SMTP id o11-20020a637e4b000000b003a566365b94mr3273096pgn.173.1650144055451;
-        Sat, 16 Apr 2022 14:20:55 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id ay13-20020a056a00300d00b0050a5af3fbc7sm1731994pfb.220.2022.04.16.14.20.55
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=7dPcFs565C9c1WFXikvbzN8qlHn8qJL0dUAk+7Q/+p0=;
+        b=TLa8UZ+sDlYr2yJBFVXvUBIghsB7i2bPqTGG1iR/sCGk4iZ2FkeCD+NfOv2EHeIJqZ
+         iQy25dTUbdizs7rTfsbnWCg1MqeR+MtYE1KQGh8NqsRFP4hb3+g/H7IyaKbdVUok6B74
+         vAA2IRQiCSSaY4ISdvhU0M48IK2EV6sRyT4KuZcGU+T9f/+XdjC5pTDoC+RiIQoO0KhX
+         iBKoBHkU5dZHStc1GcaOQkYKlY1tjaHcsAD/su3T49L3smtpEa10rRpfwnG1rkAqM5Xo
+         6KhPQ8bZw7/ayxE7eLA7RDpcw90s9AJa+lN8CgTNeG92Zp070zEi5nFCA2NS91k1mAaC
+         8fUw==
+X-Gm-Message-State: AOAM533j8tJmKmRHusEarV5p/Uj79+/Jtcf0fcX7fZfawBgc4wYjKxm6
+        Ozx//qzQPv2PJvI6Wdrl1w==
+X-Google-Smtp-Source: ABdhPJzcOBOFLYRBnjRkFKYm36bRA1+9aCycXC6AAhf5bxP7oOLONMn2t+h7bqsghdRFSNm7zPU0jg==
+X-Received: by 2002:a05:6871:58c:b0:e3:25e9:6792 with SMTP id u12-20020a056871058c00b000e325e96792mr3791936oan.147.1650147460477;
+        Sat, 16 Apr 2022 15:17:40 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id os2-20020a0568707d0200b000e42ef7cff2sm2727982oab.43.2022.04.16.15.17.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Apr 2022 14:20:55 -0700 (PDT)
-Date:   Sat, 16 Apr 2022 14:20:54 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Dan Li <ashimida@linux.alibaba.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Kees Cook <keescook@chromium.org>,
-        linux-kselftest@vger.kernel.org,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Shuah Khan <shuah@kernel.org>
-Subject: [GIT PULL drivers/misc] lkdtm updates for next
-Message-ID: <202204161420.168B8DDBE@keescook>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Sat, 16 Apr 2022 15:17:40 -0700 (PDT)
+Received: (nullmailer pid 3544946 invoked by uid 1000);
+        Sat, 16 Apr 2022 22:17:39 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-media@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        Maxime Ripard <mripard@kernel.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, Chen-Yu Tsai <wens@csie.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hans.verkuil@cisco.com>
+In-Reply-To: <20220415153708.637804-2-paul.kocialkowski@bootlin.com>
+References: <20220415153708.637804-1-paul.kocialkowski@bootlin.com> <20220415153708.637804-2-paul.kocialkowski@bootlin.com>
+Subject: Re: [PATCH v3 1/4] dt-bindings: media: Add Allwinner A31 ISP bindings documentation
+Date:   Sat, 16 Apr 2022 17:17:39 -0500
+Message-Id: <1650147459.143664.3544945.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+On Fri, 15 Apr 2022 17:37:05 +0200, Paul Kocialkowski wrote:
+> This introduces YAML bindings documentation for the Allwinner A31 Image
+> Signal Processor (ISP).
+> 
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> ---
+>  .../media/allwinner,sun6i-a31-isp.yaml        | 117 ++++++++++++++++++
+>  1 file changed, 117 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
+> 
 
-Please pull these lkdtm updates for -next.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Thanks!
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml:73:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
+./Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml:75:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
 
--Kees
+dtschema/dtc warnings/errors:
 
-The following changes since commit ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e:
+doc reference errors (make refcheckdocs):
 
-  Linux 5.18-rc2 (2022-04-10 14:21:36 -1000)
+See https://patchwork.ozlabs.org/patch/
 
-are available in the Git repository at:
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/lkdtm-next
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
-for you to fetch changes up to 2e53b877dc1258d4ac3de98f496bb88ec3bf5e25:
+pip3 install dtschema --upgrade
 
-  lkdtm: Add CFI_BACKWARD to test ROP mitigations (2022-04-16 13:57:23 -0700)
+Please check and re-submit.
 
-----------------------------------------------------------------
-lkdtm updates for next
-
-Christophe Leroy (1):
-      lkdtm/bugs: Don't expect thread termination without CONFIG_UBSAN_TRAP
-
-Jiasheng Jiang (1):
-      lkdtm/bugs: Check for the NULL pointer after calling kmalloc
-
-Kees Cook (4):
-      lkdtm/heap: Note conditions for SLAB_LINEAR_OVERFLOW
-      lkdtm/usercopy: Expand size of "out of frame" object
-      lkdtm: Move crashtype definitions into each category
-      lkdtm: Add CFI_BACKWARD to test ROP mitigations
-
-----------------------------------------------------------------
-
- drivers/misc/lkdtm/bugs.c               |  96 +++++++++++++++------
- drivers/misc/lkdtm/cfi.c                | 145 +++++++++++++++++++++++++++++++-
- drivers/misc/lkdtm/core.c               | 138 +++++++-----------------------
- drivers/misc/lkdtm/fortify.c            |  17 +++-
- drivers/misc/lkdtm/heap.c               |  47 ++++++++---
- drivers/misc/lkdtm/lkdtm.h              | 142 ++++++++-----------------------
- drivers/misc/lkdtm/perms.c              |  47 ++++++++---
- drivers/misc/lkdtm/powerpc.c            |  11 ++-
- drivers/misc/lkdtm/refcount.c           |  65 +++++++++-----
- drivers/misc/lkdtm/stackleak.c          |  11 ++-
- drivers/misc/lkdtm/usercopy.c           |  49 ++++++++---
- tools/testing/selftests/lkdtm/config    |   2 +
- tools/testing/selftests/lkdtm/tests.txt |   1 +
- 13 files changed, 471 insertions(+), 300 deletions(-)
-
--- 
-Kees Cook
