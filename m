@@ -2,116 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D73C4167D
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF554C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229613AbiDPCKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36564 "EHLO
+        id S229493AbiDPCQE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:16:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229699AbiDPCGY (ORCPT
+        with ESMTP id S229848AbiDPCPb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:06:24 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D222765827;
-        Fri, 15 Apr 2022 18:57:16 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KgGX26D0Pz1HBhn;
-        Sat, 16 Apr 2022 09:56:34 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 16 Apr 2022 09:57:12 +0800
-Message-ID: <6c18a27f-c983-58f3-1dc0-5192f7df232a@huawei.com>
-Date:   Sat, 16 Apr 2022 09:57:12 +0800
+        Fri, 15 Apr 2022 22:15:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90211F47E5
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:12:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650075129;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3hb96ojkoLw7AMiZ7GVNm8rfGhRjOoCkHeqA5a/3O9g=;
+        b=DyBt33JktCRpZ9x1c+yMTicN0DtU+NBqWmVhLWev59BKrfRq7hZrFdZqfGnLPu9qN+PAyH
+        OPE0lbvb9bhdWuW2oP/4iOmHgmc/Ijn3h6sMz0HaPZwL3UIKNCE92/BdmE7d8T1SfV+ew8
+        zqBGAhlSG5o0ni+IGc3auo1jASizDDo=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-339-Spu3XCRTOlWUDdLE63H-ZQ-1; Fri, 15 Apr 2022 20:56:14 -0400
+X-MC-Unique: Spu3XCRTOlWUDdLE63H-ZQ-1
+Received: by mail-qk1-f199.google.com with SMTP id c8-20020a05620a268800b0069c0f1b3206so6482880qkp.18
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 17:56:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3hb96ojkoLw7AMiZ7GVNm8rfGhRjOoCkHeqA5a/3O9g=;
+        b=NJVXLbO7ZDLQy+jqqhccYdwauOgPuCN7MReftcT6t/4VzqzWwIGfro0nyQxiPGQtle
+         +uHVcAvifWTzChtFvSIneldfcrfv2oVuBpXdKDmnzPdFdTVKYR73gtksXOCjmfjR86jO
+         I4TttvutDHfzvQ07PSK1Grz7r7/7c+xo03ucbDQSVVNrO6v6omMimqYyU33ks6tIuyzZ
+         fx0SsgGJEDBnKWCTgZFygUCK3BhIAHmfNmXY421X7YKzqKo1xKuWj4LZ6ETks2k/QYYw
+         fpIvTlDz3WUuiFkbzdc3YoYDahl/uhEOqU8Ww027cx97REuHALSt8Pk1n3kL3wgOUIHe
+         gmkQ==
+X-Gm-Message-State: AOAM5313VQRdv8girhNOA8KQ3n0JuG6rFwNqKFoo4Lay7jRl7e8jdSVP
+        xMyPw8WlGqFamOl3P8orcRz3yxKira5pMX37bZk33WYqJJ2u2tH7lGo+Otoj3rEnDlRTWLVi2BN
+        ymtQ6fvQPkd7jCfOA+vKpjnAt
+X-Received: by 2002:a05:622a:1f8c:b0:2ef:9ec3:e176 with SMTP id cb12-20020a05622a1f8c00b002ef9ec3e176mr1098434qtb.39.1650070573506;
+        Fri, 15 Apr 2022 17:56:13 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxyW8eq6CVpC4t7+D5RwWQ2Sr5wdDGnmiP1wm3b/X7cOpvlUCwWtVvnTzG1xXkamMQoqom5Bg==
+X-Received: by 2002:a05:622a:1f8c:b0:2ef:9ec3:e176 with SMTP id cb12-20020a05622a1f8c00b002ef9ec3e176mr1098430qtb.39.1650070573290;
+        Fri, 15 Apr 2022 17:56:13 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::45])
+        by smtp.gmail.com with ESMTPSA id i23-20020a05620a145700b0069c4e3b9c1dsm3170445qkl.46.2022.04.15.17.56.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 17:56:12 -0700 (PDT)
+Date:   Fri, 15 Apr 2022 17:56:09 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Chen Zhongjin <chenzhongjin@huawei.com>
+Cc:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        mark.rutland@arm.com, broonie@kernel.org, ardb@kernel.org,
+        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
+        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
+        linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v1 0/9] arm64: livepatch: Use DWARF Call Frame
+ Information for frame pointer validation
+Message-ID: <20220416005609.3znhltjlhpg475ff@treble>
+References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
+ <20220407202518.19780-1-madvenka@linux.microsoft.com>
+ <20220408002147.pk7clzruj6sawj7z@treble>
+ <15a22f4b-f04a-15e1-8f54-5b3147d8df7d@linux.microsoft.com>
+ <35c99466-9024-a7fd-9632-5d21b3e558f7@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH bpf-next v2 5/6] bpf, arm64: bpf trampoline for arm64
-Content-Language: en-US
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, <hpa@zytor.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Delyan Kratunov <delyank@fb.com>
-References: <20220414162220.1985095-1-xukuohai@huawei.com>
- <20220414162220.1985095-6-xukuohai@huawei.com>
- <CAEf4Bzb_R56wAuD-Wgg7B5brT-dcsa+5sYynY+_CFzRwg+N5AA@mail.gmail.com>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <CAEf4Bzb_R56wAuD-Wgg7B5brT-dcsa+5sYynY+_CFzRwg+N5AA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <35c99466-9024-a7fd-9632-5d21b3e558f7@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/16/2022 1:12 AM, Andrii Nakryiko wrote:
-> On Thu, Apr 14, 2022 at 9:10 AM Xu Kuohai <xukuohai@huawei.com> wrote:
->>
->> Add bpf trampoline support for arm64. Most of the logic is the same as
->> x86.
->>
->> fentry before bpf trampoline hooked:
->>  mov x9, x30
->>  nop
->>
->> fentry after bpf trampoline hooked:
->>  mov x9, x30
->>  bl  <bpf_trampoline>
->>
->> Tested on qemu, result:
->>  #55 fentry_fexit:OK
->>  #56 fentry_test:OK
->>  #58 fexit_sleep:OK
->>  #59 fexit_stress:OK
->>  #60 fexit_test:OK
->>  #67 get_func_args_test:OK
->>  #68 get_func_ip_test:OK
->>  #101 modify_return:OK
->>
->> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
->> Acked-by: Song Liu <songliubraving@fb.com>
->> ---
+On Tue, Apr 12, 2022 at 04:32:22PM +0800, Chen Zhongjin wrote:
+> By the way, I was thinking about a corner case, because arm64 CALL
+> instruction won't push LR onto stack atomically as x86. Before push LR, FP
+> to save frame there still can be some instructions such as bti, paciasp. If
+> an irq happens here, the stack frame is not constructed so the FP unwinder
+> will omit this function and provides a wrong stack trace to livepatch.
 > 
-> Can you please also take a look at [0], which is an ongoing work to
-> add support for BPF cookie to BPF trampoline-based BPF programs. It's
-> very close to being done, so it would be good if you can implement
-> that at the same time.
+> It's just a guess and I have not built the test case. But I think it's a
+> defect on arm64 that FP unwinder can't work properly on prologue and
+> epilogue. Do you have any idea about this?
 
-OK, I'll take a look and try to implemnt it.
+x86 has similar issues with frame pointers, if for example preemption or
+page fault exception occurs in a leaf function, or in a function
+prologue or epilogue, before or after the frame pointer setup.
+
+This issue is solved by the "reliable" unwinder which detects
+irqs/exceptions on the stack and reports the stack as unreliable.
+
+-- 
+Josh
+
