@@ -2,175 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DA2AC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:06:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0FEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229788AbiDPCIj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
+        id S229724AbiDPCJB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:09:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbiDPCGP (ORCPT
+        with ESMTP id S229702AbiDPCGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:06:15 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C0762A06
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 18:56:43 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KgGX82ftWzRRf7;
-        Sat, 16 Apr 2022 09:56:40 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 16 Apr 2022 09:56:41 +0800
-Subject: Re: [PATCH v1] mm: recheck PageCompound() before printing out info of
- head page
-To:     John Hubbard <jhubbard@nvidia.com>,
-        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        Matthew Wilcox <willy@infradead.org>
-CC:     Christoph Hellwig <hch@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        William Kucharski <william.kucharski@oracle.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        <linux-kernel@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
-References: <20220414235950.840409-1-naoya.horiguchi@linux.dev>
- <a07a8bab-9962-d7f4-a49a-e44ece203032@nvidia.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <21807e0d-8bd1-7b1a-dd76-85a02267b424@huawei.com>
-Date:   Sat, 16 Apr 2022 09:56:41 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Fri, 15 Apr 2022 22:06:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE22966632;
+        Fri, 15 Apr 2022 18:57:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54CFB622DA;
+        Sat, 16 Apr 2022 01:34:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7D10C385AB;
+        Sat, 16 Apr 2022 01:34:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650072870;
+        bh=G2r0hwQVplCHQ7ULSTnFo0Naiy/A7faEgp5IvkPlONE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Pq3SzjbhQTusy5kohaS/V6DGX7cLkZ2tDW7LFljSG6yIehpOqQcJxHBB5R/2ZCRgt
+         /biILVADCenQL3RyHWBcsunQiVh1BKsFzdBhqI7ZOV7NZC/OwU2UM84qtKUFnQHEl2
+         2SA01AeyL4/21GXs0IcIwHCkl5O6ISh/eiFDRMwcgJ4hhP97KHwK+s/MeU9/UV0bLy
+         WasqSynTsTSfGVKx9sj6BBpAxpBZTwHTD9R678qDMMq4wuP/vAPAKWIXs8SdbWbZVX
+         Jug5v/gcYurNurwI21M/9qWJAItbWhk2vYzSN6OSfrty2S8HCmFt3FR6ogSR8A/g5J
+         0ij0JO47VE1qQ==
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2ef4a241cc5so89939167b3.2;
+        Fri, 15 Apr 2022 18:34:30 -0700 (PDT)
+X-Gm-Message-State: AOAM531BNK5y8s9TXUZ35SyncpjtxX60sbaFQLjBm0yo6v94/ObDFz5m
+        3D3v2ffw+HRHwO5nczIoscBgJNjHFJqw9M4NZXM=
+X-Google-Smtp-Source: ABdhPJy5ZiuwR/MEz1NUAABLIKN4yUPCqmIOYhws4Ld2Q8fuVdw0YNd1v43E0sRlgvspqLO2yY6OXD6IevZ1wTBQv7Y=
+X-Received: by 2002:a81:5087:0:b0:2ef:33c1:fccd with SMTP id
+ e129-20020a815087000000b002ef33c1fccdmr1455985ywb.73.1650072869799; Fri, 15
+ Apr 2022 18:34:29 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <a07a8bab-9962-d7f4-a49a-e44ece203032@nvidia.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+References: <20220415164413.2727220-1-song@kernel.org> <YlnCBqNWxSm3M3xB@bombadil.infradead.org>
+In-Reply-To: <YlnCBqNWxSm3M3xB@bombadil.infradead.org>
+From:   Song Liu <song@kernel.org>
+Date:   Fri, 15 Apr 2022 18:34:16 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6LY8g6SZpW0CBOe22FUd2e3oSq4RW1GDxZoPmHYBqwvw@mail.gmail.com>
+Message-ID: <CAPhsuW6LY8g6SZpW0CBOe22FUd2e3oSq4RW1GDxZoPmHYBqwvw@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf 0/4] vmalloc: bpf: introduce VM_ALLOW_HUGE_VMAP
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        Christoph Hellwig <hch@infradead.org>, imbrenda@linux.ibm.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/15 9:08, John Hubbard wrote:
-> On 4/14/22 16:59, Naoya Horiguchi wrote:
->> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
->>
->> The following VM_BUG_ON_FOLIO() is triggered when memory error event
->> happens on the (thp/folio) pages which are about to be freed:
->>
->>    [ 1160.232771] page:00000000b36a8a0f refcount:1 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x16a000
->>    [ 1160.236916] page:00000000b36a8a0f refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x16a000
->>    [ 1160.240684] flags: 0x57ffffc0800000(hwpoison|node=1|zone=2|lastcpupid=0x1fffff)
->>    [ 1160.243458] raw: 0057ffffc0800000 dead000000000100 dead000000000122 0000000000000000
->>    [ 1160.246268] raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
->>    [ 1160.249197] page dumped because: VM_BUG_ON_FOLIO(!folio_test_large(folio))
->>    [ 1160.251815] ------------[ cut here ]------------
->>    [ 1160.253438] kernel BUG at include/linux/mm.h:788!
->>    [ 1160.256162] invalid opcode: 0000 [#1] PREEMPT SMP PTI
->>    [ 1160.258172] CPU: 2 PID: 115368 Comm: mceinj.sh Tainted: G            E     5.18.0-rc1-v5.18-rc1-220404-2353-005-g83111+ #3
->>    [ 1160.262049] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1.fc35 04/01/2014
->>    [ 1160.265103] RIP: 0010:dump_page.cold+0x27e/0x2bd
->>    [ 1160.266757] Code: fe ff ff 48 c7 c6 81 f1 5a 98 e9 4c fe ff ff 48 c7 c6 a1 95 59 98 e9 40 fe ff ff 48 c7 c6 50 bf 5a 98 48 89 ef e8 9d 04 6d ff <0f> 0b 41 f7 c4 ff 0f 00 00 0f 85 9f fd ff ff 49 8b 04 24 a9 00 00
->>    [ 1160.273180] RSP: 0018:ffffaa2c4d59fd18 EFLAGS: 00010292
->>    [ 1160.274969] RAX: 000000000000003e RBX: 0000000000000001 RCX: 0000000000000000
->>    [ 1160.277263] RDX: 0000000000000001 RSI: ffffffff985995a1 RDI: 00000000ffffffff
->>    [ 1160.279571] RBP: ffffdc9c45a80000 R08: 0000000000000000 R09: 00000000ffffdfff
->>    [ 1160.281794] R10: ffffaa2c4d59fb08 R11: ffffffff98940d08 R12: ffffdc9c45a80000
->>    [ 1160.283920] R13: ffffffff985b6f94 R14: 0000000000000000 R15: ffffdc9c45a80000
->>    [ 1160.286641] FS:  00007eff54ce1740(0000) GS:ffff99c67bd00000(0000) knlGS:0000000000000000
->>    [ 1160.289498] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>    [ 1160.291106] CR2: 00005628381a5f68 CR3: 0000000104712003 CR4: 0000000000170ee0
->>    [ 1160.293031] Call Trace:
->>    [ 1160.293724]  <TASK>
->>    [ 1160.294334]  get_hwpoison_page+0x47d/0x570
->>    [ 1160.295474]  memory_failure+0x106/0xaa0
->>    [ 1160.296474]  ? security_capable+0x36/0x50
->>    [ 1160.297524]  hard_offline_page_store+0x43/0x80
->>    [ 1160.298684]  kernfs_fop_write_iter+0x11c/0x1b0
->>    [ 1160.299829]  new_sync_write+0xf9/0x160
->>    [ 1160.300810]  vfs_write+0x209/0x290
->>    [ 1160.301835]  ksys_write+0x4f/0xc0
->>    [ 1160.302718]  do_syscall_64+0x3b/0x90
->>    [ 1160.303664]  entry_SYSCALL_64_after_hwframe+0x44/0xae
->>    [ 1160.304981] RIP: 0033:0x7eff54b018b7
->>
->> As shown in the RIP address, this VM_BUG_ON in folio_entire_mapcount() is
->> called from dump_page("hwpoison: unhandlable page") in get_any_page().
->> The below explains the mechanism of the race:
->>
->>    CPU 0                                       CPU 1
->>
->>      memory_failure
->>        get_hwpoison_page
->>          get_any_page
->>            dump_page
->>              compound = PageCompound
->>                                                  free_pages_prepare
->>                                                    page->flags &= ~PAGE_FLAGS_CHECK_AT_PREP
->>              folio_entire_mapcount
->>                VM_BUG_ON_FOLIO(!folio_test_large(folio))
->>
->> So in order to avoid the BUG_ON, recheck PageCompound() before __dump_page()
->> prints out information about the head page.  Precisely saying, this does
->> not close up the race, but mitigates the impact to just inaccurate info,
->> which should be acceptable.
-> 
-> Actually, I don't think it really closes the race even to that extent,
-> because a machine check (MCE, on x86) could come in at any point, so
-> rechecking (without locks) won't really completely fix such a bug, right?
+On Fri, Apr 15, 2022 at 12:05 PM Luis Chamberlain <mcgrof@kernel.org> wrote:
+>
+> On Fri, Apr 15, 2022 at 09:44:09AM -0700, Song Liu wrote:
+> > Changes v3 => v4:
+> > 1. Fix __weak module_alloc_huge; remove unused vmalloc_huge; rename
+> >    __vmalloc_huge => vmalloc_huge. (Christoph Hellwig)
+> > 2. Use vzalloc (as it was before vmalloc_no_huge) and clean up comments in
+> >    kvm_s390_pv_alloc_vm.
+> >
+> > Changes v2 => v3:
+> > 1. Use __vmalloc_huge in alloc_large_system_hash.
+> > 2. Use EXPORT_SYMBOL_GPL for new functions. (Christoph Hellwig)
+> > 3. Add more description about the issues and changes.(Christoph Hellwig,
+> >    Rick Edgecombe).
+> >
+> > Changes v1 => v2:
+> > 1. Add vmalloc_huge(). (Christoph Hellwig)
+> > 2. Add module_alloc_huge(). (Christoph Hellwig)
+> > 3. Add Fixes tag and Link tag. (Thorsten Leemhuis)
+> >
+> > Enabling HAVE_ARCH_HUGE_VMALLOC on x86_64 and use it for bpf_prog_pack has
+> > caused some issues [1], as many users of vmalloc are not yet ready to
+> > handle huge pages. To enable a more smooth transition to use huge page
+> > backed vmalloc memory, this set replaces VM_NO_HUGE_VMAP flag with an new
+> > opt-in flag, VM_ALLOW_HUGE_VMAP. More discussions about this topic can be
+> > found at [2].
+> >
+> > Patch 1 removes VM_NO_HUGE_VMAP and adds VM_ALLOW_HUGE_VMAP.
+> > Patch 2 uses VM_ALLOW_HUGE_VMAP in bpf_prog_pack.
+> >
+> > [1] https://lore.kernel.org/lkml/20220204185742.271030-1-song@kernel.org/
+> > [2] https://lore.kernel.org/linux-mm/20220330225642.1163897-1-song@kernel.org/
+>
+> Looks good except for that I think this should just wait for v5.19. The
+> fixes are so large I can't see why this needs to be rushed in other than
+> the first assumptions of the optimizations had some flaws addressed here.
 
-It might also be unsafe to do dump_mapping or dump_page_owner when page could
-be freed at any time or we might come across some use-after-free issues?
+We need these changes to fix issues like [3]. Note that there might
+still be some
+undiscovered issues with huge page backed vmalloc memory on powerpc, which
+had HAVE_ARCH_HUGE_VMALLOC enabled since the 5.15 kernel. As we
+agreed, the new opt-in flag is a safer approach here. We probably should have
+1/4 and 2/4 back ported to stable. Therefore, I think shipping this
+set now would
+give us a more reliable 5.18 release.
 
-> 
->>
->> Fixes: 74e8ee4708a8 ("mm: Turn head_compound_mapcount() into folio_entire_mapcount()")
->> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
->> ---
->> I'm actually not sure how widely the race condition could affect.
->> If we can consider this as a bug specific to memory_failure(), simply
->> replacing the dump_page() with simple printk() might be a proper fix
-> 
-> I think we should have separate, limited, special case functions that
-> are safe for use by exotic things like the MCE handler. And so just
-> doing a printk there seems better to me.
-> 
->> (I confirmed that that fix also works).  But if any other dump_page()'s
->> caller could race with freeing thp/folio, the more generic fix
->> (I'm suggesting in this patch) would be desirable.
-> 
-> *If* there are other races, they should be addressed separately, IMHO.
-> Because MCE should be a special case.
-> 
->> ---
->>   mm/debug.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/mm/debug.c b/mm/debug.c
->> index bef329bf28f0..fce63b200bea 100644
->> --- a/mm/debug.c
->> +++ b/mm/debug.c
->> @@ -93,7 +93,7 @@ static void __dump_page(struct page *page)
->>       pr_warn("page:%p refcount:%d mapcount:%d mapping:%p index:%#lx pfn:%#lx\n",
->>               page, page_ref_count(head), mapcount, mapping,
->>               page_to_pgoff(page), page_to_pfn(page));
->> -    if (compound) {
->> +    if (compound && PageCompound(page)) {
-> 
-> If people decide to keep this approach, then I'd go with something
-> that makes it clear, like:
-> 
->     /* Re-check, in a semi-doomed attempt to avoid racing with MCE: */
->     compound = PageCompound(page);
+Does this make sense?
 
-Agree. A comment will be needed or the code might look obscure.
+Thanks,
+Song
 
-Thanks!
-
-> 
-> :)
-> 
-> thanks,
-
+[3] https://lore.kernel.org/lkml/14444103-d51b-0fb3-ee63-c3f182f0b546@molgen.mpg.de/
