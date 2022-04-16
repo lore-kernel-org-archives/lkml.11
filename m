@@ -2,173 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C62CC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:20:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B3BC43219
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229756AbiDPCWI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:22:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
+        id S229794AbiDPCWk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:22:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229780AbiDPCV6 (ORCPT
+        with ESMTP id S229764AbiDPCWR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:21:58 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 156C43CA78
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:19:28 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id 4DAE23202175;
-        Fri, 15 Apr 2022 22:19:26 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Fri, 15 Apr 2022 22:19:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1650075565; x=
-        1650161965; bh=uR0sd88BLmMrf7MsnBeqOtT78ti+J0aJP6bHQT/zSLE=; b=E
-        glxmXf+SI4CDdpXMXB7wN8WI0nFOSI23u7ZE/NmHcY9fcYGe5lROyBIcXGYYigE0
-        ThIPTBbNiL8GaKnb58hGC3jCNtT4y8XeKMFhye1oE2meRNObKP9M+tBkCkiD8FMW
-        XrjpIEV11wbY5nEL+zBy7noJuVyeIMxnXQGCIvmPQ5wr3G8ynoKqd9tt/x9LTUro
-        WaJ7+oSzZWRh4LG6rzB/ngcmEH+wLjsgXd+jmsoTkSSxQ+drzoHjOlL0VikdsGLb
-        Krw3Cseicac7j+KqGDTeeqGTj9nydcJ/rSIYGxMmuYdvPAhjUPXo+d3M3fm1JIRT
-        zBxC4Sv+n+GInvJEEaUhw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1650075565; x=1650161965; bh=uR0sd88BLmMrf
-        7MsnBeqOtT78ti+J0aJP6bHQT/zSLE=; b=Gt8Zt2lEArqf2/mO0KiViDbQJwwy5
-        7c+w+8bceIV1BuacYNqOx9IXV7IqXnZK367s+nyObbpceND2jFQw6TJXgl3/LZAC
-        cBKHDkiQ0+WUYDmy1enCRpXDS3c9z89hAlSzeSaJPX/9NY5iKdnhMr0STOPifX/J
-        V7tPQ5EeCTJ/fUh731G9K56SdkrzZJyjn4M1SjNLJCgCbB/rw90ZcRdNuXZv28s5
-        tRHTdCIWP8HPL8Ld2kBvkzvsCddXaNx8rxxYWC4fNy8DNdbxSN0rPXzv1A64bLHd
-        a1gWNHRU23X1+pNkzYEglYUjC7Hr/WjAOPoVYleybNJldiebeVAU5v6UQ==
-X-ME-Sender: <xms:rSdaYpQF3FHxxFJdLWe3j1gDZh8kZQoHZ_LkqpAvSV3V4U3n1GRoaw>
-    <xme:rSdaYix0F0wSy7kbb5KSp939cAV2wSJ48fKFocqw2E2NxnJMPPGKnIM_mn7dRMiPo
-    NcN91x9mmc-l_OquQ>
-X-ME-Received: <xmr:rSdaYu1WTLDnreKBpf_s2hxCYV6N16iX-S-zJPg4QbVHzjYvaRiw7lWJ40uKboB3zZK0j2TLAtAwVHRe21bcf4qUCkXSC7uzfHr0IxBrXaggc4IrgkNXkVry5A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeliedghedtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepuffvfhfhkffffgggjggtgfesthekredttdefjeenucfhrhhomhepufgrmhhu
-    vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
-    ftrfgrthhtvghrnhepuddvleffkeejhfduieelheejteehleefieeikefgteeugefhtdev
-    keefvefgheeinecuffhomhgrihhnpehgihhthhhusgdrtghomhenucevlhhushhtvghruf
-    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsrghmuhgvlhesshhhohhllhgr
-    nhgurdhorhhg
-X-ME-Proxy: <xmx:rSdaYhBd-ZNa7gitLBsclKr6QZWZ2V3UbqPAuTNMlYzS0_HdYVoNNg>
-    <xmx:rSdaYijEzPHMR23ne-4-5q70_FDxXZgyRtY17ZyG4ziRssMGLNvFkA>
-    <xmx:rSdaYloRMvK_8NrirfsYODhuSAHB-uMLHfo7QqHECIZZ2K2r3f0xaA>
-    <xmx:rSdaYpouN75HsdXz_4oKjYy2bBVDVZIPbxIqvnxa2fKvNdxEr4e95Q>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 15 Apr 2022 22:19:24 -0400 (EDT)
-Subject: Re: [PATCH 0/2] riscv: implement Zicbom-based CMO instructions + the
- t-head variant
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wefu@redhat.com, guoren@kernel.org, atishp@atishpatra.org,
-        anup@brainfault.org, mick@ics.forth.gr, cmuellner@linux.com,
-        philipp.tomsich@vrull.eu
-References: <20220307224620.1933061-1-heiko@sntech.de> <YllWTN+15CoskNBt@Red>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <70da24dd-2d03-fc49-151d-daabb315a5f6@sholland.org>
-Date:   Fri, 15 Apr 2022 21:19:23 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Fri, 15 Apr 2022 22:22:17 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0989258E4F;
+        Fri, 15 Apr 2022 19:19:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=bUAJkklJHXouTvJvon6xbqqyKuElapQGuj6PBphCcfo=; b=Xar28tDBlyh51k6qHs4/qv6klW
+        JKgvCYizkt8JvdgPqL/H1j3LkMzhitRPp0hQ0HS6a9NWVvVxTToJjKNkJI7Dyn4yWIPHbqL5glTOM
+        OypgRvApQK3LjTjzi6JSMObnW8ON+wq2JRYUf9KOOtk6/OJMAh77Vv9toU//TkDz/65KgGQBzrs/P
+        fAOhOwvrC+mjeqg4aSRZLMme4Ue6z5bBKOSbhwkdO3f3xMQOA9b23o/z+AUqtaLyHbnLFOxkvvFsn
+        oM7JwAFu8SGO+AVK146Dzu8JrS2izXKe/H42yEiaHvsOuw+P2NyOL6rV3BSXPkGJEMroIniPDimcU
+        8VWh4f1Q==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nfXSF-00BuRc-6s; Sat, 16 Apr 2022 01:42:27 +0000
+Date:   Fri, 15 Apr 2022 18:42:27 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Song Liu <song@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        Christoph Hellwig <hch@infradead.org>, imbrenda@linux.ibm.com
+Subject: Re: [PATCH v4 bpf 0/4] vmalloc: bpf: introduce VM_ALLOW_HUGE_VMAP
+Message-ID: <YlofA8u760BE8e0B@bombadil.infradead.org>
+References: <20220415164413.2727220-1-song@kernel.org>
+ <YlnCBqNWxSm3M3xB@bombadil.infradead.org>
+ <CAPhsuW6LY8g6SZpW0CBOe22FUd2e3oSq4RW1GDxZoPmHYBqwvw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <YllWTN+15CoskNBt@Red>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPhsuW6LY8g6SZpW0CBOe22FUd2e3oSq4RW1GDxZoPmHYBqwvw@mail.gmail.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/15/22 6:26 AM, Corentin Labbe wrote:
-> Le Mon, Mar 07, 2022 at 11:46:18PM +0100, Heiko Stuebner a écrit :
->> This series is based on the alternatives changes done in my svpbmt series
->> and thus also depends on Atish's isa-extension parsing series.
->>
->> It implements using the cache-management instructions from the  Zicbom-
->> extension to handle cache flush, etc actions on platforms needing them.
->>
->> SoCs using cpu cores from T-Head like the Allwinne D1 implement a
->> different set of cache instructions. But while they are different,
->> instructions they provide the same functionality, so a variant can
->> easly hook into the existing alternatives mechanism on those.
->>
->>
+On Fri, Apr 15, 2022 at 06:34:16PM -0700, Song Liu wrote:
+> On Fri, Apr 15, 2022 at 12:05 PM Luis Chamberlain <mcgrof@kernel.org> wrote:
+> >
+> > On Fri, Apr 15, 2022 at 09:44:09AM -0700, Song Liu wrote:
+> > > Changes v3 => v4:
+> > > 1. Fix __weak module_alloc_huge; remove unused vmalloc_huge; rename
+> > >    __vmalloc_huge => vmalloc_huge. (Christoph Hellwig)
+> > > 2. Use vzalloc (as it was before vmalloc_no_huge) and clean up comments in
+> > >    kvm_s390_pv_alloc_vm.
+> > >
+> > > Changes v2 => v3:
+> > > 1. Use __vmalloc_huge in alloc_large_system_hash.
+> > > 2. Use EXPORT_SYMBOL_GPL for new functions. (Christoph Hellwig)
+> > > 3. Add more description about the issues and changes.(Christoph Hellwig,
+> > >    Rick Edgecombe).
+> > >
+> > > Changes v1 => v2:
+> > > 1. Add vmalloc_huge(). (Christoph Hellwig)
+> > > 2. Add module_alloc_huge(). (Christoph Hellwig)
+> > > 3. Add Fixes tag and Link tag. (Thorsten Leemhuis)
+> > >
+> > > Enabling HAVE_ARCH_HUGE_VMALLOC on x86_64 and use it for bpf_prog_pack has
+> > > caused some issues [1], as many users of vmalloc are not yet ready to
+> > > handle huge pages. To enable a more smooth transition to use huge page
+> > > backed vmalloc memory, this set replaces VM_NO_HUGE_VMAP flag with an new
+> > > opt-in flag, VM_ALLOW_HUGE_VMAP. More discussions about this topic can be
+> > > found at [2].
+> > >
+> > > Patch 1 removes VM_NO_HUGE_VMAP and adds VM_ALLOW_HUGE_VMAP.
+> > > Patch 2 uses VM_ALLOW_HUGE_VMAP in bpf_prog_pack.
+> > >
+> > > [1] https://lore.kernel.org/lkml/20220204185742.271030-1-song@kernel.org/
+> > > [2] https://lore.kernel.org/linux-mm/20220330225642.1163897-1-song@kernel.org/
+> >
+> > Looks good except for that I think this should just wait for v5.19. The
+> > fixes are so large I can't see why this needs to be rushed in other than
+> > the first assumptions of the optimizations had some flaws addressed here.
 > 
-> Hello
+> We need these changes to fix issues like [3]. Note that there might
+> still be some
+> undiscovered issues with huge page backed vmalloc memory on powerpc, which
+> had HAVE_ARCH_HUGE_VMALLOC enabled since the 5.15 kernel. As we
+> agreed, the new opt-in flag is a safer approach here. We probably should have
+> 1/4 and 2/4 back ported to stable. Therefore, I think shipping this
+> set now would
+> give us a more reliable 5.18 release.
 > 
-> I am testing https://github.com/smaeul/linux.git branch:origin/riscv/d1-wip which contain this serie.
-> 
-> I am hitting a buffer corruption problem with DMA.
-> The sun8i-ce crypto driver fail self tests due to "device overran destination buffer".
-> In fact the buffer is not overran by device but by dma_map_single() operation.
-> 
-> The following small code show the problem:
-> 
-> dma_addr_t dma;
-> u8 *buf;
-> #define BSIZE 2048
-> #define DMASIZE 16
-> 
-> buf = kmalloc(BSIZE, GFP_KERNEL | GFP_DMA);
-> for (i = 0; i < BSIZE; i++)
->     buf[i] = 0xFE;
-> print_hex_dump(KERN_INFO, "DMATEST1:", DUMP_PREFIX_NONE, 16, 4, buf, 256, false);
-> dma = dma_map_single(ce->dev, buf, DMASIZE, DMA_FROM_DEVICE);
+> Does this make sense?
 
-This function (through dma_direct_map_page()) ends up calling
-arch_sync_dma_for_device(..., ..., DMA_FROM_DEVICE), which invalidates the CPU's
-cache. This is the same thing other architectures do (at least arm, arm64,
-openrisc, and powerpc). So this appears to be working as intended.
+Yes absolutely, but that sounds like that optimization should just be
+reverted completely from v5.18 isntead then no? Or if one can skip the
+optimizations for v5.18 with a small patch, and then enable for v5.19.
 
-Regards,
-Samuel
-
-> dma_unmap_single(ce->dev, dma, DMASIZE, DMA_FROM_DEVICE);
-> print_hex_dump(KERN_INFO, "DMATEST3:", DUMP_PREFIX_NONE, 16, 4, buf, 256, false);
-> 
-> Will lead to:
-> [    2.960040] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    2.965354] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    2.970709] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    2.976069] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    2.981440] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    2.986814] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    2.992188] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    2.997560] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    3.002934] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    3.008307] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    3.013680] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    3.019054] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    3.024427] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    3.029802] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    3.035175] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    3.040546] DMATEST1:fefefefe fefefefe fefefefe fefefefe
-> [    3.401647] DMATEST3:a9c3a9c3 a9c3a9c3 a9c3a9c3 a9c3a9c3
-> [    3.406982] DMATEST3:a9c3a9c3 a9c3a9c3 a9c3a9c3 a9c3a9c3
-> [    3.412350] DMATEST3:a9c3a9c3 a9c3a9c3 a9c3a9c3 a9c3a9c3
-> [    3.417720] DMATEST3:a9c3a9c3 a9c3a9c3 a9c3a9c3 a9c3a9c3
-> [    3.423094] DMATEST3:fefefefe fefefefe fefefefe fefefefe
-> [    3.428468] DMATEST3:fefefefe fefefefe fefefefe fefefefe
-> [    3.433841] DMATEST3:fefefefe fefefefe fefefefe fefefefe
-> [    3.439213] DMATEST3:fefefefe fefefefe fefefefe fefefefe
-> [    3.444588] DMATEST3:fefefefe fefefefe fefefefe fefefefe
-> [    3.449962] DMATEST3:fefefefe fefefefe fefefefe fefefefe
-> [    3.455334] DMATEST3:fefefefe fefefefe fefefefe fefefefe
-> [    3.460707] DMATEST3:fefefefe fefefefe fefefefe fefefefe
-> [    3.466081] DMATEST3:fefefefe fefefefe fefefefe fefefefe
-> [    3.471454] DMATEST3:fefefefe fefefefe fefefefe fefefefe
-> [    3.476828] DMATEST3:fefefefe fefefefe fefefefe fefefefe
-> [    3.482200] DMATEST3:fefefefe fefefefe fefefefe fefefefe
-> 
-> Even with no DMA action, the buffer is corrupted.
-> 
-> Regards
-> 
-
+  Luis
