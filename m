@@ -2,236 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B02C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:05:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 722BEC43219
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:05:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229760AbiDPCHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:07:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34880 "EHLO
+        id S229783AbiDPCHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:07:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbiDPCGB (ORCPT
+        with ESMTP id S229625AbiDPCGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:06:01 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354692194;
-        Fri, 15 Apr 2022 18:59:22 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id 91AF53202184;
-        Fri, 15 Apr 2022 21:59:18 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Fri, 15 Apr 2022 21:59:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1650074358; x=
-        1650160758; bh=DsIZSVRAwE42Gn8ZixFtjn0uMkrlMndqIZ6G0Y5AI/4=; b=v
-        ofQvzTSJzQ9MkUg0exyz/hODYtwDf1fGYIm3zRStBhNtrkRlgowagO+bOWO8cUzh
-        q23DqehxcTwcrRlb4RfTk3fZO7kOhZWcRyzVf3KmVDHn3eRXjFIaBV9WLcCWbq2a
-        RU3rEmvtfGNhsbbC2LlpCuOzV2RXVIDhLCJXJ87rCIxE4KuofTPeNiJrHYVNhDsR
-        2bn378XD2Mn48LTLZMYMIc2snNQ6XeI8eIiLsvTSf09OdL67+q1WmtqZgxqA4AUn
-        QpzkdfOdaXX3ccjSqaUyqKyCfE/yDYKNctOEUoTXgr+hgnpcAXUWXNN93gZ57NZf
-        5SMLiqXmGRi2gSn/lDJyQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1650074358; x=1650160758; bh=DsIZSVRAwE42G
-        n8ZixFtjn0uMkrlMndqIZ6G0Y5AI/4=; b=bYVuTgUYBsQTNnlxU5US0jyiPBbXZ
-        mFG6lTqRrEr42liDgqrarHGFmcWTM3tAAE/8WhCz2EsgxzGoMFti1oHtWF64G3Ss
-        yrDzkMM5P3QgAeixj3hzJwfqda2x2KBtcTqjHRXxOzLIj8Y0Avio6yaJblorrK0Z
-        hS/JXCOtbLwu2ERmhWfDJagU3nMqUNctjRzGax38Shhk1yu43esCLMHYAUBzeU3w
-        2sBADRZJGDwuLDdo73dbxjpSJQLN50TL4hHfUHTc9qYXy9TWSmCPRWBpIfneQdDr
-        MMTNowdfCXZTHpc7mqr6nHzjPEYLK+trxeIGkIZ0mO66rmNll7p5zWeZA==
-X-ME-Sender: <xms:9SJaYvpc2lX9S77Y_psFb_TnC2je-Wlk1MQe_tfJyC7_IPLiPFALYw>
-    <xme:9SJaYppO8Ie-u9jC4_2nnMypdN9K32jQZk4WBnZ0E0IH8--zOEoMENqikEnDB2ExS
-    H3woy9YAY-C6rcb0A>
-X-ME-Received: <xmr:9SJaYsMrSMF-8DAbhBq7N3BcxdY-2JM88babmgpCyWtpYOf-95uQhD94IyAVSY4zj2dlSqUK7kvvis1sjTHoWyxJLelH2YcLHTFhp7WwN3AcM7PE78Az6XCE-A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeliedggeejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepuffvfhfhkffffgggjggtgfesthejredttdefjeenucfhrhhomhepufgrmhhu
-    vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
-    ftrfgrthhtvghrnhepffeigfelvdfgtdetleduveevgfdutdeiuddtveetvdfhffejlefh
-    heetjeetvdelnecuffhomhgrihhnpeguvghvihgtvghtrhgvvgdrohhrghenucevlhhush
-    htvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsrghmuhgvlhesshhh
-    ohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:9SJaYi5As9kW734rNq9qWZhgGxtOhnvlUmZL_v-yrLAXRFHVFcrGMQ>
-    <xmx:9SJaYu5rpwcaHozDnmeQ0KRPrMDDeBN-VLpR3VTrQ_RUfKcJ04HUJA>
-    <xmx:9SJaYqhkjxHh8wMLMpeP9SJtZstFEHq2IJ6gblbyz0Gtug3ilQuXeA>
-    <xmx:9iJaYhqU14ncJuMjdwFgtppOKgNv_VuguB75Be41zWPEUje1WYVizg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 15 Apr 2022 21:59:16 -0400 (EDT)
-Subject: Re: [PATCH v3 1/4] dt-bindings: media: Add Allwinner A31 ISP bindings
- documentation
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-References: <20220415153708.637804-1-paul.kocialkowski@bootlin.com>
- <20220415153708.637804-2-paul.kocialkowski@bootlin.com>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <19aa74b7-0096-87c5-ef2c-9a135ad5505a@sholland.org>
-Date:   Fri, 15 Apr 2022 20:59:13 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Fri, 15 Apr 2022 22:06:04 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270C0F1E94
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 18:55:32 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id r8so9764766oib.5
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 18:55:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uqKd1Orxl/LGzBg+7rmnNDHUMWN7s9B1LCDOy65IlQA=;
+        b=N364O5BnRkqe8gLCY6+6Riw2dvoQSe+pV8jWLMWkyKwDJRiXRodeWCF6dOX1MO0Y4x
+         l5vzEFdxw764IXFw5pt2I5BaJ+tiXzVWOV0DHxMes3hgEwxVqH25T3a+HXfXVKNmujhX
+         hMQBDzRqJbeKLwx5z5Dohu9PQwC4xp2QffevxBiof/Ljud8I/BkLx1YhGNh15rnHV943
+         d3fweG1MjzrT+eHTNW/Vt4UAwMp0KpdTnPm+n/SjiieMqWl+NZC15j/By41/vK3ysxGi
+         Fmv3PXICjX+HefHAu07XpbCXz3A+PWe8enneamXLGhzN05xmtj+7sxMQyENtpcQY3+mV
+         3ZaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uqKd1Orxl/LGzBg+7rmnNDHUMWN7s9B1LCDOy65IlQA=;
+        b=pBl1Shv4Os86/3/nNEPdG7jo1l0dFDCBorSSBrqYxPRWPQWqFmCeXWSrVQDrsCEOWK
+         HtBY7KihBcEP2LfFhgy8bR3MCNwF/kW+UsFxETTitwLNn1CbEy5kPh9Pb7o/mY1RuvpE
+         MimY2Fewzj2ftP7fKuZdyxNTDtynge41PQi/BZejOCuMGApxL3TnrzW5x6r6lDMgt2hl
+         9rKGSpr2Ky0sVjt7WnmfkGCvjgdzxTf0V6/kKelzB8YjjG/CyqrQ/Jf7rur8M5GNaQg7
+         bw+LUzZY49Giv/KfEB2OOLsLf+B+rQRfkRMd0xwNIxzDqhl8M5W7fxQD6YWJg/sX1Nug
+         HP6Q==
+X-Gm-Message-State: AOAM533PX+wAiVJcdNQIOB5gJX6EzzvbSxOeQV2X0+1W94fsGfGFYV1k
+        WAz+sWf3GKnUGRh7yIBxHkL8Va2ahqOj9ILbRJnGPA==
+X-Google-Smtp-Source: ABdhPJzO4dFfJiTJAfRiEarg+WpfXqOs2uIeFBF1W0TiWPqIMzBObZpTJ1JBTD1oZF/evYqedyW8yQ==
+X-Received: by 2002:a17:90b:4d01:b0:1d0:f39f:6073 with SMTP id mw1-20020a17090b4d0100b001d0f39f6073mr1618465pjb.175.1650072405373;
+        Fri, 15 Apr 2022 18:26:45 -0700 (PDT)
+Received: from localhost.localdomain ([134.195.101.46])
+        by smtp.gmail.com with ESMTPSA id n184-20020a6227c1000000b0050a3bbd36d6sm3313260pfn.204.2022.04.15.18.26.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 18:26:44 -0700 (PDT)
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Leo Yan <leo.yan@linaro.org>
+Subject: [PATCH] interconnect: qcom: msm8939: Use icc_sync_state
+Date:   Sat, 16 Apr 2022 09:26:34 +0800
+Message-Id: <20220416012634.479617-1-leo.yan@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20220415153708.637804-2-paul.kocialkowski@bootlin.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/15/22 10:37 AM, Paul Kocialkowski wrote:
-> This introduces YAML bindings documentation for the Allwinner A31 Image
-> Signal Processor (ISP).
-> 
-> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> ---
->  .../media/allwinner,sun6i-a31-isp.yaml        | 117 ++++++++++++++++++
->  1 file changed, 117 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> new file mode 100644
-> index 000000000000..ffca216b841f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> @@ -0,0 +1,117 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/media/allwinner,sun6i-a31-isp.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Allwinner A31 Image Signal Processor Driver (ISP) Device Tree Bindings
-> +
-> +maintainers:
-> +  - Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - allwinner,sun6i-a31-isp
-> +      - allwinner,sun8i-v3s-isp
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    items:
-> +      - description: Bus Clock
-> +      - description: Module Clock
-> +      - description: DRAM Clock
-> +
-> +  clock-names:
-> +    items:
-> +      - const: bus
-> +      - const: mod
-> +      - const: ram
-> +
-> +  resets:
-> +    maxItems: 1
-> +
-> +  ports:
-> +    $ref: /schemas/graph.yaml#/properties/ports
-> +
-> +    properties:
-> +      port@0:
-> +        $ref: /schemas/graph.yaml#/$defs/port-base
-> +        description: CSI0 input port
-> +
-> +        properties:
-> +          reg:
-> +            const: 0
-> +
-> +          endpoint:
-> +            $ref: /schemas/graph.yaml#/$defs/endpoint-base
-> +            unevaluatedProperties: false
-> +
-> +        additionalProperties: false
-> +
-> +      port@1:
-> +        $ref: /schemas/graph.yaml#/$defs/port-base
-> +        description: CSI1 input port
-> +
-> +        properties:
-> +          reg:
-> +            const: 0
+It's fashion to use the icc_sync_state callback to notify the framework
+when all consumers are probed, so that the bandwidth request doesn't
+need to stay on maximum value.
 
-Should be "const: 1".
+Do the same thing for msm8939 driver.
 
-Otherwise,
-Reviewed-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+---
+ drivers/interconnect/qcom/msm8939.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> +
-> +          endpoint:
-> +            $ref: /schemas/graph.yaml#/$defs/endpoint-base
-> +            unevaluatedProperties: false
-> +
-> +        additionalProperties: false
-> +
-> +    anyOf:
-> +      - required:
-> +        - port@0
-> +      - required:
-> +        - port@1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - clock-names
-> +  - resets
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/clock/sun8i-v3s-ccu.h>
-> +    #include <dt-bindings/reset/sun8i-v3s-ccu.h>
-> +
-> +    isp: isp@1cb8000 {
-> +        compatible = "allwinner,sun8i-v3s-isp";
-> +        reg = <0x01cb8000 0x1000>;
-> +        interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks = <&ccu CLK_BUS_CSI>,
-> +             <&ccu CLK_CSI1_SCLK>,
-> +             <&ccu CLK_DRAM_CSI>;
-> +        clock-names = "bus", "mod", "ram";
-> +        resets = <&ccu RST_BUS_CSI>;
-> +
-> +        ports {
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +
-> +            port@0 {
-> +                reg = <0>;
-> +
-> +                isp_in_csi0: endpoint {
-> +                    remote-endpoint = <&csi0_out_isp>;
-> +                };
-> +            };
-> +        };
-> +    };
-> +
-> +...
-> 
+diff --git a/drivers/interconnect/qcom/msm8939.c b/drivers/interconnect/qcom/msm8939.c
+index f9c2d7d3100d..ca5f611d33b0 100644
+--- a/drivers/interconnect/qcom/msm8939.c
++++ b/drivers/interconnect/qcom/msm8939.c
+@@ -1423,6 +1423,7 @@ static struct platform_driver msm8939_noc_driver = {
+ 	.driver = {
+ 		.name = "qnoc-msm8939",
+ 		.of_match_table = msm8939_noc_of_match,
++		.sync_state = icc_sync_state,
+ 	},
+ };
+ module_platform_driver(msm8939_noc_driver);
+-- 
+2.25.1
 
