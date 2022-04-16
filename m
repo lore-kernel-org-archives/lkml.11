@@ -2,106 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 079D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F263C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:15:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231726AbiDPLRq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 07:17:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36998 "EHLO
+        id S231736AbiDPLR6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 07:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231740AbiDPLRf (ORCPT
+        with ESMTP id S231739AbiDPLRy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 07:17:35 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119861C93A;
-        Sat, 16 Apr 2022 04:15:02 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so6286580wmn.1;
-        Sat, 16 Apr 2022 04:15:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uEhSMDHJtiuwdrj4dJJyu97KIVJOOD+nk/JiQfVUpZY=;
-        b=dAvG/VUOiUi0sXwkQHoF+5NVAuiQMfKZcP1vqgjbrBMkds32W4S/eU8nfu9IqtPPMh
-         RAk15ZLBRCzkyRWKkGVGJpTDzaSReBgjw+tB0S7YEMHgWwyGmXlgdNTTvue7wzattbWH
-         6/vvwJXkAwZvshn54gexQbZcinhpcI4xzvXg3WLmsxJL7y0INjgfbhPUZKVTWaVHWPZs
-         hUMyU6iVTLqHlA8iSHqeZj8/wn8dBw8KYI6VkbA5YMmL7AkLk5GoX42GmWcNeitGY8lq
-         2LT9Kqd1NhYAjJYGdAgPh9rKu9HOKoKFVzLMflSZnl+3U1TQg8kn1sKUX7Tgj0kUP149
-         66lw==
+        Sat, 16 Apr 2022 07:17:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C87D93C72F
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 04:15:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650107718;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ztaTsvLTF8cbNkdtRcQLTl5LXI+kwPm0KvDnKWHh+yU=;
+        b=OtSXmCG093KSnj73HTBGB6slko2PYOPdu2CIat5VlcYBk0STwmcO6QyguqnSLd9Cbz9qnA
+        KO8M7t1HJzzVCx3eR9sv+hiRp0cEOucE0WHUhfuPdZ9gScPPYPa1RSEfgakxYP9Fo2q8xC
+        A5yk/+u8XCLnH0MMbkHwZLxNS50eW8Y=
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com
+ [209.85.214.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-497-Xi3c5jD8NzOlrimWjKYdWw-1; Sat, 16 Apr 2022 07:15:17 -0400
+X-MC-Unique: Xi3c5jD8NzOlrimWjKYdWw-1
+Received: by mail-pl1-f200.google.com with SMTP id u8-20020a170903124800b0015195a5826cso5733276plh.4
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 04:15:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=uEhSMDHJtiuwdrj4dJJyu97KIVJOOD+nk/JiQfVUpZY=;
-        b=qh+bPghtsryiXw4+hE19bCotLpBxtz2JaRNrlFiuKhuGQ+eq0uORnrneCqtN20KkA0
-         pxrhSD8aGp77LsVBoFU5FcVnc3cjhlkyBMZbdjiFYBD5uJz2xzdOwnT0FTn64qvyKgVh
-         Z3bp3Nam2+/FOOJAE4EGz8/MSAsTjrzRQNbncRP3lu37Yhac7qKqFHWJuo1jSwwT4bVC
-         ucX4eUIo0NlhqDm2YXguct9Z1+f6gqtc89c7mcbWuyPORjQ7g1ktHGFuRnGnzyWBHJ7a
-         fO2/P39f+qsND0zvbx+GFTWUmEKz5+XAB0o6AusS8GcYbq5MAEjMG8zy1P6JIhM5yXnE
-         K9Mw==
-X-Gm-Message-State: AOAM5315ULPVazWXMF/BwNha9rWcYZgaR8sKZuLUMfCRm0DFDK1VDBSJ
-        K3OcSC1Xk5cXUdsYR9l3q4k=
-X-Google-Smtp-Source: ABdhPJxpvZFQaoNKdlYwE8qfxCxznE1bYGAnUYXCQP5HCgyf90I8tzuMZa59kHFBG+rR05HyfPdo7A==
-X-Received: by 2002:a05:600c:1e8a:b0:38e:d57d:a3fe with SMTP id be10-20020a05600c1e8a00b0038ed57da3femr7027147wmb.59.1650107700553;
-        Sat, 16 Apr 2022 04:15:00 -0700 (PDT)
-Received: from alaa-emad ([197.57.90.163])
-        by smtp.gmail.com with ESMTPSA id 2-20020a1c1902000000b00380d3873d6asm7344196wmz.43.2022.04.16.04.15.00
+        bh=ztaTsvLTF8cbNkdtRcQLTl5LXI+kwPm0KvDnKWHh+yU=;
+        b=g8end7BDJVzmjzgOiCJELikM33ngRMi6fVdgIppzkMzyL+zrRNyw9M/nuH2J4SYSoN
+         HVSX3yPDLTjtW/fcoKuoVY1pxgPfQZ4UYKtpdRsEvs6ZSUfnA7ulrGZ19mQ+F8xvRrL+
+         v04ty9QvBgM6gw0HNDw6Cyx5q+9AgCa9w2H+cf0mB1dzDH1O8jUFaQVBijZxMoGk4L6r
+         WqIj+PLyzQjJz6lHR/biEudm0fuHSKqA3Tyb4wSL4IX5J98P8ZsQrrGm4GzJogfJZGFV
+         wor49JYr/vOrB9qvECpW3/ljX/NurPgvgSBavVrcip4pgjh81XZ/0kvS+8WJOiyi6bof
+         eFtA==
+X-Gm-Message-State: AOAM532uswr7KbdjpKdMt0sAcn1tS9EToWTdrOGyeTrsZNCTpaaCCnJu
+        sxMKWeifd1B2VO8dX//Ctic/gAGqS/DDmWMwLRMuZ2G28vAKItuQS7LkuVjacxCN67K6y/r23Fu
+        DD9VqMul6O+J4RJNbRNDmLeKe
+X-Received: by 2002:a17:902:f70f:b0:153:ebfe:21b3 with SMTP id h15-20020a170902f70f00b00153ebfe21b3mr3126277plo.119.1650107716075;
+        Sat, 16 Apr 2022 04:15:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyVQv9EVl2R9qgPnHbNZm4Vfw0djxGkPIQ94EL5azYrNUvYYp0MdOtCzgQcwiIKyQpzuftx6A==
+X-Received: by 2002:a17:902:f70f:b0:153:ebfe:21b3 with SMTP id h15-20020a170902f70f00b00153ebfe21b3mr3126254plo.119.1650107715783;
+        Sat, 16 Apr 2022 04:15:15 -0700 (PDT)
+Received: from localhost.localdomain.com ([103.59.74.34])
+        by smtp.gmail.com with ESMTPSA id h18-20020a056a001a5200b0050a43bb7ae6sm4404565pfv.161.2022.04.16.04.15.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Apr 2022 04:15:00 -0700 (PDT)
-From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-To:     outreachy@lists.linux.dev
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        Sat, 16 Apr 2022 04:15:15 -0700 (PDT)
+From:   Suresh Kumar <surkumar@redhat.com>
+X-Google-Original-From: Suresh Kumar <suresh2514@gmail.com>
+To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
         davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ira.weiny@intel.com,
-        eng.alaamohamedsoliman.am@gmail.com
-Subject: [PATCH v3] intel: igb: igb_ethtool.c: Convert kmap() to kmap_local_page()
-Date:   Sat, 16 Apr 2022 13:14:57 +0200
-Message-Id: <20220416111457.5868-1-eng.alaamohamedsoliman.am@gmail.com>
-X-Mailer: git-send-email 2.35.2
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     suresh kumar <suresh2514@gmail.com>
+Subject: [PATCH] bonding: do not discard lowest hash bit for non layer3+4 hashing
+Date:   Sat, 16 Apr 2022 16:44:10 +0530
+Message-Id: <20220416111410.356132-1-suresh2514@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert kmap() to kmap_local_page()
+From: suresh kumar <suresh2514@gmail.com>
 
-With kmap_local_page(), the mapping is per thread, CPU local and not
-globally visible.
+Commit b5f862180d70 was introduced to discard lowest hash bit for layer3+4 hashing
+but it also removes last bit from non layer3+4 hashing
 
-Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
----
-changes in V2:
-	fix kunmap_local path value to take address of the mapped page.
----
-changes in V3:
-	edit commit message to be clearer
----
- drivers/net/ethernet/intel/igb/igb_ethtool.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Below script shows layer2+3 hashing will result in same slave to be used with above commit.
+$ cat hash.py
+#/usr/bin/python3.6
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-index 2a5782063f4c..c14fc871dd41 100644
---- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-+++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-@@ -1798,14 +1798,14 @@ static int igb_check_lbtest_frame(struct igb_rx_buffer *rx_buffer,
- 
- 	frame_size >>= 1;
- 
--	data = kmap(rx_buffer->page);
-+	data = kmap_local_page(rx_buffer->page);
- 
- 	if (data[3] != 0xFF ||
- 	    data[frame_size + 10] != 0xBE ||
- 	    data[frame_size + 12] != 0xAF)
- 		match = false;
- 
--	kunmap(rx_buffer->page);
-+	kunmap_local(data);
- 
- 	return match;
+h_dests=[0xa0, 0xa1]
+h_source=0xe3
+hproto=0x8
+saddr=0x1e7aa8c0
+daddr=0x17aa8c0
+
+for h_dest in h_dests:
+    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
+    hash ^= hash >> 16
+    hash ^= hash >> 8
+    print(hash)
+
+print("with last bit removed")
+for h_dest in h_dests:
+    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
+    hash ^= hash >> 16
+    hash ^= hash >> 8
+    hash = hash >> 1
+    print(hash)
+
+Output:
+$ python3.6 hash.py
+522133332
+522133333   <-------------- will result in both slaves being used
+
+with last bit removed
+261066666
+261066666   <-------------- only single slave used
+
+Signed-off-by: suresh kumar <suresh2514@gmail.com>
+---
+ drivers/net/bonding/bond_main.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 15eddca7b4b6..38e152548126 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -4027,14 +4027,19 @@ static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb, const v
+ 	return true;
  }
+ 
+-static u32 bond_ip_hash(u32 hash, struct flow_keys *flow)
++static u32 bond_ip_hash(u32 hash, struct flow_keys *flow, int xmit_policy)
+ {
+ 	hash ^= (__force u32)flow_get_u32_dst(flow) ^
+ 		(__force u32)flow_get_u32_src(flow);
+ 	hash ^= (hash >> 16);
+ 	hash ^= (hash >> 8);
++
+ 	/* discard lowest hash bit to deal with the common even ports pattern */
+-	return hash >> 1;
++	if (xmit_policy == BOND_XMIT_POLICY_LAYER34 ||
++		xmit_policy == BOND_XMIT_POLICY_ENCAP34)
++		return hash >> 1;
++
++	return hash;
+ }
+ 
+ /* Generate hash based on xmit policy. If @skb is given it is used to linearize
+@@ -4064,7 +4069,7 @@ static u32 __bond_xmit_hash(struct bonding *bond, struct sk_buff *skb, const voi
+ 			memcpy(&hash, &flow.ports.ports, sizeof(hash));
+ 	}
+ 
+-	return bond_ip_hash(hash, &flow);
++	return bond_ip_hash(hash, &flow, bond->params.xmit_policy);
+ }
+ 
+ /**
+@@ -5259,7 +5264,7 @@ static u32 bond_sk_hash_l34(struct sock *sk)
+ 	/* L4 */
+ 	memcpy(&hash, &flow.ports.ports, sizeof(hash));
+ 	/* L3 */
+-	return bond_ip_hash(hash, &flow);
++	return bond_ip_hash(hash, &flow, BOND_XMIT_POLICY_LAYER34);
+ }
+ 
+ static struct net_device *__bond_sk_get_lower_dev(struct bonding *bond,
 -- 
-2.35.2
+2.27.0
 
