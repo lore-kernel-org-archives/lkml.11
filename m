@@ -2,68 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09A6AC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D73C4167D
 	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229593AbiDPCKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37818 "EHLO
+        id S229613AbiDPCKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbiDPCGY (ORCPT
+        with ESMTP id S229699AbiDPCGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 15 Apr 2022 22:06:24 -0400
-Received: from relay.hostedemail.com (relay.hostedemail.com [64.99.140.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76A520F6D
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:02:12 -0700 (PDT)
-Received: from omf12.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay07.hostedemail.com (Postfix) with ESMTP id D339C20CEC;
-        Sat, 16 Apr 2022 01:46:35 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf12.hostedemail.com (Postfix) with ESMTPA id EE61D18;
-        Sat, 16 Apr 2022 01:46:34 +0000 (UTC)
-Message-ID: <5ee2984b7c0130df1ddbe8b8fc72b66331b214b0.camel@perches.com>
-Subject: Re: [PATCH] MAINTAINERS: Add x86 unwinders entry
-From:   Joe Perches <joe@perches.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org
-Cc:     linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>
-Date:   Fri, 15 Apr 2022 18:46:33 -0700
-In-Reply-To: <7b9eb43c029d20676d9173ec5b2c675b43e2a99c.1650068519.git.jpoimboe@redhat.com>
-References: <7b9eb43c029d20676d9173ec5b2c675b43e2a99c.1650068519.git.jpoimboe@redhat.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D222765827;
+        Fri, 15 Apr 2022 18:57:16 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KgGX26D0Pz1HBhn;
+        Sat, 16 Apr 2022 09:56:34 +0800 (CST)
+Received: from [10.67.111.192] (10.67.111.192) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Apr 2022 09:57:12 +0800
+Message-ID: <6c18a27f-c983-58f3-1dc0-5192f7df232a@huawei.com>
+Date:   Sat, 16 Apr 2022 09:57:12 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH bpf-next v2 5/6] bpf, arm64: bpf trampoline for arm64
+Content-Language: en-US
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, <hpa@zytor.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Delyan Kratunov <delyank@fb.com>
+References: <20220414162220.1985095-1-xukuohai@huawei.com>
+ <20220414162220.1985095-6-xukuohai@huawei.com>
+ <CAEf4Bzb_R56wAuD-Wgg7B5brT-dcsa+5sYynY+_CFzRwg+N5AA@mail.gmail.com>
+From:   Xu Kuohai <xukuohai@huawei.com>
+In-Reply-To: <CAEf4Bzb_R56wAuD-Wgg7B5brT-dcsa+5sYynY+_CFzRwg+N5AA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-Rspamd-Server: rspamout07
-X-Rspamd-Queue-Id: EE61D18
-X-Stat-Signature: ubzc3wqkb7tiax4f8u94tmjtmfko4cfi
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+YcY7w3GORf4nfwzYsd2KDqiL8xe83Fuk=
-X-HE-Tag: 1650073594-354967
+X-Originating-IP: [10.67.111.192]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-04-15 at 17:22 -0700, Josh Poimboeuf wrote:
-> Create a new section for x86 unwinder maintenance.
+On 4/16/2022 1:12 AM, Andrii Nakryiko wrote:
+> On Thu, Apr 14, 2022 at 9:10 AM Xu Kuohai <xukuohai@huawei.com> wrote:
+>>
+>> Add bpf trampoline support for arm64. Most of the logic is the same as
+>> x86.
+>>
+>> fentry before bpf trampoline hooked:
+>>  mov x9, x30
+>>  nop
+>>
+>> fentry after bpf trampoline hooked:
+>>  mov x9, x30
+>>  bl  <bpf_trampoline>
+>>
+>> Tested on qemu, result:
+>>  #55 fentry_fexit:OK
+>>  #56 fentry_test:OK
+>>  #58 fexit_sleep:OK
+>>  #59 fexit_stress:OK
+>>  #60 fexit_test:OK
+>>  #67 get_func_args_test:OK
+>>  #68 get_func_ip_test:OK
+>>  #101 modify_return:OK
+>>
+>> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+>> Acked-by: Song Liu <songliubraving@fb.com>
+>> ---
 > 
-> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-[]
-> diff --git a/MAINTAINERS b/MAINTAINERS
-[]
-> @@ -21434,6 +21434,15 @@ F:	arch/x86/include/asm/uv/
->  F:	arch/x86/kernel/apic/x2apic_uv_x.c
->  F:	arch/x86/platform/uv/
->  
-> +X86 UNWINDERS
-> +M:	Josh Poimboeuf <jpoimboe@redhat.com>
-> +M:	Peter Zijlstra <peterz@infradead.org>
-> +S:	Supported
-> +F:	arch/x86/include/asm/unwind*.h
-> +F:	arch/x86/kernel/dumpstack.c
-> +F:	arch/x86/kernel/stacktrace.c
-> +F:	arch/x86/kernel/unwind_*,c
+> Can you please also take a look at [0], which is an ongoing work to
+> add support for BPF cookie to BPF trampoline-based BPF programs. It's
+> very close to being done, so it would be good if you can implement
+> that at the same time.
 
-Should be a period not a comma.
-
-F:	arch/x86/kernel/unwind_*.c
-
-
+OK, I'll take a look and try to implemnt it.
