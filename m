@@ -2,143 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA504C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:09:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231678AbiDPLIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 07:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
+        id S231657AbiDPLLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 07:11:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231669AbiDPLID (ORCPT
+        with ESMTP id S230149AbiDPLLn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 07:08:03 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56193B562;
-        Sat, 16 Apr 2022 04:05:23 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id bu29so17539331lfb.0;
-        Sat, 16 Apr 2022 04:05:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to;
-        bh=Wci9Il7J8wetpC5RlZmMGn0bKOP3JvqUfYp7PT1EcdY=;
-        b=p+GdkZdzQe66I94lVpn/DDQKK/AJSohoyNsdgy23xL+fTDaymcjN9KGZ4brakcSYzB
-         OUIeP1xSFjdxDUCqkavCJEsi98rebGXS1WU7YM20omcdoeue7hdankdu3BPpcjwJzdUa
-         QfVeSNN0+bd9eN4LW8pSmJk9LT6FVKEvtb6BRQVHEhkSC9SfUMSWIZ2m4V244NeNt1TO
-         GCYTYJbdbsIkce5T0Iu5Fc7/COrKL7GLQKdas0cHTtljtqAAw79ezKX28rLBv9y/3HjG
-         HJ3ASDC9YG95mGPEHn3U8ANZ7OO2QxEbnj8ymw/d+eLys+0Ol0r4g+8AxFbT1oImwxPK
-         CCuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to;
-        bh=Wci9Il7J8wetpC5RlZmMGn0bKOP3JvqUfYp7PT1EcdY=;
-        b=tgtUXUFN4/yiXOR8O78DhCZBh4bXtgWFTK/YIAnQ3X3+siUxiPWrG++ZbZoH+j1BzX
-         GScXrTFE36vihBFYpB925Rsr8YTJ7GCTCDxaQtk8D3n3dABpnssmPLsN0LozldASmNW8
-         DCye4xVHzJVjQSDPjuFF3hc3WTTg2LhCORZYy9d5WRudJAqBcDVaBjdUoUc/8lAFilvd
-         OnAYc2eDNUKfynkGXkHN8KGoBNREhd5W3Bm2vxB2xw58pHUIsvN1QSbruTrFF8O3SiQY
-         1jUri5GxkaWbW1J/JrEdZE03q2w6tzXd9VXEemoWkIOvAzmI3x325o/ngjBwRzCA7apk
-         4fHA==
-X-Gm-Message-State: AOAM530RfuG5sGxfeXopxpREyZQOlEqWinBJWDe6GpbLuh5NmPdQhrD1
-        TVwXzPLjq+md/4GWS1MlKmw=
-X-Google-Smtp-Source: ABdhPJw2OzWAPBuRLcjVHf5R4/N2Qk2L1Px0hMpSOSQ+7Ss/MNXcpj0bTphY2yEuV9FUTOVdeyIyKw==
-X-Received: by 2002:a05:6512:1195:b0:44a:6ec3:4fe7 with SMTP id g21-20020a056512119500b0044a6ec34fe7mr2070990lfr.395.1650107121614;
-        Sat, 16 Apr 2022 04:05:21 -0700 (PDT)
-Received: from [192.168.1.11] ([94.103.225.17])
-        by smtp.gmail.com with ESMTPSA id k38-20020a05651c062600b0024da9b13e91sm359255lje.103.2022.04.16.04.05.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Apr 2022 04:05:20 -0700 (PDT)
-Message-ID: <13bcf1cc-b75c-93d0-49cc-ecb99e291ee7@gmail.com>
-Date:   Sat, 16 Apr 2022 14:05:19 +0300
+        Sat, 16 Apr 2022 07:11:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD954A94F0;
+        Sat, 16 Apr 2022 04:09:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6855560E73;
+        Sat, 16 Apr 2022 11:09:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2194BC385A1;
+        Sat, 16 Apr 2022 11:09:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650107350;
+        bh=kh5r9cbB7fwoB+X+RIjkMvT5RGWxR4kbshMlqan9fhc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eEq3+wV6ZmtU1ECpF0H34v3j6A5kWRBtjOivkYZityg9O95Bf/gFIvPVCXM7M1sHN
+         64adcwBsroZiT5uD4Yjr0EE8W1/Xwr7mxQlvRgJANHlf3gbfiju3SjqlyPlTwCRWTA
+         Vf+ldD7LL6s8nR0lpazmBhblR70biCs6j5PONRJDJYyw3WFjnCI2xtZ/061qdzODAI
+         10yfTS9j6P1oeC81nrCl8yDWgJ710bVrLj+FqZwAhAwN7V5lqZCdNQIiOCWx6fZZjz
+         vHyV/fqKxIl/pJmuu5nkog0G21SN+AcR9wSKLxIe04tehBPOcHopy018K3Xp7ScS8l
+         RQRtPzVo8iX5w==
+Date:   Sat, 16 Apr 2022 12:17:08 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 1/1] iio: core: Convert to use firmware node handle
+ instead of OF node
+Message-ID: <20220416121708.37018ce9@jic23-huawei>
+In-Reply-To: <20220413180202.19220-1-andriy.shevchenko@linux.intel.com>
+References: <20220413180202.19220-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] net: ax88179: add proper error handling of usb read
- errors
-Content-Language: en-US
-To:     David Kahurani <k.kahurani@gmail.com>, netdev@vger.kernel.org
-Cc:     syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com,
-        davem@davemloft.net, jgg@ziepe.ca, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        phil@philpotter.co.uk, syzkaller-bugs@googlegroups.com,
-        arnd@arndb.de, dan.carpenter@oracle.com
-References: <20220416074817.571160-1-k.kahurani@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220416074817.571160-1-k.kahurani@gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------bI9o000ynnXmHdQv1XVQp1Hz"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------bI9o000ynnXmHdQv1XVQp1Hz
-Content-Type: multipart/mixed; boundary="------------p9yASZ0dxDT0nWMmSaPSa6si";
- protected-headers="v1"
-From: Pavel Skripkin <paskripkin@gmail.com>
-To: David Kahurani <k.kahurani@gmail.com>, netdev@vger.kernel.org
-Cc: syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com,
- davem@davemloft.net, jgg@ziepe.ca, kuba@kernel.org,
- linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
- phil@philpotter.co.uk, syzkaller-bugs@googlegroups.com, arnd@arndb.de,
- dan.carpenter@oracle.com
-Message-ID: <13bcf1cc-b75c-93d0-49cc-ecb99e291ee7@gmail.com>
-Subject: Re: [PATCH] net: ax88179: add proper error handling of usb read
- errors
-References: <20220416074817.571160-1-k.kahurani@gmail.com>
-In-Reply-To: <20220416074817.571160-1-k.kahurani@gmail.com>
+On Wed, 13 Apr 2022 21:02:02 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
---------------p9yASZ0dxDT0nWMmSaPSa6si
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+> Switch the IIO core to use firmware node handle instead of OF node.
+> This will allow to get label from firmware on non-OF systems.
+> 
+> Note, this doesn't change of_iio_*() APIs for now.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied to the togreg branch of iio.git and pushed out as testing for
+0-day to poke at this and see if we missed anything.
 
-SGkgRGF2aWQsDQoNCkFsbW9zdCBwZXJmZWN0LCBwbGVhc2Ugc2VlIG9uZSBjb21tZW50IGlu
-bGluZQ0KDQpPbiA0LzE2LzIyIDEwOjQ4LCBEYXZpZCBLYWh1cmFuaSB3cm90ZToNCj4gUmVh
-ZHMgdGhhdCBhcmUgbGVzc2VyIHRoYW4gdGhlIHJlcXVlc3RlZCBzaXplIGxlYWQgdG8gdW5p
-bml0LXZhbHVlIGJ1Z3MuDQo+IEluIHRoaXMgcGFydGljdWxhciBjYXNlIGEgdmFyaWFibGUg
-d2hpY2ggd2FzIHN1cHBvc2VkIHRvIGJlIGluaXRpYWxpemVkDQo+IGFmdGVyIGEgcmVhZCBp
-cyBsZWZ0IHVuaW5pdGlhbGl6ZWQgYWZ0ZXIgYSBwYXJ0aWFsIHJlYWQuDQo+IA0KPiBRdWFs
-aWZ5IHN1Y2ggcmVhZHMgYXMgZXJyb3JzIGFuZCBoYW5kbGUgdGhlbSBjb3JyZWN0bHkgYW5k
-IHdoaWxlIGF0IGl0DQo+IGNvbnZlcnQgdGhlIHJlYWRlciBmdW5jdGlvbnMgdG8gcmV0dXJu
-IHplcm8gb24gc3VjY2VzcyBmb3IgZWFzaWVyIGVycm9yDQo+IGhhbmRsaW5nLg0KPiANCj4g
-Rml4ZXM6IGUyY2E5MGMyNzZlMSAoImF4ODgxNzlfMTc4YTogQVNJWCBBWDg4MTc5XzE3OEEg
-VVNCIDMuMC8yLjAgdG8NCj4gZ2lnYWJpdCBldGhlcm5ldCBhZGFwdGVyIGRyaXZlciIpDQo+
-IFNpZ25lZC1vZmYtYnk6IERhdmlkIEthaHVyYW5pIDxrLmthaHVyYW5pQGdtYWlsLmNvbT4N
-Cj4gUmVwb3J0ZWQtYW5kLXRlc3RlZC1ieTogc3l6Ym90K2QzZGJkZjMxZmJlOWQ4ZjVmMzEx
-QHN5emthbGxlci5hcHBzcG90bWFpbC5jb20NCj4gLS0tDQoNCltjb2RlIHNuaXBdDQoNCj4g
-ICANCj4gQEAgLTQxNiw3ICs0NDEsNyBAQCBheDg4MTc5X3BoeV93cml0ZV9tbWRfaW5kaXJl
-Y3Qoc3RydWN0IHVzYm5ldCAqZGV2LCB1MTYgcHJ0YWQsIHUxNiBkZXZhZCwNCj4gICAJcmV0
-ID0gYXg4ODE3OV93cml0ZV9jbWQoZGV2LCBBWF9BQ0NFU1NfUEhZLCBBWDg4MTc5X1BIWV9J
-RCwNCj4gICAJCQkJTUlJX01NRF9EQVRBLCAyLCAmZGF0YSk7DQo+ICAgDQo+IC0JaWYgKHJl
-dCA8IDApDQo+ICsJaWYgKHJldCkNCj4gICAJCXJldHVybiByZXQ7DQo+ICAgDQoNCkkgdGhp
-bmssIHlvdSBkaWRuJ3QgbWVhbiB0byBkbyBzby4gYXg4ODE3OV93cml0ZV9jbWQoKSByZXR1
-cm5zIG51bWJlciBvZiANCmJ5dGVzIHdyaXR0ZW4sIHNvIHlvdSBhcmUgY2hhbmdpbmcgdGhl
-IGxvZ2ljIGhlcmUuIEFuZCB3cml0ZSBjYWxsIGlzIG5vdCANCnJlbGF0ZWQgdG8gdW5pbml0
-IHZhbHVlIGJ1Z3MNCg0KDQoNCg0KDQpXaXRoIHJlZ2FyZHMsDQpQYXZlbCBTa3JpcGtpbg0K
+Thanks,
 
+Jonathan
 
---------------p9yASZ0dxDT0nWMmSaPSa6si--
+> ---
+>  drivers/iio/industrialio-core.c | 16 +++++++++-------
+>  1 file changed, 9 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 2f48e9a97274..ffbe76806e07 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -1893,20 +1893,22 @@ static const struct iio_buffer_setup_ops noop_ring_setup_ops;
+>  int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
+>  {
+>  	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> -	const char *label;
+> +	struct fwnode_handle *fwnode;
+>  	int ret;
+>  
+>  	if (!indio_dev->info)
+>  		return -EINVAL;
+>  
+>  	iio_dev_opaque->driver_module = this_mod;
+> -	/* If the calling driver did not initialize of_node, do it here */
+> -	if (!indio_dev->dev.of_node && indio_dev->dev.parent)
+> -		indio_dev->dev.of_node = indio_dev->dev.parent->of_node;
+>  
+> -	label = of_get_property(indio_dev->dev.of_node, "label", NULL);
+> -	if (label)
+> -		indio_dev->label = label;
+> +	/* If the calling driver did not initialize firmware node, do it here */
+> +	if (dev_fwnode(&indio_dev->dev))
+> +		fwnode = dev_fwnode(&indio_dev->dev);
+> +	else
+> +		fwnode = dev_fwnode(indio_dev->dev.parent);
+> +	device_set_node(&indio_dev->dev, fwnode);
+> +
+> +	fwnode_property_read_string(fwnode, "label", &indio_dev->label);
+>  
+>  	ret = iio_check_unique_scan_index(indio_dev);
+>  	if (ret < 0)
 
---------------bI9o000ynnXmHdQv1XVQp1Hz
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsF5BAABCAAjFiEER3XL3TplLQE8Qi40bk1w61LbBA0FAmJaou8FAwAAAAAACgkQbk1w61LbBA00
-Jg//Q+sdmnfH53LV6rL7oisgCo74KI172/u+N2Wc3iJQR+AkSm5g8+ncTeGWGLz3PY2OJmfBJ8dA
-J+1xP8StPUFdxfQbqxCvaUrlANu6DT0XAjSEoqnUvfbgFRH/dddtiqB+XLHZkGt7UB/t7a/rTwYm
-yGt6YQsxZ6TBWp7TANVIq15oIrX5sw9wsOjWbkZKO6wsQkrOr/yGCWnAmGxzhEIQXDUWbkZn/bBR
-laDEmE1BAChD8G3xXSOashAX9PyKbG2ww/HHHiwJKW2UhgxeSuSSYICkKA5hZr86DFvTc0WSAXA2
-+LKt6+AWpOrgtOSeJsj0Y1z9Fb5ZKRjSJJFytyGeqxG7kLudvEB00UcoAqWJoj8fAeGvZ0vZSgUo
-59w9W5euaYUD1zfMPpSLVC0uBN6uwQT8+7/xax4rs2YsDMJeQJEsjd9im/fFc6eoJxvSDL6HROj8
-M+PXaAzIAC1OoqlaSDJz7vL1JBmAFHwvv7vY7bv+zExKUQKxYeO1BuGt6TRGRx0+8vzr7vIiEXIC
-3pxTM+8px0DDWht5DLmvo7u2KBJQqI3MjfyS6lm82KkSUhHE4ydcDdoG0Nqrynw3B7hrSqom8bBe
-lHHnnxMZ6+6bA8aILo+EDxp/OtVTZJj++5yv7wV4Ax+HYspKhG5K93jP8la54yfGNdfrVJy8qhEm
-EAw=
-=vWHq
------END PGP SIGNATURE-----
-
---------------bI9o000ynnXmHdQv1XVQp1Hz--
