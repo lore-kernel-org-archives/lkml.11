@@ -2,161 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F263C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:15:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89FEFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:15:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231736AbiDPLR6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 07:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38510 "EHLO
+        id S231749AbiDPLSC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 07:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231739AbiDPLRy (ORCPT
+        with ESMTP id S231733AbiDPLR5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 07:17:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C87D93C72F
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 04:15:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650107718;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ztaTsvLTF8cbNkdtRcQLTl5LXI+kwPm0KvDnKWHh+yU=;
-        b=OtSXmCG093KSnj73HTBGB6slko2PYOPdu2CIat5VlcYBk0STwmcO6QyguqnSLd9Cbz9qnA
-        KO8M7t1HJzzVCx3eR9sv+hiRp0cEOucE0WHUhfuPdZ9gScPPYPa1RSEfgakxYP9Fo2q8xC
-        A5yk/+u8XCLnH0MMbkHwZLxNS50eW8Y=
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com
- [209.85.214.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-497-Xi3c5jD8NzOlrimWjKYdWw-1; Sat, 16 Apr 2022 07:15:17 -0400
-X-MC-Unique: Xi3c5jD8NzOlrimWjKYdWw-1
-Received: by mail-pl1-f200.google.com with SMTP id u8-20020a170903124800b0015195a5826cso5733276plh.4
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 04:15:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ztaTsvLTF8cbNkdtRcQLTl5LXI+kwPm0KvDnKWHh+yU=;
-        b=g8end7BDJVzmjzgOiCJELikM33ngRMi6fVdgIppzkMzyL+zrRNyw9M/nuH2J4SYSoN
-         HVSX3yPDLTjtW/fcoKuoVY1pxgPfQZ4UYKtpdRsEvs6ZSUfnA7ulrGZ19mQ+F8xvRrL+
-         v04ty9QvBgM6gw0HNDw6Cyx5q+9AgCa9w2H+cf0mB1dzDH1O8jUFaQVBijZxMoGk4L6r
-         WqIj+PLyzQjJz6lHR/biEudm0fuHSKqA3Tyb4wSL4IX5J98P8ZsQrrGm4GzJogfJZGFV
-         wor49JYr/vOrB9qvECpW3/ljX/NurPgvgSBavVrcip4pgjh81XZ/0kvS+8WJOiyi6bof
-         eFtA==
-X-Gm-Message-State: AOAM532uswr7KbdjpKdMt0sAcn1tS9EToWTdrOGyeTrsZNCTpaaCCnJu
-        sxMKWeifd1B2VO8dX//Ctic/gAGqS/DDmWMwLRMuZ2G28vAKItuQS7LkuVjacxCN67K6y/r23Fu
-        DD9VqMul6O+J4RJNbRNDmLeKe
-X-Received: by 2002:a17:902:f70f:b0:153:ebfe:21b3 with SMTP id h15-20020a170902f70f00b00153ebfe21b3mr3126277plo.119.1650107716075;
-        Sat, 16 Apr 2022 04:15:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyVQv9EVl2R9qgPnHbNZm4Vfw0djxGkPIQ94EL5azYrNUvYYp0MdOtCzgQcwiIKyQpzuftx6A==
-X-Received: by 2002:a17:902:f70f:b0:153:ebfe:21b3 with SMTP id h15-20020a170902f70f00b00153ebfe21b3mr3126254plo.119.1650107715783;
-        Sat, 16 Apr 2022 04:15:15 -0700 (PDT)
-Received: from localhost.localdomain.com ([103.59.74.34])
-        by smtp.gmail.com with ESMTPSA id h18-20020a056a001a5200b0050a43bb7ae6sm4404565pfv.161.2022.04.16.04.15.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Apr 2022 04:15:15 -0700 (PDT)
-From:   Suresh Kumar <surkumar@redhat.com>
-X-Google-Original-From: Suresh Kumar <suresh2514@gmail.com>
-To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     suresh kumar <suresh2514@gmail.com>
-Subject: [PATCH] bonding: do not discard lowest hash bit for non layer3+4 hashing
-Date:   Sat, 16 Apr 2022 16:44:10 +0530
-Message-Id: <20220416111410.356132-1-suresh2514@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        Sat, 16 Apr 2022 07:17:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9A6377FD;
+        Sat, 16 Apr 2022 04:15:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BA4B60E99;
+        Sat, 16 Apr 2022 11:15:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A895DC385A5;
+        Sat, 16 Apr 2022 11:15:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650107724;
+        bh=nqtzCAVG0UydeJj9805KTNz5rLFTdeSKGY2+Q6Dlv4k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=K+2dJ9pFOvsCgPHvg2S0S3x366hrjxBuSmjcsqUiS9p72g3EW0juNGCqpdL86ne4T
+         MjOu7YszoKpmLWSUOMXdSfzXKBX594H9cwF4evc/r9gSO6xo3+JGt2/0l8g1HWIk4F
+         n0n1QlN4xII1Yao19ZLH7czyqaFwIhgOdwwVRrv8BUQgMQlFUg0jImftfoVuBKMqeE
+         q3LdFkVbxgXu3/S5T7WPHZfpksGMxZ5KldpcQq+JPqXTX1E3uQ1rmgrroMZClUGoP9
+         iVWbwtWMYgHtQim1ovjFVL3d9OVlDDhRcfmRh5F0W47w6JMFBNuXHOeSSzxAVasYt/
+         Ey49IWzqDZNeQ==
+Date:   Sat, 16 Apr 2022 12:23:22 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [PATCH] iio: adc: Kconfig: Make RZG2L_ADC depend on ARCH_RZG2L
+Message-ID: <20220416122322.7aa14706@jic23-huawei>
+In-Reply-To: <CAMuHMdViXg2ZpKG+fJJyMjA_uY-7Tu2E1WwWed97OX5LOMq4tQ@mail.gmail.com>
+References: <20220406070315.13862-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        <20220410174713.1a4e013f@jic23-huawei>
+        <CAMuHMdViXg2ZpKG+fJJyMjA_uY-7Tu2E1WwWed97OX5LOMq4tQ@mail.gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: suresh kumar <suresh2514@gmail.com>
+On Mon, 11 Apr 2022 16:40:20 +0200
+Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 
-Commit b5f862180d70 was introduced to discard lowest hash bit for layer3+4 hashing
-but it also removes last bit from non layer3+4 hashing
+> Hi Jonathan,
+> 
+> On Sun, Apr 10, 2022 at 7:52 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> > On Wed,  6 Apr 2022 08:03:15 +0100
+> > Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> >  
+> > > ADC block is common on Renesas RZ/G2L and RZ/V2L SoC's, so instead of
+> > > adding dependency for each SoC's add dependency on ARCH_RZG2L. The
+> > > ARCH_RZG2L config option is already selected by ARCH_R9A07G044 and
+> > > ARCH_R9A07G054.
+> > >
+> > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>  
+> 
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Applied. Thanks,
 
-Below script shows layer2+3 hashing will result in same slave to be used with above commit.
-$ cat hash.py
-#/usr/bin/python3.6
+Jonathan
 
-h_dests=[0xa0, 0xa1]
-h_source=0xe3
-hproto=0x8
-saddr=0x1e7aa8c0
-daddr=0x17aa8c0
-
-for h_dest in h_dests:
-    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
-    hash ^= hash >> 16
-    hash ^= hash >> 8
-    print(hash)
-
-print("with last bit removed")
-for h_dest in h_dests:
-    hash = (h_dest ^ h_source ^ hproto ^ saddr ^ daddr)
-    hash ^= hash >> 16
-    hash ^= hash >> 8
-    hash = hash >> 1
-    print(hash)
-
-Output:
-$ python3.6 hash.py
-522133332
-522133333   <-------------- will result in both slaves being used
-
-with last bit removed
-261066666
-261066666   <-------------- only single slave used
-
-Signed-off-by: suresh kumar <suresh2514@gmail.com>
----
- drivers/net/bonding/bond_main.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 15eddca7b4b6..38e152548126 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4027,14 +4027,19 @@ static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb, const v
- 	return true;
- }
- 
--static u32 bond_ip_hash(u32 hash, struct flow_keys *flow)
-+static u32 bond_ip_hash(u32 hash, struct flow_keys *flow, int xmit_policy)
- {
- 	hash ^= (__force u32)flow_get_u32_dst(flow) ^
- 		(__force u32)flow_get_u32_src(flow);
- 	hash ^= (hash >> 16);
- 	hash ^= (hash >> 8);
-+
- 	/* discard lowest hash bit to deal with the common even ports pattern */
--	return hash >> 1;
-+	if (xmit_policy == BOND_XMIT_POLICY_LAYER34 ||
-+		xmit_policy == BOND_XMIT_POLICY_ENCAP34)
-+		return hash >> 1;
-+
-+	return hash;
- }
- 
- /* Generate hash based on xmit policy. If @skb is given it is used to linearize
-@@ -4064,7 +4069,7 @@ static u32 __bond_xmit_hash(struct bonding *bond, struct sk_buff *skb, const voi
- 			memcpy(&hash, &flow.ports.ports, sizeof(hash));
- 	}
- 
--	return bond_ip_hash(hash, &flow);
-+	return bond_ip_hash(hash, &flow, bond->params.xmit_policy);
- }
- 
- /**
-@@ -5259,7 +5264,7 @@ static u32 bond_sk_hash_l34(struct sock *sk)
- 	/* L4 */
- 	memcpy(&hash, &flow.ports.ports, sizeof(hash));
- 	/* L3 */
--	return bond_ip_hash(hash, &flow);
-+	return bond_ip_hash(hash, &flow, BOND_XMIT_POLICY_LAYER34);
- }
- 
- static struct net_device *__bond_sk_get_lower_dev(struct bonding *bond,
--- 
-2.27.0
+> 
+> > Sounds like a fix?
+> >
+> > If so, please supply a Fixes tag.
+> > no need to resend, just reply with one to this email.  
+> 
+> This is not really a fix, as the original dependency was correct at
+> that time.
+> This is a change to add support for the RZ/V2L (r9a07g054) SoC, and
+> avoiding the need to update the dependencies when support is added
+> for more SoCs of the RZ/G2L family later.
+> 
+> > > --- a/drivers/iio/adc/Kconfig
+> > > +++ b/drivers/iio/adc/Kconfig
+> > > @@ -910,7 +910,7 @@ config ROCKCHIP_SARADC
+> > >
+> > >  config RZG2L_ADC
+> > >       tristate "Renesas RZ/G2L ADC driver"
+> > > -     depends on ARCH_R9A07G044 || COMPILE_TEST
+> > > +     depends on ARCH_RZG2L || COMPILE_TEST
+> > >       help
+> > >         Say yes here to build support for the ADC found in Renesas
+> > >         RZ/G2L family.  
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
 
