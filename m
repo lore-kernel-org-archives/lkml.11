@@ -2,95 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4772C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 01:07:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DD18C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:02:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229557AbiDPBKT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 21:10:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38626 "EHLO
+        id S229462AbiDPCEi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiDPBKS (ORCPT
+        with ESMTP id S229379AbiDPCEh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 21:10:18 -0400
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B39516665B
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 18:07:42 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1650069678;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=C5nkTrq4xMgYIDmhUhVhC2Dq7TG9dRaDSUT0wVRb144=;
-        b=Jo2/gZ05dZmfC/MFjPD+Ds9RazbpGZ3I7R9PcnlMSTwT7x2TY0Hg3IsG8oiZff1gW75ZYv
-        tfWe7WPDHcAf/j2xhHdyc+Jg5hRoAz9OgqZlsX81+XLBSBBRonAbTz29hjw51prfNIvNSN
-        ei8ecQgEloMgkibAiWOgzN6iNK2LOsA=
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     linux-mm@kvack.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        linux-kernel@vger.kernel.org, Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Subject: [PATCH] mm: do not call add_nr_deferred() with zero deferred
-Date:   Fri, 15 Apr 2022 17:41:04 -0700
-Message-Id: <20220416004104.4089743-1-roman.gushchin@linux.dev>
+        Fri, 15 Apr 2022 22:04:37 -0400
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 717C31342DF;
+        Fri, 15 Apr 2022 18:54:01 -0700 (PDT)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-dacc470e03so9414001fac.5;
+        Fri, 15 Apr 2022 18:54:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JSSksXfSHT8J5RaVPGQ9iInEYYQkEPPrA2/YVmqRfXs=;
+        b=OU2Yqq+f86YpQJByLea2+P16BM8pxSSyWmk1uKVQm9hHeePVtZyDivMG10YhUTbIbw
+         r+Lg4uSnR7ZRcHD0wUaQVXk7g72nWv1DcdTSBMpdx/8GtKC46hUtiKnHIYly4HbNYgG3
+         3zZebYK2ItjOkSEAgK3SMa26KNQi3yvUXaNjwgxJpDW1K2lHXiNtUNmZl+bvvDvTGn99
+         WxBcq29+4inQvCgIUQbE5uowI1ykjtiwxpvSaHxU9AnAB+COJy4VQKeV9xHHuRYUbNl1
+         g2xuJEHq7422mYxkUjWKlBEeYl+vQp/FoxDHTTJpSzayNIsrn97+RnuOznmIx9PzbeUA
+         0SAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JSSksXfSHT8J5RaVPGQ9iInEYYQkEPPrA2/YVmqRfXs=;
+        b=Q0JfEQvsxc73HI8dA6GmBZpv9onAcdLcNezPV3aw7NgRqs/nTaqyV1wVqiI44b6SIB
+         hquFtnIlPAyFpDYsQn/N7wjYtwhS/66BwDnJ/xlHPOkX9R/bGmcxJ6Rt+5x5X1iHhOyj
+         hDizvy3qB+cJ5B6t81sdIceUOjrkIbp6NDHOFnEqAQNDeUJIk2DKkYeO60t+Oad8Np3c
+         0s/QxVgmoLQfxeDtoRpGkHDxwiGmStTtxlXxcUJTcHD5RkKLX+pLVRcgbeEBkkRPE8Ow
+         IvKZIlNCLWc7RcLi0Bkb1rSCKJ0bDVcAIFJcwkr2v1JnfReV7m06cQgqbsk1r2+dJZx7
+         Jw8A==
+X-Gm-Message-State: AOAM532Fl+tYP1oYBLsVZ5yJQKCmfScZ28rr+mEDJaDZNQDGWE8HWhOQ
+        7g/UEyWgzt1Ti1a6ekIUrjAyr99i+EG6iw==
+X-Google-Smtp-Source: ABdhPJw/Jj+ggFXWVzYqOMrwoGySpFgbznD2nqtFZEejK9A/D8nCrw3gYkqXuSkkRptU7a06zbilcw==
+X-Received: by 2002:a17:90b:1c8f:b0:1b8:c6dc:ca61 with SMTP id oo15-20020a17090b1c8f00b001b8c6dcca61mr1702855pjb.13.1650073476694;
+        Fri, 15 Apr 2022 18:44:36 -0700 (PDT)
+Received: from d3 ([2405:6580:97e0:3100:ae94:2ee7:59a:4846])
+        by smtp.gmail.com with ESMTPSA id q91-20020a17090a1b6400b001d0dcaf7920sm2917613pjq.6.2022.04.15.18.44.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Apr 2022 18:44:36 -0700 (PDT)
+Date:   Sat, 16 Apr 2022 10:44:30 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Yihao Han <hanyihao@vivo.com>
+Cc:     Shahed Shaikh <shshaikh@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@vivo.com
+Subject: Re: [PATCH v2] net: qlogic: qlcnic: simplify if-if to if-else
+Message-ID: <Yloffi2Og9bS2fds@d3>
+References: <20220415120949.86169-1-hanyihao@vivo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220415120949.86169-1-hanyihao@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-add_nr_deferred() is often called with next_deferred equal to 0.
-For instance, it's happening under low memory pressure for any
-shrinkers with a low number of cached objects. A corresponding trace
-looks like:
-  <...>-619914 [005] .... 467456.345160: mm_shrink_slab_end: \
-  super_cache_scan+0x0/0x1a0 0000000087027f06: nid: 1	     \
-  unused scan count 0 new scan count 0 total_scan 0	     \
-  last shrinker return val 0
+On 2022-04-15 05:09 -0700, Yihao Han wrote:
+> Replace `if (!pause->autoneg)` with `else` for simplification
+> according to the kernel coding style:
+> 
+> "Do not unnecessarily use braces where a single statement will do."
+> 
+> ...
+> 
+> "This does not apply if only one branch of a conditional statement is
+> a single statement; in the latter case use braces in both branches"
+> 
+> Please refer to:
+> https://www.kernel.org/doc/html/v5.17-rc8/process/coding-style.html
 
-  <...>-619914 [005] .... 467456.345371: mm_shrink_slab_end: \
-  super_cache_scan+0x0/0x1a0 0000000087027f06: nid: 1	     \
-  unused scan count 0 new scan count 0 total_scan 0	     \
-  last shrinker return val 0
+This commit log is even more confusing than v1. Only the first line is
+correct.
 
-  <...>-619914 [005] .... 467456.345380: mm_shrink_slab_end: \
-  super_cache_scan+0x0/0x1a0 0000000087027f06: nid: 1 unused \
-  scan count 0 new scan count 0 total_scan 0	             \
-  last shrinker return val 0
+> 
+> Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
 
-This lead to unnecessary checks and atomic operations, which can be
-avoided by checking next_deferred for not being zero before calling
-add_nr_deferred(). In this case the mm_shrink_slab_end trace point
-will get a potentially slightly outdated "new scan count" value, but
-it's totally fine.
+I did not suggest this change. Please remove the tag.
 
-Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
----
- mm/vmscan.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index d4a7d2bd276d..19d3d4fa1aad 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -808,7 +808,10 @@ static unsigned long do_shrink_slab(struct shrink_control *shrinkctl,
- 	 * move the unused scan count back into the shrinker in a
- 	 * manner that handles concurrent updates.
- 	 */
--	new_nr = add_nr_deferred(next_deferred, shrinker, shrinkctl);
-+	if (next_deferred)
-+		new_nr = add_nr_deferred(next_deferred, shrinker, shrinkctl);
-+	else
-+		new_nr = nr;
- 
- 	trace_mm_shrink_slab_end(shrinker, shrinkctl->nid, freed, nr, new_nr, total_scan);
- 	return freed;
--- 
-2.35.1
-
+> Signed-off-by: Yihao Han <hanyihao@vivo.com>
+> ---
+> v2:edit commit message
+> ---
+>  drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
+> index bd0607680329..e3842eaf1532 100644
+> --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
+> +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
+> @@ -3752,7 +3752,7 @@ int qlcnic_83xx_set_pauseparam(struct qlcnic_adapter *adapter,
+>  	if (ahw->port_type == QLCNIC_GBE) {
+>  		if (pause->autoneg)
+>  			ahw->port_config |= QLC_83XX_ENABLE_AUTONEG;
+> -		if (!pause->autoneg)
+> +		else
+>  			ahw->port_config &= ~QLC_83XX_ENABLE_AUTONEG;
+>  	} else if ((ahw->port_type == QLCNIC_XGBE) && (pause->autoneg)) {
+>  		return -EOPNOTSUPP;
+> -- 
+> 2.17.1
+> 
