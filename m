@@ -2,87 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 13:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 847E4C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 13:55:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232142AbiDPN5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 09:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59430 "EHLO
+        id S232160AbiDPN6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 09:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232133AbiDPN5t (ORCPT
+        with ESMTP id S232145AbiDPN6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 09:57:49 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D1D52A72B;
-        Sat, 16 Apr 2022 06:55:17 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id i27so19740100ejd.9;
-        Sat, 16 Apr 2022 06:55:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6SJ0gjuIReiuq6mKLxC15SlD0RAGcpMYYaigPzM4upQ=;
-        b=QStPKpSkC1LkjeyGv3bKHJYw9iXMBqJMz7A9O9udDbO2DfaYzQ9wEXayi6wYS1FfJs
-         h28pj3Tj1tzh8bKPIGh0uU0YpYp95FvbdVoGObTqp5lYF/qcBM7ASVkgfRxAyGZH29QP
-         AOkFOVLtMwSOXX0YzxG4NVXO9rH7OY40Xx7V8v/l/TnAw05i56w3mcUUb4nJpwosqmex
-         kZWOpcSvgAZHEj3ZvZOOxYMe8+YOixhHxBUdk19j9XUHZsuZSjUXxCgx7ooFkSzsXf/4
-         Xtz0jtZQW9YrhcljnoOnqbiNHmWsKlsO3BtCgdlOkuNeY5hKsFZOSZ9yAXm9j8Y00Su8
-         OW2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6SJ0gjuIReiuq6mKLxC15SlD0RAGcpMYYaigPzM4upQ=;
-        b=Z9AcGPHE3qCpiW/RpInJe9ANf4syV1qGD0fR8wyzSBaiYoJdloWYvZwB9ndmqerveu
-         40SdV6Gk5N0goCx7rzmDjfJB3SGo/t9FeecF1Tc1ufXjhdSItWf9PTRyO4ibBoHwPpi4
-         1A+AOaN0umPuvNJ6ySM5GEO4YagXyRC/TmejrMywjfJajTpya1Mcm5pgtB2uuAyvtcXa
-         LwgSvt5Whr0XjSeVRGuH2wGRkpxvABLG/NxIfEyp1pIrmts0mCDEJ1aDUXwjsLw7E/vf
-         pNsPumdBtHMR4elFCLlxpAasxphY2u1NQqLOdQO9AJQ9kOl8kNxnWiqCAoOIffQoEvuH
-         GcFg==
-X-Gm-Message-State: AOAM531/FRi8DMfVUPxWLX4kcMLS1sIFd2XZR7279aqpUviF3FEgz2fj
-        N9MZ9AfGBS1tMvDfXYe9QLW2wNJ0y3xJl7rEeoi3yVKRYLE=
-X-Google-Smtp-Source: ABdhPJxnrbadrn8LjtwLPpjps81ECEVthSYbNkd4qnaqH6ZLIhBCPTFttIxzMll+6jY4JmULrxZLxToMBGz+FwtbLOs=
-X-Received: by 2002:a17:906:6a08:b0:6e8:a871:b8d2 with SMTP id
- qw8-20020a1709066a0800b006e8a871b8d2mr2826295ejc.71.1650117315860; Sat, 16
- Apr 2022 06:55:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAH9NwWec6ovS1xQbuPsB5duskJdmK_qv4t+URTK6thCvGNST7w@mail.gmail.com>
- <20220323023714.GA1244184@bhelgaas>
-In-Reply-To: <20220323023714.GA1244184@bhelgaas>
-From:   Christian Gmeiner <christian.gmeiner@gmail.com>
-Date:   Sat, 16 Apr 2022 15:55:04 +0200
-Message-ID: <CAH9NwWfZQWbfc6VJMT3isv2gmnWCoAOU4osDKQ7EBW_XsywGpg@mail.gmail.com>
-Subject: Re: [PATCH v2] PCI: cadence: Enable Controller to respond to received
- PTM Requests
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Sat, 16 Apr 2022 09:58:08 -0400
+Received: from mxout3.routing.net (mxout3.routing.net [IPv6:2a03:2900:1:a::8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4473C739;
+        Sat, 16 Apr 2022 06:55:34 -0700 (PDT)
+Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
+        by mxout3.routing.net (Postfix) with ESMTP id ACDE460362;
+        Sat, 16 Apr 2022 13:55:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
+        s=20200217; t=1650117332;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=s68gl0yAxZUm+X2bvVvokjQGAHtdT79RQMQEhISep+M=;
+        b=rE8+uq6rNsCmMbExXD0PS3nAsHvd1dwdaJL/p41t0+95QEfLUYPl1ClZrBRyzZfI81PGKf
+        o83mnws4tZCflHeGe/4+rnuKJtyX8Arfwu/t8rv+UGUKqu5PnxhOYhaHRAH7lakV4HxbdQ
+        Fay4p/hLJBxd51Ey0DQwCUx16pTJp/8=
+Received: from localhost.localdomain (fttx-pool-217.61.150.108.bambit.de [217.61.150.108])
+        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 4397A1006D1;
+        Sat, 16 Apr 2022 13:55:31 +0000 (UTC)
+From:   Frank Wunderlich <linux@fw-web.de>
+To:     linux-rockchip@lists.infradead.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
         Kishon Vijay Abraham I <kishon@ti.com>,
-        Tom Joseph <tjoseph@cadence.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Johan Jonker <jbx6244@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: [RFC/RFT 1/6] dt-bindings: phy: rockchip: add pcie3 phy
+Date:   Sat, 16 Apr 2022 15:54:53 +0200
+Message-Id: <20220416135458.104048-2-linux@fw-web.de>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220416135458.104048-1-linux@fw-web.de>
+References: <20220416135458.104048-1-linux@fw-web.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Mail-ID: 2d0b12d3-a185-41d7-b17c-fea8090fc266
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > >
-> > > > This enables the Controller [RP] to automatically respond with
-> > > > Response/ResponseD messages if CDNS_PCIE_LM_TPM_CTRL_PTMRSEN
-> > > > and PCI_PTM_CTRL_ENABLE bits are both set.
-> > > >
-> > > > Signed-off-by: Christian Gmeiner <christian.gmeiner@gmail.com>
->
-> We're in the middle of the merge window right now, but I'm sure
-> Lorenzo will be able to look at it after -rc1.  This looks fine to me.
->
+From: Frank Wunderlich <frank-w@public-files.de>
 
-Another gentle ping :(
+Add a new binding file for Rockchip PCIe V3 phy driver.
 
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+---
+ .../bindings/phy/rockchip-pcie3-phy.yaml      | 77 +++++++++++++++++++
+ 1 file changed, 77 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/phy/rockchip-pcie3-phy.yaml
+
+diff --git a/Documentation/devicetree/bindings/phy/rockchip-pcie3-phy.yaml b/Documentation/devicetree/bindings/phy/rockchip-pcie3-phy.yaml
+new file mode 100644
+index 000000000000..58a8ce175f13
+--- /dev/null
++++ b/Documentation/devicetree/bindings/phy/rockchip-pcie3-phy.yaml
+@@ -0,0 +1,77 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/phy/rockchip-pcie3-phy.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Rockchip PCIe v3 phy
++
++maintainers:
++  - Heiko Stuebner <heiko@sntech.de>
++
++properties:
++  compatible:
++    enum:
++      - rockchip,rk3568-pcie3-phy
++      - rockchip,rk3588-pcie3-phy
++
++  reg:
++    maxItems: 2
++
++  clocks:
++    minItems: 1
++    maxItems: 3
++
++  clock-names:
++    contains:
++      anyOf:
++        - enum: [ refclk_m, refclk_n, pclk ]
++
++  "#phy-cells":
++    const: 0
++
++  resets:
++    maxItems: 1
++
++  reset-names:
++    const: phy
++
++  rockchip,phy-grf:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: phandle to the syscon managing the phy "general register files"
++
++  rockchip,pipe-grf:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: phandle to the syscon managing the pipe "general register files"
++
++  rockchip,pcie30-phymode:
++    $ref: '/schemas/types.yaml#/definitions/uint32'
++    description: |
++      use PHY_MODE_PCIE_AGGREGATION if not defined
++    minimum: 0x0
++    maximum: 0x4
++
++
++required:
++  - compatible
++  - reg
++  - rockchip,phy-grf
++
++additionalProperties: false
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/rk3568-cru.h>
++    pcie30phy: phy@fe8c0000 {
++      compatible = "rockchip,rk3568-pcie3-phy";
++      reg = <0x0 0xfe8c0000 0x0 0x20000>;
++      #phy-cells = <0>;
++      clocks = <&pmucru CLK_PCIE30PHY_REF_M>, <&pmucru CLK_PCIE30PHY_REF_N>,
++       <&cru PCLK_PCIE30PHY>;
++      clock-names = "refclk_m", "refclk_n", "pclk";
++      resets = <&cru SRST_PCIE30PHY>;
++      reset-names = "phy";
++      rockchip,phy-grf = <&pcie30_phy_grf>;
++    };
 -- 
-greets
---
-Christian Gmeiner, MSc
+2.25.1
 
-https://christian-gmeiner.info/privacypolicy
