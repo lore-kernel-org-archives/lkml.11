@@ -2,317 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A91C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43017C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:24:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229829AbiDPCYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
+        id S229767AbiDPC0X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:26:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229931AbiDPCYa (ORCPT
+        with ESMTP id S229479AbiDPCZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:24:30 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F4EBC1E
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:22:00 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-dacc470e03so9451757fac.5
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:21:59 -0700 (PDT)
+        Fri, 15 Apr 2022 22:25:52 -0400
+Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630B048388
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:23:20 -0700 (PDT)
+Received: by mail-vs1-xe2b.google.com with SMTP id z139so2884684vsz.0
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:23:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=NYONr+AFm2fCZTaj4r8wiIPrJ05AY/b2ZvfTRaJ/zOk=;
-        b=Y82TPRjKvXw5A3p0jgGetMRUQsz82x8nctcpPl89tuxGOEpml5s9bRYf7r8fQykCSu
-         bf2DSWe7ihyOLvgOh8Nws0s1ngVq1Dx5HO++KMOhXtxR8Kmd67jUP+dt6GqcTT0rWylL
-         B6svIOzE5zozGCgRbKfOs2BEfvdIUrooR0wPs=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wQoyQFv+DR+j7fh3LRsGpz2vueHCeVQWzUanchbUatQ=;
+        b=YfZhReGfuSfjixzN1iUSULLfspq+EGZIgRMn8VXbc68flA1D/N7dwBKQfs/xC0p5yg
+         BgGmeJmziqzKEfW2f1qWhonkGaD4X++4IDEbom7B23DXnAGvBARF+Hx0L+xcXhRHLRUQ
+         E6VC2+zFnZz9n1JvcpvskO2IDJMJD8shaQWPMhW8VnmThGBVZAo1yNVFeDPkiqGVqiHQ
+         tNa96/gupiv5vdSM+D15htH5OWPQEmvn0NPsCokDJTlI+27gB3/z8nc1SMaLpgGODnhN
+         VkY4dGw5Y1CR15/Z2dpvvseYqGD2OtOCAFGP1+oF3mAmZWSjWmZAlhNrNJJ4KBegHTbq
+         AumQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=NYONr+AFm2fCZTaj4r8wiIPrJ05AY/b2ZvfTRaJ/zOk=;
-        b=anVJFabcvJyha3UIrbbz9w6454BvoUz5NsOHI/lkDicTvjfLcnAmePxNlF+OzDuaDI
-         zQkFkIDv5UuQUbkgBS5sjKA5EfvY96xbH7x+iIHl3zlh6eGzZ37X7wsXKLqfezYOQCcD
-         29dq5j0/tlX3OgJ3E9fb8gMBzCIzmzdV9iKNPG+9Roso05nmx4zuiPX3dhMbJHLBA+wQ
-         UH+na0XqeDJv8y9SR5h2W7UnDkrarixVZcU8k1WQc5kq3HoyuKPmKPYeZE+r7p4MRRfH
-         M7XFzBfwx0WkWPIy6pWhaKrw3sDCoSk7qqaRMFO1iHoo/Iqg0IXuHtRV0uRy98HcwT/o
-         DIxA==
-X-Gm-Message-State: AOAM530ucc4nmsCuNV3MA2jO2h8Yos/2FF3ZmtW1qfYSqX7H5vA3i6Uu
-        jr4UtdcHqHCvxEFD2RDk/RrGbSRb3e3TOA==
-X-Google-Smtp-Source: ABdhPJxt5D6aE+sxh0PRA/fim3Hj0Z54qM9liaCFo3BWU7ZRz/wp6GzYikl4T/Ot0etDtdmLN26pUw==
-X-Received: by 2002:a17:90a:9294:b0:1b9:48e9:a030 with SMTP id n20-20020a17090a929400b001b948e9a030mr6816647pjo.200.1650071141253;
-        Fri, 15 Apr 2022 18:05:41 -0700 (PDT)
-Received: from google.com ([240f:75:7537:3187:9147:3fb7:c742:81c2])
-        by smtp.gmail.com with ESMTPSA id e16-20020a63ee10000000b0039d1c7e80bcsm5473311pgi.75.2022.04.15.18.05.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 18:05:40 -0700 (PDT)
-Date:   Sat, 16 Apr 2022 10:05:33 +0900
-From:   Sergey Senozhatsky <senozhatsky@chromium.org>
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Jaska Uimonen <jaska.uimonen@linux.intel.com>,
-        =?iso-8859-1?Q?P=E9ter?= Ujfalusi 
-        <peter.ujfalusi@linux.intel.com>, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, Takashi Iwai <tiwai@suse.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Mark Brown <broonie@kernel.org>,
-        Ricardo Ribalda <ribalda@chromium.org>,
-        sound-open-firmware@alsa-project.org
-Subject: Re: out-of-bounds access in sound/soc/sof/topology.c
-Message-ID: <YloWXZE/JjsIWAGH@google.com>
-References: <Ylk5o3EC/hyX5UQ0@google.com>
- <8eeb08ec-4836-cf7d-2285-8ed74ccfc1cb@linux.intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wQoyQFv+DR+j7fh3LRsGpz2vueHCeVQWzUanchbUatQ=;
+        b=T+zqxSJtUqnA3GB4Vqyt2vBrJS5US1xDKMkovVvQTeGLLeDO8/uPk+OlD++zUqHMu5
+         W6A6/+lq/TNu3z5uiq1bTljebPvgeELXqXlm07Cm+3SOrR5uz/Ocvburw9gTp2OXoS9F
+         CsjmpDOmGlhndChJT47H9pwgTjZILQDZj94O2wy8Rcf+Herbpry6RAQprqSSq4ASDgYT
+         K45mN9nR6lchsnXrskK0jhXhqpNqFhI3cRN36o2Yf5FuFclLJXpCEbRnj6xXNCWUNBy8
+         Fl0o4PTMKWs6Z6iga/3X89Pvst5Mkp2I4yZJhmBWkSh4cTTTYI6HG5pIlzCelTJAGUUY
+         13Xg==
+X-Gm-Message-State: AOAM5303FsnT8qCg/8p5LDbN2o4oxXKVYFCvisS6jBWur023VYrNlumE
+        dmMRb5IyAmYJ0qYQgQssRahE2Ft15WLeADKXLf/Mcg==
+X-Google-Smtp-Source: ABdhPJz2RupV69wuUiP6W5/87we/n4sQFTTip7chnuEWLhQ2xLI53Oru7ERzQVELUJpxwreO5H3ZWGtU1Fh+7xHkjc4=
+X-Received: by 2002:a67:de17:0:b0:32a:4007:cd86 with SMTP id
+ q23-20020a67de17000000b0032a4007cd86mr479002vsk.22.1650075799347; Fri, 15 Apr
+ 2022 19:23:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8eeb08ec-4836-cf7d-2285-8ed74ccfc1cb@linux.intel.com>
+References: <20220407031525.2368067-1-yuzhao@google.com> <20220407031525.2368067-14-yuzhao@google.com>
+ <20220411191639.52c62959489a6c27cb7d251e@linux-foundation.org>
+In-Reply-To: <20220411191639.52c62959489a6c27cb7d251e@linux-foundation.org>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Fri, 15 Apr 2022 20:22:42 -0600
+Message-ID: <CAOUHufacnY6zMzkMvgHD9_DAwDcnpq7a9YdYT3SKUV8dAi=Fmw@mail.gmail.com>
+Subject: Re: [PATCH v10 13/14] mm: multi-gen LRU: admin guide
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Stephen Rothwell <sfr@rothwell.id.au>,
+        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <21cnbao@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Mon, Apr 11, 2022 at 8:16 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+>
+> On Wed,  6 Apr 2022 21:15:25 -0600 Yu Zhao <yuzhao@google.com> wrote:
+>
+> > +Kill switch
+> > +-----------
+> > +``enable`` accepts different values to enable or disable the following
+>
+> It's actually called "enabled".
 
-On (22/04/15 11:00), Pierre-Louis Bossart wrote:
-> > Now control data allocations looks as follows
-> > 
-> > 	scontrol->size = struct_size(scontrol->control_data, chanv,
-> > 				     le32_to_cpu(mc->num_channels));
-> > 	scontrol->control_data = kzalloc(scontrol->size, GFP_KERNEL);
-> > 
-> > Which is sizeof(sof_ipc_ctrl_data) + mc->num_channels * sizeof(sof_ipc_ctrl_value_chan)
+Good catch. Thanks!
 
-[..]
+> And I suggest that the file name be
+> included right there in the title.  ie.
+>
+> "enabled": Kill Switch
+> ======================
 
-> 
-> I checked the v5.10.111 code and I see the same code, with the max_size being used for sof_control_load_bytes() and no channel-based arithmetic.
-> 
-> Can I ask how you found out about this problem, is this the result of a warning/error reported by a software tool or based on your reviews of the code?
+Will do.
 
-I some KASAN warnings, confirmed. This appears to be when control_data is
-allocated as control_data.chanv
+> > +Experimental features
+> > +=====================
+> > +``/sys/kernel/debug/lru_gen`` accepts commands described in the
+> > +following subsections. Multiple command lines are supported, so does
+> > +concatenation with delimiters ``,`` and ``;``.
+> > +
+> > +``/sys/kernel/debug/lru_gen_full`` provides additional stats for
+> > +debugging. ``CONFIG_LRU_GEN_STATS=y`` keeps historical stats from
+> > +evicted generations in this file.
+> > +
+> > +Working set estimation
+> > +----------------------
+> > +Working set estimation measures how much memory an application
+> > +requires in a given time interval, and it is usually done with little
+> > +impact on the performance of the application. E.g., data centers want
+> > +to optimize job scheduling (bin packing) to improve memory
+> > +utilizations. When a new job comes in, the job scheduler needs to find
+> > +out whether each server it manages can allocate a certain amount of
+> > +memory for this new job before it can pick a candidate. To do so, this
+> > +job scheduler needs to estimate the working sets of the existing jobs.
+>
+> These various sysfs interfaces are a big deal.  Because they are so
+> hard to change once released.
 
-	scontrol->size = 92 + 1 * sizeof(sof_ipc_ctrl_value_chan)
+Debugfs, not sysfs. The title is "Experimental features" :)
 
-but being dereferenced as it was control_data.data, so the 8 bytes
-"payload" is being used as a 32 bytes "payload".
+> btw, what is this "job scheduler" of which you speak?
 
-I'd say the first one is scarier than the second one. This should be
-two data->size and one data->data accesses in sof_process_load()
+Basically it's part of cluster management software. Many jobs
+(programs + data) can run concurrently in the same cluster and the job
+scheduler of this cluster does the bin packing. To improve resource
+utilization, the job scheduler needs to know the (memory) size of each
+job it packs, hence the working set estimation (how much memory a job
+uses within a given time interval). The job scheduler also takes
+memory from some jobs so that those jobs can better fit into a single
+machine (proactive reclaim).
 
-        if (ipc_data_size) {
-                for (i = 0; i < widget->num_kcontrols; i++) {
-                        memcpy(&process->data[offset],
-                               wdata[i].pdata->data,
-                               wdata[i].pdata->size);
-                        offset += wdata[i].pdata->size;
-                }
-        }
+> Is there an open
+> source implementation upon which we hope the world will converge?
 
-    [   21.493203] ==================================================================
-    [   21.493254] BUG: KASAN: slab-out-of-bounds in sof_widget_ready+0x1710/0x20a8 [snd_sof]
-    [   21.493276] Read of size 4 at addr ffff888101d25865 by task udevd/2538
-    
-    [   21.493317] CPU: 6 PID: 2538 Comm: udevd Tainted: G     U            5.10.111 #20 f82fe8812f39d1966e2c6a66cfdb6cc00489a69b
-    [   21.493364] Call Trace:
-    [   21.493424]  dump_stack+0xb1/0x111
-    [   21.493478]  print_address_description+0x25/0x4fe
-    [   21.493521]  ? printk+0x76/0x96
-    [   21.493568]  kasan_report+0x14f/0x190
-    [   21.493639]  ? sof_widget_ready+0x1710/0x20a8 [snd_sof 35e04f225667e77b61e030d236a681f127c4c356]
-    [   21.493708]  ? sof_widget_ready+0x1710/0x20a8 [snd_sof 35e04f225667e77b61e030d236a681f127c4c356]
-    [   21.493756]  check_memory_region+0x17f/0x183
-    [   21.493825]  sof_widget_ready+0x1710/0x20a8 [snd_sof 35e04f225667e77b61e030d236a681f127c4c356]
-    [   21.493910]  ? sof_route_unload+0xb8/0xb8 [snd_sof 35e04f225667e77b61e030d236a681f127c4c356]
-    [   21.493959]  soc_tplg_dapm_widget_elems_load+0x14c2/0x1758
-    [   21.494035]  ? soc_tplg_dapm_graph_elems_load+0x320/0x320
-    [   21.494079]  snd_soc_tplg_component_load+0x309/0x5d7
-    [   21.494156]  snd_sof_load_topology+0x78/0x115 [snd_sof 35e04f225667e77b61e030d236a681f127c4c356]
-    [   21.494228]  sof_pcm_probe+0xa4/0xd7 [snd_sof 35e04f225667e77b61e030d236a681f127c4c356]
-    [   21.494277]  snd_soc_component_probe+0x3b/0x99
-    [   21.494321]  soc_probe_component+0x2a3/0x4fc
-    [   21.494365]  snd_soc_bind_card+0x83c/0xfe3
-    [   21.494426]  devm_snd_soc_register_card+0x48/0x83
-    [   21.494474]  platform_drv_probe+0x88/0xac
-    [   21.494519]  really_probe+0x1b2/0x4f1
-    [   21.494565]  driver_probe_device+0x98/0xd7
-    [   21.494609]  device_driver_attach+0x71/0x96
-    [   21.494651]  __driver_attach+0xda/0xe5
-    [   21.494691]  ? driver_attach+0x2d/0x2d
-    [   21.494733]  bus_for_each_dev+0xcc/0x102
-    [   21.494779]  bus_add_driver+0x1cb/0x2e3
-    [   21.494827]  driver_register+0xd7/0x19c
-    [   21.494867]  ? 0xffffffffc0c60000
-    [   21.494909]  do_one_initcall+0x158/0x30c
-    [   21.494967]  ? intel_bw_atomic_check+0x3ef/0x67b
-    [   21.495014]  do_init_module+0xe5/0x2dc
-    [   21.495060]  load_module+0x3d0b/0x411a
-    [   21.495129]  ? __kasan_slab_free+0x128/0x144
-    [   21.495175]  __se_sys_finit_module+0x13e/0x166
-    [   21.495227]  do_syscall_64+0x43/0x55
-    [   21.495272]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-    [   21.495314] RIP: 0033:0x7ee05f706899
-    [   21.495362] Code: 48 8d 3d 9a bd 0c 00 0f 05 eb ad 66 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 9f 85 0c 00 f7 d8 64 89 01 48
-    [   21.495404] RSP: 002b:00007ffc67d1a128 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-    [   21.495464] RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 00007ee05f706899
-    [   21.495500] RDX: 0000000000000004 RSI: 00007ee05f7f8adb RDI: 0000000000000018
-    [   21.495537] RBP: 00007ffc67d1a190 R08: 000056d1041460d0 R09: 00007ffc67d1a190
-    [   21.495572] R10: 00000000003ebf60 R11: 0000000000000246 R12: 0000000000020000
-    [   21.495608] R13: 000056d102cbf6b0 R14: 0000000000000000 R15: 00007ee05f7f8adb
-    
-    [   21.495659] Allocated by task 2538:
-    [   21.495680]  stack_trace_save+0x89/0xb8
-    [   21.495698]  kasan_save_stack+0x36/0x56
-    [   21.495715]  __kasan_kmalloc+0xf5/0x10c
-    [   21.495734]  __kmalloc+0xf4/0x2d2
-    [   21.495762]  sof_control_load+0x17c/0xaf9 [snd_sof]
-    [   21.495782]  soc_tplg_dapm_widget_elems_load+0xfa5/0x1758
-    [   21.495801]  snd_soc_tplg_component_load+0x309/0x5d7
-    [   21.495828]  snd_sof_load_topology+0x78/0x115 [snd_sof]
-    [   21.495854]  sof_pcm_probe+0xa4/0xd7 [snd_sof]
-    [   21.495873]  snd_soc_component_probe+0x3b/0x99
-    [   21.495890]  soc_probe_component+0x2a3/0x4fc
-    [   21.495907]  snd_soc_bind_card+0x83c/0xfe3
-    [   21.495925]  devm_snd_soc_register_card+0x48/0x83
-    [   21.495944]  platform_drv_probe+0x88/0xac
-    [   21.495963]  really_probe+0x1b2/0x4f1
-    [   21.495981]  driver_probe_device+0x98/0xd7
-    [   21.495998]  device_driver_attach+0x71/0x96
-    [   21.496015]  __driver_attach+0xda/0xe5
-    [   21.496033]  bus_for_each_dev+0xcc/0x102
-    [   21.496051]  bus_add_driver+0x1cb/0x2e3
-    [   21.496073]  driver_register+0xd7/0x19c
-    [   21.496095]  do_one_initcall+0x158/0x30c
-    [   21.496112]  do_init_module+0xe5/0x2dc
-    [   21.496129]  load_module+0x3d0b/0x411a
-    [   21.496146]  __se_sys_finit_module+0x13e/0x166
-    [   21.496164]  do_syscall_64+0x43/0x55
-    [   21.496183]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-    
-    [   21.496212] The buggy address belongs to the object at ffff888101d25800
-                    which belongs to the cache kmalloc-128 of size 128
-    [   21.496232] The buggy address is located 101 bytes inside of
-                    128-byte region [ffff888101d25800, ffff888101d25880)
-    [   21.496247] The buggy address belongs to the page:
-    [   21.496270] page:000000001cb121a9 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x101d24
-    [   21.496287] head:000000001cb121a9 order:1 compound_mapcount:0
-    [   21.496305] flags: 0x8000000000010200(slab|head)
-    [   21.496329] raw: 8000000000010200 ffffea0004268c80 0000000700000007 ffff888100043680
-    [   21.496351] raw: 0000000000000000 0000000080200020 00000001ffffffff 0000000000000000
-    [   21.496366] page dumped because: kasan: bad access detected
-    
-    [   21.496390] Memory state around the buggy address:
-    [   21.496408]  ffff888101d25700: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-    [   21.496424]  ffff888101d25780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-    [   21.496440] >ffff888101d25800: 00 00 00 00 00 00 00 00 00 00 00 00 05 fc fc fc
-    [   21.496455]                                                        ^
-    [   21.496472]  ffff888101d25880: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-    [   21.496488]  ffff888101d25900: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-    [   21.496501] ==================================================================
+There are many [1], e.g., Kubernetes (k8s). Personally, I don't think
+they'll ever converge.
 
-The seconds one is sof_get_control_data()
+At the moment, all open source implementations I know of rely on users
+manually specifying the size of each job (job spec), e.g., [2]. Users
+overprovision memory to avoid OOM kills. The average memory
+utilization generally is surprisingly low. What we can hope for is
+that eventually some of the open source implementations will use the
+working set estimation and proactive reclaim features provided here.
 
-		*size += wdata[i].pdata->size;
+[1] https://en.wikipedia.org/wiki/List_of_cluster_management_software
+[2] https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
 
-    [   20.174619] ==================================================================
-    [   20.174672] BUG: KASAN: slab-out-of-bounds in sof_widget_ready+0x1485/0x1f15 [snd_sof]
-    [   20.174694] Read of size 4 at addr ffff88813f66aa64 by task udevd/2525
-    
-    [   20.174735] CPU: 6 PID: 2525 Comm: udevd Tainted: G     U            5.10.111 #15 0affb963ab1ae58c88daed12d4caa605c5149ad7
-    [   20.174768] Call Trace:
-    [   20.174797]  dump_stack+0xb1/0x111
-    [   20.174823]  print_address_description+0x25/0x4fe
-    [   20.174844]  ? printk+0x76/0x96
-    [   20.174866]  kasan_report+0x14f/0x190
-    [   20.174898]  ? sof_widget_ready+0x1485/0x1f15 [snd_sof ed49f3db2df0d72704365322eabcc747c7cbe78c]
-    [   20.174929]  ? sof_widget_ready+0x12cb/0x1f15 [snd_sof ed49f3db2df0d72704365322eabcc747c7cbe78c]
-    [   20.174958]  ? sof_widget_ready+0x1485/0x1f15 [snd_sof ed49f3db2df0d72704365322eabcc747c7cbe78c]
-    [   20.174980]  check_memory_region+0x17f/0x183
-    [   20.175010]  sof_widget_ready+0x1485/0x1f15 [snd_sof ed49f3db2df0d72704365322eabcc747c7cbe78c]
-    [   20.175048]  ? sof_route_unload+0xb8/0xb8 [snd_sof ed49f3db2df0d72704365322eabcc747c7cbe78c]
-    [   20.175072]  soc_tplg_dapm_widget_elems_load+0x14c2/0x1758
-    [   20.175108]  ? soc_tplg_dapm_graph_elems_load+0x320/0x320
-    [   20.175128]  snd_soc_tplg_component_load+0x309/0x5d7
-    [   20.175163]  snd_sof_load_topology+0x78/0x115 [snd_sof ed49f3db2df0d72704365322eabcc747c7cbe78c]
-    [   20.175196]  sof_pcm_probe+0xa4/0xd7 [snd_sof ed49f3db2df0d72704365322eabcc747c7cbe78c]
-    [   20.175220]  snd_soc_component_probe+0x3b/0x99
-    [   20.175240]  soc_probe_component+0x2a3/0x4fc
-    [   20.175261]  snd_soc_bind_card+0x83c/0xfe3
-    [   20.175288]  devm_snd_soc_register_card+0x48/0x83
-    [   20.175310]  platform_drv_probe+0x88/0xac
-    [   20.175331]  really_probe+0x1b2/0x4f1
-    [   20.175352]  driver_probe_device+0x98/0xd7
-    [   20.175372]  device_driver_attach+0x71/0x96
-    [   20.175392]  __driver_attach+0xda/0xe5
-    [   20.175410]  ? driver_attach+0x2d/0x2d
-    [   20.175429]  bus_for_each_dev+0xcc/0x102
-    [   20.175451]  bus_add_driver+0x1cb/0x2e3
-    [   20.175473]  driver_register+0xd7/0x19c
-    [   20.175492]  ? 0xffffffffc0ec8000
-    [   20.175512]  do_one_initcall+0x158/0x30c
-    [   20.175539]  ? intel_bw_atomic_check+0x3ef/0x67b
-    [   20.175561]  do_init_module+0xe5/0x2dc
-    [   20.175582]  load_module+0x3d0b/0x411a
-    [   20.175615]  ? __kasan_slab_free+0x128/0x144
-    [   20.175636]  __se_sys_finit_module+0x13e/0x166
-    [   20.175659]  do_syscall_64+0x43/0x55
-    [   20.175681]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-    [   20.175699] RIP: 0033:0x78e6c3948899
-    [   20.175722] Code: 48 8d 3d 9a bd 0c 00 0f 05 eb ad 66 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 9f 85 0c 00 f7 d8 64 89 01 48
-    [   20.175741] RSP: 002b:00007ffff7b907a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-    [   20.175768] RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 000078e6c3948899
-    [   20.175785] RDX: 0000000000000004 RSI: 000078e6c3a3aadb RDI: 0000000000000017
-    [   20.175802] RBP: 00007ffff7b90810 R08: 00005a58cc4cde40 R09: 00007ffff7b90810
-    [   20.175818] R10: 00000000003ebf60 R11: 0000000000000246 R12: 0000000000020000
-    [   20.175834] R13: 00005a58cb0486b0 R14: 0000000000000000 R15: 000078e6c3a3aadb
-    
-    [   20.175865] Allocated by task 2525:
-    [   20.175885]  stack_trace_save+0x89/0xb8
-    [   20.175903]  kasan_save_stack+0x36/0x56
-    [   20.175920]  __kasan_kmalloc+0xf5/0x10c
-    [   20.175940]  __kmalloc+0xf4/0x2d2
-    [   20.175966]  sof_control_load+0x17c/0xaf4 [snd_sof]
-    [   20.175986]  soc_tplg_dapm_widget_elems_load+0xfa5/0x1758
-    [   20.176005]  snd_soc_tplg_component_load+0x309/0x5d7
-    [   20.176032]  snd_sof_load_topology+0x78/0x115 [snd_sof]
-    [   20.176058]  sof_pcm_probe+0xa4/0xd7 [snd_sof]
-    [   20.176076]  snd_soc_component_probe+0x3b/0x99
-    [   20.176093]  soc_probe_component+0x2a3/0x4fc
-    [   20.176109]  snd_soc_bind_card+0x83c/0xfe3
-    [   20.176127]  devm_snd_soc_register_card+0x48/0x83
-    [   20.176145]  platform_drv_probe+0x88/0xac
-    [   20.176162]  really_probe+0x1b2/0x4f1
-    [   20.176179]  driver_probe_device+0x98/0xd7
-    [   20.176197]  device_driver_attach+0x71/0x96
-    [   20.176214]  __driver_attach+0xda/0xe5
-    [   20.176232]  bus_for_each_dev+0xcc/0x102
-    [   20.176249]  bus_add_driver+0x1cb/0x2e3
-    [   20.176267]  driver_register+0xd7/0x19c
-    [   20.176285]  do_one_initcall+0x158/0x30c
-    [   20.176302]  do_init_module+0xe5/0x2dc
-    [   20.176319]  load_module+0x3d0b/0x411a
-    [   20.176336]  __se_sys_finit_module+0x13e/0x166
-    [   20.176353]  do_syscall_64+0x43/0x55
-    [   20.176371]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-    
-    [   20.176400] The buggy address belongs to the object at ffff88813f66aa00
-                    which belongs to the cache kmalloc-128 of size 128
-    [   20.176420] The buggy address is located 100 bytes inside of
-                    128-byte region [ffff88813f66aa00, ffff88813f66aa80)
-    [   20.176434] The buggy address belongs to the page:
-    [   20.176457] page:0000000032124a7f refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x13f66a
-    [   20.176475] head:0000000032124a7f order:1 compound_mapcount:0
-    [   20.176493] flags: 0x8000000000010200(slab|head)
-    [   20.176517] raw: 8000000000010200 dead000000000100 dead000000000122 ffff888100043680
-    [   20.176539] raw: 0000000000000000 0000000080200020 00000001ffffffff 0000000000000000
-    [   20.176554] page dumped because: kasan: bad access detected
-    
-    [   20.176578] Memory state around the buggy address:
-    [   20.176596]  ffff88813f66a900: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 fc
-    [   20.176614]  ffff88813f66a980: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-    [   20.176631] >ffff88813f66aa00: 00 00 00 00 00 00 00 00 00 00 00 00 04 fc fc fc
-    [   20.176646]                                                        ^
-    [   20.176664]  ffff88813f66aa80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-    [   20.176680]  ffff88813f66ab00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-    [   20.176694] ==================================================================
+> > +Proactive reclaim
+> > +-----------------
+> > +Proactive reclaim induces memory reclaim when there is no memory
+> > +pressure and usually targets cold memory only. E.g., when a new job
+> > +comes in, the job scheduler wants to proactively reclaim memory on the
+> > +server it has selected to improve the chance of successfully landing
+> > +this new job.
+> > +
+> > +Users can write ``- memcg_id node_id min_gen_nr [swappiness
+> > +[nr_to_reclaim]]`` to ``lru_gen`` to evict generations less than or
+> > +equal to ``min_gen_nr``. Note that ``min_gen_nr`` should be less than
+> > +``max_gen_nr-1`` as ``max_gen_nr`` and ``max_gen_nr-1`` are not fully
+> > +aged and therefore cannot be evicted. ``swappiness`` overrides the
+> > +default value in ``/proc/sys/vm/swappiness``. ``nr_to_reclaim`` limits
+> > +the number of pages to evict.
+> > +
+> > +A typical use case is that a job scheduler writes to ``lru_gen``
+> > +before it tries to land a new job on a server, and if it fails to
+> > +materialize the cold memory without impacting the existing jobs on
+> > +this server, it retries on the next server according to the ranking
+> > +result obtained from the working set estimation step described
+> > +earlier.
+>
+> It sounds to me that these interfaces were developed in response to
+> ongoing development and use of a particular job scheduler.
+
+I did borrow some of my previous experience with Google's data
+centers. But I'm a Chrome OS developer now, so I designed them to be
+job scheduler agnostic :)
+
+> This is a very good thing, but has thought been given to the potential
+> needs of other job schedulers?
+
+Yes, basically I'm trying to help everybody replicate the success
+stories at Google and Meta [3][4].
+
+[3] https://dl.acm.org/doi/10.1145/3297858.3304053
+[4] https://dl.acm.org/doi/10.1145/3503222.3507731
