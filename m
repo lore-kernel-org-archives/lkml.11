@@ -2,88 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7D65C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 16:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 974E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 17:00:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232658AbiDPRB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 13:01:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55000 "EHLO
+        id S232666AbiDPRDL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 13:03:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232651AbiDPRB0 (ORCPT
+        with ESMTP id S232651AbiDPRDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 13:01:26 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C5DE4C792;
-        Sat, 16 Apr 2022 09:58:53 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id mp16-20020a17090b191000b001cb5efbcab6so14025899pjb.4;
-        Sat, 16 Apr 2022 09:58:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=cMNohu7KsNouJa1UFb+K8nUtLwDTzTI/72r42ygiURM=;
-        b=Y8b4kXsAn89yhrVM/0XlFxsROV32VWFrmhPy+SPB4NP+2xDJXqt4R86dGjkRoe9U8m
-         MdmH0mXzpvpipacGFAnrRsCf4QgpcP1cYnBuT9lag8JDJjsD2dlukS2RXMXDJLzuySXQ
-         mB37X0txV/IsQArkVEBpXZ/0ZCXwbyNt5ahBpKOjKGBQcmBF0GAPJiQ2WBRzPwvTGoX3
-         LU7TsQQj2bxorSO/0vkvdY5yB2nfZSfM1Oq24eIKtsO3W8wn3bo3jY8DmN6YpSaJuQeA
-         yExE3JgRYfb29zlkViY9mCgeL769ZMdiU6+g9Y04NXlt+LY5ISCZt5cv1VWww/NctZFz
-         rWkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=cMNohu7KsNouJa1UFb+K8nUtLwDTzTI/72r42ygiURM=;
-        b=qzHBoTfEnZeSj1vNLcn+Zz+Hm0ZvnjZK8q3VHEOEHd+iLfWZYJE+SFnXC5vHE/ShQa
-         +c+xYmdGnVWY5cUOY36fqtfiZqsyS3puvfpwOZ+pHap3qlvmobs1MaF/yRC9nLlZ4wfK
-         0RQPXpOu0EBAcyg85EJnxvgUZxD4rL8MWE2Oz8yjg8vMNGtlG6QpdhOaTb61CStfpQkZ
-         yOo+j46bSRmbQTWZt0ic3mI4krKng2ra+O/bSN7LAwKMG8a8D6AVYi0dyx6U0nDfr/Z9
-         toQSwL9PKkcICJMR2+fqoiijMX7YogfMfxmT0qdJ5hqp7kwaMdKAj8vN8yeehmVXuAkj
-         oCjw==
-X-Gm-Message-State: AOAM533diBsvSkFSxDSwkIcfUL89JO/3S0VX6T+nucNQMR6BcAthIAVb
-        x6gybP6JBK0aph2Z0Kg+Fj1YHbLosIGdWYEeycg=
-X-Google-Smtp-Source: ABdhPJy7YB+IwrdQor5NjHuIZEoM/n6B3J0+rbXLoq4HAbBBdffaXFkJHbDhXcjRlqLQV7zffljEd7TTuM21G4CDAS8=
-X-Received: by 2002:a17:903:1246:b0:155:c376:e5a0 with SMTP id
- u6-20020a170903124600b00155c376e5a0mr3891686plh.167.1650128332785; Sat, 16
- Apr 2022 09:58:52 -0700 (PDT)
+        Sat, 16 Apr 2022 13:03:10 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1D264719;
+        Sat, 16 Apr 2022 10:00:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650128436; x=1681664436;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=c41hGLHaAehdnBiHkOfPD2fC/yD5IiZ95Pu4yRuFNdQ=;
+  b=lCr/dbNB89qGPJt8IL6ZjkNpEVK26XQ67133LX25i9vNkP8RuRbjjMaB
+   gfe361BgLrm+krMkh+5wi7nbiEq9DGFHAcqGQOAKX7yHKWVW/KWtMuXI1
+   rkP366puqnkTW7j+2vFS6ecG8bNG6VGCF84G4rYiiURMX3/nvk+Z+G1GT
+   wT65BZd3XYGGrjdMFur2VwWqBXWpwJR4FIxxWmFK/Kl4Mj4ekRVrMkP3c
+   oN+OQFfhoenPxdGOXzjOSJfz6POzZJuWl9oYslLbaqAx8kK4LRhEwkxzo
+   oOjkcjQ5OHzlPWYMhSGHk7rD6MZYyuvmoJUl2NXMukMZjkW8CRL+P9EgN
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="262767296"
+X-IronPort-AV: E=Sophos;i="5.90,264,1643702400"; 
+   d="scan'208";a="262767296"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2022 10:00:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,264,1643702400"; 
+   d="scan'208";a="701369843"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by fmsmga001.fm.intel.com with ESMTP; 16 Apr 2022 10:00:33 -0700
+Date:   Sun, 17 Apr 2022 00:53:01 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Nava kishore Manne <nava.manne@xilinx.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
+        michal.simek@xilinx.com, linux-fpga@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        git@xilinx.com
+Subject: Re: [PATCH v4 3/5] fpga: fpga-mgr: fix kernel-doc warnings
+Message-ID: <20220416165301.GG301222@yilunxu-OptiPlex-7050>
+References: <20220416133719.3382895-1-nava.manne@xilinx.com>
+ <20220416133719.3382895-4-nava.manne@xilinx.com>
 MIME-Version: 1.0
-References: <20220415195027.305019-1-tales.aparecida@gmail.com>
- <20220415195027.305019-3-tales.aparecida@gmail.com> <4f4c8441-a144-6c2d-0f8b-b598905c2f3d@gmail.com>
-In-Reply-To: <4f4c8441-a144-6c2d-0f8b-b598905c2f3d@gmail.com>
-From:   Tales <tales.aparecida@gmail.com>
-Date:   Sat, 16 Apr 2022 13:58:12 -0300
-Message-ID: <CAGVoLp75WEWxk2uTz6AtomRo+5kNexqM-+aLHQe8pSp66PcHzQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] MAINTAINERS: add docs entry to AMDGPU
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@riseup.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220416133719.3382895-4-nava.manne@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bagas Sanjaya,
+On Sat, Apr 16, 2022 at 07:07:17PM +0530, Nava kishore Manne wrote:
+> warnings: No description found for return value of 'xxx'
+> 
+> In-order to fix the above kernel-doc warnings added the
+> 'Return' description for 'devm_fpga_mgr_register_full()'
+> and 'devm_fpga_mgr_register()' API's.
 
-Em s=C3=A1b., 16 de abr. de 2022 =C3=A0s 02:47, Bagas Sanjaya
-<bagasdotme@gmail.com> escreveu:
-> On 4/16/22 02:50, Tales Lelo da Aparecida wrote:
-> > To make sure maintainers of amdgpu drivers are aware of any changes
-> >  in their documentation, add its entry to MAINTAINERS.
-> >
->
-> Did you mean the Documentation/gpu/amdgpu/ is maintained by dri-devel?
+                                 APIs.
 
-`Documentation/gpu/amdgpu/` should be maintained by "RADEON and AMDGPU
-DRM DRIVERS" developers, which are part of the dri-devel community.
+> 
+> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
 
-Kind regards
+With the minor fix, please add my Acked-by.
+
+Acked-by: Xu Yilun <yilun.xu@intel.com>
+
+> ---
+> Changes for v2:
+>                 -Replaced s/@return:/Return:/
+> Changes for v3:
+>                -Updated commit description.
+> Changes for v4:
+>                -Updated commit description.
+> 
+>  drivers/fpga/fpga-mgr.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
+> index a699cc8e2fa6..0f2b28538f17 100644
+> --- a/drivers/fpga/fpga-mgr.c
+> +++ b/drivers/fpga/fpga-mgr.c
+> @@ -730,6 +730,8 @@ static void devm_fpga_mgr_unregister(struct device *dev, void *res)
+>   * @parent:	fpga manager device from pdev
+>   * @info:	parameters for fpga manager
+>   *
+> + * Return:  fpga manager pointer on success, negative error code otherwise.
+> + *
+>   * This is the devres variant of fpga_mgr_register_full() for which the unregister
+>   * function will be called automatically when the managing device is detached.
+>   */
+> @@ -763,6 +765,8 @@ EXPORT_SYMBOL_GPL(devm_fpga_mgr_register_full);
+>   * @mops:	pointer to structure of fpga manager ops
+>   * @priv:	fpga manager private data
+>   *
+> + * Return:  fpga manager pointer on success, negative error code otherwise.
+> + *
+>   * This is the devres variant of fpga_mgr_register() for which the
+>   * unregister function will be called automatically when the managing
+>   * device is detached.
+> -- 
+> 2.25.1
