@@ -2,87 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6A6C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:04:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE3A2C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:04:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229668AbiDPCGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
+        id S229610AbiDPCHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiDPCFl (ORCPT
+        with ESMTP id S229620AbiDPCGD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:05:41 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE974137F7C
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 18:54:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650074087; x=1681610087;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=tnWW8RHrYAEi7ZmsFv26NaD1X/SNeXSnVLg9q3uTZX0=;
-  b=jG4m61zRmBUbrSmWSxX5gFoRGorGu2DOC5SOmdAMOOMTNODputQXnXUM
-   A2sccxmKf+dGYu4yauFH9hp5XDiZlCSrbuk8/20yFuyomPwssB4CpzlXJ
-   Pi3tpjPbs16bg4SpxnR6vH9YyjxBgpYGHDXBui3RX1axYvBViyLZGzh6z
-   Tk51smowqeR4HldiqMIfDtdGwZquu/C57xomiYVFmgGQQFJo2AW4c1Erp
-   ezTp18hSO9Ky5AYVOpAUDqJzeAGoHdBBiEuruR0KEakNBxPz1kk37+eY4
-   W+q5QqqVw8Lsrqvp653KyT5u7LEc8WVfOzfuNIZxMYjZ2QM6x8oKF1J/T
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="260856691"
-X-IronPort-AV: E=Sophos;i="5.90,264,1643702400"; 
-   d="scan'208";a="260856691"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2022 18:47:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,264,1643702400"; 
-   d="scan'208";a="701239795"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 15 Apr 2022 18:47:43 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nfXXK-0002e6-Mh;
-        Sat, 16 Apr 2022 01:47:42 +0000
-Date:   Sat, 16 Apr 2022 09:47:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bart Van Assche <bvanassche@acm.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Subject: [bvanassche:scsi-gap-zone 8/8] ERROR: modpost: "__umoddi3"
- [drivers/scsi/scsi_debug.ko] undefined!
-Message-ID: <202204160900.KLzxt1Xe-lkp@intel.com>
+        Fri, 15 Apr 2022 22:06:03 -0400
+Received: from out203-205-251-60.mail.qq.com (out203-205-251-60.mail.qq.com [203.205.251.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D8F6D4E5
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 18:58:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1650074332;
+        bh=CriwDWtOWAQX5VANr5fAIAkGQbBAnagbCEroVjZL5xE=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=NTRnOIaHyemr/JoHOXrNcIwV+urI6oIdsGlqBmMV7bxymwyVaIdf0dcpXbodWKjI1
+         6bmhN6NuqwVtHhxsdJoJjJUncKPGcBWgbbxn+XfgWDl3v99oZsz47JRo3i3VdMAkkb
+         BnFNbS5f/wrLjxHneUqI730/6Vm3QDb4qQY0HjzI=
+Received: from [IPv6:240e:362:47d:9500:6527:51dc:8ce2:179e] ([240e:362:47d:9500:6527:51dc:8ce2:179e])
+        by newxmesmtplogicsvrszc7.qq.com (NewEsmtp) with SMTP
+        id AD38087B; Sat, 16 Apr 2022 09:43:19 +0800
+X-QQ-mid: xmsmtpt1650073399tvl7nvia6
+Message-ID: <tencent_8EC09A26D25C1A263AE207952230B789D409@qq.com>
+X-QQ-XMAILINFO: NY3HYYTs4gYSrO+zHxGJ/iwzNSjLXu9vUBN6PnZHIBGTm9jqMKPbKBgmf1wIfN
+         fUnS32uHdLgy3E17MQn5nFZSjeuCUdYakAG0ji4xpE2GYKNVYpdnhhiMAyVYLaYzjVramRVd2o6T
+         PBKHwjgnLhPCmooQY8Laqj4OEKZkrHDUYaNs6LU0sl3pPhLu9tkGtd7ookVkvph0+UidYKAunvTl
+         z64mBPOAzGtjKjINLBHRpyPODP9pwo///ZZYbqaX/8sZ9yXWUo65C/WPy8YoOlqhnHs8VqUSMZLP
+         h7/QcFSpSabezlKuABc/Wc/pjNosbHwzpDVAWJ9XolbEH93SZPppBI5AMRueJubQh+/vV6hHOKHR
+         Y+AFXbM4k/ES7/0nxIZfWygx2H4lW7tefGlAaGII6lLDYSSHCqfjVpmrGKkY0Zd2TU6QlpNrSD7O
+         7QWzcDuxN6wQUBngabozrXDxiyeXEpoclQka7rTkMp3+/5Euph5yL1mqelcqQunVwmuPTv1w+iUz
+         WxAGWWWQkwg/8dzxw/NdUDUzSo5OWhYFlYkxLLzlDLZMUMIehLrrF0+gLFfGbzUkF5RS7a8q3IJb
+         8lrJzBymc56Fn/tztPziAJBerWZxZ3+c8tF7zcBjUZP9dSZNb2blYQZw+VVvxDTb5igATok3q35O
+         6PIQGZkUpGXIW5e0/M9ZEfI1eTTEzcQ2lopQigFZnhNAZ3lu/1+4jc8P1v8uJC/hezPlSX1BKFvi
+         y6O5YlLO9pbmg+Zu0uqrecPrFhfwamuTbcuYhgHZyxEY6aPA64xzsL7ESon5Rrz4jL1z08ULC3CU
+         xNAp8smcjAtTgyp37Z+QYLn5SKilhvPcZx5jn3ME9bKAuWX6oh4QE/+ASY50DPki7FRfUaqp60rk
+         63jl0c74ddlK+VrqzWWIu0WF629TKIDoj/id2Z1rgmyE8kz20Viyu9zOXNU+hmCMecUiG/Xh/ZsB
+         y5FqaZTq2OEsJN4wfz7Q==
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+To:     Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        jean-philippe <jean-philippe@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Dave Hansen <dave.hansen@intel.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+References: <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
+ <f439dde5-0eaa-52e4-9cf7-2ed1f62ea07f@intel.com>
+ <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
+ <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
+ <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
+ <YlWBkyGeb2ZOGLKl@fyu1.sc.intel.com>
+ <tencent_A9458C6CEBAADD361DA765356477B00E920A@qq.com>
+ <tencent_8B6D7835F62688B4CD069C0EFC41B308B407@qq.com>
+ <YllADL6uMoLllzQo@fyu1.sc.intel.com>
+ <99bcb9f5-4776-9c40-a776-cdecfa9e1010@foxmail.com>
+ <YllN/OmjpYdT1tO9@otcwcpicx3.sc.intel.com>
+ <tencent_CD35B6A6FBB48186B38EF641F088BAED1407@qq.com>
+ <20220415140002.7c12b0d2@jacob-builder>
+From:   "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
+X-OQ-MSGID: <df95e2ad-4010-cd9c-094b-8b816419951a@foxmail.com>
+Date:   Sat, 16 Apr 2022 09:43:07 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220415140002.7c12b0d2@jacob-builder>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/bvanassche/linux scsi-gap-zone
-head:   5531f96720bc0e475e669eb56b7094401c53f928
-commit: 5531f96720bc0e475e669eb56b7094401c53f928 [8/8] scsi_debug: Add gap zone support
-config: riscv-randconfig-r042-20220414 (https://download.01.org/0day-ci/archive/20220416/202204160900.KLzxt1Xe-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 8e43cbab33765c476337571e5ed11b005199dd0d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/bvanassche/linux/commit/5531f96720bc0e475e669eb56b7094401c53f928
-        git remote add bvanassche https://github.com/bvanassche/linux
-        git fetch --no-tags bvanassche scsi-gap-zone
-        git checkout 5531f96720bc0e475e669eb56b7094401c53f928
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+On 2022/4/16 上午5:00, Jacob Pan wrote:
+> Hi zhangfei.gao@foxmail.com,
+>
+> On Fri, 15 Apr 2022 19:52:03 +0800, "zhangfei.gao@foxmail.com"
+> <zhangfei.gao@foxmail.com> wrote:
+>
+>>>>> A PASID might be still used even though it is freed on mm exit.
+>>>>>
+>>>>> process A:
+>>>>> 	sva_bind();
+>>>>> 	ioasid_alloc() = N; // Get PASID N for the mm
+>>>>> 	fork(): // spawn process B
+>>>>> 	exit();
+>>>>> 	ioasid_free(N);
+>>>>>
+>>>>> process B:
+>>>>> 	device uses PASID N -> failure
+>>>>> 	sva_unbind();
+>>>>>
+>>>>> Dave Hansen suggests to take a refcount on the mm whenever binding the
+>>>>> PASID to a device and drop the refcount on unbinding. The mm won't be
+>>>>> dropped if the PASID is still bound to it.
+>>>>>
+>>>>> Fixes: 701fac40384f ("iommu/sva: Assign a PASID to mm on PASID
+>>>>> allocation and free it on mm exit")
+>>>>>
+> Is process A's mm intended to be used by process B? Or you really should
+> use PASID N on process B's mm? If the latter, it may work for a while until
+> B changes mapping.
+>
+> It seems you are just extending the life of a defunct mm?
 
->> ERROR: modpost: "__umoddi3" [drivers/scsi/scsi_debug.ko] undefined!
+ From nginx code, the master process init resources, then fork daemon 
+process to take over,
+then master process exit by itself.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+src/core/nginx.c
+main
+ngx_ssl_init(log);    -> openssl engine -> bind_fn -> sva_bind()
+ngx_daemon(cycle->log)
+
+src/os/unix/ngx_daemon.c
+ngx_daemon(ngx_log_t *log)
+{
+      int  fd;
+
+      switch (fork()) {
+      case -1:
+          ngx_log_error(NGX_LOG_EMERG, log, ngx_errno, "fork() failed");
+          return NGX_ERROR;
+
+      case 0:
+         // the fork daemon process
+          break;
+
+      default:
+        // master process directly exit, and release mm as well as ioasid
+          exit(0);
+      }
+
+       // only daemon process
+
+Thanks
+
+>
+> Thanks,
+>
+> Jacob
+
