@@ -2,179 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9275FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 16:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D452FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 16:33:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232544AbiDPQfJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 12:35:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
+        id S232552AbiDPQf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 12:35:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232156AbiDPQfH (ORCPT
+        with ESMTP id S230112AbiDPQfy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 12:35:07 -0400
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04CC03B004
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 09:32:35 -0700 (PDT)
-Received: by mail-ot1-x329.google.com with SMTP id g17-20020a9d6191000000b005e8d8583c36so7175397otk.8
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 09:32:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxtx.org; s=google;
-        h=sender:mime-version:references:in-reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=sZr+uwfdHKmeg2pHKOfIzlKY2/0N62xG4fWchiL4BA0=;
-        b=R6vut8AJtPQR6vznNzXpxi2jqRZtGeBIMFdJ1p4UIz7AsaB5JEDXWyzkEvcAxsfL2r
-         h0XosbIiuHiNtCXmVNH9C2+WW0Di+6JDXCrMyOX400xLizB7IDqkl4VmZL7N77hShzEI
-         OAzUydHeAkZ7wwy5N2UPWZJvF/EWE2V8DZ/7k=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:mime-version:references:in-reply-to:from
-         :date:message-id:subject:to:cc;
-        bh=sZr+uwfdHKmeg2pHKOfIzlKY2/0N62xG4fWchiL4BA0=;
-        b=fkC7B2WUTf989e64DvuBfLCnwnXicN3lhxHsHgeEjWqCxvMz9NGxZZZjF/WGuMzdAH
-         8XzFhwzPwINZEiRtYnsb0l8sVr/gi6jvARrtLLjlwf1gr057JxTuU/k1ARCjm/DHg9ED
-         GI/0Pcj4g99KQixEgbdvKZOGScHnHvb5/HIkOr0alpeu79FcVjekq+jvM+7x09TNyubA
-         h04Qg5gXgN88xrlzCabcwtnp5bvZz+lsLbpG6efYwjb4RQl67zTgCYQcw4AP73qxVQxy
-         dUuTG5Ep0gnh+Lj3th5LdpLM6OfdsOigsxAmSU2fl19frE+0s1Hq5HwDZIPlNpk8PAzK
-         aTuQ==
-X-Gm-Message-State: AOAM53132FsT4yCc797qKlfMSvVpsj2FBX44cXWfkLUO0+Sg3mhzaNV+
-        n4ms/GXoXHWRDARzivsUVvrRhVIva97by693ROk=
-X-Google-Smtp-Source: ABdhPJygen62YbC1ySlM9clohLZ59FdgPf2BggZHzEVUBTDrosRVsKOvcS+wvuToKqHcHRzcaThBcw==
-X-Received: by 2002:a9d:6b12:0:b0:5e6:bc04:ea2a with SMTP id g18-20020a9d6b12000000b005e6bc04ea2amr1424409otp.119.1650126754057;
-        Sat, 16 Apr 2022 09:32:34 -0700 (PDT)
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com. [209.85.167.170])
-        by smtp.gmail.com with ESMTPSA id x20-20020a4ac594000000b00329a02f2f34sm2320060oop.16.2022.04.16.09.32.30
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Apr 2022 09:32:31 -0700 (PDT)
-Sender: Justin Forbes <jmforbes@linuxtx.org>
-Received: by mail-oi1-f170.google.com with SMTP id z8so10978989oix.3
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 09:32:30 -0700 (PDT)
-X-Received: by 2002:a17:90a:ca84:b0:1cb:adf4:1740 with SMTP id
- y4-20020a17090aca8400b001cbadf41740mr10027204pjt.109.1650126739461; Sat, 16
- Apr 2022 09:32:19 -0700 (PDT)
+        Sat, 16 Apr 2022 12:35:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE5D3B2B1;
+        Sat, 16 Apr 2022 09:33:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF41460DCA;
+        Sat, 16 Apr 2022 16:33:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD3D8C385A3;
+        Sat, 16 Apr 2022 16:33:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650126801;
+        bh=yh2F/q93aCsWp0FLnBhPO/VFXr1ot352TPPIXtctmdc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=G9ONQqSpSIO/WWvRN8m/btnSFTrlMN/cx25ZBsAZLrth8eBKU3w2C/Cg0hPVib3ki
+         mWaUCnKXviAbKIbC5rWw7oMtkR1WK/eRp56/8iMIjaBs68RDEMHWzP8t88arwM33SR
+         xsISRC3EUKBI4QMgRaYcPl0Ks/eAfkwZhXX7ehCEuGdSHjzJTtEbYGSRyiyD1+/d12
+         oL5MNWo74yiuMCg95MwT6mGOqNKCeU1GZj0UsvVOlvArTG9Diw3gkxsq4hO8lZOo8f
+         SlHAnZUcHeW6yoAu714FFukJ9PtZsU/0/AR7UJJUx55jy5TL0y9mmhmE5yRBjYF+oy
+         K2/bAcM+tS6FA==
+Date:   Sat, 16 Apr 2022 17:41:18 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     dan@dlrobertson.com, andy.shevchenko@gmail.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 5/9] iio: accel: bma400: Add separate channel for
+ step counter
+Message-ID: <20220416174118.13f787be@jic23-huawei>
+In-Reply-To: <20220411203133.19929-6-jagathjog1996@gmail.com>
+References: <20220411203133.19929-1-jagathjog1996@gmail.com>
+        <20220411203133.19929-6-jagathjog1996@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220407031525.2368067-1-yuzhao@google.com> <20220407031525.2368067-9-yuzhao@google.com>
- <20220411191621.0378467ad99ebc822d5ad005@linux-foundation.org>
- <CAOUHufYeC=Kuu59BPL_48sM67CqACxH2wWy-SYGXpadgMDmY3w@mail.gmail.com>
- <20220414185654.e7150bcbe859e0dd4b9c61af@linux-foundation.org>
- <CAOUHufYy6yQS9ARN9C5+ODkopR+ez4TH3hZNZo4HtNHBExS1mA@mail.gmail.com>
- <20220415121521.764a88dda55ae8c676ad26b0@linux-foundation.org>
- <CAOUHufYsjwMGMFCfYoh79rFZqwqS1jDihcBS9sHd-gBxEAD3Ug@mail.gmail.com> <20220415143220.cc37b0b0a368ed2bf2a821f8@linux-foundation.org>
-In-Reply-To: <20220415143220.cc37b0b0a368ed2bf2a821f8@linux-foundation.org>
-From:   Justin Forbes <jforbes@fedoraproject.org>
-Date:   Sat, 16 Apr 2022 11:32:08 -0500
-X-Gmail-Original-Message-ID: <CAFbkSA3jdtDrWz9-i2ZED5k8uBx6nwrikSO6x22qGeWqj8bgHg@mail.gmail.com>
-Message-ID: <CAFbkSA3jdtDrWz9-i2ZED5k8uBx6nwrikSO6x22qGeWqj8bgHg@mail.gmail.com>
-Subject: Re: [PATCH v10 08/14] mm: multi-gen LRU: support page table walks
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Yu Zhao <yuzhao@google.com>, Stephen Rothwell <sfr@rothwell.id.au>,
-        Linux-MM <linux-mm@kvack.org>, Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Barry Song <21cnbao@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 4:33 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Fri, 15 Apr 2022 14:11:32 -0600 Yu Zhao <yuzhao@google.com> wrote:
->
-> > >
-> > > I grabbed
-> > > https://kojipkgs.fedoraproject.org//packages/kernel/5.18.0/0.rc2.23.fc37/src/kernel-5.18.0-0.rc2.23.fc37.src.rpm
-> > > and
-> >
-> > Yes, Fedora/RHEL is one concrete example of the model I mentioned
-> > above (experimental/stable). I added Justin, the Fedora kernel
-> > maintainer, and he can further clarify.
+On Tue, 12 Apr 2022 02:01:29 +0530
+Jagath Jog J <jagathjog1996@gmail.com> wrote:
 
-We almost split into 3 scenarios. In rawhide we run a standard Fedora
-config for rcX releases and .0, but git snapshots are built with debug
-configs only. The trade off is that we can't turn on certain options
-which kill performance, but we do get more users running these kernels
-which expose real bugs.  The rawhide kernel follows Linus' tree and is
-rebuilt most weekdays.  Stable Fedora is not a full debug config, but
-in cases where we can keep a debug feature on without it much getting
-in the way of performance, as is the case with CONFIG_DEBUG_VM, I
-think there is value in keeping those on, until there is not.  And of
-course RHEL is a much more conservative config, and a much more
-conservative rebase/backport codebase.
+> Added channel for step counter which can be enable or disable
+> through the sysfs interface.
+> 
+> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+> ---
+>  drivers/iio/accel/bma400.h      |  1 +
+>  drivers/iio/accel/bma400_core.c | 48 ++++++++++++++++++++++++++++++---
+>  2 files changed, 45 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
+> index a7482a66b36b..52f9ea95de81 100644
+> --- a/drivers/iio/accel/bma400.h
+> +++ b/drivers/iio/accel/bma400.h
+> @@ -53,6 +53,7 @@
+>  #define BMA400_STEP_CNT1_REG        0x16
+>  #define BMA400_STEP_CNT3_REG        0x17
+>  #define BMA400_STEP_STAT_REG        0x18
+> +#define BMA400_STEP_INT_MSK	    BIT(0)
+>  
+>  /*
+>   * Read-write configuration registers
+> diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
+> index b7b2b67aef31..c8f147163d3c 100644
+> --- a/drivers/iio/accel/bma400_core.c
+> +++ b/drivers/iio/accel/bma400_core.c
+> @@ -20,6 +20,8 @@
+>  #include <linux/regmap.h>
+>  #include <linux/regulator/consumer.h>
+>  
+> +#include <asm/unaligned.h>
+> +
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/buffer.h>
+>  #include <linux/iio/trigger.h>
+> @@ -67,6 +69,7 @@ struct bma400_data {
+>  	int oversampling_ratio;
+>  	int scale;
+>  	struct iio_trigger *trig;
+> +	int steps_enabled;
+>  	/* Correct time stamp alignment */
+>  	struct {
+>  		__le16 buff[3];
+> @@ -201,6 +204,12 @@ static const struct iio_chan_spec bma400_channels[] = {
+>  			.endianness = IIO_LE,
+>  		},
+>  	},
+> +	{
+> +		.type = IIO_STEPS,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +				      BIT(IIO_CHAN_INFO_ENABLE),
+> +		.scan_index = -1, /* No buffer support */
+> +	},
+>  	IIO_CHAN_SOFT_TIMESTAMP(4),
+>  };
+>  
+> @@ -705,13 +714,28 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
+>  {
+>  	struct bma400_data *data = iio_priv(indio_dev);
+>  	int ret;
+> +	u8 steps_raw[3];
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_PROCESSED:
+> -		mutex_lock(&data->mutex);
+> -		ret = bma400_get_temp_reg(data, val, val2);
+> -		mutex_unlock(&data->mutex);
+> -		return ret;
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			mutex_lock(&data->mutex);
+> +			ret = bma400_get_temp_reg(data, val, val2);
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		case IIO_STEPS:
+> +			mutex_lock(&data->mutex);
+> +			ret = regmap_bulk_read(data->regmap, BMA400_STEP_CNT0_REG,
+> +					       &steps_raw, sizeof(steps_raw));
 
-> > If we don't want more VM_BUG_ONs, I'll remove them. But (let me
-> > reiterate) it seems to me that just defeats the purpose of having
-> > CONFIG_DEBUG_VM.
-> >
->
-> Well, I feel your pain.  It was never expected that VM_BUG_ON() would
-> get subverted in this fashion.
+Bulk read to a non DMA safe buffer. Similar fix to before needed.
+Or given this is a slow path, just use a local kmalloc() for the buffer.
 
-Fedora is not trying to subvert anything.  If keeping the option on
-becomes problematic, we can simply turn it off.   Fedora certainly has
-a more diverse installed base than typical enterprise distributions,
-and much more diverse than most QA pools.  Both in the array of
-hardware, and in the use patterns, so things do get uncovered that
-would not be seen otherwise.
+The reality is you are probably fine today without such care, but last
+time we discussed this the conclusion was that it would be a perfectly
+valid optimisation in regmap to return to requiring DMA safe buffers
+for bulk accesses.
 
-> We could create a new MM-developer-only assertion.  Might even call it
-> MM_BUG_ON().  With compile-time enablement but perhaps not a runtime
-> switch.
->
-> With nice simple semantics, please.  Like "it returns void" and "if you
-> pass an expression with side-effects then you lose".  And "if you send
-> a patch which produces warnings when CONFIG_MM_BUG_ON=n then you get to
-> switch to windows95 for a month".
->
-> Let's leave the mglru assertions in place for now and let's think about
-> creating something more suitable, with a view to switching mglru over
-> to that at a later time.
->
->
->
-> But really, none of this addresses the core problem: *_BUG_ON() often
-> kills the kernel.  So guess what we just did?  We killed the user's
-> kernel at the exact time when we least wished to do so: when they have
-> a bug to report to us.  So the thing is self-defeating.
->
-> It's much much better to WARN and to attempt to continue.  This makes
-> it much more likely that we'll get to hear about the kernel flaw.
+> +			mutex_unlock(&data->mutex);
+> +			if (ret)
+> +				return ret;
+> +			*val = get_unaligned_le24(steps_raw);
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+>  	case IIO_CHAN_INFO_RAW:
+>  		mutex_lock(&data->mutex);
+>  		ret = bma400_get_accel_reg(data, chan, val);
+> @@ -752,6 +776,9 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
+>  
+>  		*val = data->oversampling_ratio;
+>  		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_ENABLE:
+> +		*val = data->steps_enabled;
+> +		return IIO_VAL_INT;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -817,6 +844,17 @@ static int bma400_write_raw(struct iio_dev *indio_dev,
+>  		ret = bma400_set_accel_oversampling_ratio(data, val);
+>  		mutex_unlock(&data->mutex);
+>  		return ret;
+> +	case IIO_CHAN_INFO_ENABLE:
+> +		if (data->steps_enabled == val)
+> +			return 0;
+> +
+> +		mutex_lock(&data->mutex);
+> +		ret = regmap_update_bits(data->regmap, BMA400_INT_CONFIG1_REG,
+> +					 BMA400_STEP_INT_MSK,
+> +					 FIELD_PREP(BMA400_STEP_INT_MSK, !!val));
 
-I agree very much with this. We hear about warnings from users, they
-don't go unnoticed, and several of these users are willing to spend
-time to help get to the bottom of an issue. They may not know the
-code, but plenty are willing to test various patches or scenarios.
+Why the lock for this one?
 
-Justin
+> +		mutex_unlock(&data->mutex);
+> +		data->steps_enabled = val;
+> +		return ret;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -833,6 +871,8 @@ static int bma400_write_raw_get_fmt(struct iio_dev *indio_dev,
+>  		return IIO_VAL_INT_PLUS_MICRO;
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>  		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_ENABLE:
+> +		return IIO_VAL_INT;
+>  	default:
+>  		return -EINVAL;
+>  	}
+
