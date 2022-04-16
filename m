@@ -2,108 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70240C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 08:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3089C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 08:15:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230289AbiDPIRc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 04:17:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51142 "EHLO
+        id S230320AbiDPISZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 04:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230287AbiDPIRa (ORCPT
+        with ESMTP id S230108AbiDPISU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 04:17:30 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCD818E3C
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 01:14:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650096898; x=1681632898;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=jxT27LaRFB+VIouMNBnne8LOHkM4l4qELkyspOGsRPc=;
-  b=EjEbDJik8Mp4llrk/i+Ga2AhBlTcFCKU62RPMmTg6RabMFmqIo/Qzzqd
-   bs+bStrPartSgAr3qtb9KEYaqEJBnuiggPjewiFcLt4YCgszl7QkIm02B
-   dFtw090AlZf48enP0jeHcJKrt1kouOFFSsJytrIV0ev/P/y8QgMaIrOiY
-   WT1fHmw0rcOT/ZhTGWiEYbHGgqj/LlUulId+ZfRT4t+nrIJMxDOZ/uvHF
-   ar7IMcbjpa2qIW8qk3XzVdbEm/U66gYtOimCVHCrG/FZcR89IvZinJGAB
-   89bfwLIrhAVDAoxxO2BBndfz6K8tVYD/AwK9NSSJo704U24y4TnHmIXW3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="326179914"
-X-IronPort-AV: E=Sophos;i="5.90,264,1643702400"; 
-   d="scan'208";a="326179914"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2022 01:14:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,264,1643702400"; 
-   d="scan'208";a="613053503"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 16 Apr 2022 01:14:55 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nfda2-0002wL-TA;
-        Sat, 16 Apr 2022 08:14:54 +0000
-Date:   Sat, 16 Apr 2022 16:14:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Zhi Wang <zhi.a.wang@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        zhenyu.z.wang@intel.com, terrence.xu@intel.com,
-        intel-gvt-dev@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>
-Subject: [intel-gvt:topic/for-christoph 1/37]
- drivers/gpu/drm/i915/intel_gvt.h:69:5: error: no previous prototype for
- function 'intel_gvt_iterate_mmio_table'
-Message-ID: <202204161634.p6DDJoeT-lkp@intel.com>
+        Sat, 16 Apr 2022 04:18:20 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F2A5F83;
+        Sat, 16 Apr 2022 01:15:48 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id i24-20020a17090adc1800b001cd5529465aso8692431pjv.0;
+        Sat, 16 Apr 2022 01:15:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iVfFJCMkrWLbyYUJOBj2PVHo9GdUj3rw5BmoGxMpBoo=;
+        b=iYCJ6Wum2Xv3OfVJqUjKKcIs4chqAe85/Ts0gdvaAhPlZcypz00oeX4nApt4uQ/IQM
+         Z/kGU5mHBZSb9cwIXqhlKJgLGbDSgyzXjte2f83Epit+PxLjJ4EZ5nvq6K/cvze/KLpV
+         WP3hiWF5BvZLNM0yjBJ/gYWOXc/A3aPeK9627J6poVefhVN+uUJNUq7nPJwXA0/05YWl
+         6XVvVYcQfJX6r08lZlHmq288j5fEPiyaUFTsEW6T8NT8d4Tgc14I/GLjt7eOXxgoSJ4L
+         tTv4KdfEoFhcmfbHm0XMaGw71L4uoZs/A6XJWQxKMgIKzxkvnRWiZwFoKy3LIzcvIXLR
+         ITDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iVfFJCMkrWLbyYUJOBj2PVHo9GdUj3rw5BmoGxMpBoo=;
+        b=xbT9YwH5mWims7iMY3SYveY/qhJFslcBt88dCfSZVaaeendUpEemHgBvFUjQodJ4p8
+         tVPZxK+vPgxl86tZLqbewuPluW3H4u/eqrE+IxOJ1zkwm5J63zV/Bdr/wuPtlopy8IEa
+         6GbzuqDu+a2fl2l1bAv91Ygrgv7AydazcvqBRFwIdYxENBDp6nwErHWikqM3Wlmt0BW2
+         VTROZrcaeMoESZCwr+jvHEC9qB2zbufZz+suZMeB7L5fSYtAqULnnMa0cxQ0FN/7G/oH
+         1tPIW9iZ5dmmGsqItpg4KZTbZLntlRwt6xOIjktup6TH1JYOT6loySTjGnyYZdxteoOd
+         wZhw==
+X-Gm-Message-State: AOAM532vcfNYmk0MbkBVCe6xAWN1qyl9Q7TMuSx+8wqcFQPSeeauoB9k
+        PSx/Tbnd2G1n2n0R100Avkophv1Tv7tcKocu
+X-Google-Smtp-Source: ABdhPJyMPbjlWbRSvxRImteK8nhcFkaxavzpAmXI8Nda6nL/B2Mb6fHzJYwRgmR8/Qxj1XUqk4txSw==
+X-Received: by 2002:a17:90b:3889:b0:1c6:408b:6b0f with SMTP id mu9-20020a17090b388900b001c6408b6b0fmr2814842pjb.43.1650096947494;
+        Sat, 16 Apr 2022 01:15:47 -0700 (PDT)
+Received: from debian.me (subs02-180-214-232-93.three.co.id. [180.214.232.93])
+        by smtp.gmail.com with ESMTPSA id z6-20020a056a00240600b004e17ab23340sm5513328pfh.177.2022.04.16.01.15.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Apr 2022 01:15:46 -0700 (PDT)
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     linux-doc@vger.kernel.org
+Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        kernel test robot <lkp@intel.com>, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Nick Terrell <terrelln@fb.com>, Schspa Shi <schspa@gmail.com>,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] btrfs: zstd: add missing function name in zstd_reclaim_timer_fn() comment
+Date:   Sat, 16 Apr 2022 15:15:34 +0700
+Message-Id: <20220416081534.28729-1-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/gvt-linux.git topic/for-christoph
-head:   fd6f410fe5eced449a4d6467a4f4789a8eb10382
-commit: 07de96038f7d8a179287ae178dfcad8f085abb9e [1/37] i915/gvt: Separate the MMIO tracking table from GVT-g
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220416/202204161634.p6DDJoeT-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 64c045e25b8471bbb572bd29159c294a82a86a25)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel/gvt-linux/commit/07de96038f7d8a179287ae178dfcad8f085abb9e
-        git remote add intel-gvt https://github.com/intel/gvt-linux.git
-        git fetch --no-tags intel-gvt topic/for-christoph
-        git checkout 07de96038f7d8a179287ae178dfcad8f085abb9e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/
+kernel test robot reports kernel-doc warning:
 
-If you fix the issue, kindly add following tag as appropriate
+>> fs/btrfs/zstd.c:98: warning: This comment starts with '/**', but
+isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+
+The warning is caused by missing function name (in this case
+zstd_reclaim_timer_fn) in the comment.
+
+Add the function name.
+
+Link: https://lore.kernel.org/linux-doc/202204151934.CkKcnvuJ-lkp@intel.com/
+Fixes: b672526e2ee935 (btrfs: use non-bh spin_lock in zstd timer callback)
 Reported-by: kernel test robot <lkp@intel.com>
+Cc: Chris Mason <clm@fb.com>
+Cc: Josef Bacik <josef@toxicpanda.com>
+Cc: David Sterba <dsterba@suse.com>
+Cc: Nick Terrell <terrelln@fb.com>
+Cc: Schspa Shi <schspa@gmail.com>
+Cc: linux-btrfs@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+---
+ This patch is applied on top of btrfs-devel/misc-next [1] tree.
 
-All errors (new ones prefixed by >>):
+ [1]: https://github.com/kdave/btrfs-devel.git
 
-   In file included from <built-in>:4:
-   In file included from drivers/gpu/drm/i915/gvt/gvt.h:39:
->> drivers/gpu/drm/i915/intel_gvt.h:69:5: error: no previous prototype for function 'intel_gvt_iterate_mmio_table' [-Werror,-Wmissing-prototypes]
-   int intel_gvt_iterate_mmio_table(struct intel_gvt_mmio_table_iter *iter)
-       ^
-   drivers/gpu/drm/i915/intel_gvt.h:69:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int intel_gvt_iterate_mmio_table(struct intel_gvt_mmio_table_iter *iter)
-   ^
-   static 
-   1 error generated.
+ fs/btrfs/zstd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/fs/btrfs/zstd.c b/fs/btrfs/zstd.c
+index 0fe31a6f6e68f0..b2740358e94819 100644
+--- a/fs/btrfs/zstd.c
++++ b/fs/btrfs/zstd.c
+@@ -95,7 +95,7 @@ void zstd_free_workspace(struct list_head *ws);
+ struct list_head *zstd_alloc_workspace(unsigned int level);
+ 
+ /**
+- * Timer callback to free unused workspaces.
++ * zstd_reclaim_timer_fn() - Timer callback to free unused workspaces.
+  *
+  * @t: timer
+  *
 
-vim +/intel_gvt_iterate_mmio_table +69 drivers/gpu/drm/i915/intel_gvt.h
-
-    68	
-  > 69	int intel_gvt_iterate_mmio_table(struct intel_gvt_mmio_table_iter *iter)
-    70	{
-    71		return 0;
-    72	}
-    73	#endif
-    74	
-
+base-commit: 550a34e972578538fd0826916ae4fc407b62bb68
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+An old man doll... just what I always wanted! - Clara
+
