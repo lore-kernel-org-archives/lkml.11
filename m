@@ -2,137 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 152D7C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 16:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24745C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 16:40:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232584AbiDPQjg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 12:39:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52454 "EHLO
+        id S232589AbiDPQmh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 12:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232002AbiDPQje (ORCPT
+        with ESMTP id S230215AbiDPQmf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 12:39:34 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33EBF24BC9;
-        Sat, 16 Apr 2022 09:37:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1650127019; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GOs8EDSW2bsL9lE0rcV1/MuXh3hhz7eHcwmtxCp09zs=;
-        b=cbfkAgnS3dIK4kJ6GEnjn92hMqnz3+Db7aqlrIvquJR9vonVKdmCmhL6F91J4/bFLPcCbS
-        cMXGL0TRittcZx33/SRzM/FfCNNcm9Q9DFZrYAAw/RMN1hm49zsa3C6eyLLofKZRPKNyyJ
-        ycvkfoj/oYoEIkRfpOx5dlxk3fgY1Es=
-Date:   Sat, 16 Apr 2022 17:36:46 +0100
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 1/3] SPI: Ingenic: Add support for use GPIO as chip select
- line.
-To:     Zhou Yanjie <zhouyanjie@wanyeetech.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     broonie@kernel.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        linux-spi@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        contact@artur-rojek.eu, dongsheng.qiu@ingenic.com,
-        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
-        sernia.zhou@foxmail.com, zhenwenjin@gmail.com, reimu@sudomaker.com
-Message-Id: <A5YFAR.5U5RNX82OXJY1@crapouillou.net>
-In-Reply-To: <d7926a1d-c5e3-6519-6a52-1bd3ca3cf773@wanyeetech.com>
-References: <1650032528-118220-1-git-send-email-zhouyanjie@wanyeetech.com>
-        <1650032528-118220-2-git-send-email-zhouyanjie@wanyeetech.com>
-        <61ZDAR.SD20HFTWMIBH3@crapouillou.net>
-        <d7926a1d-c5e3-6519-6a52-1bd3ca3cf773@wanyeetech.com>
+        Sat, 16 Apr 2022 12:42:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D603BE0E;
+        Sat, 16 Apr 2022 09:40:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87D2DB803F7;
+        Sat, 16 Apr 2022 16:40:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E34EC385A1;
+        Sat, 16 Apr 2022 16:39:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650127200;
+        bh=117922OSzxqzIKsbzmLpfsdLb7XmsnoYiqmR/kKVuZE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LULiVjuB9q1suCPcvvFxu3X7b0UUjvH5AfNEgsSgW256mrkNICNCnsT8iU0wW1a73
+         Zg4Ca2RxpgV1xzIDyXuVPDQJwBzQ+hkcpIGQTxuV0whd4Ojkg/GjrTNJ4k2p2DXmi1
+         0Ll9SLPYz95q/6iHqc2/gzdzd4ByMFIkl2WE8NC1in9biQkdwUqh/F/qxRBIIw507H
+         5+hwXRNcSmxqvUfsGMVpEC+dtkJK04NZJyP7KcsuvOM/vx1Z69RKN+5RA1HWzsMqzA
+         /RrtZZXgbDIH2uhFbq5JJg/s82M7F3m8zhGFVaG+NoWcwL9yzmbNibmxUH4GPkNZ8e
+         cYdDA0H+CjM1Q==
+Date:   Sat, 16 Apr 2022 17:47:57 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     dan@dlrobertson.com, andy.shevchenko@gmail.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 7/9] iio: accel: bma400: Add activity recognition
+ support
+Message-ID: <20220416174757.24346a41@jic23-huawei>
+In-Reply-To: <20220411203133.19929-8-jagathjog1996@gmail.com>
+References: <20220411203133.19929-1-jagathjog1996@gmail.com>
+        <20220411203133.19929-8-jagathjog1996@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Zhou,
+On Tue, 12 Apr 2022 02:01:31 +0530
+Jagath Jog J <jagathjog1996@gmail.com> wrote:
 
-Le sam., avril 16 2022 at 19:55:13 +0800, Zhou Yanjie=20
-<zhouyanjie@wanyeetech.com> a =C3=A9crit :
-> Hi Paul,
->=20
-> On 2022/4/15 =E4=B8=8B=E5=8D=8811:00, Paul Cercueil wrote:
->> Hi Zhou,
->>=20
->> Le ven., avril 15 2022 at 22:22:06 +0800, =E5=91=A8=E7=90=B0=E6=9D=B0 (Z=
-hou Yanjie)=20
->> =7F<zhouyanjie@wanyeetech.com> a =C3=A9crit :
->>> Add support for using GPIOs as chip select lines on Ingenic SoCs.
->>>=20
->>> Signed-off-by: =E5=91=A8=E7=90=B0=E6=9D=B0 (Zhou Yanjie) <zhouyanjie@wa=
-nyeetech.com>
->>> ---
->>>  drivers/spi/spi-ingenic.c | 11 +++++++++--
->>>  1 file changed, 9 insertions(+), 2 deletions(-)
->>>=20
->>> diff --git a/drivers/spi/spi-ingenic.c b/drivers/spi/spi-ingenic.c
->>> index 03077a7..672e4ed 100644
->>> --- a/drivers/spi/spi-ingenic.c
->>> +++ b/drivers/spi/spi-ingenic.c
->>> @@ -380,7 +380,7 @@ static int spi_ingenic_probe(struct=20
->>> =7F=7Fplatform_device *pdev)
->>>      struct spi_controller *ctlr;
->>>      struct ingenic_spi *priv;
->>>      void __iomem *base;
->>> -    int ret;
->>> +    int num_cs, ret;
->>>=20
->>>      pdata =3D of_device_get_match_data(dev);
->>>      if (!pdata) {
->>> @@ -416,6 +416,11 @@ static int spi_ingenic_probe(struct=20
->>> =7F=7Fplatform_device *pdev)
->>>      if (IS_ERR(priv->flen_field))
->>>          return PTR_ERR(priv->flen_field);
->>>=20
->>> +    if (of_property_read_u32(dev->of_node, "num-cs", &num_cs)) {
->>> +        dev_warn(dev, "Number of chip select lines not=20
->>> specified.\n");
->>> +        num_cs =3D 2;
->>> +    }
->>> +
->>>      platform_set_drvdata(pdev, ctlr);
->>>=20
->>>      ctlr->prepare_transfer_hardware =3D spi_ingenic_prepare_hardware;
->>> @@ -429,7 +434,9 @@ static int spi_ingenic_probe(struct=20
->>> =7F=7Fplatform_device *pdev)
->>>      ctlr->bits_per_word_mask =3D pdata->bits_per_word_mask;
->>>      ctlr->min_speed_hz =3D 7200;
->>>      ctlr->max_speed_hz =3D 54000000;
->>> -    ctlr->num_chipselect =3D 2;
->>> +    ctlr->use_gpio_descriptors =3D true;
->>=20
->> I wonder if this should be set conditionally instead. Maybe set it=20
->> to =7F"true" if the "num-cs" property exists?
->>=20
->=20
-> I'm not too sure, but it seems some other drivers like "spi-sun6i.c",=20
-> "spi-stm32.c", "spi-s3c64xx.c", "spi-pic32.c", etc. set it=20
-> unconditionally.
+> Add support for activity recognition like STILL, WALKING, RUNNING
+> and these events are pushed to the userspace whenever the STEP
+> interrupt occurs.
+> 
+> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+Hi Jagath,
 
-Ok, maybe Mark can enlighten us here.
+Other than more questions on locking and a suggestion for some
+code deduplication this looks good to me.
 
-Cheers,
--Paul
+Jonathan
 
+> ---
+>  drivers/iio/accel/bma400_core.c | 104 ++++++++++++++++++++++++++++++++
+>  1 file changed, 104 insertions(+)
+> 
+> diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
+> index 37f38626a9aa..69d2caa4ed18 100644
+> --- a/drivers/iio/accel/bma400_core.c
+> +++ b/drivers/iio/accel/bma400_core.c
+> @@ -59,6 +59,12 @@ struct bma400_sample_freq {
+>  	int uhz;
+>  };
+>  
+> +enum bma400_activity {
+> +	BMA400_STILL,
+> +	BMA400_WALKING,
+> +	BMA400_RUNNING,
+> +};
+> +
+>  struct bma400_data {
+>  	struct device *dev;
+>  	struct regmap *regmap;
+> @@ -72,6 +78,7 @@ struct bma400_data {
+>  	struct iio_trigger *trig;
+>  	int steps_enabled;
+>  	bool step_event_en;
+> +	bool activity_event_en;
+>  	/* Correct time stamp alignment */
+>  	struct {
+>  		__le16 buff[3];
+> @@ -175,6 +182,12 @@ static const struct iio_event_spec bma400_step_detect_event = {
+>  	.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+>  };
+>  
+> +static const struct iio_event_spec bma400_activity_event = {
+> +	.type = IIO_EV_TYPE_CHANGE,
+> +	.dir = IIO_EV_DIR_NONE,
+> +	.mask_shared_by_type = BIT(IIO_EV_INFO_ENABLE),
+> +};
+> +
+>  #define BMA400_ACC_CHANNEL(_index, _axis) { \
+>  	.type = IIO_ACCEL, \
+>  	.modified = 1, \
+> @@ -196,6 +209,16 @@ static const struct iio_event_spec bma400_step_detect_event = {
+>  	},				\
+>  }
+>  
+> +#define BMA400_ACTIVITY_CHANNEL(_chan2) {	\
+> +	.type = IIO_ACTIVITY,			\
+> +	.modified = 1,				\
+> +	.channel2 = _chan2,			\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
+> +	.scan_index = -1, /* No buffer support */		\
+> +	.event_spec = &bma400_activity_event,			\
+> +	.num_event_specs = 1,					\
+> +}
+> +
+>  static const struct iio_chan_spec bma400_channels[] = {
+>  	BMA400_ACC_CHANNEL(0, X),
+>  	BMA400_ACC_CHANNEL(1, Y),
+> @@ -220,6 +243,9 @@ static const struct iio_chan_spec bma400_channels[] = {
+>  		.event_spec = &bma400_step_detect_event,
+>  		.num_event_specs = 1,
+>  	},
+> +	BMA400_ACTIVITY_CHANNEL(IIO_MOD_STILL),
+> +	BMA400_ACTIVITY_CHANNEL(IIO_MOD_WALKING),
+> +	BMA400_ACTIVITY_CHANNEL(IIO_MOD_RUNNING),
+>  	IIO_CHAN_SOFT_TIMESTAMP(4),
+>  };
+>  
+> @@ -626,6 +652,20 @@ static void bma400_power_disable(void *data_ptr)
+>  			 ERR_PTR(ret));
+>  }
+>  
+> +static enum iio_modifier bma400_act_to_mod(enum bma400_activity activity)
+> +{
+> +	switch (activity) {
+> +	case BMA400_STILL:
+> +		return IIO_MOD_STILL;
+> +	case BMA400_WALKING:
+> +		return IIO_MOD_WALKING;
+> +	case BMA400_RUNNING:
+> +		return IIO_MOD_RUNNING;
+> +	default:
+> +		return IIO_NO_MOD;
+> +	}
+> +}
+> +
+>  static int bma400_init(struct bma400_data *data)
+>  {
+>  	unsigned int val;
+> @@ -725,6 +765,7 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
+>  	struct bma400_data *data = iio_priv(indio_dev);
+>  	int ret;
+>  	u8 steps_raw[3];
+> +	unsigned int activity;
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_PROCESSED:
+> @@ -743,6 +784,23 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
+>  				return ret;
+>  			*val = get_unaligned_le24(steps_raw);
+>  			return IIO_VAL_INT;
+> +		case IIO_ACTIVITY:
+> +			mutex_lock(&data->mutex);
+> +			ret = regmap_read(data->regmap, BMA400_STEP_STAT_REG,
+> +					  &activity);
 
->> The rest looks good to me.
->>=20
->> Cheers,
->> -Paul
->>=20
->>> +    ctlr->max_native_cs =3D 2;
->>> +    ctlr->num_chipselect =3D num_cs;
->>>      ctlr->dev.of_node =3D pdev->dev.of_node;
->>>=20
->>>      if (spi_ingenic_request_dma(ctlr, dev))
->>> --
->>> 2.7.4
->>>=20
->>=20
+More locking in here to think about. Not clear what you are protecting here.
 
+> +			mutex_unlock(&data->mutex);
+> +			if (ret)
+> +				return ret;
+> +			/*
+> +			 * The device does not support confidence value levels,
+> +			 * so we will always have 100% for current activity and
+> +			 * 0% for the others.
+I was thinking ahead when I came up with confidence for these. One day someone
+will implement a sensor that is honest that it isn't that sure what the activity is.
+:)  When they do we'll be ready!
+> +			 */
+> +			if (chan->channel2 == bma400_act_to_mod(activity))
+> +				*val = 100;
+> +			else
+> +				*val = 0;
+> +			return IIO_VAL_INT;
+>  		default:
+>  			return -EINVAL;
+>  		}
+> @@ -898,6 +956,8 @@ static int bma400_read_event_config(struct iio_dev *indio_dev,
+>  	switch (chan->type) {
+>  	case IIO_STEPS:
+>  		return data->step_event_en;
+> +	case IIO_ACTIVITY:
+> +		return data->activity_event_en;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -937,6 +997,32 @@ static int bma400_write_event_config(struct iio_dev *indio_dev,
+>  			return ret;
+>  		data->step_event_en = state;
+>  		return 0;
+> +	case IIO_ACTIVITY:
+> +		if (!data->step_event_en) {
+> +			mutex_lock(&data->mutex);
+> +			ret = regmap_update_bits(data->regmap,
+> +						 BMA400_INT_CONFIG1_REG,
+> +						 BMA400_STEP_INT_MSK,
+> +						 FIELD_PREP(BMA400_STEP_INT_MSK,
+> +							    1));
+> +			if (ret) {
+> +				mutex_unlock(&data->mutex);
+> +				return ret;
+> +			}
+> +			data->steps_enabled = 1;
+> +
+> +			ret = regmap_update_bits(data->regmap,
+> +						 BMA400_INT12_MAP_REG,
+> +						 BMA400_STEP_INT_MSK,
+> +						 FIELD_PREP(BMA400_STEP_INT_MSK,
+> +							    1));
+
+This looks like some code that could be sensibly factored out in the earlier
+patch to provide a function to call here rather than having another copy
+of more or less the same code.
+
+> +			mutex_unlock(&data->mutex);
+> +			if (ret)
+> +				return ret;
+> +			data->step_event_en = 1;
+
+I can understand logic of using lock to keep the internal tracking in sync
+with the device, but here you are doing that outside the lock which doesn't seem
+to do that.
+
+> +		}
+> +		data->activity_event_en = state;
+> +		return 0;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -1015,6 +1101,7 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
+>  	s64 timestamp = iio_get_time_ns(indio_dev);
+>  	int ret;
+>  	__le16 status;
+> +	unsigned int act;
+>  
+>  	mutex_lock(&data->mutex);
+>  	ret = regmap_bulk_read(data->regmap, BMA400_INT_STAT0_REG, &status,
+> @@ -1029,6 +1116,23 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
+>  					      IIO_EV_DIR_NONE,
+>  					      IIO_EV_TYPE_CHANGE, 0, 0, 0),
+>  			       timestamp);
+> +
+> +		if (data->activity_event_en) {
+> +			mutex_lock(&data->mutex);
+> +			ret = regmap_read(data->regmap, BMA400_STEP_STAT_REG,
+> +					  &act);
+> +			mutex_unlock(&data->mutex);
+> +			if (ret)
+> +				return IRQ_NONE;
+> +
+> +			iio_push_event(indio_dev,
+> +				       IIO_EVENT_CODE(IIO_ACTIVITY, 0,
+> +						      bma400_act_to_mod(act),
+> +						      IIO_EV_DIR_NONE,
+> +						      IIO_EV_TYPE_CHANGE, 0,
+> +						      0, 0),
+> +				       timestamp);
+> +		}
+>  		return IRQ_HANDLED;
+>  	}
+>  
 
