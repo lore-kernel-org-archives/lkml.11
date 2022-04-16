@@ -2,143 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8939C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA504C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:05:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231685AbiDPLIL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 07:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38304 "EHLO
+        id S231678AbiDPLIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 07:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231602AbiDPLHt (ORCPT
+        with ESMTP id S231669AbiDPLID (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 07:07:49 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D401715A06;
-        Sat, 16 Apr 2022 04:05:14 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id z19so7321790qtw.2;
-        Sat, 16 Apr 2022 04:05:14 -0700 (PDT)
+        Sat, 16 Apr 2022 07:08:03 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56193B562;
+        Sat, 16 Apr 2022 04:05:23 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id bu29so17539331lfb.0;
+        Sat, 16 Apr 2022 04:05:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wHb/kWKkyUoMSq3gKmql5I0wP4N+nhBclwmCSXeGOCA=;
-        b=DeSr22RKUsgQpJKim6SJmZdEax2iP8VQJMrxoFEpH17Sfn3Gc6Y3mGfrqn2pgEhPMd
-         tCdM968xmSZ5NvLk5optsYY9Ha6I1ySvwiQNfUTxWU97yf8lXGqREsx7K42vagDsYS3m
-         5nsqAuHdS16X6qLysAmxwvf591wagOYDS0US8VWnea2cKnNzHmvlOOB2BV7nTZPasX63
-         clP9YgMpOh0Fb7doH7qgprEdPSthlVYRilkLZtvD3YdFeTBmPHs8vUN1c6keVvm/aG7y
-         bo7fgnWU3GpSevUpeXGW3t/siZodwHLNnTLzsObW2kX7Q6ZHznUmCvULhmNlaolfUTFL
-         kusg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to;
+        bh=Wci9Il7J8wetpC5RlZmMGn0bKOP3JvqUfYp7PT1EcdY=;
+        b=p+GdkZdzQe66I94lVpn/DDQKK/AJSohoyNsdgy23xL+fTDaymcjN9KGZ4brakcSYzB
+         OUIeP1xSFjdxDUCqkavCJEsi98rebGXS1WU7YM20omcdoeue7hdankdu3BPpcjwJzdUa
+         QfVeSNN0+bd9eN4LW8pSmJk9LT6FVKEvtb6BRQVHEhkSC9SfUMSWIZ2m4V244NeNt1TO
+         GCYTYJbdbsIkce5T0Iu5Fc7/COrKL7GLQKdas0cHTtljtqAAw79ezKX28rLBv9y/3HjG
+         HJ3ASDC9YG95mGPEHn3U8ANZ7OO2QxEbnj8ymw/d+eLys+0Ol0r4g+8AxFbT1oImwxPK
+         CCuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wHb/kWKkyUoMSq3gKmql5I0wP4N+nhBclwmCSXeGOCA=;
-        b=s6Vod9twxFYyc7gBwqSXlSPblBUDCYKtCNlwWOcttqzjB+QN0G1SzoUWMeqysz5wSh
-         lfCYMtd0vexWw4bPa+TuIayhDXRNL6f6Y0sYhfPf+a5qu2c6Pgnh5fi+GYaDrKbR4Iiv
-         eY7vDDkXOk9AVz0U0oIWHV3ZzVvu1WqV+K2HMaAJnntHDitBAUlJ75W++JHwFt+emtmL
-         /7zMBf0EddgM4LIKncrW2czEYxo73A/76HMp/XvCrzTpF/1am5k/RU2/Zcs7zlz0n0q2
-         E6hsUw5DxeE0R+f9lZHhDvYClof8ap1e4B3zzElT+odWgudqrLe8MxWjBgkK/QO7qOwd
-         9fcA==
-X-Gm-Message-State: AOAM5327rYuFTPpJBV6Ygz+IYl2e9v5NLos+qrzVUNi05/FOzngyrBl1
-        aBfO5J/V0Vz0qAKq4LSfgzU=
-X-Google-Smtp-Source: ABdhPJxG6E7fIu49tzkJ5bJeXmAzZsUQjvjD8ZS4FiBSmkWy8B5OREubKBHRVnYg7JsCT6oFLCDdsA==
-X-Received: by 2002:ac8:7f4b:0:b0:2f1:effa:6175 with SMTP id g11-20020ac87f4b000000b002f1effa6175mr1864999qtk.555.1650107113973;
-        Sat, 16 Apr 2022 04:05:13 -0700 (PDT)
-Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
-        by smtp.gmail.com with ESMTPSA id w6-20020a05622a190600b002f1f91ad3e7sm97026qtc.22.2022.04.16.04.05.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Apr 2022 04:05:13 -0700 (PDT)
-From:   Peter Geis <pgwipeout@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     linux-rockchip@lists.infradead.org,
-        Peter Geis <pgwipeout@gmail.com>, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v7 3/4] arm64: dts: rockchip: add rk3568 pcie2x1 controller
-Date:   Sat, 16 Apr 2022 07:05:05 -0400
-Message-Id: <20220416110507.642398-4-pgwipeout@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220416110507.642398-1-pgwipeout@gmail.com>
-References: <20220416110507.642398-1-pgwipeout@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to;
+        bh=Wci9Il7J8wetpC5RlZmMGn0bKOP3JvqUfYp7PT1EcdY=;
+        b=tgtUXUFN4/yiXOR8O78DhCZBh4bXtgWFTK/YIAnQ3X3+siUxiPWrG++ZbZoH+j1BzX
+         GScXrTFE36vihBFYpB925Rsr8YTJ7GCTCDxaQtk8D3n3dABpnssmPLsN0LozldASmNW8
+         DCye4xVHzJVjQSDPjuFF3hc3WTTg2LhCORZYy9d5WRudJAqBcDVaBjdUoUc/8lAFilvd
+         OnAYc2eDNUKfynkGXkHN8KGoBNREhd5W3Bm2vxB2xw58pHUIsvN1QSbruTrFF8O3SiQY
+         1jUri5GxkaWbW1J/JrEdZE03q2w6tzXd9VXEemoWkIOvAzmI3x325o/ngjBwRzCA7apk
+         4fHA==
+X-Gm-Message-State: AOAM530RfuG5sGxfeXopxpREyZQOlEqWinBJWDe6GpbLuh5NmPdQhrD1
+        TVwXzPLjq+md/4GWS1MlKmw=
+X-Google-Smtp-Source: ABdhPJw2OzWAPBuRLcjVHf5R4/N2Qk2L1Px0hMpSOSQ+7Ss/MNXcpj0bTphY2yEuV9FUTOVdeyIyKw==
+X-Received: by 2002:a05:6512:1195:b0:44a:6ec3:4fe7 with SMTP id g21-20020a056512119500b0044a6ec34fe7mr2070990lfr.395.1650107121614;
+        Sat, 16 Apr 2022 04:05:21 -0700 (PDT)
+Received: from [192.168.1.11] ([94.103.225.17])
+        by smtp.gmail.com with ESMTPSA id k38-20020a05651c062600b0024da9b13e91sm359255lje.103.2022.04.16.04.05.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 16 Apr 2022 04:05:20 -0700 (PDT)
+Message-ID: <13bcf1cc-b75c-93d0-49cc-ecb99e291ee7@gmail.com>
+Date:   Sat, 16 Apr 2022 14:05:19 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] net: ax88179: add proper error handling of usb read
+ errors
+Content-Language: en-US
+To:     David Kahurani <k.kahurani@gmail.com>, netdev@vger.kernel.org
+Cc:     syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com,
+        davem@davemloft.net, jgg@ziepe.ca, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        phil@philpotter.co.uk, syzkaller-bugs@googlegroups.com,
+        arnd@arndb.de, dan.carpenter@oracle.com
+References: <20220416074817.571160-1-k.kahurani@gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20220416074817.571160-1-k.kahurani@gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------bI9o000ynnXmHdQv1XVQp1Hz"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pcie2x1 controller is common between the rk3568 and rk3566. It is a
-single lane pcie2 compliant controller.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------bI9o000ynnXmHdQv1XVQp1Hz
+Content-Type: multipart/mixed; boundary="------------p9yASZ0dxDT0nWMmSaPSa6si";
+ protected-headers="v1"
+From: Pavel Skripkin <paskripkin@gmail.com>
+To: David Kahurani <k.kahurani@gmail.com>, netdev@vger.kernel.org
+Cc: syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com,
+ davem@davemloft.net, jgg@ziepe.ca, kuba@kernel.org,
+ linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+ phil@philpotter.co.uk, syzkaller-bugs@googlegroups.com, arnd@arndb.de,
+ dan.carpenter@oracle.com
+Message-ID: <13bcf1cc-b75c-93d0-49cc-ecb99e291ee7@gmail.com>
+Subject: Re: [PATCH] net: ax88179: add proper error handling of usb read
+ errors
+References: <20220416074817.571160-1-k.kahurani@gmail.com>
+In-Reply-To: <20220416074817.571160-1-k.kahurani@gmail.com>
 
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
----
- arch/arm64/boot/dts/rockchip/rk356x.dtsi | 52 ++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+--------------p9yASZ0dxDT0nWMmSaPSa6si
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-index ca20d7b91fe5..bb08633332c7 100644
---- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-@@ -722,6 +722,58 @@ qos_vop_m1: qos@fe1a8100 {
- 		reg = <0x0 0xfe1a8100 0x0 0x20>;
- 	};
- 
-+	pcie2x1: pcie@fe260000 {
-+		compatible = "rockchip,rk3568-pcie";
-+		#address-cells = <3>;
-+		#size-cells = <2>;
-+		bus-range = <0x0 0xf>;
-+		clocks = <&cru ACLK_PCIE20_MST>, <&cru ACLK_PCIE20_SLV>,
-+			 <&cru ACLK_PCIE20_DBI>, <&cru PCLK_PCIE20>,
-+			 <&cru CLK_PCIE20_AUX_NDFT>;
-+		clock-names = "aclk_mst", "aclk_slv",
-+			      "aclk_dbi", "pclk", "aux";
-+		device_type = "pci";
-+		interrupts = <GIC_SPI 75 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 74 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
-+		interrupt-names = "sys", "pmc", "msi", "legacy", "err";
-+		#interrupt-cells = <1>;
-+		interrupt-map-mask = <0 0 0 7>;
-+		interrupt-map = <0 0 0 1 &pcie_intc 0>,
-+				<0 0 0 2 &pcie_intc 1>,
-+				<0 0 0 3 &pcie_intc 2>,
-+				<0 0 0 4 &pcie_intc 3>;
-+		linux,pci-domain = <0>;
-+		num-ib-windows = <6>;
-+		num-ob-windows = <2>;
-+		max-link-speed = <2>;
-+		msi-map = <0x0 &gic 0x0 0x1000>;
-+		num-lanes = <1>;
-+		phys = <&combphy2 PHY_TYPE_PCIE>;
-+		phy-names = "pcie-phy";
-+		power-domains = <&power RK3568_PD_PIPE>;
-+		reg = <0x3 0xc0000000 0x0 0x00400000>,
-+		      <0x0 0xfe260000 0x0 0x00010000>,
-+		      <0x3 0x00000000 0x0 0x01000000>;
-+		ranges = <0x01000000 0x0 0x01000000 0x3 0x01000000 0x0 0x00100000
-+			  0x02000000 0x0 0x02000000 0x3 0x01100000 0x0 0x3ef00000>;
-+		reg-names = "dbi", "apb", "config";
-+		resets = <&cru SRST_PCIE20_POWERUP>;
-+		reset-names = "pipe";
-+		status = "disabled";
-+
-+		pcie_intc: legacy-interrupt-controller {
-+			#address-cells = <0>;
-+			#interrupt-cells = <1>;
-+			interrupt-controller;
-+			interrupt-parent = <&gic>;
-+			interrupts = <GIC_SPI 72 IRQ_TYPE_EDGE_RISING>;
-+		};
-+
-+	};
-+
- 	sdmmc0: mmc@fe2b0000 {
- 		compatible = "rockchip,rk3568-dw-mshc", "rockchip,rk3288-dw-mshc";
- 		reg = <0x0 0xfe2b0000 0x0 0x4000>;
--- 
-2.25.1
+SGkgRGF2aWQsDQoNCkFsbW9zdCBwZXJmZWN0LCBwbGVhc2Ugc2VlIG9uZSBjb21tZW50IGlu
+bGluZQ0KDQpPbiA0LzE2LzIyIDEwOjQ4LCBEYXZpZCBLYWh1cmFuaSB3cm90ZToNCj4gUmVh
+ZHMgdGhhdCBhcmUgbGVzc2VyIHRoYW4gdGhlIHJlcXVlc3RlZCBzaXplIGxlYWQgdG8gdW5p
+bml0LXZhbHVlIGJ1Z3MuDQo+IEluIHRoaXMgcGFydGljdWxhciBjYXNlIGEgdmFyaWFibGUg
+d2hpY2ggd2FzIHN1cHBvc2VkIHRvIGJlIGluaXRpYWxpemVkDQo+IGFmdGVyIGEgcmVhZCBp
+cyBsZWZ0IHVuaW5pdGlhbGl6ZWQgYWZ0ZXIgYSBwYXJ0aWFsIHJlYWQuDQo+IA0KPiBRdWFs
+aWZ5IHN1Y2ggcmVhZHMgYXMgZXJyb3JzIGFuZCBoYW5kbGUgdGhlbSBjb3JyZWN0bHkgYW5k
+IHdoaWxlIGF0IGl0DQo+IGNvbnZlcnQgdGhlIHJlYWRlciBmdW5jdGlvbnMgdG8gcmV0dXJu
+IHplcm8gb24gc3VjY2VzcyBmb3IgZWFzaWVyIGVycm9yDQo+IGhhbmRsaW5nLg0KPiANCj4g
+Rml4ZXM6IGUyY2E5MGMyNzZlMSAoImF4ODgxNzlfMTc4YTogQVNJWCBBWDg4MTc5XzE3OEEg
+VVNCIDMuMC8yLjAgdG8NCj4gZ2lnYWJpdCBldGhlcm5ldCBhZGFwdGVyIGRyaXZlciIpDQo+
+IFNpZ25lZC1vZmYtYnk6IERhdmlkIEthaHVyYW5pIDxrLmthaHVyYW5pQGdtYWlsLmNvbT4N
+Cj4gUmVwb3J0ZWQtYW5kLXRlc3RlZC1ieTogc3l6Ym90K2QzZGJkZjMxZmJlOWQ4ZjVmMzEx
+QHN5emthbGxlci5hcHBzcG90bWFpbC5jb20NCj4gLS0tDQoNCltjb2RlIHNuaXBdDQoNCj4g
+ICANCj4gQEAgLTQxNiw3ICs0NDEsNyBAQCBheDg4MTc5X3BoeV93cml0ZV9tbWRfaW5kaXJl
+Y3Qoc3RydWN0IHVzYm5ldCAqZGV2LCB1MTYgcHJ0YWQsIHUxNiBkZXZhZCwNCj4gICAJcmV0
+ID0gYXg4ODE3OV93cml0ZV9jbWQoZGV2LCBBWF9BQ0NFU1NfUEhZLCBBWDg4MTc5X1BIWV9J
+RCwNCj4gICAJCQkJTUlJX01NRF9EQVRBLCAyLCAmZGF0YSk7DQo+ICAgDQo+IC0JaWYgKHJl
+dCA8IDApDQo+ICsJaWYgKHJldCkNCj4gICAJCXJldHVybiByZXQ7DQo+ICAgDQoNCkkgdGhp
+bmssIHlvdSBkaWRuJ3QgbWVhbiB0byBkbyBzby4gYXg4ODE3OV93cml0ZV9jbWQoKSByZXR1
+cm5zIG51bWJlciBvZiANCmJ5dGVzIHdyaXR0ZW4sIHNvIHlvdSBhcmUgY2hhbmdpbmcgdGhl
+IGxvZ2ljIGhlcmUuIEFuZCB3cml0ZSBjYWxsIGlzIG5vdCANCnJlbGF0ZWQgdG8gdW5pbml0
+IHZhbHVlIGJ1Z3MNCg0KDQoNCg0KDQpXaXRoIHJlZ2FyZHMsDQpQYXZlbCBTa3JpcGtpbg0K
 
+
+--------------p9yASZ0dxDT0nWMmSaPSa6si--
+
+--------------bI9o000ynnXmHdQv1XVQp1Hz
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEER3XL3TplLQE8Qi40bk1w61LbBA0FAmJaou8FAwAAAAAACgkQbk1w61LbBA00
+Jg//Q+sdmnfH53LV6rL7oisgCo74KI172/u+N2Wc3iJQR+AkSm5g8+ncTeGWGLz3PY2OJmfBJ8dA
+J+1xP8StPUFdxfQbqxCvaUrlANu6DT0XAjSEoqnUvfbgFRH/dddtiqB+XLHZkGt7UB/t7a/rTwYm
+yGt6YQsxZ6TBWp7TANVIq15oIrX5sw9wsOjWbkZKO6wsQkrOr/yGCWnAmGxzhEIQXDUWbkZn/bBR
+laDEmE1BAChD8G3xXSOashAX9PyKbG2ww/HHHiwJKW2UhgxeSuSSYICkKA5hZr86DFvTc0WSAXA2
++LKt6+AWpOrgtOSeJsj0Y1z9Fb5ZKRjSJJFytyGeqxG7kLudvEB00UcoAqWJoj8fAeGvZ0vZSgUo
+59w9W5euaYUD1zfMPpSLVC0uBN6uwQT8+7/xax4rs2YsDMJeQJEsjd9im/fFc6eoJxvSDL6HROj8
+M+PXaAzIAC1OoqlaSDJz7vL1JBmAFHwvv7vY7bv+zExKUQKxYeO1BuGt6TRGRx0+8vzr7vIiEXIC
+3pxTM+8px0DDWht5DLmvo7u2KBJQqI3MjfyS6lm82KkSUhHE4ydcDdoG0Nqrynw3B7hrSqom8bBe
+lHHnnxMZ6+6bA8aILo+EDxp/OtVTZJj++5yv7wV4Ax+HYspKhG5K93jP8la54yfGNdfrVJy8qhEm
+EAw=
+=vWHq
+-----END PGP SIGNATURE-----
+
+--------------bI9o000ynnXmHdQv1XVQp1Hz--
