@@ -2,101 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF554C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C711C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:17:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229493AbiDPCQE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:16:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36478 "EHLO
+        id S229474AbiDPCT1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:19:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbiDPCPb (ORCPT
+        with ESMTP id S229454AbiDPCTA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:15:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90211F47E5
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:12:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650075129;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3hb96ojkoLw7AMiZ7GVNm8rfGhRjOoCkHeqA5a/3O9g=;
-        b=DyBt33JktCRpZ9x1c+yMTicN0DtU+NBqWmVhLWev59BKrfRq7hZrFdZqfGnLPu9qN+PAyH
-        OPE0lbvb9bhdWuW2oP/4iOmHgmc/Ijn3h6sMz0HaPZwL3UIKNCE92/BdmE7d8T1SfV+ew8
-        zqBGAhlSG5o0ni+IGc3auo1jASizDDo=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-339-Spu3XCRTOlWUDdLE63H-ZQ-1; Fri, 15 Apr 2022 20:56:14 -0400
-X-MC-Unique: Spu3XCRTOlWUDdLE63H-ZQ-1
-Received: by mail-qk1-f199.google.com with SMTP id c8-20020a05620a268800b0069c0f1b3206so6482880qkp.18
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 17:56:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3hb96ojkoLw7AMiZ7GVNm8rfGhRjOoCkHeqA5a/3O9g=;
-        b=NJVXLbO7ZDLQy+jqqhccYdwauOgPuCN7MReftcT6t/4VzqzWwIGfro0nyQxiPGQtle
-         +uHVcAvifWTzChtFvSIneldfcrfv2oVuBpXdKDmnzPdFdTVKYR73gtksXOCjmfjR86jO
-         I4TttvutDHfzvQ07PSK1Grz7r7/7c+xo03ucbDQSVVNrO6v6omMimqYyU33ks6tIuyzZ
-         fx0SsgGJEDBnKWCTgZFygUCK3BhIAHmfNmXY421X7YKzqKo1xKuWj4LZ6ETks2k/QYYw
-         fpIvTlDz3WUuiFkbzdc3YoYDahl/uhEOqU8Ww027cx97REuHALSt8Pk1n3kL3wgOUIHe
-         gmkQ==
-X-Gm-Message-State: AOAM5313VQRdv8girhNOA8KQ3n0JuG6rFwNqKFoo4Lay7jRl7e8jdSVP
-        xMyPw8WlGqFamOl3P8orcRz3yxKira5pMX37bZk33WYqJJ2u2tH7lGo+Otoj3rEnDlRTWLVi2BN
-        ymtQ6fvQPkd7jCfOA+vKpjnAt
-X-Received: by 2002:a05:622a:1f8c:b0:2ef:9ec3:e176 with SMTP id cb12-20020a05622a1f8c00b002ef9ec3e176mr1098434qtb.39.1650070573506;
-        Fri, 15 Apr 2022 17:56:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxyW8eq6CVpC4t7+D5RwWQ2Sr5wdDGnmiP1wm3b/X7cOpvlUCwWtVvnTzG1xXkamMQoqom5Bg==
-X-Received: by 2002:a05:622a:1f8c:b0:2ef:9ec3:e176 with SMTP id cb12-20020a05622a1f8c00b002ef9ec3e176mr1098430qtb.39.1650070573290;
-        Fri, 15 Apr 2022 17:56:13 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::45])
-        by smtp.gmail.com with ESMTPSA id i23-20020a05620a145700b0069c4e3b9c1dsm3170445qkl.46.2022.04.15.17.56.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 17:56:12 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 17:56:09 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Chen Zhongjin <chenzhongjin@huawei.com>
-Cc:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        mark.rutland@arm.com, broonie@kernel.org, ardb@kernel.org,
-        nobuta.keiya@fujitsu.com, sjitindarsingh@gmail.com,
-        catalin.marinas@arm.com, will@kernel.org, jmorris@namei.org,
-        linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v1 0/9] arm64: livepatch: Use DWARF Call Frame
- Information for frame pointer validation
-Message-ID: <20220416005609.3znhltjlhpg475ff@treble>
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
- <20220407202518.19780-1-madvenka@linux.microsoft.com>
- <20220408002147.pk7clzruj6sawj7z@treble>
- <15a22f4b-f04a-15e1-8f54-5b3147d8df7d@linux.microsoft.com>
- <35c99466-9024-a7fd-9632-5d21b3e558f7@huawei.com>
+        Fri, 15 Apr 2022 22:19:00 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45A93C72F;
+        Fri, 15 Apr 2022 19:16:24 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KgFtl21SZzCr3Z;
+        Sat, 16 Apr 2022 09:27:43 +0800 (CST)
+Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Apr 2022 09:32:04 +0800
+Received: from [10.174.178.120] (10.174.178.120) by
+ dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Apr 2022 09:32:02 +0800
+Message-ID: <6de859df-e1c3-e9aa-4530-3b61b9c69a28@huawei.com>
+Date:   Sat, 16 Apr 2022 09:32:01 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <35c99466-9024-a7fd-9632-5d21b3e558f7@huawei.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 0/9] introduce mirrored memory support for arm64
+To:     <ardb@kernel.org>
+CC:     <akpm@linux-foundation.org>, <catalin.marinas@arm.com>,
+        <will@kernel.org>, <corbet@lwn.net>, <tglx@linutronix.de>,
+        <mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
+        <x86@kernel.org>, <hpa@zyccr.com>, <dvhart@infradead.org>,
+        <andy@infradead.org>, <rppt@kernel.org>, <paulmck@kernel.org>,
+        <peterz@infradead.org>, <jroedel@suse.de>,
+        <songmuchun@bytedance.com>, <macro@orcam.me.uk>,
+        <frederic@kernel.org>, <W_Armin@gmx.de>, <john.garry@huawei.com>,
+        <seanjc@google.com>, <tsbogend@alpha.franken.de>,
+        <anshuman.khandual@arm.com>, <chenhuacai@kernel.org>,
+        <david@redhat.com>, <gpiccoli@igalia.com>, <mark.rutland@arm.com>,
+        <wangkefeng.wang@huawei.com>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-efi@vger.kernel.org>, <linux-ia64@vger.kernel.org>,
+        <platform-driver-x86@vger.kernel.org>, <linux-mm@kvack.org>
+References: <20220414101314.1250667-1-mawupeng1@huawei.com>
+ <CAMj1kXGSStDgj9ABmUaTLnBmpQFksh3wx4tx=mJohum4GQe3Gg@mail.gmail.com>
+From:   mawupeng <mawupeng1@huawei.com>
+In-Reply-To: <CAMj1kXGSStDgj9ABmUaTLnBmpQFksh3wx4tx=mJohum4GQe3Gg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.178.120]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500014.china.huawei.com (7.185.36.153)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 04:32:22PM +0800, Chen Zhongjin wrote:
-> By the way, I was thinking about a corner case, because arm64 CALL
-> instruction won't push LR onto stack atomically as x86. Before push LR, FP
-> to save frame there still can be some instructions such as bti, paciasp. If
-> an irq happens here, the stack frame is not constructed so the FP unwinder
-> will omit this function and provides a wrong stack trace to livepatch.
+
+
+在 2022/4/14 18:22, Ard Biesheuvel 写道:
+> On Thu, 14 Apr 2022 at 11:54, Wupeng Ma <mawupeng1@huawei.com> wrote:
+>>
+>> From: Ma Wupeng <mawupeng1@huawei.com>
+>>
+>> Commit b05b9f5f9dcf ("x86, mirror: x86 enabling - find mirrored memory ranges")
+>> introduced mirrored memory support for x86. This support rely on UEFI to
+>> report mirrored memory address ranges.  See UEFI 2.5 spec pages 157-158:
+>>
+>>    http://www.uefi.org/sites/default/files/resources/UEFI%202_5.pdf
+>>
+>> Memory mirroring is a technique used to separate memory into two separate
+>> channels, usually on a memory device, like a server. In memory mirroring,
+>> one channel is copied to another to create redundancy. This method makes
+>> input/output (I/O) registers and memory appear with more than one address
+>> range because the same physical byte is accessible at more than one
+>> address. Using memory mirroring, higher memory reliability and a higher
+>> level of memory consolidation are possible.
+>>
+>> Arm64 can support this too. So mirrored memory support is added to support
+>> arm64.
+>>
+>> Efi_fake_mem is used for testing mirrored features and will not be used in
+>> production environment. This test features can fake memory's attribute
+>> values.
+>>
+>> The reason why efi_fake_mem support is put first is that memory's attribute
+>> is reported by BIOS which is hard to simulate. With this support, any arm64
+>> machines with efi support can easily test mirrored features.
+>>
+>> The main purpose of this patchset is to introduce mirrored support for
+>> arm64 and we have already fixed the problems we had which is shown in
+>> patch #5 to patch #7 and try to bring total isolation in patch #8 which
+>> will disable mirror feature if kernelcore is not specified.
+>>
+>> In order to test this support in arm64:
+>> - patch this patchset
+>> - add efi_fake_mem=8G@0:0x10000 in kernel parameter to simulate mirrored
+>>    memroy between phy addr 0-8G.
+>> - add kernelcore=mirror in kernel parameter
+>> - start you kernel
+>>
 > 
-> It's just a guess and I have not built the test case. But I think it's a
-> defect on arm64 that FP unwinder can't work properly on prologue and
-> epilogue. Do you have any idea about this?
+> As I explained before:
+> 
+> - NAK to EFI fake_mem support on arm64
 
-x86 has similar issues with frame pointers, if for example preemption or
-page fault exception occurs in a leaf function, or in a function
-prologue or epilogue, before or after the frame pointer setup.
+fake_mem support on arm64 will be removed in subsequent version.
 
-This issue is solved by the "reliable" unwinder which detects
-irqs/exceptions on the stack and reports the stack as unreliable.
+> - NAK to the whole series until you come up with a proposal on how to
+> locate the static kernel image itself into more reliable memory, as
+> there is really no point to any of this otherwise.
 
--- 
-Josh
+Sorry I am not familiar with this, as you metioned before,
+
+ > you have to iterate over the memory map and look for regions with
+ > the desired attribute, and allocate those pages explicitly.
+
+Do you mean this is x86, commit c05cd79750fb
+("x86/boot/KASLR: Prefer mirrored memory regions for the kernel physical address").
+I will do some research.
+
+ > I'd prefer to implement this in the bootloader, and only add minimal
+ > logic to the stub to respect the placement of the kernel by the loader
+ > if the loader signals it to do so.
+
+Does this bootloader refer to grub and then add minimal logic to arm64-stub.c?
+
+What is the loader signal?
+System exists mirrored memory reported by uefi?
+
+Thanks for reviewing, sorry for my ignorance on this.
+
+> .
+
+
 
