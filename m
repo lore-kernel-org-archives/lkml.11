@@ -2,83 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7706C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 17:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41205C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 17:50:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232712AbiDPRwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 13:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
+        id S232724AbiDPRxV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 13:53:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232450AbiDPRwj (ORCPT
+        with ESMTP id S232450AbiDPRxT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 13:52:39 -0400
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DA93E34
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 10:50:06 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 23GHlWIm010241;
-        Sun, 17 Apr 2022 02:47:32 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 23GHlWIm010241
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1650131253;
-        bh=MmtjwtCuEj1qKGBoGSATHNrzVUzXA3tNAIgp0P+zNN0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YSqIGN04c1empKIaQiXTqky6lQBCPNNOGUw8yXvf58p/lT4sdDIdnit5dyy3R6TEu
-         ZowWR6VqzcC6vMXbfA4ftgj6rlA5QZt28XkHhUxNT4ziPDZhlIerc+OjLJUJtcHth7
-         mtsBqrjBiTcBgfXnzSgdjZTyjOTUXUvU0zgPFAkrQH1krhf/SJ9cvFNu1b4m3Dq9hF
-         IcDiWtkn7jzcjC83Dp00vVGGuwt+7izP+szMcBdWO4uPF8tmvqzTGq7FwB2v2dDCcz
-         P7bHXkCrMawxk8B955iCnH0U0HQpD6tERgp0Cy+yYsw4VTijitWwZ7mh7eveFclmcs
-         Cwy823jAt2msQ==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     x86@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
+        Sat, 16 Apr 2022 13:53:19 -0400
+Received: from mail-4322.protonmail.ch (mail-4322.protonmail.ch [185.70.43.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0690E34;
+        Sat, 16 Apr 2022 10:50:46 -0700 (PDT)
+Date:   Sat, 16 Apr 2022 17:50:39 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
+        s=protonmail2; t=1650131444;
+        bh=dUBVYxJ9KjFGdWAPZ3BpuTxFmDw0xhV4VjL0SW5G2Cs=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+         Message-ID;
+        b=amXLMAutJGPxMzbDaeGMyXFJX9zlX6dkXXT2t9TYkA46iUHC/JG9DfVb84E1JOr3v
+         5i7k7LSd6DCTZ9xQKZwi5NNgJfHv/MWn3SPTSbUKs5djHd6HpB83Jpha6uCFBEKI2S
+         ooJYv4Nu0+mGX154G/bDnvnCNY35Fs70h23GR1G3Q9iqkEV/9dfNmBjoz+J4sVs0EG
+         R3cAIWN/RYxouBCKNFFiV+kSnSqMug8na3JtHvmg/YEO5OSMTeVOeAAiKi/TnqiBIW
+         0lZthWkwvsFWIICVz4tefCNwyM0eB0/EOg5Tzqc/tR+5qvYDOiUyacvmPEMLFeeF5Q
+         1/fmwoe9vwpLw==
+To:     Song Liu <song@kernel.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
         Alexei Starovoitov <ast@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Subject: [PATCH] x86/build: remove unused OBJECT_FILES_NON_STANDARD_test_nx.o
-Date:   Sun, 17 Apr 2022 02:47:10 +0900
-Message-Id: <20220416174710.269226-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Dmitrii Dolgov <9erthalion6@gmail.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Chenbo Feng <fengc@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        linux-perf-users@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        llvm@lists.linux.dev
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH bpf-next 02/11] bpf: always emit struct bpf_perf_link BTF
+Message-ID: <20220416174330.195496-1-alobakin@pm.me>
+In-Reply-To: <CAPhsuW42Sv2EkMzVoh2+i=2NN2yMRHOqDN8wmXGPax2-cz8ynA@mail.gmail.com>
+References: <20220414223704.341028-1-alobakin@pm.me> <20220414223704.341028-3-alobakin@pm.me> <CAPhsuW42Sv2EkMzVoh2+i=2NN2yMRHOqDN8wmXGPax2-cz8ynA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 3ad38ceb2769 ("x86/mm: Remove CONFIG_DEBUG_NX_TEST")
-removed arch/x86/kernel/test_nx.c
+From: Song Liu <song@kernel.org>
+Date: Fri, 15 Apr 2022 16:24:41 -0700
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
+> On Thu, Apr 14, 2022 at 3:45 PM Alexander Lobakin <alobakin@pm.me> wrote:
+> >
+> > When building bpftool with !CONFIG_PERF_EVENTS:
+> >
+> > skeleton/pid_iter.bpf.c:47:14: error: incomplete definition of type 'st=
+ruct bpf_perf_link'
+> >         perf_link =3D container_of(link, struct bpf_perf_link, link);
+> >                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:74:22: not=
+e: expanded from macro 'container_of'
+> >                 ((type *)(__mptr - offsetof(type, member)));    \
+> >                                    ^~~~~~~~~~~~~~~~~~~~~~
+> > tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:68:60: not=
+e: expanded from macro 'offsetof'
+> >  #define offsetof(TYPE, MEMBER)  ((unsigned long)&((TYPE *)0)->MEMBER)
+> >                                                   ~~~~~~~~~~~^
+> > skeleton/pid_iter.bpf.c:44:9: note: forward declaration of 'struct bpf_=
+perf_link'
+> >         struct bpf_perf_link *perf_link;
+> >                ^
+> >
+> > &bpf_perf_link is being defined and used only under the ifdef.
+> > Move it out of the block and explicitly emit a BTF to fix
+> > compilation.
+> >
+> > Fixes: cbdaf71f7e65 ("bpftool: Add bpf_cookie to link output")
+> > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+>
+> Similar to v1, this fix is weird to me. I hope we have can fix it in user
+> space.
 
- arch/x86/kernel/Makefile | 2 --
- 1 file changed, 2 deletions(-)
+I've been thinking on this, but userspace is not provided with any
+autoconf.h definitions (only selftests have them), so its code must
+be sort of universal.
+Both this and 01/11 are compile time and due to imcomplete and/or
+absent BTF struct declarations. I'm not familiar with
+bpf_core_field_exists(), and it might be that it's able to solve
+01/11, but not this one. &bpf_perf_link must be present
+unconditionally, otherwise it won't be defined in the generated
+vmlinux.h at all.
 
-diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index c41ef42adbe8..d8b2a81b3dba 100644
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -34,8 +34,6 @@ KASAN_SANITIZE_sev.o					:= n
- # by several compilation units. To be safe, disable all instrumentation.
- KCSAN_SANITIZE := n
- 
--OBJECT_FILES_NON_STANDARD_test_nx.o			:= y
--
- ifdef CONFIG_FRAME_POINTER
- OBJECT_FILES_NON_STANDARD_ftrace_$(BITS).o		:= y
- endif
--- 
-2.32.0
+Thanks,
+Al
 
