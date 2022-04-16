@@ -2,73 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77672C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 14:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D389C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 14:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232273AbiDPOXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 10:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47500 "EHLO
+        id S232295AbiDPOYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 10:24:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232263AbiDPOXU (ORCPT
+        with ESMTP id S232288AbiDPOYf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 10:23:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9B82C137;
-        Sat, 16 Apr 2022 07:20:48 -0700 (PDT)
+        Sat, 16 Apr 2022 10:24:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CE92DABF;
+        Sat, 16 Apr 2022 07:22:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3553160F50;
-        Sat, 16 Apr 2022 14:20:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B553C385A3;
-        Sat, 16 Apr 2022 14:20:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26E56B82417;
+        Sat, 16 Apr 2022 14:22:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCFB0C385AA;
+        Sat, 16 Apr 2022 14:22:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650118847;
-        bh=cWFwLZ0gsVucA5Es4p84LruYFLWbrqoMEwSN0TuIkzU=;
+        s=k20201202; t=1650118920;
+        bh=AQEu64jaXboAv+zoYsgsiYMWLuLEVN/IlKXUW/p/mps=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=XDzfBSksXEI8qGNWOHFtln3WMB9rNV8dHxdESNVd28Tycyp8gxI14j+GAueK0vdoo
-         x52nmuvKOi1hSqYc4FyW+ZiFl8k9MsO6fSGIxXICkqa6xj2UgMJf5g8fpAvC7hc3Qm
-         6rf3JtbNezGuA1rUkmYwsSVbkciLwK3jKixYXM7M3VFWOjiTTOM7OJuwHxIGmN6cKe
-         7SmTLyrYHEoJrDm01TEbyaZQsSC4a+KXjSLcnqqvQOz2juxXRUqxltuzwlYBj2pg7S
-         jFrMzs+50pBrPEHMhJYcpE1TjyCDemN3Sd0etL4BxaocQo/aNlKeyMr6pZhU2jH7Rr
-         TxBv3XBppqQgA==
-Received: by mail-ed1-f51.google.com with SMTP id b15so12878302edn.4;
-        Sat, 16 Apr 2022 07:20:47 -0700 (PDT)
-X-Gm-Message-State: AOAM533szeMmJ8UzTxnuAh1mNffiQMnXPTMHY67baiGTF2b+7EVaUpk0
-        UlfHq2WtEN5yI9cgHXCeabBLCLnDfmVs7SmzJw==
-X-Google-Smtp-Source: ABdhPJwQkbTe35To395M3KGFQV4l935J7hGJqs1dYrMx9rEk+J0ELzSpWfOjk+VIW7myhFOyzkXfRd5cnptK29wlYcI=
-X-Received: by 2002:a05:6402:350d:b0:419:547f:134a with SMTP id
- b13-20020a056402350d00b00419547f134amr3964452edd.405.1650118845815; Sat, 16
- Apr 2022 07:20:45 -0700 (PDT)
+        b=E0cUbtpNFUtMtgLzUGDRPk1ps4WTOQ6oEsPx+kxBcp6AtkAxIZMJNc61Bmwu5BN9d
+         7d9m/UE8LMvVLGmH3uqoqkkeTg1mUnbTzWuVHrDUFGINZetndpzYrFJSKtJRlTgZZY
+         W20TnC595lz8I6gO6/TT14wcxLKlImcvaZhmligz/9dhvCVSgjM+6TNDLOWec1dQNv
+         VjcUiv2gT2yv2EdPYRHdjkAdjnlQXYSg2ksm32u6ZjQR7t0SJO2IX9sLiN2z6SiKac
+         /SWGtK25uh/IrA6XiGTY5BzUWNSixeZhMySR6VeNbsOygmK2eQVLxdA2hbAQW/+9i1
+         RwduB5sdJ5rIw==
+Received: by mail-ed1-f45.google.com with SMTP id z12so12903498edl.2;
+        Sat, 16 Apr 2022 07:22:00 -0700 (PDT)
+X-Gm-Message-State: AOAM5302tkI5+G0BoIofk79LOo/IQxlB94ocHuybW0CvUVMFQetrW0MF
+        d/JK90mrr03yiPZ991iBk20qK6mSWiaehC3aXA==
+X-Google-Smtp-Source: ABdhPJxbmEV+hwk4GL9LWk4P/pzE9nAuwmYPGG4NNYd79+xQNfoh8INhSk/eBBi9Q4r3fxMonmeqRsOfHI+xYyVF7gw=
+X-Received: by 2002:aa7:c38f:0:b0:41d:82c7:7751 with SMTP id
+ k15-20020aa7c38f000000b0041d82c77751mr3960939edq.215.1650118919152; Sat, 16
+ Apr 2022 07:21:59 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220411035843.19847-1-rex-bc.chen@mediatek.com>
- <20220411035843.19847-2-rex-bc.chen@mediatek.com> <YldWhNA6SwNBGXa8@robh.at.kernel.org>
-In-Reply-To: <YldWhNA6SwNBGXa8@robh.at.kernel.org>
+ <20220411035843.19847-4-rex-bc.chen@mediatek.com> <YldWk9eTLbXBcbX+@robh.at.kernel.org>
+In-Reply-To: <YldWk9eTLbXBcbX+@robh.at.kernel.org>
 From:   Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Date:   Sat, 16 Apr 2022 22:20:38 +0800
-X-Gmail-Original-Message-ID: <CAAOTY_8L1EVvAOvD757o3kTq=AKf20yAsDGbuHFQ_mdkfoKwOg@mail.gmail.com>
-Message-ID: <CAAOTY_8L1EVvAOvD757o3kTq=AKf20yAsDGbuHFQ_mdkfoKwOg@mail.gmail.com>
-Subject: Re: [PATCH V2 1/3] dt-bindings: display: mediatek: Update disp_aal
- binding for MT8183
+Date:   Sat, 16 Apr 2022 22:21:51 +0800
+X-Gmail-Original-Message-ID: <CAAOTY_8j407wX8SEmK4rSfLheb4GQjQBJPyfXgy=5m+dLw7XPw@mail.gmail.com>
+Message-ID: <CAAOTY_8j407wX8SEmK4rSfLheb4GQjQBJPyfXgy=5m+dLw7XPw@mail.gmail.com>
+Subject: Re: [PATCH V2 3/3] dt-bindings: display: mediatek: Update disp_aal
+ binding for MT8192 and MT8195
 To:     Rob Herring <robh@kernel.org>
 Cc:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Yongqiang Niu <yongqiang.niu@mediatek.com>,
-        allen-kh.cheng@mediatek.com,
-        linux-kernel <linux-kernel@vger.kernel.org>, krzk+dt@kernel.org,
+        Philipp Zabel <p.zabel@pengutronix.de>,
         David Airlie <airlied@linux.ie>,
-        DTML <devicetree@vger.kernel.org>,
-        Nancy Lin <nancy.lin@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
+        Yongqiang Niu <yongqiang.niu@mediatek.com>,
+        Nancy Lin <nancy.lin@mediatek.com>, krzk+dt@kernel.org,
         DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jason-JH Lin <jason-jh.lin@mediatek.com>,
         Project_Global_Chrome_Upstream_Group 
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jason-JH Lin <jason-jh.lin@mediatek.com>,
+        allen-kh.cheng@mediatek.com,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
+        <linux-mediatek@lists.infradead.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -78,28 +78,14 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 Rob Herring <robh@kernel.org> =E6=96=BC 2022=E5=B9=B44=E6=9C=8814=E6=97=A5 =
 =E9=80=B1=E5=9B=9B =E4=B8=8A=E5=8D=887:02=E5=AF=AB=E9=81=93=EF=BC=9A
 >
-> On Mon, 11 Apr 2022 11:58:41 +0800, Rex-BC Chen wrote:
-> > The driver data of MT8183 and MT8173 are different.
-> >
-> > For MT8173, the gamma module is inside disp_aal. When we need to adjust
-> > gamma value, we need to use "has_gamma" to control gamma function
-> > inside disp_aal to adjust the gamma value.
-> >
-> > For successors like MT8183, disp_gamma is separated from disp_aal. We
-> > just need to control disp_gamma directly and don't need to control gamm=
-a
-> > function inside disp_aal.
-> >
-> > With this modification, the driver doesn't require any functional chang=
-es.
-> > We only update the dt-binding and DTS node to make it clear.
+> On Mon, 11 Apr 2022 11:58:43 +0800, Rex-BC Chen wrote:
+> > Disp_aal of MT8192 and MT8195 are fully compatible with disp_aal of
+> > MT8183. Therefore, we move the them to item "mediatek,mt8183-disp-aal".
 > >
 > > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@coll=
-abora.com>
 > > ---
-> >  .../devicetree/bindings/display/mediatek/mediatek,aal.yaml  | 6 +++---
-> >  1 file changed, 3 insertions(+), 3 deletions(-)
+> >  .../devicetree/bindings/display/mediatek/mediatek,aal.yaml    | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
 > >
 >
 > Acked-by: Rob Herring <robh@kernel.org>
