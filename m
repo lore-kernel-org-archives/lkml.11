@@ -2,62 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE077C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 19:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32132C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 19:29:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232776AbiDPTMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 15:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
+        id S232793AbiDPTVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 15:21:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230293AbiDPTME (ORCPT
+        with ESMTP id S232171AbiDPTVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 15:12:04 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 286303CA6A;
-        Sat, 16 Apr 2022 12:09:31 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id y20so459507eju.7;
-        Sat, 16 Apr 2022 12:09:31 -0700 (PDT)
+        Sat, 16 Apr 2022 15:21:00 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8FE457B9;
+        Sat, 16 Apr 2022 12:18:27 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id 32so11958907pgl.4;
+        Sat, 16 Apr 2022 12:18:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Wc5pFB9cFV9X8b0ifj+g9eVrc/4oE6DJhMyg+0grg+A=;
-        b=g6SviAzwXAp09tyT7R2XRj717VnDS6GwDtEcvKbhHtciTAYMqsQMA11jPSRytxv9XW
-         VFUNpY7EV8Y5oPQJ9ZEoGLCrgx1HKdushCUIVTi1NtwrIybOWklDz4kcdjRsSZskXWLw
-         zh1eEM9Ek3muGqX4M+Qk9UWBUD9QHNjpYj6b/i9o4VnZimj1LcebyvcDJ73l9LEG7ZxU
-         SCw0yjEdDv5IlHMOo3a4dG2ZUOsIMVRkGOJQIn8KPp7vF8MJPb5nqrTvke/VHHa5NCsG
-         2ppWyRQLDnz02tFJevSmSmYFvT/8WXGOQTEYLJNzXD70ecglJ1TRe9jwMuIf9DSxpXva
-         vaRQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=cEiFYO7CvfRyx2lxfp/dzLomivsTy3qKaQW3t/1AfgA=;
+        b=hjhW4uwSoiJ3c41yfoxcSod5NklVn46w57mFDsyZSSAbFNscq7GfEDF2n69+jgBU/F
+         ZhCf4FjSWojzwk+zZGwcEbar4ct/cbGfd2eveL/hB7gga5rsGJy7MENwxAGaVcc5pIo2
+         EQIUYVmcm/ZID7UwqnIIxLDG/kPCxRKGpvywa3K8oyasbskgiAfNYJJ1vOl3XlIKBeCp
+         xMdcpw05UCMjFnGsOYsm3qkFUOOyNo2QzfYIQkzYDbCxzdTC4B/dDlBNYLQW1iH5MTX8
+         LD7nBPDyLaKRH29NiZbn3WYCc/vxBJczs183CgGDAeBiBPSHBiMzYnbYaY2lHcWe0U7K
+         4iBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Wc5pFB9cFV9X8b0ifj+g9eVrc/4oE6DJhMyg+0grg+A=;
-        b=wC7NZB8v289th7qJZdEn8FX/4rPCDBYW5DlPK6T/ATWPwqXbRjAl6moNtYwODeUQUw
-         57MxB/vVwMPer+KOA7RdrEp8lPy0ml+4JY/Z+Q4LKF+yQFg/CYmhdPuny7ay3x8KgQj0
-         r/IJwEBtZzW0ff1HrnJnEyDMqid333AN/2lhmygjpivjIlNnhiDgFPP5q8WQAbBoFG+g
-         i2eLgda/iYfKBV/3q8OupiDaj7HlyUp081IimIM3zXgCALAyisydeJrESdG1BrOkV+d2
-         UCa9TxctsnHyus0lm5LF8h9ZSS4tyFo+XSt7aE5KpufPWykTT6Adk54QJY0dkh5MEHAo
-         WkaA==
-X-Gm-Message-State: AOAM532fwohF6pW8BiJLIYtpZcor6zZRrvOjITpeBBsFwjH3TggYFQ3P
-        G6TQK1/9x6GAHRmtqUJqtL8B1V0V9oqXe3/RgJA=
-X-Google-Smtp-Source: ABdhPJy0dXUnDlNqpFSRWbTmBQ7n5zYVtmmJh0Ee6Th3tr80ERDWMczGFfIgI95tpj9HKKbOvbuOv7n6qhOInUV9gaw=
-X-Received: by 2002:a17:907:2d0f:b0:6e8:b710:a68 with SMTP id
- gs15-20020a1709072d0f00b006e8b7100a68mr3471849ejc.510.1650136169569; Sat, 16
- Apr 2022 12:09:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220225155622.585621-1-ahamedhusni73@gmail.com> <20220320163618.41054-1-ahamedhusni73@gmail.com>
-In-Reply-To: <20220320163618.41054-1-ahamedhusni73@gmail.com>
-From:   Ahamed Husni <ahamedhusni73@gmail.com>
-Date:   Sun, 17 Apr 2022 00:39:18 +0530
-Message-ID: <CAFjpAKqT1eP4vXDPuTG50aBJPuosWTN3qddrURgp3zFS8pCz0A@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] media: av7110: fix switch indentation
-To:     mchehab@kernel.org, Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=cEiFYO7CvfRyx2lxfp/dzLomivsTy3qKaQW3t/1AfgA=;
+        b=WAuE0/o8S7gSjztp3gHwXiMwCFMZRIPKKkL41MUB0kgB9Xo0FxFF7TTvulvyM6WGu6
+         6BmldKU4rLt0GI8Rlcu/sxQBOJ9OHc4nEiTha95dhkDTc8Nyhh5T19cX0tmKWs+mfDZ4
+         u8IqAAubpXnjSUipSuWknkRhrTA1gSHmmFM0R+Z1YtTiVQfd1YYa/g+Q/0QmXe4Oy9T6
+         fpqufM5AENRgfMZ8AmiZWFVA/QlU429l4fNzw9k6nPvIuR6Ir+pfoNS0EZ9ZW2CB4E/R
+         +BjdeNeaQpWq8vY6TleqIxELa6CXdSJ6UkI2asa8k1mn9iylb2b40mWGtw8mXZOJab6I
+         wXJA==
+X-Gm-Message-State: AOAM533SpNDA64hmoM+VxnUU6BAYTfaXCIG6FTEigsaVR2kEqy1SvycH
+        fzolZCNZrgBzT/AJA5QZST8=
+X-Google-Smtp-Source: ABdhPJzgLqlNi+iTW3XfsMmksrs4Si6d6BxNd3yiSJYhM4GHXT37Bc+odwKwilPJVYOUYvT/NjF8gw==
+X-Received: by 2002:a05:6a00:140f:b0:4e0:6995:9c48 with SMTP id l15-20020a056a00140f00b004e069959c48mr4780091pfu.59.1650136707150;
+        Sat, 16 Apr 2022 12:18:27 -0700 (PDT)
+Received: from Negi ([207.151.52.3])
+        by smtp.gmail.com with ESMTPSA id d5-20020a17090acd0500b001b9c05b075dsm11913701pju.44.2022.04.16.12.18.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Apr 2022 12:18:26 -0700 (PDT)
+From:   Soumya Negi <soumya.negi97@gmail.com>
+To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
+Cc:     Soumya Negi <soumya.negi97@gmail.com>
+Subject: [PATCH v2] staging: qlge: add blank line after function declaration
+Date:   Sat, 16 Apr 2022 12:17:45 -0700
+Message-Id: <20220416191745.7079-1-soumya.negi97@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ping :)
+Adhere to linux coding style. Reported by checkpatch:
+CHECK: Please use a blank line after function/struct/union/enum declarations
+
+Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
+---
+Changes in v2:
+  - Correct commit message.
+---
+ drivers/staging/qlge/qlge.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
+index 55e0ad759250..d0dd659834ee 100644
+--- a/drivers/staging/qlge/qlge.h
++++ b/drivers/staging/qlge/qlge.h
+@@ -2072,6 +2072,7 @@ struct qlge_adapter *netdev_to_qdev(struct net_device *ndev)
+ 
+ 	return ndev_priv->qdev;
+ }
++
+ /*
+  * The main Adapter structure definition.
+  * This structure has all fields relevant to the hardware.
+-- 
+2.17.1
+
