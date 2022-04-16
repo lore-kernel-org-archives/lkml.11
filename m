@@ -2,253 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D234C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:22:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 908CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231747AbiDPLXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 07:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58318 "EHLO
+        id S231784AbiDPLdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 07:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231488AbiDPLXl (ORCPT
+        with ESMTP id S231191AbiDPLdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 07:23:41 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99010F1EBA
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 04:21:09 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id t25so17485430lfg.7
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 04:21:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=MkmORvIL2zULObkfbkJsVQHkLyWpB1iVIjReF7hXUtw=;
-        b=AK2SOvHLW5mDBzz1jN0pHbMi/hJbTe6lyeB1udOyu8+VrB2al9YrqwA+5XFcZnPE6l
-         rx5b68FFiM5I4Itu4Rt0QoXB5J2x5cN1JcSYTh2ajTZjl/MCalQOVTlZ7SK3io4x6A0V
-         etjC+wgvRTsW36OPzwhLdT7B6Jgh5oT9VuidcUh+KqogWo+cuq79sXrORgF+IYGgrEy8
-         eF2mJmaXs7PcfrGFuAy4pe/PSf9cw/HIlLXzWw6LMfGXOk+RSC/MSlS9uNqIvsVrR6x0
-         GNG43BP2c8pDj9GfJEiM3Pip/fufgoZjnRCIvnfv5ka6VtgpmPogUJ9es63BVOj9ADF6
-         gebA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=MkmORvIL2zULObkfbkJsVQHkLyWpB1iVIjReF7hXUtw=;
-        b=NDBzDk9py6zTIMyVOUP802KFaHnTG69GOsUKuiI1utI5ZkTtaHB4wkrAiBBsv8a77j
-         6H4NAXUKtajOI7aYKeCN7WW5pOXOKAoX9XzTLXVsqpCpRPbQjMfuJmqTsQL8hn2OORuu
-         eOPzbNZVSEWtoUswJRhBQPKJr8sqNl9QCA9vuGicWTCVyKQ9u6OVuwUVByd4WstAP44h
-         /G/w5HPUIwalCKS7+Bh8A9Q4g+mo/3EpO2FPYB1uUy30sZ4XarX4FX1LXnT7BvneZk3e
-         MOxL48oKjOs/xtIJMiOQnEqQ1misqhm4rA0aGepfaQuv9ayF3uH3dS9ggXK0Eml0N9xK
-         qCdg==
-X-Gm-Message-State: AOAM532YbVZDpf0HehVWaLjVqTyv62Njpke/c4X/3iKFeOn25HViBsMG
-        +ahSV+OlD3EUXxyEpMXAh8Y=
-X-Google-Smtp-Source: ABdhPJz6HmqsVX9N3NnQWycGjKb8kCMfTcHXY06N+k8BoRP0nDeW0vE0IPwxjDswf9jdkRogIbYjzw==
-X-Received: by 2002:a05:6512:3a85:b0:464:f83e:f680 with SMTP id q5-20020a0565123a8500b00464f83ef680mr2122985lfu.371.1650108067718;
-        Sat, 16 Apr 2022 04:21:07 -0700 (PDT)
-Received: from [192.168.1.11] ([94.103.225.17])
-        by smtp.gmail.com with ESMTPSA id m12-20020a19710c000000b0046b985ed95esm638745lfc.100.2022.04.16.04.21.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Apr 2022 04:21:07 -0700 (PDT)
-Message-ID: <63d56f0f-52f0-52da-675a-a18f5ce31b3d@gmail.com>
-Date:   Sat, 16 Apr 2022 14:21:06 +0300
+        Sat, 16 Apr 2022 07:33:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB8AD40A21
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 04:30:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650108651;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bAG/WM0W5/enoG6FatM/xF/Cjod8FMGsP2hun8D0RyY=;
+        b=LhP8sQc4DRTyExLXhrgUjkHnsQc47tcn1xCsspdtHwvogGfZs7vBp7eX0bI2CvPNsGeaIr
+        070i9AqwnXy6gXy/LJS3zdcyGEik1heMfe4y60PJChdpjRUtIAttV15ZcMQNz3bNfKquCE
+        JQ8Sc5GDRnUOP2jUnvaMvWJwZOzfJbA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-567-eaKJ0ggBPE2VTwyeBIMTyA-1; Sat, 16 Apr 2022 07:30:46 -0400
+X-MC-Unique: eaKJ0ggBPE2VTwyeBIMTyA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 169A41C05ABC;
+        Sat, 16 Apr 2022 11:30:46 +0000 (UTC)
+Received: from ceranb (unknown [10.40.194.169])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 424AE40EC002;
+        Sat, 16 Apr 2022 11:30:44 +0000 (UTC)
+Date:   Sat, 16 Apr 2022 13:30:43 +0200
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Fei Liu <feliu@redhat.com>, <netdev@vger.kernel.org>,
+        <mschmidt@redhat.com>, Brett Creeley <brett@pensando.io>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [Intel-wired-lan] [PATCH net] ice: Protect vf_state check by
+ cfg_lock in ice_vc_process_vf_msg()
+Message-ID: <20220416133043.08b4ee74@ceranb>
+In-Reply-To: <248da3d7-cb00-14b6-12f0-6bb9fda6d532@intel.com>
+References: <20220413072259.3189386-1-ivecera@redhat.com>
+        <YlldFriBVkKEgbBs@boxer>
+        <YlldsfrRJURXpp5d@boxer>
+        <248da3d7-cb00-14b6-12f0-6bb9fda6d532@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] staging: rtl8723bs: remove leftover code for other chips
-Content-Language: en-US
-To:     Artur Bujdoso <artur.bujdoso@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>
-References: <Ylqk7RQmpRfh/RxV@crux>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <Ylqk7RQmpRfh/RxV@crux>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Artur,
+On Fri, 15 Apr 2022 13:55:06 -0700
+Tony Nguyen <anthony.l.nguyen@intel.com> wrote:
 
-On 4/16/22 14:13, Artur Bujdoso wrote:
-> Clean up unreferenced register definitons in hal headers.
+> >>> diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+> >>> index 5612c032f15a..553287a75b50 100644
+> >>> --- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+> >>> +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+> >>> @@ -3625,44 +3625,39 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
+> >>>   		return;
+> >>>   	}
+> >>>   
+> >>> +	mutex_lock(&vf->cfg_lock);
+> >>> +
+> >>>   	/* Check if VF is disabled. */
+> >>>   	if (test_bit(ICE_VF_STATE_DIS, vf->vf_states)) {
+> >>>   		err = -EPERM;
+> >>> -		goto error_handler;
+> >>> -	}
+> >>> -
+> >>> -	ops = vf->virtchnl_ops;
+> >>> -
+> >>> -	/* Perform basic checks on the msg */
+> >>> -	err = virtchnl_vc_validate_vf_msg(&vf->vf_ver, v_opcode, msg, msglen);
+> >>> -	if (err) {
+> >>> -		if (err == VIRTCHNL_STATUS_ERR_PARAM)
+> >>> -			err = -EPERM;
+> >>> -		else
+> >>> -			err = -EINVAL;
+> >>> +	} else {
+> >>> +		/* Perform basic checks on the msg */
+> >>> +		err = virtchnl_vc_validate_vf_msg(&vf->vf_ver, v_opcode, msg,
+> >>> +						  msglen);
+> >>> +		if (err) {
+> >>> +			if (err == VIRTCHNL_STATUS_ERR_PARAM)
+> >>> +				err = -EPERM;
+> >>> +			else
+> >>> +				err = -EINVAL;
+> >>> +		}  
+> >> The chunk above feels a bit like unnecessary churn, no?
+> >> Couldn't this patch be simply focused only on extending critical section?  
 > 
-> Signed-off-by: Artur Bujdoso <artur.bujdoso@gmail.com>
-> ---
->   drivers/staging/rtl8723bs/hal/HalBtcOutSrc.h  |  36 +--
->   drivers/staging/rtl8723bs/include/HalVerDef.h |  74 ++---
->   .../staging/rtl8723bs/include/hal_com_reg.h   | 297 +-----------------
->   3 files changed, 49 insertions(+), 358 deletions(-)
+> Agree, this doesn't seem related to the fix.
 > 
-> diff --git a/drivers/staging/rtl8723bs/hal/HalBtcOutSrc.h b/drivers/staging/rtl8723bs/hal/HalBtcOutSrc.h
-> index af50674b2a65..706aafe86d0d 100644
-> --- a/drivers/staging/rtl8723bs/hal/HalBtcOutSrc.h
-> +++ b/drivers/staging/rtl8723bs/hal/HalBtcOutSrc.h
-> @@ -70,38 +70,34 @@ enum btc_chip_interface {
->   
->   enum {
->   	BTC_CHIP_UNDEF		= 0,
-> -	BTC_CHIP_CSR_BC4	= 1,
-> -	BTC_CHIP_CSR_BC8	= 2,
-> -	BTC_CHIP_RTL8723A	= 3,
-> -	BTC_CHIP_RTL8821	= 4,
->   	BTC_CHIP_RTL8723B	= 5,
->   	BTC_CHIP_MAX
->   };
->   
->   /*  following is for wifi link status */
-> -#define WIFI_STA_CONNECTED				BIT0
-> -#define WIFI_AP_CONNECTED				BIT1
-> -#define WIFI_HS_CONNECTED				BIT2
-> +#define WIFI_STA_CONNECTED			BIT0
-> +#define WIFI_AP_CONNECTED			BIT1
-> +#define WIFI_HS_CONNECTED			BIT2
->   #define WIFI_P2P_GO_CONNECTED			BIT3
->   #define WIFI_P2P_GC_CONNECTED			BIT4
->   
+> Thanks,
+> 
+> Tony
+Yes, it is not directly related but it's just a conversion of following snippet
+to avoid ugly and unnecessary 'goto':
 
-Should be done in separate patch
+if (A) {
+	err = ...
+	goto error_handler;
+}
+if (B) {
+	err = ...
+	...
+}
+if (err) {
+	...
+}
 
->   struct btc_board_info {
->   	/*  The following is some board information */
->   	u8 btChipType;
-> -	u8 pgAntNum;	/*  pg ant number */
-> -	u8 btdmAntNum;	/*  ant number for btdm */
-> +	u8 pgAntNum;		/*  pg ant number */
-> +	u8 btdmAntNum;		/*  ant number for btdm */
->   	u8 btdmAntPos;		/* Bryant Add to indicate Antenna Position for (pgAntNum = 2) && (btdmAntNum = 1)  (DPDT+1Ant case) */
->   	u8 singleAntPath;	/*  current used for 8723b only, 1 =>s0,  0 =>s1 */
-> -	/* bool				bBtExist; */
-> +	/* bool			bBtExist; */
->   };
->   
+to
 
+if (A) {
+	err = ...
+} else {
+	if (B) {
+		...
+	}
+}
+if (err) {
+	...
+}
 
-Should be done in separate patch
+If you want to leave the code as is and remove this from the patch
+let me know and I will send v2.
 
->   enum {
-> -	BTC_RSSI_STATE_HIGH			    = 0x0,
-> -	BTC_RSSI_STATE_MEDIUM			= 0x1,
-> -	BTC_RSSI_STATE_LOW			    = 0x2,
-> -	BTC_RSSI_STATE_STAY_HIGH		= 0x3,
-> -	BTC_RSSI_STATE_STAY_MEDIUM		= 0x4,
-> -	BTC_RSSI_STATE_STAY_LOW			= 0x5,
-> +	BTC_RSSI_STATE_HIGH		= 0x0,
-> +	BTC_RSSI_STATE_MEDIUM		= 0x1,
-> +	BTC_RSSI_STATE_LOW		= 0x2,
-> +	BTC_RSSI_STATE_STAY_HIGH	= 0x3,
-> +	BTC_RSSI_STATE_STAY_MEDIUM	= 0x4,
-> +	BTC_RSSI_STATE_STAY_LOW		= 0x5,
->   	BTC_RSSI_MAX
->   };
->   #define BTC_RSSI_HIGH(_rssi_)	((_rssi_ == BTC_RSSI_STATE_HIGH || _rssi_ == BTC_RSSI_STATE_STAY_HIGH) ? true : false)
-> @@ -122,7 +118,7 @@ enum {
->   };
->   
->   enum {
-> -	BTC_WIFI_PNP_WAKE_UP		= 0x0,
-> +	BTC_WIFI_PNP_WAKE_UP			= 0x0,
->   	BTC_WIFI_PNP_SLEEP			= 0x1,
->   	BTC_WIFI_PNP_MAX
->   };
-> @@ -211,7 +207,7 @@ enum {
->   
->   enum {
->   	BTC_DBG_DISP_COEX_STATISTICS		= 0x0,
-> -	BTC_DBG_DISP_BT_LINK_INFO			= 0x1,
-> +	BTC_DBG_DISP_BT_LINK_INFO		= 0x1,
->   	BTC_DBG_DISP_FW_PWR_MODE_CMD		= 0x2,
->   	BTC_DBG_DISP_MAX
->   };
-> @@ -235,13 +231,13 @@ enum {
->   };
->   
->   enum {
-> -	BTC_ASSOCIATE_FINISH				= 0x0,
-> +	BTC_ASSOCIATE_FINISH					= 0x0,
->   	BTC_ASSOCIATE_START					= 0x1,
->   	BTC_ASSOCIATE_MAX
->   };
->   
->   enum {
-> -	BTC_MEDIA_DISCONNECT				= 0x0,
-> +	BTC_MEDIA_DISCONNECT					= 0x0,
->   	BTC_MEDIA_CONNECT					= 0x1,
->   	BTC_MEDIA_MAX
->   };
+Thanks,
+Ivan
 
-All white-space clean ups should be done in separate patch
-
-
-> diff --git a/drivers/staging/rtl8723bs/include/HalVerDef.h b/drivers/staging/rtl8723bs/include/HalVerDef.h
-> index 8f654a49fb9d..42c8ff90e824 100644
-> --- a/drivers/staging/rtl8723bs/include/HalVerDef.h
-> +++ b/drivers/staging/rtl8723bs/include/HalVerDef.h
-> @@ -9,38 +9,29 @@
->   
->   /*  hal_ic_type_e */
->   enum hal_ic_type_e { /* tag_HAL_IC_Type_Definition */
-> -	CHIP_8192S	=	0,
-> -	CHIP_8188C	=	1,
-> -	CHIP_8192C	=	2,
-> -	CHIP_8192D	=	3,
-> -	CHIP_8723A	=	4,
-> -	CHIP_8188E	=	5,
-> -	CHIP_8812	=	6,
-> -	CHIP_8821	=	7,
->   	CHIP_8723B	=	8,
-> -	CHIP_8192E	=	9,
->   };
->   
-
-Then why this enum is needed? ChipVersion.ICType looks set, but not used.
-
->   /* hal_chip_type_e */
->   enum hal_chip_type_e { /* tag_HAL_CHIP_Type_Definition */
-> -	TEST_CHIP		=	0,
-> +	TEST_CHIP	=	0,
->   	NORMAL_CHIP	=	1,
-> -	FPGA			=	2,
-> +	FPGA		=	2,
->   };
->   
-
-Again white-space clean ups
-
->   /* hal_cut_version_e */
->   enum hal_cut_version_e { /* tag_HAL_Cut_Version_Definition */
-> -	A_CUT_VERSION		=	0,
-> -	B_CUT_VERSION		=	1,
-> -	C_CUT_VERSION		=	2,
-> -	D_CUT_VERSION		=	3,
-> -	E_CUT_VERSION		=	4,
-> -	F_CUT_VERSION		=	5,
-> -	G_CUT_VERSION		=	6,
-> -	H_CUT_VERSION		=	7,
-> -	I_CUT_VERSION		=	8,
-> -	J_CUT_VERSION		=	9,
-> -	K_CUT_VERSION		=	10,
-> +	A_CUT_VERSION	=	0,
-> +	B_CUT_VERSION	=	1,
-> +	C_CUT_VERSION	=	2,
-> +	D_CUT_VERSION	=	3,
-> +	E_CUT_VERSION	=	4,
-> +	F_CUT_VERSION	=	5,
-> +	G_CUT_VERSION	=	6,
-> +	H_CUT_VERSION	=	7,
-> +	I_CUT_VERSION	=	8,
-> +	J_CUT_VERSION	=	9,
-> +	K_CUT_VERSION	=	10,
->   };
-
-and again...
-
-
-
-
-
-
-With regards,
-Pavel Skripkin
