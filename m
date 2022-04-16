@@ -2,153 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F01F0C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:04:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ACD6C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231599AbiDPLHP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 07:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36086 "EHLO
+        id S231614AbiDPLHr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 07:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230388AbiDPLHO (ORCPT
+        with ESMTP id S231602AbiDPLHq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 07:07:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA5FF2;
-        Sat, 16 Apr 2022 04:04:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 775F760EC8;
-        Sat, 16 Apr 2022 11:04:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D94FC385A3;
-        Sat, 16 Apr 2022 11:04:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650107079;
-        bh=22vqrDrATcTvNHzYENBFLVN2ck1Ig62NFHe/ggmr8sY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BSwZL883Mbp8vsy28dOm8OvQLGmeioLiTF0VudzXNJ5E2FHpvjqOc/aXBj6JMK9yw
-         fVYt3BVX2bSPIYwL/2I2ERMRmlYRVLrPEcmY1hp3STrdHdhLUX4LYmFv02eC+e240Y
-         5zD1J9JSxC3IVW4Bnrt5vb40TKpuVIZisMEw2wjFop/OxURycn1P1cWKQJTfEosycX
-         RlgVqxhVAPbcStE3H2TtmmDwPQd0tKjLgcllJjA45ut+cnOYmHRnZi3a5SXuHWDD16
-         m39B1sC66tvbT0JQ/iyIFQFUvxS0LhoIxb3N5nOCZ1Xxq3OVbh5BZ5OYbqnrcmpmqw
-         P4qcGZexux/yA==
-Date:   Sat, 16 Apr 2022 12:12:38 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Brian Masney <bmasney@redhat.com>
-Subject: Re: [PATCH v1 1/1] iio: light: tsl2772: Make use of device
- properties
-Message-ID: <20220416121238.67708b6a@jic23-huawei>
-In-Reply-To: <20220413181402.19582-1-andriy.shevchenko@linux.intel.com>
-References: <20220413181402.19582-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 16 Apr 2022 07:07:46 -0400
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED0F1CB31;
+        Sat, 16 Apr 2022 04:05:11 -0700 (PDT)
+Received: by mail-qk1-x730.google.com with SMTP id c1so8138335qkf.13;
+        Sat, 16 Apr 2022 04:05:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5tjCwNy7RZXxZJdAC+JulQOtn63QPnfqne4iR8XvOSk=;
+        b=RdMsiYZGszmO70+SYVt/9mW6om6WqD0ZV7uWYpPn3gGsfFI63jaPf6RCdNw/f/jvjg
+         3qhkMt4kTZMe7ywHDHXZswZ2xD8whO/GfewTQ1BTq5cJ4bgpwdcs+jkcrQbSE1S2hGon
+         tRCVryOJBfyWG0PGihc6Lcar7qkoy/Mt8iNBCDJ2GLguCwyZ2wHFgX9xGN4YNphT87Pn
+         tNkLl3qjYKDoMiLAYCObN9aSnNQewvUFt8AhEpvvORl/BsPvVb0crBjI/jDsBVZlg+rj
+         a5cwsEIdu6AIbGj7NW/Z+k78O45+s+O5pj04iSZ6i1vP4gxClWgV83BmFAlip4G1nnjO
+         hqhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5tjCwNy7RZXxZJdAC+JulQOtn63QPnfqne4iR8XvOSk=;
+        b=yycY1I4/JLgp7npk/UOzAERMT0DWJNkYiSRWgVYoYNEGbgu0xrtMgeno+kUUtoJjXi
+         T5ojmUy/U5jX6JoE3JjsNq76pHUj6IM3B45P3qD/x7KzdvbM1ltXmBSG0Sn/Ii2LLUDl
+         0PzCL+PurO5q2diHjxK1TOrQukzCKHRl2/qXaZKtG73dWzx1secNx8URjxeZHnv4bF5X
+         FHp62oAMAEq9njYj4fSeheYCFuuzsZTneYVv4Enb39/8sGHZDeib4ZvKoMZu0y+b+eTw
+         m/T5CWBDKaWs2z4Em+EWxhAIAHhbJQHWaZik/A5YWEZCSwQx69UYM+xNJy6RQrf6FF2Y
+         aJdQ==
+X-Gm-Message-State: AOAM532UGY++5qXwVfmdLHUVMYqHO9muMDXgJCUFbWfSSlzKrysFAzLJ
+        vhdX/TZfkiHQDOYYSefYB0PvvyBZpPZpJ3cm
+X-Google-Smtp-Source: ABdhPJxiWNWboafGa0pm1NGh8x4nUNaJD2LAsJm7xIzh/1IZ+EQ4YfbsRqfNqrrSOyeg+yWb0nYNvg==
+X-Received: by 2002:a37:ad14:0:b0:69c:8c86:7d9 with SMTP id f20-20020a37ad14000000b0069c8c8607d9mr1665388qkm.383.1650107111107;
+        Sat, 16 Apr 2022 04:05:11 -0700 (PDT)
+Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
+        by smtp.gmail.com with ESMTPSA id w6-20020a05622a190600b002f1f91ad3e7sm97026qtc.22.2022.04.16.04.05.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Apr 2022 04:05:10 -0700 (PDT)
+From:   Peter Geis <pgwipeout@gmail.com>
+Cc:     linux-rockchip@lists.infradead.org, heiko@sntech.de,
+        Peter Geis <pgwipeout@gmail.com>, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v7 0/4] Enable rk356x PCIe controller
+Date:   Sat, 16 Apr 2022 07:05:02 -0400
+Message-Id: <20220416110507.642398-1-pgwipeout@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Apr 2022 21:14:02 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+This series enables the DesignWare based PCIe controller on the rk356x
+series of chips.
+We drop the fallback to the core driver due to compatibility issues.
+We add support for legacy interrupts for cards that lack MSI support
+(which is partially broken currently).
+We then add the device tree nodes to enable PCIe on the Quartz64 Model
+A.
 
-> Convert the module to be property provider agnostic and allow
-> it to be used on non-OF platforms.
-> 
-> While at it, reuse temporary device pointer in the same function.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-+CC Bryan as an FYI.
+Patch 1 drops the snps,dw,pcie fallback from the dt-binding
+Patch 2 adds legacy interrupt support to the driver
+Patch 3 adds the device tree binding to the rk356x.dtsi
+Patch 4 enables the PCIe controller on the Quartz64-A
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-all the normal reasons.
+Changelog:
+v7:
+- drop assigned-clocks
 
-Thanks,
+v6:
+- fix a ranges issue
+- point to gic instead of its
 
-Jonathan
+v5:
+- fix incorrect series (apologies for the v4 spam)
 
+v4:
+- drop the ITS modification, poor compatibility is better than
+  completely broken
 
-> ---
->  drivers/iio/light/tsl2772.c | 25 ++++++++++---------------
->  1 file changed, 10 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/iio/light/tsl2772.c b/drivers/iio/light/tsl2772.c
-> index 729f14d9f2a4..dd9051f1cc1a 100644
-> --- a/drivers/iio/light/tsl2772.c
-> +++ b/drivers/iio/light/tsl2772.c
-> @@ -15,7 +15,9 @@
->  #include <linux/kernel.h>
->  #include <linux/module.h>
->  #include <linux/mutex.h>
-> +#include <linux/property.h>
->  #include <linux/slab.h>
-> +
->  #include <linux/iio/events.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> @@ -549,10 +551,10 @@ static int tsl2772_get_prox(struct iio_dev *indio_dev)
->  
->  static int tsl2772_read_prox_led_current(struct tsl2772_chip *chip)
->  {
-> -	struct device_node *of_node = chip->client->dev.of_node;
-> +	struct device *dev = &chip->client->dev;
->  	int ret, tmp, i;
->  
-> -	ret = of_property_read_u32(of_node, "led-max-microamp", &tmp);
-> +	ret = device_property_read_u32(dev, "led-max-microamp", &tmp);
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -563,20 +565,18 @@ static int tsl2772_read_prox_led_current(struct tsl2772_chip *chip)
->  		}
->  	}
->  
-> -	dev_err(&chip->client->dev, "Invalid value %d for led-max-microamp\n",
-> -		tmp);
-> +	dev_err(dev, "Invalid value %d for led-max-microamp\n", tmp);
->  
->  	return -EINVAL;
-> -
->  }
->  
->  static int tsl2772_read_prox_diodes(struct tsl2772_chip *chip)
->  {
-> -	struct device_node *of_node = chip->client->dev.of_node;
-> +	struct device *dev = &chip->client->dev;
->  	int i, ret, num_leds, prox_diode_mask;
->  	u32 leds[TSL2772_MAX_PROX_LEDS];
->  
-> -	ret = of_property_count_u32_elems(of_node, "amstaos,proximity-diodes");
-> +	ret = device_property_count_u32(dev, "amstaos,proximity-diodes");
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -584,12 +584,9 @@ static int tsl2772_read_prox_diodes(struct tsl2772_chip *chip)
->  	if (num_leds > TSL2772_MAX_PROX_LEDS)
->  		num_leds = TSL2772_MAX_PROX_LEDS;
->  
-> -	ret = of_property_read_u32_array(of_node, "amstaos,proximity-diodes",
-> -					 leds, num_leds);
-> +	ret = device_property_read_u32_array(dev, "amstaos,proximity-diodes", leds, num_leds);
->  	if (ret < 0) {
-> -		dev_err(&chip->client->dev,
-> -			"Invalid value for amstaos,proximity-diodes: %d.\n",
-> -			ret);
-> +		dev_err(dev, "Invalid value for amstaos,proximity-diodes: %d.\n", ret);
->  		return ret;
->  	}
->  
-> @@ -600,9 +597,7 @@ static int tsl2772_read_prox_diodes(struct tsl2772_chip *chip)
->  		else if (leds[i] == 1)
->  			prox_diode_mask |= TSL2772_DIODE1;
->  		else {
-> -			dev_err(&chip->client->dev,
-> -				"Invalid value %d in amstaos,proximity-diodes.\n",
-> -				leds[i]);
-> +			dev_err(dev, "Invalid value %d in amstaos,proximity-diodes.\n", leds[i]);
->  			return -EINVAL;
->  		}
->  	}
+v3:
+- drop select node from dt-binding
+- convert to for_each_set_bit
+- convert to generic_handle_domain_irq
+- drop unncessary dev_err
+- reorder irq_chip items
+- change to level_irq
+- install the handler after initializing the domain
+
+v2:
+- Define PCIE_CLIENT_INTR_STATUS_LEGACY
+- Fix PCIE_LEGACY_INT_ENABLE to only enable the RC interrupts
+- Add legacy interrupt enable/disable support
+
+Peter Geis (4):
+  dt-bindings: pci: remove fallback from Rockchip DesignWare binding
+  PCI: dwc: rockchip: add legacy interrupt support
+  arm64: dts: rockchip: add rk3568 pcie2x1 controller
+  arm64: dts: rockchip: enable pcie controller on quartz64-a
+
+ .../bindings/pci/rockchip-dw-pcie.yaml        |  12 +-
+ .../boot/dts/rockchip/rk3566-quartz64-a.dts   |  34 ++++++
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi      |  52 ++++++++
+ drivers/pci/controller/dwc/pcie-dw-rockchip.c | 112 +++++++++++++++++-
+ 4 files changed, 197 insertions(+), 13 deletions(-)
+
+-- 
+2.25.1
 
