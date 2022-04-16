@@ -2,130 +2,665 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9951C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18197C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231713AbiDPLP3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 07:15:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34304 "EHLO
+        id S231719AbiDPLQ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 07:16:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231578AbiDPLP1 (ORCPT
+        with ESMTP id S230290AbiDPLQ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 07:15:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A2B2E5413;
-        Sat, 16 Apr 2022 04:12:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADAD1B80687;
-        Sat, 16 Apr 2022 11:12:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99F59C385A5;
-        Sat, 16 Apr 2022 11:12:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650107572;
-        bh=bRGdM51RRpea4PxpnQqVJdFGDcc0UH0JobnMgITXHO8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nSU3sdDdx3h/gZSdiEylXPuQRyQwHU/LiiVV7H2/mBRc8npIkZWRHUSWgXBPeu/DO
-         nQ3yGNn9TgbSbF+rCbx+2Sq2405UvarvQ6PE8GR3P3QxL8H8nRdPtbd83KJ6x532q9
-         TIO3vc4uHIHeVTQfENn+BjOrseJByvupo6eD9MBcLCAoikx2llMVeGDlvSeNjDHbpR
-         tjDpZd1NjMCweLd1a0TON4p0MPGKp/4JhM7YrJJPZZ12pamNFlG1hBMdg9F/mmhzAz
-         W2xG+xnht5w987U1ynGIJPKAwmmr6obMM/92KZ9iniFpW2zGhUGasFVk5+Eb4Eb738
-         JjTogovP4J2Ew==
-Date:   Sat, 16 Apr 2022 12:20:50 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Rui Miguel Silva <rmfrfs@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/1] iio: gyro: fxas21002c: Make use of device
- properties
-Message-ID: <20220416122050.72c88536@jic23-huawei>
-In-Reply-To: <20220413162623.azoqoehu23kggk4x@arch-thunder>
-References: <20220413131513.59258-1-andriy.shevchenko@linux.intel.com>
-        <20220413162623.azoqoehu23kggk4x@arch-thunder>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sat, 16 Apr 2022 07:16:27 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01CCFE5E23
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 04:13:54 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id k5so17467803lfg.9
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 04:13:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=faUmcbAgnFH45NAG+M+Ofsx3hNCx1ralddYuE3msYDM=;
+        b=Zkx8y9qfE7mV8RKSXriu87xEi6hnuhy6IiKi1rE19mrb4xb9I8YpJ13KE/OrWW5E9E
+         lEKABvi3HgSfI+1ru/lHq3BKn/Q8OscuA3ku+z1d5rHIXyZSVMoIB1iDKfn/YEyykAlq
+         9N1j0dzqcwVNOfoliG+lCsADhTfIocUXDjNt4cKwimvAnUHWts3KjEHe/UewWVMtwYtQ
+         tbe8CuyFEy57HrWeSVLVOQZP9szLEPnT9uxMU5zc5Brjm6KvMlCQX/KJIYF1zrtptJhl
+         V6P97dHgsfpOmBq3ItC9gQOEPwjsjeAfdkcEjTUKorIOUQBZpNbO1+cFxkLDb465QHAh
+         ck9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=faUmcbAgnFH45NAG+M+Ofsx3hNCx1ralddYuE3msYDM=;
+        b=Ge3ALUmRmZKhr8zPHosfdvtHoJPl4NmON0bkso+w9/y3s+PRZMFH/gO3Sa7uNuE8Xn
+         3/3n2t/q7sZJI4d1x41+LrTQBQA50FDgzcJ/nSDt+H7yGeIVLONnwhq62v8lgt2xeue8
+         5w2DF4rFCBwFwPnWuiwTjNNa1WRPSdb/RAby4N+/axMlz2kD7YX/4q0oR3wyHCE7Gtl8
+         nUGLuH1GqC7Hu2NYeyaP+Lpd9rsPbGRcqxPTWU/GAC/frJem1NObU7092Qv70kzUn2HA
+         aTfuzri7BWEwkdo/AJDMIbQDA3YeLMT4cOYc+R2kgWwRipyl31OYjAsKp4ndSFQ/dg9D
+         y+xw==
+X-Gm-Message-State: AOAM533L7Dr9Y2eUixEz/S0J0MkKqYWevuJDKbDV9sSdEPggM2tlPenC
+        Etv3yyP+7sTqEUVdAz0GOV8=
+X-Google-Smtp-Source: ABdhPJyOeUnxuL1hv7+Qgnnm+enrv5gVczbXJF1a8p30jr1zHdPA09JzLJh4hLgWcKV9kzwwHkfp5g==
+X-Received: by 2002:ac2:5ec2:0:b0:46b:c30a:2b1 with SMTP id d2-20020ac25ec2000000b0046bc30a02b1mr2069243lfq.267.1650107631906;
+        Sat, 16 Apr 2022 04:13:51 -0700 (PDT)
+Received: from crux (185-113-96-245.cust.bredband2.com. [185.113.96.245])
+        by smtp.gmail.com with ESMTPSA id m2-20020a196142000000b004711ef2d738sm12718lfk.254.2022.04.16.04.13.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Apr 2022 04:13:51 -0700 (PDT)
+Date:   Sat, 16 Apr 2022 13:13:49 +0200
+From:   Artur Bujdoso <artur.bujdoso@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>
+Subject: [PATCH] staging: rtl8723bs: remove leftover code for other chips
+Message-ID: <Ylqk7RQmpRfh/RxV@crux>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Apr 2022 17:26:23 +0100
-Rui Miguel Silva <rmfrfs@gmail.com> wrote:
+Clean up unreferenced register definitons in hal headers.
 
-> Hi Andy,
-> Thanks for the patch.
-> 
-> On Wed, Apr 13, 2022 at 04:15:13PM +0300, Andy Shevchenko wrote:
-> > Convert the module to be property provider agnostic and allow
-> > it to be used on non-OF platforms.
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>  
-> 
-> This LGTM.
-> 
-> Acked-by: Rui Miguel Silva <rmfrfs@gmail.com>
-> 
-Applied to the togreg branch of iio.git and pushed out as testing
-for 0-day to poke at it and see what we missed.
+Signed-off-by: Artur Bujdoso <artur.bujdoso@gmail.com>
+---
+ drivers/staging/rtl8723bs/hal/HalBtcOutSrc.h  |  36 +--
+ drivers/staging/rtl8723bs/include/HalVerDef.h |  74 ++---
+ .../staging/rtl8723bs/include/hal_com_reg.h   | 297 +-----------------
+ 3 files changed, 49 insertions(+), 358 deletions(-)
 
-Thanks,
-
-Jonathan
-
-> Cheers,
->      Rui
-> 
-> > ---
-> >  drivers/iio/gyro/fxas21002c_core.c | 8 +++-----
-> >  1 file changed, 3 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/iio/gyro/fxas21002c_core.c b/drivers/iio/gyro/fxas21002c_core.c
-> > index 410e5e9f2672..0923fd793492 100644
-> > --- a/drivers/iio/gyro/fxas21002c_core.c
-> > +++ b/drivers/iio/gyro/fxas21002c_core.c
-> > @@ -7,9 +7,9 @@
-> >  
-> >  #include <linux/interrupt.h>
-> >  #include <linux/module.h>
-> > -#include <linux/of_irq.h>
-> >  #include <linux/pm.h>
-> >  #include <linux/pm_runtime.h>
-> > +#include <linux/property.h>
-> >  #include <linux/regmap.h>
-> >  #include <linux/regulator/consumer.h>
-> >  
-> > @@ -822,7 +822,6 @@ static int fxas21002c_trigger_probe(struct fxas21002c_data *data)
-> >  {
-> >  	struct device *dev = regmap_get_device(data->regmap);
-> >  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> > -	struct device_node *np = indio_dev->dev.of_node;
-> >  	unsigned long irq_trig;
-> >  	bool irq_open_drain;
-> >  	int irq1;
-> > @@ -831,8 +830,7 @@ static int fxas21002c_trigger_probe(struct fxas21002c_data *data)
-> >  	if (!data->irq)
-> >  		return 0;
-> >  
-> > -	irq1 = of_irq_get_byname(np, "INT1");
-> > -
-> > +	irq1 = fwnode_irq_get_byname(dev_fwnode(dev), "INT1");
-> >  	if (irq1 == data->irq) {
-> >  		dev_info(dev, "using interrupt line INT1\n");
-> >  		ret = regmap_field_write(data->regmap_fields[F_INT_CFG_DRDY],
-> > @@ -843,7 +841,7 @@ static int fxas21002c_trigger_probe(struct fxas21002c_data *data)
-> >  
-> >  	dev_info(dev, "using interrupt line INT2\n");
-> >  
-> > -	irq_open_drain = of_property_read_bool(np, "drive-open-drain");
-> > +	irq_open_drain = device_property_read_bool(dev, "drive-open-drain");
-> >  
-> >  	data->dready_trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
-> >  						   indio_dev->name,
-> > -- 
-> > 2.35.1
-> >   
+diff --git a/drivers/staging/rtl8723bs/hal/HalBtcOutSrc.h b/drivers/staging/rtl8723bs/hal/HalBtcOutSrc.h
+index af50674b2a65..706aafe86d0d 100644
+--- a/drivers/staging/rtl8723bs/hal/HalBtcOutSrc.h
++++ b/drivers/staging/rtl8723bs/hal/HalBtcOutSrc.h
+@@ -70,38 +70,34 @@ enum btc_chip_interface {
+ 
+ enum {
+ 	BTC_CHIP_UNDEF		= 0,
+-	BTC_CHIP_CSR_BC4	= 1,
+-	BTC_CHIP_CSR_BC8	= 2,
+-	BTC_CHIP_RTL8723A	= 3,
+-	BTC_CHIP_RTL8821	= 4,
+ 	BTC_CHIP_RTL8723B	= 5,
+ 	BTC_CHIP_MAX
+ };
+ 
+ /*  following is for wifi link status */
+-#define WIFI_STA_CONNECTED				BIT0
+-#define WIFI_AP_CONNECTED				BIT1
+-#define WIFI_HS_CONNECTED				BIT2
++#define WIFI_STA_CONNECTED			BIT0
++#define WIFI_AP_CONNECTED			BIT1
++#define WIFI_HS_CONNECTED			BIT2
+ #define WIFI_P2P_GO_CONNECTED			BIT3
+ #define WIFI_P2P_GC_CONNECTED			BIT4
+ 
+ struct btc_board_info {
+ 	/*  The following is some board information */
+ 	u8 btChipType;
+-	u8 pgAntNum;	/*  pg ant number */
+-	u8 btdmAntNum;	/*  ant number for btdm */
++	u8 pgAntNum;		/*  pg ant number */
++	u8 btdmAntNum;		/*  ant number for btdm */
+ 	u8 btdmAntPos;		/* Bryant Add to indicate Antenna Position for (pgAntNum = 2) && (btdmAntNum = 1)  (DPDT+1Ant case) */
+ 	u8 singleAntPath;	/*  current used for 8723b only, 1 =>s0,  0 =>s1 */
+-	/* bool				bBtExist; */
++	/* bool			bBtExist; */
+ };
+ 
+ enum {
+-	BTC_RSSI_STATE_HIGH			    = 0x0,
+-	BTC_RSSI_STATE_MEDIUM			= 0x1,
+-	BTC_RSSI_STATE_LOW			    = 0x2,
+-	BTC_RSSI_STATE_STAY_HIGH		= 0x3,
+-	BTC_RSSI_STATE_STAY_MEDIUM		= 0x4,
+-	BTC_RSSI_STATE_STAY_LOW			= 0x5,
++	BTC_RSSI_STATE_HIGH		= 0x0,
++	BTC_RSSI_STATE_MEDIUM		= 0x1,
++	BTC_RSSI_STATE_LOW		= 0x2,
++	BTC_RSSI_STATE_STAY_HIGH	= 0x3,
++	BTC_RSSI_STATE_STAY_MEDIUM	= 0x4,
++	BTC_RSSI_STATE_STAY_LOW		= 0x5,
+ 	BTC_RSSI_MAX
+ };
+ #define BTC_RSSI_HIGH(_rssi_)	((_rssi_ == BTC_RSSI_STATE_HIGH || _rssi_ == BTC_RSSI_STATE_STAY_HIGH) ? true : false)
+@@ -122,7 +118,7 @@ enum {
+ };
+ 
+ enum {
+-	BTC_WIFI_PNP_WAKE_UP		= 0x0,
++	BTC_WIFI_PNP_WAKE_UP			= 0x0,
+ 	BTC_WIFI_PNP_SLEEP			= 0x1,
+ 	BTC_WIFI_PNP_MAX
+ };
+@@ -211,7 +207,7 @@ enum {
+ 
+ enum {
+ 	BTC_DBG_DISP_COEX_STATISTICS		= 0x0,
+-	BTC_DBG_DISP_BT_LINK_INFO			= 0x1,
++	BTC_DBG_DISP_BT_LINK_INFO		= 0x1,
+ 	BTC_DBG_DISP_FW_PWR_MODE_CMD		= 0x2,
+ 	BTC_DBG_DISP_MAX
+ };
+@@ -235,13 +231,13 @@ enum {
+ };
+ 
+ enum {
+-	BTC_ASSOCIATE_FINISH				= 0x0,
++	BTC_ASSOCIATE_FINISH					= 0x0,
+ 	BTC_ASSOCIATE_START					= 0x1,
+ 	BTC_ASSOCIATE_MAX
+ };
+ 
+ enum {
+-	BTC_MEDIA_DISCONNECT				= 0x0,
++	BTC_MEDIA_DISCONNECT					= 0x0,
+ 	BTC_MEDIA_CONNECT					= 0x1,
+ 	BTC_MEDIA_MAX
+ };
+diff --git a/drivers/staging/rtl8723bs/include/HalVerDef.h b/drivers/staging/rtl8723bs/include/HalVerDef.h
+index 8f654a49fb9d..42c8ff90e824 100644
+--- a/drivers/staging/rtl8723bs/include/HalVerDef.h
++++ b/drivers/staging/rtl8723bs/include/HalVerDef.h
+@@ -9,38 +9,29 @@
+ 
+ /*  hal_ic_type_e */
+ enum hal_ic_type_e { /* tag_HAL_IC_Type_Definition */
+-	CHIP_8192S	=	0,
+-	CHIP_8188C	=	1,
+-	CHIP_8192C	=	2,
+-	CHIP_8192D	=	3,
+-	CHIP_8723A	=	4,
+-	CHIP_8188E	=	5,
+-	CHIP_8812	=	6,
+-	CHIP_8821	=	7,
+ 	CHIP_8723B	=	8,
+-	CHIP_8192E	=	9,
+ };
+ 
+ /* hal_chip_type_e */
+ enum hal_chip_type_e { /* tag_HAL_CHIP_Type_Definition */
+-	TEST_CHIP		=	0,
++	TEST_CHIP	=	0,
+ 	NORMAL_CHIP	=	1,
+-	FPGA			=	2,
++	FPGA		=	2,
+ };
+ 
+ /* hal_cut_version_e */
+ enum hal_cut_version_e { /* tag_HAL_Cut_Version_Definition */
+-	A_CUT_VERSION		=	0,
+-	B_CUT_VERSION		=	1,
+-	C_CUT_VERSION		=	2,
+-	D_CUT_VERSION		=	3,
+-	E_CUT_VERSION		=	4,
+-	F_CUT_VERSION		=	5,
+-	G_CUT_VERSION		=	6,
+-	H_CUT_VERSION		=	7,
+-	I_CUT_VERSION		=	8,
+-	J_CUT_VERSION		=	9,
+-	K_CUT_VERSION		=	10,
++	A_CUT_VERSION	=	0,
++	B_CUT_VERSION	=	1,
++	C_CUT_VERSION	=	2,
++	D_CUT_VERSION	=	3,
++	E_CUT_VERSION	=	4,
++	F_CUT_VERSION	=	5,
++	G_CUT_VERSION	=	6,
++	H_CUT_VERSION	=	7,
++	I_CUT_VERSION	=	8,
++	J_CUT_VERSION	=	9,
++	K_CUT_VERSION	=	10,
+ };
+ 
+ /*  HAL_Manufacturer */
+@@ -51,22 +42,21 @@ enum hal_vendor_e { /* tag_HAL_Manufacturer_Version_Definition */
+ };
+ 
+ struct hal_version { /* tag_HAL_VERSION */
+-	enum hal_ic_type_e		ICType;
+-	enum hal_chip_type_e		ChipType;
++	enum hal_ic_type_e	ICType;
++	enum hal_chip_type_e	ChipType;
+ 	enum hal_cut_version_e	CUTVersion;
+-	enum hal_vendor_e		VendorType;
++	enum hal_vendor_e	VendorType;
+ 	u8 			ROMVer;
+ };
+ 
+-/* VERSION_8192C			VersionID; */
+-/* hal_version			VersionID; */
++/* hal_version	VersionID; */
+ 
+ /*  Get element */
+-#define GET_CVID_IC_TYPE(version)			((enum hal_ic_type_e)((version).ICType))
+-#define GET_CVID_CHIP_TYPE(version)			((enum hal_chip_type_e)((version).ChipType))
+-#define GET_CVID_MANUFACTUER(version)		((enum hal_vendor_e)((version).VendorType))
+-#define GET_CVID_CUT_VERSION(version)		((enum hal_cut_version_e)((version).CUTVersion))
+-#define GET_CVID_ROM_VERSION(version)		(((version).ROMVer) & ROM_VERSION_MASK)
++#define GET_CVID_IC_TYPE(version)	((enum hal_ic_type_e)((version).ICType))
++#define GET_CVID_CHIP_TYPE(version)	((enum hal_chip_type_e)((version).ChipType))
++#define GET_CVID_MANUFACTUER(version)	((enum hal_vendor_e)((version).VendorType))
++#define GET_CVID_CUT_VERSION(version)	((enum hal_cut_version_e)((version).CUTVersion))
++#define GET_CVID_ROM_VERSION(version)	(((version).ROMVer) & ROM_VERSION_MASK)
+ 
+ /*  */
+ /* Common Macro. -- */
+@@ -74,18 +64,18 @@ struct hal_version { /* tag_HAL_VERSION */
+ /* hal_version VersionID */
+ 
+ /* hal_chip_type_e */
+-#define IS_TEST_CHIP(version)			((GET_CVID_CHIP_TYPE(version) == TEST_CHIP) ? true : false)
+-#define IS_NORMAL_CHIP(version)			((GET_CVID_CHIP_TYPE(version) == NORMAL_CHIP) ? true : false)
++#define IS_TEST_CHIP(version)	((GET_CVID_CHIP_TYPE(version) == TEST_CHIP) ? true : false)
++#define IS_NORMAL_CHIP(version)	((GET_CVID_CHIP_TYPE(version) == NORMAL_CHIP) ? true : false)
+ 
+ /* hal_cut_version_e */
+-#define IS_A_CUT(version)				((GET_CVID_CUT_VERSION(version) == A_CUT_VERSION) ? true : false)
+-#define IS_B_CUT(version)				((GET_CVID_CUT_VERSION(version) == B_CUT_VERSION) ? true : false)
+-#define IS_C_CUT(version)				((GET_CVID_CUT_VERSION(version) == C_CUT_VERSION) ? true : false)
+-#define IS_D_CUT(version)				((GET_CVID_CUT_VERSION(version) == D_CUT_VERSION) ? true : false)
+-#define IS_E_CUT(version)				((GET_CVID_CUT_VERSION(version) == E_CUT_VERSION) ? true : false)
+-#define IS_I_CUT(version)				((GET_CVID_CUT_VERSION(version) == I_CUT_VERSION) ? true : false)
+-#define IS_J_CUT(version)				((GET_CVID_CUT_VERSION(version) == J_CUT_VERSION) ? true : false)
+-#define IS_K_CUT(version)				((GET_CVID_CUT_VERSION(version) == K_CUT_VERSION) ? true : false)
++#define IS_A_CUT(version)	((GET_CVID_CUT_VERSION(version) == A_CUT_VERSION) ? true : false)
++#define IS_B_CUT(version)	((GET_CVID_CUT_VERSION(version) == B_CUT_VERSION) ? true : false)
++#define IS_C_CUT(version)	((GET_CVID_CUT_VERSION(version) == C_CUT_VERSION) ? true : false)
++#define IS_D_CUT(version)	((GET_CVID_CUT_VERSION(version) == D_CUT_VERSION) ? true : false)
++#define IS_E_CUT(version)	((GET_CVID_CUT_VERSION(version) == E_CUT_VERSION) ? true : false)
++#define IS_I_CUT(version)	((GET_CVID_CUT_VERSION(version) == I_CUT_VERSION) ? true : false)
++#define IS_J_CUT(version)	((GET_CVID_CUT_VERSION(version) == J_CUT_VERSION) ? true : false)
++#define IS_K_CUT(version)	((GET_CVID_CUT_VERSION(version) == K_CUT_VERSION) ? true : false)
+ 
+ /* hal_vendor_e */
+ #define IS_CHIP_VENDOR_TSMC(version)	((GET_CVID_MANUFACTUER(version) == CHIP_VENDOR_TSMC) ? true : false)
+diff --git a/drivers/staging/rtl8723bs/include/hal_com_reg.h b/drivers/staging/rtl8723bs/include/hal_com_reg.h
+index 8213dcf48b34..691a59bc167a 100644
+--- a/drivers/staging/rtl8723bs/include/hal_com_reg.h
++++ b/drivers/staging/rtl8723bs/include/hal_com_reg.h
+@@ -47,7 +47,7 @@
+ #define REG_AFE_XTAL_CTRL				0x0024
+ #define REG_AFE_LDO_CTRL				0x0027 /*  1.5v for 8188EE test chip, 1.4v for MP chip */
+ #define REG_AFE_PLL_CTRL				0x0028
+-#define REG_MAC_PHY_CTRL				0x002c /* for 92d, DMDP, SMSP, DMSP contrl */
++	#define REG_MAC_PHY_CTRL				0x002c /* for 92d, DMDP, SMSP, DMSP contrl */
+ #define REG_APE_PLL_CTRL_EXT			0x002c
+ #define REG_EFUSE_CTRL					0x0030
+ #define REG_EFUSE_TEST					0x0034
+@@ -72,13 +72,9 @@
+ #define REG_MULTI_FUNC_CTRL			0x0068 /*  RTL8723 WIFI/BT/GPS Multi-Function control source. */
+ #define REG_GSSR						0x006c
+ #define REG_AFE_XTAL_CTRL_EXT			0x0078 /* RTL8188E */
+-#define REG_XCK_OUT_CTRL				0x007c /* RTL8188E */
+ #define REG_MCUFWDL					0x0080
+-#define REG_WOL_EVENT					0x0081 /* RTL8188E */
+ #define REG_MCUTSTCFG					0x0084
+ #define REG_FDHM0						0x0088
+-#define REG_HOST_SUSP_CNT				0x00BC	/*  RTL8192C Host suspend counter on FPGA platform */
+-#define REG_SYSTEM_ON_CTRL			0x00CC	/*  For 8723AE Reset after S3 */
+ #define REG_EFUSE_ACCESS				0x00CF	/*  Efuse access protection for RTL8723 */
+ #define REG_BIST_SCAN					0x00D0
+ #define REG_BIST_RPT					0x00D4
+@@ -117,7 +113,6 @@
+ #define REG_FWIMR						0x0130
+ #define REG_FWISR						0x0134
+ #define REG_FTIMR						0x0138
+-#define REG_FTISR						0x013C /* RTL8192C */
+ #define REG_PKTBUF_DBG_CTRL			0x0140
+ #define REG_RXPKTBUF_CTRL				(REG_PKTBUF_DBG_CTRL+2)
+ #define REG_PKTBUF_DBG_DATA_L			0x0144
+@@ -132,11 +127,9 @@
+ #define REG_MBIST_START				0x0174
+ #define REG_MBIST_DONE					0x0178
+ #define REG_MBIST_FAIL					0x017C
+-#define REG_32K_CTRL					0x0194 /* RTL8188E */
+ #define REG_C2HEVT_MSG_NORMAL		0x01A0
+ #define REG_C2HEVT_CLEAR				0x01AF
+ #define REG_MCUTST_1					0x01c0
+-#define REG_MCUTST_WOWLAN			0x01C7	/*  Defined after 8188E series. */
+ #define REG_FMETHR						0x01C8
+ #define REG_HMETFR						0x01CC
+ #define REG_HMEBOX_0					0x01D0
+@@ -525,44 +518,6 @@
+ #define MAX_MSS_DENSITY_2T			0x13
+ #define MAX_MSS_DENSITY_1T			0x0A
+ 
+-/*  */
+-/*        8192C Cmd9346CR bits					(Offset 0xA, 16bit) */
+-/*  */
+-#define CmdEEPROM_En				BIT5	 /*  EEPROM enable when set 1 */
+-#define CmdEERPOMSEL				BIT4	/*  System EEPROM select, 0: boot from E-FUSE, 1: The EEPROM used is 9346 */
+-#define Cmd9346CR_9356SEL			BIT4
+-
+-/*  */
+-/*        8192C GPIO MUX Configuration Register (offset 0x40, 4 byte) */
+-/*  */
+-#define GPIOSEL_GPIO				0
+-#define GPIOSEL_ENBT				BIT5
+-
+-/*  */
+-/*        8192C GPIO PIN Control Register (offset 0x44, 4 byte) */
+-/*  */
+-#define GPIO_IN					REG_GPIO_PIN_CTRL		/*  GPIO pins input value */
+-#define GPIO_OUT				(REG_GPIO_PIN_CTRL+1)	/*  GPIO pins output value */
+-#define GPIO_IO_SEL				(REG_GPIO_PIN_CTRL+2)	/*  GPIO pins output enable when a bit is set to "1"; otherwise, input is configured. */
+-#define GPIO_MOD				(REG_GPIO_PIN_CTRL+3)
+-
+-/*  */
+-/*        8811A GPIO PIN Control Register (offset 0x60, 4 byte) */
+-/*  */
+-#define GPIO_IN_8811A			REG_GPIO_PIN_CTRL_2		/*  GPIO pins input value */
+-#define GPIO_OUT_8811A			(REG_GPIO_PIN_CTRL_2+1)	/*  GPIO pins output value */
+-#define GPIO_IO_SEL_8811A		(REG_GPIO_PIN_CTRL_2+2)	/*  GPIO pins output enable when a bit is set to "1"; otherwise, input is configured. */
+-#define GPIO_MOD_8811A			(REG_GPIO_PIN_CTRL_2+3)
+-
+-/*  */
+-/*        8723/8188E Host System Interrupt Mask Register (offset 0x58, 32 byte) */
+-/*  */
+-#define HSIMR_GPIO12_0_INT_EN			BIT0
+-#define HSIMR_SPS_OCP_INT_EN			BIT5
+-#define HSIMR_RON_INT_EN				BIT6
+-#define HSIMR_PDN_INT_EN				BIT7
+-#define HSIMR_GPIO9_INT_EN				BIT25
+-
+ /*  */
+ /*        8723/8188E Host System Interrupt Status Register (offset 0x5C, 32 byte) */
+ /*  */
+@@ -572,22 +527,6 @@
+ #define HSISR_PDNINT					BIT7
+ #define HSISR_GPIO9_INT					BIT25
+ 
+-/*  */
+-/*        8192C (MSR) Media Status Register	(Offset 0x4C, 8 bits) */
+-/*  */
+-/*
+-Network Type
+-00: No link
+-01: Link in ad hoc network
+-10: Link in infrastructure network
+-11: AP mode
+-Default: 00b.
+-*/
+-#define MSR_NOLINK				0x00
+-#define MSR_ADHOC				0x01
+-#define MSR_INFRA				0x02
+-#define MSR_AP					0x03
+-
+ /*  */
+ /*        USB INTR CONTENT */
+ /*  */
+@@ -786,206 +725,6 @@ Default: 00b.
+ #define IMR_OCPINT				BIT1
+ #define IMR_WLANOFF			BIT0
+ 
+-/*  */
+-/*  8723E series PCIE Host IMR/ISR bit */
+-/*  */
+-/*  IMR DW0 Bit 0-31 */
+-#define PHIMR_TIMEOUT2				BIT31
+-#define PHIMR_TIMEOUT1				BIT30
+-#define PHIMR_PSTIMEOUT			BIT29
+-#define PHIMR_GTINT4				BIT28
+-#define PHIMR_GTINT3				BIT27
+-#define PHIMR_TXBCNERR				BIT26
+-#define PHIMR_TXBCNOK				BIT25
+-#define PHIMR_TSF_BIT32_TOGGLE	BIT24
+-#define PHIMR_BCNDMAINT3			BIT23
+-#define PHIMR_BCNDMAINT2			BIT22
+-#define PHIMR_BCNDMAINT1			BIT21
+-#define PHIMR_BCNDMAINT0			BIT20
+-#define PHIMR_BCNDOK3				BIT19
+-#define PHIMR_BCNDOK2				BIT18
+-#define PHIMR_BCNDOK1				BIT17
+-#define PHIMR_BCNDOK0				BIT16
+-#define PHIMR_HSISR_IND_ON			BIT15
+-#define PHIMR_BCNDMAINT_E			BIT14
+-#define PHIMR_ATIMEND_E			BIT13
+-#define PHIMR_ATIM_CTW_END		BIT12
+-#define PHIMR_HISRE_IND			BIT11	/*  RO. HISRE Indicator (HISRE & HIMRE is true, this bit is set to 1) */
+-#define PHIMR_C2HCMD				BIT10
+-#define PHIMR_CPWM2				BIT9
+-#define PHIMR_CPWM					BIT8
+-#define PHIMR_HIGHDOK				BIT7		/*  High Queue DMA OK Interrupt */
+-#define PHIMR_MGNTDOK				BIT6		/*  Management Queue DMA OK Interrupt */
+-#define PHIMR_BKDOK					BIT5		/*  AC_BK DMA OK Interrupt */
+-#define PHIMR_BEDOK					BIT4		/*  AC_BE DMA OK Interrupt */
+-#define PHIMR_VIDOK					BIT3		/*  AC_VI DMA OK Interrupt */
+-#define PHIMR_VODOK				BIT2		/*  AC_VO DMA Interrupt */
+-#define PHIMR_RDU					BIT1		/*  Receive Descriptor Unavailable */
+-#define PHIMR_ROK					BIT0		/*  Receive DMA OK Interrupt */
+-
+-/*  PCIE Host Interrupt Status Extension bit */
+-#define PHIMR_BCNDMAINT7			BIT23
+-#define PHIMR_BCNDMAINT6			BIT22
+-#define PHIMR_BCNDMAINT5			BIT21
+-#define PHIMR_BCNDMAINT4			BIT20
+-#define PHIMR_BCNDOK7				BIT19
+-#define PHIMR_BCNDOK6				BIT18
+-#define PHIMR_BCNDOK5				BIT17
+-#define PHIMR_BCNDOK4				BIT16
+-/*  bit12 15: RSVD */
+-#define PHIMR_TXERR					BIT11
+-#define PHIMR_RXERR					BIT10
+-#define PHIMR_TXFOVW				BIT9
+-#define PHIMR_RXFOVW				BIT8
+-/*  bit2-7: RSVD */
+-#define PHIMR_OCPINT				BIT1
+-/*  bit0: RSVD */
+-
+-#define UHIMR_TIMEOUT2				BIT31
+-#define UHIMR_TIMEOUT1				BIT30
+-#define UHIMR_PSTIMEOUT			BIT29
+-#define UHIMR_GTINT4				BIT28
+-#define UHIMR_GTINT3				BIT27
+-#define UHIMR_TXBCNERR				BIT26
+-#define UHIMR_TXBCNOK				BIT25
+-#define UHIMR_TSF_BIT32_TOGGLE	BIT24
+-#define UHIMR_BCNDMAINT3			BIT23
+-#define UHIMR_BCNDMAINT2			BIT22
+-#define UHIMR_BCNDMAINT1			BIT21
+-#define UHIMR_BCNDMAINT0			BIT20
+-#define UHIMR_BCNDOK3				BIT19
+-#define UHIMR_BCNDOK2				BIT18
+-#define UHIMR_BCNDOK1				BIT17
+-#define UHIMR_BCNDOK0				BIT16
+-#define UHIMR_HSISR_IND			BIT15
+-#define UHIMR_BCNDMAINT_E			BIT14
+-/* RSVD	BIT13 */
+-#define UHIMR_CTW_END				BIT12
+-/* RSVD	BIT11 */
+-#define UHIMR_C2HCMD				BIT10
+-#define UHIMR_CPWM2				BIT9
+-#define UHIMR_CPWM					BIT8
+-#define UHIMR_HIGHDOK				BIT7		/*  High Queue DMA OK Interrupt */
+-#define UHIMR_MGNTDOK				BIT6		/*  Management Queue DMA OK Interrupt */
+-#define UHIMR_BKDOK				BIT5		/*  AC_BK DMA OK Interrupt */
+-#define UHIMR_BEDOK				BIT4		/*  AC_BE DMA OK Interrupt */
+-#define UHIMR_VIDOK					BIT3		/*  AC_VI DMA OK Interrupt */
+-#define UHIMR_VODOK				BIT2		/*  AC_VO DMA Interrupt */
+-#define UHIMR_RDU					BIT1		/*  Receive Descriptor Unavailable */
+-#define UHIMR_ROK					BIT0		/*  Receive DMA OK Interrupt */
+-
+-/*  USB Host Interrupt Status Extension bit */
+-#define UHIMR_BCNDMAINT7			BIT23
+-#define UHIMR_BCNDMAINT6			BIT22
+-#define UHIMR_BCNDMAINT5			BIT21
+-#define UHIMR_BCNDMAINT4			BIT20
+-#define UHIMR_BCNDOK7				BIT19
+-#define UHIMR_BCNDOK6				BIT18
+-#define UHIMR_BCNDOK5				BIT17
+-#define UHIMR_BCNDOK4				BIT16
+-/*  bit14-15: RSVD */
+-#define UHIMR_ATIMEND_E			BIT13
+-#define UHIMR_ATIMEND				BIT12
+-#define UHIMR_TXERR					BIT11
+-#define UHIMR_RXERR					BIT10
+-#define UHIMR_TXFOVW				BIT9
+-#define UHIMR_RXFOVW				BIT8
+-/*  bit2-7: RSVD */
+-#define UHIMR_OCPINT				BIT1
+-/*  bit0: RSVD */
+-
+-
+-#define HAL_NIC_UNPLUG_ISR			0xFFFFFFFF	/*  The value when the NIC is unplugged for PCI. */
+-#define HAL_NIC_UNPLUG_PCI_ISR		0xEAEAEAEA	/*  The value when the NIC is unplugged for PCI in PCI interrupt (page 3). */
+-
+-/*  */
+-/*        8188 IMR/ISR bits */
+-/*  */
+-#define IMR_DISABLED_88E			0x0
+-/*  IMR DW0(0x0060-0063) Bit 0-31 */
+-#define IMR_TXCCK_88E				BIT30		/*  TXRPT interrupt when CCX bit of the packet is set */
+-#define IMR_PSTIMEOUT_88E			BIT29		/*  Power Save Time Out Interrupt */
+-#define IMR_GTINT4_88E				BIT28		/*  When GTIMER4 expires, this bit is set to 1 */
+-#define IMR_GTINT3_88E				BIT27		/*  When GTIMER3 expires, this bit is set to 1 */
+-#define IMR_TBDER_88E				BIT26		/*  Transmit Beacon0 Error */
+-#define IMR_TBDOK_88E				BIT25		/*  Transmit Beacon0 OK */
+-#define IMR_TSF_BIT32_TOGGLE_88E	BIT24		/*  TSF Timer BIT32 toggle indication interrupt */
+-#define IMR_BCNDMAINT0_88E		BIT20		/*  Beacon DMA Interrupt 0 */
+-#define IMR_BCNDERR0_88E			BIT16		/*  Beacon Queue DMA Error 0 */
+-#define IMR_HSISR_IND_ON_INT_88E	BIT15		/*  HSISR Indicator (HSIMR & HSISR is true, this bit is set to 1) */
+-#define IMR_BCNDMAINT_E_88E		BIT14		/*  Beacon DMA Interrupt Extension for Win7 */
+-#define IMR_ATIMEND_88E			BIT12		/*  CTWidnow End or ATIM Window End */
+-#define IMR_HISR1_IND_INT_88E		BIT11		/*  HISR1 Indicator (HISR1 & HIMR1 is true, this bit is set to 1) */
+-#define IMR_C2HCMD_88E				BIT10		/*  CPU to Host Command INT Status, Write 1 clear */
+-#define IMR_CPWM2_88E				BIT9			/*  CPU power Mode exchange INT Status, Write 1 clear */
+-#define IMR_CPWM_88E				BIT8			/*  CPU power Mode exchange INT Status, Write 1 clear */
+-#define IMR_HIGHDOK_88E			BIT7			/*  High Queue DMA OK */
+-#define IMR_MGNTDOK_88E			BIT6			/*  Management Queue DMA OK */
+-#define IMR_BKDOK_88E				BIT5			/*  AC_BK DMA OK */
+-#define IMR_BEDOK_88E				BIT4			/*  AC_BE DMA OK */
+-#define IMR_VIDOK_88E				BIT3			/*  AC_VI DMA OK */
+-#define IMR_VODOK_88E				BIT2			/*  AC_VO DMA OK */
+-#define IMR_RDU_88E					BIT1			/*  Rx Descriptor Unavailable */
+-#define IMR_ROK_88E					BIT0			/*  Receive DMA OK */
+-
+-/*  IMR DW1(0x00B4-00B7) Bit 0-31 */
+-#define IMR_BCNDMAINT7_88E		BIT27		/*  Beacon DMA Interrupt 7 */
+-#define IMR_BCNDMAINT6_88E		BIT26		/*  Beacon DMA Interrupt 6 */
+-#define IMR_BCNDMAINT5_88E		BIT25		/*  Beacon DMA Interrupt 5 */
+-#define IMR_BCNDMAINT4_88E		BIT24		/*  Beacon DMA Interrupt 4 */
+-#define IMR_BCNDMAINT3_88E		BIT23		/*  Beacon DMA Interrupt 3 */
+-#define IMR_BCNDMAINT2_88E		BIT22		/*  Beacon DMA Interrupt 2 */
+-#define IMR_BCNDMAINT1_88E		BIT21		/*  Beacon DMA Interrupt 1 */
+-#define IMR_BCNDOK7_88E			BIT20		/*  Beacon Queue DMA OK Interrupt 7 */
+-#define IMR_BCNDOK6_88E			BIT19		/*  Beacon Queue DMA OK Interrupt 6 */
+-#define IMR_BCNDOK5_88E			BIT18		/*  Beacon Queue DMA OK Interrupt 5 */
+-#define IMR_BCNDOK4_88E			BIT17		/*  Beacon Queue DMA OK Interrupt 4 */
+-#define IMR_BCNDOK3_88E			BIT16		/*  Beacon Queue DMA OK Interrupt 3 */
+-#define IMR_BCNDOK2_88E			BIT15		/*  Beacon Queue DMA OK Interrupt 2 */
+-#define IMR_BCNDOK1_88E			BIT14		/*  Beacon Queue DMA OK Interrupt 1 */
+-#define IMR_ATIMEND_E_88E			BIT13		/*  ATIM Window End Extension for Win7 */
+-#define IMR_TXERR_88E				BIT11		/*  Tx Error Flag Interrupt Status, write 1 clear. */
+-#define IMR_RXERR_88E				BIT10		/*  Rx Error Flag INT Status, Write 1 clear */
+-#define IMR_TXFOVW_88E				BIT9			/*  Transmit FIFO Overflow */
+-#define IMR_RXFOVW_88E				BIT8			/*  Receive FIFO Overflow */
+-
+-/*===================================================================
+-=====================================================================
+-Here the register defines are for 92C. When the define is as same with 92C,
+-we will use the 92C's define for the consistency
+-So the following defines for 92C is not entire!!!!!!
+-=====================================================================
+-=====================================================================*/
+-/*
+-Based on Datasheet V33---090401
+-Register Summary
+-Current IOREG MAP
+-0x0000h ~ 0x00FFh   System Configuration (256 Bytes)
+-0x0100h ~ 0x01FFh   MACTOP General Configuration (256 Bytes)
+-0x0200h ~ 0x027Fh   TXDMA Configuration (128 Bytes)
+-0x0280h ~ 0x02FFh   RXDMA Configuration (128 Bytes)
+-0x0300h ~ 0x03FFh   PCIE EMAC Reserved Region (256 Bytes)
+-0x0400h ~ 0x04FFh   Protocol Configuration (256 Bytes)
+-0x0500h ~ 0x05FFh   EDCA Configuration (256 Bytes)
+-0x0600h ~ 0x07FFh   WMAC Configuration (512 Bytes)
+-0x2000h ~ 0x3FFFh   8051 FW Download Region (8196 Bytes)
+-*/
+-	/*  */
+-	/* 		 8192C (TXPAUSE) transmission pause	(Offset 0x522, 8 bits) */
+-	/*  */
+-/*  Note: */
+-/* 	The  bits of stopping AC(VO/VI/BE/BK) queue in datasheet RTL8192S/RTL8192C are wrong, */
+-/* 	the correct arrangement is VO - Bit0, VI - Bit1, BE - Bit2, and BK - Bit3. */
+-/* 	8723 and 88E may be not correct either in the earlier version. Confirmed with DD Tim. */
+-/*  By Bruce, 2011-09-22. */
+-#define StopBecon		BIT6
+-#define StopHigh			BIT5
+-#define StopMgt			BIT4
+-#define StopBK			BIT3
+-#define StopBE			BIT2
+-#define StopVI			BIT1
+-#define StopVO			BIT0
+-
+ /*  */
+ /*        8192C (RCR) Receive Configuration Register	(Offset 0x608, 32 bits) */
+ /*  */
+@@ -1557,10 +1296,6 @@ Current IOREG MAP
+ #define SDIO_HIMR_ATIMEND_E_MSK		BIT26
+ #define SDIO_HIMR_CTWEND_MSK			BIT27
+ 
+-/* RTL8188E SDIO Specific */
+-#define SDIO_HIMR_MCU_ERR_MSK			BIT28
+-#define SDIO_HIMR_TSF_BIT32_TOGGLE_MSK		BIT29
+-
+ /*  SDIO Host Interrupt Service Routine */
+ #define SDIO_HISR_RX_REQUEST			BIT0
+ #define SDIO_HISR_AVAL					BIT1
+@@ -1583,10 +1318,6 @@ Current IOREG MAP
+ #define SDIO_HISR_ATIMEND_E			BIT26
+ #define SDIO_HISR_CTWEND				BIT27
+ 
+-/* RTL8188E SDIO Specific */
+-#define SDIO_HISR_MCU_ERR				BIT28
+-#define SDIO_HISR_TSF_BIT32_TOGGLE	BIT29
+-
+ #define MASK_SDIO_HISR_CLEAR		(SDIO_HISR_TXERR |\
+ 									SDIO_HISR_RXERR |\
+ 									SDIO_HISR_TXFOVW |\
+@@ -1651,39 +1382,13 @@ Current IOREG MAP
+ #define GPS_HWPDN_SL			BIT21	/*  GPS HW PDn polarity control */
+ #define GPS_FUNC_EN			BIT22	/*  GPS function enable */
+ 
+-/* 3 REG_LIFECTRL_CTRL */
+-#define HAL92C_EN_PKT_LIFE_TIME_BK		BIT3
+-#define HAL92C_EN_PKT_LIFE_TIME_BE		BIT2
+-#define HAL92C_EN_PKT_LIFE_TIME_VI		BIT1
+-#define HAL92C_EN_PKT_LIFE_TIME_VO		BIT0
+-
+-#define HAL92C_MSDU_LIFE_TIME_UNIT		128	/*  in us, said by Tim. */
+-
+-/* 2 8192D PartNo. */
+-#define PARTNO_92D_NIC							(BIT7|BIT6)
+-#define PARTNO_92D_NIC_REMARK				(BIT5|BIT4)
+-#define PARTNO_SINGLE_BAND_VS				BIT3
+-#define PARTNO_SINGLE_BAND_VS_REMARK		BIT1
+-#define PARTNO_CONCURRENT_BAND_VC			(BIT3|BIT2)
+-#define PARTNO_CONCURRENT_BAND_VC_REMARK	(BIT1|BIT0)
+-
+ /*  */
+ /*  General definitions */
+ /*  */
+ 
+-#define LAST_ENTRY_OF_TX_PKT_BUFFER_8188E		176
+-#define LAST_ENTRY_OF_TX_PKT_BUFFER_8812			255
+ #define LAST_ENTRY_OF_TX_PKT_BUFFER_8723B		255
+-#define LAST_ENTRY_OF_TX_PKT_BUFFER_8192C		255
+-#define LAST_ENTRY_OF_TX_PKT_BUFFER_DUAL_MAC	127
+ 
+ #define POLLING_LLT_THRESHOLD				20
+ #define POLLING_READY_TIMEOUT_COUNT		1000
+ 
+-
+-/*  GPIO BIT */
+-#define	HAL_8192C_HW_GPIO_WPS_BIT	BIT2
+-#define	HAL_8192EU_HW_GPIO_WPS_BIT	BIT7
+-#define	HAL_8188E_HW_GPIO_WPS_BIT	BIT7
+-
+ #endif /* __HAL_COMMON_H__ */
+-- 
+2.30.2
 
