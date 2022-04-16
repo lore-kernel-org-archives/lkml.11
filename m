@@ -2,112 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 242D0C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10759C433EF
 	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229734AbiDPCIc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:08:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37274 "EHLO
+        id S229587AbiDPCIZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:08:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbiDPCGO (ORCPT
+        with ESMTP id S229683AbiDPCGO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 15 Apr 2022 22:06:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CFB0D2627
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:01:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650074461;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sMCjJkvqww4TEQNfOVtThKzjaCAIlsjnZPfM7Zr40XE=;
-        b=Uu+cXTHsNvTzdNPQTWoK9KvlywleRX5D/xdhr8a8CAJIHvR21ZYGjxHVpCBmd7kOD+P55e
-        kHmVdBfAg21Fhb3BMkdj4trjlUaPHlQ+96WW3rY3dotZuQ5sxkVj9wMdF7vJ3E2DXsUAEo
-        VOzXfSLKmxkVG2HmeH/TMXJNKRQAEDs=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-609-c2DVSNQqPM6IMXbDdLMl_A-1; Fri, 15 Apr 2022 20:49:51 -0400
-X-MC-Unique: c2DVSNQqPM6IMXbDdLMl_A-1
-Received: by mail-qt1-f198.google.com with SMTP id o6-20020a05622a138600b002f1ebce54cfso2264387qtk.18
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 17:49:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sMCjJkvqww4TEQNfOVtThKzjaCAIlsjnZPfM7Zr40XE=;
-        b=iYARGLf+lLT0/uHOK9BEOm2FP7BVX0ce8R2nexmV0JUNAz5bqiVWpwoUlG9TYZWzyH
-         fkXWkp+BGlB8BmjOXh6WXTrl1sfjW3+xQy4LFBlArLj8zY7yUWWJttO4+zou0ZIiREh2
-         xB+fAj3v9KTai6MK3tKTVsfzUwwauonB0vdnpu+5/rbfy0ZzfLmsrS0mjmWD7erW6V9/
-         LcOPBNnCEAl6M+afiHJpra8aYq6+7lqH80walihFNQEg77nHtqm4GxfK+FjZSFnCyYop
-         yGmPeICpe+rbslnNTMs641JHEMRplDttDEsNeUHvBiYGq/HQzWxU3PDRFGtqekIHANc/
-         OwYw==
-X-Gm-Message-State: AOAM530/oIx86P0WEoYLwCUHHidwX55498IZIgFzuaBUnOreOWoFdbPj
-        H+Swva9inJkS9BD5D0cS/fAIQQEiRl0gNXl+ZmVhuhiXnWO+L+AxvAyh9mTik+XkMf4khu7BVDh
-        /niYUd8Rxkigl/I7wmHiUYu/J
-X-Received: by 2002:a05:6214:1c48:b0:443:6e40:13cc with SMTP id if8-20020a0562141c4800b004436e4013ccmr958486qvb.106.1650070190561;
-        Fri, 15 Apr 2022 17:49:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyvbt0JtayRx0Xw8p0OXEwGz3kVU24hvlbWFZFIw0iTwGerAt2JWScLCNG/OI5KlLgVjBWL0g==
-X-Received: by 2002:a05:6214:1c48:b0:443:6e40:13cc with SMTP id if8-20020a0562141c4800b004436e4013ccmr958479qvb.106.1650070190354;
-        Fri, 15 Apr 2022 17:49:50 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::45])
-        by smtp.gmail.com with ESMTPSA id q123-20020a378e81000000b0067eb3d6f605sm3159123qkd.0.2022.04.15.17.49.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 17:49:49 -0700 (PDT)
-Date:   Fri, 15 Apr 2022 17:49:46 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>,
-        linux-kernel@vger.kernel.org, x86@kernel.org, mingo@redhat.com,
-        kim.phillips@amd.com
-Subject: Re: [PATCH 1/2] x86/unwind/orc: recheck address range after stack
- info was updated
-Message-ID: <20220416004946.tydhjaewitocy2cn@treble>
-References: <1649749204-186363-1-git-send-email-dmtrmonakhov@yandex-team.ru>
- <YlVPpVC8chepOdzJ@hirez.programming.kicks-ass.net>
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39451F3A
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:00:44 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KgFl70tV3zfYpJ;
+        Sat, 16 Apr 2022 09:21:07 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Apr 2022 09:21:46 +0800
+Received: from [10.174.177.243] (10.174.177.243) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Apr 2022 09:21:45 +0800
+Message-ID: <1407c3bb-89c4-ae11-7b09-d42115ab693e@huawei.com>
+Date:   Sat, 16 Apr 2022 09:21:45 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YlVPpVC8chepOdzJ@hirez.programming.kicks-ass.net>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v3 1/4] hugetlb: Fix wrong use of nr_online_nodes
+Content-Language: en-US
+To:     Peng Liu <liupeng256@huawei.com>, <mike.kravetz@oracle.com>,
+        <david@redhat.com>, <akpm@linux-foundation.org>,
+        <yaozhenguo1@gmail.com>, <baolin.wang@linux.alibaba.com>,
+        <songmuchun@bytedance.com>, <liuyuntao10@huawei.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220413032915.251254-1-liupeng256@huawei.com>
+ <20220413032915.251254-2-liupeng256@huawei.com>
+ <20220415020927.x7ylevbd5uaevfyt@offworld>
+ <08896d0c-8821-000e-4cc2-9e64beda167f@huawei.com>
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+In-Reply-To: <08896d0c-8821-000e-4cc2-9e64beda167f@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.243]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 12:08:37PM +0200, Peter Zijlstra wrote:
-> On Tue, Apr 12, 2022 at 10:40:03AM +0300, Dmitry Monakhov wrote:
-> > get_stack_info() detects stack type only by begin address, so we must
-> > check that address range in question is fully covered by detected stack
-> > 
-> > Otherwise following crash is possible:
-> > -> unwind_next_frame
-> >    case ORC_TYPE_REGS:
-> >      if (!deref_stack_regs(state, sp, &state->ip, &state->sp))
-> >      -> deref_stack_regs
-> >        -> stack_access_ok  <- here addr is inside stack range, but addr+len-1 is not, but we still exit with success
-> >      *ip = READ_ONCE_NOCHECK(regs->ip); <- Here we hit stack guard fault
-> > OOPS LOG:
-> > <0>[ 1941.845743] BUG: stack guard page was hit at 000000000dd984a2 (stack is 00000000d1caafca..00000000613712f0)
-> 
-> 
-> > <4>[ 1941.845751]  get_perf_callchain+0x10d/0x280
-> > <4>[ 1941.845751]  perf_callchain+0x6e/0x80
-> > <4>[ 1941.845752]  perf_prepare_sample+0x87/0x540
-> > <4>[ 1941.845752]  perf_event_output_forward+0x31/0x90
-> > <4>[ 1941.845753]  __perf_event_overflow+0x5a/0xf0
-> > <4>[ 1941.845754]  perf_ibs_handle_irq+0x340/0x5b0
-> > <4>[ 1941.845757]  perf_ibs_nmi_handler+0x34/0x60
-> > <4>[ 1941.845757]  nmi_handle+0x79/0x190
-> 
-> Urgh, this is another instance of trying to unwind an IP that no longer
-> matches the stack.
-> 
-> Fixing the unwinder bug is good, but arguable we should also fix this
-> IBS stuff, see 6cbc304f2f36 ("perf/x86/intel: Fix unwind errors from PEBS entries (mk-II)")
 
-I remember that nastiness well.  So it's still broken?  Or is this a
-regression?  Maybe we wouldn't notice it except for this triggered
-unwinder bug?
+On 2022/4/15 13:41, Kefeng Wang wrote:
+>
+> On 2022/4/15 10:09, Davidlohr Bueso wrote:
+>> On Wed, 13 Apr 2022, Peng Liu wrote:
+>>
+>>> Certain systems are designed to have sparse/discontiguous nodes. In
+>>> this case, nr_online_nodes can not be used to walk through numa node.
+>>> Also, a valid node may be greater than nr_online_nodes.
+>>>
+>>> However, in hugetlb, it is assumed that nodes are contiguous. Recheck
+>>> all the places that use nr_online_nodes, and repair them one by one.
+>>>
+>>> Suggested-by: David Hildenbrand <david@redhat.com>
+>>> Fixes: 4178158ef8ca ("hugetlbfs: fix issue of preallocation of 
+>>> gigantic pages can't work")
+>>> Fixes: b5389086ad7b ("hugetlbfs: extend the definition of hugepages 
+>>> parameter to support node allocation")
+>>> Fixes: e79ce9832316 ("hugetlbfs: fix a truncation issue in hugepages 
+>>> parameter")
+>>> Fixes: f9317f77a6e0 ("hugetlb: clean up potential spectre issue 
+>>> warnings")
+>>> Signed-off-by: Peng Liu <liupeng256@huawei.com>
+>>> Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+>>> Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+>>
+>> Reviewed-by: Davidlohr Bueso <dave@stgolabs.net>
+>>
+>> ... but
+>>
+>>> ---
+>>> mm/hugetlb.c | 12 ++++++------
+>>> 1 file changed, 6 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+>>> index b34f50156f7e..5b5a2a5a742f 100644
+>>> --- a/mm/hugetlb.c
+>>> +++ b/mm/hugetlb.c
+>>> @@ -2979,7 +2979,7 @@ int __alloc_bootmem_huge_page(struct hstate 
+>>> *h, int nid)
+>>>     struct huge_bootmem_page *m = NULL; /* initialize for clang */
+>>>     int nr_nodes, node;
+>>>
+>>> -    if (nid != NUMA_NO_NODE && nid >= nr_online_nodes)
+>>> +    if (nid != NUMA_NO_NODE && !node_online(nid))
+>>
+>> afaict null_blk could also use this, actually the whole thing wants a
+>> helper - node_valid()?
+>>
+> This one should be unnecessary, and this patch looks has a bug,
+>
+> if a very nid passed to node_online(), it may crash,  could you 
+> re-check it,
+>
+> see my changes below,
+>
+> 1) add tmp check against MAX_NUMNODES before node_online() check,
+>
+>     and move it after get tmp in hugepages_setup() , this could cover 
+> both per-node alloc and normal alloc
 
--- 
-Josh
+sorry，for normal alloc, tmp is the number of huge pages, we don't  need 
+the movement,   only add tmp >= MAX_NUMNODES is ok
 
+>
+> 2) due to for_each_online_node() usage, we can drop additional check 
+> of nid in __alloc_bootmem_huge_page()
+>
