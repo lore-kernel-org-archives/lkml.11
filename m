@@ -2,91 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C98BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 10:57:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C7F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 10:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231564AbiDPLAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 07:00:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53396 "EHLO
+        id S231590AbiDPLCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 07:02:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231315AbiDPLAI (ORCPT
+        with ESMTP id S231572AbiDPLCC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 07:00:08 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 435425A0AB
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 03:57:37 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id n17so6969426ljc.11
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 03:57:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=6jmuQhxjlZyaiauhW3ksOezxG0CdP/I9NiSXgA9JK6A=;
-        b=p9igy0WaKtSgvuM+Vgjvowr4iI6JukewIbViqym/RUaHaxUjLNcApkK1uFMcKOYB+K
-         zMhSO3mN62uEcOSXDNzz0T1385ojs0ofa/sbBx66yOUepc5GHMdOPCkmVE8vU7fCQTc8
-         oXwEMaz9+PEhKLqr2+4PaRyDX2VOODXplZWMLp5AXIPEJl2/GzdEZ0HUoB7ets+eu9mU
-         wdXn4/fU/EE5ML+U+Hcsor+qwOYHJ6f+32uWmYsIGzVmCRApvmCRou/nwAiVwohR9gvL
-         RTTJoarhVenZx9XiB47cgm1wHEatLKcQRFh1j/SZsGJSZ9BXurXsFE8l5tBI8i5YM5E9
-         DjIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6jmuQhxjlZyaiauhW3ksOezxG0CdP/I9NiSXgA9JK6A=;
-        b=jjzsR/YuSs9CCbVr7FdMwtME+CNI50mUgVWvllnq0hWVLsCsrGueJ19t6BgIEKmpmw
-         mOK4l/DAStZWO4gbN7nwfU9a5f7Msjc68HOR+O6CEVDxBqRMaZMUg9XVot5C8RiwCR8F
-         abx+KXmvlLNBjLH/6aQg2Q7E3kZCn6wGF6tv0a1niA2Lu8kiO2nxIwKKDwyQSIeX62M/
-         y9/hRpcoGWOuZ2amUCDuCYnDNEZXWgTSGDdKFOJ9JWSH+TKOvXfSvZdCQjJmmIiyaLt1
-         1+oPa4ZUXO+2abClqNzoq6Vbs3f3vcnBpOrCFz/aGXVXUCg19a5VER/Hb1/0ckc6mdZL
-         6yuA==
-X-Gm-Message-State: AOAM530GO0btBNx9Fjksss8yMRFpDOmBY/J2rJCFoum2RnmOs9J4xAum
-        /7WAPPpywW/FMOPbkT8VYLg=
-X-Google-Smtp-Source: ABdhPJzQyR4FP3VLblv2z4wiz/PPqJ2Ndjvb20TUlZYYDW6Pceo9/rpNrzinvXXid0O+WFh9VOyHeA==
-X-Received: by 2002:a2e:9101:0:b0:24b:27c:c210 with SMTP id m1-20020a2e9101000000b0024b027cc210mr1858659ljg.134.1650106655322;
-        Sat, 16 Apr 2022 03:57:35 -0700 (PDT)
-Received: from [192.168.1.11] ([94.103.225.17])
-        by smtp.gmail.com with ESMTPSA id r18-20020a19da12000000b0047022f82509sm239361lfg.238.2022.04.16.03.57.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Apr 2022 03:57:34 -0700 (PDT)
-Message-ID: <5d9181be-0a02-0623-7741-1d4352d62610@gmail.com>
-Date:   Sat, 16 Apr 2022 13:57:33 +0300
+        Sat, 16 Apr 2022 07:02:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4655A146;
+        Sat, 16 Apr 2022 03:59:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F067CB80687;
+        Sat, 16 Apr 2022 10:59:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF6F3C385A1;
+        Sat, 16 Apr 2022 10:59:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650106768;
+        bh=sibJV/RKG56aZPeMc2C4JBMgg/l3MOrABmFndh0H3Po=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GXQGfM+K4pX4aqbmQXpchU0gvK4qvcXc+m/kkubMvS4D+QBjxSO8aIxofIJ9ic51y
+         kTF45RY3p0CCo2Kz7YFPo/gmvORuKH4QaAissW3qQvc288rHQfOCjBIt+vagmB+wb0
+         02KmXXZgv3NuD5Fg+aZZyv9TeCaq0FoE4COHrur9FZoLHGTnsjBUIx7X/dLvW7adC7
+         A3ZuqwzxuO9p6bQBX30S37NXdWSA2gelq4WJDHZLxwwk3jnDPLmIkjeMvKAB5PfKzC
+         7TtXZilo33K8ZrKHSHhh5n4ciXD4m1gN9E9QJ4ZDLHLFgv30IqCqK/epFe2mM1SpK+
+         yUMt6Lh4yEosA==
+Date:   Sat, 16 Apr 2022 12:07:26 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andreas Klinger <ak@it-klinger.de>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 1/1] iio: proximity: mb1232: Switch to use
+ fwnode_irq_get()
+Message-ID: <20220416120726.0ba78960@jic23-huawei>
+In-Reply-To: <20220413183123.20292-1-andriy.shevchenko@linux.intel.com>
+References: <20220413183123.20292-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] staging: rtl8712: fix uninit-value "data" and "mac"
-Content-Language: en-US
-To:     Wang Cheng <wanngchenng@gmail.com>
-Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
-        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-References: <20220414141223.qwiznrwgjyywngfg@ppc.localdomain>
- <68484555-f763-bc42-eb4c-9cea2ee8dadb@gmail.com>
- <20220415095741.3zfuztivtgidvpqc@ppc.localdomain>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220415095741.3zfuztivtgidvpqc@ppc.localdomain>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Wang,
+On Wed, 13 Apr 2022 21:31:23 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-On 4/15/22 12:57, Wang Cheng wrote:
-> Hi Pavel, thx for your review.
+> We have OF-centric variant of fwnode_irq_get() in the driver.
+> Replace it with a call to an agnostic implementation.
 > 
-> Sorry, this patch is just confined to fixing uninit-values with
-> modifying the original code as less as possible. It sounds good to
-> refactor r8712_usbctrl_vendorreq() with better API.
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+Whilst I 'think' this ends up being functionally identical
+I'd like to leave it a little longer to see if Andreas has
+time to take a look and verify this change is fine.
+
+There seem to be subtle differences in the irq setup as the
+new code does a sanity check on the domain being available
+and defers if not which I don't think happens with the
+existing code.
+
+Thanks,
+
+Jonathan
+
+
+> ---
+>  drivers/iio/proximity/mb1232.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
 > 
+> diff --git a/drivers/iio/proximity/mb1232.c b/drivers/iio/proximity/mb1232.c
+> index ad4b1fb2607a..0bca5f74de68 100644
+> --- a/drivers/iio/proximity/mb1232.c
+> +++ b/drivers/iio/proximity/mb1232.c
+> @@ -10,12 +10,14 @@
+>   * https://www.maxbotix.com/documents/I2CXL-MaxSonar-EZ_Datasheet.pdf
+>   */
+>  
+> +#include <linux/bitops.h>
+>  #include <linux/err.h>
+>  #include <linux/i2c.h>
+> -#include <linux/of_irq.h>
+>  #include <linux/delay.h>
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+> -#include <linux/bitops.h>
+> +#include <linux/property.h>
+> +
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+>  #include <linux/iio/buffer.h>
+> @@ -209,7 +211,7 @@ static int mb1232_probe(struct i2c_client *client,
+>  
+>  	init_completion(&data->ranging);
+>  
+> -	data->irqnr = irq_of_parse_and_map(dev->of_node, 0);
+> +	data->irqnr = fwnode_irq_get(dev_fwnode(&client->dev), 0);
+>  	if (data->irqnr <= 0) {
+>  		/* usage of interrupt is optional */
+>  		data->irqnr = -1;
 
-I understand your idea, but this will just hide the real problem until 
-syzbot hit it in different place. So, I believe, it's better to fix the 
-root case instead of hiding local cases.
-
-
-
-
-With regards,
-Pavel Skripkin
