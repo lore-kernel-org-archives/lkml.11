@@ -2,230 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF278C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 22:55:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C30F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 23:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233095AbiDPW5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 18:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42812 "EHLO
+        id S233112AbiDPXJA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 19:09:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233086AbiDPW5i (ORCPT
+        with ESMTP id S233106AbiDPXI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 18:57:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36056140F1;
-        Sat, 16 Apr 2022 15:55:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFF65B809E3;
-        Sat, 16 Apr 2022 22:55:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED602C385A1;
-        Sat, 16 Apr 2022 22:54:57 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Ke3CzabD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1650149696;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+2nP+VdPEpPNPoKQqSrgbL4ZK7I/c4P/cLhbUMeqeEs=;
-        b=Ke3CzabDCTCN7z1X+blAnwmP5mSkY04Aqwf/G5fDtQU6WM6tPriviP3rwnh0y2BbiEiSI5
-        kxvqYG3bXaLOy2oV1jIUlAv1SxvW/krAz60U3oZjY/ozmULtrXkPvuBaIxrnDhhjiRe7WK
-        DiZ/+FwTFNQXboYw4FOs1PNDoMoDXRw=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id cef1d983 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sat, 16 Apr 2022 22:54:56 +0000 (UTC)
-Date:   Sun, 17 Apr 2022 00:54:49 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-um@lists.infradead.org, X86 ML <x86@kernel.org>,
-        linux-xtensa@linux-xtensa.org
-Subject: Re: [PATCH v4 04/11] mips: use fallback for random_get_entropy()
- instead of zero
-Message-ID: <YltJOfEylRC0rhKv@zx2c4.com>
-References: <20220413115411.21489-1-Jason@zx2c4.com>
- <20220413115411.21489-5-Jason@zx2c4.com>
- <20220413122546.GA11860@alpha.franken.de>
- <alpine.DEB.2.21.2204131331450.9383@angie.orcam.me.uk>
- <CAHmME9pQ4xdeTUDxAdrOu=S9NRTonYzJVk50fa0Zfz4knZt5WA@mail.gmail.com>
- <alpine.DEB.2.21.2204140014580.9383@angie.orcam.me.uk>
- <YlfoeGRM6w2O+eXA@zx2c4.com>
- <alpine.DEB.2.21.2204142349180.9383@angie.orcam.me.uk>
- <CAHmME9qzkZqkGntLn--XfMKzyR=tYiCaZu1uFpoQBzAzCipZ-A@mail.gmail.com>
- <alpine.DEB.2.21.2204161533420.9383@angie.orcam.me.uk>
+        Sat, 16 Apr 2022 19:08:56 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F3CF2C131
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 16:06:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650150383; x=1681686383;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=wELl+SyaLPB/ly7xW2SzJaUB89/IRsuP9PxBJjpL30Y=;
+  b=TUFNkBqNi5Mn81CWUtiYaqxKKyiYhHcsYda/S07viXufvVRJxIZuLQ6h
+   hreA8G7n/jVxIF/4j1Z37FINnBLY3lbU4vHh3i6DoZ8oM0ofh3lXoxqKG
+   h/fme30DGR12H39WbmDJQYeXyBNdX2ncFBudpfykIwIDYbBuvfd5a+IsQ
+   jVEfMTSQNO6HfnAIFlOpb4ZifK9IMvAiQo4KM9/RyMce0fkZ9+xn2Ywt9
+   m75BiFTrFhJOTilsDihkdygbiJSY2HR435TOIV7J9ElGGe/qFgjUmJE8L
+   ueKnNoIDzmua0ckCygh+Qg0dbQa0p5jS1TYlSrCSWvRSmPAzX4IY8NdtE
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10318"; a="323787433"
+X-IronPort-AV: E=Sophos;i="5.90,266,1643702400"; 
+   d="scan'208";a="323787433"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2022 16:06:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,266,1643702400"; 
+   d="scan'208";a="509341458"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 16 Apr 2022 16:06:21 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nfrUi-0003YH-L6;
+        Sat, 16 Apr 2022 23:06:20 +0000
+Date:   Sun, 17 Apr 2022 07:06:08 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [lunn:v5.18-rc1-net-next-c45 38/44]
+ drivers/net/dsa/sja1105/sja1105_mdio.c:190:9: warning: variable 'tmp' is
+ uninitialized when used here
+Message-ID: <202204170750.Ftg38eOr-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <alpine.DEB.2.21.2204161533420.9383@angie.orcam.me.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Maciej,
+tree:   https://github.com/lunn/linux.git v5.18-rc1-net-next-c45
+head:   a6ca6875280b5cf6ee1d8466840b71bf6ffb7bfd
+commit: 47aade045321c64f7486052fb1cee153d0f6cbdc [38/44] net: dsa: sja1105: Separate C22 and C45 transactions for T1 MDIO bus
+config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220417/202204170750.Ftg38eOr-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 64c045e25b8471bbb572bd29159c294a82a86a25)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/lunn/linux/commit/47aade045321c64f7486052fb1cee153d0f6cbdc
+        git remote add lunn https://github.com/lunn/linux.git
+        git fetch --no-tags lunn v5.18-rc1-net-next-c45
+        git checkout 47aade045321c64f7486052fb1cee153d0f6cbdc
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/dsa/sja1105/
 
-On Sat, Apr 16, 2022 at 03:44:53PM +0100, Maciej W. Rozycki wrote:
-> > Okay, I can give this a shot, but this certainly isn't my forté. It
-> > may ultimately wind up being simpler for you to just send some code of
-> > what you envision for this, but if I understand your idea correctly,
-> > what you're saying is something like:
-> > 
-> > static inline unsigned long random_get_entropy(void)
-> > {
-> >         unsigned int prid = read_c0_prid();
-> >         unsigned int imp = prid & PRID_IMP_MASK;
-> >         unsigned int c0_random;
-> > 
-> >         if (can_use_mips_counter(prid))
-> >                 return read_c0_count();
-> > 
-> >         if (cpu_has_3kex)
-> >                 c0_random = (read_c0_random() >> 8) & 0x3f;
-> >         else
-> >                 c0_random = read_c0_random() & 0x3f;
-> >         return (random_get_entropy_fallback() << 6) | (0x3f - c0_random);
-> > }
-> > 
-> > What do you think of that? Some tweak I'm missing?
-> 
->  It certainly looks good to me.  Do you have a way I could verify how this 
-> function performs?  If so, then I could put it through my systems as I can 
-> cover all the cases handled here.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Oh, awesome about the test rig. Below is a little patch that adds some
-printf code to init, calling the above sequence 70 times in a busy loop
-and then 30 times after that with a scheduler 1 ms delay in there,
-printing lots of various about the above calculation. Hopefully that's
-enough information that it'll be possible to notice if something looks
-really off when we squint at it.
+All warnings (new ones prefixed by >>):
 
-Jason
+>> drivers/net/dsa/sja1105/sja1105_mdio.c:190:9: warning: variable 'tmp' is uninitialized when used here [-Wuninitialized]
+           return tmp & 0xffff;
+                  ^~~
+   drivers/net/dsa/sja1105/sja1105_mdio.c:175:9: note: initialize the variable 'tmp' to silence this warning
+           u32 tmp;
+                  ^
+                   = 0
+   1 warning generated.
 
--------------------8<-----------------------------------------------------
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 3a293f919af9..0b32203aa47f 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -48,6 +48,7 @@
- #include <linux/ptrace.h>
- #include <linux/workqueue.h>
- #include <linux/irq.h>
-+#include <linux/delay.h>
- #include <linux/ratelimit.h>
- #include <linux/syscalls.h>
- #include <linux/completion.h>
-@@ -1781,6 +1782,26 @@ static struct ctl_table random_table[] = {
-  */
- static int __init random_sysctls_init(void)
- {
-+
-+	int i;
-+	for (i = 0; i < 100; ++i) {
-+		if (can_use_mips_counter(read_c0_prid()))
-+			pr_err("SARU %d c0 count: %08x\n", i, read_c0_count());
-+		else {
-+			unsigned int c0_random = read_c0_random(), c0_random_mask;
-+			unsigned long fallback = random_get_entropy_fallback(), out;
-+			if (cpu_has_3kex)
-+				c0_random_mask = (c0_random >> 8) & 0x3f;
-+			else
-+				c0_random_mask = c0_random & 0x3f;
-+			out = (fallback << 6) | (0x3f - c0_random_mask);
-+			pr_err("SARU: %d (%08x >> n) & 0x3f = %08x, inverted = %08x, fallback = %08lx, fallback << 6 = %08lx, combined = %08lx\n",
-+			       i, c0_random, c0_random_mask, 0x3f - c0_random_mask, fallback, fallback << 6, out);
-+		}
-+		if (i > 70)
-+			msleep(1);
-+	}
-+
- 	register_sysctl_init("kernel/random", random_table);
- 	return 0;
- }
-diff --git a/include/linux/timex.h b/include/linux/timex.h
-index 5745c90c8800..3871b06bd302 100644
---- a/include/linux/timex.h
-+++ b/include/linux/timex.h
-@@ -62,6 +62,8 @@
- #include <linux/types.h>
- #include <linux/param.h>
+vim +/tmp +190 drivers/net/dsa/sja1105/sja1105_mdio.c
 
-+unsigned long random_get_entropy_fallback(void);
-+
- #include <asm/timex.h>
+5a8f09748ee79f Vladimir Oltean 2021-06-08  168  
+47aade045321c6 Andrew Lunn     2022-04-01  169  static int sja1105_base_t1_mdio_read_c45(struct mii_bus *bus, int phy,
+47aade045321c6 Andrew Lunn     2022-04-01  170  					 int mmd, int reg)
+47aade045321c6 Andrew Lunn     2022-04-01  171  {
+47aade045321c6 Andrew Lunn     2022-04-01  172  	struct sja1105_mdio_private *mdio_priv = bus->priv;
+47aade045321c6 Andrew Lunn     2022-04-01  173  	struct sja1105_private *priv = mdio_priv->priv;
+47aade045321c6 Andrew Lunn     2022-04-01  174  	u64 addr;
+47aade045321c6 Andrew Lunn     2022-04-01  175  	u32 tmp;
+47aade045321c6 Andrew Lunn     2022-04-01  176  	int rc;
+5a8f09748ee79f Vladimir Oltean 2021-06-08  177  
+47aade045321c6 Andrew Lunn     2022-04-01  178  	addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C45_ADDR, mmd);
+47aade045321c6 Andrew Lunn     2022-04-01  179  
+47aade045321c6 Andrew Lunn     2022-04-01  180  	rc = sja1105_xfer_u32(priv, SPI_WRITE, addr, &reg, NULL);
+47aade045321c6 Andrew Lunn     2022-04-01  181  	if (rc < 0)
+47aade045321c6 Andrew Lunn     2022-04-01  182  		return rc;
+47aade045321c6 Andrew Lunn     2022-04-01  183  
+47aade045321c6 Andrew Lunn     2022-04-01  184  	addr = sja1105_base_t1_encode_addr(priv, phy, SJA1105_C45_DATA, mmd);
+47aade045321c6 Andrew Lunn     2022-04-01  185  
+47aade045321c6 Andrew Lunn     2022-04-01  186  	rc = sja1105_xfer_u32(priv, SPI_READ, addr, &reg, NULL);
+5a8f09748ee79f Vladimir Oltean 2021-06-08  187  	if (rc < 0)
+5a8f09748ee79f Vladimir Oltean 2021-06-08  188  		return rc;
+5a8f09748ee79f Vladimir Oltean 2021-06-08  189  
+5a8f09748ee79f Vladimir Oltean 2021-06-08 @190  	return tmp & 0xffff;
+5a8f09748ee79f Vladimir Oltean 2021-06-08  191  }
+5a8f09748ee79f Vladimir Oltean 2021-06-08  192  
 
- #ifndef random_get_entropy
-@@ -74,8 +76,14 @@
-  *
-  * By default we use get_cycles() for this purpose, but individual
-  * architectures may override this in their asm/timex.h header file.
-+ * If a given arch does not have get_cycles(), then we fallback to
-+ * using random_get_entropy_fallback().
-  */
-+#ifdef get_cycles
- #define random_get_entropy()	((unsigned long)get_cycles())
-+#else
-+#define random_get_entropy()	random_get_entropy_fallback()
-+#endif
- #endif
+:::::: The code at line 190 was first introduced by commit
+:::::: 5a8f09748ee79f2ef28e560bd095587a0e204b3d net: dsa: sja1105: register the MDIO buses for 100base-T1 and 100base-TX
 
- /*
-diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
-index dcdcb85121e4..7cd2ec239cae 100644
---- a/kernel/time/timekeeping.c
-+++ b/kernel/time/timekeeping.c
-@@ -17,6 +17,7 @@
- #include <linux/clocksource.h>
- #include <linux/jiffies.h>
- #include <linux/time.h>
-+#include <linux/timex.h>
- #include <linux/tick.h>
- #include <linux/stop_machine.h>
- #include <linux/pvclock_gtod.h>
-@@ -2380,6 +2381,15 @@ static int timekeeping_validate_timex(const struct __kernel_timex *txc)
- 	return 0;
- }
+:::::: TO: Vladimir Oltean <vladimir.oltean@nxp.com>
+:::::: CC: David S. Miller <davem@davemloft.net>
 
-+/**
-+ * random_get_entropy_fallback - Returns the raw clock source value,
-+ * used by random.c for platforms with no valid random_get_entropy().
-+ */
-+unsigned long random_get_entropy_fallback(void)
-+{
-+	return tk_clock_read(&tk_core.timekeeper.tkr_mono);
-+}
-+EXPORT_SYMBOL_GPL(random_get_entropy_fallback);
-
- /**
-  * do_adjtimex() - Accessor function to NTP __do_adjtimex function
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
