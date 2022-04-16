@@ -2,115 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0FEEC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:07:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B78C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229724AbiDPCJB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35256 "EHLO
+        id S229513AbiDPCJb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbiDPCGY (ORCPT
+        with ESMTP id S229727AbiDPCGc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:06:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE22966632;
-        Fri, 15 Apr 2022 18:57:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54CFB622DA;
-        Sat, 16 Apr 2022 01:34:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7D10C385AB;
-        Sat, 16 Apr 2022 01:34:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650072870;
-        bh=G2r0hwQVplCHQ7ULSTnFo0Naiy/A7faEgp5IvkPlONE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Pq3SzjbhQTusy5kohaS/V6DGX7cLkZ2tDW7LFljSG6yIehpOqQcJxHBB5R/2ZCRgt
-         /biILVADCenQL3RyHWBcsunQiVh1BKsFzdBhqI7ZOV7NZC/OwU2UM84qtKUFnQHEl2
-         2SA01AeyL4/21GXs0IcIwHCkl5O6ISh/eiFDRMwcgJ4hhP97KHwK+s/MeU9/UV0bLy
-         WasqSynTsTSfGVKx9sj6BBpAxpBZTwHTD9R678qDMMq4wuP/vAPAKWIXs8SdbWbZVX
-         Jug5v/gcYurNurwI21M/9qWJAItbWhk2vYzSN6OSfrty2S8HCmFt3FR6ogSR8A/g5J
-         0ij0JO47VE1qQ==
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2ef4a241cc5so89939167b3.2;
-        Fri, 15 Apr 2022 18:34:30 -0700 (PDT)
-X-Gm-Message-State: AOAM531BNK5y8s9TXUZ35SyncpjtxX60sbaFQLjBm0yo6v94/ObDFz5m
-        3D3v2ffw+HRHwO5nczIoscBgJNjHFJqw9M4NZXM=
-X-Google-Smtp-Source: ABdhPJy5ZiuwR/MEz1NUAABLIKN4yUPCqmIOYhws4Ld2Q8fuVdw0YNd1v43E0sRlgvspqLO2yY6OXD6IevZ1wTBQv7Y=
-X-Received: by 2002:a81:5087:0:b0:2ef:33c1:fccd with SMTP id
- e129-20020a815087000000b002ef33c1fccdmr1455985ywb.73.1650072869799; Fri, 15
- Apr 2022 18:34:29 -0700 (PDT)
+        Fri, 15 Apr 2022 22:06:32 -0400
+Received: from out162-62-57-87.mail.qq.com (out162-62-57-87.mail.qq.com [162.62.57.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51335183BF
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 19:02:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1650074523;
+        bh=MRhdO0cz7cxp9uoazzUTQIFzQSvjWuvNyJYajb1r9is=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=W5uB/Ds1oVQ4J6kkjBT+5KY45ZBuZ9PLGTWIzX7ao8DXahUAzzmTvIInMDLBecTAC
+         dlW+fR0NsnuDVTqQn38BzDYrHT5jta+RSw+bH6Hv41St8TAxJ5aERW4C/uezRHHRLa
+         cFL+RwQzbzkNdqGWrPh6fttb4g1Xm4BtsZeRsvSw=
+Received: from [IPv6:240e:362:47d:9500:6527:51dc:8ce2:179e] ([240e:362:47d:9500:6527:51dc:8ce2:179e])
+        by newxmesmtplogicsvrsza8.qq.com (NewEsmtp) with SMTP
+        id 798346B3; Sat, 16 Apr 2022 09:30:24 +0800
+X-QQ-mid: xmsmtpt1650072624trb9mmb58
+Message-ID: <tencent_C8A588B7ED0135E6A6CB349F06AE0EB44107@qq.com>
+X-QQ-XMAILINFO: M/NR0wiIuy70QpzxApsWPM1NiJ2tyeChvdwskY/HojDIOHIeQ0wZc6DtJaB77C
+         qxEIDkoQ3uTCgYYP6ee+dDWikpW+roqtweBaIiIoWtjSq4FYdXqgyKlh1W+X3La4Fm52vtXAHZtN
+         QGTtG1RGhbFN1Beh1Gvvwb/4/bNgqE7dUd/HtnmAl9miMe8o0PhKi2Td8y0g6KCLZI2/pJuICMXz
+         dnjGjTzPdhORuURiOksZgiPHNP9JAUHDWW1r+OPS9QwFIP54qQr0+UHN8aGidXfVRritM8e7PP1N
+         R5LyQCRyan35JxttaPmLvptA0qyw5yPWFu32XQJ35apnA6zefnmaTG+WdQKcX+axk8bx65Ova19j
+         4sGwFsa2d8a87btvtEfkwuWh5Y+0+s2aItiBGm2i8aO/oqKMTJPHnJX9UKV2VlhkRc4gTY9Vm88c
+         9hA7KOMDjnU27aGpB1MDlb9xsXyi0R1mzsFVefiNbo+YvY/QSf8tIPPiTv3HgR4teG6SPboOKetE
+         LDXtHUOUAun46pBGkPuCIQkcZei51Ddm7yNS+DaTxhjuZOhyZi63OUzymAIWJzRAScAeLyh3kIwM
+         fsNthC9bD73kiUx22wxEvi4Q1z5/PjwDK5ksK9mzgONMdD7kQmd6UGcxLuFGrzc9gyeW2XCX4yuB
+         ojC/oAmxC3vBwQ1hyA6eYW9FIA8gJLqtIKftoStNYDup+MHOeESwgJpEjllVnj9GeF0Rafxawzyg
+         GY3RRyJ+/h2Bb49MZ1M4v1OtyvfDCZ385DVdO8Giy0MtsJfx/Myd19ZKXJOV2CLjCd3C+X9PkF9j
+         dtbMCzek2zsz+UuQje9bwlDnHjfXsNP4CWz4KdJVeJTTCZ/gIIEFQ/nLuEY5B5a6TiIRw2GSgKb1
+         IuK2uEJ7zCVPN4ZY0MJqwYJvHqlA7dG61k1q1cZNAVu2p6grqa1NAy2ZP/VkteQ6TsjM/1i1neey
+         1w/VaxJUdXnxVCxYyFJBB4i25C04vT
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+To:     Fenghua Yu <fenghua.yu@intel.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        jean-philippe <jean-philippe@linaro.org>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        iommu <iommu@lists.linux-foundation.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+References: <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
+ <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
+ <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
+ <YlWBkyGeb2ZOGLKl@fyu1.sc.intel.com>
+ <tencent_A9458C6CEBAADD361DA765356477B00E920A@qq.com>
+ <tencent_8B6D7835F62688B4CD069C0EFC41B308B407@qq.com>
+ <YllADL6uMoLllzQo@fyu1.sc.intel.com>
+ <99bcb9f5-4776-9c40-a776-cdecfa9e1010@foxmail.com>
+ <YllN/OmjpYdT1tO9@otcwcpicx3.sc.intel.com>
+ <tencent_CD35B6A6FBB48186B38EF641F088BAED1407@qq.com>
+ <YllnAPUlh3KHwjXq@fyu1.sc.intel.com>
+From:   "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
+X-OQ-MSGID: <06436154-03dc-96c3-4e75-b7d982832d8a@foxmail.com>
+Date:   Sat, 16 Apr 2022 09:30:21 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20220415164413.2727220-1-song@kernel.org> <YlnCBqNWxSm3M3xB@bombadil.infradead.org>
-In-Reply-To: <YlnCBqNWxSm3M3xB@bombadil.infradead.org>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 15 Apr 2022 18:34:16 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW6LY8g6SZpW0CBOe22FUd2e3oSq4RW1GDxZoPmHYBqwvw@mail.gmail.com>
-Message-ID: <CAPhsuW6LY8g6SZpW0CBOe22FUd2e3oSq4RW1GDxZoPmHYBqwvw@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf 0/4] vmalloc: bpf: introduce VM_ALLOW_HUGE_VMAP
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        Christoph Hellwig <hch@infradead.org>, imbrenda@linux.ibm.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YllnAPUlh3KHwjXq@fyu1.sc.intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 12:05 PM Luis Chamberlain <mcgrof@kernel.org> wrote:
+
+
+On 2022/4/15 下午8:37, Fenghua Yu wrote:
+> Hi, Zhangfei,
 >
-> On Fri, Apr 15, 2022 at 09:44:09AM -0700, Song Liu wrote:
-> > Changes v3 => v4:
-> > 1. Fix __weak module_alloc_huge; remove unused vmalloc_huge; rename
-> >    __vmalloc_huge => vmalloc_huge. (Christoph Hellwig)
-> > 2. Use vzalloc (as it was before vmalloc_no_huge) and clean up comments in
-> >    kvm_s390_pv_alloc_vm.
-> >
-> > Changes v2 => v3:
-> > 1. Use __vmalloc_huge in alloc_large_system_hash.
-> > 2. Use EXPORT_SYMBOL_GPL for new functions. (Christoph Hellwig)
-> > 3. Add more description about the issues and changes.(Christoph Hellwig,
-> >    Rick Edgecombe).
-> >
-> > Changes v1 => v2:
-> > 1. Add vmalloc_huge(). (Christoph Hellwig)
-> > 2. Add module_alloc_huge(). (Christoph Hellwig)
-> > 3. Add Fixes tag and Link tag. (Thorsten Leemhuis)
-> >
-> > Enabling HAVE_ARCH_HUGE_VMALLOC on x86_64 and use it for bpf_prog_pack has
-> > caused some issues [1], as many users of vmalloc are not yet ready to
-> > handle huge pages. To enable a more smooth transition to use huge page
-> > backed vmalloc memory, this set replaces VM_NO_HUGE_VMAP flag with an new
-> > opt-in flag, VM_ALLOW_HUGE_VMAP. More discussions about this topic can be
-> > found at [2].
-> >
-> > Patch 1 removes VM_NO_HUGE_VMAP and adds VM_ALLOW_HUGE_VMAP.
-> > Patch 2 uses VM_ALLOW_HUGE_VMAP in bpf_prog_pack.
-> >
-> > [1] https://lore.kernel.org/lkml/20220204185742.271030-1-song@kernel.org/
-> > [2] https://lore.kernel.org/linux-mm/20220330225642.1163897-1-song@kernel.org/
+> On Fri, Apr 15, 2022 at 07:52:03PM +0800, zhangfei.gao@foxmail.com wrote:
+>>
+>> On 2022/4/15 下午6:50, Fenghua Yu wrote:
+>>> Hi, Zhangfei,
+>>>
+>>> On Fri, Apr 15, 2022 at 06:14:09PM +0800, zhangfei.gao@foxmail.com wrote:
+>>> I download this patch from:
+>>> https://lore.kernel.org/lkml/YllADL6uMoLllzQo@fyu1.sc.intel.com/raw
+>>> git am to either v5.18-rc2 or the latest upstream without any issue.
+>> It is my copy paste issue.
+>>
+>> I have tested, nginx woks well.
+> Great!
 >
-> Looks good except for that I think this should just wait for v5.19. The
-> fixes are so large I can't see why this needs to be rushed in other than
-> the first assumptions of the optimizations had some flaws addressed here.
+>> Other than the following issue,
+>> Each time /sbin/nginx will alloc ioasid but not free.
+>> which I think it maybe nginx issue or the mis-usage, will ask there.
+> Which nginx/openssl function is supposed to call kernel sva_unbind? I couldn't
+> find the function in nginx tree.
+>
+> If nginx doesn't free ioasid, it will cause ioasid leak and memory leak.
+Yes
 
-We need these changes to fix issues like [3]. Note that there might
-still be some
-undiscovered issues with huge page backed vmalloc memory on powerpc, which
-had HAVE_ARCH_HUGE_VMALLOC enabled since the 5.15 kernel. As we
-agreed, the new opt-in flag is a safer approach here. We probably should have
-1/4 and 2/4 back ported to stable. Therefore, I think shipping this
-set now would
-give us a more reliable 5.18 release.
+In my case, sva_bind/unbind is from openssl_engine, bind_fn, not in 
+nginx itself
+nginx will use openssl -> openssl engine.
 
-Does this make sense?
+nginx:
+src/core/nginx.c
+main
+ngx_ssl_init(log);
 
-Thanks,
-Song
+OPENSSL_init_ssl(OPENSSL_INIT_LOAD_CONFIG, NULL)
 
-[3] https://lore.kernel.org/lkml/14444103-d51b-0fb3-ee63-c3f182f0b546@molgen.mpg.de/
+
+openssl_engine
+IMPLEMENT_DYNAMIC_BIND_FN(bind_fn)
+bind_fn
+sva_bind
+
+destroy
+sva_unbind
+
+But destroy seems not called in sbin/nginx -s quit.
+
+
+Thanks
+
+
