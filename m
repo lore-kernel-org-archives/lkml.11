@@ -2,127 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BB4BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 13:50:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 644CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 13:51:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232091AbiDPNvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 09:51:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55372 "EHLO
+        id S232127AbiDPNxp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 09:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230055AbiDPNvs (ORCPT
+        with ESMTP id S230055AbiDPNxo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 09:51:48 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF433C704;
-        Sat, 16 Apr 2022 06:49:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=fQFaKMW6gm7npdxtIFfE0RrlCeY4gGTbCdpIyvFb5xM=; b=jp
-        VmvmVOHSw88NPCp4V/2PxuyNxwbsmzPNyOev4P3KCRmN6I8plSNrqHM4cciCmJvvbRBzVC/tM5abN
-        y9/SQDNy5Cd/gw5iTSvh5vi+J/WIJLJBSdJKaqtKpKbZfJ67xAH7+kb1b05dnGWI1e5wOnDS4pxeq
-        ezm+UTmZ0fmeuqw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nfinD-00G6bB-T1; Sat, 16 Apr 2022 15:48:51 +0200
-Date:   Sat, 16 Apr 2022 15:48:51 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 09/12] ARM: dts: r9a06g032: describe MII
- converter
-Message-ID: <YlrJQ47tkmQdhtMu@lunn.ch>
-References: <20220414122250.158113-1-clement.leger@bootlin.com>
- <20220414122250.158113-10-clement.leger@bootlin.com>
- <YlismVi8y3Vf6PZ0@lunn.ch>
- <20220415102453.1b5b3f77@fixe.home>
- <Yll+Tpnwo5410B9H@lunn.ch>
- <20220415163853.683c0b6d@fixe.home>
- <YlmLWv4Hsm2uk8pa@lunn.ch>
- <20220415172954.64e53086@fixe.home>
- <YlmbIjoIZ8Xb4Kh/@lunn.ch>
- <20220415184541.0a6928f5@fixe.home>
+        Sat, 16 Apr 2022 09:53:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBFE33881;
+        Sat, 16 Apr 2022 06:51:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1CB9BB8241F;
+        Sat, 16 Apr 2022 13:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC8E7C385A1;
+        Sat, 16 Apr 2022 13:51:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650117069;
+        bh=d8QKVxdG4FlCyd4OG5tSxmy/2lyoeJsbEk6g26b9g0s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=I9lICP1Y+XVpygKDt1AUNygvxAvyUKQCp0ybg/cxx1+PZUMzrehupBWrTUTvTWtzl
+         rbgGLkefFv4FCFBNi5VOKqzqPBux/BSiJHUZOud+GEi/rAvSHFLBvZ/aI7FergO5s6
+         yTdCf1N3sSaOmv7bgRWpTss3Ys8McXk3vj0rJZCm5u/EufcW3ThKtrnZixO2W7RCqF
+         YKfmLgHAa0YkladYYgLFzXk+lmMCA7kA7UZNgvsnNuE9A8oeT8p7MkVOEXqTfatZgY
+         Btd7e2+HNJk7qZ/yRlglX5YAzJO7yVsJAcPaTEvwfgh7iECvq+Putvt0AvoOaS9lRs
+         BIpSq3GzCe2yg==
+Date:   Sat, 16 Apr 2022 14:59:06 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Song Qiang <songqiang1304521@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Ivan Drobyshevskyi <drobyshevskyi@gmail.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: proximity: vl53l0x:  Fix return value check of
+ wait_for_completion_timeout
+Message-ID: <20220416145906.1162767c@jic23-huawei>
+In-Reply-To: <20220412064210.10734-1-linmq006@gmail.com>
+References: <PH0PR03MB6786F62DE142E3E2C66C937F99ED9@PH0PR03MB6786.namprd03.prod.outlook.com>
+        <20220412064210.10734-1-linmq006@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220415184541.0a6928f5@fixe.home>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 15, 2022 at 06:45:41PM +0200, Clément Léger wrote:
-> Le Fri, 15 Apr 2022 18:19:46 +0200,
-> Andrew Lunn <andrew@lunn.ch> a écrit :
+On Tue, 12 Apr 2022 06:42:09 +0000
+Miaoqian Lin <linmq006@gmail.com> wrote:
+
+> wait_for_completion_timeout() returns unsigned long not int.
+> It returns 0 if timed out, and positive if completed.
+> The check for <= 0 is ambiguous and should be == 0 here
+> indicating timeout which is the only error case.
 > 
-> > > I think it would be good to modify it like this:
-> > > 
-> > > eth-miic@44030000 {
-> > >     ...
-> > >   converters {
-> > >     mii_conv0: mii-conv@0 {
-> > >       // Even if useless, maybe keeping it for the sake of coherency
-> > >       renesas,miic-input = <MIIC_GMAC1>;
-> > >       reg = <0>;
-> > >     };  
-> > 
-> > This is not a 'bus', so using reg, and @0, etc is i think wrong.  You
-> > just have a collection of properties.
+> Fixes: 3cef2e31b54b ("iio: proximity: vl53l0x: Add IRQ support")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Hi,
+
+Applied to the togreg branch of iio.git ready for the next
+merge window. I'm not rushing this in because it's removing pointless
+and misleading code rather than fixing a bug as such.
+
+Thanks,
+
+Jonathan
+
+> ---
+> Changes in v2:
+> - add driver name in patch subject.
+> ---
+>  drivers/iio/proximity/vl53l0x-i2c.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
 > 
-> Agreed, but this is the same thing that is done for DSA ports (at least
-> I think). It uses reg which describe the port number, this is not a
-> real bus per se, it only refer to port indices.
-
-True. That is an old binding, before a lot of good practices were
-enforced. I'm not sure it would be accepted today.
-
-I suggest you make a proposal and see what the DT Maintainers say.
-
-> But if you think this should not be done like this, what do you
-> propose then ? These nodes are also reference from "pcs-handle"
-> properties in switch to retrieve the PCS.
-
-This i was not thinking about. Make this clear in the binding
-documentation for what you propose.
-
-Humm, this last point just gave me an idea. How are you representing
-the PCS in DT? Are they memory mapped? So you have a nodes something
-like:
-
-eth-pcs-conv1@44040100 {
-	compatible = "acm-inc,pcs"
-}
-
-eth-pcs-conv2@44040200 {
-	compatible = "acm-inc,pcs"
-}
-
-The MAC node than has a pcs-handle pointing to one of these nodes?
-
-You implicitly have the information you need to configure the MII
-muxes here. The information is a lot more distributed, but it is
-there. As each MAC probes, it can ask the MII MUX driver to connect
-its MAC to the converter pointed to by its pcs-handle.
-
-	Andrew
+> diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
+> index 661a79ea200d..a284b20529fb 100644
+> --- a/drivers/iio/proximity/vl53l0x-i2c.c
+> +++ b/drivers/iio/proximity/vl53l0x-i2c.c
+> @@ -104,6 +104,7 @@ static int vl53l0x_read_proximity(struct vl53l0x_data *data,
+>  	u16 tries = 20;
+>  	u8 buffer[12];
+>  	int ret;
+> +	unsigned long time_left;
+>  
+>  	ret = i2c_smbus_write_byte_data(client, VL_REG_SYSRANGE_START, 1);
+>  	if (ret < 0)
+> @@ -112,10 +113,8 @@ static int vl53l0x_read_proximity(struct vl53l0x_data *data,
+>  	if (data->client->irq) {
+>  		reinit_completion(&data->completion);
+>  
+> -		ret = wait_for_completion_timeout(&data->completion, HZ/10);
+> -		if (ret < 0)
+> -			return ret;
+> -		else if (ret == 0)
+> +		time_left = wait_for_completion_timeout(&data->completion, HZ/10);
+> +		if (time_left == 0)
+>  			return -ETIMEDOUT;
+>  
+>  		vl53l0x_clear_irq(data);
 
