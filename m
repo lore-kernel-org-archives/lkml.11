@@ -2,101 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C37C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 484D7C4332F
 	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:06:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229644AbiDPCHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
+        id S229679AbiDPCH6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:07:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229661AbiDPCGJ (ORCPT
+        with ESMTP id S229654AbiDPCGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:06:09 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD54E17;
-        Fri, 15 Apr 2022 19:00:05 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id q12so9258914pgj.13;
-        Fri, 15 Apr 2022 19:00:05 -0700 (PDT)
+        Fri, 15 Apr 2022 22:06:07 -0400
+Received: from mail-vs1-xe2a.google.com (mail-vs1-xe2a.google.com [IPv6:2607:f8b0:4864:20::e2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D23403D7;
+        Fri, 15 Apr 2022 18:55:56 -0700 (PDT)
+Received: by mail-vs1-xe2a.google.com with SMTP id v15so6785684vsm.5;
+        Fri, 15 Apr 2022 18:55:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8XEJp2R4K25ZYHNS7d51S7Y7FdMSq6LIaDwY2H8Jjr4=;
-        b=kQsKyrkT1DWICrd0ptnoiBSDY/8mwSomsBEmcNT+vOSVEupMSVa7wDQ1ZaII+k1i0h
-         gm0IbwRP6+tleoe51hK5sIbdaPDAvC6YyKupthbkj5YlKMp7iLJEREukF38JQEVPtmgb
-         C7LBkXRLChz/Lo40XLkQVfN/GPl7gjcg+tqcnhe0PNVNjcJTViHuHG1iqkTaL8LY/JNZ
-         LOlnRzh+lrxGvmYBtLiA5YbebU0JlWjJjiVqaI1Fax6atGQ6v5FmA/0xqUzOpbyU/oYG
-         royS+qDvPJc0ctoWHF4tpf+bBkuVUh4d197rd+TrfLvMug16FupxYFIgCH3cQHx3+O/R
-         ulJw==
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=C/yp2SiPCDYhZ9QJZ/VkI3pUZmOOKH2y3TvYwr4r/ZY=;
+        b=KaItwtfz20xnWMtNTiOqG2T72TphlDwszWNLq4pqt1Jy2NZGmz4xPEv7EjGhIFMi2E
+         F9OgIDcC54Zx2zt/Hc+cI8xZuyo5DfmMAdWKoggxKdi7cqSaPSSOvQeZo4IkNe6FZqjW
+         766dPYHxy1CDcGyaM/Z80nLgd+sTo05wF5k6mWrg8+8FRzyf7bZpXhpKU1TmqG2iAc+T
+         trXclf97t/OX+AuOY1U0xx/4aO1cfsSbMRR8jpD1VLLVDXr57cYQeftuyZwU7l5NQ2uC
+         mmuQdoTbb24IrxRsmtippfaiePCKwvbxgOuSPIEYDge1N3I/qm3TPyMI9RYvYE1jdoL9
+         d4Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8XEJp2R4K25ZYHNS7d51S7Y7FdMSq6LIaDwY2H8Jjr4=;
-        b=m8olP9Z1sSkblglZMrxi9rF4/y7hxozHpE15stoiJyBGZpZgjV6WgXnRAauopnTPiq
-         sELcnO6nSNUc2xv670dw5I9DlwoP+RiFRLzACcAddBRgy2+632XHIiY9ILkQ+w2+WLFY
-         u065JcG9Z+Tt8AOwfhE14FGAeNW39BK51FzvqSRnha7ypAE1gTsn6ld0nq/NgLcnXcZP
-         YRyLIuzdX3cD1QVzcWTfNnLUWePEb+t3Uvn0y2alf+W3dOoiKIqJh8PetyHvuMHnKbU8
-         4htlwKLdzCfL022ZFJFET4L2A+VfFaOiqldkyq/H+bBFcwYj8JZpy82LHHRsDxkmUWa5
-         tT9A==
-X-Gm-Message-State: AOAM533qVpxTEN0zBtdz6BI+CQ5OM+TnwwV8+zYTJotzYRSTTt3+TmvV
-        Axu5jntQbwU2gepH5PsQWs1DO5NcjWc=
-X-Google-Smtp-Source: ABdhPJx+ex28/CxkmPcqU/qGwXQmffQRsGXU8jOdNzZxx9XrSJz0QB9hKwR+mpiU5ton0cWn7TdfxQ==
-X-Received: by 2002:a17:903:11cc:b0:151:71e4:dadc with SMTP id q12-20020a17090311cc00b0015171e4dadcmr1428533plh.78.1650073831037;
-        Fri, 15 Apr 2022 18:50:31 -0700 (PDT)
-Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:9b6:6aad:72f6:6e16])
-        by smtp.gmail.com with ESMTPSA id d8-20020a056a00198800b004fab740dbe6sm4325957pfl.15.2022.04.15.18.50.29
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=C/yp2SiPCDYhZ9QJZ/VkI3pUZmOOKH2y3TvYwr4r/ZY=;
+        b=XMiXR3yNWGb8vqEqR+UFh4CrCQmBPAoy7n14Vx2KhSDBxB/Mr5lB/DtVd7g+MCG3B+
+         9Inv6fPOlpIKJdL9xwJfaoTHBCPt8XYh4MJwHDtPwT+olngQ6Nx+0/9Greptv0r67szn
+         3HCAltkmnCyeqQwfFss/9NhNDxmAHzGMAa9dzcM+IcIsd1bHmBX0FGjxX+08JlVrS7ET
+         FC6zF8R9yOKhfCwGUJJSJFOTGth0IlLf2qs720ptaLAbDBHSAxRWrT8vjQgZ5sNLGTYV
+         1ClpbzKeeJo6M/BShg4fscz21KCdKhXfGSc/gG4YAli+YZrYK6r0khO5dDaWicNRY9EQ
+         ei4w==
+X-Gm-Message-State: AOAM530aZlJi2+6QTqL6b09AvP0jyCB8jbEzwbtgwaePocnFyjz7OjvF
+        LtPK758f0NO6B9Ty/lrR5OHOABcSvaA=
+X-Google-Smtp-Source: ABdhPJzsACZqcMn+IVHVYYnMsaYkZAQYl/1YN2wyFMIwCE7NodBJ76t90Djj26qvoMib2GCP1YQ1Lg==
+X-Received: by 2002:a17:902:7884:b0:158:b5b6:572c with SMTP id q4-20020a170902788400b00158b5b6572cmr1452146pll.144.1650069656404;
+        Fri, 15 Apr 2022 17:40:56 -0700 (PDT)
+Received: from balhae.roam.corp.google.com ([2607:fb90:461:36d2:dba1:7530:2cda:19b1])
+        by smtp.gmail.com with ESMTPSA id j9-20020a056a00130900b004f73df40914sm3913537pfu.82.2022.04.15.17.40.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 18:50:30 -0700 (PDT)
-From:   Max Filippov <jcmvbkbc@gmail.com>
-To:     linux-xtensa@linux-xtensa.org
-Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
-        Max Filippov <jcmvbkbc@gmail.com>, stable@vger.kernel.org
-Subject: [PATCH] xtensa: fix a7 clobbering in coprocessor context load/store
-Date:   Fri, 15 Apr 2022 18:50:18 -0700
-Message-Id: <20220416015018.2025282-1-jcmvbkbc@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Fri, 15 Apr 2022 17:40:55 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
+        Michael Petlan <mpetlan@redhat.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>,
+        Song Liu <songliubraving@fb.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-s390@vger.kernel.org
+Subject: [PATCH 1/3] perf symbol: Pass is_kallsyms to symbols__fixup_end()
+Date:   Fri, 15 Apr 2022 17:40:46 -0700
+Message-Id: <20220416004048.1514900-2-namhyung@kernel.org>
+X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
+In-Reply-To: <20220416004048.1514900-1-namhyung@kernel.org>
+References: <20220416004048.1514900-1-namhyung@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fast coprocessor exception handler saves a3..a6, but coprocessor context
-load/store code uses a4..a7 as temporaries, potentially clobbering a7.
-'Potentially' because coprocessor state load/store macros may not use
-all four temporary registers (and neither FPU nor HiFi macros do).
-Use a3..a6 as intended.
+The symbol fixup is necessary for symbols in kallsyms since they don't
+have size info.  So we use the next symbol's address to calculate the
+size.  Now it's also used for user binaries because sometimes they
+miss size for hand-written asm functions.
 
-Cc: stable@vger.kernel.org
-Fixes: c658eac628aa ("[XTENSA] Add support for configurable registers and coprocessors")
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+There's a arch-specific function to handle kallsyms differently but
+currently it cannot distinguish kallsyms from others.  Pass this
+information explicitly to handle it properly.  Note that those arch
+functions will be moved to the generic function so I didn't added it
+to the arch-functions.
+
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
 ---
- arch/xtensa/kernel/coprocessor.S | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/perf/util/symbol-elf.c | 2 +-
+ tools/perf/util/symbol.c     | 7 ++++---
+ tools/perf/util/symbol.h     | 2 +-
+ 3 files changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/arch/xtensa/kernel/coprocessor.S b/arch/xtensa/kernel/coprocessor.S
-index 45cc0ae0af6f..c7b9f12896f2 100644
---- a/arch/xtensa/kernel/coprocessor.S
-+++ b/arch/xtensa/kernel/coprocessor.S
-@@ -29,7 +29,7 @@
- 	.if XTENSA_HAVE_COPROCESSOR(x);					\
- 		.align 4;						\
- 	.Lsave_cp_regs_cp##x:						\
--		xchal_cp##x##_store a2 a4 a5 a6 a7;			\
-+		xchal_cp##x##_store a2 a3 a4 a5 a6;			\
- 		jx	a0;						\
- 	.endif
+diff --git a/tools/perf/util/symbol-elf.c b/tools/perf/util/symbol-elf.c
+index 31cd59a2b66e..ecd377938eea 100644
+--- a/tools/perf/util/symbol-elf.c
++++ b/tools/perf/util/symbol-elf.c
+@@ -1290,7 +1290,7 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
+ 	 * For misannotated, zeroed, ASM function sizes.
+ 	 */
+ 	if (nr > 0) {
+-		symbols__fixup_end(&dso->symbols);
++		symbols__fixup_end(&dso->symbols, false);
+ 		symbols__fixup_duplicate(&dso->symbols);
+ 		if (kmap) {
+ 			/*
+diff --git a/tools/perf/util/symbol.c b/tools/perf/util/symbol.c
+index dea0fc495185..1b85cc1422a9 100644
+--- a/tools/perf/util/symbol.c
++++ b/tools/perf/util/symbol.c
+@@ -217,7 +217,8 @@ void symbols__fixup_duplicate(struct rb_root_cached *symbols)
+ 	}
+ }
  
-@@ -46,7 +46,7 @@
- 	.if XTENSA_HAVE_COPROCESSOR(x);					\
- 		.align 4;						\
- 	.Lload_cp_regs_cp##x:						\
--		xchal_cp##x##_load a2 a4 a5 a6 a7;			\
-+		xchal_cp##x##_load a2 a3 a4 a5 a6;			\
- 		jx	a0;						\
- 	.endif
+-void symbols__fixup_end(struct rb_root_cached *symbols)
++void symbols__fixup_end(struct rb_root_cached *symbols,
++			bool is_kallsyms __maybe_unused)
+ {
+ 	struct rb_node *nd, *prevnd = rb_first_cached(symbols);
+ 	struct symbol *curr, *prev;
+@@ -1467,7 +1468,7 @@ int __dso__load_kallsyms(struct dso *dso, const char *filename,
+ 	if (kallsyms__delta(kmap, filename, &delta))
+ 		return -1;
  
+-	symbols__fixup_end(&dso->symbols);
++	symbols__fixup_end(&dso->symbols, true);
+ 	symbols__fixup_duplicate(&dso->symbols);
+ 
+ 	if (dso->kernel == DSO_SPACE__KERNEL_GUEST)
+@@ -1659,7 +1660,7 @@ int dso__load_bfd_symbols(struct dso *dso, const char *debugfile)
+ #undef bfd_asymbol_section
+ #endif
+ 
+-	symbols__fixup_end(&dso->symbols);
++	symbols__fixup_end(&dso->symbols, false);
+ 	symbols__fixup_duplicate(&dso->symbols);
+ 	dso->adjust_symbols = 1;
+ 
+diff --git a/tools/perf/util/symbol.h b/tools/perf/util/symbol.h
+index fbf866d82dcc..5fcdd1f94c56 100644
+--- a/tools/perf/util/symbol.h
++++ b/tools/perf/util/symbol.h
+@@ -203,7 +203,7 @@ void __symbols__insert(struct rb_root_cached *symbols, struct symbol *sym,
+ 		       bool kernel);
+ void symbols__insert(struct rb_root_cached *symbols, struct symbol *sym);
+ void symbols__fixup_duplicate(struct rb_root_cached *symbols);
+-void symbols__fixup_end(struct rb_root_cached *symbols);
++void symbols__fixup_end(struct rb_root_cached *symbols, bool is_kallsyms);
+ void maps__fixup_end(struct maps *maps);
+ 
+ typedef int (*mapfn_t)(u64 start, u64 len, u64 pgoff, void *data);
 -- 
-2.30.2
+2.36.0.rc0.470.gd361397f0d-goog
 
