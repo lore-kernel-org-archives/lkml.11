@@ -2,94 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 722BEC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62383C4321E
 	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 02:05:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbiDPCHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Apr 2022 22:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36834 "EHLO
+        id S229771AbiDPCHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Apr 2022 22:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229625AbiDPCGE (ORCPT
+        with ESMTP id S229617AbiDPCGB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Apr 2022 22:06:04 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270C0F1E94
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 18:55:32 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id r8so9764766oib.5
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Apr 2022 18:55:32 -0700 (PDT)
+        Fri, 15 Apr 2022 22:06:01 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185726E36D;
+        Fri, 15 Apr 2022 18:59:30 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-dacc470e03so9422768fac.5;
+        Fri, 15 Apr 2022 18:59:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uqKd1Orxl/LGzBg+7rmnNDHUMWN7s9B1LCDOy65IlQA=;
-        b=N364O5BnRkqe8gLCY6+6Riw2dvoQSe+pV8jWLMWkyKwDJRiXRodeWCF6dOX1MO0Y4x
-         l5vzEFdxw764IXFw5pt2I5BaJ+tiXzVWOV0DHxMes3hgEwxVqH25T3a+HXfXVKNmujhX
-         hMQBDzRqJbeKLwx5z5Dohu9PQwC4xp2QffevxBiof/Ljud8I/BkLx1YhGNh15rnHV943
-         d3fweG1MjzrT+eHTNW/Vt4UAwMp0KpdTnPm+n/SjiieMqWl+NZC15j/By41/vK3ysxGi
-         Fmv3PXICjX+HefHAu07XpbCXz3A+PWe8enneamXLGhzN05xmtj+7sxMQyENtpcQY3+mV
-         3ZaA==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CZl1G0yOWcHR+4w7BioZbnZEDnrT5AWLArVFooO2o4c=;
+        b=D5xuKdFnExTDBQqGU6R+W9iBOJpgg5vTWz80N32DLEL+l8fWuCwxG0MVcgkEwFH7RW
+         YvkGiShTxKYq2hXm+RWPdnsD6DLANCncDhkkitJ9shRjRuHTzU8q6hyWi1WbXnZAR2TZ
+         evkw8KDtAyW9Zr3GMDBwD7RLvmc2Y9f7bznv649G1+oIzcWr/WP3E4T96M8KiNQ9Tqan
+         CusSHAAqLghyE6N8VPTqmRNKvIGPefCOr2mLmjhUs1uUG0N/faddOvgUzzHSOJXBwzNi
+         c0t0wfXtojBK6O41quttPCM+v96WGPpztgmcEjzGZ2JQwXccwOo8vK/sellCw3CigLCn
+         pthA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uqKd1Orxl/LGzBg+7rmnNDHUMWN7s9B1LCDOy65IlQA=;
-        b=pBl1Shv4Os86/3/nNEPdG7jo1l0dFDCBorSSBrqYxPRWPQWqFmCeXWSrVQDrsCEOWK
-         HtBY7KihBcEP2LfFhgy8bR3MCNwF/kW+UsFxETTitwLNn1CbEy5kPh9Pb7o/mY1RuvpE
-         MimY2Fewzj2ftP7fKuZdyxNTDtynge41PQi/BZejOCuMGApxL3TnrzW5x6r6lDMgt2hl
-         9rKGSpr2Ky0sVjt7WnmfkGCvjgdzxTf0V6/kKelzB8YjjG/CyqrQ/Jf7rur8M5GNaQg7
-         bw+LUzZY49Giv/KfEB2OOLsLf+B+rQRfkRMd0xwNIxzDqhl8M5W7fxQD6YWJg/sX1Nug
-         HP6Q==
-X-Gm-Message-State: AOAM533PX+wAiVJcdNQIOB5gJX6EzzvbSxOeQV2X0+1W94fsGfGFYV1k
-        WAz+sWf3GKnUGRh7yIBxHkL8Va2ahqOj9ILbRJnGPA==
-X-Google-Smtp-Source: ABdhPJzO4dFfJiTJAfRiEarg+WpfXqOs2uIeFBF1W0TiWPqIMzBObZpTJ1JBTD1oZF/evYqedyW8yQ==
-X-Received: by 2002:a17:90b:4d01:b0:1d0:f39f:6073 with SMTP id mw1-20020a17090b4d0100b001d0f39f6073mr1618465pjb.175.1650072405373;
-        Fri, 15 Apr 2022 18:26:45 -0700 (PDT)
-Received: from localhost.localdomain ([134.195.101.46])
-        by smtp.gmail.com with ESMTPSA id n184-20020a6227c1000000b0050a3bbd36d6sm3313260pfn.204.2022.04.15.18.26.41
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CZl1G0yOWcHR+4w7BioZbnZEDnrT5AWLArVFooO2o4c=;
+        b=1NqdEKfQx/IwrlFeIrHhcnYcTpCZuYN1uM1kptxfGIR0vOW2i5YtK02mUVDoyYuktI
+         iRA1PxkwumuLKUetCixjumbY0Js5RpbMS6Am1Jcn7wJplXdVh4IUDbuUZXNpao0zE3I8
+         sqoWeMeMq7vWzq/4Rav6Au9RhJlOgunkfGp6bdgRIAuYrK2jB88uanG8xAGbGqg0Ivet
+         Pa7cQdFyxPEbHKaMRuyAmuNuG6bJ1FuVWQ2p/aPBs8YGtL2G5HRgPd67XTl4ajIVnkYn
+         k7z8sNTLG1S2KcnKsmeW7JUkXwurBsbZ8A90cEnb9KJmDdKR6Xv4Y4wKllvAfadmVKcA
+         IYOg==
+X-Gm-Message-State: AOAM532dEyrt3i81XfDq67YdJfu6NYzkDKcU0HD+bsXaiJkbKNHcqo8i
+        0FVpBa6Smi0+9e8eLFu9kgabAIBtteDtTA==
+X-Google-Smtp-Source: ABdhPJyxSVABo8qkGB7Wudcok21+GD2dj2PEU388i7rw/ixuqjyPAXobglCig6MbNKyzeogfnUBjzA==
+X-Received: by 2002:a17:90a:8581:b0:1b2:7541:af6c with SMTP id m1-20020a17090a858100b001b27541af6cmr1747571pjn.48.1650073848590;
+        Fri, 15 Apr 2022 18:50:48 -0700 (PDT)
+Received: from d3 ([2405:6580:97e0:3100:ae94:2ee7:59a:4846])
+        by smtp.gmail.com with ESMTPSA id v18-20020a17090a899200b001d22f3fe3e2sm205313pjn.35.2022.04.15.18.50.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 18:26:44 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH] interconnect: qcom: msm8939: Use icc_sync_state
-Date:   Sat, 16 Apr 2022 09:26:34 +0800
-Message-Id: <20220416012634.479617-1-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        Fri, 15 Apr 2022 18:50:48 -0700 (PDT)
+Date:   Sat, 16 Apr 2022 10:50:42 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Jeff Johnson <quic_jjohnson@quicinc.com>
+Cc:     Yihao Han <hanyihao@vivo.com>, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@vivo.com
+Subject: Re: [PATCH v2] ath11k: simplify if-if to if-else
+Message-ID: <Ylog8qhT6X/bYiZZ@d3>
+References: <20220415125853.86418-1-hanyihao@vivo.com>
+ <ca2944bd-e80e-e0ff-0804-c8439f54b28a@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ca2944bd-e80e-e0ff-0804-c8439f54b28a@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's fashion to use the icc_sync_state callback to notify the framework
-when all consumers are probed, so that the bandwidth request doesn't
-need to stay on maximum value.
+On 2022-04-15 16:02 -0700, Jeff Johnson wrote:
+> On 4/15/2022 5:58 AM, Yihao Han wrote:
+> > Replace `if (!ab->is_reset)` with `else` for simplification
+> > according to the kernel coding style:
+> > 
+> > "Do not unnecessarily use braces where a single statement will do."
+> > 
+> > ...
+> > 
+> > "This does not apply if only one branch of a conditional statement is
+> > a single statement; in the latter case use braces in both branches"
+> > 
+> > Please refer to:
+> > https://www.kernel.org/doc/html/v5.17-rc8/process/coding-style.html
+> 
+> why are you referring to braces when your patch has nothing to do with
+> braces?
+> 
+> changing if (foo) X;if (!foo) Y; to if (foo) X else Y; is not a design
+> pattern referenced in the coding style
+> 
+> > 
+> > Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
 
-Do the same thing for msm8939 driver.
+I did not suggest this change. Please remove this tag.
 
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
----
- drivers/interconnect/qcom/msm8939.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/interconnect/qcom/msm8939.c b/drivers/interconnect/qcom/msm8939.c
-index f9c2d7d3100d..ca5f611d33b0 100644
---- a/drivers/interconnect/qcom/msm8939.c
-+++ b/drivers/interconnect/qcom/msm8939.c
-@@ -1423,6 +1423,7 @@ static struct platform_driver msm8939_noc_driver = {
- 	.driver = {
- 		.name = "qnoc-msm8939",
- 		.of_match_table = msm8939_noc_of_match,
-+		.sync_state = icc_sync_state,
- 	},
- };
- module_platform_driver(msm8939_noc_driver);
--- 
-2.25.1
-
+> > Signed-off-by: Yihao Han <hanyihao@vivo.com>
+> > ---
+> > v2:edit commit message
+> > ---
+> >   drivers/net/wireless/ath/ath11k/core.c | 3 +--
+> >   1 file changed, 1 insertion(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+> > index cbac1919867f..80009482165a 100644
+> > --- a/drivers/net/wireless/ath/ath11k/core.c
+> > +++ b/drivers/net/wireless/ath/ath11k/core.c
+> > @@ -1532,8 +1532,7 @@ static void ath11k_core_restart(struct work_struct *work)
+> >   	if (ab->is_reset)
+> >   		complete_all(&ab->reconfigure_complete);
+> > -
+> > -	if (!ab->is_reset)
+> > +	else
+> >   		ath11k_core_post_reconfigure_recovery(ab);
+> >   }
+> 
