@@ -2,138 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E706C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 14:10:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57779C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 14:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232246AbiDPOMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 10:12:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42546 "EHLO
+        id S232285AbiDPOXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 10:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232233AbiDPOMd (ORCPT
+        with ESMTP id S232263AbiDPOXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 10:12:33 -0400
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD234BC15;
-        Sat, 16 Apr 2022 07:09:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=QXg79ITIMb+c/YfTxTorJco9Mt6LYRevJ11/hq3FBHM=;
-  b=fmJwVTpLkxQYJ84reDMPtf2kdPCy1MxrwZogdslFhrQhcidTftQca1zB
-   VDQQHeuEtFCSO4nHYtOSPVwEae3uCetGHZTbhmQlZ770ZtDBtQjqUDskl
-   Uvs9Xz7l5HY7zTbYbVLzjJRxg/3NQdnvRz3VJaSidouSlW2874zxBStNj
-   4=;
-Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=julia.lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="5.90,264,1643670000"; 
-   d="scan'208";a="32016200"
-Received: from 203.107.68.85.rev.sfr.net (HELO hadrien) ([85.68.107.203])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2022 16:09:58 +0200
-Date:   Sat, 16 Apr 2022 16:09:58 +0200 (CEST)
-From:   Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To:     Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-cc:     Julia Lawall <julia.lawall@inria.fr>, outreachy@lists.linux.dev,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ira.weiny@intel.com
-Subject: Re: [PATCH v3] intel: igb: igb_ethtool.c: Convert kmap() to
- kmap_local_page()
-In-Reply-To: <857a2d22-5d0f-99d6-6686-98d50e4491d5@gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2204161608230.3501@hadrien>
-References: <20220416111457.5868-1-eng.alaamohamedsoliman.am@gmail.com> <alpine.DEB.2.22.394.2204161331080.3501@hadrien> <857a2d22-5d0f-99d6-6686-98d50e4491d5@gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-848588355-1650118198=:3501"
+        Sat, 16 Apr 2022 10:23:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCDB2CC81;
+        Sat, 16 Apr 2022 07:21:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B1FD60F52;
+        Sat, 16 Apr 2022 14:21:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4151AC385A1;
+        Sat, 16 Apr 2022 14:21:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650118869;
+        bh=tdkaG+9kosN+V7ncXVMKU8UTBd3pKo/eqmLPeP1OWgU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iY1CcdV3umoK6WRz4nCbnu4PbsFiJaPTe2v+PTBDghUaVha55vpk3s2P4WGk19Sb2
+         ceV1fjCeouPPxlhZOYqm7Qq7e8qxU2pjDw3ufy0bJQYZ9AbOlwVil0Yw1OqCBKUBkZ
+         Zn3s5TRssBnufgR06lZw9RoyhTv6NrWFeZWRnk6zEqYmkJuQHuEbnzHZk3FP1DoRvD
+         wsM5qYrIV5XOZuQrbeFSE+dCKi6f1RahN2E3VsnYtgJgh15YI9QW6kjnaZVUJEUmzS
+         aH5fokOb74x74GXuGweUOiYz8dllkuCkKNkqDfDeQ7iRKfi703GD4iSxEaHwQ9SJ9f
+         j3zmHIHgRKz0A==
+Date:   Sat, 16 Apr 2022 23:21:03 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>, Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
+Message-Id: <20220416232103.c0b241c2ec7f2b3b985a2f99@kernel.org>
+In-Reply-To: <CAEf4BzaQRcZGMqq5wqHo3wSHZAAVvY6AhizDk_dV_GtnwHuxLQ@mail.gmail.com>
+References: <20220407125224.310255-1-jolsa@kernel.org>
+        <20220407125224.310255-5-jolsa@kernel.org>
+        <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com>
+        <20220412094923.0abe90955e5db486b7bca279@kernel.org>
+        <CAEf4BzaQRcZGMqq5wqHo3wSHZAAVvY6AhizDk_dV_GtnwHuxLQ@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi,
 
---8323329-848588355-1650118198=:3501
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+On Tue, 12 Apr 2022 15:51:43 -0700
+Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 
-
-
-On Sat, 16 Apr 2022, Alaa Mohamed wrote:
-
->
-> On ١٦/٤/٢٠٢٢ ١٣:٣١, Julia Lawall wrote:
+> On Mon, Apr 11, 2022 at 5:49 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
 > >
-> > On Sat, 16 Apr 2022, Alaa Mohamed wrote:
+> > On Mon, 11 Apr 2022 15:15:40 -0700
+> > Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 > >
-> > > Convert kmap() to kmap_local_page()
+> > > > +#define DEBUGFS "/sys/kernel/debug/tracing/"
+> > > > +
+> > > > +static int get_syms(char ***symsp, size_t *cntp)
+> > > > +{
+> > > > +       size_t cap = 0, cnt = 0, i;
+> > > > +       char *name, **syms = NULL;
+> > > > +       struct hashmap *map;
+> > > > +       char buf[256];
+> > > > +       FILE *f;
+> > > > +       int err;
+> > > > +
+> > > > +       /*
+> > > > +        * The available_filter_functions contains many duplicates,
+> > > > +        * but other than that all symbols are usable in kprobe multi
+> > > > +        * interface.
+> > > > +        * Filtering out duplicates by using hashmap__add, which won't
+> > > > +        * add existing entry.
+> > > > +        */
+> > > > +       f = fopen(DEBUGFS "available_filter_functions", "r");
 > > >
-> > > With kmap_local_page(), the mapping is per thread, CPU local and not
-> > > globally visible.
-> > It's not clearer.
-> I mean this " fix kunmap_local path value to take address of the mapped page"
-> be more clearer
-> > This is a general statement about the function.  You
-> > need to explain why it is appropriate to use it here.  Unless it is the
-> > case that all calls to kmap should be converted to call kmap_local_page.
-> It's required to convert all calls kmap to kmap_local_page. So, I don't what
-> should the commit message be?
-
-If all calls should be changed then you can also say that.
-
-I thought that a previous commit on the outreachy list made some arguments
-about how the affacted value was just allocated and thus could not yet be
-shared.
-
-julia
-
->
-> Is this will be good :
->
-> "kmap_local_page() was recently developed as a replacement for kmap().  The
-> kmap_local_page() creates a mapping which is restricted to local use by a
-> single thread of execution. "
+> > > I'm really curious how did you manage to attach to everything in
+> > > available_filter_functions because when I'm trying to do that I fail.
+> > > available_filter_functions has a bunch of functions that should not be
+> > > attachable (e.g., notrace functions). Look just at __bpf_tramp_exit:
+> > >
+> > >   void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr);
 > >
-> > julia
+> > Hmm, this sounds like a bug in ftrace side. IIUC, the
+> > "available_filter_functions" only shows the functions which is NOT
+> > instrumented by mcount, we should not see any notrace functions on it.
 > >
-> > > Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-> > > ---
-> > > changes in V2:
-> > > 	fix kunmap_local path value to take address of the mapped page.
-> > > ---
-> > > changes in V3:
-> > > 	edit commit message to be clearer
-> > > ---
-> > >   drivers/net/ethernet/intel/igb/igb_ethtool.c | 4 ++--
-> > >   1 file changed, 2 insertions(+), 2 deletions(-)
+> > Technically, this is done by __no_instrument_function__ attribute.
+> >
+> > #if defined(CC_USING_HOTPATCH)
+> > #define notrace                 __attribute__((hotpatch(0, 0)))
+> > #elif defined(CC_USING_PATCHABLE_FUNCTION_ENTRY)
+> > #define notrace                 __attribute__((patchable_function_entry(0, 0)))
+> > #else
+> > #define notrace                 __attribute__((__no_instrument_function__))
+> > #endif
+> >
 > > >
-> > > diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> > > b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> > > index 2a5782063f4c..c14fc871dd41 100644
-> > > --- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> > > +++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-> > > @@ -1798,14 +1798,14 @@ static int igb_check_lbtest_frame(struct
-> > > igb_rx_buffer *rx_buffer,
+> > > So first, curious what I am doing wrong or rather why it succeeds in
+> > > your case ;)
 > > >
-> > >   	frame_size >>= 1;
-> > >
-> > > -	data = kmap(rx_buffer->page);
-> > > +	data = kmap_local_page(rx_buffer->page);
-> > >
-> > >   	if (data[3] != 0xFF ||
-> > >   	    data[frame_size + 10] != 0xBE ||
-> > >   	    data[frame_size + 12] != 0xAF)
-> > >   		match = false;
-> > >
-> > > -	kunmap(rx_buffer->page);
-> > > +	kunmap_local(data);
-> > >
-> > >   	return match;
-> > >   }
-> > > --
-> > > 2.35.2
-> > >
-> > >
-> > >
->
---8323329-848588355-1650118198=:3501--
+> > > But second, just wanted to plea to "fix" available_filter_functions to
+> > > not list stuff that should not be attachable. Can you please take a
+> > > look and checks what's going on there and why do we have notrace
+> > > functions (and what else should *NOT* be there)?
+> >
+> > Can you share how did you reproduce the issue? I'll check it.
+> >
+> 
+> $ sudo cat /sys/kernel/debug/tracing/available_filter_functions | grep
+> __bpf_tramp
+> __bpf_tramp_image_release
+> __bpf_tramp_image_put_rcu_tasks
+> __bpf_tramp_image_put_rcu
+> __bpf_tramp_image_put_deferred
+> __bpf_tramp_exit
+> 
+> 
+> __bpf_tramp_exit is notrace function, so shouldn't be here. Notice
+> that __bpf_tramp_enter (which is also notrace) are not in
+> available_filter_functions.
+
+OK, I also confirmed that __bpf_tramp_exit is listed. (others seems no notrace)
+
+/sys/kernel/tracing # cat available_filter_functions | grep __bpf_tramp
+__bpf_tramp_image_release
+__bpf_tramp_image_put_rcu
+__bpf_tramp_image_put_rcu_tasks
+__bpf_tramp_image_put_deferred
+__bpf_tramp_exit
+
+My gcc is older one.
+gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 
+
+But it seems that __bpf_tramp_exit() doesn't call __fentry__. (I objdump'ed) 
+
+ffffffff81208270 <__bpf_tramp_exit>:
+ffffffff81208270:       55                      push   %rbp
+ffffffff81208271:       48 89 e5                mov    %rsp,%rbp
+ffffffff81208274:       53                      push   %rbx
+ffffffff81208275:       48 89 fb                mov    %rdi,%rbx
+ffffffff81208278:       e8 83 70 ef ff          callq  ffffffff810ff300 <__rcu_read_lock>
+ffffffff8120827d:       31 d2                   xor    %edx,%edx
+
+
+> 
+> So it's quite bizarre and inconsistent.
+
+Indeed. I guess there is a bug in scripts/recordmcount.pl.
+
+Thank you,
+
+> 
+> > Thank you,
+> >
+> >
+> > --
+> > Masami Hiramatsu <mhiramat@kernel.org>
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
