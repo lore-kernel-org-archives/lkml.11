@@ -2,79 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4CDBC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:49:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEFA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Apr 2022 11:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231824AbiDPLva (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 07:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60982 "EHLO
+        id S231842AbiDPLwa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 07:52:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiDPLv2 (ORCPT
+        with ESMTP id S231835AbiDPLwV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 07:51:28 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E00EE239;
-        Sat, 16 Apr 2022 04:48:54 -0700 (PDT)
-Received: from localhost.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxv9cgrVpiHp0lAA--.17905S2;
-        Sat, 16 Apr 2022 19:48:49 +0800 (CST)
-From:   Ze Zhang <zhangze@loongson.cn>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Shuah Khan <shuah@kernel.org>
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Qing Zhang <zhangqing@loongson.cn>,
-        Ze Zhang <zhangze@loongson.cn>
-Subject: [PATCH 1/2] selftests/ftrace: add mips support for kprobe args string tests
-Date:   Sat, 16 Apr 2022 19:48:47 +0800
-Message-Id: <20220416114848.25288-1-zhangze@loongson.cn>
-X-Mailer: git-send-email 2.20.1
+        Sat, 16 Apr 2022 07:52:21 -0400
+Received: from mail-vs1-xe2a.google.com (mail-vs1-xe2a.google.com [IPv6:2607:f8b0:4864:20::e2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3B563C3;
+        Sat, 16 Apr 2022 04:49:49 -0700 (PDT)
+Received: by mail-vs1-xe2a.google.com with SMTP id i186so8894634vsc.9;
+        Sat, 16 Apr 2022 04:49:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/pFssxoLZmPuWgKi5vncIMSo1DCdax1EcoWBNQif+HM=;
+        b=D+xkEg1a6hjF1V3UTFFTmAqCKPMeLHkneGOn8hpsmi57kTSwyip+IMCZrj+bER4Duk
+         7v4NA8FQMiEUz6XzVEOxu+E8Lj9Dauk/WdZI52PlGVbMNo8QArXOZoJQRVcaug2ySAq7
+         DnBrKrjR5D3dtThLWaHXkpg/aCaur5J7NdvtsHEizAs4AOkTeygAgYIuq/Ww0Ovh+zzs
+         uHuYtYF0W8DrUNDC1Pj3cYALQF0w9AGPkBuFBfBpow1WomPdiJsKmw6BUnqiIgYPMe2W
+         r4JxsTdMAV5dbdj2VnLno8e3cMna5cgyt3XIk3V/QxUdFB8KoUa9W1KkDKzacrMCCogA
+         kHBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/pFssxoLZmPuWgKi5vncIMSo1DCdax1EcoWBNQif+HM=;
+        b=LaLqS9ABqkDC80eKzcyj69ohKFcVhF58E2ZzW9qTBOwUykszinhXk//+QCyFe4B8fD
+         tuvgRtWbSdBUDskdbXMEmPFMztlQXwMfWC91pOurZyZAbVhG5l3kQ4dRK7C7Mx/AKnKf
+         a1UxwGV4gdEhSTReHAoaru4l01TteMdGrAFY1ad+GOX6k8vpU7+0h50M5WrjPwkI+42g
+         8bsJt3ysnda6L+nQZsr88zA4Fe9OWVeKqofRlpD3yCRmjfrNgmWV8pPGhm4oClv9ReoL
+         knueG6ghplpWruDP02h8YUOs64yV0AsGxXrCkxe5g7ti+tFykjluJtTrtcxswET00WVA
+         vXeQ==
+X-Gm-Message-State: AOAM533FnDfx7HR5+l7UbmUnfYskWKg4qu+Zq/hL6nGktJ6KoBk3ia3i
+        IpWWb14Ksk8dSmdK1d9pb+rNBa0ViT/plEoSg90=
+X-Google-Smtp-Source: ABdhPJzV0vJqdRlkVn0eXLetCb0I4Oj/t7WT0wQIPKQWRfA8TMOAoDvltO8LyX0LPgc4HoeBZl/BvARKr7B62um/xHU=
+X-Received: by 2002:a67:2d51:0:b0:32a:c2b:78c4 with SMTP id
+ t78-20020a672d51000000b0032a0c2b78c4mr758801vst.36.1650109788662; Sat, 16 Apr
+ 2022 04:49:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9Dxv9cgrVpiHp0lAA--.17905S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrZr1kJw1UGrykJF43Zr17GFg_yoW3urgEv3
-        9rt3s7CrWUuFyqqr4rtr1rCws5GwsrWr1xtrWjyr95try2qw45tan7CF1xJF4fW393XFy7
-        tFsxZF45Za18XjkaLaAFLSUrUUUUbb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbxxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Jr0_
-        Gr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
-        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vI
-        r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1l4IxYO2xFxVAFwI0_Jrv_JF1lx2IqxVAqx4xG67
-        AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIY
-        rxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14
-        v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWU
-        JVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU5s
-        jjDUUUU
-X-CM-SenderInfo: x2kd0wt2h6z05rqj20fqof0/
+References: <20220416074817.571160-1-k.kahurani@gmail.com> <65c52645-26e8-ff2b-86dc-b5dd697317f9@gmail.com>
+In-Reply-To: <65c52645-26e8-ff2b-86dc-b5dd697317f9@gmail.com>
+From:   David Kahurani <k.kahurani@gmail.com>
+Date:   Sat, 16 Apr 2022 14:49:37 +0300
+Message-ID: <CAAZOf27Q-QQ51pGO1gFETNR0ASg6zmxF4HUFUVn77oL3Cs7LEg@mail.gmail.com>
+Subject: Re: [PATCH] net: ax88179: add proper error handling of usb read errors
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        syzbot <syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com>,
+        davem@davemloft.net, jgg@ziepe.ca, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        Phillip Potter <phil@philpotter.co.uk>,
+        syzkaller-bugs@googlegroups.com, arnd@arndb.de,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the mips variant of commit <3990b5baf225> ("selftests/ftrace:
-Add s390 support for kprobe args tests").
+On Sat, Apr 16, 2022 at 2:10 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
+>
+> Hi David,
 
-Signed-off-by: Ze Zhang <zhangze@loongson.cn>
----
- .../selftests/ftrace/test.d/kprobe/kprobe_args_string.tc       | 3 +++
- 1 file changed, 3 insertions(+)
+Hi Pavel.
 
-diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_string.tc b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_string.tc
-index dc7ade196798..459741565222 100644
---- a/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_string.tc
-+++ b/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_string.tc
-@@ -25,6 +25,9 @@ ppc*)
- s390*)
-   ARG1=%r2
- ;;
-+mips*)
-+  ARG1=%r4
-+;;
- *)
-   echo "Please implement other architecture here"
-   exit_untested
--- 
-2.20.1
+>
+> one more small comment
+>
+> On 4/16/22 10:48, David Kahurani wrote:
+> > Reads that are lesser than the requested size lead to uninit-value bugs.
+> > In this particular case a variable which was supposed to be initialized
+> > after a read is left uninitialized after a partial read.
+> >
+> > Qualify such reads as errors and handle them correctly and while at it
+> > convert the reader functions to return zero on success for easier error
+> > handling.
+> >
+> > Fixes: e2ca90c276e1 ("ax88179_178a: ASIX AX88179_178A USB 3.0/2.0 to
+> > gigabit ethernet adapter driver")
+> > Signed-off-by: David Kahurani <k.kahurani@gmail.com>
+> > Reported-and-tested-by: syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com
+> > ---
+>
+> [code snip]
+>
+> > @@ -1295,6 +1439,7 @@ static int ax88179_led_setting(struct usbnet *dev)
+> >   static void ax88179_get_mac_addr(struct usbnet *dev)
+> >   {
+> >       u8 mac[ETH_ALEN];
+> > +     int ret;
+> >
+> >       memset(mac, 0, sizeof(mac));
+> >
+> > @@ -1303,8 +1448,12 @@ static void ax88179_get_mac_addr(struct usbnet *dev)
+> >               netif_dbg(dev, ifup, dev->net,
+> >                         "MAC address read from device tree");
+> >       } else {
+> > -             ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_NODE_ID, ETH_ALEN,
+> > -                              ETH_ALEN, mac);
+> > +             ret = ax88179_read_cmd(dev, AX_ACCESS_MAC, AX_NODE_ID, ETH_ALEN,
+> > +                                    ETH_ALEN, mac);
+> > +
+> > +             if (ret)
+> > +                     netdev_dbg(dev->net, "Failed to read NODE_ID: %d", ret);
+> > +
+> >               netif_dbg(dev, ifup, dev->net,
+> >                         "MAC address read from ASIX chip");
+> >       }
+>
+>
+> This message sequence is confusing.
+>
+> In case of ax88179_read_cmd() failure mac read from device actually
+> failed, but message says, that it was successfully finished.
 
+I suppose the code should return in case of an error that way the next
+message does not get executed.
+
+Thanks for the review! Will fix it and the other issue in the next version.
+
+>
+>
+>
+>
+>
+> With regards,
+> Pavel Skripkin
