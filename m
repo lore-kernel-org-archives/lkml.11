@@ -2,98 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9270C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 17:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 420EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 17:55:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234675AbiDQR5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 13:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
+        id S234689AbiDQR5l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 13:57:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231895AbiDQR5Z (ORCPT
+        with ESMTP id S234659AbiDQR52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 13:57:25 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1242C28
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 10:54:48 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id v15so15311617edb.12
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 10:54:48 -0700 (PDT)
+        Sun, 17 Apr 2022 13:57:28 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB4BE1F
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 10:54:51 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id v4so15343985edl.7
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 10:54:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OILYgrcMHgfS0MAxmoEH1VbxpcKZui0oVM3USNBv13c=;
-        b=P5JmW2KvKOzg8qOf35NH2HDiMtRbk+FunpBhn4lw3vrTLmTtwn+zfCxWydq2GbZqDD
-         pv+pniNDd2S/dD7GxQkyq73AAJJMRC3xnzIBhA/5JPwOYbYL/WTEEVEnfvM9qeYANwUV
-         EQsvajbm7ra+t55FY2WbCC10lvtFqiJ4vrvGRogBav8w81z9ZHgb7VA6vi57p0fgUxC3
-         nwKUSibDC1N+eyAhY1tj/8cLwp30FSiF+hxlXaR3loHhAw/qS5RTbQeymMNwZBlWcpvB
-         0KOybdRncJsJqu7B+H8Fntd4y1iFNknSdkmOZ4x17GwBJ2KYCcbJZa7HWXJmHkJCFO91
-         Y8qw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=YHM9PFFwx6hClGPcuoJgSs1Sb6xb089x4uMzIqzHgxE=;
+        b=Yp56c+ZB8HEv1qF30A4KlgnajiNfkp/end5U3doacovPJEmHPgB5M6jLXBAj6iHqYp
+         9R3CjqP3XpBeMvY0D1uc4/D1k9NcvvT/5P/SB18egXGckfj+qK4SIuldWJftfnXDetPP
+         oixZVm9mHe0rEIgR4YkuTxhJ5SwWJM3vOwqLNJXkihF3CQKhO2IwGHj2AIOJjnJBCvvc
+         XCvs40JMYYhGizciLG+mwnPww5IYMX/0bJWrF+c31+UlY4IO+4CsLNAI6bTu9le4JEBf
+         NtSAcjkyQyPB2TCehsBPWANsEfo9C7Qjpxh3uDHTPYc88z3opIRcxISWAXtprEXNZzEa
+         kNuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OILYgrcMHgfS0MAxmoEH1VbxpcKZui0oVM3USNBv13c=;
-        b=UAsEfXX9NIFaUKBwEqabnB99Lmn7T/f9MYcT0JtT+QvYUR1UYTZ/xrVuyzIn4VAZVg
-         CMA//hIeJSR7rxLDML87xWtP+XvuOTbHyW7L65FYPEhksDlMLSuxtD7h3K81GTwb/Q00
-         L/+wZRA7UesdOfR9sF+TsRJBHlIx2V2m/GWZW1ROlhzpXDDhojA9xY1pRJ9dCIRGBs24
-         /hCZ79Z4cg/fdUv/c942lEQEDc99j8R3DdqsqlbABj/s+0gZdTdHwcKIJs6p5QrEOZ/P
-         qqqttogT0dURnHqRkiOApwWzHt7C1cRDle2t+FD57ii7vnV+SYA88DqUCw2FZwK2FMiI
-         2G3w==
-X-Gm-Message-State: AOAM531uxljhUcBvnXvd5kENZtqKUneIOOTv3dewiP0K8tXb392ZNyxG
-        kycLthzpRldunbG8WwAztXXr91eK/Io=
-X-Google-Smtp-Source: ABdhPJwqZKjheh+2KqPTKOUweCixJfif8kv973dXy3667xA5l9SqWcbZHJ5+FUDWF3oeidpQTGO5Xw==
-X-Received: by 2002:aa7:ce05:0:b0:41d:6857:549e with SMTP id d5-20020aa7ce05000000b0041d6857549emr8844788edv.251.1650218087587;
-        Sun, 17 Apr 2022 10:54:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=YHM9PFFwx6hClGPcuoJgSs1Sb6xb089x4uMzIqzHgxE=;
+        b=mZuR5dHeI5C2Z/1LbHujZoNutuYqXKYuFmuTZQ3+JdeFxrHkm5qnbo86j27EicIqhB
+         itgyoTGR+BhaAfVaoWQdAGzvD+CqHoc2aU8hvQnoBvFCz3F6RSLLd/J6HkjkgViN9SAe
+         sGK7tQYjby7WHnEP0ZP5kIZe2nob7WjKKfPa6O9/Vr5P5vhJ/Lhw9AU+WOrZg+olMSGM
+         Aum2jyTOPpFNo5NnpPEL19ZzS75aLnYPTTwhhWNWh0Y71RAeamZnlP18D/Qba0irVuJw
+         8RizKrpTqjV84C+QivM3WZHJm5msqhjdMF6bK/D1d2j/9Ckn7B7AIsNVNviNLJjw8R/J
+         W9DQ==
+X-Gm-Message-State: AOAM532L+bTnRqq9pO2VQn2zQFoyDQDCrba82ZI9urw1z+7kerlohqhc
+        MnGdWpNuN9+kx9YZK094QEA=
+X-Google-Smtp-Source: ABdhPJzpsqelcEFavErmiQTZY9Yba+1II7W/RaX2sY5D0MrTifQjwSVy8Q2XdtxzQbs85AIktc1GBw==
+X-Received: by 2002:aa7:dcd3:0:b0:41d:70e4:bf4d with SMTP id w19-20020aa7dcd3000000b0041d70e4bf4dmr8649818edu.223.1650218089830;
+        Sun, 17 Apr 2022 10:54:49 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5abba5.dynamic.kabel-deutschland.de. [95.90.187.165])
-        by smtp.gmail.com with ESMTPSA id jw12-20020a17090776ac00b006e87137194esm3719409ejc.150.2022.04.17.10.54.46
+        by smtp.gmail.com with ESMTPSA id jw12-20020a17090776ac00b006e87137194esm3719409ejc.150.2022.04.17.10.54.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Apr 2022 10:54:47 -0700 (PDT)
+        Sun, 17 Apr 2022 10:54:49 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH v4 0/8] staging: r8188eu: fix and clean up some firmware code
-Date:   Sun, 17 Apr 2022 19:54:33 +0200
-Message-Id: <20220417175441.13830-1-straube.linux@gmail.com>
+Subject: [PATCH v4 3/8] staging: r8188eu: clean up comments in struct rt_firmware_hdr
+Date:   Sun, 17 Apr 2022 19:54:36 +0200
+Message-Id: <20220417175441.13830-4-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220417175441.13830-1-straube.linux@gmail.com>
+References: <20220417175441.13830-1-straube.linux@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series fixes wrong size of struct rt_firmware_hdr in the first
-patch and does some cleanups in rtl8188e_firmware_download() in the
-other patches.
+Remove unnecessary comments from struct rt_firmware_hdr. While at it
+align the in-line comments.
 
-Tested on x86_64 with Inter-Tech DMG-02.
-
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+---
 v4:
-- Keep the in-line comments of struct rt_firmware_hdr.
+- keep the in-line comments
 
 v3:
-- Splitted the first patch into two separate patches.
-- Added back logging the firmware version only once.
-- Included the compile time check for size of rt_firmware_hdr from
-  patch 8/8 of v2 in the patch that replaces the hardcoded size.
+- no changes
 
 v2:
-- Added a patch to check size of struct rt_firmware_hdr at compile time.
+- no changes
 
-Michael Straube (8):
-  staging: r8188eu: fix struct rt_firmware_hdr
-  staging: r8188eu: convert u32 fields of rt_firmware_hdr to __le32
-  staging: r8188eu: clean up comments in struct rt_firmware_hdr
-  staging: r8188eu: rename fields of struct rt_firmware_hdr
-  staging: r8188eu: use sizeof instead of hardcoded firmware header size
-  staging: r8188eu: remove variables from rtl8188e_firmware_download()
-  staging: r8188eu: use pr_info_once() to log the firmware version
-  staging: r8188eu: check firmware header existence before access
+ drivers/staging/r8188eu/core/rtw_fw.c | 36 ++++++++++-----------------
+ 1 file changed, 13 insertions(+), 23 deletions(-)
 
- drivers/staging/r8188eu/core/rtw_fw.c | 84 +++++++++++----------------
- 1 file changed, 34 insertions(+), 50 deletions(-)
-
+diff --git a/drivers/staging/r8188eu/core/rtw_fw.c b/drivers/staging/r8188eu/core/rtw_fw.c
+index 7cd08268f3b9..0fa27b36bb8e 100644
+--- a/drivers/staging/r8188eu/core/rtw_fw.c
++++ b/drivers/staging/r8188eu/core/rtw_fw.c
+@@ -14,37 +14,27 @@
+ 	(le16_to_cpu(_fwhdr->Signature) & 0xFFF0) == 0x2300 ||	\
+ 	(le16_to_cpu(_fwhdr->Signature) & 0xFFF0) == 0x88E0)
+ 
+-/*  This structure must be careful with byte-ordering */
+-
+ struct rt_firmware_hdr {
+-	/*  8-byte alinment required */
+-	/*  LONG WORD 0 ---- */
+ 	__le16		Signature;	/* 92C0: test chip; 92C,
+ 					 * 88C0: test chip; 88C1: MP A-cut;
+ 					 * 92C1: MP A-cut */
+-	u8		Category;	/*  AP/NIC and USB/PCI */
+-	u8		Function;	/*  Reserved for different FW function
+-					 *  indcation, for further use when
+-					 *  driver needs to download different
+-					 *  FW for different conditions */
+-	__le16		Version;	/*  FW Version */
+-	u8		Subversion;	/*  FW Subversion, default 0x00 */
++	u8		Category;	/* AP/NIC and USB/PCI */
++	u8		Function;	/* Reserved for different FW function
++					 * indcation, for further use when
++					 * driver needs to download different
++					 * FW for different conditions */
++	__le16		Version;	/* FW Version */
++	u8		Subversion;	/* FW Subversion, default 0x00 */
+ 	u8		Rsvd1;
+-
+-	/*  LONG WORD 1 ---- */
+-	u8		Month;	/*  Release time Month field */
+-	u8		Date;	/*  Release time Date field */
+-	u8		Hour;	/*  Release time Hour field */
+-	u8		Minute;	/*  Release time Minute field */
+-	__le16		RamCodeSize;	/*  The size of RAM code */
++	u8		Month;		/* Release time Month field */
++	u8		Date;		/* Release time Date field */
++	u8		Hour;		/* Release time Hour field */
++	u8		Minute;		/* Release time Minute field */
++	__le16		RamCodeSize;	/* The size of RAM code */
+ 	u8		Foundry;
+ 	u8		Rsvd2;
+-
+-	/*  LONG WORD 2 ---- */
+-	__le32		SvnIdx;	/*  The SVN entry index */
++	__le32		SvnIdx;		/* The SVN entry index */
+ 	__le32		Rsvd3;
+-
+-	/*  LONG WORD 3 ---- */
+ 	__le32		Rsvd4;
+ 	__le32		Rsvd5;
+ };
 -- 
 2.35.1
 
