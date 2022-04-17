@@ -2,77 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FE8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 12:30:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF0E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 12:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233894AbiDQMcu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 08:32:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50694 "EHLO
+        id S234055AbiDQMmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 08:42:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231488AbiDQMcs (ORCPT
+        with ESMTP id S229565AbiDQMmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 08:32:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF716DEA9;
-        Sun, 17 Apr 2022 05:30:13 -0700 (PDT)
+        Sun, 17 Apr 2022 08:42:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A013222529;
+        Sun, 17 Apr 2022 05:40:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7EB1BB80B83;
-        Sun, 17 Apr 2022 12:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 18519C385A4;
-        Sun, 17 Apr 2022 12:30:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 266A2611DA;
+        Sun, 17 Apr 2022 12:40:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 855E7C385A8;
+        Sun, 17 Apr 2022 12:40:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650198611;
-        bh=o/0z0cSTiJx0WM+KrWfPxlkZPrjpZ7Llch6HOsEHINE=;
+        s=k20201202; t=1650199214;
+        bh=8aesVbcwycKDFh52PyLuSVq0ROPJJkJWbNquk46DqO0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JHlVdbmVdxZqotMNLILNbbl3JU+akKt6x8XxYjDdzB2Vf4XfOkSlc/tT3vPqKDzDM
-         gnMfLsHhCeb8ZSyxQ92grUeP2tBYvygQAKEL7T5n7NxibdskcX4/k0T9Ldk5WJmwzz
-         DFzStLf5pW0XEASkCKFPQnvejtxex+hOgQluf0rN4OtMOZdgFlpKz9br/3yLHammHe
-         zhwLA6xf9e8AHpZbeW+tn8XUTLn4A1guPAL10r61PxXkASkzhtGCggLUZ5G/GyQ5Xa
-         W9CzjQ3X4SY0+MgAGP2U0ITj11QZ1B+GRndls572QYWjXoJuE3PsQtSRq64G0nS6hb
-         +82QOvPoLHjtA==
+        b=X/t+pF7h9sGAh5J94WA2K0Pd5E+qAmLmwVv/xJgVi0fNwLwjkm/t9IaRUuXb6lSbY
+         xg5iqFZ4OGlrC7lE5ikB8qpSjbAfB+zxc077r3P4nRfSPK6VmxQHdWV+bU3t+W7r36
+         R0y8xKiJFufUdWZcMA7tyP4n/+J5LCpeWGhUV5DQGDnhazI1MSp4R0eE2axT7HZbmu
+         I+0cJNpC7w1UDxtksKO6Pm2RFlSZNBOlvh6tmVlayN1UWNXOenWrET+06dszlGZwIz
+         uNxHckzfJ40FF/im79Tat2PPUKaZaEW2MioeHjBKw1l+UKWlXgNWnB1xLmG0dP3kIV
+         yM1Z5PYAH2BJg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E98F9E8DD6A;
-        Sun, 17 Apr 2022 12:30:10 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6D96FE7399D;
+        Sun, 17 Apr 2022 12:40:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v6] net/ipv6: Introduce accept_unsolicited_na knob to
- implement router-side changes for RFC9131
+Subject: Re: [net-next PATCH v3 0/6] Reduce qca8k_priv space usage
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165019861094.3969.10708842046305944701.git-patchwork-notify@kernel.org>
-Date:   Sun, 17 Apr 2022 12:30:10 +0000
-References: <20220415083402.39080-1-aajith@arista.com>
-In-Reply-To: <20220415083402.39080-1-aajith@arista.com>
-To:     Arun Ajith S <aajith@arista.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        dsahern@kernel.org, yoshfuji@linux-ipv6.org, kuba@kernel.org,
-        pabeni@redhat.com, corbet@lwn.net, prestwoj@gmail.com,
-        gilligan@arista.com, noureddine@arista.com, gk@arista.com
+Message-Id: <165019921444.7317.254288819022934334.git-patchwork-notify@kernel.org>
+Date:   Sun, 17 Apr 2022 12:40:14 +0000
+References: <20220415233017.23275-1-ansuelsmth@gmail.com>
+In-Reply-To: <20220415233017.23275-1-ansuelsmth@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 15 Apr 2022 08:34:02 +0000 you wrote:
-> Add a new neighbour cache entry in STALE state for routers on receiving
-> an unsolicited (gratuitous) neighbour advertisement with
-> target link-layer-address option specified.
-> This is similar to the arp_accept configuration for IPv4.
-> A new sysctl endpoint is created to turn on this behaviour:
-> /proc/sys/net/ipv6/conf/interface/accept_unsolicited_na.
+On Sat, 16 Apr 2022 01:30:11 +0200 you wrote:
+> These 6 patch is a first attempt at reducting qca8k_priv space.
+> The code changed a lot during times and we have many old logic
+> that can be replaced with new implementation
+> 
+> The first patch drop the tracking of MTU. We mimic what was done
+> for mtk and we change MTU only when CPU port is changed.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v6] net/ipv6: Introduce accept_unsolicited_na knob to implement router-side changes for RFC9131
-    https://git.kernel.org/netdev/net-next/c/f9a2fb73318e
+  - [net-next,v3,1/6] net: dsa: qca8k: drop MTU tracking from qca8k_priv
+    https://git.kernel.org/netdev/net-next/c/69fd055957a0
+  - [net-next,v3,2/6] net: dsa: qca8k: drop port_sts from qca8k_priv
+    https://git.kernel.org/netdev/net-next/c/2b8fd87af7f1
+  - [net-next,v3,3/6] net: dsa: qca8k: rework and simplify mdiobus logic
+    https://git.kernel.org/netdev/net-next/c/8255212e4130
+  - [net-next,v3,4/6] net: dsa: qca8k: drop dsa_switch_ops from qca8k_priv
+    https://git.kernel.org/netdev/net-next/c/2349b83a2486
+  - [net-next,v3,5/6] net: dsa: qca8k: correctly handle mdio read error
+    https://git.kernel.org/netdev/net-next/c/6cfc03b60220
+  - [net-next,v3,6/6] net: dsa: qca8k: unify bus id naming with legacy and OF mdio bus
+    https://git.kernel.org/netdev/net-next/c/8d1af50842bf
 
 You are awesome, thank you!
 -- 
