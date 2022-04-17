@@ -2,104 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0948AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 11:49:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E81C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 12:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234007AbiDQLvc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 07:51:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59834 "EHLO
+        id S234015AbiDQMGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 08:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232401AbiDQLvb (ORCPT
+        with ESMTP id S232401AbiDQMGD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 07:51:31 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7A4344E0
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 04:48:55 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id y20so2509865eju.7
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 04:48:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4Sb5MwZlN2yMxpkxo8ReoYsChI1LsnLBd53l7qgtB8w=;
-        b=JTBU4huSWjw4WvyksFXfBs27pd8RjBvsyNEFTQzVek49lRGs1jiwoFrXWbVnlsBKlg
-         oCy71aLpG2lUS0ALxfq3/6RI6bCm7jOW3mDd9XMt2Iu0caeRjEv3AYCjvKpClOkK6gn2
-         1fOcnP9VGPe52CYu8TLDUmntewJg4pxf2GGVdJDp+cZt67aJmf/Z88hHYlVzwy9K7Z2i
-         nzvZ3MsP8HL1gIb61hhYbRsb+5n8xEe4/+H6LA9537ePpzyLTqy+9CxNPIlBGSVuJq1v
-         0JfILfnGGvUg0jm23ydC8fWxH+022UxHoHyqe+fOVWDl5xPGPrRcLwOycDC4Py4qEFq2
-         PVpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4Sb5MwZlN2yMxpkxo8ReoYsChI1LsnLBd53l7qgtB8w=;
-        b=ZGRoIGkOV1vzL0LCBZaA5Dmlv8R2vVJwJrcezL5McqY8UQGL1TMn4N0hptZTJktCrl
-         oRSMghA8zLzUGqEdDV8Su03XCcK6q0kmJ2FfjXYxaiLPjS77G33yls9hJNIYuzsvMTDN
-         AoMQ55nJc26QUdYZ4CL0co6gGyHR/6T8cvfqLdjlUs54e8pFNMJHOw+jFQ7dmTS019aV
-         /E61ZZdfPG6TzwgOjEtXQJ+g+o3V3cXev0Db95yb2C8+HWJPf8pw4B3G96PbdW6jWpUZ
-         ZE/82Nn1iJZK9l5SyS4pxaOpekXkwLw/SuqFzikditJ/C4T6JTiVTCxPOUyaYdqCRYrx
-         Uz0g==
-X-Gm-Message-State: AOAM533ZqL610QcGpATMfra/S4RSosqwbbZSQI1yzJLATURQyglwXaab
-        fL3l1OEFKYdcaE8BW/1+v9zd9w==
-X-Google-Smtp-Source: ABdhPJywdz0cASNHVewBWwUezqR/0l3LQF0BqQXVnJx7pQzrjX6eK/IeXLoBuBLaSaz4iyUJcASnDg==
-X-Received: by 2002:a17:906:dc93:b0:6e8:8d81:b4bb with SMTP id cs19-20020a170906dc9300b006e88d81b4bbmr5526764ejc.32.1650196134186;
-        Sun, 17 Apr 2022 04:48:54 -0700 (PDT)
-Received: from localhost.localdomain ([134.195.101.46])
-        by smtp.gmail.com with ESMTPSA id w1-20020a1709064a0100b006e89334f5dfsm3510574eju.136.2022.04.17.04.48.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Apr 2022 04:48:53 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        James Clark <james.clark@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH] perf script: Always allow field 'data_src' for auxtrace
-Date:   Sun, 17 Apr 2022 19:48:37 +0800
-Message-Id: <20220417114837.839896-1-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sun, 17 Apr 2022 08:06:03 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA7CC23BC7;
+        Sun, 17 Apr 2022 05:03:26 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app2 (Coremail) with SMTP id by_KCgB3pMT6AVxihfvuAQ--.19863S2;
+        Sun, 17 Apr 2022 20:03:12 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-kernel@vger.kernel.org
+Cc:     gregkh@linuxfoundation.org, davem@davemloft.net,
+        alexander.deucher@amd.com, akpm@linux-foundation.org,
+        broonie@kernel.org, linux-usb@vger.kernel.org,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH] drivers: usb: host: Fix deadlock in oxu_bus_suspend()
+Date:   Sun, 17 Apr 2022 20:03:05 +0800
+Message-Id: <20220417120305.64577-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: by_KCgB3pMT6AVxihfvuAQ--.19863S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Gr1ftr4xWw1DXw43ArW5ZFb_yoW8JrW7pr
+        4qgryayr1Utr42gFyUCa1DZa4rGa1DW3yUCrW7G39xZ3W8XF45GF1vyrWFgF4aqFsrJwnI
+        vF1Fq3y3CF4DCaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUk21xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2
+        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
+        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
+        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
+        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv
+        6cx26r4fKr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGw
+        C20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48J
+        MIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMI
+        IF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E
+        87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUoOJ5UUUUU
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwDAVZdtZOglAAOsb
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If use command 'perf script -F,+data_src' to dump memory samples with
-Arm SPE trace data, it reports error:
+There is a deadlock in oxu_bus_suspend(), which is shown below:
 
-  # perf script -F,+data_src
-  Samples for 'dummy:u' event do not have DATA_SRC attribute set. Cannot print 'data_src' field.
+   (Thread 1)              |      (Thread 2)
+                           | timer_action()
+oxu_bus_suspend()          |  mod_timer()
+ spin_lock_irq() //(1)     |  (wait a time)
+ ...                       | oxu_watchdog()
+ del_timer_sync()          |  spin_lock_irq() //(2)
+ (wait timer to stop)      |  ...
 
-This is because the 'dummy:u' event is absent DATA_SRC bit in its sample
-type, so if a file contains AUX area tracing data then always allow
-field 'data_src' to be selected as an option for perf script.
+We hold oxu->lock in position (1) of thread 1, and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need oxu->lock in position (2) of thread 2. As a result,
+oxu_bus_suspend() will block forever.
 
-Fixes: e55ed3423c1b ("perf arm-spe: Synthesize memory event")
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irq(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 ---
- tools/perf/builtin-script.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/host/oxu210hp-hcd.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
-index a2f117936188..cf5eab5431b4 100644
---- a/tools/perf/builtin-script.c
-+++ b/tools/perf/builtin-script.c
-@@ -461,7 +461,7 @@ static int evsel__check_attr(struct evsel *evsel, struct perf_session *session)
- 		return -EINVAL;
+diff --git a/drivers/usb/host/oxu210hp-hcd.c b/drivers/usb/host/oxu210hp-hcd.c
+index b741670525e..ee403df3309 100644
+--- a/drivers/usb/host/oxu210hp-hcd.c
++++ b/drivers/usb/host/oxu210hp-hcd.c
+@@ -3909,8 +3909,10 @@ static int oxu_bus_suspend(struct usb_hcd *hcd)
+ 		}
+ 	}
  
- 	if (PRINT_FIELD(DATA_SRC) &&
--	    evsel__check_stype(evsel, PERF_SAMPLE_DATA_SRC, "DATA_SRC", PERF_OUTPUT_DATA_SRC))
-+	    evsel__do_check_stype(evsel, PERF_SAMPLE_DATA_SRC, "DATA_SRC", PERF_OUTPUT_DATA_SRC, allow_user_set))
- 		return -EINVAL;
++	spin_unlock_irq(&oxu->lock);
+ 	/* turn off now-idle HC */
+ 	del_timer_sync(&oxu->watchdog);
++	spin_lock_irq(&oxu->lock);
+ 	ehci_halt(oxu);
+ 	hcd->state = HC_STATE_SUSPENDED;
  
- 	if (PRINT_FIELD(WEIGHT) &&
 -- 
-2.25.1
+2.17.1
 
