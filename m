@@ -2,121 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96922C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 17:52:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41870C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 17:55:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234656AbiDQRzD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 13:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54158 "EHLO
+        id S234666AbiDQR5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 13:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231895AbiDQRy6 (ORCPT
+        with ESMTP id S233437AbiDQR50 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 13:54:58 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2201A7;
-        Sun, 17 Apr 2022 10:52:22 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id n17so9769718ljc.11;
-        Sun, 17 Apr 2022 10:52:22 -0700 (PDT)
+        Sun, 17 Apr 2022 13:57:26 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D84DACD5
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 10:54:49 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id i27so23510438ejd.9
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 10:54:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=IZcS1862k/wOZXv/1MDZH2jzk4RBMFR/rIwyADVF1tM=;
-        b=c5wBxrs+myyz+cehvr7adR+iHhrVPmrSAcQyhSuI0tCfIFBHr+kQonM7ZapnzMu6hK
-         VTepduyqYRCgvQKVn4wBxhxqzSaF85Q5pP0FwjV5d7pGN0ALfpOrkLIwu5uFfcDb/P6F
-         2ec/AuOPy4bIQmp+9lLXtGHfUVig5HzpLTsbg3ZrSTwi0Gye0Ccc640hT4YQZM3RSg5s
-         T5AZJvPH8lXNcP77vH/DQS5FfZdPDkMTXPWvAwJKdut1xLeddN67TMHbCkk7sZMBpLui
-         XA8i6tvGiFeCOZiPcMWz36iRsim34kNW7g1mQTf32htOwDsORlFu/OurBu3fZ8yG4OCg
-         ht9Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=sZTBfR/A89syNfUStFLmnUWCQR/KrbeiEyXxR04D+i4=;
+        b=JbNAEqTXiQowm2n17xTXw3p55q/678/g4P2W8R2+Gq8DZeXcdqZKHqBnon1GuG6Rco
+         e+gzkl0dUhLAp/TcbnXCaju0oWLkNLeHKiTQrWVZ2ORSxBWhtPvMQgBFM7qmM7hsgsP0
+         WdADsG+v+sECo5fkpt0CapJF6C8QFMK4XmpS+2m1fcqEl9vbDMuIKrhBQk+KQ24OL21U
+         PlbPKzuwYFpsSowSiSBIusykAvZUxwvCaxt5ihrYNeimVQO4X+1reeb1I5oHP+F8aFFk
+         mCKF8hm0HWf+WVYEZnunVTD9eLk/rVRJRUoeMRiMp/IW64KXsdbvjeAPr/Mnc3yl59SF
+         ID8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IZcS1862k/wOZXv/1MDZH2jzk4RBMFR/rIwyADVF1tM=;
-        b=w9C5lX4sFWWzy+8yyEeMBEORDdOqy6vhuBu/Rpgx3rNUR+zluJJMrYZWRGe53WYJS1
-         1QuPbZcjKvC/bN+yvEaAPZwIwK9z8zNwQwEpjbQIW+SPTAhbipyv5WQQK96HtnujZVGo
-         TGqw2+JKwdYfr2h0V2HImL+U1y38FHWKe7f6Ls0e2P3WCX5gV3KuDHjVZNjN5DdSgFeJ
-         krTvKiYFI6CGD4NutYh9h14E1kwJkpfPHlKuwMIJkL5Cz7FokFHrU3KLIlPwOUfbc6DU
-         qs6tQdq3Lz25AAMFlu+uy+hrpqouTtUpVp5bwRh8v9pZRVpAMsLkr+ueO+ZFvEdFFOHm
-         F2Uw==
-X-Gm-Message-State: AOAM530r9VdelNmH+ixA5GzYsVbWAZuV8HbtcHBsyvtQSTa6O+aB6gHq
-        QnKUuCv1Sfk0/6oHDrZhYSo=
-X-Google-Smtp-Source: ABdhPJwl+zeVHdLsYsIQO9j/HfEbk61S41aUMvo2tIXvVDXpxCbV5pZ2B4dJP/52nbkfTRVemrlkNg==
-X-Received: by 2002:a05:651c:b29:b0:24b:6aaf:f200 with SMTP id b41-20020a05651c0b2900b0024b6aaff200mr5226345ljr.168.1650217940142;
-        Sun, 17 Apr 2022 10:52:20 -0700 (PDT)
-Received: from mobilestation (ip1.ibrae.ac.ru. [91.238.191.1])
-        by smtp.gmail.com with ESMTPSA id v4-20020a2e7a04000000b0024db637f51bsm330973ljc.84.2022.04.17.10.52.18
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=sZTBfR/A89syNfUStFLmnUWCQR/KrbeiEyXxR04D+i4=;
+        b=oDEGDpPR7HIl8yNKrF8iwm3Oo7zBFuaEl71Ey7YjXAZw77Oo6tEIJ2XSQlkXOd9MW9
+         48OR60T3ml5SkP/ZfZUPHaxvkrm1fyLpUT45PpO7lXuPJaxZlyZ1yLw04W4663UN7eE1
+         lP2Dguc/CSr6W1HD7LLRu+Zlc8FEkRwoJ6OOFQiy6he8fyrx0G7w/8NlEzeRh3lPg9VA
+         dMpdJ/QmDRk9gzajTZKgttoV87SsAzPhMG9JJFkaKMVzvq8WracmaQKLe5CnnKREBIkW
+         K1lk80I/6t5XPUoQ8fYRq313C32nQ8BGqD2q8PIjSdsJeBmFxkPB02/98XUEy3Noa38A
+         nitw==
+X-Gm-Message-State: AOAM5312Gf4XbvSbgE8dFViia7lLdlvjKKDZmelZouuUsXruaGsuNOXK
+        pLZsIPdXr48Qxht5MRPFkUk=
+X-Google-Smtp-Source: ABdhPJwXoFfnrFhj0GsJ8c2wFNj++cwxFiLjiiIn68WECW8SJS8vyxTlSYWX4RZpIp6goCLoEzlxXA==
+X-Received: by 2002:a17:907:948b:b0:6d8:27f8:ab4a with SMTP id dm11-20020a170907948b00b006d827f8ab4amr6363899ejc.39.1650218088398;
+        Sun, 17 Apr 2022 10:54:48 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abba5.dynamic.kabel-deutschland.de. [95.90.187.165])
+        by smtp.gmail.com with ESMTPSA id jw12-20020a17090776ac00b006e87137194esm3719409ejc.150.2022.04.17.10.54.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Apr 2022 10:52:19 -0700 (PDT)
-Date:   Sun, 17 Apr 2022 20:52:17 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 10/16] PCI: dwc: Drop iATU regions enumeration -
- dw_pcie_region_type
-Message-ID: <20220417175217.zho6vzovfkoypo7q@mobilestation>
-References: <20220324013734.18234-1-Sergey.Semin@baikalelectronics.ru>
- <20220324013734.18234-11-Sergey.Semin@baikalelectronics.ru>
- <YkMmRrF0e7WyvKsO@robh.at.kernel.org>
+        Sun, 17 Apr 2022 10:54:47 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH v4 1/8] staging: r8188eu: fix struct rt_firmware_hdr
+Date:   Sun, 17 Apr 2022 19:54:34 +0200
+Message-Id: <20220417175441.13830-2-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220417175441.13830-1-straube.linux@gmail.com>
+References: <20220417175441.13830-1-straube.linux@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkMmRrF0e7WyvKsO@robh.at.kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 10:31:18AM -0500, Rob Herring wrote:
-> On Thu, Mar 24, 2022 at 04:37:28AM +0300, Serge Semin wrote:
-> > There is no point in having the dw_pcie_region_type enumeration for almost
-> > the same reasons as it was stated for dw_pcie_as_type. First of all it's
-> > redundant since the driver already has a set of macro declared which
-> > describe the possible inbound and outbound iATU regions. Having an
-> > addition abstraction just needlessly complicates the code. Secondly
-> > checking the region index passed to the dw_pcie_disable_atu() method for
-> > validity is pointless since the erroneous situation will be just
-> > ignored in the current code implementation. So to speak let's drop the
-> > redundant dw_pcie_region_type enumeration replacing it with the direct
-> > iATU direction macro usage.
-> > 
-> > While at it we suggest to convert the dw_pcie_disable_atu() method to
-> > being more consistent with the dw_pcie_readl_atu{_ib}() and
-> > dw_pcie_readl_atu{_ob}() functions by having the direction parameter
-> > specified ahead of the region index. Thus the code will be a little bit
-> > more pleasant to read.
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > ---
-> >  drivers/pci/controller/dwc/pcie-designware-ep.c  |  4 ++--
-> >  .../pci/controller/dwc/pcie-designware-host.c    |  2 +-
-> >  drivers/pci/controller/dwc/pcie-designware.c     | 16 +---------------
-> >  drivers/pci/controller/dwc/pcie-designware.h     |  9 +--------
-> >  4 files changed, 5 insertions(+), 26 deletions(-)
-> 
+The size of struct rt_firmware_hdr is 36 bytes.
 
-> This answers my question. I would have expected this to come before the 
-> previous patch, but if it's easier to do it this way it's fine.
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
+$ pahole -C rt_firmware_hdr drivers/staging/r8188eu/r8188eu.o
+struct rt_firmware_hdr {
+        __le16                     Signature;            /*     0     2 */
+        u8                         Category;             /*     2     1 */
+        u8                         Function;             /*     3     1 */
+        __le16                     Version;              /*     4     2 */
+        u8                         Subversion;           /*     6     1 */
 
-I thought about placing this patch before the previous one, but it
-turned a bit easier for me to split the changes in the reverse order.
-It has made this patch a bit smaller and more coherent. But seeing you
-weren't happy with too many changes in the previous patch I'll do as
-you suggest and change the patches order. Since the patch content will
-be changed I won't add your reviewed-by tag there on v2. So please
-consider re-reviewing it one more time.
+        /* XXX 1 byte hole, try to pack */
 
--Sergey
+        u16                        Rsvd1;                /*     8     2 */
+        u8                         Month;                /*    10     1 */
+        u8                         Date;                 /*    11     1 */
+        u8                         Hour;                 /*    12     1 */
+        u8                         Minute;               /*    13     1 */
+        __le16                     RamCodeSize;          /*    14     2 */
+        u8                         Foundry;              /*    16     1 */
+        u8                         Rsvd2;                /*    17     1 */
+
+        /* XXX 2 bytes hole, try to pack */
+
+        __le32                     SvnIdx;               /*    20     4 */
+        u32                        Rsvd3;                /*    24     4 */
+        u32                        Rsvd4;                /*    28     4 */
+        u32                        Rsvd5;                /*    32     4 */
+
+        /* size: 36, cachelines: 1, members: 17 */
+        /* sum members: 33, holes: 2, sum holes: 3 */
+        /* last cacheline: 36 bytes */
+};
+
+But the header in the firmware file is only 32 bytes long.
+
+The hexdump of rtl8188eufw.bin shows that the field Rsvd1 should be u8
+instead of __le16.
+
+OFFSET      rtl8188eufw.bin
+-----------------------------------------------------------
+0x00000000  E1 88 10 00 0B 00 01 00 01 21 11 27 30 36 00 00
+0x00000010  2D 07 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+0x00000000  E1 88 10 00 0B 00 01  00     01     21    11    27 30 36 00 00
+                              ^   ^      ^      ^     ^     ^
+                     Subversion   Rsvd1  Month  Date  Hour  Minute
+
+With the change of field Rsvd1 from __le16 to u8 the structure has the
+correct size 32.
+
+$ pahole -C rt_firmware_hdr drivers/staging/r8188eu/r8188eu.o
+struct rt_firmware_hdr {
+        __le16                     Signature;            /*     0     2 */
+        u8                         Category;             /*     2     1 */
+        u8                         Function;             /*     3     1 */
+        __le16                     Version;              /*     4     2 */
+        u8                         Subversion;           /*     6     1 */
+        u8                         Rsvd1;                /*     7     1 */
+        u8                         Month;                /*     8     1 */
+        u8                         Date;                 /*     9     1 */
+        u8                         Hour;                 /*    10     1 */
+        u8                         Minute;               /*    11     1 */
+        __le16                     RamCodeSize;          /*    12     2 */
+        u8                         Foundry;              /*    14     1 */
+        u8                         Rsvd2;                /*    15     1 */
+        __le32                     SvnIdx;               /*    16     4 */
+        u32                        Rsvd3;                /*    20     4 */
+        u32                        Rsvd4;                /*    24     4 */
+        u32                        Rsvd5;                /*    28     4 */
+
+        /* size: 32, cachelines: 1, members: 17 */
+        /* last cacheline: 32 bytes */
+
+The wrong size had no effect because the header size is hardcoded to
+32 where it is used in the code and the fields after Subversion are
+not used.
+
+Fixes: 7884fc0a1473 ("staging: r8188eu: introduce new include dir for RTL8188eu driver")
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+---
+v4:
+- no changes
+
+v3:
+- updated the commit message
+- moved the u32 to __le32 conversions to a separate patch
+
+v2:
+- no changes
+
+ drivers/staging/r8188eu/core/rtw_fw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_fw.c b/drivers/staging/r8188eu/core/rtw_fw.c
+index 8620f3c92b52..eb4ab11f6b28 100644
+--- a/drivers/staging/r8188eu/core/rtw_fw.c
++++ b/drivers/staging/r8188eu/core/rtw_fw.c
+@@ -29,7 +29,7 @@ struct rt_firmware_hdr {
+ 					 *  FW for different conditions */
+ 	__le16		Version;	/*  FW Version */
+ 	u8		Subversion;	/*  FW Subversion, default 0x00 */
+-	u16		Rsvd1;
++	u8		Rsvd1;
+ 
+ 	/*  LONG WORD 1 ---- */
+ 	u8		Month;	/*  Release time Month field */
+-- 
+2.35.1
 
