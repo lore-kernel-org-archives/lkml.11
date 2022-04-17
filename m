@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B38DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 10:22:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06061C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 10:22:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233975AbiDQKZ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 06:25:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59884 "EHLO
+        id S233965AbiDQKZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 06:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233914AbiDQKZO (ORCPT
+        with ESMTP id S233917AbiDQKZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 17 Apr 2022 06:25:14 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5657A27FC0
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D6D27FCA
         for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 03:22:39 -0700 (PDT)
 Received: from dslb-188-096-140-061.188.096.pools.vodafone-ip.de ([188.96.140.61] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1ng239-0002FP-6G; Sun, 17 Apr 2022 12:22:35 +0200
+        id 1ng236-0002FP-Rk; Sun, 17 Apr 2022 12:22:32 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -27,9 +27,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 6/6] staging: r8188eu: use ARRAY_SIZE for mlme_sta_tbl
-Date:   Sun, 17 Apr 2022 12:22:21 +0200
-Message-Id: <20220417102221.466524-7-martin@kaiser.cx>
+Subject: [PATCH 3/6] staging: r8188eu: the frame type is shifted out
+Date:   Sun, 17 Apr 2022 12:22:18 +0200
+Message-Id: <20220417102221.466524-4-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220417102221.466524-1-martin@kaiser.cx>
 References: <20220417102221.466524-1-martin@kaiser.cx>
@@ -39,27 +39,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use ARRAY_SIZE instead of hard-coding the number of entries in the
-mlme_sta_tbl array.
+The index calculation in mgt_dispatcher does not use the frame type. The
+4-bit right shift ignores protocol version and frame type.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/core/rtw_mlme_ext.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-index abb910f33c1c..973adebdd69c 100644
+index be1afabe77d1..77a14f55b743 100644
 --- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
 +++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-@@ -404,7 +404,7 @@ void mgt_dispatcher(struct adapter *padapter, struct recv_frame *precv_frame)
- 		return;
+@@ -408,8 +408,7 @@ void mgt_dispatcher(struct adapter *padapter, struct recv_frame *precv_frame)
  
- 	index = (le16_to_cpu(hdr->frame_control) & IEEE80211_FCTL_STYPE) >> 4;
--	if (index > 13)
-+	if (index > ARRAY_SIZE(mlme_sta_tbl))
- 		return;
- 	fct = mlme_sta_tbl[index];
+ 	ptable = mlme_sta_tbl;
  
+-	index = (le16_to_cpu(hdr->frame_control) &
+-		 (IEEE80211_FCTL_STYPE | IEEE80211_FCTL_FTYPE)) >> 4;
++	index = (le16_to_cpu(hdr->frame_control) & IEEE80211_FCTL_STYPE) >> 4;
+ 	if (index > 13)
+ 		return;
+ 	ptable += index;
 -- 
 2.30.2
 
