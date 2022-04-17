@@ -2,85 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD0AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 08:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84C8CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 08:45:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233733AbiDQIqa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 04:46:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35766 "EHLO
+        id S233715AbiDQIrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 04:47:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233706AbiDQIqY (ORCPT
+        with ESMTP id S233429AbiDQIr3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 04:46:24 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D640722BDA
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 01:43:48 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1ng0VJ-003jWG-6P; Sun, 17 Apr 2022 18:43:34 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Sun, 17 Apr 2022 16:43:33 +0800
-Date:   Sun, 17 Apr 2022 16:43:33 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Ard Biesheuvel <ardb@kernel.org>, Will Deacon <will@kernel.org>,
-        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
- ARCH_KMALLOC_MINALIGN
-Message-ID: <YlvTNQGh+MfZFWKW@gondor.apana.org.au>
-References: <YlVxGAHHD/j6lW3c@arm.com>
- <CAMj1kXGCR833rqKOetj8ykQ8XtDCWbszJYVtVKvLpDLWnM=B5w@mail.gmail.com>
- <YlaOIbSA7B/G9222@arm.com>
- <YlkV7NtatO7KFusX@gondor.apana.org.au>
- <CAMj1kXFW_zC-U5Ox9_=4gKCwWOmkR7wPNb6UQhiz8viNWTRU-w@mail.gmail.com>
- <YlkkGpVx8rhcsBot@gondor.apana.org.au>
- <YllALIgZcQJ6asdA@arm.com>
- <YlllpH+PB8XVUn6h@arm.com>
- <YlvLqkIdrCp/rOsG@gondor.apana.org.au>
- <YlvSEHul1Rv3Ap34@arm.com>
+        Sun, 17 Apr 2022 04:47:29 -0400
+X-Greylist: delayed 410 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 17 Apr 2022 01:44:50 PDT
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050:0:465::102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46F1C72
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 01:44:50 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4Kh3Nh2DcQz9sPr;
+        Sun, 17 Apr 2022 10:37:56 +0200 (CEST)
+Date:   Sun, 17 Apr 2022 10:37:51 +0200
+From:   Andreas-Christian Hagau <ach@hagau.se>
+To:     Brendan Higgins <brendanhiggins@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] Documentation: kunit: change complete_and_exit to
+ kthread_complete_and_exit
+Message-ID: <20220417102807.10b91497ed@19d04f311a0a9de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YlvSEHul1Rv3Ap34@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 17, 2022 at 09:38:40AM +0100, Catalin Marinas wrote:
-> 
-> I don't think we need to do anything here. A structure like:
-> 
-> struct x {
-> 	char y;
-> 	char z[] CRYPTO_MINALIGN_ATTR;
-> };
-> 
-> is already of size 128. Without CRYPTO_MINALIGN_ATTR, its size would be
-> 1 but otherwise the whole structure inherits the alignment of its
-> member and this translates into an aligned size.
+Commit cead18552660 ("exit: Rename complete_and_exit to
+kthread_complete_and_exit") renamed complete_and_exit to
+kthread_complete_and_exit.
 
-No we should not lie to the compiler, we have code elsewhere
-that uses the alignment to compute the amount of extra padding
-needed to create greater padding.  If CRYPTO_MINALIGN is misleading
-then that calculation will fall apart.
+Signed-off-by: Andreas-Christian Hagau <ach@hagau.se>
+---
+ Documentation/dev-tools/kunit/architecture.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-So keep CRYPTO_MINALIGN at whatever alignment you lower kmalloc
-to, and then add the padding you need to separate the Crypto API
-bits from the context.  In fact, that is exactly what cra_alignmask
-is supposed to do.
-
-Sure we currently limit the maximum alignment to 64 bytes because
-of stack usage but we can certainly look into increasing it as
-that's what you're doing here anyway.
-
-Cheers,
+diff --git a/Documentation/dev-tools/kunit/architecture.rst b/Documentation/dev-tools/kunit/architecture.rst
+index ff9c85a0bff21..cf9e6e3eeae4c 100644
+--- a/Documentation/dev-tools/kunit/architecture.rst
++++ b/Documentation/dev-tools/kunit/architecture.rst
+@@ -125,7 +125,7 @@ All expectations/assertions are formatted as:
+ 		  ``void __noreturn kunit_try_catch_throw(struct kunit_try_catch *try_catch)``.
+ 
+ 		- ``kunit_try_catch_throw`` calls function:
+-		  ``void complete_and_exit(struct completion *, long) __noreturn;``
++		  ``void kthread_complete_and_exit(struct completion *, long) __noreturn;``
+ 		  and terminates the special thread context.
+ 
+ - ``<op>`` denotes a check with options: ``TRUE`` (supplied property
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.35.1
+
