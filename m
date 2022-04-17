@@ -2,98 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B4BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 13:14:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3313C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 13:29:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234149AbiDQNRB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 09:17:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52334 "EHLO
+        id S234174AbiDQNaH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 09:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbiDQNRA (ORCPT
+        with ESMTP id S234165AbiDQNaB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 09:17:00 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ED7D4BA5;
-        Sun, 17 Apr 2022 06:14:23 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app4 (Coremail) with SMTP id cS_KCgA3rqWmElxiir9bAQ--.56903S2;
-        Sun, 17 Apr 2022 21:14:18 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org
-Cc:     mustafa.ismail@intel.com, shiraz.saleem@intel.com, jgg@ziepe.ca,
-        leon@kernel.org, linux-rdma@vger.kernel.org,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH V5] drivers: infiniband: hw: Fix deadlock in irdma_cleanup_cm_core()
-Date:   Sun, 17 Apr 2022 21:14:14 +0800
-Message-Id: <20220417131414.98144-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cS_KCgA3rqWmElxiir9bAQ--.56903S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Aw13Ar15Xw1rZryxtF43Jrb_yoW8AF4xpr
-        WDW34akryq9F42ka18Xw1kZF9xXwn5XFWqvryvv395ZFn7XFyUAFnFyr1jqFZ8JF9Fgrn3
-        GF1FvryrCF9Ivr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
-        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_
-        JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
-        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxF
-        aVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
-        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxG
-        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJw
-        CI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2
-        z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VU1a9aPUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgoDAVZdtZOq7gAMsv
+        Sun, 17 Apr 2022 09:30:01 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F063FD45
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 06:27:24 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id q3so10506452plg.3
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 06:27:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=2lsv0ntY4n+MI/Hd3e+PEhNvyJ29+Oq+Iyeq2UXcg+Q=;
+        b=yELFNctQNh8f9kq818ppMkx1U+LhZFvvzoNJBrgFCYj8wM16rEoGsJERr95ZJLzq67
+         1ppvMprwsyYqIMq88GVAAKx+l9cXpeWFkYNrgJACHo738WLr9MvgBrqaMXoAtKaHVAv/
+         IIyG/vuxcQOAdSnKZoCqCyU4HC/+W9exGvPxAg4/zv1MuxwWTzbuvFoC27VrsGqbz4io
+         LWmnXaHFVLtxgb10txwAhlwxqQ2vbbG62p8UDzHtDUyM2Ib21uY7g/BJaTbY4AC3ilSW
+         RoSvsasdkeYR0KwSisIFoIz2a1/yPOF9Vd20W6/9YgWyaABfpGDhr5mCu/lBrZfcPkpv
+         gwQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2lsv0ntY4n+MI/Hd3e+PEhNvyJ29+Oq+Iyeq2UXcg+Q=;
+        b=3gXJDcEOObCnOqpsIUlE9PXdOwmj29C6C/ezYzwrG5VsPM5dBe6QoKOzJurD8JzvBG
+         Ufa/LT6cKN/Mj3v4NmzmzHm0ismq1wlFa5nCJZYCs5vmNuy/OMIjCyGsIt4sIkthMPBu
+         2ZKAQpf4UOGatBMiIak7RMDqDRe8lDB9vebbOI6DdmFHOLveHtB/5CNPnzQnOtB4hqRq
+         MuEJBhvYVU1pklxxfMwPzS4o+gvqDA7L66VGqGr79ps85WaP0ooJIDdJLNWSoBafvobe
+         Bacd35yvJAnNx6KGwNxbUF3TR0+7mfGUYn5c/wUaXF5S8O5G3bHRWP5eSRvPxCDlUiQm
+         UVXA==
+X-Gm-Message-State: AOAM531wRhapLB9bHI7HA8xZktd0YmpDMZh+UgoB8jTXJeYLDLUnJQjT
+        6K1tuoOR6TnTFJrMOoPzy68XhagkzhC1ecru
+X-Google-Smtp-Source: ABdhPJw1y3DOoUi6NRe3MQxj9rsC0yTa3f5ata6PXmG6W714zzk2jMCcR08ZklwR9kHaadkF/2yXWQ==
+X-Received: by 2002:a17:902:8698:b0:158:99d4:6256 with SMTP id g24-20020a170902869800b0015899d46256mr7144705plo.104.1650202044452;
+        Sun, 17 Apr 2022 06:27:24 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id s35-20020a17090a2f2600b001cd67e544e4sm10193811pjd.2.2022.04.17.06.27.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 17 Apr 2022 06:27:23 -0700 (PDT)
+Message-ID: <6ab618f8-f88b-0771-a739-04cd9cdc1a3c@kernel.dk>
+Date:   Sun, 17 Apr 2022 07:27:22 -0600
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [syzbot] memory leak in iovec_from_user
+Content-Language: en-US
+To:     syzbot <syzbot+96b43810dfe9c3bb95ed@syzkaller.appspotmail.com>,
+        asml.silence@gmail.com, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <000000000000951a1505dccf8b73@google.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <000000000000951a1505dccf8b73@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a deadlock in irdma_cleanup_cm_core(), which is shown
-below:
+#syz test: git://git.kernel.dk/linux-block io_uring-5.18
 
-   (Thread 1)              |      (Thread 2)
-                           | irdma_schedule_cm_timer()
-irdma_cleanup_cm_core()    |  add_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | irdma_cm_timer_tick()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
-
-We hold cm_core->ht_lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need cm_core->ht_lock in position (2) of thread 2.
-As a result, irdma_cleanup_cm_core() will block forever.
-
-This patch removes the check of timer_pending() in
-irdma_cleanup_cm_core(), because the del_timer_sync()
-function will just return directly if there isn't a
-pending timer. As a result, the lock is redundant,
-because there is no resource it could protect.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in V5:
-  - Remove mod_timer() in irdma_schedule_cm_timer and irdma_cm_timer_tick.
-
- drivers/infiniband/hw/irdma/cm.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
-diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
-index dedb3b7edd8..4b6b1065f85 100644
---- a/drivers/infiniband/hw/irdma/cm.c
-+++ b/drivers/infiniband/hw/irdma/cm.c
-@@ -3251,10 +3251,7 @@ void irdma_cleanup_cm_core(struct irdma_cm_core *cm_core)
- 	if (!cm_core)
- 		return;
- 
--	spin_lock_irqsave(&cm_core->ht_lock, flags);
--	if (timer_pending(&cm_core->tcp_timer))
--		del_timer_sync(&cm_core->tcp_timer);
--	spin_unlock_irqrestore(&cm_core->ht_lock, flags);
-+	del_timer_sync(&cm_core->tcp_timer);
- 
- 	destroy_workqueue(cm_core->event_wq);
- 	cm_core->dev->ws_reset(&cm_core->iwdev->vsi);
 -- 
-2.17.1
+Jens Axboe
 
