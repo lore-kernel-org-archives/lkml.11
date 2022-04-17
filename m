@@ -2,157 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9425DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 11:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1445CC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 11:10:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233958AbiDQK61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 06:58:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47708 "EHLO
+        id S233968AbiDQLMl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 07:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiDQK6W (ORCPT
+        with ESMTP id S233959AbiDQLMh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 06:58:22 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA971010;
-        Sun, 17 Apr 2022 03:55:44 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kh6Nn1xYyzFpXF;
-        Sun, 17 Apr 2022 18:53:13 +0800 (CST)
-Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sun, 17 Apr 2022 18:55:41 +0800
-Received: from huawei.com (10.175.101.6) by dggpemm500017.china.huawei.com
- (7.185.36.178) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 17 Apr
- 2022 18:55:40 +0800
-From:   Wenchao Hao <haowenchao@huawei.com>
-To:     Mike Christie <michael.christie@oracle.com>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        <open-iscsi@googlegroups.com>, <linux-scsi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <linfeilong@huawei.com>, Wenchao Hao <haowenchao@huawei.com>
-Subject: [PATCH v2] scsi: iscsi: Fix multiple iscsi session unbind event sent to userspace
-Date:   Sun, 17 Apr 2022 20:06:28 -0400
-Message-ID: <20220418000627.474784-1-haowenchao@huawei.com>
-X-Mailer: git-send-email 2.32.0
+        Sun, 17 Apr 2022 07:12:37 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAEBBAB;
+        Sun, 17 Apr 2022 04:10:01 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id b15so14728074edn.4;
+        Sun, 17 Apr 2022 04:10:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=scbjRhQc3dC9uDF//ZfZgBhT9QtztPDwfTGJnmb4ISg=;
+        b=h3IZfSoIP7/Hmyn5pnGsTIEOlEKL3fP+UsSqfFr0aSQw8vhp8VaGclKalQIB66fy63
+         kAJRkXG6a5SvBFtm63pDQgbnbwmaM2Y7XuddtkOptmLMWcGVqm/7wAexHdtyFTYTxktd
+         sAddoDsaQKjensJ0AAawyBpATA3OLnhHyPtZAnb9Znh/V8k2eqtgtQp6F7juNKE2kJfJ
+         yM9EZKb4uz14iFQOta+xH/JeES95w+UbrS3l6NRMu6PGRjdetxrR6nit8uzE/Ves+4lm
+         tr/IxTnEr6b2O703juMYKflvQOdbCxXrFHNG2wxJqhv3RaSe6xfox9RFRzn6KbU2DdGP
+         rDuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=scbjRhQc3dC9uDF//ZfZgBhT9QtztPDwfTGJnmb4ISg=;
+        b=MnTliuDmAbfPdG7AP/V+/6WNIYtm8ndGyBLcspGOA+wZAxtCNLLMQLUORwnQ1kRYPv
+         K601nANfxlUQxvRn9qE3uuygXJgkJAQjNusFQ4T5wmu5SHp9lJ7DBM/eVH41MAykIwPr
+         2cvVEbUJyOZzmzJmjknlZyrMaVeT2qXSz94a8QBdADiAXGk0rcsbIfSdYfgSJ4hyjoQa
+         BoRgu84m0CL6Z/jvgv0Zusy85nhEaYGEUohrzB3OOSOnim8JxmOxy7eS16unErwUw39B
+         0jNDfuINGB8U+rAaR3AZFa5GnzZfWzAMh9kKSicR2Vtl9P38s+beO3IIEz2p37OyW43m
+         L+EQ==
+X-Gm-Message-State: AOAM530jxNw5n3BGFPjBZawsmq8EI0qZzWatTLhIV5PXm5Gcu0Itzn4E
+        h66eivzdjUSsB+hUYz6ViCQ=
+X-Google-Smtp-Source: ABdhPJwbNM8JKHydXAk5G7aF0sEd/dSgHhBYR4n2/QrIrj5J3nFjFKBveurtwJ5VzQ0ex/QQJt0djg==
+X-Received: by 2002:a05:6402:1d55:b0:423:e3a9:d455 with SMTP id dz21-20020a0564021d5500b00423e3a9d455mr1505245edb.340.1650193800248;
+        Sun, 17 Apr 2022 04:10:00 -0700 (PDT)
+Received: from linux.. (p5dd1ed70.dip0.t-ipconnect.de. [93.209.237.112])
+        by smtp.gmail.com with ESMTPSA id j2-20020a056402238200b0041f351a8b83sm5382386eda.43.2022.04.17.04.09.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Apr 2022 04:09:59 -0700 (PDT)
+From:   Bean Huo <huobean@gmail.com>
+To:     ulf.hansson@linaro.org, adrian.hunter@intel.com,
+        jakob.rossler@nokia.com, Avri.Altman@wdc.com
+Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bean Huo <beanhuo@micron.com>
+Subject: [PATCH v2] mmc-utils: Add General command CMD56 read support
+Date:   Sun, 17 Apr 2022 13:09:34 +0200
+Message-Id: <20220417110934.621035-1-huobean@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500017.china.huawei.com (7.185.36.178)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I found an issue that kernel would send ISCSI_KEVENT_UNBIND_SESSION
-for multiple times which should be fixed.
+From: Bean Huo <beanhuo@micron.com>
 
-This patch introduce target_unbound in iscsi_cls_session to make
-sure session would send only one ISCSI_KEVENT_UNBIND_SESSION.
+We can use GEN_CMD (CMD56) to read a  data block with vendor-specific
+format and meaning, which is very helpful and useful for customers to
+analyze device health. This patch is to add support for this command.
 
-But this would break issue fixed in commit 13e60d3ba287 ("scsi: iscsi:
-Report unbind session event when the target has been removed"). The issue
-is iscsid died for any reason after it send unbind session to kernel, once
-iscsid restart again, it loss kernel's ISCSI_KEVENT_UNBIND_SESSION event.
+At the same time, in order to make CMD56 universal, let more users of
+mmc-utils can benefit from this. We will allow the user to enter [arg]
+for special commands. Because some eMMC vendors provide an additional
+set of commands beyond the GEN_CMD (CMD56) definition in the JEDEC
+specification. These additional commands are implemented using generic
+CMD56 commands, and they return a wealth of useful information about the
+state of the NAND device. For these special purposes, the [31:1]stuff
+bits in the CMD56 argument are used. You can refer to  Micron eMMC
+"TN-FC-32: e·MMC Device Health Report" as an example.
 
-Now kernel think iscsi_cls_session has already sent an
-ISCSI_KEVENT_UNBIND_SESSION event and would not send it any more. Which
-would cause userspace unable to logout. Actually the session is in
-invalid state(it's target_id is INVALID), iscsid should not sync this
-session in it's restart.
+I didn't add data parsing, just print the raw data as it is vendor-specific.
 
-So we need to check session's target unbound state during iscsid restart,
-if session is in unbound state, do not sync this session and perform
-session teardown. It's reasonable because once a session is unbound, we
-can not recover it any more(mainly because it's target id is INVALID)
-
-Changes from V1:
-- Using target_unbound rather than state to indicate session has been
-  unbound
-
-Signed-off-by: Wenchao Hao <haowenchao@huawei.com>
+Signed-off-by: Bean Huo <beanhuo@micron.com>
+Acked-by: Avri Altman <Avri.Altman@wdc.com>
+Tested-by: Rossler Jakob (Nokia - DE/Ulm) <jakob.rossler@nokia.com>
 ---
- drivers/scsi/scsi_transport_iscsi.c | 21 +++++++++++++++++++++
- include/scsi/scsi_transport_iscsi.h |  1 +
- 2 files changed, 22 insertions(+)
+ mmc.c      |  8 ++++++++
+ mmc.h      |  2 ++
+ mmc_cmds.c | 57 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ mmc_cmds.h |  1 +
+ 4 files changed, 68 insertions(+)
 
-diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
-index 2c0dd64159b0..43ba31e595b4 100644
---- a/drivers/scsi/scsi_transport_iscsi.c
-+++ b/drivers/scsi/scsi_transport_iscsi.c
-@@ -1958,6 +1958,14 @@ static void __iscsi_unbind_session(struct work_struct *work)
+diff --git a/mmc.c b/mmc.c
+index eb2638b12271..6c563879cf1a 100644
+--- a/mmc.c
++++ b/mmc.c
+@@ -237,6 +237,14 @@ static struct Command commands[] = {
+ 		"secure-trim1 | secure-trim2 | trim \n",
+ 	NULL
+ 	},
++	{ do_general_cmd_read, -1,
++	"gen_cmd read", "<device> [arg]\n"
++		"Send GEN_CMD (CMD56) to read vendor-specific format/meaning data from <device>\n\n"
++		"NOTE!: [arg] is optional and defaults to 0x1. If [arg] is specified, then [arg]\n"
++		"must be a 32-bit hexadecimal number, prefixed with 0x/0X. And bit0 in [arg] must\n"
++		"be 1.",
++	NULL
++	},
+ 	{ 0, 0, 0, 0 }
+ };
  
- 	ISCSI_DBG_TRANS_SESSION(session, "Unbinding session\n");
+diff --git a/mmc.h b/mmc.h
+index 25d6864ac76f..b621374a1ed1 100644
+--- a/mmc.h
++++ b/mmc.h
+@@ -41,6 +41,8 @@
+ 					      [1] Discard Enable
+ 					      [0] Identify Write Blocks for
+ 					      Erase (or TRIM Enable)  R1b */
++#define MMC_GEN_CMD		56   /* adtc  [31:1] stuff bits.
++					      [0]: RD/WR1 R1 */
  
-+	spin_lock_irqsave(&session->lock, flags);
-+	if (session->target_unbound) {
-+		spin_unlock_irqrestore(&session->lock, flags);
-+		return;
-+	}
-+	session->target_unbound = 1;
-+	spin_unlock_irqrestore(&session->lock, flags);
+ #define R1_OUT_OF_RANGE         (1 << 31)       /* er, c */
+ #define R1_ADDRESS_ERROR        (1 << 30)       /* erx, c */
+diff --git a/mmc_cmds.c b/mmc_cmds.c
+index 49d3e324d266..bb0f0226bf23 100644
+--- a/mmc_cmds.c
++++ b/mmc_cmds.c
+@@ -2981,3 +2981,60 @@ out:
+ 	return ret;
+ #endif
+ }
 +
- 	/* Prevent new scans and make sure scanning is not in progress */
- 	mutex_lock(&ihost->mutex);
- 	spin_lock_irqsave(&session->lock, flags);
-@@ -2058,6 +2066,7 @@ int iscsi_add_session(struct iscsi_cls_session *session, unsigned int target_id)
- 		session->target_id = target_id;
- 
- 	dev_set_name(&session->dev, "session%u", session->sid);
-+	session->target_unbound = 0;
- 	err = device_add(&session->dev);
- 	if (err) {
- 		iscsi_cls_session_printk(KERN_ERR, session,
-@@ -4319,6 +4328,15 @@ iscsi_session_attr(def_taskmgmt_tmo, ISCSI_PARAM_DEF_TASKMGMT_TMO, 0);
- iscsi_session_attr(discovery_parent_idx, ISCSI_PARAM_DISCOVERY_PARENT_IDX, 0);
- iscsi_session_attr(discovery_parent_type, ISCSI_PARAM_DISCOVERY_PARENT_TYPE, 0);
- 
-+static ssize_t
-+show_priv_session_target_unbound(struct device *dev, struct device_attribute *attr,
-+			char *buf)
++int do_general_cmd_read(int nargs, char **argv)
 +{
-+	struct iscsi_cls_session *session = iscsi_dev_to_session(dev->parent);
-+	return sysfs_emit(buf, "%d\n", session->target_unbound);
++	int dev_fd;
++	char *device;
++	char *endptr;
++	__u8 buf[512];
++	__u32 arg = 0x01;
++	int ret = -EINVAL, i;
++	struct mmc_ioc_cmd idata;
++
++	if (nargs != 2 && nargs != 3) {
++		fprintf(stderr, "Usage: gen_cmd read </path/to/mmcblkX> [arg]\n");
++		exit(1);
++	}
++
++	device = argv[1];
++	dev_fd = open(device, O_RDWR);
++	if (dev_fd < 0) {
++		perror("device open failed");
++		exit(1);
++	}
++
++	/* arg is specified */
++	if (nargs == 3) {
++		arg = strtol(argv[2], &endptr, 16);
++		if (errno != 0 || *endptr != '\0' || !(arg & 0x1)) {
++			fprintf(stderr, "Wrong ARG, it should be Hex number and bit0 must be 1\n");
++			goto out;
++		}
++	}
++
++	memset(&idata, 0, sizeof(idata));
++	idata.write_flag = 0;
++	idata.opcode = MMC_GEN_CMD;
++	idata.arg = arg;
++	idata.flags = MMC_RSP_SPI_R1 | MMC_RSP_R1 | MMC_CMD_ADTC;
++	idata.blksz = 512;
++	idata.blocks = 1;
++	mmc_ioc_cmd_set_data(idata, buf);
++
++	ret = ioctl(dev_fd, MMC_IOC_CMD, &idata);
++	if (ret) {
++		perror("ioctl");
++		goto out;
++	}
++
++	printf("Data:\n");
++	for (i = 0; i < 512; i++) {
++		printf("%2x ", buf[i]);
++		if ((i + 1) % 16 == 0)
++			printf("\n");
++	}
++out:
++	close(dev_fd);
++	return ret;
 +}
-+static ISCSI_CLASS_ATTR(priv_sess, target_unbound, S_IRUGO,
-+			show_priv_session_target_unbound, NULL);
- static ssize_t
- show_priv_session_state(struct device *dev, struct device_attribute *attr,
- 			char *buf)
-@@ -4422,6 +4440,7 @@ static struct attribute *iscsi_session_attrs[] = {
- 	&dev_attr_priv_sess_recovery_tmo.attr,
- 	&dev_attr_priv_sess_state.attr,
- 	&dev_attr_priv_sess_creator.attr,
-+	&dev_attr_priv_sess_target_unbound.attr,
- 	&dev_attr_sess_chap_out_idx.attr,
- 	&dev_attr_sess_chap_in_idx.attr,
- 	&dev_attr_priv_sess_target_id.attr,
-@@ -4534,6 +4553,8 @@ static umode_t iscsi_session_attr_is_visible(struct kobject *kobj,
- 		return S_IRUGO | S_IWUSR;
- 	else if (attr == &dev_attr_priv_sess_state.attr)
- 		return S_IRUGO;
-+	else if (attr == &dev_attr_priv_sess_target_unbound.attr)
-+		return S_IRUGO;
- 	else if (attr == &dev_attr_priv_sess_creator.attr)
- 		return S_IRUGO;
- 	else if (attr == &dev_attr_priv_sess_target_id.attr)
-diff --git a/include/scsi/scsi_transport_iscsi.h b/include/scsi/scsi_transport_iscsi.h
-index 9acb8422f680..877632c25e56 100644
---- a/include/scsi/scsi_transport_iscsi.h
-+++ b/include/scsi/scsi_transport_iscsi.h
-@@ -256,6 +256,7 @@ struct iscsi_cls_session {
- 	struct workqueue_struct *workq;
- 
- 	unsigned int target_id;
-+	int target_unbound;   /* make sure unbind session only once */
- 	bool ida_used;
- 
- 	/*
+diff --git a/mmc_cmds.h b/mmc_cmds.h
+index 8331ab2373fd..0f7c0041f753 100644
+--- a/mmc_cmds.h
++++ b/mmc_cmds.h
+@@ -46,3 +46,4 @@ int do_read_scr(int argc, char **argv);
+ int do_read_cid(int argc, char **argv);
+ int do_read_csd(int argc, char **argv);
+ int do_erase(int nargs, char **argv);
++int do_general_cmd_read(int nargs, char **argv);
 -- 
-2.32.0
+2.34.1
 
