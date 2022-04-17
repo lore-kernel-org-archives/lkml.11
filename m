@@ -2,77 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B41FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 12:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E41C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 12:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234080AbiDQMv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 08:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
+        id S234091AbiDQM6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 08:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231315AbiDQMv5 (ORCPT
+        with ESMTP id S231315AbiDQM6P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 08:51:57 -0400
-X-Greylist: delayed 927 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 17 Apr 2022 05:49:19 PDT
-Received: from m12-15.163.com (m12-15.163.com [220.181.12.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB3192BB0B;
-        Sun, 17 Apr 2022 05:49:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=K+Zu7
-        9SFGsB8FkMycJpkj4rA7OHY5+I73z/C4EXhavI=; b=qBtzQX6EF28QUZhW7qLB8
-        vw4BibBZrH1w7R6Fzaez3CF5ttVNmis7yW7zeZ3S1nNa1bYFTojspvFqPkqtKZAH
-        8hzwJByr/RtuXwv6LKH3q5hrAmpjiEzg2OajG+4Vv5dbM1wKmTSxdosi0QQfXTym
-        H+cwbjaUQnLBUVuU6Fbbno=
-Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
-        by smtp11 (Coremail) with SMTP id D8CowADnvCUVCVxiLzSsBg--.47634S2;
-        Sun, 17 Apr 2022 20:33:26 +0800 (CST)
-From:   yacanliu@163.com
-To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>
-Subject: [PATCH] net/smc: sync err info when TCP connection is refused
-Date:   Sun, 17 Apr 2022 20:33:07 +0800
-Message-Id: <20220417123307.1094747-1-yacanliu@163.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: D8CowADnvCUVCVxiLzSsBg--.47634S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZr48CF15CFy5KF1rKr1ftFb_yoWDWrXEkr
-        17W3WkGa1jvr1fG3y29398ZwsaqayrCFWrGwnIyrWqy3s29w45Zrs8Zrn8Crn7ur4a9F9x
-        Gw45Kasak34IyjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8AhLUUUUUU==
-X-Originating-IP: [115.238.122.38]
-X-CM-SenderInfo: p1dft0xolxqiywtou0bp/1tbiXwvlS1154TpjTwAAsp
+        Sun, 17 Apr 2022 08:58:15 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A7A6624D;
+        Sun, 17 Apr 2022 05:55:37 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app2 (Coremail) with SMTP id by_KCgDnXhY4DlxiFY_vAQ--.19586S2;
+        Sun, 17 Apr 2022 20:55:25 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-kernel@vger.kernel.org, jes@trained-monkey.org
+Cc:     netdev@vger.kernel.org, linux-hippi@sunsite.dk, pabeni@redhat.com,
+        kuba@kernel.org, davem@davemloft.net,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH] drivers: net: hippi: Fix deadlock in rr_close()
+Date:   Sun, 17 Apr 2022 20:55:19 +0800
+Message-Id: <20220417125519.82618-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: by_KCgDnXhY4DlxiFY_vAQ--.19586S2
+X-Coremail-Antispam: 1UD129KBjvJXoWrtF45CF13JFWfKFykZFW7XFb_yoW8Jry7pa
+        1UGrWSyF10vr4jq3WkJa1kXFn8uwsrGrWUGFy3Wws5Zwn5Z3WYqFn5KFWYvF4UtFsFvFZx
+        KF4UZryfCFs8Z3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUka1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
+        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
+        x4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgoDAVZdtZOq7gADsg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: liuyacan <liuyacan@corp.netease.com>
+There is a deadlock in rr_close(), which is shown below:
 
-In the current implementation, when TCP initiates a connection
-to an unavailable [ip,port], ECONNREFUSED will be stored in the
-TCP socket, but SMC will not. However, some apps (like curl) use
-getsockopt(,,SO_ERROR,,) to get the error information, which makes
-them miss the error message and behave strangely.
+   (Thread 1)                |      (Thread 2)
+                             | rr_open()
+rr_close()                   |  add_timer()
+ spin_lock_irqsave() //(1)   |  (wait a time)
+ ...                         | rr_timer()
+ del_timer_sync()            |  spin_lock_irqsave() //(2)
+ (wait timer to stop)        |  ...
 
-Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+We hold rrpriv->lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need rrpriv->lock in position (2) of thread 2.
+As a result, rr_close() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 ---
- net/smc/af_smc.c | 2 ++
+ drivers/net/hippi/rrunner.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index fc7b6eb22..bbb1a4ce5 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -1475,6 +1475,8 @@ static void smc_connect_work(struct work_struct *work)
- 		smc->sk.sk_state = SMC_CLOSED;
- 		if (rc == -EPIPE || rc == -EAGAIN)
- 			smc->sk.sk_err = EPIPE;
-+		else if (rc == -ECONNREFUSED)
-+			smc->sk.sk_err = ECONNREFUSED;
- 		else if (signal_pending(current))
- 			smc->sk.sk_err = -sock_intr_errno(timeo);
- 		sock_put(&smc->sk); /* passive closing */
+diff --git a/drivers/net/hippi/rrunner.c b/drivers/net/hippi/rrunner.c
+index 16105292b14..74e845fa2e0 100644
+--- a/drivers/net/hippi/rrunner.c
++++ b/drivers/net/hippi/rrunner.c
+@@ -1355,7 +1355,9 @@ static int rr_close(struct net_device *dev)
+ 
+ 	rrpriv->fw_running = 0;
+ 
++	spin_unlock_irqrestore(&rrpriv->lock, flags);
+ 	del_timer_sync(&rrpriv->timer);
++	spin_lock_irqsave(&rrpriv->lock, flags);
+ 
+ 	writel(0, &regs->TxPi);
+ 	writel(0, &regs->IpRxPi);
 -- 
-2.20.1
+2.17.1
 
