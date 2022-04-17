@@ -2,173 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33260C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 08:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABEDBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 08:36:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233676AbiDQIfU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 04:35:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
+        id S232002AbiDQIiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 04:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233674AbiDQIfN (ORCPT
+        with ESMTP id S229460AbiDQIiu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 04:35:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F46526104;
-        Sun, 17 Apr 2022 01:32:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F17F6B80AAD;
-        Sun, 17 Apr 2022 08:32:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD9C0C385A4;
-        Sun, 17 Apr 2022 08:32:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650184349;
-        bh=SloG/WECzjYIYLRlYm3HUsPkH+gQKLOl9nBd2sKXDIs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fJU7SLNo8fVXHypscjr4P5PKojNSvRBR+JJqAfSGKiMIjim3zd8t7YMiTo81EqNFT
-         gm5yYbt03tL0HCoY3bMycSxpjWoL+gYVA8YZJeH9PHX01wcYye9YLOi0b60hx6i03x
-         IMIar3/2tI7t+tCdBqwAGEzeWlPBJ0GY1lyqSPs+0pAkFkuXo1kz7zkg0S9hzMnb/i
-         9imSHPKrLkx0qG0YWp1+HAjwqxGPZfNxgoIfygROU78M0Az59+W9koM8f82PoypGuY
-         kZDuLzxtYsyPuEKo64Znr8hoYDnkhJSL3UtIlOYk0jzuSAPxof/41jNZILXiM3+q/w
-         VbZ8gGiNBVnMg==
-From:   guoren@kernel.org
-To:     guoren@kernel.org, arnd@arndb.de, mark.rutland@arm.com,
-        boqun.feng@gmail.com, peterz@infradead.org, will@kernel.org
-Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-csky@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>
-Subject: [PATCH V3 3/3] csky: atomic: Add conditional atomic operations' optimization
-Date:   Sun, 17 Apr 2022 16:32:04 +0800
-Message-Id: <20220417083204.2048364-4-guoren@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220417083204.2048364-1-guoren@kernel.org>
-References: <20220417083204.2048364-1-guoren@kernel.org>
+        Sun, 17 Apr 2022 04:38:50 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E2763F5
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 01:36:16 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1ng0Nx-003jSQ-Oq; Sun, 17 Apr 2022 18:35:59 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Sun, 17 Apr 2022 16:35:58 +0800
+Date:   Sun, 17 Apr 2022 16:35:58 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>, Will Deacon <will@kernel.org>,
+        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
+ ARCH_KMALLOC_MINALIGN
+Message-ID: <YlvRbvWSWMTtBJiN@gondor.apana.org.au>
+References: <YlkkGpVx8rhcsBot@gondor.apana.org.au>
+ <CAMj1kXH0x5Va7Wgs+mU1ONDwwsazOBuN4z4ihVzO2uG-n41Kbg@mail.gmail.com>
+ <Ylko07++4naWJ5LE@gondor.apana.org.au>
+ <CAMj1kXH=ybJWBzmMqkrkvyF8nM3UpTchUOq+oweW=BqW2TOyRw@mail.gmail.com>
+ <YllE+wWqP6F+1nwa@gondor.apana.org.au>
+ <CAMj1kXFjLbtpJLFh-C_k3Ydcg4M7NqrCfOXnBY2iSxusWtBLbA@mail.gmail.com>
+ <YllM24eca/uxf9y7@gondor.apana.org.au>
+ <CAMj1kXH5O32H1nnm6y7=3KiH7R-_oakxzBpZ20wK+8kaD46aKw@mail.gmail.com>
+ <YlvK9iefUECy361O@gondor.apana.org.au>
+ <YlvQTci7RP5evtTy@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlvQTci7RP5evtTy@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Ren <guoren@linux.alibaba.com>
+On Sun, Apr 17, 2022 at 09:31:09AM +0100, Catalin Marinas wrote:
+>
+> Not with my series, the non-sharing of cache lines is preserved.
+> kmalloc() still returns objects aligned to a cache-line.
+> ARCH_DMA_MINALIGN was chosen as the cover-all value for all SoCs
+> supported but I want to reduce the kmalloc() alignment to a cache line
+> size if a platform has a cache line smaller than ARCH_DMA_MINALIGN (most
+> arm64 SoCs have a cache line of 64 bytes rather than 128).
 
-Add conditional atomic operations' optimization:
- - arch_atomic_fetch_add_unless
- - arch_atomic_inc_unless_negative
- - arch_atomic_dec_unless_positive
- - arch_atomic_dec_if_positive
+OK, but then you don't need to play with CRYPTO_MINALIGN at all,
+right? All you need to do is add the padding between the Crypto
+API fields and the context structure, right?
 
-Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-Signed-off-by: Guo Ren <guoren@kernel.org>
----
- arch/csky/include/asm/atomic.h | 95 ++++++++++++++++++++++++++++++++++
- 1 file changed, 95 insertions(+)
-
-diff --git a/arch/csky/include/asm/atomic.h b/arch/csky/include/asm/atomic.h
-index 5ecc657a2a66..3f2917b748c3 100644
---- a/arch/csky/include/asm/atomic.h
-+++ b/arch/csky/include/asm/atomic.h
-@@ -112,6 +112,101 @@ ATOMIC_OPS(xor)
- 
- #undef ATOMIC_FETCH_OP
- 
-+static __always_inline int
-+arch_atomic_fetch_add_unless(atomic_t *v, int a, int u)
-+{
-+	int prev, tmp;
-+
-+	__asm__ __volatile__ (
-+		"1:	ldex.w		%0, (%3)	\n"
-+		"	cmpne		%0, %4		\n"
-+		"	bf		2f		\n"
-+		"	mov		%1, %0		\n"
-+		"	add		%1, %2		\n"
-+		RELEASE_FENCE
-+		"	stex.w		%1, (%3)	\n"
-+		"	bez		%1, 1b		\n"
-+		FULL_FENCE
-+		"2:\n"
-+		: "=&r" (prev), "=&r" (tmp)
-+		: "r" (a), "r" (&v->counter), "r" (u)
-+		: "memory");
-+
-+	return prev;
-+}
-+#define arch_atomic_fetch_add_unless arch_atomic_fetch_add_unless
-+
-+static __always_inline bool
-+arch_atomic_inc_unless_negative(atomic_t *v)
-+{
-+	int rc, tmp;
-+
-+	__asm__ __volatile__ (
-+		"1:	ldex.w		%0, (%2)	\n"
-+		"	movi		%1, 0		\n"
-+		"	blz		%0, 2f		\n"
-+		"	movi		%1, 1		\n"
-+		"	addi		%0, 1		\n"
-+		RELEASE_FENCE
-+		"	stex.w		%0, (%2)	\n"
-+		"	bez		%0, 1b		\n"
-+		FULL_FENCE
-+		"2:\n"
-+		: "=&r" (tmp), "=&r" (rc)
-+		: "r" (&v->counter)
-+		: "memory");
-+
-+	return tmp ? true : false;
-+
-+}
-+#define arch_atomic_inc_unless_negative arch_atomic_inc_unless_negative
-+
-+static __always_inline bool
-+arch_atomic_dec_unless_positive(atomic_t *v)
-+{
-+	int rc, tmp;
-+
-+	__asm__ __volatile__ (
-+		"1:	ldex.w		%0, (%2)	\n"
-+		"	movi		%1, 0		\n"
-+		"	bhz		%0, 2f		\n"
-+		"	movi		%1, 1		\n"
-+		"	subi		%0, 1		\n"
-+		RELEASE_FENCE
-+		"	stex.w		%0, (%2)	\n"
-+		"	bez		%0, 1b		\n"
-+		FULL_FENCE
-+		"2:\n"
-+		: "=&r" (tmp), "=&r" (rc)
-+		: "r" (&v->counter)
-+		: "memory");
-+
-+	return tmp ? true : false;
-+}
-+#define arch_atomic_dec_unless_positive arch_atomic_dec_unless_positive
-+
-+static __always_inline int
-+arch_atomic_dec_if_positive(atomic_t *v)
-+{
-+	int dec, tmp;
-+
-+	__asm__ __volatile__ (
-+		"1:	ldex.w		%0, (%2)	\n"
-+		"	subi		%1, %0, 1	\n"
-+		"	blz		%1, 2f		\n"
-+		RELEASE_FENCE
-+		"	stex.w		%1, (%2)	\n"
-+		"	bez		%1, 1b		\n"
-+		FULL_FENCE
-+		"2:\n"
-+		: "=&r" (dec), "=&r" (tmp)
-+		: "r" (&v->counter)
-+		: "memory");
-+
-+	return dec - 1;
-+}
-+#define arch_atomic_dec_if_positive arch_atomic_dec_if_positive
-+
- #define ATOMIC_OP()							\
- static __always_inline							\
- int arch_atomic_xchg_relaxed(atomic_t *v, int n)			\
+Cheers,
 -- 
-2.25.1
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
