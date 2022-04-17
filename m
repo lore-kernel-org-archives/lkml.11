@@ -2,143 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B12CC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 12:45:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B41FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 12:49:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234065AbiDQMsP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 08:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44206 "EHLO
+        id S234080AbiDQMv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 08:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233751AbiDQMsN (ORCPT
+        with ESMTP id S231315AbiDQMv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 08:48:13 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9F2EBA
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 05:45:37 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id y10so5362818ejw.8
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 05:45:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d0NpqGl1oKuCDKK6YqMWlHFLPk05EK6v3fjoJIR9AXE=;
-        b=fy3aoVSpwgXrwvuWPVrID/wRU5DAyDrjgPET4pnQzlQkWUzL/6IHK75YRxiU9gB8UK
-         eQMrqDymbyy58EHlQubtSZwd1rpkx919MmPUScKBpIJ4uzDACjv87qWFpE1Nzk393F6H
-         /eAg4/6fMcxBQIZTUgoE/oKtnlFL/whOe8X55JU84NZaPsIr9UqKOm4MLzi4nW0yVoTA
-         tcpAQO61px1Ub4W4ryNnzCmHd3fJCBj5wS11rLSjhHv1mscepcCAEeSweRoexjBHr55E
-         JeVKlFq7i6IjC3hhpxU+u8vpjCwvNKy8TIPU5kyXY1G9xmiaBLOFdxgyEhd2GCcai9wJ
-         9mmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d0NpqGl1oKuCDKK6YqMWlHFLPk05EK6v3fjoJIR9AXE=;
-        b=txgvkiCXYdcMdTyngqfYNaKUtUuc6P/7vT7C5Os/7rsNmCIqrX9BVKzy9Jhaw+79Kf
-         eJC8OkDBSZdruCO3NWwO50zPmo2xrSfnkJpT+bEGtZ/AEPaZDtblxjb7ZF0FNB+rYn7F
-         XuyGBmCnEZqYEyUEcdjOcF5ebeje8gI6UoaWacgQSnxQJ3JYDbTeOrNDq55H+kQ80sqV
-         HAm5MXrwJCj70q3VWMmJwZxwVaJsG9ARjaUR/5TZuDW3F3SIu/dnoovFh8NeVCi2M30K
-         fauLNklij7n1oaBqHeEmSN8LG6cgN1Ew8XX5O2Z1/i1Wqmsm7tXR3Y7Jm1+9XlPu7HV8
-         gu8w==
-X-Gm-Message-State: AOAM531Z7jTIm5GuFsmuAyGpBruScemdq8ZoRz57iBJYebaVn5hpjgB5
-        Gco5cdk0IbcGrEuVDiSkh4cgYw==
-X-Google-Smtp-Source: ABdhPJw8J7hshp/T+PkBbUWSdEGyBv+bsgA/yAvMw1/l87P9f/Wd4fOR8sTbzNaiX4sjBSIbLxAwgQ==
-X-Received: by 2002:a17:907:6d10:b0:6e8:8fbc:310c with SMTP id sa16-20020a1709076d1000b006e88fbc310cmr5455154ejc.530.1650199536410;
-        Sun, 17 Apr 2022 05:45:36 -0700 (PDT)
-Received: from localhost.localdomain ([134.195.101.46])
-        by smtp.gmail.com with ESMTPSA id ee17-20020a056402291100b0041fe1e4e342sm5485527edb.27.2022.04.17.05.45.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Apr 2022 05:45:35 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Li Huafei <lihuafei1@huawei.com>,
-        Ali Saidi <alisaidi@amazon.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH] perf mem: Print memory operation type
-Date:   Sun, 17 Apr 2022 20:45:24 +0800
-Message-Id: <20220417124524.901148-1-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        Sun, 17 Apr 2022 08:51:57 -0400
+X-Greylist: delayed 927 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 17 Apr 2022 05:49:19 PDT
+Received: from m12-15.163.com (m12-15.163.com [220.181.12.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB3192BB0B;
+        Sun, 17 Apr 2022 05:49:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=K+Zu7
+        9SFGsB8FkMycJpkj4rA7OHY5+I73z/C4EXhavI=; b=qBtzQX6EF28QUZhW7qLB8
+        vw4BibBZrH1w7R6Fzaez3CF5ttVNmis7yW7zeZ3S1nNa1bYFTojspvFqPkqtKZAH
+        8hzwJByr/RtuXwv6LKH3q5hrAmpjiEzg2OajG+4Vv5dbM1wKmTSxdosi0QQfXTym
+        H+cwbjaUQnLBUVuU6Fbbno=
+Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
+        by smtp11 (Coremail) with SMTP id D8CowADnvCUVCVxiLzSsBg--.47634S2;
+        Sun, 17 Apr 2022 20:33:26 +0800 (CST)
+From:   yacanliu@163.com
+To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>
+Subject: [PATCH] net/smc: sync err info when TCP connection is refused
+Date:   Sun, 17 Apr 2022 20:33:07 +0800
+Message-Id: <20220417123307.1094747-1-yacanliu@163.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: D8CowADnvCUVCVxiLzSsBg--.47634S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZr48CF15CFy5KF1rKr1ftFb_yoWDWrXEkr
+        17W3WkGa1jvr1fG3y29398ZwsaqayrCFWrGwnIyrWqy3s29w45Zrs8Zrn8Crn7ur4a9F9x
+        Gw45Kasak34IyjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8AhLUUUUUU==
+X-Originating-IP: [115.238.122.38]
+X-CM-SenderInfo: p1dft0xolxqiywtou0bp/1tbiXwvlS1154TpjTwAAsp
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The memory operation types are not only for load and store, for easier
-reviewing the memory operation type, this patch prints out it.
+From: liuyacan <liuyacan@corp.netease.com>
 
-Before:
-  ls 14753 [011]  3678.072400:          1      l1d-miss:         88000182 L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
-  ls 14753 [011]  3678.072400:          1    l1d-access:         88000182 L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
-  ls 14753 [011]  3678.072400:          1    tlb-access:         88000182 L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
-  ls 14753 [011]  3678.072400:          1        memory:         88000182 L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
+In the current implementation, when TCP initiates a connection
+to an unavailable [ip,port], ECONNREFUSED will be stored in the
+TCP socket, but SMC will not. However, some apps (like curl) use
+getsockopt(,,SO_ERROR,,) to get the error information, which makes
+them miss the error message and behave strangely.
 
-After:
-
-  ls 14753 [011]  3678.072400:          1      l1d-miss:         88000182 |OP LOAD|LVL L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
-  ls 14753 [011]  3678.072400:          1    l1d-access:         88000182 |OP LOAD|LVL L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
-  ls 14753 [011]  3678.072400:          1    tlb-access:         88000182 |OP LOAD|LVL L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
-  ls 14753 [011]  3678.072400:          1        memory:         88000182 |OP LOAD|LVL L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
-
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Signed-off-by: liuyacan <liuyacan@corp.netease.com>
 ---
- tools/perf/util/mem-events.c | 29 ++++++++++++++++++++++++++++-
- 1 file changed, 28 insertions(+), 1 deletion(-)
+ net/smc/af_smc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/perf/util/mem-events.c b/tools/perf/util/mem-events.c
-index e5e405185498..f8f234251f92 100644
---- a/tools/perf/util/mem-events.c
-+++ b/tools/perf/util/mem-events.c
-@@ -314,6 +314,30 @@ static const char * const mem_hops[] = {
- 	"board",
- };
- 
-+static int perf_mem__op_scnprintf(char *out, size_t sz, struct mem_info *mem_info)
-+{
-+	u64 op = PERF_MEM_LOCK_NA;
-+	int l;
-+
-+	if (mem_info)
-+		op = mem_info->data_src.mem_op;
-+
-+	if (op & PERF_MEM_OP_NA)
-+		l = scnprintf(out, sz, "N/A");
-+	else if (op & PERF_MEM_OP_LOAD)
-+		l = scnprintf(out, sz, "LOAD");
-+	else if (op & PERF_MEM_OP_STORE)
-+		l = scnprintf(out, sz, "STORE");
-+	else if (op & PERF_MEM_OP_PFETCH)
-+		l = scnprintf(out, sz, "PFETCH");
-+	else if (op & PERF_MEM_OP_EXEC)
-+		l = scnprintf(out, sz, "EXEC");
-+	else
-+		l = scnprintf(out, sz, "No");
-+
-+	return l;
-+}
-+
- int perf_mem__lvl_scnprintf(char *out, size_t sz, struct mem_info *mem_info)
- {
- 	size_t i, l = 0;
-@@ -466,7 +490,10 @@ int perf_script__meminfo_scnprintf(char *out, size_t sz, struct mem_info *mem_in
- {
- 	int i = 0;
- 
--	i += perf_mem__lvl_scnprintf(out, sz, mem_info);
-+	i += scnprintf(out, sz, "|OP ");
-+	i += perf_mem__op_scnprintf(out + i, sz - i, mem_info);
-+	i += scnprintf(out + i, sz - i, "|LVL ");
-+	i += perf_mem__lvl_scnprintf(out + i, sz, mem_info);
- 	i += scnprintf(out + i, sz - i, "|SNP ");
- 	i += perf_mem__snp_scnprintf(out + i, sz - i, mem_info);
- 	i += scnprintf(out + i, sz - i, "|TLB ");
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index fc7b6eb22..bbb1a4ce5 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -1475,6 +1475,8 @@ static void smc_connect_work(struct work_struct *work)
+ 		smc->sk.sk_state = SMC_CLOSED;
+ 		if (rc == -EPIPE || rc == -EAGAIN)
+ 			smc->sk.sk_err = EPIPE;
++		else if (rc == -ECONNREFUSED)
++			smc->sk.sk_err = ECONNREFUSED;
+ 		else if (signal_pending(current))
+ 			smc->sk.sk_err = -sock_intr_errno(timeo);
+ 		sock_put(&smc->sk); /* passive closing */
 -- 
-2.25.1
+2.20.1
 
