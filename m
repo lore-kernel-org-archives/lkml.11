@@ -2,69 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8636AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 00:12:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46D3EC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 00:12:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233132AbiDQAIY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 20:08:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36876 "EHLO
+        id S233210AbiDQAOl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 20:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229898AbiDQAIW (ORCPT
+        with ESMTP id S233194AbiDQAOh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 20:08:22 -0400
-Received: from abedmanico.biharhotel.com (abedmanico.biharhotel.com [194.31.98.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B002BC02
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 17:05:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=biharhotel.com;
- h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=mar.veg@biharhotel.com;
- bh=dnkE0QHVOCf1aNji21hnkG44FB8=;
- b=CxrpP4QMHpAivwYXkqYg495+9tGI0sVS9d3h+mKOoDnd49BwFltZ1Mq6EV2vYarsSV5Ve2uRoxAE
-   JAcvD23W65tMvtG7OecDtP/1vnxboaMhOCObU+MemAf3XE6E85mzLqXx/VQ/phw94OV+3qvnc4EI
-   vCXAV95Jd02QMyUkEYU4VUAfNHpwRCatqUMlWY7n9WLBSJRG8kcl96/NzwCcsOmst/4olr+NfVxd
-   jyiTosee4JjKuvyIe2vPFSeCEVC1Q6ZnylgAUEWybE3e21bZBNLqqy13TwmNw+z9TIFHdM6Hq2ub
-   mxFd7J9TW/BpF3n+y8TG/O+g2lYcEgXlRvnyeQ==
-DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=biharhotel.com;
- b=di+tu/RAVTiKSDcKTzGsd8UcqYMjAmw9l3rzi8anJx0rplCLCAjgABqDePDk+MM/PXlbK0HSbvdM
-   BMUMGGmpdEWEm7yslSoZ7XgECidmUXaKVxlpVw2O96RoIc9e/OJ5nD5Et0+nNLuGMdKf8hjUnZ7+
-   Au6feI/8mMcYjQqXR9XdSIpnsQ5wTTsOsfXJSz+n5hhVaeF/EjHLLAU/xrNWCgr9Wka/nmrbdUJa
-   6WNGe+5NrUFQDRfoLajx6B0Jt9GZdUoB2kyEZH4hv0hIL/jFkl/JaftK9gyKnscnyAFfftc244Ie
-   Nec611StQh/w6A3bCHuoW26/Cy8PQb3HGct5oA==;
-Reply-To: bradleywrubel@scotfoundation.org
-From:   "MACKENZIE SCOTT (Scott Foundation)" <mar.veg@biharhotel.com>
-To:     linux-kernel@vger.kernel.org
-Subject: CONGRATULATIONS...
-Date:   17 Apr 2022 02:03:05 +0200
-Message-ID: <20220417020305.ADB59FCC7B30314C@biharhotel.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+        Sat, 16 Apr 2022 20:14:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C13553E21
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Apr 2022 17:12:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC8A661046
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 00:12:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4792BC385A3;
+        Sun, 17 Apr 2022 00:12:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650154323;
+        bh=Xs1FUV2SeNB/pwiT2MC0qOCGySDQHFM0g3iHtg3NBt4=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=BTevM3SSDrlpmInZIu0geb1ALwW76hq+aYMODyfazk5SZ9XK9GU9QqL9Sg7MkBNbb
+         M2s1+/cDGn1v5IOzEuq5xqw955T2eFhaJsrwpbPQDph/zVj53AX4CKFZHwT+MT0uaO
+         kNiDZn3JM/Suy3ZvHqO+0K9mYA5mp7CbhX4qFcZ9DsAJvJ3pq1HSxDpzpKNAmYb+e6
+         PJMs6g/n006ITVsffcN53q4HNSaVYYhHpQGcWySeZJUQ0L+anb3yFfTUpA6T35uAUP
+         MGHY4HjDG6zrof1I0UXv/xYIjbKA8153iTyDGjby+O8ERadafKxIqCB/SRqSsJuTw9
+         ji/FHBR+qflOA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3401CE8DD67;
+        Sun, 17 Apr 2022 00:12:03 +0000 (UTC)
+Subject: Re: [GIT PULL] random number generator fixes for 5.18-rc3
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220416131318.80278-1-Jason@zx2c4.com>
+References: <20220416131318.80278-1-Jason@zx2c4.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220416131318.80278-1-Jason@zx2c4.com>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.18-rc3-for-linus
+X-PR-Tracked-Commit-Id: 35a33ff3807d3adb9daaf937f5bca002ffa9f84e
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 92edbe32e3822f7b66e471c7e0bd5ee5d63bf4b8
+Message-Id: <165015432320.20129.10453685302413958110.pr-tracker-bot@kernel.org>
+Date:   Sun, 17 Apr 2022 00:12:03 +0000
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The pull request you sent on Sat, 16 Apr 2022 15:13:18 +0200:
 
-I'm Mackenzie Scott, Ex-wife to Jeff Bezos (Amazon Founder and=20
-CEO). I'm donating $4 billion to charities, churches, individuals,=20
-colleges and businesses across the Globe from Scott's Foundation to=20
-provide immediate support to people and businesses suffering=20
-economically from the impact of COVID-19 pandemic and the ongoing=20
-war in Ukraine. Your email emerged as one of the lucky winners=20
-after an electronically conducted ballot process.
+> https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git tags/random-5.18-rc3-for-linus
 
-I have a donation grant worth $8,500,000.00 Dollars for you. You=20
-are to contact Mr. BRADLEY WRUBEL for more information if you're=20
-interested.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/92edbe32e3822f7b66e471c7e0bd5ee5d63bf4b8
 
-Mr. BRADLEY WRUBEL
-bradleywrubel@scotfoundation.org
+Thank you!
 
-Congratulations.
-
-Yours Sincerely
-Mackenzie Scott
-The Scott Foundation
-P.O. Box 1513
-Los Gatos, CA 95031-1513
-USA.
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
