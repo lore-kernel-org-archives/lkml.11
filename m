@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 889A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 16:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD37C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 16:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234584AbiDQRBq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 13:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48552 "EHLO
+        id S234595AbiDQRBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 13:01:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234519AbiDQRBi (ORCPT
+        with ESMTP id S234563AbiDQRBj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 13:01:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3D01903A;
-        Sun, 17 Apr 2022 09:59:02 -0700 (PDT)
+        Sun, 17 Apr 2022 13:01:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 481ED1C938
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 09:59:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48AD1B80D30;
-        Sun, 17 Apr 2022 16:59:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FBB2C385A4;
-        Sun, 17 Apr 2022 16:59:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9C2E61278
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 16:59:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3AC40C385AE;
+        Sun, 17 Apr 2022 16:59:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650214740;
-        bh=P6ASqz0CNPpNP1c/VGzhMBEoj8JIZ6HAz3kqOzB8p+o=;
+        s=k20201202; t=1650214742;
+        bh=Jlc5kOdOxBvt8DQQykyopwbD4HZ/gGYyDnRM8jpUawc=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=kUR4rfdi6tSpntNZsg5+u3PzZATLGU2BEvBjqJItW+Z1GuvWbLduqc0yvva8B4shf
-         woHVaIyU01RHKKq+oAHdF1D1ddksnAv8xrfMRqfGoFRaCLrvP9laTPSa52UJP+EYr0
-         nhF4ApngmfsrIKWft+C0Zy79/AVAm6SKsx9o6WPKHqB8onHJ7GPY8/WHhxAA+A7AFp
-         dtPBXGDoygeAY6z7AL3MToacg3N3NfDEWpI/dz1Kf+Goi22e7zdyFqBjZ/AHQe3Atv
-         Vb/bnQEBxcreK3Eh8LZX9SOm/kc7ZeJTak1RPbZ5djqptkR9kb5mTLOtRmUuxBbRvK
-         56caUtE6//JgQ==
+        b=GmhYWYFMeRVkZqAFvNrUbynue1zgT0k6S0H6D14GAFaM+92IDvXn9pcz01sEwSzVx
+         r6IeW1KXokUZspw2FvAMuzliCeqj85FaEpOF7BZJQxM9OMSxvaFs4hv/7C8HuHnUtA
+         mu6MOOoCNZpxPEuY2lYuugQPQVmWwPmJRBQPMS0CffM2vLJbR1p9ApPFPEOo+GfiyD
+         OXZbFiN6vfN5iPzRhtZ1crbDZli76UpIeovSavyfiCGUqF/ANK5lQnCPM10WdyUk83
+         exVIYUOTHgzhisZcEeiUfMBcQF91rLUSKItgZvuJxIz7WFHqhbItVLVZq3i/68/GhQ
+         hP3ajoK+L8MbA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EA11FE85D15;
-        Sun, 17 Apr 2022 16:58:59 +0000 (UTC)
-Subject: Re: [GIT PULL] power-supply changes for 5.18-rc
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2199BEAC09B;
+        Sun, 17 Apr 2022 16:59:02 +0000 (UTC)
+Subject: Re: [GIT pull] x86/urgent for v5.18-rc3
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220417162936.zqxxjmfpdut34qjb@earth.universe>
-References: <20220417162936.zqxxjmfpdut34qjb@earth.universe>
-X-PR-Tracked-List-Id: <linux-pm.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220417162936.zqxxjmfpdut34qjb@earth.universe>
-X-PR-Tracked-Remote: ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/sre/linux-power-supply.git tags/for-v5.18-rc
-X-PR-Tracked-Commit-Id: 581045ed5cfa42ed7f5364d6ccbcb6fcc077ffcf
+In-Reply-To: <165018953883.44773.12883227528447853271.tglx@xen13>
+References: <165018953450.44773.6382828227632028472.tglx@xen13> <165018953883.44773.12883227528447853271.tglx@xen13>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <165018953883.44773.12883227528447853271.tglx@xen13>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86-urgent-2022-04-17
+X-PR-Tracked-Commit-Id: 400331f8ffa3bec5c561417e5eec6848464e9160
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 9a921a6ff7a616863b981220d0a2e0d1de2d050b
-Message-Id: <165021473995.4330.3612361325979901539.pr-tracker-bot@kernel.org>
-Date:   Sun, 17 Apr 2022 16:58:59 +0000
-To:     Sebastian Reichel <sre@kernel.org>
+X-PR-Merge-Commit-Id: 3a69a44278a72e15f12e24f5db4d277a497649aa
+Message-Id: <165021474213.4330.4186273817487618260.pr-tracker-bot@kernel.org>
+Date:   Sun, 17 Apr 2022 16:59:02 +0000
+To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+        linux-kernel@vger.kernel.org, x86@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 17 Apr 2022 18:29:36 +0200:
+The pull request you sent on Sun, 17 Apr 2022 11:59:16 +0200 (CEST):
 
-> ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/sre/linux-power-supply.git tags/for-v5.18-rc
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86-urgent-2022-04-17
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/9a921a6ff7a616863b981220d0a2e0d1de2d050b
+https://git.kernel.org/torvalds/c/3a69a44278a72e15f12e24f5db4d277a497649aa
 
 Thank you!
 
