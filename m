@@ -2,67 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CE77C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 00:12:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E6B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 00:12:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233141AbiDQAOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Apr 2022 20:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56568 "EHLO
+        id S233224AbiDQAOt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Apr 2022 20:14:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233190AbiDQAOi (ORCPT
+        with ESMTP id S233202AbiDQAOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Apr 2022 20:14:38 -0400
+        Sat, 16 Apr 2022 20:14:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA6F55775;
-        Sat, 16 Apr 2022 17:12:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EBE56204;
+        Sat, 16 Apr 2022 17:12:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8F50B80A08;
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA085B80A25;
+        Sun, 17 Apr 2022 00:12:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 557E1C385A1;
         Sun, 17 Apr 2022 00:12:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6E47CC385AC;
-        Sun, 17 Apr 2022 00:12:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650154322;
-        bh=0fHr7bqbijKghkRRoAuFYYVqr2tK7VyD3vAKWbneVmM=;
+        s=k20201202; t=1650154323;
+        bh=+zOc6jWx4vu0Oby0f8z+pmqLblYr279ZaK63fLF/0BY=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=UaVeKWir+HP00VGF0gmjPTcwqQLc5OMgh+pk/zoffiV/himROF8Et1kLZv2UxabOO
-         JeINrRb834R4APY2YGFcl2ZwVpUeG7bNIse6Kd4iLrva1JKV41IODOQJrd7M2/Vfz/
-         QHEW/B8WE4A/3oI9U8gEqS3sienhkc+93nYdSYD+L7Mnw+SKtA4rCK4/b1cnqwEPbQ
-         NwEHkU6GoSjQnbRTXLcCGR/VfSEFOwfh+V0teY6+XtmBb4GYuW3kx3AHzfsfXx5U5e
-         Kei3wyJHB1AoXXhB+KcIaYnSnfYugL235zRE8175bE5UapWd9QN5sGMGnDn45/o3Dt
-         YrGcMeeAHJnyw==
+        b=kLRY/YuozE4LREyYCupYfpevhDZX68Aeg9bQl3Z875FWSoEndDs296Lu1rDYLs+4I
+         flUeeav3Eho4PeGFxMOsKcpL+XVLW0gYzGw9eMS8DIg1UitT2T+Ow06Uu4Axv4gXQm
+         smet2LK+fKvSCXwe0eGlgdMwpI25ETiap6F6Zn6xiG/oDLcDRN1GOyPxapFlatJpXG
+         x6tnrCmB2xaGYAggl97KVkhcd1FmacLusPoAeLSOf7E4KsGElKeuS68aQNwQuTJTBt
+         jxFx90yzOJ5CeV/lh2zqm+OkOuDdYSBjZgjkgZe2BzRT2ObyQ0sf/dPJXGJmu90TdK
+         oBVhD4V+femVQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5B3A0E7399D;
-        Sun, 17 Apr 2022 00:12:02 +0000 (UTC)
-Subject: Re: [GIT PULL] Devicetree fixes for v5.18, take 2
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 40BC2E7399D;
+        Sun, 17 Apr 2022 00:12:03 +0000 (UTC)
+Subject: Re: [GIT PULL] gpio: fixes for v5.18-rc3
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YltCm/NZ+tnI6dzn@robh.at.kernel.org>
-References: <YltCm/NZ+tnI6dzn@robh.at.kernel.org>
-X-PR-Tracked-List-Id: <devicetree.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YltCm/NZ+tnI6dzn@robh.at.kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git tags/devicetree-fixes-for-5.18-2
-X-PR-Tracked-Commit-Id: 652980b1541c5a02e6410647c7daf840c06d724a
+In-Reply-To: <20220416201727.3017-1-brgl@bgdev.pl>
+References: <20220416201727.3017-1-brgl@bgdev.pl>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220416201727.3017-1-brgl@bgdev.pl>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/brgl/linux.git tags/gpio-fixes-for-v5.18-rc3
+X-PR-Tracked-Commit-Id: 0ebb4fbe31343a42370a2897ea9424fe78f3a88f
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: a2c29ccd9477861b16ddc02c411a6c9665250558
-Message-Id: <165015432236.20129.3790348596362231864.pr-tracker-bot@kernel.org>
-Date:   Sun, 17 Apr 2022 00:12:02 +0000
-To:     Rob Herring <robh@kernel.org>
+X-PR-Merge-Commit-Id: de6e93366828925b58e4a102b6590a8f4798b7e2
+Message-Id: <165015432326.20129.3721465694539628414.pr-tracker-bot@kernel.org>
+Date:   Sun, 17 Apr 2022 00:12:03 +0000
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <brgl@bgdev.pl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sat, 16 Apr 2022 17:26:35 -0500:
+The pull request you sent on Sat, 16 Apr 2022 22:17:27 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git tags/devicetree-fixes-for-5.18-2
+> git://git.kernel.org/pub/scm/linux/kernel/git/brgl/linux.git tags/gpio-fixes-for-v5.18-rc3
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/a2c29ccd9477861b16ddc02c411a6c9665250558
+https://git.kernel.org/torvalds/c/de6e93366828925b58e4a102b6590a8f4798b7e2
 
 Thank you!
 
