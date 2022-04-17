@@ -2,101 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9597C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 13:30:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A227C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 13:37:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234180AbiDQNdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 09:33:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36114 "EHLO
+        id S234188AbiDQNjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 09:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbiDQNd3 (ORCPT
+        with ESMTP id S229496AbiDQNjr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 09:33:29 -0400
-X-Greylist: delayed 439 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 17 Apr 2022 06:30:52 PDT
-Received: from forward300j.mail.yandex.net (forward300j.mail.yandex.net [5.45.198.244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B053DFE8
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 06:30:52 -0700 (PDT)
-Received: from iva5-7aaec7404f99.qloud-c.yandex.net (iva5-7aaec7404f99.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:74a5:0:640:7aae:c740])
-        by forward300j.mail.yandex.net (Yandex) with ESMTP id 27FC17E4755;
-        Sun, 17 Apr 2022 16:23:31 +0300 (MSK)
-Received: from kernel1.search.yandex.net (kernel1.search.yandex.net [2a02:6b8:c02:550:0:604:9094:6282])
-        by iva5-7aaec7404f99.qloud-c.yandex.net (yaback/Yandex) with ESMTP id 5s9z81sXYH-NTs08ZEu;
-        Sun, 17 Apr 2022 16:23:29 +0300
-X-Yandex-Fwd: 1
-Authentication-Results: iva5-7aaec7404f99.qloud-c.yandex.net; dkim=pass
-Received: by kernel1.search.yandex.net (Postfix, from userid 55271)
-        id AA27856006C; Sun, 17 Apr 2022 16:23:29 +0300 (MSK)
-From:   Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
-To:     linux-kernel@vger.kernel.org
-Cc:     x86@kernel.org, mingo@redhat.com, jpoimboe@redhat.com,
-        Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
-Subject: [PATCH] x86/unwind/orc: recheck address range after stack info was updated V2
-Date:   Sun, 17 Apr 2022 16:23:11 +0300
-Message-Id: <1650201791-356270-1-git-send-email-dmtrmonakhov@yandex-team.ru>
-X-Mailer: git-send-email 2.7.4
+        Sun, 17 Apr 2022 09:39:47 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778B96475
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 06:37:11 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id d19-20020a0566022d5300b0065499cd4a73so412935iow.14
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 06:37:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=wA0FmzGAcRTrX+FnNeAVQOC1kod7R+OPRg+GRTVqKh8=;
+        b=uUpV6i3ugvMY+QoTvuqfZ80b19rd3TWH6a1Zr4qMgB94aozR94JNQIdFcOUCUo3Svf
+         5uvh3rgxNF8FnmadUTKKDRDGdxSde8IR0whSZI94NLlhP0rZaWlmYzwfcob7dTNPVkQM
+         6PrK4VeaRUwbaq3qQ4+T8m8iZsrStJxfg8RrZ6DwVYctrRsNdIBur81kZdKm5NOukdeX
+         5wlXCMGn3bjhjtt+Fo7+Lu5asaUrBwxn5YiJEWjIsGUEa21MfQkZv+vJbXoiwW2Nlx9H
+         FSQnnyviE3J8tyFPGlBgMMzHl13QC7o+iArRaAk4B0A8cwJ5QikkGv8cSh29yR3qOvjd
+         eEEQ==
+X-Gm-Message-State: AOAM532KcIhxZvSYXWH7iqXb6UsKrc/pQMpN3fBExHUzBVoePhL4J36F
+        tSPPSFmzLRCTcFPY+4MwfCCkiqlhsHHMQx/I/inzRLhc+ds+
+X-Google-Smtp-Source: ABdhPJzu8m14N1MFCoEmHDFz6ieSul9y+/6ERhmpPdxdOihDx3wppwzmzdQYIcOP91/UdZmPr8NDfGWK1J1CtfWUls48flDEJ4tM
+MIME-Version: 1.0
+X-Received: by 2002:a05:6e02:214b:b0:2cc:1c95:8198 with SMTP id
+ d11-20020a056e02214b00b002cc1c958198mr1316033ilv.231.1650202630786; Sun, 17
+ Apr 2022 06:37:10 -0700 (PDT)
+Date:   Sun, 17 Apr 2022 06:37:10 -0700
+In-Reply-To: <6ab618f8-f88b-0771-a739-04cd9cdc1a3c@kernel.dk>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000009d92dd05dcd9bd1c@google.com>
+Subject: Re: [syzbot] memory leak in iovec_from_user
+From:   syzbot <syzbot+96b43810dfe9c3bb95ed@syzkaller.appspotmail.com>
+To:     asml.silence@gmail.com, axboe@kernel.dk, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-get_stack_info() detects stack type only by begin address, so we must
-check that address range in question is fully covered by detected stack
+Hello,
 
-Otherwise following crash is possible:
--> unwind_next_frame
-   case ORC_TYPE_REGS:
-     if (!deref_stack_regs(state, sp, &state->ip, &state->sp))
-     -> deref_stack_regs
-       -> stack_access_ok  <- addr is ok, but addr+len-1 is not, exit with success
-     *ip = READ_ONCE_NOCHECK(regs->ip); <- Here we hit stack guard fault
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Original OOPS log:
-BUG: stack guard page was hit at 000000000dd984a2 (stack is 00000000d1caafca..00000000613712f0)
-kernel stack overflow (page fault): 0000 [#1] SMP NOPTI
-CPU: 93 PID: 23787 Comm: context_switch1 Not tainted 5.4.145 #1
-RIP: 0010:unwind_next_frame
-Call Trace:
- <NMI>
- perf_callchain_kernel
- ..
- get_perf_callchain
- perf_callchain
- perf_prepare_sample
- perf_event_output_forward
- ...
- __perf_event_overflow
- perf_ibs_handle_irq
- ....
- perf_ibs_nmi_handler
- nmi_handle
- default_do_nmi
- do_nmi
- end_repeat_nmi
+Reported-and-tested-by: syzbot+96b43810dfe9c3bb95ed@syzkaller.appspotmail.com
 
-Changes since v1:
- - Do not call on_stack() twice for valid range.
+Tested on:
 
-Signed-off-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
+commit:         c0713540 io_uring: fix leaks on IOPOLL and CQE_SKIP
+git tree:       git://git.kernel.dk/linux-block io_uring-5.18
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b8f1a3425e05af27
+dashboard link: https://syzkaller.appspot.com/bug?extid=96b43810dfe9c3bb95ed
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
-index 794fdef2501a..38185aedf7d1 100644
---- a/arch/x86/kernel/unwind_orc.c
-+++ b/arch/x86/kernel/unwind_orc.c
-@@ -339,11 +339,11 @@ static bool stack_access_ok(struct unwind_state *state, unsigned long _addr,
- 	struct stack_info *info = &state->stack_info;
- 	void *addr = (void *)_addr;
- 
--	if (!on_stack(info, addr, len) &&
--	    (get_stack_info(addr, state->task, info, &state->stack_mask)))
--		return false;
-+	if (on_stack(info, addr, len))
-+		return true;
- 
--	return true;
-+	return !get_stack_info(addr, state->task, info, &state->stack_mask) &&
-+		on_stack(info, addr, len);
- }
- 
- static bool deref_stack_reg(struct unwind_state *state, unsigned long addr,
--- 
-2.7.4
-
+Note: no patches were applied.
+Note: testing is done by a robot and is best-effort only.
