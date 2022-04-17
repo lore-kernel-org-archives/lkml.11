@@ -2,73 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B50C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F09C4332F
 	for <linux-kernel@archiver.kernel.org>; Sun, 17 Apr 2022 13:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234176AbiDQNcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 09:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33894 "EHLO
+        id S234161AbiDQN3o convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 09:29:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbiDQNcW (ORCPT
+        with ESMTP id S233866AbiDQN3m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 09:32:22 -0400
-Received: from m12-13.163.com (m12-13.163.com [220.181.12.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15E7A2B2
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 06:29:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=8xdy1
-        otSXW1cwfTIsLN61K8o+NtLtYS2/7RspgGPkFc=; b=WaktQzaNvApyYYQ3HqeLE
-        oJrH0VHDXzUSk9eqn4Sweu6M+/U73QAridWyhEm6N/T0iXbkI+sUQ8QSllnR4GQg
-        E/Jeajtx7eTWfW2a870TFPqO9WUEvL11ILiolkVp6FO2c3OotRVKDIyffplOIUZg
-        YGuspDxGJxTDLZyj84pgak=
-Received: from carlis (unknown [120.229.91.35])
-        by smtp9 (Coremail) with SMTP id DcCowABHu14vFlxikyJyBw--.4076S2;
-        Sun, 17 Apr 2022 21:29:20 +0800 (CST)
-From:   Xuezhi Zhang <zhangxuezhi1@coolpad.com>
-To:     liviu.dudau@arm.com, brian.starkey@arm.com, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Xuezhi Zhang <zhangxuezhi1@coolpad.com>
-Subject: [PATCH] drm/malidp: convert sysfs snprintf to sysfs_emit
-Date:   Sun, 17 Apr 2022 13:29:18 +0000
-Message-Id: <20220417132918.135795-1-zhangxuezhi1@coolpad.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 17 Apr 2022 09:29:42 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C53842DD
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 06:27:06 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-170-nF3cRDBxPKCZQGK-HhuPow-1; Sun, 17 Apr 2022 14:27:03 +0100
+X-MC-Unique: nF3cRDBxPKCZQGK-HhuPow-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Sun, 17 Apr 2022 14:27:00 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Sun, 17 Apr 2022 14:27:00 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Peter Zijlstra' <peterz@infradead.org>,
+        Christophe de Dinechin <dinechin@redhat.com>
+CC:     "trivial@kernel.org" <trivial@kernel.org>,
+        Ben Segall <bsegall@google.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Ingo Molnar" <mingo@redhat.com>, Mel Gorman <mgorman@suse.de>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        "Juri Lelli" <juri.lelli@redhat.com>
+Subject: RE: [PATCH 1/3] sched/headers: Fix compilation error with GCC 12
+Thread-Topic: [PATCH 1/3] sched/headers: Fix compilation error with GCC 12
+Thread-Index: AQHYUBibLip3vnTtMkGRChiOLjIGKKz0GpLA
+Date:   Sun, 17 Apr 2022 13:27:00 +0000
+Message-ID: <13a0f55340174900b36caa90920d942a@AcuMS.aculab.com>
+References: <20220414150855.2407137-1-dinechin@redhat.com>
+ <20220414150855.2407137-2-dinechin@redhat.com>
+ <Ylg73c83AJGwz9UN@hirez.programming.kicks-ass.net>
+In-Reply-To: <Ylg73c83AJGwz9UN@hirez.programming.kicks-ass.net>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcCowABHu14vFlxikyJyBw--.4076S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7GrWfXF1UWrWfGr1xZw1kZrb_yoWfWFb_CF
-        10qrsrZrs2yF97uw1xCF4fZryIkayF9FZ5XrW8ta4fZrsFvrsrZ3s29ryvqryUJF47AF9r
-        Aa1kuF15J3ZrCjkaLaAFLSUrUUUU1b8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUnpWlPUUUUU==
-X-Originating-IP: [120.229.91.35]
-Sender: llyz108@163.com
-X-CM-SenderInfo: xoo16iiqy6il2tof0z/1tbiQwjlhVc7Yte1mgABsc
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following coccicheck warning:
-drivers/gpu/drm/arm/malidp_drv.c:658:8-16:
-WARNING: use scnprintf or sprintf
+From: Peter Zijlstra
+> Sent: 14 April 2022 16:21
+...
+> <snip tons of noise>
+> 
+..
+> > -#define sched_class_highest (__end_sched_classes - 1)
+> > +/*
+> > + * sched_class_highests is really __end_sched_classes - 1, but written in a way
+> > + * that makes it clear that it is within __begin_sched_classes[] and not outside
+> > + * of __end_sched_classes[].
+> > + */
+> > +#define sched_class_highest (__begin_sched_classes + \
+> > +			     (__end_sched_classes - __begin_sched_classes - 1))
+> >  #define sched_class_lowest  (__begin_sched_classes - 1)
+> >
+> > +/* The + 1 below places the pointers within the range of their array */
+> >  #define for_class_range(class, _from, _to) \
+> > -	for (class = (_from); class != (_to); class--)
+> > +	for (class = (_from); class + 1 != (_to) + 1; class--)
 
-Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
----
- drivers/gpu/drm/arm/malidp_drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+That is still technically broken because you are still calculating
+the address of array[-1] - even though it is probably optimised out.
 
-diff --git a/drivers/gpu/drm/arm/malidp_drv.c b/drivers/gpu/drm/arm/malidp_drv.c
-index d5aef21426cf..b1ffd5ba27d9 100644
---- a/drivers/gpu/drm/arm/malidp_drv.c
-+++ b/drivers/gpu/drm/arm/malidp_drv.c
-@@ -655,7 +655,7 @@ static ssize_t core_id_show(struct device *dev, struct device_attribute *attr,
- 	struct drm_device *drm = dev_get_drvdata(dev);
- 	struct malidp_drm *malidp = drm->dev_private;
- 
--	return snprintf(buf, PAGE_SIZE, "%08x\n", malidp->core_id);
-+	return sysfs_emit(buf, "%08x\n", malidp->core_id);
- }
- 
- static DEVICE_ATTR_RO(core_id);
--- 
-2.25.1
+> Urgh, so now we get less readable code, just because GCC is being
+> stupid?
+> 
+> What's wrong with negative array indexes? memory is memory, stuff works.
+
+Consider segmented x86 where malloc() always returns {segment:0..segment:size).
+Pointer arithmetic will only change the offset.
+So &array[-1] is likely to be greater than &array[0].
+So it has never been valid C to create pointers to before a data item.
+
+OTOH I've NFI why gcc and clang have started generating warnings for
+portability issues that really don't affect mainstream systems.
+
+I'm just waiting for them to warn about memset(p, 0 sizeof *p) when
+the structure contains pointers - because the NULL pointer doesn't
+have to be the all-zero bit pattern.
+The only reason (int)&(struct foo *)0->member is non-portable is because
+NULL might not be 0.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
