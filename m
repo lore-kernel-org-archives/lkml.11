@@ -2,94 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97490C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:24:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2564EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241923AbiDRN10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:27:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59826 "EHLO
+        id S242060AbiDRN1a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240952AbiDRNCY (ORCPT
+        with ESMTP id S241006AbiDRNCf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:02:24 -0400
+        Mon, 18 Apr 2022 09:02:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D180A26ACB;
-        Mon, 18 Apr 2022 05:42:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06C0326D6;
+        Mon, 18 Apr 2022 05:42:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12F02B80EDD;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B33AB80EDE;
+        Mon, 18 Apr 2022 12:42:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57FD3C385AB;
         Mon, 18 Apr 2022 12:42:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D522C385A1;
-        Mon, 18 Apr 2022 12:42:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285742;
-        bh=5x/hr0RTqZjcqu+gwHu6SeQi/Y//QzF22XW4sumoa3M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wtKs3G+OBkZuf61B0eZw09WE6Y/TRjqZKU4uEubDB/cDTeP/ifQYZCj5icJx1hDa3
-         BUwsb8C7iPnvLWOCdNvh5ZflwQH4G+c/aQXCfDuGQMYSTTH30Fj9oUFC59B1E3NApo
-         ZA4LELNik23ajVz9jV8d3MhBmWD933d5TSEay44A=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 10/63] drm/msm/dsi: Use connector directly in msm_dsi_manager_connector_init()
-Date:   Mon, 18 Apr 2022 14:13:07 +0200
-Message-Id: <20220418121134.839290788@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
-References: <20220418121134.149115109@linuxfoundation.org>
-User-Agent: quilt/0.66
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650285746;
+        bh=ihICU86jZLqrg+rCTyEXVS33fBSPZSaeOuWzRAs+kM8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PROa4KLoMA9n0RATaVpIv5+BeXPpW0pdn6DpUwMbVS+dbFtmBrinuRbG6sipKOSnH
+         70blGLM6azyp7fu9nQ+gQblTr4uPUcFmRs2Z7ezMcqFxUQWM53RRVAeabZ6avD7dHV
+         Nvn9gO4T5vgSZIIrG3A40y9qWGxN907QdqZqFvnw28/GPtHIvOtXER6o6WMcb7Ko25
+         3ToHtOhrDeIgPWHomXMRU7VAvnxd4WNGDdNrx4fybHIXFvegyPM/xk5ALFGCReNkz0
+         op4CzTYwHXOhCFM22GVvfkKd5gE7MfZBWYS+k/qjABThIQB4N020Y2PAMahlDJiHAt
+         TOX8C6qQAkrOQ==
+Date:   Mon, 18 Apr 2022 20:42:19 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+Subject: Re: [PATCH v2 1/2] dt-bindings: arm: Add i.MX8M Plus Gateworks
+ GW74xx board
+Message-ID: <20220418124219.GN391514@dragon>
+References: <20220414161505.15524-1-tharvey@gateworks.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220414161505.15524-1-tharvey@gateworks.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+On Thu, Apr 14, 2022 at 09:15:04AM -0700, Tim Harvey wrote:
+> Add DT compatible string for i.MX8M Plus based Gateworks GW74xx board.
+> 
+> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
+> Cc: Shawn Guo <shawnguo@kernel.org>
+> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+> Cc: Fabio Estevam <festevam@gmail.com>
+> Cc: NXP Linux Team <linux-imx@nxp.com>
 
-[ Upstream commit 47b7de6b88b962ef339a2427a023d2a23d161654 ]
-
-The member 'msm_dsi->connector' isn't assigned until
-msm_dsi_manager_connector_init() returns (see msm_dsi_modeset_init() and
-how it assigns the return value). Therefore this pointer is going to be
-NULL here. Let's use 'connector' which is what was intended.
-
-Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: Sean Paul <seanpaul@chromium.org>
-Fixes: 6d5e78406991 ("drm/msm/dsi: Move dsi panel init into modeset init path")
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/478693/
-Link: https://lore.kernel.org/r/20220318000731.2823718-1-swboyd@chromium.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/msm/dsi/dsi_manager.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
-index 73127948f54d..f3ff2cdc288b 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
-@@ -625,7 +625,7 @@ struct drm_connector *msm_dsi_manager_connector_init(u8 id)
- 	return connector;
- 
- fail:
--	connector->funcs->destroy(msm_dsi->connector);
-+	connector->funcs->destroy(connector);
- 	return ERR_PTR(ret);
- }
- 
--- 
-2.35.1
-
-
-
+Applied both, thanks!
