@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 341BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 932B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:54:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240248AbiDRM4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:56:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48292 "EHLO
+        id S240437AbiDRM44 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:56:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237140AbiDRMpW (ORCPT
+        with ESMTP id S239582AbiDRMps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:45:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D328327B18;
-        Mon, 18 Apr 2022 05:32:43 -0700 (PDT)
+        Mon, 18 Apr 2022 08:45:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8745728E33;
+        Mon, 18 Apr 2022 05:32:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 71AE660F04;
-        Mon, 18 Apr 2022 12:32:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66CBAC385A1;
-        Mon, 18 Apr 2022 12:32:42 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C4C8ACE1089;
+        Mon, 18 Apr 2022 12:32:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9660C385A1;
+        Mon, 18 Apr 2022 12:32:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285162;
-        bh=Pdw1cZs7Hj7U8xVNdvVZ73/gHVZZx/AhjKYJR7xZ5Mk=;
+        s=korg; t=1650285169;
+        bh=/owy/O8ag0S9GdoObEsSYcAC04+NvJUCRS8wDSrBxVw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nuxCK1DMozddKJN5MIKRWH3sJxaRxor7IizWuG02O3uP2WE/Ic3htwECCl9hb6cdG
-         2WyGjhwI6TU8GpW/J+MWV0R7O1841IMb4NhMoyzPQqXyCrOo29Y2ML6U0y8cZJq0Gv
-         yqhh0iNZbVP+eP6k1rtYC2K7OKFRkRYC4USdQ4kc=
+        b=mQvCbYFVKwsJAYAgVZYmT58rrlXfPyzMe6Ey9OF0LXfK/zCbN3gpeTz7t0e3ZkVTF
+         JhKcQ0yKRwm1sVJjVJoFuMm3xG2sJasCA5LXn6xr0A+M9bw0LT0U5EtGmtGiDB1tRw
+         1lajd+hgVUIwLAt31nuj7ZBm4PHIiBiA4UYNg+Aw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tyrel Datwyler <tyreld@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 121/189] scsi: ibmvscsis: Increase INITIAL_SRP_LIMIT to 1024
-Date:   Mon, 18 Apr 2022 14:12:21 +0200
-Message-Id: <20220418121204.055491515@linuxfoundation.org>
+Subject: [PATCH 5.15 123/189] ata: libata-core: Disable READ LOG DMA EXT for Samsung 840 EVOs
+Date:   Mon, 18 Apr 2022 14:12:23 +0200
+Message-Id: <20220418121204.319701909@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,42 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyrel Datwyler <tyreld@linux.ibm.com>
+From: Christian Lamparter <chunkeey@gmail.com>
 
-[ Upstream commit 0bade8e53279157c7cc9dd95d573b7e82223d78a ]
+[ Upstream commit 5399752299396a3c9df6617f4b3c907d7aa4ded8 ]
 
-The adapter request_limit is hardcoded to be INITIAL_SRP_LIMIT which is
-currently an arbitrary value of 800. Increase this value to 1024 which
-better matches the characteristics of the typical IBMi Initiator that
-supports 32 LUNs and a queue depth of 32.
+Samsung' 840 EVO with the latest firmware (EXT0DB6Q) locks up with
+the a message: "READ LOG DMA EXT failed, trying PIO" during boot.
 
-This change also has the secondary benefit of being a power of two as
-required by the kfifo API. Since, Commit ab9bb6318b09 ("Partially revert
-"kfifo: fix kfifo_alloc() and kfifo_init()"") the size of IU pool for each
-target has been rounded down to 512 when attempting to kfifo_init() those
-pools with the current request_limit size of 800.
+Initially this was discovered because it caused a crash
+with the sata_dwc_460ex controller on a WD MyBook Live DUO.
 
-Link: https://lore.kernel.org/r/20220322194443.678433-1-tyreld@linux.ibm.com
-Signed-off-by: Tyrel Datwyler <tyreld@linux.ibm.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+The reporter "Tice Rex" which has the unique opportunity that he
+has two Samsung 840 EVO SSD! One with the older firmware "EXT0BB0Q"
+which booted fine and didn't expose "READ LOG DMA EXT". But the
+newer/latest firmware "EXT0DB6Q" caused the headaches.
+
+BugLink: https://github.com/openwrt/openwrt/issues/9505
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/ata/libata-core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-index 10b6c6daaacd..d43bb18f58fd 100644
---- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-+++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-@@ -36,7 +36,7 @@
- 
- #define IBMVSCSIS_VERSION	"v0.2"
- 
--#define	INITIAL_SRP_LIMIT	800
-+#define	INITIAL_SRP_LIMIT	1024
- #define	DEFAULT_MAX_SECTORS	256
- #define MAX_TXU			1024 * 1024
- 
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 24b67d78cb83..a0343b7c9add 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -3999,6 +3999,9 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
+ 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
+ 	{ "Crucial_CT*MX100*",		"MU01",	ATA_HORKAGE_NO_NCQ_TRIM |
+ 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
++	{ "Samsung SSD 840 EVO*",	NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
++						ATA_HORKAGE_NO_DMA_LOG |
++						ATA_HORKAGE_ZERO_AFTER_TRIM, },
+ 	{ "Samsung SSD 840*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+ 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
+ 	{ "Samsung SSD 850*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
 -- 
 2.35.1
 
