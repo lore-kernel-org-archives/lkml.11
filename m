@@ -2,103 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B33C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C45C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:33:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242641AbiDRNfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53904 "EHLO
+        id S242693AbiDRNfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242639AbiDRNJR (ORCPT
+        with ESMTP id S242816AbiDRNJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:09:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599813614E;
-        Mon, 18 Apr 2022 05:48:46 -0700 (PDT)
+        Mon, 18 Apr 2022 09:09:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9512369C6;
+        Mon, 18 Apr 2022 05:49:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7AD9460FB6;
-        Mon, 18 Apr 2022 12:48:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7338FC385A1;
-        Mon, 18 Apr 2022 12:48:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286124;
-        bh=6118wY5SUqvaOGFyKq6KoocM37LhFJT1VLYB+36B0Ig=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2E87B80EDB;
+        Mon, 18 Apr 2022 12:48:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 005B7C385A1;
+        Mon, 18 Apr 2022 12:48:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650286138;
+        bh=l5dooTjbgCNig025z/CpTFdhYCb1guxzIXi8auXSJ1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BEGAlTBUDQB6DUBfUPay87sPa3P5Q/NCcbZi8qtUgjVHcI+TDyGQQ7aE3fWFf9INs
-         /3kG9gP9IOCB5wCFj/U/kvu+gLHvsO675jVHLTyM7sbGuDDhDFVxrSTlYODfmGSmBi
-         DR+6L2aqBPcEUCzgs5BcsAgdDVyR+JQsVINxCzzE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.14 035/284] ALSA: cs4236: fix an incorrect NULL check on list iterator
-Date:   Mon, 18 Apr 2022 14:10:16 +0200
-Message-Id: <20220418121211.693125219@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
-References: <20220418121210.689577360@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=hGZlpXTtzMxkqwRnpBxWwuPLvnGxRVMlX30XmdfK4s5DDoy4MeBWTXsxtuBxaoEWH
+         mJSpRi1BCInVFtuCO9qofR4+zv4imTIvfHyi0yYgKojUwiPYXB9GD7Di/zCJBDJRyK
+         vN3oMA1gHMjtL0zuyhh3n2NGJcSWc0TQ98zBUaLSE4cr63h/rMPBYXd5JrYbhNCO5C
+         GE9LcDw5GUXzaJPtmvlTk664jj7fO4+X3gVKajpRXZTUAIzhI4w5OPR+87Q96NwZuK
+         DpKvjLvmQFiGdc+YtZRrz+gv5LzHcZY6QPa2bF0E7rboV0zTxmcmpKtbOzQzjEntjn
+         HW8Y2h9Kng27A==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCHv2 bpf-next 2/4] fprobe: Resolve symbols with kallsyms_lookup_names
+Date:   Mon, 18 Apr 2022 14:48:32 +0200
+Message-Id: <20220418124834.829064-3-jolsa@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220418124834.829064-1-jolsa@kernel.org>
+References: <20220418124834.829064-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Using kallsyms_lookup_names to speed up symbols lookup
+in register_fprobe_syms API.
 
-commit 0112f822f8a6d8039c94e0bc9b264d7ffc5d4704 upstream.
+This requires syms array to be alphabetically sorted.
 
-The bug is here:
-	err = snd_card_cs423x_pnp(dev, card->private_data, pdev, cdev);
-
-The list iterator value 'cdev' will *always* be set and non-NULL
-by list_for_each_entry(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty or no element
-is found.
-
-To fix the bug, use a new variable 'iter' as the list iterator,
-while use the original variable 'cdev' as a dedicated pointer
-to point to the found element. And snd_card_cs423x_pnp() itself
-has NULL check for cdev.
-
-Cc: stable@vger.kernel.org
-Fixes: c2b73d1458014 ("ALSA: cs4236: cs4232 and cs4236 driver merge to solve PnP BIOS detection")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220327060822.4735-1-xiam0nd.tong@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- sound/isa/cs423x/cs4236.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ kernel/trace/fprobe.c | 32 ++++++++++++--------------------
+ 1 file changed, 12 insertions(+), 20 deletions(-)
 
---- a/sound/isa/cs423x/cs4236.c
-+++ b/sound/isa/cs423x/cs4236.c
-@@ -559,7 +559,7 @@ static int snd_cs423x_pnpbios_detect(str
- 	static int dev;
- 	int err;
- 	struct snd_card *card;
--	struct pnp_dev *cdev;
-+	struct pnp_dev *cdev, *iter;
- 	char cid[PNP_ID_LEN];
+diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
+index 89d9f994ebb0..6419501a0036 100644
+--- a/kernel/trace/fprobe.c
++++ b/kernel/trace/fprobe.c
+@@ -85,39 +85,31 @@ static void fprobe_exit_handler(struct rethook_node *rh, void *data,
+ }
+ NOKPROBE_SYMBOL(fprobe_exit_handler);
  
- 	if (pnp_device_is_isapnp(pdev))
-@@ -575,9 +575,11 @@ static int snd_cs423x_pnpbios_detect(str
- 	strcpy(cid, pdev->id[0].id);
- 	cid[5] = '1';
- 	cdev = NULL;
--	list_for_each_entry(cdev, &(pdev->protocol->devices), protocol_list) {
--		if (!strcmp(cdev->id[0].id, cid))
-+	list_for_each_entry(iter, &(pdev->protocol->devices), protocol_list) {
-+		if (!strcmp(iter->id[0].id, cid)) {
-+			cdev = iter;
- 			break;
-+		}
- 	}
- 	err = snd_cs423x_card_new(&pdev->dev, dev, &card);
- 	if (err < 0)
-
++static int symbols_cmp(const void *a, const void *b)
++{
++	const char **str_a = (const char **) a;
++	const char **str_b = (const char **) b;
++
++	return strcmp(*str_a, *str_b);
++}
++
+ /* Convert ftrace location address from symbols */
+ static unsigned long *get_ftrace_locations(const char **syms, int num)
+ {
+-	unsigned long addr, size;
+ 	unsigned long *addrs;
+-	int i;
+ 
+ 	/* Convert symbols to symbol address */
+ 	addrs = kcalloc(num, sizeof(*addrs), GFP_KERNEL);
+ 	if (!addrs)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	for (i = 0; i < num; i++) {
+-		addr = kallsyms_lookup_name(syms[i]);
+-		if (!addr)	/* Maybe wrong symbol */
+-			goto error;
+-
+-		/* Convert symbol address to ftrace location. */
+-		if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
+-			goto error;
++	/* kallsyms_lookup_names expects sorted symbols */
++	sort(syms, num, sizeof(*syms), symbols_cmp, NULL);
+ 
+-		addr = ftrace_location_range(addr, addr + size - 1);
+-		if (!addr) /* No dynamic ftrace there. */
+-			goto error;
++	if (!kallsyms_lookup_names(syms, num, addrs))
++		return addrs;
+ 
+-		addrs[i] = addr;
+-	}
+-
+-	return addrs;
+-
+-error:
+ 	kfree(addrs);
+-
+ 	return ERR_PTR(-ENOENT);
+ }
+ 
+-- 
+2.35.1
 
