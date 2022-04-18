@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0813EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF1DC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236293AbiDRMc1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:32:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37106 "EHLO
+        id S239133AbiDRMca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239522AbiDRM2b (ORCPT
+        with ESMTP id S239492AbiDRM2a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:28:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456331FCD9;
-        Mon, 18 Apr 2022 05:22:01 -0700 (PDT)
+        Mon, 18 Apr 2022 08:28:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3231BE98;
+        Mon, 18 Apr 2022 05:21:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B964B80EDC;
-        Mon, 18 Apr 2022 12:21:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE0AC385A1;
-        Mon, 18 Apr 2022 12:21:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3D5A60FAB;
+        Mon, 18 Apr 2022 12:21:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4427C385A1;
+        Mon, 18 Apr 2022 12:21:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284518;
-        bh=SuuDmPTb5VGvYkiKexzHbRRnRZQ/cYrWEhuSXbDByN8=;
+        s=korg; t=1650284515;
+        bh=mfL2CmQ9NoDpEOv1VHHlZ0R3Tzoajclb7F4KvKPCUJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oWydHuVeuUqUQEwOcb+/1OiIjLI3vM6GZtSVwCVTRCabXwHR3Fufcn6toEFXS49tk
-         izuYD6Urxewaxj1xR+UqOMb36kgeNcKWcO8tReFTEKGcrKzix6yn1yX9Y4Gc3apwJz
-         3EKZuIUNhASB0Ka2KdhIFWnUxDpa6ZiRLAvKj/9g=
+        b=fd2JjUrS2npwGDlp2pKTRwCmsUmJW6dTYdJWDNbsWGSS69kiEgv8gWUrwWd1dJcdS
+         aVbF/5aly+VE1dO6qjblAKiJufm4k0lovDYtYbocLfSjk+0sw7sUxLr5Uj/7+1cySI
+         3XERbD6C2HQT8L/IIcT7CGoGcoesbEhBMm48Lalo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
-        Robin Murphy <robin.murphy@arm.com>,
+        stable@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
         Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 142/219] Drivers: hv: vmbus: Propagate VMbus coherence to each VMbus device
-Date:   Mon, 18 Apr 2022 14:11:51 +0200
-Message-Id: <20220418121210.865930956@linuxfoundation.org>
+Subject: [PATCH 5.17 141/219] Drivers: hv: vmbus: Deactivate sysctl_record_panic_msg by default in isolated guests
+Date:   Mon, 18 Apr 2022 14:11:50 +0200
+Message-Id: <20220418121210.838543273@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,130 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Kelley <mikelley@microsoft.com>
+From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
 
-[ Upstream commit 37200078ed6aa2ac3c88a01a64996133dccfdd34 ]
+[ Upstream commit 9f8b577f7b43b2170628d6c537252785dcc2dcea ]
 
-VMbus synthetic devices are not represented in the ACPI DSDT -- only
-the top level VMbus device is represented. As a result, on ARM64
-coherence information in the _CCA method is not specified for
-synthetic devices, so they default to not hardware coherent.
-Drivers for some of these synthetic devices have been recently
-updated to use the standard DMA APIs, and they are incurring extra
-overhead of unneeded software coherence management.
+hv_panic_page might contain guest-sensitive information, do not dump it
+over to Hyper-V by default in isolated guests.
 
-Fix this by propagating coherence information from the VMbus node
-in ACPI to the individual synthetic devices. There's no effect on
-x86/x64 where devices are always hardware coherent.
+While at it, update some comments in hyperv_{panic,die}_event().
 
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/1648138492-2191-2-git-send-email-mikelley@microsoft.com
+Reported-by: Dexuan Cui <decui@microsoft.com>
+Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Reviewed-by: Dexuan Cui <decui@microsoft.com>
+Link: https://lore.kernel.org/r/20220301141135.2232-1-parri.andrea@gmail.com
 Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hv/hv_common.c         | 11 +++++++++++
- drivers/hv/vmbus_drv.c         | 31 +++++++++++++++++++++++++++++++
- include/asm-generic/mshyperv.h |  1 +
- 3 files changed, 43 insertions(+)
+ drivers/hv/vmbus_drv.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
-index 181d16bbf49d..820e81406251 100644
---- a/drivers/hv/hv_common.c
-+++ b/drivers/hv/hv_common.c
-@@ -20,6 +20,7 @@
- #include <linux/panic_notifier.h>
- #include <linux/ptrace.h>
- #include <linux/slab.h>
-+#include <linux/dma-map-ops.h>
- #include <asm/hyperv-tlfs.h>
- #include <asm/mshyperv.h>
- 
-@@ -216,6 +217,16 @@ bool hv_query_ext_cap(u64 cap_query)
- }
- EXPORT_SYMBOL_GPL(hv_query_ext_cap);
- 
-+void hv_setup_dma_ops(struct device *dev, bool coherent)
-+{
-+	/*
-+	 * Hyper-V does not offer a vIOMMU in the guest
-+	 * VM, so pass 0/NULL for the IOMMU settings
-+	 */
-+	arch_setup_dma_ops(dev, 0, 0, NULL, coherent);
-+}
-+EXPORT_SYMBOL_GPL(hv_setup_dma_ops);
-+
- bool hv_is_hibernation_supported(void)
- {
- 	return !hv_root_partition && acpi_sleep_state_supported(ACPI_STATE_S4);
 diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 6c057c76c2ca..3cd0d3a44fa2 100644
+index 4bea1dfa41cd..6c057c76c2ca 100644
 --- a/drivers/hv/vmbus_drv.c
 +++ b/drivers/hv/vmbus_drv.c
-@@ -920,6 +920,21 @@ static int vmbus_probe(struct device *child_device)
- 	return ret;
- }
+@@ -77,8 +77,8 @@ static int hyperv_panic_event(struct notifier_block *nb, unsigned long val,
  
-+/*
-+ * vmbus_dma_configure -- Configure DMA coherence for VMbus device
-+ */
-+static int vmbus_dma_configure(struct device *child_device)
-+{
-+	/*
-+	 * On ARM64, propagate the DMA coherence setting from the top level
-+	 * VMbus ACPI device to the child VMbus device being added here.
-+	 * On x86/x64 coherence is assumed and these calls have no effect.
-+	 */
-+	hv_setup_dma_ops(child_device,
-+		device_get_dma_attr(&hv_acpi_dev->dev) == DEV_DMA_COHERENT);
-+	return 0;
-+}
+ 	/*
+ 	 * Hyper-V should be notified only once about a panic.  If we will be
+-	 * doing hyperv_report_panic_msg() later with kmsg data, don't do
+-	 * the notification here.
++	 * doing hv_kmsg_dump() with kmsg data later, don't do the notification
++	 * here.
+ 	 */
+ 	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE
+ 	    && hyperv_report_reg()) {
+@@ -100,8 +100,8 @@ static int hyperv_die_event(struct notifier_block *nb, unsigned long val,
+ 
+ 	/*
+ 	 * Hyper-V should be notified only once about a panic.  If we will be
+-	 * doing hyperv_report_panic_msg() later with kmsg data, don't do
+-	 * the notification here.
++	 * doing hv_kmsg_dump() with kmsg data later, don't do the notification
++	 * here.
+ 	 */
+ 	if (hyperv_report_reg())
+ 		hyperv_report_panic(regs, val, true);
+@@ -1546,14 +1546,20 @@ static int vmbus_bus_init(void)
+ 	if (ret)
+ 		goto err_connect;
+ 
++	if (hv_is_isolation_supported())
++		sysctl_record_panic_msg = 0;
 +
- /*
-  * vmbus_remove - Remove a vmbus device
-  */
-@@ -1040,6 +1055,7 @@ static struct bus_type  hv_bus = {
- 	.remove =		vmbus_remove,
- 	.probe =		vmbus_probe,
- 	.uevent =		vmbus_uevent,
-+	.dma_configure =	vmbus_dma_configure,
- 	.dev_groups =		vmbus_dev_groups,
- 	.drv_groups =		vmbus_drv_groups,
- 	.bus_groups =		vmbus_bus_groups,
-@@ -2435,6 +2451,21 @@ static int vmbus_acpi_add(struct acpi_device *device)
- 
- 	hv_acpi_dev = device;
- 
-+	/*
-+	 * Older versions of Hyper-V for ARM64 fail to include the _CCA
-+	 * method on the top level VMbus device in the DSDT. But devices
-+	 * are hardware coherent in all current Hyper-V use cases, so fix
-+	 * up the ACPI device to behave as if _CCA is present and indicates
-+	 * hardware coherence.
-+	 */
-+	ACPI_COMPANION_SET(&device->dev, device);
-+	if (IS_ENABLED(CONFIG_ACPI_CCA_REQUIRED) &&
-+	    device_get_dma_attr(&device->dev) == DEV_DMA_NOT_SUPPORTED) {
-+		pr_info("No ACPI _CCA found; assuming coherent device I/O\n");
-+		device->flags.cca_seen = true;
-+		device->flags.coherent_dma = true;
-+	}
-+
- 	result = acpi_walk_resources(device->handle, METHOD_NAME__CRS,
- 					vmbus_walk_resources, NULL);
- 
-diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
-index c08758b6b364..c05d2ce9b6cd 100644
---- a/include/asm-generic/mshyperv.h
-+++ b/include/asm-generic/mshyperv.h
-@@ -269,6 +269,7 @@ bool hv_isolation_type_snp(void);
- u64 hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size);
- void hyperv_cleanup(void);
- bool hv_query_ext_cap(u64 cap_query);
-+void hv_setup_dma_ops(struct device *dev, bool coherent);
- void *hv_map_memory(void *addr, unsigned long size);
- void hv_unmap_memory(void *addr);
- #else /* CONFIG_HYPERV */
+ 	/*
+ 	 * Only register if the crash MSRs are available
+ 	 */
+ 	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE) {
+ 		u64 hyperv_crash_ctl;
+ 		/*
+-		 * Sysctl registration is not fatal, since by default
+-		 * reporting is enabled.
++		 * Panic message recording (sysctl_record_panic_msg)
++		 * is enabled by default in non-isolated guests and
++		 * disabled by default in isolated guests; the panic
++		 * message recording won't be available in isolated
++		 * guests should the following registration fail.
+ 		 */
+ 		hv_ctl_table_hdr = register_sysctl_table(hv_root_table);
+ 		if (!hv_ctl_table_hdr)
 -- 
 2.35.1
 
