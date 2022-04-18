@@ -2,145 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B03F1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E943C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245581AbiDRNxw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58226 "EHLO
+        id S244427AbiDRNyr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:54:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244783AbiDRNay (ORCPT
+        with ESMTP id S244872AbiDRNa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 435B91C131
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:55:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650286522;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ko1k1fU4FuGAEDeyXkrcC555L5G5PS8Gw/yrT6nSdxE=;
-        b=KEOFIhjKJNeODe0q/rcRQbsEJvFBZBuWRrF3WQChtxbQQrJLlRnZ/IsM4dfPsd/ZxBJDQo
-        w6CuSuTWS1eo9UaGSY+F+v3/mHwGURmH9JfjmWNWENbxBCSKunBR94XhlYNvaG0CmxwqM+
-        J879S8hUap685TZahLRPvK0Z+BAWmmU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-441-yOdWIB2ZPV-E5lEUHxNUVw-1; Mon, 18 Apr 2022 08:55:06 -0400
-X-MC-Unique: yOdWIB2ZPV-E5lEUHxNUVw-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 18 Apr 2022 09:30:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148E91EEF1;
+        Mon, 18 Apr 2022 05:56:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0F0CC802819;
-        Mon, 18 Apr 2022 12:55:06 +0000 (UTC)
-Received: from starship (unknown [10.40.194.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E8FD65E2C39;
-        Mon, 18 Apr 2022 12:55:03 +0000 (UTC)
-Message-ID: <abb93e2d73b7ada6cbabcd3ebbf7b38e4701ec57.camel@redhat.com>
-Subject: Re: [PATCH v2 08/12] KVM: SVM: Update AVIC settings when changing
- APIC mode
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Mon, 18 Apr 2022 15:55:02 +0300
-In-Reply-To: <20220412115822.14351-9-suravee.suthikulpanit@amd.com>
-References: <20220412115822.14351-1-suravee.suthikulpanit@amd.com>
-         <20220412115822.14351-9-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A393460FD9;
+        Mon, 18 Apr 2022 12:56:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 916F1C385A1;
+        Mon, 18 Apr 2022 12:56:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650286608;
+        bh=RyYRvTh/gCaabpitJ9QTL82+jjl5OBhyZhWNKY8lAcA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mvogsyMsPle8pu55q1MgFhhZv+Niey59jG2CZhGVVvDNwEjN5/1j8DQAgb+xe5MWR
+         o0n+5LzsXsi8dKaCeYEDQXzAyAfrMkzI3zINmQTNWWgjT32+NwnJz5IKlC2ErrvvBr
+         Yx3NFOqgZTuQLvoQ3nK/tD41ApmnI2Owes5pnSpY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.14 188/284] ubifs: rename_whiteout: correct old_dir size computing
+Date:   Mon, 18 Apr 2022 14:12:49 +0200
+Message-Id: <20220418121217.081930940@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
+References: <20220418121210.689577360@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-04-12 at 06:58 -0500, Suravee Suthikulpanit wrote:
-> When APIC mode is updated (e.g. disabled, xAPIC, or x2APIC),
-> KVM needs to call kvm_vcpu_update_apicv() to update AVIC settings
-> accordingly.
-> 
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  arch/x86/kvm/svm/avic.c | 15 +++++++++++++++
->  arch/x86/kvm/svm/svm.c  |  1 +
->  2 files changed, 16 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index 22ee1098e2a5..01392b8364f4 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -616,6 +616,21 @@ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu)
->  	avic_handle_ldr_update(vcpu);
->  }
->  
-> +void avic_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
-> +{
-> +	struct vcpu_svm *svm = to_svm(vcpu);
-> +
-> +	if (!lapic_in_kernel(vcpu) || (avic_mode == AVIC_MODE_NONE))
-> +		return;
-> +
-> +	if (kvm_get_apic_mode(vcpu) == LAPIC_MODE_INVALID) {
-> +		WARN_ONCE(true, "Invalid local APIC state (vcpu_id=%d)", vcpu->vcpu_id);
-> +		return;
-> +	}
-> +
-> +	kvm_vcpu_update_apicv(&svm->vcpu);
+From: Baokun Li <libaokun1@huawei.com>
 
-I think it makes sense to call avic_refresh_apicv_exec_ctrl directly here.
- 
-I am not sure that kvm_vcpu_update_apicv will even call it
-because it has an optimization of doing nothing when inhibition status
-didn't change.
- 
- 
-Another semi-related note:
- 
-the current way the x2avic msrs are configured creates slight performance 
-problem for nesting:
- 
-The problem is that when entering a nested guest, AVIC on the current vCPU
-is inhibited, but this is done only so that this vCPU *peers* don't
-try to use AVIC to send IPIs to it, so there is no need to update vmcb01
-msr interception bitmap, and vmcb02 should have all these msrs intercepted always.
-Same with returning to host.
+commit 705757274599e2e064dd3054aabc74e8af31a095 upstream.
 
-It also should be checked that during nested entry, at least vmcb01 msr bitmap
-is updated - TL;DR - please check that x2avic works when there is a nested guest running.
+When renaming the whiteout file, the old whiteout file is not deleted.
+Therefore, we add the old dentry size to the old dir like XFS.
+Otherwise, an error may be reported due to `fscki->calc_sz != fscki->size`
+in check_indes.
+
+Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
+Reported-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ubifs/dir.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -1452,6 +1452,9 @@ static int do_rename(struct inode *old_d
+ 			if (unlink)
+ 				drop_nlink(old_dir);
+ 		}
++
++		/* Add the old_dentry size to the old_dir size. */
++		old_sz -= CALC_DENT_SIZE(fname_len(&old_nm));
+ 	}
  
-
-My avic nested coexistence patches are already upstream (kvm/queue) so this is already
-relevant.
- 
-With nested x2avic (which will be very easy to do after my nested AVIC code is
-upstream, vmcb02 will need to have x2avic msrs not intercepted as long as L1
-doesn't want to intercept them if nested x2avic is enabled).
-
-Best regards,
-	Maxim Levitsky
-
-
-> +}
-> +
->  static int avic_set_pi_irte_mode(struct kvm_vcpu *vcpu, bool activate)
->  {
->  	int ret = 0;
-> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> index c85663b62d4e..b7dbd8bb2c0a 100644
-> --- a/arch/x86/kvm/svm/svm.c
-> +++ b/arch/x86/kvm/svm/svm.c
-> @@ -4606,6 +4606,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
->  	.enable_nmi_window = svm_enable_nmi_window,
->  	.enable_irq_window = svm_enable_irq_window,
->  	.update_cr8_intercept = svm_update_cr8_intercept,
-> +	.set_virtual_apic_mode = avic_set_virtual_apic_mode,
->  	.refresh_apicv_exec_ctrl = avic_refresh_apicv_exec_ctrl,
->  	.check_apicv_inhibit_reasons = avic_check_apicv_inhibit_reasons,
->  	.apicv_post_state_restore = avic_apicv_post_state_restore,
+ 	old_dir->i_size -= old_sz;
 
 
