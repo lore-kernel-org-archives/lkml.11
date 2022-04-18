@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0970AC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43831C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:52:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237687AbiDRMyz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:54:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37728 "EHLO
+        id S240231AbiDRMzD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239891AbiDRMiO (ORCPT
+        with ESMTP id S239858AbiDRMiL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:38:14 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F50D245A0;
-        Mon, 18 Apr 2022 05:28:52 -0700 (PDT)
+        Mon, 18 Apr 2022 08:38:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E844D24598;
+        Mon, 18 Apr 2022 05:28:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C1DF8CE1077;
-        Mon, 18 Apr 2022 12:28:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B302C385A1;
-        Mon, 18 Apr 2022 12:28:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 814CF60FDF;
+        Mon, 18 Apr 2022 12:28:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FE70C385A9;
+        Mon, 18 Apr 2022 12:28:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284929;
-        bh=nrYe9b8ZryklTVeVSOhKWsQwQKecSmUeNeKxQ9My95U=;
+        s=korg; t=1650284925;
+        bh=MLjCz8AqeORP/5DdnvkYhJEBc8DfgTNnq0cfKf6/iK0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sXDKm8i0qvO7yKgjqL4E2WKlMpu9Phds64FJY8l+kBYQ4aV4uVybMbkp9no9nqV+9
-         4f+FOm2aeWx2IiLY+3O0FGFnnM9MPHIspK3hqFGTeOFfDcwitoqZxlhFgeF3iEdW5q
-         1YhECVd3qR9ZrtS8xjxtnYU/3tZdx1p19dCJzwBw=
+        b=eRtTyH63xxuNZhHSRxNkwWFaYau/uuPe7Eeqf7v2MHg5yMAKLilW1RcbryIeLHbWi
+         QiFllhk6vBd1o7iUCgGWx/xVmXvi4BfAXSMZ/koxk4DBTEpwqZTp5eVD3dR8cL+KWa
+         knW42PshWB+uyVmF1OJxXKnvQBmDx0FtxQNcNzlI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 011/189] btrfs: remove unused variable in btrfs_{start,write}_dirty_block_groups()
-Date:   Mon, 18 Apr 2022 14:10:31 +0200
-Message-Id: <20220418121200.811035886@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 049/189] ALSA: rme9652: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:11:09 +0200
+Message-Id: <20220418121201.904869631@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -48,68 +47,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 6d4a6b515c39f1f8763093e0f828959b2fbc2f45 upstream.
+commit b2aa4f80693b7841e5ac4eadbd2d8cec56b10a51 upstream.
 
-Clang's version of -Wunused-but-set-variable recently gained support for
-unary operations, which reveals two unused variables:
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-  fs/btrfs/block-group.c:2949:6: error: variable 'num_started' set but not used [-Werror,-Wunused-but-set-variable]
-          int num_started = 0;
-              ^
-  fs/btrfs/block-group.c:3116:6: error: variable 'num_started' set but not used [-Werror,-Wunused-but-set-variable]
-          int num_started = 0;
-              ^
-  2 errors generated.
+This patch fixes it by calling snd_card_free() manually on the error
+from the probe callback.
 
-These variables appear to be unused from their introduction, so just
-remove them to silence the warnings.
-
-Fixes: c9dc4c657850 ("Btrfs: two stage dirty block group writeout")
-Fixes: 1bbc621ef284 ("Btrfs: allow block group cache writeout outside critical section in commit")
-CC: stable@vger.kernel.org # 5.4+
-Link: https://github.com/ClangBuiltLinux/linux/issues/1614
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: b1002b2d41c5 ("ALSA: rme9652: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-38-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/block-group.c |    4 ----
- 1 file changed, 4 deletions(-)
+ sound/pci/rme9652/rme9652.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/fs/btrfs/block-group.c
-+++ b/fs/btrfs/block-group.c
-@@ -2882,7 +2882,6 @@ int btrfs_start_dirty_block_groups(struc
- 	struct btrfs_path *path = NULL;
- 	LIST_HEAD(dirty);
- 	struct list_head *io = &cur_trans->io_bgs;
--	int num_started = 0;
- 	int loops = 0;
+diff --git a/sound/pci/rme9652/rme9652.c b/sound/pci/rme9652/rme9652.c
+index 7755e19aa776..1d614fe89a6a 100644
+--- a/sound/pci/rme9652/rme9652.c
++++ b/sound/pci/rme9652/rme9652.c
+@@ -2572,7 +2572,7 @@ static int snd_rme9652_probe(struct pci_dev *pci,
+ 	rme9652->pci = pci;
+ 	err = snd_rme9652_create(card, rme9652, precise_ptr[dev]);
+ 	if (err)
+-		return err;
++		goto error;
  
- 	spin_lock(&cur_trans->dirty_bgs_lock);
-@@ -2948,7 +2947,6 @@ again:
- 			cache->io_ctl.inode = NULL;
- 			ret = btrfs_write_out_cache(trans, cache, path);
- 			if (ret == 0 && cache->io_ctl.inode) {
--				num_started++;
- 				should_put = 0;
+ 	strcpy(card->shortname, rme9652->card_name);
  
- 				/*
-@@ -3049,7 +3047,6 @@ int btrfs_write_dirty_block_groups(struc
- 	int should_put;
- 	struct btrfs_path *path;
- 	struct list_head *io = &cur_trans->io_bgs;
--	int num_started = 0;
+@@ -2580,10 +2580,14 @@ static int snd_rme9652_probe(struct pci_dev *pci,
+ 		card->shortname, rme9652->port, rme9652->irq);
+ 	err = snd_card_register(card);
+ 	if (err)
+-		return err;
++		goto error;
+ 	pci_set_drvdata(pci, card);
+ 	dev++;
+ 	return 0;
++
++ error:
++	snd_card_free(card);
++	return err;
+ }
  
- 	path = btrfs_alloc_path();
- 	if (!path)
-@@ -3107,7 +3104,6 @@ int btrfs_write_dirty_block_groups(struc
- 			cache->io_ctl.inode = NULL;
- 			ret = btrfs_write_out_cache(trans, cache, path);
- 			if (ret == 0 && cache->io_ctl.inode) {
--				num_started++;
- 				should_put = 0;
- 				list_add_tail(&cache->io_list, io);
- 			} else {
+ static struct pci_driver rme9652_driver = {
+-- 
+2.35.2
+
 
 
