@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4671C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 936ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:44:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233460AbiDRMqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
+        id S236844AbiDRMrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240096AbiDRMik (ORCPT
+        with ESMTP id S240101AbiDRMik (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:38:40 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F9F2528E;
-        Mon, 18 Apr 2022 05:29:17 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C6C24F34;
+        Mon, 18 Apr 2022 05:29:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D9409CE1099;
-        Mon, 18 Apr 2022 12:29:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BABFEC385A1;
-        Mon, 18 Apr 2022 12:29:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB70761014;
+        Mon, 18 Apr 2022 12:29:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D723AC385A1;
+        Mon, 18 Apr 2022 12:29:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284954;
-        bh=AVO+MOL+bqK/XmS+YnMfmQ7LUvClj07a1xA0LE9tqAE=;
+        s=korg; t=1650284957;
+        bh=QW4AOLZ2mnwr58m9urouc3JcM35Hp0AuME0jM0U7jgU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PEihDcDk2ULAOvB27uYwexCbdWNEhsgvt26j24OHnsv/3EVe0K46VaroOQ8bMOuPm
-         tH6TtrhVk1qc6uQHfmR1s/EYNnA8J1PFuDH9HSj1ue9suuIu3i67RzKx7eod/F8spA
-         BR0po25784pAhfPCON1BBLC56pW/plo97/DqImKM=
+        b=BwS9K43Hbi8A7+WKMB7AyiBf+3dBNDG6QNexSdT2swCOkhVYYTQ/H21uXuHefZ6Pf
+         iI+2dJngghI8sYsdE1dO2y4whygYmA9bd5c+F6zqQy1+GWTiC9zZdA6X2uNAw3+J+L
+         VzqqCEeGEOTOIR78sF3XwQmgYoZpo2R/ZspV9ECo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dragan Simic <dragan.simic@gmail.com>,
-        Kyle Copperfield <kmcopper@danwin1210.me>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 061/189] media: rockchip/rga: do proper error checking in probe
-Date:   Mon, 18 Apr 2022 14:11:21 +0200
-Message-Id: <20220418121202.241741556@linuxfoundation.org>
+Subject: [PATCH 5.15 062/189] SUNRPC: Fix the svc_deferred_event trace class
+Date:   Mon, 18 Apr 2022 14:11:22 +0200
+Message-Id: <20220418121202.269470664@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -53,42 +48,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kyle Copperfield <kmcopper@danwin1210.me>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit 6150f276073a1480030242a7e006a89e161d6cd6 ]
+[ Upstream commit 4d5004451ab2218eab94a30e1841462c9316ba19 ]
 
-The latest fix for probe error handling contained a typo that causes
-probing to fail with the following message:
+Fix a NULL deref crash that occurs when an svc_rqst is deferred
+while the sunrpc tracing subsystem is enabled. svc_revisit() sets
+dr->xprt to NULL, so it can't be relied upon in the tracepoint to
+provide the remote's address.
 
-  rockchip-rga: probe of ff680000.rga failed with error -12
+Unfortunately we can't revert the "svc_deferred_class" hunk in
+commit ece200ddd54b ("sunrpc: Save remote presentation address in
+svc_xprt for trace events") because there is now a specific check
+of event format specifiers for unsafe dereferences. The warning
+that check emits is:
 
-This patch fixes the typo.
+  event svc_defer_recv has unsafe dereference of argument 1
 
-Fixes: e58430e1d4fd (media: rockchip/rga: fix error handling in probe)
-Reviewed-by: Dragan Simic <dragan.simic@gmail.com>
-Signed-off-by: Kyle Copperfield <kmcopper@danwin1210.me>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+A "%pISpc" format specifier with a "struct sockaddr *" is indeed
+flagged by this check.
+
+Instead, take the brute-force approach used by the svcrdma_qp_error
+tracepoint. Convert the dr::addr field into a presentation address
+in the TP_fast_assign() arm of the trace event, and store that as
+a string. This fix can be backported to -stable kernels.
+
+In the meantime, commit c6ced22997ad ("tracing: Update print fmt
+check to handle new __get_sockaddr() macro") is now in v5.18, so
+this wonky fix can be replaced with __sockaddr() and friends
+properly during the v5.19 merge window.
+
+Fixes: ece200ddd54b ("sunrpc: Save remote presentation address in svc_xprt for trace events")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/rockchip/rga/rga.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/trace/events/sunrpc.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/media/platform/rockchip/rga/rga.c b/drivers/media/platform/rockchip/rga/rga.c
-index 6759091b15e0..d99ea8973b67 100644
---- a/drivers/media/platform/rockchip/rga/rga.c
-+++ b/drivers/media/platform/rockchip/rga/rga.c
-@@ -895,7 +895,7 @@ static int rga_probe(struct platform_device *pdev)
- 	}
- 	rga->dst_mmu_pages =
- 		(unsigned int *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 3);
--	if (rga->dst_mmu_pages) {
-+	if (!rga->dst_mmu_pages) {
- 		ret = -ENOMEM;
- 		goto free_src_pages;
- 	}
+diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
+index 7c48613c1830..6bcb8c7a3175 100644
+--- a/include/trace/events/sunrpc.h
++++ b/include/trace/events/sunrpc.h
+@@ -1924,17 +1924,18 @@ DECLARE_EVENT_CLASS(svc_deferred_event,
+ 	TP_STRUCT__entry(
+ 		__field(const void *, dr)
+ 		__field(u32, xid)
+-		__string(addr, dr->xprt->xpt_remotebuf)
++		__array(__u8, addr, INET6_ADDRSTRLEN + 10)
+ 	),
+ 
+ 	TP_fast_assign(
+ 		__entry->dr = dr;
+ 		__entry->xid = be32_to_cpu(*(__be32 *)(dr->args +
+ 						       (dr->xprt_hlen>>2)));
+-		__assign_str(addr, dr->xprt->xpt_remotebuf);
++		snprintf(__entry->addr, sizeof(__entry->addr) - 1,
++			 "%pISpc", (struct sockaddr *)&dr->addr);
+ 	),
+ 
+-	TP_printk("addr=%s dr=%p xid=0x%08x", __get_str(addr), __entry->dr,
++	TP_printk("addr=%s dr=%p xid=0x%08x", __entry->addr, __entry->dr,
+ 		__entry->xid)
+ );
+ 
 -- 
 2.35.1
 
