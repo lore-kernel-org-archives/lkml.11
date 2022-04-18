@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD16C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:04:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245311AbiDROHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:07:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57504 "EHLO
+        id S245447AbiDROH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244656AbiDRNuu (ORCPT
+        with ESMTP id S243861AbiDRNty (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:50:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1257443F7;
-        Mon, 18 Apr 2022 06:02:02 -0700 (PDT)
+        Mon, 18 Apr 2022 09:49:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8301434B1;
+        Mon, 18 Apr 2022 06:01:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7BD00B80EDC;
-        Mon, 18 Apr 2022 13:02:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1577C385A1;
-        Mon, 18 Apr 2022 13:01:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E3DE60B3C;
+        Mon, 18 Apr 2022 13:01:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E116C385A7;
+        Mon, 18 Apr 2022 13:01:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286920;
-        bh=0c1wzjzdCckmhAYOoRg1y/jRpjgntM2jVZjWBC9E3BY=;
+        s=korg; t=1650286904;
+        bh=zMLP5TNIBiQ355nvXboytYzyDZtwOuVe7iSxgjN8PE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iKATwCC5x/Jp/gyIUKdMAG0nmwTp8CmWUGWCMqWMweg44z0dgldjP8ocpeaVRbhNI
-         6PTi2ttj66oDe7p/iaDl+aRRhtqgFooy1Ey4Ol7ltMaoQKBm5fOdPFRF6poHUwRDtz
-         zxyKU3EMU6OO+kfB5yDbkO4w+ZGTG8NVoOw8rnf0=
+        b=oo9197C7XejWPwZQETt1jGVZcA7yCYq4+xt7H2ly51dRPGIFuHGwiTHoYJmacpp78
+         N1j3Kcm+mSLXjQw0B2F22uJfxsakEK0Lt2CXz6/hbSHoU4ceC391UJZo6vK75Fgw8A
+         bl8Gt6MlIbXKz2HJObAAJgPv2KL5LEKRxN8g1gzM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        syzbot+50f5cf33a284ce738b62@syzkaller.appspotmail.com,
-        Tejun Heo <tj@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.14 259/284] cgroup: Use open-time cgroup namespace for process migration perm checks
-Date:   Mon, 18 Apr 2022 14:14:00 +0200
-Message-Id: <20220418121219.855654899@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH 4.14 282/284] ARM: davinci: da850-evm: Avoid NULL pointer dereference
+Date:   Mon, 18 Apr 2022 14:14:23 +0200
+Message-Id: <20220418121221.236242740@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -53,154 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit e57457641613fef0d147ede8bd6a3047df588b95 upstream.
+commit 83a1cde5c74bfb44b49cb2a940d044bb2380f4ea upstream.
 
-cgroup process migration permission checks are performed at write time as
-whether a given operation is allowed or not is dependent on the content of
-the write - the PID. This currently uses current's cgroup namespace which is
-a potential security weakness as it may allow scenarios where a less
-privileged process tricks a more privileged one into writing into a fd that
-it created.
+With newer versions of GCC, there is a panic in da850_evm_config_emac()
+when booting multi_v5_defconfig in QEMU under the palmetto-bmc machine:
 
-This patch makes cgroup remember the cgroup namespace at the time of open
-and uses it for migration permission checks instad of current's. Note that
-this only applies to cgroup2 as cgroup1 doesn't have namespace support.
+Unable to handle kernel NULL pointer dereference at virtual address 00000020
+pgd = (ptrval)
+[00000020] *pgd=00000000
+Internal error: Oops: 5 [#1] PREEMPT ARM
+Modules linked in:
+CPU: 0 PID: 1 Comm: swapper Not tainted 5.15.0 #1
+Hardware name: Generic DT based system
+PC is at da850_evm_config_emac+0x1c/0x120
+LR is at do_one_initcall+0x50/0x1e0
 
-This also fixes a use-after-free bug on cgroupns reported in
+The emac_pdata pointer in soc_info is NULL because davinci_soc_info only
+gets populated on davinci machines but da850_evm_config_emac() is called
+on all machines via device_initcall().
 
- https://lore.kernel.org/r/00000000000048c15c05d0083397@google.com
+Move the rmii_en assignment below the machine check so that it is only
+dereferenced when running on a supported SoC.
 
-Note that backporting this fix also requires the preceding patch.
-
-Reported-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
-Cc: Michal Koutný <mkoutny@suse.com>
-Cc: Oleg Nesterov <oleg@redhat.com>
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Reported-by: syzbot+50f5cf33a284ce738b62@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/00000000000048c15c05d0083397@google.com
-Fixes: 5136f6365ce3 ("cgroup: implement "nsdelegate" mount option")
-Signed-off-by: Tejun Heo <tj@kernel.org>
-[mkoutny: v5.10: duplicate ns check in procs/threads write handler, adjust context]
-Signed-off-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-[OP: backport to v4.14: drop changes to cgroup_attach_permissions() and
-cgroup_css_set_fork(), adjust cgroup_procs_write_permission() calls]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Fixes: bae105879f2f ("davinci: DA850/OMAP-L138 EVM: implement autodetect of RMII PHY")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/YcS4xVWs6bQlQSPC@archlinux-ax161/
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cgroup-internal.h |    2 ++
- kernel/cgroup/cgroup.c          |   24 +++++++++++++++++-------
- 2 files changed, 19 insertions(+), 7 deletions(-)
+ arch/arm/mach-davinci/board-da850-evm.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/kernel/cgroup/cgroup-internal.h
-+++ b/kernel/cgroup/cgroup-internal.h
-@@ -11,6 +11,8 @@
- struct cgroup_pidlist;
+--- a/arch/arm/mach-davinci/board-da850-evm.c
++++ b/arch/arm/mach-davinci/board-da850-evm.c
+@@ -1035,11 +1035,13 @@ static int __init da850_evm_config_emac(
+ 	int ret;
+ 	u32 val;
+ 	struct davinci_soc_info *soc_info = &davinci_soc_info;
+-	u8 rmii_en = soc_info->emac_pdata->rmii_en;
++	u8 rmii_en;
  
- struct cgroup_file_ctx {
-+	struct cgroup_namespace	*ns;
-+
- 	struct {
- 		void			*trigger;
- 	} psi;
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -3370,14 +3370,19 @@ static int cgroup_file_open(struct kernf
- 	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
- 	if (!ctx)
- 		return -ENOMEM;
-+
-+	ctx->ns = current->nsproxy->cgroup_ns;
-+	get_cgroup_ns(ctx->ns);
- 	of->priv = ctx;
- 
- 	if (!cft->open)
+ 	if (!machine_is_davinci_da850_evm())
  		return 0;
  
- 	ret = cft->open(of);
--	if (ret)
-+	if (ret) {
-+		put_cgroup_ns(ctx->ns);
- 		kfree(ctx);
-+	}
- 	return ret;
- }
++	rmii_en = soc_info->emac_pdata->rmii_en;
++
+ 	cfg_chip3_base = DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP3_REG);
  
-@@ -3388,13 +3393,14 @@ static void cgroup_file_release(struct k
- 
- 	if (cft->release)
- 		cft->release(of);
-+	put_cgroup_ns(ctx->ns);
- 	kfree(ctx);
- }
- 
- static ssize_t cgroup_file_write(struct kernfs_open_file *of, char *buf,
- 				 size_t nbytes, loff_t off)
- {
--	struct cgroup_namespace *ns = current->nsproxy->cgroup_ns;
-+	struct cgroup_file_ctx *ctx = of->priv;
- 	struct cgroup *cgrp = of->kn->parent->priv;
- 	struct cftype *cft = of->kn->priv;
- 	struct cgroup_subsys_state *css;
-@@ -3408,7 +3414,7 @@ static ssize_t cgroup_file_write(struct
- 	 */
- 	if ((cgrp->root->flags & CGRP_ROOT_NS_DELEGATE) &&
- 	    !(cft->flags & CFTYPE_NS_DELEGATABLE) &&
--	    ns != &init_cgroup_ns && ns->root_cset->dfl_cgrp == cgrp)
-+	    ctx->ns != &init_cgroup_ns && ctx->ns->root_cset->dfl_cgrp == cgrp)
- 		return -EPERM;
- 
- 	if (cft->write)
-@@ -4351,9 +4357,9 @@ static int cgroup_procs_show(struct seq_
- 
- static int cgroup_procs_write_permission(struct cgroup *src_cgrp,
- 					 struct cgroup *dst_cgrp,
--					 struct super_block *sb)
-+					 struct super_block *sb,
-+					 struct cgroup_namespace *ns)
- {
--	struct cgroup_namespace *ns = current->nsproxy->cgroup_ns;
- 	struct cgroup *com_cgrp = src_cgrp;
- 	struct inode *inode;
- 	int ret;
-@@ -4389,6 +4395,7 @@ static int cgroup_procs_write_permission
- static ssize_t cgroup_procs_write(struct kernfs_open_file *of,
- 				  char *buf, size_t nbytes, loff_t off)
- {
-+	struct cgroup_file_ctx *ctx = of->priv;
- 	struct cgroup *src_cgrp, *dst_cgrp;
- 	struct task_struct *task;
- 	const struct cred *saved_cred;
-@@ -4415,7 +4422,8 @@ static ssize_t cgroup_procs_write(struct
- 	 */
- 	saved_cred = override_creds(of->file->f_cred);
- 	ret = cgroup_procs_write_permission(src_cgrp, dst_cgrp,
--					    of->file->f_path.dentry->d_sb);
-+					    of->file->f_path.dentry->d_sb,
-+					    ctx->ns);
- 	revert_creds(saved_cred);
- 	if (ret)
- 		goto out_finish;
-@@ -4438,6 +4446,7 @@ static void *cgroup_threads_start(struct
- static ssize_t cgroup_threads_write(struct kernfs_open_file *of,
- 				    char *buf, size_t nbytes, loff_t off)
- {
-+	struct cgroup_file_ctx *ctx = of->priv;
- 	struct cgroup *src_cgrp, *dst_cgrp;
- 	struct task_struct *task;
- 	const struct cred *saved_cred;
-@@ -4466,7 +4475,8 @@ static ssize_t cgroup_threads_write(stru
- 	 */
- 	saved_cred = override_creds(of->file->f_cred);
- 	ret = cgroup_procs_write_permission(src_cgrp, dst_cgrp,
--					    of->file->f_path.dentry->d_sb);
-+					    of->file->f_path.dentry->d_sb,
-+					    ctx->ns);
- 	revert_creds(saved_cred);
- 	if (ret)
- 		goto out_finish;
+ 	val = __raw_readl(cfg_chip3_base);
 
 
