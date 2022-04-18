@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D79ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 00:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA341C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 00:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235543AbiDRAzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 20:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50962 "EHLO
+        id S235551AbiDRAzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 20:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235511AbiDRAz1 (ORCPT
+        with ESMTP id S235520AbiDRAzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 20:55:27 -0400
+        Sun, 17 Apr 2022 20:55:31 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C6213E89
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 17:52:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AF413E3F
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 17:52:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650243170; x=1681779170;
+  t=1650243173; x=1681779173;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=bzKeQHa5qWTWSDpiVDQ6SnLMeCA91i1EIw+rja1W+U0=;
-  b=JgtnDgkib9nLnbIUPi9Dk1b0KqRj/6XR8cl/M19cqwlYkwU9IMFI04B4
-   1Z2qUk0utruZpsup7bpvUpsSmRORDb2ztju6+dR0cTQquWSpWK0Sfdj2f
-   tW0hy0EIlH0NtpyJ4Oify5Sy4g/iAwo6mmbEJ3J8OhVa/fWCMt63DwqJA
-   4G2700gfxH0ZIsaWgNpj6nC45kVAyBN9W/VGWD1QzFE6MbINxfmy5I0kQ
-   Yo3BpKNZOZMgTx5GRFIu17xOIaOLMnyaBzxfizYcAb9JktXuBzevnMdNJ
-   eHylGD3qNBq/5/FP9ITjo8G/L56HQr1IySgvgxz5HC82xfOZr8uU7Fxty
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10320"; a="245313235"
+  bh=e4zKevnerCv3swR38QOP36pCi6FNMKl3EHNwss6IlEU=;
+  b=fu01Y2VKC6FwsihdP0zyay11DrPamXSOKuZi3hAOGoghjHEfn0Ke9sRa
+   MUTqxK2Y0HMJiml4WQQkpKWfT3l077w0HxD2ulzZ6cjrrXw8nrNAyM6Th
+   SfAZeUF3G12dsug0PyABrISxmPxnm0FkR/ssriDyDcsL8Jct4iAd8En+3
+   TVBIaiKuuMrxz+nSNAh0N4RsCxExtuL8bekUjVn/4FwlfVm2ZIZ08dTJl
+   qValdaWzLCNV/N7K1CSaDORDy8x4dfwWm9CpPArquG3ZcQV/+94RUy/sc
+   58OpELQuw+XYJYZJOGK/VS0n7GdfgTZbXm8GmXqEqD0JVDFJtZ6QWED/5
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10320"; a="245313241"
 X-IronPort-AV: E=Sophos;i="5.90,267,1643702400"; 
-   d="scan'208";a="245313235"
+   d="scan'208";a="245313241"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2022 17:52:49 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2022 17:52:53 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,267,1643702400"; 
-   d="scan'208";a="701651315"
+   d="scan'208";a="701651323"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 17 Apr 2022 17:52:48 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 17 Apr 2022 17:52:51 -0700
 From:   Lu Baolu <baolu.lu@linux.intel.com>
 To:     Joerg Roedel <joro@8bytes.org>
 Cc:     Jason Gunthorpe <jgg@nvidia.com>,
         Kevin Tian <kevin.tian@intel.com>,
         Liu Yi L <yi.l.liu@intel.com>,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH v8 09/11] vfio: Delete the unbound_list
-Date:   Mon, 18 Apr 2022 08:49:58 +0800
-Message-Id: <20220418005000.897664-10-baolu.lu@linux.intel.com>
+Subject: [RESEND PATCH v8 11/11] iommu: Remove iommu group changes notifier
+Date:   Mon, 18 Apr 2022 08:50:00 +0800
+Message-Id: <20220418005000.897664-12-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220418005000.897664-1-baolu.lu@linux.intel.com>
 References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
@@ -56,183 +56,202 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Gunthorpe <jgg@nvidia.com>
+The iommu group changes notifer is not referenced in the tree. Remove it
+to avoid dead code.
 
-commit 60720a0fc646 ("vfio: Add device tracking during unbind") added the
-unbound list to plug a problem with KVM where KVM_DEV_VFIO_GROUP_DEL
-relied on vfio_group_get_external_user() succeeding to return the
-vfio_group from a group file descriptor. The unbound list allowed
-vfio_group_get_external_user() to continue to succeed in edge cases.
-
-However commit 5d6dee80a1e9 ("vfio: New external user group/file match")
-deleted the call to vfio_group_get_external_user() during
-KVM_DEV_VFIO_GROUP_DEL. Instead vfio_external_group_match_file() is used
-to directly match the file descriptor to the group pointer.
-
-This in turn avoids the call down to vfio_dev_viable() during
-KVM_DEV_VFIO_GROUP_DEL and also avoids the trouble the first commit was
-trying to fix.
-
-There are no other users of vfio_dev_viable() that care about the time
-after vfio_unregister_group_dev() returns, so simply delete the
-unbound_list entirely.
-
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Suggested-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Acked-by: Alex Williamson <alex.williamson@redhat.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/vfio/vfio.c | 74 ++-------------------------------------------
- 1 file changed, 2 insertions(+), 72 deletions(-)
+ include/linux/iommu.h | 23 -------------
+ drivers/iommu/iommu.c | 75 -------------------------------------------
+ 2 files changed, 98 deletions(-)
 
-diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index 8a9347f732a5..b2f19d17d0c3 100644
---- a/drivers/vfio/vfio.c
-+++ b/drivers/vfio/vfio.c
-@@ -62,11 +62,6 @@ struct vfio_container {
- 	bool				noiommu;
- };
- 
--struct vfio_unbound_dev {
--	struct device			*dev;
--	struct list_head		unbound_next;
--};
--
- struct vfio_group {
- 	struct device 			dev;
- 	struct cdev			cdev;
-@@ -79,8 +74,6 @@ struct vfio_group {
- 	struct notifier_block		nb;
- 	struct list_head		vfio_next;
- 	struct list_head		container_next;
--	struct list_head		unbound_list;
--	struct mutex			unbound_lock;
- 	atomic_t			opened;
- 	wait_queue_head_t		container_q;
- 	enum vfio_group_type		type;
-@@ -340,16 +333,8 @@ vfio_group_get_from_iommu(struct iommu_group *iommu_group)
- static void vfio_group_release(struct device *dev)
- {
- 	struct vfio_group *group = container_of(dev, struct vfio_group, dev);
--	struct vfio_unbound_dev *unbound, *tmp;
--
--	list_for_each_entry_safe(unbound, tmp,
--				 &group->unbound_list, unbound_next) {
--		list_del(&unbound->unbound_next);
--		kfree(unbound);
--	}
- 
- 	mutex_destroy(&group->device_lock);
--	mutex_destroy(&group->unbound_lock);
- 	iommu_group_put(group->iommu_group);
- 	ida_free(&vfio.group_ida, MINOR(group->dev.devt));
- 	kfree(group);
-@@ -381,8 +366,6 @@ static struct vfio_group *vfio_group_alloc(struct iommu_group *iommu_group,
- 	refcount_set(&group->users, 1);
- 	INIT_LIST_HEAD(&group->device_list);
- 	mutex_init(&group->device_lock);
--	INIT_LIST_HEAD(&group->unbound_list);
--	mutex_init(&group->unbound_lock);
- 	init_waitqueue_head(&group->container_q);
- 	group->iommu_group = iommu_group;
- 	/* put in vfio_group_release() */
-@@ -571,19 +554,8 @@ static int vfio_dev_viable(struct device *dev, void *data)
- 	struct vfio_group *group = data;
- 	struct vfio_device *device;
- 	struct device_driver *drv = READ_ONCE(dev->driver);
--	struct vfio_unbound_dev *unbound;
--	int ret = -EINVAL;
- 
--	mutex_lock(&group->unbound_lock);
--	list_for_each_entry(unbound, &group->unbound_list, unbound_next) {
--		if (dev == unbound->dev) {
--			ret = 0;
--			break;
--		}
--	}
--	mutex_unlock(&group->unbound_lock);
--
--	if (!ret || !drv || vfio_dev_driver_allowed(dev, drv))
-+	if (!drv || vfio_dev_driver_allowed(dev, drv))
- 		return 0;
- 
- 	device = vfio_group_get_device(group, dev);
-@@ -592,7 +564,7 @@ static int vfio_dev_viable(struct device *dev, void *data)
- 		return 0;
- 	}
- 
--	return ret;
-+	return -EINVAL;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 77972ef978b5..6ef2df258673 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -407,13 +407,6 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
+ 	return dev->iommu->iommu_dev->ops;
  }
  
- /*
-@@ -634,7 +606,6 @@ static int vfio_iommu_group_notifier(struct notifier_block *nb,
+-#define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
+-#define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
+-#define IOMMU_GROUP_NOTIFY_BIND_DRIVER		3 /* Pre Driver bind */
+-#define IOMMU_GROUP_NOTIFY_BOUND_DRIVER		4 /* Post Driver bind */
+-#define IOMMU_GROUP_NOTIFY_UNBIND_DRIVER	5 /* Pre Driver unbind */
+-#define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
+-
+ extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
+ extern int bus_iommu_probe(struct bus_type *bus);
+ extern bool iommu_present(struct bus_type *bus);
+@@ -478,10 +471,6 @@ extern int iommu_group_for_each_dev(struct iommu_group *group, void *data,
+ extern struct iommu_group *iommu_group_get(struct device *dev);
+ extern struct iommu_group *iommu_group_ref_get(struct iommu_group *group);
+ extern void iommu_group_put(struct iommu_group *group);
+-extern int iommu_group_register_notifier(struct iommu_group *group,
+-					 struct notifier_block *nb);
+-extern int iommu_group_unregister_notifier(struct iommu_group *group,
+-					   struct notifier_block *nb);
+ extern int iommu_register_device_fault_handler(struct device *dev,
+ 					iommu_dev_fault_handler_t handler,
+ 					void *data);
+@@ -878,18 +867,6 @@ static inline void iommu_group_put(struct iommu_group *group)
  {
- 	struct vfio_group *group = container_of(nb, struct vfio_group, nb);
+ }
+ 
+-static inline int iommu_group_register_notifier(struct iommu_group *group,
+-						struct notifier_block *nb)
+-{
+-	return -ENODEV;
+-}
+-
+-static inline int iommu_group_unregister_notifier(struct iommu_group *group,
+-						  struct notifier_block *nb)
+-{
+-	return 0;
+-}
+-
+ static inline
+ int iommu_register_device_fault_handler(struct device *dev,
+ 					iommu_dev_fault_handler_t handler,
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index eba8e8ccf19d..0c42ece25854 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -18,7 +18,6 @@
+ #include <linux/errno.h>
+ #include <linux/iommu.h>
+ #include <linux/idr.h>
+-#include <linux/notifier.h>
+ #include <linux/err.h>
+ #include <linux/pci.h>
+ #include <linux/bitops.h>
+@@ -40,7 +39,6 @@ struct iommu_group {
+ 	struct kobject *devices_kobj;
+ 	struct list_head devices;
+ 	struct mutex mutex;
+-	struct blocking_notifier_head notifier;
+ 	void *iommu_data;
+ 	void (*iommu_data_release)(void *iommu_data);
+ 	char *name;
+@@ -632,7 +630,6 @@ struct iommu_group *iommu_group_alloc(void)
+ 	mutex_init(&group->mutex);
+ 	INIT_LIST_HEAD(&group->devices);
+ 	INIT_LIST_HEAD(&group->entry);
+-	BLOCKING_INIT_NOTIFIER_HEAD(&group->notifier);
+ 
+ 	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
+ 	if (ret < 0) {
+@@ -905,10 +902,6 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ 	if (ret)
+ 		goto err_put_group;
+ 
+-	/* Notify any listeners about change to group. */
+-	blocking_notifier_call_chain(&group->notifier,
+-				     IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev);
+-
+ 	trace_add_device_to_group(group->id, dev);
+ 
+ 	dev_info(dev, "Adding to iommu group %d\n", group->id);
+@@ -950,10 +943,6 @@ void iommu_group_remove_device(struct device *dev)
+ 
+ 	dev_info(dev, "Removing from iommu group %d\n", group->id);
+ 
+-	/* Pre-notify listeners that a device is being removed. */
+-	blocking_notifier_call_chain(&group->notifier,
+-				     IOMMU_GROUP_NOTIFY_DEL_DEVICE, dev);
+-
+ 	mutex_lock(&group->mutex);
+ 	list_for_each_entry(tmp_device, &group->devices, list) {
+ 		if (tmp_device->dev == dev) {
+@@ -1075,36 +1064,6 @@ void iommu_group_put(struct iommu_group *group)
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_put);
+ 
+-/**
+- * iommu_group_register_notifier - Register a notifier for group changes
+- * @group: the group to watch
+- * @nb: notifier block to signal
+- *
+- * This function allows iommu group users to track changes in a group.
+- * See include/linux/iommu.h for actions sent via this notifier.  Caller
+- * should hold a reference to the group throughout notifier registration.
+- */
+-int iommu_group_register_notifier(struct iommu_group *group,
+-				  struct notifier_block *nb)
+-{
+-	return blocking_notifier_chain_register(&group->notifier, nb);
+-}
+-EXPORT_SYMBOL_GPL(iommu_group_register_notifier);
+-
+-/**
+- * iommu_group_unregister_notifier - Unregister a notifier
+- * @group: the group to watch
+- * @nb: notifier block to signal
+- *
+- * Unregister a previously registered group notifier block.
+- */
+-int iommu_group_unregister_notifier(struct iommu_group *group,
+-				    struct notifier_block *nb)
+-{
+-	return blocking_notifier_chain_unregister(&group->notifier, nb);
+-}
+-EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
+-
+ /**
+  * iommu_register_device_fault_handler() - Register a device fault handler
+  * @dev: the device
+@@ -1650,14 +1609,8 @@ static int remove_iommu_group(struct device *dev, void *data)
+ static int iommu_bus_notifier(struct notifier_block *nb,
+ 			      unsigned long action, void *data)
+ {
+-	unsigned long group_action = 0;
  	struct device *dev = data;
--	struct vfio_unbound_dev *unbound;
- 
- 	switch (action) {
- 	case IOMMU_GROUP_NOTIFY_ADD_DEVICE:
-@@ -663,28 +634,6 @@ static int vfio_iommu_group_notifier(struct notifier_block *nb,
- 			__func__, iommu_group_id(group->iommu_group),
- 			dev->driver->name);
- 		break;
--	case IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER:
--		dev_dbg(dev, "%s: group %d unbound from driver\n", __func__,
--			iommu_group_id(group->iommu_group));
--		/*
--		 * XXX An unbound device in a live group is ok, but we'd
--		 * really like to avoid the above BUG_ON by preventing other
--		 * drivers from binding to it.  Once that occurs, we have to
--		 * stop the system to maintain isolation.  At a minimum, we'd
--		 * want a toggle to disable driver auto probe for this device.
--		 */
--
--		mutex_lock(&group->unbound_lock);
--		list_for_each_entry(unbound,
--				    &group->unbound_list, unbound_next) {
--			if (dev == unbound->dev) {
--				list_del(&unbound->unbound_next);
--				kfree(unbound);
--				break;
--			}
--		}
--		mutex_unlock(&group->unbound_lock);
--		break;
- 	}
- 	return NOTIFY_OK;
- }
-@@ -889,29 +838,10 @@ static struct vfio_device *vfio_device_get_from_name(struct vfio_group *group,
- void vfio_unregister_group_dev(struct vfio_device *device)
- {
- 	struct vfio_group *group = device->group;
--	struct vfio_unbound_dev *unbound;
- 	unsigned int i = 0;
- 	bool interrupted = false;
- 	long rc;
+-	struct iommu_group *group;
  
 -	/*
--	 * When the device is removed from the group, the group suddenly
--	 * becomes non-viable; the device has a driver (until the unbind
--	 * completes), but it's not present in the group.  This is bad news
--	 * for any external users that need to re-acquire a group reference
--	 * in order to match and release their existing reference.  To
--	 * solve this, we track such devices on the unbound_list to bridge
--	 * the gap until they're fully unbound.
+-	 * ADD/DEL call into iommu driver ops if provided, which may
+-	 * result in ADD/DEL notifiers to group->notifier
 -	 */
--	unbound = kzalloc(sizeof(*unbound), GFP_KERNEL);
--	if (unbound) {
--		unbound->dev = device->dev;
--		mutex_lock(&group->unbound_lock);
--		list_add(&unbound->unbound_next, &group->unbound_list);
--		mutex_unlock(&group->unbound_lock);
--	}
--	WARN_ON(!unbound);
+ 	if (action == BUS_NOTIFY_ADD_DEVICE) {
+ 		int ret;
+ 
+@@ -1668,34 +1621,6 @@ static int iommu_bus_notifier(struct notifier_block *nb,
+ 		return NOTIFY_OK;
+ 	}
+ 
+-	/*
+-	 * Remaining BUS_NOTIFYs get filtered and republished to the
+-	 * group, if anyone is listening
+-	 */
+-	group = iommu_group_get(dev);
+-	if (!group)
+-		return 0;
 -
- 	vfio_device_put(device);
- 	rc = try_wait_for_completion(&device->comp);
- 	while (rc <= 0) {
+-	switch (action) {
+-	case BUS_NOTIFY_BIND_DRIVER:
+-		group_action = IOMMU_GROUP_NOTIFY_BIND_DRIVER;
+-		break;
+-	case BUS_NOTIFY_BOUND_DRIVER:
+-		group_action = IOMMU_GROUP_NOTIFY_BOUND_DRIVER;
+-		break;
+-	case BUS_NOTIFY_UNBIND_DRIVER:
+-		group_action = IOMMU_GROUP_NOTIFY_UNBIND_DRIVER;
+-		break;
+-	case BUS_NOTIFY_UNBOUND_DRIVER:
+-		group_action = IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER;
+-		break;
+-	}
+-
+-	if (group_action)
+-		blocking_notifier_call_chain(&group->notifier,
+-					     group_action, dev);
+-
+-	iommu_group_put(group);
+ 	return 0;
+ }
+ 
 -- 
 2.25.1
 
