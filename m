@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 948F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:59:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3467C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:59:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244328AbiDROCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:02:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35628 "EHLO
+        id S244859AbiDROCO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243782AbiDRNmJ (ORCPT
+        with ESMTP id S243842AbiDRNmU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:42:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C9830F7B;
-        Mon, 18 Apr 2022 05:59:34 -0700 (PDT)
+        Mon, 18 Apr 2022 09:42:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492833121C;
+        Mon, 18 Apr 2022 05:59:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D17CB80D9C;
-        Mon, 18 Apr 2022 12:59:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1D03C385A1;
-        Mon, 18 Apr 2022 12:59:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1F1D609FA;
+        Mon, 18 Apr 2022 12:59:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F76C385A7;
+        Mon, 18 Apr 2022 12:59:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286772;
-        bh=oDeTHARGZEfrXPcCeIWg2xEfZgIW08C61yBMEcE/0AY=;
+        s=korg; t=1650286775;
+        bh=tAgNDFITJraa6hr2dQBON6qTAxbYC//JPNb21T8z+98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h3GjPj8Wf4Erj3AodwolM18FBjE0obxre4aN6JrogFagVRqjdv9kW8C4kRoi0zexx
-         603sJmo+XrSAH5Y8wJAEt0Bu9c/zn1yixZtjl+VbbKCeyC52dMmAqM+p17e080gAoZ
-         T3XRURRWoewiPQ/Qkknse9IvLPmIoQswAQtnFh7w=
+        b=O1rJoViTNS+0kB2Ukx9wpqkldXqWW9yVZ63PGGJoIrd9X20htJTp90bAQZdTr3D36
+         E5f8C0Exi13B7LpWA5Jm22+TPBKiUkWoX1U71QiBK9NHTkxcj5T+q0s7BdDTLWH+rI
+         ZFBdn06BA6+BxMJgkHG1LNjLGoKygsVJOyNntkK4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 240/284] scsi: zorro7xx: Fix a resource leak in zorro7xx_remove_one()
-Date:   Mon, 18 Apr 2022 14:13:41 +0200
-Message-Id: <20220418121218.623771234@linuxfoundation.org>
+Subject: [PATCH 4.14 214/284] PCI: aardvark: Fix support for MSI interrupts
+Date:   Mon, 18 Apr 2022 14:13:15 +0200
+Message-Id: <20220418121217.801505300@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,38 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 16ed828b872d12ccba8f07bcc446ae89ba662f9c ]
+[ Upstream commit b0b0b8b897f8e12b2368e868bd7cdc5742d5c5a9 ]
 
-The error handling path of the probe releases a resource that is not freed
-in the remove function. In some cases, a ioremap() must be undone.
+Aardvark hardware supports Multi-MSI and MSI_FLAG_MULTI_PCI_MSI is already
+set for the MSI chip. But when allocating MSI interrupt numbers for
+Multi-MSI, the numbers need to be properly aligned, otherwise endpoint
+devices send MSI interrupt with incorrect numbers.
 
-Add the missing iounmap() call in the remove function.
+Fix this issue by using function bitmap_find_free_region() instead of
+bitmap_find_next_zero_area().
 
-Link: https://lore.kernel.org/r/247066a3104d25f9a05de8b3270fc3c848763bcc.1647673264.git.christophe.jaillet@wanadoo.fr
-Fixes: 45804fbb00ee ("[SCSI] 53c700: Amiga Zorro NCR53c710 SCSI")
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+To ensure that aligned MSI interrupt numbers are used by endpoint devices,
+we cannot use Linux virtual irq numbers (as they are random and not
+properly aligned). Instead we need to use the aligned hwirq numbers.
+
+This change fixes receiving MSI interrupts on Armada 3720 boards and
+allows using NVMe disks which use Multi-MSI feature with 3 interrupts.
+
+Without this NVMe disks freeze booting as linux nvme-core.c is waiting
+60s for an interrupt.
+
+Link: https://lore.kernel.org/r/20220110015018.26359-4-kabel@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/zorro7xx.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/pci/host/pci-aardvark.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/scsi/zorro7xx.c b/drivers/scsi/zorro7xx.c
-index aff31991aea9..ee6d97473853 100644
---- a/drivers/scsi/zorro7xx.c
-+++ b/drivers/scsi/zorro7xx.c
-@@ -158,6 +158,8 @@ static void zorro7xx_remove_one(struct zorro_dev *z)
- 	scsi_remove_host(host);
+diff --git a/drivers/pci/host/pci-aardvark.c b/drivers/pci/host/pci-aardvark.c
+index 9ae544e113dc..124fd7cb5da5 100644
+--- a/drivers/pci/host/pci-aardvark.c
++++ b/drivers/pci/host/pci-aardvark.c
+@@ -834,7 +834,7 @@ static void advk_msi_irq_compose_msi_msg(struct irq_data *data,
  
- 	NCR_700_release(host);
-+	if (host->base > 0x01000000)
-+		iounmap(hostdata->base);
- 	kfree(hostdata);
- 	free_irq(host->irq, host);
- 	zorro_release_device(z);
+ 	msg->address_lo = lower_32_bits(msi_msg);
+ 	msg->address_hi = upper_32_bits(msi_msg);
+-	msg->data = data->irq;
++	msg->data = data->hwirq;
+ }
+ 
+ static int advk_msi_set_affinity(struct irq_data *irq_data,
+@@ -851,15 +851,11 @@ static int advk_msi_irq_domain_alloc(struct irq_domain *domain,
+ 	int hwirq, i;
+ 
+ 	mutex_lock(&pcie->msi_used_lock);
+-	hwirq = bitmap_find_next_zero_area(pcie->msi_used, MSI_IRQ_NUM,
+-					   0, nr_irqs, 0);
+-	if (hwirq >= MSI_IRQ_NUM) {
+-		mutex_unlock(&pcie->msi_used_lock);
+-		return -ENOSPC;
+-	}
+-
+-	bitmap_set(pcie->msi_used, hwirq, nr_irqs);
++	hwirq = bitmap_find_free_region(pcie->msi_used, MSI_IRQ_NUM,
++					order_base_2(nr_irqs));
+ 	mutex_unlock(&pcie->msi_used_lock);
++	if (hwirq < 0)
++		return -ENOSPC;
+ 
+ 	for (i = 0; i < nr_irqs; i++)
+ 		irq_domain_set_info(domain, virq + i, hwirq + i,
+@@ -877,7 +873,7 @@ static void advk_msi_irq_domain_free(struct irq_domain *domain,
+ 	struct advk_pcie *pcie = domain->host_data;
+ 
+ 	mutex_lock(&pcie->msi_used_lock);
+-	bitmap_clear(pcie->msi_used, d->hwirq, nr_irqs);
++	bitmap_release_region(pcie->msi_used, d->hwirq, order_base_2(nr_irqs));
+ 	mutex_unlock(&pcie->msi_used_lock);
+ }
+ 
 -- 
 2.35.1
 
