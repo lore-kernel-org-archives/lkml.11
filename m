@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D2BC352AA
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F32C38161
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244759AbiDRNpb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43236 "EHLO
+        id S244773AbiDRNph (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:45:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242584AbiDRNX0 (ORCPT
+        with ESMTP id S241494AbiDRNX5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:23:26 -0400
+        Mon, 18 Apr 2022 09:23:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B29E53D1DA;
-        Mon, 18 Apr 2022 05:52:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21513D4B5;
+        Mon, 18 Apr 2022 05:52:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F7E1B80E59;
-        Mon, 18 Apr 2022 12:52:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 865F8C385A1;
-        Mon, 18 Apr 2022 12:52:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4396DB80EC0;
+        Mon, 18 Apr 2022 12:52:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A98E6C385A1;
+        Mon, 18 Apr 2022 12:52:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286362;
-        bh=WUAPkXaX+FIRxRV6F+q0jv1YQE4laA/FQC2MJMuYRH0=;
+        s=korg; t=1650286369;
+        bh=T97bYP5P7iu39kdTLx5OIaN6WD5k29ziQ0v41fmvI0k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rrIxQlEKXSMZ1yjmvZQHUo6a6gY2Hh02SdZrs9qMTvhf0fMMahvPdu4HfgE7fcHUq
-         n4KmbigA40EYCOUdCLaYOYYHQW0A5B9t4b4oIRs+P45ps35nhEaUpkMe1ITU9dGEBe
-         s+FsPLOXhzZhCwHQpNacUqNuhpxErJC3HPjFJkUg=
+        b=g2JtTE5ipwOR/RSxBZPwpRmyhJ1zWLN4VGN7EFTWxSgcLH66UCzJxypQ1RkIiKKOk
+         nCNn540iyXOiFLI47xIRES4rd2tWwuBmd0A05r6c7sTyVDX3QnFAvs+Ya+dHFIYLQ8
+         P9LuJzpedZup7VXu7pT66mrkimJkekL8feqWMAGE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        stable@vger.kernel.org, Bastien Nocera <hadess@hadess.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 084/284] memory: emif: Add check for setup_interrupts
-Date:   Mon, 18 Apr 2022 14:11:05 +0200
-Message-Id: <20220418121213.074400308@linuxfoundation.org>
+Subject: [PATCH 4.14 112/284] power: supply: bq24190_charger: Fix bq24190_vbus_is_enabled() wrong false return
+Date:   Mon, 18 Apr 2022 14:11:33 +0200
+Message-Id: <20220418121214.154504397@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,47 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit fd7bd80b46373887b390852f490f21b07e209498 ]
+[ Upstream commit f7731754fdce33dad19be746f647d6ac47c5d695 ]
 
-As the potential failure of the devm_request_threaded_irq(),
-it should be better to check the return value of the
-setup_interrupts() and return error if fails.
+The datasheet says that the BQ24190_REG_POC_CHG_CONFIG bits can
+have a value of either 10(0x2) or 11(0x3) for OTG (5V boost regulator)
+mode.
 
-Fixes: 68b4aee35d1f ("memory: emif: add interrupt and temperature handling")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220224025444.3256530-1-jiasheng@iscas.ac.cn
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Sofar bq24190_vbus_is_enabled() was only checking for 10 but some BIOS-es
+uses 11 when enabling the regulator at boot.
+
+Make bq24190_vbus_is_enabled() also check for 11 so that it does not
+wrongly returns false when the bits are set to 11.
+
+Fixes: 66b6bef2c4e0 ("power: supply: bq24190_charger: Export 5V boost converter as regulator")
+Cc: Bastien Nocera <hadess@hadess.net>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/emif.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/power/supply/bq24190_charger.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
-index 88c32b8dc88a..ed6c5fcb136f 100644
---- a/drivers/memory/emif.c
-+++ b/drivers/memory/emif.c
-@@ -1517,7 +1517,7 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
- {
- 	struct emif_data	*emif;
- 	struct resource		*res;
--	int			irq;
-+	int			irq, ret;
+diff --git a/drivers/power/supply/bq24190_charger.c b/drivers/power/supply/bq24190_charger.c
+index 0906f6b562bc..32bd28f68983 100644
+--- a/drivers/power/supply/bq24190_charger.c
++++ b/drivers/power/supply/bq24190_charger.c
+@@ -44,6 +44,7 @@
+ #define BQ24190_REG_POC_CHG_CONFIG_DISABLE		0x0
+ #define BQ24190_REG_POC_CHG_CONFIG_CHARGE		0x1
+ #define BQ24190_REG_POC_CHG_CONFIG_OTG			0x2
++#define BQ24190_REG_POC_CHG_CONFIG_OTG_ALT		0x3
+ #define BQ24190_REG_POC_SYS_MIN_MASK		(BIT(3) | BIT(2) | BIT(1))
+ #define BQ24190_REG_POC_SYS_MIN_SHIFT		1
+ #define BQ24190_REG_POC_SYS_MIN_MIN			3000
+@@ -572,7 +573,11 @@ static int bq24190_vbus_is_enabled(struct regulator_dev *dev)
+ 	pm_runtime_mark_last_busy(bdi->dev);
+ 	pm_runtime_put_autosuspend(bdi->dev);
  
- 	if (pdev->dev.of_node)
- 		emif = of_get_memory_device_details(pdev->dev.of_node, &pdev->dev);
-@@ -1551,7 +1551,9 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
- 	emif_onetime_settings(emif);
- 	emif_debugfs_init(emif);
- 	disable_and_clear_all_interrupts(emif);
--	setup_interrupts(emif, irq);
-+	ret = setup_interrupts(emif, irq);
+-	return ret ? ret : val == BQ24190_REG_POC_CHG_CONFIG_OTG;
 +	if (ret)
-+		goto error;
++		return ret;
++
++	return (val == BQ24190_REG_POC_CHG_CONFIG_OTG ||
++		val == BQ24190_REG_POC_CHG_CONFIG_OTG_ALT);
+ }
  
- 	/* One-time actions taken on probing the first device */
- 	if (!emif1) {
+ static const struct regulator_ops bq24190_vbus_ops = {
 -- 
 2.34.1
 
