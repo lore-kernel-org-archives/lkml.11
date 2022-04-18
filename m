@@ -2,90 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DEB6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC16C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Apr 2022 00:00:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236063AbiDSACy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 20:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44404 "EHLO
+        id S236297AbiDSADA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235925AbiDSACw (ORCPT
+        with ESMTP id S235925AbiDSACz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 20:02:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 168CEBC96;
-        Mon, 18 Apr 2022 17:00:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 467DCCE0B26;
-        Tue, 19 Apr 2022 00:00:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CC5DC385A1;
-        Tue, 19 Apr 2022 00:00:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650326407;
-        bh=ZR6gQYEJdXJ2+sTzbqqBqwaigPZJYaasmoHWa/u3sw4=;
-        h=Date:From:To:Cc:Subject:Reply-To:From;
-        b=ZjOI+cuo2TRk/T5z2jMpXQjMQ2Y4c7LvM5B3KazFoiEX/gNvEmC+w19G/BUeBzeud
-         hHl96SXqRRdJnATogl69N/ihQL4fEYog2EcgB8A7Uvt801eklNm3pTebEKXcXYR3b1
-         W7cA9VH6f8otZmgjnes/oZRtjaDAt/8PUibPO9ttxCVbz9F2rDYWm1eQKtPBmNCf8T
-         OQZW2Bl3ioeIgDesZbce4LUrHFSTijXlJXnig8PdSIrYlw3NAVW/K752+tWUG+KlSa
-         AaMzk7pNWyY1YWAhpOskOHj/4UgOD4ncLixlzyjreONsk9TmsMQuPYBIkOrAOR1kJ7
-         DlwcXSTMFQt3w==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 1657B5C04BD; Mon, 18 Apr 2022 17:00:07 -0700 (PDT)
-Date:   Mon, 18 Apr 2022 17:00:07 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org
-Subject: [PATCH rcu 0/9] Tasks-RCU updates for v5.19
-Message-ID: <20220419000007.GA3945818@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
+        Mon, 18 Apr 2022 20:02:55 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7940EBC96
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 17:00:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650326414; x=1681862414;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=MAqT9RMA6b4dnkmNoVjddZGKEP09Mmugkj11bMGsY1M=;
+  b=N4da43k38tC+WdXewxPB30lnQbDuvCT4FWahCwh0+C8lTJAIqAEVZhJh
+   bc2u5m4LpBoOl79RfwIkoQDL7dn7fq9ka7GFPaSUvxaJvwCECOWR+OAbY
+   cm+1k+MNHZauL8qcFWFavYO/DiZXMZ/JbXPVUX3Rk6lWB/V+hAxTczUaI
+   /ttAwuwK/t0OrOIvEak6P/u/oxW/TeVaXNVVGx0nHiHZzWdlkBnSGbxAE
+   o0ToN6YZbWWsdSxp01IwYj5S7BSYM9tZX8GIo/q472fMqNtSfrsWQz4bL
+   unJcFwjk09U5g9a55Ejh+GRBN/ORQ5rhs+gd+DjiJtR2FRLbRqOYYGoa5
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="263395151"
+X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
+   d="scan'208";a="263395151"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 17:00:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
+   d="scan'208";a="592571222"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 18 Apr 2022 17:00:07 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ngbHq-00056m-Tj;
+        Tue, 19 Apr 2022 00:00:06 +0000
+Date:   Tue, 19 Apr 2022 07:59:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 84/2356]
+ arch/mips/kernel/../../../kernel/sched/per_task_area_struct_defs.h:9:13:
+ warning: no previous prototype for 'per_task_common'
+Message-ID: <202204190758.aysUCWYS-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   af93551cf39027d176f30b9beafc60a4c130998a
+commit: dcac6390a2220f99834d2d14650fb82f2da9136b [84/2356] headers/deps: per_task: Add the per_task infrastructure for x86, arm64, sparc and MIPS
+config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220419/202204190758.aysUCWYS-lkp@intel.com/config)
+compiler: mips-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=dcac6390a2220f99834d2d14650fb82f2da9136b
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout dcac6390a2220f99834d2d14650fb82f2da9136b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips prepare
 
-This series contains RCU-Tasks updates, including some -rt fixups,
-handling of systems with sparse CPU numbering, and a fix for a boot-time
-race-condition failure.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-1.	rcu-tasks: Fix race in schedule and flush work, courtesy of
-	Padmanabha Srinivasaiah.
+All warnings (new ones prefixed by >>):
 
-2.	rcu-tasks: Print pre-stall-warning informational messages.
+   In file included from arch/mips/kernel/asm-offsets.c:29:
+>> arch/mips/kernel/../../../kernel/sched/per_task_area_struct_defs.h:9:13: warning: no previous prototype for 'per_task_common' [-Wmissing-prototypes]
+       9 | void __used per_task_common(void)
+         |             ^~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:35:6: warning: no previous prototype for 'output_ptreg_defines' [-Wmissing-prototypes]
+      35 | void output_ptreg_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:87:6: warning: no previous prototype for 'output_task_defines' [-Wmissing-prototypes]
+      87 | void output_task_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:101:6: warning: no previous prototype for 'output_thread_info_defines' [-Wmissing-prototypes]
+     101 | void output_thread_info_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:117:6: warning: no previous prototype for 'output_thread_defines' [-Wmissing-prototypes]
+     117 | void output_thread_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:141:6: warning: no previous prototype for 'output_thread_fpu_defines' [-Wmissing-prototypes]
+     141 | void output_thread_fpu_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:184:6: warning: no previous prototype for 'output_mm_defines' [-Wmissing-prototypes]
+     184 | void output_mm_defines(void)
+         |      ^~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:223:6: warning: no previous prototype for 'output_sc_defines' [-Wmissing-prototypes]
+     223 | void output_sc_defines(void)
+         |      ^~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:258:6: warning: no previous prototype for 'output_signal_defined' [-Wmissing-prototypes]
+     258 | void output_signal_defined(void)
+         |      ^~~~~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:325:6: warning: no previous prototype for 'output_pbe_defines' [-Wmissing-prototypes]
+     325 | void output_pbe_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:337:6: warning: no previous prototype for 'output_pm_defines' [-Wmissing-prototypes]
+     337 | void output_pm_defines(void)
+         |      ^~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:351:6: warning: no previous prototype for 'output_kvm_defines' [-Wmissing-prototypes]
+     351 | void output_kvm_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:395:6: warning: no previous prototype for 'output_cps_defines' [-Wmissing-prototypes]
+     395 | void output_cps_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~
+--
+   In file included from arch/mips/kernel/asm-offsets.c:29:
+>> arch/mips/kernel/../../../kernel/sched/per_task_area_struct_defs.h:9:13: warning: no previous prototype for 'per_task_common' [-Wmissing-prototypes]
+       9 | void __used per_task_common(void)
+         |             ^~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:35:6: warning: no previous prototype for 'output_ptreg_defines' [-Wmissing-prototypes]
+      35 | void output_ptreg_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:87:6: warning: no previous prototype for 'output_task_defines' [-Wmissing-prototypes]
+      87 | void output_task_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:101:6: warning: no previous prototype for 'output_thread_info_defines' [-Wmissing-prototypes]
+     101 | void output_thread_info_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:117:6: warning: no previous prototype for 'output_thread_defines' [-Wmissing-prototypes]
+     117 | void output_thread_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:141:6: warning: no previous prototype for 'output_thread_fpu_defines' [-Wmissing-prototypes]
+     141 | void output_thread_fpu_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:184:6: warning: no previous prototype for 'output_mm_defines' [-Wmissing-prototypes]
+     184 | void output_mm_defines(void)
+         |      ^~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:223:6: warning: no previous prototype for 'output_sc_defines' [-Wmissing-prototypes]
+     223 | void output_sc_defines(void)
+         |      ^~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:258:6: warning: no previous prototype for 'output_signal_defined' [-Wmissing-prototypes]
+     258 | void output_signal_defined(void)
+         |      ^~~~~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:325:6: warning: no previous prototype for 'output_pbe_defines' [-Wmissing-prototypes]
+     325 | void output_pbe_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:337:6: warning: no previous prototype for 'output_pm_defines' [-Wmissing-prototypes]
+     337 | void output_pm_defines(void)
+         |      ^~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:351:6: warning: no previous prototype for 'output_kvm_defines' [-Wmissing-prototypes]
+     351 | void output_kvm_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~
+   arch/mips/kernel/asm-offsets.c:395:6: warning: no previous prototype for 'output_cps_defines' [-Wmissing-prototypes]
+     395 | void output_cps_defines(void)
+         |      ^~~~~~~~~~~~~~~~~~
 
-3.	rcu-tasks: Use rcuwait for the rcu_tasks_kthread(), courtesy of
-	Sebastian Andrzej Siewior.
 
-4.	rcu-tasks: Make Tasks RCU account for userspace execution.
+vim +/per_task_common +9 arch/mips/kernel/../../../kernel/sched/per_task_area_struct_defs.h
 
-5.	rcu-tasks: Use schedule_hrtimeout_range() to wait for grace
-	periods, courtesy of Sebastian Andrzej Siewior.
+     8	
+   > 9	void __used per_task_common(void)
+    10	{
+    11	#ifdef CONFIG_THREAD_INFO_IN_TASK
+    12		DEF_PER_TASK(ti);
+    13	#endif
+    14		DEF_PER_TASK(stack);
+    15		DEF_PER_TASK(usage);
+    16		DEF_PER_TASK(flags);
+    17		DEF_PER_TASK(ptrace);
+    18	
 
-6.	rcu-tasks: Restore use of timers for non-RT kernels.
-
-7.	rcu-tasks: Make show_rcu_tasks_generic_gp_kthread() check
-	all CPUs.
-
-8.	rcu-tasks: Handle sparse cpu_possible_mask, courtesy of Eric
-	Dumazet.
-
-9.	rcu-tasks: Handle sparse cpu_possible_mask in
-	rcu_tasks_invoke_cbs().
-
-						Thanx, Paul
-
-------------------------------------------------------------------------
-
- b/Documentation/admin-guide/kernel-parameters.txt |   30 ++++++-
- b/include/linux/rcupdate.h                        |    1 
- b/kernel/rcu/tasks.h                              |    3 
- b/kernel/rcu/tree.c                               |    2 
- kernel/rcu/tasks.h                                |   92 +++++++++++++++++-----
- 5 files changed, 105 insertions(+), 23 deletions(-)
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
