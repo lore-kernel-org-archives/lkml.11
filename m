@@ -2,100 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B036C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3498FC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240096AbiDRMwa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:52:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37962 "EHLO
+        id S240180AbiDRMwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240038AbiDRMif (ORCPT
+        with ESMTP id S240756AbiDRMjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:38:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE0B27149;
-        Mon, 18 Apr 2022 05:29:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4867CB80ED7;
-        Mon, 18 Apr 2022 12:29:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DDAAC385A1;
-        Mon, 18 Apr 2022 12:29:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284947;
-        bh=VeEhEUrliP6/o3JwmIDWYWdQAVOhcne8xo41rXksrYQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kOojLEsszTdW42LnKfRZwWVolcuKdWcsW7I49o0Gc1HwpjIa5wf1MlnWSMZHzm3sJ
-         R61cdKtW+9FR/tcw1/tsLCjDGZTY1uk2moaHsP5kns0xj6t5J+5RYNtBEgVCQnKlG1
-         zJboIygTMUt8mkaiUzHCRRmedmTsfWgXJM58uFZg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 051/189] ALSA: sc6000: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:11:11 +0200
-Message-Id: <20220418121201.961188407@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
-References: <20220418121200.312988959@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 18 Apr 2022 08:39:36 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0164B12627;
+        Mon, 18 Apr 2022 05:30:26 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23ICULIK120040;
+        Mon, 18 Apr 2022 07:30:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1650285021;
+        bh=V24Pg9flw1bNbkBXpcqZ1XDD4yowcEtZAzI4rpfzD24=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=HM7pxqH4EpECKH9mLgBhzBdlvQSeWZqPpWuu8+laRvVipNu7r2pPFrE5uWuTaqw+R
+         a3EytiP4bIwXUZbtP19jVsJCk+mpgQT1QuvfIELQU6X2cQTd4MMwnFoN7LSeV5IXg5
+         bvIuwNwkTH2Os7IB1TXl6OCX/ItiXLIpB2aUjQ7A=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23ICUL66015761
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 18 Apr 2022 07:30:21 -0500
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 18
+ Apr 2022 07:30:20 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 18 Apr 2022 07:30:20 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23ICUJRH032161;
+        Mon, 18 Apr 2022 07:30:20 -0500
+From:   Puranjay Mohan <p-mohan@ti.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
+        <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
+        <rogerq@kernel.org>, <grygorii.strashko@ti.com>, <vigneshr@ti.com>,
+        <kishon@ti.com>
+Subject: [PATCH v2 6/6] soc: ti: pruss: Add helper functions to get/set PRUSS_CFG_GPMUX
+Date:   Mon, 18 Apr 2022 18:00:04 +0530
+Message-ID: <20220418123004.9332-7-p-mohan@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220418123004.9332-1-p-mohan@ti.com>
+References: <20220418123004.9332-1-p-mohan@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Tero Kristo <t-kristo@ti.com>
 
-commit d72458071150b802940204950d0d462ea3c913b1 upstream.
+Add two new helper functions pruss_cfg_get_gpmux() & pruss_cfg_set_gpmux()
+to get and set the GP MUX mode for programming the PRUSS internal wrapper
+mux functionality as needed by usecases.
 
-The previous cleanup with devres may lead to the incorrect release
-orders at the probe error handling due to the devres's nature.  Until
-we register the card, snd_card_free() has to be called at first for
-releasing the stuff properly when the driver tries to manage and
-release the stuff via card->private_free().
-
-This patch fixes it by calling snd_card_free() on the error from the
-probe callback using a new helper function.
-
-Fixes: 111601ff76e9 ("ALSA: sc6000: Allocate resources with device-managed APIs")
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-3-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Co-developed-by: Suman Anna <s-anna@ti.com>
+Signed-off-by: Suman Anna <s-anna@ti.com>
+Signed-off-by: Tero Kristo <t-kristo@ti.com>
+Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
 ---
- sound/isa/sc6000.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ include/linux/pruss_driver.h | 44 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
-diff --git a/sound/isa/sc6000.c b/sound/isa/sc6000.c
-index 26ab7ff80768..60398fced046 100644
---- a/sound/isa/sc6000.c
-+++ b/sound/isa/sc6000.c
-@@ -537,7 +537,7 @@ static void snd_sc6000_free(struct snd_card *card)
- 		sc6000_setup_board(vport, 0);
- }
+diff --git a/include/linux/pruss_driver.h b/include/linux/pruss_driver.h
+index e2d5477225c6..3312281ef4c1 100644
+--- a/include/linux/pruss_driver.h
++++ b/include/linux/pruss_driver.h
+@@ -35,4 +35,48 @@ struct pruss {
+ 	struct clk *iep_clk_mux;
+ };
  
--static int snd_sc6000_probe(struct device *devptr, unsigned int dev)
-+static int __snd_sc6000_probe(struct device *devptr, unsigned int dev)
- {
- 	static const int possible_irqs[] = { 5, 7, 9, 10, 11, -1 };
- 	static const int possible_dmas[] = { 1, 3, 0, -1 };
-@@ -662,6 +662,11 @@ static int snd_sc6000_probe(struct device *devptr, unsigned int dev)
- 	return 0;
- }
- 
-+static int snd_sc6000_probe(struct device *devptr, unsigned int dev)
++/**
++ * pruss_cfg_get_gpmux() - get the current GPMUX value for a PRU device
++ * @pruss: pruss instance
++ * @pru_id: PRU identifier (0-1)
++ * @mux: pointer to store the current mux value into
++ *
++ * Return: 0 on success, or an error code otherwise
++ */
++static inline int pruss_cfg_get_gpmux(struct pruss *pruss,
++				      enum pruss_pru_id pru_id, u8 *mux)
 +{
-+	return snd_card_free_on_error(devptr, __snd_sc6000_probe(devptr, dev));
++	int ret = 0;
++	u32 val;
++
++	if (pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
++		return -EINVAL;
++
++	ret = pruss_cfg_read(pruss, PRUSS_CFG_GPCFG(pru_id), &val);
++	if (!ret)
++		*mux = (u8)((val & PRUSS_GPCFG_PRU_MUX_SEL_MASK) >>
++			    PRUSS_GPCFG_PRU_MUX_SEL_SHIFT);
++	return ret;
 +}
 +
- static struct isa_driver snd_sc6000_driver = {
- 	.match		= snd_sc6000_match,
- 	.probe		= snd_sc6000_probe,
++/**
++ * pruss_cfg_set_gpmux() - set the GPMUX value for a PRU device
++ * @pruss: pruss instance
++ * @pru_id: PRU identifier (0-1)
++ * @mux: new mux value for PRU
++ *
++ * Return: 0 on success, or an error code otherwise
++ */
++static inline int pruss_cfg_set_gpmux(struct pruss *pruss,
++				      enum pruss_pru_id pru_id, u8 mux)
++{
++	if (mux >= PRUSS_GP_MUX_SEL_MAX ||
++	    pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
++		return -EINVAL;
++
++	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
++				PRUSS_GPCFG_PRU_MUX_SEL_MASK,
++				(u32)mux << PRUSS_GPCFG_PRU_MUX_SEL_SHIFT);
++}
++
+ #endif	/* _PRUSS_DRIVER_H_ */
 -- 
-2.35.2
-
-
+2.17.1
 
