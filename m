@@ -2,187 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C064C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 06:27:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4370C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 06:29:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236778AbiDRG3r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 02:29:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41008 "EHLO
+        id S229732AbiDRGcM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 02:32:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230360AbiDRG3p (ORCPT
+        with ESMTP id S232367AbiDRGcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 02:29:45 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1417E1834E;
-        Sun, 17 Apr 2022 23:27:07 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id i20so17473060wrb.13;
-        Sun, 17 Apr 2022 23:27:07 -0700 (PDT)
+        Mon, 18 Apr 2022 02:32:07 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7F418E0E;
+        Sun, 17 Apr 2022 23:29:29 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id b189so10562089qkf.11;
+        Sun, 17 Apr 2022 23:29:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=s+1LbEHTZ4xb/p3MS2k3Xy2C6GVhDnJWDT9sJsoDOPA=;
-        b=aEtrZrDwD81IkQf7qqZzqWCOqcb7Q211AlcRLiYcoOuDujHbxfhOoluP2i1Kf+XV1e
-         TDqGfFdAYNsm4QK6bkR9NAq5Z07hYM15Fw8wpouvXX8J9wWqrVvRwDEFtC3YBUgaKyff
-         Bp0kzyniNrHLJvQi10iJf2ysjkWRr4lV2tPznLo6k84x+Q/miW+GahtshZtos33LYK3A
-         /nZ8QJjnPfvKhQWUo6Qjct8ZIlWufFokK1nRyFqDR4hD/67/yP3yMCemUt49QlTK8aMr
-         bCp2NlXbve0BRZn9f3tcZUfw9LNIEFsaxTU++OioT1ItfbYHxSU4CFnOERhlOwa+HVws
-         5q8Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4ZNxKkB1heXshxCdkEbaHOZ1fBK6TexM+Jzjx/u/3mE=;
+        b=agKys+0f9B8+rSNrGPubzZYwAMOCNPp+KyH39Uo+8JOadAlMbwSceqA4BguldvGJWm
+         vCYjn0TUYIY5iTCMob2vo5gEz4aIH56qNPNa5gJjqGkYRI5DdPudaQC9ZSSGLVhvUAYa
+         iwEtiK9Up1VbT3mhVV9uRM28/gIfPra2kPkYhT1xA4MQXAtj3Y1nJ2F89LYtjGWW1e8F
+         dJuV5aG+dxoTH7f5n8IvyS6li71+/ufGEJeg2lITo0qho7RJ0VDWUg9NXi6ETKvG5jC1
+         I5HWD4VIVavBK5ljSscJD1c88bRlFKMcDy9xIZuCytAt+w+x2F2HcprvFCDnphXMlq11
+         KVIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=s+1LbEHTZ4xb/p3MS2k3Xy2C6GVhDnJWDT9sJsoDOPA=;
-        b=ksz6akFeedbeQ9a12lqObzOuT19KX95QlSf9HHzHh/UYGl7pk2/cLGihPAx7O18bnX
-         94AirdLHpt0bTeTFNp7lhwuVs2uSwbm6ro3HGttJdOR6mQtkb3CN76FA6K0wOvXkc95w
-         4LodYaXJ4xVzzrzIdE1Xel3dqA79UK2aMrdzP+B1K1GYq84q9Mx3dw7hbOE8RiNpxFBp
-         PEDZ5kmrGddI5gTVkB19Dmm/k78DzqYJNzrCuvyu/vkZHvvYaNGYo1Z+6x944OhE8dDl
-         zfsqLKyHT9WiEfAQ++q48K12PdFDSNI/ufx9Ykthnr50mhSwbPqd1mxDEIxS/bUt/lEf
-         Alyg==
-X-Gm-Message-State: AOAM532xeEwgZKX7eGE9kqDhYbOnLcF6YuI0MB/mHOuaPGEMfuaTuvIs
-        BFc+OI/acHlahv+4peuvJpqwBaBfMPhYEGtNnwU=
-X-Google-Smtp-Source: ABdhPJzW2eAw+FwQCJpaDWa8O+sHyNYdtqXYOVCPpNDBj5c1YcLjVlfa6Qaw/+hh0JEa0XA4a6Yk/a7GrBprm47ed6g=
-X-Received: by 2002:a5d:6e85:0:b0:207:a435:d9a7 with SMTP id
- k5-20020a5d6e85000000b00207a435d9a7mr7165580wrz.217.1650263225527; Sun, 17
- Apr 2022 23:27:05 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4ZNxKkB1heXshxCdkEbaHOZ1fBK6TexM+Jzjx/u/3mE=;
+        b=V0OgXb/xEuXcXGxoWP04owSEr0QSyY/RZd1iwB/dBAyij8CqU7LZfajlgEp6qXZupo
+         YgaQy+wDK6TUK/flTETRVWzyNKixyDByMvYiaxyIwCiTEXW1/AgIobay1M0k88g2uh+8
+         vfS5NmSnjOJDGXhvRaZ33gQAlRTPvDQKIAznabq5TTxVheCdrnO+RTUSRWerIjWYBbWb
+         weUZYnXc4y1S/DJYIgmbtwoNjkqIm2Y9e4EyPXconTcvMMB9F2zdRqqdqvUzyAQYFyke
+         1qbu/u3UEQMhG+YFE9i1q9vNUxxl1K+d1V2aOTM9EUFAJXVW+f13LDlrivraizBxkuC5
+         5HQg==
+X-Gm-Message-State: AOAM532vJpm9aMkW0uhJxMnxgM+F1zYBIJN/qzSXUDOEtA7e8fIZqej8
+        B5hrn2v3oC/kaqpm7wUj/y094Nr0QxU=
+X-Google-Smtp-Source: ABdhPJyVwl94lwStyIiTsrgoJZ1Q8p4COL0lQihBGHuXyhMvdWo+5AO0tzliP/ZkPPgeHaILIw0Q2g==
+X-Received: by 2002:a05:620a:2681:b0:67e:933e:54b6 with SMTP id c1-20020a05620a268100b0067e933e54b6mr5861271qkp.428.1650263368206;
+        Sun, 17 Apr 2022 23:29:28 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id t198-20020a3746cf000000b0069c51337badsm6238458qka.45.2022.04.17.23.29.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Apr 2022 23:29:27 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     grygorii.strashko@ti.com
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] drivers: net: davinci_mdio: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Mon, 18 Apr 2022 06:29:21 +0000
+Message-Id: <20220418062921.2557884-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220407082148.571442-1-gengcixi@gmail.com> <20220407082148.571442-2-gengcixi@gmail.com>
- <YlcgtLmXwc2s2+oJ@robh.at.kernel.org>
-In-Reply-To: <YlcgtLmXwc2s2+oJ@robh.at.kernel.org>
-From:   Cixi Geng <gengcixi@gmail.com>
-Date:   Mon, 18 Apr 2022 14:26:29 +0800
-Message-ID: <CAF12kFuY_t4i2SpAaBvTAOagKVJOf3Awuds1O0J7xvKFgSEQQg@mail.gmail.com>
-Subject: Re: [PATCH V3 1/7] dt-bindings:iio:adc: add sprd,ump9620-adc dt-binding
-To:     Rob Herring <robh@kernel.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        =?UTF-8?B?5pyx546J5piOIChZdW1pbmcgWmh1LzExNDU3KQ==?= 
-        <yuming.zhu1@unisoc.com>, linux-iio@vger.kernel.org,
-        Devicetree List <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rob Herring <robh@kernel.org> =E4=BA=8E2022=E5=B9=B44=E6=9C=8814=E6=97=A5=
-=E5=91=A8=E5=9B=9B 03:12=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Thu, Apr 07, 2022 at 04:21:42PM +0800, Cixi Geng wrote:
-> > From: Cixi Geng <cixi.geng1@unisoc.com>
-> >
-> > sprd,ump9620-adc is one variant of sc27xx series, add ump9620
-> > description and sample in dt-bindings.
-> >
-> > Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
-> > ---
-> >  .../bindings/iio/adc/sprd,sc2720-adc.yaml     | 57 +++++++++++++++++--
-> >  1 file changed, 53 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.=
-yaml b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
-> > index caa3ee0b4b8c..0d0f317b75c5 100644
-> > --- a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
-> > @@ -20,6 +20,7 @@ properties:
-> >        - sprd,sc2723-adc
-> >        - sprd,sc2730-adc
-> >        - sprd,sc2731-adc
-> > +      - sprd,ump9620-adc
-> >
-> >    reg:
-> >      maxItems: 1
-> > @@ -34,12 +35,39 @@ properties:
-> >      maxItems: 1
-> >
-> >    nvmem-cells:
-> > -    maxItems: 2
-> > +    description: nvmem-cells.
-> >
-> >    nvmem-cell-names:
-> > -    items:
-> > -      - const: big_scale_calib
-> > -      - const: small_scale_calib
-> > +    description: Names for each nvmem-cells specified.
->
-> These descriptions of common properties are redundant. Just use 'true'
-> for the property values.
->
-> > +
-> > +if:
-> > +  not:
-> > +    properties:
-> > +      compatible:
-> > +        contains:
-> > +          enum:
-> > +            - sprd,ump9620-adc
->
-> Use 'const'
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Hi Rob Herring=EF=BC=9A
-did you mean I should use "- const: sprd,ump9620-adc"? or change the
-enum to const?
-but the above two modification methods have failed for me to test
-dt-bindings-check.
->
-> > +then:
-> > +  properties:
-> > +    nvmem-cells:
-> > +      maxItems: 2
-> > +    nvmem-cell-names:
-> > +      items:
-> > +        - const: big_scale_calib
-> > +        - const: small_scale_calib
-> > +
-> > +else:
-> > +  properties:
-> > +    nvmem-cells:
-> > +      maxItems: 6
-> > +    nvmem-cell-names:
-> > +      items:
-> > +        - const: big_scale_calib1
-> > +        - const: big_scale_calib2
-> > +        - const: small_scale_calib1
-> > +        - const: small_scale_calib2
-> > +        - const: vbat_det_cal1
-> > +        - const: vbat_det_cal2
-> >
-> >  required:
-> >    - compatible
-> > @@ -69,4 +97,25 @@ examples:
-> >              nvmem-cell-names =3D "big_scale_calib", "small_scale_calib=
-";
-> >          };
-> >      };
-> > +
-> > +  - |
-> > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > +    pmic {
-> > +        #address-cells =3D <1>;
-> > +        #size-cells =3D <0>;
-> > +        adc@504 {
-> > +            compatible =3D "sprd,ump9620-adc";
-> > +            reg =3D <0x504>;
-> > +            interrupt-parent =3D <&ump9620_pmic>;
-> > +            interrupts =3D <0 IRQ_TYPE_LEVEL_HIGH>;
-> > +            #io-channel-cells =3D <1>;
-> > +            hwlocks =3D <&hwlock 4>;
-> > +            nvmem-cells =3D <&adc_bcal1>, <&adc_bcal2>,
-> > +                          <&adc_scal1>, <&adc_scal2>,
-> > +                          <&vbat_det_cal1>, <&vbat_det_cal2>;
-> > +            nvmem-cell-names =3D "big_scale_calib1", "big_scale_calib2=
-",
-> > +                               "small_scale_calib1", "small_scale_cali=
-b2",
-> > +                               "vbat_det_cal1", "vbat_det_cal2";
-> > +        };
-> > +    };
-> >  ...
-> > --
-> > 2.25.1
-> >
-> >
+Using pm_runtime_resume_and_get is more appropriate
+for simplifing code
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/net/ethernet/ti/davinci_mdio.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/ethernet/ti/davinci_mdio.c b/drivers/net/ethernet/ti/davinci_mdio.c
+index fce2626e34fa..ea3772618043 100644
+--- a/drivers/net/ethernet/ti/davinci_mdio.c
++++ b/drivers/net/ethernet/ti/davinci_mdio.c
+@@ -134,11 +134,9 @@ static int davinci_mdio_reset(struct mii_bus *bus)
+ 	u32 phy_mask, ver;
+ 	int ret;
+ 
+-	ret = pm_runtime_get_sync(data->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(data->dev);
++	ret = pm_runtime_resume_and_get(data->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	/* wait for scan logic to settle */
+ 	msleep(PHY_MAX_ADDR * data->access_time);
+@@ -232,11 +230,9 @@ static int davinci_mdio_read(struct mii_bus *bus, int phy_id, int phy_reg)
+ 	if (phy_reg & ~PHY_REG_MASK || phy_id & ~PHY_ID_MASK)
+ 		return -EINVAL;
+ 
+-	ret = pm_runtime_get_sync(data->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(data->dev);
++	ret = pm_runtime_resume_and_get(data->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	reg = (USERACCESS_GO | USERACCESS_READ | (phy_reg << 21) |
+ 	       (phy_id << 16));
+@@ -276,11 +272,9 @@ static int davinci_mdio_write(struct mii_bus *bus, int phy_id,
+ 	if (phy_reg & ~PHY_REG_MASK || phy_id & ~PHY_ID_MASK)
+ 		return -EINVAL;
+ 
+-	ret = pm_runtime_get_sync(data->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(data->dev);
++	ret = pm_runtime_resume_and_get(data->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	reg = (USERACCESS_GO | USERACCESS_WRITE | (phy_reg << 21) |
+ 		   (phy_id << 16) | (phy_data & USERACCESS_DATA));
+-- 
+2.25.1
+
+
