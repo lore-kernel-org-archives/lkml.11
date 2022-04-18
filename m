@@ -2,113 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC3B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:54:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4883DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:54:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346645AbiDRQ5A (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 12:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57484 "EHLO
+        id S233532AbiDRQ5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 12:57:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346630AbiDRQ4k (ORCPT
+        with ESMTP id S1346747AbiDRQ4t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 12:56:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 653B434BB4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:52:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650300733;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WHwtgBFXaVRPDxpgXVknAcXgf6im9N3NqhP05P8+ItY=;
-        b=K+tLHQOcqfZJqA82ngLxu9EfYGZvJbRyelKKqYwawmF/hctj9LBgQ042fo11ncrIVdBp/n
-        oerK0SYisg1sIg0vJJb7+OK8H451gp12QjeR/5C3f6oK1a1mhT0GqIb4iDYv1yRYgpnOKC
-        LzMRiVd8AMJ07+eB/vrUy6ew3T0iVJ4=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-359-SHPNHb6tO6mlmiXqA_mGFA-1; Mon, 18 Apr 2022 12:50:54 -0400
-X-MC-Unique: SHPNHb6tO6mlmiXqA_mGFA-1
-Received: by mail-qv1-f72.google.com with SMTP id eo13-20020ad4594d000000b004466661ece9so1379959qvb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:50:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WHwtgBFXaVRPDxpgXVknAcXgf6im9N3NqhP05P8+ItY=;
-        b=Cp20nsAWqDC9+AA2EFTaoLZPerTNyVXB8bMJOyWYrvh2u31x+uxWVTvG5yfNIy/+QQ
-         Tj7z1wD5cihWeMvlTK785KJB4ZGbA5poo8Jlm8MnW+eJU0E09zgyZRgFE5hZeEEyRTTG
-         q6Jf8mgPU/mYiPPE7cab98HXkfMeouDQNIwMW7Gqo3PMIws/kCgYZ+erw4fetIH3CjLU
-         4Lz71ob4RkW4LTqtkrxv/V8uJRDu/IRENKf6qnEaO7xaqWPM4peG6RmFsjLy/kZqX+vZ
-         dLRqFAJqfXhZWiUf6NoC3iq5MgajX2YLnwG9JgsfIg35xwH8Gb1vEOIx/jbtOdN6EUOv
-         PdIw==
-X-Gm-Message-State: AOAM532rS29tf7quGAg9RCoD7XLfsxfz6iv4dXZj1WAR7BcLn2c2/iN0
-        tXXm20r7zdo9lYYJTZT/1Ec4LF2SCr7ptLonHr0+18FthuqhZQGKcdwrTlu6o+WdPId21JmI6Z7
-        9I2WP4TiPLDr9cVOwN7ujDmCN
-X-Received: by 2002:a05:620a:6db:b0:69e:84e3:5059 with SMTP id 27-20020a05620a06db00b0069e84e35059mr5494234qky.709.1650300653947;
-        Mon, 18 Apr 2022 09:50:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwbWQYYsvn90H1BnF5L8o1UGM3/9JXhiIclvSAkzCGZCOu7kfxyf1pecjQS5e4NPEffWlm8uw==
-X-Received: by 2002:a05:620a:6db:b0:69e:84e3:5059 with SMTP id 27-20020a05620a06db00b0069e84e35059mr5494227qky.709.1650300653717;
-        Mon, 18 Apr 2022 09:50:53 -0700 (PDT)
-Received: from treble.redhat.com ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id e15-20020ac8670f000000b002e22d9c756dsm7277059qtp.30.2022.04.18.09.50.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 09:50:53 -0700 (PDT)
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     x86@kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
-Subject: [PATCH v2 01/25] objtool: Enable unreachable warnings for CLANG LTO
-Date:   Mon, 18 Apr 2022 09:50:20 -0700
-Message-Id: <7b12df54bceeb0761fe9fc8269ea0c00501214a9.1650300597.git.jpoimboe@redhat.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1650300597.git.jpoimboe@redhat.com>
-References: <cover.1650300597.git.jpoimboe@redhat.com>
+        Mon, 18 Apr 2022 12:56:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E639433EB8;
+        Mon, 18 Apr 2022 09:52:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A10B3B8104C;
+        Mon, 18 Apr 2022 16:52:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A77EC385AB;
+        Mon, 18 Apr 2022 16:52:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650300747;
+        bh=FqA87CXgaTYslJKT4j5d//cmzCdvUZXSeGEszJTZZjk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=MrkJSukFcEJ1Zk/lIRC80aIrInKZSSpKqmq0u5QlxlZaTrIQD21v5v5gzfcGmCjep
+         ct6C7k7YyDekrWeXPAPWEaTd5TpLHVNFCwo3/NBmqVf5G6baM2QNZCL9pRaK63cHR2
+         X8ZbexAFAFgFgzYYGNrk5TuH1uxiswgGzL02Zre2U2DEAQoRVZ7EdWNC3Rn8n2csaS
+         efFeAva1gSESCMNUSVVhLP7ZbK3dTXPIdrEfFWdHfvYCFc6b5b3WPBvjtHRVvXmYTl
+         5lFEitQ/UCkh4zgieGEr1NVM9/JvlDzpIyvziiZNerRVaEWxLssdJiH1ajii+02gki
+         uwvC9Jg/Oz0iw==
+Message-ID: <4a6dd90c-3f8e-ad18-0136-88b75f4d9cf9@kernel.org>
+Date:   Mon, 18 Apr 2022 18:52:18 +0200
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 0/5] Add support for Axis, ARTPEC-8 PCIe driver
+Content-Language: en-US
+To:     wangseok.lee@samsung.com, robh+dt <robh+dt@kernel.org>,
+        krzk+dt <krzk+dt@kernel.org>, kishon <kishon@ti.com>,
+        vkoul <vkoul@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "jesper.nilsson" <jesper.nilsson@axis.com>,
+        "lars.persson" <lars.persson@axis.com>
+Cc:     bhelgaas <bhelgaas@google.com>,
+        linux-phy <linux-phy@lists.infradead.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        "lorenzo.pieralisi" <lorenzo.pieralisi@arm.com>, kw <kw@linux.com>,
+        linux-arm-kernel <linux-arm-kernel@axis.com>,
+        kernel <kernel@axis.com>, Moon-Ki Jun <moonki.jun@samsung.com>,
+        Dongjin Yang <dj76.yang@samsung.com>
+References: <CGME20220418072049epcms2p463a9f01d8ae3e29f75b746a0dce934f1@epcms2p4>
+ <20220418072049epcms2p463a9f01d8ae3e29f75b746a0dce934f1@epcms2p4>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220418072049epcms2p463a9f01d8ae3e29f75b746a0dce934f1@epcms2p4>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With IBT support in, objtool is now fully capable of following vmlinux
-code flow in LTO mode.  Start reporting unreachable warnings for Clang
-LTO as well.
+On 18/04/2022 09:20, Wangseok Lee wrote:
+>>> Also, as you know,
+>>> exynos driver is designed according to exynos SoC platform,
+>>> so both function and variable names start with exynos.
+>>
+>> That's hardly a problem...
+>>
+>>> Compared to the existing exynos driver, 
+>>> you can see that the structure and type of function are different.
+>>
+>> No, I cannot see it. You coded the driver that way, you can code it in
+>> other way.
+>>
+>>> For this reason, it is difficult to use the existing exynos driver 
+>>> for artpec.
+>>
+>> Naming of functions and structures is not making it difficult. That's
+>> not the reason.
+>>
+>>> Our idea is to register a new PCIe driver for artpec-8 SoC platform 
+>>> and maintain it in the future.
+>>
+>> We also want to maintain Exynos PCIe driver in the future.
+>>
+>> Best regards,
+>> Krzysztof
+> 
+> Hi, 
+> Sorry for delay response.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
----
- scripts/Makefile.build  | 2 +-
- scripts/link-vmlinux.sh | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Sure, happens, but I don't remember the discussion, so replying that
+late will not help your cause.
 
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 9717e6f6fb31..33c1ed581522 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -231,7 +231,7 @@ objtool_args =								\
- 	$(if $(part-of-module), --module)				\
- 	$(if $(CONFIG_X86_KERNEL_IBT), --lto --ibt)			\
- 	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
--	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
-+	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)			\
- 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
- 	$(if $(CONFIG_X86_SMAP), --uaccess)				\
- 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 20f44504a644..9361a1ef02c9 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -140,7 +140,7 @@ objtool_link()
- 		if ! is_enabled CONFIG_FRAME_POINTER; then
- 			objtoolopt="${objtoolopt} --no-fp"
- 		fi
--		if is_enabled CONFIG_GCOV_KERNEL || is_enabled CONFIG_LTO_CLANG; then
-+		if is_enabled CONFIG_GCOV_KERNEL; then
- 			objtoolopt="${objtoolopt} --no-unreachable"
- 		fi
- 		if is_enabled CONFIG_RETPOLINE; then
--- 
-2.34.1
+You know that if you (you as Samsung) worked with upstream, e.g. by
+extending the drivers and keeping them in shape, it would be much easier
+for you (again you as Samsung) to actually add new features? It's much
+better/effective approach than the path of pushing every time new driver
+with explanation like "we do not want to maintain older driver, so we
+want a new one"...
 
+> I have listed some parts that are different from exynos pcie driver.
+> 
+> PHY driver
+> PHY is different, so register map is also different.
+> Three reference clock options are available in ARTPEC-8.
+>   It operates by selecting one clock among XO, IO, and SOC PLL.
+>   However, the exynos phy driver sets one ref clk though sysreg.
+
+It usually trivial to code such difference in the driver.
+
+> The reset method and type of PHY for initialization are different.
+> The overall sysreg configuration is different
+
+Indeed.
+
+> Artpec-8 requires a separate sequence for phy tuning,
+> but it does not exist in exynos phy driver.
+> Artpec-8 requires pcs resources, but exynos phy driver does not exist.
+> 
+
+For the phy driver indeed it might require much effort to create one driver.
+
+> Controller driver
+> Sub controller is different, so register map is also different.
+> And it is different handles lane control, link control, PHY clocking,
+> reset, interrupt control. 
+> The number and type of clock resources used are different.
+> The overall sysreg configuration is different
+> 
+> Also artpec-8 is performed in dual mode that supports both RC and EP.
+> As described above, the PHY and sub ontroller are different
+> and the regiser map is different.
+> sysreg is also different. And there are differences such as reset.
+> The driver will be much more complicated if both hardwares should be
+> supported in the same driver.
+
+Maybe, quite probably. The reluctance to extend any existing code makes
+me doubting this, but I admit that there are many differences.
+
+> For these reasons, my opinion is that better to create
+> a phy, controller both driver with a new file.
+> Please let me know your opinion.
+
+At the end it's mostly the decision of PCIe and phy subsystem
+maintainers whether they want to have separate drivers for DWC PCIe
+blocks in ARMv8 Samsung SoCs.
+
+In any case, the driver code looks like copied-pasted from some vendor
+sources, so you need to bring it to shape.
+
+Best regards,
+Krzysztof
