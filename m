@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC3B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:37:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E88AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344337AbiDROkR (ORCPT
+        id S1344709AbiDROk2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60666 "EHLO
+        Mon, 18 Apr 2022 10:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345834AbiDROi4 (ORCPT
+        with ESMTP id S1345817AbiDROi4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 10:38:56 -0400
 Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA94F580CF;
-        Mon, 18 Apr 2022 06:24:37 -0700 (PDT)
-Received: from pps.filterd (m0250809.ppops.net [127.0.0.1])
-        by mx0a-0064b401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23ICBBTB014126;
-        Mon, 18 Apr 2022 06:23:03 -0700
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD3A580C7;
+        Mon, 18 Apr 2022 06:24:36 -0700 (PDT)
+Received: from pps.filterd (m0250810.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23IDA5an010696;
+        Mon, 18 Apr 2022 06:22:48 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references :
  content-transfer-encoding : content-type : mime-version; s=PPS06212021;
- bh=ri8NbMErtUsmIwZuPVcvvPn+8AwVXaNNfl5A5CVR35w=;
- b=lxDlMZFRz5HYi7JHEC5ub3JgynobxfsZLAAuzt4w2h7XfPqwQCGfjNRjy+Wq7lsKznHO
- vyKQ1NWCthctZoOJpsTHJNQ8EagempC00KiZheJYGKZHRqe3Qgh+MM6udijMqfFoudLh
- eI6mtPzKX03PgZj8TBUcs6ylbwuT52om2FJ6A3TgrhRoeC1xAGQwvl+001ExsTVr8u9Y
- 4160tEiqwfnlyb11T05PySTeY3m8/lFgJ6MqBpw4dckfiNEdUJSof5+Mtzt/vrQLaeNk
- EDkzb9G1Zwfa+7pRnYsmxxOFdNpIo5xxeOFoanzID9KGTdIijWk4N6is48W1E6Fw6kfo UQ== 
-Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2047.outbound.protection.outlook.com [104.47.56.47])
-        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3ffwah150s-1
+ bh=k/NQfZS4NJCNCzJzOq5gcpOFjgri9NwJbvn+CXXa+Ps=;
+ b=Ch0ah0hqbV0q8DS2UrmGk3ov8fToeA739c05vyClXJeYkgKyYi2NQEUNbJZ3Oel/bzil
+ iIokmhEKDBqZMNXhn8/WUXkHmU153Ddc2qR8j6/6CetOxfHPS/x4Aqs6OQjAA2QkxJ3K
+ VL7567OeWcsUPr9WPQpwVqENPTcyJm7sWxRC8pXfxuXKlNDezAObTQA6phjkJdZMPf5A
+ LmwiYgEKIOdvc8LXtkmCkUnGZiJMR87BE94pgTug1yFgae5WeNn7bH8SSwaoMfdhjvDV
+ V+Qr/EwXo25UwRm3BpxriFhhp0eZgMAciJUzawcVjcd6LaDD7O39lQCmpsBMeuMHPsjZ Wg== 
+Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2042.outbound.protection.outlook.com [104.47.56.42])
+        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3ffs3118r0-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Apr 2022 06:23:03 -0700
+        Mon, 18 Apr 2022 06:22:47 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E5vYZsMq9+zKGI4vMTSzF3ijW2Ri3x4mdbVD3FMQGM6eOIEpK++PEEXtguqfuve8wogvpExNHLWgThmfNI+sUrx7/oAnFyTZOdOqHQA4O+bBB0qE++3XYhZwRusaEJi/gU4XzY7Rm+KIiLm9eG2yywRshejPVIeg9cmz4boBrrTY2haZhtdVX26IlR/UUQSm0qgoAoVofRvrfIvooAcIRcDxhSL/5gR9A902bCDelh2fzzwNEUhuz2ihUtnV4qMpIc/V5eEsBbju8GqFj6/MxjrfCT23VJm3jxPiDtASKikPAL0iLhSvXItCmaC8ZQRs0AH8Y2xqbG6rD46h6ke0Ig==
+ b=ogipQrW1wyyCC3sYu6LD+jazraozzCmVLaj9Y/oyFrJgfRjz5o1yg2aSjy9NDkLQC1EHSJglJYxI440rS7DFRXTx4P0FUJOPjtGE0FSj863w7IAmhrj/vdgHNmv0wC+TjTeaOdyoOmH2XMIxTrQ8yaLcbEfQIgYH60T43WTVqaWApa2mJg9+flJ5uRZtxUwUQ0cK6Yo3/Vbw89TyG7IVPkySnzA46XNpMm/XT3JzqVnTbnNfMpV2qlaTTBCmcNr8TZypInP5GBY3YIm01XEZH6bC2AiJeUTeFP2B3HbnRglz29Xfy64a+4Ww0r2V7V0ZGf8lXNCOCnBISkzvUaxy+Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ri8NbMErtUsmIwZuPVcvvPn+8AwVXaNNfl5A5CVR35w=;
- b=B757VIUv5BtKqNkgirBKryovwveKkghjpzly7GPt7IPWbGE2c88qFwMEG5aZ4gksvUorGQ/uGd8lM8ON++xKhxFS6k0Ul3VMWYILWfzu+VBUL95/JU4JI9bIeasRQNXSKoETkuWxqiyIv1NyG4bn3N1GayFmvOYeQCJEOD11wGc7uYsjyO+UQwnB/84UCaoKAwGGVhXHR+A5Wfa3BPEsZvVQHvDyyG83J2H6VaLkj0Q3PAGvKdAFLLU34JotkZ4JQUUDK8i/eaVRHHUTObDx4SJq/z7qGdpkYNjeLC6V5bIeDQicd2zeFOY/RsOkiVIS8MoGAkAILhVs5D+DEmiHKw==
+ bh=k/NQfZS4NJCNCzJzOq5gcpOFjgri9NwJbvn+CXXa+Ps=;
+ b=FbsjgynPymMeaXjV0kKQaeXnJTCgqRXSg2cMkzGOXu6DYndQE3zb+oYd2rxGHJly1Pbi+WLCON/p9COCMFVGXG9VrueqCPBcmPeKJjfKSVgBrZAVqdqy6pROVAtraW2G/X6GUB+ojcF/jOpsvUgFrGekF/NaQHNcgZs9e0bibUdLZqYXDYC0U1kZ7ddJ/4xuRbUUHJvKqOUOOh/9p03tjqDBkzlpW4QCcTrVbxaH7PqPs0/bYDQMQBf7m8Q2ZtSBOnV8FespnevMl2yzQwcOQXjkWzT3WuDnxOz12epDcp4plnreu/r65JLeahwNx1Wb2ykkz2cqK8ohJNGnKawejg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=windriver.com; dmarc=pass action=none
  header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
@@ -46,11 +46,11 @@ Received: from MWHPR11MB1358.namprd11.prod.outlook.com (2603:10b6:300:23::8)
  by DM6PR11MB2857.namprd11.prod.outlook.com (2603:10b6:5:cb::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Mon, 18 Apr
- 2022 13:23:01 +0000
+ 2022 13:22:46 +0000
 Received: from MWHPR11MB1358.namprd11.prod.outlook.com
  ([fe80::1cd4:125:344:9fc]) by MWHPR11MB1358.namprd11.prod.outlook.com
  ([fe80::1cd4:125:344:9fc%7]) with mapi id 15.20.5164.025; Mon, 18 Apr 2022
- 13:23:01 +0000
+ 13:22:46 +0000
 From:   He Zhe <zhe.he@windriver.com>
 To:     catalin.marinas@arm.com, will@kernel.org, mark.rutland@arm.com,
         tglx@linutronix.de, bp@alien8.de, dave.hansen@linux.intel.com,
@@ -62,9 +62,9 @@ Cc:     x86@kernel.org, linux-arm-kernel@lists.infradead.org,
         linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
         linux-s390@vger.kernel.org, linux-perf-users@vger.kernel.org,
         linux-kernel@vger.kernel.org, zhe.he@windriver.com
-Subject: [PATCH RFC 5/8] riscv: stacktrace: Make callbacks use new prototype with frame info
-Date:   Mon, 18 Apr 2022 21:22:14 +0800
-Message-Id: <20220418132217.1573072-6-zhe.he@windriver.com>
+Subject: [PATCH RFC 2/8] arm64: stacktrace: Add arch_within_stack_frames
+Date:   Mon, 18 Apr 2022 21:22:11 +0800
+Message-Id: <20220418132217.1573072-3-zhe.he@windriver.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220418132217.1573072-1-zhe.he@windriver.com>
 References: <20220418132217.1573072-1-zhe.he@windriver.com>
@@ -75,192 +75,221 @@ X-ClientProxiedBy: HK2PR02CA0133.apcprd02.prod.outlook.com
  (2603:10b6:300:23::8)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 33923727-9cb3-4956-9125-08da213e9022
+X-MS-Office365-Filtering-Correlation-Id: b7b7c11b-d83b-4079-650d-08da213e86ea
 X-MS-TrafficTypeDiagnostic: DM6PR11MB2857:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR11MB285775ADDFB93E8CA0E44CC48FF39@DM6PR11MB2857.namprd11.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DM6PR11MB285741F28DADD5F31CE506F98FF39@DM6PR11MB2857.namprd11.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: U1snG/qP8BEe2R6G9vcemDhtS38JSN4LEAtxjAy/cJ/YnLdm4iw1ZZslb3Y/T8UL3Hy1iW7uqOy15ezuhVvK9F2ySDvnE9f6Oe4iajP4/1eDIqj0F+q8O5IVk/t3VN741f3+ojRk3EJ3M/Ri+aDj1c0OmYUXdlV/Y3nWrzO5fvyCCeIC8zMAkbWfbDEEbxeHw6C0st2mbUhVC9oUTtseUFz9IY4ng/XUUgWmf3/8FIN5jPv2OcbBOxW+bQfUu4JyiBxtl2guHjEqTfHkFSUNndKvKs+rbdVlkJv+IhWHMkaoXNyIfNKz56ZIbjieSUJo+ADfuHF/D6PojMWmtN6Kw7NolgJXzZYyQvZGDfLJyif1KLiFOy0em01Td6gFWCXkOaw5RPgl+VquaNaSkROGujr1zkf3i7rr6yfdL1VRyNmX+TqqaefymH3GwqV72IsiPZ/yzCDhjodV/8+Y14V0nnp/UX/zjFkSfJjV2zy/i9Fpzai9rqqeRqH4gBSeAMwQ2aZ/48TfMeZhCBogCKFqQkY5/627Zzl2rmGF/k77bq/3dhHusTaabXYidzrpJX0XYM7lu2k+U+YmrvXeZFD555i9TlaZgGL/iAxYK/YBflRWVBUINhgiuMZlEFQYyw6J6pVi6Vps2NtAo6Uv6nH7Ig3svebCN/aq/QWxAwprtmTg3vb9SVuLEZ4jAQLimWF/b2Q4A4tokQKhXbW+F7EFDcgV6Hyc1QTX/65CBb0YOis=
+X-Microsoft-Antispam-Message-Info: UBwWdgNkXaFT+EExp710LA0Xz/Ktn1dTrkz92/dXZ/Kv9B9E1NQVoTd45/pIS/ntADGXrDgvLwYIP+Ca/IJu8Iq+g9TMJl17c/M86aLC/WQa76/I2e2exzYnK+P6Y0q7+ydjmSd/njjK6B9vEmALtvVozU/kIi/eqe4Ld14lSFB/u+xu6zsOfYGqcC54mudbUl1mFbqZRAHUzXSp9McpiHTQbEatsF697XX4kfTC8BSoFJScw0IXIZTgZT3KlsasPzo44cu0Xa3YKGbKtVRNP+MabnKMlh+ris+ubeU8Ciwa05uIlq+I9wn6rrxlbjzXUvfZCRA0aEVwcHqYLYYt6aW1ClZVZxWBr+E3df8pKwTVrKdth9LHw2sh7gqZIewE8a1p/X5xKIfjoDTrf+EijTaeOz2kSfBZjCuugAhyX7hh8naEAc0Z8INhRJHKh4ujt3zwNhvJpW2vmmNfnqINEpjUNbjKH9oFjUiOSUa0Ee7XAQwQfjeMdyi3HxdtZLBU63x3D9RZV558fTPSkpDosnd76R2S1UT2yxC7dNZEwTjkvqZ55t6WlkU19zvXCHk+ndWjWQcyxrBJXL4Iy39RVrFDSvciLbub1EYIfEUsPD4ywul2gZe+Oe4wyaMbKEAO2N79eeQNcYcbYzo4mxVCVfD9iacIJHZOSRHPoDde75KXRCE8Jbu8Fi67UfhJuzVh/FImn0Owy5tmTVPNCPmfSpIl5ZHDHvrd7UcU/N2zv0w=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR11MB1358.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66556008)(2616005)(186003)(86362001)(83380400001)(1076003)(38100700002)(66946007)(316002)(66476007)(7416002)(107886003)(8936002)(2906002)(4326008)(6506007)(38350700002)(5660300002)(508600001)(36756003)(52116002)(8676002)(26005)(6486002)(921005)(6512007)(6666004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0D2Nh60ZK0WbyVdl8tFNkd1FehpnekWO1HsUqM3vFift6JwoA00nfHEGD4GV?=
- =?us-ascii?Q?vRGOfMjmYqun6za+KsLDAZ4PwO3yDPRbBdXtdJOD+9T+nF1/OmvdUmSHFBYO?=
- =?us-ascii?Q?6Q2/o51m+IGvQMe+lLCHf1sc+/JflT858QuoFywkENmBH0hNpO7aPt32gPLK?=
- =?us-ascii?Q?c7cpl/aQjVhwjxa0804sQ1IAoP2ecZapxwTmcF4t6ai+2fIPZA2XPXZBD0ly?=
- =?us-ascii?Q?xrYi++NHHt1TSX/jp2iqu5KNmJLEttTixScru0sfsLHn51GbWIFeM0BjDB73?=
- =?us-ascii?Q?lq4fRzdH5FjHbG1Ze8yce8jUhhlpewixfoRJ6jAOR4L7dfxwlEnPWig48bEn?=
- =?us-ascii?Q?6pXxAeWmdRqyDpIvXZs+tHWIBfOV/KKsAatV7mLqXBTeTnaUKnIqGe8eI6V9?=
- =?us-ascii?Q?uAC4Li1DE8kSBT+j+DUrZYMyLzveI8H2wwXsaEnK2tiAnVgjcrztxnOwjZ7s?=
- =?us-ascii?Q?PLhAdLnvunBLAl6CC7fkO+uPYRDmRc1wVtIMcdhcsYJdZD8wglluOgVXcoc3?=
- =?us-ascii?Q?PHSouXzhdM24J55d4CVtBKwr++qqjQ/P/q+VfeG+fAHDZACGAnFVwnqfGqsP?=
- =?us-ascii?Q?m2pzRpUcozIcaJxy3W2PkPd3rBDeV+y1n6V3HQy2qSa4n1M8/tajEhdj/zjg?=
- =?us-ascii?Q?SN1nPRryu2YmlT3sk036adW4W4sbpPBwVSwG309///rsLMrmnEM9Njc7PGZG?=
- =?us-ascii?Q?DgVjyfe8pD7aNjm7mNiyus0YiR96R07rvyaUZvCEffuQsZXvTGCYhr06+53x?=
- =?us-ascii?Q?7SWvIBq38/XtLUx+nDwaT2XTK/YBGpvLh0RC0XK9Otzq0u3oLsXh6Z06fs6g?=
- =?us-ascii?Q?962pZdmAKTGIwQ51Sz//yZi2q6aNFiLXy6RbuJvKBjxVZEp6EA7BSEzMKmnp?=
- =?us-ascii?Q?BkdHQxGNlsJFWv3URFlWm0Xa6qwVqQ6dDvWymeSOmiJJC2GXjZiDu+62whG8?=
- =?us-ascii?Q?Wyb5KgUBmqHDP4tLHZtmJVZmh+a2bk74LpD8UGtjrIAsH8obHkS/19YILEfA?=
- =?us-ascii?Q?7CcUzBoI1tUdisDttXunA4vTXut8PGik/+3wljFPOZGDqanBmjinpLZKoLFQ?=
- =?us-ascii?Q?7Nn8vnlyicWDgoJOtNQNr4IH4Sh2YtVI04Eh6uX587eAXNnQJPOHz9Vkd4fB?=
- =?us-ascii?Q?j9HsWeWrgEeDlBziAhGhTFDWNWisb/vBBDFENUlO7WXhrtPuCy5n2bxrvK4n?=
- =?us-ascii?Q?bT4BLJa0832p1T33TjDW+f//dzZGmNyEdFepwLpa2Im+AHfPmbsDwR++za9u?=
- =?us-ascii?Q?ADo07M0DM06tl6UAJymvS37Mo1xgBVdQtGLFnjbJWO+hy5bXma2dVRK0YDWN?=
- =?us-ascii?Q?IUguhQdc5oD4cRnvvb60qT2z1pmxM2ehL+a5Pkx4jzXszfyclevfidemXqnh?=
- =?us-ascii?Q?QtEX35g50UYSWh4Wo0ENWKGT0TEtywVZSMBD9nKZ2QfABTa+EOB52i783NH3?=
- =?us-ascii?Q?Q9ctA4yJ5Unt759yEkN3Z7aNX95qRA1HBbugD1MKR5NADwlfrTaw+fz8KUGO?=
- =?us-ascii?Q?LLUngKtk/AqBzAx6lpvhghP7wcywSiWAxqXJWitpgPobEvnZmZrzQOYE8mXa?=
- =?us-ascii?Q?CeC9w0Tvmf2RLbLqebffAeNUz3yUEEABG5cmlDuvH1V6lPTXhbntKbtaxsbC?=
- =?us-ascii?Q?xLa6hqhTza9e8ODVZVvFka+Pasks5QF/hFUV+y4hjEMsLoxAGejJKsBDyti0?=
- =?us-ascii?Q?LxKem7dnRiJpRhyQu3d4IzP/Mn+8STwO4mFUR9zdInTTWP85iyMdUIqAWu+a?=
- =?us-ascii?Q?bFqBZiEMvQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cI5QHA39fhqVvKLCszKi+qlJwj8q3cmRp3l8DIX/186Zgu0pPeAZaFzJM6jm?=
+ =?us-ascii?Q?ipk3bxZXuErq02ZNi4rYDh/ZhC1vLg6iUSK+MG+Lbi2lmQYQxOrai5+J2uGD?=
+ =?us-ascii?Q?qzACC0dRDnFwlfdeJHbg7yFuF5MJf7gYgT3WEf28TlIcyKdwGsv64gt+lKYf?=
+ =?us-ascii?Q?GidUf+GzgJDuPFIkFIOoolu2ordERw+BUJSfB+94PI2fZ6Gssm12ESpCa74t?=
+ =?us-ascii?Q?zAPiX6lC/JfgNwzZzHL+T1JvHAYYPzq4+oEWwYYUA/SCu7c+f20GsuXK96MZ?=
+ =?us-ascii?Q?RV80b3cAaz0oByduV341hf0OR/19Td6nxBnpqaOravvJZ4kgKTdlbvEbMU2i?=
+ =?us-ascii?Q?BGLB1AXNH5FVzbmm8AygkCt3lPpaP7V1fcU6JyxJp61xiLVDPdZuo3u7+zbp?=
+ =?us-ascii?Q?d2L9bkfIMPfSxcNNVU3irH4LJIsRC2eC55LSJbAP7SNOqcDWUzLTngogCRRO?=
+ =?us-ascii?Q?vVtLWG/cg/i021WRfC465fRoNAF0+p1zd/zB1zCtnqNbHVE1HeV5pzrpugqv?=
+ =?us-ascii?Q?vkpewDRy2FbrX71PUkhJ9Ci/Rlc2Lge7H2p0UhA0iQYgG4I++igrdDSPhwKK?=
+ =?us-ascii?Q?qC+pT8H05z7y1iX7c0LOfxzaDNBhRalWLGZquTRLe7/mYh6eGUceJLvNI9zI?=
+ =?us-ascii?Q?WGpwVr62xZ9KnvwWqa1z6B3WfPlbnNPwt8AfWO841LQwjGpOMAayZ1yCLCvO?=
+ =?us-ascii?Q?RF7dbg3RsBboe7MQEaNGI1zI4vtKj/CsHpBHrNXT1WNe65McZXahT09VR+/R?=
+ =?us-ascii?Q?uBjz8yTBCPoriZWR6w8d+OFbLfc2qYoyuNf1G6DtqIY+VOXONA57ky/TMwET?=
+ =?us-ascii?Q?Pn17/QZXzgKBJ6giSGYjP/s5SQbojMVmrNyUqj0tamxWKgmLmnW2ziy135nP?=
+ =?us-ascii?Q?rQ8lL8JR5YQ4rAigKbJBCA4MFKtksfKuKKXIhHz+WTMYhyXIVgQ6SfHy5GWm?=
+ =?us-ascii?Q?t0zI5qQ+JqFliECZiok9rlq2QMmK5rfKc7IqMc8xcZUYk381EREANdooaDNL?=
+ =?us-ascii?Q?R4LWs8PSJGt3mLHKTopc5nhYb5HgGgM8pa29gEalTSphgsXEn29ucqe74aTE?=
+ =?us-ascii?Q?esGnQC4EXq7WcnPaXuTyuZJRs8IZNi8l7hIZW43uNGHogyoNAakRKZtSDYQf?=
+ =?us-ascii?Q?oP4VwgxeD1rrkRGQuP3i4JIrzoa6g8TJ08XzArKoBVRsg9nrpKz/HPBCMMrv?=
+ =?us-ascii?Q?uGkAEeCV09kEpzc2rH4TwIlA69QMPwWTA5IpCohszGfE04EABxaTReLe4jq2?=
+ =?us-ascii?Q?AFUgxjXPW6UyYrp5cirvUEjGcE9icnYiclmHg9XkDwvQ6LGgYzKHSc5b/iV8?=
+ =?us-ascii?Q?DVjgffwhpecdm8f52aUiJVySPUoRzQwa55TM0dzD+d+2x/RH4OEtdqwSkZ2F?=
+ =?us-ascii?Q?nRh3ZZ3LsTKgnlO5RsPQTtf5P0ijRyhds3rdB8tM2m5yXijGxGfiAmFASrTN?=
+ =?us-ascii?Q?h58b2hzkpTGiJMN5StgLsoAlso8Z53tEajIRQiv4Ny9SOgQWAwWurOkKE3aK?=
+ =?us-ascii?Q?Tz6bjKUEKRpvI19bF/gYSr6V9mxj4rBuW3T5ybxR7VlkrLjBL1caHQwhLfvk?=
+ =?us-ascii?Q?xgzNJuFh5KpqB1qijqtvE4iGaVR5HG4wyJFfcv13DliJxv8ZQXxURiCLD0xa?=
+ =?us-ascii?Q?Ei7XKBX8KXYhv+sJ2XthfTBAoZemrxVI/rjYAafO1A4RpjF+C7GrTeX5OfsV?=
+ =?us-ascii?Q?0jYtqdrafmAnlLQUS9jcMnDUxIosx9w0GYyOvE1XKEzjQsWfdvOxWETgZ6zo?=
+ =?us-ascii?Q?zrX+U274qA=3D=3D?=
 X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 33923727-9cb3-4956-9125-08da213e9022
+X-MS-Exchange-CrossTenant-Network-Message-Id: b7b7c11b-d83b-4079-650d-08da213e86ea
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1358.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Apr 2022 13:23:01.7469
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Apr 2022 13:22:46.2949
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oJurLbPzfQMbpwhQJv4oULxunsiuwEatCMQTq8cQ8SD9v64QM/Do8zLtADiNgHJSls/JNLsDp1p+3Z2RIZsBgA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: mqZakgqwmB0vyn3TSYwVBu/RdMvbUtJEdh5LqaXDM8AXaG51Awzks5M2DUdPScwZqkUHQcROsRkgkZE2w8xchw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB2857
-X-Proofpoint-ORIG-GUID: Aod_roRjV79KpNthk3_U2ND7CEqM04FS
-X-Proofpoint-GUID: Aod_roRjV79KpNthk3_U2ND7CEqM04FS
+X-Proofpoint-ORIG-GUID: 0mf7eftsbD7ZzuPT20UYBMvG8hI8wZ4M
+X-Proofpoint-GUID: 0mf7eftsbD7ZzuPT20UYBMvG8hI8wZ4M
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
  definitions=2022-04-18_02,2022-04-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- mlxlogscore=736 phishscore=0 lowpriorityscore=0 spamscore=0 suspectscore=0
- priorityscore=1501 malwarescore=0 adultscore=0 impostorscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204180078
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ priorityscore=1501 lowpriorityscore=0 mlxlogscore=999 mlxscore=0
+ adultscore=0 clxscore=1015 spamscore=0 bulkscore=0 malwarescore=0
+ impostorscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2204180078
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-stack_trace_consume_fn has been changed to
-bool (*stack_trace_consume_fn)(void *cookie, struct frame_info *fi);
-to be able to pass more information.
-
-Turn to use pc in struct frame_info in arch_stack_walk callbacks without
-functinoal change.
+This function checks if the given address range crosses frame boundary.
+It is based on the existing x86 algorithm, but implemented via stacktrace.
+This can be tested by USERCOPY_STACK_FRAME_FROM and
+USERCOPY_STACK_FRAME_TO in lkdtm.
 
 Signed-off-by: He Zhe <zhe.he@windriver.com>
 ---
- arch/riscv/include/asm/stacktrace.h |  2 +-
- arch/riscv/kernel/perf_callchain.c  |  4 ++--
- arch/riscv/kernel/stacktrace.c      | 22 +++++++++++++---------
- 3 files changed, 16 insertions(+), 12 deletions(-)
+ arch/arm64/Kconfig                   |  1 +
+ arch/arm64/include/asm/thread_info.h | 12 +++++
+ arch/arm64/kernel/stacktrace.c       | 76 ++++++++++++++++++++++++++--
+ 3 files changed, 85 insertions(+), 4 deletions(-)
 
-diff --git a/arch/riscv/include/asm/stacktrace.h b/arch/riscv/include/asm/stacktrace.h
-index 3450c1912afd..486ed6a96b89 100644
---- a/arch/riscv/include/asm/stacktrace.h
-+++ b/arch/riscv/include/asm/stacktrace.h
-@@ -12,7 +12,7 @@ struct stackframe {
- };
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 57c4c995965f..0f52a83d7771 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -165,6 +165,7 @@ config ARM64
+ 	select HAVE_ARCH_TRACEHOOK
+ 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE
+ 	select HAVE_ARCH_VMAP_STACK
++	select HAVE_ARCH_WITHIN_STACK_FRAMES
+ 	select HAVE_ARM_SMCCC
+ 	select HAVE_ASM_MODVERSIONS
+ 	select HAVE_EBPF_JIT
+diff --git a/arch/arm64/include/asm/thread_info.h b/arch/arm64/include/asm/thread_info.h
+index e1317b7c4525..b839ad9f2248 100644
+--- a/arch/arm64/include/asm/thread_info.h
++++ b/arch/arm64/include/asm/thread_info.h
+@@ -58,6 +58,18 @@ void arch_setup_new_exec(void);
+ void arch_release_task_struct(struct task_struct *tsk);
+ int arch_dup_task_struct(struct task_struct *dst,
+ 				struct task_struct *src);
++/*
++ * Walks up the stack frames to make sure that the specified object is
++ * entirely contained by a single stack frame.
++ *
++ * Returns:
++ *	GOOD_FRAME	if within a frame
++ *	BAD_STACK	if placed across a frame boundary (or outside stack)
++ *	NOT_STACK	unable to determine (no frame pointers, etc)
++ */
++int arch_within_stack_frames(const void * const stack,
++		const void * const stackend,
++		const void *obj, unsigned long len);
  
- extern void notrace walk_stackframe(struct task_struct *task, struct pt_regs *regs,
--				    bool (*fn)(void *, unsigned long), void *arg);
-+				    stack_trace_consume_fn fn, void *arg);
- extern void dump_backtrace(struct pt_regs *regs, struct task_struct *task,
- 			   const char *loglvl);
+ #endif
  
-diff --git a/arch/riscv/kernel/perf_callchain.c b/arch/riscv/kernel/perf_callchain.c
-index 3348a61de7d9..413abf094818 100644
---- a/arch/riscv/kernel/perf_callchain.c
-+++ b/arch/riscv/kernel/perf_callchain.c
-@@ -66,9 +66,9 @@ void perf_callchain_user(struct perf_callchain_entry_ctx *entry,
- 		fp = user_backtrace(entry, fp, 0);
- }
+diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+index e4103e085681..219b90c1de12 100644
+--- a/arch/arm64/kernel/stacktrace.c
++++ b/arch/arm64/kernel/stacktrace.c
+@@ -145,12 +145,17 @@ NOKPROBE_SYMBOL(unwind_frame);
  
--static bool fill_callchain(void *entry, unsigned long pc)
-+static bool fill_callchain(void *entry, struct frame_info *fi)
+ static void notrace walk_stackframe(struct task_struct *tsk,
+ 				    struct stackframe *frame,
+-				    bool (*fn)(void *, unsigned long), void *data)
++				    stack_trace_consume_fn fn, void *data)
  {
--	return perf_callchain_store(entry, pc) == 0;
-+	return perf_callchain_store(entry, fi->pc) == 0;
- }
- 
- void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
-diff --git a/arch/riscv/kernel/stacktrace.c b/arch/riscv/kernel/stacktrace.c
-index 08d11a53f39e..9cc5013a5ea4 100644
---- a/arch/riscv/kernel/stacktrace.c
-+++ b/arch/riscv/kernel/stacktrace.c
-@@ -17,10 +17,11 @@
- #ifdef CONFIG_FRAME_POINTER
- 
- void notrace walk_stackframe(struct task_struct *task, struct pt_regs *regs,
--			     bool (*fn)(void *, unsigned long), void *arg)
-+			     stack_trace_consume_fn fn, void *arg)
- {
- 	unsigned long fp, sp, pc;
- 	int level = 0;
 +	struct frame_info fi;
++
+ 	while (1) {
+ 		int ret;
  
- 	if (regs) {
- 		fp = frame_pointer(regs);
-@@ -41,7 +42,8 @@ void notrace walk_stackframe(struct task_struct *task, struct pt_regs *regs,
- 		unsigned long low, high;
- 		struct stackframe *frame;
- 
--		if (unlikely(!__kernel_text_address(pc) || (level++ >= 1 && !fn(arg, pc))))
-+		fi.pc = pc;
-+		if (unlikely(!__kernel_text_address(pc) || (level++ >= 1 && !fn(arg, &fi))))
+-		if (!fn(data, frame->pc))
++		fi.pc = frame->pc;
++		fi.fp = frame->fp;
++		fi.prev_fp = frame->prev_fp;
++		if (!fn(data, &fi))
  			break;
+ 		ret = unwind_frame(tsk, frame);
+ 		if (ret < 0)
+@@ -159,10 +164,10 @@ static void notrace walk_stackframe(struct task_struct *tsk,
+ }
+ NOKPROBE_SYMBOL(walk_stackframe);
  
- 		/* Validate frame pointer */
-@@ -67,10 +69,11 @@ void notrace walk_stackframe(struct task_struct *task, struct pt_regs *regs,
- #else /* !CONFIG_FRAME_POINTER */
- 
- void notrace walk_stackframe(struct task_struct *task,
--	struct pt_regs *regs, bool (*fn)(void *, unsigned long), void *arg)
-+	struct pt_regs *regs, stack_trace_consume_fn fn, void *arg)
+-static bool dump_backtrace_entry(void *arg, unsigned long where)
++static bool dump_backtrace_entry(void *arg, struct frame_info *fi)
  {
- 	unsigned long sp, pc;
- 	unsigned long *ksp;
-+	struct frame_info fi;
- 
- 	if (regs) {
- 		sp = user_stack_pointer(regs);
-@@ -89,7 +92,8 @@ void notrace walk_stackframe(struct task_struct *task,
- 
- 	ksp = (unsigned long *)sp;
- 	while (!kstack_end(ksp)) {
--		if (__kernel_text_address(pc) && unlikely(!fn(arg, pc)))
-+		fi.pc = pc;
-+		if (__kernel_text_address(pc) && unlikely(!fn(arg, &fi)))
- 			break;
- 		pc = (*ksp++) - 0x4;
- 	}
-@@ -97,11 +101,11 @@ void notrace walk_stackframe(struct task_struct *task,
- 
- #endif /* CONFIG_FRAME_POINTER */
- 
--static bool print_trace_address(void *arg, unsigned long pc)
-+static bool print_trace_address(void *arg, struct frame_info *fi)
- {
- 	const char *loglvl = arg;
- 
--	print_ip_sym(loglvl, pc);
-+	print_ip_sym(loglvl, fi->pc);
+ 	char *loglvl = arg;
+-	printk("%s %pSb\n", loglvl, (void *)where);
++	printk("%s %pSb\n", loglvl, (void *)fi->pc);
  	return true;
  }
  
-@@ -117,11 +121,11 @@ void show_stack(struct task_struct *task, unsigned long *sp, const char *loglvl)
- 	dump_backtrace(NULL, task, loglvl);
- }
+@@ -210,3 +215,66 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
  
--static bool save_wchan(void *arg, unsigned long pc)
-+static bool save_wchan(void *arg, struct frame_info *fi)
- {
--	if (!in_sched_functions(pc)) {
-+	if (!in_sched_functions(fi->pc)) {
- 		unsigned long *p = arg;
--		*p = pc;
-+		*p = fi->pc;
- 		return false;
- 	}
- 	return true;
+ 	walk_stackframe(task, &frame, consume_entry, cookie);
+ }
++
++struct arch_stack_object {
++	unsigned long start;
++	unsigned long len;
++	int flag;
++};
++
++static bool arch_stack_object_check(void *data, struct frame_info *fi)
++{
++	struct arch_stack_object *obj = (struct arch_stack_object *)data;
++
++	/* Skip the frame of arch_within_stack_frames itself */
++	if (fi->prev_fp == 0)
++		return true;
++
++	/*
++	 * low ----------------------------------------------> high
++	 * [saved bp][saved ip][args][local vars][saved bp][saved ip]
++	 *                     ^----------------^
++	 *               allow copies only within here
++	 */
++	if (obj->start + obj->len <= fi->fp) {
++		obj->flag = obj->start >=
++			fi->prev_fp + 2 * sizeof(void *) ?
++			GOOD_FRAME : BAD_STACK;
++		return false;
++	} else
++		return true;
++}
++
++/*
++ * Walks up the stack frames to make sure that the specified object is
++ * entirely contained by a single stack frame.
++ *
++ * Returns:
++ *	GOOD_FRAME	if within a frame
++ *	BAD_STACK	if placed across a frame boundary (or outside stack)
++ *	NOT_STACK	unable to determine (no frame pointers, etc)
++ */
++int arch_within_stack_frames(const void * const stack,
++		const void * const stackend,
++		const void *obj, unsigned long len)
++{
++#if defined(CONFIG_FRAME_POINTER)
++	struct arch_stack_object object;
++	struct pt_regs regs;
++
++	if (__builtin_frame_address(1) == 0)
++		return NOT_STACK;
++
++	object.start = (unsigned long)obj;
++	object.len = len;
++	object.flag = NOT_STACK;
++
++	regs.regs[29] = (u64)__builtin_frame_address(1);
++
++	arch_stack_walk(arch_stack_object_check, (void *)&object, NULL, &regs);
++
++	return object.flag;
++#else
++	return NOT_STACK;
++#endif
++}
 -- 
 2.25.1
 
