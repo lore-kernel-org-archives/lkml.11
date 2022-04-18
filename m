@@ -2,68 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55959C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346485AbiDRQyX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 12:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55798 "EHLO
+        id S244619AbiDRQyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 12:54:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346530AbiDRQxy (ORCPT
+        with ESMTP id S1346510AbiDRQxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 12:53:54 -0400
+        Mon, 18 Apr 2022 12:53:55 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9686C3337E
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:51:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9067332ED8
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:51:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650300672;
+        s=mimecast20190719; t=1650300675;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=x9Fz+Xc8RoGhISO17r8oqMWhPNYKVczvw/S/wtXruE8=;
-        b=TXc8k1lX28H+jxqwBqEF8/mSreSqlmRKLe0q63WejVhdL59POmuk6zXqJVS2v1k7X4Ld9Q
-        RTRp+fCjfNQgfcovV66hQ9k7jxIoi9TRflhlXfXaZpCqsLBESX8xisnfdtrXiM7C5umCyv
-        PBNeYfBNoB1vo/wGiIo55Mq25Bks9gI=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=8a1RSwZRwZa7WB4b2xc1Iz/do+hexW0HjVpkJirC0vM=;
+        b=hCpvN2TEa1Syk4rfjPmynQGpgMRUAfozhFq4u/1A3DOhEquIEkcy1biQOazwkjkOUswqSx
+        VRKhK7E41D6o5fBT6SyCLoxJp12VNmL3pNLLjPNEFJqLDn17Wq03b4PpqNao2pAQjVzR+Z
+        PSx0nbP9LJgiwgkbHaNCkRosREroR1o=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-58-wk0xCG6vN12dc_HJz4oq4g-1; Mon, 18 Apr 2022 12:51:11 -0400
-X-MC-Unique: wk0xCG6vN12dc_HJz4oq4g-1
-Received: by mail-qt1-f198.google.com with SMTP id s9-20020ac87589000000b002e1cfb25db9so2060767qtq.1
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:51:11 -0700 (PDT)
+ us-mta-550-CdS-3ZOBNYWcr4FDV8wx6w-1; Mon, 18 Apr 2022 12:51:14 -0400
+X-MC-Unique: CdS-3ZOBNYWcr4FDV8wx6w-1
+Received: by mail-qv1-f70.google.com with SMTP id o1-20020ad44561000000b0044635418a3cso7674439qvu.0
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:51:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=x9Fz+Xc8RoGhISO17r8oqMWhPNYKVczvw/S/wtXruE8=;
-        b=dBg39bdWPRQw/BDdgiqX5ye/5CJE7hXFIusVibfirY6o8m/RmqgUSgr+1pfnTvNqQG
-         /gLd0HfMJFaamONYsaWAbDMNql4HMJyf4ajJBR65OJBKHlpyfZZ6wwS5ectxREdrxcXk
-         MzjyDMW5ATTdqKvgh3V5Utw3k0u9ZNZ525idiTGo0E4z2uOQZP+pOW8RQlqKn2lB0qqZ
-         VWLQzH1sSghVcWbvWa1Mbj+WZnCwpmoL7KXBIfPT0+biMk5i+kmlXb+sunvPZHtU/lKS
-         DsTkm2x8ZexUzts7TMmNyD2fw3Bit5xRff3ilHKP5lkTdjC+ct0BlV8oadZQCsCPjE8C
-         gT7w==
-X-Gm-Message-State: AOAM532zrkULyGltP+F/0F3XRD9lzkcRQRnq6FIRNmvWj8gexyzotFkD
-        ynS+4QXmgWmHRObupEdekRfv5eem+q+yVdHHXlWg0+rVnbYq4kZ60svUFjfdVc5sPWus/+i+kZY
-        GekxS3VqEEDMbKuWDfwtvB3uD
-X-Received: by 2002:ac8:590e:0:b0:2e1:dcaf:bbb6 with SMTP id 14-20020ac8590e000000b002e1dcafbbb6mr7591137qty.644.1650300670762;
-        Mon, 18 Apr 2022 09:51:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwoacZs4E+r8OSfJFZkgztLmXpm2DEK+jp7Kds0Xtg7vwOt61QvoeNvi5Ah8ZbViMiVka4j/g==
-X-Received: by 2002:ac8:590e:0:b0:2e1:dcaf:bbb6 with SMTP id 14-20020ac8590e000000b002e1dcafbbb6mr7591122qty.644.1650300670509;
-        Mon, 18 Apr 2022 09:51:10 -0700 (PDT)
+        bh=8a1RSwZRwZa7WB4b2xc1Iz/do+hexW0HjVpkJirC0vM=;
+        b=JewRCWKq4qz6Z57YxfnTHZ7xdnUvoIW54CC47QeZVDR/N077i+zRIvioKr5XlaqUAo
+         yQwPoyt2EUHtSd9BH6LUFoFlvhFNHYyUCU9YEWbQNHKIKhTryQsfTe6VS24g4CwUd7bn
+         tbmV7FUt98p6XTrxXEyydw6J9Ai45qQ8taVbVaM/rjcs9TpuIIQPsTtyi8/3dcJO8wsx
+         nB9Tw8AUjlxCyocUdiYmCNFsXmUJTpqkUy73rvTx+go7SijWYrXEsVI48tAuwV+3NoCu
+         BIx4kTv67mgTYMOjIOLGWxCE2ILbKV7fH+MjZuFI1VZY6HVgvWbfka310IMgYPwioPf6
+         R0Dw==
+X-Gm-Message-State: AOAM532wrJbFJKhl49PG8QwsJHJk9O7lc7ILyjiFjXSm8B7vOzgFoIS2
+        H+ZgW3kJoSCMYv0hev3/GcJ/iRGEbOn1l4vH3KDpMMdEtcx6OCOcQVXnZbVMXeNWSmo83w/omLX
+        d8HPNR44eFJRyG9XUpvu2Ul2U
+X-Received: by 2002:a05:622a:6091:b0:2f1:d379:1973 with SMTP id hf17-20020a05622a609100b002f1d3791973mr7638384qtb.495.1650300673819;
+        Mon, 18 Apr 2022 09:51:13 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzys19uRmL1M1K12mF9KHOzsp2sgSqgqd9V2D4+Na4KZH0mq+1SWPr+v2QSJjGgPcgLomBrug==
+X-Received: by 2002:a05:622a:6091:b0:2f1:d379:1973 with SMTP id hf17-20020a05622a609100b002f1d3791973mr7638368qtb.495.1650300673579;
+        Mon, 18 Apr 2022 09:51:13 -0700 (PDT)
 Received: from treble.redhat.com ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id e15-20020ac8670f000000b002e22d9c756dsm7277059qtp.30.2022.04.18.09.51.09
+        by smtp.gmail.com with ESMTPSA id e15-20020ac8670f000000b002e22d9c756dsm7277059qtp.30.2022.04.18.09.51.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 09:51:10 -0700 (PDT)
+        Mon, 18 Apr 2022 09:51:13 -0700 (PDT)
 From:   Josh Poimboeuf <jpoimboe@redhat.com>
 To:     x86@kernel.org
 Cc:     Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH v2 12/25] objtool: Add option to print section addresses
-Date:   Mon, 18 Apr 2022 09:50:31 -0700
-Message-Id: <2cea4d5299d53d1a4c09212a6ad7820aa46fda7a.1650300597.git.jpoimboe@redhat.com>
+        linux-kernel@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
+Subject: [PATCH v2 14/25] objtool: Make stack validation optional
+Date:   Mon, 18 Apr 2022 09:50:33 -0700
+Message-Id: <52da143699574d756e65ca4c9d4acaffe9b0fe5f.1650300597.git.jpoimboe@redhat.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1650300597.git.jpoimboe@redhat.com>
 References: <cover.1650300597.git.jpoimboe@redhat.com>
@@ -74,103 +72,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To help prevent objtool users from having to do math to convert function
-addresses to section addresses, and to help out with finding data
-addresses reported by IBT validation, add an option to print the section
-address in addition to the function address.
+Make stack validation an explicit cmdline option so that individual
+objtool features can be enabled individually by other arches.
 
-Normal:
-
-  vmlinux.o: warning: objtool: fixup_exception()+0x2d1: unreachable instruction
-
-With '--sec-address':
-
-  vmlinux.o: warning: objtool: fixup_exception()+0x2d1 (.text+0x76c51): unreachable instruction
-
-Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 ---
- tools/objtool/builtin-check.c           |  1 +
+ scripts/Makefile.build                  |  1 +
+ scripts/link-vmlinux.sh                 |  4 ++++
+ tools/objtool/builtin-check.c           |  2 ++
+ tools/objtool/check.c                   | 28 +++++++++++++------------
  tools/objtool/include/objtool/builtin.h |  1 +
- tools/objtool/include/objtool/warn.h    | 31 ++++++++++++++-----------
- 3 files changed, 19 insertions(+), 14 deletions(-)
+ 5 files changed, 23 insertions(+), 13 deletions(-)
 
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 116c7272b41c..d5e15ae29156 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -232,6 +232,7 @@ objtool_args =								\
+ 	$(if $(CONFIG_UNWINDER_ORC), --orc)				\
+ 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
+ 	$(if $(CONFIG_SLS), --sls)					\
++	$(if $(CONFIG_STACK_VALIDATION), --stackval)			\
+ 	$(if $(CONFIG_X86_SMAP), --uaccess)				\
+ 	$(if $(part-of-module), --module)				\
+ 	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index f6db79b11573..0140bfa32c0c 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -126,6 +126,10 @@ objtool_link()
+ 			objtoolopt="${objtoolopt} --orc"
+ 		fi
+ 
++		if is_enabled CONFIG_STACK_VALIDATION; then
++			objtoolopt="${objtoolopt} --stackval"
++		fi
++
+ 		objtoolopt="${objtoolopt} --lto"
+ 	fi
+ 
 diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
-index 8c3eed5b67e4..6acfebd2c6ca 100644
+index 6acfebd2c6ca..d4e6930ad0a0 100644
 --- a/tools/objtool/builtin-check.c
 +++ b/tools/objtool/builtin-check.c
-@@ -50,6 +50,7 @@ const struct option check_options[] = {
- 	OPT_BOOLEAN(0, "module", &opts.module, "object is part of a kernel module"),
- 	OPT_BOOLEAN(0, "no-fp", &opts.no_fp, "skip frame pointer validation"),
- 	OPT_BOOLEAN(0, "no-unreachable", &opts.no_unreachable, "skip 'unreachable instruction' warnings"),
-+	OPT_BOOLEAN(0, "sec-address", &opts.sec_address, "print section addresses in warnings"),
- 	OPT_BOOLEAN(0, "stats", &opts.stats, "print statistics"),
- 	OPT_BOOLEAN(0, "vmlinux", &opts.vmlinux, "vmlinux.o validation"),
+@@ -39,6 +39,7 @@ const struct option check_options[] = {
+ 	OPT_BOOLEAN('o', "orc", &opts.orc, "generate ORC metadata"),
+ 	OPT_BOOLEAN('r', "retpoline", &opts.retpoline, "validate and annotate retpoline usage"),
+ 	OPT_BOOLEAN('l', "sls", &opts.sls, "validate straight-line-speculation mitigations"),
++	OPT_BOOLEAN('s', "stackval", &opts.stackval, "validate stack unwinding rules"),
+ 	OPT_BOOLEAN('u', "uaccess", &opts.uaccess, "validate uaccess rules for SMAP"),
+ 	OPT_CALLBACK_OPTARG(0, "dump", NULL, NULL, "orc", "dump metadata", parse_dump),
  
-diff --git a/tools/objtool/include/objtool/builtin.h b/tools/objtool/include/objtool/builtin.h
-index 44548e24473c..e0972fbfa09e 100644
---- a/tools/objtool/include/objtool/builtin.h
-+++ b/tools/objtool/include/objtool/builtin.h
-@@ -28,6 +28,7 @@ struct opts {
- 	bool module;
- 	bool no_fp;
- 	bool no_unreachable;
-+	bool sec_address;
- 	bool stats;
- 	bool vmlinux;
- };
-diff --git a/tools/objtool/include/objtool/warn.h b/tools/objtool/include/objtool/warn.h
-index c4bde3e2a79c..a3e79ae75f2e 100644
---- a/tools/objtool/include/objtool/warn.h
-+++ b/tools/objtool/include/objtool/warn.h
-@@ -11,30 +11,33 @@
- #include <sys/types.h>
- #include <sys/stat.h>
- #include <fcntl.h>
-+#include <objtool/builtin.h>
- #include <objtool/elf.h>
- 
- extern const char *objname;
- 
- static inline char *offstr(struct section *sec, unsigned long offset)
- {
--	struct symbol *func;
--	char *name, *str;
--	unsigned long name_off;
-+	bool is_text = (sec->sh.sh_flags & SHF_EXECINSTR);
-+	struct symbol *sym = NULL;
-+	char *str;
-+	int len;
- 
--	func = find_func_containing(sec, offset);
--	if (!func)
--		func = find_symbol_containing(sec, offset);
--	if (func) {
--		name = func->name;
--		name_off = offset - func->offset;
-+	if (is_text)
-+		sym = find_func_containing(sec, offset);
-+	if (!sym)
-+		sym = find_symbol_containing(sec, offset);
-+
-+	if (sym) {
-+		str = malloc(strlen(sym->name) + strlen(sec->name) + 40);
-+		len = sprintf(str, "%s+0x%lx", sym->name, offset - sym->offset);
-+		if (opts.sec_address)
-+			sprintf(str+len, " (%s+0x%lx)", sec->name, offset);
- 	} else {
--		name = sec->name;
--		name_off = offset;
-+		str = malloc(strlen(sec->name) + 20);
-+		sprintf(str, "%s+0x%lx", sec->name, offset);
+@@ -92,6 +93,7 @@ static bool opts_valid(void)
+ 	    opts.orc		||
+ 	    opts.retpoline	||
+ 	    opts.sls		||
++	    opts.stackval	||
+ 	    opts.uaccess) {
+ 		if (opts.dump_orc) {
+ 			fprintf(stderr, "--dump can't be combined with other options\n");
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 49d5f0986a52..8dc6035fabd2 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -3900,25 +3900,27 @@ int check(struct objtool_file *file)
+ 		warnings += ret;
  	}
  
--	str = malloc(strlen(name) + 20);
--	sprintf(str, "%s+0x%lx", name, name_off);
+-	ret = validate_functions(file);
+-	if (ret < 0)
+-		goto out;
+-	warnings += ret;
 -
- 	return str;
- }
+-	ret = validate_unwind_hints(file, NULL);
+-	if (ret < 0)
+-		goto out;
+-	warnings += ret;
++	if (opts.stackval || opts.orc || opts.uaccess || opts.ibt || opts.sls) {
++		ret = validate_functions(file);
++		if (ret < 0)
++			goto out;
++		warnings += ret;
  
+-	if (opts.ibt) {
+-		ret = validate_ibt(file);
++		ret = validate_unwind_hints(file, NULL);
+ 		if (ret < 0)
+ 			goto out;
+ 		warnings += ret;
++
++		if (!warnings) {
++			ret = validate_reachable_instructions(file);
++			if (ret < 0)
++				goto out;
++			warnings += ret;
++		}
+ 	}
+ 
+-	if (!warnings) {
+-		ret = validate_reachable_instructions(file);
++	if (opts.ibt) {
++		ret = validate_ibt(file);
+ 		if (ret < 0)
+ 			goto out;
+ 		warnings += ret;
+diff --git a/tools/objtool/include/objtool/builtin.h b/tools/objtool/include/objtool/builtin.h
+index e0972fbfa09e..8618585bb742 100644
+--- a/tools/objtool/include/objtool/builtin.h
++++ b/tools/objtool/include/objtool/builtin.h
+@@ -18,6 +18,7 @@ struct opts {
+ 	bool orc;
+ 	bool retpoline;
+ 	bool sls;
++	bool stackval;
+ 	bool uaccess;
+ 
+ 	/* options: */
 -- 
 2.34.1
 
