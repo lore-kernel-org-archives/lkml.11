@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F32C38161
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5A89C352A7
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244773AbiDRNph (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:45:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
+        id S244639AbiDRNpM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241494AbiDRNX5 (ORCPT
+        with ESMTP id S241396AbiDRNVP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:23:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21513D4B5;
-        Mon, 18 Apr 2022 05:52:51 -0700 (PDT)
+        Mon, 18 Apr 2022 09:21:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 896BD140D6;
+        Mon, 18 Apr 2022 05:52:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4396DB80EC0;
-        Mon, 18 Apr 2022 12:52:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A98E6C385A1;
-        Mon, 18 Apr 2022 12:52:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F4EEB80E44;
+        Mon, 18 Apr 2022 12:52:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5930AC385A1;
+        Mon, 18 Apr 2022 12:52:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286369;
-        bh=T97bYP5P7iu39kdTLx5OIaN6WD5k29ziQ0v41fmvI0k=;
+        s=korg; t=1650286350;
+        bh=oDCLpOGgBcPsxVODLiGPdcn9SR76ABDkisKl8yt2qy8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g2JtTE5ipwOR/RSxBZPwpRmyhJ1zWLN4VGN7EFTWxSgcLH66UCzJxypQ1RkIiKKOk
-         nCNn540iyXOiFLI47xIRES4rd2tWwuBmd0A05r6c7sTyVDX3QnFAvs+Ya+dHFIYLQ8
-         P9LuJzpedZup7VXu7pT66mrkimJkekL8feqWMAGE=
+        b=o8stmyzmxQm5bKbfwm3D/SOFAqsPG68zioFvX4cBa2or2SxBPkl4OSnWDdiygfmua
+         dOV3r/WvZOGhOgrLZx5FeuLfjRYfH3X2K5q3AMvJBkhiG80QPntTH/wDtq/QivtyLr
+         OTyibfjtrdErdjJOUQLaSaWGiIo0NT1JLJ6nGTdo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bastien Nocera <hadess@hadess.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 112/284] power: supply: bq24190_charger: Fix bq24190_vbus_is_enabled() wrong false return
-Date:   Mon, 18 Apr 2022 14:11:33 +0200
-Message-Id: <20220418121214.154504397@linuxfoundation.org>
+Subject: [PATCH 4.14 107/284] scsi: pm8001: Fix payload initialization in pm80xx_set_thermal_config()
+Date:   Mon, 18 Apr 2022 14:11:28 +0200
+Message-Id: <20220418121213.945201259@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -51,55 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit f7731754fdce33dad19be746f647d6ac47c5d695 ]
+[ Upstream commit bb225b12dbcc82d53d637d10b8d70b64494f8c16 ]
 
-The datasheet says that the BQ24190_REG_POC_CHG_CONFIG bits can
-have a value of either 10(0x2) or 11(0x3) for OTG (5V boost regulator)
-mode.
+The fields of the set_ctrl_cfg_req structure have the __le32 type, so use
+cpu_to_le32() to assign them. This removes the sparse warnings:
 
-Sofar bq24190_vbus_is_enabled() was only checking for 10 but some BIOS-es
-uses 11 when enabling the regulator at boot.
+warning: incorrect type in assignment (different base types)
+    expected restricted __le32
+    got unsigned int
 
-Make bq24190_vbus_is_enabled() also check for 11 so that it does not
-wrongly returns false when the bits are set to 11.
-
-Fixes: 66b6bef2c4e0 ("power: supply: bq24190_charger: Export 5V boost converter as regulator")
-Cc: Bastien Nocera <hadess@hadess.net>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20220220031810.738362-8-damien.lemoal@opensource.wdc.com
+Fixes: 842784e0d15b ("pm80xx: Update For Thermal Page Code")
+Fixes: f5860992db55 ("[SCSI] pm80xx: Added SPCv/ve specific hardware functionalities and relevant changes in common files")
+Reviewed-by: John Garry <john.garry@huawei.com>
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/bq24190_charger.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/scsi/pm8001/pm80xx_hwi.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/power/supply/bq24190_charger.c b/drivers/power/supply/bq24190_charger.c
-index 0906f6b562bc..32bd28f68983 100644
---- a/drivers/power/supply/bq24190_charger.c
-+++ b/drivers/power/supply/bq24190_charger.c
-@@ -44,6 +44,7 @@
- #define BQ24190_REG_POC_CHG_CONFIG_DISABLE		0x0
- #define BQ24190_REG_POC_CHG_CONFIG_CHARGE		0x1
- #define BQ24190_REG_POC_CHG_CONFIG_OTG			0x2
-+#define BQ24190_REG_POC_CHG_CONFIG_OTG_ALT		0x3
- #define BQ24190_REG_POC_SYS_MIN_MASK		(BIT(3) | BIT(2) | BIT(1))
- #define BQ24190_REG_POC_SYS_MIN_SHIFT		1
- #define BQ24190_REG_POC_SYS_MIN_MIN			3000
-@@ -572,7 +573,11 @@ static int bq24190_vbus_is_enabled(struct regulator_dev *dev)
- 	pm_runtime_mark_last_busy(bdi->dev);
- 	pm_runtime_put_autosuspend(bdi->dev);
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index 162b819f3a89..cf037e076235 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -870,9 +870,11 @@ pm80xx_set_thermal_config(struct pm8001_hba_info *pm8001_ha)
+ 	else
+ 		page_code = THERMAL_PAGE_CODE_8H;
  
--	return ret ? ret : val == BQ24190_REG_POC_CHG_CONFIG_OTG;
-+	if (ret)
-+		return ret;
-+
-+	return (val == BQ24190_REG_POC_CHG_CONFIG_OTG ||
-+		val == BQ24190_REG_POC_CHG_CONFIG_OTG_ALT);
- }
+-	payload.cfg_pg[0] = (THERMAL_LOG_ENABLE << 9) |
+-				(THERMAL_ENABLE << 8) | page_code;
+-	payload.cfg_pg[1] = (LTEMPHIL << 24) | (RTEMPHIL << 8);
++	payload.cfg_pg[0] =
++		cpu_to_le32((THERMAL_LOG_ENABLE << 9) |
++			    (THERMAL_ENABLE << 8) | page_code);
++	payload.cfg_pg[1] =
++		cpu_to_le32((LTEMPHIL << 24) | (RTEMPHIL << 8));
  
- static const struct regulator_ops bq24190_vbus_ops = {
+ 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload, 0);
+ 	if (rc)
 -- 
 2.34.1
 
