@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE86DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B52C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:24:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238786AbiDRM0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:26:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38890 "EHLO
+        id S238799AbiDRM05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238683AbiDRMZl (ORCPT
+        with ESMTP id S238757AbiDRMZm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:25:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB5EC13;
-        Mon, 18 Apr 2022 05:19:46 -0700 (PDT)
+        Mon, 18 Apr 2022 08:25:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14DBD26D6;
+        Mon, 18 Apr 2022 05:19:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45C3BB80EDB;
-        Mon, 18 Apr 2022 12:19:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87972C385A9;
-        Mon, 18 Apr 2022 12:19:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7800E60F0F;
+        Mon, 18 Apr 2022 12:19:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FE92C385A1;
+        Mon, 18 Apr 2022 12:19:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284383;
-        bh=Xe2AbJ8/FRjja0awDq2I0DB0l+XsLNsfBPUqt1HnJaQ=;
+        s=korg; t=1650284386;
+        bh=M6RhXLMmz2S6qMvA0PcSqI2yybCtTdtl2N6YoFyDWec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GGtHrZIS90sL7y3vUf3AbeBDbkquh5AtnSBbxLuZMPxJFX3RpMV3hEmErsNugehfq
-         iAgsMu9XPhQC2/sFUhFPzFS+TT7zKanUN6DO7dzkTcT5Yd8RaXHdWPpibt29bAdrOl
-         jwckVE7+9v34FtqjK0GkwdqwdI2+ZZGE1ObxYbtw=
+        b=uoEQwgSRWEURfxsFbqrdmYKwOBJEk/z7o2s5P+cNzcHM22zCVigYlkO5tLHlZroGm
+         0ngt865wqbA8SOThRjm7PmmYm53XsXHQgwjXFD06XEmjzuzUI6dEEoB71L7zbp1FsM
+         zK1Fx1PyXDp2I1njZeWO67Us3DAflq3BFsDHZcY8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Ajish Koshy <Ajish.Koshy@microchip.com>,
-        Viswas G <Viswas.G@microchip.com>,
+        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 097/219] scsi: pm80xx: Enable upper inbound, outbound queues
-Date:   Mon, 18 Apr 2022 14:11:06 +0200
-Message-Id: <20220418121209.491526549@linuxfoundation.org>
+Subject: [PATCH 5.17 098/219] scsi: iscsi: Move iscsi_ep_disconnect()
+Date:   Mon, 18 Apr 2022 14:11:07 +0200
+Message-Id: <20220418121209.542546532@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -53,61 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ajish Koshy <Ajish.Koshy@microchip.com>
+From: Mike Christie <michael.christie@oracle.com>
 
-[ Upstream commit bcd8a45223470e00b5f254018174d64a75db4bbe ]
+[ Upstream commit c34f95e98d8fb750eefd4f3fe58b4f8b5e89253b ]
 
-Executing driver on servers with more than 32 CPUs were faced with command
-timeouts. This is because we were not geting completions for commands
-submitted on IQ32 - IQ63.
+This patch moves iscsi_ep_disconnect() so it can be called earlier in the
+next patch.
 
-Set E64Q bit to enable upper inbound and outbound queues 32 to 63 in the
-MPI main configuration table.
-
-Added 500ms delay after successful MPI initialization as mentioned in
-controller datasheet.
-
-Link: https://lore.kernel.org/r/20220411064603.668448-3-Ajish.Koshy@microchip.com
-Fixes: 05c6c029a44d ("scsi: pm80xx: Increase number of supported queues")
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Acked-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Ajish Koshy <Ajish.Koshy@microchip.com>
-Signed-off-by: Viswas G <Viswas.G@microchip.com>
+Link: https://lore.kernel.org/r/20220408001314.5014-2-michael.christie@oracle.com
+Tested-by: Manish Rangankar <mrangankar@marvell.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Reviewed-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/scsi/scsi_transport_iscsi.c | 38 ++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 2dea48933ef9..5853b3c0d76d 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -766,6 +766,10 @@ static void init_default_table_values(struct pm8001_hba_info *pm8001_ha)
- 	pm8001_ha->main_cfg_tbl.pm80xx_tbl.pcs_event_log_severity	= 0x01;
- 	pm8001_ha->main_cfg_tbl.pm80xx_tbl.fatal_err_interrupt		= 0x01;
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index 554b6f784223..126f6f23bffa 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -2236,6 +2236,25 @@ static void iscsi_stop_conn(struct iscsi_cls_conn *conn, int flag)
+ 	ISCSI_DBG_TRANS_CONN(conn, "Stopping conn done.\n");
+ }
  
-+	/* Enable higher IQs and OQs, 32 to 63, bit 16 */
-+	if (pm8001_ha->max_q_num > 32)
-+		pm8001_ha->main_cfg_tbl.pm80xx_tbl.fatal_err_interrupt |=
-+							1 << 16;
- 	/* Disable end to end CRC checking */
- 	pm8001_ha->main_cfg_tbl.pm80xx_tbl.crc_core_dump = (0x1 << 16);
- 
-@@ -1027,6 +1031,13 @@ static int mpi_init_check(struct pm8001_hba_info *pm8001_ha)
- 	if (0x0000 != gst_len_mpistate)
- 		return -EBUSY;
- 
-+	/*
-+	 *  As per controller datasheet, after successful MPI
-+	 *  initialization minimum 500ms delay is required before
-+	 *  issuing commands.
-+	 */
-+	msleep(500);
++static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
++{
++	struct iscsi_cls_session *session = iscsi_conn_to_session(conn);
++	struct iscsi_endpoint *ep;
 +
++	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep.\n");
++	conn->state = ISCSI_CONN_FAILED;
++
++	if (!conn->ep || !session->transport->ep_disconnect)
++		return;
++
++	ep = conn->ep;
++	conn->ep = NULL;
++
++	session->transport->unbind_conn(conn, is_active);
++	session->transport->ep_disconnect(ep);
++	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
++}
++
+ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 			      struct iscsi_uevent *ev)
+ {
+@@ -2276,25 +2295,6 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
  	return 0;
  }
  
+-static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
+-{
+-	struct iscsi_cls_session *session = iscsi_conn_to_session(conn);
+-	struct iscsi_endpoint *ep;
+-
+-	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep.\n");
+-	conn->state = ISCSI_CONN_FAILED;
+-
+-	if (!conn->ep || !session->transport->ep_disconnect)
+-		return;
+-
+-	ep = conn->ep;
+-	conn->ep = NULL;
+-
+-	session->transport->unbind_conn(conn, is_active);
+-	session->transport->ep_disconnect(ep);
+-	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
+-}
+-
+ static void iscsi_cleanup_conn_work_fn(struct work_struct *work)
+ {
+ 	struct iscsi_cls_conn *conn = container_of(work, struct iscsi_cls_conn,
 -- 
 2.35.1
 
