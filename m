@@ -2,94 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01435C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:11:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 190A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236412AbiDRMOW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:14:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41804 "EHLO
+        id S238053AbiDRMPa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238045AbiDRMOS (ORCPT
+        with ESMTP id S236080AbiDRMP1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:14:18 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696141A826
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:11:38 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id u15so26447817ejf.11
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:11:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=+Nbh/Prc/5H/cORCat6vWbX6y9/y12F3+R8EiMn4z8U=;
-        b=Dm4XMjPYCtdWA3+pMzuuvBgBW44TWQH3InrfQd1a0hq7Ob49UlvwiCHAN4ZWvJ2y2q
-         +yzvclbmmfLi8ARs9lokw+4HyAR4OfObvE+VJm1/QHMoG8/6c73qAkgTz3aC8v29MHz7
-         qVaiWh5oclYzdnwqFl/v0Kdtyjc33wAKTtZBwPgH+dP75Zei0myGjOASKfxImNlyCHXi
-         x6yFw94J3CaPW2OBnqLltUmOjDHvVj9PyIdhil2JglCu/pso0MDmodEaDLL0QCVnq2AB
-         NZMS5jHhb5h4lNtVobaLz4MrJm3uiX64/3mkg2BeGQG7KiQC50PvFPOt3j1FcgFhI71w
-         ur7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=+Nbh/Prc/5H/cORCat6vWbX6y9/y12F3+R8EiMn4z8U=;
-        b=kvoc1UNht4I4jqjE69vbJ4gy7h2EQO3kczAqy6W8WU4xyD4RmAwVP120+j6HCQIM4o
-         s3xrTTcTfYky3l3eQeCTsYaXZ/IQNqMcua9oY3PbA0tGI0Hd0sJRf/tZc26wHsDPBA/J
-         5BOHvRpw/2jzroxtlWv6uUIAnup474FAMZfjBIH2nsm7UVbzsO57kusqkNDu1wCC+IHs
-         zsXITBCNRADN9sQIngea+fcmr60I/X1e5SCjIZSGjOP14a3Fr+QYppYVpT9gVjE5rdBT
-         0i5Jm9NuVbnoE+zFfhq3Rz3KLVIT67fZgzwCjXZlpdizHwkstzbEhzoRNOC9+fhDR/dB
-         +VYA==
-X-Gm-Message-State: AOAM5336erubO/JkadUq1vsQqjNt5zl2LfBFMtHBlkIb/D7JUH594mkz
-        Py3/LiZtzVPV+yY2n/v67zYxaw==
-X-Google-Smtp-Source: ABdhPJxwyW9e6YDW1vaDtAloi25ghlPcrr65ZHDnvPjhycYnJSWeOGX1Kex17Bi6It3cYwT7mCnGZA==
-X-Received: by 2002:a17:907:60c9:b0:6e8:ae9e:d052 with SMTP id hv9-20020a17090760c900b006e8ae9ed052mr8666429ejc.628.1650283896988;
-        Mon, 18 Apr 2022 05:11:36 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id h9-20020aa7c949000000b0041b4d8ae50csm6861903edt.34.2022.04.18.05.11.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 05:11:36 -0700 (PDT)
-Message-ID: <fd9316a6-7df6-e1fa-50dc-ff50934afb5c@linaro.org>
-Date:   Mon, 18 Apr 2022 14:11:35 +0200
+        Mon, 18 Apr 2022 08:15:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD211A829;
+        Mon, 18 Apr 2022 05:12:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 790FF60F07;
+        Mon, 18 Apr 2022 12:12:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5363FC385A7;
+        Mon, 18 Apr 2022 12:12:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650283967;
+        bh=sTDHUW8H0Ju0SV7mP2T0ccSD+m9Wyqkx8gNkRMj7XuA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=E+HI4BvBiOBx8bp1xWUOYDFCgyTltZVUIUBGmnsrzDETzHjyJWg5Ji2+mOuaJ4gXo
+         80R/HdIt1py897GU53mJ+a3spXGgkcdA33nkaLX2cj8Ns2KSMv89sOaKPbAYW7WKD0
+         CPzz9Y97vVBYe88R6rd2XDlbttF33OrlOK06waRoH8XyJLbIwVtKeiCfquqvyP0qvK
+         VnSWyj+x3sx6hWQ9wvHgXaXEbPEFMi2uQEPj/nZMFUMIHZqBYwsDxdhFCEX2wAPmYy
+         Bg+CQr4SFsZa/g9EFsDeJ8ggtgKe52vh8ss6dyHC1ATdHi8MPhmc1jHfDvgf0KuKTb
+         4GIAkbtCDfifA==
+Date:   Mon, 18 Apr 2022 20:12:41 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+Cc:     linux-amarula@amarulasolutions.com,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Li Jun <jun.li@nxp.com>, Richard Zhu <hongxing.zhu@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] arm64: dts: imx8mm-evk: add pwm1/backlight support
+Message-ID: <20220418121241.GL391514@dragon>
+References: <20220413213313.11511-1-tommaso.merciai@amarulasolutions.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 5/5] dt-bindings: arm: Add initial bindings for Nuvoton
- Platform
-Content-Language: en-US
-To:     Jacky Huang <ychuang3@nuvoton.com>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, ychuang570808@gmail.com
-Cc:     robh+dt@kernel.org, sboyd@kernel.org, krzk+dt@kernel.org,
-        arnd@arndb.de, olof@lixom.net, will@kernel.org, soc@kernel.org,
-        cfli0@nuvoton.com
-References: <20220418082738.11301-1-ychuang3@nuvoton.com>
- <20220418082738.11301-6-ychuang3@nuvoton.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220418082738.11301-6-ychuang3@nuvoton.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220413213313.11511-1-tommaso.merciai@amarulasolutions.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/04/2022 10:27, Jacky Huang wrote:
-> +properties:
-> +  $nodename:
-> +    const: '/'
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - nuvoton,ma35d1
-> +          - nuvoton,ma35d1-evb
-> +          - nuvoton,ma35d1-iot
-> +          - nuvoton,ma35d1-som512
-> +          - nuvoton,ma35d1-som1g
+On Wed, Apr 13, 2022 at 11:33:11PM +0200, Tommaso Merciai wrote:
+> Add pwm1/backlight support nodes for imx8mm_evk board.
+> Align with u-boot dts
+> 
+> References:
+>  - https://patchwork.ozlabs.org/project/uboot/patch/20220326111911.13720-9-tommaso.merciai@amarulasolutions.com/
+> 
+> Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
 
-This does not match your DTS and does not look reasonable (SoC
-compatible should not be part of this enum). Check some other board
-bindings for examples.
-
-
-Best regards,
-Krzysztof
+Applied, thanks!
