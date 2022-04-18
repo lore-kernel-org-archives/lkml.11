@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB603C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:48:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C90C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:48:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239917AbiDRMva (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38008 "EHLO
+        id S239943AbiDRMve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240836AbiDRMjk (ORCPT
+        with ESMTP id S240835AbiDRMjk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:39:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3E8CCF;
-        Mon, 18 Apr 2022 05:31:10 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24BD21BE;
+        Mon, 18 Apr 2022 05:31:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95323B80EC1;
-        Mon, 18 Apr 2022 12:31:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B42BEC385A1;
-        Mon, 18 Apr 2022 12:31:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59F0060F0A;
+        Mon, 18 Apr 2022 12:31:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62CD1C385A1;
+        Mon, 18 Apr 2022 12:31:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285068;
-        bh=SZJF1zbsC4uu0BF6I10onqFwthdm5Qnyw+4Kau8Mzbc=;
+        s=korg; t=1650285076;
+        bh=iZBhekhUh7LMaNsWnbgQLwxjvvfc6NEOh4EKVHUUbho=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EU9YeyogDHm8iBHNbYAhmBbpvplA/Yqi5YWYlRKnQaXBfIzZlMR4vunCPZ0OUdSjm
-         QncAiAn7tzazyXUc7D5b4qN4bXZdQL0aNDLTEQcckj3HcO3bMtTJ0brslmukaFe7eW
-         hTy162NH3iUGiatVce7nJQ4l2GE0/ZwwSbNg8sWU=
+        b=qfxBxxpjy5vjezTmfGg5Kn6VUloSR2lsHukZlsxB48NxqH80DSigUUIMvDMTtyy/3
+         DHQ1vCcNPe2grpYN0D/iA66EWQZReOhcN1wJcSE8AL4gaDHn3cI+EIh+CB0PftGeWa
+         GYnRwvSyTa7fAuDg6JCeC9ZWbH3djLHXVBobJuZE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Martin Willi <martin@strongswan.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 096/189] perf tools: Fix misleading add event PMU debug message
-Date:   Mon, 18 Apr 2022 14:11:56 +0200
-Message-Id: <20220418121203.229108584@linuxfoundation.org>
+Subject: [PATCH 5.15 097/189] macvlan: Fix leaking skb in source mode with nodst option
+Date:   Mon, 18 Apr 2022 14:11:57 +0200
+Message-Id: <20220418121203.257306150@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,58 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Martin Willi <martin@strongswan.org>
 
-[ Upstream commit f034fc50d3c7d9385c20d505ab4cf56b8fd18ac7 ]
+[ Upstream commit e16b859872b87650bb55b12cca5a5fcdc49c1442 ]
 
-Fix incorrect debug message:
+The MACVLAN receive handler clones skbs to all matching source MACVLAN
+interfaces, before it passes the packet along to match on destination
+based MACVLANs.
 
-   Attempting to add event pmu 'intel_pt' with '' that may result in
-   non-fatal errors
+When using the MACVLAN nodst mode, passing the packet to destination based
+MACVLANs is omitted and the handler returns with RX_HANDLER_CONSUMED.
+However, the passed skb is not freed, leaking for any packet processed
+with the nodst option.
 
-which always appears with perf record -vv and intel_pt e.g.
+Properly free the skb when consuming packets to fix that leak.
 
-    perf record -vv -e intel_pt//u uname
-
-The message is incorrect because there will never be non-fatal errors.
-
-Suppress the message if the PMU is 'selectable' i.e. meant to be
-selected directly as an event.
-
-Fixes: 4ac22b484d4c79e8 ("perf parse-events: Make add PMU verbose output clearer")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Link: http://lore.kernel.org/lkml/20220411061758.2458417-1-adrian.hunter@intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 427f0c8c194b ("macvlan: Add nodst option to macvlan type source")
+Signed-off-by: Martin Willi <martin@strongswan.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/parse-events.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/macvlan.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index 51a2219df601..3bfe099d8643 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -1529,7 +1529,9 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
- 	bool use_uncore_alias;
- 	LIST_HEAD(config_terms);
- 
--	if (verbose > 1) {
-+	pmu = parse_state->fake_pmu ?: perf_pmu__find(name);
-+
-+	if (verbose > 1 && !(pmu && pmu->selectable)) {
- 		fprintf(stderr, "Attempting to add event pmu '%s' with '",
- 			name);
- 		if (head_config) {
-@@ -1542,7 +1544,6 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
- 		fprintf(stderr, "' that may result in non-fatal errors\n");
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 35f46ad040b0..a9a515cf5a46 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -460,8 +460,10 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
+ 			return RX_HANDLER_CONSUMED;
+ 		*pskb = skb;
+ 		eth = eth_hdr(skb);
+-		if (macvlan_forward_source(skb, port, eth->h_source))
++		if (macvlan_forward_source(skb, port, eth->h_source)) {
++			kfree_skb(skb);
+ 			return RX_HANDLER_CONSUMED;
++		}
+ 		src = macvlan_hash_lookup(port, eth->h_source);
+ 		if (src && src->mode != MACVLAN_MODE_VEPA &&
+ 		    src->mode != MACVLAN_MODE_BRIDGE) {
+@@ -480,8 +482,10 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
+ 		return RX_HANDLER_PASS;
  	}
  
--	pmu = parse_state->fake_pmu ?: perf_pmu__find(name);
- 	if (!pmu) {
- 		char *err_str;
- 
+-	if (macvlan_forward_source(skb, port, eth->h_source))
++	if (macvlan_forward_source(skb, port, eth->h_source)) {
++		kfree_skb(skb);
+ 		return RX_HANDLER_CONSUMED;
++	}
+ 	if (macvlan_passthru(port))
+ 		vlan = list_first_or_null_rcu(&port->vlans,
+ 					      struct macvlan_dev, list);
 -- 
 2.35.1
 
