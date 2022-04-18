@@ -2,100 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE030C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B2F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345291AbiDRPVt (ORCPT
+        id S1345311AbiDRPXD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:21:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60456 "EHLO
+        Mon, 18 Apr 2022 11:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234826AbiDRPVX (ORCPT
+        with ESMTP id S1345327AbiDRPWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:21:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6CE62CD31C
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 07:18:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650291530;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=rU+BOzU7OFMdCRKMQTeeqDo4Ukzfu12ch4PVunTJ6T0=;
-        b=SOWoSxqfdfmf3s7M+iOSP4ZH2chazVfbkm1GQ6+N8wW0PMN//vypNHciUKNYrTPS+aePz1
-        oDCvpffFiquk+yvY7W1PHP1QnIDKhGxNZeriOkeSLGFSSfS2oQ64GTfXz9pG7VkEyRVSlR
-        29r5UvgYf8AACDqHvQPzJkO+oyANZUk=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-240-5kK5dh2tOVGKrVWxpHE6sg-1; Mon, 18 Apr 2022 10:18:49 -0400
-X-MC-Unique: 5kK5dh2tOVGKrVWxpHE6sg-1
-Received: by mail-qv1-f70.google.com with SMTP id b8-20020a056214002800b0044666054d36so1157306qvr.12
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 07:18:49 -0700 (PDT)
+        Mon, 18 Apr 2022 11:22:24 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E80B26E;
+        Mon, 18 Apr 2022 07:19:45 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id 12so12426702pll.12;
+        Mon, 18 Apr 2022 07:19:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B8HB5UsMcYCH6dnCh61XsqKo6h5w3bfQReOb/+tBK5w=;
+        b=WU9ydoNL8Xn3bewDq3z90aKYqnymssyAL2SVHjHgL1bqcAi1HiUt3jlZq9AD2KlvHD
+         e+SONocd1RP+tpUBOTp4KUceRLJ9XmeV78B/lNq/ZXqCPOz7dbBWsTFuH6dTzyTp3HOU
+         hSC7kJFZ6/qdFkDHR086kuDvduIb1BFAH1Jl0C7pdbV2+LYYxUwL7xNzZk0QQc/gAnkf
+         RVNRkItIK9s4WQQLLlIq+9nXFKnkwx7W6QNQzhxkq8M7sO0OdyBJVt89+QxMSsldeZ3T
+         iyRcHw8WlYj8Z7RgIdhDzRyqwprEBCsjRfR7NfipDNTHjo2uwuf9Jjd6b+0JQ96ScNJi
+         e6dQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=rU+BOzU7OFMdCRKMQTeeqDo4Ukzfu12ch4PVunTJ6T0=;
-        b=AramC/L8vtM12KQWZD5tZd1hcxHVCShI0z7T6dj0M5W6bUqpzl+KKktwje9/DWAIAk
-         wx1wUBh42ppwV6W1P15dhmKLQ4diRw1XzG3yUdpreH6zS0cvwskJpSJ+Mvkqv2pghpdP
-         NJSqdnIYKaav3mkgo2pI6R6oL/RZAojNqMRnfvbm/fcBIawY3Xt5zN6AwUg0p4k8qCrg
-         4kocZwBcPE2xJBu4CINxlXXP3Nf6k+0ksmp6DPmNaOPPyrerCroRHPUIuY2+KblJNiD3
-         4S0bfy0oMcqAZVkqijhDkv0LHvvFdlt1KSawP5Pft185mywLqL9jMiIoU+btM/M8o7Bk
-         ioxA==
-X-Gm-Message-State: AOAM531lR8Wdi/v5mfeliBEoTnvEa9pmSQlfAOzuFIbZaxSVPZX5c+Oq
-        BZpSiSumD7GfYwA3YHh2PT+iBWiR3RuM3NOrY3tWdUs3UYOgdClOjGxWQP1GGsz+B00KLNQhv/M
-        X1Z87pcqBa66ambmt9X1m5KBE
-X-Received: by 2002:ac8:7f06:0:b0:2f1:f823:856a with SMTP id f6-20020ac87f06000000b002f1f823856amr5665524qtk.623.1650291528866;
-        Mon, 18 Apr 2022 07:18:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz/SQVkTBbtpx6NFVq6KE6yRW7/GHXsA0oi2d+LEGg7hhPI3vQ5/gmQ8L/2ysPbdvyDIKURNQ==
-X-Received: by 2002:ac8:7f06:0:b0:2f1:f823:856a with SMTP id f6-20020ac87f06000000b002f1f823856amr5665514qtk.623.1650291528603;
-        Mon, 18 Apr 2022 07:18:48 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id d2-20020ac85ac2000000b002e1cc2d363asm7785952qtd.24.2022.04.18.07.18.47
+        bh=B8HB5UsMcYCH6dnCh61XsqKo6h5w3bfQReOb/+tBK5w=;
+        b=i4HXF4Q8TWiSPDMomuVgwxjhTESyut9zqCuYtWauBewsTdhclA6oE7rcWjLEZIivIG
+         J47W3ryRLJjyC+acLJgSOlPlF67eL3Bgap3+2m5t1mZydNJDTESHNnEo+34vCojd7Yy9
+         wfnwPyuipi6maqFhlguzzWs8eDiDmndyLSGhU4XeHYYX3PgMW4U3DnXjrIlUZSHl2+Bs
+         GRm5eCbw9BZUNH+x1c9V7SKszbfV4yotC07TQh4ZMwDUsWEDdTAkmovlT5A6SHpKKI97
+         TEWAHNwwCWa1jzD6shTjv3UgIsdVsbGa0H1HcW1gSpngtVnFBpKTuoyXbqKGf8x6CeYT
+         x8BA==
+X-Gm-Message-State: AOAM532PyTRcjszKUOun8PT0l6RryigX3u1S5wISHluUnakASTpjoKPw
+        Av1hIb/9hXm/wdwt4rukGiw=
+X-Google-Smtp-Source: ABdhPJzJYJJR4ZkwuBoCA0V+2271521Eaa4SR0LIZ+DL60TXBnyLz/51QR0qqQOMnyB+7OvjqbtUIA==
+X-Received: by 2002:a17:90b:17c3:b0:1c6:b0ff:abf with SMTP id me3-20020a17090b17c300b001c6b0ff0abfmr13182032pjb.24.1650291585099;
+        Mon, 18 Apr 2022 07:19:45 -0700 (PDT)
+Received: from localhost ([210.21.229.138])
+        by smtp.gmail.com with ESMTPSA id a2-20020a17090ad80200b001d27824fc24sm5732955pjv.5.2022.04.18.07.19.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 07:18:48 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     bskeggs@redhat.com, kherbst@redhat.com, lyude@redhat.com,
-        airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] drm/nouveau: change base917c_format from global to static
-Date:   Mon, 18 Apr 2022 10:18:42 -0400
-Message-Id: <20220418141842.296386-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Mon, 18 Apr 2022 07:19:44 -0700 (PDT)
+From:   Yunbo Yu <yuyunbo519@gmail.com>
+To:     vkoul@kernel.org
+Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yunbo Yu <yuyunbo519@gmail.com>
+Subject: [PATCH] dmaengine: mv_xor_v2: move spin_lock_bh to spin_lock
+Date:   Mon, 18 Apr 2022 22:19:40 +0800
+Message-Id: <20220418141940.1241482-1-yuyunbo519@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Smatch reports this issue
-base917c.c:26:1: warning: symbol 'base917c_format'
-  was not declared. Should it be static?
+It is unnecessary to call spin_lock_bh() for that you are already in a
+taselet.
 
-base917c_format is only used in base917.c.  Single
-file variables should not be global so change
-base917c_format's storage-class specifier to static.
-
-Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: Yunbo Yu <yuyunbo519@gmail.com>
 ---
- drivers/gpu/drm/nouveau/dispnv50/base917c.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/dma/mv_xor_v2.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/nouveau/dispnv50/base917c.c b/drivers/gpu/drm/nouveau/dispnv50/base917c.c
-index a1baed4fe0e9..ca260509a4f1 100644
---- a/drivers/gpu/drm/nouveau/dispnv50/base917c.c
-+++ b/drivers/gpu/drm/nouveau/dispnv50/base917c.c
-@@ -22,7 +22,7 @@
- #include "base.h"
- #include "atom.h"
+diff --git a/drivers/dma/mv_xor_v2.c b/drivers/dma/mv_xor_v2.c
+index 9c8b4084ba2f..f10b29034da1 100644
+--- a/drivers/dma/mv_xor_v2.c
++++ b/drivers/dma/mv_xor_v2.c
+@@ -591,14 +591,14 @@ static void mv_xor_v2_tasklet(struct tasklet_struct *t)
+ 		dma_run_dependencies(&next_pending_sw_desc->async_tx);
  
--const u32
-+static const u32
- base917c_format[] = {
- 	DRM_FORMAT_C8,
- 	DRM_FORMAT_XRGB8888,
+ 		/* Lock the channel */
+-		spin_lock_bh(&xor_dev->lock);
++		spin_lock(&xor_dev->lock);
+ 
+ 		/* add the SW descriptor to the free descriptors list */
+ 		list_add(&next_pending_sw_desc->free_list,
+ 			 &xor_dev->free_sw_desc);
+ 
+ 		/* Release the channel */
+-		spin_unlock_bh(&xor_dev->lock);
++		spin_unlock(&xor_dev->lock);
+ 
+ 		/* increment the next descriptor */
+ 		pending_ptr++;
 -- 
-2.27.0
+2.25.1
 
