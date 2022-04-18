@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F58C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FEE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238370AbiDRMVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49140 "EHLO
+        id S238413AbiDRMVz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:21:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238133AbiDRMVK (ORCPT
+        with ESMTP id S238312AbiDRMVX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:21:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B881B798;
-        Mon, 18 Apr 2022 05:17:16 -0700 (PDT)
+        Mon, 18 Apr 2022 08:21:23 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C11D1B79F;
+        Mon, 18 Apr 2022 05:17:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E13D860F0C;
-        Mon, 18 Apr 2022 12:17:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9D80C385A1;
-        Mon, 18 Apr 2022 12:17:14 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BC62ACE106E;
+        Mon, 18 Apr 2022 12:17:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7964C385B6;
+        Mon, 18 Apr 2022 12:17:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284235;
-        bh=5JbYmoZdz9OPv01seDCLPt6a9WZgN2UOJzLnWfa3bRo=;
+        s=korg; t=1650284241;
+        bh=cdNDqpkNaU9r1wGlZfcKaJ16jhD9Zx0xu+eQ50C2+H4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0zgsmz60WqL6tg7nH47U08R3ghAafQparK030Os59HTgr0i4TLLvzQkFHsYqMXomc
-         J6YlPIaCGMZ1HQDd53zkP77fFH8y5JrpJ4sKGli6OYhFCOlV8nS7Jme0FQ+yaWTbsB
-         xKNrJZ6H/14Bx4Lw7hB6JBaroAEDG3Aq0Hmh7zkU=
+        b=CfERLRylGNUAGVhjvALkps3C67GOqUj42GgnnpbPdpzkce20ZewpeYZIx3WCgJAix
+         bOMGNzltCBcrune5Xf0UOG4w9IBpy/TXvur2w1FBLq5JG2ssU4/VguF8coNh84YHxF
+         Xx48o7lXuPBMHMMxTmDcsaP+aYMeTA8i3tQUMprg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.17 007/219] net: dsa: realtek: make interface drivers depend on OF
-Date:   Mon, 18 Apr 2022 14:09:36 +0200
-Message-Id: <20220418121203.680735597@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 050/219] ALSA: rme9652: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:10:19 +0200
+Message-Id: <20220418121206.415549437@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -51,41 +47,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 109d899452ba17996eccec7ae8249fb1f8900a16 upstream.
+commit b2aa4f80693b7841e5ac4eadbd2d8cec56b10a51 upstream.
 
-The kernel test robot reported build warnings with a randconfig that
-built realtek-{smi,mdio} without CONFIG_OF set. Since both interface
-drivers are using OF and will not probe without, add the corresponding
-dependency to Kconfig.
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-Link: https://lore.kernel.org/all/202203231233.Xx73Y40o-lkp@intel.com/
-Link: https://lore.kernel.org/all/202203231439.ycl0jg50-lkp@intel.com/
-Fixes: aac94001067d ("net: dsa: realtek: add new mdio interface for drivers")
-Fixes: 765c39a4fafe ("net: dsa: realtek: convert subdrivers into modules")
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Acked-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Link: https://lore.kernel.org/r/20220323124225.91763-1-alvin@pqrs.dk
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-[alsi: backport to 5.16: remove mdio part]
-Cc: stable@vger.kernel.org # v5.16+
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+This patch fixes it by calling snd_card_free() manually on the error
+from the probe callback.
+
+Fixes: b1002b2d41c5 ("ALSA: rme9652: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-38-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/realtek/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ sound/pci/rme9652/rme9652.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/net/dsa/realtek/Kconfig
-+++ b/drivers/net/dsa/realtek/Kconfig
-@@ -14,6 +14,7 @@ menuconfig NET_DSA_REALTEK
- config NET_DSA_REALTEK_SMI
- 	tristate "Realtek SMI connected switch driver"
- 	depends on NET_DSA_REALTEK
-+	depends on OF
- 	default y
- 	help
- 	  Select to enable support for registering switches connected
+--- a/sound/pci/rme9652/rme9652.c
++++ b/sound/pci/rme9652/rme9652.c
+@@ -2572,7 +2572,7 @@ static int snd_rme9652_probe(struct pci_
+ 	rme9652->pci = pci;
+ 	err = snd_rme9652_create(card, rme9652, precise_ptr[dev]);
+ 	if (err)
+-		return err;
++		goto error;
+ 
+ 	strcpy(card->shortname, rme9652->card_name);
+ 
+@@ -2580,10 +2580,14 @@ static int snd_rme9652_probe(struct pci_
+ 		card->shortname, rme9652->port, rme9652->irq);
+ 	err = snd_card_register(card);
+ 	if (err)
+-		return err;
++		goto error;
+ 	pci_set_drvdata(pci, card);
+ 	dev++;
+ 	return 0;
++
++ error:
++	snd_card_free(card);
++	return err;
+ }
+ 
+ static struct pci_driver rme9652_driver = {
 
 
