@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99EF4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:34:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3841C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242579AbiDRNhT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53784 "EHLO
+        id S242907AbiDRNhX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:37:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243911AbiDRNKf (ORCPT
+        with ESMTP id S243847AbiDRNKa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:10:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B39C38BCB;
-        Mon, 18 Apr 2022 05:49:58 -0700 (PDT)
+        Mon, 18 Apr 2022 09:10:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 060B838DB7;
+        Mon, 18 Apr 2022 05:50:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CC0161267;
-        Mon, 18 Apr 2022 12:49:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0F89C385A7;
-        Mon, 18 Apr 2022 12:49:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A744861254;
+        Mon, 18 Apr 2022 12:50:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0B78C385A1;
+        Mon, 18 Apr 2022 12:50:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286185;
-        bh=3SRV4St52/FhRN6i2PSM1NQl46JAcRfsEjy14dO9vks=;
+        s=korg; t=1650286205;
+        bh=bEM7qOBc7IJVNEaG71DewBv/7O4ZTdXmvVxauwwLXro=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fPUW7bKQJRyUNrU08vcvHC/TRojFwexokC7QpuOPJQcMBbvmBWBN2ydyezFjsG6nJ
-         7DO1q5bldiJlUfCz45iIEutLzmT2MVoHUrffHCmp8yC+JeLr5hRkgvC7mk4kP1A6Ow
-         wLg7K+a4KtKmdhThpUgCYficVu7XzXOxt/H18nEo=
+        b=ksy/vLLf4SRrWjiYc9ooVgyyi7xvC7eDHKMVsPlVmMM4hEqFoGXlrEaN3r9d2JRf+
+         TSiOhezjZRJK3vjPrYVdKNmLipGAqP+mTH0Y/aAc9NBjFPu2H41JvHinExMZS7neaD
+         c5FrwqE0FlTISOFjdKhEWMmX3v/93oJWFJuYg468=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "kernelci.org bot" <bot@kernelci.org>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 056/284] selftests/x86: Add validity check and allow field splitting
-Date:   Mon, 18 Apr 2022 14:10:37 +0200
-Message-Id: <20220418121212.287228499@linuxfoundation.org>
+Subject: [PATCH 4.14 061/284] PM: suspend: fix return value of __setup handler
+Date:   Mon, 18 Apr 2022 14:10:42 +0200
+Message-Id: <20220418121212.426726556@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,38 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muhammad Usama Anjum <usama.anjum@collabora.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit b06e15ebd5bfb670f93c7f11a29b8299c1178bc6 ]
+[ Upstream commit 7a64ca17e4dd50d5f910769167f3553902777844 ]
 
-Add check to test if CC has a string. CC can have multiple sub-strings
-like "ccache gcc". Erorr pops up if it is treated as single string and
-double quotes are used around it. This can be fixed by removing the
-quotes and not treating CC as a single string.
+If an invalid option is given for "test_suspend=<option>", the entire
+string is added to init's environment, so return 1 instead of 0 from
+the __setup handler.
 
-Fixes: e9886ace222e ("selftests, x86: Rework x86 target architecture detection")
-Reported-by: "kernelci.org bot" <bot@kernelci.org>
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Link: https://lkml.kernel.org/r/20220214184109.3739179-2-usama.anjum@collabora.com
+  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc5
+    test_suspend=invalid"
+
+and
+
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     test_suspend=invalid
+
+Fixes: 2ce986892faf ("PM / sleep: Enhance test_suspend option with repeat capability")
+Fixes: 27ddcc6596e5 ("PM / sleep: Add state field to pm_states[] entries")
+Fixes: a9d7052363a6 ("PM: Separate suspend to RAM functionality from core")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/x86/check_cc.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/power/suspend_test.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/x86/check_cc.sh b/tools/testing/selftests/x86/check_cc.sh
-index 172d3293fb7b..356689c56397 100755
---- a/tools/testing/selftests/x86/check_cc.sh
-+++ b/tools/testing/selftests/x86/check_cc.sh
-@@ -7,7 +7,7 @@ CC="$1"
- TESTPROG="$2"
- shift 2
+diff --git a/kernel/power/suspend_test.c b/kernel/power/suspend_test.c
+index 6a897e8b2a88..3f6345d60256 100644
+--- a/kernel/power/suspend_test.c
++++ b/kernel/power/suspend_test.c
+@@ -158,22 +158,22 @@ static int __init setup_test_suspend(char *value)
+ 	value++;
+ 	suspend_type = strsep(&value, ",");
+ 	if (!suspend_type)
+-		return 0;
++		return 1;
  
--if "$CC" -o /dev/null "$TESTPROG" -O0 "$@" 2>/dev/null; then
-+if [ -n "$CC" ] && $CC -o /dev/null "$TESTPROG" -O0 "$@" 2>/dev/null; then
-     echo 1
- else
-     echo 0
+ 	repeat = strsep(&value, ",");
+ 	if (repeat) {
+ 		if (kstrtou32(repeat, 0, &test_repeat_count_max))
+-			return 0;
++			return 1;
+ 	}
+ 
+ 	for (i = PM_SUSPEND_MIN; i < PM_SUSPEND_MAX; i++)
+ 		if (!strcmp(pm_labels[i], suspend_type)) {
+ 			test_state_label = pm_labels[i];
+-			return 0;
++			return 1;
+ 		}
+ 
+ 	printk(warn_bad_state, suspend_type);
+-	return 0;
++	return 1;
+ }
+ __setup("test_suspend", setup_test_suspend);
+ 
 -- 
 2.34.1
 
