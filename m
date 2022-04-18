@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1F2C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B431C3527C
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243439AbiDRNKJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:10:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
+        id S243518AbiDRNKM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:10:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241397AbiDRM6l (ORCPT
+        with ESMTP id S241632AbiDRM64 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:58:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7D827FF8;
-        Mon, 18 Apr 2022 05:39:03 -0700 (PDT)
+        Mon, 18 Apr 2022 08:58:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA2E2DD4E;
+        Mon, 18 Apr 2022 05:39:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98CC260FB6;
-        Mon, 18 Apr 2022 12:39:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AD44C385A1;
-        Mon, 18 Apr 2022 12:39:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3A96B80EDC;
+        Mon, 18 Apr 2022 12:39:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E97FC385A1;
+        Mon, 18 Apr 2022 12:39:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285542;
-        bh=RuI6u+OIMxRckoYB0ZZOJmgmVKvMnxAua/PYBTcCYEo=;
+        s=korg; t=1650285561;
+        bh=PdqZVzizgk6/NDj9Gpg1f+LUl/smdkF9TxT+ushn/pk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oVK8vrB2S9T3vlhTWc3sPcmBwGdE5B0OFzY72btiKcXkoRSJq/hLaAMf453vUF/jy
-         YEbJDa9FB+zXcyfaI2eMK6+W9K2qfArAhfPt6dWGQ3VIOw3MQM41AoiEfkt0osEZoY
-         w+9cUx7WL7TTLo18RGzRw+tWtkRTTLEEkxHpBpFU=
+        b=dwhbjXLFJVyb1K7YNtPNhGG5o70mwbLJIjhzQC3gguifqyxC/4g8l1nBXkG0ESRZd
+         59GScqI0oQIjhDkQLHz+dPVGS/kRUayBOn388C0e3EO7Dyu0UctmFLGmEOHLccOdxf
+         4FsuebWimq03QqdpZ2AMAQlLA5Sv23AZCmlngU1Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        stable@vger.kernel.org, Jonathan Bakker <xc-racer2@live.ca>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 011/105] SUNRPC: Fix the svc_deferred_event trace class
-Date:   Mon, 18 Apr 2022 14:12:13 +0200
-Message-Id: <20220418121145.985862344@linuxfoundation.org>
+Subject: [PATCH 5.10 058/105] regulator: wm8994: Add an off-on delay for WM8994 variant
+Date:   Mon, 18 Apr 2022 14:13:00 +0200
+Message-Id: <20220418121148.134499476@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -48,69 +50,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Jonathan Bakker <xc-racer2@live.ca>
 
-[ Upstream commit 4d5004451ab2218eab94a30e1841462c9316ba19 ]
+[ Upstream commit 92d96b603738ec4f35cde7198c303ae264dd47cb ]
 
-Fix a NULL deref crash that occurs when an svc_rqst is deferred
-while the sunrpc tracing subsystem is enabled. svc_revisit() sets
-dr->xprt to NULL, so it can't be relied upon in the tracepoint to
-provide the remote's address.
+As per Table 130 of the wm8994 datasheet at [1], there is an off-on
+delay for LDO1 and LDO2.  In the wm8958 datasheet [2], I could not
+find any reference to it.  I could not find a wm1811 datasheet to
+double-check there, but as no one has complained presumably it works
+without it.
 
-Unfortunately we can't revert the "svc_deferred_class" hunk in
-commit ece200ddd54b ("sunrpc: Save remote presentation address in
-svc_xprt for trace events") because there is now a specific check
-of event format specifiers for unsafe dereferences. The warning
-that check emits is:
+This solves the issue on Samsung Aries boards with a wm8994 where
+register writes fail when the device is powered off and back-on
+quickly.
 
-  event svc_defer_recv has unsafe dereference of argument 1
+[1] https://statics.cirrus.com/pubs/proDatasheet/WM8994_Rev4.6.pdf
+[2] https://statics.cirrus.com/pubs/proDatasheet/WM8958_v3.5.pdf
 
-A "%pISpc" format specifier with a "struct sockaddr *" is indeed
-flagged by this check.
-
-Instead, take the brute-force approach used by the svcrdma_qp_error
-tracepoint. Convert the dr::addr field into a presentation address
-in the TP_fast_assign() arm of the trace event, and store that as
-a string. This fix can be backported to -stable kernels.
-
-In the meantime, commit c6ced22997ad ("tracing: Update print fmt
-check to handle new __get_sockaddr() macro") is now in v5.18, so
-this wonky fix can be replaced with __sockaddr() and friends
-properly during the v5.19 merge window.
-
-Fixes: ece200ddd54b ("sunrpc: Save remote presentation address in svc_xprt for trace events")
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/CY4PR04MB056771CFB80DC447C30D5A31CB1D9@CY4PR04MB0567.namprd04.prod.outlook.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/sunrpc.h | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/regulator/wm8994-regulator.c | 42 ++++++++++++++++++++++++++--
+ 1 file changed, 39 insertions(+), 3 deletions(-)
 
-diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
-index 23db248a7fdb..ed1bbac004d5 100644
---- a/include/trace/events/sunrpc.h
-+++ b/include/trace/events/sunrpc.h
-@@ -1874,17 +1874,18 @@ DECLARE_EVENT_CLASS(svc_deferred_event,
- 	TP_STRUCT__entry(
- 		__field(const void *, dr)
- 		__field(u32, xid)
--		__string(addr, dr->xprt->xpt_remotebuf)
-+		__array(__u8, addr, INET6_ADDRSTRLEN + 10)
- 	),
+diff --git a/drivers/regulator/wm8994-regulator.c b/drivers/regulator/wm8994-regulator.c
+index cadea0344486..40befdd9dfa9 100644
+--- a/drivers/regulator/wm8994-regulator.c
++++ b/drivers/regulator/wm8994-regulator.c
+@@ -71,6 +71,35 @@ static const struct regulator_ops wm8994_ldo2_ops = {
+ };
  
- 	TP_fast_assign(
- 		__entry->dr = dr;
- 		__entry->xid = be32_to_cpu(*(__be32 *)(dr->args +
- 						       (dr->xprt_hlen>>2)));
--		__assign_str(addr, dr->xprt->xpt_remotebuf);
-+		snprintf(__entry->addr, sizeof(__entry->addr) - 1,
-+			 "%pISpc", (struct sockaddr *)&dr->addr);
- 	),
- 
--	TP_printk("addr=%s dr=%p xid=0x%08x", __get_str(addr), __entry->dr,
-+	TP_printk("addr=%s dr=%p xid=0x%08x", __entry->addr, __entry->dr,
- 		__entry->xid)
- );
- 
+ static const struct regulator_desc wm8994_ldo_desc[] = {
++	{
++		.name = "LDO1",
++		.id = 1,
++		.type = REGULATOR_VOLTAGE,
++		.n_voltages = WM8994_LDO1_MAX_SELECTOR + 1,
++		.vsel_reg = WM8994_LDO_1,
++		.vsel_mask = WM8994_LDO1_VSEL_MASK,
++		.ops = &wm8994_ldo1_ops,
++		.min_uV = 2400000,
++		.uV_step = 100000,
++		.enable_time = 3000,
++		.off_on_delay = 36000,
++		.owner = THIS_MODULE,
++	},
++	{
++		.name = "LDO2",
++		.id = 2,
++		.type = REGULATOR_VOLTAGE,
++		.n_voltages = WM8994_LDO2_MAX_SELECTOR + 1,
++		.vsel_reg = WM8994_LDO_2,
++		.vsel_mask = WM8994_LDO2_VSEL_MASK,
++		.ops = &wm8994_ldo2_ops,
++		.enable_time = 3000,
++		.off_on_delay = 36000,
++		.owner = THIS_MODULE,
++	},
++};
++
++static const struct regulator_desc wm8958_ldo_desc[] = {
+ 	{
+ 		.name = "LDO1",
+ 		.id = 1,
+@@ -172,9 +201,16 @@ static int wm8994_ldo_probe(struct platform_device *pdev)
+ 	 * regulator core and we need not worry about it on the
+ 	 * error path.
+ 	 */
+-	ldo->regulator = devm_regulator_register(&pdev->dev,
+-						 &wm8994_ldo_desc[id],
+-						 &config);
++	if (ldo->wm8994->type == WM8994) {
++		ldo->regulator = devm_regulator_register(&pdev->dev,
++							 &wm8994_ldo_desc[id],
++							 &config);
++	} else {
++		ldo->regulator = devm_regulator_register(&pdev->dev,
++							 &wm8958_ldo_desc[id],
++							 &config);
++	}
++
+ 	if (IS_ERR(ldo->regulator)) {
+ 		ret = PTR_ERR(ldo->regulator);
+ 		dev_err(wm8994->dev, "Failed to register LDO%d: %d\n",
 -- 
 2.35.1
 
