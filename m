@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 539F5C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B43C3525B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242219AbiDRNS0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:18:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
+        id S242357AbiDRNSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242360AbiDRM7u (ORCPT
+        with ESMTP id S242513AbiDRNAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2017C201BB;
-        Mon, 18 Apr 2022 05:40:56 -0700 (PDT)
+        Mon, 18 Apr 2022 09:00:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE393134B;
+        Mon, 18 Apr 2022 05:41:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53002B80EC3;
-        Mon, 18 Apr 2022 12:40:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F3D2C385A1;
-        Mon, 18 Apr 2022 12:40:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D5DB61218;
+        Mon, 18 Apr 2022 12:41:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E9A8C385A1;
+        Mon, 18 Apr 2022 12:41:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285654;
-        bh=U6HJbILbFH/jDdPNi6UJqdpoL9mzb5+SE4t1nR22814=;
+        s=korg; t=1650285688;
+        bh=LQPRrzsPuk3UiGHZPzBJ3WvbKAYxjT0D/NxWnxfFlxM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pcwffEIBtbbgB2GSQG4b2TB3JhirTPHq7SviNptScrMSLTpr2cfAQa0ldGy8f8Nwv
-         W5+dhTifypsdVJfLkZrZ2Lx760jaaltPdC6IEapiT98vcmfTq0GQ/Q03PKupxXenXB
-         ec9ReTEksP1HjyHXRYIR8j9NjSFbtQNkov/m8eiE=
+        b=XAIqGrCMoOsZ+8Ka+BQyhBE7fqVRr1L/sEn3ANbAp9zjDtlIKBsvQPbJpIuHyK2zS
+         TbtNXxT3GZVNfi97kq+AyzSdAMyuYTkxPMSENWH4W+8voaep7vZ8VElC57yiPNyi4D
+         LFEk+fNOKdsLtjh8nIWv+QJqg6fnTj59tPvhCDCU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kongweibin <kongweibin2@huawei.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 085/105] ipv6: fix panic when forwarding a pkt with no in6 dev
-Date:   Mon, 18 Apr 2022 14:13:27 +0200
-Message-Id: <20220418121149.047517945@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.10 091/105] dm integrity: fix memory corruption when tag_size is less than digest size
+Date:   Mon, 18 Apr 2022 14:13:33 +0200
+Message-Id: <20220418121149.218998572@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -50,38 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit e3fa461d8b0e185b7da8a101fe94dfe6dd500ac0 upstream.
+commit 08c1af8f1c13bbf210f1760132f4df24d0ed46d6 upstream.
 
-kongweibin reported a kernel panic in ip6_forward() when input interface
-has no in6 dev associated.
+It is possible to set up dm-integrity in such a way that the
+"tag_size" parameter is less than the actual digest size. In this
+situation, a part of the digest beyond tag_size is ignored.
 
-The following tc commands were used to reproduce this panic:
-tc qdisc del dev vxlan100 root
-tc qdisc add dev vxlan100 root netem corrupt 5%
+In this case, dm-integrity would write beyond the end of the
+ic->recalc_tags array and corrupt memory. The corruption happened in
+integrity_recalc->integrity_sector_checksum->crypto_shash_final.
 
-CC: stable@vger.kernel.org
-Fixes: ccd27f05ae7b ("ipv6: fix 'disable_policy' for fwd packets")
-Reported-by: kongweibin <kongweibin2@huawei.com>
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix this corruption by increasing the tags array so that it has enough
+padding at the end to accomodate the loop in integrity_recalc() being
+able to write a full digest size for the last member of the tags
+array.
+
+Cc: stable@vger.kernel.org # v4.19+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/ip6_output.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/dm-integrity.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -508,7 +508,7 @@ int ip6_forward(struct sk_buff *skb)
- 		goto drop;
+--- a/drivers/md/dm-integrity.c
++++ b/drivers/md/dm-integrity.c
+@@ -4232,6 +4232,7 @@ try_smaller_buffer:
+ 	}
  
- 	if (!net->ipv6.devconf_all->disable_policy &&
--	    !idev->cnf.disable_policy &&
-+	    (!idev || !idev->cnf.disable_policy) &&
- 	    !xfrm6_policy_check(NULL, XFRM_POLICY_FWD, skb)) {
- 		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
- 		goto drop;
+ 	if (ic->internal_hash) {
++		size_t recalc_tags_size;
+ 		ic->recalc_wq = alloc_workqueue("dm-integrity-recalc", WQ_MEM_RECLAIM, 1);
+ 		if (!ic->recalc_wq ) {
+ 			ti->error = "Cannot allocate workqueue";
+@@ -4245,8 +4246,10 @@ try_smaller_buffer:
+ 			r = -ENOMEM;
+ 			goto bad;
+ 		}
+-		ic->recalc_tags = kvmalloc_array(RECALC_SECTORS >> ic->sb->log2_sectors_per_block,
+-						 ic->tag_size, GFP_KERNEL);
++		recalc_tags_size = (RECALC_SECTORS >> ic->sb->log2_sectors_per_block) * ic->tag_size;
++		if (crypto_shash_digestsize(ic->internal_hash) > ic->tag_size)
++			recalc_tags_size += crypto_shash_digestsize(ic->internal_hash) - ic->tag_size;
++		ic->recalc_tags = kvmalloc(recalc_tags_size, GFP_KERNEL);
+ 		if (!ic->recalc_tags) {
+ 			ti->error = "Cannot allocate tags for recalculating";
+ 			r = -ENOMEM;
 
 
