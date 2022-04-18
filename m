@@ -2,34 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFBC0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7002C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:14:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239800AbiDRPRL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54398 "EHLO
+        id S1345156AbiDRPRT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242390AbiDRPPm (ORCPT
+        with ESMTP id S240101AbiDRPPl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:15:42 -0400
+        Mon, 18 Apr 2022 11:15:41 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C212BB9186
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 07:12:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD8D0B89BB
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 07:12:29 -0700 (PDT)
 Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KhpjM4t6MzFplq;
-        Mon, 18 Apr 2022 22:09:59 +0800 (CST)
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KhpjL273FzFppB;
+        Mon, 18 Apr 2022 22:09:58 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 18 Apr
- 2022 22:12:28 +0800
+ 2022 22:12:27 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <vbabka@suse.cz>, <pintu@codeaurora.org>,
         <charante@codeaurora.org>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH 04/12] mm: compaction: clean up comment for sched contention
-Date:   Mon, 18 Apr 2022 22:12:45 +0800
-Message-ID: <20220418141253.24298-5-linmiaohe@huawei.com>
+Subject: [PATCH 01/12] mm: compaction: remove unneeded return value of kcompactd_run
+Date:   Mon, 18 Apr 2022 22:12:42 +0800
+Message-ID: <20220418141253.24298-2-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220418141253.24298-1-linmiaohe@huawei.com>
 References: <20220418141253.24298-1-linmiaohe@huawei.com>
@@ -44,61 +45,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit cf66f0700c8f ("mm, compaction: do not consider a need to
-reschedule as contention"), async compaction won't abort when scheduling
-is needed. Correct the relevant comment accordingly.
+The return value of kcompactd_run() is unused now.  Clean it up.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- mm/compaction.c | 11 ++++-------
- mm/internal.h   |  2 +-
- 2 files changed, 5 insertions(+), 8 deletions(-)
+ include/linux/compaction.h | 5 ++---
+ mm/compaction.c            | 7 ++-----
+ 2 files changed, 4 insertions(+), 8 deletions(-)
 
+diff --git a/include/linux/compaction.h b/include/linux/compaction.h
+index 34bce35c808d..52a9ff65faee 100644
+--- a/include/linux/compaction.h
++++ b/include/linux/compaction.h
+@@ -177,7 +177,7 @@ static inline bool compaction_withdrawn(enum compact_result result)
+ bool compaction_zonelist_suitable(struct alloc_context *ac, int order,
+ 					int alloc_flags);
+ 
+-extern int kcompactd_run(int nid);
++extern void kcompactd_run(int nid);
+ extern void kcompactd_stop(int nid);
+ extern void wakeup_kcompactd(pg_data_t *pgdat, int order, int highest_zoneidx);
+ 
+@@ -212,9 +212,8 @@ static inline bool compaction_withdrawn(enum compact_result result)
+ 	return true;
+ }
+ 
+-static inline int kcompactd_run(int nid)
++static inline void kcompactd_run(int nid)
+ {
+-	return 0;
+ }
+ static inline void kcompactd_stop(int nid)
+ {
 diff --git a/mm/compaction.c b/mm/compaction.c
-index ee2ddf77191f..e839b26fb3d8 100644
+index baf654b5e073..2e838992b324 100644
 --- a/mm/compaction.c
 +++ b/mm/compaction.c
-@@ -513,15 +513,12 @@ static bool compact_lock_irqsave(spinlock_t *lock, unsigned long *flags,
-  * very heavily contended. The lock should be periodically unlocked to avoid
-  * having disabled IRQs for a long time, even when there is nobody waiting on
-  * the lock. It might also be that allowing the IRQs will result in
-- * need_resched() becoming true. If scheduling is needed, async compaction
-- * aborts. Sync compaction schedules.
-+ * need_resched() becoming true. If scheduling is needed, compaction schedules.
-  * Either compaction type will also abort if a fatal signal is pending.
-  * In either case if the lock was locked, it is dropped and not regained.
-  *
-- * Returns true if compaction should abort due to fatal signal pending, or
-- *		async compaction due to need_resched()
-- * Returns false when compaction can continue (sync compaction might have
-- *		scheduled)
-+ * Returns true if compaction should abort due to fatal signal pending.
-+ * Returns false when compaction can continue.
+@@ -3016,21 +3016,18 @@ static int kcompactd(void *p)
+  * This kcompactd start function will be called by init and node-hot-add.
+  * On node-hot-add, kcompactd will moved to proper cpus if cpus are hot-added.
   */
- static bool compact_unlock_should_abort(spinlock_t *lock,
- 		unsigned long flags, bool *locked, struct compact_control *cc)
-@@ -574,7 +571,7 @@ static unsigned long isolate_freepages_block(struct compact_control *cc,
- 		/*
- 		 * Periodically drop the lock (if held) regardless of its
- 		 * contention, to give chance to IRQs. Abort if fatal signal
--		 * pending or async compaction detects need_resched()
-+		 * pending.
- 		 */
- 		if (!(blockpfn % SWAP_CLUSTER_MAX)
- 		    && compact_unlock_should_abort(&cc->zone->lock, flags,
-diff --git a/mm/internal.h b/mm/internal.h
-index 48eb2d24fcd2..70cc61af06de 100644
---- a/mm/internal.h
-+++ b/mm/internal.h
-@@ -403,7 +403,7 @@ struct compact_control {
- 	bool direct_compaction;		/* False from kcompactd or /proc/... */
- 	bool proactive_compaction;	/* kcompactd proactive compaction */
- 	bool whole_zone;		/* Whole zone should/has been scanned */
--	bool contended;			/* Signal lock or sched contention */
-+	bool contended;			/* Signal lock contention */
- 	bool rescan;			/* Rescanning the same pageblock */
- 	bool alloc_contig;		/* alloc_contig_range allocation */
- };
+-int kcompactd_run(int nid)
++void kcompactd_run(int nid)
+ {
+ 	pg_data_t *pgdat = NODE_DATA(nid);
+-	int ret = 0;
+ 
+ 	if (pgdat->kcompactd)
+-		return 0;
++		return;
+ 
+ 	pgdat->kcompactd = kthread_run(kcompactd, pgdat, "kcompactd%d", nid);
+ 	if (IS_ERR(pgdat->kcompactd)) {
+ 		pr_err("Failed to start kcompactd on node %d\n", nid);
+-		ret = PTR_ERR(pgdat->kcompactd);
+ 		pgdat->kcompactd = NULL;
+ 	}
+-	return ret;
+ }
+ 
+ /*
 -- 
 2.23.0
 
