@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72604C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53CB4C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245449AbiDRNxd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:53:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
+        id S245319AbiDRNxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244800AbiDRNaz (ORCPT
+        with ESMTP id S244769AbiDRNay (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BC01FCF1;
-        Mon, 18 Apr 2022 05:55:31 -0700 (PDT)
+        Mon, 18 Apr 2022 09:30:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 780B52AC51;
+        Mon, 18 Apr 2022 05:55:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1733AB80E4B;
-        Mon, 18 Apr 2022 12:55:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53593C385A7;
-        Mon, 18 Apr 2022 12:55:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EEA106115A;
+        Mon, 18 Apr 2022 12:55:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 910DAC385A7;
+        Mon, 18 Apr 2022 12:55:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286528;
-        bh=87Dy8mAAeekj4Khq5ieyQ/YtECtV+i9VCgc9SA9o5EY=;
+        s=korg; t=1650286515;
+        bh=/NKQc/i2EtPguCbWqU+pLA0gE+pcVnSy/5UslyQ6ho8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q6DwhAbVbY9fKM7n6yLSnICHUZQCpXVRfMyBn47gph0IxYgcaPR7O81U84Vz0WQ9l
-         cP6EktSsE0REaPmqauKZ8j/c7ui5g6HPlbpIqXhNprjWF3lXeENrry2QZrh3t8P3DN
-         xO4Hh2gcf5lpAkPLiCxTXtwYTO1BkOW45DMrMX3Q=
+        b=1PXXHRVTy1Dxqs4N6s6J5Rq/oCV18wupGW86ZxVfzCVvK+SdZSU/gAYsWzx8ezXT/
+         Uh8yXIFtJ/gH+ZwbdAGRXYMjw+mwr3IqefIQMPOHA9iuG/CJBYiSMuymrbHl7xeXeC
+         4j0We+WArdDU9tfPyfo9BZce4gBULaanV0r3abTk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 162/284] spi: tegra20: Use of_device_get_match_data()
-Date:   Mon, 18 Apr 2022 14:12:23 +0200
-Message-Id: <20220418121216.351018227@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 158/284] irqchip/nvic: Release nvic_base upon failure
+Date:   Mon, 18 Apr 2022 14:12:19 +0200
+Message-Id: <20220418121216.234073929@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,41 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+From: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
 
-[ Upstream commit c9839acfcbe20ce43d363c2a9d0772472d9921c0 ]
+[ Upstream commit e414c25e3399b2b3d7337dc47abccab5c71b7c8f ]
 
-Use of_device_get_match_data() to simplify the code.
+smatch warning was reported as below ->
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Link: https://lore.kernel.org/r/20220315023138.2118293-1-chi.minghao@zte.com.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+smatch warnings:
+drivers/irqchip/irq-nvic.c:131 nvic_of_init()
+warn: 'nvic_base' not released on lines: 97.
+
+Release nvic_base upon failure.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220218163303.33344-1-jrdr.linux@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-tegra20-slink.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ drivers/irqchip/irq-nvic.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/spi/spi-tegra20-slink.c b/drivers/spi/spi-tegra20-slink.c
-index 1548f7b738c1..b520525df246 100644
---- a/drivers/spi/spi-tegra20-slink.c
-+++ b/drivers/spi/spi-tegra20-slink.c
-@@ -1016,14 +1016,8 @@ static int tegra_slink_probe(struct platform_device *pdev)
- 	struct resource		*r;
- 	int ret, spi_irq;
- 	const struct tegra_slink_chip_data *cdata = NULL;
--	const struct of_device_id *match;
+diff --git a/drivers/irqchip/irq-nvic.c b/drivers/irqchip/irq-nvic.c
+index 9694529b709d..330beb62d015 100644
+--- a/drivers/irqchip/irq-nvic.c
++++ b/drivers/irqchip/irq-nvic.c
+@@ -108,6 +108,7 @@ static int __init nvic_of_init(struct device_node *node,
  
--	match = of_match_device(tegra_slink_of_match, &pdev->dev);
--	if (!match) {
--		dev_err(&pdev->dev, "Error: No device match found\n");
--		return -ENODEV;
--	}
--	cdata = match->data;
-+	cdata = of_device_get_match_data(&pdev->dev);
+ 	if (!nvic_irq_domain) {
+ 		pr_warn("Failed to allocate irq domain\n");
++		iounmap(nvic_base);
+ 		return -ENOMEM;
+ 	}
  
- 	master = spi_alloc_master(&pdev->dev, sizeof(*tspi));
- 	if (!master) {
+@@ -117,6 +118,7 @@ static int __init nvic_of_init(struct device_node *node,
+ 	if (ret) {
+ 		pr_warn("Failed to allocate irq chips\n");
+ 		irq_domain_remove(nvic_irq_domain);
++		iounmap(nvic_base);
+ 		return ret;
+ 	}
+ 
 -- 
 2.34.1
 
