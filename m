@@ -2,117 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C18DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:23:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC39C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347009AbiDRRZm (ORCPT
+        id S1346436AbiDRR0a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 13:25:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43594 "EHLO
+        Mon, 18 Apr 2022 13:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242820AbiDRRZj (ORCPT
+        with ESMTP id S236088AbiDRR00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 13:25:39 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C15133A1A;
-        Mon, 18 Apr 2022 10:23:00 -0700 (PDT)
+        Mon, 18 Apr 2022 13:26:26 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3757833A1C
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:23:46 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id c12so12867822plr.6
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:23:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650302580; x=1681838580;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=TUDh1P4g0jsnsPATt1iFcZ2ZfjR5qo7apigNyVsZJ3k=;
-  b=oHmQAETe7jJwaTHo6H1JyL3K2JdSVPH0Xmdw1SM0cup2JMq/R99Iui0W
-   RmmlGSMArPNKSdrn3YlIsyqkfwd8Of+an9QXovuGVLh0SCxepJAErM/j8
-   baOPeiq4w/d6U+nWuXQKqk/5lWVkELSX4jqMdShNJJ2PfCA8heei8WwJs
-   E=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 18 Apr 2022 10:22:59 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 10:22:59 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 18 Apr 2022 10:22:52 -0700
-Received: from jhugo-lnx.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 18 Apr 2022 10:22:51 -0700
-From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
-To:     <mani@kernel.org>, <quic_hemantk@quicinc.com>,
-        <quic_bbhatt@quicinc.com>
-CC:     <mhi@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>
-Subject: [PATCH v4] bus: mhi: host: Wait for ready state after reset
-Date:   Mon, 18 Apr 2022 11:22:42 -0600
-Message-ID: <1650302562-30964-1-git-send-email-quic_jhugo@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=w84A5bSnfH8JPWuHmpfwhtHQL8kzzjVsgikmw3NAGNg=;
+        b=fRhwSkr30I2GH+odEqNIwtcw6Mkc0hs533hCNGNu6B733isTMyN7mgdaKJgnWGDzEl
+         uhuORa20O7wxLI2fE+KLlFcOaSk6ihk0xdw+Se0E4RwpcwCBNNsm470hU/synopNyK6a
+         pws6E8OuSufQCw6xr+gShLZC0yxbf6DEZRQGxhBlFl/uT9ybPy4/2v200xJVgdS9V3aZ
+         7JF4lfZ2lbZm6vMLIZBGdhDP7mUpgcMb0QdGJgRz7QVUotehsgBRObxX9Wusw548AHgq
+         q373jx7YHbzuvYTNCUJC6fW8z7kiHgN04Y6B1/+jto9xSuqRl/jrBAc/XVwzbTAd04Sn
+         0pgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=w84A5bSnfH8JPWuHmpfwhtHQL8kzzjVsgikmw3NAGNg=;
+        b=5bkCD32dSJG9mjyPyEui0GL5EKX+ep0Oln9oEB6FHeFipwpgDda0Lxb4eY60kp1Ink
+         lQKP9Z6WSEH0CEkkZ5hvM9iHVfFl5A7UJLHUBr+E+KE16yBiSZi7vPgiqekvIhxOtmmv
+         9SyZFHkO1VVsBGzEWBd/C+Le5FPZZ+JlBayo/A4ojpeq8l/T8QSbkF9O1RE6lX+0akYx
+         GI2cCqMbnPppWiCtsxxaSqss9BkkffgfPG50nmwDyHSVo70PwbrcDKGnpKT4O8koT8Sm
+         vXGzmvosYWbia6QwqHfH6Ray7gu36Ol/0WYV1wTZOyQgNuG8BPTiX0YtY/y3jrIv8s7Y
+         PL2w==
+X-Gm-Message-State: AOAM533O6bqGEWaMLvk7V8qehYbcNXQYDJCDa62azAvS0qq1dr5rIx5i
+        2jIVkmyCpmxxJUU6gs9wAOwp5hx4cTWNPA==
+X-Google-Smtp-Source: ABdhPJzAQUrr9wPWIp/IDtWYEjrW8r1+3GdG/Kl5eQZZhBJXkcJeST2nsFkYH/qrtsTT3vQplbAPOA==
+X-Received: by 2002:a17:90b:201:b0:1cb:a159:65ce with SMTP id fy1-20020a17090b020100b001cba15965cemr19878149pjb.104.1650302625656;
+        Mon, 18 Apr 2022 10:23:45 -0700 (PDT)
+Received: from aliyar-HP-Laptop-15-da1xxx.domain.name ([14.139.241.88])
+        by smtp.gmail.com with ESMTPSA id y9-20020aa78f29000000b005098201d2f5sm13041394pfr.205.2022.04.18.10.23.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 10:23:45 -0700 (PDT)
+From:   Aliya Rahmani <aliyarahmani786@gmail.com>
+To:     clabbe@baylibre.com
+Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
+        outreachy@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Aliya Rahmani <aliyarahmani786@gmail.com>
+Subject: [PATCH v3 2/3] staging: media: zoran: else is not generally useful after a break or return
+Date:   Mon, 18 Apr 2022 22:44:54 +0530
+Message-Id: <20220418171453.16971-3-aliyarahmani786@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220418171453.16971-1-aliyarahmani786@gmail.com>
+References: <20220418171453.16971-1-aliyarahmani786@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After the device has signaled the end of reset by clearing the reset bit,
-it will automatically reinit MHI and the internal device structures.  Once
-That is done, the device will signal it has entered the ready state.
+Remove the else without affecting the logic. 
+Fixes the following checkpatch warning:
+ else is not generally useful after a break or return
 
-Signaling the ready state involves sending an interrupt (MSI) to the host
-which might cause IOMMU faults if it occurs at the wrong time.
-
-If the controller is being powered down, and possibly removed, then the
-reset flow would only wait for the end of reset.  At which point, the host
-and device would start a race.  The host may complete its reset work, and
-remove the interrupt handler, which would cause the interrupt to be
-disabled in the IOMMU.  If that occurs before the device signals the ready
-state, then the IOMMU will fault since it blocked an interrupt.  While
-harmless, the fault would appear like a serious issue has occurred so let's
-silence it by making sure the device hits the ready state before the host
-completes its reset processing.
-
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Hemant Kumar <quic_hemantk@quicinc.com>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Aliya Rahmani <aliyarahmani786@gmail.com>
+---
+changes since v2: Rework commit description and subject
 ---
 
-v4:
-Cleanup email domain change
+ drivers/staging/media/zoran/videocodec.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-v3:
-Rebase and use dev_err over dev_warn
-
-v2: 
-Fix subject and remove use of cur_state
-
- drivers/bus/mhi/host/pm.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/drivers/bus/mhi/host/pm.c b/drivers/bus/mhi/host/pm.c
-index 3d90b8e..c000a92 100644
---- a/drivers/bus/mhi/host/pm.c
-+++ b/drivers/bus/mhi/host/pm.c
-@@ -476,6 +476,15 @@ static void mhi_pm_disable_transition(struct mhi_controller *mhi_cntrl)
- 		 * hence re-program it
- 		 */
- 		mhi_write_reg(mhi_cntrl, mhi_cntrl->bhi, BHI_INTVEC, 0);
-+
-+		if (!MHI_IN_PBL(mhi_get_exec_env(mhi_cntrl))) {
-+			/* wait for ready to be set */
-+			ret = mhi_poll_reg_field(mhi_cntrl, mhi_cntrl->regs,
-+						 MHISTATUS,
-+						 MHISTATUS_READY_MASK, 1, 25000);
-+			if (ret)
-+				dev_err(dev, "Device failed to enter READY state\n");
-+		}
- 	}
+diff --git a/drivers/staging/media/zoran/videocodec.c b/drivers/staging/media/zoran/videocodec.c
+index 16a1f23a7f19..19732a47c8bd 100644
+--- a/drivers/staging/media/zoran/videocodec.c
++++ b/drivers/staging/media/zoran/videocodec.c
+@@ -98,9 +98,8 @@ struct videocodec *videocodec_attach(struct videocodec_master *master)
  
- 	dev_dbg(dev,
+ 				h->attached += 1;
+ 				return codec;
+-			} else {
+-				kfree(codec);
+ 			}
++			kfree(codec);
+ 		}
+ 		h = h->next;
+ 	}
 -- 
-2.7.4
+2.25.1
 
