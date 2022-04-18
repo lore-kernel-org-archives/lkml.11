@@ -2,46 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30529C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 22:54:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1861CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 22:54:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233737AbiDRW5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 18:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44366 "EHLO
+        id S233655AbiDRW5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 18:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233497AbiDRW4t (ORCPT
+        with ESMTP id S233305AbiDRW4t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 18:56:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CCDE2CE3B;
-        Mon, 18 Apr 2022 15:54:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0C0F2CE2C;
+        Mon, 18 Apr 2022 15:54:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17885B81148;
-        Mon, 18 Apr 2022 22:54:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E70AC385B6;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A5F8B81136;
+        Mon, 18 Apr 2022 22:54:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42828C385A1;
         Mon, 18 Apr 2022 22:54:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650322441;
-        bh=7YceAtQ4xCGuX9O3QcLmd4DKQm9RucoBz1BbPwEutSg=;
+        bh=tPyCRwdFs1UacCDWo6gPWFP2J8tgNjkdVtTI/kMjO/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZmMN9xvPQderK9vVByZh5rBt/vyyHCPUQuUl6ftiTHVZ/2t43QFA+9TIRY5gm7jQX
-         CPayMZBHu5nKUzvMsIwSiEwjHqMlCDjWX1u37LzOpm9cw8vAl57hZ81tFiTA01+ZrD
-         Yo0fSZnkM+YE4fp04aoqH2qaY+PBW1Q3AMuxE+nu2cgIgikUJZwNgunlyqr0LnUUn9
-         rG2Mg8O7ChLolIdsuAwmhTjPXCm/4xwbytAmGXwmrdYhII1kadckulN//W1IQ/vwYm
-         STPglXypdkND0e9CillyEdx7/yUbs2bkaGajISr/Hfs1JUe1QoTOBccNGqON6w507o
-         XhsWqF3iozXMw==
+        b=TcUbXgjE7VF1cqmzO0nZknf3hCOB6m2pLrkKrPBeLeT9duKCb0DbzbydFSa50sG0k
+         hcRX7uV/VAEGuvQEbnPMYNOHsXJCGFJCmzNXAl+2EWzwzQ54ak8oC8qeQCpinYhuAs
+         CqtBVAiJGo8D2iuyaWcHhM4USdLCm898Bq+B2NFawfme1LKeRZQKO+IQodD93TI4vR
+         v5VbPp/rAodcE/QRsmIGNmkOYd7xequfoHJKHDylT4mOfQBdsqmhh6t3ICVkAlYxJB
+         rjgwNxfhHMDWRwSYlruRV7piO/azxnadspi1KG+660ywzzP9uLiZmM1VuOot1pvtlW
+         ugsjYlo/5TWUg==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id ECC905C121E; Mon, 18 Apr 2022 15:54:00 -0700 (PDT)
+        id E554E5C0A0D; Mon, 18 Apr 2022 15:54:00 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 08/11] srcu: Drop needless initialization of sdp in srcu_gp_start()
-Date:   Mon, 18 Apr 2022 15:53:56 -0700
-Message-Id: <20220418225359.3945217-8-paulmck@kernel.org>
+        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Juergen Gross <jgross@suse.com>
+Subject: [PATCH rcu 04/11] kernel/smp: Provide boot-time timeout for CSD lock diagnostics
+Date:   Mon, 18 Apr 2022 15:53:52 -0700
+Message-Id: <20220418225359.3945217-4-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220418225345.GA3945110@paulmck-ThinkPad-P17-Gen-1>
 References: <20220418225345.GA3945110@paulmck-ThinkPad-P17-Gen-1>
@@ -51,36 +56,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Debugging of problems involving insanely long-running SMI handlers
+proceeds better if the CSD-lock timeout can be adjusted.  This commit
+therefore provides a new smp.csd_lock_timeout kernel boot parameter
+that specifies the timeout in milliseconds.  The default remains at the
+previously hard-coded value of five seconds.
 
-Commit 9c7ef4c30f12 ("srcu: Make Tree SRCU able to operate without
-snp_node array") initializes the local variable sdp differently depending
-on the srcu's state in srcu_gp_start().  Either way, this initialization
-overwrites the value used when sdp is defined.
-
-This commit therefore drops this pointless definition-time initialization.
-Although there is no functional change, compiler code generation may
-be affected.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc: Rik van Riel <riel@surriel.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Juergen Gross <jgross@suse.com>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- kernel/rcu/srcutree.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/admin-guide/kernel-parameters.txt | 11 +++++++++++
+ kernel/smp.c                                    |  7 +++++--
+ 2 files changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
-index 6833d8887181..e0ef018612a2 100644
---- a/kernel/rcu/srcutree.c
-+++ b/kernel/rcu/srcutree.c
-@@ -434,7 +434,7 @@ EXPORT_SYMBOL_GPL(__srcu_read_unlock);
-  */
- static void srcu_gp_start(struct srcu_struct *ssp)
- {
--	struct srcu_data *sdp = this_cpu_ptr(ssp->sda);
-+	struct srcu_data *sdp;
- 	int state;
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 3f1cc5e317ed..645c4c001b16 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -5377,6 +5377,17 @@
+ 	smart2=		[HW]
+ 			Format: <io1>[,<io2>[,...,<io8>]]
  
- 	lockdep_assert_held(&ACCESS_PRIVATE(ssp, lock));
++	smp.csd_lock_timeout= [KNL]
++			Specify the period of time in milliseconds
++			that smp_call_function() and friends will wait
++			for a CPU to release the CSD lock.  This is
++			useful when diagnosing bugs involving CPUs
++			disabling interrupts for extended periods
++			of time.  Defaults to 5,000 milliseconds, and
++			setting a value of zero disables this feature.
++			This feature may be more efficiently disabled
++			using the csdlock_debug- kernel parameter.
++
+ 	smsc-ircc2.nopnp	[HW] Don't use PNP to discover SMC devices
+ 	smsc-ircc2.ircc_cfg=	[HW] Device configuration I/O port
+ 	smsc-ircc2.ircc_sir=	[HW] SIR base I/O port
+diff --git a/kernel/smp.c b/kernel/smp.c
+index 01a7c1706a58..d82439bac401 100644
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -183,7 +183,9 @@ static DEFINE_PER_CPU(smp_call_func_t, cur_csd_func);
+ static DEFINE_PER_CPU(void *, cur_csd_info);
+ static DEFINE_PER_CPU(struct cfd_seq_local, cfd_seq_local);
+ 
+-#define CSD_LOCK_TIMEOUT (5ULL * NSEC_PER_SEC)
++static ulong csd_lock_timeout = 5000;  /* CSD lock timeout in milliseconds. */
++module_param(csd_lock_timeout, ulong, 0444);
++
+ static atomic_t csd_bug_count = ATOMIC_INIT(0);
+ static u64 cfd_seq;
+ 
+@@ -329,6 +331,7 @@ static bool csd_lock_wait_toolong(struct __call_single_data *csd, u64 ts0, u64 *
+ 	u64 ts2, ts_delta;
+ 	call_single_data_t *cpu_cur_csd;
+ 	unsigned int flags = READ_ONCE(csd->node.u_flags);
++	unsigned long long csd_lock_timeout_ns = csd_lock_timeout * NSEC_PER_MSEC;
+ 
+ 	if (!(flags & CSD_FLAG_LOCK)) {
+ 		if (!unlikely(*bug_id))
+@@ -341,7 +344,7 @@ static bool csd_lock_wait_toolong(struct __call_single_data *csd, u64 ts0, u64 *
+ 
+ 	ts2 = sched_clock();
+ 	ts_delta = ts2 - *ts1;
+-	if (likely(ts_delta <= CSD_LOCK_TIMEOUT))
++	if (likely(ts_delta <= csd_lock_timeout_ns || csd_lock_timeout_ns <= 0))
+ 		return false;
+ 
+ 	firsttime = !*bug_id;
 -- 
 2.31.1.189.g2e36527f23
 
