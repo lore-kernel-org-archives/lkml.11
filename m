@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0F2CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:53:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA387C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244414AbiDRN4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55910 "EHLO
+        id S240221AbiDRN4m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:56:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243023AbiDRN2s (ORCPT
+        with ESMTP id S244885AbiDRNbA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:28:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33DB3E5F4;
-        Mon, 18 Apr 2022 05:53:20 -0700 (PDT)
+        Mon, 18 Apr 2022 09:31:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3BBB40;
+        Mon, 18 Apr 2022 05:57:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58EF8B80E44;
-        Mon, 18 Apr 2022 12:53:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7189C385A1;
-        Mon, 18 Apr 2022 12:53:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7295B80D9C;
+        Mon, 18 Apr 2022 12:57:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5178BC385A1;
+        Mon, 18 Apr 2022 12:57:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286398;
-        bh=Uq4rzu+iYVCiYvKLAPyXV0+epEToMfF5Hp3/zPfFeMg=;
+        s=korg; t=1650286626;
+        bh=CtgnVmjO7n35BM1i49bLL7QIy1XlXumsaStrof2QA5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n+1r/6zIB9N7GH/P45KViD7ZPZ5nFmffhsedpfOgqvtyGuzDA2L7kEuoL9Hnu52T3
-         4VjoPOVv3K+FCj6G//Vruac8g2VcbE+WGD4b2sZ9ON1S6f6IRzwcIWldvl7nCqTLMZ
-         2bYrK1DCealn0Epg+trqF+mJ/g7c5XWcj6mlK0/8=
+        b=EcV0zCs5H3Bykpzs6qYLHgW+oT3/Oe34aBiUqY+4lCOhNfXASZ7qHytmdQh78g+zC
+         6GpUjSYdLPXm1ECy4vPLbat/u+EqF0VPuK1NOfe84wVu0Xv+I/Yt5VRLWWMWtYFX87
+         TPKxo2UAz6u9ESXtRGUeLEsGoO2gwReJo06uelWY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 085/284] memory: emif: check the pointer temp in get_device_details()
-Date:   Mon, 18 Apr 2022 14:11:06 +0200
-Message-Id: <20220418121213.102640723@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Huang Rui <ray.huang@amd.com>
+Subject: [PATCH 4.14 194/284] ACPI: CPPC: Avoid out of bounds access when parsing _CPC data
+Date:   Mon, 18 Apr 2022 14:12:55 +0200
+Message-Id: <20220418121217.247611588@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,37 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 5b5ab1bfa1898c6d52936a57c25c5ceba2cb2f87 ]
+commit 40d8abf364bcab23bc715a9221a3c8623956257b upstream.
 
-The pointer temp is allocated by devm_kzalloc(), so it should be
-checked for error handling.
+If the NumEntries field in the _CPC return package is less than 2, do
+not attempt to access the "Revision" element of that package, because
+it may not be present then.
 
-Fixes: 7ec944538dde ("memory: emif: add basic infrastructure for EMIF driver")
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Link: https://lore.kernel.org/r/20220225132552.27894-1-baijiaju1990@gmail.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 337aadff8e45 ("ACPI: Introduce CPU performance controls using CPPC")
+BugLink: https://lore.kernel.org/lkml/20220322143534.GC32582@xsang-OptiPlex-9020/
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Huang Rui <ray.huang@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/memory/emif.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/cppc_acpi.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
-index ed6c5fcb136f..9f293b931144 100644
---- a/drivers/memory/emif.c
-+++ b/drivers/memory/emif.c
-@@ -1425,7 +1425,7 @@ static struct emif_data *__init_or_module get_device_details(
- 	temp	= devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
- 	dev_info = devm_kzalloc(dev, sizeof(*dev_info), GFP_KERNEL);
- 
--	if (!emif || !pd || !dev_info) {
-+	if (!emif || !temp || !dev_info) {
- 		dev_err(dev, "%s:%d: allocation error\n", __func__, __LINE__);
- 		goto error;
- 	}
--- 
-2.34.1
-
+--- a/drivers/acpi/cppc_acpi.c
++++ b/drivers/acpi/cppc_acpi.c
+@@ -678,6 +678,11 @@ int acpi_cppc_processor_probe(struct acp
+ 	cpc_obj = &out_obj->package.elements[0];
+ 	if (cpc_obj->type == ACPI_TYPE_INTEGER)	{
+ 		num_ent = cpc_obj->integer.value;
++		if (num_ent <= 1) {
++			pr_debug("Unexpected _CPC NumEntries value (%d) for CPU:%d\n",
++				 num_ent, pr->id);
++			goto out_free;
++		}
+ 	} else {
+ 		pr_debug("Unexpected entry type(%d) for NumEntries\n",
+ 				cpc_obj->type);
 
 
