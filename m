@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44FCBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:33:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6247FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:33:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241152AbiDRNfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:35:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53904 "EHLO
+        id S242362AbiDRNgC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:36:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243074AbiDRNJs (ORCPT
+        with ESMTP id S243221AbiDRNJ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:09:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159BA2CCAC;
-        Mon, 18 Apr 2022 05:49:15 -0700 (PDT)
+        Mon, 18 Apr 2022 09:09:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2839E37A0A;
+        Mon, 18 Apr 2022 05:49:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E030B80E4E;
-        Mon, 18 Apr 2022 12:49:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 537FEC385A7;
-        Mon, 18 Apr 2022 12:49:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6BA66124D;
+        Mon, 18 Apr 2022 12:49:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D401FC385A1;
+        Mon, 18 Apr 2022 12:49:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286141;
-        bh=Mk1Iqrphq54417Wc0cBdCgN7loP8w3zoxuUin2+H7X0=;
+        s=korg; t=1650286163;
+        bh=5Z78gfGHfHm7csyWYfRHlrzotpJOLnNIrOIF5IitPrY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DgisBNabDwMPZgwaf3H3pXPMzkc9F2dHVb+2pYhl5jNd+CPqT8hN5p/Okg6XuCTd2
-         8TcNPk0Des+W54jrI7p5R/ZILrdByUXTh0cgWZ8Z7yVYy3/myJhWbOcSzK8Cd9T0GU
-         bn0DGI4o0zchtZrssl0b+A5WaNQn1EYuhfwRCS7g=
+        b=PIDphFe7g2FBmLJ7HzBZrxzYsVEYrL1+TFB95cJXbvXWbD44JaZvT7iZyGXy1m7QX
+         T7ZqghQ2JFW+ZIijOoJFqkZMCRH1IQcC+FbxCxWD2SHvjCw4J2/JdyNzSeNX0BvMRJ
+         ZXvoQKP0dDyjnul7Al/x4/fcZZg0rHy7P/8mEEeY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 007/284] spi: Fix erroneous sgs value with min_t()
-Date:   Mon, 18 Apr 2022 14:09:48 +0200
-Message-Id: <20220418121210.905523230@linuxfoundation.org>
+        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Lad@vger.kernel.org
+Subject: [PATCH 4.14 049/284] media: davinci: vpif: fix unbalanced runtime PM get
+Date:   Mon, 18 Apr 2022 14:10:30 +0200
+Message-Id: <20220418121212.091259923@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -53,59 +52,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit ebc4cb43ea5ada3db46c80156fca58a54b9bbca8 ]
+commit 4a321de239213300a714fa0353a5f1272d381a44 upstream.
 
-While computing sgs in spi_map_buf(), the data type
-used in min_t() for max_seg_size is 'unsigned int' where
-as that of ctlr->max_dma_len is 'size_t'.
+Make sure to balance the runtime PM usage counter on driver unbind.
 
-min_t(unsigned int,x,y) gives wrong results if one of x/y is
-'size_t'
-
-Consider the below examples on a 64-bit machine (ie size_t is
-64-bits, and unsigned int is 32-bit).
-    case 1) min_t(unsigned int, 5, 0x100000001);
-    case 2) min_t(size_t, 5, 0x100000001);
-
-Case 1 returns '1', where as case 2 returns '5'. As you can see
-the result from case 1 is wrong.
-
-This patch fixes the above issue by using the data type of the
-parameters that are used in min_t with maximum data length.
-
-Fixes: commit 1a4e53d2fc4f68aa ("spi: Fix invalid sgs value")
-Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Link: https://lore.kernel.org/r/20220316175317.465-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 407ccc65bfd2 ("[media] davinci: vpif: add pm_runtime support")
+Cc: stable@vger.kernel.org      # 3.9
+Cc: Lad, Prabhakar <prabhakar.csengg@gmail.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Reviewed-by: Lad Prabhakar <prabhakar.csengg@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/platform/davinci/vpif.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index d26aefed16ac..1031c8e38144 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -774,10 +774,10 @@ static int spi_map_buf(struct spi_controller *ctlr, struct device *dev,
- 	int i, ret;
+--- a/drivers/media/platform/davinci/vpif.c
++++ b/drivers/media/platform/davinci/vpif.c
+@@ -495,6 +495,7 @@ static int vpif_probe(struct platform_de
  
- 	if (vmalloced_buf || kmap_buf) {
--		desc_len = min_t(unsigned int, max_seg_size, PAGE_SIZE);
-+		desc_len = min_t(unsigned long, max_seg_size, PAGE_SIZE);
- 		sgs = DIV_ROUND_UP(len + offset_in_page(buf), desc_len);
- 	} else if (virt_addr_valid(buf)) {
--		desc_len = min_t(unsigned int, max_seg_size, ctlr->max_dma_len);
-+		desc_len = min_t(size_t, max_seg_size, ctlr->max_dma_len);
- 		sgs = DIV_ROUND_UP(len, desc_len);
- 	} else {
- 		return -EINVAL;
--- 
-2.34.1
-
+ static int vpif_remove(struct platform_device *pdev)
+ {
++	pm_runtime_put(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
+ 	return 0;
+ }
 
 
