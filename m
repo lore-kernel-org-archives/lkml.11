@@ -2,92 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B119C3527C
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:28:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C886C3527A
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:28:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344494AbiDROa1 (ORCPT
+        id S1344801AbiDROae (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
+        Mon, 18 Apr 2022 10:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343939AbiDRORB (ORCPT
+        with ESMTP id S1344381AbiDROU6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:17:01 -0400
+        Mon, 18 Apr 2022 10:20:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE933A18F;
-        Mon, 18 Apr 2022 06:13:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80492DD49;
+        Mon, 18 Apr 2022 06:17:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6CAEB80EE6;
-        Mon, 18 Apr 2022 13:13:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E62DC385A7;
-        Mon, 18 Apr 2022 13:13:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287599;
-        bh=+Xhxq35zIrS32x1vS5708oQRgbV77aN/xWOJSWv5kAQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ToIpaQfPQQ4M4WhT7OomEBjD+IKtgp5djI+KqpVEz3iBNfwZ6nTy6iFdq1hwRM70q
-         GqXeRDnWnb0ZzFasBRLgAGUhI+JUUPCYtw45laTnL14ilmTXg7uQzmnWENX4KUI2n+
-         oxZGMPz7emqh4D7oFxAF1RI0AyPa2s66y1hx1l5A=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jordy Zomer <jordy@pwning.systems>,
-        Mike Snitzer <snitzer@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 172/218] dm ioctl: prevent potential spectre v1 gadget
-Date:   Mon, 18 Apr 2022 14:13:58 +0200
-Message-Id: <20220418121205.498414131@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
-References: <20220418121158.636999985@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65647B80D9C;
+        Mon, 18 Apr 2022 13:17:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83F3BC385A7;
+        Mon, 18 Apr 2022 13:17:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650287836;
+        bh=UQN6nyUsWvECSwrI29dTKr5hYwn2QwUdm3cJIU+mU8Y=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=Jw7/vKOBPXaEiUGFi00wQQEVzScIeMnHjORhJmwNTjPabVOR715Aeo+ny75k4cEw3
+         AczUIt22Gn9OehYi7o/q2laBzt0AH9gvYEgXKX9rMmXsL/FvTq3I4RlnRTjnOHPQBR
+         UERjo/3rtU9Pxp09wIRQ+ZuxUCX4EuJ4unx2o2ZfQVFXMcH0qBJhjCiJsjl3HsnpkU
+         mJ0z6qzCnC9qJlaZJa9lDXIUt84HXSbLW5cQwRlL1WkpOZgbp27d58zwiGCZu8+ly7
+         DrY760wsICYfcllGoDOvN25E/mBsTuM3O3g+UtXOg/EVj9MB+vpMF++8IszwtmcnXH
+         slYQI48DnBR/g==
+Message-ID: <0c5c361c6d65f5b2fdb1dc89fd4317f22cbc3e74.camel@kernel.org>
+Subject: Re: [PATCH] ceph: prevent snapshots to be created in encrypted
+ locked directories
+From:   Jeff Layton <jlayton@kernel.org>
+To:     =?ISO-8859-1?Q?Lu=EDs?= Henriques <lhenriques@suse.de>,
+        Xiubo Li <xiubli@redhat.com>, Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 18 Apr 2022 09:17:14 -0400
+In-Reply-To: <20220418130839.9862-1-lhenriques@suse.de>
+References: <20220414135122.26821-1-lhenriques@suse.de>
+         <20220418130839.9862-1-lhenriques@suse.de>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jordy Zomer <jordy@jordyzomer.github.io>
+On Mon, 2022-04-18 at 14:08 +0100, Luís Henriques wrote:
+> With snapshot names encryption we can not allow snapshots to be created in
+> locked directories because the names wouldn't be encrypted.  This patch
+> forces the directory to be unlocked to allow a snapshot to be created.
+> 
+> Signed-off-by: Luís Henriques <lhenriques@suse.de>
+> ---
+>  fs/ceph/dir.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+> index f48f1ff20927..93e2f08102a1 100644
+> --- a/fs/ceph/dir.c
+> +++ b/fs/ceph/dir.c
+> @@ -1071,6 +1071,10 @@ static int ceph_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
+>  		err = -EDQUOT;
+>  		goto out;
+>  	}
+> +	if ((op == CEPH_MDS_OP_MKSNAP) && !fscrypt_has_encryption_key(dir)) {
+> +		err = -ENOKEY;
+> +		goto out;
+> +	}
+>  
+>  
+>  	req = ceph_mdsc_create_request(mdsc, op, USE_AUTH_MDS);
 
-[ Upstream commit cd9c88da171a62c4b0f1c70e50c75845969fbc18 ]
-
-It appears like cmd could be a Spectre v1 gadget as it's supplied by a
-user and used as an array index. Prevent the contents of kernel memory
-from being leaked to userspace via speculative execution by using
-array_index_nospec.
-
-Signed-off-by: Jordy Zomer <jordy@pwning.systems>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/md/dm-ioctl.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
-index eb2659a12310..70245782e7f6 100644
---- a/drivers/md/dm-ioctl.c
-+++ b/drivers/md/dm-ioctl.c
-@@ -16,6 +16,7 @@
- #include <linux/dm-ioctl.h>
- #include <linux/hdreg.h>
- #include <linux/compat.h>
-+#include <linux/nospec.h>
- 
- #include <asm/uaccess.h>
- 
-@@ -1642,6 +1643,7 @@ static ioctl_fn lookup_ioctl(unsigned int cmd, int *ioctl_flags)
- 	if (unlikely(cmd >= ARRAY_SIZE(_ioctls)))
- 		return NULL;
- 
-+	cmd = array_index_nospec(cmd, ARRAY_SIZE(_ioctls));
- 	*ioctl_flags = _ioctls[cmd].flags;
- 	return _ioctls[cmd].fn;
- }
+Looks good. I'll pull this and the v4 series into the wip-fscrypt later
+todat.  
 -- 
-2.35.1
-
-
-
+Jeff Layton <jlayton@kernel.org>
