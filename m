@@ -2,106 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C0ADC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 05:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA22AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 05:33:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236653AbiDRFfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 01:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35254 "EHLO
+        id S236662AbiDRFfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 01:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231880AbiDRFfA (ORCPT
+        with ESMTP id S230337AbiDRFfw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 01:35:00 -0400
-Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2ECC13E15
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 22:32:22 -0700 (PDT)
-Received: by mail-oo1-xc31.google.com with SMTP id i21-20020a4ad395000000b0033a4c45246dso51702oos.12
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 22:32:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2n1IYTlj53blplS6LFG3VZvmnjl4fg6dH+NSs+G8dQ4=;
-        b=OSAdQ8/lBvHefkLQ0BiIWsC5mxjiT+LCEK5Yo7cdMdJtFg4BoOjtnyhoaeZhU/REnj
-         GfirY72Q5DzgthlCFrEv6D6jXRlntZnM/bw8Toxe5qWrqzKYmvZPWFzCFxKxZp7vJ+nh
-         4BoLg5k7JC2ZL0f0L3ah2daskEuIaYLK8l0zlBD4eUU9yGNv7s8Y753alJbeuaoP1ap8
-         /mW84BnxIerx+DfY3lyEVIxGBOaFBNytAjj+l+J6RzmY/zYiv7UAMLZ0P/pVPpkbSObT
-         9gW0BbbCKlgGFhQr6hjjSkF98vvFQsMkEh+SsMdnIZ/qL1JH/0Uehi+hZ5VdoMsEY1M9
-         aqww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2n1IYTlj53blplS6LFG3VZvmnjl4fg6dH+NSs+G8dQ4=;
-        b=dPhCV+mxuCHlj1ngncV2cb4+czO1P4/UnQmovKsPN7SMOsQi8hXwR0gDefjR0CZFON
-         FmAXQzCeKaTRmarKHDz0a9P5XMEswYVtekbiFAEuMq7BlBV54Cww0XeqTfZBljKfnmZh
-         QBnJZocuQ058FWiNhZOBxwcfyOlHiYDmzrcMJfFM0XgVBSRsYw+UyLDvTFxp/1a/6NwE
-         IX3+K9kNStUEp04Q+ol/Y8E3gESyHxkL5de4z4afB4cHR5quTsLaSiRB9bMi5ejPKrpx
-         zU4Ykz1lxwy9EutDVjyog6ar15Z3QIIF2xMr6mKvyBXU1lqS09qr1YdT+wJASiFjtE+p
-         cHmg==
-X-Gm-Message-State: AOAM531s8d9OPPH8YEppJfJWvOmP2s/tVoBiuL5N0bTPknvKXkWKIehg
-        c9Mze5kESdump7pr3SglM0betUeKdtBkHTCowpHNsQ==
-X-Google-Smtp-Source: ABdhPJz477nHi0AARqt5yRs8j661CLlpDBupUxnPd4HHI4R1NeB+O8RICaTBFKTAq7pLH2SrAGIAUHn+ypMURZ5l0uM=
-X-Received: by 2002:a4a:d74a:0:b0:33a:2e4d:1b85 with SMTP id
- h10-20020a4ad74a000000b0033a2e4d1b85mr2305470oot.7.1650259941947; Sun, 17 Apr
- 2022 22:32:21 -0700 (PDT)
+        Mon, 18 Apr 2022 01:35:52 -0400
+Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C702C13E12;
+        Sun, 17 Apr 2022 22:33:13 -0700 (PDT)
+Received: from droid06.amlogic.com (10.18.11.248) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Mon, 18 Apr 2022
+ 13:33:09 +0800
+From:   Yu Tu <yu.tu@amlogic.com>
+To:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Yu Tu <yu.tu@amlogic.com>
+Subject: [PATCH V2 0/2] Add q 12MHz internal clock rate to calculate
+Date:   Mon, 18 Apr 2022 13:32:00 +0800
+Message-ID: <20220418053202.24528-1-yu.tu@amlogic.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-References: <20220417210436.6203-1-singh.kuldeep87k@gmail.com> <20220417210436.6203-4-singh.kuldeep87k@gmail.com>
-In-Reply-To: <20220417210436.6203-4-singh.kuldeep87k@gmail.com>
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Date:   Mon, 18 Apr 2022 11:02:11 +0530
-Message-ID: <CAH=2Nty6gTX-u1LZZ_g3FZfpkX2CaV3Gh+R8DJODuh4489nCyw@mail.gmail.com>
-Subject: Re: [PATCH v3 3/6] arm64: dts: qcom: msm8996: User generic node name
- for DMA
-To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-arm-msm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.18.11.248]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kuldeep,
+1.Added 12Mhz as the clock source for calculating baud rate.
 
-On Mon, 18 Apr 2022 at 02:34, Kuldeep Singh <singh.kuldeep87k@gmail.com> wrote:
->
-> Qcom BAM DT spec expects generic DMA controller node name as
-> "dma-controller" to enable validations.
+2.Added S4 SOC compatibility. 
 
-This is already fixed with in-flight patch
-<https://lore.kernel.org/lkml/20220211214941.f55q5yksittut3ep@amazon.com/T/#mb84230b9b8e06544859ccf5e16a7651fac79c933>
+Yu Tu (2):
+  tty: serial: meson: Add a 12MHz internal clock rate to calculate baud
+    rate in order to meet the baud rate requirements of special BT
+    modules
+  tty: serial: meson: Added S4 SOC compatibility
 
-Thanks,
-Bhupesh
+V1 -> V2: Change format as discussed in the email.
 
-> Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
-> v3: Add Krzysztof R-b tag
-> ---
-> v2: No change
-> ---
->  arch/arm64/boot/dts/qcom/msm8996.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/arm64/boot/dts/qcom/msm8996.dtsi b/arch/arm64/boot/dts/qcom/msm8996.dtsi
-> index b9a48cfd760f..c4cfab92a44e 100644
-> --- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
-> @@ -707,7 +707,7 @@ tsens1: thermal-sensor@4ad000 {
->                         #thermal-sensor-cells = <1>;
->                 };
->
-> -               cryptobam: dma@644000 {
-> +               cryptobam: dma-controller@644000 {
->                         compatible = "qcom,bam-v1.7.0";
->                         reg = <0x00644000 0x24000>;
->                         interrupts = <GIC_SPI 206 IRQ_TYPE_LEVEL_HIGH>;
-> --
-> 2.25.1
->
+Link:https://lore.kernel.org/linux-amlogic/20220407081355.13602-3-yu.tu@amlogic.com/
+
+ drivers/tty/serial/meson_uart.c | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
+
+
+base-commit: f398e0aa325c61fa20903833a5b534ecb8e6e418
+-- 
+2.33.1
+
