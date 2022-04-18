@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E73C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF884C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243675AbiDRNly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:41:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53540 "EHLO
+        id S243505AbiDRNl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242126AbiDRNIp (ORCPT
+        with ESMTP id S242086AbiDRNNV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:08:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0657134B80;
-        Mon, 18 Apr 2022 05:48:20 -0700 (PDT)
+        Mon, 18 Apr 2022 09:13:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D323A1AE;
+        Mon, 18 Apr 2022 05:51:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25856B80E4E;
-        Mon, 18 Apr 2022 12:48:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62838C385A1;
-        Mon, 18 Apr 2022 12:48:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD28D61287;
+        Mon, 18 Apr 2022 12:51:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3DE9C385A8;
+        Mon, 18 Apr 2022 12:51:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286097;
-        bh=NcRu25js3toUPx0KLfzmrjPtNYkGWmP5Qed61QgN4e4=;
+        s=korg; t=1650286261;
+        bh=FJARBZBjsKTFIZCwEbBcLJQp8/d4yzz5kJwdbs6GYbI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vub1YS/uqv9TanzgBHcXyTKurynUtV6Q/AZgFcxkCQ3DYXfgZmOj90fn4biG1LEfb
-         iHoEza1UamnD+Twti5evArEiyKflbxYfcapxfej6oQSvJlgc1Gph7r3kRxuTxIOK/e
-         JWwX6hhAlRvh7vjLWclHY22lGsyNEyIiijFhQ4XI=
+        b=ei3kUWxwt+VM3jeF+FgOyCJ2sZ/+oxzOxHEIkEGWlZ/r96EMPqQyqN67mMIByjNMh
+         erxm3TZi4TLrktSMQyUJAqkQdhwGjGnq5HJBSwrB+4ZSVAG9YRA3r1ADw/UDJa33Qt
+         8eajziq4RWonUZ/8v7KBLrJRiPEAmgTFcQmApro4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 4.14 028/284] jffs2: fix memory leak in jffs2_scan_medium
-Date:   Mon, 18 Apr 2022 14:10:09 +0200
-Message-Id: <20220418121211.496495273@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 077/284] ASoC: ti: davinci-i2s: Add check for clk_enable()
+Date:   Mon, 18 Apr 2022 14:10:58 +0200
+Message-Id: <20220418121212.876495581@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -48,110 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 9cdd3128874f5fe759e2c4e1360ab7fb96a8d1df upstream.
+[ Upstream commit ed7c9fef11931fc5d32a83d68017ff390bf5c280 ]
 
-If an error is returned in jffs2_scan_eraseblock() and some memory
-has been added to the jffs2_summary *s, we can observe the following
-kmemleak report:
+As the potential failure of the clk_enable(),
+it should be better to check it and return error
+if fails.
 
---------------------------------------------
-unreferenced object 0xffff88812b889c40 (size 64):
-  comm "mount", pid 692, jiffies 4294838325 (age 34.288s)
-  hex dump (first 32 bytes):
-    40 48 b5 14 81 88 ff ff 01 e0 31 00 00 00 50 00  @H........1...P.
-    00 00 01 00 00 00 01 00 00 00 02 00 00 00 09 08  ................
-  backtrace:
-    [<ffffffffae93a3a3>] __kmalloc+0x613/0x910
-    [<ffffffffaf423b9c>] jffs2_sum_add_dirent_mem+0x5c/0xa0
-    [<ffffffffb0f3afa8>] jffs2_scan_medium.cold+0x36e5/0x4794
-    [<ffffffffb0f3dbe1>] jffs2_do_mount_fs.cold+0xa7/0x2267
-    [<ffffffffaf40acf3>] jffs2_do_fill_super+0x383/0xc30
-    [<ffffffffaf40c00a>] jffs2_fill_super+0x2ea/0x4c0
-    [<ffffffffb0315d64>] mtd_get_sb+0x254/0x400
-    [<ffffffffb0315f5f>] mtd_get_sb_by_nr+0x4f/0xd0
-    [<ffffffffb0316478>] get_tree_mtd+0x498/0x840
-    [<ffffffffaf40bd15>] jffs2_get_tree+0x25/0x30
-    [<ffffffffae9f358d>] vfs_get_tree+0x8d/0x2e0
-    [<ffffffffaea7a98f>] path_mount+0x50f/0x1e50
-    [<ffffffffaea7c3d7>] do_mount+0x107/0x130
-    [<ffffffffaea7c5c5>] __se_sys_mount+0x1c5/0x2f0
-    [<ffffffffaea7c917>] __x64_sys_mount+0xc7/0x160
-    [<ffffffffb10142f5>] do_syscall_64+0x45/0x70
-unreferenced object 0xffff888114b54840 (size 32):
-  comm "mount", pid 692, jiffies 4294838325 (age 34.288s)
-  hex dump (first 32 bytes):
-    c0 75 b5 14 81 88 ff ff 02 e0 02 00 00 00 02 00  .u..............
-    00 00 84 00 00 00 44 00 00 00 6b 6b 6b 6b 6b a5  ......D...kkkkk.
-  backtrace:
-    [<ffffffffae93be24>] kmem_cache_alloc_trace+0x584/0x880
-    [<ffffffffaf423b04>] jffs2_sum_add_inode_mem+0x54/0x90
-    [<ffffffffb0f3bd44>] jffs2_scan_medium.cold+0x4481/0x4794
-    [...]
-unreferenced object 0xffff888114b57280 (size 32):
-  comm "mount", pid 692, jiffies 4294838393 (age 34.357s)
-  hex dump (first 32 bytes):
-    10 d5 6c 11 81 88 ff ff 08 e0 05 00 00 00 01 00  ..l.............
-    00 00 38 02 00 00 28 00 00 00 6b 6b 6b 6b 6b a5  ..8...(...kkkkk.
-  backtrace:
-    [<ffffffffae93be24>] kmem_cache_alloc_trace+0x584/0x880
-    [<ffffffffaf423c34>] jffs2_sum_add_xattr_mem+0x54/0x90
-    [<ffffffffb0f3a24f>] jffs2_scan_medium.cold+0x298c/0x4794
-    [...]
-unreferenced object 0xffff8881116cd510 (size 16):
-  comm "mount", pid 692, jiffies 4294838395 (age 34.355s)
-  hex dump (first 16 bytes):
-    00 00 00 00 00 00 00 00 09 e0 60 02 00 00 6b a5  ..........`...k.
-  backtrace:
-    [<ffffffffae93be24>] kmem_cache_alloc_trace+0x584/0x880
-    [<ffffffffaf423cc4>] jffs2_sum_add_xref_mem+0x54/0x90
-    [<ffffffffb0f3b2e3>] jffs2_scan_medium.cold+0x3a20/0x4794
-    [...]
---------------------------------------------
-
-Therefore, we should call jffs2_sum_reset_collected(s) on exit to
-release the memory added in s. In addition, a new tag "out_buf" is
-added to prevent the NULL pointer reference caused by s being NULL.
-(thanks to Zhang Yi for this analysis)
-
-Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
-Cc: stable@vger.kernel.org
-Co-developed-with: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5f9a50c3e55e ("ASoC: Davinci: McBSP: add device tree support for McBSP")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+Link: https://lore.kernel.org/r/20220228031540.3571959-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jffs2/scan.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ sound/soc/davinci/davinci-i2s.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/fs/jffs2/scan.c
-+++ b/fs/jffs2/scan.c
-@@ -136,7 +136,7 @@ int jffs2_scan_medium(struct jffs2_sb_in
- 		if (!s) {
- 			JFFS2_WARNING("Can't allocate memory for summary\n");
- 			ret = -ENOMEM;
--			goto out;
-+			goto out_buf;
- 		}
- 	}
+diff --git a/sound/soc/davinci/davinci-i2s.c b/sound/soc/davinci/davinci-i2s.c
+index 384961651904..e5f61f1499c6 100644
+--- a/sound/soc/davinci/davinci-i2s.c
++++ b/sound/soc/davinci/davinci-i2s.c
+@@ -719,7 +719,9 @@ static int davinci_i2s_probe(struct platform_device *pdev)
+ 	dev->clk = clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(dev->clk))
+ 		return -ENODEV;
+-	clk_enable(dev->clk);
++	ret = clk_enable(dev->clk);
++	if (ret)
++		goto err_put_clk;
  
-@@ -274,13 +274,15 @@ int jffs2_scan_medium(struct jffs2_sb_in
- 	}
- 	ret = 0;
-  out:
-+	jffs2_sum_reset_collected(s);
-+	kfree(s);
-+ out_buf:
- 	if (buf_size)
- 		kfree(flashbuf);
- #ifndef __ECOS
- 	else
- 		mtd_unpoint(c->mtd, 0, c->mtd->size);
- #endif
--	kfree(s);
+ 	dev->dev = &pdev->dev;
+ 	dev_set_drvdata(&pdev->dev, dev);
+@@ -741,6 +743,7 @@ static int davinci_i2s_probe(struct platform_device *pdev)
+ 	snd_soc_unregister_component(&pdev->dev);
+ err_release_clk:
+ 	clk_disable(dev->clk);
++err_put_clk:
+ 	clk_put(dev->clk);
  	return ret;
  }
- 
+-- 
+2.34.1
+
 
 
