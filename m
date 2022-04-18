@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B155C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BA5AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:21:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232261AbiDRNYI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41142 "EHLO
+        id S241395AbiDRNYT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:24:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241834AbiDRNDb (ORCPT
+        with ESMTP id S241161AbiDRNCw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:03:31 -0400
+        Mon, 18 Apr 2022 09:02:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2617433EB9;
-        Mon, 18 Apr 2022 05:44:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6776D329B6;
+        Mon, 18 Apr 2022 05:42:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D839CB80E44;
-        Mon, 18 Apr 2022 12:44:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA686C385A7;
-        Mon, 18 Apr 2022 12:44:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D779B80EE2;
+        Mon, 18 Apr 2022 12:42:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60184C385A1;
+        Mon, 18 Apr 2022 12:42:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285881;
-        bh=X0t+T/PV6H7afRr7VxLAQykE69EkNrL4/q4ZlSkuoE4=;
+        s=korg; t=1650285771;
+        bh=gY0Qt1XeyyVXBqWlXeogsn6jG66hFxrQ/NBv4zRBgCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V73wlpNNVRqlRYGaXdxye+6g2Br/YrVha17Cn9O6AnOT1HFCN4McI9bRxKvS6NEFx
-         CoVgCfPKFWEtNGCpRuvX5UhhOl2wODmlXh699umW2ayEoBtPWRFLnntbimONB1zUZ0
-         dQU94RMrF6NlAVy7/HrKubOio4wn2s/rV70vupkI=
+        b=YKrBj5fUrRa26vf6rVokvB2IweXkY5pKT1ZaGNTkwqgBloiasWZ5ac8XeKiBZVxh4
+         Gv5/V+cSY9MH4/ujb5Q3Frta2ww9fCJqy3jsGJpBndnEGovejuwdE7vHR0pAwwFw4H
+         CY/W1Q8xauaOZaO89NB5xzkJ0UHDQaz8RGf1p9vI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Sven Peter <sven@svenpeter.dev>, Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH 5.4 54/63] i2c: pasemi: Wait for write xfers to finish
-Date:   Mon, 18 Apr 2022 14:13:51 +0200
-Message-Id: <20220418121137.806448460@linuxfoundation.org>
+        stable@vger.kernel.org, Vadim Pasternak <vadimp@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 05/63] mlxsw: i2c: Fix initialization error flow
+Date:   Mon, 18 Apr 2022 14:13:02 +0200
+Message-Id: <20220418121134.509255024@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -49,50 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Povišer <povik+lin@cutebit.org>
+From: Vadim Pasternak <vadimp@nvidia.com>
 
-commit bd8963e602c77adc76dbbbfc3417c3cf14fed76b upstream.
+[ Upstream commit d452088cdfd5a4ad9d96d847d2273fe958d6339b ]
 
-Wait for completion of write transfers before returning from the driver.
-At first sight it may seem advantageous to leave write transfers queued
-for the controller to carry out on its own time, but there's a couple of
-issues with it:
+Add mutex_destroy() call in driver initialization error flow.
 
- * Driver doesn't check for FIFO space.
-
- * The queued writes can complete while the driver is in its I2C read
-   transfer path which means it will get confused by the raising of
-   XEN (the 'transaction ended' signal). This can cause a spurious
-   ENODATA error due to premature reading of the MRXFIFO register.
-
-Adding the wait fixes some unreliability issues with the driver. There's
-some efficiency cost to it (especially with pasemi_smb_waitready doing
-its polling), but that will be alleviated once the driver receives
-interrupt support.
-
-Fixes: beb58aa39e6e ("i2c: PA Semi SMBus driver")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Reviewed-by: Sven Peter <sven@svenpeter.dev>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 6882b0aee180f ("mlxsw: Introduce support for I2C bus")
+Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Link: https://lore.kernel.org/r/20220407070703.2421076-1-idosch@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-pasemi.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/i2c/busses/i2c-pasemi.c
-+++ b/drivers/i2c/busses/i2c-pasemi.c
-@@ -137,6 +137,12 @@ static int pasemi_i2c_xfer_msg(struct i2
- 
- 		TXFIFO_WR(smbus, msg->buf[msg->len-1] |
- 			  (stop ? MTXFIFO_STOP : 0));
-+
-+		if (stop) {
-+			err = pasemi_smb_waitready(smbus);
-+			if (err)
-+				goto reset_out;
-+		}
- 	}
- 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/i2c.c b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
+index 95f408d0e103..7cc4c30af1a7 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/i2c.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
+@@ -649,6 +649,7 @@ static int mlxsw_i2c_probe(struct i2c_client *client,
  	return 0;
+ 
+ errout:
++	mutex_destroy(&mlxsw_i2c->cmd.lock);
+ 	i2c_set_clientdata(client, NULL);
+ 
+ 	return err;
+-- 
+2.35.1
+
 
 
