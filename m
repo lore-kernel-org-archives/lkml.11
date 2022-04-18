@@ -2,100 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C706C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:29:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E5E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244172AbiDRPcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40854 "EHLO
+        id S238374AbiDRPeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:34:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344940AbiDRPbV (ORCPT
+        with ESMTP id S1345164AbiDRPcI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:31:21 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62FFA64E5;
-        Mon, 18 Apr 2022 07:44:19 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id u3so18830208wrg.3;
-        Mon, 18 Apr 2022 07:44:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=U/BmndimxRUeGnhgbDunPyQq29ma5+SBfEP8BqMsdFU=;
-        b=ZLnqQm98G+ZMkFQXpLyGZSX7fecCPhjMaUZd1GrcqcdgaP6HD6TuQSlDJ3MYDJ6g7y
-         fjGPUCmal/HdSK6Joq1ZM5PJTvmmrMpUwmh9uy8kZyyOytxq4Fz91uEVLK/alpOxuHD+
-         hhKyyIWY6OZg4IaB8v/e30AnJ50CeXu34skkKWsH66GkjbeNa7HhkbRLzoYi5D01P4Gb
-         G5IiYD7NH9MxyhCdiPXFNJ0pIWeASI4bs01Vyn9WUV+AurAIfp9oIcZHa0DdeIQuZLEK
-         6dv3Howdcd6jr+QU19tVb12STIXLZaknW+Tm6Q12MyVCw1Mz9sQRQ7882olvihPcasSD
-         Z0nQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=U/BmndimxRUeGnhgbDunPyQq29ma5+SBfEP8BqMsdFU=;
-        b=m3i5mmN4b9dxY02Ht33enK1Is16KU5aNWitkytB6ggnDyZo0ZYPCo5YNpCxhXCJB/W
-         jf3A9erR8ysECSKBJXejD04Ju63CeH6nQcuAT6J5J/aYrRC7tvPYr7qsNC3dFfsfx3vT
-         p9HD/llAS2TnAx2sMdJAwWS/FMRCKZ4Jx54JOSlDSSlt7ZsomRqjjSMArd8BshsXAazw
-         z8HrCaBcw8w0TWg4Of+/r9v1gGoVaBVT8Cgn5+2nvEEYnr1GlgdMautntnrOwfSBLzPT
-         1+INy2LQDBJIlP17/QOdxncYbpRJCvQ/ZYkj4T5gYqgtHcXocmvJGX+VLBJWbCoDf26w
-         vyig==
-X-Gm-Message-State: AOAM533azVBcPXhL2mvdSWaw83vpux5ggO8a7FLT/mwdpOcbRamqhSqd
-        luEt3RK7FX9BMQtbm1WQvyc=
-X-Google-Smtp-Source: ABdhPJy6pPOJ+6VhwxYN/pnIzTHx+lgfuKlb7rqnPNvgzd2Y+LUnRXOI5h+9yUgPBmkfSXaE05jaAQ==
-X-Received: by 2002:a05:6000:1ace:b0:203:d465:1a83 with SMTP id i14-20020a0560001ace00b00203d4651a83mr8476727wry.26.1650293058002;
-        Mon, 18 Apr 2022 07:44:18 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id d2-20020a056000186200b0020a7be3f1d2sm9107529wri.53.2022.04.18.07.44.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 07:44:17 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Rob Herring <robh@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH] PCI: versatile: Remove redundant variable retval
-Date:   Mon, 18 Apr 2022 15:44:16 +0100
-Message-Id: <20220418144416.86121-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 18 Apr 2022 11:32:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4F91D32D;
+        Mon, 18 Apr 2022 07:45:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 237D3B80EE5;
+        Mon, 18 Apr 2022 14:45:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE4A2C385A1;
+        Mon, 18 Apr 2022 14:45:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650293120;
+        bh=9D22M32rTqd0DBd1ckR6AUneXhxPz8jtuLV0DeZTXHA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WWlxb99HzpfEXZeoExxYz9hMaA8AFKDteltrZlmAUzInzqKMU2yF233Esj2tbTVFC
+         JPXsNGZO4cWlUsOtqcey3RXyR+TP8qj+WHfDyEeUf4LudGZKnmN1iBpWJQ3Fzlg0qW
+         lQAX3s/qUyvuN9Hf3MkHqXwNP3ZkE7HoFwSi71wQxTrfNmQ5dArwwgDr7HHFtKpB60
+         dZQ3bdLdfLu803zKw35+4RVyyriUeDfV68Olx+tmSoHwtDdz9jzoHF30bzyoIHX8z/
+         q+w1tkSoRNRVMmCwws3Rg5fVNALYEzY2Q9I+tAnGXUIIN+K9Ljlj2ViqIY1WbOsB4F
+         if8aaEyKK9kkg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 7BD7040407; Mon, 18 Apr 2022 11:45:18 -0300 (-03)
+Date:   Mon, 18 Apr 2022 11:45:18 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     Adrian Hunter <adrian.hunter@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] perf script: Always allow field 'data_src' for auxtrace
+Message-ID: <Yl15fnAwfu3pDg2d@kernel.org>
+References: <20220417114837.839896-1-leo.yan@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220417114837.839896-1-leo.yan@linaro.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Variable retval is being assigned a value that is never read, the
-variable is redundant and can be removed.
+Em Sun, Apr 17, 2022 at 07:48:37PM +0800, Leo Yan escreveu:
+> If use command 'perf script -F,+data_src' to dump memory samples with
+> Arm SPE trace data, it reports error:
+> 
+>   # perf script -F,+data_src
+>   Samples for 'dummy:u' event do not have DATA_SRC attribute set. Cannot print 'data_src' field.
+> 
+> This is because the 'dummy:u' event is absent DATA_SRC bit in its sample
+> type, so if a file contains AUX area tracing data then always allow
+> field 'data_src' to be selected as an option for perf script.
 
-Cleans up clang scan build warning:
-drivers/pci/controller/pci-versatile.c:37:10: warning: Although the value
-stored to 'retval' is used in the enclosing expression, the value is never
-actually read from 'retval' [deadcode.DeadStores]
+Thanks, applied to perf/urgent.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/pci/controller/pci-versatile.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+- Arnaldo
 
-diff --git a/drivers/pci/controller/pci-versatile.c b/drivers/pci/controller/pci-versatile.c
-index 653d5d0ecf81..7991d334e0f1 100644
---- a/drivers/pci/controller/pci-versatile.c
-+++ b/drivers/pci/controller/pci-versatile.c
-@@ -31,10 +31,9 @@ static u32 pci_slot_ignore;
  
- static int __init versatile_pci_slot_ignore(char *str)
- {
--	int retval;
- 	int slot;
- 
--	while ((retval = get_option(&str, &slot))) {
-+	while (get_option(&str, &slot)) {
- 		if ((slot < 0) || (slot > 31))
- 			pr_err("Illegal slot value: %d\n", slot);
- 		else
+> Fixes: e55ed3423c1b ("perf arm-spe: Synthesize memory event")
+> Signed-off-by: Leo Yan <leo.yan@linaro.org>
+> ---
+>  tools/perf/builtin-script.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
+> index a2f117936188..cf5eab5431b4 100644
+> --- a/tools/perf/builtin-script.c
+> +++ b/tools/perf/builtin-script.c
+> @@ -461,7 +461,7 @@ static int evsel__check_attr(struct evsel *evsel, struct perf_session *session)
+>  		return -EINVAL;
+>  
+>  	if (PRINT_FIELD(DATA_SRC) &&
+> -	    evsel__check_stype(evsel, PERF_SAMPLE_DATA_SRC, "DATA_SRC", PERF_OUTPUT_DATA_SRC))
+> +	    evsel__do_check_stype(evsel, PERF_SAMPLE_DATA_SRC, "DATA_SRC", PERF_OUTPUT_DATA_SRC, allow_user_set))
+>  		return -EINVAL;
+>  
+>  	if (PRINT_FIELD(WEIGHT) &&
+> -- 
+> 2.25.1
+
 -- 
-2.35.1
 
+- Arnaldo
