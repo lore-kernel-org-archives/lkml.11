@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 656D3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:22:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 376E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231528AbiDRMYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49258 "EHLO
+        id S238498AbiDRMYz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239025AbiDRMXS (ORCPT
+        with ESMTP id S238988AbiDRMXQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:23:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DAFF1FA5E;
-        Mon, 18 Apr 2022 05:18:48 -0700 (PDT)
+        Mon, 18 Apr 2022 08:23:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2A5B1F639;
+        Mon, 18 Apr 2022 05:18:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6853760F01;
-        Mon, 18 Apr 2022 12:18:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74EE9C385A1;
-        Mon, 18 Apr 2022 12:18:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F93C60F01;
+        Mon, 18 Apr 2022 12:18:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 464D3C385A1;
+        Mon, 18 Apr 2022 12:18:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284327;
-        bh=CsCTfSsNjHS16QQ1DIkCgSALfrwY92Y131KIND27RZQ=;
+        s=korg; t=1650284321;
+        bh=tZywWRlz/GYtnjHuFQ/H2v22JKSJT+kAwSDdH8vOghk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VGN8+KmQolXWpXwlROHJiGI7Y4bofTsZyB6OQgcZcnL1J/UwImWtIPs6kRo0pxR67
-         xYhhUng9U9wRMyen+8Zd/GUaO3EOn68fFbHemwJjI16Uuy2EC7EhbaRiaMLjookbjU
-         moMQFi7fsto7WjLT4GInjoRz77TRNWqPsc2cT+hQ=
+        b=rqzy/wWJoVS/j6JbGvLPi+tU+cvqRaSLngkMuw++Ch1wR0D+zjtKOeyW0snvhbZ7S
+         UL3S0c+DqwaXo4hAjjfwH7/wH0uLM6LqzO3YFCeU1mA4JiwiNnYlOYdqAQqgCOkgs9
+         gq2jrsAoDktIci0AS17MGlskMNeDMZQMq+UORsmI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yi Chen <yiche@redhat.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 076/219] sctp: use the correct skb for security_sctp_assoc_request
-Date:   Mon, 18 Apr 2022 14:10:45 +0200
-Message-Id: <20220418121208.176976872@linuxfoundation.org>
+Subject: [PATCH 5.17 074/219] net: mdio: dont defer probe forever if PHY IRQ provider is missing
+Date:   Mon, 18 Apr 2022 14:10:43 +0200
+Message-Id: <20220418121208.043153639@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -52,67 +51,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit e2d88f9ce678cd33763826ae2f0412f181251314 ]
+[ Upstream commit 74befa447e6839cdd90ed541159ec783726946f9 ]
 
-Yi Chen reported an unexpected sctp connection abort, and it occurred when
-COOKIE_ECHO is bundled with DATA Fragment by SCTP HW GSO. As the IP header
-is included in chunk->head_skb instead of chunk->skb, it failed to check
-IP header version in security_sctp_assoc_request().
+When a driver for an interrupt controller is missing, of_irq_get()
+returns -EPROBE_DEFER ad infinitum, causing
+fwnode_mdiobus_phy_device_register(), and ultimately, the entire
+of_mdiobus_register() call, to fail. In turn, any phy_connect() call
+towards a PHY on this MDIO bus will also fail.
 
-According to Ondrej, SELinux only looks at IP header (address and IPsec
-options) and XFRM state data, and these are all included in head_skb for
-SCTP HW GSO packets. So fix it by using head_skb when calling
-security_sctp_assoc_request() in processing COOKIE_ECHO.
+This is not what is expected to happen, because the PHY library falls
+back to poll mode when of_irq_get() returns a hard error code, and the
+MDIO bus, PHY and attached Ethernet controller work fine, albeit
+suboptimally, when the PHY library polls for link status. However,
+-EPROBE_DEFER has special handling given the assumption that at some
+point probe deferral will stop, and the driver for the supplier will
+kick in and create the IRQ domain.
 
-v1->v2:
-  - As Ondrej noticed, chunk->head_skb should also be used for
-    security_sctp_assoc_established() in sctp_sf_do_5_1E_ca().
+Reasons for which the interrupt controller may be missing:
 
-Fixes: e215dab1c490 ("security: call security_sctp_assoc_request in sctp_sf_do_5_1D_ce")
-Reported-by: Yi Chen <yiche@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Reviewed-by: Ondrej Mosnacek <omosnace@redhat.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Link: https://lore.kernel.org/r/71becb489e51284edf0c11fc15246f4ed4cef5b6.1649337862.git.lucien.xin@gmail.com
+- It is not yet written. This may happen if a more recent DT blob (with
+  an interrupt-parent for the PHY) is used to boot an old kernel where
+  the driver didn't exist, and that kernel worked with the
+  vintage-correct DT blob using poll mode.
+
+- It is compiled out. Behavior is the same as above.
+
+- It is compiled as a module. The kernel will wait for a number of
+  seconds specified in the "deferred_probe_timeout" boot parameter for
+  user space to load the required module. The current default is 0,
+  which times out at the end of initcalls. It is possible that this
+  might cause regressions unless users adjust this boot parameter.
+
+The proposed solution is to use the driver_deferred_probe_check_state()
+helper function provided by the driver core, which gives up after some
+-EPROBE_DEFER attempts, taking "deferred_probe_timeout" into consideration.
+The return code is changed from -EPROBE_DEFER into -ENODEV or
+-ETIMEDOUT, depending on whether the kernel is compiled with support for
+modules or not.
+
+Fixes: 66bdede495c7 ("of_mdio: Fix broken PHY IRQ in case of probe deferral")
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220407165538.4084809-1-vladimir.oltean@nxp.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/sm_statefuns.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/base/dd.c              | 1 +
+ drivers/net/mdio/fwnode_mdio.c | 5 +++++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-index 7f342bc12735..52edee1322fc 100644
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -781,7 +781,7 @@ enum sctp_disposition sctp_sf_do_5_1D_ce(struct net *net,
- 		}
- 	}
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 752a11d16e26..7e079fa3795b 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -296,6 +296,7 @@ int driver_deferred_probe_check_state(struct device *dev)
  
--	if (security_sctp_assoc_request(new_asoc, chunk->skb)) {
-+	if (security_sctp_assoc_request(new_asoc, chunk->head_skb ?: chunk->skb)) {
- 		sctp_association_free(new_asoc);
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 	}
-@@ -932,7 +932,7 @@ enum sctp_disposition sctp_sf_do_5_1E_ca(struct net *net,
+ 	return -EPROBE_DEFER;
+ }
++EXPORT_SYMBOL_GPL(driver_deferred_probe_check_state);
  
- 	/* Set peer label for connection. */
- 	if (security_sctp_assoc_established((struct sctp_association *)asoc,
--					    chunk->skb))
-+					    chunk->head_skb ?: chunk->skb))
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ static void deferred_probe_timeout_work_func(struct work_struct *work)
+ {
+diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+index 1becb1a731f6..1c1584fca632 100644
+--- a/drivers/net/mdio/fwnode_mdio.c
++++ b/drivers/net/mdio/fwnode_mdio.c
+@@ -43,6 +43,11 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
+ 	int rc;
  
- 	/* Verify that the chunk length for the COOKIE-ACK is OK.
-@@ -2262,7 +2262,7 @@ enum sctp_disposition sctp_sf_do_5_2_4_dupcook(
- 	}
+ 	rc = fwnode_irq_get(child, 0);
++	/* Don't wait forever if the IRQ provider doesn't become available,
++	 * just fall back to poll mode
++	 */
++	if (rc == -EPROBE_DEFER)
++		rc = driver_deferred_probe_check_state(&phy->mdio.dev);
+ 	if (rc == -EPROBE_DEFER)
+ 		return rc;
  
- 	/* Update socket peer label if first association. */
--	if (security_sctp_assoc_request(new_asoc, chunk->skb)) {
-+	if (security_sctp_assoc_request(new_asoc, chunk->head_skb ?: chunk->skb)) {
- 		sctp_association_free(new_asoc);
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 	}
 -- 
 2.35.1
 
