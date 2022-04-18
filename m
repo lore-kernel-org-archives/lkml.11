@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C05AC4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0EA7C3525B
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243391AbiDRNKE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:10:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59846 "EHLO
+        id S243330AbiDRNKC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241364AbiDRM6j (ORCPT
+        with ESMTP id S241275AbiDRM6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:58:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0511A27CFD;
-        Mon, 18 Apr 2022 05:38:59 -0700 (PDT)
+        Mon, 18 Apr 2022 08:58:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06712275CB;
+        Mon, 18 Apr 2022 05:38:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60069611D6;
-        Mon, 18 Apr 2022 12:38:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 661B7C385A1;
-        Mon, 18 Apr 2022 12:38:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58232B80EDD;
+        Mon, 18 Apr 2022 12:38:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F7DAC385A1;
+        Mon, 18 Apr 2022 12:38:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285538;
-        bh=AVO+MOL+bqK/XmS+YnMfmQ7LUvClj07a1xA0LE9tqAE=;
+        s=korg; t=1650285530;
+        bh=7pljjTtnQK7vSOC4UMs/AsmTYE4EvmJi4DnLDl8Bdgo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MhsXjK/d0ZDa2hA+lJgj8OFGZ3KYtgwnbIvbN/7yBcR1kyTvBuvq1Q7hhh0q9KjWI
-         74Ip3Bo7CfJ12khRip256CGBTprMDJEmC7pNg8alS47jN9dE0XAFYiO5yhSpF272wC
-         26zw2DGfpkxm5PN0HDnlfImxooct/7DodEFxMgjU=
+        b=kqgN2cCF9d4QE1+4rePZFDQAn+z6Vc5UM67b+KGIEfmo5Qn3M68DMzQ5MImoTh/tH
+         XL8fQjaH7AL6bd7Ja+j2Yme4KREo43wgXhiTxhoqNBQQoM5265RFwLLc5eCARwrPzw
+         DrkLw0lrxPPGbIfZCfYeuTYJ1M6WQR5dC0BMO8a0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dragan Simic <dragan.simic@gmail.com>,
-        Kyle Copperfield <kmcopper@danwin1210.me>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 010/105] media: rockchip/rga: do proper error checking in probe
-Date:   Mon, 18 Apr 2022 14:12:12 +0200
-Message-Id: <20220418121145.920599451@linuxfoundation.org>
+Subject: [PATCH 5.10 007/105] drm/msm: Add missing put_task_struct() in debugfs path
+Date:   Mon, 18 Apr 2022 14:12:09 +0200
+Message-Id: <20220418121145.657156428@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -53,42 +48,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kyle Copperfield <kmcopper@danwin1210.me>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit 6150f276073a1480030242a7e006a89e161d6cd6 ]
+[ Upstream commit ac3e4f42d5ec459f701743debd9c1ad2f2247402 ]
 
-The latest fix for probe error handling contained a typo that causes
-probing to fail with the following message:
-
-  rockchip-rga: probe of ff680000.rga failed with error -12
-
-This patch fixes the typo.
-
-Fixes: e58430e1d4fd (media: rockchip/rga: fix error handling in probe)
-Reviewed-by: Dragan Simic <dragan.simic@gmail.com>
-Signed-off-by: Kyle Copperfield <kmcopper@danwin1210.me>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 25faf2f2e065 ("drm/msm: Show process names in gem_describe")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Link: https://lore.kernel.org/r/20220317184550.227991-1-robdclark@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/rockchip/rga/rga.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/msm_gem.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/platform/rockchip/rga/rga.c b/drivers/media/platform/rockchip/rga/rga.c
-index 6759091b15e0..d99ea8973b67 100644
---- a/drivers/media/platform/rockchip/rga/rga.c
-+++ b/drivers/media/platform/rockchip/rga/rga.c
-@@ -895,7 +895,7 @@ static int rga_probe(struct platform_device *pdev)
- 	}
- 	rga->dst_mmu_pages =
- 		(unsigned int *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 3);
--	if (rga->dst_mmu_pages) {
-+	if (!rga->dst_mmu_pages) {
- 		ret = -ENOMEM;
- 		goto free_src_pages;
- 	}
+diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
+index 819567e40565..9c05bf6c4551 100644
+--- a/drivers/gpu/drm/msm/msm_gem.c
++++ b/drivers/gpu/drm/msm/msm_gem.c
+@@ -849,6 +849,7 @@ void msm_gem_describe(struct drm_gem_object *obj, struct seq_file *m)
+ 					get_pid_task(aspace->pid, PIDTYPE_PID);
+ 				if (task) {
+ 					comm = kstrdup(task->comm, GFP_KERNEL);
++					put_task_struct(task);
+ 				} else {
+ 					comm = NULL;
+ 				}
 -- 
 2.35.1
 
