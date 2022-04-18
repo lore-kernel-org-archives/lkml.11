@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A58C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:58:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5503CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:58:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240690AbiDRNAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:00:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59966 "EHLO
+        id S240589AbiDRNA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240589AbiDRMto (ORCPT
+        with ESMTP id S240440AbiDRMth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:49:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B122C12E;
-        Mon, 18 Apr 2022 05:33:59 -0700 (PDT)
+        Mon, 18 Apr 2022 08:49:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9556A2B250;
+        Mon, 18 Apr 2022 05:33:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E98AB80ED6;
-        Mon, 18 Apr 2022 12:33:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99CEEC385A1;
-        Mon, 18 Apr 2022 12:33:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC18D61033;
+        Mon, 18 Apr 2022 12:33:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDDD8C385A1;
+        Mon, 18 Apr 2022 12:33:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285237;
-        bh=EcZIn9B50ER/b5XM1sUKQIjm37ZI2VynoYO5vl94STY=;
+        s=korg; t=1650285227;
+        bh=0w5fkYWRq9t9bwKn/65Gjp/8xhsgA6n0+Ym3YnpIS4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OWH2XQeHPaOmtUMMlQ5ltbYCwz0jv8Rs1vBgHvrH99So28tUtQQrbgUEYU5wJj9iA
-         dZBvQf8Zxxud6dNwjd3DGWISsLCra36qoxMrrLPrKObvQyLA0UScrN5VQhGQIrEWF6
-         ka3UGxlFYjUIZVa0BZ4572fnQF+qgwclLfJiLB+o=
+        b=h26+t1xMD4P7Vjjb+Myez97KCvk+NPqzlb+DpvCRh4xaQ08aFT3/lCwpc4tPysMyd
+         OEY3m7v0VzvNdityKg4dz2sOhrECOAcbqQNpeUBD091HsTpVDXV1oV5VQ2kC6xUGML
+         rOEqS8rRZrQmnLFK+oOQX4sYdzjx0RVRG7oXT19Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Chiu <andy.chiu@sifive.com>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Frank Li <Frank.li@nxp.com>, Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 128/189] net: axienet: setup mdio unconditionally
-Date:   Mon, 18 Apr 2022 14:12:28 +0200
-Message-Id: <20220418121204.671340317@linuxfoundation.org>
+Subject: [PATCH 5.15 143/189] perf/imx_ddr: Fix undefined behavior due to shift overflowing the constant
+Date:   Mon, 18 Apr 2022 14:12:43 +0200
+Message-Id: <20220418121205.660191822@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -53,53 +56,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Chiu <andy.chiu@sifive.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit d1c4f93e3f0a023024a6f022a61528c06cf1daa9 ]
+[ Upstream commit d02b4dd84e1a90f7f1444d027c0289bf355b0d5a ]
 
-The call to axienet_mdio_setup should not depend on whether "phy-node"
-pressents on the DT. Besides, since `lp->phy_node` is used if PHY is in
-SGMII or 100Base-X modes, move it into the if statement. And the next patch
-will remove `lp->phy_node` from driver's private structure and do an
-of_node_put on it right away after use since it is not used elsewhere.
+Fix:
 
-Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
-Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
-Reviewed-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+  In file included from <command-line>:0:0:
+  In function ‘ddr_perf_counter_enable’,
+      inlined from ‘ddr_perf_irq_handler’ at drivers/perf/fsl_imx8_ddr_perf.c:651:2:
+  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_729’ \
+	declared with attribute error: FIELD_PREP: mask is not constant
+    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+...
+
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Frank Li <Frank.li@nxp.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Acked-by: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220405151517.29753-10-bp@alien8.de
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/perf/fsl_imx8_ddr_perf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 80637ffcca93..fbbbcfe0e891 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -2127,15 +2127,14 @@ static int axienet_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto cleanup_clk;
+diff --git a/drivers/perf/fsl_imx8_ddr_perf.c b/drivers/perf/fsl_imx8_ddr_perf.c
+index 94ebc1ecace7..b1b2a55de77f 100644
+--- a/drivers/perf/fsl_imx8_ddr_perf.c
++++ b/drivers/perf/fsl_imx8_ddr_perf.c
+@@ -29,7 +29,7 @@
+ #define CNTL_OVER_MASK		0xFFFFFFFE
  
--	lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
--	if (lp->phy_node) {
--		ret = axienet_mdio_setup(lp);
--		if (ret)
--			dev_warn(&pdev->dev,
--				 "error registering MDIO bus: %d\n", ret);
--	}
-+	ret = axienet_mdio_setup(lp);
-+	if (ret)
-+		dev_warn(&pdev->dev,
-+			 "error registering MDIO bus: %d\n", ret);
-+
- 	if (lp->phy_mode == PHY_INTERFACE_MODE_SGMII ||
- 	    lp->phy_mode == PHY_INTERFACE_MODE_1000BASEX) {
-+		lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
- 		if (!lp->phy_node) {
- 			dev_err(&pdev->dev, "phy-handle required for 1000BaseX/SGMII\n");
- 			ret = -EINVAL;
+ #define CNTL_CSV_SHIFT		24
+-#define CNTL_CSV_MASK		(0xFF << CNTL_CSV_SHIFT)
++#define CNTL_CSV_MASK		(0xFFU << CNTL_CSV_SHIFT)
+ 
+ #define EVENT_CYCLES_ID		0
+ #define EVENT_CYCLES_COUNTER	0
 -- 
 2.35.1
 
