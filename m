@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 012B1C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:20:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 768C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238585AbiDRMX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:23:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48826 "EHLO
+        id S234460AbiDRMXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:23:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238573AbiDRMWh (ORCPT
+        with ESMTP id S238595AbiDRMWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:22:37 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548251E3E3;
-        Mon, 18 Apr 2022 05:17:52 -0700 (PDT)
+        Mon, 18 Apr 2022 08:22:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B931E3F3;
+        Mon, 18 Apr 2022 05:17:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A4195CE1077;
-        Mon, 18 Apr 2022 12:17:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90880C385A7;
-        Mon, 18 Apr 2022 12:17:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 978E9B80EDA;
+        Mon, 18 Apr 2022 12:17:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9FEDC385A1;
+        Mon, 18 Apr 2022 12:17:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284269;
-        bh=8knLZoPJk4a53zkhcmAmTdECi6kU/0EGUcp5Zlk78SE=;
+        s=korg; t=1650284272;
+        bh=DGlMcssyVODphwIEjEibXqLuXSd5OjJfC7Az2qe41EA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vXnwJoaeDGMn+1uZ/f7kDg3xFOec8iOjzfst893O6W3e1Jpr7pdsNr2B6TDaOzlAx
-         xe8EeiAjCAwgmySGy4Vi9I+GquCP6Is143AjqRXIZQtOR8bQoCPwTpJBri/8xrTHa8
-         NEQgKv8iRfLzBblP97ty4q4aZvcuHbGatUW9uC80=
+        b=OebP33cN3/hRigxzDaDzbmTXcumoCcCuPUML5z55B+TXpgDopRarnm7tGj+Ea9zVc
+         zT3ph8lR2QDcul2eL7EbgQ2kosSxkKmOg9zJ58pL1HvU/stKrdCiRPWtR8n1mDUsWX
+         U2WWL1NGS9NJ2d5/FXGdIDpj+q6m1/UZ1MVnDuCw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 059/219] nfsd: Fix a write performance regression
-Date:   Mon, 18 Apr 2022 14:10:28 +0200
-Message-Id: <20220418121207.048407777@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 042/219] ALSA: intel_hdmi: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:10:11 +0200
+Message-Id: <20220418121205.880122869@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,86 +47,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 6b8a94332ee4f7d9a8ae0cbac7609f79c212f06c ]
+commit 5e154dfb4f9995096aa6d342df75040ae802c17e upstream.
 
-The call to filemap_flush() in nfsd_file_put() is there to ensure that
-we clear out any writes belonging to a NFSv3 client relatively quickly
-and avoid situations where the file can't be evicted by the garbage
-collector. It also ensures that we detect write errors quickly.
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-The problem is this causes a regression in performance for some
-workloads.
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
 
-So try to improve matters by deferring writeback until we're ready to
-close the file, and need to detect errors so that we can force the
-client to resend.
-
-Tested-by: Jan Kara <jack@suse.cz>
-Fixes: b6669305d35a ("nfsd: Reduce the number of calls to nfsd_file_gc()")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Link: https://lore.kernel.org/all/20220330103457.r4xrhy2d6nhtouzk@quack3.lan
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 854577ac2aea ("ALSA: x86: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-27-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/filecache.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ sound/x86/intel_hdmi_audio.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
-index cc2831cec669..496f7b3f7523 100644
---- a/fs/nfsd/filecache.c
-+++ b/fs/nfsd/filecache.c
-@@ -235,6 +235,13 @@ nfsd_file_check_write_error(struct nfsd_file *nf)
- 	return filemap_check_wb_err(file->f_mapping, READ_ONCE(file->f_wb_err));
+--- a/sound/x86/intel_hdmi_audio.c
++++ b/sound/x86/intel_hdmi_audio.c
+@@ -1665,7 +1665,7 @@ static void hdmi_lpe_audio_free(struct s
+  * This function is called when the i915 driver creates the
+  * hdmi-lpe-audio platform device.
+  */
+-static int hdmi_lpe_audio_probe(struct platform_device *pdev)
++static int __hdmi_lpe_audio_probe(struct platform_device *pdev)
+ {
+ 	struct snd_card *card;
+ 	struct snd_intelhad_card *card_ctx;
+@@ -1828,6 +1828,11 @@ static int hdmi_lpe_audio_probe(struct p
+ 	return 0;
  }
  
-+static void
-+nfsd_file_flush(struct nfsd_file *nf)
++static int hdmi_lpe_audio_probe(struct platform_device *pdev)
 +{
-+	if (nf->nf_file && vfs_fsync(nf->nf_file, 1) != 0)
-+		nfsd_reset_write_verifier(net_generic(nf->nf_net, nfsd_net_id));
++	return snd_card_free_on_error(&pdev->dev, __hdmi_lpe_audio_probe(pdev));
 +}
 +
- static void
- nfsd_file_do_unhash(struct nfsd_file *nf)
- {
-@@ -302,11 +309,14 @@ nfsd_file_put(struct nfsd_file *nf)
- 		return;
- 	}
- 
--	filemap_flush(nf->nf_file->f_mapping);
- 	is_hashed = test_bit(NFSD_FILE_HASHED, &nf->nf_flags) != 0;
--	nfsd_file_put_noref(nf);
--	if (is_hashed)
-+	if (!is_hashed) {
-+		nfsd_file_flush(nf);
-+		nfsd_file_put_noref(nf);
-+	} else {
-+		nfsd_file_put_noref(nf);
- 		nfsd_file_schedule_laundrette();
-+	}
- 	if (atomic_long_read(&nfsd_filecache_count) >= NFSD_FILE_LRU_LIMIT)
- 		nfsd_file_gc();
- }
-@@ -327,6 +337,7 @@ nfsd_file_dispose_list(struct list_head *dispose)
- 	while(!list_empty(dispose)) {
- 		nf = list_first_entry(dispose, struct nfsd_file, nf_lru);
- 		list_del(&nf->nf_lru);
-+		nfsd_file_flush(nf);
- 		nfsd_file_put_noref(nf);
- 	}
- }
-@@ -340,6 +351,7 @@ nfsd_file_dispose_list_sync(struct list_head *dispose)
- 	while(!list_empty(dispose)) {
- 		nf = list_first_entry(dispose, struct nfsd_file, nf_lru);
- 		list_del(&nf->nf_lru);
-+		nfsd_file_flush(nf);
- 		if (!refcount_dec_and_test(&nf->nf_ref))
- 			continue;
- 		if (nfsd_file_free(nf))
--- 
-2.35.1
-
+ static const struct dev_pm_ops hdmi_lpe_audio_pm = {
+ 	SET_SYSTEM_SLEEP_PM_OPS(hdmi_lpe_audio_suspend, hdmi_lpe_audio_resume)
+ };
 
 
