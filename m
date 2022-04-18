@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37239C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CE6DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239683AbiDRMwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
+        id S239759AbiDRMw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240810AbiDRMji (ORCPT
+        with ESMTP id S239833AbiDRMiJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AE13B20;
-        Mon, 18 Apr 2022 05:30:47 -0700 (PDT)
+        Mon, 18 Apr 2022 08:38:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10656240BD;
+        Mon, 18 Apr 2022 05:28:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7017B80EC1;
-        Mon, 18 Apr 2022 12:30:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39C20C385A7;
-        Mon, 18 Apr 2022 12:30:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72B4D60B40;
+        Mon, 18 Apr 2022 12:28:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B044C385A1;
+        Mon, 18 Apr 2022 12:28:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285044;
-        bh=8/1RHy4MdpZjC7sA0dq68BKq+gTwySVBh9ogwJc4L54=;
+        s=korg; t=1650284922;
+        bh=Ax4pNkg7lo0baEl4IIg+lzBbn4lt6rQz3Gz0GRLZcU0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jnJVWwO+94szZmtoEVf0M0ZX7yobzN6gy1wP2pVsLNohilkRbPAZ26pb8krIhzwMO
-         K6E4lVKb0kmqi1PnIkLCGanvYAq66RqkJ3mbWy6C7njqSzZfRpF/EV/TXi2DJ3lr31
-         LVuOJftmQzlTqySVwK3ap1RGS8Q2TADIY8F1TluY=
+        b=DRJHAI5zEFnS/udL3rFdckFyEwZxH/Cg+L+cxi7YsHuSauvogfpWdCE10Qu5bCqdo
+         WkkjT5PbQdEtGlKX4vUDvhYOdVB/0iRZpJUBNUFW73lWhEPos1FGf+KyEYyFzqTVOX
+         /EDkntp9MJDNKqt82+T0V3YbtGvZ/6SonOw6YKEM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 056/189] drm/msm: Add missing put_task_struct() in debugfs path
-Date:   Mon, 18 Apr 2022 14:11:16 +0200
-Message-Id: <20220418121202.100734649@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 048/189] ALSA: rme32: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:11:08 +0200
+Message-Id: <20220418121201.876834986@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -48,32 +47,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit ac3e4f42d5ec459f701743debd9c1ad2f2247402 ]
+commit 55d2d046b23b9bcb907f6b3e38e52113d55085eb upstream.
 
-Fixes: 25faf2f2e065 ("drm/msm: Show process names in gem_describe")
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Link: https://lore.kernel.org/r/20220317184550.227991-1-robdclark@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
+
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
+
+Fixes: 102e6156ded2 ("ALSA: rme32: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-23-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/msm_gem.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/pci/rme32.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
-index cb52ac01e512..d280dd64744d 100644
---- a/drivers/gpu/drm/msm/msm_gem.c
-+++ b/drivers/gpu/drm/msm/msm_gem.c
-@@ -937,6 +937,7 @@ void msm_gem_describe(struct drm_gem_object *obj, struct seq_file *m,
- 					get_pid_task(aspace->pid, PIDTYPE_PID);
- 				if (task) {
- 					comm = kstrdup(task->comm, GFP_KERNEL);
-+					put_task_struct(task);
- 				} else {
- 					comm = NULL;
- 				}
--- 
-2.35.1
-
+--- a/sound/pci/rme32.c
++++ b/sound/pci/rme32.c
+@@ -1875,7 +1875,7 @@ static void snd_rme32_card_free(struct s
+ }
+ 
+ static int
+-snd_rme32_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
++__snd_rme32_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+ {
+ 	static int dev;
+ 	struct rme32 *rme32;
+@@ -1927,6 +1927,12 @@ snd_rme32_probe(struct pci_dev *pci, con
+ 	return 0;
+ }
+ 
++static int
++snd_rme32_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_rme32_probe(pci, pci_id));
++}
++
+ static struct pci_driver rme32_driver = {
+ 	.name =		KBUILD_MODNAME,
+ 	.id_table =	snd_rme32_ids,
 
 
