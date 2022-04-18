@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E86C3525B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3EBCC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244164AbiDRNn3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59194 "EHLO
+        id S244148AbiDRNn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241827AbiDRNQw (ORCPT
+        with ESMTP id S241766AbiDRNQk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:16:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9B13B3D4;
-        Mon, 18 Apr 2022 05:51:32 -0700 (PDT)
+        Mon, 18 Apr 2022 09:16:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F9F3B2A4;
+        Mon, 18 Apr 2022 05:51:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DE56B80E4B;
-        Mon, 18 Apr 2022 12:51:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52ECEC385A7;
-        Mon, 18 Apr 2022 12:51:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 081066124E;
+        Mon, 18 Apr 2022 12:51:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAFF0C385A1;
+        Mon, 18 Apr 2022 12:51:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286289;
-        bh=1oyP9Yl4iCnmhceZBjK/ORLjx4DgeqKe6WkA2MqXfLI=;
+        s=korg; t=1650286286;
+        bh=ougz0A3GVQnfqTBVPOaUoq+OCwWMjMUSH082GbCyOXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RJOwMTVokgn2nqkOGQXbLwjv2EWEJOsWALDX61yhkg9u12D9YFaehEgbOXEjk2LcK
-         hYOAI6NuNlIDxvOv2wBAF58P/veoYB+c86H7KiwYfqmmqeVQmljYTqMDb4mJXmS6rd
-         W74QJi1TzrLHo8V03Z96Y/mnZdpIhzDTzV9lHPLY=
+        b=Otd9kC6fR/nTvGvsSrXTxvAuQqMCU+a53EFhfqI2VgkeHJqloNkhGPlAxxAke74FT
+         8O484v+WPeIC1AYciCNpOWGYy5ymSusTommMurPoIjRZjH0mmM/0NNST+W0RVuhzng
+         DrPswGRgKrTkNoTTROU5TVft+ct+aVM/NBxE5y0g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
         "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 4.14 037/284] ACPI: properties: Consistently return -ENOENT if there are no more references
-Date:   Mon, 18 Apr 2022 14:10:18 +0200
-Message-Id: <20220418121211.750050000@linuxfoundation.org>
+Subject: [PATCH 4.14 046/284] thermal: int340x: Increase bitmap size
+Date:   Mon, 18 Apr 2022 14:10:27 +0200
+Message-Id: <20220418121212.005004311@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,36 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-commit babc92da5928f81af951663fc436997352e02d3a upstream.
+commit 668f69a5f863b877bc3ae129efe9a80b6f055141 upstream.
 
-__acpi_node_get_property_reference() is documented to return -ENOENT if
-the caller requests a property reference at an index that does not exist,
-not -EINVAL which it actually does.
+The number of policies are 10, so can't be supported by the bitmap size
+of u8.
 
-Fix this by returning -ENOENT consistenly, independently of whether the
-property value is a plain reference or a package.
+Even though there are no platfoms with these many policies, but
+for correctness increase to u32.
 
-Fixes: c343bc2ce2c6 ("ACPI: properties: Align return codes of __acpi_node_get_property_reference()")
-Cc: 4.14+ <stable@vger.kernel.org> # 4.14+
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Fixes: 16fc8eca1975 ("thermal/int340x_thermal: Add additional UUIDs")
+Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
 Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/property.c |    2 +-
+ drivers/thermal/int340x_thermal/int3400_thermal.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/acpi/property.c
-+++ b/drivers/acpi/property.c
-@@ -601,7 +601,7 @@ int __acpi_node_get_property_reference(c
- 	 */
- 	if (obj->type == ACPI_TYPE_LOCAL_REFERENCE) {
- 		if (index)
--			return -EINVAL;
-+			return -ENOENT;
- 
- 		ret = acpi_bus_get_device(obj->reference.handle, &device);
- 		if (ret)
+--- a/drivers/thermal/int340x_thermal/int3400_thermal.c
++++ b/drivers/thermal/int340x_thermal/int3400_thermal.c
+@@ -53,7 +53,7 @@ struct int3400_thermal_priv {
+ 	struct art *arts;
+ 	int trt_count;
+ 	struct trt *trts;
+-	u8 uuid_bitmap;
++	u32 uuid_bitmap;
+ 	int rel_misc_dev_res;
+ 	int current_uuid_index;
+ };
 
 
