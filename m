@@ -2,316 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6405CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 18:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 158DBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 18:02:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347288AbiDRSDr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 14:03:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51198 "EHLO
+        id S237057AbiDRSFU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 14:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239421AbiDRSDq (ORCPT
+        with ESMTP id S236694AbiDRSFS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 14:03:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C24872B267
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 11:01:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650304865;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=h2xJQAjjAMxj15/Nk8pU+d9wAHaap4Eqczh9wEnvtVw=;
-        b=G4Xii1qLy3d80rjP/FWaAgiPakipNa82qVGhnk67wwBLhrGPckUN0rER1H+7PhEeq+rlKi
-        NbITdBrN7o/EZDzc+3N06VgovJevzFf2+yRLWxslycexTJcOn+hLuln6mdkRSzy9bC0INN
-        UFPwbaUUaoSNpIT8oQ1yPlatMCDln0c=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-637-hpYrLCy4NG2Bab_--fo3cw-1; Mon, 18 Apr 2022 14:01:02 -0400
-X-MC-Unique: hpYrLCy4NG2Bab_--fo3cw-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3C62A3820F69;
-        Mon, 18 Apr 2022 18:01:02 +0000 (UTC)
-Received: from redhat.com (unknown [10.22.8.122])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 04E1F5374E1;
-        Mon, 18 Apr 2022 18:01:01 +0000 (UTC)
-Date:   Mon, 18 Apr 2022 14:01:00 -0400
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org
-Subject: Re: elf API: was: Re: [RFC PATCH v6 03/12] livepatch: Add
- klp-convert tool
-Message-ID: <Yl2nXD2L4z3gu5Nr@redhat.com>
-References: <20220216163940.228309-1-joe.lawrence@redhat.com>
- <20220216163940.228309-4-joe.lawrence@redhat.com>
- <Ylg3qKWBpryUa/t8@alley>
+        Mon, 18 Apr 2022 14:05:18 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF81B35279
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 11:02:38 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso17882656pju.1
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 11:02:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eg593dgxClf//7PPVqv2pIKMyAscRCrL2z7qozxUKac=;
+        b=CTpAD/MMzI7jhpybytxnZY4ekWnGxVHkxOrnnn/OW28kpud2Zy8hEej7e+egaOTbhr
+         4snRL6190R9sAqG4ms5put2bvw/vK4aF3J/JuWf3HN/48SfWSnBVCCzGV5oTXq7ZFzTZ
+         pbS3yi09TfZvMcLUarrnxNDbWMYA+2iUZwcWE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eg593dgxClf//7PPVqv2pIKMyAscRCrL2z7qozxUKac=;
+        b=YjEWgtDkg0QkjLBombTfF+DHEaTqEqZhDGNlgmUiWbIAJlulGPmDhUf12E2o0TCSHk
+         ygcPue/RM2lQ5rTzBQ9zi9jHGmCkafaAs91rysDNLLVdL8w400JwYCY7vtQrziNREofo
+         9dhkzljUAwJNbTE9LFWjjZM+UjYUDh5uZ3pW5hCibKxE/xXLPURc1ZC/Zot+6xT9sakM
+         LO6IlMsXrKIWWjXCvWxLbIyw+sEh0JbGCHzV4tj9XcSeot452nEZplhM5a2OnY0oqJYZ
+         kK5WyjAQftXTK94vjCwIbedi/xMYmErlhrBtZXTS3TgolC//lbTJbs9HUFCcoyQOq6St
+         ADYQ==
+X-Gm-Message-State: AOAM5306aZioS4C7rUtnDplbj8WiR5k/dVu6GcKM0nUJaj85jtHIzzAn
+        Oane+N2VDJKK0HJCzN54f/xcZA==
+X-Google-Smtp-Source: ABdhPJxt4UVsz1QDHcMYghK0k7x93W6SA+ManYwfE51sQgtEkuNj9kX2yOc0NVFRY/m6GbkL85bWeg==
+X-Received: by 2002:a17:902:cf0a:b0:156:39c9:4c44 with SMTP id i10-20020a170902cf0a00b0015639c94c44mr12091466plg.124.1650304958488;
+        Mon, 18 Apr 2022 11:02:38 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:6b32:a0a5:ec32:c287])
+        by smtp.gmail.com with UTF8SMTPSA id f10-20020a056a0022ca00b0050a858e8cc3sm3049297pfj.200.2022.04.18.11.02.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 11:02:37 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 11:02:35 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
+        srinivas.kandagatla@linaro.org, dianders@chromium.org,
+        swboyd@chromium.org, judyhsiao@chromium.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v8 4/4] arm64: dts: qcom: sc7280: Add dt nodes for sound
+ card
+Message-ID: <Yl2nuxzH0mcPa94B@google.com>
+References: <1650291252-30398-1-git-send-email-quic_srivasam@quicinc.com>
+ <1650291252-30398-5-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Ylg3qKWBpryUa/t8@alley>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+In-Reply-To: <1650291252-30398-5-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 05:03:04PM +0200, Petr Mladek wrote:
-> On Wed 2022-02-16 11:39:31, Joe Lawrence wrote:
-> > From: Josh Poimboeuf <jpoimboe@redhat.com>
-> > klp-convert relies on libelf and on a list implementation. Add files
-> > scripts/livepatch/elf.c and scripts/livepatch/elf.h, which are a libelf
-> > interfacing layer and scripts/livepatch/list.h, which is a list
-> > implementation.
-> > 
-> > --- /dev/null
-> > +++ b/scripts/livepatch/elf.c
-> > +static int update_shstrtab(struct elf *elf)
-> > +{
-> > +	struct section *shstrtab, *sec;
-> > +	size_t orig_size, new_size = 0, offset, len;
-> > +	char *buf;
-> > +
-> > +	shstrtab = find_section_by_name(elf, ".shstrtab");
-> > +	if (!shstrtab) {
-> > +		WARN("can't find .shstrtab");
-> > +		return -1;
-> > +	}
-> > +
-> > +	orig_size = new_size = shstrtab->size;
-> > +
-> > +	list_for_each_entry(sec, &elf->sections, list) {
-> > +		if (sec->sh.sh_name != -1)
-> > +			continue;
-> > +		new_size += strlen(sec->name) + 1;
-> > +	}
-> > +
-> > +	if (new_size == orig_size)
-> > +		return 0;
-> > +
-> > +	buf = malloc(new_size);
-> > +	if (!buf) {
-> > +		WARN("malloc failed");
-> > +		return -1;
-> > +	}
-> > +	memcpy(buf, (void *)shstrtab->data, orig_size);
-> > +
-> > +	offset = orig_size;
-> > +	list_for_each_entry(sec, &elf->sections, list) {
-> > +		if (sec->sh.sh_name != -1)
-> > +			continue;
-> > +		sec->sh.sh_name = offset;
-> > +		len = strlen(sec->name) + 1;
-> > +		memcpy(buf + offset, sec->name, len);
-> > +		offset += len;
-> > +	}
-> > +
-> > +	shstrtab->elf_data->d_buf = shstrtab->data = buf;
-> > +	shstrtab->elf_data->d_size = shstrtab->size = new_size;
-> > +	shstrtab->sh.sh_size = new_size;
+On Mon, Apr 18, 2022 at 07:44:12PM +0530, Srinivasa Rao Mandadapu wrote:
+> Add dt nodes for sound card support, which is using WCD938x headset
+> playback, capture, I2S speaker playback and DMICs via VA macro.
 > 
-> All the update_*() functions have the same pattern. They replace
-> the original buffer with a bigger one when needed. And the pointer
-> to the original buffer gets lost.
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts | 23 ++++++++
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi   | 93 ++++++++++++++++++++++++++++++
+>  2 files changed, 116 insertions(+)
 > 
-> I guess that the original buffer could not be freed because
-> it is part of a bigger allocated blob. Or it might even be
-> a file mapped to memory.
-> 
-> It looks like a memory leak. We could probably ignore it.
-> But there is another related danger, see below.
-> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
+> index aa0bf6e2..bf15bbe 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
+> @@ -87,6 +87,29 @@ ap_ts_pen_1v8: &i2c13 {
+>  	pins = "gpio51";
+>  };
+>  
+> +&sound {
+> +	audio-routing =
+> +		"IN1_HPHL", "HPHL_OUT",
+> +		"IN2_HPHR", "HPHR_OUT",
+> +		"AMIC1", "MIC BIAS1",
+> +		"AMIC2", "MIC BIAS2",
+> +		"VA DMIC0", "MIC BIAS1",
+> +		"VA DMIC1", "MIC BIAS1",
+> +		"VA DMIC2", "MIC BIAS3",
+> +		"VA DMIC3", "MIC BIAS3",
+> +		"TX SWR_ADC0", "ADC1_OUTPUT",
+> +		"TX SWR_ADC1", "ADC2_OUTPUT",
+> +		"TX SWR_ADC2", "ADC3_OUTPUT",
+> +		"TX SWR_DMIC0", "DMIC1_OUTPUT",
+> +		"TX SWR_DMIC1", "DMIC2_OUTPUT",
+> +		"TX SWR_DMIC2", "DMIC3_OUTPUT",
+> +		"TX SWR_DMIC3", "DMIC4_OUTPUT",
+> +		"TX SWR_DMIC4", "DMIC5_OUTPUT",
+> +		"TX SWR_DMIC5", "DMIC6_OUTPUT",
+> +		"TX SWR_DMIC6", "DMIC7_OUTPUT",
+> +		"TX SWR_DMIC7", "DMIC8_OUTPUT";
+> +};
 
-Hi Petr,
+Should this also be added to sc7280-herobrine-crd.dts?
 
-Looking at this code, I would agree that it looks very suspicious with
-respect to leaking memory.  Then I remembered that I had been testing
-with valgrind and it hadn't reported any lost allocations.
+> +
+>  &wcd938x {
+>  	pinctrl-names = "default";
+>  	pinctrl-0 = <&us_euro_hs_sel>;
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> index e880837..640b1338 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> @@ -85,6 +85,99 @@
+>  		pinctrl-names = "default";
+>  		pinctrl-0 = <&nvme_pwren>;
+>  	};
+> +
+> +	sound: sound {
+> +		compatible = "google,sc7280-herobrine";
+> +		model = "sc7280-wcd938x-max98360a-1mic";
+> +
+> +		audio-routing =
+> +			"IN1_HPHL", "HPHL_OUT",
+> +			"IN2_HPHR", "HPHR_OUT",
+> +			"AMIC1", "MIC BIAS1",
+> +			"AMIC2", "MIC BIAS2",
+> +			"VA DMIC0", "MIC BIAS3",
+> +			"VA DMIC1", "MIC BIAS3",
+> +			"VA DMIC2", "MIC BIAS1",
+> +			"VA DMIC3", "MIC BIAS1",
+> +			"TX SWR_ADC0", "ADC1_OUTPUT",
+> +			"TX SWR_ADC1", "ADC2_OUTPUT",
+> +			"TX SWR_ADC2", "ADC3_OUTPUT",
+> +			"TX SWR_DMIC0", "DMIC1_OUTPUT",
+> +			"TX SWR_DMIC1", "DMIC2_OUTPUT",
+> +			"TX SWR_DMIC2", "DMIC3_OUTPUT",
+> +			"TX SWR_DMIC3", "DMIC4_OUTPUT",
+> +			"TX SWR_DMIC4", "DMIC5_OUTPUT",
+> +			"TX SWR_DMIC5", "DMIC6_OUTPUT",
+> +			"TX SWR_DMIC6", "DMIC7_OUTPUT",
+> +			"TX SWR_DMIC7", "DMIC8_OUTPUT";
+> +
+> +		qcom,msm-mbhc-hphl-swh = <1>;
+> +		qcom,msm-mbhc-gnd-swh = <1>;
+> +
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +		#sound-dai-cells = <0>;
+> +
+> +		dai-link@1 {
 
-I was confused, so to verify, I fired up gdb with conditional
-breakpoints (when the passed pointer was one of the clobbered X-Y->d_buf
-pointers) on glibc's __GI___libc_free() and found that these buffers
-were all handled by libelf's elf_end() function:
+The '@1' is the address of the lpass CPU DAI, which doesn't seem correct
+here. As I brought up on v7 [1] I think this value isn't even necessarily
+unique, a SoC could have multiple IP blocks with audio buses, each with
+their own DAI address space. The binding (currently) requires an
+'address'/id, rather than using the CPU DAI id I suggest to enumerate the
+links linearly, starting with 0.
 
-	/* The section data is allocated if we couldn't mmap
-	   the file.  */
-	if (elf->map_address == NULL)
-	  free (scn->rawdata_base);
+[1] https://patchwork.kernel.org/project/linux-arm-msm/patch/1649863277-31615-5-git-send-email-quic_srivasam@quicinc.com/
 
-The program, in the name of efficiency or developer expediency (I dunno,
-I didn't create it), ends up creating a few file representations:
+> +			link-name = "MAX98360A";
 
-  1) libelf's internal representation of the input ELF file
-  2) klp-convert's structures (see elf.h)
-       a) derived from the previous (1)
-       b) modified for klp-relocations
-  3) klp-convert's new Elf structure for the output ELF file (see
-     write_file())
-       a) information from (2b) is used to create consistent structures
+The binding requires a 'reg' property, even though it isn't used (also
+discussed on v7). I think the 'reg' property should be removed from the
+binding and the DTs that use it, but maybe that should be done in a
+separate series. In the meantime the value should match that of the
+node.
 
-And so representation (2) ends up with some data values (enums, etc.)
-from (1) which is OK.  In a few places, however, it copies the buffer
-pointers from (1)... and then as you noticed, may need to realloc them
-for step (2b).  Now buffer ownership is muddled and depends on the
-runtime situation.
-
-Do you think it would be worth some refactoring to try and keep library
-and program allocated memory separate?  In cases where klp-convert only
-needs to read memory, perhaps a naming or scoping convention could help.
-For those re-allocations, I can't think of anything clever aside from
-separate buffers or noting original (ie, library) pointer values.
-
-> > +	return 1;
-> > +}
-> > +
+> +
+> +			cpu {
+> +				sound-dai = <&lpass_cpu MI2S_SECONDARY>;
+> +			};
+> +
+> +			codec {
+> +				sound-dai = <&max98360a>;
+> +			};
+> +		};
+> +
+> +		dai-link@5 {
+> +			link-name = "DisplayPort";
+> +
+> +			cpu {
+> +				sound-dai = <&lpass_cpu LPASS_DP_RX>;
+> +			};
+> +
+> +			codec {
+> +				sound-dai = <&mdss_dp>;
+> +			};
+> +		};
+> +
+> +		dai-link@6 {
+> +			link-name = "WCD9385 Playback";
+> +
+> +			cpu {
+> +				sound-dai = <&lpass_cpu LPASS_CDC_DMA_RX0>;
+> +			};
+> +
+> +			codec {
+> +				sound-dai = <&wcd938x 0>, <&swr0 0>, <&lpass_rx_macro 0>;
+> +			};
+> +		};
+> +
+> +		dai-link@19 {
+> +			link-name = "WCD9385 Capture";
+> +
+> +			cpu {
+> +				sound-dai = <&lpass_cpu LPASS_CDC_DMA_TX3>;
+> +			};
+> +
+> +			codec {
+> +				sound-dai = <&wcd938x 1>, <&swr1 0>, <&lpass_tx_macro 0>;
+> +			};
+> +		};
+> +
+> +		dai-link@25 {
+> +			link-name = "DMIC";
+> +
+> +			cpu {
+> +				sound-dai = <&lpass_cpu LPASS_CDC_DMA_VA_TX0>;
+> +			};
+> +
+> +			codec {
+> +				sound-dai = <&lpass_va_macro 0>;
+> +			};
+> +		};
+> +	};
+>  };
+>  
+>  &apps_rsc {
+> -- 
+> 2.7.4
 > 
-> [...]
-> 
-> > +int elf_write_file(struct elf *elf, const char *file)
-> > +{
-> > +	int ret_shstrtab;
-> > +	int ret_strtab;
-> > +	int ret_symtab;
-> > +	int ret_relas;
-> 
-> We do not free the bigger buffers when something goes wrong.
-> Also this is not that important. But it is easy to fix:
-> 
-> We might do:
-> 
-> 	int ret_shstrtab = 0;
-> 	int ret_strtab = 0;
-> 	int ret_symtab = 0;
-> 	int ret_relas = 0;
-> 
-> > +	int ret;
-> > +
-> > +	ret_shstrtab = update_shstrtab(elf);
-> > +	if (ret_shstrtab < 0)
-> > +		return ret_shstrtab;
-> > +
-> > +	ret_strtab = update_strtab(elf);
-> > +	if (ret_strtab < 0)
-> > +		return ret_strtab;
-> 
-> 	if (ret_strtab < 0) {
-> 		ret = ret_strtab;
-> 		goto out;
-> 	}
-> 
-> > +	ret_symtab = update_symtab(elf);
-> > +	if (ret_symtab < 0)
-> > +		return ret_symtab;
-> 
-> 	if (ret_symtab < 0) {
-> 		ret = ret_symtab;
-> 		goto out;
-> 	}
-> 
-> > +	ret_relas = update_relas(elf);
-> > +	if (ret_relas < 0)
-> > +		return ret_relas;
-> 
-> 	if (ret_relas < 0) {
-> 		ret = ret_relas;
-> 		goto out;
-> 	}
-> 
-> 
-> > +	update_groups(elf);
-> > +
-> > +	ret = write_file(elf, file);
-> > +	if (ret)
-> > +		return ret;
-> 
-> 	Continue even when write_file(elf, file) returns an error.
-> 
-> out:
-> 
-> > +	if (ret_relas > 0)
-> > +		free_relas(elf);
-> > +	if (ret_symtab > 0)
-> > +		free_symtab(elf);
-> > +	if (ret_strtab > 0)
-> > +		free_strtab(elf);
-> > +	if (ret_shstrtab > 0)
-> > +		free_shstrtab(elf);
-> > +
-> > +	return ret;
- 
-Yes, that's a good recommendation.  I think this would improve the error
-handling and isn't too hard to implement.
- 
-> Another problem is that the free_*() functions release the
-> bigger buffers. But they do not put back the original ones. Also
-> all the updated offsets and indexes point to the bigger buffers.
-> As a result the structures can't be made consistent any longer.
-> 
-> I am not sure if there is an easy way to fix it. IMHO, proper solution
-> is not worth a big effort. klp-convert frees everthing after writing
-> the elf file.
-> 
-> Well, we should at least make a comment above elf_write_file() about
-> that the structures are damaged in this way.
-
-The assumption in the code seems to be that elf_write_file() and the
-update_*() functions it calls would only ever be done once.
-
-And then, I think, that the new output file Elf structure created by
-write_file() and passed to elf_update(), would have consistent offset
-and indexes since the klp-converted structures are iterated in order as
-appropriate gelf_update_*() are called.
-
-If something else looks amiss, please point it out and I can try to
-verify using my tests.
-          
-> Finally, my main concern:
-> 
-> It brings a question whether the written data were consistent.
-> 
-> I am not familiar with the elf format. I quess that it is rather
-> stable. But there might still be some differences between
-> architectures or some new extensions that might need special handing.
-> 
-> I do not see any big consistency checks in the gelf_update_ehdr(),
-> elf_update(), or elf_end() functions that are used when writing
-> the changes.
-
-If you have specifics in mind, I can verify empirically and research
-if/how libelf abstracts this for us or not (endianness in cross-arch
-scenarios, for example).
-
-> But there seems to be some thorough consistency checks provided by:
-> 
->     readelf --enable-checks
-> 
-> It currently see these warnings:
-> 
-> $> readelf --lint lib/livepatch/test_klp_convert2.ko >/dev/null
-> readelf: Warning: Section '.note.GNU-stack': has a size of zero - is this intended ?
-> 
-> $> readelf --lint lib/livepatch/test_klp_callbacks_mod.ko >/dev/null
-> readelf: Warning: Section '.data': has a size of zero - is this intended ?
-> readelf: Warning: Section '.note.GNU-stack': has a size of zero - is this intended ?
-> 
-> $> readelf --lint lib/test_printf.ko >/dev/null
-> readelf: Warning: Section '.text': has a size of zero - is this intended ?
-> readelf: Warning: Section '.data': has a size of zero - is this intended ?
-> readelf: Warning: Section '.note.GNU-stack': has a size of zero - is this intended ?
-> 
-> But I see this warnings even without this patchset. I wonder if it
-> might really help to find problems introduced by klp-convert or
-> if it would be a waste of time.
-
-Interesting, I didn't know about readelf --enable-checks / --lint.  Do
-you know if this is any different from elflint?
-
-In any case, I can take a look at those, but as you noticed, it looks
-like all of the complaints also crop up outside of klp-convert cases.  I
-wonder if kernel linker script is unconditionally creating those
-zero-sized sections?
-
--- Joe
-
