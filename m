@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 914B4C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC9DC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239915AbiDRNps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
+        id S241503AbiDRNpx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:45:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241826AbiDRN0I (ORCPT
+        with ESMTP id S241883AbiDRNZl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:26:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FECF3D4A0;
-        Mon, 18 Apr 2022 05:53:04 -0700 (PDT)
+        Mon, 18 Apr 2022 09:25:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B1E115819;
+        Mon, 18 Apr 2022 05:52:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3017B80EDB;
-        Mon, 18 Apr 2022 12:52:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC125C385AB;
-        Mon, 18 Apr 2022 12:52:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE5D4612B5;
+        Mon, 18 Apr 2022 12:52:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCCD0C385A1;
+        Mon, 18 Apr 2022 12:52:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286378;
-        bh=O34HfqQmSB8Ffe9PET8fc6aq5j5lIAnMeD0GOTv4ips=;
+        s=korg; t=1650286375;
+        bh=XHhJvtTAVSezNouZIbqSrgobfO0e7Br0xeWb1Sc4/XM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ummj0U42CU6ZcztEZH/5ARTv6swAmdukoCmUabXV3Nqc5dVillVghVo/gL3+ZPEj6
-         t+XELs6I9y28YlPsxmYlk92jhIE8S29DDa3fn4sBSgHEAYT1qu6xDK7l6JMffNMtvl
-         b7wQzYjgEr/bbw0mq290iypau/6uPIpGFgDsR/Mw=
+        b=KeTAKfat5jtd0jDaTkxyVQ1fSTWVdq1J8mBUH/fiUnj2mKtAoUNSAGEeM9OAdi1Qg
+         1DlYqq90qhtY9Rkz7uaB6pL/+XUQa3CIyDvJxX+9CBOa73Ro9A7Gu6Ei4xEV8HeS44
+         83GRZ/kZ66KL/YeFgvx4lIYc33us6ujLs5E1XKL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 115/284] i2c: xiic: Make bus names unique
-Date:   Mon, 18 Apr 2022 14:11:36 +0200
-Message-Id: <20220418121214.296108828@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Hou Wenlong <houwenlong.hwl@antgroup.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 114/284] KVM: x86/emulator: Defer not-present segment check in __load_segment_descriptor()
+Date:   Mon, 18 Apr 2022 14:11:35 +0200
+Message-Id: <20220418121214.252056985@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,47 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Hou Wenlong <houwenlong.hwl@antgroup.com>
 
-[ Upstream commit 1d366c2f9df8279df2adbb60471f86fc40a1c39e ]
+[ Upstream commit ca85f002258fdac3762c57d12d5e6e401b6a41af ]
 
-This driver is for an FPGA logic core, so there can be arbitrarily many
-instances of the bus on a given system. Previously all of the I2C bus
-names were "xiic-i2c" which caused issues with lm_sensors when trying to
-map human-readable names to sensor inputs because it could not properly
-distinguish the busses, for example. Append the platform device name to
-the I2C bus name so it is unique between different instances.
+Per Intel's SDM on the "Instruction Set Reference", when
+loading segment descriptor, not-present segment check should
+be after all type and privilege checks. But the emulator checks
+it first, then #NP is triggered instead of #GP if privilege fails
+and segment is not present. Put not-present segment check after
+type and privilege checks in __load_segment_descriptor().
 
-Fixes: e1d5b6598cdc ("i2c: Add support for Xilinx XPS IIC Bus Interface")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Tested-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: 38ba30ba51a00 (KVM: x86 emulator: Emulate task switch in emulator.c)
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
+Message-Id: <52573c01d369f506cadcf7233812427cf7db81a7.1644292363.git.houwenlong.hwl@antgroup.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-xiic.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/kvm/emulate.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-xiic.c b/drivers/i2c/busses/i2c-xiic.c
-index 5a94f732049e..da526cc471cc 100644
---- a/drivers/i2c/busses/i2c-xiic.c
-+++ b/drivers/i2c/busses/i2c-xiic.c
-@@ -731,7 +731,6 @@ static const struct i2c_adapter_quirks xiic_quirks = {
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index 23d3329e1c73..c5f2a72343e3 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -1682,11 +1682,6 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
+ 		goto exception;
+ 	}
  
- static const struct i2c_adapter xiic_adapter = {
- 	.owner = THIS_MODULE,
--	.name = DRIVER_NAME,
- 	.class = I2C_CLASS_DEPRECATED,
- 	.algo = &xiic_algorithm,
- 	.quirks = &xiic_quirks,
-@@ -768,6 +767,8 @@ static int xiic_i2c_probe(struct platform_device *pdev)
- 	i2c_set_adapdata(&i2c->adap, i2c);
- 	i2c->adap.dev.parent = &pdev->dev;
- 	i2c->adap.dev.of_node = pdev->dev.of_node;
-+	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
-+		 DRIVER_NAME " %s", pdev->name);
+-	if (!seg_desc.p) {
+-		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
+-		goto exception;
+-	}
+-
+ 	dpl = seg_desc.dpl;
  
- 	mutex_init(&i2c->lock);
- 	init_waitqueue_head(&i2c->wait);
+ 	switch (seg) {
+@@ -1726,6 +1721,10 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
+ 	case VCPU_SREG_TR:
+ 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
+ 			goto exception;
++		if (!seg_desc.p) {
++			err_vec = NP_VECTOR;
++			goto exception;
++		}
+ 		old_desc = seg_desc;
+ 		seg_desc.type |= 2; /* busy */
+ 		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
+@@ -1750,6 +1749,11 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
+ 		break;
+ 	}
+ 
++	if (!seg_desc.p) {
++		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
++		goto exception;
++	}
++
+ 	if (seg_desc.s) {
+ 		/* mark segment as accessed */
+ 		if (!(seg_desc.type & 1)) {
 -- 
 2.34.1
 
