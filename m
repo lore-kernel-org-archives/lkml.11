@@ -2,140 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E86C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A3E3C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240098AbiDRMnp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51036 "EHLO
+        id S240141AbiDRMns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239211AbiDRMce (ORCPT
+        with ESMTP id S240178AbiDRMdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:32:34 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E3525C5D
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:24:22 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id y10so9141419ejw.8
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:24:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=5BNPomPjSt5hiIea69EjTytPpEqikhMJXfLRqSI0kqc=;
-        b=I5SuOIQtfj+q49dWAfkSqB3QEoGkcQfwsNlbTI9LRwxKGBca6C8FMO+RPcsStXcouw
-         2FsU+EMejcQ0Xq1EFdGgKf/N0JaDRNSS6bl0roXE2RYiN5oKXz8I6gVyJfznys9CUYX8
-         +CoXwOuhTicBgujPYcRgqJdLf7vzTFMmxZd6d7Hgji5Z7cuQcx5Lyjj14s7fbAO7JEzb
-         DNDK4/EVWvedwBSd1WFiEqgWHULj7pdR4Hl2iE1K0m1Vgbd0rO1/L/frFwRlQzFaNgAA
-         QAce4D+vkqhUF8XTQcjzsAPhK7Gh33ZJmRF2v24MjS1kRSmbU2jYVlHOo2ZL7hzsz/Zc
-         NB/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=5BNPomPjSt5hiIea69EjTytPpEqikhMJXfLRqSI0kqc=;
-        b=lFn2AwSROyutU/xzjw2iY9eiU7u1E2AP7IySQoi9wdmH/2WDepxF7Dt+2+Ao2NBS3j
-         ynVrJC9i25/03bVBEpRwmcuxQaM7Ym7aItJv2Ay/6A4GYAuKPHuyhkSmT8WJr96ENnuV
-         lDDf+GHmvHuAXraPK1xGCYJgy6Zyw/jvvA0ysB168Dq+nPIyLPpq26hRKdlNPYcT5IUz
-         tvEco63jEFYeEOYgvPqEUOooi19VSGQ/hme7GOZnivQc3TnWw6R0xJfs2ycnVcnS4D23
-         ril9dAkygonnX1tK2QT3KGK5OE1gVHuXWVN1oj40D8VMRXsS4Iq3tNwd7doqisecGTtg
-         NE0A==
-X-Gm-Message-State: AOAM531sv6yiwd8iR/J25A+xHBcMaJSKbhMbVg6C6akZ80nzrIpFYhOi
-        kPH0M63/cA5Q66cvBVO5MYejyw==
-X-Google-Smtp-Source: ABdhPJzA+mjTWUhOE3zIGZp8dEO8EaZ9s5olb+oYT5/uf26kP4FWKUquYw+4VYBh+7qW1k0QWLNFNg==
-X-Received: by 2002:a17:907:a40b:b0:6da:b4a1:33fa with SMTP id sg11-20020a170907a40b00b006dab4a133famr8628973ejc.22.1650284661044;
-        Mon, 18 Apr 2022 05:24:21 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id v21-20020a1709064e9500b006e8973a14d0sm4596498eju.174.2022.04.18.05.24.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 05:24:20 -0700 (PDT)
-Message-ID: <d441a648-a85c-6610-fc07-0956395f903d@linaro.org>
-Date:   Mon, 18 Apr 2022 14:24:19 +0200
+        Mon, 18 Apr 2022 08:33:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB64F205DF;
+        Mon, 18 Apr 2022 05:27:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C06AB80EDB;
+        Mon, 18 Apr 2022 12:27:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55E99C385A7;
+        Mon, 18 Apr 2022 12:27:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650284829;
+        bh=ankRfE1NJGscVelAIBbvu7K3FN2QodaqU/jv0PZKqhw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hHzgpIpmKQOlVzw261UB/H3Yo31I8gOQ2B9mBQukMonv2D+rpwjhUqc1JHYKRuDGY
+         YwI3qjZla5AQXzClKtRvoeur/82lHAus6yxaz4Ma1sur5xQtpt+dm5BTnqK73F5M/s
+         8PSPrOdvWcPrgTyW7FkbVkMDP9Ql8V46dJHaBt+0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 022/189] ALSA: au88x0: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:10:42 +0200
+Message-Id: <20220418121201.145654760@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
+References: <20220418121200.312988959@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/4] dt-bindings: input: Add the PinePhone keyboard
- binding
-Content-Language: en-US
-To:     Samuel Holland <samuel@sholland.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org
-Cc:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Ondrej Jirman <x@xff.cz>,
-        linux-kernel@vger.kernel.org
-References: <20220417021633.56127-1-samuel@sholland.org>
- <20220417021633.56127-2-samuel@sholland.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220417021633.56127-2-samuel@sholland.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/04/2022 04:16, Samuel Holland wrote:
+From: Takashi Iwai <tiwai@suse.de>
 
-(...)
+commit b093de145bc8769c6e9207947afad9efe102f4f6 upstream.
 
-> +properties:
-> +  compatible:
-> +    const: pine64,pinephone-keyboard
-> +
-> +  reg:
-> +    const: 0x15
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  vbat-supply:
-> +    description: Supply for the keyboard MCU
-> +
-> +  wakeup-source: true
-> +
-> +  i2c-bus:
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-Generic node names, so just "i2c".
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
 
-> +    $ref: /schemas/i2c/i2c-controller.yaml#
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +
-> +unevaluatedProperties: false
+Fixes: e44b5b440609 ("ALSA: au88x0: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-8-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ sound/pci/au88x0/au88x0.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-You do not include any other schema at this level, so this should be
-additionalProperties:false.
-
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/input/input.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    i2c {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +
-> +      keyboard@15 {
-> +        compatible = "pine64,pinephone-keyboard";
-> +        reg = <0x15>;
-> +        interrupt-parent = <&r_pio>;
-> +        interrupts = <0 12 IRQ_TYPE_EDGE_FALLING>; /* PL12 */
-> +
-> +        i2c-bus {
-> +          #address-cells = <1>;
-> +          #size-cells = <0>;
-> +
-> +          charger@75 {
-> +            reg = <0x75>;
-> +          };
-> +        };
-> +      };
-> +    };
+diff --git a/sound/pci/au88x0/au88x0.c b/sound/pci/au88x0/au88x0.c
+index 342ef2a6655e..eb234153691b 100644
+--- a/sound/pci/au88x0/au88x0.c
++++ b/sound/pci/au88x0/au88x0.c
+@@ -193,7 +193,7 @@ snd_vortex_create(struct snd_card *card, struct pci_dev *pci)
+ 
+ // constructor -- see "Constructor" sub-section
+ static int
+-snd_vortex_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
++__snd_vortex_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+ {
+ 	static int dev;
+ 	struct snd_card *card;
+@@ -310,6 +310,12 @@ snd_vortex_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+ 	return 0;
+ }
+ 
++static int
++snd_vortex_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_vortex_probe(pci, pci_id));
++}
++
+ // pci_driver definition
+ static struct pci_driver vortex_driver = {
+ 	.name = KBUILD_MODNAME,
+-- 
+2.35.2
 
 
-Best regards,
-Krzysztof
+
