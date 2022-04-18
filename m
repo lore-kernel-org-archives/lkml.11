@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F653C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:48:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F690C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:48:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239828AbiDRMvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:51:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40502 "EHLO
+        id S239864AbiDRMvL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240821AbiDRMjj (ORCPT
+        with ESMTP id S240825AbiDRMjj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:39:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E55BEC;
-        Mon, 18 Apr 2022 05:30:55 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B117C0B;
+        Mon, 18 Apr 2022 05:31:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04089B80ED6;
-        Mon, 18 Apr 2022 12:30:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AD4AC385A7;
-        Mon, 18 Apr 2022 12:30:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD5C960FB6;
+        Mon, 18 Apr 2022 12:31:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FA52C385A1;
+        Mon, 18 Apr 2022 12:31:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285052;
-        bh=PegEbT3n0i2LdUmAqbH0lGb/v7kofzcUA1BCGaGp0fs=;
+        s=korg; t=1650285062;
+        bh=Gx922/rWDZ/4F9PMVr+uq0fXu5sFKFg0M7O2OXkXBt0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IttAV4hHuVVIiUL0PeCR8FzemweEL5ZJlYAvuGSHAShNRnVcE01lRM34NZXRLIuR8
-         RQPUfsRonTXPYXY+Q7B4XdOtQR2YVaEzNilknlnvpC+Hsq/IF0DaUPO0chOHTrND1A
-         VqmRC1bEHgMQb4Ag+MF2m0kUpTtZFDUfPtRnH8pg=
+        b=NCWYy7E3j6meNhVSLeQfgc1YqadQM7xoHrJfpU7RoA7u8OEFRoh0GEne44GKYN+nN
+         bLN+UpFn51KAYT1+7VkHA/mu/2RHmFJCceYt6B+Xty4Kd/QxAhNKec0OulpEaKiUgX
+         jY9f/iVtT0DCus/RiupqIOW/2jwfvsCivts1U1gI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anilkumar Kolli <quic_akolli@quicinc.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 059/189] Revert "ath11k: mesh: add support for 256 bitmap in blockack frames in 11ax"
-Date:   Mon, 18 Apr 2022 14:11:19 +0200
-Message-Id: <20220418121202.185148438@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 095/189] ALSA: usb-audio: Limit max buffer and period sizes per time
+Date:   Mon, 18 Apr 2022 14:11:55 +0200
+Message-Id: <20220418121203.201733682@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -48,66 +48,191 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anilkumar Kolli <quic_akolli@quicinc.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 10cb21f4ff3f9cb36d1e1c39bf80426f02f4986a ]
+[ Upstream commit 24d0c9f0e7de95fe3e3e0067cbea1cd5d413244b ]
 
-This reverts commit 743b9065fe6348a5f8f5ce04869ce2d701e5e1bc.
+In the previous fix, we increased the max buffer bytes from 1MB to 4MB
+so that we can use bigger buffers for the modern HiFi devices with
+higher rates, more channels and wider formats.  OTOH, extending this
+has a concern that too big buffer is allowed for the lower rates, less
+channels and narrower formats; when an application tries to allocate
+as big buffer as possible, it'll lead to unexpectedly too huge size.
 
-The original commit breaks the 256 bitmap in blockack frames in AP
-mode. After reverting the commit the feature works again in both AP and
-mesh modes
+Also, we had a problem about the inconsistent max buffer and period
+bytes for the implicit feedback mode when both streams have different
+channels.  This was fixed by the (relatively complex) patch to reduce
+the max buffer and period bytes accordingly.
 
-Tested-on: IPQ8074 hw2.0 PCI WLAN.HK.2.6.0.1-00786-QCAHKSWPL_SILICONZ-1
+This is an alternative fix for those, a patch to kill two birds with
+one stone (*): instead of increasing the max buffer bytes blindly and
+applying the reduction per channels, we simply use the hw constraints
+for the buffer and period "time".  Meanwhile the max buffer and period
+bytes are set unlimited instead.
 
-Fixes: 743b9065fe63 ("ath11k: mesh: add support for 256 bitmap in blockack frames in 11ax")
-Signed-off-by: Anilkumar Kolli <quic_akolli@quicinc.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/1648701477-16367-1-git-send-email-quic_akolli@quicinc.com
+Since the inconsistency of buffer (and period) bytes comes from the
+difference of the channels in the tied streams, as long as we care
+only about the buffer (and period) time, it doesn't matter; the buffer
+time is same for different channels, although we still allow higher
+buffer size.  Similarly, this will allow more buffer bytes for HiFi
+devices while it also keeps the reasonable size for the legacy
+devices, too.
+
+As of this patch, the max period and buffer time are set to 1 and 2
+seconds, which should be large enough for all possible use cases.
+
+(*) No animals were harmed in the making of this patch.
+
+Fixes: 98c27add5d96 ("ALSA: usb-audio: Cap upper limits of buffer/period bytes for implicit fb")
+Fixes: fee2ec8cceb3 ("ALSA: usb-audio: Increase max buffer size")
+Link: https://lore.kernel.org/r/20220412130740.18933-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ sound/usb/pcm.c | 101 +++++++-----------------------------------------
+ 1 file changed, 14 insertions(+), 87 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 3834be158705..07004564a3ec 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -2156,6 +2156,19 @@ static void ath11k_mac_op_bss_info_changed(struct ieee80211_hw *hw,
- 		if (ret)
- 			ath11k_warn(ar->ab, "failed to update bcn template: %d\n",
- 				    ret);
-+		if (vif->bss_conf.he_support) {
-+			ret = ath11k_wmi_vdev_set_param_cmd(ar, arvif->vdev_id,
-+							    WMI_VDEV_PARAM_BA_MODE,
-+							    WMI_BA_MODE_BUFFER_SIZE_256);
-+			if (ret)
-+				ath11k_warn(ar->ab,
-+					    "failed to set BA BUFFER SIZE 256 for vdev: %d\n",
-+					    arvif->vdev_id);
-+			else
-+				ath11k_dbg(ar->ab, ATH11K_DBG_MAC,
-+					   "Set BA BUFFER SIZE 256 for VDEV: %d\n",
-+					   arvif->vdev_id);
-+		}
+diff --git a/sound/usb/pcm.c b/sound/usb/pcm.c
+index 866a82b69d8d..729e26f5ac4c 100644
+--- a/sound/usb/pcm.c
++++ b/sound/usb/pcm.c
+@@ -659,9 +659,6 @@ static int snd_usb_pcm_prepare(struct snd_pcm_substream *substream)
+ #define hwc_debug(fmt, args...) do { } while(0)
+ #endif
+ 
+-#define MAX_BUFFER_BYTES	(4 * 1024 * 1024)
+-#define MAX_PERIOD_BYTES	(512 * 1024)
+-
+ static const struct snd_pcm_hardware snd_usb_hardware =
+ {
+ 	.info =			SNDRV_PCM_INFO_MMAP |
+@@ -672,9 +669,9 @@ static const struct snd_pcm_hardware snd_usb_hardware =
+ 				SNDRV_PCM_INFO_PAUSE,
+ 	.channels_min =		1,
+ 	.channels_max =		256,
+-	.buffer_bytes_max =	MAX_BUFFER_BYTES,
++	.buffer_bytes_max =	INT_MAX, /* limited by BUFFER_TIME later */
+ 	.period_bytes_min =	64,
+-	.period_bytes_max =	MAX_PERIOD_BYTES,
++	.period_bytes_max =	INT_MAX, /* limited by PERIOD_TIME later */
+ 	.periods_min =		2,
+ 	.periods_max =		1024,
+ };
+@@ -974,78 +971,6 @@ static int hw_rule_periods_implicit_fb(struct snd_pcm_hw_params *params,
+ 				      ep->cur_buffer_periods);
+ }
+ 
+-/* get the adjusted max buffer (or period) bytes that can fit with the
+- * paired format for implicit fb
+- */
+-static unsigned int
+-get_adjusted_max_bytes(struct snd_usb_substream *subs,
+-		       struct snd_usb_substream *pair,
+-		       struct snd_pcm_hw_params *params,
+-		       unsigned int max_bytes,
+-		       bool reverse_map)
+-{
+-	const struct audioformat *fp, *pp;
+-	unsigned int rmax = 0, r;
+-
+-	list_for_each_entry(fp, &subs->fmt_list, list) {
+-		if (!fp->implicit_fb)
+-			continue;
+-		if (!reverse_map &&
+-		    !hw_check_valid_format(subs, params, fp))
+-			continue;
+-		list_for_each_entry(pp, &pair->fmt_list, list) {
+-			if (pp->iface != fp->sync_iface ||
+-			    pp->altsetting != fp->sync_altsetting ||
+-			    pp->ep_idx != fp->sync_ep_idx)
+-				continue;
+-			if (reverse_map &&
+-			    !hw_check_valid_format(pair, params, pp))
+-				break;
+-			if (!reverse_map && pp->channels > fp->channels)
+-				r = max_bytes * fp->channels / pp->channels;
+-			else if (reverse_map && pp->channels < fp->channels)
+-				r = max_bytes * pp->channels / fp->channels;
+-			else
+-				r = max_bytes;
+-			rmax = max(rmax, r);
+-			break;
+-		}
+-	}
+-	return rmax;
+-}
+-
+-/* Reduce the period or buffer bytes depending on the paired substream;
+- * when a paired configuration for implicit fb has a higher number of channels,
+- * we need to reduce the max size accordingly, otherwise it may become unusable
+- */
+-static int hw_rule_bytes_implicit_fb(struct snd_pcm_hw_params *params,
+-				     struct snd_pcm_hw_rule *rule)
+-{
+-	struct snd_usb_substream *subs = rule->private;
+-	struct snd_usb_substream *pair;
+-	struct snd_interval *it;
+-	unsigned int max_bytes;
+-	unsigned int rmax;
+-
+-	pair = &subs->stream->substream[!subs->direction];
+-	if (!pair->ep_num)
+-		return 0;
+-
+-	if (rule->var == SNDRV_PCM_HW_PARAM_PERIOD_BYTES)
+-		max_bytes = MAX_PERIOD_BYTES;
+-	else
+-		max_bytes = MAX_BUFFER_BYTES;
+-
+-	rmax = get_adjusted_max_bytes(subs, pair, params, max_bytes, false);
+-	if (!rmax)
+-		rmax = get_adjusted_max_bytes(pair, subs, params, max_bytes, true);
+-	if (!rmax)
+-		return 0;
+-
+-	it = hw_param_interval(params, rule->var);
+-	return apply_hw_params_minmax(it, 0, rmax);
+-}
+-
+ /*
+  * set up the runtime hardware information.
+  */
+@@ -1139,6 +1064,18 @@ static int setup_hw_info(struct snd_pcm_runtime *runtime, struct snd_usb_substre
+ 			return err;
  	}
  
- 	if (changed & (BSS_CHANGED_BEACON_INFO | BSS_CHANGED_BEACON)) {
-@@ -2191,14 +2204,6 @@ static void ath11k_mac_op_bss_info_changed(struct ieee80211_hw *hw,
++	/* set max period and buffer sizes for 1 and 2 seconds, respectively */
++	err = snd_pcm_hw_constraint_minmax(runtime,
++					   SNDRV_PCM_HW_PARAM_PERIOD_TIME,
++					   0, 1000000);
++	if (err < 0)
++		return err;
++	err = snd_pcm_hw_constraint_minmax(runtime,
++					   SNDRV_PCM_HW_PARAM_BUFFER_TIME,
++					   0, 2000000);
++	if (err < 0)
++		return err;
++
+ 	/* additional hw constraints for implicit fb */
+ 	err = snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_FORMAT,
+ 				  hw_rule_format_implicit_fb, subs,
+@@ -1160,16 +1097,6 @@ static int setup_hw_info(struct snd_pcm_runtime *runtime, struct snd_usb_substre
+ 				  SNDRV_PCM_HW_PARAM_PERIODS, -1);
+ 	if (err < 0)
+ 		return err;
+-	err = snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
+-				  hw_rule_bytes_implicit_fb, subs,
+-				  SNDRV_PCM_HW_PARAM_BUFFER_BYTES, -1);
+-	if (err < 0)
+-		return err;
+-	err = snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
+-				  hw_rule_bytes_implicit_fb, subs,
+-				  SNDRV_PCM_HW_PARAM_PERIOD_BYTES, -1);
+-	if (err < 0)
+-		return err;
  
- 		if (arvif->is_up && vif->bss_conf.he_support &&
- 		    vif->bss_conf.he_oper.params) {
--			ret = ath11k_wmi_vdev_set_param_cmd(ar, arvif->vdev_id,
--							    WMI_VDEV_PARAM_BA_MODE,
--							    WMI_BA_MODE_BUFFER_SIZE_256);
--			if (ret)
--				ath11k_warn(ar->ab,
--					    "failed to set BA BUFFER SIZE 256 for vdev: %d\n",
--					    arvif->vdev_id);
--
- 			param_id = WMI_VDEV_PARAM_HEOPS_0_31;
- 			param_value = vif->bss_conf.he_oper.params;
- 			ret = ath11k_wmi_vdev_set_param_cmd(ar, arvif->vdev_id,
+ 	return 0;
+ }
 -- 
 2.35.1
 
