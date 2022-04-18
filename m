@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 317D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA20C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239337AbiDRMhX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:37:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50610 "EHLO
+        id S229740AbiDRMh0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:37:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239001AbiDRMb2 (ORCPT
+        with ESMTP id S239027AbiDRMbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:31:28 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C862625288;
-        Mon, 18 Apr 2022 05:24:00 -0700 (PDT)
+        Mon, 18 Apr 2022 08:31:38 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBD7252AB;
+        Mon, 18 Apr 2022 05:24:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0F8C3CE10A0;
+        by sin.source.kernel.org (Postfix) with ESMTPS id DA664CE1099;
+        Mon, 18 Apr 2022 12:24:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDF49C385A8;
         Mon, 18 Apr 2022 12:23:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB2A7C385A9;
-        Mon, 18 Apr 2022 12:23:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284637;
-        bh=uS/GY6ExnjhPYx2j4Wl+qD9StA6nkkAyHB9DsmGkl2U=;
+        s=korg; t=1650284640;
+        bh=saIBfUiOO9oi8JxUXD5UmunFw+zU/h9YE0bVKwbuzVI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FqXqpi6cB/dVrA1tOVba0YrH5VI2VaqugJ7oUzbSAWlVPHV9lZKFkZ6eZnFmUekNC
-         VBrSI3qBvv4QiTh3I7tDiEylyXyXaMIQjZMSBHJPQs0dfEVnyXGLDfnOT4asKHh1ib
-         rLmRFeOU/OTY/XOKGCaZQeBMBaoomVk/Iga3WwEc=
+        b=UJjt9ybm6uIqFWWHCsodVV6FJkCNVyOezB1A+DoJtImZEMu11qgZ1Vt5IlsVCPYlM
+         xVTL4hNJJ0+YGxUg+m/EgnNp9VyHBHcPGL9kNjIxxeM+2P0yYY6lt9KdlKRc9lU4vO
+         +8ZTETrROtFBG1ExG8GBrjpSbgfU8K/paKQTotGs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 129/219] KVM: PPC: Book3S HV P9: Fix "lost kick" race
-Date:   Mon, 18 Apr 2022 14:11:38 +0200
-Message-Id: <20220418121210.507201101@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 173/219] io_uring: use nospec annotation for more indexes
+Date:   Mon, 18 Apr 2022 14:12:22 +0200
+Message-Id: <20220418121211.721539889@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,136 +48,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-[ Upstream commit c7fa848ff01dad9ed3146a6b1a7d3622131bcedd ]
+[ Upstream commit 4cdd158be9d09223737df83136a1fb65269d809a ]
 
-When new work is created that requires attention from the hypervisor
-(e.g., to inject an interrupt into the guest), fast_vcpu_kick is used to
-pull the target vcpu out of the guest if it may have been running.
+There are still several places that using pre array_index_nospec()
+indexes, fix them up.
 
-Therefore the work creation side looks like this:
-
-  vcpu->arch.doorbell_request = 1;
-  kvmppc_fast_vcpu_kick_hv(vcpu) {
-    smp_mb();
-    cpu = vcpu->cpu;
-    if (cpu != -1)
-        send_ipi(cpu);
-  }
-
-And the guest entry side *should* look like this:
-
-  vcpu->cpu = smp_processor_id();
-  smp_mb();
-  if (vcpu->arch.doorbell_request) {
-    // do something (abort entry or inject doorbell etc)
-  }
-
-But currently the store and load are flipped, so it is possible for the
-entry to see no doorbell pending, and the doorbell creation misses the
-store to set cpu, resulting lost work (or at least delayed until the
-next guest exit).
-
-Fix this by reordering the entry operations and adding a smp_mb
-between them. The P8 path appears to have a similar race which is
-commented but not addressed yet.
-
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220303053315.1056880-2-npiggin@gmail.com
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Link: https://lore.kernel.org/r/b01ef5ee83f72ed35ad525912370b729f5d145f4.1649336342.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kvm/book3s_hv.c | 41 +++++++++++++++++++++++++++++-------
- 1 file changed, 33 insertions(+), 8 deletions(-)
+ fs/io_uring.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
-index 791db769080d..316f61a4cb59 100644
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -225,6 +225,13 @@ static void kvmppc_fast_vcpu_kick_hv(struct kvm_vcpu *vcpu)
- 	int cpu;
- 	struct rcuwait *waitp;
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 53b20d8b1129..f0febb2cb016 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -8613,7 +8613,7 @@ static int io_close_fixed(struct io_kiocb *req, unsigned int issue_flags)
+ 	bool needs_lock = issue_flags & IO_URING_F_UNLOCKED;
+ 	struct io_fixed_file *file_slot;
+ 	struct file *file;
+-	int ret, i;
++	int ret;
  
-+	/*
-+	 * rcuwait_wake_up contains smp_mb() which orders prior stores that
-+	 * create pending work vs below loads of cpu fields. The other side
-+	 * is the barrier in vcpu run that orders setting the cpu fields vs
-+	 * testing for pending work.
-+	 */
-+
- 	waitp = kvm_arch_vcpu_get_wait(vcpu);
- 	if (rcuwait_wake_up(waitp))
- 		++vcpu->stat.generic.halt_wakeup;
-@@ -1089,7 +1096,7 @@ int kvmppc_pseries_do_hcall(struct kvm_vcpu *vcpu)
- 			break;
- 		}
- 		tvcpu->arch.prodded = 1;
--		smp_mb();
-+		smp_mb(); /* This orders prodded store vs ceded load */
- 		if (tvcpu->arch.ceded)
- 			kvmppc_fast_vcpu_kick_hv(tvcpu);
- 		break;
-@@ -3771,6 +3778,14 @@ static noinline void kvmppc_run_core(struct kvmppc_vcore *vc)
- 		pvc = core_info.vc[sub];
- 		pvc->pcpu = pcpu + thr;
- 		for_each_runnable_thread(i, vcpu, pvc) {
-+			/*
-+			 * XXX: is kvmppc_start_thread called too late here?
-+			 * It updates vcpu->cpu and vcpu->arch.thread_cpu
-+			 * which are used by kvmppc_fast_vcpu_kick_hv(), but
-+			 * kick is called after new exceptions become available
-+			 * and exceptions are checked earlier than here, by
-+			 * kvmppc_core_prepare_to_enter.
-+			 */
- 			kvmppc_start_thread(vcpu, pvc);
- 			kvmppc_create_dtl_entry(vcpu, pvc);
- 			trace_kvm_guest_enter(vcpu);
-@@ -4492,6 +4507,21 @@ int kvmhv_run_single_vcpu(struct kvm_vcpu *vcpu, u64 time_limit,
- 	if (need_resched() || !kvm->arch.mmu_ready)
+ 	io_ring_submit_lock(ctx, needs_lock);
+ 	ret = -ENXIO;
+@@ -8626,8 +8626,8 @@ static int io_close_fixed(struct io_kiocb *req, unsigned int issue_flags)
+ 	if (ret)
  		goto out;
  
-+	vcpu->cpu = pcpu;
-+	vcpu->arch.thread_cpu = pcpu;
-+	vc->pcpu = pcpu;
-+	local_paca->kvm_hstate.kvm_vcpu = vcpu;
-+	local_paca->kvm_hstate.ptid = 0;
-+	local_paca->kvm_hstate.fake_suspend = 0;
-+
-+	/*
-+	 * Orders set cpu/thread_cpu vs testing for pending interrupts and
-+	 * doorbells below. The other side is when these fields are set vs
-+	 * kvmppc_fast_vcpu_kick_hv reading the cpu/thread_cpu fields to
-+	 * kick a vCPU to notice the pending interrupt.
-+	 */
-+	smp_mb();
-+
- 	if (!nested) {
- 		kvmppc_core_prepare_to_enter(vcpu);
- 		if (test_bit(BOOK3S_IRQPRIO_EXTERNAL,
-@@ -4511,13 +4541,6 @@ int kvmhv_run_single_vcpu(struct kvm_vcpu *vcpu, u64 time_limit,
+-	i = array_index_nospec(offset, ctx->nr_user_files);
+-	file_slot = io_fixed_file_slot(&ctx->file_table, i);
++	offset = array_index_nospec(offset, ctx->nr_user_files);
++	file_slot = io_fixed_file_slot(&ctx->file_table, offset);
+ 	ret = -EBADF;
+ 	if (!file_slot->file_ptr)
+ 		goto out;
+@@ -8683,8 +8683,7 @@ static int __io_sqe_files_update(struct io_ring_ctx *ctx,
  
- 	tb = mftb();
+ 		if (file_slot->file_ptr) {
+ 			file = (struct file *)(file_slot->file_ptr & FFS_MASK);
+-			err = io_queue_rsrc_removal(data, up->offset + done,
+-						    ctx->rsrc_node, file);
++			err = io_queue_rsrc_removal(data, i, ctx->rsrc_node, file);
+ 			if (err)
+ 				break;
+ 			file_slot->file_ptr = 0;
+@@ -9357,7 +9356,7 @@ static int __io_sqe_buffers_update(struct io_ring_ctx *ctx,
  
--	vcpu->cpu = pcpu;
--	vcpu->arch.thread_cpu = pcpu;
--	vc->pcpu = pcpu;
--	local_paca->kvm_hstate.kvm_vcpu = vcpu;
--	local_paca->kvm_hstate.ptid = 0;
--	local_paca->kvm_hstate.fake_suspend = 0;
--
- 	__kvmppc_create_dtl_entry(vcpu, pcpu, tb + vc->tb_offset, 0);
- 
- 	trace_kvm_guest_enter(vcpu);
-@@ -4619,6 +4642,8 @@ int kvmhv_run_single_vcpu(struct kvm_vcpu *vcpu, u64 time_limit,
- 	run->exit_reason = KVM_EXIT_INTR;
- 	vcpu->arch.ret = -EINTR;
-  out:
-+	vcpu->cpu = -1;
-+	vcpu->arch.thread_cpu = -1;
- 	powerpc_local_irq_pmu_restore(flags);
- 	preempt_enable();
- 	goto done;
+ 		i = array_index_nospec(offset, ctx->nr_user_bufs);
+ 		if (ctx->user_bufs[i] != ctx->dummy_ubuf) {
+-			err = io_queue_rsrc_removal(ctx->buf_data, offset,
++			err = io_queue_rsrc_removal(ctx->buf_data, i,
+ 						    ctx->rsrc_node, ctx->user_bufs[i]);
+ 			if (unlikely(err)) {
+ 				io_buffer_unmap(ctx, &imu);
 -- 
 2.35.1
 
