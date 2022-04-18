@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DDAC352A7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB1CCC38161
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344819AbiDRO21 (ORCPT
+        id S1345103AbiDRO2t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38056 "EHLO
+        Mon, 18 Apr 2022 10:28:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344085AbiDRORf (ORCPT
+        with ESMTP id S1344268AbiDRORz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:17:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF69C3A1AD;
-        Mon, 18 Apr 2022 06:13:33 -0700 (PDT)
+        Mon, 18 Apr 2022 10:17:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E483FBFB;
+        Mon, 18 Apr 2022 06:13:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 026DDB80EE5;
-        Mon, 18 Apr 2022 13:12:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50D5CC385A7;
-        Mon, 18 Apr 2022 13:12:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EDDFC60AAD;
+        Mon, 18 Apr 2022 13:13:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08BF6C385A7;
+        Mon, 18 Apr 2022 13:13:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287577;
-        bh=2X054I721Z00ymUe9y1tZN0FVB/oy5dHB3h/KaeNAGY=;
+        s=korg; t=1650287590;
+        bh=t7Ek2bfIGx3XDB9l3vX26eAquej9L1q8mFbYIgiCgz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nYfaEVgFndxla26PHRK7F2AknF6PQMa7x44mWBsvV63HJ8Xq5lMSpAjVjVkGitZnb
-         jiwjtES9Uttk6STIYVuBrhh/cdBfYJKBdAO96GrpfJcqBpcmUabsrSIwihq7kPXAlZ
-         tGD8mT7Jdoi72ImHeqANELFtRkeF5cLedcJ10fIE=
+        b=UnoRbZ6D/52Zr6Y2TMjZaMH/HbijDlerncx9FcKm/i87me43l9gxmsDtO9WToXFMb
+         0hso9u4gyQ8HgT82fjYn5QWx9PzeLt36Haii4TyUXOVbj5TLcvgv84ZHFW2IK7fdD6
+         7NWTGA95L45/vU6yB7M2tMj5zM6UWyz16kuBXysA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Tyrel Datwyler <tyreld@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 204/218] nfc: nci: add flush_workqueue to prevent uaf
-Date:   Mon, 18 Apr 2022 14:14:30 +0200
-Message-Id: <20220418121207.737646123@linuxfoundation.org>
+Subject: [PATCH 4.9 207/218] scsi: ibmvscsis: Increase INITIAL_SRP_LIMIT to 1024
+Date:   Mon, 18 Apr 2022 14:14:33 +0200
+Message-Id: <20220418121207.950378846@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -51,126 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Tyrel Datwyler <tyreld@linux.ibm.com>
 
-[ Upstream commit ef27324e2cb7bb24542d6cb2571740eefe6b00dc ]
+[ Upstream commit 0bade8e53279157c7cc9dd95d573b7e82223d78a ]
 
-Our detector found a concurrent use-after-free bug when detaching an
-NCI device. The main reason for this bug is the unexpected scheduling
-between the used delayed mechanism (timer and workqueue).
+The adapter request_limit is hardcoded to be INITIAL_SRP_LIMIT which is
+currently an arbitrary value of 800. Increase this value to 1024 which
+better matches the characteristics of the typical IBMi Initiator that
+supports 32 LUNs and a queue depth of 32.
 
-The race can be demonstrated below:
+This change also has the secondary benefit of being a power of two as
+required by the kfifo API. Since, Commit ab9bb6318b09 ("Partially revert
+"kfifo: fix kfifo_alloc() and kfifo_init()"") the size of IU pool for each
+target has been rounded down to 512 when attempting to kfifo_init() those
+pools with the current request_limit size of 800.
 
-Thread-1                           Thread-2
-                                 | nci_dev_up()
-                                 |   nci_open_device()
-                                 |     __nci_request(nci_reset_req)
-                                 |       nci_send_cmd
-                                 |         queue_work(cmd_work)
-nci_unregister_device()          |
-  nci_close_device()             | ...
-    del_timer_sync(cmd_timer)[1] |
-...                              | Worker
-nci_free_device()                | nci_cmd_work()
-  kfree(ndev)[3]                 |   mod_timer(cmd_timer)[2]
-
-In short, the cleanup routine thought that the cmd_timer has already
-been detached by [1] but the mod_timer can re-attach the timer [2], even
-it is already released [3], resulting in UAF.
-
-This UAF is easy to trigger, crash trace by POC is like below
-
-[   66.703713] ==================================================================
-[   66.703974] BUG: KASAN: use-after-free in enqueue_timer+0x448/0x490
-[   66.703974] Write of size 8 at addr ffff888009fb7058 by task kworker/u4:1/33
-[   66.703974]
-[   66.703974] CPU: 1 PID: 33 Comm: kworker/u4:1 Not tainted 5.18.0-rc2 #5
-[   66.703974] Workqueue: nfc2_nci_cmd_wq nci_cmd_work
-[   66.703974] Call Trace:
-[   66.703974]  <TASK>
-[   66.703974]  dump_stack_lvl+0x57/0x7d
-[   66.703974]  print_report.cold+0x5e/0x5db
-[   66.703974]  ? enqueue_timer+0x448/0x490
-[   66.703974]  kasan_report+0xbe/0x1c0
-[   66.703974]  ? enqueue_timer+0x448/0x490
-[   66.703974]  enqueue_timer+0x448/0x490
-[   66.703974]  __mod_timer+0x5e6/0xb80
-[   66.703974]  ? mark_held_locks+0x9e/0xe0
-[   66.703974]  ? try_to_del_timer_sync+0xf0/0xf0
-[   66.703974]  ? lockdep_hardirqs_on_prepare+0x17b/0x410
-[   66.703974]  ? queue_work_on+0x61/0x80
-[   66.703974]  ? lockdep_hardirqs_on+0xbf/0x130
-[   66.703974]  process_one_work+0x8bb/0x1510
-[   66.703974]  ? lockdep_hardirqs_on_prepare+0x410/0x410
-[   66.703974]  ? pwq_dec_nr_in_flight+0x230/0x230
-[   66.703974]  ? rwlock_bug.part.0+0x90/0x90
-[   66.703974]  ? _raw_spin_lock_irq+0x41/0x50
-[   66.703974]  worker_thread+0x575/0x1190
-[   66.703974]  ? process_one_work+0x1510/0x1510
-[   66.703974]  kthread+0x2a0/0x340
-[   66.703974]  ? kthread_complete_and_exit+0x20/0x20
-[   66.703974]  ret_from_fork+0x22/0x30
-[   66.703974]  </TASK>
-[   66.703974]
-[   66.703974] Allocated by task 267:
-[   66.703974]  kasan_save_stack+0x1e/0x40
-[   66.703974]  __kasan_kmalloc+0x81/0xa0
-[   66.703974]  nci_allocate_device+0xd3/0x390
-[   66.703974]  nfcmrvl_nci_register_dev+0x183/0x2c0
-[   66.703974]  nfcmrvl_nci_uart_open+0xf2/0x1dd
-[   66.703974]  nci_uart_tty_ioctl+0x2c3/0x4a0
-[   66.703974]  tty_ioctl+0x764/0x1310
-[   66.703974]  __x64_sys_ioctl+0x122/0x190
-[   66.703974]  do_syscall_64+0x3b/0x90
-[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   66.703974]
-[   66.703974] Freed by task 406:
-[   66.703974]  kasan_save_stack+0x1e/0x40
-[   66.703974]  kasan_set_track+0x21/0x30
-[   66.703974]  kasan_set_free_info+0x20/0x30
-[   66.703974]  __kasan_slab_free+0x108/0x170
-[   66.703974]  kfree+0xb0/0x330
-[   66.703974]  nfcmrvl_nci_unregister_dev+0x90/0xd0
-[   66.703974]  nci_uart_tty_close+0xdf/0x180
-[   66.703974]  tty_ldisc_kill+0x73/0x110
-[   66.703974]  tty_ldisc_hangup+0x281/0x5b0
-[   66.703974]  __tty_hangup.part.0+0x431/0x890
-[   66.703974]  tty_release+0x3a8/0xc80
-[   66.703974]  __fput+0x1f0/0x8c0
-[   66.703974]  task_work_run+0xc9/0x170
-[   66.703974]  exit_to_user_mode_prepare+0x194/0x1a0
-[   66.703974]  syscall_exit_to_user_mode+0x19/0x50
-[   66.703974]  do_syscall_64+0x48/0x90
-[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-To fix the UAF, this patch adds flush_workqueue() to ensure the
-nci_cmd_work is finished before the following del_timer_sync.
-This combination will promise the timer is actually detached.
-
-Fixes: 6a2968aaf50c ("NFC: basic NCI protocol implementation")
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20220322194443.678433-1-tyreld@linux.ibm.com
+Signed-off-by: Tyrel Datwyler <tyreld@linux.ibm.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/nfc/nci/core.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
-index 84eedbd5716d..df90872fcf90 100644
---- a/net/nfc/nci/core.c
-+++ b/net/nfc/nci/core.c
-@@ -561,6 +561,10 @@ static int nci_close_device(struct nci_dev *ndev)
- 	mutex_lock(&ndev->req_lock);
+diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
+index 5ed28111c3c3..569b662e19e7 100644
+--- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
++++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
+@@ -43,7 +43,7 @@
  
- 	if (!test_and_clear_bit(NCI_UP, &ndev->flags)) {
-+		/* Need to flush the cmd wq in case
-+		 * there is a queued/running cmd_work
-+		 */
-+		flush_workqueue(ndev->cmd_wq);
- 		del_timer_sync(&ndev->cmd_timer);
- 		del_timer_sync(&ndev->data_timer);
- 		mutex_unlock(&ndev->req_lock);
+ #define IBMVSCSIS_VERSION	"v0.2"
+ 
+-#define	INITIAL_SRP_LIMIT	800
++#define	INITIAL_SRP_LIMIT	1024
+ #define	DEFAULT_MAX_SECTORS	256
+ #define MAX_TXU			1024 * 1024
+ 
 -- 
 2.35.1
 
