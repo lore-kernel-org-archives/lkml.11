@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC171C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 356C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239292AbiDRMfm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38174 "EHLO
+        id S239034AbiDRMfs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:35:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240047AbiDRM3Q (ORCPT
+        with ESMTP id S239995AbiDRM3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:29:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6960E20BDC;
-        Mon, 18 Apr 2022 05:23:08 -0700 (PDT)
+        Mon, 18 Apr 2022 08:29:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF0C205D9;
+        Mon, 18 Apr 2022 05:23:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ECA4660F0C;
-        Mon, 18 Apr 2022 12:23:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04DAFC385A8;
-        Mon, 18 Apr 2022 12:23:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABFBE60EF4;
+        Mon, 18 Apr 2022 12:23:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D93EC385A7;
+        Mon, 18 Apr 2022 12:23:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284587;
-        bh=FFtHTLViO7Kk3k4dRDhJk2ARFMqmxQ2ReCqBcHvNwIw=;
+        s=korg; t=1650284581;
+        bh=7XTqroqFO/okzB1xM2ykxMbeDx4n0Pp7JOnf+IK9yyc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vuR3qDYveLGD9v7nr+gRJD6QtyuJshU2KmvtTXCLF3ZUMYVE1zsiyR+zvZFjpoqhh
-         0f0AHGXERA3m5R0RnOQpOLykXR6Y7IQNtHn2juYQLkbEKMxZbxeLNG+xcqdEo3IpJG
-         kGFDMeylCBAAOMZpiLyezM7kKJEKWY7HGZcQO4ec=
+        b=GyLbVDr/MoIZ5LCSgsi4US9zLP57q3av4BHbDCBg7pKOrYlShtuhRYT2LC9mBu9oG
+         uJ/A9Xfh9NRcDIo5BSlfTqwUy+cXBtODW6D6XuqaLxaouopTW6f/B0qsniMiqG18DV
+         bh9kdKl8mBSJQSks5/iDFN93AqYKYrm/3RjTHLPM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wenjing Liu <Wenjing.Liu@amd.com>,
-        Alex Hung <alex.hung@amd.com>, Chris Park <Chris.Park@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 162/219] drm/amd/display: Correct Slice reset calculation
-Date:   Mon, 18 Apr 2022 14:12:11 +0200
-Message-Id: <20220418121211.417970399@linuxfoundation.org>
+Subject: [PATCH 5.17 160/219] myri10ge: fix an incorrect free for skb in myri10ge_sw_tso
+Date:   Mon, 18 Apr 2022 14:12:09 +0200
+Message-Id: <20220418121211.362126379@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -51,49 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Park <Chris.Park@amd.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit 862a876c3a6372f2fa9d0c6510f1976ac94fc857 ]
+[ Upstream commit b423e54ba965b4469b48e46fd16941f1e1701697 ]
 
-[Why]
-Once DSC slice cannot fit pixel clock, we incorrectly
-reset min slices to 0 and allow max slice to operate,
-even when max slice itself cannot fit the pixel clock
-properly.
+All remaining skbs should be released when myri10ge_xmit fails to
+transmit a packet. Fix it within another skb_list_walk_safe.
 
-[How]
-Change the sequence such that we correctly determine
-DSC is not possible when both min slices and max
-slices cannot fit pixel clock per slice.
-
-Reviewed-by: Wenjing Liu <Wenjing.Liu@amd.com>
-Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Chris Park <Chris.Park@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dsc/dc_dsc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dsc/dc_dsc.c b/drivers/gpu/drm/amd/display/dc/dsc/dc_dsc.c
-index 9c74564cbd8d..8973d3a38f9c 100644
---- a/drivers/gpu/drm/amd/display/dc/dsc/dc_dsc.c
-+++ b/drivers/gpu/drm/amd/display/dc/dsc/dc_dsc.c
-@@ -864,11 +864,11 @@ static bool setup_dsc_config(
- 		min_slices_h = inc_num_slices(dsc_common_caps.slice_caps, min_slices_h);
- 	}
- 
-+	is_dsc_possible = (min_slices_h <= max_slices_h);
-+
- 	if (pic_width % min_slices_h != 0)
- 		min_slices_h = 0; // DSC TODO: Maybe try increasing the number of slices first?
- 
--	is_dsc_possible = (min_slices_h <= max_slices_h);
--
- 	if (min_slices_h == 0 && max_slices_h == 0)
- 		is_dsc_possible = false;
- 
+diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+index 50ac3ee2577a..21d2645885ce 100644
+--- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
++++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+@@ -2903,11 +2903,9 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
+ 		status = myri10ge_xmit(curr, dev);
+ 		if (status != 0) {
+ 			dev_kfree_skb_any(curr);
+-			if (segs != NULL) {
+-				curr = segs;
+-				segs = next;
++			skb_list_walk_safe(next, curr, next) {
+ 				curr->next = NULL;
+-				dev_kfree_skb_any(segs);
++				dev_kfree_skb_any(curr);
+ 			}
+ 			goto drop;
+ 		}
 -- 
 2.35.1
 
