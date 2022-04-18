@@ -2,93 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B02C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:26:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E5ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:28:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347160AbiDRR3S (ORCPT
+        id S1343883AbiDRRai (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 13:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49064 "EHLO
+        Mon, 18 Apr 2022 13:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347162AbiDRR2o (ORCPT
+        with ESMTP id S1346825AbiDRRaa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 13:28:44 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE192B242
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:25:49 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id u2so20023601pgq.10
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:25:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZKuq0wU3+JeGnDXBmVteCxHEwvafVW2Ji4siv6RJc6g=;
-        b=Xhxa5K+utu+20ev8QXD3/Lag35QKJGaCMWBrtXNdffFxd4KBEDHQdfHNXN2MAU2oNe
-         47KiHyvukhJBBbUl45qknLCBmfya/36mwjvNNiTsO1I9igy2qNvLEHgfodUUULeJvp/Q
-         xRAIP/9qMTqxk4VHxG9yuN4UKq66u+zS1rxsFeYnKmsacrVfwjQ2qr7ynbAoobvMDm6n
-         rAquBQyNzQByJy4weYuIB1ex+xEf/r4IufPrMauOHxTByzfsfB1nlztfPjFoj115xEcJ
-         D+JfZjMAn9S82aMibIZsjpZ+b0lDuBd2fODhr9T8gtEuKlc2i4MyGySi0TkaXIhiWQqU
-         I11Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZKuq0wU3+JeGnDXBmVteCxHEwvafVW2Ji4siv6RJc6g=;
-        b=01lFIOCeYm8+PIYfML9VjVX48ePFOQSihGTEgNX/LbsSConX64LEPj+be/1lbrbN8Y
-         v49I1pLkquGAP1JBtAG5OdQXFyII2X0kUjTeB8KtR+wYQn40UeKSAkaKAoA3pTHBbX5e
-         xb1sJdTxRXDliiFgDvQuJsQm2kArvvKIW0RXszPa5si0SJZdUWygomnbA7RExgfxdQtH
-         +AH4mVgYdIfTPjwi9oWo6I3Zz2507L5OT7bjinSGY/Jx7t3w0rH2ilxLNw2IrO+znTzd
-         drlg5k5VxQbChIhcIIMNq/GcQFUpDCq0rYkI8vDsGhnxwHWVF9cRXhbDLGGDejKkXBwc
-         0VWQ==
-X-Gm-Message-State: AOAM53287bp0AMf7B5hfwW5Ki6esQG0HxGEqYYQd4aXoGGEvFxKvP7+/
-        szWj/EafU6fQrlwUnuEO5rWMoLuq/uvaXw==
-X-Google-Smtp-Source: ABdhPJy3JJAfOVN7tfyfI2+4b+4P83md/k20gxaF/4DLe0/MfcqlQs9FIeOyxP5Nqj4Fe1hS3IYReg==
-X-Received: by 2002:a63:7d49:0:b0:378:907d:1fc7 with SMTP id m9-20020a637d49000000b00378907d1fc7mr11130115pgn.252.1650302749267;
-        Mon, 18 Apr 2022 10:25:49 -0700 (PDT)
-Received: from aliyar-HP-Laptop-15-da1xxx.domain.name ([14.139.241.88])
-        by smtp.gmail.com with ESMTPSA id y9-20020aa78f29000000b005098201d2f5sm13041394pfr.205.2022.04.18.10.25.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 10:25:49 -0700 (PDT)
-From:   Aliya Rahmani <aliyarahmani786@gmail.com>
-To:     clabbe@baylibre.com
-Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        outreachy@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Aliya Rahmani <aliyarahmani786@gmail.com>
-Subject: [PATCH v3 3/3] staging: media: zoran: add parentheses on macro parameter
-Date:   Mon, 18 Apr 2022 22:44:56 +0530
-Message-Id: <20220418171453.16971-4-aliyarahmani786@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220418171453.16971-1-aliyarahmani786@gmail.com>
-References: <20220418171453.16971-1-aliyarahmani786@gmail.com>
+        Mon, 18 Apr 2022 13:30:30 -0400
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC536416
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:27:42 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 10:27:34 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1650302861;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/Gp18eUoW03iuPGj3GLuowLyhOcAU8RggWp55xHDiug=;
+        b=YOzUkpmXwDTK8OBKTvkVHeeh6b7M8TfcYAqpT4+k8uxZSRvkpWNPd8elMnjNOnEu8sybek
+        jMTg6/6gOLCJ4jwFUQH8mO1SdLzlSVd0Jm7mPmTmxQw25N+e+Q+Mw2G3IDzdKktQmrWwCX
+        GldI0fnvHg6eAaQAO9QGWaWfv70VUnk=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
+        Dave Chinner <dchinner@redhat.com>,
+        linux-kernel@vger.kernel.org, Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Yang Shi <shy828301@gmail.com>
+Subject: Re: [PATCH rfc 0/5] mm: introduce shrinker sysfs interface
+Message-ID: <Yl2fhgcW5pL66nPK@carbon>
+References: <20220416002756.4087977-1-roman.gushchin@linux.dev>
+ <Yl0vCDE44VeU8qxC@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yl0vCDE44VeU8qxC@kernel.org>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch fixes checkpatch warnings of precedence issues. Add parentheses
-around macro argument 'num'.
+On Mon, Apr 18, 2022 at 12:27:36PM +0300, Mike Rapoport wrote:
+> On Fri, Apr 15, 2022 at 05:27:51PM -0700, Roman Gushchin wrote:
+> > There are 50+ different shrinkers in the kernel, many with their own bells and
+> > whistles. Under the memory pressure the kernel applies some pressure on each of
+> > them in the order of which they were created/registered in the system. Some
+> > of them can contain only few objects, some can be quite large. Some can be
+> > effective at reclaiming memory, some not.
+> > 
+> > The only existing debugging mechanism is a couple of tracepoints in
+> > do_shrink_slab(): mm_shrink_slab_start and mm_shrink_slab_end. They aren't
+> > covering everything though: shrinkers which report 0 objects will never show up,
+> > there is no support for memcg-aware shrinkers. Shrinkers are identified by their
+> > scan function, which is not always enough (e.g. hard to guess which super
+> > block's shrinker it is having only "super_cache_scan"). They are a passive
+> > mechanism: there is no way to call into counting and scanning of an individual
+> > shrinker and profile it.
+> > 
+> > To provide a better visibility and debug options for memory shrinkers
+> > this patchset introduces a /sys/kernel/shrinker interface, to some extent
+> > similar to /sys/kernel/slab.
+> 
+> Wouldn't debugfs better fit the purpose of shrinker debugging?
 
-Signed-off-by: Aliya Rahmani <aliyarahmani786@gmail.com>
----
-changes since v2: Rework commit description and subject
----
- drivers/staging/media/zoran/videocodec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I think sysfs fits better, but not a very strong opinion.
 
-diff --git a/drivers/staging/media/zoran/videocodec.c b/drivers/staging/media/zoran/videocodec.c
-index 19732a47c8bd..925f90fd5885 100644
---- a/drivers/staging/media/zoran/videocodec.c
-+++ b/drivers/staging/media/zoran/videocodec.c
-@@ -22,7 +22,7 @@ MODULE_PARM_DESC(videocodec_debug, "Debug level (0-4)");
- 
- #define dprintk(num, format, args...) \
- 	do { \
--		if (videocodec_debug >= num) \
-+		if (videocodec_debug >= (num)) \
- 			printk(format, ##args); \
- 	} while (0)
- 
--- 
-2.25.1
+Even though the interface is likely not very useful for the general
+public, big cloud instances might wanna enable it to gather statistics
+(and it's certainly what we gonna do at Facebook) and to provide
+additional data when something is off.  They might not have debugfs
+mounted. And it's really similar to /sys/kernel/slab.
 
+Are there any reasons why debugfs is preferable?
+
+Thanks!
