@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80CEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:24:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B85DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:24:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241802AbiDRN1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
+        id S241872AbiDRN1N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234791AbiDRNE0 (ORCPT
+        with ESMTP id S241092AbiDRNEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:04:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C95F312ABD;
-        Mon, 18 Apr 2022 05:45:22 -0700 (PDT)
+        Mon, 18 Apr 2022 09:04:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394FF11C12;
+        Mon, 18 Apr 2022 05:45:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B122B80E4E;
-        Mon, 18 Apr 2022 12:45:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5ECDC385A1;
-        Mon, 18 Apr 2022 12:45:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B57106124A;
+        Mon, 18 Apr 2022 12:45:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8FEBC385A7;
+        Mon, 18 Apr 2022 12:45:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285920;
-        bh=6h+zenz2aJ/yUi8OPrnbYjt4TWXbywz6dvrupYyuBFg=;
+        s=korg; t=1650285917;
+        bh=jRFNtK5UFQUSCCnXr9EJi7wlu1AKbloGOIeMmQoALFI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0sm0TxLUT6M5jhiMKxfzwx3/wa791bM7sW2sjSDlQ7YRcScPqaM7aE/H4a38/8/l+
-         WQ8nAp7a0t5Ltb9yrDN6WDc0qAo8PUP6gHwIF3xmLjubjt6LWz89hUc+RUu3ZfefTQ
-         217l3FtVDtvQFDyZzfNiXx4PIKrm3AoAfzVX1XDA=
+        b=OgLc85TLv4NHJgzjev+1mzqiA+xL6MZ+BsQ2avrd1FYsz721qsrhaaw5DhQn8fYEl
+         zu+qt27xrhLSZt5dpbs7o57/5FJFdBx/73+ypnYqAcTGKo3YqaP9Nmnw+J/Ygp+cgq
+         85hc3jyqY6bdYNtVFep+RJ/eo5oKLLfT8RQc+dNQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Duoming Zhou <duoming@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
         Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.4 61/63] ax25: fix NPD bug in ax25_disconnect
-Date:   Mon, 18 Apr 2022 14:13:58 +0200
-Message-Id: <20220418121138.237593195@linuxfoundation.org>
+Subject: [PATCH 5.4 60/63] ax25: fix UAF bug in ax25_send_control()
+Date:   Mon, 18 Apr 2022 14:13:57 +0200
+Message-Id: <20220418121138.178322705@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -51,63 +51,85 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 7ec02f5ac8a5be5a3f20611731243dc5e1d9ba10 upstream.
+commit 5352a761308397a0e6250fdc629bb3f615b94747 upstream.
 
-The ax25_disconnect() in ax25_kill_by_device() is not
-protected by any locks, thus there is a race condition
-between ax25_disconnect() and ax25_destroy_socket().
-when ax25->sk is assigned as NULL by ax25_destroy_socket(),
-a NULL pointer dereference bug will occur if site (1) or (2)
-dereferences ax25->sk.
+There are UAF bugs in ax25_send_control(), when we call ax25_release()
+to deallocate ax25_dev. The possible race condition is shown below:
 
-ax25_kill_by_device()                | ax25_release()
-  ax25_disconnect()                  |   ax25_destroy_socket()
-    ...                              |
-    if(ax25->sk != NULL)             |     ...
-      ...                            |     ax25->sk = NULL;
-      bh_lock_sock(ax25->sk); //(1)  |     ...
-      ...                            |
-      bh_unlock_sock(ax25->sk); //(2)|
+      (Thread 1)              |     (Thread 2)
+ax25_dev_device_up() //(1)    |
+                              | ax25_kill_by_device()
+ax25_bind()          //(2)    |
+ax25_connect()                | ...
+ ax25->state = AX25_STATE_1   |
+ ...                          | ax25_dev_device_down() //(3)
 
-This patch moves ax25_disconnect() into lock_sock(), which can
-synchronize with ax25_destroy_socket() in ax25_release().
+      (Thread 3)
+ax25_release()                |
+ ax25_dev_put()  //(4) FREE   |
+ case AX25_STATE_1:           |
+  ax25_send_control()         |
+   alloc_skb()       //USE    |
 
-Fail log:
-===============================================================
-BUG: kernel NULL pointer dereference, address: 0000000000000088
-...
-RIP: 0010:_raw_spin_lock+0x7e/0xd0
-...
-Call Trace:
-ax25_disconnect+0xf6/0x220
-ax25_device_event+0x187/0x250
-raw_notifier_call_chain+0x5e/0x70
-dev_close_many+0x17d/0x230
-rollback_registered_many+0x1f1/0x950
-unregister_netdevice_queue+0x133/0x200
-unregister_netdev+0x13/0x20
-...
+The refcount of ax25_dev increases in position (1) and (2), and
+decreases in position (3) and (4). The ax25_dev will be freed
+before dereference sites in ax25_send_control().
 
+The following is part of the report:
+
+[  102.297448] BUG: KASAN: use-after-free in ax25_send_control+0x33/0x210
+[  102.297448] Read of size 8 at addr ffff888009e6e408 by task ax25_close/602
+[  102.297448] Call Trace:
+[  102.303751]  ax25_send_control+0x33/0x210
+[  102.303751]  ax25_release+0x356/0x450
+[  102.305431]  __sock_release+0x6d/0x120
+[  102.305431]  sock_close+0xf/0x20
+[  102.305431]  __fput+0x11f/0x420
+[  102.305431]  task_work_run+0x86/0xd0
+[  102.307130]  get_signal+0x1075/0x1220
+[  102.308253]  arch_do_signal_or_restart+0x1df/0xc00
+[  102.308253]  exit_to_user_mode_prepare+0x150/0x1e0
+[  102.308253]  syscall_exit_to_user_mode+0x19/0x50
+[  102.308253]  do_syscall_64+0x48/0x90
+[  102.308253]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  102.308253] RIP: 0033:0x405ae7
+
+This patch defers the free operation of ax25_dev and net_device after
+all corresponding dereference sites in ax25_release() to avoid UAF.
+
+Fixes: 9fd75b66b8f6 ("ax25: Fix refcount leaks caused by ax25_cb_del()")
 Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-[OP: backport to 5.4: adjust context]
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+[OP: backport to 5.4: adjust dev_put_track()->dev_put()]
 Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ax25/af_ax25.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ax25/af_ax25.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 --- a/net/ax25/af_ax25.c
 +++ b/net/ax25/af_ax25.c
-@@ -102,8 +102,8 @@ again:
- 				dev_put(ax25_dev->dev);
- 				ax25_dev_put(ax25_dev);
- 			}
--			release_sock(sk);
- 			ax25_disconnect(s, ENETUNREACH);
-+			release_sock(sk);
- 			spin_lock_bh(&ax25_list_lock);
- 			sock_put(sk);
- 			/* The entry could have been deleted from the
+@@ -990,10 +990,6 @@ static int ax25_release(struct socket *s
+ 	sock_orphan(sk);
+ 	ax25 = sk_to_ax25(sk);
+ 	ax25_dev = ax25->ax25_dev;
+-	if (ax25_dev) {
+-		dev_put(ax25_dev->dev);
+-		ax25_dev_put(ax25_dev);
+-	}
+ 
+ 	if (sk->sk_type == SOCK_SEQPACKET) {
+ 		switch (ax25->state) {
+@@ -1055,6 +1051,10 @@ static int ax25_release(struct socket *s
+ 		sk->sk_state_change(sk);
+ 		ax25_destroy_socket(ax25);
+ 	}
++	if (ax25_dev) {
++		dev_put(ax25_dev->dev);
++		ax25_dev_put(ax25_dev);
++	}
+ 
+ 	sock->sk   = NULL;
+ 	release_sock(sk);
 
 
