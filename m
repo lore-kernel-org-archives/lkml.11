@@ -2,133 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83A45C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A75EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242979AbiDRNge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54052 "EHLO
+        id S242196AbiDRNgm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:36:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243627AbiDRNKU (ORCPT
+        with ESMTP id S243756AbiDRNK0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:10:20 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E483C2E6;
-        Mon, 18 Apr 2022 05:49:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650286188; x=1681822188;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ABkdpW+V2FJ0I93fLJrLSjfEAalvHr2mygxY11H9jGg=;
-  b=IJKjD8MoL0bhRXaAvvtYx90ROTn/qZCbxRvS1xY9j2uWNz6xMXHN+029
-   6ov5hSFrAPgoUhQvIaPyY6MzQcGHDrtyEfKl5dpNGI6p1Bzz1sWtHxEkN
-   EL0VW7zgIYEs+2zRBmBxbNlPEDFSqVcuvkl9TIs9KLfC4dgYmKBfLeweL
-   QLGD8uhuC2z/64eZN4eJO84tEbud/M4rGYWOsyUJtars8scQE+oVUTmLk
-   H1foY43tCH8wyPkI7tfs1CyFGPlPllm4vFuNRYeSI/0KKfg/lIRHHy6V9
-   6NXFjVeYRP4HIZmaoEB4NnIZqEwdN1TYxXqGalHB+g4MTtrBKKZny7J3X
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10320"; a="288598413"
-X-IronPort-AV: E=Sophos;i="5.90,269,1643702400"; 
-   d="scan'208";a="288598413"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 05:49:29 -0700
-X-IronPort-AV: E=Sophos;i="5.90,269,1643702400"; 
-   d="scan'208";a="575558445"
-Received: from zengguan-mobl1.ccr.corp.intel.com (HELO [10.254.215.57]) ([10.254.215.57])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 05:49:22 -0700
-Message-ID: <8dee4d22-8b32-e2b0-4f4f-8c1921fce5b3@intel.com>
-Date:   Mon, 18 Apr 2022 20:49:05 +0800
+        Mon, 18 Apr 2022 09:10:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC5BE6172;
+        Mon, 18 Apr 2022 05:49:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77B23B80E4E;
+        Mon, 18 Apr 2022 12:49:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B14E1C385A7;
+        Mon, 18 Apr 2022 12:49:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650286179;
+        bh=F3GUFIFxn3xZhMHv+WyQhBku19qiHak4wQw1BJOJxO0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VhcTdB1Gwta6Zrcrw5fdl1C+PSaNlLc41kcqo1xps/8j6zpZxhJCQpHjtkRWvDrXv
+         Ls6Gr4So9td2e5cefrPm61tZA84BkJKPaBpFLJttpAYe4Jllmwg/5ouSaUACT2ufGR
+         UsimkxXiPH2BEJtE7BO2hzP9yBt638fthqV6P0fc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tomas Paukrt <tomaspaukrt@email.cz>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 054/284] crypto: mxs-dcp - Fix scatterlist processing
+Date:   Mon, 18 Apr 2022 14:10:35 +0200
+Message-Id: <20220418121212.232001320@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
+References: <20220418121210.689577360@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v8 9/9] KVM: VMX: enable IPI virtualization
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>,
-        "Gao, Chao" <chao.gao@intel.com>
-References: <20220411090447.5928-1-guang.zeng@intel.com>
- <20220411090447.5928-10-guang.zeng@intel.com> <YlmOUtXgIdQcUTO1@google.com>
-From:   Zeng Guang <guang.zeng@intel.com>
-In-Reply-To: <YlmOUtXgIdQcUTO1@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Tomas Paukrt <tomaspaukrt@email.cz>
 
-On 4/15/2022 11:25 PM, Sean Christopherson wrote:
-> On Mon, Apr 11, 2022, Zeng Guang wrote:
->> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
->> index d1a39285deab..23fbf52f7bea 100644
->> --- a/arch/x86/kvm/x86.c
->> +++ b/arch/x86/kvm/x86.c
->> @@ -11180,11 +11180,15 @@ static int sync_regs(struct kvm_vcpu *vcpu)
->>   
->>   int kvm_arch_vcpu_precreate(struct kvm *kvm, unsigned int id)
->>   {
->> +	int ret = 0;
->> +
->>   	if (kvm_check_tsc_unstable() && atomic_read(&kvm->online_vcpus) != 0)
->>   		pr_warn_once("kvm: SMP vm created on host with unstable TSC; "
->>   			     "guest TSC will not be reliable\n");
->>   
->> -	return 0;
->> +	if (kvm_x86_ops.alloc_ipiv_pid_table)
->> +		ret = static_call(kvm_x86_alloc_ipiv_pid_table)(kvm);
-> Add a generic kvm_x86_ops.vcpu_precreate, no reason to make this so specific.
-> And use KVM_X86_OP_RET0 instead of KVM_X86_OP_OPTIONAL, then this can simply be
->
-> 	return static_call(kvm_x86_vcpu_precreate);
->
-> That said, there's a flaw in my genius plan.
->
->    1. KVM_CREATE_VM
->    2. KVM_CAP_MAX_VCPU_ID, set max_vcpu_ids=1
->    3. KVM_CREATE_VCPU, create IPIv table but ultimately fails
->    4. KVM decrements created_vcpus back to '0'
->    5. KVM_CAP_MAX_VCPU_ID, set max_vcpu_ids=4096
->    6. KVM_CREATE_VCPU w/ ID out of range
->
-> In other words, malicious userspace could trigger buffer overflow.
+[ Upstream commit 28e9b6d8199a3f124682b143800c2dacdc3d70dd ]
+
+This patch fixes a bug in scatterlist processing that may cause incorrect AES block encryption/decryption.
+
+Fixes: 2e6d793e1bf0 ("crypto: mxs-dcp - Use sg_mapping_iter to copy data")
+Signed-off-by: Tomas Paukrt <tomaspaukrt@email.cz>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/crypto/mxs-dcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/crypto/mxs-dcp.c b/drivers/crypto/mxs-dcp.c
+index e986be405411..3e4068badffd 100644
+--- a/drivers/crypto/mxs-dcp.c
++++ b/drivers/crypto/mxs-dcp.c
+@@ -328,7 +328,7 @@ static int mxs_dcp_aes_block_crypt(struct crypto_async_request *arq)
+ 		memset(key + AES_KEYSIZE_128, 0, AES_KEYSIZE_128);
+ 	}
+ 
+-	for_each_sg(req->src, src, sg_nents(src), i) {
++	for_each_sg(req->src, src, sg_nents(req->src), i) {
+ 		src_buf = sg_virt(src);
+ 		len = sg_dma_len(src);
+ 		tlen += len;
+-- 
+2.34.1
 
 
-This is the tricky exploit that make max_vcpu_ids update more times. I 
-think we
-can avoid this issue by checking pid table availability during the 
-pre-creation
-of the first vCPU. If it's already allocated, free it and re-allocate to 
-accommodate
-table size to new max_vcpu_ids if updated.
 
-> That could be solved by adding an arch hook to undo precreate, but that's gross
-> and a good indication that we're trying to solve this the wrong way.
->
-> I think it's high time we add KVM_FINALIZE_VM, though that's probably a bad name
-> since e.g. TDX wants to use that name for VM really, really, being finalized[*],
-> i.e. after all vCPUs have been created.
->
-> KVM_POST_CREATE_VM?  That's not very good either.
->
-> Paolo or anyone else, thoughts?
->
-> [*] https://lore.kernel.org/all/83768bf0f786d24f49d9b698a45ba65441ef5ef0.1646422845.git.isaku.yamahata@intel.com
