@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B85DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:24:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97490C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:24:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241872AbiDRN1N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:27:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41138 "EHLO
+        id S241923AbiDRN10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:27:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241092AbiDRNEV (ORCPT
+        with ESMTP id S240952AbiDRNCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:04:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394FF11C12;
-        Mon, 18 Apr 2022 05:45:18 -0700 (PDT)
+        Mon, 18 Apr 2022 09:02:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D180A26ACB;
+        Mon, 18 Apr 2022 05:42:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B57106124A;
-        Mon, 18 Apr 2022 12:45:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8FEBC385A7;
-        Mon, 18 Apr 2022 12:45:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12F02B80EDD;
+        Mon, 18 Apr 2022 12:42:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D522C385A1;
+        Mon, 18 Apr 2022 12:42:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285917;
-        bh=jRFNtK5UFQUSCCnXr9EJi7wlu1AKbloGOIeMmQoALFI=;
+        s=korg; t=1650285742;
+        bh=5x/hr0RTqZjcqu+gwHu6SeQi/Y//QzF22XW4sumoa3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OgLc85TLv4NHJgzjev+1mzqiA+xL6MZ+BsQ2avrd1FYsz721qsrhaaw5DhQn8fYEl
-         zu+qt27xrhLSZt5dpbs7o57/5FJFdBx/73+ypnYqAcTGKo3YqaP9Nmnw+J/Ygp+cgq
-         85hc3jyqY6bdYNtVFep+RJ/eo5oKLLfT8RQc+dNQ=
+        b=wtKs3G+OBkZuf61B0eZw09WE6Y/TRjqZKU4uEubDB/cDTeP/ifQYZCj5icJx1hDa3
+         BUwsb8C7iPnvLWOCdNvh5ZflwQH4G+c/aQXCfDuGQMYSTTH30Fj9oUFC59B1E3NApo
+         ZA4LELNik23ajVz9jV8d3MhBmWD933d5TSEay44A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.4 60/63] ax25: fix UAF bug in ax25_send_control()
-Date:   Mon, 18 Apr 2022 14:13:57 +0200
-Message-Id: <20220418121138.178322705@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 10/63] drm/msm/dsi: Use connector directly in msm_dsi_manager_connector_init()
+Date:   Mon, 18 Apr 2022 14:13:07 +0200
+Message-Id: <20220418121134.839290788@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -49,87 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Stephen Boyd <swboyd@chromium.org>
 
-commit 5352a761308397a0e6250fdc629bb3f615b94747 upstream.
+[ Upstream commit 47b7de6b88b962ef339a2427a023d2a23d161654 ]
 
-There are UAF bugs in ax25_send_control(), when we call ax25_release()
-to deallocate ax25_dev. The possible race condition is shown below:
+The member 'msm_dsi->connector' isn't assigned until
+msm_dsi_manager_connector_init() returns (see msm_dsi_modeset_init() and
+how it assigns the return value). Therefore this pointer is going to be
+NULL here. Let's use 'connector' which is what was intended.
 
-      (Thread 1)              |     (Thread 2)
-ax25_dev_device_up() //(1)    |
-                              | ax25_kill_by_device()
-ax25_bind()          //(2)    |
-ax25_connect()                | ...
- ax25->state = AX25_STATE_1   |
- ...                          | ax25_dev_device_down() //(3)
-
-      (Thread 3)
-ax25_release()                |
- ax25_dev_put()  //(4) FREE   |
- case AX25_STATE_1:           |
-  ax25_send_control()         |
-   alloc_skb()       //USE    |
-
-The refcount of ax25_dev increases in position (1) and (2), and
-decreases in position (3) and (4). The ax25_dev will be freed
-before dereference sites in ax25_send_control().
-
-The following is part of the report:
-
-[  102.297448] BUG: KASAN: use-after-free in ax25_send_control+0x33/0x210
-[  102.297448] Read of size 8 at addr ffff888009e6e408 by task ax25_close/602
-[  102.297448] Call Trace:
-[  102.303751]  ax25_send_control+0x33/0x210
-[  102.303751]  ax25_release+0x356/0x450
-[  102.305431]  __sock_release+0x6d/0x120
-[  102.305431]  sock_close+0xf/0x20
-[  102.305431]  __fput+0x11f/0x420
-[  102.305431]  task_work_run+0x86/0xd0
-[  102.307130]  get_signal+0x1075/0x1220
-[  102.308253]  arch_do_signal_or_restart+0x1df/0xc00
-[  102.308253]  exit_to_user_mode_prepare+0x150/0x1e0
-[  102.308253]  syscall_exit_to_user_mode+0x19/0x50
-[  102.308253]  do_syscall_64+0x48/0x90
-[  102.308253]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  102.308253] RIP: 0033:0x405ae7
-
-This patch defers the free operation of ax25_dev and net_device after
-all corresponding dereference sites in ax25_release() to avoid UAF.
-
-Fixes: 9fd75b66b8f6 ("ax25: Fix refcount leaks caused by ax25_cb_del()")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-[OP: backport to 5.4: adjust dev_put_track()->dev_put()]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Sean Paul <seanpaul@chromium.org>
+Fixes: 6d5e78406991 ("drm/msm/dsi: Move dsi panel init into modeset init path")
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/478693/
+Link: https://lore.kernel.org/r/20220318000731.2823718-1-swboyd@chromium.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ax25/af_ax25.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/msm/dsi/dsi_manager.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -990,10 +990,6 @@ static int ax25_release(struct socket *s
- 	sock_orphan(sk);
- 	ax25 = sk_to_ax25(sk);
- 	ax25_dev = ax25->ax25_dev;
--	if (ax25_dev) {
--		dev_put(ax25_dev->dev);
--		ax25_dev_put(ax25_dev);
--	}
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+index 73127948f54d..f3ff2cdc288b 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+@@ -625,7 +625,7 @@ struct drm_connector *msm_dsi_manager_connector_init(u8 id)
+ 	return connector;
  
- 	if (sk->sk_type == SOCK_SEQPACKET) {
- 		switch (ax25->state) {
-@@ -1055,6 +1051,10 @@ static int ax25_release(struct socket *s
- 		sk->sk_state_change(sk);
- 		ax25_destroy_socket(ax25);
- 	}
-+	if (ax25_dev) {
-+		dev_put(ax25_dev->dev);
-+		ax25_dev_put(ax25_dev);
-+	}
+ fail:
+-	connector->funcs->destroy(msm_dsi->connector);
++	connector->funcs->destroy(connector);
+ 	return ERR_PTR(ret);
+ }
  
- 	sock->sk   = NULL;
- 	release_sock(sk);
+-- 
+2.35.1
+
 
 
