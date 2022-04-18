@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76169C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 489C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241781AbiDRNQq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50898 "EHLO
+        id S232596AbiDRNRN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:17:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241529AbiDRM6u (ORCPT
+        with ESMTP id S241810AbiDRM7D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:58:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE10328981;
-        Mon, 18 Apr 2022 05:39:14 -0700 (PDT)
+        Mon, 18 Apr 2022 08:59:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FE31FCD4;
+        Mon, 18 Apr 2022 05:39:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64BCDB80EE0;
-        Mon, 18 Apr 2022 12:39:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84D73C385A1;
-        Mon, 18 Apr 2022 12:39:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5CADB80EC0;
+        Mon, 18 Apr 2022 12:39:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C5B0C385A8;
+        Mon, 18 Apr 2022 12:39:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285552;
-        bh=WxdINBJhJmuQhfsk54MQKM6StE1JaxXVgmu28O0s0EQ=;
+        s=korg; t=1650285576;
+        bh=jkM/RKdyK/H5xm4aNkhaPVHUFc65CBbp7zNjhnkRVso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dez/LTALV2Lt5bEe0RN8KPsHI9fg9ZzKUGFv0AYqUFhP9sB2+IX7RHY5mX76polrD
-         8CWxda9NZV44OM0c/Q4CYOc3g7cZM539JiIjMQ9Gk519BnOCIEyGJHk46Bgu3HsNiZ
-         yfMoMMqEn+1YAfLpxBznQVn9qw2/FSyocz2loxtI=
+        b=euE4yi4u3Qh0i0NUSv2/tw9PMLZTrleGQKRDLBiBjtvOUIEU98SZLaXAytR1S6dWj
+         e9IgE23lPXAx6pKzwa4XeOz2S6eQqgfeNwg7wPy+CDZiyaCyX37n37tqNxEBavxr00
+         1zKudYPeoHJGdqTTz5Wv+fMBDdMlKo/ef7tPCXc4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 055/105] net: micrel: fix KS8851_MLL Kconfig
-Date:   Mon, 18 Apr 2022 14:12:57 +0200
-Message-Id: <20220418121148.048207658@linuxfoundation.org>
+Subject: [PATCH 5.10 063/105] myri10ge: fix an incorrect free for skb in myri10ge_sw_tso
+Date:   Mon, 18 Apr 2022 14:13:05 +0200
+Message-Id: <20220418121148.277931257@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -51,48 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit c3efcedd272aa6dd5929e20cf902a52ddaa1197a ]
+[ Upstream commit b423e54ba965b4469b48e46fd16941f1e1701697 ]
 
-KS8851_MLL selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL,
-so make KS8851_MLL also depend on PTP_1588_CLOCK_OPTIONAL since
-'select' does not follow any dependency chains.
+All remaining skbs should be released when myri10ge_xmit fails to
+transmit a packet. Fix it within another skb_list_walk_safe.
 
-Fixes kconfig warning and build errors:
-
-WARNING: unmet direct dependencies detected for MICREL_PHY
-  Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
-  Selected by [y]:
-  - KS8851_MLL [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && HAS_IOMEM [=y]
-
-ld: drivers/net/phy/micrel.o: in function `lan8814_ts_info':
-micrel.c:(.text+0xb35): undefined reference to `ptp_clock_index'
-ld: drivers/net/phy/micrel.o: in function `lan8814_probe':
-micrel.c:(.text+0x2586): undefined reference to `ptp_clock_register'
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/micrel/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
-index 42bc014136fe..9ceb7e1fb169 100644
---- a/drivers/net/ethernet/micrel/Kconfig
-+++ b/drivers/net/ethernet/micrel/Kconfig
-@@ -37,6 +37,7 @@ config KS8851
- config KS8851_MLL
- 	tristate "Micrel KS8851 MLL"
- 	depends on HAS_IOMEM
-+	depends on PTP_1588_CLOCK_OPTIONAL
- 	select MII
- 	select CRC32
- 	select EEPROM_93CX6
+diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+index fc99ad8e4a38..1664e9184c9c 100644
+--- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
++++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+@@ -2895,11 +2895,9 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
+ 		status = myri10ge_xmit(curr, dev);
+ 		if (status != 0) {
+ 			dev_kfree_skb_any(curr);
+-			if (segs != NULL) {
+-				curr = segs;
+-				segs = next;
++			skb_list_walk_safe(next, curr, next) {
+ 				curr->next = NULL;
+-				dev_kfree_skb_any(segs);
++				dev_kfree_skb_any(curr);
+ 			}
+ 			goto drop;
+ 		}
 -- 
 2.35.1
 
