@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97204C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 286A9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343742AbiDROT5 (ORCPT
+        id S1343998AbiDROUL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:19:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
+        Mon, 18 Apr 2022 10:20:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245086AbiDROCC (ORCPT
+        with ESMTP id S245089AbiDROCC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 10:02:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94070344DE;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115A9344D8;
         Mon, 18 Apr 2022 06:09:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 236D560F16;
-        Mon, 18 Apr 2022 13:08:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1231BC385BA;
-        Mon, 18 Apr 2022 13:08:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EEDD960F5A;
+        Mon, 18 Apr 2022 13:09:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC5A3C385A1;
+        Mon, 18 Apr 2022 13:09:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287337;
-        bh=zZZ8+bt+swbdKgisPUds2B86Lnz7Y1ZXyD/TXnFQ/U8=;
+        s=korg; t=1650287363;
+        bh=oJf58TLgyayrPgKP70qwWD4+lAFv8v5sODX5AlRkVOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VgeS0APSRDD4K2mLsMnwxSXW1nKL0884VAN/6bE8vLac5aN+yd/gIm41KhUw+W+X5
-         viUJ5ZylHUtEmGlMGveRh3WDRJHJK1w55vbH+A0+h4BVOPNG8oiJGpTFzSpOzE7/rs
-         jBF8aih4BIuisrgcFIwY/u8KhwulvOiFCP3VhyWI=
+        b=CND5wiu6frh7o8iS17QQIRbov5zY/BQsS4Bq2oV/WxpzN9W3pPBnujPelRNvJt8I5
+         5PYQ+xCumanK3o2rQvGYPqjoS1kZJu5qhje98f1bkXJA9XfTM0iVn+BKZEaB/NLIL0
+         rmsk+35lEKNqsq6fmmRsDib9M870FFO5w1Sp2gZ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
-        Paul Moore <paul@paul-moore.com>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 123/218] selinux: use correct type for context length
-Date:   Mon, 18 Apr 2022 14:13:09 +0200
-Message-Id: <20220418121203.111822121@linuxfoundation.org>
+Subject: [PATCH 4.9 139/218] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
+Date:   Mon, 18 Apr 2022 14:13:25 +0200
+Message-Id: <20220418121203.566013930@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -51,42 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Göttsche <cgzones@googlemail.com>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-[ Upstream commit b97df7c098c531010e445da88d02b7bf7bf59ef6 ]
+[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
 
-security_sid_to_context() expects a pointer to an u32 as the address
-where to store the length of the computed context.
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-Reported by sparse:
-
-    security/selinux/xfrm.c:359:39: warning: incorrect type in arg 4
-                                    (different signedness)
-    security/selinux/xfrm.c:359:39:    expected unsigned int
-                                       [usertype] *scontext_len
-    security/selinux/xfrm.c:359:39:    got int *
-
-Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
-[PM: wrapped commit description]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/selinux/xfrm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
-index 56e354fcdfc6..5304dd49e054 100644
---- a/security/selinux/xfrm.c
-+++ b/security/selinux/xfrm.c
-@@ -344,7 +344,7 @@ int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
- 	int rc;
- 	struct xfrm_sec_ctx *ctx;
- 	char *ctx_str = NULL;
--	int str_len;
-+	u32 str_len;
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+index 8b810696a42b..6a8f0f0fa601 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+@@ -413,7 +413,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
+ 	if (r)
+ 		return r;
  
- 	if (!polsec)
- 		return 0;
+-	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
++	return sysfs_emit(buf, "%d\n", errors);
+ }
+ 
+ static ssize_t dsicm_hw_revision_show(struct device *dev,
+@@ -444,7 +444,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
+ 	if (r)
+ 		return r;
+ 
+-	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
++	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
+ }
+ 
+ static ssize_t dsicm_store_ulps(struct device *dev,
+@@ -494,7 +494,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
+ 	t = ddata->ulps_enabled;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static ssize_t dsicm_store_ulps_timeout(struct device *dev,
+@@ -541,7 +541,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
+ 	t = ddata->ulps_timeout;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
 -- 
 2.34.1
 
