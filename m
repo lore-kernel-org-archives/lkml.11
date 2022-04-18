@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A21C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFD99C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240274AbiDRMiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54016 "EHLO
+        id S240786AbiDRMjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:39:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239756AbiDRMdX (ORCPT
+        with ESMTP id S239807AbiDRMd2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:23 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB9B91E3EF;
-        Mon, 18 Apr 2022 05:25:32 -0700 (PDT)
+        Mon, 18 Apr 2022 08:33:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D501B7B8;
+        Mon, 18 Apr 2022 05:26:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 22184CE1099;
-        Mon, 18 Apr 2022 12:25:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8465C385A1;
-        Mon, 18 Apr 2022 12:25:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F31760B40;
+        Mon, 18 Apr 2022 12:26:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 246CDC385A1;
+        Mon, 18 Apr 2022 12:26:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284729;
-        bh=in+Tjq7u2HtEgipwNeDYze3KLACNyZ5YX46Zm/zoWb0=;
+        s=korg; t=1650284791;
+        bh=qpVTc7+3ifbfoP/oGzLvgbLxeru/ApKNEpfvierqZMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h4Sx3TV0D62WbFN67BEILoo9hpc9NAAEORmbb43kAHJMjfjpcxcGQjg92ObLcDYm/
-         f5mbcHlHiLMlLebn17KBqZCG7CC9b5yyM5BhadhBdGUjeAzvS7gB0UQOk2cxJBAGMf
-         GCrdEPD1PjO4aT8gB8Lklw12A82cADEdhu/zKPbs=
+        b=GoR0B83emf9MjW5z/bbjOM77vIUs59UaVH6eAvHxPXr2l9T3DCVCaKcFW96Y4pwW0
+         RcIb1uFQKrDH7ELIMgOeCzOjyYnHD2mU5E5PJVzrXVxpCQdPgTsVPZFRtVIntaUdlF
+         /1VB8d557/GaTnwaTJBXbnQgO6fy3e1CjIFbdrYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH 5.17 208/219] i2c: dev: check return value when calling dev_set_name()
-Date:   Mon, 18 Apr 2022 14:12:57 +0200
-Message-Id: <20220418121212.690559498@linuxfoundation.org>
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Eric Yang <Eric.Yang2@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 002/189] drm/amd/display: Fix p-state allow debug index on dcn31
+Date:   Mon, 18 Apr 2022 14:10:22 +0200
+Message-Id: <20220418121200.425177027@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
-References: <20220418121203.462784814@linuxfoundation.org>
+In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
+References: <20220418121200.312988959@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,49 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
 
-commit 993eb48fa199b5f476df8204e652eff63dd19361 upstream.
+commit 3107e1a7ae088ee94323fe9ab05dbefd65b3077f upstream.
 
-If dev_set_name() fails, the dev_name() is null, check the return
-value of dev_set_name() to avoid the null-ptr-deref.
+[Why]
+It changed since dcn30 but the hubbub31 constructor hasn't been
+modified to reflect this.
 
-Fixes: 1413ef638aba ("i2c: dev: Fix the race between the release of i2c_dev and cdev")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+[How]
+Update the value in the constructor to 0x6 so we're checking the right
+bits for p-state allow.
+
+It worked before by accident, but can falsely assert 0 depending on HW
+state transitions. The most frequent of which appears to be when
+all pipes turn off during IGT tests.
+
+Cc: Harry Wentland <harry.wentland@amd.com>
+
+Fixes: e7031d8258f1b4 ("drm/amd/display: Add pstate verification and recovery for DCN31")
+Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Reviewed-by: Eric Yang <Eric.Yang2@amd.com>
+Acked-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/i2c-dev.c |   15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hubbub.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/i2c/i2c-dev.c
-+++ b/drivers/i2c/i2c-dev.c
-@@ -668,16 +668,21 @@ static int i2cdev_attach_adapter(struct
- 	i2c_dev->dev.class = i2c_dev_class;
- 	i2c_dev->dev.parent = &adap->dev;
- 	i2c_dev->dev.release = i2cdev_dev_release;
--	dev_set_name(&i2c_dev->dev, "i2c-%d", adap->nr);
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hubbub.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hubbub.c
+@@ -1042,5 +1042,7 @@ void hubbub31_construct(struct dcn20_hub
+ 	hubbub31->detile_buf_size = det_size_kb * 1024;
+ 	hubbub31->pixel_chunk_size = pixel_chunk_size_kb * 1024;
+ 	hubbub31->crb_size_segs = config_return_buffer_size_kb / DCN31_CRB_SEGMENT_SIZE_KB;
 +
-+	res = dev_set_name(&i2c_dev->dev, "i2c-%d", adap->nr);
-+	if (res)
-+		goto err_put_i2c_dev;
- 
- 	res = cdev_device_add(&i2c_dev->cdev, &i2c_dev->dev);
--	if (res) {
--		put_i2c_dev(i2c_dev, false);
--		return res;
--	}
-+	if (res)
-+		goto err_put_i2c_dev;
- 
- 	pr_debug("adapter [%s] registered as minor %d\n", adap->name, adap->nr);
- 	return 0;
-+
-+err_put_i2c_dev:
-+	put_i2c_dev(i2c_dev, false);
-+	return res;
++	hubbub31->debug_test_index_pstate = 0x6;
  }
  
- static int i2cdev_detach_adapter(struct device *dev, void *dummy)
 
 
