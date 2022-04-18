@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BA5AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE45BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241395AbiDRNYT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:24:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
+        id S241433AbiDRNYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:24:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241161AbiDRNCw (ORCPT
+        with ESMTP id S241358AbiDRNDA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:02:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6776D329B6;
-        Mon, 18 Apr 2022 05:42:54 -0700 (PDT)
+        Mon, 18 Apr 2022 09:03:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0937727155;
+        Mon, 18 Apr 2022 05:43:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D779B80EE2;
-        Mon, 18 Apr 2022 12:42:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60184C385A1;
-        Mon, 18 Apr 2022 12:42:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3182B80EC3;
+        Mon, 18 Apr 2022 12:43:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01193C385A1;
+        Mon, 18 Apr 2022 12:43:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285771;
-        bh=gY0Qt1XeyyVXBqWlXeogsn6jG66hFxrQ/NBv4zRBgCo=;
+        s=korg; t=1650285792;
+        bh=Qem81bJBJ4bXuldztS3i1EFkoRvyIMTGFYIioO0Ei+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YKrBj5fUrRa26vf6rVokvB2IweXkY5pKT1ZaGNTkwqgBloiasWZ5ac8XeKiBZVxh4
-         Gv5/V+cSY9MH4/ujb5Q3Frta2ww9fCJqy3jsGJpBndnEGovejuwdE7vHR0pAwwFw4H
-         CY/W1Q8xauaOZaO89NB5xzkJ0UHDQaz8RGf1p9vI=
+        b=NC3pC4Uwpopo2dm0/gqKPU2cQf9LfQsuustWNUIxhggVoLzVRtjNqIKuXyc5tqvVF
+         fzmx9oRfeeIHEM1nzrJeK7rAxLzQq5xe92gtfSm8sqGaIvbVTZFPI4NoijramzeXCw
+         psUbVcx4pO8pKk4RcVXpAlwAsDNOy0eyjLLkNqNQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vadim Pasternak <vadimp@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Leo Ruan <tingquan.ruan@cn.bosch.com>,
+        Mark Jonas <mark.jonas@de.bosch.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 05/63] mlxsw: i2c: Fix initialization error flow
-Date:   Mon, 18 Apr 2022 14:13:02 +0200
-Message-Id: <20220418121134.509255024@linuxfoundation.org>
+Subject: [PATCH 5.4 26/63] gpu: ipu-v3: Fix dev_dbg frequency output
+Date:   Mon, 18 Apr 2022 14:13:23 +0200
+Message-Id: <20220418121135.876117592@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -50,34 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vadim Pasternak <vadimp@nvidia.com>
+From: Leo Ruan <tingquan.ruan@cn.bosch.com>
 
-[ Upstream commit d452088cdfd5a4ad9d96d847d2273fe958d6339b ]
+[ Upstream commit 070a88fd4a03f921b73a2059e97d55faaa447dab ]
 
-Add mutex_destroy() call in driver initialization error flow.
+This commit corrects the printing of the IPU clock error percentage if
+it is between -0.1% to -0.9%. For example, if the pixel clock requested
+is 27.2 MHz but only 27.0 MHz can be achieved the deviation is -0.8%.
+But the fixed point math had a flaw and calculated error of 0.2%.
 
-Fixes: 6882b0aee180f ("mlxsw: Introduce support for I2C bus")
-Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Link: https://lore.kernel.org/r/20220407070703.2421076-1-idosch@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Before:
+  Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
+  IPU clock can give 27000000 with divider 10, error 0.2%
+  Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU, 27000000Hz
+
+After:
+  Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
+  IPU clock can give 27000000 with divider 10, error -0.8%
+  Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU, 27000000Hz
+
+Signed-off-by: Leo Ruan <tingquan.ruan@cn.bosch.com>
+Signed-off-by: Mark Jonas <mark.jonas@de.bosch.com>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220207151411.5009-1-mark.jonas@de.bosch.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/i2c.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/ipu-v3/ipu-di.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/i2c.c b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-index 95f408d0e103..7cc4c30af1a7 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-@@ -649,6 +649,7 @@ static int mlxsw_i2c_probe(struct i2c_client *client,
- 	return 0;
+diff --git a/drivers/gpu/ipu-v3/ipu-di.c b/drivers/gpu/ipu-v3/ipu-di.c
+index b4a31d506fcc..74eca68891ad 100644
+--- a/drivers/gpu/ipu-v3/ipu-di.c
++++ b/drivers/gpu/ipu-v3/ipu-di.c
+@@ -451,8 +451,9 @@ static void ipu_di_config_clock(struct ipu_di *di,
  
- errout:
-+	mutex_destroy(&mlxsw_i2c->cmd.lock);
- 	i2c_set_clientdata(client, NULL);
+ 		error = rate / (sig->mode.pixelclock / 1000);
  
- 	return err;
+-		dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider %u, error %d.%u%%\n",
+-			rate, div, (signed)(error - 1000) / 10, error % 10);
++		dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider %u, error %c%d.%d%%\n",
++			rate, div, error < 1000 ? '-' : '+',
++			abs(error - 1000) / 10, abs(error - 1000) % 10);
+ 
+ 		/* Allow a 1% error */
+ 		if (error < 1010 && error >= 990) {
 -- 
 2.35.1
 
