@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC7DC3525B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADD52C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240327AbiDRMiy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:38:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54022 "EHLO
+        id S240014AbiDRMie (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:38:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239769AbiDRMdY (ORCPT
+        with ESMTP id S239706AbiDRMdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C082A1E3FF;
-        Mon, 18 Apr 2022 05:25:42 -0700 (PDT)
+        Mon, 18 Apr 2022 08:33:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF7D2659C;
+        Mon, 18 Apr 2022 05:25:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D11860FB0;
-        Mon, 18 Apr 2022 12:25:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 537ACC385A1;
-        Mon, 18 Apr 2022 12:25:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68960B80EC4;
+        Mon, 18 Apr 2022 12:25:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE48CC385A1;
+        Mon, 18 Apr 2022 12:25:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284741;
-        bh=rW1u9K8345+MlZzqAj6h4y9oB8V4Y/VHGKcLCTUIvac=;
+        s=korg; t=1650284711;
+        bh=bYcVda4ElHgHELXVHUWW4uXvDvvaYN2pV6L8EEtrMVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1tJKviRIGfxQnLrXo8w1Gf/DrGoe9x8zZ9muyOUX9fddyjNHlFxnxUdrX3q4NXFiH
-         b49g0BPZE+WqvkAf3d2nFepSc8H2t3JBYg89nP+eHHLdYF4oNrgMxsBMapdylarlwp
-         ihun+HRdFHGBPWIrRnJNZKq3+TP16IGVVlEFVkBU=
+        b=cE5pPJY/oWziy24yN4c1Xz5Zm1ZuEsVmjvtjHFfZJCpKYTsAGo3GsClL04g6+IcxR
+         OleINBPMlyz/7xwpo/VuMaqeMN572SJYwqhrPUz+V+WqWnIbfPFfU/HSiDLiFFdhi2
+         bvwVn0zn1719DTml2NA3Y8aC0UjD2pcrQ2PdMzcc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, Michal Hocko <mhocko@suse.com>,
-        David Hildenbrand <david@redhat.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 176/219] mm, page_alloc: fix build_zonerefs_node()
-Date:   Mon, 18 Apr 2022 14:12:25 +0200
-Message-Id: <20220418121211.804040370@linuxfoundation.org>
+        stable@vger.kernel.org, Andrew Cooper <andrew.cooper3@citrix.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Neelima Krishnan <neelima.krishnan@intel.com>
+Subject: [PATCH 5.17 202/219] x86/tsx: Disable TSX development mode at boot
+Date:   Mon, 18 Apr 2022 14:12:51 +0200
+Message-Id: <20220418121212.524788930@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -53,66 +51,201 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-commit e553f62f10d93551eb883eca227ac54d1a4fad84 upstream.
+commit 400331f8ffa3bec5c561417e5eec6848464e9160 upstream.
 
-Since commit 6aa303defb74 ("mm, vmscan: only allocate and reclaim from
-zones with pages managed by the buddy allocator") only zones with free
-memory are included in a built zonelist.  This is problematic when e.g.
-all memory of a zone has been ballooned out when zonelists are being
-rebuilt.
+A microcode update on some Intel processors causes all TSX transactions
+to always abort by default[*]. Microcode also added functionality to
+re-enable TSX for development purposes. With this microcode loaded, if
+tsx=on was passed on the cmdline, and TSX development mode was already
+enabled before the kernel boot, it may make the system vulnerable to TSX
+Asynchronous Abort (TAA).
 
-The decision whether to rebuild the zonelists when onlining new memory
-is done based on populated_zone() returning 0 for the zone the memory
-will be added to.  The new zone is added to the zonelists only, if it
-has free memory pages (managed_zone() returns a non-zero value) after
-the memory has been onlined.  This implies, that onlining memory will
-always free the added pages to the allocator immediately, but this is
-not true in all cases: when e.g. running as a Xen guest the onlined new
-memory will be added only to the ballooned memory list, it will be freed
-only when the guest is being ballooned up afterwards.
+To be on safer side, unconditionally disable TSX development mode during
+boot. If a viable use case appears, this can be revisited later.
 
-Another problem with using managed_zone() for the decision whether a
-zone is being added to the zonelists is, that a zone with all memory
-used will in fact be removed from all zonelists in case the zonelists
-happen to be rebuilt.
+  [*]: Intel TSX Disable Update for Selected Processors, doc ID: 643557
 
-Use populated_zone() when building a zonelist as it has been done before
-that commit.
+  [ bp: Drop unstable web link, massage heavily. ]
 
-There was a report that QubesOS (based on Xen) is hitting this problem.
-Xen has switched to use the zone device functionality in kernel 5.9 and
-QubesOS wants to use memory hotplugging for guests in order to be able
-to start a guest with minimal memory and expand it as needed.  This was
-the report leading to the patch.
-
-Link: https://lkml.kernel.org/r/20220407120637.9035-1-jgross@suse.com
-Fixes: 6aa303defb74 ("mm, vmscan: only allocate and reclaim from zones with pages managed by the buddy allocator")
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Acked-by: David Hildenbrand <david@redhat.com>
-Cc: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Reviewed-by: Wei Yang <richard.weiyang@gmail.com>
+Suggested-by: Andrew Cooper <andrew.cooper3@citrix.com>
+Suggested-by: Borislav Petkov <bp@alien8.de>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Tested-by: Neelima Krishnan <neelima.krishnan@intel.com>
 Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Link: https://lore.kernel.org/r/347bd844da3a333a9793c6687d4e4eb3b2419a3e.1646943780.git.pawan.kumar.gupta@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/page_alloc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/include/asm/msr-index.h       |    4 +-
+ arch/x86/kernel/cpu/common.c           |    2 +
+ arch/x86/kernel/cpu/cpu.h              |    5 +--
+ arch/x86/kernel/cpu/intel.c            |    8 -----
+ arch/x86/kernel/cpu/tsx.c              |   50 +++++++++++++++++++++++++++++++--
+ tools/arch/x86/include/asm/msr-index.h |    4 +-
+ 6 files changed, 55 insertions(+), 18 deletions(-)
 
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -6112,7 +6112,7 @@ static int build_zonerefs_node(pg_data_t
- 	do {
- 		zone_type--;
- 		zone = pgdat->node_zones + zone_type;
--		if (managed_zone(zone)) {
-+		if (populated_zone(zone)) {
- 			zoneref_set_zone(zone, &zonerefs[nr_zones++]);
- 			check_highest_zone(zone_type);
- 		}
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -128,9 +128,9 @@
+ #define TSX_CTRL_RTM_DISABLE		BIT(0)	/* Disable RTM feature */
+ #define TSX_CTRL_CPUID_CLEAR		BIT(1)	/* Disable TSX enumeration */
+ 
+-/* SRBDS support */
+ #define MSR_IA32_MCU_OPT_CTRL		0x00000123
+-#define RNGDS_MITG_DIS			BIT(0)
++#define RNGDS_MITG_DIS			BIT(0)	/* SRBDS support */
++#define RTM_ALLOW			BIT(1)	/* TSX development mode */
+ 
+ #define MSR_IA32_SYSENTER_CS		0x00000174
+ #define MSR_IA32_SYSENTER_ESP		0x00000175
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1719,6 +1719,8 @@ void identify_secondary_cpu(struct cpuin
+ 	validate_apic_and_package_id(c);
+ 	x86_spec_ctrl_setup_ap();
+ 	update_srbds_msr();
++
++	tsx_ap_init();
+ }
+ 
+ static __init int setup_noclflush(char *arg)
+--- a/arch/x86/kernel/cpu/cpu.h
++++ b/arch/x86/kernel/cpu/cpu.h
+@@ -55,11 +55,10 @@ enum tsx_ctrl_states {
+ extern __ro_after_init enum tsx_ctrl_states tsx_ctrl_state;
+ 
+ extern void __init tsx_init(void);
+-extern void tsx_enable(void);
+-extern void tsx_disable(void);
+-extern void tsx_clear_cpuid(void);
++void tsx_ap_init(void);
+ #else
+ static inline void tsx_init(void) { }
++static inline void tsx_ap_init(void) { }
+ #endif /* CONFIG_CPU_SUP_INTEL */
+ 
+ extern void get_cpu_cap(struct cpuinfo_x86 *c);
+--- a/arch/x86/kernel/cpu/intel.c
++++ b/arch/x86/kernel/cpu/intel.c
+@@ -717,14 +717,6 @@ static void init_intel(struct cpuinfo_x8
+ 
+ 	init_intel_misc_features(c);
+ 
+-	if (tsx_ctrl_state == TSX_CTRL_ENABLE)
+-		tsx_enable();
+-	else if (tsx_ctrl_state == TSX_CTRL_DISABLE)
+-		tsx_disable();
+-	else if (tsx_ctrl_state == TSX_CTRL_RTM_ALWAYS_ABORT)
+-		/* See comment over that function for more details. */
+-		tsx_clear_cpuid();
+-
+ 	split_lock_init();
+ 	bus_lock_init();
+ 
+--- a/arch/x86/kernel/cpu/tsx.c
++++ b/arch/x86/kernel/cpu/tsx.c
+@@ -19,7 +19,7 @@
+ 
+ enum tsx_ctrl_states tsx_ctrl_state __ro_after_init = TSX_CTRL_NOT_SUPPORTED;
+ 
+-void tsx_disable(void)
++static void tsx_disable(void)
+ {
+ 	u64 tsx;
+ 
+@@ -39,7 +39,7 @@ void tsx_disable(void)
+ 	wrmsrl(MSR_IA32_TSX_CTRL, tsx);
+ }
+ 
+-void tsx_enable(void)
++static void tsx_enable(void)
+ {
+ 	u64 tsx;
+ 
+@@ -122,7 +122,7 @@ static enum tsx_ctrl_states x86_get_tsx_
+  * That's why, this function's call in init_intel() doesn't clear the
+  * feature flags.
+  */
+-void tsx_clear_cpuid(void)
++static void tsx_clear_cpuid(void)
+ {
+ 	u64 msr;
+ 
+@@ -142,11 +142,42 @@ void tsx_clear_cpuid(void)
+ 	}
+ }
+ 
++/*
++ * Disable TSX development mode
++ *
++ * When the microcode released in Feb 2022 is applied, TSX will be disabled by
++ * default on some processors. MSR 0x122 (TSX_CTRL) and MSR 0x123
++ * (IA32_MCU_OPT_CTRL) can be used to re-enable TSX for development, doing so is
++ * not recommended for production deployments. In particular, applying MD_CLEAR
++ * flows for mitigation of the Intel TSX Asynchronous Abort (TAA) transient
++ * execution attack may not be effective on these processors when Intel TSX is
++ * enabled with updated microcode.
++ */
++static void tsx_dev_mode_disable(void)
++{
++	u64 mcu_opt_ctrl;
++
++	/* Check if RTM_ALLOW exists */
++	if (!boot_cpu_has_bug(X86_BUG_TAA) || !tsx_ctrl_is_supported() ||
++	    !cpu_feature_enabled(X86_FEATURE_SRBDS_CTRL))
++		return;
++
++	rdmsrl(MSR_IA32_MCU_OPT_CTRL, mcu_opt_ctrl);
++
++	if (mcu_opt_ctrl & RTM_ALLOW) {
++		mcu_opt_ctrl &= ~RTM_ALLOW;
++		wrmsrl(MSR_IA32_MCU_OPT_CTRL, mcu_opt_ctrl);
++		setup_force_cpu_cap(X86_FEATURE_RTM_ALWAYS_ABORT);
++	}
++}
++
+ void __init tsx_init(void)
+ {
+ 	char arg[5] = {};
+ 	int ret;
+ 
++	tsx_dev_mode_disable();
++
+ 	/*
+ 	 * Hardware will always abort a TSX transaction when the CPUID bit
+ 	 * RTM_ALWAYS_ABORT is set. In this case, it is better not to enumerate
+@@ -215,3 +246,16 @@ void __init tsx_init(void)
+ 		setup_force_cpu_cap(X86_FEATURE_HLE);
+ 	}
+ }
++
++void tsx_ap_init(void)
++{
++	tsx_dev_mode_disable();
++
++	if (tsx_ctrl_state == TSX_CTRL_ENABLE)
++		tsx_enable();
++	else if (tsx_ctrl_state == TSX_CTRL_DISABLE)
++		tsx_disable();
++	else if (tsx_ctrl_state == TSX_CTRL_RTM_ALWAYS_ABORT)
++		/* See comment over that function for more details. */
++		tsx_clear_cpuid();
++}
+--- a/tools/arch/x86/include/asm/msr-index.h
++++ b/tools/arch/x86/include/asm/msr-index.h
+@@ -128,9 +128,9 @@
+ #define TSX_CTRL_RTM_DISABLE		BIT(0)	/* Disable RTM feature */
+ #define TSX_CTRL_CPUID_CLEAR		BIT(1)	/* Disable TSX enumeration */
+ 
+-/* SRBDS support */
+ #define MSR_IA32_MCU_OPT_CTRL		0x00000123
+-#define RNGDS_MITG_DIS			BIT(0)
++#define RNGDS_MITG_DIS			BIT(0)	/* SRBDS support */
++#define RTM_ALLOW			BIT(1)	/* TSX development mode */
+ 
+ #define MSR_IA32_SYSENTER_CS		0x00000174
+ #define MSR_IA32_SYSENTER_ESP		0x00000175
 
 
