@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA20C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73310C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229740AbiDRMh0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54142 "EHLO
+        id S239460AbiDRMhc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239027AbiDRMbi (ORCPT
+        with ESMTP id S239073AbiDRMbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:31:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBD7252AB;
-        Mon, 18 Apr 2022 05:24:03 -0700 (PDT)
+        Mon, 18 Apr 2022 08:31:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D2C4E089;
+        Mon, 18 Apr 2022 05:24:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DA664CE1099;
-        Mon, 18 Apr 2022 12:24:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDF49C385A8;
-        Mon, 18 Apr 2022 12:23:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6B8F60FA7;
+        Mon, 18 Apr 2022 12:24:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCE51C385A7;
+        Mon, 18 Apr 2022 12:24:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284640;
-        bh=saIBfUiOO9oi8JxUXD5UmunFw+zU/h9YE0bVKwbuzVI=;
+        s=korg; t=1650284646;
+        bh=YkaemEMBK7qaTeQB8mFXuiMEQuO6DXR44MGW7zHTBoM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UJjt9ybm6uIqFWWHCsodVV6FJkCNVyOezB1A+DoJtImZEMu11qgZ1Vt5IlsVCPYlM
-         xVTL4hNJJ0+YGxUg+m/EgnNp9VyHBHcPGL9kNjIxxeM+2P0yYY6lt9KdlKRc9lU4vO
-         +8ZTETrROtFBG1ExG8GBrjpSbgfU8K/paKQTotGs=
+        b=YMvPs0YqMy/eINu+ploeE9Uyc/Jd1YiYUW/FVnd33Myed3a9LUz1rSpArE9GWZda1
+         319yiYypmZq4OT0SaiFPYNeh8VA70ayjwYA3PDsvQbQlNw55m7dOEGPHJVR1ppneDT
+         Fy+QGRh+msbyI5YqXHROybQicPO197rKawQ4qmyM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 173/219] io_uring: use nospec annotation for more indexes
-Date:   Mon, 18 Apr 2022 14:12:22 +0200
-Message-Id: <20220418121211.721539889@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Oliver Upton <oupton@google.com>, Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.17 183/219] KVM: Dont create VM debugfs files outside of the VM directory
+Date:   Mon, 18 Apr 2022 14:12:32 +0200
+Message-Id: <20220418121212.002023130@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,66 +48,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Oliver Upton <oupton@google.com>
 
-[ Upstream commit 4cdd158be9d09223737df83136a1fb65269d809a ]
+commit a44a4cc1c969afec97dbb2aedaf6f38eaa6253bb upstream.
 
-There are still several places that using pre array_index_nospec()
-indexes, fix them up.
+Unfortunately, there is no guarantee that KVM was able to instantiate a
+debugfs directory for a particular VM. To that end, KVM shouldn't even
+attempt to create new debugfs files in this case. If the specified
+parent dentry is NULL, debugfs_create_file() will instantiate files at
+the root of debugfs.
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/b01ef5ee83f72ed35ad525912370b729f5d145f4.1649336342.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+For arm64, it is possible to create the vgic-state file outside of a
+VM directory, the file is not cleaned up when a VM is destroyed.
+Nonetheless, the corresponding struct kvm is freed when the VM is
+destroyed.
+
+Nip the problem in the bud for all possible errant debugfs file
+creations by initializing kvm->debugfs_dentry to -ENOENT. In so doing,
+debugfs_create_file() will fail instead of creating the file in the root
+directory.
+
+Cc: stable@kernel.org
+Fixes: 929f45e32499 ("kvm: no need to check return value of debugfs_create functions")
+Signed-off-by: Oliver Upton <oupton@google.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220406235615.1447180-2-oupton@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ virt/kvm/kvm_main.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 53b20d8b1129..f0febb2cb016 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -8613,7 +8613,7 @@ static int io_close_fixed(struct io_kiocb *req, unsigned int issue_flags)
- 	bool needs_lock = issue_flags & IO_URING_F_UNLOCKED;
- 	struct io_fixed_file *file_slot;
- 	struct file *file;
--	int ret, i;
-+	int ret;
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -937,7 +937,7 @@ static void kvm_destroy_vm_debugfs(struc
+ 	int kvm_debugfs_num_entries = kvm_vm_stats_header.num_desc +
+ 				      kvm_vcpu_stats_header.num_desc;
  
- 	io_ring_submit_lock(ctx, needs_lock);
- 	ret = -ENXIO;
-@@ -8626,8 +8626,8 @@ static int io_close_fixed(struct io_kiocb *req, unsigned int issue_flags)
- 	if (ret)
- 		goto out;
+-	if (!kvm->debugfs_dentry)
++	if (IS_ERR(kvm->debugfs_dentry))
+ 		return;
  
--	i = array_index_nospec(offset, ctx->nr_user_files);
--	file_slot = io_fixed_file_slot(&ctx->file_table, i);
-+	offset = array_index_nospec(offset, ctx->nr_user_files);
-+	file_slot = io_fixed_file_slot(&ctx->file_table, offset);
- 	ret = -EBADF;
- 	if (!file_slot->file_ptr)
- 		goto out;
-@@ -8683,8 +8683,7 @@ static int __io_sqe_files_update(struct io_ring_ctx *ctx,
+ 	debugfs_remove_recursive(kvm->debugfs_dentry);
+@@ -960,6 +960,12 @@ static int kvm_create_vm_debugfs(struct
+ 	int kvm_debugfs_num_entries = kvm_vm_stats_header.num_desc +
+ 				      kvm_vcpu_stats_header.num_desc;
  
- 		if (file_slot->file_ptr) {
- 			file = (struct file *)(file_slot->file_ptr & FFS_MASK);
--			err = io_queue_rsrc_removal(data, up->offset + done,
--						    ctx->rsrc_node, file);
-+			err = io_queue_rsrc_removal(data, i, ctx->rsrc_node, file);
- 			if (err)
- 				break;
- 			file_slot->file_ptr = 0;
-@@ -9357,7 +9356,7 @@ static int __io_sqe_buffers_update(struct io_ring_ctx *ctx,
++	/*
++	 * Force subsequent debugfs file creations to fail if the VM directory
++	 * is not created.
++	 */
++	kvm->debugfs_dentry = ERR_PTR(-ENOENT);
++
+ 	if (!debugfs_initialized())
+ 		return 0;
  
- 		i = array_index_nospec(offset, ctx->nr_user_bufs);
- 		if (ctx->user_bufs[i] != ctx->dummy_ubuf) {
--			err = io_queue_rsrc_removal(ctx->buf_data, offset,
-+			err = io_queue_rsrc_removal(ctx->buf_data, i,
- 						    ctx->rsrc_node, ctx->user_bufs[i]);
- 			if (unlikely(err)) {
- 				io_buffer_unmap(ctx, &imu);
--- 
-2.35.1
-
+@@ -5484,7 +5490,7 @@ static void kvm_uevent_notify_change(uns
+ 	}
+ 	add_uevent_var(env, "PID=%d", kvm->userspace_pid);
+ 
+-	if (kvm->debugfs_dentry) {
++	if (!IS_ERR(kvm->debugfs_dentry)) {
+ 		char *tmp, *p = kmalloc(PATH_MAX, GFP_KERNEL_ACCOUNT);
+ 
+ 		if (p) {
 
 
