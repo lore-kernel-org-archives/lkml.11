@@ -2,86 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A62DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 086ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:09:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237990AbiDRMMW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:12:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38340 "EHLO
+        id S238005AbiDRMM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:12:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230287AbiDRMMR (ORCPT
+        with ESMTP id S236281AbiDRMMU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:12:17 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4018B7D4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:09:34 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id 11so12212166edw.0
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:09:34 -0700 (PDT)
+        Mon, 18 Apr 2022 08:12:20 -0400
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5EFC1A803
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:09:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=SSv/kGw/sPtJ7xffy1Sqnr1P6e8jX6vTWYRNPrJXy+E=;
-        b=jl0s2qu3zHzXOOG/XXwBXtdHcq+UyIspnmNveiot9OMZOHyKn4v4BKCOQKD3pkrCK0
-         eum9+ZF1+q8e+Rrh7RG1F2HOY0m66DpMB1sr8Yt+ut9a6x0bspNKX5HFWjOpW56YSIri
-         oU8+DwbzF8UOaGf3e2FPU4nd6+15wc5vAyCsFKnTQnDNhqLq6wPTDO71rtAMHGmrP8WS
-         ICxFiFLJ1Qwsh/Ugwo4zoH3CQl5Iw2J2Ro5IfC/VlHP33UwCBg1/0lWX6CsGMidiKZtV
-         c/bcNDX7ErJz2rvQkBkpQxtATla7/1mh6xTifwt7S8mONzxQ5IyJuBuFDgF/FIDHEQL3
-         bfEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=SSv/kGw/sPtJ7xffy1Sqnr1P6e8jX6vTWYRNPrJXy+E=;
-        b=h4TDpuXKdBjEUdhjlOl22aWZt56Wj1fVGCRX6vyi2BiduZFgXS+d/Lhn7z403qm7ua
-         ry11Be6/w0Vv4dkVWZQyEMJMRE6bHBJw+iTLRAdRuWKUR8Lks59It4o0TnbV9HfZa8Ph
-         5sWjUIaTyjMkQrMbIU0AXyNiU95DlKoA4rnFYeTEP0X1vtKvsM2Kzu+Q97AtHWmqHGgA
-         S2C9f3vXrwVDyGL4dFJ5z5qhFiwuiDjAqoBJ+zo37AkzMcOfEicjAk2QRMirmLRMihyk
-         HG7NIlOnXrg/aHIFwthgMNOa+tx5rZibVgKB9ta9Dtw7gsbwCVKcdQc+CukkPOdP4mgf
-         N3mw==
-X-Gm-Message-State: AOAM5336C37j2XjLiqEgkAVZ4mXpJSIj0Pf3fvELVK3SvAEq79eZsguB
-        KnbY9qGECZVOhwLo3IMXeRBjyQ==
-X-Google-Smtp-Source: ABdhPJwA8yjnwIzDfarUC+vVVrE8aSLrawiRP6weL99Jh6WKXgbp7zK0u3Ij8+I1lNxfhsABKRUrJg==
-X-Received: by 2002:aa7:ccd0:0:b0:41d:70e5:b87f with SMTP id y16-20020aa7ccd0000000b0041d70e5b87fmr11607725edt.20.1650283773577;
-        Mon, 18 Apr 2022 05:09:33 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id u26-20020a17090626da00b006e7cb663277sm4541728ejc.90.2022.04.18.05.09.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 05:09:33 -0700 (PDT)
-Message-ID: <f419829d-87f7-17ff-50ce-fd3628df71fe@linaro.org>
-Date:   Mon, 18 Apr 2022 14:09:31 +0200
+  d=inria.fr; s=dc;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=mr7U61Lv/iEwOWf4m7Y5C1lRiJrpx9ObNmLADe2a/u8=;
+  b=ajsDAonmjyfq5jaJ2PpIgIMHc/OVqaQDouZOSs2mDr75YPBq7oIKB5X4
+   BLjgr5Yh9/vtd8YxiHzVSouOBebsbCJj+FF8sh5qP9g6/KEGkOf/sGl4X
+   HAVwaZGfYv3XEb8tbqpeJdWv8qfCnYLZHr5HuEOiZhwG3fT6Tq1q34aSL
+   M=;
+Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=julia.lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
+X-IronPort-AV: E=Sophos;i="5.90,269,1643670000"; 
+   d="scan'208";a="11791691"
+Received: from 203.107.68.85.rev.sfr.net (HELO hadrien) ([85.68.107.203])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 14:09:37 +0200
+Date:   Mon, 18 Apr 2022 14:09:37 +0200 (CEST)
+From:   Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To:     Aliya Rahmani <aliyarahmani786@gmail.com>
+cc:     clabbe@baylibre.com, gregkh@linuxfoundation.org,
+        linux-staging@lists.linux.dev, outreachy@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] staging: media: zoran: avoid macro argument precedence
+ issues
+In-Reply-To: <20220418115948.5456-4-aliyarahmani786@gmail.com>
+Message-ID: <alpine.DEB.2.22.394.2204181408230.11986@hadrien>
+References: <20220418115948.5456-1-aliyarahmani786@gmail.com> <20220418115948.5456-4-aliyarahmani786@gmail.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 1/5] dt-bindings: clock: add binding for MA35D1 clock
- controller
-Content-Language: en-US
-To:     Jacky Huang <ychuang3@nuvoton.com>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, ychuang570808@gmail.com
-Cc:     robh+dt@kernel.org, sboyd@kernel.org, krzk+dt@kernel.org,
-        arnd@arndb.de, olof@lixom.net, will@kernel.org, soc@kernel.org,
-        cfli0@nuvoton.com
-References: <20220418082738.11301-1-ychuang3@nuvoton.com>
- <20220418082738.11301-2-ychuang3@nuvoton.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220418082738.11301-2-ychuang3@nuvoton.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/04/2022 10:27, Jacky Huang wrote:
-> Add the dt-bindings header for Nuvoton MA35D1, that gets shared
-> between the clock controller and clock references in the dts.
-> 
-> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
 
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+On Mon, 18 Apr 2022, Aliya Rahmani wrote:
 
+> This patch fixes checkpatch warnings of precedence issues. Added parentheses
+> around macro argument 'num'.
 
-Best regards,
-Krzysztof
+You should use the imperative.  This "Add" rather than "Added".
+
+The subject line would be better as "add parentheses on macro parameter".
+That describes what you did, rather than what you avoided (avoided how?).
+
+julia
+
+>
+> Signed-off-by: Aliya Rahmani <aliyarahmani786@gmail.com>
+> ---
+>  drivers/staging/media/zoran/videocodec.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/staging/media/zoran/videocodec.c b/drivers/staging/media/zoran/videocodec.c
+> index 19732a47c8bd..925f90fd5885 100644
+> --- a/drivers/staging/media/zoran/videocodec.c
+> +++ b/drivers/staging/media/zoran/videocodec.c
+> @@ -22,7 +22,7 @@ MODULE_PARM_DESC(videocodec_debug, "Debug level (0-4)");
+>
+>  #define dprintk(num, format, args...) \
+>  	do { \
+> -		if (videocodec_debug >= num) \
+> +		if (videocodec_debug >= (num)) \
+>  			printk(format, ##args); \
+>  	} while (0)
+>
+> --
+> 2.25.1
+>
+>
+>
