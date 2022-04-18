@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A10EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FED8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234606AbiDRMUf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48078 "EHLO
+        id S238358AbiDRMUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:20:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238341AbiDRMT4 (ORCPT
+        with ESMTP id S238329AbiDRMTy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:19:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F171C92C;
-        Mon, 18 Apr 2022 05:16:47 -0700 (PDT)
+        Mon, 18 Apr 2022 08:19:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D8C1C903;
+        Mon, 18 Apr 2022 05:16:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50AFC60F07;
-        Mon, 18 Apr 2022 12:16:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59FECC385A1;
-        Mon, 18 Apr 2022 12:16:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D557B80ED6;
+        Mon, 18 Apr 2022 12:16:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D6CCC385A7;
+        Mon, 18 Apr 2022 12:16:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284206;
-        bh=3a2v0mJy0hoCm06UP+LU9YrkWPFsjP8HGnh6ARG1qAI=;
+        s=korg; t=1650284201;
+        bh=qQuplBFLH5g3JbuqxjbpvdnwMb0CDU7Mn//3SIj0s3U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x1m5o8OZE72Vqsa+C+x2DG+IzZYSFnxNDaIlBvRrhuBRAKX5ugMXO3zAIVcpipgmD
-         w2/R3zEAs3dGQZ87niJNayTbw1SBKmlCsChOSyDOtOUOUR1Ld9uLDs7sp4QjsFZhnV
-         U21ulhCrRSvVGA/FvDkkNPlMvdhSNUp9zz1Vhi4s=
+        b=GuKP1IdyC0m8UUpWAAbNVR/Ua7TaaykoZmFOvbBmsBEpak7QT39sYW3JAHya51ZXx
+         t8mQeNJLkeKcaLZSTCxdXVbYWVvHLMUYbPMNLweeOUxZfeOFYpkhvIxOMbvCaxbu5c
+         M0EtO/jMbmX3VHKfOgoyiHJY7a1asrGaH/Vsno4A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anup Patel <apatel@ventanamicro.com>,
-        Anup Patel <anup@brainfault.org>
-Subject: [PATCH 5.17 010/219] RISC-V: KVM: Dont clear hgatp CSR in kvm_arch_vcpu_put()
-Date:   Mon, 18 Apr 2022 14:09:39 +0200
-Message-Id: <20220418121203.767117836@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 035/219] ALSA: es1968: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:10:04 +0200
+Message-Id: <20220418121205.402594936@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,41 +47,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anup Patel <apatel@ventanamicro.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 8c3ce496bd612bd21679e445f75fcabb6be997b2 upstream.
+commit de9a01bc95a9e5e36d0659521bb04579053d8566 upstream.
 
-We might have RISC-V systems (such as QEMU) where VMID is not part
-of the TLB entry tag so these systems will have to flush all TLB
-entries upon any change in hgatp.VMID.
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-Currently, we zero-out hgatp CSR in kvm_arch_vcpu_put() and we
-re-program hgatp CSR in kvm_arch_vcpu_load(). For above described
-systems, this will flush all TLB entries whenever VCPU exits to
-user-space hence reducing performance.
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
 
-This patch fixes above described performance issue by not clearing
-hgatp CSR in kvm_arch_vcpu_put().
-
-Fixes: 34bde9d8b9e6 ("RISC-V: KVM: Implement VCPU world-switch")
-Cc: stable@vger.kernel.org
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-Signed-off-by: Anup Patel <anup@brainfault.org>
+Fixes: a7b4cbfdc701 ("ALSA: es1968: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-16-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kvm/vcpu.c |    2 --
- 1 file changed, 2 deletions(-)
+ sound/pci/es1968.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/arch/riscv/kvm/vcpu.c
-+++ b/arch/riscv/kvm/vcpu.c
-@@ -653,8 +653,6 @@ void kvm_arch_vcpu_put(struct kvm_vcpu *
- 				     vcpu->arch.isa);
- 	kvm_riscv_vcpu_host_fp_restore(&vcpu->arch.host_context);
+--- a/sound/pci/es1968.c
++++ b/sound/pci/es1968.c
+@@ -2741,8 +2741,8 @@ static int snd_es1968_create(struct snd_
  
--	csr_write(CSR_HGATP, 0);
--
- 	csr->vsstatus = csr_read(CSR_VSSTATUS);
- 	csr->vsie = csr_read(CSR_VSIE);
- 	csr->vstvec = csr_read(CSR_VSTVEC);
+ /*
+  */
+-static int snd_es1968_probe(struct pci_dev *pci,
+-			    const struct pci_device_id *pci_id)
++static int __snd_es1968_probe(struct pci_dev *pci,
++			      const struct pci_device_id *pci_id)
+ {
+ 	static int dev;
+ 	struct snd_card *card;
+@@ -2848,6 +2848,12 @@ static int snd_es1968_probe(struct pci_d
+ 	return 0;
+ }
+ 
++static int snd_es1968_probe(struct pci_dev *pci,
++			    const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_es1968_probe(pci, pci_id));
++}
++
+ static struct pci_driver es1968_driver = {
+ 	.name = KBUILD_MODNAME,
+ 	.id_table = snd_es1968_ids,
 
 
