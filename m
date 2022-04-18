@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B10C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E17B0C41535
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240956AbiDRMju (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:39:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52964 "EHLO
+        id S240453AbiDRMjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239828AbiDRMda (ORCPT
+        with ESMTP id S239788AbiDRMd2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:30 -0400
+        Mon, 18 Apr 2022 08:33:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1171E1C10C;
-        Mon, 18 Apr 2022 05:26:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12561B798;
+        Mon, 18 Apr 2022 05:26:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97A3660FF1;
-        Mon, 18 Apr 2022 12:26:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70DA5C385AC;
-        Mon, 18 Apr 2022 12:26:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A94D60F7C;
+        Mon, 18 Apr 2022 12:26:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78639C385A9;
+        Mon, 18 Apr 2022 12:25:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284811;
-        bh=hnXxtEBUA5ZxcilPT0tseZET3rfXT3b/XiaIGhqWjCs=;
+        s=korg; t=1650284744;
+        bh=XH/aPqskHsYqk183lo7pT+BSy3GImF4PNjTADsO1cVo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tdhGIgA2WouvEFCI9ck1Lmy8q+5+kqv3z+FfcFP6fxZf6qEoYzylb7SFuP5Fnqbkm
-         q4uHzwUuQk/GCOBA8wNKTH3lK/BP4hHJP553e/KfOEjDH1pFBiGu2gQNEidIMGKZai
-         AwNVHViaxeSzLywrH5u8l3FoLzPuPNKj7zFDFHco=
+        b=IhPMJ30I+70DmqY7Q1fI/KTUBxxD9/8Y2hSNyJpAdjgt0FyxHFpPB32CestBiEES7
+         twIOfnVCJG5i2FgXiy+YzB5KAQe5lB0vAhs6pIkRdHSFoJDJWsp6IaIekCIrx42Exb
+         7LaGspwwzjRMAFtsfrkAazK3qcpYpJVfCjwzyp6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 016/189] ALSA: core: Add snd_card_free_on_error() helper
-Date:   Mon, 18 Apr 2022 14:10:36 +0200
-Message-Id: <20220418121200.973418134@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Sven Peter <sven@svenpeter.dev>, Wolfram Sang <wsa@kernel.org>
+Subject: [PATCH 5.17 212/219] i2c: pasemi: Wait for write xfers to finish
+Date:   Mon, 18 Apr 2022 14:13:01 +0200
+Message-Id: <20220418121212.801276880@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
-References: <20220418121200.312988959@linuxfoundation.org>
+In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
+References: <20220418121203.462784814@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,96 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Martin Povišer <povik+lin@cutebit.org>
 
-commit fee2b871d8d6389c9b4bdf9346a99ccc1c98c9b8 upstream.
+commit bd8963e602c77adc76dbbbfc3417c3cf14fed76b upstream.
 
-This is a small helper function to handle the error path more easily
-when an error happens during the probe for the device with the
-device-managed card.  Since devres releases in the reverser order of
-the creations, usually snd_card_free() gets called at the last in the
-probe error path unless it already reached snd_card_register() calls.
-Due to this nature, when a driver expects the resource releases in
-card->private_free, this might be called too lately.
+Wait for completion of write transfers before returning from the driver.
+At first sight it may seem advantageous to leave write transfers queued
+for the controller to carry out on its own time, but there's a couple of
+issues with it:
 
-As a workaround, one should call the probe like:
+ * Driver doesn't check for FIFO space.
 
- static int __some_probe(...) { // do real probe.... }
+ * The queued writes can complete while the driver is in its I2C read
+   transfer path which means it will get confused by the raising of
+   XEN (the 'transaction ended' signal). This can cause a spurious
+   ENODATA error due to premature reading of the MRXFIFO register.
 
- static int some_probe(...)
- {
-	return snd_card_free_on_error(dev, __some_probe(dev, ...));
- }
+Adding the wait fixes some unreliability issues with the driver. There's
+some efficiency cost to it (especially with pasemi_smb_waitready doing
+its polling), but that will be alleviated once the driver receives
+interrupt support.
 
-so that the snd_card_free() is called explicitly at the beginning of
-the error path from the probe.
-
-This function will be used in the upcoming fixes to address the
-regressions by devres usages.
-
-Fixes: e8ad415b7a55 ("ALSA: core: Add managed card creation")
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412093141.8008-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: beb58aa39e6e ("i2c: PA Semi SMBus driver")
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+Reviewed-by: Sven Peter <sven@svenpeter.dev>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/sound/core.h |    1 +
- sound/core/init.c    |   28 ++++++++++++++++++++++++++++
- 2 files changed, 29 insertions(+)
+ drivers/i2c/busses/i2c-pasemi-core.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/include/sound/core.h
-+++ b/include/sound/core.h
-@@ -284,6 +284,7 @@ int snd_card_disconnect(struct snd_card
- void snd_card_disconnect_sync(struct snd_card *card);
- int snd_card_free(struct snd_card *card);
- int snd_card_free_when_closed(struct snd_card *card);
-+int snd_card_free_on_error(struct device *dev, int ret);
- void snd_card_set_id(struct snd_card *card, const char *id);
- int snd_card_register(struct snd_card *card);
- int snd_card_info_init(void);
---- a/sound/core/init.c
-+++ b/sound/core/init.c
-@@ -209,6 +209,12 @@ static void __snd_card_release(struct de
-  * snd_card_register(), the very first devres action to call snd_card_free()
-  * is added automatically.  In that way, the resource disconnection is assured
-  * at first, then released in the expected order.
-+ *
-+ * If an error happens at the probe before snd_card_register() is called and
-+ * there have been other devres resources, you'd need to free the card manually
-+ * via snd_card_free() call in the error; otherwise it may lead to UAF due to
-+ * devres call orders.  You can use snd_card_free_on_error() helper for
-+ * handling it more easily.
-  */
- int snd_devm_card_new(struct device *parent, int idx, const char *xid,
- 		      struct module *module, size_t extra_size,
-@@ -235,6 +241,28 @@ int snd_devm_card_new(struct device *par
- }
- EXPORT_SYMBOL_GPL(snd_devm_card_new);
+--- a/drivers/i2c/busses/i2c-pasemi-core.c
++++ b/drivers/i2c/busses/i2c-pasemi-core.c
+@@ -137,6 +137,12 @@ static int pasemi_i2c_xfer_msg(struct i2
  
-+/**
-+ * snd_card_free_on_error - a small helper for handling devm probe errors
-+ * @dev: the managed device object
-+ * @ret: the return code from the probe callback
-+ *
-+ * This function handles the explicit snd_card_free() call at the error from
-+ * the probe callback.  It's just a small helper for simplifying the error
-+ * handling with the managed devices.
-+ */
-+int snd_card_free_on_error(struct device *dev, int ret)
-+{
-+	struct snd_card *card;
+ 		TXFIFO_WR(smbus, msg->buf[msg->len-1] |
+ 			  (stop ? MTXFIFO_STOP : 0));
 +
-+	if (!ret)
-+		return 0;
-+	card = devres_find(dev, __snd_card_release, NULL, NULL);
-+	if (card)
-+		snd_card_free(card);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(snd_card_free_on_error);
-+
- static int snd_card_init(struct snd_card *card, struct device *parent,
- 			 int idx, const char *xid, struct module *module,
- 			 size_t extra_size)
++		if (stop) {
++			err = pasemi_smb_waitready(smbus);
++			if (err)
++				goto reset_out;
++		}
+ 	}
+ 
+ 	return 0;
 
 
