@@ -2,80 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5FE8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:03:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 446EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244926AbiDROF5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:05:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57258 "EHLO
+        id S245711AbiDROGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244956AbiDRNso (ORCPT
+        with ESMTP id S245024AbiDRNs4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:48:44 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B525933A01
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 06:01:18 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23IBd2un027093;
-        Mon, 18 Apr 2022 08:00:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=0XOMCRsLJEli4pwqJVwSkmm9Imnsr07cAJCh8WzK9BA=;
- b=cHG6J304RS/6msPYoGsVj9ki7BY45Y/QzSGz7QcvCyv8ivwtGCIyS78Tol+GeP0WA17G
- a9Z5o0MeSBuIb8UUmVkujtvtGm1D22SRnMoyJcMcRdW7G1sQL7SFXXSs7XOb2mTIDuV5
- rHkTzgLeUDyBny+8nr4T/OR4Zh8RXDBqLH+2BiREMd9jUG0QB8VJa11c3Uje5G+wN7SU
- +fCzXmO8UpFDT/ty6LnaHqWQnsKZBg3s+s54dYE6FuSldyHINPY0Ehv4woDoUpWpZ0Q5
- n9k/yAd2g6SOFMeELd012kZ6HoQx/adWeJSNN2ADFSwXES8bigHAneNk2ic+acyBeYKG tA== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fft7msvf9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 18 Apr 2022 08:00:58 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 18 Apr
- 2022 14:00:54 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Mon, 18 Apr 2022 14:00:54 +0100
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 46FBAB10;
-        Mon, 18 Apr 2022 13:00:54 +0000 (UTC)
-Date:   Mon, 18 Apr 2022 13:00:54 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     <cgel.zte@gmail.com>
-CC:     <lgirdwood@gmail.com>, <broonie@kernel.org>,
-        <patches@opensource.cirrus.com>, <alsa-devel@alsa-project.org>,
-        <linux-kernel@vger.kernel.org>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] ASoC: codecs: wm8962: using pm_runtime_resume_and_get
- instead of pm_runtime_get_sync
-Message-ID: <20220418130054.GC38351@ediswmail.ad.cirrus.com>
-References: <20220418110259.2559144-1-chi.minghao@zte.com.cn>
+        Mon, 18 Apr 2022 09:48:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103B533E30;
+        Mon, 18 Apr 2022 06:01:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A535603E0;
+        Mon, 18 Apr 2022 13:01:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D38CC385A7;
+        Mon, 18 Apr 2022 13:01:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650286886;
+        bh=4Dci3quEyDp7dpPRUeAudPXkyXmM1KLPWCf5Ec3oX00=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ra6CgLogrMU4nzobuZKAEKckm1C5RGxqVofdGpv6hDPNgvrCmQCDFVyhhp1jYJMTf
+         LXr8mLQVFnLnwRWyDXdecJf4qaSotvdCIh0hIeR+l7YnZZD2Xpn5v5xFXClBFue2yJ
+         IsxKw2cvbynelPVULxqakPNv1V1xZ5yZHESNw1bU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alexey Galakhov <agalakhov@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 276/284] scsi: mvsas: Add PCI ID of RocketRaid 2640
+Date:   Mon, 18 Apr 2022 14:14:17 +0200
+Message-Id: <20220418121220.882134733@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
+References: <20220418121210.689577360@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220418110259.2559144-1-chi.minghao@zte.com.cn>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-ORIG-GUID: PsQS2BgAoLINJu4Xj1w7dDtiBR0lPfp-
-X-Proofpoint-GUID: PsQS2BgAoLINJu4Xj1w7dDtiBR0lPfp-
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 11:02:59AM +0000, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> Using pm_runtime_resume_and_get is more appropriate
-> for simplifing code
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> ---
+From: Alexey Galakhov <agalakhov@gmail.com>
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+[ Upstream commit 5f2bce1e222028dc1c15f130109a17aa654ae6e8 ]
 
-Thanks,
-Charles
+The HighPoint RocketRaid 2640 is a low-cost SAS controller based on Marvell
+chip. The chip in question was already supported by the kernel, just the
+PCI ID of this particular board was missing.
+
+Link: https://lore.kernel.org/r/20220309212535.402987-1-agalakhov@gmail.com
+Signed-off-by: Alexey Galakhov <agalakhov@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/scsi/mvsas/mv_init.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
+index f6070b1fe1d8..b03fdff72adb 100644
+--- a/drivers/scsi/mvsas/mv_init.c
++++ b/drivers/scsi/mvsas/mv_init.c
+@@ -678,6 +678,7 @@ static struct pci_device_id mvs_pci_table[] = {
+ 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1300), chip_1300 },
+ 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1320), chip_1320 },
+ 	{ PCI_VDEVICE(ADAPTEC2, 0x0450), chip_6440 },
++	{ PCI_VDEVICE(TTI, 0x2640), chip_6440 },
+ 	{ PCI_VDEVICE(TTI, 0x2710), chip_9480 },
+ 	{ PCI_VDEVICE(TTI, 0x2720), chip_9480 },
+ 	{ PCI_VDEVICE(TTI, 0x2721), chip_9480 },
+-- 
+2.35.1
+
+
+
