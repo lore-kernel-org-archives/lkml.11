@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83751C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:09:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 920F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:09:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245353AbiDROLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:11:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45492 "EHLO
+        id S245456AbiDROLo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245638AbiDRNxz (ORCPT
+        with ESMTP id S245617AbiDRNxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:53:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D056E46B21;
-        Mon, 18 Apr 2022 06:02:58 -0700 (PDT)
+        Mon, 18 Apr 2022 09:53:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B5B46B0E;
+        Mon, 18 Apr 2022 06:02:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15C9060B41;
-        Mon, 18 Apr 2022 13:02:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B1FEC385A1;
-        Mon, 18 Apr 2022 13:02:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADE5CB80EBA;
+        Mon, 18 Apr 2022 13:02:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD17C385A8;
+        Mon, 18 Apr 2022 13:02:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286977;
-        bh=NcRu25js3toUPx0KLfzmrjPtNYkGWmP5Qed61QgN4e4=;
+        s=korg; t=1650286974;
+        bh=D0KhdQUtd4xsL/VSZoclQHtl4B5v9CRGQPzcl2JCxKY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VPegGX8me77t8KkPm6HBA2eMpWCeFF2edIfT+zZmG6+jMpw0b1xD/sFd3ur3n4iKJ
-         lzzXeaya8pxEnCwdY27ieHRZQNUHtFL3vrPfuNbRvML94v/K35LRsn+NkhZ8vR4APd
-         x6aXmEmkJWtXBmsfueE4dC1Wiu2tQa5q4ksG7ytI=
+        b=DXU0OD8DSwfziiAda7LwAxfta48W8auq0WC833AMt8G4yDVzKj9XZeP/TZVc9Mw0n
+         QNDzQ4gaUjd/viWLisxTz3tEi/q/64y8xbVys1P9fFlEreiK9jwLqjoOEt+PUIMj8a
+         Ti9GX7x5kwx0FcMNX0KrMW87jnVI0asTkAgZkZ0I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 4.9 020/218] jffs2: fix memory leak in jffs2_scan_medium
-Date:   Mon, 18 Apr 2022 14:11:26 +0200
-Message-Id: <20220418121159.740116443@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.9 002/218] USB: serial: simple: add Nokia phone driver
+Date:   Mon, 18 Apr 2022 14:11:08 +0200
+Message-Id: <20220418121158.775304139@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -48,110 +47,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit 9cdd3128874f5fe759e2c4e1360ab7fb96a8d1df upstream.
+commit c4b9c570965f75d0d55e639747f1e5ccdad2fae0 upstream.
 
-If an error is returned in jffs2_scan_eraseblock() and some memory
-has been added to the jffs2_summary *s, we can observe the following
-kmemleak report:
+Add a new "simple" driver for certain Nokia phones, including Nokia 130
+(RM-1035) which exposes two serial ports in "charging only" mode:
 
---------------------------------------------
-unreferenced object 0xffff88812b889c40 (size 64):
-  comm "mount", pid 692, jiffies 4294838325 (age 34.288s)
-  hex dump (first 32 bytes):
-    40 48 b5 14 81 88 ff ff 01 e0 31 00 00 00 50 00  @H........1...P.
-    00 00 01 00 00 00 01 00 00 00 02 00 00 00 09 08  ................
-  backtrace:
-    [<ffffffffae93a3a3>] __kmalloc+0x613/0x910
-    [<ffffffffaf423b9c>] jffs2_sum_add_dirent_mem+0x5c/0xa0
-    [<ffffffffb0f3afa8>] jffs2_scan_medium.cold+0x36e5/0x4794
-    [<ffffffffb0f3dbe1>] jffs2_do_mount_fs.cold+0xa7/0x2267
-    [<ffffffffaf40acf3>] jffs2_do_fill_super+0x383/0xc30
-    [<ffffffffaf40c00a>] jffs2_fill_super+0x2ea/0x4c0
-    [<ffffffffb0315d64>] mtd_get_sb+0x254/0x400
-    [<ffffffffb0315f5f>] mtd_get_sb_by_nr+0x4f/0xd0
-    [<ffffffffb0316478>] get_tree_mtd+0x498/0x840
-    [<ffffffffaf40bd15>] jffs2_get_tree+0x25/0x30
-    [<ffffffffae9f358d>] vfs_get_tree+0x8d/0x2e0
-    [<ffffffffaea7a98f>] path_mount+0x50f/0x1e50
-    [<ffffffffaea7c3d7>] do_mount+0x107/0x130
-    [<ffffffffaea7c5c5>] __se_sys_mount+0x1c5/0x2f0
-    [<ffffffffaea7c917>] __x64_sys_mount+0xc7/0x160
-    [<ffffffffb10142f5>] do_syscall_64+0x45/0x70
-unreferenced object 0xffff888114b54840 (size 32):
-  comm "mount", pid 692, jiffies 4294838325 (age 34.288s)
-  hex dump (first 32 bytes):
-    c0 75 b5 14 81 88 ff ff 02 e0 02 00 00 00 02 00  .u..............
-    00 00 84 00 00 00 44 00 00 00 6b 6b 6b 6b 6b a5  ......D...kkkkk.
-  backtrace:
-    [<ffffffffae93be24>] kmem_cache_alloc_trace+0x584/0x880
-    [<ffffffffaf423b04>] jffs2_sum_add_inode_mem+0x54/0x90
-    [<ffffffffb0f3bd44>] jffs2_scan_medium.cold+0x4481/0x4794
-    [...]
-unreferenced object 0xffff888114b57280 (size 32):
-  comm "mount", pid 692, jiffies 4294838393 (age 34.357s)
-  hex dump (first 32 bytes):
-    10 d5 6c 11 81 88 ff ff 08 e0 05 00 00 00 01 00  ..l.............
-    00 00 38 02 00 00 28 00 00 00 6b 6b 6b 6b 6b a5  ..8...(...kkkkk.
-  backtrace:
-    [<ffffffffae93be24>] kmem_cache_alloc_trace+0x584/0x880
-    [<ffffffffaf423c34>] jffs2_sum_add_xattr_mem+0x54/0x90
-    [<ffffffffb0f3a24f>] jffs2_scan_medium.cold+0x298c/0x4794
-    [...]
-unreferenced object 0xffff8881116cd510 (size 16):
-  comm "mount", pid 692, jiffies 4294838395 (age 34.355s)
-  hex dump (first 16 bytes):
-    00 00 00 00 00 00 00 00 09 e0 60 02 00 00 6b a5  ..........`...k.
-  backtrace:
-    [<ffffffffae93be24>] kmem_cache_alloc_trace+0x584/0x880
-    [<ffffffffaf423cc4>] jffs2_sum_add_xref_mem+0x54/0x90
-    [<ffffffffb0f3b2e3>] jffs2_scan_medium.cold+0x3a20/0x4794
-    [...]
---------------------------------------------
+Bus 001 Device 009: ID 0421:069a Nokia Mobile Phones 130 [RM-1035] (Charging only)
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.00
+  bDeviceClass            0
+  bDeviceSubClass         0
+  bDeviceProtocol         0
+  bMaxPacketSize0         8
+  idVendor           0x0421 Nokia Mobile Phones
+  idProduct          0x069a 130 [RM-1035] (Charging only)
+  bcdDevice            1.00
+  iManufacturer           1 Nokia
+  iProduct                2 Nokia 130 (RM-1035)
+  iSerial                 0
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength       0x0037
+    bNumInterfaces          2
+    bConfigurationValue     1
+    iConfiguration          0
+    bmAttributes         0x80
+      (Bus Powered)
+    MaxPower              500mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           2
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    255 Vendor Specific Subclass
+      bInterfaceProtocol    255 Vendor Specific Protocol
+      iInterface              0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x01  EP 1 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        1
+      bAlternateSetting       0
+      bNumEndpoints           2
+      bInterfaceClass       255 Vendor Specific Class
+      bInterfaceSubClass    255 Vendor Specific Subclass
+      bInterfaceProtocol    255 Vendor Specific Protocol
+      iInterface              0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x82  EP 2 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x02  EP 2 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+Device Status:     0x0000
+  (Bus Powered)
 
-Therefore, we should call jffs2_sum_reset_collected(s) on exit to
-release the memory added in s. In addition, a new tag "out_buf" is
-added to prevent the NULL pointer reference caused by s being NULL.
-(thanks to Zhang Yi for this analysis)
-
-Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
 Cc: stable@vger.kernel.org
-Co-developed-with: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Link: https://lore.kernel.org/r/20220228084919.10656-1-johan@kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/jffs2/scan.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/usb/serial/Kconfig             |    1 +
+ drivers/usb/serial/usb-serial-simple.c |    7 +++++++
+ 2 files changed, 8 insertions(+)
 
---- a/fs/jffs2/scan.c
-+++ b/fs/jffs2/scan.c
-@@ -136,7 +136,7 @@ int jffs2_scan_medium(struct jffs2_sb_in
- 		if (!s) {
- 			JFFS2_WARNING("Can't allocate memory for summary\n");
- 			ret = -ENOMEM;
--			goto out;
-+			goto out_buf;
- 		}
- 	}
+--- a/drivers/usb/serial/Kconfig
++++ b/drivers/usb/serial/Kconfig
+@@ -65,6 +65,7 @@ config USB_SERIAL_SIMPLE
+ 		- Libtransistor USB console
+ 		- a number of Motorola phones
+ 		- Motorola Tetra devices
++		- Nokia mobile phones
+ 		- Novatel Wireless GPS receivers
+ 		- Siemens USB/MPI adapter.
+ 		- ViVOtech ViVOpay USB device.
+--- a/drivers/usb/serial/usb-serial-simple.c
++++ b/drivers/usb/serial/usb-serial-simple.c
+@@ -94,6 +94,11 @@ DEVICE(moto_modem, MOTO_IDS);
+ 	{ USB_DEVICE(0x0cad, 0x9016) }	/* TPG2200 */
+ DEVICE(motorola_tetra, MOTOROLA_TETRA_IDS);
  
-@@ -274,13 +274,15 @@ int jffs2_scan_medium(struct jffs2_sb_in
- 	}
- 	ret = 0;
-  out:
-+	jffs2_sum_reset_collected(s);
-+	kfree(s);
-+ out_buf:
- 	if (buf_size)
- 		kfree(flashbuf);
- #ifndef __ECOS
- 	else
- 		mtd_unpoint(c->mtd, 0, c->mtd->size);
- #endif
--	kfree(s);
- 	return ret;
- }
- 
++/* Nokia mobile phone driver */
++#define NOKIA_IDS()			\
++	{ USB_DEVICE(0x0421, 0x069a) }	/* Nokia 130 (RM-1035) */
++DEVICE(nokia, NOKIA_IDS);
++
+ /* Novatel Wireless GPS driver */
+ #define NOVATEL_IDS()			\
+ 	{ USB_DEVICE(0x09d7, 0x0100) }	/* NovAtel FlexPack GPS */
+@@ -126,6 +131,7 @@ static struct usb_serial_driver * const
+ 	&vivopay_device,
+ 	&moto_modem_device,
+ 	&motorola_tetra_device,
++	&nokia_device,
+ 	&novatel_gps_device,
+ 	&hp4x_device,
+ 	&suunto_device,
+@@ -143,6 +149,7 @@ static const struct usb_device_id id_tab
+ 	VIVOPAY_IDS(),
+ 	MOTO_IDS(),
+ 	MOTOROLA_TETRA_IDS(),
++	NOKIA_IDS(),
+ 	NOVATEL_IDS(),
+ 	HP4X_IDS(),
+ 	SUUNTO_IDS(),
 
 
