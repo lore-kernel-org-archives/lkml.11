@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 356A6C388F3
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:12:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1FA4C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242396AbiDRNNy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:13:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32934 "EHLO
+        id S242260AbiDRNNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242373AbiDRM7u (ORCPT
+        with ESMTP id S242336AbiDRM7t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89B1205C3;
-        Mon, 18 Apr 2022 05:41:00 -0700 (PDT)
+        Mon, 18 Apr 2022 08:59:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183AB2019E;
+        Mon, 18 Apr 2022 05:40:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51625611FE;
-        Mon, 18 Apr 2022 12:41:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EF11C385A1;
-        Mon, 18 Apr 2022 12:40:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A807760FB6;
+        Mon, 18 Apr 2022 12:40:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A115DC385A7;
+        Mon, 18 Apr 2022 12:40:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285659;
-        bh=0pNCm8cPtRNE2lPaj50F4TUTtqGyvvsngKx3mqhnaVw=;
+        s=korg; t=1650285651;
+        bh=+c2FCMYkIhAQb6pTpNufiCaP0nYl95lV9Tb0t+9Od+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AqIHTnzUMpX1GsCnY6tII6dexTo2YqF7H3DoFOtA286rj2HrFT7o1J+qbSlSS+5iH
-         RVVbVzUpr/whMuVtKG040wHepVGtCdWxgOiEdU7gjcAZ7HfXL9p0rQ0ZWZ4cdm1M5Q
-         GvU0BgN73yg3us+rLVRo1lkC4mJt3pA+pGEK1/Sg=
+        b=FGfDPFHK0DOuH+MQyJNuITiZvG57XrwhsVtNJNan7tNQxyXKDKNnFEjKAPMfmws1S
+         s9HnDMkUqWRZIE5PTNI5iJbkCJD3GcyN2GCxMAq1cTGq6VsMp8bfCv+ezI9nL0Vf9f
+         ckYgg+W+v1AzXSjtFf8cNhHYjsNIK1VIPrTNKOX8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <desowin@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.10 087/105] drm/amdgpu: Enable gfxoff quirk on MacBook Pro
-Date:   Mon, 18 Apr 2022 14:13:29 +0200
-Message-Id: <20220418121149.104870040@linuxfoundation.org>
+        stable@vger.kernel.org, James Zhu <James.Zhu@amd.com>,
+        Tianci Yin <tianci.yin@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 049/105] drm/amdgpu/vcn: improve vcn dpg stop procedure
+Date:   Mon, 18 Apr 2022 14:12:51 +0200
+Message-Id: <20220418121147.873655891@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -49,34 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomasz Moń <desowin@gmail.com>
+From: Tianci Yin <tianci.yin@amd.com>
 
-commit 4593c1b6d159f1e5c35c07a7f125e79e5a864302 upstream.
+[ Upstream commit 6ea239adc2a712eb318f04f5c29b018ba65ea38a ]
 
-Enabling gfxoff quirk results in perfectly usable graphical user
-interface on MacBook Pro (15-inch, 2019) with Radeon Pro Vega 20 4 GB.
+Prior to disabling dpg, VCN need unpausing dpg mode, or VCN will hang in
+S3 resuming.
 
-Without the quirk, X server is completely unusable as every few seconds
-there is gpu reset due to ring gfx timeout.
-
-Signed-off-by: Tomasz Moń <desowin@gmail.com>
+Reviewed-by: James Zhu <James.Zhu@amd.com>
+Signed-off-by: Tianci Yin <tianci.yin@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
-@@ -1248,6 +1248,8 @@ static const struct amdgpu_gfxoff_quirk
- 	{ 0x1002, 0x15dd, 0x103c, 0x83e7, 0xd3 },
- 	/* GFXOFF is unstable on C6 parts with a VBIOS 113-RAVEN-114 */
- 	{ 0x1002, 0x15dd, 0x1002, 0x15dd, 0xc6 },
-+	/* Apple MacBook Pro (15-inch, 2019) Radeon Pro Vega 20 4 GB */
-+	{ 0x1002, 0x69af, 0x106b, 0x019a, 0xc0 },
- 	{ 0, 0, 0, 0, 0 },
- };
+diff --git a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
+index 2099f6ebd833..bdb8e596bda6 100644
+--- a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
+@@ -1429,8 +1429,11 @@ static int vcn_v3_0_start_sriov(struct amdgpu_device *adev)
  
+ static int vcn_v3_0_stop_dpg_mode(struct amdgpu_device *adev, int inst_idx)
+ {
++	struct dpg_pause_state state = {.fw_based = VCN_DPG_STATE__UNPAUSE};
+ 	uint32_t tmp;
+ 
++	vcn_v3_0_pause_dpg_mode(adev, 0, &state);
++
+ 	/* Wait for power status to be 1 */
+ 	SOC15_WAIT_ON_RREG(VCN, inst_idx, mmUVD_POWER_STATUS, 1,
+ 		UVD_POWER_STATUS__UVD_POWER_STATUS_MASK);
+-- 
+2.35.1
+
 
 
