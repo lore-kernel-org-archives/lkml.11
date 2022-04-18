@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B70DC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69700C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242762AbiDRN2k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:28:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41074 "EHLO
+        id S243159AbiDRN2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241153AbiDRNFR (ORCPT
+        with ESMTP id S240964AbiDRNFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:05:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBB220F57;
-        Mon, 18 Apr 2022 05:45:41 -0700 (PDT)
+        Mon, 18 Apr 2022 09:05:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A0E340CF;
+        Mon, 18 Apr 2022 05:45:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49E80B80E44;
-        Mon, 18 Apr 2022 12:45:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6E62C385A7;
-        Mon, 18 Apr 2022 12:45:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2273B6101A;
+        Mon, 18 Apr 2022 12:45:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B3A0C385A7;
+        Mon, 18 Apr 2022 12:45:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285939;
-        bh=tGzXzQhqgL+alx1Q6zWeqj7q4zL1AuwH2it+jAec/5w=;
+        s=korg; t=1650285951;
+        bh=pJ2M5/+qEwvfUYmQmLNTCFIGmh9gFKayrlgbg4eF8lo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nTxCUhhB2KJxdjt0ZQLb/A1eYvIUn3BdrqxOSU/Cno2yPe3vU1f+seFbztk97JgWy
-         fR5zz/NvIJyPROniSnhXiJdb9vwp+9OUOGxsIiaqbjsoWMPYR5Qj4kSAp7vmRXDlEy
-         Z/yYBY5km2chPRCMaZ2njq0uyTYMWIS+vYQHL8uo=
+        b=tegn9rZei41rXMEGFzs9DSo0y4fYGSyVbR5o0i0oUFRk6VewVQCQIDt0H4MQrGgzh
+         TjVxpG4vMjqbfHYWS5KZ8MxmLd56KWfj9ulXaHSQBBTgqlCRHGH3aVT4RqOBg+ZjeN
+         YS+lap8FgK4XJlfVEzuvKEVeIx/kUNIqA2zVx48s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Aurabindo Pillai <aurabindo.pillai@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Tyrel Datwyler <tyreld@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 11/32] drm/amd: Add USBC connector ID
-Date:   Mon, 18 Apr 2022 14:13:51 +0200
-Message-Id: <20220418121127.457909506@linuxfoundation.org>
+Subject: [PATCH 4.19 15/32] scsi: ibmvscsis: Increase INITIAL_SRP_LIMIT to 1024
+Date:   Mon, 18 Apr 2022 14:13:55 +0200
+Message-Id: <20220418121127.572901104@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
 References: <20220418121127.127656835@linuxfoundation.org>
@@ -50,32 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aurabindo Pillai <aurabindo.pillai@amd.com>
+From: Tyrel Datwyler <tyreld@linux.ibm.com>
 
-[ Upstream commit c5c948aa894a831f96fccd025e47186b1ee41615 ]
+[ Upstream commit 0bade8e53279157c7cc9dd95d573b7e82223d78a ]
 
-[Why&How] Add a dedicated AMDGPU specific ID for use with
-newer ASICs that support USB-C output
+The adapter request_limit is hardcoded to be INITIAL_SRP_LIMIT which is
+currently an arbitrary value of 800. Increase this value to 1024 which
+better matches the characteristics of the typical IBMi Initiator that
+supports 32 LUNs and a queue depth of 32.
 
-Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+This change also has the secondary benefit of being a power of two as
+required by the kfifo API. Since, Commit ab9bb6318b09 ("Partially revert
+"kfifo: fix kfifo_alloc() and kfifo_init()"") the size of IU pool for each
+target has been rounded down to 512 when attempting to kfifo_init() those
+pools with the current request_limit size of 800.
+
+Link: https://lore.kernel.org/r/20220322194443.678433-1-tyreld@linux.ibm.com
+Signed-off-by: Tyrel Datwyler <tyreld@linux.ibm.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/ObjectID.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/ObjectID.h b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-index 5b393622f592..a0f0a17e224f 100644
---- a/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-+++ b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-@@ -119,6 +119,7 @@
- #define CONNECTOR_OBJECT_ID_eDP                   0x14
- #define CONNECTOR_OBJECT_ID_MXM                   0x15
- #define CONNECTOR_OBJECT_ID_LVDS_eDP              0x16
-+#define CONNECTOR_OBJECT_ID_USBC                  0x17
+diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
+index f42a619198c4..79bc6c3bfa6e 100644
+--- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
++++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
+@@ -44,7 +44,7 @@
  
- /* deleted */
+ #define IBMVSCSIS_VERSION	"v0.2"
+ 
+-#define	INITIAL_SRP_LIMIT	800
++#define	INITIAL_SRP_LIMIT	1024
+ #define	DEFAULT_MAX_SECTORS	256
+ #define MAX_TXU			1024 * 1024
  
 -- 
 2.35.1
