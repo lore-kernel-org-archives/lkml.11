@@ -2,252 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1FC4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:02:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9357C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245318AbiDRPEo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:04:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36688 "EHLO
+        id S244993AbiDRPH6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:07:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245435AbiDRPEI (ORCPT
+        with ESMTP id S1345333AbiDRPHi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:04:08 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894A864FC;
-        Mon, 18 Apr 2022 06:54:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650290071; x=1681826071;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=acwXphJFeX2V8q+QY3YwXSKjv1k9OMNV8xD3S9oFEMo=;
-  b=MMr3hV5tR69ce/zdTVcn/K7UnEp1KxRcQDD0IYIkEb3CH/zVPY8wFwHf
-   TamVdx8atjyQZ3Mrcyp+7+VYY87LfhYKeIaBFwNHDHqwz5rSkCYRrljnF
-   jqQD0N7LAS0NE0RTuVNpY2ocYHesO8+SZ9MYkxMf8QmwaF8Kj2ImcrCFb
-   o=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 18 Apr 2022 06:54:30 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 06:54:30 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 18 Apr 2022 06:54:29 -0700
-Received: from [10.216.27.177] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 18 Apr
- 2022 06:54:25 -0700
-Message-ID: <39ad1f0a-fb34-c81a-82c3-d14f0b830ee2@quicinc.com>
-Date:   Mon, 18 Apr 2022 19:24:22 +0530
+        Mon, 18 Apr 2022 11:07:38 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B8D102CC8C;
+        Mon, 18 Apr 2022 06:59:25 -0700 (PDT)
+Received: by ajax-webmail-mail-app4 (Coremail) ; Mon, 18 Apr 2022 21:59:10
+ +0800 (GMT+08:00)
+X-Originating-IP: [222.205.9.250]
+Date:   Mon, 18 Apr 2022 21:59:10 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "Lin Ma" <linma@zju.edu.cn>
+To:     "Guenter Roeck" <linux@roeck-us.net>
+Cc:     krzk@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mudongliangabcd@gmail.com
+Subject: Re: [PATCH v0] nfc: nci: add flush_workqueue to prevent uaf
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <20220418134133.GA872670@roeck-us.net>
+References: <20220412160430.11581-1-linma@zju.edu.cn>
+ <20220418134133.GA872670@roeck-us.net>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v7 1/4] arm64: dts: qcom: sc7280: Add nodes for soundwire
- and va tx rx digital macro codecs
-Content-Language: en-US
-To:     Matthias Kaehlcke <mka@chromium.org>
-CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-References: <1649863277-31615-1-git-send-email-quic_srivasam@quicinc.com>
- <1649863277-31615-2-git-send-email-quic_srivasam@quicinc.com>
- <YlccZmu8T1Puu9Vt@google.com>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <YlccZmu8T1Puu9Vt@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Message-ID: <524c4fb6.6e33.1803cf85ae9.Coremail.linma@zju.edu.cn>
+X-Coremail-Locale: en_US
+X-CM-TRANSID: cS_KCgAXGfCubl1iY4VnAQ--.51417W
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwQEElNG3GZe+AAAsY
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 4/14/2022 12:24 AM, Matthias Kaehlcke wrote:
-Thanks for your time Matthias!!!
-> On Wed, Apr 13, 2022 at 08:51:14PM +0530, Srinivasa Rao Mandadapu wrote:
->> SC7280 has VA, TX and RX macros with SoundWire Controllers to attach with
->> external codecs using soundwire masters. Add these nodes for sc7280 based
->> platforms audio use case.
->>
->> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> ---
->>   arch/arm64/boot/dts/qcom/sc7280.dtsi | 122 +++++++++++++++++++++++++++++++++++
->>   1 file changed, 122 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> index 50fea0e..c0f127f 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> @@ -1980,6 +1980,128 @@
->>   			#clock-cells = <1>;
->>   		};
->>   
->> +		lpass_rx_macro: codec@3200000 {
->> +			compatible = "qcom,sc7280-lpass-rx-macro";
->> +			reg = <0 0x03200000 0 0x1000>;
->> +
->> +			status = "disabled";
-> nit: this is easily missed here inmidst of the other stuff, best place
-> it at the end of the node as many other nodes do.
-Okay. will place accordingly.
->
->> +			pinctrl-names = "default";
->> +			pinctrl-0 = <&lpass_rx_swr>;
->> +
->> +			clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>,
->> +				 <&lpass_aon LPASS_AON_CC_TX_MCLK_2X_CLK>,
->> +				 <&lpass_va_macro>;
->> +			clock-names = "mclk", "npl", "fsgen";
->> +
->> +			power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,p
->> +					<&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
->> +			power-domain-names ="macro", "dcodec";
-> add space after '='.
-Okay.
->
->> +
->> +			#clock-cells = <0>;
->> +			#sound-dai-cells = <1>;
->> +		};
->> +
->> +		swr0: soundwire@3210000 {
->> +			compatible = "qcom,soundwire-v1.6.0";
->> +			reg = <0 0x03210000 0 0x2000>;
->> +
->> +			interrupts = <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
->> +			clocks = <&lpass_rx_macro>;
->> +			clock-names = "iface";
->> +
->> +			qcom,din-ports = <0>;
->> +			qcom,dout-ports = <5>;
->> +
->> +			resets = <&lpass_audiocc LPASS_AUDIO_SWR_RX_CGCR>;
->> +			reset-names = "swr_audio_cgcr";
-> The resets aren't mentioned in the binding, should they be added?
-Yes. They are to be added. Mentioned same in the cover letter dependencies.
->
->> +
->> +			qcom,ports-word-length =	/bits/ 8 <0x01 0x07 0x04 0xff 0xff>;
->> +			qcom,ports-sinterval-low =	/bits/ 8 <0x03 0x3f 0x1f 0x03 0x03>;
->> +			qcom,ports-offset1 =		/bits/ 8 <0x00 0x00 0x0b 0x01 0x01>;
->> +			qcom,ports-offset2 =		/bits/ 8 <0x00 0x00 0x0b 0x00 0x00>;
->> +			qcom,ports-lane-control =	/bits/ 8 <0x01 0x00 0x00 0x00 0x00>;
->> +			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0x00 0x01 0xff 0xff>;
->> +			qcom,ports-hstart =		/bits/ 8 <0xff 0x03 0xff 0xff 0xff>;
->> +			qcom,ports-hstop =		/bits/ 8 <0xff 0x06 0xff 0xff 0xff>;
->> +			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff 0xff 0x00>;
->> +
->> +			#sound-dai-cells = <1>;
->> +			#address-cells = <2>;
->> +			#size-cells = <0>;
-> in difference to the other nodes the soundwire ones don't have
-> 'status = "disabled"', should they be disabled by default?
-Okay. will add accordingly.
->
->> +		};
->> +
->> +		lpass_tx_macro: codec@3220000 {
->> +			compatible = "qcom,sc7280-lpass-tx-macro";
->> +			reg = <0 0x03220000 0 0x1000>;
->> +
->> +			status = "disabled";
->> +			pinctrl-names = "default";
->> +			pinctrl-0 = <&lpass_tx_swr>;
->> +
->> +			clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>,
->> +				 <&lpass_aon LPASS_AON_CC_TX_MCLK_2X_CLK>,
->> +				 <&lpass_va_macro>;
->> +			clock-names = "mclk", "npl", "fsgen";
->> +
->> +			power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
->> +					<&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
->> +			power-domain-names ="macro", "dcodec";
-> add space after '='
-Okay.
->
->> +
->> +			#clock-cells = <0>;
->> +			#sound-dai-cells = <1>;
->> +		};
->> +
->> +		swr1: soundwire@3230000 {
->> +			compatible = "qcom,soundwire-v1.6.0";
->> +			reg = <0 0x03230000 0 0x2000>;
->> +
->> +			interrupts-extended = <&intc GIC_SPI 496 IRQ_TYPE_LEVEL_HIGH>,
->> +					      <&pdc 130 IRQ_TYPE_LEVEL_HIGH>;
->> +			interrupt-names = "swr_master_irq", "swr_wake_irq";
->  From the binding
->
->    - interrupt-names:
->          Usage: Optional
->          Value type: boolean
->          Value type: <stringlist>
->          Definition: should be "core" for core and "wakeup" for wake interrupt.
->
-> Does the binding need an update?
-Here interrupt names are not being used. Will remove here.
->
->> +			clocks = <&lpass_tx_macro>;
->> +			clock-names = "iface";
->> +
->> +			qcom,din-ports = <3>;
->> +			qcom,dout-ports = <0>;
->> +
->> +			resets = <&lpass_audiocc LPASS_AUDIO_SWR_TX_CGCR>;
->> +			reset-names = "swr_audio_cgcr";
->> +
->> +			qcom,ports-sinterval-low =	/bits/ 8 <0x01 0x03 0x03>;
->> +			qcom,ports-offset1 =		/bits/ 8 <0x01 0x00 0x02>;
->> +			qcom,ports-offset2 =		/bits/ 8 <0x00 0x00 0x00>;
->> +			qcom,ports-hstart =		/bits/ 8 <0xff 0xff 0xff>;
->> +			qcom,ports-hstop =		/bits/ 8 <0xff 0xff 0xff>;
->> +			qcom,ports-word-length =	/bits/ 8 <0xff 0x00 0xff>;
->> +			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0xff 0xff>;
->> +			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff>;
->> +			qcom,ports-lane-control =	/bits/ 8 <0x00 0x01 0x00>;
->> +			qcom,port-offset = <1>;
->> +
->> +			#sound-dai-cells = <1>;
->> +			#address-cells = <2>;
->> +			#size-cells = <0>;
->> +		};
->> +
->> +		lpass_va_macro: codec@3370000 {
->> +			compatible = "qcom,sc7280-lpass-va-macro";
->> +			reg = <0 0x03370000 0 0x1000>;
->> +
->> +			status = "disabled";
->> +			pinctrl-0 = <&lpass_dmic01>;
->> +			pinctrl-names = "default";
->> +
->> +			clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>;
->> +			clock-names = "mclk";
->> +
->> +			power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
->> +					<&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
->> +			power-domain-names ="macro", "dcodec";
-> add space after '='.
-Okay.
->
->> +
->> +			#clock-cells = <0>;
->> +			#sound-dai-cells = <1>;
->> +		};
->> +
->>   		lpass_ag_noc: interconnect@3c40000 {
->>   			reg = <0 0x03c40000 0 0xf080>;
->>   			compatible = "qcom,sc7280-lpass-ag-noc";
->> -- 
->> 2.7.4
->>
+SGVsbG8gR3VlbnRlciwKCj4gSSBoYXZlIGJlZW4gd29uZGVyaW5nIGFib3V0IHRoaXMgYW5kIHRo
+ZSBzYW1lIGNvZGUgZnVydGhlciBiZWxvdy4KPiBXaGF0IHByZXZlbnRzIHRoZSBjb21tYW5kIHRp
+bWVyIGZyb20gZmlyaW5nIGFmdGVyIHRoZSBjYWxsIHRvCj4gZmx1c2hfd29ya3F1ZXVlKCkgPwo+
+IAo+IFRoYW5rcywKPiBHdWVudGVyCj4gCgpGcm9tIG15IHVuZGVyc3RhbmRpbmcsIG9uY2UgdGhl
+IGZsdXNoX3dvcmtxdWV1ZSgpIGlzIGV4ZWN1dGVkLCB0aGUgd29yayB0aGF0IHF1ZXVlZCBpbgpu
+ZGV2LT5jbWRfd3Egd2lsbCBiZSB0YWtlbiB0aGUgY2FyZSBvZi4KClRoYXQgaXMsIG9uY2UgdGhl
+IGZsdXNoX3dvcmtxdWV1ZSgpIGlzIGZpbmlzaGVkLCBpdCBwcm9taXNlcyB0aGVyZSBpcyBubyBl
+eGVjdXRpbmcgb3IgCnBlbmRpbmcgbmNpX2NtZF93b3JrKCkgZXZlci4KCnN0YXRpYyB2b2lkIG5j
+aV9jbWRfd29yayhzdHJ1Y3Qgd29ya19zdHJ1Y3QgKndvcmspCnsKICAgIC8vIC4uLgoJCW1vZF90
+aW1lcigmbmRldi0+Y21kX3RpbWVyLAoJCQkgIGppZmZpZXMgKyBtc2Vjc190b19qaWZmaWVzKE5D
+SV9DTURfVElNRU9VVCkpOwogICAgLy8gLi4uCn0KClRoZSBjb21tYW5kIHRpbWVyIGlzIHN0aWxs
+IGFibGUgYmUgZmlyZWQgYmVjYXVzZSB0aGUgbW9kX3RpbWVyKCkgaGVyZS4gVGhhdCBpcyB3aHkg
+dGhlCmRlbF90aW1lcl9zeW5jKCkgaXMgbmVjZXNzYXJ5IGFmdGVyIHRoZSBmbHVzaF93b3JrcXVl
+dWUoKS4KCk9uZSB2ZXJ5IHB1enpsaW5nIHBhcnQgaXMgdGhhdCB5b3UgbWF5IGZpbmQgb3V0IHRo
+ZSB0aW1lciBxdWV1ZSB0aGUgd29yayBhZ2FpbgoKLyogTkNJIGNvbW1hbmQgdGltZXIgZnVuY3Rp
+b24gKi8Kc3RhdGljIHZvaWQgbmNpX2NtZF90aW1lcihzdHJ1Y3QgdGltZXJfbGlzdCAqdCkKewog
+ICAgLy8gLi4uCglxdWV1ZV93b3JrKG5kZXYtPmNtZF93cSwgJm5kZXYtPmNtZF93b3JrKTsKfQoK
+QnV0IEkgZm91bmQgdGhhdCB0aGlzIGlzIG9rYXkgYmVjYXVzZSB0aGVyZSBpcyBubyBwYWNrZXRz
+IGluIG5kZXYtPmNtZF9xIGJ1ZmZlcnMgaGVuY2UgCmV2ZW4gdGhlcmUgaXMgYSBxdWV1ZWQgbmNp
+X2NtZF93b3JrKCksIGl0IHNpbXBseSBjaGVja3MgdGhlIHF1ZXVlIGFuZCByZXR1cm5zLgoKVGhh
+dCBpcywgdGhlIG9sZCByYWNlIHBpY3R1cmUgYXMgYmVsb3cKCj4gVGhyZWFkLTEgICAgICAgICAg
+ICAgICAgICAgICAgICAgICBUaHJlYWQtMgo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIHwgbmNpX2Rldl91cCgpCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAg
+IG5jaV9vcGVuX2RldmljZSgpCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAg
+ICAgX19uY2lfcmVxdWVzdChuY2lfcmVzZXRfcmVxKQo+ICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIHwgICAgICAgbmNpX3NlbmRfY21kCj4gICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgfCAgICAgICAgIHF1ZXVlX3dvcmsoY21kX3dvcmspCj4gbmNpX3VucmVnaXN0ZXJf
+ZGV2aWNlKCkgICAgICAgICAgfAo+ICAgbmNpX2Nsb3NlX2RldmljZSgpICAgICAgICAgICAgIHwg
+Li4uCj4gICAgIGRlbF90aW1lcl9zeW5jKGNtZF90aW1lcilbMV0gfAo+IC4uLiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIHwgV29ya2VyCj4gbmNpX2ZyZWVfZGV2aWNlKCkgICAgICAgICAg
+ICAgICAgfCBuY2lfY21kX3dvcmsoKQo+ICAga2ZyZWUobmRldilbM10gICAgICAgICAgICAgICAg
+IHwgICBtb2RfdGltZXIoY21kX3RpbWVyKVsyXQoKaXMgaW1wb3NzaWJsZSBub3cgYmVjYXVzZSB0
+aGUgcGF0Y2hlZCBmbHVzaF93b3JrcXVldWUoKSBtYWtlIHRoZSByYWNlIGxpa2UgYmVsb3cKCj4g
+VGhyZWFkLTEgICAgICAgICAgICAgICAgICAgICAgICAgICBUaHJlYWQtMgo+ICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIHwgbmNpX2Rldl91cCgpCj4gICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgfCAgIG5jaV9vcGVuX2RldmljZSgpCj4gICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgfCAgICAgX19uY2lfcmVxdWVzdChuY2lfcmVzZXRfcmVxKQo+ICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgbmNpX3NlbmRfY21kCj4gICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgIHF1ZXVlX3dvcmsoY21kX3dvcmsp
+Cj4gbmNpX3VucmVnaXN0ZXJfZGV2aWNlKCkgICAgICAgICAgfAo+ICAgbmNpX2Nsb3NlX2Rldmlj
+ZSgpICAgICAgICAgICAgIHwgLi4uCj4gICAgIGZsdXNoX3dvcmtxdWV1ZSgpW3BhdGNoXSAgICAg
+fCBXb3JrZXIKPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IG5jaV9jbWRfd29y
+aygpCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgIG1vZF90aW1lcihjbWRf
+dGltZXIpWzJdCj4gICAgIC8vIHdvcmsgb3ZlciB0aGVuIHJldHVybgo+ICAgICBkZWxfdGltZXJf
+c3luYyhjbWRfdGltZXIpWzFdIHwKPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8
+IFRpbWVyCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCBuY2lfY21kX3RpbWVy
+KCkKPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IAo+ICAgICAvLyB0aW1lciBv
+dmVyIHRoZW4gcmV0dXJuICAgIHwKPiAuLi4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8
+Cj4gbmNpX2ZyZWVfZGV2aWNlKCkgICAgICAgICAgICAgICAgfCAKPiAgIGtmcmVlKG5kZXYpWzNd
+ICAgICAgICAgICAgICAgICB8IAoKCldpdGggYWJvdmUgdGhpbmtpbmdzIGFuZCB0aGUgZ2l2ZW4g
+ZmFjdCB0aGF0IG15IFBPQyBkaWRuJ3QgcmFpc2UgdGhlIFVBRiwgSSB0aGluayB0aGUgCmZsdXNo
+X3dvcmtxdWV1ZSgpICsgZGVsX3RpbWVyX3N5bmMoKSBjb21iaW5hdGlvbiBpcyBva2F5IHRvIGhp
+bmRlciB0aGlzIHJhY2UuCgpUZWxsIG1lIGlmIHRoZXJlIGlzIGFueXRoaW5nIHdyb25nLgoKUmVn
+YXJkcwpMaW4gTWEKCgo=
