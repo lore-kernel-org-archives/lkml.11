@@ -2,123 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B348CC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0DA4C3527D
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242708AbiDRNSz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:18:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
+        id S242852AbiDRNTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240562AbiDRM4m (ORCPT
+        with ESMTP id S242574AbiDRNAK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:56:42 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08BE712AA9;
-        Mon, 18 Apr 2022 05:37:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650285474; x=1681821474;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=oc3o9zAraAEr29frHp+Jyf45oT9tTWsAvE/U0IEHF24=;
-  b=vcAdf3zgg5WEdCsE+icu2W2BRhv/nF7BIhSg2n2/0czpoqZtvFKcxj6i
-   hrAbp59BEqeZx35BUpbURYTFXNU1IH0p1tlpy0iBiE7LzruB2eV/YU4//
-   D2N5hjwRlvKu7l8/KfXetx29SS2BCG9IB50c40FbNVT6uaPuz3RJkG4FK
-   w=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 18 Apr 2022 05:37:54 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 05:37:54 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 18 Apr 2022 05:37:53 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 18 Apr 2022 05:37:47 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, Linus Walleij <linus.walleij@linaro.org>,
-        <linux-gpio@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v13 3/7] pinctrl: qcom: Update macro name to LPI specific
-Date:   Mon, 18 Apr 2022 18:07:03 +0530
-Message-ID: <1650285427-19752-4-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650285427-19752-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1650285427-19752-1-git-send-email-quic_srivasam@quicinc.com>
+        Mon, 18 Apr 2022 09:00:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3891D2612A;
+        Mon, 18 Apr 2022 05:41:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C811560FB6;
+        Mon, 18 Apr 2022 12:41:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D458AC385A1;
+        Mon, 18 Apr 2022 12:41:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650285698;
+        bh=+bJHROMegmTVcDWC4ZKfPap8cszGveXnm0W1xWIE8ko=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bIs2yQXUL950qWWOD6vFsCwuWgJSS572j/OVpjHNknOS3StKy3MfjRt0Faj56HVo8
+         mj0vQ6E0J+DUdDex9CLxw48ou9oGgs9KN1JCwm78JWnl/5bq1ztshNZC+n3WAosJGl
+         xZWTGqW3EYxQ8iSKukisSkHwo0rjrnjo+g3HWD38=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Johannes Berg <johannes@sipsolutions.net>,
+        Anna-Maria Behnsen <anna-maria@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Frederic Weisbecker <frederic@kernel.org>
+Subject: [PATCH 5.10 094/105] timers: Fix warning condition in __run_timers()
+Date:   Mon, 18 Apr 2022 14:13:36 +0200
+Message-Id: <20220418121149.304352708@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
+References: <20220418121145.140991388@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update NO_SLEW macro to LPI_NO_SLEW macro as this driver lpi specific.
+From: Anna-Maria Behnsen <anna-maria@linutronix.de>
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+commit c54bc0fc84214b203f7a0ebfd1bd308ce2abe920 upstream.
+
+When the timer base is empty, base::next_expiry is set to base::clk +
+NEXT_TIMER_MAX_DELTA and base::next_expiry_recalc is false. When no timer
+is queued until jiffies reaches base::next_expiry value, the warning for
+not finding any expired timer and base::next_expiry_recalc is false in
+__run_timers() triggers.
+
+To prevent triggering the warning in this valid scenario
+base::timers_pending needs to be added to the warning condition.
+
+Fixes: 31cd0e119d50 ("timers: Recalculate next timer interrupt only when necessary")
+Reported-by: Johannes Berg <johannes@sipsolutions.net>
+Signed-off-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+Link: https://lore.kernel.org/r/20220405191732.7438-3-anna-maria@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/qcom/pinctrl-lpass-lpi.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ kernel/time/timer.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-index 2f19ab4..3c15f80 100644
---- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-+++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-@@ -40,7 +40,7 @@
- #define LPI_GPIO_KEEPER			0x2
- #define LPI_GPIO_PULL_UP		0x3
- #define LPI_GPIO_DS_TO_VAL(v)		(v / 2 - 1)
--#define NO_SLEW				-1
-+#define LPI_NO_SLEW				-1
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -1738,11 +1738,14 @@ static inline void __run_timers(struct t
+ 	       time_after_eq(jiffies, base->next_expiry)) {
+ 		levels = collect_expired_timers(base, heads);
+ 		/*
+-		 * The only possible reason for not finding any expired
+-		 * timer at this clk is that all matching timers have been
+-		 * dequeued.
++		 * The two possible reasons for not finding any expired
++		 * timer at this clk are that all matching timers have been
++		 * dequeued or no timer has been queued since
++		 * base::next_expiry was set to base::clk +
++		 * NEXT_TIMER_MAX_DELTA.
+ 		 */
+-		WARN_ON_ONCE(!levels && !base->next_expiry_recalc);
++		WARN_ON_ONCE(!levels && !base->next_expiry_recalc
++			     && base->timers_pending);
+ 		base->clk++;
+ 		base->next_expiry = __next_timer_interrupt(base);
  
- #define LPI_FUNCTION(fname)			                \
- 	[LPI_MUX_##fname] = {		                \
-@@ -193,14 +193,14 @@ static const struct lpi_pingroup sm8250_groups[] = {
- 	LPI_PINGROUP(3, 8, swr_rx_clk, qua_mi2s_data, _, _),
- 	LPI_PINGROUP(4, 10, swr_rx_data, qua_mi2s_data, _, _),
- 	LPI_PINGROUP(5, 12, swr_tx_data, swr_rx_data, _, _),
--	LPI_PINGROUP(6, NO_SLEW, dmic1_clk, i2s1_clk, _,  _),
--	LPI_PINGROUP(7, NO_SLEW, dmic1_data, i2s1_ws, _, _),
--	LPI_PINGROUP(8, NO_SLEW, dmic2_clk, i2s1_data, _, _),
--	LPI_PINGROUP(9, NO_SLEW, dmic2_data, i2s1_data, _, _),
-+	LPI_PINGROUP(6, LPI_NO_SLEW, dmic1_clk, i2s1_clk, _,  _),
-+	LPI_PINGROUP(7, LPI_NO_SLEW, dmic1_data, i2s1_ws, _, _),
-+	LPI_PINGROUP(8, LPI_NO_SLEW, dmic2_clk, i2s1_data, _, _),
-+	LPI_PINGROUP(9, LPI_NO_SLEW, dmic2_data, i2s1_data, _, _),
- 	LPI_PINGROUP(10, 16, i2s2_clk, wsa_swr_clk, _, _),
- 	LPI_PINGROUP(11, 18, i2s2_ws, wsa_swr_data, _, _),
--	LPI_PINGROUP(12, NO_SLEW, dmic3_clk, i2s2_data, _, _),
--	LPI_PINGROUP(13, NO_SLEW, dmic3_data, i2s2_data, _, _),
-+	LPI_PINGROUP(12, LPI_NO_SLEW, dmic3_clk, i2s2_data, _, _),
-+	LPI_PINGROUP(13, LPI_NO_SLEW, dmic3_data, i2s2_data, _, _),
- };
- 
- static const struct lpi_function sm8250_functions[] = {
-@@ -435,7 +435,7 @@ static int lpi_config_set(struct pinctrl_dev *pctldev, unsigned int group,
- 			}
- 
- 			slew_offset = g->slew_offset;
--			if (slew_offset == NO_SLEW)
-+			if (slew_offset == LPI_NO_SLEW)
- 				break;
- 
- 			mutex_lock(&pctrl->slew_access_lock);
--- 
-2.7.4
+
 
