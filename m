@@ -2,120 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94640C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B03F1C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245400AbiDRNx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59800 "EHLO
+        id S245581AbiDRNxw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:53:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244726AbiDRNau (ORCPT
+        with ESMTP id S244783AbiDRNay (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6221B7BD;
-        Mon, 18 Apr 2022 05:55:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 18 Apr 2022 09:30:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 435B91C131
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:55:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650286522;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ko1k1fU4FuGAEDeyXkrcC555L5G5PS8Gw/yrT6nSdxE=;
+        b=KEOFIhjKJNeODe0q/rcRQbsEJvFBZBuWRrF3WQChtxbQQrJLlRnZ/IsM4dfPsd/ZxBJDQo
+        w6CuSuTWS1eo9UaGSY+F+v3/mHwGURmH9JfjmWNWENbxBCSKunBR94XhlYNvaG0CmxwqM+
+        J879S8hUap685TZahLRPvK0Z+BAWmmU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-441-yOdWIB2ZPV-E5lEUHxNUVw-1; Mon, 18 Apr 2022 08:55:06 -0400
+X-MC-Unique: yOdWIB2ZPV-E5lEUHxNUVw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95D396115A;
-        Mon, 18 Apr 2022 12:55:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E4FCC385A7;
-        Mon, 18 Apr 2022 12:55:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286509;
-        bh=arOqiv7s1sG8hM57x5heqLv9MAqGzAu1E9HVg0Oq938=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1VNg90cMovVze2AwOi8DaQYbSTgkN1OPucsmkpNo5qRKxkECQuOdfA8j11oZwOVnV
-         mWn++9QyykQ2pfeAk5icLqMH1hg50fZdmSa+39lEW6u2DT5mJu+cuOjetI66B+xA5S
-         6MPdO9M98aXjmMIs3hvxVXT2uvo0wyHva1fUMDSk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chaitanya Kulkarni <kch@nvidia.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 156/284] loop: use sysfs_emit() in the sysfs xxx show()
-Date:   Mon, 18 Apr 2022 14:12:17 +0200
-Message-Id: <20220418121216.165386341@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
-References: <20220418121210.689577360@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0F0CC802819;
+        Mon, 18 Apr 2022 12:55:06 +0000 (UTC)
+Received: from starship (unknown [10.40.194.231])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E8FD65E2C39;
+        Mon, 18 Apr 2022 12:55:03 +0000 (UTC)
+Message-ID: <abb93e2d73b7ada6cbabcd3ebbf7b38e4701ec57.camel@redhat.com>
+Subject: Re: [PATCH v2 08/12] KVM: SVM: Update AVIC settings when changing
+ APIC mode
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
+        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
+Date:   Mon, 18 Apr 2022 15:55:02 +0300
+In-Reply-To: <20220412115822.14351-9-suravee.suthikulpanit@amd.com>
+References: <20220412115822.14351-1-suravee.suthikulpanit@amd.com>
+         <20220412115822.14351-9-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chaitanya Kulkarni <kch@nvidia.com>
+On Tue, 2022-04-12 at 06:58 -0500, Suravee Suthikulpanit wrote:
+> When APIC mode is updated (e.g. disabled, xAPIC, or x2APIC),
+> KVM needs to call kvm_vcpu_update_apicv() to update AVIC settings
+> accordingly.
+> 
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>  arch/x86/kvm/svm/avic.c | 15 +++++++++++++++
+>  arch/x86/kvm/svm/svm.c  |  1 +
+>  2 files changed, 16 insertions(+)
+> 
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index 22ee1098e2a5..01392b8364f4 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -616,6 +616,21 @@ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu)
+>  	avic_handle_ldr_update(vcpu);
+>  }
+>  
+> +void avic_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
+> +{
+> +	struct vcpu_svm *svm = to_svm(vcpu);
+> +
+> +	if (!lapic_in_kernel(vcpu) || (avic_mode == AVIC_MODE_NONE))
+> +		return;
+> +
+> +	if (kvm_get_apic_mode(vcpu) == LAPIC_MODE_INVALID) {
+> +		WARN_ONCE(true, "Invalid local APIC state (vcpu_id=%d)", vcpu->vcpu_id);
+> +		return;
+> +	}
+> +
+> +	kvm_vcpu_update_apicv(&svm->vcpu);
 
-[ Upstream commit b27824d31f09ea7b4a6ba2c1b18bd328df3e8bed ]
+I think it makes sense to call avic_refresh_apicv_exec_ctrl directly here.
+ 
+I am not sure that kvm_vcpu_update_apicv will even call it
+because it has an optimization of doing nothing when inhibition status
+didn't change.
+ 
+ 
+Another semi-related note:
+ 
+the current way the x2avic msrs are configured creates slight performance 
+problem for nesting:
+ 
+The problem is that when entering a nested guest, AVIC on the current vCPU
+is inhibited, but this is done only so that this vCPU *peers* don't
+try to use AVIC to send IPIs to it, so there is no need to update vmcb01
+msr interception bitmap, and vmcb02 should have all these msrs intercepted always.
+Same with returning to host.
 
-sprintf does not know the PAGE_SIZE maximum of the temporary buffer
-used for outputting sysfs content and it's possible to overrun the
-PAGE_SIZE buffer length.
+It also should be checked that during nested entry, at least vmcb01 msr bitmap
+is updated - TL;DR - please check that x2avic works when there is a nested guest running.
+ 
 
-Use a generic sysfs_emit function that knows the size of the
-temporary buffer and ensures that no overrun is done for offset
-attribute in
-loop_attr_[offset|sizelimit|autoclear|partscan|dio]_show() callbacks.
+My avic nested coexistence patches are already upstream (kvm/queue) so this is already
+relevant.
+ 
+With nested x2avic (which will be very easy to do after my nested AVIC code is
+upstream, vmcb02 will need to have x2avic msrs not intercepted as long as L1
+doesn't want to intercept them if nested x2avic is enabled).
 
-Signed-off-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Link: https://lore.kernel.org/r/20220215213310.7264-2-kch@nvidia.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/block/loop.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Best regards,
+	Maxim Levitsky
 
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index c6157ccb9498..4c115c1e9209 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -765,33 +765,33 @@ static ssize_t loop_attr_backing_file_show(struct loop_device *lo, char *buf)
- 
- static ssize_t loop_attr_offset_show(struct loop_device *lo, char *buf)
- {
--	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_offset);
-+	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_offset);
- }
- 
- static ssize_t loop_attr_sizelimit_show(struct loop_device *lo, char *buf)
- {
--	return sprintf(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
-+	return sysfs_emit(buf, "%llu\n", (unsigned long long)lo->lo_sizelimit);
- }
- 
- static ssize_t loop_attr_autoclear_show(struct loop_device *lo, char *buf)
- {
- 	int autoclear = (lo->lo_flags & LO_FLAGS_AUTOCLEAR);
- 
--	return sprintf(buf, "%s\n", autoclear ? "1" : "0");
-+	return sysfs_emit(buf, "%s\n", autoclear ? "1" : "0");
- }
- 
- static ssize_t loop_attr_partscan_show(struct loop_device *lo, char *buf)
- {
- 	int partscan = (lo->lo_flags & LO_FLAGS_PARTSCAN);
- 
--	return sprintf(buf, "%s\n", partscan ? "1" : "0");
-+	return sysfs_emit(buf, "%s\n", partscan ? "1" : "0");
- }
- 
- static ssize_t loop_attr_dio_show(struct loop_device *lo, char *buf)
- {
- 	int dio = (lo->lo_flags & LO_FLAGS_DIRECT_IO);
- 
--	return sprintf(buf, "%s\n", dio ? "1" : "0");
-+	return sysfs_emit(buf, "%s\n", dio ? "1" : "0");
- }
- 
- LOOP_ATTR_RO(backing_file);
--- 
-2.34.1
 
+> +}
+> +
+>  static int avic_set_pi_irte_mode(struct kvm_vcpu *vcpu, bool activate)
+>  {
+>  	int ret = 0;
+> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> index c85663b62d4e..b7dbd8bb2c0a 100644
+> --- a/arch/x86/kvm/svm/svm.c
+> +++ b/arch/x86/kvm/svm/svm.c
+> @@ -4606,6 +4606,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
+>  	.enable_nmi_window = svm_enable_nmi_window,
+>  	.enable_irq_window = svm_enable_irq_window,
+>  	.update_cr8_intercept = svm_update_cr8_intercept,
+> +	.set_virtual_apic_mode = avic_set_virtual_apic_mode,
+>  	.refresh_apicv_exec_ctrl = avic_refresh_apicv_exec_ctrl,
+>  	.check_apicv_inhibit_reasons = avic_check_apicv_inhibit_reasons,
+>  	.apicv_post_state_restore = avic_apicv_post_state_restore,
 
 
