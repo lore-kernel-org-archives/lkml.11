@@ -2,199 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47915C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76829C35294
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243036AbiDRNTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60564 "EHLO
+        id S243099AbiDRNTn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:19:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240373AbiDRNAR (ORCPT
+        with ESMTP id S240400AbiDRNAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:00:17 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1834C3150D;
-        Mon, 18 Apr 2022 05:41:52 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id mm4-20020a17090b358400b001cb93d8b137so17179085pjb.2;
-        Mon, 18 Apr 2022 05:41:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7kzCvTCHP5Ec0EYskhQImxhR7aaaSEbjrSNccJSSVpE=;
-        b=idMzA4OgXctXR29po4+p6or86OZoa5hbLmu3y7m+IThAXzETFBdUKW63uXTQ2ZIqJq
-         g3mZLGIhZFksaJ+TmYkuRTKR/L5KPGb3An5NUO6nrvF+MCowHEsta510JE48ntxwJROr
-         UXoKRab9tbihG62rOSi8l4gZPh4u1W4y+rKSAgHMwPCnyCOyrDyqHcVblpPvPJmvmp/J
-         c+yOnA/DuXrD3BwLNsYady06+agKPQ4z2U1pNJwBS5hw7SFmaBWoGXSHulLYuAiwQs/t
-         jJtKLtkE4hANn1PcGA7x3VQw01OX2mrrjJwCwbp9DoOrz4NcM3mqtItoyLL7SXxKXCNB
-         0B6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7kzCvTCHP5Ec0EYskhQImxhR7aaaSEbjrSNccJSSVpE=;
-        b=WkF7wOaH4NWNzo4arIaqGtwqibwr0CX6n/3tnjSg6F4VMcFU/zeMqMlvmiYyStH2g/
-         098FVOk8Gx42fRNWvdAI7MWYkWWBGe2GYkydNSy6sTfntEAz5uMknzPIsVF4JyesvzbS
-         U+vhssbFVWK2ibbcoGGl56o0fF58HtPpdQugD1bVtSx38ILNzdfKhYKKtFT97OTdYOi1
-         v/k+jscJ+RG/P6zfNtCp0LoBcBTwK9Ebbi1WMgDTp4cJTC8O2CJqcbC9Svq3tIeYYolf
-         GdLcUCg4GarAvpUl0E0lLuQP6bsh/adRvKwY0QixXhYdxRSCUpWcPK/Yg+yPdTqIcdPP
-         Sq/w==
-X-Gm-Message-State: AOAM530OJH7j9Dy17IlXRe4n4DKo7mBszd59nz9G0kHrCIbEb3E3ZSID
-        nq0oJhIUwkS38AJ14pgrJzY=
-X-Google-Smtp-Source: ABdhPJxr8oswLT3gJLSeJiCYVoAg8kYjyl9WW56hpoZQdqGlGIrW34LbW+mDHJBjVaFvmRGTwXLAHg==
-X-Received: by 2002:a17:902:ce06:b0:156:8118:9e9a with SMTP id k6-20020a170902ce0600b0015681189e9amr10977783plg.169.1650285711582;
-        Mon, 18 Apr 2022 05:41:51 -0700 (PDT)
-Received: from [192.168.2.225] (93.179.119.173.16clouds.com. [93.179.119.173])
-        by smtp.gmail.com with ESMTPSA id h6-20020a056a00218600b004f65315bb37sm13060177pfi.13.2022.04.18.05.41.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 05:41:51 -0700 (PDT)
-Message-ID: <202ba5f5-f842-f4ce-dd67-c5166d94cc67@gmail.com>
-Date:   Mon, 18 Apr 2022 20:41:45 +0800
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF79931906;
+        Mon, 18 Apr 2022 05:41:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EAFBB80EC3;
+        Mon, 18 Apr 2022 12:41:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35CCDC385A1;
+        Mon, 18 Apr 2022 12:41:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650285710;
+        bh=K8XrQc/ubFAMXZJhjuTpvI8f92jO4EsjVVLcmWbnMIM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GO8uk7EGdhpYUyeWa7S5ZrvjLWnle2Okln6EqgHbb19qgQCwBNcsllmss50VsSPZ7
+         a66cpIIROF2YZilYBgJdWJsN/OdhtWIGtKU7aUMMsulgiR7y69AV0VlJ/3102zVrIR
+         w29y2cxXn8eRA+e8kJ7zhReU5btLUbMyOfIHylvE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Duoming Zhou <duoming@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.10 098/105] ax25: add refcount in ax25_dev to avoid UAF bugs
+Date:   Mon, 18 Apr 2022 14:13:40 +0200
+Message-Id: <20220418121149.421321511@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
+References: <20220418121145.140991388@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH V4] docs/zh_CN: sync with original text
- Documentation/vm/page_owner.rst
-Content-Language: en-US
-To:     Haowen Bai <baihaowen@meizu.com>, siyanteng01@gmail.com
-Cc:     alexs@kernel.org, corbet@lwn.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, siyanteng@loongson.cn
-References: <CAEensMx3qvL7qmT=PhxYoJ4v5P8USn1qyAGBcB1WR5R4FQ24og@mail.gmail.com>
- <1650274084-27871-1-git-send-email-baihaowen@meizu.com>
-From:   Alex Shi <seakeel@gmail.com>
-In-Reply-To: <1650274084-27871-1-git-send-email-baihaowen@meizu.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Haowen,
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-There are still some space error during the 'git apply'.
-Could you like to fix them?
+commit d01ffb9eee4af165d83b08dd73ebdf9fe94a519b upstream.
 
-thanks
-Alex
+If we dereference ax25_dev after we call kfree(ax25_dev) in
+ax25_dev_device_down(), it will lead to concurrency UAF bugs.
+There are eight syscall functions suffer from UAF bugs, include
+ax25_bind(), ax25_release(), ax25_connect(), ax25_ioctl(),
+ax25_getname(), ax25_sendmsg(), ax25_getsockopt() and
+ax25_info_show().
 
-Applying: docs/zh_CN: sync with original text Documentation/vm/page_owner.rst
+One of the concurrency UAF can be shown as below:
 
-.git/rebase-apply/patch:21: trailing whitespace.
+  (USE)                       |    (FREE)
+                              |  ax25_device_event
+                              |    ax25_dev_device_down
+ax25_bind                     |    ...
+  ...                         |      kfree(ax25_dev)
+  ax25_fillin_cb()            |    ...
+    ax25_fillin_cb_from_dev() |
+  ...                         |
 
-		--sort <order>	指定排序顺序。排序语法是 [+|-]key[,[+|-]key[,...]]. 从 
+The root cause of UAF bugs is that kfree(ax25_dev) in
+ax25_dev_device_down() is not protected by any locks.
+When ax25_dev, which there are still pointers point to,
+is released, the concurrency UAF bug will happen.
 
-.git/rebase-apply/patch:65: indent with spaces.
+This patch introduces refcount into ax25_dev in order to
+guarantee that there are no pointers point to it when ax25_dev
+is released.
 
-        ======          ==========      ===================
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[OP: backport to 5.10: adjusted context]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/net/ax25.h    |   10 ++++++++++
+ net/ax25/af_ax25.c    |    2 ++
+ net/ax25/ax25_dev.c   |   12 ++++++++++--
+ net/ax25/ax25_route.c |    3 +++
+ 4 files changed, 25 insertions(+), 2 deletions(-)
 
-.git/rebase-apply/patch:66: indent with spaces.
+--- a/include/net/ax25.h
++++ b/include/net/ax25.h
+@@ -236,6 +236,7 @@ typedef struct ax25_dev {
+ #if defined(CONFIG_AX25_DAMA_SLAVE) || defined(CONFIG_AX25_DAMA_MASTER)
+ 	ax25_dama_info		dama;
+ #endif
++	refcount_t		refcount;
+ } ax25_dev;
+ 
+ typedef struct ax25_cb {
+@@ -290,6 +291,15 @@ static __inline__ void ax25_cb_put(ax25_
+ 	}
+ }
+ 
++#define ax25_dev_hold(__ax25_dev) \
++	refcount_inc(&((__ax25_dev)->refcount))
++
++static __inline__ void ax25_dev_put(ax25_dev *ax25_dev)
++{
++	if (refcount_dec_and_test(&ax25_dev->refcount)) {
++		kfree(ax25_dev);
++	}
++}
+ static inline __be16 ax25_type_trans(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	skb->dev      = dev;
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -98,6 +98,7 @@ again:
+ 			spin_unlock_bh(&ax25_list_lock);
+ 			lock_sock(sk);
+ 			s->ax25_dev = NULL;
++			ax25_dev_put(ax25_dev);
+ 			release_sock(sk);
+ 			ax25_disconnect(s, ENETUNREACH);
+ 			spin_lock_bh(&ax25_list_lock);
+@@ -446,6 +447,7 @@ static int ax25_ctl_ioctl(const unsigned
+ 	  }
+ 
+ out_put:
++	ax25_dev_put(ax25_dev);
+ 	ax25_cb_put(ax25);
+ 	return ret;
+ 
+--- a/net/ax25/ax25_dev.c
++++ b/net/ax25/ax25_dev.c
+@@ -37,6 +37,7 @@ ax25_dev *ax25_addr_ax25dev(ax25_address
+ 	for (ax25_dev = ax25_dev_list; ax25_dev != NULL; ax25_dev = ax25_dev->next)
+ 		if (ax25cmp(addr, (ax25_address *)ax25_dev->dev->dev_addr) == 0) {
+ 			res = ax25_dev;
++			ax25_dev_hold(ax25_dev);
+ 		}
+ 	spin_unlock_bh(&ax25_dev_lock);
+ 
+@@ -56,6 +57,7 @@ void ax25_dev_device_up(struct net_devic
+ 		return;
+ 	}
+ 
++	refcount_set(&ax25_dev->refcount, 1);
+ 	dev->ax25_ptr     = ax25_dev;
+ 	ax25_dev->dev     = dev;
+ 	dev_hold(dev);
+@@ -83,6 +85,7 @@ void ax25_dev_device_up(struct net_devic
+ 	spin_lock_bh(&ax25_dev_lock);
+ 	ax25_dev->next = ax25_dev_list;
+ 	ax25_dev_list  = ax25_dev;
++	ax25_dev_hold(ax25_dev);
+ 	spin_unlock_bh(&ax25_dev_lock);
+ 
+ 	ax25_register_dev_sysctl(ax25_dev);
+@@ -112,20 +115,22 @@ void ax25_dev_device_down(struct net_dev
+ 
+ 	if ((s = ax25_dev_list) == ax25_dev) {
+ 		ax25_dev_list = s->next;
++		ax25_dev_put(ax25_dev);
+ 		spin_unlock_bh(&ax25_dev_lock);
+ 		dev->ax25_ptr = NULL;
+ 		dev_put(dev);
+-		kfree(ax25_dev);
++		ax25_dev_put(ax25_dev);
+ 		return;
+ 	}
+ 
+ 	while (s != NULL && s->next != NULL) {
+ 		if (s->next == ax25_dev) {
+ 			s->next = ax25_dev->next;
++			ax25_dev_put(ax25_dev);
+ 			spin_unlock_bh(&ax25_dev_lock);
+ 			dev->ax25_ptr = NULL;
+ 			dev_put(dev);
+-			kfree(ax25_dev);
++			ax25_dev_put(ax25_dev);
+ 			return;
+ 		}
+ 
+@@ -133,6 +138,7 @@ void ax25_dev_device_down(struct net_dev
+ 	}
+ 	spin_unlock_bh(&ax25_dev_lock);
+ 	dev->ax25_ptr = NULL;
++	ax25_dev_put(ax25_dev);
+ }
+ 
+ int ax25_fwd_ioctl(unsigned int cmd, struct ax25_fwd_struct *fwd)
+@@ -149,6 +155,7 @@ int ax25_fwd_ioctl(unsigned int cmd, str
+ 		if (ax25_dev->forward != NULL)
+ 			return -EINVAL;
+ 		ax25_dev->forward = fwd_dev->dev;
++		ax25_dev_put(fwd_dev);
+ 		break;
+ 
+ 	case SIOCAX25DELFWD:
+@@ -161,6 +168,7 @@ int ax25_fwd_ioctl(unsigned int cmd, str
+ 		return -EINVAL;
+ 	}
+ 
++	ax25_dev_put(ax25_dev);
+ 	return 0;
+ }
+ 
+--- a/net/ax25/ax25_route.c
++++ b/net/ax25/ax25_route.c
+@@ -116,6 +116,7 @@ static int __must_check ax25_rt_add(stru
+ 	ax25_rt->dev          = ax25_dev->dev;
+ 	ax25_rt->digipeat     = NULL;
+ 	ax25_rt->ip_mode      = ' ';
++	ax25_dev_put(ax25_dev);
+ 	if (route->digi_count != 0) {
+ 		if ((ax25_rt->digipeat = kmalloc(sizeof(ax25_digi), GFP_ATOMIC)) == NULL) {
+ 			write_unlock_bh(&ax25_route_lock);
+@@ -172,6 +173,7 @@ static int ax25_rt_del(struct ax25_route
+ 			}
+ 		}
+ 	}
++	ax25_dev_put(ax25_dev);
+ 	write_unlock_bh(&ax25_route_lock);
+ 
+ 	return 0;
+@@ -214,6 +216,7 @@ static int ax25_rt_opt(struct ax25_route
+ 	}
+ 
+ out:
++	ax25_dev_put(ax25_dev);
+ 	write_unlock_bh(&ax25_route_lock);
+ 	return err;
+ }
 
-        缩写键          全称键          描述
 
-.git/rebase-apply/patch:67: indent with spaces.
-
-        ======          ==========      ===================
-
-.git/rebase-apply/patch:68: indent with spaces.
-
-        p               pid             进程 ID
-
-warning: squelched 16 whitespace errors
-
-warning: 21 lines add whitespace errors.
-
-
-
-On 4/18/22 17:28, Haowen Bai wrote:
-> As the tools/vm/page_owner_sort added some feature and original text
-> updated, sync the translation of zh_CN.
-> 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> ---
-> V1->V2: fix whitespace warning.
-> V2->V3: fix some tab Alignment issue.
-> V3->V4: fix sphinx warning
-> 
->  Documentation/translations/zh_CN/vm/page_owner.rst | 61 +++++++++++++++++++++-
->  1 file changed, 60 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/translations/zh_CN/vm/page_owner.rst b/Documentation/translations/zh_CN/vm/page_owner.rst
-> index 9e951fabba9d..4d719547ce4f 100644
-> --- a/Documentation/translations/zh_CN/vm/page_owner.rst
-> +++ b/Documentation/translations/zh_CN/vm/page_owner.rst
-> @@ -103,14 +103,73 @@ page owner在默认情况下是禁用的。所以，如果你想使用它，你
->  		-m		按总内存排序
->  		-p		按pid排序。
->  		-P		按tgid排序。
-> +		-n		按任务名称排序。
->  		-r		按内存释放时间排序。
->  		-s		按堆栈跟踪排序。
->  		-t		按时间排序（默认）。
-> +		--sort <order>	指定排序顺序。排序语法是 [+|-]key[,[+|-]key[,...]]. 从 
-> +						**标准格式说明符** 部分选择一个键。"+" 是可选的，因为默认方向是增加数字或字典顺序。
-> +						允许混合使用缩写键和全称键。
-> +
-> +		Examples:
-> +				./page_owner_sort <input> <output> --sort=n,+pid,-tgid
-> +				./page_owner_sort <input> <output> --sort=at
->  
->     其它函数:
->  
->  	Cull:
-> -		-c		通过比较堆栈跟踪而不是总块来进行剔除。
-> +		--cull <rules>
-> +				指定筛选规则。筛选语法是 key[,key[,...]]。在**标准格式说明符**部分选择一个多字母键
-> +
-> +		<rules> 是逗号分隔列表形式的单个参数，它提供了一种指定单个筛选规则的方法。下面的**标准格式说明
-> +				符**部分描述了可识别的关键字。<rules> 可以由键 k1,k2, ... 顺序指定，如下面的
-> +				STANDARD SORT KEYS 部分所述。允许混合使用缩写形式和完整形式的键。
->  
-> +		Examples:
-> +				./page_owner_sort <input> <output> --cull=stacktrace
-> +				./page_owner_sort <input> <output> --cull=st,pid,name
-> +				./page_owner_sort <input> <output> --cull=n,f
->  	Filter:
->  		-f		过滤掉内存已被释放的块的信息。
-> +
-> +	Select:
-> +		--pid <pidlist>		通过 pid 进行选择。这将选择进程 ID 号出现在 <pidlist> 中的块。
-> +		--tgid <tgidlist>	通过 tgid 进行选择。这将选择线程组 ID 号出现在 <tgidlist> 中的块。
-> +		--name <cmdlist>	按任务名称选择。这将选择任务名称出现在 <cmdlist> 中的块。
-> +
-> +		<pidlist>、<tgidlist>、<cmdlist>是逗号分隔列表形式的单参数，它提供了一种指定单个选择规则的方法。
-> +
-> +
-> +		Examples:
-> +				./page_owner_sort <input> <output> --pid=1
-> +				./page_owner_sort <input> <output> --tgid=1,2,3
-> +				./page_owner_sort <input> <output> --name name1,name2
-> +
-> +标准格式说明符
-> +==============
-> +
-> +--sort 选项:
-> +
-> +        ======          ==========      ===================
-> +        缩写键          全称键          描述
-> +        ======          ==========      ===================
-> +        p               pid             进程 ID
-> +        tg              tgid            线程组 ID
-> +        n               name            任务名称
-> +        st              stacktrace      页面分配的调用栈
-> +        T               txt             块的全文
-> +        ft              free_ts         页面被释放的时间戳
-> +        at              alloc_ts        页面分配的时间戳
-> +        ======          ==========      ===================
-> +
-> +--curl 选项:
-> +
-> +        ======          ==========      ==================
-> +        缩写键          全称键          描述
-> +        ======          ==========      ==================
-> +        p               pid             进程 ID
-> +        tg              tgid            线程组 ID
-> +        n               name            任务名称
-> +        f               free            该页面是否已被释放
-> +        st              stacktrace      页面分配的调用栈
-> +        ======          ==========      ==================
