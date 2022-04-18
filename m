@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5A89C352A7
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 057B3C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244639AbiDRNpM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43480 "EHLO
+        id S240435AbiDRNqA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:46:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241396AbiDRNVP (ORCPT
+        with ESMTP id S241879AbiDRNZl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:21:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 896BD140D6;
-        Mon, 18 Apr 2022 05:52:33 -0700 (PDT)
+        Mon, 18 Apr 2022 09:25:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D78023D1E7;
+        Mon, 18 Apr 2022 05:52:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F4EEB80E44;
-        Mon, 18 Apr 2022 12:52:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5930AC385A1;
-        Mon, 18 Apr 2022 12:52:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B109E612AB;
+        Mon, 18 Apr 2022 12:52:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A274AC385A1;
+        Mon, 18 Apr 2022 12:52:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286350;
-        bh=oDCLpOGgBcPsxVODLiGPdcn9SR76ABDkisKl8yt2qy8=;
+        s=korg; t=1650286372;
+        bh=YgaaXn8L+J0QNN2LrURmoLOQzivUOwU+l9C8Qdd+nFU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o8stmyzmxQm5bKbfwm3D/SOFAqsPG68zioFvX4cBa2or2SxBPkl4OSnWDdiygfmua
-         dOV3r/WvZOGhOgrLZx5FeuLfjRYfH3X2K5q3AMvJBkhiG80QPntTH/wDtq/QivtyLr
-         OTyibfjtrdErdjJOUQLaSaWGiIo0NT1JLJ6nGTdo=
+        b=0pxWAcft1FAGbvZm5Lmf0JlE8tzOAvg6yswWYRFxchcNh7oHozIA+V+ph+tpF+hUi
+         mnlio93LaSawASDsYss5J8eHGdqrSgLHs21nYbEbf0ZW/F7wKvkWKPKAXyCuOH6VYA
+         At8/60JBjUGmG/KRO9qsCnv+3L1ScuynFl1aU4lc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Zhenzhong Duan <zhenzhong.duan@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 107/284] scsi: pm8001: Fix payload initialization in pm80xx_set_thermal_config()
-Date:   Mon, 18 Apr 2022 14:11:28 +0200
-Message-Id: <20220418121213.945201259@linuxfoundation.org>
+Subject: [PATCH 4.14 113/284] KVM: x86: Fix emulation in writing cr8
+Date:   Mon, 18 Apr 2022 14:11:34 +0200
+Message-Id: <20220418121214.202313915@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -51,48 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Zhenzhong Duan <zhenzhong.duan@intel.com>
 
-[ Upstream commit bb225b12dbcc82d53d637d10b8d70b64494f8c16 ]
+[ Upstream commit f66af9f222f08d5b11ea41c1bd6c07a0f12daa07 ]
 
-The fields of the set_ctrl_cfg_req structure have the __le32 type, so use
-cpu_to_le32() to assign them. This removes the sparse warnings:
+In emulation of writing to cr8, one of the lowest four bits in TPR[3:0]
+is kept.
 
-warning: incorrect type in assignment (different base types)
-    expected restricted __le32
-    got unsigned int
+According to Intel SDM 10.8.6.1(baremetal scenario):
+"APIC.TPR[bits 7:4] = CR8[bits 3:0], APIC.TPR[bits 3:0] = 0";
 
-Link: https://lore.kernel.org/r/20220220031810.738362-8-damien.lemoal@opensource.wdc.com
-Fixes: 842784e0d15b ("pm80xx: Update For Thermal Page Code")
-Fixes: f5860992db55 ("[SCSI] pm80xx: Added SPCv/ve specific hardware functionalities and relevant changes in common files")
-Reviewed-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+and SDM 28.3(use TPR shadow):
+"MOV to CR8. The instruction stores bits 3:0 of its source operand into
+bits 7:4 of VTPR; the remainder of VTPR (bits 3:0 and bits 31:8) are
+cleared.";
+
+and AMD's APM 16.6.4:
+"Task Priority Sub-class (TPS)-Bits 3 : 0. The TPS field indicates the
+current sub-priority to be used when arbitrating lowest-priority messages.
+This field is written with zero when TPR is written using the architectural
+CR8 register.";
+
+so in KVM emulated scenario, clear TPR[3:0] to make a consistent behavior
+as in other scenarios.
+
+This doesn't impact evaluation and delivery of pending virtual interrupts
+because processor does not use the processor-priority sub-class to
+determine which interrupts to delivery and which to inhibit.
+
+Sub-class is used by hardware to arbitrate lowest priority interrupts,
+but KVM just does a round-robin style delivery.
+
+Fixes: b93463aa59d6 ("KVM: Accelerated apic support")
+Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220210094506.20181-1-zhenzhong.duan@intel.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/x86/kvm/lapic.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 162b819f3a89..cf037e076235 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -870,9 +870,11 @@ pm80xx_set_thermal_config(struct pm8001_hba_info *pm8001_ha)
- 	else
- 		page_code = THERMAL_PAGE_CODE_8H;
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index d4fdf0e52144..99b3fa3a29bf 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -1929,10 +1929,7 @@ void kvm_set_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu, u64 data)
  
--	payload.cfg_pg[0] = (THERMAL_LOG_ENABLE << 9) |
--				(THERMAL_ENABLE << 8) | page_code;
--	payload.cfg_pg[1] = (LTEMPHIL << 24) | (RTEMPHIL << 8);
-+	payload.cfg_pg[0] =
-+		cpu_to_le32((THERMAL_LOG_ENABLE << 9) |
-+			    (THERMAL_ENABLE << 8) | page_code);
-+	payload.cfg_pg[1] =
-+		cpu_to_le32((LTEMPHIL << 24) | (RTEMPHIL << 8));
+ void kvm_lapic_set_tpr(struct kvm_vcpu *vcpu, unsigned long cr8)
+ {
+-	struct kvm_lapic *apic = vcpu->arch.apic;
+-
+-	apic_set_tpr(apic, ((cr8 & 0x0f) << 4)
+-		     | (kvm_lapic_get_reg(apic, APIC_TASKPRI) & 4));
++	apic_set_tpr(vcpu->arch.apic, (cr8 & 0x0f) << 4);
+ }
  
- 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload, 0);
- 	if (rc)
+ u64 kvm_lapic_get_cr8(struct kvm_vcpu *vcpu)
 -- 
 2.34.1
 
