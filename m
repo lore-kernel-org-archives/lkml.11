@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5092C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F0C4C46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244127AbiDRNnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:43:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60342 "EHLO
+        id S244191AbiDRNnd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241474AbiDRNQV (ORCPT
+        with ESMTP id S241543AbiDRNR1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:16:21 -0400
+        Mon, 18 Apr 2022 09:17:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DEF3B282;
-        Mon, 18 Apr 2022 05:51:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46743B3F3;
+        Mon, 18 Apr 2022 05:51:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC2B261267;
-        Mon, 18 Apr 2022 12:51:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0B34C385A7;
-        Mon, 18 Apr 2022 12:51:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8551561254;
+        Mon, 18 Apr 2022 12:51:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95491C385A9;
+        Mon, 18 Apr 2022 12:51:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286283;
-        bh=3o60MGbp90aXjEh3M/qITHvtekpeqDke9s29V/+7rjI=;
+        s=korg; t=1650286293;
+        bh=uL8gsqBp9qxoVBEHIUetvCQwCqbDjLIqa0SXOg5/iJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SXvFO8y56D8bLUsnkDW+wDELomPnWqpj4MeS0s1pBUC2xxT+x+6J+z0Z1BKcndf/+
-         dp0d4BOUe9vliTd9QJkV1LI6DDL2dXQjImg6bUSiy7Ol/SnOIpeG51pOWYBKnImOjF
-         4LAvAuRSKpIAnwmeJOts3LQU+9UMVc7okEjuuGsU=
+        b=x5UArXw+10r7bV5PHDoFK1qcN8mCqX3L6FsLS2ZPX+GoSRcDFoqRuF2SrvrQXvpfz
+         8JpiZXpXhg5iodlyNIlHHzNNDXTpaDu21xDUh98bbUcj7KJX0pS95M498u8z0zg8Ut
+         /hLQmdafVr2r73vhV1zOu7JdT8W6wADqceQEHoGg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
-        Stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [PATCH 4.14 045/284] carl9170: fix missing bit-wise or operator for tx_params
-Date:   Mon, 18 Apr 2022 14:10:26 +0200
-Message-Id: <20220418121211.976950077@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 082/284] ASoC: mxs-saif: Handle errors for clk_enable
+Date:   Mon, 18 Apr 2022 14:11:03 +0200
+Message-Id: <20220418121213.017075916@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,39 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.i.king@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 02a95374b5eebdbd3b6413fd7ddec151d2ea75a1 upstream.
+[ Upstream commit 2ecf362d220317debf5da376e0390e9f7a3f7b29 ]
 
-Currently tx_params is being re-assigned with a new value and the
-previous setting IEEE80211_HT_MCS_TX_RX_DIFF is being overwritten.
-The assignment operator is incorrect, the original intent was to
-bit-wise or the value in. Fix this by replacing the = operator
-with |= instead.
+As the potential failure of the clk_enable(),
+it should be better to check it, like mxs_saif_trigger().
 
-Kudos to Christian Lamparter for suggesting the correct fix.
-
-Fixes: fe8ee9ad80b2 ("carl9170: mac80211 glue and command interface")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-Cc: <Stable@vger.kernel.org>
-Acked-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220125004406.344422-1-colin.i.king@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d0ba4c014934 ("ASoC: mxs-saif: set a base clock rate for EXTMASTER mode work")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220301081717.3727190-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/carl9170/main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/mxs/mxs-saif.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/net/wireless/ath/carl9170/main.c
-+++ b/drivers/net/wireless/ath/carl9170/main.c
-@@ -1922,7 +1922,7 @@ static int carl9170_parse_eeprom(struct
- 		WARN_ON(!(tx_streams >= 1 && tx_streams <=
- 			IEEE80211_HT_MCS_TX_MAX_STREAMS));
- 
--		tx_params = (tx_streams - 1) <<
-+		tx_params |= (tx_streams - 1) <<
- 			    IEEE80211_HT_MCS_TX_MAX_STREAMS_SHIFT;
- 
- 		carl9170_band_2GHz.ht_cap.mcs.tx_params |= tx_params;
+diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
+index 156aa7c00787..93c019670199 100644
+--- a/sound/soc/mxs/mxs-saif.c
++++ b/sound/soc/mxs/mxs-saif.c
+@@ -467,7 +467,10 @@ static int mxs_saif_hw_params(struct snd_pcm_substream *substream,
+ 		* basic clock which should be fast enough for the internal
+ 		* logic.
+ 		*/
+-		clk_enable(saif->clk);
++		ret = clk_enable(saif->clk);
++		if (ret)
++			return ret;
++
+ 		ret = clk_set_rate(saif->clk, 24000000);
+ 		clk_disable(saif->clk);
+ 		if (ret)
+-- 
+2.34.1
+
 
 
