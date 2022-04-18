@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 543C6C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22FA5C35274
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240564AbiDRMjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54148 "EHLO
+        id S240408AbiDRMjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239792AbiDRMd2 (ORCPT
+        with ESMTP id S239734AbiDRMdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0332B1B79B;
-        Mon, 18 Apr 2022 05:26:19 -0700 (PDT)
+        Mon, 18 Apr 2022 08:33:22 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFFC1DA55;
+        Mon, 18 Apr 2022 05:25:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0E2AB80ED1;
-        Mon, 18 Apr 2022 12:26:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E60CC385A1;
-        Mon, 18 Apr 2022 12:26:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1680CCE106E;
+        Mon, 18 Apr 2022 12:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3C6FC385A7;
+        Mon, 18 Apr 2022 12:25:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284776;
-        bh=e2tQCsWF4ZZ7HEVZeNQHj3qSvi3dIOelinn6MUFjnOo=;
+        s=korg; t=1650284723;
+        bh=ZHMZnOit5c8zTbyxv8NwyQI3YVinWF2OZ+PTUpwGha4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YsuRtTgzBz+9+k+xXzzTTYKmfpK3ks4cpkF8YJT2Y7ay9P1xgCR8xvhbCk/BHVrSc
-         zBgiEBlDG6DRoFMyQ+g4XbVNmc7qmER5ycn3d0uSY6TdDQX9uH0VtkjfpRzdLOGdCb
-         XDA/tEs13AZ/Psnj7mZfHy86XGmwP48Z9lbqC2fY=
+        b=1XcLq9jfJMMcTzkAEGyI/I03hxWa/w1edK9f6sAU8Z8eES7sQ7BiDrAKJPNR7N/4X
+         Qfz1rAQiTGeWBIXbTX9haSevrvzcZ+srJdbTJRTTaZz5TLQ5m4K0shShscQ+1nt+AF
+         l4kJtgyqhHfahbh1MGFSUILFmdks7fmJr8E6Oofg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Subject: [PATCH 5.17 217/219] drm/i915: Sunset igpu legacy mmap support based on GRAPHICS_VER_FULL
-Date:   Mon, 18 Apr 2022 14:13:06 +0200
-Message-Id: <20220418121212.940565142@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.17 206/219] ep93xx: clock: Fix UAF in ep93xx_clk_register_gate()
+Date:   Mon, 18 Apr 2022 14:12:55 +0200
+Message-Id: <20220418121212.634259061@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -52,43 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matt Roper <matthew.d.roper@intel.com>
+From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
 
-commit 1acb34e7dd7720a1fff00cbd4d000ec3219dc9d6 upstream.
+commit 3b68b08885217abd9c57ff9b3bb3eb173eee02a9 upstream.
 
-The intent of the version check in the mmap ioctl was to maintain
-support for existing platforms (i.e., ADL/RPL and earlier), but drop
-support on all future igpu platforms.  As we've seen on the dgpu side,
-the hardware teams are using a more fine-grained numbering system for IP
-version numbers these days, so it's possible the version number
-associated with our next igpu could be some form of "12.xx" rather than
-13 or higher.  Comparing against the full ver.release number will ensure
-the intent of the check is maintained no matter what numbering the
-hardware teams settle on.
+arch/arm/mach-ep93xx/clock.c:154:2: warning: Use of memory after it is freed [clang-analyzer-unix.Malloc]
+arch/arm/mach-ep93xx/clock.c:151:2: note: Taking true branch
+if (IS_ERR(clk))
+^
+arch/arm/mach-ep93xx/clock.c:152:3: note: Memory is released
+kfree(psc);
+^~~~~~~~~~
+arch/arm/mach-ep93xx/clock.c:154:2: note: Use of memory after it is freed
+return &psc->hw;
+^ ~~~~~~~~
 
-Fixes: d3f3baa3562a ("drm/i915: Reinstate the mmap ioctl for some platforms")
-Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Cc: Lucas De Marchi <lucas.demarchi@intel.com>
-Signed-off-by: Matt Roper <matthew.d.roper@intel.com>
-Reviewed-by: Lucas De Marchi <lucas.demarchi@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220407161839.1073443-1-matthew.d.roper@intel.com
-(cherry picked from commit 8e7e5c077cd57ee9a36d58c65f07257dc49a88d5)
-Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Fixes: 9645ccc7bd7a ("ep93xx: clock: convert in-place to COMMON_CLK")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Cc: stable@vger.kernel.org
+Link: https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org/thread/B5YCO2NJEXINCYE26Y255LCVMO55BGWW/
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_mman.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-ep93xx/clock.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/i915/gem/i915_gem_mman.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_mman.c
-@@ -67,7 +67,7 @@ i915_gem_mmap_ioctl(struct drm_device *d
- 	 * mmap ioctl is disallowed for all discrete platforms,
- 	 * and for all platforms with GRAPHICS_VER > 12.
- 	 */
--	if (IS_DGFX(i915) || GRAPHICS_VER(i915) > 12)
-+	if (IS_DGFX(i915) || GRAPHICS_VER_FULL(i915) > IP_VER(12, 0))
- 		return -EOPNOTSUPP;
+--- a/arch/arm/mach-ep93xx/clock.c
++++ b/arch/arm/mach-ep93xx/clock.c
+@@ -148,8 +148,10 @@ static struct clk_hw *ep93xx_clk_registe
+ 	psc->lock = &clk_lock;
  
- 	if (args->flags & ~(I915_MMAP_WC))
+ 	clk = clk_register(NULL, &psc->hw);
+-	if (IS_ERR(clk))
++	if (IS_ERR(clk)) {
+ 		kfree(psc);
++		return ERR_CAST(clk);
++	}
+ 
+ 	return &psc->hw;
+ }
 
 
