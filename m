@@ -2,212 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25559C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3DC2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:38:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344988AbiDROlE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:41:04 -0400
+        id S241271AbiDROlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:41:12 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345827AbiDROi4 (ORCPT
+        with ESMTP id S1345993AbiDROjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:38:56 -0400
-Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D773F580CD;
-        Mon, 18 Apr 2022 06:24:37 -0700 (PDT)
-Received: from pps.filterd (m0250809.ppops.net [127.0.0.1])
-        by mx0a-0064b401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23ICBnc3014635;
-        Mon, 18 Apr 2022 06:22:58 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references :
- content-transfer-encoding : content-type : mime-version; s=PPS06212021;
- bh=nnChPSqJXpUTi6zekwIMRyrlocC10UkdDcqufEsb44w=;
- b=Qo6H6/trWCLSLXZKyBZa4d3WirD2S0Ch7QM+t6fWvy+EPbRdBmHwmK+H4GVTbJJQNKI3
- RD9oPh0uap2IfIe0robdfuKteUFc0B2M7ym2jmInh1UuV9fKqEPDuGCbRDxVF5hDOkuB
- cPK42OWTT49Pd2kvWgJNTDvT02HYZeFFYwwBUgJr5Vd6Hn3wmEM/IEPs4A1xuYEGwIYu
- X4Tke1UqsM6cUBzCPAA9dQ8U+umUuX068eW+uXmlb+WCkmqr2YrKppaOdAZ1DEdmX0ru
- 5+SYpzODssiSbehXNazKKNJnoMey78F7f9i37OkH9Kp0AyzxRy5n2zYx0xZ/aAp7wmWT bw== 
-Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2048.outbound.protection.outlook.com [104.47.56.48])
-        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3ffwah150p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Apr 2022 06:22:58 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Pvk4wjTHAXItKiubxoVELZYLZus3YgY4kUPvMIKiNrW8IMuJDrOP2YPA5D+o9/XBsYfVdiSGV12Hd9MNvKenE9CeDXR5xMkB0fI2PsN08IPZ3Iuc41Wj5CHKu2bWTSquYn2mD8uezf2r6MeF/tuniROGpGaLEHYJjcprBognVV/+x4MkrBBqoDwxVtyDIY4VRjLZLmjeBz28OjJLHEn5qGJdrPHJfX8cRjy6QQ7jZsKKgRn7ena8XNONw9zwD8Mia3vLLevQa6NygtJeuqS4Rw6IkmySY3jDlc4ry6TMMzudN6q33AS6KJWxVVy4TNG+MZV9CA503F+dsIp9YbG6pg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nnChPSqJXpUTi6zekwIMRyrlocC10UkdDcqufEsb44w=;
- b=PEFsoz7kmPuHp/1Fe32FHNnLcNPGswiIl08gtrJNwaHLr77nYzuwevoKiuOWZFSJ3Q55Qdvx+BExyBf0EXGxB7LoYIWIoIuWKs2fVKPGOV8zkC2ZRGRJg2fFFQJGaf6U6bdu+kQscPwdN4rCx5hWAEuObWZd+OUDOlGK90TOhFlyz4jjHIH1EKCU800S4gHXYX5fBSa4D5NLtaWqxDprgTQX/+CaO4uxnRmVBFSpYKVPDzP+zqj1IKNucuiJquQ63jFo45w5nepwLWa7/iH+OnvOVlWwnNPOM0NWOgt4KtdlODWo0xhjTVD8JhaZZ+UfHKS7KlT5gY2Duk3AWnlwgw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
-Received: from MWHPR11MB1358.namprd11.prod.outlook.com (2603:10b6:300:23::8)
- by DM6PR11MB2857.namprd11.prod.outlook.com (2603:10b6:5:cb::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Mon, 18 Apr
- 2022 13:22:56 +0000
-Received: from MWHPR11MB1358.namprd11.prod.outlook.com
- ([fe80::1cd4:125:344:9fc]) by MWHPR11MB1358.namprd11.prod.outlook.com
- ([fe80::1cd4:125:344:9fc%7]) with mapi id 15.20.5164.025; Mon, 18 Apr 2022
- 13:22:56 +0000
-From:   He Zhe <zhe.he@windriver.com>
-To:     catalin.marinas@arm.com, will@kernel.org, mark.rutland@arm.com,
-        tglx@linutronix.de, bp@alien8.de, dave.hansen@linux.intel.com,
-        keescook@chromium.org, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, namhyung@kernel.org, benh@kernel.crashing.org,
-        paulus@samba.org, borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        hpa@zytor.com
-Cc:     x86@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
-        linux-s390@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zhe.he@windriver.com
-Subject: [PATCH RFC 4/8] powerpc: stacktrace: Make callbacks use new prototype with frame info
-Date:   Mon, 18 Apr 2022 21:22:13 +0800
-Message-Id: <20220418132217.1573072-5-zhe.he@windriver.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220418132217.1573072-1-zhe.he@windriver.com>
-References: <20220418132217.1573072-1-zhe.he@windriver.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR02CA0133.apcprd02.prod.outlook.com
- (2603:1096:202:16::17) To MWHPR11MB1358.namprd11.prod.outlook.com
- (2603:10b6:300:23::8)
+        Mon, 18 Apr 2022 10:39:32 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD61426C0
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 06:24:45 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id t12so12324212pll.7
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 06:24:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=I3Okq40SlFfO9yXRZG5Ce7bYgQKjZc2Ftg4cYgYx4m8=;
+        b=6PO6V6vFnFgC58QWshF35FjkEk9Z7u+n4zuiRR3KmuUZpt5fZEAfLbphuF1/nf7f2/
+         HXwngU80rWrVWSpTH2vYWztb1pm40kGAZ17W/ncsZxlM6ATosxJNNXoPG3TEK/gngKse
+         rN6ya9uF/YE13/CJVQl+n+sveLUb0w4PGL2mETeEkkCRHpAh8vWhlg904J6jZ7SVcKdK
+         nTU/9M1W5zhVdV8toTXMIzv9HOYU1+6V5OUOUpYH9S8F+ba+b6TTm7hAHWIHTyeFcqnC
+         FPbE40/XOnFgiFdT8VYkuuMnwPRg+GWjQBbRszbZJFtgYgoT0KK7zrSdPn3IghUTpt8L
+         InGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=I3Okq40SlFfO9yXRZG5Ce7bYgQKjZc2Ftg4cYgYx4m8=;
+        b=CUN3ZWAeQXDGHTXWma1NWeRTUv7OqxKZPSnGfOCzfYR1Jt1awn1IYj0bX8OfPMqu82
+         XKv1Jl9QM80vc1qhScC9ISym6r74y2XCKYHruOBwmEM5KNYnk4wU7Hm9+5i/nB0eLElN
+         Kg0pM07Unggd2v9nTG/nr9jhVn/xAM/B+54kYRdQEGVmKxcowHzAa3uFWjl/adYLFwOo
+         DPAqZekd5AnUXvSVmdt4LZmGElz8FcFURAaYsjvUmOb6nrMRsUHuMuZMvxm6yP632wgt
+         YybDKHr7mxVF/KUugIyHBJDFUCdi4vETVenRtSKVoqcVkEzU9AGS+uV6nQeIz5Sd+h6i
+         mqgA==
+X-Gm-Message-State: AOAM53038v9Tyu/MfzNH+pm7yHN675sudAWWPux2T2Y83x6jlgq84XWq
+        gsdCvnM7hK1WnJ/+f9pkxSjOvA==
+X-Google-Smtp-Source: ABdhPJwW7DdXoMh6QPVdDXx+iurahKR62ysJSxnGzbplHlB7A1OGIOBp+Svbhry8OD53s/ru47JIsQ==
+X-Received: by 2002:a17:90b:3a90:b0:1d2:80bf:d968 with SMTP id om16-20020a17090b3a9000b001d280bfd968mr8382241pjb.16.1650288284557;
+        Mon, 18 Apr 2022 06:24:44 -0700 (PDT)
+Received: from [10.254.152.226] ([139.177.225.231])
+        by smtp.gmail.com with ESMTPSA id d139-20020a621d91000000b00505aa0d10desm12768842pfd.0.2022.04.18.06.24.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 06:24:44 -0700 (PDT)
+Message-ID: <a5c66655-7e05-7bec-dcf4-0c9fe8a63061@bytedance.com>
+Date:   Mon, 18 Apr 2022 21:24:36 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 99599bfd-ae8b-48dd-c355-08da213e8d1b
-X-MS-TrafficTypeDiagnostic: DM6PR11MB2857:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR11MB285705CF8C9F8C3C635184008FF39@DM6PR11MB2857.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Tq3U57KdIFMlbl8ue0MywnQFRK/3rPd30+fZeCPH/iaxGXfAThGMFPg4bHWSIO9V4uk+KRtYZ126GDfac8blLbqjePWPJ4dCu2VX/Fbz+NcUHJXVNhjmiZGT22vgYT0aFnCcl3xNUhKIfMm72cea+sijm3osto7HCKmqbLD/1NihjeZuTPj4W1UQ1Ku/pHUDZf5xbl8WvlUt3BYlEWtQ3kErdKqq3jLDPelytKW3el/mKPA5sbCCTCDdHgJwHEfteNtSjFrp2MGVVlR6q+DpyXMugyr+Yl/7FelOEv8o0MGAnoTN71jD8Gs6WfSCnraHZkiOleTvDOlY0LK9AgvQnBwnjtWZoXx2Lm/XidTIwsa1zyReKSrD8KtC1vHbPcBGedGZzE9kTDjYTN1fIaDPaRi8h/RWgAeRMcKVLmEu9PnMwOkd2iBePvceESZzz+4PET0/8JsvaMioe4bzROBKlyVW5Mvt0xu1lzKu5KZqRzboygbMw2Xz6hfSn8FBArW3mGMc8M0Srk2thBBR9+duydOOE6m/gCaeiLAPIxwN59ytU303zUnkKRdVE53WB2fq/ds5dmr4pxOV9GTbOLMOYB+7QYUdpm3KfoUkQ1K5Focpt66eL3nyQfp3fEwjU6RI1b/60aSlq0hb6n0X6fyXGBtqdVtbO2F0fMGAH2cjNtw8O814URh0BkGuk6sCOq3OiKvXc1HDhItN1lguBHBM9ZvW6zq5csKyqvtK+v3f62E=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR11MB1358.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66556008)(2616005)(186003)(86362001)(83380400001)(1076003)(38100700002)(66946007)(316002)(66476007)(7416002)(107886003)(8936002)(2906002)(4326008)(6506007)(38350700002)(5660300002)(508600001)(36756003)(52116002)(8676002)(26005)(6486002)(921005)(6512007)(6666004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EMneee429EMJNL1cg+AD+ytfgDz+cxg6LiqjTBkL4v4x45Zjc3T2tpvSR3tB?=
- =?us-ascii?Q?0snds8dQxaP/OpARzYUOSajoB1e6kf85kprsJl6AjI/XBOx/XJSUpkwDNpub?=
- =?us-ascii?Q?iZj/iAVnKxDkiYVtKyMpsezPpuETLRxwSFliADnm6UEttldHpBIC/psCqCg+?=
- =?us-ascii?Q?/rq57nDXJRro4XbFhjJaSY251a7sYCY7UodDZJc0NWtskm6woWdLaukzntTa?=
- =?us-ascii?Q?dVMV0ruqEg62QJk55tyfYmWdbracd6hkmvbQP9aYUk2Cwp5g6kDUM1Il9WBY?=
- =?us-ascii?Q?aWSDafMDvG4UOEVI9PQthmoPrT6go0mgEpCsqSjWVHseMHkSQ3oXZqr6Faqg?=
- =?us-ascii?Q?js6OtaxDEbKlbLAWnqHzyib9qpR5IqkSxzhDmKTn88qiIwg3+QUSe2MMQHBY?=
- =?us-ascii?Q?UpLm6do0eeQ741Ipyqbbh/FxL1tA0Uzd+Fyzb2FhEG6gxKueq8jq7anhuYqn?=
- =?us-ascii?Q?bMx5jlq4vLarEhauRfSHLwBdd4ROBeTqzc8Ho3TpSgi6HQo1G+xmpsZq5Z7N?=
- =?us-ascii?Q?Zd0xmmRrY1HKrD21SXHFi0OR4ZkZzYBtWLehTxOQ7v/5Ff8N3wfHFVjyyE+v?=
- =?us-ascii?Q?Rj51tjHHEk5Rp76aRrv4UX926EafqwgFsRpS5hrh41HbsEO7gXEU7GMMCL4n?=
- =?us-ascii?Q?6lU1S4QiNladvijpT8RPn1yWoyiOGOP358pdvlgQBPcX2BFFsLSkwqbcg4ju?=
- =?us-ascii?Q?L1zRoXlSLbNXbQJO4IUxyIQnfTLFDAwSveN4XLNXNQ92MNuQ/r9hLk90MMwf?=
- =?us-ascii?Q?wK/mmLbbBLQ5MR2TM2bV1wJDHFxaAofqJtvCD8WFe3bF/TrcS+irxoLeVEvW?=
- =?us-ascii?Q?M8FgtWzxcD1Z5X1UFkKl04avZBcsB73KDk2pr1eezyonUguShN4wqC6AHjfV?=
- =?us-ascii?Q?Bo7xOHKf2hJo94fuIj9cv44kfnJ4Oswabk1/s893i+qPGGoLLNZoZJuaHzpH?=
- =?us-ascii?Q?tvOOw0Vt7hjr6I5wcLBLsq4racLvlkUZRIk13wrD5jiC4w1DgPvt3zl+fJeg?=
- =?us-ascii?Q?e7mlufy3DDQckXallDGigP0CXQ88Dr4perj73MhAeEh/gbcr1/9bziyFFAsM?=
- =?us-ascii?Q?D3Xo1I5DgT79Iem9U2OF4mM4rxFIxZqP04P51mXQ4+fwqa5QXRt3YWSuwD2N?=
- =?us-ascii?Q?i0ceqXayJDdZHXqf2+ONtCfiC/WS0cO/7kDHIKxsDSUZvp1ec6KXirmxgW/+?=
- =?us-ascii?Q?/ATcW4U6fORUparBE44toxWT1CqeTTeTRUCwf/q1STzzbkaYazT+qJ1X2bDR?=
- =?us-ascii?Q?aDG4KHemS9o1ywIgGwqaG7bFXZo1oLVu2bRGM47qX4Y2ktBH8tFz7BmZxWUC?=
- =?us-ascii?Q?P/ly811ZQmQMLc1g6Jmb1DdqtPMT18JuNcGLzYOucjJifAjWi3Dw8pfsA/uw?=
- =?us-ascii?Q?78RbyEJXNWdmpOKVq3kiCThUydcIPFvq0RWckbTREH/DK86u5nmZ36j5E50E?=
- =?us-ascii?Q?CbeyY7qev21ek89Vsy5U+QCJDydRCSz/gb+C7NDck3Xy24oua5oExrQ3IdTr?=
- =?us-ascii?Q?E/NKSE0t9uWTArEVenXzAU9S+v9gICJrqzEf3R1GehmK/P7X/oj7HH/ElNl0?=
- =?us-ascii?Q?Wxa+66pYrqNRjA/lk6p/xk9Wr2V6x+4JouRmlnKifGE7phVLwQSl/35c7V2Y?=
- =?us-ascii?Q?lLZR6K0gHErTagwBXZupcjSn6l9h5yP11zuBbjyeVpGyXQmkCFPd70bQg02c?=
- =?us-ascii?Q?ubz73cU0U4ExLbAL06XJ66Th2XjC1mtDyCwvF75grVdTnCQdpnv1MKalxAhI?=
- =?us-ascii?Q?LTTXPe4QOw=3D=3D?=
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 99599bfd-ae8b-48dd-c355-08da213e8d1b
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1358.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Apr 2022 13:22:56.7004
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SgqWfGxXAtBIAy+cVXXJZTRz4gwknKCsyPADuFg+VgxWRE4vD81EJUwYVCYvNaMMkfxRTDZBMXafQ9MT+y3JzA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB2857
-X-Proofpoint-ORIG-GUID: DPEj9QxHWeM-U3XqjFdxjg-BG26mSCZo
-X-Proofpoint-GUID: DPEj9QxHWeM-U3XqjFdxjg-BG26mSCZo
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-18_02,2022-04-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- mlxlogscore=468 phishscore=0 lowpriorityscore=0 spamscore=0 suspectscore=0
- priorityscore=1501 malwarescore=0 adultscore=0 impostorscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204180078
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.8.0
+Subject: Re: [PATCH v4 1/2] ftrace: cleanup ftrace_graph_caller enable and
+ disable
+Content-Language: en-US
+To:     rostedt@goodmis.org, mingo@redhat.com, catalin.marinas@arm.com,
+        will@kernel.org, tglx@linutronix.de, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        broonie@kernel.org, mark.rutland@arm.com, ardb@kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
+        songmuchun@bytedance.com
+References: <20220409153554.14470-1-zhouchengming@bytedance.com>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <20220409153554.14470-1-zhouchengming@bytedance.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-stack_trace_consume_fn has been changed to
-bool (*stack_trace_consume_fn)(void *cookie, struct frame_info *fi);
-to be able to pass more information.
+Hello, friendly ping :-)
 
-Turn to use pc in struct frame_info in arch_stack_walk callbacks without
-functinoal change.
 
-Signed-off-by: He Zhe <zhe.he@windriver.com>
----
- arch/powerpc/kernel/stacktrace.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
-
-diff --git a/arch/powerpc/kernel/stacktrace.c b/arch/powerpc/kernel/stacktrace.c
-index a2443d61728e..8640e9acfa29 100644
---- a/arch/powerpc/kernel/stacktrace.c
-+++ b/arch/powerpc/kernel/stacktrace.c
-@@ -28,9 +28,13 @@ void __no_sanitize_address arch_stack_walk(stack_trace_consume_fn consume_entry,
- 					   struct task_struct *task, struct pt_regs *regs)
- {
- 	unsigned long sp;
-+	struct frame_info fi;
- 
--	if (regs && !consume_entry(cookie, regs->nip))
--		return;
-+	if (regs) {
-+		fi.pc = regs->nip;
-+		if (!consume_entry(cookie, &fi))
-+			return;
-+	}
- 
- 	if (regs)
- 		sp = regs->gpr[1];
-@@ -41,15 +45,15 @@ void __no_sanitize_address arch_stack_walk(stack_trace_consume_fn consume_entry,
- 
- 	for (;;) {
- 		unsigned long *stack = (unsigned long *) sp;
--		unsigned long newsp, ip;
-+		unsigned long newsp;
- 
- 		if (!validate_sp(sp, task, STACK_FRAME_OVERHEAD))
- 			return;
- 
- 		newsp = stack[0];
--		ip = stack[STACK_FRAME_LR_SAVE];
-+		fi.pc = stack[STACK_FRAME_LR_SAVE];
- 
--		if (!consume_entry(cookie, ip))
-+		if (!consume_entry(cookie, &fi))
- 			return;
- 
- 		sp = newsp;
-@@ -71,6 +75,7 @@ int __no_sanitize_address arch_stack_walk_reliable(stack_trace_consume_fn consum
- 	unsigned long stack_end;
- 	int graph_idx = 0;
- 	bool firstframe;
-+	struct frame_info fi;
- 
- 	stack_end = stack_page + THREAD_SIZE;
- 	if (!is_idle_task(task)) {
-@@ -159,7 +164,8 @@ int __no_sanitize_address arch_stack_walk_reliable(stack_trace_consume_fn consum
- 			return -EINVAL;
- #endif
- 
--		if (!consume_entry(cookie, ip))
-+		fi.pc = ip;
-+		if (!consume_entry(cookie, &fi))
- 			return -EINVAL;
- 	}
- 	return 0;
--- 
-2.25.1
-
+On 2022/4/9 23:35, Chengming Zhou wrote:
+> The ftrace_[enable,disable]_ftrace_graph_caller() are used to do
+> special hooks for graph tracer, which are not needed on some ARCHs
+> that use graph_ops:func function to install return_hooker.
+> 
+> So introduce the weak version in ftrace core code to cleanup
+> in x86.
+> 
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+> ---
+> v4:
+>  - put weak ftrace_enable,disable_ftrace_graph_caller() in
+>    fgraph.c instead of ftrace.c as suggested by Steve.
+> 
+> v3:
+>  - consolidate two #if into a single #if, suggested by Steve. Thanks.
+> ---
+>  arch/x86/kernel/ftrace.c | 17 ++---------------
+>  kernel/trace/fgraph.c    | 18 ++++++++++++++++++
+>  2 files changed, 20 insertions(+), 15 deletions(-)
+> 
+> diff --git a/arch/x86/kernel/ftrace.c b/arch/x86/kernel/ftrace.c
+> index 1e31c7d21597..b09d73c2ba89 100644
+> --- a/arch/x86/kernel/ftrace.c
+> +++ b/arch/x86/kernel/ftrace.c
+> @@ -579,9 +579,7 @@ void arch_ftrace_trampoline_free(struct ftrace_ops *ops)
+>  
+>  #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+>  
+> -#ifdef CONFIG_DYNAMIC_FTRACE
+> -
+> -#ifndef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
+> +#if defined(CONFIG_DYNAMIC_FTRACE) && !defined(CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS)
+>  extern void ftrace_graph_call(void);
+>  static const char *ftrace_jmp_replace(unsigned long ip, unsigned long addr)
+>  {
+> @@ -610,18 +608,7 @@ int ftrace_disable_ftrace_graph_caller(void)
+>  
+>  	return ftrace_mod_jmp(ip, &ftrace_stub);
+>  }
+> -#else /* !CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
+> -int ftrace_enable_ftrace_graph_caller(void)
+> -{
+> -	return 0;
+> -}
+> -
+> -int ftrace_disable_ftrace_graph_caller(void)
+> -{
+> -	return 0;
+> -}
+> -#endif /* CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
+> -#endif /* !CONFIG_DYNAMIC_FTRACE */
+> +#endif /* CONFIG_DYNAMIC_FTRACE && !CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
+>  
+>  /*
+>   * Hook the return address and push it in the stack of return addrs
+> diff --git a/kernel/trace/fgraph.c b/kernel/trace/fgraph.c
+> index 8f4fb328133a..289311680c29 100644
+> --- a/kernel/trace/fgraph.c
+> +++ b/kernel/trace/fgraph.c
+> @@ -30,6 +30,24 @@ int ftrace_graph_active;
+>  /* Both enabled by default (can be cleared by function_graph tracer flags */
+>  static bool fgraph_sleep_time = true;
+>  
+> +/*
+> + * archs can override this function if they must do something
+> + * to enable hook for graph tracer.
+> + */
+> +int __weak ftrace_enable_ftrace_graph_caller(void)
+> +{
+> +	return 0;
+> +}
+> +
+> +/*
+> + * archs can override this function if they must do something
+> + * to disable hook for graph tracer.
+> + */
+> +int __weak ftrace_disable_ftrace_graph_caller(void)
+> +{
+> +	return 0;
+> +}
+> +
+>  /**
+>   * ftrace_graph_stop - set to permanently disable function graph tracing
+>   *
