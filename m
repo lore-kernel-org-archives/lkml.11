@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7895C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:29:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240582AbiDRNb1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41222 "EHLO
+        id S241698AbiDRNbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:31:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240591AbiDRNFh (ORCPT
+        with ESMTP id S239002AbiDRNFm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:05:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9618629CB9;
-        Mon, 18 Apr 2022 05:46:30 -0700 (PDT)
+        Mon, 18 Apr 2022 09:05:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B38F829CBF;
+        Mon, 18 Apr 2022 05:46:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53A13B80E4B;
-        Mon, 18 Apr 2022 12:46:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D19BC385A1;
-        Mon, 18 Apr 2022 12:46:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E28F60FB6;
+        Mon, 18 Apr 2022 12:46:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DFE7C385A7;
+        Mon, 18 Apr 2022 12:46:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285988;
-        bh=YYLuu5NjY4uaMIVTDNevuujgq4FvzW1hDJ2d+Dha7H4=;
+        s=korg; t=1650285993;
+        bh=olGAV6P3/bdfp4ZsB1dE9ZnWfbk+IEVsCX5kp+ufGzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VZHrH9++yFcpQA9lhQRkyDOtDEd/1JhJdHOxv3YGkqVG+62xgWSarTUeyKCEnZYir
-         x64EsL+CunRtSKUzbhhNTGfVRcpCpWee2sWXehI2A82Yu/1yomHawrHmqXVRELvxea
-         IbuDtREPVDIiCatRZmSAtG9Ct3AmIAr9JgDgsnB0=
+        b=VzOUlG60u7Ot0u6pnAKe8f1OnMLMpdIC/QUfzX2t3XngKdTiH8x8sTcCpBy6otHBu
+         0ryFqfYU9IJm8z15FZpqcoRdlu3i4yEb5NX2bnC2ta5tfwokmUPRj7W1rkC/HtYaak
+         w+7t2WdEV/4wyaAK+owjU6J4XHDRp9YxGKZE04p4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vadim Pasternak <vadimp@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
+        stable@vger.kernel.org, Petr Malat <oss@malat.biz>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 05/32] mlxsw: i2c: Fix initialization error flow
-Date:   Mon, 18 Apr 2022 14:13:45 +0200
-Message-Id: <20220418121127.284611032@linuxfoundation.org>
+Subject: [PATCH 4.19 07/32] sctp: Initialize daddr on peeled off socket
+Date:   Mon, 18 Apr 2022 14:13:47 +0200
+Message-Id: <20220418121127.343178003@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
 References: <20220418121127.127656835@linuxfoundation.org>
@@ -50,34 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vadim Pasternak <vadimp@nvidia.com>
+From: Petr Malat <oss@malat.biz>
 
-[ Upstream commit d452088cdfd5a4ad9d96d847d2273fe958d6339b ]
+[ Upstream commit 8467dda0c26583547731e7f3ea73fc3856bae3bf ]
 
-Add mutex_destroy() call in driver initialization error flow.
+Function sctp_do_peeloff() wrongly initializes daddr of the original
+socket instead of the peeled off socket, which makes getpeername()
+return zeroes instead of the primary address. Initialize the new socket
+instead.
 
-Fixes: 6882b0aee180f ("mlxsw: Introduce support for I2C bus")
-Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Link: https://lore.kernel.org/r/20220407070703.2421076-1-idosch@nvidia.com
+Fixes: d570ee490fb1 ("[SCTP]: Correctly set daddr for IPv6 sockets during peeloff")
+Signed-off-by: Petr Malat <oss@malat.biz>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Link: https://lore.kernel.org/r/20220409063611.673193-1-oss@malat.biz
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/i2c.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/sctp/socket.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/i2c.c b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-index 798bd5aca384..1d1025fd2d88 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-@@ -516,6 +516,7 @@ static int mlxsw_i2c_probe(struct i2c_client *client,
- 	return 0;
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index d429d5922804..8901bb7afa2b 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -5333,7 +5333,7 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
+ 	 * Set the daddr and initialize id to something more random and also
+ 	 * copy over any ip options.
+ 	 */
+-	sp->pf->to_sk_daddr(&asoc->peer.primary_addr, sk);
++	sp->pf->to_sk_daddr(&asoc->peer.primary_addr, sock->sk);
+ 	sp->pf->copy_ip_options(sk, sock->sk);
  
- errout:
-+	mutex_destroy(&mlxsw_i2c->cmd.lock);
- 	i2c_set_clientdata(client, NULL);
- 
- 	return err;
+ 	/* Populate the fields of the newsk from the oldsk and migrate the
 -- 
 2.35.1
 
