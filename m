@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC2BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6671C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344169AbiDRORk (ORCPT
+        id S1344459AbiDROSE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
+        Mon, 18 Apr 2022 10:18:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244698AbiDRN5f (ORCPT
+        with ESMTP id S244699AbiDRN5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:57:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 543B6FD;
-        Mon, 18 Apr 2022 06:07:53 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D62E2BE;
+        Mon, 18 Apr 2022 06:08:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E49A460F24;
-        Mon, 18 Apr 2022 13:07:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC728C385A7;
-        Mon, 18 Apr 2022 13:07:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2C78B80E4B;
+        Mon, 18 Apr 2022 13:07:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E115C385A7;
+        Mon, 18 Apr 2022 13:07:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287272;
-        bh=MIc6Qg8gQ/Ha65kerfjhPUV40AaPn9yZ72gnUp8pj+Q=;
+        s=korg; t=1650287278;
+        bh=JVt47S6x1EuP+6ogtx2Rw3Px24qUwKdWURS3QWyrprI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QIMWEauz/zU4aSTo8D7kIM4404YfQhMWkGQUVeWIji0+VsSQXes8jBoHdJJtJK2Aw
-         fHoPFwqnTgrZSoa2dMiYfXocuZtwgnNcZzhx5QkYKIjnLK1TIwU/yRjBCVieaiiSWq
-         En6Tets44lZWUlvuSFKPg8b+j3LinA65Cc43lLFw=
+        b=V1NEGwF81jRNbz26DIyIlcZ6rELVt11Y5qMd5zPCT2GlGmKAx9tcHyUWihR1ZHfyM
+         296jcml6NK+bVCm1TINor5+fO8X6HACPvuyvvcBjWboeNRo0yUxTU9X5cfyivf2qTJ
+         L8gD33MAA2vnnHYXf7n2ky4ie/D+/bx3NYUWct64=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 109/218] clk: clps711x: Terminate clk_div_table with sentinel element
-Date:   Mon, 18 Apr 2022 14:12:55 +0200
-Message-Id: <20220418121202.717468133@linuxfoundation.org>
+Subject: [PATCH 4.9 111/218] NFS: remove unneeded check in decode_devicenotify_args()
+Date:   Mon, 18 Apr 2022 14:12:57 +0200
+Message-Id: <20220418121202.773509072@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -51,40 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
 
-[ Upstream commit 8bed4ed5aa3431085d9d27afc35d684856460eda ]
+[ Upstream commit cb8fac6d2727f79f211e745b16c9abbf4d8be652 ]
 
-In order that the end of a clk_div_table can be detected, it must be
-terminated with a sentinel element (.div = 0).
+[You don't often get email from khoroshilov@ispras.ru. Learn why this is important at http://aka.ms/LearnAboutSenderIdentification.]
 
-Fixes: 631c53478973d ("clk: Add CLPS711X clk driver")
-Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Link: https://lore.kernel.org/r/20220218000922.134857-5-j.neuschaefer@gmx.net
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Overflow check in not needed anymore after we switch to kmalloc_array().
+
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Fixes: a4f743a6bb20 ("NFSv4.1: Convert open-coded array allocation calls to kmalloc_array()")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/clk-clps711x.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/nfs/callback_xdr.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/clk/clk-clps711x.c b/drivers/clk/clk-clps711x.c
-index 9193f64561f6..4dcf15a88269 100644
---- a/drivers/clk/clk-clps711x.c
-+++ b/drivers/clk/clk-clps711x.c
-@@ -32,11 +32,13 @@ static const struct clk_div_table spi_div_table[] = {
- 	{ .val = 1, .div = 8, },
- 	{ .val = 2, .div = 2, },
- 	{ .val = 3, .div = 1, },
-+	{ /* sentinel */ }
- };
+diff --git a/fs/nfs/callback_xdr.c b/fs/nfs/callback_xdr.c
+index 67903eeb2ca4..00e58a42e637 100644
+--- a/fs/nfs/callback_xdr.c
++++ b/fs/nfs/callback_xdr.c
+@@ -319,10 +319,6 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
+ 	n = ntohl(*p++);
+ 	if (n <= 0)
+ 		goto out;
+-	if (n > ULONG_MAX / sizeof(*args->devs)) {
+-		status = htonl(NFS4ERR_BADXDR);
+-		goto out;
+-	}
  
- static const struct clk_div_table timer_div_table[] = {
- 	{ .val = 0, .div = 256, },
- 	{ .val = 1, .div = 1, },
-+	{ /* sentinel */ }
- };
- 
- struct clps711x_clk {
+ 	args->devs = kmalloc_array(n, sizeof(*args->devs), GFP_KERNEL);
+ 	if (!args->devs) {
 -- 
 2.34.1
 
