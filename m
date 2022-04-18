@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEB4C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E5EAC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243654AbiDRNUz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:20:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41224 "EHLO
+        id S234986AbiDRNVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241370AbiDRNDC (ORCPT
+        with ESMTP id S241451AbiDRNDG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:03:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A5AE27147;
-        Mon, 18 Apr 2022 05:43:16 -0700 (PDT)
+        Mon, 18 Apr 2022 09:03:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CB326AFB;
+        Mon, 18 Apr 2022 05:43:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6387611E4;
-        Mon, 18 Apr 2022 12:43:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5329C385A1;
-        Mon, 18 Apr 2022 12:43:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3834B80E59;
+        Mon, 18 Apr 2022 12:43:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8E12C385A1;
+        Mon, 18 Apr 2022 12:43:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285795;
-        bh=PdqZVzizgk6/NDj9Gpg1f+LUl/smdkF9TxT+ushn/pk=;
+        s=korg; t=1650285804;
+        bh=Wlepa6YIr2hY5FeD4yQs2YIwB5qn8KB5kc30quQBXrE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q87MEBpciHbSqSvG8AUKNiKojRypxZjzvNCdvnZIHMlRfAkMeDxTDTlhLfaBilo9n
-         UzEiVGABBjcPASwxHi9KHLwX7hppcWBx9xJDBu4u64CfUkDTDd4XRR4HJ3PG9AqfBz
-         UnwqO3EPGbAofMJaa9364q82SBReEfi1U+yfrDTs=
+        b=WZA3jvpY+neSnhcG8gG3Nd2WsSqGXl55OTjM9sOiYtuzBt2Cy2yNXsDG1wvxya8rQ
+         8RVey9wDPbKTqEDJ5kgQumd15L436rckG3vwFhsg9fteAZ14v5PT7dHEyAKxOpPZrq
+         n4zrCJEaVtVKYtXor7RMn3XQr9sU6+SSvJdGtUxo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Bakker <xc-racer2@live.ca>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Marcin Kozlowski <marcinguy@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 27/63] regulator: wm8994: Add an off-on delay for WM8994 variant
-Date:   Mon, 18 Apr 2022 14:13:24 +0200
-Message-Id: <20220418121135.923353254@linuxfoundation.org>
+Subject: [PATCH 5.4 30/63] net: usb: aqc111: Fix out-of-bounds accesses in RX fixup
+Date:   Mon, 18 Apr 2022 14:13:27 +0200
+Message-Id: <20220418121136.103360922@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -50,92 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Bakker <xc-racer2@live.ca>
+From: Marcin Kozlowski <marcinguy@gmail.com>
 
-[ Upstream commit 92d96b603738ec4f35cde7198c303ae264dd47cb ]
+[ Upstream commit afb8e246527536848b9b4025b40e613edf776a9d ]
 
-As per Table 130 of the wm8994 datasheet at [1], there is an off-on
-delay for LDO1 and LDO2.  In the wm8958 datasheet [2], I could not
-find any reference to it.  I could not find a wm1811 datasheet to
-double-check there, but as no one has complained presumably it works
-without it.
+aqc111_rx_fixup() contains several out-of-bounds accesses that can be
+triggered by a malicious (or defective) USB device, in particular:
 
-This solves the issue on Samsung Aries boards with a wm8994 where
-register writes fail when the device is powered off and back-on
-quickly.
+ - The metadata array (desc_offset..desc_offset+2*pkt_count) can be out of bounds,
+   causing OOB reads and (on big-endian systems) OOB endianness flips.
+ - A packet can overlap the metadata array, causing a later OOB
+   endianness flip to corrupt data used by a cloned SKB that has already
+   been handed off into the network stack.
+ - A packet SKB can be constructed whose tail is far beyond its end,
+   causing out-of-bounds heap data to be considered part of the SKB's
+   data.
 
-[1] https://statics.cirrus.com/pubs/proDatasheet/WM8994_Rev4.6.pdf
-[2] https://statics.cirrus.com/pubs/proDatasheet/WM8958_v3.5.pdf
+Found doing variant analysis. Tested it with another driver (ax88179_178a), since
+I don't have a aqc111 device to test it, but the code looks very similar.
 
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/CY4PR04MB056771CFB80DC447C30D5A31CB1D9@CY4PR04MB0567.namprd04.prod.outlook.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Marcin Kozlowski <marcinguy@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/wm8994-regulator.c | 42 ++++++++++++++++++++++++++--
- 1 file changed, 39 insertions(+), 3 deletions(-)
+ drivers/net/usb/aqc111.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/regulator/wm8994-regulator.c b/drivers/regulator/wm8994-regulator.c
-index cadea0344486..40befdd9dfa9 100644
---- a/drivers/regulator/wm8994-regulator.c
-+++ b/drivers/regulator/wm8994-regulator.c
-@@ -71,6 +71,35 @@ static const struct regulator_ops wm8994_ldo2_ops = {
- };
+diff --git a/drivers/net/usb/aqc111.c b/drivers/net/usb/aqc111.c
+index 7e44110746dd..68912e266826 100644
+--- a/drivers/net/usb/aqc111.c
++++ b/drivers/net/usb/aqc111.c
+@@ -1102,10 +1102,15 @@ static int aqc111_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 	if (start_of_descs != desc_offset)
+ 		goto err;
  
- static const struct regulator_desc wm8994_ldo_desc[] = {
-+	{
-+		.name = "LDO1",
-+		.id = 1,
-+		.type = REGULATOR_VOLTAGE,
-+		.n_voltages = WM8994_LDO1_MAX_SELECTOR + 1,
-+		.vsel_reg = WM8994_LDO_1,
-+		.vsel_mask = WM8994_LDO1_VSEL_MASK,
-+		.ops = &wm8994_ldo1_ops,
-+		.min_uV = 2400000,
-+		.uV_step = 100000,
-+		.enable_time = 3000,
-+		.off_on_delay = 36000,
-+		.owner = THIS_MODULE,
-+	},
-+	{
-+		.name = "LDO2",
-+		.id = 2,
-+		.type = REGULATOR_VOLTAGE,
-+		.n_voltages = WM8994_LDO2_MAX_SELECTOR + 1,
-+		.vsel_reg = WM8994_LDO_2,
-+		.vsel_mask = WM8994_LDO2_VSEL_MASK,
-+		.ops = &wm8994_ldo2_ops,
-+		.enable_time = 3000,
-+		.off_on_delay = 36000,
-+		.owner = THIS_MODULE,
-+	},
-+};
+-	/* self check desc_offset from header*/
+-	if (desc_offset >= skb_len)
++	/* self check desc_offset from header and make sure that the
++	 * bounds of the metadata array are inside the SKB
++	 */
++	if (pkt_count * 2 + desc_offset >= skb_len)
+ 		goto err;
+ 
++	/* Packets must not overlap the metadata array */
++	skb_trim(skb, desc_offset);
 +
-+static const struct regulator_desc wm8958_ldo_desc[] = {
- 	{
- 		.name = "LDO1",
- 		.id = 1,
-@@ -172,9 +201,16 @@ static int wm8994_ldo_probe(struct platform_device *pdev)
- 	 * regulator core and we need not worry about it on the
- 	 * error path.
- 	 */
--	ldo->regulator = devm_regulator_register(&pdev->dev,
--						 &wm8994_ldo_desc[id],
--						 &config);
-+	if (ldo->wm8994->type == WM8994) {
-+		ldo->regulator = devm_regulator_register(&pdev->dev,
-+							 &wm8994_ldo_desc[id],
-+							 &config);
-+	} else {
-+		ldo->regulator = devm_regulator_register(&pdev->dev,
-+							 &wm8958_ldo_desc[id],
-+							 &config);
-+	}
-+
- 	if (IS_ERR(ldo->regulator)) {
- 		ret = PTR_ERR(ldo->regulator);
- 		dev_err(wm8994->dev, "Failed to register LDO%d: %d\n",
+ 	if (pkt_count == 0)
+ 		goto err;
+ 
 -- 
 2.35.1
 
