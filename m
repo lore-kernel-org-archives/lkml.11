@@ -2,88 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F33C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C89C9C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239857AbiDRMnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
+        id S239929AbiDRMn2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:43:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239822AbiDRMda (ORCPT
+        with ESMTP id S239903AbiDRMde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:30 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EA81BE99
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:26:50 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id s18so26659273ejr.0
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:26:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=I3d5udvKIjqAWucjjIKmuyn7gYiBA99VwyV2DIv8hOs=;
-        b=O6i40JuKQXOyvwtn8Dy33ZqEQOG5EHZzXGoOpqZzNZ9ieOhuYgUKLhfzpGxvbXiAfC
-         Vwf80nHGzunG0NFoscB2CnQZ0JQu4sPahErZnIz5NgO6On1mSrWR8+eqgUYGkK04Z/cm
-         am6eYB6HIbNfNKmvh6CfzcqdjEqDMZklnqPh2wvAj+hoM7Z/WC2jzgm+/aKNM463g1jw
-         g7uQ/8uHdj6HIoospz4Bv4O6YviYZPMRyTqevmkLEkrfzf/jDuJ6B+t56CgXYgzMzeUH
-         zqzjkk8aXXXyzV9RR8CD0OyiQVQF/FlvxcK4hkfLOu+q4NO8TFovZ3kQgN5AmwmO6rfZ
-         2wEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=I3d5udvKIjqAWucjjIKmuyn7gYiBA99VwyV2DIv8hOs=;
-        b=t6emigtQ6rN0RTEcgMAjFja5IfKjwdcQgm98A9aIwqXYBmHyMcsqrXArf6/miDjRK1
-         aWC+xUH/RZUuW4SGFcQrvX1s+tC610WwgA6zIB/A76A93s3V3KlxMTnJ2i7+1dmGD37f
-         nmPdWNqlPvkbvQAKiANxDuzgAmY7lbRNH5hYNrcMZZiwqMJUsaPB0OdPuKwkTaR/I+hW
-         K1lYlldN51oQRW56nSceHv6nSLpDPRbaHULOE6Q/jgrORZx1SVcNWnZ6AkCPfqKpNl+J
-         PfeOciOfQ6rFBYT8ftioerf8GmP0Z7EJbpl21qHp7cNTSgLje2ggntkC1KlUX/knQ9wf
-         228w==
-X-Gm-Message-State: AOAM532LHw3WOlaOuDdzsmnv9O1Jdv3Zi1i9sX+/qjDvQYdLPwrtBE7k
-        gR29n9Y4/df32YWWgglxD617RB0yVbP6hA==
-X-Google-Smtp-Source: ABdhPJw1EAebv52D0fGCecrKQNHXpvA1WtVaDZlB3PXnrtrkiLQTkMClotu0rgBrzw31XDzOlJMw2A==
-X-Received: by 2002:a17:906:7a51:b0:6e8:8e6c:f182 with SMTP id i17-20020a1709067a5100b006e88e6cf182mr8740413ejo.506.1650284808614;
-        Mon, 18 Apr 2022 05:26:48 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id gj3-20020a170906e10300b006e8ac161bcfsm4539377ejb.203.2022.04.18.05.26.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 05:26:47 -0700 (PDT)
-Message-ID: <a81e72f0-f01f-723e-fb0e-7667b2d3ff3f@linaro.org>
-Date:   Mon, 18 Apr 2022 14:26:46 +0200
+        Mon, 18 Apr 2022 08:33:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C2B1EC6A;
+        Mon, 18 Apr 2022 05:26:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CBFD460B40;
+        Mon, 18 Apr 2022 12:26:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6757C385A8;
+        Mon, 18 Apr 2022 12:26:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650284817;
+        bh=ySO7GTBaEjzR2TeAio7eXrxjSfOfiGxEe0t48xlU2Xo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YRxKajxUXIWKCbnIwvldumXp49ZKCc3Qlby30hScVVO4FWUIXPs5H75lm2WQ4RMZ0
+         iSShdC3BsKQfzGyqXKzDIaTw0VIoq6oiKZx88WYqrbrslq00BZwA9hvBlBTd0vghrk
+         RW0gBR8maBC7yshS7Q/ombBXvqFNRpIQfE/rB7vE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 018/189] ALSA: ali5451: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:10:38 +0200
+Message-Id: <20220418121201.033545609@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
+References: <20220418121200.312988959@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/3] dt-bindings: SPI: Add bindings for new Ingenic SoCs.
-Content-Language: en-US
-To:     =?UTF-8?B?5ZGo55Cw5p2wIChaaG91IFlhbmppZSk=?= 
-        <zhouyanjie@wanyeetech.com>, broonie@kernel.org,
-        robh+dt@kernel.org, krzk+dt@kernel.org
-Cc:     linux-spi@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        paul@crapouillou.net, contact@artur-rojek.eu,
-        dongsheng.qiu@ingenic.com, aric.pzqi@ingenic.com,
-        rick.tyliu@ingenic.com, sernia.zhou@foxmail.com,
-        zhenwenjin@gmail.com, reimu@sudomaker.com
-References: <1650032528-118220-1-git-send-email-zhouyanjie@wanyeetech.com>
- <1650032528-118220-3-git-send-email-zhouyanjie@wanyeetech.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1650032528-118220-3-git-send-email-zhouyanjie@wanyeetech.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/04/2022 16:22, 周琰杰 (Zhou Yanjie) wrote:
-> Add the SPI bindings for the JZ4775 SoC, the X1000 SoC,
-> and the X2000 SoC from Ingenic.
-> 
-> Signed-off-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
+From: Takashi Iwai <tiwai@suse.de>
+
+commit 19401a9441236cfbbbeb1bef4ef4c8668db45dfc upstream.
+
+The recent cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
+
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
+
+Fixes: 1f0819979248 ("ALSA: ali5451: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-5-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ sound/pci/ali5451/ali5451.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/sound/pci/ali5451/ali5451.c b/sound/pci/ali5451/ali5451.c
+index 92eb59db106d..2378a39abaeb 100644
+--- a/sound/pci/ali5451/ali5451.c
++++ b/sound/pci/ali5451/ali5451.c
+@@ -2124,8 +2124,8 @@ static int snd_ali_create(struct snd_card *card,
+ 	return 0;
+ }
+ 
+-static int snd_ali_probe(struct pci_dev *pci,
+-			 const struct pci_device_id *pci_id)
++static int __snd_ali_probe(struct pci_dev *pci,
++			   const struct pci_device_id *pci_id)
+ {
+ 	struct snd_card *card;
+ 	struct snd_ali *codec;
+@@ -2170,6 +2170,12 @@ static int snd_ali_probe(struct pci_dev *pci,
+ 	return 0;
+ }
+ 
++static int snd_ali_probe(struct pci_dev *pci,
++			 const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_ali_probe(pci, pci_id));
++}
++
+ static struct pci_driver ali5451_driver = {
+ 	.name = KBUILD_MODNAME,
+ 	.id_table = snd_ali_ids,
+-- 
+2.35.2
 
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-
-Best regards,
-Krzysztof
