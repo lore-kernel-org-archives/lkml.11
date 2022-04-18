@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B94ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:33:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44FCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:33:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242275AbiDRNfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:35:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53554 "EHLO
+        id S241152AbiDRNfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242824AbiDRNJ3 (ORCPT
+        with ESMTP id S243074AbiDRNJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:09:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 370F4369ED;
-        Mon, 18 Apr 2022 05:49:03 -0700 (PDT)
+        Mon, 18 Apr 2022 09:09:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159BA2CCAC;
+        Mon, 18 Apr 2022 05:49:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3377F61259;
-        Mon, 18 Apr 2022 12:48:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1D50C385A8;
-        Mon, 18 Apr 2022 12:48:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E030B80E4E;
+        Mon, 18 Apr 2022 12:49:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 537FEC385A7;
+        Mon, 18 Apr 2022 12:49:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286134;
-        bh=m010D5kfjHCZrOKrDHaOt/zruGT7jWSVi3xsW6bm/1E=;
+        s=korg; t=1650286141;
+        bh=Mk1Iqrphq54417Wc0cBdCgN7loP8w3zoxuUin2+H7X0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WHPHmsEUL3AIZ9jjrWDcWE1/myKT/fJ4fEJ7YvIKN9iAPiXsWgG/4je8Sct6KBS+K
-         S8YSHn3np8yJ8zYaUvcirxtl2jTL1+AXcQwLaOW8R742dpu53BmPGVWIi7gmTx9z/K
-         e1JLKEio6/v2v0mtvIAs63kTAlQVBJdvKnsGVbJI=
+        b=DgisBNabDwMPZgwaf3H3pXPMzkc9F2dHVb+2pYhl5jNd+CPqT8hN5p/Okg6XuCTd2
+         8TcNPk0Des+W54jrI7p5R/ZILrdByUXTh0cgWZ8Z7yVYy3/myJhWbOcSzK8Cd9T0GU
+         bn0DGI4o0zchtZrssl0b+A5WaNQn1EYuhfwRCS7g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 005/284] ethernet: sun: Free the coherent when failing in probing
-Date:   Mon, 18 Apr 2022 14:09:46 +0200
-Message-Id: <20220418121210.849128396@linuxfoundation.org>
+Subject: [PATCH 4.14 007/284] spi: Fix erroneous sgs value with min_t()
+Date:   Mon, 18 Apr 2022 14:09:48 +0200
+Message-Id: <20220418121210.905523230@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,45 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit bb77bd31c281f70ec77c9c4f584950a779e05cf8 ]
+[ Upstream commit ebc4cb43ea5ada3db46c80156fca58a54b9bbca8 ]
 
-When the driver fails to register net device, it should free the DMA
-region first, and then do other cleanup.
+While computing sgs in spi_map_buf(), the data type
+used in min_t() for max_seg_size is 'unsigned int' where
+as that of ctlr->max_dma_len is 'size_t'.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+min_t(unsigned int,x,y) gives wrong results if one of x/y is
+'size_t'
+
+Consider the below examples on a 64-bit machine (ie size_t is
+64-bits, and unsigned int is 32-bit).
+    case 1) min_t(unsigned int, 5, 0x100000001);
+    case 2) min_t(size_t, 5, 0x100000001);
+
+Case 1 returns '1', where as case 2 returns '5'. As you can see
+the result from case 1 is wrong.
+
+This patch fixes the above issue by using the data type of the
+parameters that are used in min_t with maximum data length.
+
+Fixes: commit 1a4e53d2fc4f68aa ("spi: Fix invalid sgs value")
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Link: https://lore.kernel.org/r/20220316175317.465-1-biju.das.jz@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sun/sunhme.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/spi/spi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index 9e983e1d8249..7522f277e912 100644
---- a/drivers/net/ethernet/sun/sunhme.c
-+++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -3165,7 +3165,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
- 	if (err) {
- 		printk(KERN_ERR "happymeal(PCI): Cannot register net device, "
- 		       "aborting.\n");
--		goto err_out_iounmap;
-+		goto err_out_free_coherent;
- 	}
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index d26aefed16ac..1031c8e38144 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -774,10 +774,10 @@ static int spi_map_buf(struct spi_controller *ctlr, struct device *dev,
+ 	int i, ret;
  
- 	pci_set_drvdata(pdev, hp);
-@@ -3198,6 +3198,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
- 
- 	return 0;
- 
-+err_out_free_coherent:
-+	dma_free_coherent(hp->dma_dev, PAGE_SIZE,
-+			  hp->happy_block, hp->hblock_dvma);
-+
- err_out_iounmap:
- 	iounmap(hp->gregs);
- 
+ 	if (vmalloced_buf || kmap_buf) {
+-		desc_len = min_t(unsigned int, max_seg_size, PAGE_SIZE);
++		desc_len = min_t(unsigned long, max_seg_size, PAGE_SIZE);
+ 		sgs = DIV_ROUND_UP(len + offset_in_page(buf), desc_len);
+ 	} else if (virt_addr_valid(buf)) {
+-		desc_len = min_t(unsigned int, max_seg_size, ctlr->max_dma_len);
++		desc_len = min_t(size_t, max_seg_size, ctlr->max_dma_len);
+ 		sgs = DIV_ROUND_UP(len, desc_len);
+ 	} else {
+ 		return -EINVAL;
 -- 
 2.34.1
 
