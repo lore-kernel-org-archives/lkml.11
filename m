@@ -2,49 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1AC6C3525B
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:11:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FDA8C3527C
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343878AbiDRONf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45518 "EHLO
+        id S240446AbiDRONo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244578AbiDRN4y (ORCPT
+        with ESMTP id S244560AbiDRN5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:56:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8A02A727;
-        Mon, 18 Apr 2022 06:05:28 -0700 (PDT)
+        Mon, 18 Apr 2022 09:57:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D472AC43;
+        Mon, 18 Apr 2022 06:05:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0774360EFC;
-        Mon, 18 Apr 2022 13:05:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D60D5C385A7;
-        Mon, 18 Apr 2022 13:05:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E72D6B80EC0;
+        Mon, 18 Apr 2022 13:05:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B120C385A7;
+        Mon, 18 Apr 2022 13:05:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287127;
-        bh=nvvAawuA+9Uo82xtcojrVm7MvKOqv8XN33hhFXK37HA=;
+        s=korg; t=1650287153;
+        bh=lSJcNQdo0UgwYrG3zYfemBAVszoq8o1xW2OWKp5LwW8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z7V9hJuQVYFBAZYBBdtZUPBywxSmcIY6Rzutcu2MbsG03wC2q5GBOG5Ek40tTlXT5
-         2mD6C8uHm3TZvBOQsrdFmszpg2vlpQCxNGZRhsaXx2jqNYoJg+vFPyE5lf2swe518J
-         ThG9VqCOHYQzZffK9uszvm/8LDOdMqhc9Gag85Fc=
+        b=tPlX73AqPQuFOdnrl0PASMsGsX4JnXix+ZXqDqspNmAqFApBAXppkYbi6AOA0gGBI
+         a3YrGWr2Ia61TacUJVxhATp11w8Y8wGthXNIp41CObiC20hl3HIpm8UA9EW48Z72iz
+         Pyalt/8VitEYeD0p9cclwIe/77810ERGhYxklrfY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Borislav Petkov <bp@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 064/218] printk: fix return value of printk.devkmsg __setup handler
-Date:   Mon, 18 Apr 2022 14:12:10 +0200
-Message-Id: <20220418121201.443361933@linuxfoundation.org>
+Subject: [PATCH 4.9 072/218] ASoC: fsi: Add check for clk_enable
+Date:   Mon, 18 Apr 2022 14:12:18 +0200
+Message-Id: <20220418121201.670344765@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -56,68 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit b665eae7a788c5e2bc10f9ac3c0137aa0ad1fc97 ]
+[ Upstream commit 405afed8a728f23cfaa02f75bbc8bdd6b7322123 ]
 
-If an invalid option value is used with "printk.devkmsg=<value>",
-it is silently ignored.
-If a valid option value is used, it is honored but the wrong return
-value (0) is used, indicating that the command line option had an
-error and was not handled. This string is not added to init's
-environment strings due to init/main.c::unknown_bootoption()
-checking for a '.' in the boot option string and then considering
-that string to be an "Unused module parameter".
+As the potential failure of the clk_enable(),
+it should be better to check it and return error
+if fails.
 
-Print a warning message if a bad option string is used.
-Always return 1 from the __setup handler to indicate that the command
-line option has been handled.
-
-Fixes: 750afe7babd1 ("printk: add kernel parameter to control writes to /dev/kmsg")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Borislav Petkov <bp@suse.de>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: John Ogness <john.ogness@linutronix.de>
-Reviewed-by: John Ogness <john.ogness@linutronix.de>
-Reviewed-by: Sergey Senozhatsky <senozhatsky@chromium.org>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Petr Mladek <pmladek@suse.com>
-Link: https://lore.kernel.org/r/20220228220556.23484-1-rdunlap@infradead.org
+Fixes: ab6f6d85210c ("ASoC: fsi: add master clock control functions")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220302062844.46869-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/printk/printk.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ sound/soc/sh/fsi.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 9c17a2655551..f1f115b3ee01 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -122,8 +122,10 @@ static int __control_devkmsg(char *str)
+diff --git a/sound/soc/sh/fsi.c b/sound/soc/sh/fsi.c
+index ead520182e26..29be45285274 100644
+--- a/sound/soc/sh/fsi.c
++++ b/sound/soc/sh/fsi.c
+@@ -821,14 +821,27 @@ static int fsi_clk_enable(struct device *dev,
+ 			return ret;
+ 		}
  
- static int __init control_devkmsg(char *str)
- {
--	if (__control_devkmsg(str) < 0)
-+	if (__control_devkmsg(str) < 0) {
-+		pr_warn("printk.devkmsg: bad option string '%s'\n", str);
- 		return 1;
-+	}
+-		clk_enable(clock->xck);
+-		clk_enable(clock->ick);
+-		clk_enable(clock->div);
++		ret = clk_enable(clock->xck);
++		if (ret)
++			goto err;
++		ret = clk_enable(clock->ick);
++		if (ret)
++			goto disable_xck;
++		ret = clk_enable(clock->div);
++		if (ret)
++			goto disable_ick;
  
- 	/*
- 	 * Set sysctl string accordingly:
-@@ -145,7 +147,7 @@ static int __init control_devkmsg(char *str)
- 	 */
- 	devkmsg_log |= DEVKMSG_LOG_MASK_LOCK;
+ 		clock->count++;
+ 	}
  
--	return 0;
-+	return 1;
+ 	return ret;
++
++disable_ick:
++	clk_disable(clock->ick);
++disable_xck:
++	clk_disable(clock->xck);
++err:
++	return ret;
  }
- __setup("printk.devkmsg=", control_devkmsg);
  
+ static int fsi_clk_disable(struct device *dev,
 -- 
 2.34.1
 
