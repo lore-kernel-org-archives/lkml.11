@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC36C35280
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC0F2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243563AbiDRN3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:29:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41178 "EHLO
+        id S240744AbiDRNbO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:31:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240987AbiDRNFX (ORCPT
+        with ESMTP id S241071AbiDRNF2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:05:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C848340D9;
-        Mon, 18 Apr 2022 05:45:57 -0700 (PDT)
+        Mon, 18 Apr 2022 09:05:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61042340E8;
+        Mon, 18 Apr 2022 05:46:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EEA40B80E44;
-        Mon, 18 Apr 2022 12:45:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44704C385A8;
-        Mon, 18 Apr 2022 12:45:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 258F0B80E44;
+        Mon, 18 Apr 2022 12:46:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 867D5C385A1;
+        Mon, 18 Apr 2022 12:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285954;
-        bh=cYzXXg1Vy1q7vvQEVY1rET2xsZpGFJS5PCjsVVvLFiQ=;
+        s=korg; t=1650285985;
+        bh=9XKXzyrtWXOZdWGEu+wkDPOgdSs9WB4Lo30G4Sm5GvM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gnYDa95tyqeimFxmucWAB2redUxgG+/JnewToGUUk0b8ZGYfgckCwC9LXU6w+m1A3
-         FKY6zZ/Z5Gc0AzQ9hXnu0KOizVmHGCPdCRKIYQv5s1xYoInHaAP+MrAIHg0iAPl2Eb
-         RWvCcIUZMW7Vdh4w2i4vQ/ar76dzxz8xIdptYUvc=
+        b=moeM2Fyzl3nrbNC/4sLqYySnmI+AdtgsSuJTjfYvh50Ks7rIfAPfeY6gYK4ZHCfzN
+         kbUVB4m4MOfW+JwV/4/72NoOJS7BZ5UE3CZj50slA+4eLP4IQslggPulzoetlrxh1f
+         ozHcKldOCydbie9inrDAnS8Zq0WNJXQgV/XDQ/3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 16/32] net: micrel: fix KS8851_MLL Kconfig
-Date:   Mon, 18 Apr 2022 14:13:56 +0200
-Message-Id: <20220418121127.601803311@linuxfoundation.org>
+Subject: [PATCH 4.19 04/32] gpiolib: acpi: use correct format characters
+Date:   Mon, 18 Apr 2022 14:13:44 +0200
+Message-Id: <20220418121127.256386009@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
 References: <20220418121127.127656835@linuxfoundation.org>
@@ -51,48 +50,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit c3efcedd272aa6dd5929e20cf902a52ddaa1197a ]
+[ Upstream commit 213d266ebfb1621aab79cfe63388facc520a1381 ]
 
-KS8851_MLL selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL,
-so make KS8851_MLL also depend on PTP_1588_CLOCK_OPTIONAL since
-'select' does not follow any dependency chains.
+When compiling with -Wformat, clang emits the following warning:
 
-Fixes kconfig warning and build errors:
+  gpiolib-acpi.c:393:4: warning: format specifies type 'unsigned char' but the argument has type 'int' [-Wformat]
+                        pin);
+                        ^~~
 
-WARNING: unmet direct dependencies detected for MICREL_PHY
-  Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
-  Selected by [y]:
-  - KS8851_MLL [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && HAS_IOMEM [=y]
+So warning that '%hhX' is paired with an 'int' is all just completely
+mindless and wrong. Sadly, I can see a different bogus warning reason
+why people would want to use '%02hhX'.
 
-ld: drivers/net/phy/micrel.o: in function `lan8814_ts_info':
-micrel.c:(.text+0xb35): undefined reference to `ptp_clock_index'
-ld: drivers/net/phy/micrel.o: in function `lan8814_probe':
-micrel.c:(.text+0x2586): undefined reference to `ptp_clock_register'
+Again, the *sane* thing from a human perspective is to use '%02X. But
+if the compiler doesn't do any range analysis at all, it could decide
+that "Oh, that print format could need up to 8 bytes of space in the
+result". Using '%02hhX' would cut that down to two.
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+And since we use
+
+        char ev_name[5];
+
+and currently use "_%c%02hhX" as the format string, even a compiler
+that doesn't notice that "pin <= 255" test that guards this all will
+go "OK, that's at most 4 bytes and the final NUL termination, so it's
+fine".
+
+While a compiler - like gcc - that only sees that the original source
+of the 'pin' value is a 'unsigned short' array, and then doesn't take
+the "pin <= 255" into account, will warn like this:
+
+  gpiolib-acpi.c: In function 'acpi_gpiochip_request_interrupt':
+  gpiolib-acpi.c:206:24: warning: '%02X' directive writing between 2 and 4 bytes into a region of size 3 [-Wformat-overflow=]
+       sprintf(ev_name, "_%c%02X",
+                            ^~~~
+  gpiolib-acpi.c:206:20: note: directive argument in the range [0, 65535]
+
+because gcc isn't being very good at that argument range analysis either.
+
+In other words, the original use of 'hhx' was bogus to begin with, and
+due to *another* compiler warning being bad, and we had that bad code
+being written back in 2016 to work around _that_ compiler warning
+(commit e40a3ae1f794: "gpio: acpi: work around false-positive
+-Wstring-overflow warning").
+
+Sadly, two different bad compiler warnings together does not make for
+one good one.
+
+It just makes for even more pain.
+
+End result: I think the simplest and cleanest option is simply the
+proposed change which undoes that '%hhX' change for gcc, and replaces
+it with just using a slightly bigger stack allocation. It's not like
+a 5-byte allocation is in any way likely to have saved any actual stack,
+since all the other variables in that function are 'int' or bigger.
+
+False-positive compiler warnings really do make people write worse
+code, and that's a problem. But on a scale of bad code, I feel that
+extending the buffer trivially is better than adding a pointless cast
+that literally makes no sense.
+
+At least in this case the end result isn't unreadable or buggy. We've
+had several cases of bad compiler warnings that caused changes that
+were actually horrendously wrong.
+
+Fixes: e40a3ae1f794 ("gpio: acpi: work around false-positive -Wstring-overflow warning")
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/micrel/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpio/gpiolib-acpi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
-index b7e2f49696b7..aa12bace8673 100644
---- a/drivers/net/ethernet/micrel/Kconfig
-+++ b/drivers/net/ethernet/micrel/Kconfig
-@@ -45,6 +45,7 @@ config KS8851
- config KS8851_MLL
- 	tristate "Micrel KS8851 MLL"
- 	depends on HAS_IOMEM
-+	depends on PTP_1588_CLOCK_OPTIONAL
- 	select MII
- 	---help---
- 	  This platform driver is for Micrel KS8851 Address/data bus
+diff --git a/drivers/gpio/gpiolib-acpi.c b/drivers/gpio/gpiolib-acpi.c
+index 47cdc1f89e3f..6afe833031e3 100644
+--- a/drivers/gpio/gpiolib-acpi.c
++++ b/drivers/gpio/gpiolib-acpi.c
+@@ -278,8 +278,8 @@ static acpi_status acpi_gpiochip_alloc_event(struct acpi_resource *ares,
+ 	pin = agpio->pin_table[0];
+ 
+ 	if (pin <= 255) {
+-		char ev_name[5];
+-		sprintf(ev_name, "_%c%02hhX",
++		char ev_name[8];
++		sprintf(ev_name, "_%c%02X",
+ 			agpio->triggering == ACPI_EDGE_SENSITIVE ? 'E' : 'L',
+ 			pin);
+ 		if (ACPI_SUCCESS(acpi_get_handle(handle, ev_name, &evt_handle)))
 -- 
 2.35.1
 
