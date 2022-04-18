@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 417CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 543C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240613AbiDRMjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:39:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54196 "EHLO
+        id S240564AbiDRMjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:39:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239814AbiDRMda (ORCPT
+        with ESMTP id S239792AbiDRMd2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B331BE83;
-        Mon, 18 Apr 2022 05:26:41 -0700 (PDT)
+        Mon, 18 Apr 2022 08:33:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0332B1B79B;
+        Mon, 18 Apr 2022 05:26:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8E2560FB0;
-        Mon, 18 Apr 2022 12:26:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0154C385A7;
-        Mon, 18 Apr 2022 12:26:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0E2AB80ED1;
+        Mon, 18 Apr 2022 12:26:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E60CC385A1;
+        Mon, 18 Apr 2022 12:26:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284800;
-        bh=cjgxeclnMlt0Wf4GDnGqD7fbo9ohrM+9rOQvJXfpy14=;
+        s=korg; t=1650284776;
+        bh=e2tQCsWF4ZZ7HEVZeNQHj3qSvi3dIOelinn6MUFjnOo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k7lNRYpo1k6kQLYfiPfH5u2DWWH0yZp+bqcrN2lHDRnUsoR2qNm4J91jsZGx6RBZa
-         jVa4J/zJJJI1b05SpWgmGndnFnY9EUJE+W4BO8mflCaKpo2r//0aQTVreOpa4ItC0o
-         +Fcv2wJfC0mov2SJJhhqDFtAI6JqqxHd9VuRbBC8=
+        b=YsuRtTgzBz+9+k+xXzzTTYKmfpK3ks4cpkF8YJT2Y7ay9P1xgCR8xvhbCk/BHVrSc
+         zBgiEBlDG6DRoFMyQ+g4XbVNmc7qmER5ycn3d0uSY6TdDQX9uH0VtkjfpRzdLOGdCb
+         XDA/tEs13AZ/Psnj7mZfHy86XGmwP48Z9lbqC2fY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.15 005/189] cpuidle: PSCI: Move the `has_lpi` check to the beginning of the function
-Date:   Mon, 18 Apr 2022 14:10:25 +0200
-Message-Id: <20220418121200.553515582@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Matt Roper <matthew.d.roper@intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Subject: [PATCH 5.17 217/219] drm/i915: Sunset igpu legacy mmap support based on GRAPHICS_VER_FULL
+Date:   Mon, 18 Apr 2022 14:13:06 +0200
+Message-Id: <20220418121212.940565142@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
-References: <20220418121200.312988959@linuxfoundation.org>
+In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
+References: <20220418121203.462784814@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,46 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Matt Roper <matthew.d.roper@intel.com>
 
-commit 01f6c7338ce267959975da65d86ba34f44d54220 upstream.
+commit 1acb34e7dd7720a1fff00cbd4d000ec3219dc9d6 upstream.
 
-Currently the first thing checked is whether the PCSI cpu_suspend function
-has been initialized.
+The intent of the version check in the mmap ioctl was to maintain
+support for existing platforms (i.e., ADL/RPL and earlier), but drop
+support on all future igpu platforms.  As we've seen on the dgpu side,
+the hardware teams are using a more fine-grained numbering system for IP
+version numbers these days, so it's possible the version number
+associated with our next igpu could be some form of "12.xx" rather than
+13 or higher.  Comparing against the full ver.release number will ensure
+the intent of the check is maintained no matter what numbering the
+hardware teams settle on.
 
-Another change will be overloading `acpi_processor_ffh_lpi_probe` and
-calling it sooner.  So make the `has_lpi` check the first thing checked
-to prepare for that change.
-
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: d3f3baa3562a ("drm/i915: Reinstate the mmap ioctl for some platforms")
+Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+Cc: Lucas De Marchi <lucas.demarchi@intel.com>
+Signed-off-by: Matt Roper <matthew.d.roper@intel.com>
+Reviewed-by: Lucas De Marchi <lucas.demarchi@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220407161839.1073443-1-matthew.d.roper@intel.com
+(cherry picked from commit 8e7e5c077cd57ee9a36d58c65f07257dc49a88d5)
+Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/cpuidle.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_mman.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm64/kernel/cpuidle.c
-+++ b/arch/arm64/kernel/cpuidle.c
-@@ -54,6 +54,9 @@ static int psci_acpi_cpu_init_idle(unsig
- 	struct acpi_lpi_state *lpi;
- 	struct acpi_processor *pr = per_cpu(processors, cpu);
- 
-+	if (unlikely(!pr || !pr->flags.has_lpi))
-+		return -EINVAL;
-+
- 	/*
- 	 * If the PSCI cpu_suspend function hook has not been initialized
- 	 * idle states must not be enabled, so bail out
-@@ -61,9 +64,6 @@ static int psci_acpi_cpu_init_idle(unsig
- 	if (!psci_ops.cpu_suspend)
+--- a/drivers/gpu/drm/i915/gem/i915_gem_mman.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_mman.c
+@@ -67,7 +67,7 @@ i915_gem_mmap_ioctl(struct drm_device *d
+ 	 * mmap ioctl is disallowed for all discrete platforms,
+ 	 * and for all platforms with GRAPHICS_VER > 12.
+ 	 */
+-	if (IS_DGFX(i915) || GRAPHICS_VER(i915) > 12)
++	if (IS_DGFX(i915) || GRAPHICS_VER_FULL(i915) > IP_VER(12, 0))
  		return -EOPNOTSUPP;
  
--	if (unlikely(!pr || !pr->flags.has_lpi))
--		return -EINVAL;
--
- 	count = pr->power.count - 1;
- 	if (count <= 0)
- 		return -ENODEV;
+ 	if (args->flags & ~(I915_MMAP_WC))
 
 
