@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240772AbiDRN0w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:26:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41116 "EHLO
+        id S241665AbiDRN05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241019AbiDRNET (ORCPT
+        with ESMTP id S241116AbiDRNCv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:04:19 -0400
+        Mon, 18 Apr 2022 09:02:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293DEE0F9;
-        Mon, 18 Apr 2022 05:45:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51AB32991;
+        Mon, 18 Apr 2022 05:42:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB0EB6124D;
-        Mon, 18 Apr 2022 12:45:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE925C385A7;
-        Mon, 18 Apr 2022 12:45:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A381611E4;
+        Mon, 18 Apr 2022 12:42:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37730C385A1;
+        Mon, 18 Apr 2022 12:42:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285914;
-        bh=tGzXzQhqgL+alx1Q6zWeqj7q4zL1AuwH2it+jAec/5w=;
+        s=korg; t=1650285758;
+        bh=0VdI8qXu19UZJTHRWXu9rUPQhnfK/6Ja+SvEJ2DkiaM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F5KKYZ92PkjN7A6g1Np5UZ9DrfuHCthDUd6Az83KtV7AnYjR/72X9tUZ3+TXsj8CA
-         ++l9Qt4NGsN6cHxAK2vLxJ9fp7ahn9QRKPZtd7DfsqZb8OQDeVoJDDKNYIQUUT0esn
-         Cw6lAsnZeclZAkeijYAMd4OogfcqGBdEbrpcLZak=
+        b=AreO3Ltxed1Kt2EBVb0dyYAUSGaDoeslr0PbwSlvuClA5GiFheQugpXkrY7ErZGR/
+         1m/GxJ5188HxIcj6v1H/VbTVw1ahxfIQk8SXcB0C4c0S2dpM51rIh9gAoTPqWHFQ43
+         Ld1ORzHhKVbs9ehIPnDfaanV9ZKCrUR3FQxhsdr8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Aurabindo Pillai <aurabindo.pillai@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 16/63] drm/amd: Add USBC connector ID
-Date:   Mon, 18 Apr 2022 14:13:13 +0200
-Message-Id: <20220418121135.245990562@linuxfoundation.org>
+Subject: [PATCH 5.4 15/63] cifs: potential buffer overflow in handling symlinks
+Date:   Mon, 18 Apr 2022 14:13:12 +0200
+Message-Id: <20220418121135.177447577@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -50,33 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aurabindo Pillai <aurabindo.pillai@amd.com>
+From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 
-[ Upstream commit c5c948aa894a831f96fccd025e47186b1ee41615 ]
+[ Upstream commit 64c4a37ac04eeb43c42d272f6e6c8c12bfcf4304 ]
 
-[Why&How] Add a dedicated AMDGPU specific ID for use with
-newer ASICs that support USB-C output
+Smatch printed a warning:
+	arch/x86/crypto/poly1305_glue.c:198 poly1305_update_arch() error:
+	__memcpy() 'dctx->buf' too small (16 vs u32max)
 
-Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+It's caused because Smatch marks 'link_len' as untrusted since it comes
+from sscanf(). Add a check to ensure that 'link_len' is not larger than
+the size of the 'link_str' buffer.
+
+Fixes: c69c1b6eaea1 ("cifs: implement CIFSParseMFSymlink()")
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/ObjectID.h | 1 +
- 1 file changed, 1 insertion(+)
+ fs/cifs/link.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/ObjectID.h b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-index 5b393622f592..a0f0a17e224f 100644
---- a/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-+++ b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-@@ -119,6 +119,7 @@
- #define CONNECTOR_OBJECT_ID_eDP                   0x14
- #define CONNECTOR_OBJECT_ID_MXM                   0x15
- #define CONNECTOR_OBJECT_ID_LVDS_eDP              0x16
-+#define CONNECTOR_OBJECT_ID_USBC                  0x17
+diff --git a/fs/cifs/link.c b/fs/cifs/link.c
+index b736acd3917b..a24bcbbb5033 100644
+--- a/fs/cifs/link.c
++++ b/fs/cifs/link.c
+@@ -97,6 +97,9 @@ parse_mf_symlink(const u8 *buf, unsigned int buf_len, unsigned int *_link_len,
+ 	if (rc != 1)
+ 		return -EINVAL;
  
- /* deleted */
- 
++	if (link_len > CIFS_MF_SYMLINK_LINK_MAXLEN)
++		return -EINVAL;
++
+ 	rc = symlink_hash(link_len, link_str, md5_hash);
+ 	if (rc) {
+ 		cifs_dbg(FYI, "%s: MD5 hash failure: %d\n", __func__, rc);
 -- 
 2.35.1
 
