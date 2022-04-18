@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62CD4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ED3AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:29:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234909AbiDRMb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38406 "EHLO
+        id S236320AbiDRMcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239369AbiDRM2W (ORCPT
+        with ESMTP id S239527AbiDRM2b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:28:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D09A21241;
-        Mon, 18 Apr 2022 05:21:42 -0700 (PDT)
+        Mon, 18 Apr 2022 08:28:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F48E21832;
+        Mon, 18 Apr 2022 05:22:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE623B80ED6;
-        Mon, 18 Apr 2022 12:21:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 256C9C385A7;
-        Mon, 18 Apr 2022 12:21:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFE7460EF4;
+        Mon, 18 Apr 2022 12:22:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBD28C385A8;
+        Mon, 18 Apr 2022 12:22:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284499;
-        bh=zDfn1lGmLBtYBMqJBS6fF6HQOhZA5RF7ZoQrvNcctxc=;
+        s=korg; t=1650284521;
+        bh=yVc9gM0GvyeesUHCUbbJse0kel0eC1dgwpszLaGwkxs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MUfTNBUxlh2d8by2COw+0wCeRuiPr9MExJGO52CJmYLLR1/i44llYqcsWQkpTXjGg
-         6dc7qkZi/0euOIok7A7Wmi5o0mb5+RKQSxY886BOEkaIH4IIuX5CXQz8vwKi7ZVLqr
-         g8wzT618LMawV5gTX2iYjwC4QQcUWVO5EKHHGYug=
+        b=lQdsl9ryeh/oQkayejIuYA+uzlHsI89DHEwKbjEeqTK5QWvCm9KdaBLsHw8r+OCAv
+         wo9MXjBVgX7lHh4Vjb4/4kyJcUhb0tg1PW0bE58wHRAqapufP38WjR0QDI2qrYtUSH
+         sWlzy4mB0dxyXrZcN2XPVtTerpDOokOnMo6A0SUE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 111/219] io_uring: verify that resv2 is 0 in io_uring_rsrc_update2
-Date:   Mon, 18 Apr 2022 14:11:20 +0200
-Message-Id: <20220418121210.006355712@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 143/219] PCI: hv: Propagate coherence from VMbus device to PCI device
+Date:   Mon, 18 Apr 2022 14:11:52 +0200
+Message-Id: <20220418121210.893992320@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,51 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dylan Yudaken <dylany@fb.com>
+From: Michael Kelley <mikelley@microsoft.com>
 
-[ Upstream commit d8a3ba9c143bf89c032deced8a686ffa53b46098 ]
+[ Upstream commit 8d21732475c637c7efcdb91dc927a4c594e97898 ]
 
-Verify that the user does not pass in anything but 0 for this field.
+PCI pass-thru devices in a Hyper-V VM are represented as a VMBus
+device and as a PCI device.  The coherence of the VMbus device is
+set based on the VMbus node in ACPI, but the PCI device has no
+ACPI node and defaults to not hardware coherent.  This results
+in extra software coherence management overhead on ARM64 when
+devices are hardware coherent.
 
-Fixes: 992da01aa932 ("io_uring: change registration/upd/rsrc tagging ABI")
-Signed-off-by: Dylan Yudaken <dylany@fb.com>
-Link: https://lore.kernel.org/r/20220412163042.2788062-3-dylany@fb.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fix this by setting up the PCI host bus so that normal
+PCI mechanisms will propagate the coherence of the VMbus
+device to the PCI device. There's no effect on x86/x64 where
+devices are always hardware coherent.
+
+Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+Acked-by: Boqun Feng <boqun.feng@gmail.com>
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/1648138492-2191-3-git-send-email-mikelley@microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/pci/controller/pci-hyperv.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 7da6fddaef4d..2838bc6cdbc8 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -6466,6 +6466,7 @@ static int io_files_update(struct io_kiocb *req, unsigned int issue_flags)
- 	up.nr = 0;
- 	up.tags = 0;
- 	up.resv = 0;
-+	up.resv2 = 0;
+diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+index ae0bc2fee4ca..88b3b56d0522 100644
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -3404,6 +3404,15 @@ static int hv_pci_probe(struct hv_device *hdev,
+ 	hbus->bridge->domain_nr = dom;
+ #ifdef CONFIG_X86
+ 	hbus->sysdata.domain = dom;
++#elif defined(CONFIG_ARM64)
++	/*
++	 * Set the PCI bus parent to be the corresponding VMbus
++	 * device. Then the VMbus device will be assigned as the
++	 * ACPI companion in pcibios_root_bridge_prepare() and
++	 * pci_dma_configure() will propagate device coherence
++	 * information to devices created on the bus.
++	 */
++	hbus->sysdata.parent = hdev->device.parent;
+ #endif
  
- 	io_ring_submit_lock(ctx, needs_lock);
- 	ret = __io_register_rsrc_update(ctx, IORING_RSRC_FILE,
-@@ -10809,7 +10810,7 @@ static int io_register_files_update(struct io_ring_ctx *ctx, void __user *arg,
- 	memset(&up, 0, sizeof(up));
- 	if (copy_from_user(&up, arg, sizeof(struct io_uring_rsrc_update)))
- 		return -EFAULT;
--	if (up.resv)
-+	if (up.resv || up.resv2)
- 		return -EINVAL;
- 	return __io_register_rsrc_update(ctx, IORING_RSRC_FILE, &up, nr_args);
- }
-@@ -10823,7 +10824,7 @@ static int io_register_rsrc_update(struct io_ring_ctx *ctx, void __user *arg,
- 		return -EINVAL;
- 	if (copy_from_user(&up, arg, sizeof(up)))
- 		return -EFAULT;
--	if (!up.nr || up.resv)
-+	if (!up.nr || up.resv || up.resv2)
- 		return -EINVAL;
- 	return __io_register_rsrc_update(ctx, type, &up, up.nr);
- }
+ 	hbus->hdev = hdev;
 -- 
 2.35.1
 
