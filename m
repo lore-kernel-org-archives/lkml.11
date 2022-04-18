@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69611C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 540F8C4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343493AbiDROEE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53594 "EHLO
+        id S245690AbiDROD5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:03:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242361AbiDRNqA (ORCPT
+        with ESMTP id S244619AbiDRNpH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:46:00 -0400
+        Mon, 18 Apr 2022 09:45:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F02E26AF3;
-        Mon, 18 Apr 2022 06:00:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E34B32043;
+        Mon, 18 Apr 2022 06:00:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F0E6B80E59;
-        Mon, 18 Apr 2022 13:00:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65C79C385A8;
-        Mon, 18 Apr 2022 13:00:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84AFBB80D9C;
+        Mon, 18 Apr 2022 13:00:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF7B8C385A7;
+        Mon, 18 Apr 2022 13:00:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286834;
-        bh=qrkvQeMpr0ey3HLw1OJ8GVC0W/w0tk3it/LT1Se4FDc=;
+        s=korg; t=1650286809;
+        bh=1X3jVFBcdpgqeellWvIrk80zSJ9UX1SgA+Li3Hq5Ql4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hiwmNzDYtvxizm95Le6N8DCM4CywPgPyXesyRoKJrQe9u3nP8eXwS13XDFjoRDtFE
-         IDa2nJW4Z/vyUMgDXMKRxRXAv6qDMY0oLkaEkTLNjAz+ijnirqKXWae6WoSHlQvpoW
-         bQNr/KZDO6uYtz1urpG5PcP2s0mwSXFZ5qe/1Bs8=
+        b=Jlkw6hl+ZGZNpF3ilxXnW3XBfVMQjww75GtPrlyIHVyViAWpqijsJnlquTY52zYk3
+         N6AtcUqIhAhTjCF+lJjacHBczPYxB7Zze62q1yBRgT29r5aaLIMi8O9cLpRc8cpb+E
+         BCS0YzvsAjWgpveUX+dREZOW1Xg7siSGsELbP7N4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
-        Sven Eckelmann <sven@narfation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 220/284] macvtap: advertise link netns via netlink
-Date:   Mon, 18 Apr 2022 14:13:21 +0200
-Message-Id: <20220418121217.968808267@linuxfoundation.org>
+        stable@vger.kernel.org, Zhou Guanghui <zhouguanghui1@huawei.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 215/284] iommu/arm-smmu-v3: fix event handling soft lockup
+Date:   Mon, 18 Apr 2022 14:13:16 +0200
+Message-Id: <20220418121217.828612769@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -52,63 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Zhou Guanghui <zhouguanghui1@huawei.com>
 
-[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
+[ Upstream commit 30de2b541af98179780054836b48825fcfba4408 ]
 
-Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
-added to rtnetlink messages. This fixes iproute2 which otherwise resolved
-the link interface to an interface in the wrong namespace.
+During event processing, events are read from the event queue one
+by one until the queue is empty.If the master device continuously
+requests address access at the same time and the SMMU generates
+events, the cyclic processing of the event takes a long time and
+softlockup warnings may be reported.
 
-Test commands:
+arm-smmu-v3 arm-smmu-v3.34.auto: event 0x0a received:
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00007f220000280a
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x000010000000007e
+arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00000000034e8670
+watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [irq/268-arm-smm:247]
+Call trace:
+ _dev_info+0x7c/0xa0
+ arm_smmu_evtq_thread+0x1c0/0x230
+ irq_thread_fn+0x30/0x80
+ irq_thread+0x128/0x210
+ kthread+0x134/0x138
+ ret_from_fork+0x10/0x1c
+Kernel panic - not syncing: softlockup: hung tasks
 
-  ip netns add nst
-  ip link add dummy0 type dummy
-  ip link add link macvtap0 link dummy0 type macvtap
-  ip link set macvtap0 netns nst
-  ip -netns nst link show macvtap0
+Fix this by calling cond_resched() after the event information is
+printed.
 
-Before:
-
-  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
-      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
-
-After:
-
-  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
-      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-
-Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
+Link: https://lore.kernel.org/r/20220119070754.26528-1-zhouguanghui1@huawei.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macvtap.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
-index cba5cb3b849a..dc89019ca876 100644
---- a/drivers/net/macvtap.c
-+++ b/drivers/net/macvtap.c
-@@ -132,11 +132,17 @@ static void macvtap_setup(struct net_device *dev)
- 	dev->tx_queue_len = TUN_READQ_SIZE;
- }
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 29feafa8007f..878087b9ddfe 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1210,6 +1210,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ 				dev_info(smmu->dev, "\t0x%016llx\n",
+ 					 (unsigned long long)evt[i]);
  
-+static struct net *macvtap_link_net(const struct net_device *dev)
-+{
-+	return dev_net(macvlan_dev_real_dev(dev));
-+}
-+
- static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
- 	.kind		= "macvtap",
- 	.setup		= macvtap_setup,
- 	.newlink	= macvtap_newlink,
- 	.dellink	= macvtap_dellink,
-+	.get_link_net	= macvtap_link_net,
- 	.priv_size      = sizeof(struct macvtap_dev),
- };
++			cond_resched();
+ 		}
  
+ 		/*
 -- 
 2.35.1
 
