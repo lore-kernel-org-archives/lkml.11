@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B3DBC4707F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8070C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345431AbiDROTL (ORCPT
+        id S1345600AbiDROTU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57330 "EHLO
+        Mon, 18 Apr 2022 10:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244897AbiDRN7p (ORCPT
+        with ESMTP id S244676AbiDROAC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:59:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46CF22BB21;
-        Mon, 18 Apr 2022 06:08:55 -0700 (PDT)
+        Mon, 18 Apr 2022 10:00:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A692C114;
+        Mon, 18 Apr 2022 06:09:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7CD460EFC;
-        Mon, 18 Apr 2022 13:08:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D94DDC385A8;
-        Mon, 18 Apr 2022 13:08:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DC8360F9C;
+        Mon, 18 Apr 2022 13:08:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D70DC385C8;
+        Mon, 18 Apr 2022 13:08:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287324;
-        bh=yd/PIrVhYLRbTH3zwdEWESN2Dz9/FjzPd4jm3AGP9OY=;
+        s=korg; t=1650287308;
+        bh=XIPSXsMqXkgYWJscQGEr7EjgGojV+9HwO2YU2rmqgy4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NszjQplTwX0SQMZwU8Ir1VmLNZCxSS0S2q6z9wdw8tRmoSzFyafbdQwii87FkhFg4
-         HSbMWreHgV5ykEMUdFiI+2xjTK0FK+c0xlWxsfc1ql4jSCHFUrhIai/qUSTJ3PNk/J
-         uidg9NorgkQCEQMmSCVJakbvL9sDPsPMcjXODkvo=
+        b=KiWWd1b+XoUOXGNlEKl/CFgB0gT9aOrqYTOqWU5GD1o2hqGQhAqxtP9rZi9E2C1sM
+         yU/vWUCmYNNXkUIpwTr/p6tohJw3/8kMFFSPpTKOf4RUys1x9vg80m5RMk0FaQzNOH
+         5u9le01lTjh85elX8RvIs5FBiS9IEJ/19VkcBZa0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Sven Auhagen <sven.auhagen@voleatech.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 085/218] scsi: pm8001: Fix command initialization in pm8001_chip_ssp_tm_req()
-Date:   Mon, 18 Apr 2022 14:12:31 +0200
-Message-Id: <20220418121202.039752125@linuxfoundation.org>
+Subject: [PATCH 4.9 119/218] netfilter: nf_conntrack_tcp: preserve liberal flag in tcp options
+Date:   Mon, 18 Apr 2022 14:13:05 +0200
+Message-Id: <20220418121202.998475889@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -51,41 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit cd2268a180117aa8ebb23e090ba204324b2d0e93 ]
+[ Upstream commit f2dd495a8d589371289981d5ed33e6873df94ecc ]
 
-The ds_ads_m field of struct ssp_ini_tm_start_req has the type __le32.
-Assigning a value to it should thus use cpu_to_le32(). This fixes the
-sparse warning:
+Do not reset IP_CT_TCP_FLAG_BE_LIBERAL flag in out-of-sync scenarios
+coming before the TCP window tracking, otherwise such connections will
+fail in the window check.
 
-warning: incorrect type in assignment (different base types)
-   expected restricted __le32 [addressable] [assigned] [usertype] ds_ads_m
-   got int
+Update tcp_options() to leave this flag in place and add a new helper
+function to reset the tcp window state.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-7-damien.lemoal@opensource.wdc.com
-Fixes: dbf9bfe61571 ("[SCSI] pm8001: add SAS/SATA HBA driver")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Based on patch from Sven Auhagen.
+
+Fixes: c4832c7bbc3f ("netfilter: nf_ct_tcp: improve out-of-sync situation in TCP tracking")
+Tested-by: Sven Auhagen <sven.auhagen@voleatech.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/nf_conntrack_proto_tcp.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 853dba857239..2889717a770e 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -4718,7 +4718,7 @@ int pm8001_chip_ssp_tm_req(struct pm8001_hba_info *pm8001_ha,
- 	memcpy(sspTMCmd.lun, task->ssp_task.LUN, 8);
- 	sspTMCmd.tag = cpu_to_le32(ccb->ccb_tag);
- 	if (pm8001_ha->chip_id != chip_8001)
--		sspTMCmd.ds_ads_m = 0x08;
-+		sspTMCmd.ds_ads_m = cpu_to_le32(0x08);
- 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
- 	ret = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sspTMCmd, 0);
- 	return ret;
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
+index 69f687740c76..9e9ce570bb9e 100644
+--- a/net/netfilter/nf_conntrack_proto_tcp.c
++++ b/net/netfilter/nf_conntrack_proto_tcp.c
+@@ -390,8 +390,8 @@ static void tcp_options(const struct sk_buff *skb,
+ 				 length, buff);
+ 	BUG_ON(ptr == NULL);
+ 
+-	state->td_scale =
+-	state->flags = 0;
++	state->td_scale = 0;
++	state->flags &= IP_CT_TCP_FLAG_BE_LIBERAL;
+ 
+ 	while (length > 0) {
+ 		int opcode=*ptr++;
+@@ -806,6 +806,16 @@ static unsigned int *tcp_get_timeouts(struct net *net)
+ 	return tcp_pernet(net)->timeouts;
+ }
+ 
++static void nf_ct_tcp_state_reset(struct ip_ct_tcp_state *state)
++{
++	state->td_end		= 0;
++	state->td_maxend	= 0;
++	state->td_maxwin	= 0;
++	state->td_maxack	= 0;
++	state->td_scale		= 0;
++	state->flags		&= IP_CT_TCP_FLAG_BE_LIBERAL;
++}
++
+ /* Returns verdict for packet, or -1 for invalid. */
+ static int tcp_packet(struct nf_conn *ct,
+ 		      const struct sk_buff *skb,
+@@ -907,8 +917,7 @@ static int tcp_packet(struct nf_conn *ct,
+ 			ct->proto.tcp.last_flags &= ~IP_CT_EXP_CHALLENGE_ACK;
+ 			ct->proto.tcp.seen[ct->proto.tcp.last_dir].flags =
+ 				ct->proto.tcp.last_flags;
+-			memset(&ct->proto.tcp.seen[dir], 0,
+-			       sizeof(struct ip_ct_tcp_state));
++			nf_ct_tcp_state_reset(&ct->proto.tcp.seen[dir]);
+ 			break;
+ 		}
+ 		ct->proto.tcp.last_index = index;
 -- 
 2.34.1
 
