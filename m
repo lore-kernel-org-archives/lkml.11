@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A9AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E108EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:18:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245725AbiDROVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:21:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58380 "EHLO
+        id S244676AbiDROVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343491AbiDROED (ORCPT
+        with ESMTP id S1343524AbiDROEL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:04:03 -0400
+        Mon, 18 Apr 2022 10:04:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0503D344EE;
-        Mon, 18 Apr 2022 06:09:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17BF2344F5;
+        Mon, 18 Apr 2022 06:09:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F17DB60F6F;
-        Mon, 18 Apr 2022 13:09:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2FDEC385A1;
-        Mon, 18 Apr 2022 13:09:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3589460F6C;
+        Mon, 18 Apr 2022 13:09:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26974C385A1;
+        Mon, 18 Apr 2022 13:09:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287347;
-        bh=KCdXw1ny4TNy0K+BLzYJ0gRmwDx43DnoQ1MrFXnm9PI=;
+        s=korg; t=1650287353;
+        bh=8po8f1Xl0zaNUcaxPtfHw7BuiUII+Dnnc34P38OXYKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UQABlodsZqePMUHUgeJ7GA0Vt9cUgGxK2HDoXI0AurDb9FylT5ak9F9lSD1GfxQK8
-         pmtY1JQIPZ28AQ0F8LPBIfn3JBEJ9oUm48WcCxA1ypz3RfcG8WiHonA91VfE3UV6e3
-         k5xoVfhzatKvacckz4Lz+n02ptFxvb9Yb7qQygjM=
+        b=c3TmkHDuPPEL7M1a8cumnLcEuaWHONecbejZIj1X3y6aYsa7qIejmCprCJaXSonf0
+         g2TTIkyuQD/7bEMe9O9C+G0d0TjH++rp00RUWWaNZxYSCJa2XMT4tmH2ymjwknM/yf
+         KuFGjGe2SwV1jVlQ4KDe+YYcJkAZnCZ1AHMnjMi8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evgeny Novikov <novikov@ispras.ru>,
-        Kirill Shilimanov <kirill.shilimanov@huawei.com>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Yang Guang <yang.guang5@zte.com.cn>,
         Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 134/218] video: fbdev: w100fb: Reset global state
-Date:   Mon, 18 Apr 2022 14:13:20 +0200
-Message-Id: <20220418121203.422202900@linuxfoundation.org>
+Subject: [PATCH 4.9 136/218] video: fbdev: omapfb: acx565akm: replace snprintf with sysfs_emit
+Date:   Mon, 18 Apr 2022 14:13:22 +0200
+Message-Id: <20220418121203.479246633@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -49,66 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgeny Novikov <novikov@ispras.ru>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit 8738ddcac644964ae128ccd3d80d48773c8d528e ]
+[ Upstream commit 24565bc4115961db7ee64fcc7ad2a7437c0d0a49 ]
 
-w100fb_probe() did not reset the global state to its initial state. This
-can result in invocation of iounmap() even when there was not the
-appropriate successful call of ioremap(). For instance, this may be the
-case if first probe fails after two successful ioremap() while second
-probe fails when first ioremap() fails. The similar issue is with
-w100fb_remove(). The patch fixes both bugs.
+coccinelle report:
+./drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c:
+479:9-17: WARNING: use scnprintf or sprintf
 
-Found by Linux Driver Verification project (linuxtesting.org).
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
 
-Signed-off-by: Evgeny Novikov <novikov@ispras.ru>
-Co-developed-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
-Signed-off-by: Kirill Shilimanov <kirill.shilimanov@huawei.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
 Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/w100fb.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ .../video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c    | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/w100fb.c b/drivers/video/fbdev/w100fb.c
-index 7bd4c27cfb14..b3b17b6adb7e 100644
---- a/drivers/video/fbdev/w100fb.c
-+++ b/drivers/video/fbdev/w100fb.c
-@@ -772,12 +772,18 @@ int w100fb_probe(struct platform_device *pdev)
- 		fb_dealloc_cmap(&info->cmap);
- 		kfree(info->pseudo_palette);
- 	}
--	if (remapped_fbuf != NULL)
-+	if (remapped_fbuf != NULL) {
- 		iounmap(remapped_fbuf);
--	if (remapped_regs != NULL)
-+		remapped_fbuf = NULL;
-+	}
-+	if (remapped_regs != NULL) {
- 		iounmap(remapped_regs);
--	if (remapped_base != NULL)
-+		remapped_regs = NULL;
-+	}
-+	if (remapped_base != NULL) {
- 		iounmap(remapped_base);
-+		remapped_base = NULL;
-+	}
- 	if (info)
- 		framebuffer_release(info);
- 	return err;
-@@ -802,8 +808,11 @@ static int w100fb_remove(struct platform_device *pdev)
- 	fb_dealloc_cmap(&info->cmap);
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
+index 468560a6daae..0a1a82c68680 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
+@@ -487,7 +487,7 @@ static ssize_t show_cabc_available_modes(struct device *dev,
+ 	int i;
  
- 	iounmap(remapped_base);
-+	remapped_base = NULL;
- 	iounmap(remapped_regs);
-+	remapped_regs = NULL;
- 	iounmap(remapped_fbuf);
-+	remapped_fbuf = NULL;
+ 	if (!ddata->has_cabc)
+-		return snprintf(buf, PAGE_SIZE, "%s\n", cabc_modes[0]);
++		return sysfs_emit(buf, "%s\n", cabc_modes[0]);
  
- 	framebuffer_release(info);
- 
+ 	for (i = 0, len = 0;
+ 	     len < PAGE_SIZE && i < ARRAY_SIZE(cabc_modes); i++)
 -- 
 2.34.1
 
