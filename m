@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B43C3525B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71EEDC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242357AbiDRNSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59870 "EHLO
+        id S242289AbiDRNSc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:18:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242513AbiDRNAB (ORCPT
+        with ESMTP id S240750AbiDRM5r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:00:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE393134B;
-        Mon, 18 Apr 2022 05:41:29 -0700 (PDT)
+        Mon, 18 Apr 2022 08:57:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF9F237C3;
+        Mon, 18 Apr 2022 05:38:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D5DB61218;
-        Mon, 18 Apr 2022 12:41:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E9A8C385A1;
-        Mon, 18 Apr 2022 12:41:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFF3DB80EDC;
+        Mon, 18 Apr 2022 12:38:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38A76C385AB;
+        Mon, 18 Apr 2022 12:38:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285688;
-        bh=LQPRrzsPuk3UiGHZPzBJ3WvbKAYxjT0D/NxWnxfFlxM=;
+        s=korg; t=1650285487;
+        bh=RdZeJRexRc5cYyhfz/1ZZRz8dp2B8bRR03bjXvJaztI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XAIqGrCMoOsZ+8Ka+BQyhBE7fqVRr1L/sEn3ANbAp9zjDtlIKBsvQPbJpIuHyK2zS
-         TbtNXxT3GZVNfi97kq+AyzSdAMyuYTkxPMSENWH4W+8voaep7vZ8VElC57yiPNyi4D
-         LFEk+fNOKdsLtjh8nIWv+QJqg6fnTj59tPvhCDCU=
+        b=isiHAfljSsERzfcVnsNLvxYBU6bnfZUeN85ag2pRAV2f1xPX+0+xr2u47xGWyVa3f
+         tqg7NoFQzZ9pCvQMdiwggGybOYWangL5j8+83lTr0ruMVCUvLGCtZxk48WgiIis5Xr
+         +wj2DPUK/2OVqIHQzhlCm+8FnEkUdaPZeevqQaCA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.10 091/105] dm integrity: fix memory corruption when tag_size is less than digest size
-Date:   Mon, 18 Apr 2022 14:13:33 +0200
-Message-Id: <20220418121149.218998572@linuxfoundation.org>
+        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 032/105] scsi: iscsi: Move iscsi_ep_disconnect()
+Date:   Mon, 18 Apr 2022 14:12:34 +0200
+Message-Id: <20220418121147.292355847@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -48,53 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Mike Christie <michael.christie@oracle.com>
 
-commit 08c1af8f1c13bbf210f1760132f4df24d0ed46d6 upstream.
+[ Upstream commit c34f95e98d8fb750eefd4f3fe58b4f8b5e89253b ]
 
-It is possible to set up dm-integrity in such a way that the
-"tag_size" parameter is less than the actual digest size. In this
-situation, a part of the digest beyond tag_size is ignored.
+This patch moves iscsi_ep_disconnect() so it can be called earlier in the
+next patch.
 
-In this case, dm-integrity would write beyond the end of the
-ic->recalc_tags array and corrupt memory. The corruption happened in
-integrity_recalc->integrity_sector_checksum->crypto_shash_final.
-
-Fix this corruption by increasing the tags array so that it has enough
-padding at the end to accomodate the loop in integrity_recalc() being
-able to write a full digest size for the last member of the tags
-array.
-
-Cc: stable@vger.kernel.org # v4.19+
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220408001314.5014-2-michael.christie@oracle.com
+Tested-by: Manish Rangankar <mrangankar@marvell.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Reviewed-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-integrity.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/scsi/scsi_transport_iscsi.c | 38 ++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
---- a/drivers/md/dm-integrity.c
-+++ b/drivers/md/dm-integrity.c
-@@ -4232,6 +4232,7 @@ try_smaller_buffer:
- 	}
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index 7246f7b2ff03..8f6dc391356d 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -2239,6 +2239,25 @@ static void iscsi_stop_conn(struct iscsi_cls_conn *conn, int flag)
+ 	ISCSI_DBG_TRANS_CONN(conn, "Stopping conn done.\n");
+ }
  
- 	if (ic->internal_hash) {
-+		size_t recalc_tags_size;
- 		ic->recalc_wq = alloc_workqueue("dm-integrity-recalc", WQ_MEM_RECLAIM, 1);
- 		if (!ic->recalc_wq ) {
- 			ti->error = "Cannot allocate workqueue";
-@@ -4245,8 +4246,10 @@ try_smaller_buffer:
- 			r = -ENOMEM;
- 			goto bad;
- 		}
--		ic->recalc_tags = kvmalloc_array(RECALC_SECTORS >> ic->sb->log2_sectors_per_block,
--						 ic->tag_size, GFP_KERNEL);
-+		recalc_tags_size = (RECALC_SECTORS >> ic->sb->log2_sectors_per_block) * ic->tag_size;
-+		if (crypto_shash_digestsize(ic->internal_hash) > ic->tag_size)
-+			recalc_tags_size += crypto_shash_digestsize(ic->internal_hash) - ic->tag_size;
-+		ic->recalc_tags = kvmalloc(recalc_tags_size, GFP_KERNEL);
- 		if (!ic->recalc_tags) {
- 			ti->error = "Cannot allocate tags for recalculating";
- 			r = -ENOMEM;
++static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
++{
++	struct iscsi_cls_session *session = iscsi_conn_to_session(conn);
++	struct iscsi_endpoint *ep;
++
++	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep.\n");
++	conn->state = ISCSI_CONN_FAILED;
++
++	if (!conn->ep || !session->transport->ep_disconnect)
++		return;
++
++	ep = conn->ep;
++	conn->ep = NULL;
++
++	session->transport->unbind_conn(conn, is_active);
++	session->transport->ep_disconnect(ep);
++	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
++}
++
+ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 			      struct iscsi_uevent *ev)
+ {
+@@ -2279,25 +2298,6 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 	return 0;
+ }
+ 
+-static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
+-{
+-	struct iscsi_cls_session *session = iscsi_conn_to_session(conn);
+-	struct iscsi_endpoint *ep;
+-
+-	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep.\n");
+-	conn->state = ISCSI_CONN_FAILED;
+-
+-	if (!conn->ep || !session->transport->ep_disconnect)
+-		return;
+-
+-	ep = conn->ep;
+-	conn->ep = NULL;
+-
+-	session->transport->unbind_conn(conn, is_active);
+-	session->transport->ep_disconnect(ep);
+-	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
+-}
+-
+ static void iscsi_cleanup_conn_work_fn(struct work_struct *work)
+ {
+ 	struct iscsi_cls_conn *conn = container_of(work, struct iscsi_cls_conn,
+-- 
+2.35.1
+
 
 
