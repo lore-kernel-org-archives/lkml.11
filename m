@@ -2,144 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6649C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C706C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:29:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244141AbiDRPbx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:31:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38528 "EHLO
+        id S244172AbiDRPcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242574AbiDRPav (ORCPT
+        with ESMTP id S1344940AbiDRPbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:30:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635013467A;
-        Mon, 18 Apr 2022 07:40:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAD0660FA4;
-        Mon, 18 Apr 2022 14:39:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D08C4C385A1;
-        Mon, 18 Apr 2022 14:39:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650292799;
-        bh=lVGjQiNeitfHX6Iw3+yTxPJF2qVLbXbZLtivn9dL8HI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Z/3j0DiSUf+Ao6nkd41yapgoBbFIJGGLFAkGZWMBukANcXiLbbN6qlE+ZtGtrK9wi
-         qMUr8KUKJdRbWUxALTxU9dWV+wIkGsBP+7vIOu7mhvF4FHBh7h6hPibFIvyqCNNgyw
-         NbvNm2+zYu0nJ4FKDHHAZkL1QcSbRlgitn7o61GqJMkFkUX8JpxzHMXjPRQNelSPra
-         k9N3GIkbV1JHNmLtCJf7k+g+3qVmToVyc0SFJ0AKzhgTmPZcGiEt711efcEAH4Z9Tt
-         PoUt2rI2OAfO1klT+lQQ4jOohCyWm5HPcIXFoIdd1/FgTbhsj8noS3Zy+AkRfQ65lJ
-         HkYxc7fSmXIXA==
-Date:   Mon, 18 Apr 2022 23:39:54 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCHv2 bpf-next 2/4] fprobe: Resolve symbols with
- kallsyms_lookup_names
-Message-Id: <20220418233954.0b17b003759d54b81e78888b@kernel.org>
-In-Reply-To: <20220418124834.829064-3-jolsa@kernel.org>
-References: <20220418124834.829064-1-jolsa@kernel.org>
-        <20220418124834.829064-3-jolsa@kernel.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Mon, 18 Apr 2022 11:31:21 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62FFA64E5;
+        Mon, 18 Apr 2022 07:44:19 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id u3so18830208wrg.3;
+        Mon, 18 Apr 2022 07:44:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=U/BmndimxRUeGnhgbDunPyQq29ma5+SBfEP8BqMsdFU=;
+        b=ZLnqQm98G+ZMkFQXpLyGZSX7fecCPhjMaUZd1GrcqcdgaP6HD6TuQSlDJ3MYDJ6g7y
+         fjGPUCmal/HdSK6Joq1ZM5PJTvmmrMpUwmh9uy8kZyyOytxq4Fz91uEVLK/alpOxuHD+
+         hhKyyIWY6OZg4IaB8v/e30AnJ50CeXu34skkKWsH66GkjbeNa7HhkbRLzoYi5D01P4Gb
+         G5IiYD7NH9MxyhCdiPXFNJ0pIWeASI4bs01Vyn9WUV+AurAIfp9oIcZHa0DdeIQuZLEK
+         6dv3Howdcd6jr+QU19tVb12STIXLZaknW+Tm6Q12MyVCw1Mz9sQRQ7882olvihPcasSD
+         Z0nQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=U/BmndimxRUeGnhgbDunPyQq29ma5+SBfEP8BqMsdFU=;
+        b=m3i5mmN4b9dxY02Ht33enK1Is16KU5aNWitkytB6ggnDyZo0ZYPCo5YNpCxhXCJB/W
+         jf3A9erR8ysECSKBJXejD04Ju63CeH6nQcuAT6J5J/aYrRC7tvPYr7qsNC3dFfsfx3vT
+         p9HD/llAS2TnAx2sMdJAwWS/FMRCKZ4Jx54JOSlDSSlt7ZsomRqjjSMArd8BshsXAazw
+         z8HrCaBcw8w0TWg4Of+/r9v1gGoVaBVT8Cgn5+2nvEEYnr1GlgdMautntnrOwfSBLzPT
+         1+INy2LQDBJIlP17/QOdxncYbpRJCvQ/ZYkj4T5gYqgtHcXocmvJGX+VLBJWbCoDf26w
+         vyig==
+X-Gm-Message-State: AOAM533azVBcPXhL2mvdSWaw83vpux5ggO8a7FLT/mwdpOcbRamqhSqd
+        luEt3RK7FX9BMQtbm1WQvyc=
+X-Google-Smtp-Source: ABdhPJy6pPOJ+6VhwxYN/pnIzTHx+lgfuKlb7rqnPNvgzd2Y+LUnRXOI5h+9yUgPBmkfSXaE05jaAQ==
+X-Received: by 2002:a05:6000:1ace:b0:203:d465:1a83 with SMTP id i14-20020a0560001ace00b00203d4651a83mr8476727wry.26.1650293058002;
+        Mon, 18 Apr 2022 07:44:18 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id d2-20020a056000186200b0020a7be3f1d2sm9107529wri.53.2022.04.18.07.44.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 07:44:17 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Rob Herring <robh@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH] PCI: versatile: Remove redundant variable retval
+Date:   Mon, 18 Apr 2022 15:44:16 +0100
+Message-Id: <20220418144416.86121-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jiri,
+Variable retval is being assigned a value that is never read, the
+variable is redundant and can be removed.
 
-On Mon, 18 Apr 2022 14:48:32 +0200
-Jiri Olsa <jolsa@kernel.org> wrote:
+Cleans up clang scan build warning:
+drivers/pci/controller/pci-versatile.c:37:10: warning: Although the value
+stored to 'retval' is used in the enclosing expression, the value is never
+actually read from 'retval' [deadcode.DeadStores]
 
-> Using kallsyms_lookup_names to speed up symbols lookup
-> in register_fprobe_syms API.
-> 
-> This requires syms array to be alphabetically sorted.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/pci/controller/pci-versatile.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-This looks good to me. But we may need to update this for changing
-the function name "kallsyms_lookup_names()". I think "ftrace_lookup_sorted_syms()"
-will be better to understand.
-What would you think?
-
-Thank you,
-
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  kernel/trace/fprobe.c | 32 ++++++++++++--------------------
->  1 file changed, 12 insertions(+), 20 deletions(-)
-> 
-> diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
-> index 89d9f994ebb0..6419501a0036 100644
-> --- a/kernel/trace/fprobe.c
-> +++ b/kernel/trace/fprobe.c
-> @@ -85,39 +85,31 @@ static void fprobe_exit_handler(struct rethook_node *rh, void *data,
->  }
->  NOKPROBE_SYMBOL(fprobe_exit_handler);
->  
-> +static int symbols_cmp(const void *a, const void *b)
-> +{
-> +	const char **str_a = (const char **) a;
-> +	const char **str_b = (const char **) b;
-> +
-> +	return strcmp(*str_a, *str_b);
-> +}
-> +
->  /* Convert ftrace location address from symbols */
->  static unsigned long *get_ftrace_locations(const char **syms, int num)
->  {
-> -	unsigned long addr, size;
->  	unsigned long *addrs;
-> -	int i;
->  
->  	/* Convert symbols to symbol address */
->  	addrs = kcalloc(num, sizeof(*addrs), GFP_KERNEL);
->  	if (!addrs)
->  		return ERR_PTR(-ENOMEM);
->  
-> -	for (i = 0; i < num; i++) {
-> -		addr = kallsyms_lookup_name(syms[i]);
-> -		if (!addr)	/* Maybe wrong symbol */
-> -			goto error;
-> -
-> -		/* Convert symbol address to ftrace location. */
-> -		if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
-> -			goto error;
-> +	/* kallsyms_lookup_names expects sorted symbols */
-> +	sort(syms, num, sizeof(*syms), symbols_cmp, NULL);
->  
-> -		addr = ftrace_location_range(addr, addr + size - 1);
-> -		if (!addr) /* No dynamic ftrace there. */
-> -			goto error;
-> +	if (!kallsyms_lookup_names(syms, num, addrs))
-> +		return addrs;
->  
-> -		addrs[i] = addr;
-> -	}
-> -
-> -	return addrs;
-> -
-> -error:
->  	kfree(addrs);
-> -
->  	return ERR_PTR(-ENOENT);
->  }
->  
-> -- 
-> 2.35.1
-> 
-
-
+diff --git a/drivers/pci/controller/pci-versatile.c b/drivers/pci/controller/pci-versatile.c
+index 653d5d0ecf81..7991d334e0f1 100644
+--- a/drivers/pci/controller/pci-versatile.c
++++ b/drivers/pci/controller/pci-versatile.c
+@@ -31,10 +31,9 @@ static u32 pci_slot_ignore;
+ 
+ static int __init versatile_pci_slot_ignore(char *str)
+ {
+-	int retval;
+ 	int slot;
+ 
+-	while ((retval = get_option(&str, &slot))) {
++	while (get_option(&str, &slot)) {
+ 		if ((slot < 0) || (slot > 31))
+ 			pr_err("Illegal slot value: %d\n", slot);
+ 		else
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+2.35.1
+
