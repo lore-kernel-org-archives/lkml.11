@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E0CC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A033EC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240277AbiDRMxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:53:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38290 "EHLO
+        id S240316AbiDRMxN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:53:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240754AbiDRMjg (ORCPT
+        with ESMTP id S240689AbiDRMja (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0613712742;
-        Mon, 18 Apr 2022 05:30:26 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1815412AEF;
+        Mon, 18 Apr 2022 05:30:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB896B80EC0;
-        Mon, 18 Apr 2022 12:30:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0053AC385A8;
-        Mon, 18 Apr 2022 12:30:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB4F760FB6;
+        Mon, 18 Apr 2022 12:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B217FC385A8;
+        Mon, 18 Apr 2022 12:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285023;
-        bh=M6RhXLMmz2S6qMvA0PcSqI2yybCtTdtl2N6YoFyDWec=;
+        s=korg; t=1650285011;
+        bh=qwIOE+fxbtogB1kDF6uX/hsJ/sFljR0FKIcKVrSQsB0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lqIBCs1918IjCGdd1GOtHY86TKcHzec+kDJsqO/O0Jzq2sRM/+3Oy+Y33CSS0IJ8z
-         8pMGxJiVwt0te1AbgP9FB2sXQ1Dw9COdxRttOkUQo9gYSCjcub+30RyJ5OW92o9mpD
-         lR1bBIoJpSDwO1+HOLIvHogZGgypDviFBBAeQsbE=
+        b=od9bJdb8cxdOadKM71PUo6KajvBDmXFkDU+fAz3JTkvJhb0zjn3fL1R5DmZ3wDcA4
+         jak3MPl5paMDEFSAX/Vo0qV5LNhaqoVSENivVfMcnKgdFYBBqDkN5HWyH3IBcSLZ1J
+         B1nRR2B/N1FIF6hSvny3DFSfnlMukERZrMmm2kqY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        syzbot+03e3e228510223dabd34@syzkaller.appspotmail.com,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 081/189] scsi: iscsi: Move iscsi_ep_disconnect()
-Date:   Mon, 18 Apr 2022 14:11:41 +0200
-Message-Id: <20220418121202.807411940@linuxfoundation.org>
+Subject: [PATCH 5.15 078/189] net/smc: Fix NULL pointer dereference in smc_pnet_find_ib()
+Date:   Mon, 18 Apr 2022 14:11:38 +0200
+Message-Id: <20220418121202.722855729@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -51,80 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Christie <michael.christie@oracle.com>
+From: Karsten Graul <kgraul@linux.ibm.com>
 
-[ Upstream commit c34f95e98d8fb750eefd4f3fe58b4f8b5e89253b ]
+[ Upstream commit d22f4f977236f97e01255a80bca2ea93a8094fc8 ]
 
-This patch moves iscsi_ep_disconnect() so it can be called earlier in the
-next patch.
+dev_name() was called with dev.parent as argument but without to
+NULL-check it before.
+Solve this by checking the pointer before the call to dev_name().
 
-Link: https://lore.kernel.org/r/20220408001314.5014-2-michael.christie@oracle.com
-Tested-by: Manish Rangankar <mrangankar@marvell.com>
-Reviewed-by: Lee Duncan <lduncan@suse.com>
-Reviewed-by: Chris Leech <cleech@redhat.com>
-Signed-off-by: Mike Christie <michael.christie@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: af5f60c7e3d5 ("net/smc: allow PCI IDs as ib device names in the pnet table")
+Reported-by: syzbot+03e3e228510223dabd34@syzkaller.appspotmail.com
+Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/scsi_transport_iscsi.c | 38 ++++++++++++++---------------
- 1 file changed, 19 insertions(+), 19 deletions(-)
+ net/smc/smc_pnet.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
-index 554b6f784223..126f6f23bffa 100644
---- a/drivers/scsi/scsi_transport_iscsi.c
-+++ b/drivers/scsi/scsi_transport_iscsi.c
-@@ -2236,6 +2236,25 @@ static void iscsi_stop_conn(struct iscsi_cls_conn *conn, int flag)
- 	ISCSI_DBG_TRANS_CONN(conn, "Stopping conn done.\n");
- }
- 
-+static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
-+{
-+	struct iscsi_cls_session *session = iscsi_conn_to_session(conn);
-+	struct iscsi_endpoint *ep;
-+
-+	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep.\n");
-+	conn->state = ISCSI_CONN_FAILED;
-+
-+	if (!conn->ep || !session->transport->ep_disconnect)
-+		return;
-+
-+	ep = conn->ep;
-+	conn->ep = NULL;
-+
-+	session->transport->unbind_conn(conn, is_active);
-+	session->transport->ep_disconnect(ep);
-+	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
-+}
-+
- static int iscsi_if_stop_conn(struct iscsi_transport *transport,
- 			      struct iscsi_uevent *ev)
- {
-@@ -2276,25 +2295,6 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
- 	return 0;
- }
- 
--static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
--{
--	struct iscsi_cls_session *session = iscsi_conn_to_session(conn);
--	struct iscsi_endpoint *ep;
--
--	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep.\n");
--	conn->state = ISCSI_CONN_FAILED;
--
--	if (!conn->ep || !session->transport->ep_disconnect)
--		return;
--
--	ep = conn->ep;
--	conn->ep = NULL;
--
--	session->transport->unbind_conn(conn, is_active);
--	session->transport->ep_disconnect(ep);
--	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
--}
--
- static void iscsi_cleanup_conn_work_fn(struct work_struct *work)
- {
- 	struct iscsi_cls_conn *conn = container_of(work, struct iscsi_cls_conn,
+diff --git a/net/smc/smc_pnet.c b/net/smc/smc_pnet.c
+index 707615809e5a..79ee0618d919 100644
+--- a/net/smc/smc_pnet.c
++++ b/net/smc/smc_pnet.c
+@@ -310,8 +310,9 @@ static struct smc_ib_device *smc_pnet_find_ib(char *ib_name)
+ 	list_for_each_entry(ibdev, &smc_ib_devices.list, list) {
+ 		if (!strncmp(ibdev->ibdev->name, ib_name,
+ 			     sizeof(ibdev->ibdev->name)) ||
+-		    !strncmp(dev_name(ibdev->ibdev->dev.parent), ib_name,
+-			     IB_DEVICE_NAME_MAX - 1)) {
++		    (ibdev->ibdev->dev.parent &&
++		     !strncmp(dev_name(ibdev->ibdev->dev.parent), ib_name,
++			     IB_DEVICE_NAME_MAX - 1))) {
+ 			goto out;
+ 		}
+ 	}
 -- 
 2.35.1
 
