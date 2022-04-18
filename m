@@ -2,369 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B32C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 22:38:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 22:43:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232713AbiDRWl0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 18:41:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52348 "EHLO
+        id S232342AbiDRWqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 18:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232206AbiDRWk7 (ORCPT
+        with ESMTP id S232199AbiDRWqK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 18:40:59 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D5225C40
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 15:38:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650321494; x=1681857494;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=I7eCMPCkhWxIv3Z41AauAVnTxBnpywemU6ykk5rfWEc=;
-  b=OM/Qi5PjGa4EMBl7xfnYzVOmIUKGx4o6995f+gsbOkhPg7MnwwXX1Woo
-   YOz/N4mSpym1FIjUOu1YUMRpN74aBhbxYI+nPimxkzwA/5L5Rk/HSV8er
-   LDKr4Bz4l0EvChf7rcgtXss/xcyW8TxkuZHr1Y02jRtpDVcQlZeZo2D95
-   dBSAvLHSFzlPqkLXRbAvRbb/DjzFYlcYdtQOamreEeuO3PWeSO4t+OMpW
-   MAnYzsWXxmQRVZWuXarDU2XoQ3H93TnXrKWh//JTdqPPoY5rOYlgTr3o9
-   DMdwPUSBjNZCOtahvyDbCIRE1z0+RcMEVu50N/IJDyfZkNqCXonpod49q
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="263800062"
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="263800062"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 15:38:10 -0700
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="509907127"
-Received: from rhweight-mobl.amr.corp.intel.com (HELO rhweight-mobl.ra.intel.com) ([10.209.35.137])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 15:38:09 -0700
-From:   Russ Weight <russell.h.weight@intel.com>
-To:     mcgrof@kernel.org, rafael@kernel.org, linux-kernel@vger.kernel.org
-Cc:     trix@redhat.com, lgoncalv@redhat.com, yilun.xu@intel.com,
-        hao.wu@intel.com, matthew.gerlach@linux.intel.com,
-        basheer.ahmed.muddebihal@intel.com, tianfei.zhang@intel.com,
-        Russ Weight <russell.h.weight@intel.com>
-Subject: [PATCH v3 5/8] firmware_loader: Add sysfs nodes to monitor fw_upload
-Date:   Mon, 18 Apr 2022 15:37:50 -0700
-Message-Id: <20220418223753.639058-6-russell.h.weight@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220418223753.639058-1-russell.h.weight@intel.com>
-References: <20220418223753.639058-1-russell.h.weight@intel.com>
+        Mon, 18 Apr 2022 18:46:10 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80072AC78
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 15:43:29 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id j71so7941627pge.11
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 15:43:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MWGw+I8Rgl/opd43ebHHMAj95ulAD46oHN9fU4DvNpo=;
+        b=RJB5VJlfpWuoUefGZyScMaomY4DRb6B11jXnHXlNxpMYTpsSmgHEIex9Xu8XXZRhMQ
+         KocBLzvItOgf2xNj9jTpA7/rQGDXuV0EG8bmfCAGh7Oy/K3ULN6eF6t+GDCYkML5TWax
+         Ql+z6+pHnoM0e70w8R488SFOiSeaO77l0jXhI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MWGw+I8Rgl/opd43ebHHMAj95ulAD46oHN9fU4DvNpo=;
+        b=ML93bT1qqNQZipDMoAcJ3CoTW6zOCbrWWCTL9x4pGsOl8LPCcWGY2B3fcpl11RLmfd
+         S5GIgqee96YZwc9736qMu1/K4pqUOu8iRzVUhfo574M5bCTKgqwmoDkvBi1K93f4qf3r
+         Wtc3h7z9QVz2Jue0D58NcHAXv+NTicUrPts5LiITNnNWbTHdiy0xj+nRgdqovlJr1ECo
+         MgltzEd3FkAvWF9ibYzQfV2xZbOGLUmZwVt8MKlFrqKAxg2IuPOWTOxKB1rQ/2wCnjx8
+         O//8z7t72IpxLPcqblEfrmkEp7/xg25yw9rMg81wxZMVXr0fg0u6VZmW883wLcbIOHMI
+         piKg==
+X-Gm-Message-State: AOAM5308hkHF1cUlZFy0I50qRnckfo+r90fYJLf3pH6CgM7VFTgD5C8d
+        9qwSDDfb+GaH2/qjP9kCS/Hkuw==
+X-Google-Smtp-Source: ABdhPJzCwRyTVg95a0VNni8DDkvimLaSN54/K64RZIVo/TLCFqUrkHEvTzI8UPMiQhfcOb3Sebf+WQ==
+X-Received: by 2002:a63:5013:0:b0:399:5816:fd0d with SMTP id e19-20020a635013000000b003995816fd0dmr11795301pgb.68.1650321809394;
+        Mon, 18 Apr 2022 15:43:29 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:6b32:a0a5:ec32:c287])
+        by smtp.gmail.com with UTF8SMTPSA id e13-20020a63370d000000b003810782e0cdsm14078821pga.56.2022.04.18.15.43.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 15:43:28 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 15:43:27 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>, linux-raid@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Song Liu <song@kernel.org>,
+        linux-security-module@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>, dm-devel@redhat.com
+Subject: Re: [PATCH 0/3] LoadPin: Enable loading from trusted dm-verity
+ devices
+Message-ID: <Yl3pj72hM/Bo+Kf5@google.com>
+References: <20220418211559.3832724-1-mka@chromium.org>
+ <202204181512.DA0C0C6EBD@keescook>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <202204181512.DA0C0C6EBD@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add additional sysfs nodes to monitor the transfer of firmware upload data
-to the target device:
+Hi Kees,
 
-cancel: Write 1 to cancel the data transfer
-error: Display error status for a failed firmware upload
-remaining_size: Display the remaining amount of data to be transferred
-status: Display the progress of the firmware upload
+On Mon, Apr 18, 2022 at 03:14:14PM -0700, Kees Cook wrote:
+> [oops, resending to actual CC list]
+> 
+> On Mon, Apr 18, 2022 at 02:15:56PM -0700, Matthias Kaehlcke wrote:
+> > This series extends LoadPin to allow loading of kernel files
+> > from trusted dm-verity devices. It adds the concept of
+> > trusted verity devices to LoadPin. Userspace can use the
+> > new systl file 'loadpin/trusted_verity_root_digests' to
+> > provide LoadPin with a list of root digests from dm-verity
+> > devices that LoadPin should consider as trusted. When a
+> > kernel file is read LoadPin first checks (as usual) whether
+> > the file is located on the pinned root, if so the file can
+> > be loaded. Otherwise, if the verity extension is enabled,
+> > LoadPin determines whether the file is located on a verity
+> > backed device and whether the root digest of that device
+> > is in the list of trusted digests. The file can be loaded
+> > if the verity device has a trusted root digest.
+> > 
+> > The list of trusted root digests can only be written once
+> > (typically at boot time), to limit the possiblity of
+> > attackers setting up rogue verity devices and marking them
+> > as trusted.
 
-Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
-Signed-off-by: Russ Weight <russell.h.weight@intel.com>
----
-v1:
-  - Adapted to enums and filename changes. Otherwise no changes.
-v2:
-  - Updated documentation Date and KernelVersion fields to July 2022
-    and 5.19.
-v3:
-  - Added Reviewed-by tag
-  - Added additional documentation text regarding progress codes
----
- .../ABI/testing/sysfs-class-firmware          |  45 +++++++
- .../driver-api/firmware/fw_upload.rst         |  23 +++-
- drivers/base/firmware_loader/sysfs.c          |   9 ++
- drivers/base/firmware_loader/sysfs_upload.c   | 121 ++++++++++++++++++
- drivers/base/firmware_loader/sysfs_upload.h   |   5 +
- 5 files changed, 201 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-class-firmware b/Documentation/ABI/testing/sysfs-class-firmware
-index 18336c23b70d..978d3d500400 100644
---- a/Documentation/ABI/testing/sysfs-class-firmware
-+++ b/Documentation/ABI/testing/sysfs-class-firmware
-@@ -10,6 +10,30 @@ Description:	The data sysfs file is used for firmware-fallback and for
- 		signal the lower-level driver that the firmware data is
- 		available.
- 
-+What: 		/sys/class/firmware/.../cancel
-+Date:		July 2022
-+KernelVersion:	5.19
-+Contact:	Russ Weight <russell.h.weight@intel.com>
-+Description:	Write-only. For firmware uploads, write a "1" to this file to
-+		request that the transfer of firmware data to the lower-level
-+		device be canceled. This request will be rejected (EBUSY) if
-+		the update cannot be canceled (e.g. a FLASH write is in
-+		progress) or (ENODEV) if there is no firmware update in progress.
-+
-+What: 		/sys/class/firmware/.../error
-+Date:		July 2022
-+KernelVersion:	5.19
-+Contact:	Russ Weight <russell.h.weight@intel.com>
-+Description:	Read-only. Returns a string describing a failed firmware
-+		upload. This string will be in the form of <STATUS>:<ERROR>,
-+		where <STATUS> will be one of the status strings described
-+		for the status sysfs file and <ERROR> will be one of the
-+		following: "hw-error", "timeout", "user-abort", "device-busy",
-+		"invalid-file-size", "read-write-error", "flash-wearout". The
-+		error sysfs file is only meaningful when the current firmware
-+		upload status is "idle". If this file is read while a firmware
-+		transfer is in progress, then the read will fail with EBUSY.
-+
- What: 		/sys/class/firmware/.../loading
- Date:		July 2022
- KernelVersion:	5.19
-@@ -22,6 +46,27 @@ Description:	The loading sysfs file is used for both firmware-fallback and
- 		uploads, the zero value also triggers the transfer of the
- 		firmware data to the lower-level device driver.
- 
-+What: 		/sys/class/firmware/.../remaining_size
-+Date:		July 2022
-+KernelVersion:	5.19
-+Contact:	Russ Weight <russell.h.weight@intel.com>
-+Description:	Read-only. For firmware upload, this file contains the size
-+		of the firmware data that remains to be transferred to the
-+		lower-level device driver. The size value is initialized to
-+		the full size of the firmware image that was previously
-+		written to the data sysfs file. This value is periodically
-+		updated during the "transferring" phase of the firmware
-+		upload.
-+		Format: "%u".
-+
-+What: 		/sys/class/firmware/.../status
-+Date:		July 2022
-+KernelVersion:	5.19
-+Contact:	Russ Weight <russell.h.weight@intel.com>
-+Description:	Read-only. Returns a string describing the current status of
-+		a firmware upload. The string will be one of the following:
-+		idle, "receiving", "preparing", "transferring", "programming".
-+
- What: 		/sys/class/firmware/.../timeout
- Date:		July 2022
- KernelVersion:	5.19
-diff --git a/Documentation/driver-api/firmware/fw_upload.rst b/Documentation/driver-api/firmware/fw_upload.rst
-index afbd8baca0d7..76922591e446 100644
---- a/Documentation/driver-api/firmware/fw_upload.rst
-+++ b/Documentation/driver-api/firmware/fw_upload.rst
-@@ -9,7 +9,8 @@ persistent sysfs nodes to enable users to initiate firmware updates for
- that device.  It is the responsibility of the device driver and/or the
- device itself to perform any validation on the data received. Firmware
- upload uses the same *loading* and *data* sysfs files described in the
--documentation for firmware fallback.
-+documentation for firmware fallback. It also adds additional sysfs files
-+to provide status on the transfer of the firmware image to the device.
- 
- Register for firmware upload
- ============================
-@@ -93,7 +94,9 @@ Firmware Upload Ops
- 
- Firmware Upload Progress Codes
- ------------------------------
--The following progress codes are used internally by the firmware loader:
-+The following progress codes are used internally by the firmware loader.
-+Corresponding strings are reported through the status sysfs node that
-+is described below and are documented in the ABI documentation.
- 
- .. kernel-doc:: drivers/base/firmware_loader/sysfs_upload.h
-    :identifiers: fw_upload_prog
-@@ -105,3 +108,19 @@ failure:
- 
- .. kernel-doc:: include/linux/firmware.h
-    :identifiers: fw_upload_err
-+
-+Sysfs Attributes
-+================
-+
-+In addition to the *loading* and *data* sysfs files, there are additional
-+sysfs files to monitor the status of the data transfer to the target
-+device and to determine the final pass/fail status of the transfer.
-+Depending on the device and the size of the firmware image, a firmware
-+update could take milliseconds or minutes.
-+
-+The additional sysfs files are:
-+
-+* status - provides an indication of the progress of a firmware update
-+* error - provides error information for a failed firmware update
-+* remaining_size - tracks the data transfer portion of an update
-+* cancel - echo 1 to this file to cancel the update
-diff --git a/drivers/base/firmware_loader/sysfs.c b/drivers/base/firmware_loader/sysfs.c
-index 4409e33b7f35..9cedba5f5f46 100644
---- a/drivers/base/firmware_loader/sysfs.c
-+++ b/drivers/base/firmware_loader/sysfs.c
-@@ -369,6 +369,12 @@ static struct bin_attribute firmware_attr_data = {
- 
- static struct attribute *fw_dev_attrs[] = {
- 	&dev_attr_loading.attr,
-+#ifdef CONFIG_FW_UPLOAD
-+	&dev_attr_cancel.attr,
-+	&dev_attr_status.attr,
-+	&dev_attr_error.attr,
-+	&dev_attr_remaining_size.attr,
-+#endif
- 	NULL
- };
- 
-@@ -380,6 +386,9 @@ static struct bin_attribute *fw_dev_bin_attrs[] = {
- static const struct attribute_group fw_dev_attr_group = {
- 	.attrs = fw_dev_attrs,
- 	.bin_attrs = fw_dev_bin_attrs,
-+#ifdef CONFIG_FW_UPLOAD
-+	.is_visible = fw_upload_is_visible,
-+#endif
- };
- 
- static const struct attribute_group *fw_dev_attr_groups[] = {
-diff --git a/drivers/base/firmware_loader/sysfs_upload.c b/drivers/base/firmware_loader/sysfs_upload.c
-index 0a6450d1974f..c504dae00dbe 100644
---- a/drivers/base/firmware_loader/sysfs_upload.c
-+++ b/drivers/base/firmware_loader/sysfs_upload.c
-@@ -11,6 +11,127 @@
-  * Support for user-space to initiate a firmware upload to a device.
-  */
- 
-+static const char * const fw_upload_prog_str[] = {
-+	[FW_UPLOAD_PROG_IDLE]	      = "idle",
-+	[FW_UPLOAD_PROG_RECEIVING]    = "receiving",
-+	[FW_UPLOAD_PROG_PREPARING]    = "preparing",
-+	[FW_UPLOAD_PROG_TRANSFERRING] = "transferring",
-+	[FW_UPLOAD_PROG_PROGRAMMING]  = "programming"
-+};
-+
-+static const char * const fw_upload_err_str[] = {
-+	[FW_UPLOAD_ERR_NONE]	     = "none",
-+	[FW_UPLOAD_ERR_HW_ERROR]     = "hw-error",
-+	[FW_UPLOAD_ERR_TIMEOUT]	     = "timeout",
-+	[FW_UPLOAD_ERR_CANCELED]     = "user-abort",
-+	[FW_UPLOAD_ERR_BUSY]	     = "device-busy",
-+	[FW_UPLOAD_ERR_INVALID_SIZE] = "invalid-file-size",
-+	[FW_UPLOAD_ERR_RW_ERROR]     = "read-write-error",
-+	[FW_UPLOAD_ERR_WEAROUT]	     = "flash-wearout",
-+};
-+
-+static const char *fw_upload_progress(struct device *dev,
-+				      enum fw_upload_prog prog)
-+{
-+	const char *status = "unknown-status";
-+
-+	if (prog < FW_UPLOAD_PROG_MAX)
-+		status = fw_upload_prog_str[prog];
-+	else
-+		dev_err(dev, "Invalid status during secure update: %d\n", prog);
-+
-+	return status;
-+}
-+
-+static const char *fw_upload_error(struct device *dev,
-+				   enum fw_upload_err err_code)
-+{
-+	const char *error = "unknown-error";
-+
-+	if (err_code < FW_UPLOAD_ERR_MAX)
-+		error = fw_upload_err_str[err_code];
-+	else
-+		dev_err(dev, "Invalid error code during secure update: %d\n",
-+			err_code);
-+
-+	return error;
-+}
-+
-+static ssize_t
-+status_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	struct fw_upload_priv *fwlp = to_fw_sysfs(dev)->fw_upload_priv;
-+
-+	return sysfs_emit(buf, "%s\n", fw_upload_progress(dev, fwlp->progress));
-+}
-+DEVICE_ATTR_RO(status);
-+
-+static ssize_t
-+error_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	struct fw_upload_priv *fwlp = to_fw_sysfs(dev)->fw_upload_priv;
-+	int ret;
-+
-+	mutex_lock(&fwlp->lock);
-+
-+	if (fwlp->progress != FW_UPLOAD_PROG_IDLE)
-+		ret = -EBUSY;
-+	else if (!fwlp->err_code)
-+		ret = 0;
-+	else
-+		ret = sysfs_emit(buf, "%s:%s\n",
-+				 fw_upload_progress(dev, fwlp->err_progress),
-+				 fw_upload_error(dev, fwlp->err_code));
-+
-+	mutex_unlock(&fwlp->lock);
-+
-+	return ret;
-+}
-+DEVICE_ATTR_RO(error);
-+
-+static ssize_t cancel_store(struct device *dev, struct device_attribute *attr,
-+			    const char *buf, size_t count)
-+{
-+	struct fw_upload_priv *fwlp = to_fw_sysfs(dev)->fw_upload_priv;
-+	int ret = count;
-+	bool cancel;
-+
-+	if (kstrtobool(buf, &cancel) || !cancel)
-+		return -EINVAL;
-+
-+	mutex_lock(&fwlp->lock);
-+	if (fwlp->progress == FW_UPLOAD_PROG_IDLE)
-+		ret = -ENODEV;
-+
-+	fwlp->ops->cancel(fwlp->fw_upload);
-+	mutex_unlock(&fwlp->lock);
-+
-+	return ret;
-+}
-+DEVICE_ATTR_WO(cancel);
-+
-+static ssize_t remaining_size_show(struct device *dev,
-+				   struct device_attribute *attr, char *buf)
-+{
-+	struct fw_upload_priv *fwlp = to_fw_sysfs(dev)->fw_upload_priv;
-+
-+	return sysfs_emit(buf, "%u\n", fwlp->remaining_size);
-+}
-+DEVICE_ATTR_RO(remaining_size);
-+
-+umode_t
-+fw_upload_is_visible(struct kobject *kobj, struct attribute *attr, int n)
-+{
-+	static struct fw_sysfs *fw_sysfs;
-+
-+	fw_sysfs = to_fw_sysfs(kobj_to_dev(kobj));
-+
-+	if (fw_sysfs->fw_upload_priv || attr == &dev_attr_loading.attr)
-+		return attr->mode;
-+
-+	return 0;
-+}
-+
- static void fw_upload_update_progress(struct fw_upload_priv *fwlp,
- 				      enum fw_upload_prog new_progress)
- {
-diff --git a/drivers/base/firmware_loader/sysfs_upload.h b/drivers/base/firmware_loader/sysfs_upload.h
-index 18bd4d99f064..9edd47d3f36a 100644
---- a/drivers/base/firmware_loader/sysfs_upload.h
-+++ b/drivers/base/firmware_loader/sysfs_upload.h
-@@ -37,6 +37,11 @@ struct fw_upload_priv {
- };
- 
- #ifdef CONFIG_FW_UPLOAD
-+extern struct device_attribute dev_attr_status;
-+extern struct device_attribute dev_attr_error;
-+extern struct device_attribute dev_attr_cancel;
-+extern struct device_attribute dev_attr_remaining_size;
-+
- int fw_upload_start(struct fw_sysfs *fw_sysfs);
- umode_t fw_upload_is_visible(struct kobject *kobj, struct attribute *attr, int n);
- #else
--- 
-2.25.1
+> Thanks for working all this out! Where does the list of trusted
+> roothashes come from? I assume some chain of trust exists. Is the list
+> maybe already stored on the rootfs?
 
+Yes, at least the content of the list comes from the rootfs. The
+userspace part is still TBD (also pending on the evolution of this
+patchset), having the list pre-formatted in a single file on the
+rootfs should be fine.
+
+> It'd be nice if there was some way to pass the trust chain to LoadPin
+> more directly.
+
+I imagine you envision LoadPin reading the file itself, instead of
+just processing the content. That should be doable. One option would
+be to pass the path of the file with the hashes through the sysctl
+file and use kernel_read_file_from_path() to read it if the path is
+in the pinned root (or maybe even in any trusted file system ;-)
