@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D454C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C1EBC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244285AbiDRNrc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:47:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
+        id S244782AbiDRNsD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:48:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243810AbiDRN3H (ORCPT
+        with ESMTP id S243963AbiDRN3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:29:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32AB72183;
-        Mon, 18 Apr 2022 05:53:53 -0700 (PDT)
+        Mon, 18 Apr 2022 09:29:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A361640916;
+        Mon, 18 Apr 2022 05:54:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8601B80E44;
-        Mon, 18 Apr 2022 12:53:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22286C385A7;
-        Mon, 18 Apr 2022 12:53:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2104FB80E59;
+        Mon, 18 Apr 2022 12:54:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87CD8C385A1;
+        Mon, 18 Apr 2022 12:53:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286430;
-        bh=imPm8s3163js/UbzvT+fhP1EWKFf3vbLroPYzRpbxfQ=;
+        s=korg; t=1650286439;
+        bh=PXwuxQls4lcpJ+LCeJY72pFN8FlRKeiT6Ogjd2vT3l4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ly8JZqrQVoIFgcHyNmbzX8OxLvJegTdCw3AX5AIa67qacl7B/y+MtqMLobP8SpLsj
-         u7H+9asZuzaCppIOnQC1idUKfjBNeZL+B0NsyNAwE0uoQg4duzIHiFbg+oTKZb7abv
-         bLzIeRLDWhxUlr2InY2yP58NHwqEDFXDMCfucjok=
+        b=NyWHBUmW3WSbi857N9pp9pS8mHWDQfyjkKcc/tGs5PcOyPS0Sk4ILf9xTgFKrlT3+
+         yUB2NNwJoHykyzGdhIW5sORlyO6oof9CQ691FfVfeVzZP8gTiEVWYrY+T6tukN7rw9
+         UHYu53k1Uf6IX0zV0uHm8euHpmD+eHhoi2fQJflU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 125/284] af_netlink: Fix shift out of bounds in group mask calculation
-Date:   Mon, 18 Apr 2022 14:11:46 +0200
-Message-Id: <20220418121214.755164993@linuxfoundation.org>
+Subject: [PATCH 4.14 136/284] remoteproc: qcom_wcnss: Add missing of_node_put() in wcnss_alloc_memory_region
+Date:   Mon, 18 Apr 2022 14:11:57 +0200
+Message-Id: <20220418121215.258707966@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,59 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 0caf6d9922192dd1afa8dc2131abfb4df1443b9f ]
+[ Upstream commit 8f90161a66bc3d6b9fe8dde4d9028d20eae1b62a ]
 
-When a netlink message is received, netlink_recvmsg() fills in the address
-of the sender. One of the fields is the 32-bit bitfield nl_groups, which
-carries the multicast group on which the message was received. The least
-significant bit corresponds to group 1, and therefore the highest group
-that the field can represent is 32. Above that, the UB sanitizer flags the
-out-of-bounds shift attempts.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-Which bits end up being set in such case is implementation defined, but
-it's either going to be a wrong non-zero value, or zero, which is at least
-not misleading. Make the latter choice deterministic by always setting to 0
-for higher-numbered multicast groups.
-
-To get information about membership in groups >= 32, userspace is expected
-to use nl_pktinfo control messages[0], which are enabled by NETLINK_PKTINFO
-socket option.
-[0] https://lwn.net/Articles/147608/
-
-The way to trigger this issue is e.g. through monitoring the BRVLAN group:
-
-	# bridge monitor vlan &
-	# ip link add name br type bridge
-
-Which produces the following citation:
-
-	UBSAN: shift-out-of-bounds in net/netlink/af_netlink.c:162:19
-	shift exponent 32 is too large for 32-bit type 'int'
-
-Fixes: f7fa9b10edbb ("[NETLINK]: Support dynamic number of multicast groups per netlink family")
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Link: https://lore.kernel.org/r/2bef6aabf201d1fc16cca139a744700cff9dcb04.1647527635.git.petrm@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: aed361adca9f ("remoteproc: qcom: Introduce WCNSS peripheral image loader")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220308063102.10049-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netlink/af_netlink.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/remoteproc/qcom_wcnss.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 0563b4d34eae..24e8ac2b724e 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -154,6 +154,8 @@ static const struct rhashtable_params netlink_rhashtable_params;
+diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
+index c7686393d505..bc399fb29592 100644
+--- a/drivers/remoteproc/qcom_wcnss.c
++++ b/drivers/remoteproc/qcom_wcnss.c
+@@ -451,6 +451,7 @@ static int wcnss_alloc_memory_region(struct qcom_wcnss *wcnss)
+ 	}
  
- static inline u32 netlink_group_mask(u32 group)
- {
-+	if (group > 32)
-+		return 0;
- 	return group ? 1 << (group - 1) : 0;
- }
+ 	ret = of_address_to_resource(node, 0, &r);
++	of_node_put(node);
+ 	if (ret)
+ 		return ret;
  
 -- 
 2.34.1
