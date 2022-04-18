@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B1B8C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BBB2C3525B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242949AbiDRNXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32982 "EHLO
+        id S242867AbiDRNXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:23:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241573AbiDRNDM (ORCPT
+        with ESMTP id S241594AbiDRNDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:03:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF90833A1A;
-        Mon, 18 Apr 2022 05:43:47 -0700 (PDT)
+        Mon, 18 Apr 2022 09:03:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE3D33A24;
+        Mon, 18 Apr 2022 05:43:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 555DCB80E4E;
-        Mon, 18 Apr 2022 12:43:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AF17C385A7;
-        Mon, 18 Apr 2022 12:43:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F25AB80E44;
+        Mon, 18 Apr 2022 12:43:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C26C385A7;
+        Mon, 18 Apr 2022 12:43:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285825;
-        bh=ubE5cBK1u0KST/FYIMyU80MCab6kYD84Od29l4/064s=;
+        s=korg; t=1650285831;
+        bh=8p+aReAVSXNj6og1QN3uqqCJu5j0sLTXlG5WVaeT6ko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iRNB7H/P4lioids253pLS5tpqq0KmwKcWQVUsMeqhmzaVliZnGqFUI4MiOWum59uY
-         AWkuSSSk8ZJ4Oc1iEseIk4EHrpxSX4UhwPx4B+WyVIw2QuVkhd56SOs9908c7kFIIV
-         k3KcySo8EYUZ/bp0BXcAEqz/ggtNTFT8LqL8oAbw=
+        b=hfnyPoCMgChLuRS5wGXTR1b6RDCCHLLzkEBNunqmal/r2BA0N0bTnbZgBcI/gkdou
+         bWB3MmYZ3MG3hb/hdkIICVHDGFyLul+UDuSbr+ZzU5HCRy8tPVTVjiqHyop1/eyvHk
+         oPV21AGOK/M16kHqhBj65lVixCBwGkTvHiMH1+i8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Frank Li <Frank.li@nxp.com>, Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 36/63] perf/imx_ddr: Fix undefined behavior due to shift overflowing the constant
-Date:   Mon, 18 Apr 2022 14:13:33 +0200
-Message-Id: <20220418121136.656965830@linuxfoundation.org>
+        stable@vger.kernel.org, Patrick Wang <patrick.wang.shcn@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 38/63] mm: kmemleak: take a full lowmem check in kmemleak_*_phys()
+Date:   Mon, 18 Apr 2022 14:13:35 +0200
+Message-Id: <20220418121136.774177839@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -56,56 +50,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Patrick Wang <patrick.wang.shcn@gmail.com>
 
-[ Upstream commit d02b4dd84e1a90f7f1444d027c0289bf355b0d5a ]
+commit 23c2d497de21f25898fbea70aeb292ab8acc8c94 upstream.
 
-Fix:
+The kmemleak_*_phys() apis do not check the address for lowmem's min
+boundary, while the caller may pass an address below lowmem, which will
+trigger an oops:
 
-  In file included from <command-line>:0:0:
-  In function ‘ddr_perf_counter_enable’,
-      inlined from ‘ddr_perf_irq_handler’ at drivers/perf/fsl_imx8_ddr_perf.c:651:2:
-  ././include/linux/compiler_types.h:352:38: error: call to ‘__compiletime_assert_729’ \
-	declared with attribute error: FIELD_PREP: mask is not constant
-    _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-...
+  # echo scan > /sys/kernel/debug/kmemleak
+  Unable to handle kernel paging request at virtual address ff5fffffffe00000
+  Oops [#1]
+  Modules linked in:
+  CPU: 2 PID: 134 Comm: bash Not tainted 5.18.0-rc1-next-20220407 #33
+  Hardware name: riscv-virtio,qemu (DT)
+  epc : scan_block+0x74/0x15c
+   ra : scan_block+0x72/0x15c
+  epc : ffffffff801e5806 ra : ffffffff801e5804 sp : ff200000104abc30
+   gp : ffffffff815cd4e8 tp : ff60000004cfa340 t0 : 0000000000000200
+   t1 : 00aaaaaac23954cc t2 : 00000000000003ff s0 : ff200000104abc90
+   s1 : ffffffff81b0ff28 a0 : 0000000000000000 a1 : ff5fffffffe01000
+   a2 : ffffffff81b0ff28 a3 : 0000000000000002 a4 : 0000000000000001
+   a5 : 0000000000000000 a6 : ff200000104abd7c a7 : 0000000000000005
+   s2 : ff5fffffffe00ff9 s3 : ffffffff815cd998 s4 : ffffffff815d0e90
+   s5 : ffffffff81b0ff28 s6 : 0000000000000020 s7 : ffffffff815d0eb0
+   s8 : ffffffffffffffff s9 : ff5fffffffe00000 s10: ff5fffffffe01000
+   s11: 0000000000000022 t3 : 00ffffffaa17db4c t4 : 000000000000000f
+   t5 : 0000000000000001 t6 : 0000000000000000
+  status: 0000000000000100 badaddr: ff5fffffffe00000 cause: 000000000000000d
+    scan_gray_list+0x12e/0x1a6
+    kmemleak_scan+0x2aa/0x57e
+    kmemleak_write+0x32a/0x40c
+    full_proxy_write+0x56/0x82
+    vfs_write+0xa6/0x2a6
+    ksys_write+0x6c/0xe2
+    sys_write+0x22/0x2a
+    ret_from_syscall+0x0/0x2
 
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
+The callers may not quite know the actual address they pass(e.g. from
+devicetree).  So the kmemleak_*_phys() apis should guarantee the address
+they finally use is in lowmem range, so check the address for lowmem's
+min boundary.
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Frank Li <Frank.li@nxp.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Acked-by: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20220405151517.29753-10-bp@alien8.de
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lkml.kernel.org/r/20220413122925.33856-1-patrick.wang.shcn@gmail.com
+Signed-off-by: Patrick Wang <patrick.wang.shcn@gmail.com>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/perf/fsl_imx8_ddr_perf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/kmemleak.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/perf/fsl_imx8_ddr_perf.c b/drivers/perf/fsl_imx8_ddr_perf.c
-index 726ed8f59868..912a220a9db9 100644
---- a/drivers/perf/fsl_imx8_ddr_perf.c
-+++ b/drivers/perf/fsl_imx8_ddr_perf.c
-@@ -29,7 +29,7 @@
- #define CNTL_OVER_MASK		0xFFFFFFFE
- 
- #define CNTL_CSV_SHIFT		24
--#define CNTL_CSV_MASK		(0xFF << CNTL_CSV_SHIFT)
-+#define CNTL_CSV_MASK		(0xFFU << CNTL_CSV_SHIFT)
- 
- #define EVENT_CYCLES_ID		0
- #define EVENT_CYCLES_COUNTER	0
--- 
-2.35.1
-
+--- a/mm/kmemleak.c
++++ b/mm/kmemleak.c
+@@ -1123,7 +1123,7 @@ EXPORT_SYMBOL(kmemleak_no_scan);
+ void __ref kmemleak_alloc_phys(phys_addr_t phys, size_t size, int min_count,
+ 			       gfp_t gfp)
+ {
+-	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
++	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
+ 		kmemleak_alloc(__va(phys), size, min_count, gfp);
+ }
+ EXPORT_SYMBOL(kmemleak_alloc_phys);
+@@ -1137,7 +1137,7 @@ EXPORT_SYMBOL(kmemleak_alloc_phys);
+  */
+ void __ref kmemleak_free_part_phys(phys_addr_t phys, size_t size)
+ {
+-	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
++	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
+ 		kmemleak_free_part(__va(phys), size);
+ }
+ EXPORT_SYMBOL(kmemleak_free_part_phys);
+@@ -1149,7 +1149,7 @@ EXPORT_SYMBOL(kmemleak_free_part_phys);
+  */
+ void __ref kmemleak_not_leak_phys(phys_addr_t phys)
+ {
+-	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
++	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
+ 		kmemleak_not_leak(__va(phys));
+ }
+ EXPORT_SYMBOL(kmemleak_not_leak_phys);
+@@ -1161,7 +1161,7 @@ EXPORT_SYMBOL(kmemleak_not_leak_phys);
+  */
+ void __ref kmemleak_ignore_phys(phys_addr_t phys)
+ {
+-	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
++	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
+ 		kmemleak_ignore(__va(phys));
+ }
+ EXPORT_SYMBOL(kmemleak_ignore_phys);
 
 
