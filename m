@@ -2,99 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D04C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:48:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231961AbiDRPvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:51:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60918 "EHLO
+        id S1345882AbiDRPvX (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345668AbiDRPuB (ORCPT
+        with ESMTP id S1345876AbiDRPux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:50:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 75D9E1A839
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 08:28:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650295698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Ih9PEnp4Wjk+k/+TucNV83KQkvF18ND4JmzRmAmOEMs=;
-        b=Dsqc9KM0JPnlcTJ6XLBc0DmVAUAKLo9Sedkpv4uLAf3d/MrGa5yiIBvcv6gKtnOBI2z5QD
-        KVRE4nP0xqoCKK03QPJJOGcF7k90xSh0LThXLE/aMzQ3vYaFBSyH3kXddm9tlosJ0SaHT1
-        mXvQdZYYAOEe0zhngx+OQZMSDhAgyvI=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-219-SSypCA95MkySLcjHCS8IYg-1; Mon, 18 Apr 2022 11:28:17 -0400
-X-MC-Unique: SSypCA95MkySLcjHCS8IYg-1
-Received: by mail-qt1-f199.google.com with SMTP id bb32-20020a05622a1b2000b002f1f41e6caeso2876618qtb.19
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 08:28:17 -0700 (PDT)
+        Mon, 18 Apr 2022 11:50:53 -0400
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8912D1C90C
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 08:29:14 -0700 (PDT)
+Received: by mail-qk1-x730.google.com with SMTP id b68so6634471qkc.4
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 08:29:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=toxicpanda-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bk1eGuqJwndoaxsSvNYecRXq6M9A/bw4S/fhOCK+UVc=;
+        b=7F1UZiOfTJRn87TwUEurTc5P9PUWSoCZVGAWHNHavR/bXr65b7KljKF0kk1dwg8xtX
+         FV2/yylNEvwEn6tcML003t9HpMDMOOawvHFcZTPEutpToRtbZWi+UaQk8xQzv04nizSZ
+         z3nZfVkKDQV81BL2ItSAoeePcPWD9Qg2Z5i1WBFyGsUhAVxc3pB8JbhNF1jOIXOoaiSH
+         8HheabbU4cpxESbOeAge9Vh2k/fJ9DIqUXhtwrgrXor14veeWkLZs43ptPfI6ZunZrcv
+         K8Veoug7qzQGyJ7hZFDpX7uKERtiGsdL5XFq9Tcp9XHLPVDqm4ABNTRKMLETwb9l3kl4
+         VlpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ih9PEnp4Wjk+k/+TucNV83KQkvF18ND4JmzRmAmOEMs=;
-        b=aQKXlLI5K8THFjQsJUb6VQPWfEyzfQKOfG7mOXUErK6UXYYuBnb73c4Sm6AwHxgSc/
-         NqbPepO+VHIy1fgj6B7EGUzRd2JRK3frXrsp4P4oooo3oBYmbR/Oh2rKBSFpTV7tqIbz
-         CxIz21yJ4X/c3p3cRW5Fe2RqENPGSxrQN4HIK3SERSeG4R4HHRoRDJLqtmXgciWr6ZjN
-         WDgQrQn3/ywf/LIuDguZ5Qh/SrRGlXnKvRHXfiae2yzt1y0IoRm/IOQYYYxnxTLR7Fjl
-         rij+pd65JJCusNibRvxUltxnFMxlCrO+jCjFNukOVDs8BR9SD6fycIMRHPjd9cB9a13h
-         nsJg==
-X-Gm-Message-State: AOAM532oTpwAe0IF4MftcOvfhHXpcT0lSN9aJ0oDjWyUalF8aPvM/ScO
-        3p5OWPb19cbjn/d2A+JHCCu94FZi75ZSDic33S6uDZrLNRG/eXfABGm0ZImkpsMvuOg7VsuE6ub
-        j+CFaLGl6boff8s4Uo3E4zaEw
-X-Received: by 2002:a37:447:0:b0:69e:a2be:f270 with SMTP id 68-20020a370447000000b0069ea2bef270mr2733226qke.130.1650295696833;
-        Mon, 18 Apr 2022 08:28:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxd+rW0DF6snrQAx/DVgdX3YAtlSUyaxLZbHZLhwb0nZYBV6ivGoW0JK0uNu8zwYr3h06hFlQ==
-X-Received: by 2002:a37:447:0:b0:69e:a2be:f270 with SMTP id 68-20020a370447000000b0069ea2bef270mr2733212qke.130.1650295696615;
-        Mon, 18 Apr 2022 08:28:16 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id y66-20020a37af45000000b0067dc0fc539fsm6830397qke.86.2022.04.18.08.28.15
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bk1eGuqJwndoaxsSvNYecRXq6M9A/bw4S/fhOCK+UVc=;
+        b=SCS2mnsE4jaBGF8mhT9BwEnHAgQguCRFLygrYaxbB0TVd5Ndi3uvcbaHSUDCjtMFdo
+         8Tm9UsopDmAILCn1BSwC7anoWwbSgaF4oYhJvATuMFRxnTvLRtxCGk6blfAu06BKkjI7
+         RrZ4qvYcgwHlqRjppG8f2K/ufuC7Aauln9dB4q5O0m/f3u00vp5phDN/TQd1DvxabU3w
+         /tRE1CnQVhuX+E4DyMTuAiVzIa6ztwmRHjeMGriwOrw14AFIjThf4HXVW7LYANBd5KZG
+         CVYwr2G3+j5JDsFCFUN5myNvVdSHu0LQhdGVQfwlN9KVdcDnXSxTWre/wOH4rtawBE78
+         YWJQ==
+X-Gm-Message-State: AOAM531bL4+cGgvq8Vou1GlZDDqOfLlzF84euFNmusTDjmwqaupT+8Lc
+        tqs4KXpRLPGQCrwi/NdRoBo2Hg==
+X-Google-Smtp-Source: ABdhPJz/YKZah8C+U0YgIVsCTc14vr9OwHpssgyFke0VAkIsnTf4JBHSdxL1MhhT+PHSqXV7HFH79w==
+X-Received: by 2002:a37:b502:0:b0:69a:ca1:298 with SMTP id e2-20020a37b502000000b0069a0ca10298mr6942704qkf.133.1650295753354;
+        Mon, 18 Apr 2022 08:29:13 -0700 (PDT)
+Received: from localhost (cpe-174-109-172-136.nc.res.rr.com. [174.109.172.136])
+        by smtp.gmail.com with ESMTPSA id c17-20020ac85a91000000b002e1dd8ae44bsm7800323qtc.29.2022.04.18.08.29.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 08:28:16 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     bskeggs@redhat.com, kherbst@redhat.com, lyude@redhat.com,
-        airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] drm/nouveau/gr/gf100-: change gf108_gr_fwif from global to static
-Date:   Mon, 18 Apr 2022 11:28:10 -0400
-Message-Id: <20220418152810.3280502-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Mon, 18 Apr 2022 08:29:12 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 11:29:11 -0400
+From:   Josef Bacik <josef@toxicpanda.com>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     linux-doc@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Chris Mason <clm@fb.com>, David Sterba <dsterba@suse.com>,
+        Nick Terrell <terrelln@fb.com>, Schspa Shi <schspa@gmail.com>,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] btrfs: zstd: remove extraneous asterix at the head of
+ zstd_reclaim_timer_fn() comment
+Message-ID: <Yl2Dx+jefYs1Un+8@localhost.localdomain>
+References: <20220418125934.566647-1-bagasdotme@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220418125934.566647-1-bagasdotme@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Smatch reports this issue
-gf108.c:147:1: warning: symbol 'gf108_gr_fwif'
-  was not declared. Should it be static?
+On Mon, Apr 18, 2022 at 07:59:35PM +0700, Bagas Sanjaya wrote:
+> kernel test robot reports kernel-doc warning:
+> 
+> >> fs/btrfs/zstd.c:98: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+> 
+> The comment is for zstd_reclaim_timer_fn(). Since the function is
+> static, the comment isn't meant for kernel-doc consumption.
+> 
+> Remove the extraneous (second) asterix at the head of function comment.
+> 
+> Link: https://lore.kernel.org/linux-doc/202204151934.CkKcnvuJ-lkp@intel.com/
+> Fixes: b672526e2ee935 ("btrfs: use non-bh spin_lock in zstd timer callback")
+> Cc: Chris Mason <clm@fb.com>
+> Cc: Josef Bacik <josef@toxicpanda.com>
+> Cc: David Sterba <dsterba@suse.com>
+> Cc: Nick Terrell <terrelln@fb.com>
+> Cc: Schspa Shi <schspa@gmail.com>
+> Cc: linux-btrfs@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-gf108_gr_fwif is only used in gf108.c.  Single
-file variables should not be global so change
-gf108_gr_fwif's storage-class specifier to static.
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/gpu/drm/nouveau/nvkm/engine/gr/gf108.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks,
 
-diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/gr/gf108.c b/drivers/gpu/drm/nouveau/nvkm/engine/gr/gf108.c
-index 030640bb3dca..ab3760e804b8 100644
---- a/drivers/gpu/drm/nouveau/nvkm/engine/gr/gf108.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/engine/gr/gf108.c
-@@ -143,7 +143,7 @@ gf108_gr = {
- 	}
- };
- 
--const struct gf100_gr_fwif
-+static const struct gf100_gr_fwif
- gf108_gr_fwif[] = {
- 	{ -1, gf100_gr_load, &gf108_gr },
- 	{ -1, gf100_gr_nofw, &gf108_gr },
--- 
-2.27.0
-
+Josef
