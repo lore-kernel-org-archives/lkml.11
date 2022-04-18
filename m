@@ -2,194 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C0FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 18:02:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 18:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347306AbiDRSF1 (ORCPT
+        id S1347309AbiDRSKn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 14:05:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52028 "EHLO
+        Mon, 18 Apr 2022 14:10:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347295AbiDRSFZ (ORCPT
+        with ESMTP id S229651AbiDRSKm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 14:05:25 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5B03586A;
-        Mon, 18 Apr 2022 11:02:45 -0700 (PDT)
+        Mon, 18 Apr 2022 14:10:42 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E426369E5
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 11:08:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650304965; x=1681840965;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=r2LvCWWhsD0xa0qyiMF8G3A6xlqv4L4gzs5uVZF3bYs=;
-  b=jYCiavUytSoUZ22zM/zF4djhx6XXS2v9wJiwG0ZmIuPM/DFzvTiBkUKd
-   cj/uRrX2uH3tczHd0aIvAhIGgVmXWBPtaKpcRSDr+TTj5miUo2OnUuAX1
-   5SJW+LBHJQ7QH+4HsvzI+fsEgHeoV0/4Hn4V502PajsoQhsfaLiybwdTJ
-   5+0Fn8j7K1XlU1dcosmIII2m/m2nESczU0ZIQfYNhc/E10Pcu5/IBQINj
-   DlW2IzifPho5RnAVtSavZ0FPcu5spFtQnd4EnS5swtqt/6eWPwhPOJVyP
-   j5fHtyh0f+ZFvsN0O8LAVXIJaaqVPplFyN+ZjawQiml6ufgHcNtAFUJ4U
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="263753686"
+  t=1650305282; x=1681841282;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=dyyMH0xpZtsmvKPKBHxyzRSqFnhpIBPEXWOqpua1DEE=;
+  b=YQj2Wk+wvtCBxdy+uZDZsMmnM0HC+CaZ4JM8XrwDBqAtWtSEEEgzaY9o
+   VtBn5qPE5K0tuAPDvRvBO0JF7BkCeZy2MgeN94ENWwM9ywGbNRdVGvOwv
+   oNZv8rTk8dSt8Y2rFmcWN4sDiBsttCkZGS5IP5UUm/m85RfATpJJhNqb1
+   kY4Uf/Y6EzY4BOwgdIZpmIIS9AcoCSuMfJoYxQNiuBvi7rfDCNOlSja5s
+   zwjYDHwTBg8b/2XCNwzGGrPG+8s/x/fJfw8/GtU61vztofUqVpnD2wWXQ
+   FvORxNpSxfox6zdCiwpNJMST+dFO0PetUx2wdyxdHVHLcJ/+06m1SOV/c
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="262440361"
 X-IronPort-AV: E=Sophos;i="5.90,270,1643702400"; 
-   d="scan'208";a="263753686"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 11:02:45 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="262440361"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 11:08:01 -0700
 X-IronPort-AV: E=Sophos;i="5.90,270,1643702400"; 
-   d="scan'208";a="860147611"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 18 Apr 2022 11:02:41 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngVhw-0004qg-FV;
-        Mon, 18 Apr 2022 18:02:40 +0000
-Date:   Tue, 19 Apr 2022 02:02:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Casey Schaufler <casey@schaufler-ca.com>,
-        casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, casey@schaufler-ca.com,
-        linux-audit@redhat.com, keescook@chromium.org,
-        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
-        paul@paul-moore.com, stephen.smalley.work@gmail.com,
-        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org
-Subject: Re: [PATCH v35 13/29] LSM: Use lsmblob in security_cred_getsecid
-Message-ID: <202204190104.VspbI376-lkp@intel.com>
-References: <20220418145945.38797-14-casey@schaufler-ca.com>
+   d="scan'208";a="529659339"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 11:08:01 -0700
+Date:   Mon, 18 Apr 2022 11:11:35 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     "Tian, Kevin" <kevin.tian@intel.com>
+Cc:     "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>,
+        "Yu, Fenghua" <fenghua.yu@intel.com>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        jean-philippe <jean-philippe@linaro.org>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "Hansen, Dave" <dave.hansen@intel.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "Poimboe, Josh" <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <20220418111135.6260d450@jacob-builder>
+In-Reply-To: <BN9PR11MB52765490BFC5F08CD4F7A9208CF39@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
+        <f439dde5-0eaa-52e4-9cf7-2ed1f62ea07f@intel.com>
+        <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
+        <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
+        <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
+        <YlWBkyGeb2ZOGLKl@fyu1.sc.intel.com>
+        <tencent_A9458C6CEBAADD361DA765356477B00E920A@qq.com>
+        <tencent_8B6D7835F62688B4CD069C0EFC41B308B407@qq.com>
+        <YllADL6uMoLllzQo@fyu1.sc.intel.com>
+        <99bcb9f5-4776-9c40-a776-cdecfa9e1010@foxmail.com>
+        <YllN/OmjpYdT1tO9@otcwcpicx3.sc.intel.com>
+        <tencent_CD35B6A6FBB48186B38EF641F088BAED1407@qq.com>
+        <20220415140002.7c12b0d2@jacob-builder>
+        <BN9PR11MB52765490BFC5F08CD4F7A9208CF39@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220418145945.38797-14-casey@schaufler-ca.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Casey,
+Hi Kevin,
 
-I love your patch! Yet something to improve:
+On Mon, 18 Apr 2022 06:34:19 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
-[auto build test ERROR on pcmoore-selinux/next]
-[also build test ERROR on linus/master v5.18-rc3 next-20220414]
-[cannot apply to pcmoore-audit/next jmorris-security/next-testing]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Saturday, April 16, 2022 5:00 AM
+> > 
+> > Hi zhangfei.gao@foxmail.com,
+> > 
+> > On Fri, 15 Apr 2022 19:52:03 +0800, "zhangfei.gao@foxmail.com"
+> > <zhangfei.gao@foxmail.com> wrote:
+> >   
+> > > >>> A PASID might be still used even though it is freed on mm exit.
+> > > >>>
+> > > >>> process A:
+> > > >>> 	sva_bind();
+> > > >>> 	ioasid_alloc() = N; // Get PASID N for the mm
+> > > >>> 	fork(): // spawn process B
+> > > >>> 	exit();
+> > > >>> 	ioasid_free(N);
+> > > >>>
+> > > >>> process B:
+> > > >>> 	device uses PASID N -> failure
+> > > >>> 	sva_unbind();
+> > > >>>
+> > > >>> Dave Hansen suggests to take a refcount on the mm whenever
+> > > >>> binding  
+> > the  
+> > > >>> PASID to a device and drop the refcount on unbinding. The mm
+> > > >>> won't  
+> > be  
+> > > >>> dropped if the PASID is still bound to it.
+> > > >>>
+> > > >>> Fixes: 701fac40384f ("iommu/sva: Assign a PASID to mm on PASID
+> > > >>> allocation and free it on mm exit")
+> > > >>>  
+> > Is process A's mm intended to be used by process B? Or you really should
+> > use PASID N on process B's mm? If the latter, it may work for a while
+> > until B changes mapping.
+> > 
+> > It seems you are just extending the life of a defunct mm?
+> >   
+> 
+> IMHO the intention is not to allow B to access A's mm.
+> 
+> The problem is that PASID N is released on exit() of A and then
+> reallocated to B before iommu driver gets the chance to quiesce
+> the device and clear the PASID entry. According to the discussion
+> the quiesce operation must be done when driver calls unbind()
+> instead of in mm exit. In this case a failure is reported when
+> B tries to call bind() on PASID N due to an already-present entry.
+> 
+> Dave's patch extending the life of A's mm until unbind() is called.
+> With it B either gets a different PASID before A's unbind() is 
+> completed or same PASID N pointing to B's mm after A's unbind().
+> 
+As long as B gets a different PASID, that is fine. It seems PASID N has no
+use then.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Casey-Schaufler/integrity-disassociate-ima_filter_rule-from-security_audit_rule/20220419-000109
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/selinux.git next
-config: i386-tinyconfig (https://download.01.org/0day-ci/archive/20220419/202204190104.VspbI376-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/2fa01492487f9135e9ea9e59924289cc23a66576
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Casey-Schaufler/integrity-disassociate-ima_filter_rule-from-security_audit_rule/20220419-000109
-        git checkout 2fa01492487f9135e9ea9e59924289cc23a66576
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/sched/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from include/linux/perf_event.h:61,
-                    from include/linux/trace_events.h:10,
-                    from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from include/linux/syscalls_api.h:1,
-                    from kernel/sched/core.c:13:
-   include/linux/security.h: In function 'security_cred_getsecid':
->> include/linux/security.h:1147:10: error: 'secid' undeclared (first use in this function)
-    1147 |         *secid = 0;
-         |          ^~~~~
-   include/linux/security.h:1147:10: note: each undeclared identifier is reported only once for each function it appears in
-   kernel/sched/core.c: At top level:
-   kernel/sched/core.c:5235:20: warning: no previous prototype for 'task_sched_runtime' [-Wmissing-prototypes]
-    5235 | unsigned long long task_sched_runtime(struct task_struct *p)
-         |                    ^~~~~~~~~~~~~~~~~~
-   kernel/sched/core.c:9420:13: warning: no previous prototype for 'sched_init_smp' [-Wmissing-prototypes]
-    9420 | void __init sched_init_smp(void)
-         |             ^~~~~~~~~~~~~~
-   kernel/sched/core.c:9448:13: warning: no previous prototype for 'sched_init' [-Wmissing-prototypes]
-    9448 | void __init sched_init(void)
-         |             ^~~~~~~~~~
---
-   In file included from include/linux/perf_event.h:61,
-                    from include/linux/trace_events.h:10,
-                    from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from include/linux/syscalls_api.h:1,
-                    from kernel/sched/sched.h:60,
-                    from kernel/sched/fair.c:53:
-   include/linux/security.h: In function 'security_cred_getsecid':
->> include/linux/security.h:1147:10: error: 'secid' undeclared (first use in this function)
-    1147 |         *secid = 0;
-         |          ^~~~~
-   include/linux/security.h:1147:10: note: each undeclared identifier is reported only once for each function it appears in
-   kernel/sched/fair.c: At top level:
-   kernel/sched/fair.c:5530:6: warning: no previous prototype for 'init_cfs_bandwidth' [-Wmissing-prototypes]
-    5530 | void init_cfs_bandwidth(struct cfs_bandwidth *cfs_b) {}
-         |      ^~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:11757:6: warning: no previous prototype for 'free_fair_sched_group' [-Wmissing-prototypes]
-   11757 | void free_fair_sched_group(struct task_group *tg) { }
-         |      ^~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:11759:5: warning: no previous prototype for 'alloc_fair_sched_group' [-Wmissing-prototypes]
-   11759 | int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent)
-         |     ^~~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:11764:6: warning: no previous prototype for 'online_fair_sched_group' [-Wmissing-prototypes]
-   11764 | void online_fair_sched_group(struct task_group *tg) { }
-         |      ^~~~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:11766:6: warning: no previous prototype for 'unregister_fair_sched_group' [-Wmissing-prototypes]
-   11766 | void unregister_fair_sched_group(struct task_group *tg) { }
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/perf_event.h:61,
-                    from include/linux/trace_events.h:10,
-                    from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from include/linux/syscalls_api.h:1,
-                    from kernel/sched/sched.h:60,
-                    from kernel/sched/build_policy.c:33:
-   include/linux/security.h: In function 'security_cred_getsecid':
->> include/linux/security.h:1147:10: error: 'secid' undeclared (first use in this function)
-    1147 |         *secid = 0;
-         |          ^~~~~
-   include/linux/security.h:1147:10: note: each undeclared identifier is reported only once for each function it appears in
-   In file included from kernel/sched/build_policy.c:43:
-   kernel/sched/rt.c: At top level:
-   kernel/sched/rt.c:259:6: warning: no previous prototype for 'unregister_rt_sched_group' [-Wmissing-prototypes]
-     259 | void unregister_rt_sched_group(struct task_group *tg) { }
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/rt.c:261:6: warning: no previous prototype for 'free_rt_sched_group' [-Wmissing-prototypes]
-     261 | void free_rt_sched_group(struct task_group *tg) { }
-         |      ^~~~~~~~~~~~~~~~~~~
-   kernel/sched/rt.c:263:5: warning: no previous prototype for 'alloc_rt_sched_group' [-Wmissing-prototypes]
-     263 | int alloc_rt_sched_group(struct task_group *tg, struct task_group *parent)
-         |     ^~~~~~~~~~~~~~~~~~~~
-   kernel/sched/rt.c:666:6: warning: no previous prototype for 'sched_rt_bandwidth_account' [-Wmissing-prototypes]
-     666 | bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
---
-   In file included from kernel/sched/build_utility.c:39:
-   include/linux/security.h: In function 'security_cred_getsecid':
->> include/linux/security.h:1147:10: error: 'secid' undeclared (first use in this function)
-    1147 |         *secid = 0;
-         |          ^~~~~
-   include/linux/security.h:1147:10: note: each undeclared identifier is reported only once for each function it appears in
+> Thanks
+> Kevin
 
 
-vim +/secid +1147 include/linux/security.h
+Thanks,
 
-ee18d64c1f6320 David Howells   2009-09-02  1143  
-2fa01492487f91 Casey Schaufler 2022-04-18  1144  static inline void security_cred_getsecid(const struct cred *c,
-2fa01492487f91 Casey Schaufler 2022-04-18  1145  					  struct lsmblob *blob)
-4d5b5539742d25 Todd Kjos       2021-10-12  1146  {
-4d5b5539742d25 Todd Kjos       2021-10-12 @1147  	*secid = 0;
-4d5b5539742d25 Todd Kjos       2021-10-12  1148  }
-4d5b5539742d25 Todd Kjos       2021-10-12  1149  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Jacob
