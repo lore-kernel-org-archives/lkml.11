@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32323C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:52:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C1D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238117AbiDRMzV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:55:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37846 "EHLO
+        id S233297AbiDRMz0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239663AbiDRMh6 (ORCPT
+        with ESMTP id S239657AbiDRMh5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:37:58 -0400
+        Mon, 18 Apr 2022 08:37:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C40237E2;
-        Mon, 18 Apr 2022 05:28:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE03237CE;
+        Mon, 18 Apr 2022 05:28:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15DC860F09;
-        Mon, 18 Apr 2022 12:28:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C58CC385A1;
-        Mon, 18 Apr 2022 12:28:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF2F360F3E;
+        Mon, 18 Apr 2022 12:28:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF0EEC385A1;
+        Mon, 18 Apr 2022 12:28:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284903;
-        bh=6m5d5jW3l1iORvtovxkZqeucVqEO9ROgGnlg9LL0ziY=;
+        s=korg; t=1650284900;
+        bh=x/mJsS/dEh4ui5wXGCfPfuVnNBwxOh1tFE8mnT+9/5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KYrbzlisR9mOzNruVsXeGk7qI8uwpwebg/186sgn2G2VkX8lJ3mZzYjhzeVm8BsQF
-         k35Z9QlRUWdJo8Th6bXE0SklcdXNZe5tB4LQFCQE0t69x1CUumoULnscSbBwpIDoeG
-         TEtRKFHiTbAORK9HHfyYVNYed4PZi5OS9pb38i20=
+        b=ldp8FCeZ/qqheKZSbgGmYkyE4FZX7nNNyfioTfz5B0M0av8sG/dDZFmFYQNZDmnTe
+         hWfL/+F+e98jKh1iHr/jsxiaDHONdcrgbKwatHaRjC6X+mOprPhTVnSxBgCk174k9c
+         EU/8/gxW1SiDxOxg7l/3DK5WjNTq9hq5EBlhO0uQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 043/189] ALSA: lola: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:11:03 +0200
-Message-Id: <20220418121201.735926024@linuxfoundation.org>
+Subject: [PATCH 5.15 042/189] ALSA: korg1212: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:11:02 +0200
+Message-Id: <20220418121201.708018902@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,7 +49,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit d04e84b9817c652002f0ee9b42059d41493e9118 upstream.
+commit c01b723a56ce18ae66ff18c5803942badc15fbcd upstream.
 
 The previous cleanup with devres may lead to the incorrect release
 orders at the probe error handling due to the devres's nature.  Until
@@ -60,43 +60,44 @@ release the stuff via card->private_free().
 This patch fixes it by calling snd_card_free() on the error from the
 probe callback using a new helper function.
 
-Fixes: 098fe3d6e775 ("ALSA: lola: Allocate resources with device-managed APIs")
+Fixes: b5cde369b618 ("ALSA: korg1212: Allocate resources with device-managed APIs")
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-30-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220412102636.16000-20-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/lola/lola.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ sound/pci/korg1212/korg1212.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/sound/pci/lola/lola.c b/sound/pci/lola/lola.c
-index 5269a1d396a5..1aa30e90b86a 100644
---- a/sound/pci/lola/lola.c
-+++ b/sound/pci/lola/lola.c
-@@ -637,8 +637,8 @@ static int lola_create(struct snd_card *card, struct pci_dev *pci, int dev)
- 	return 0;
- }
+diff --git a/sound/pci/korg1212/korg1212.c b/sound/pci/korg1212/korg1212.c
+index 5c9e240ff6a9..33b4f95d65b3 100644
+--- a/sound/pci/korg1212/korg1212.c
++++ b/sound/pci/korg1212/korg1212.c
+@@ -2355,7 +2355,7 @@ snd_korg1212_probe(struct pci_dev *pci,
  
--static int lola_probe(struct pci_dev *pci,
--		      const struct pci_device_id *pci_id)
-+static int __lola_probe(struct pci_dev *pci,
-+			const struct pci_device_id *pci_id)
- {
- 	static int dev;
- 	struct snd_card *card;
-@@ -687,6 +687,12 @@ static int lola_probe(struct pci_dev *pci,
- 	return 0;
- }
+ 	err = snd_korg1212_create(card, pci);
+ 	if (err < 0)
+-		return err;
++		goto error;
  
-+static int lola_probe(struct pci_dev *pci,
-+		      const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __lola_probe(pci, pci_id));
-+}
+ 	strcpy(card->driver, "korg1212");
+ 	strcpy(card->shortname, "korg1212");
+@@ -2366,10 +2366,14 @@ snd_korg1212_probe(struct pci_dev *pci,
+ 
+ 	err = snd_card_register(card);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 	pci_set_drvdata(pci, card);
+ 	dev++;
+ 	return 0;
 +
- /* PCI IDs */
- static const struct pci_device_id lola_ids[] = {
- 	{ PCI_VDEVICE(DIGIGRAM, 0x0001) },
++ error:
++	snd_card_free(card);
++	return err;
+ }
+ 
+ static struct pci_driver korg1212_driver = {
 -- 
 2.35.2
 
