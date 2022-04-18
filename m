@@ -2,362 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 026AFC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E5AC3527C
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242101AbiDRNIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42306 "EHLO
+        id S242214AbiDRNIv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240438AbiDRMzo (ORCPT
+        with ESMTP id S240499AbiDRM4K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:55:44 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E37FDFDD;
-        Mon, 18 Apr 2022 05:37:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650285462; x=1681821462;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=rKR8R2xrvVMhCLJudTmph3ry8li11n/7voUDkq7zraY=;
-  b=KfzXl8nzGTCj5bwa0bnN0CnDrfW/XII58dtT+UI5pt/2gFTlTpixW4FW
-   kJ7XqX2mRS9toqI/wQSMCA9RdqI7wG6pNv6GdShd63ZpQKNbX/I+/0wCv
-   UlJzuy7bekKpV8wEZWe44eUuPWDfmRsv5+cRR3SmAZgj/FYyF5u2wcWqn
-   4=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 18 Apr 2022 05:37:41 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 05:37:41 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 18 Apr 2022 05:37:40 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 18 Apr 2022 05:37:34 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, Linus Walleij <linus.walleij@linaro.org>,
-        <linux-gpio@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v13 1/7] dt-bindings: pinctrl: qcom: Update lpass lpi file name to SoC specific
-Date:   Mon, 18 Apr 2022 18:07:01 +0530
-Message-ID: <1650285427-19752-2-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650285427-19752-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1650285427-19752-1-git-send-email-quic_srivasam@quicinc.com>
+        Mon, 18 Apr 2022 08:56:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADECE0B7;
+        Mon, 18 Apr 2022 05:37:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CE28E611CC;
+        Mon, 18 Apr 2022 12:37:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC84AC385A1;
+        Mon, 18 Apr 2022 12:37:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650285465;
+        bh=0nK7dR2ySBPmj9A2wp9FXAQ9MRXguoa2VerPK/upLBk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XnO2bB36wi8E/tPp4ckLvkS1NcHM3Wafet8M8VbW7jotgw6Z2Bg8ZsIv9TeRHDvbT
+         dOXhPeRuzFxLWaWLAJ/CqIxc6fBkr4tbjTlef4KaVdoTIjD1VswWpA7AmTNoAqrLxS
+         gQTNlHKjhrKZmuobFBioN07meDDKxD3URf7lPlGY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Ajish Koshy <Ajish.Koshy@microchip.com>,
+        Viswas G <Viswas.G@microchip.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 026/105] scsi: pm80xx: Enable upper inbound, outbound queues
+Date:   Mon, 18 Apr 2022 14:12:28 +0200
+Message-Id: <20220418121147.013981195@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
+References: <20220418121145.140991388@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change generic lpass lpi pincotrol bindings file to SoC specific file,
-to distinguish and accomadate other SoC specific dt bindings.
+From: Ajish Koshy <Ajish.Koshy@microchip.com>
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+[ Upstream commit bcd8a45223470e00b5f254018174d64a75db4bbe ]
+
+Executing driver on servers with more than 32 CPUs were faced with command
+timeouts. This is because we were not geting completions for commands
+submitted on IQ32 - IQ63.
+
+Set E64Q bit to enable upper inbound and outbound queues 32 to 63 in the
+MPI main configuration table.
+
+Added 500ms delay after successful MPI initialization as mentioned in
+controller datasheet.
+
+Link: https://lore.kernel.org/r/20220411064603.668448-3-Ajish.Koshy@microchip.com
+Fixes: 05c6c029a44d ("scsi: pm80xx: Increase number of supported queues")
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Acked-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Ajish Koshy <Ajish.Koshy@microchip.com>
+Signed-off-by: Viswas G <Viswas.G@microchip.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml   | 133 ---------------------
- .../pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml     | 133 +++++++++++++++++++++
- 2 files changed, 133 insertions(+), 133 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml
- create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml
+ drivers/scsi/pm8001/pm80xx_hwi.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml
-deleted file mode 100644
-index 5c5542f..0000000
---- a/Documentation/devicetree/bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml
-+++ /dev/null
-@@ -1,133 +0,0 @@
--# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
--%YAML 1.2
-----
--$id: http://devicetree.org/schemas/pinctrl/qcom,lpass-lpi-pinctrl.yaml#
--$schema: http://devicetree.org/meta-schemas/core.yaml#
--
--title: Qualcomm Technologies, Inc. Low Power Audio SubSystem (LPASS)
--  Low Power Island (LPI) TLMM block
--
--maintainers:
--  - Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
--
--description: |
--  This binding describes the Top Level Mode Multiplexer block found in the
--  LPASS LPI IP on most Qualcomm SoCs
--
--properties:
--  compatible:
--    const: qcom,sm8250-lpass-lpi-pinctrl
--
--  reg:
--    minItems: 2
--    maxItems: 2
--
--  clocks:
--    items:
--      - description: LPASS Core voting clock
--      - description: LPASS Audio voting clock
--
--  clock-names:
--    items:
--      - const: core
--      - const: audio
--
--  gpio-controller: true
--
--  '#gpio-cells':
--    description: Specifying the pin number and flags, as defined in
--      include/dt-bindings/gpio/gpio.h
--    const: 2
--
--  gpio-ranges:
--    maxItems: 1
--
--#PIN CONFIGURATION NODES
--patternProperties:
--  '-pins$':
--    type: object
--    description:
--      Pinctrl node's client devices use subnodes for desired pin configuration.
--      Client device subnodes use below standard properties.
--    $ref: "/schemas/pinctrl/pincfg-node.yaml"
--
--    properties:
--      pins:
--        description:
--          List of gpio pins affected by the properties specified in this
--          subnode.
--        items:
--          oneOf:
--            - pattern: "^gpio([0-9]|[1-9][0-9])$"
--        minItems: 1
--        maxItems: 14
--
--      function:
--        enum: [ gpio, swr_tx_clk, qua_mi2s_sclk, swr_tx_data, qua_mi2s_ws,
--                qua_mi2s_data, swr_rx_clk, swr_rx_data, dmic1_clk, i2s1_clk,
--                dmic1_data, i2s1_ws, dmic2_clk, dmic2_data, i2s1_data,
--                i2s2_clk, wsa_swr_clk, i2s2_ws, wsa_swr_data, dmic3_clk,
--                dmic3_data, i2s2_data ]
--        description:
--          Specify the alternative function to be configured for the specified
--          pins.
--
--      drive-strength:
--        enum: [2, 4, 6, 8, 10, 12, 14, 16]
--        default: 2
--        description:
--          Selects the drive strength for the specified pins, in mA.
--
--      slew-rate:
--        enum: [0, 1, 2, 3]
--        default: 0
--        description: |
--            0: No adjustments
--            1: Higher Slew rate (faster edges)
--            2: Lower Slew rate (slower edges)
--            3: Reserved (No adjustments)
--
--      bias-pull-down: true
--
--      bias-pull-up: true
--
--      bias-disable: true
--
--      output-high: true
--
--      output-low: true
--
--    required:
--      - pins
--      - function
--
--    additionalProperties: false
--
--allOf:
--  - $ref: "pinctrl.yaml#"
--
--required:
--  - compatible
--  - reg
--  - clocks
--  - clock-names
--  - gpio-controller
--  - '#gpio-cells'
--  - gpio-ranges
--
--additionalProperties: false
--
--examples:
--  - |
--    #include <dt-bindings/sound/qcom,q6afe.h>
--    lpi_tlmm: pinctrl@33c0000 {
--        compatible = "qcom,sm8250-lpass-lpi-pinctrl";
--        reg = <0x33c0000 0x20000>,
--              <0x3550000 0x10000>;
--        clocks = <&q6afecc LPASS_HW_MACRO_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
--                 <&q6afecc LPASS_HW_DCODEC_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
--        clock-names = "core", "audio";
--        gpio-controller;
--        #gpio-cells = <2>;
--        gpio-ranges = <&lpi_tlmm 0 0 14>;
--    };
-diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml
-new file mode 100644
-index 0000000..06efb13
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml
-@@ -0,0 +1,133 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index 0543ff3ff1ba..0305c8999ba5 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -765,6 +765,10 @@ static void init_default_table_values(struct pm8001_hba_info *pm8001_ha)
+ 	pm8001_ha->main_cfg_tbl.pm80xx_tbl.pcs_event_log_severity	= 0x01;
+ 	pm8001_ha->main_cfg_tbl.pm80xx_tbl.fatal_err_interrupt		= 0x01;
+ 
++	/* Enable higher IQs and OQs, 32 to 63, bit 16 */
++	if (pm8001_ha->max_q_num > 32)
++		pm8001_ha->main_cfg_tbl.pm80xx_tbl.fatal_err_interrupt |=
++							1 << 16;
+ 	/* Disable end to end CRC checking */
+ 	pm8001_ha->main_cfg_tbl.pm80xx_tbl.crc_core_dump = (0x1 << 16);
+ 
+@@ -1024,6 +1028,13 @@ static int mpi_init_check(struct pm8001_hba_info *pm8001_ha)
+ 	if (0x0000 != gst_len_mpistate)
+ 		return -EBUSY;
+ 
++	/*
++	 *  As per controller datasheet, after successful MPI
++	 *  initialization minimum 500ms delay is required before
++	 *  issuing commands.
++	 */
++	msleep(500);
 +
-+title: Qualcomm Technologies, Inc. Low Power Audio SubSystem (LPASS)
-+  Low Power Island (LPI) TLMM block
-+
-+maintainers:
-+  - Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-+
-+description: |
-+  This binding describes the Top Level Mode Multiplexer block found in the
-+  LPASS LPI IP on most Qualcomm SoCs
-+
-+properties:
-+  compatible:
-+    const: qcom,sm8250-lpass-lpi-pinctrl
-+
-+  reg:
-+    minItems: 2
-+    maxItems: 2
-+
-+  clocks:
-+    items:
-+      - description: LPASS Core voting clock
-+      - description: LPASS Audio voting clock
-+
-+  clock-names:
-+    items:
-+      - const: core
-+      - const: audio
-+
-+  gpio-controller: true
-+
-+  '#gpio-cells':
-+    description: Specifying the pin number and flags, as defined in
-+      include/dt-bindings/gpio/gpio.h
-+    const: 2
-+
-+  gpio-ranges:
-+    maxItems: 1
-+
-+#PIN CONFIGURATION NODES
-+patternProperties:
-+  '-pins$':
-+    type: object
-+    description:
-+      Pinctrl node's client devices use subnodes for desired pin configuration.
-+      Client device subnodes use below standard properties.
-+    $ref: "/schemas/pinctrl/pincfg-node.yaml"
-+
-+    properties:
-+      pins:
-+        description:
-+          List of gpio pins affected by the properties specified in this
-+          subnode.
-+        items:
-+          oneOf:
-+            - pattern: "^gpio([0-9]|[1-9][0-9])$"
-+        minItems: 1
-+        maxItems: 14
-+
-+      function:
-+        enum: [ gpio, swr_tx_clk, qua_mi2s_sclk, swr_tx_data, qua_mi2s_ws,
-+                qua_mi2s_data, swr_rx_clk, swr_rx_data, dmic1_clk, i2s1_clk,
-+                dmic1_data, i2s1_ws, dmic2_clk, dmic2_data, i2s1_data,
-+                i2s2_clk, wsa_swr_clk, i2s2_ws, wsa_swr_data, dmic3_clk,
-+                dmic3_data, i2s2_data ]
-+        description:
-+          Specify the alternative function to be configured for the specified
-+          pins.
-+
-+      drive-strength:
-+        enum: [2, 4, 6, 8, 10, 12, 14, 16]
-+        default: 2
-+        description:
-+          Selects the drive strength for the specified pins, in mA.
-+
-+      slew-rate:
-+        enum: [0, 1, 2, 3]
-+        default: 0
-+        description: |
-+            0: No adjustments
-+            1: Higher Slew rate (faster edges)
-+            2: Lower Slew rate (slower edges)
-+            3: Reserved (No adjustments)
-+
-+      bias-pull-down: true
-+
-+      bias-pull-up: true
-+
-+      bias-disable: true
-+
-+      output-high: true
-+
-+      output-low: true
-+
-+    required:
-+      - pins
-+      - function
-+
-+    additionalProperties: false
-+
-+allOf:
-+  - $ref: "pinctrl.yaml#"
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - gpio-controller
-+  - '#gpio-cells'
-+  - gpio-ranges
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/sound/qcom,q6afe.h>
-+    lpi_tlmm: pinctrl@33c0000 {
-+        compatible = "qcom,sm8250-lpass-lpi-pinctrl";
-+        reg = <0x33c0000 0x20000>,
-+              <0x3550000 0x10000>;
-+        clocks = <&q6afecc LPASS_HW_MACRO_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
-+                 <&q6afecc LPASS_HW_DCODEC_VOTE LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
-+        clock-names = "core", "audio";
-+        gpio-controller;
-+        #gpio-cells = <2>;
-+        gpio-ranges = <&lpi_tlmm 0 0 14>;
-+    };
+ 	return 0;
+ }
+ 
 -- 
-2.7.4
+2.35.1
+
+
 
