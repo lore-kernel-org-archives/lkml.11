@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0119C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11EC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238748AbiDRM0Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:26:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38408 "EHLO
+        id S238747AbiDRM01 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238659AbiDRMYq (ORCPT
+        with ESMTP id S238668AbiDRMZB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:24:46 -0400
+        Mon, 18 Apr 2022 08:25:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCE9201BA;
-        Mon, 18 Apr 2022 05:19:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A8A205D6;
+        Mon, 18 Apr 2022 05:19:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D6A4660F01;
-        Mon, 18 Apr 2022 12:19:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0DD4C385A7;
-        Mon, 18 Apr 2022 12:19:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AABCD60F0A;
+        Mon, 18 Apr 2022 12:19:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCF5AC385A7;
+        Mon, 18 Apr 2022 12:19:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284363;
-        bh=Ax4pNkg7lo0baEl4IIg+lzBbn4lt6rQz3Gz0GRLZcU0=;
+        s=korg; t=1650284366;
+        bh=M8KDOl3jNMBBPrA+ysD76RqQfHyggS9opeHrdGWoyVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JAJymVk9C+nJCZ1BUwAfHP0B/hjT/FEn087iBr3oM4Z6xwjpa8Pc7oQFLFazY5Whb
-         fwIDDlLPx+WE7/Sy+Oob05f4vqsiGyxDkRCbWFlP7n+NRLodkR7ve8y4VuwzQYPSTg
-         lHhSJlYtnypQeI1H/hQrJJjyTyBRn0qXUuj7OjZ4=
+        b=JzU9QLSdu8IX/pvPNI1TnfOW/uLExtaguXcsAMMTDbIBPVsGcqI83pGNm7npCAFhi
+         VkrIIJvxDvfmEiCtROMUY9ECVQAYF+oAlfTVRIGbLUst6lqoL5YHN0kJyXJ3REe+O7
+         txOb5y5JqzWfd4DgOXadKzuIEsiU9Gp4dqdgnv9c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 049/219] ALSA: rme32: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:10:18 +0200
-Message-Id: <20220418121206.352410845@linuxfoundation.org>
+Subject: [PATCH 5.17 040/219] ALSA: ice1724: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:10:09 +0200
+Message-Id: <20220418121205.735592842@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,7 +49,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit 55d2d046b23b9bcb907f6b3e38e52113d55085eb upstream.
+commit 4a850a0079ce601c0c4016f4edb7d618e811ed7d upstream.
 
 The previous cleanup with devres may lead to the incorrect release
 orders at the probe error handling due to the devres's nature.  Until
@@ -60,38 +60,40 @@ release the stuff via card->private_free().
 This patch fixes it by calling snd_card_free() on the error from the
 probe callback using a new helper function.
 
-Fixes: 102e6156ded2 ("ALSA: rme32: Allocate resources with device-managed APIs")
+Fixes: 314f6dbb1f33 ("ALSA: ice1724: Allocate resources with device-managed APIs")
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-23-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220412102636.16000-18-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/rme32.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ sound/pci/ice1712/ice1724.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/sound/pci/rme32.c
-+++ b/sound/pci/rme32.c
-@@ -1875,7 +1875,7 @@ static void snd_rme32_card_free(struct s
- }
+--- a/sound/pci/ice1712/ice1724.c
++++ b/sound/pci/ice1712/ice1724.c
+@@ -2519,8 +2519,8 @@ static int snd_vt1724_create(struct snd_
+  *
+  */
  
- static int
--snd_rme32_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
-+__snd_rme32_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+-static int snd_vt1724_probe(struct pci_dev *pci,
+-			    const struct pci_device_id *pci_id)
++static int __snd_vt1724_probe(struct pci_dev *pci,
++			      const struct pci_device_id *pci_id)
  {
  	static int dev;
- 	struct rme32 *rme32;
-@@ -1927,6 +1927,12 @@ snd_rme32_probe(struct pci_dev *pci, con
+ 	struct snd_card *card;
+@@ -2662,6 +2662,12 @@ static int snd_vt1724_probe(struct pci_d
  	return 0;
  }
  
-+static int
-+snd_rme32_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
++static int snd_vt1724_probe(struct pci_dev *pci,
++			    const struct pci_device_id *pci_id)
 +{
-+	return snd_card_free_on_error(&pci->dev, __snd_rme32_probe(pci, pci_id));
++	return snd_card_free_on_error(&pci->dev, __snd_vt1724_probe(pci, pci_id));
 +}
 +
- static struct pci_driver rme32_driver = {
- 	.name =		KBUILD_MODNAME,
- 	.id_table =	snd_rme32_ids,
+ #ifdef CONFIG_PM_SLEEP
+ static int snd_vt1724_suspend(struct device *dev)
+ {
 
 
