@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD80BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:52:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC3B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:54:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346712AbiDRQzg (ORCPT
+        id S1346645AbiDRQ5A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 12:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
+        Mon, 18 Apr 2022 12:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233533AbiDRQyQ (ORCPT
+        with ESMTP id S1346630AbiDRQ4k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 12:54:16 -0400
+        Mon, 18 Apr 2022 12:56:40 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3745F3388F
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:51:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 653B434BB4
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:52:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650300695;
+        s=mimecast20190719; t=1650300733;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ykPgi6kXIPquInV89bqGLiN6dgrVRp+D+st6086CdO8=;
-        b=X0y4YUfm0vndHUJlWcL5Cr7BQRGjpTZZB3nm+SYlX/ijUQ3flaRgE1ZrNeqLb/OSmoMQfq
-        htI/LcEmbaTADMJ2rmvOe9QP7bgjJtaXZ7M+hroWHexxaOUfzi9cpUlAYY4jXzi5n31i6y
-        zGFIIcmkVLYYOzbCZS5u21wB6yTRBaA=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=WHwtgBFXaVRPDxpgXVknAcXgf6im9N3NqhP05P8+ItY=;
+        b=K+tLHQOcqfZJqA82ngLxu9EfYGZvJbRyelKKqYwawmF/hctj9LBgQ042fo11ncrIVdBp/n
+        oerK0SYisg1sIg0vJJb7+OK8H451gp12QjeR/5C3f6oK1a1mhT0GqIb4iDYv1yRYgpnOKC
+        LzMRiVd8AMJ07+eB/vrUy6ew3T0iVJ4=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-157-oNhVGS1ROuOdhHYybUsmVQ-1; Mon, 18 Apr 2022 12:51:31 -0400
-X-MC-Unique: oNhVGS1ROuOdhHYybUsmVQ-1
-Received: by mail-qk1-f199.google.com with SMTP id m23-20020a05620a221700b006809e1fa4fdso10734008qkh.6
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:51:31 -0700 (PDT)
+ us-mta-359-SHPNHb6tO6mlmiXqA_mGFA-1; Mon, 18 Apr 2022 12:50:54 -0400
+X-MC-Unique: SHPNHb6tO6mlmiXqA_mGFA-1
+Received: by mail-qv1-f72.google.com with SMTP id eo13-20020ad4594d000000b004466661ece9so1379959qvb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:50:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ykPgi6kXIPquInV89bqGLiN6dgrVRp+D+st6086CdO8=;
-        b=f9S5BocIPikdWGe+oB5nDw+3YuNtczx34ycNm3njBa2PZgUPxtmyctH75TI5Inb3yE
-         xcHdge4AGLDAmYRPDDw05hT7SmUUrT3oB0v6JV7iuDb2XuKsPWrVIzUvioE8UsEvqGRj
-         qVfGHp2EyqeVXuS+uuXjbndXOjJofvTLGFMRzPPllrorpRumSFjI4XuF2Y/7DUbZavRQ
-         U8ClJw6Qrp/6jlJdDSjb3sAsidjFAhEIkP8I9/srUcbHMvizhg+EdIsc9ZJxufJmqb2/
-         2wqCW6fd74c/Q84Ekv+WCxXJgcSKjTKEV2LLIrEzqNpsMi3ejqeVb2wbjpOKaqAICE+J
-         0+2Q==
-X-Gm-Message-State: AOAM533FDFJ1DCs1VIFo2asZM7xCAu+AC1ZgP1aifDHG42LW3UyZnjlF
-        GUXv/Q0BspXDbfvnMhWtPrcImkHO4OmaxY17M8dPrw2RgK6VDPyV2+EbxkpganL4gma2LT0QjHB
-        bc/asAm3WsPa2A5KGd+gX5VGx
-X-Received: by 2002:a05:6214:1cc4:b0:431:4cbc:1d91 with SMTP id g4-20020a0562141cc400b004314cbc1d91mr8820738qvd.64.1650300690918;
-        Mon, 18 Apr 2022 09:51:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxM2T3tBY0BTRKAmzHF3vf0/f9tMsFpe9hROzKjkbAKMjMk7Z+CVjQrSDXMgrhlw9P3724zIA==
-X-Received: by 2002:a05:6214:1cc4:b0:431:4cbc:1d91 with SMTP id g4-20020a0562141cc400b004314cbc1d91mr8820723qvd.64.1650300690652;
-        Mon, 18 Apr 2022 09:51:30 -0700 (PDT)
+        bh=WHwtgBFXaVRPDxpgXVknAcXgf6im9N3NqhP05P8+ItY=;
+        b=Cp20nsAWqDC9+AA2EFTaoLZPerTNyVXB8bMJOyWYrvh2u31x+uxWVTvG5yfNIy/+QQ
+         Tj7z1wD5cihWeMvlTK785KJB4ZGbA5poo8Jlm8MnW+eJU0E09zgyZRgFE5hZeEEyRTTG
+         q6Jf8mgPU/mYiPPE7cab98HXkfMeouDQNIwMW7Gqo3PMIws/kCgYZ+erw4fetIH3CjLU
+         4Lz71ob4RkW4LTqtkrxv/V8uJRDu/IRENKf6qnEaO7xaqWPM4peG6RmFsjLy/kZqX+vZ
+         dLRqFAJqfXhZWiUf6NoC3iq5MgajX2YLnwG9JgsfIg35xwH8Gb1vEOIx/jbtOdN6EUOv
+         PdIw==
+X-Gm-Message-State: AOAM532rS29tf7quGAg9RCoD7XLfsxfz6iv4dXZj1WAR7BcLn2c2/iN0
+        tXXm20r7zdo9lYYJTZT/1Ec4LF2SCr7ptLonHr0+18FthuqhZQGKcdwrTlu6o+WdPId21JmI6Z7
+        9I2WP4TiPLDr9cVOwN7ujDmCN
+X-Received: by 2002:a05:620a:6db:b0:69e:84e3:5059 with SMTP id 27-20020a05620a06db00b0069e84e35059mr5494234qky.709.1650300653947;
+        Mon, 18 Apr 2022 09:50:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwbWQYYsvn90H1BnF5L8o1UGM3/9JXhiIclvSAkzCGZCOu7kfxyf1pecjQS5e4NPEffWlm8uw==
+X-Received: by 2002:a05:620a:6db:b0:69e:84e3:5059 with SMTP id 27-20020a05620a06db00b0069e84e35059mr5494227qky.709.1650300653717;
+        Mon, 18 Apr 2022 09:50:53 -0700 (PDT)
 Received: from treble.redhat.com ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id e15-20020ac8670f000000b002e22d9c756dsm7277059qtp.30.2022.04.18.09.51.29
+        by smtp.gmail.com with ESMTPSA id e15-20020ac8670f000000b002e22d9c756dsm7277059qtp.30.2022.04.18.09.50.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 09:51:30 -0700 (PDT)
+        Mon, 18 Apr 2022 09:50:53 -0700 (PDT)
 From:   Josh Poimboeuf <jpoimboe@redhat.com>
 To:     x86@kernel.org
 Cc:     Peter Zijlstra <peterz@infradead.org>,
         linux-kernel@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
-Subject: [PATCH v2 25/25] objtool: Update documentation
-Date:   Mon, 18 Apr 2022 09:50:44 -0700
-Message-Id: <b6a84d301d9f73ec6725752654097f4e31fa1b69.1650300597.git.jpoimboe@redhat.com>
+Subject: [PATCH v2 01/25] objtool: Enable unreachable warnings for CLANG LTO
+Date:   Mon, 18 Apr 2022 09:50:20 -0700
+Message-Id: <7b12df54bceeb0761fe9fc8269ea0c00501214a9.1650300597.git.jpoimboe@redhat.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1650300597.git.jpoimboe@redhat.com>
 References: <cover.1650300597.git.jpoimboe@redhat.com>
@@ -73,177 +73,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The objtool documentation is very stack validation centric.  Broaden the
-documentation and describe all the features objtool supports.
+With IBT support in, objtool is now fully capable of following vmlinux
+code flow in LTO mode.  Start reporting unreachable warnings for Clang
+LTO as well.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 ---
- .../{stack-validation.txt => objtool.txt}     | 122 +++++++++++++++---
- 1 file changed, 102 insertions(+), 20 deletions(-)
- rename tools/objtool/Documentation/{stack-validation.txt => objtool.txt} (80%)
+ scripts/Makefile.build  | 2 +-
+ scripts/link-vmlinux.sh | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/objtool/Documentation/stack-validation.txt b/tools/objtool/Documentation/objtool.txt
-similarity index 80%
-rename from tools/objtool/Documentation/stack-validation.txt
-rename to tools/objtool/Documentation/objtool.txt
-index 30f38fdc0d56..8a671902a187 100644
---- a/tools/objtool/Documentation/stack-validation.txt
-+++ b/tools/objtool/Documentation/objtool.txt
-@@ -1,15 +1,103 @@
--Compile-time stack metadata validation
--======================================
-+Objtool
-+=======
- 
-+The kernel CONFIG_OBJTOOL option enables a host tool named 'objtool'
-+which runs at compile time.  It can do various validations and
-+transformations on .o files.
- 
--Overview
-+Objtool has become an integral part of the x86-64 kernel toolchain.  The
-+kernel depends on it for a variety of security and performance features
-+(and other types of features as well).
-+
-+
-+Features
- --------
- 
--The kernel CONFIG_STACK_VALIDATION option enables a host tool named
--objtool which runs at compile time.  It has a "check" subcommand which
--analyzes every .o file and ensures the validity of its stack metadata.
--It enforces a set of rules on asm code and C inline assembly code so
--that stack traces can be reliable.
-+Objtool has the following features:
-+
-+- Stack unwinding metadata validation -- useful for helping to ensure
-+  stack traces are reliable for live patching
-+
-+- ORC unwinder metadata generation -- a faster and more precise
-+  alternative to frame pointer based unwinding
-+
-+- Retpoline validation -- ensures that all indirect calls go through
-+  retpoline thunks, for Spectre v2 mitigations
-+
-+- Retpoline call site annotation -- annotates all retpoline thunk call
-+  sites, enabling the kernel to patch them inline, to prevent "thunk
-+  funneling" for both security and performance reasons
-+
-+- Non-instrumentation validation -- validates non-instrumentable
-+  ("noinstr") code rules, preventing instrumentation in low-level C
-+  entry code
-+
-+- Static call annotation -- annotates static call sites, enabling the
-+  kernel to implement inline static calls, a faster alternative to some
-+  indirect branches
-+
-+- Uaccess validation -- validates uaccess rules for a proper
-+  implementation of Supervisor Mode Access Protection (SMAP)
-+
-+- Straight Line Speculation validation -- validates certain SLS
-+  mitigations
-+
-+- Indirect Branch Tracking validation -- validates Intel CET IBT rules
-+  to ensure that all functions referenced by function pointers have
-+  corresponding ENDBR instructions
-+
-+- Indirect Branch Tracking annotation -- annotates unused ENDBR
-+  instruction sites, enabling the kernel to "seal" them (replace them
-+  with NOPs) to further harden IBT
-+
-+- Function entry annotation -- annotates function entries, enabling
-+  kernel function tracing
-+
-+- Other toolchain hacks which will go unmentioned at this time...
-+
-+Each feature can be enabled individually or in combination using the
-+objtool cmdline.
-+
-+
-+Objects
-+-------
-+
-+Typically, objtool runs on every translation unit (TU, aka ".o file") in
-+the kernel.  If a TU is part of a kernel module, the '--module' option
-+is added.
-+
-+However:
-+
-+- If noinstr validation is enabled, it also runs on vmlinux.o, with all
-+  options removed and '--noinstr' added.
-+
-+- If IBT or LTO is enabled, it doesn't run on TUs at all.  Instead it
-+  runs on vmlinux.o and linked modules, with all options.
-+
-+In summary:
-+
-+  A) Legacy mode:
-+             TU: objtool [--module] <options>
-+        vmlinux: N/A
-+         module: N/A
-+
-+  B) CONFIG_NOINSTR_VALIDATION=y && !(CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y):
-+             TU: objtool [--module] <options>	// no --noinstr
-+        vmlinux: objtool --noinstr		// other options removed
-+         module: N/A
-+
-+  C) CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y:
-+             TU: N/A
-+        vmlinux: objtool --noinstr <options>
-+         module: objtool --module --noinstr <options>
-+
-+
-+Stack validation
-+----------------
-+
-+Objtool's stack validation feature analyzes every .o file and ensures
-+the validity of its stack metadata.  It enforces a set of rules on asm
-+code and C inline assembly code so that stack traces can be reliable.
- 
- For each function, it recursively follows all possible code paths and
- validates the correct frame pointer state at each instruction.
-@@ -20,14 +108,6 @@ alternative execution paths to a given instruction (or set of
- instructions).  Similarly, it knows how to follow switch statements, for
- which gcc sometimes uses jump tables.
- 
--(Objtool also has an 'orc generate' subcommand which generates debuginfo
--for the ORC unwinder.  See Documentation/x86/orc-unwinder.rst in the
--kernel tree for more details.)
--
--
--Why do we need stack metadata validation?
-------------------------------------------
--
- Here are some of the benefits of validating stack metadata:
- 
- a) More reliable stack traces for frame pointer enabled kernels
-@@ -113,9 +193,6 @@ c) Higher live patching compatibility rate
-    For more details, see the livepatch documentation in the Linux kernel
-    source tree at Documentation/livepatch/livepatch.rst.
- 
--Rules
-------
--
- To achieve the validation, objtool enforces the following rules:
- 
- 1. Each callable function must be annotated as such with the ELF
-@@ -177,7 +254,8 @@ Another possible cause for errors in C code is if the Makefile removes
- -fno-omit-frame-pointer or adds -fomit-frame-pointer to the gcc options.
- 
- Here are some examples of common warnings reported by objtool, what
--they mean, and suggestions for how to fix them.
-+they mean, and suggestions for how to fix them.  When in doubt, ping
-+the objtool maintainers.
- 
- 
- 1. file.o: warning: objtool: func()+0x128: call without frame pointer save/setup
-@@ -358,3 +436,7 @@ ignore it:
-     OBJECT_FILES_NON_STANDARD := y
- 
-   to the Makefile.
-+
-+NOTE: OBJECT_FILES_NON_STANDARD doesn't work for link time validation of
-+vmlinux.o or a linked module.  So it should only be used for files which
-+aren't linked into vmlinux or a module.
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 9717e6f6fb31..33c1ed581522 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -231,7 +231,7 @@ objtool_args =								\
+ 	$(if $(part-of-module), --module)				\
+ 	$(if $(CONFIG_X86_KERNEL_IBT), --lto --ibt)			\
+ 	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
+-	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
++	$(if $(CONFIG_GCOV_KERNEL), --no-unreachable)			\
+ 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
+ 	$(if $(CONFIG_X86_SMAP), --uaccess)				\
+ 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index 20f44504a644..9361a1ef02c9 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -140,7 +140,7 @@ objtool_link()
+ 		if ! is_enabled CONFIG_FRAME_POINTER; then
+ 			objtoolopt="${objtoolopt} --no-fp"
+ 		fi
+-		if is_enabled CONFIG_GCOV_KERNEL || is_enabled CONFIG_LTO_CLANG; then
++		if is_enabled CONFIG_GCOV_KERNEL; then
+ 			objtoolopt="${objtoolopt} --no-unreachable"
+ 		fi
+ 		if is_enabled CONFIG_RETPOLINE; then
 -- 
 2.34.1
 
