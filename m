@@ -2,92 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5705FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37666C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:21:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346963AbiDRRWw (ORCPT
+        id S1346978AbiDRRXy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 13:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40612 "EHLO
+        Mon, 18 Apr 2022 13:23:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346991AbiDRRWh (ORCPT
+        with ESMTP id S242820AbiDRRXr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 13:22:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9A1911A34
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:19:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650302396;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BOeDwm19QZU5bj1yBihjhswrckaR7N4xxWK6qgyPxIA=;
-        b=ZCgurH657/diQCpZwxz0p2PUXks1fuUjzV2vVjVWeptahCfhdy45efJLaxS2FZGIkK134G
-        vyltAow0XPHCRmntnDKI8DELFmFentnefEuMyYPnWw4K0HFOMpeZOZfxuT6kCgJwsRXAu4
-        ZfpW1y0dacuBarmtuzvRt49sqNgCA0Y=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-437-7tjVyLDfNhGYyJThbh6otQ-1; Mon, 18 Apr 2022 13:19:52 -0400
-X-MC-Unique: 7tjVyLDfNhGYyJThbh6otQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4AC56811E78;
-        Mon, 18 Apr 2022 17:19:46 +0000 (UTC)
-Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.192.13])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 34F3840FD37C;
-        Mon, 18 Apr 2022 17:19:43 +0000 (UTC)
-Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
-        oleg@redhat.com; Mon, 18 Apr 2022 19:19:45 +0200 (CEST)
-Date:   Mon, 18 Apr 2022 19:19:42 +0200
-From:   Oleg Nesterov <oleg@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     rjw@rjwysocki.net, mingo@kernel.org, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        ebiederm@xmission.com, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        tj@kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH 2/5] sched,ptrace: Fix ptrace_check_attach() vs PREEMPT_RT
-Message-ID: <20220418171941.GB16199@redhat.com>
-References: <20220413185909.GB30360@redhat.com>
- <20220413192053.GY2731@worktop.programming.kicks-ass.net>
- <20220413195612.GC2762@worktop.programming.kicks-ass.net>
- <20220414115410.GA32752@redhat.com>
- <20220414183433.GC32752@redhat.com>
- <YlikBjA3kL3XEQP5@hirez.programming.kicks-ass.net>
- <20220415101644.GA10421@redhat.com>
- <20220415105755.GA15217@redhat.com>
- <Yllep6B8eva2VURJ@hirez.programming.kicks-ass.net>
- <20220418170104.GA16199@redhat.com>
+        Mon, 18 Apr 2022 13:23:47 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8541F31935
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:21:07 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso17794240pju.1
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:21:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iQ7zMObbxBwpwrmjodRH3jIXu53bzE9nhd/lk8gMVG0=;
+        b=N27U19zOBTYQfhc3bgkjYTIy8VPlnXYzPv3bvnCJHxVIGdoj6Dz995yQF6LlOPCvTr
+         BSsZ6cxg55iljThZtwy6r0pNbEQpmpTlAy87IBBTZdvMau1M/zmRDEh4hK1zgOBL0uge
+         VENqT2H+vNAC49WV+/Z4KPqtM4awCnGbTH7UyDkEmGNHPrn0PXFedpdb7EAn/CNfdqlh
+         247BiGGCsoUiN5RhPrOcsztxDbmWCYSrUsuMfIuqrO+cBMjYO4hw1D126HqZvf07pj3C
+         9bNgLiJENjKHtOO/4F468dhRDAhjam2oB+ydxWBy5w0zJTJCKYyRgJfqEmG2oTnafSpS
+         tKiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iQ7zMObbxBwpwrmjodRH3jIXu53bzE9nhd/lk8gMVG0=;
+        b=KPRv7kABW5IqSfJ/UIizkwQcg8vKx4LGBMuwg4o4EAAlbJHvjodOAV1Po0+TM8NhJX
+         V6JDa0uCwzEo8WTqBPjI4L83WUKDAa5ZEGmD8oPKbHULOqtR5FQ+2CdMIeYgMM5vmJNJ
+         DGUEjOcp7rxY18lijU90DSGs7wC2R+VWKIwVe2ViBvanLh/anOgBQZNNUlYeiSghWxJ5
+         4QCRK+GGXQvc+YHGjzutlpeoqJ30BA05N/Wku04UaO3u42JsqqUimgAoQ/JCyyxIR9RE
+         fe6szyVfO4FNHit89rnJfc0tgsBM6SHmXRzvRmHDlwSyOMlsfZhqjrr2zgfbtUCEYFPA
+         42xA==
+X-Gm-Message-State: AOAM531MkV59Bl4ff8LKyfuX3wXiHvGgzyGeXmBb0SlZ4HTHAPnTuhT9
+        kXS/0cZ/DpOIU2bzKcz2Mu/oCo7GeMG3zQ==
+X-Google-Smtp-Source: ABdhPJz++PL/lJOqM3fzQXj2jrTDz43c8/cBZ4e+c+pV3rnK5BSZJnTiluFjWyDif1IdjKep3RWv4w==
+X-Received: by 2002:a17:90b:1a8a:b0:1c7:c60b:f12 with SMTP id ng10-20020a17090b1a8a00b001c7c60b0f12mr13989087pjb.139.1650302467000;
+        Mon, 18 Apr 2022 10:21:07 -0700 (PDT)
+Received: from aliyar-HP-Laptop-15-da1xxx.domain.name ([14.139.241.88])
+        by smtp.gmail.com with ESMTPSA id y9-20020aa78f29000000b005098201d2f5sm13041394pfr.205.2022.04.18.10.21.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 10:21:06 -0700 (PDT)
+From:   Aliya Rahmani <aliyarahmani786@gmail.com>
+To:     clabbe@baylibre.com
+Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
+        outreachy@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Aliya Rahmani <aliyarahmani786@gmail.com>
+Subject: [PATCH v3 0/3] staging: media: zoran: fix warnings reported by checkpatch
+Date:   Mon, 18 Apr 2022 22:44:50 +0530
+Message-Id: <20220418171453.16971-1-aliyarahmani786@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220418170104.GA16199@redhat.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/18, Oleg Nesterov wrote:
->
->  static int ptrace_check_attach(struct task_struct *child, bool ignore_state)
->  {
-...
-> +	if (!traced)
-> +		return -ESRCH;
-> +
-> +	WARN_ON(READ_ONCE(child->__state) == __TASK_TRACED);
-> +	if (ignore_state)
-> +		return 0;
-> +
-> +	if (!task_is_traced(child))
-> +		return -ESRCH;
+These patches address style issues found by checkpatch in the
+zoran/videocodec.c file.
 
-This is the new check V1 didn't have, we need it to unsure that check_attach
-can't miss the change in child->jobctl and call wait_task_inactive() before
-the child marks itself as "traced" and clears JOBCTL_TRACED_XXX.
+changes since v2:
+PATCH[2/3] : Rework commit description and subject
+PATCH[3/3] : Rework commit description and subject
 
-Oleg.
+Aliya Rahmani (3):
+ staging: media: zoran: use seq_puts() instead of seq_printf()
+ staging: media: zoran: else is not generally useful after a break or return
+ staging: media: zoran: avoid macro argument precedence issues
+
+drivers/staging/media/zoran/videocodec.c | 9++++-----
+1 file changed, 4 insertions(+), 5 deletions(-)
+
+-- 
+2.25.1
 
