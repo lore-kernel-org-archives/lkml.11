@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC86C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 115E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240686AbiDRNGK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41940 "EHLO
+        id S240810AbiDRNGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:06:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240258AbiDRMzJ (ORCPT
+        with ESMTP id S240323AbiDRMzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:55:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877FE6418;
-        Mon, 18 Apr 2022 05:36:17 -0700 (PDT)
+        Mon, 18 Apr 2022 08:55:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB12523141;
+        Mon, 18 Apr 2022 05:35:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E2B6B80EDC;
-        Mon, 18 Apr 2022 12:36:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80BFDC385A1;
-        Mon, 18 Apr 2022 12:36:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC99761033;
+        Mon, 18 Apr 2022 12:35:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C457FC385A8;
+        Mon, 18 Apr 2022 12:35:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285374;
-        bh=in+Tjq7u2HtEgipwNeDYze3KLACNyZ5YX46Zm/zoWb0=;
+        s=korg; t=1650285337;
+        bh=WX8SUB5uw2THr7n8LMX3BwGIz8LUCa60mm8HUIvICWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s29PyUG4H6huEKv/CJZECgcjrq/vQznzcDiaV88l4MwGZKP0lpBptoyeDaMl7bjYi
-         ETvAGYxyYXmNhkarz3sqVjizfVOouQduD+CYaSoyQb30JX3VXqmiDPMwswdkL297Mu
-         +DUiVxzNEr9BnlcUUsuAoAGDKELiEtHDcs44apsQ=
+        b=IyGRLgIJL4Yims78HFOzk/XRzrrn8mgfhSe386JqUTR11vt7qEviOzIRLdaw4RtB/
+         4i4SR9iK63juLC7Aw+YcrNyL4i+N7p49LAHycWkf1iAq4GWOFIp7cCRwkRP76T+YtK
+         8jGjLFSQ38H1xPVzrcEMnF4t9SQBnuNSDxooQXf4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH 5.15 171/189] i2c: dev: check return value when calling dev_set_name()
-Date:   Mon, 18 Apr 2022 14:13:11 +0200
-Message-Id: <20220418121207.588078401@linuxfoundation.org>
+        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 126/189] arm64: alternatives: mark patch_alternative() as `noinstr`
+Date:   Mon, 18 Apr 2022 14:12:26 +0200
+Message-Id: <20220418121204.537741573@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,49 +50,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Joey Gouly <joey.gouly@arm.com>
 
-commit 993eb48fa199b5f476df8204e652eff63dd19361 upstream.
+[ Upstream commit a2c0b0fbe01419f8f5d1c0b9c581631f34ffce8b ]
 
-If dev_set_name() fails, the dev_name() is null, check the return
-value of dev_set_name() to avoid the null-ptr-deref.
+The alternatives code must be `noinstr` such that it does not patch itself,
+as the cache invalidation is only performed after all the alternatives have
+been applied.
 
-Fixes: 1413ef638aba ("i2c: dev: Fix the race between the release of i2c_dev and cdev")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Mark patch_alternative() as `noinstr`. Mark branch_insn_requires_update()
+and get_alt_insn() with `__always_inline` since they are both only called
+through patch_alternative().
+
+Booting a kernel in QEMU TCG with KCSAN=y and ARM64_USE_LSE_ATOMICS=y caused
+a boot hang:
+[    0.241121] CPU: All CPU(s) started at EL2
+
+The alternatives code was patching the atomics in __tsan_read4() from LL/SC
+atomics to LSE atomics.
+
+The following fragment is using LL/SC atomics in the .text section:
+  | <__tsan_unaligned_read4+304>:     ldxr    x6, [x2]
+  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
+  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
+  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
+
+This LL/SC atomic sequence was to be replaced with LSE atomics. However since
+the alternatives code was instrumentable, __tsan_read4() was being called after
+only the first instruction was replaced, which led to the following code in memory:
+  | <__tsan_unaligned_read4+304>:     ldadd   x5, x6, [x2]
+  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
+  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
+  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
+
+This caused an infinite loop as the `stxr` instruction never completed successfully,
+so `w7` was always 0.
+
+Signed-off-by: Joey Gouly <joey.gouly@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220405104733.11476-1-joey.gouly@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/i2c-dev.c |   15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ arch/arm64/kernel/alternative.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/i2c/i2c-dev.c
-+++ b/drivers/i2c/i2c-dev.c
-@@ -668,16 +668,21 @@ static int i2cdev_attach_adapter(struct
- 	i2c_dev->dev.class = i2c_dev_class;
- 	i2c_dev->dev.parent = &adap->dev;
- 	i2c_dev->dev.release = i2cdev_dev_release;
--	dev_set_name(&i2c_dev->dev, "i2c-%d", adap->nr);
-+
-+	res = dev_set_name(&i2c_dev->dev, "i2c-%d", adap->nr);
-+	if (res)
-+		goto err_put_i2c_dev;
+diff --git a/arch/arm64/kernel/alternative.c b/arch/arm64/kernel/alternative.c
+index 3fb79b76e9d9..7bbf5104b7b7 100644
+--- a/arch/arm64/kernel/alternative.c
++++ b/arch/arm64/kernel/alternative.c
+@@ -42,7 +42,7 @@ bool alternative_is_applied(u16 cpufeature)
+ /*
+  * Check if the target PC is within an alternative block.
+  */
+-static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
++static __always_inline bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
+ {
+ 	unsigned long replptr = (unsigned long)ALT_REPL_PTR(alt);
+ 	return !(pc >= replptr && pc <= (replptr + alt->alt_len));
+@@ -50,7 +50,7 @@ static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
  
- 	res = cdev_device_add(&i2c_dev->cdev, &i2c_dev->dev);
--	if (res) {
--		put_i2c_dev(i2c_dev, false);
--		return res;
--	}
-+	if (res)
-+		goto err_put_i2c_dev;
+ #define align_down(x, a)	((unsigned long)(x) & ~(((unsigned long)(a)) - 1))
  
- 	pr_debug("adapter [%s] registered as minor %d\n", adap->name, adap->nr);
- 	return 0;
-+
-+err_put_i2c_dev:
-+	put_i2c_dev(i2c_dev, false);
-+	return res;
+-static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
++static __always_inline u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
+ {
+ 	u32 insn;
+ 
+@@ -95,7 +95,7 @@ static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnp
+ 	return insn;
  }
  
- static int i2cdev_detach_adapter(struct device *dev, void *dummy)
+-static void patch_alternative(struct alt_instr *alt,
++static noinstr void patch_alternative(struct alt_instr *alt,
+ 			      __le32 *origptr, __le32 *updptr, int nr_inst)
+ {
+ 	__le32 *replptr;
+-- 
+2.35.1
+
 
 
