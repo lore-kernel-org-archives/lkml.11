@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E95C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29CCAC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344611AbiDROaR (ORCPT
+        id S1344649AbiDROaX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34588 "EHLO
+        Mon, 18 Apr 2022 10:30:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344649AbiDROSM (ORCPT
+        with ESMTP id S1344485AbiDROSG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:18:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FAA4AE06;
-        Mon, 18 Apr 2022 06:14:04 -0700 (PDT)
+        Mon, 18 Apr 2022 10:18:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FAF44A3E9;
+        Mon, 18 Apr 2022 06:13:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1CD0B80ED9;
-        Mon, 18 Apr 2022 13:14:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E179EC385A1;
-        Mon, 18 Apr 2022 13:14:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5D0FB80EC4;
+        Mon, 18 Apr 2022 13:13:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 298EFC385A7;
+        Mon, 18 Apr 2022 13:13:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287641;
-        bh=qt6zVlScKlgp/UWRwAPjnLop5XpVwyg8xY7P3/aVvDE=;
+        s=korg; t=1650287634;
+        bh=K4hybNuQ7tcwDht7og9wNoGnXsejT7br8Yb0bMkFw/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nnJ+57sQLw9TTWi6ZLCIS85lyH4woaMMUSSsAu275DVhtNex7QseKDJS4tubirERM
-         WhEGz4EURSL58aVLHg2l0LOCbS64XjPUHbwu/eghY5IOS/gMJWwVqdeGmPSwOp6Ont
-         jO9HxVYZtSbAOkVmLdgfE6rIjrfdOgCTWgJdEOLw=
+        b=DJtXtg2FdSqSPJdXPkjclUJIAQMTlus1g21G98emv2ASldW9JmUGGkU70EH/qqIMq
+         dlYw/rptM7fncSdHqYb69zmFHwAI8tPSV/p6+H7w3Qo6bEvINP9gcy4BS/AfkkgjRo
+         T5Em9cULVlWro5wOP3KsrrrghqUp9l8nQHBmwhog=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Sven Peter <sven@svenpeter.dev>, Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH 4.9 217/218] i2c: pasemi: Wait for write xfers to finish
-Date:   Mon, 18 Apr 2022 14:14:43 +0200
-Message-Id: <20220418121208.591340114@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH 4.9 215/218] ARM: davinci: da850-evm: Avoid NULL pointer dereference
+Date:   Mon, 18 Apr 2022 14:14:41 +0200
+Message-Id: <20220418121208.475925351@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,50 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Povišer <povik+lin@cutebit.org>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit bd8963e602c77adc76dbbbfc3417c3cf14fed76b upstream.
+commit 83a1cde5c74bfb44b49cb2a940d044bb2380f4ea upstream.
 
-Wait for completion of write transfers before returning from the driver.
-At first sight it may seem advantageous to leave write transfers queued
-for the controller to carry out on its own time, but there's a couple of
-issues with it:
+With newer versions of GCC, there is a panic in da850_evm_config_emac()
+when booting multi_v5_defconfig in QEMU under the palmetto-bmc machine:
 
- * Driver doesn't check for FIFO space.
+Unable to handle kernel NULL pointer dereference at virtual address 00000020
+pgd = (ptrval)
+[00000020] *pgd=00000000
+Internal error: Oops: 5 [#1] PREEMPT ARM
+Modules linked in:
+CPU: 0 PID: 1 Comm: swapper Not tainted 5.15.0 #1
+Hardware name: Generic DT based system
+PC is at da850_evm_config_emac+0x1c/0x120
+LR is at do_one_initcall+0x50/0x1e0
 
- * The queued writes can complete while the driver is in its I2C read
-   transfer path which means it will get confused by the raising of
-   XEN (the 'transaction ended' signal). This can cause a spurious
-   ENODATA error due to premature reading of the MRXFIFO register.
+The emac_pdata pointer in soc_info is NULL because davinci_soc_info only
+gets populated on davinci machines but da850_evm_config_emac() is called
+on all machines via device_initcall().
 
-Adding the wait fixes some unreliability issues with the driver. There's
-some efficiency cost to it (especially with pasemi_smb_waitready doing
-its polling), but that will be alleviated once the driver receives
-interrupt support.
+Move the rmii_en assignment below the machine check so that it is only
+dereferenced when running on a supported SoC.
 
-Fixes: beb58aa39e6e ("i2c: PA Semi SMBus driver")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Reviewed-by: Sven Peter <sven@svenpeter.dev>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: bae105879f2f ("davinci: DA850/OMAP-L138 EVM: implement autodetect of RMII PHY")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/YcS4xVWs6bQlQSPC@archlinux-ax161/
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-pasemi.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm/mach-davinci/board-da850-evm.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/i2c/busses/i2c-pasemi.c
-+++ b/drivers/i2c/busses/i2c-pasemi.c
-@@ -145,6 +145,12 @@ static int pasemi_i2c_xfer_msg(struct i2
+--- a/arch/arm/mach-davinci/board-da850-evm.c
++++ b/arch/arm/mach-davinci/board-da850-evm.c
+@@ -1043,11 +1043,13 @@ static int __init da850_evm_config_emac(
+ 	int ret;
+ 	u32 val;
+ 	struct davinci_soc_info *soc_info = &davinci_soc_info;
+-	u8 rmii_en = soc_info->emac_pdata->rmii_en;
++	u8 rmii_en;
  
- 		TXFIFO_WR(smbus, msg->buf[msg->len-1] |
- 			  (stop ? MTXFIFO_STOP : 0));
+ 	if (!machine_is_davinci_da850_evm())
+ 		return 0;
+ 
++	rmii_en = soc_info->emac_pdata->rmii_en;
 +
-+		if (stop) {
-+			err = pasemi_smb_waitready(smbus);
-+			if (err)
-+				goto reset_out;
-+		}
- 	}
+ 	cfg_chip3_base = DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP3_REG);
  
- 	return 0;
+ 	val = __raw_readl(cfg_chip3_base);
 
 
