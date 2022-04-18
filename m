@@ -2,76 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:49:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3327CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:50:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346417AbiDRQvo (ORCPT
+        id S1346449AbiDRQx1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 12:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51606 "EHLO
+        Mon, 18 Apr 2022 12:53:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239529AbiDRQvm (ORCPT
+        with ESMTP id S1346447AbiDRQxY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 12:51:42 -0400
-Received: from mail.itouring.de (mail.itouring.de [IPv6:2a01:4f8:a0:4463::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D7732992;
-        Mon, 18 Apr 2022 09:49:02 -0700 (PDT)
-Received: from tux.applied-asynchrony.com (p5ddd7616.dip0.t-ipconnect.de [93.221.118.22])
-        by mail.itouring.de (Postfix) with ESMTPSA id 19B69124EC0;
-        Mon, 18 Apr 2022 18:49:01 +0200 (CEST)
-Received: from [192.168.100.221] (hho.applied-asynchrony.com [192.168.100.221])
-        by tux.applied-asynchrony.com (Postfix) with ESMTP id D14ECF01608;
-        Mon, 18 Apr 2022 18:49:00 +0200 (CEST)
-Subject: Re: [PATCH 5.15 000/189] 5.15.35-rc1 review
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-References: <20220418121200.312988959@linuxfoundation.org>
- <ec6408b7-14f4-fc97-3371-3f6cd9a46d24@applied-asynchrony.com>
- <8d09a73f-acbd-82dc-77f0-540d106b6e67@roeck-us.net>
-From:   =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
-Organization: Applied Asynchrony, Inc.
-Message-ID: <fe7e1bac-60b0-ccab-b88e-243b41f64132@applied-asynchrony.com>
-Date:   Mon, 18 Apr 2022 18:49:00 +0200
+        Mon, 18 Apr 2022 12:53:24 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3CD32EFF
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:50:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650300637; x=1681836637;
+  h=message-id:date:mime-version:to:references:from:subject:
+   in-reply-to:content-transfer-encoding;
+  bh=T9DgsGykPJu/61nxfr6AZYfMrvU5yqC0wpyU4UQckBs=;
+  b=kbLypj4vUoXGNLt9eyOuZxrdqeuIKOvPfDhlIPpvgdMuY2aV8mBViOL/
+   CrS863w/iBoECNIYkT+Rib5LHihcT9Z805geve4zYt4sD2KzwbSmPh4pM
+   ydtukVBjM1rvDI3al2Q66ZzrGKlR+4u1+qT6gXmx3nd/ZGq4XVHv1b1mN
+   /UNdrODQEdkrjVrM7psEHpynhwxFho6+6bi0+L4yxw6XSbBxZo7C3DTuG
+   +xrvwRHoQPlxye5UHiMMWtwcH0fOTAv8UX3RLVH6QtZa0fm0zoJ+lMHa+
+   uBcW5hFQ6NZRN87X2MAdTe9TesE+OpPZvfrJCjpJF0bqchE1D1QI3UuGs
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="245453342"
+X-IronPort-AV: E=Sophos;i="5.90,270,1643702400"; 
+   d="scan'208";a="245453342"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 09:50:35 -0700
+X-IronPort-AV: E=Sophos;i="5.90,270,1643702400"; 
+   d="scan'208";a="554310652"
+Received: from cebrown-mobl.amr.corp.intel.com (HELO [10.212.18.136]) ([10.212.18.136])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 09:50:34 -0700
+Message-ID: <9961bda1-687a-a681-743e-7eb7b9f6f751@intel.com>
+Date:   Mon, 18 Apr 2022 09:50:33 -0700
 MIME-Version: 1.0
-In-Reply-To: <8d09a73f-acbd-82dc-77f0-540d106b6e67@roeck-us.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+To:     linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org,
+        rientjes@google.com, yosryahmed@google.com, hannes@cmpxchg.org,
+        shakeelb@google.com, dave.hansen@linux.intel.com,
+        tim.c.chen@linux.intel.com, roman.gushchin@linux.dev,
+        gthelen@google.com, a.manzanares@samsung.com,
+        heekwon.p@samsung.com, gim.jongmin@samsung.com,
+        linux-kernel@vger.kernel.org
+References: <20220416053902.68517-1-dave@stgolabs.net>
+ <20220417034932.jborenmvfbqrfhlj@offworld>
+ <c1475d8e-3ad6-cdab-5cc9-b44fef998636@intel.com>
+ <20220418164503.jfips3aiwhnlfjrq@offworld>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH 6/6] mm/migrate: export whether or not node is toptier in
+ sysf
+In-Reply-To: <20220418164503.jfips3aiwhnlfjrq@offworld>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-18 18:27, Guenter Roeck wrote:
-> On 4/18/22 07:07, Holger Hoffstätte wrote:
->> On 2022-04-18 14:10, Greg Kroah-Hartman wrote:
->>> This is the start of the stable review cycle for the 5.15.35 release.
->>> There are 189 patches in this series, all will be posted as a response
->>> to this one.  If anyone has any issues with these being applied, please
->>> let me know.
+On 4/18/22 09:45, Davidlohr Bueso wrote:
+> On Mon, 18 Apr 2022, Dave Hansen wrote:
+>> On 4/16/22 20:49, Davidlohr Bueso wrote:
+>>> This allows userspace to know if the node is considered fast
+>>> memory (with CPUs attached to it). While this can be already
+>>> derived without a new file, this helps further encapsulate the
+>>> concept.
 >>
->> drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_hubbub.c: In function hubbub31_verify_allow_pstate_change_high':
->> drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_hubbub.c:994:17: error: implicit declaration of function 'udelay' [-Werror=implicit-function-declaration]
->>    994 |                 udelay(1);
->>        |                 ^~~~~~
->>
->> Caused by "drm-amd-display-add-pstate-verification-and-recovery-for-dcn31.patch".
->> Explicitly includng <linux/delay.h> in dcn31_hubbub.c fixes it.
->>
->> Current mainline version of dcn31_hubbub.c does not explicitly include
->> <linux/delay.h>, so there seems to be some general inconsistency wrt.
->> which dcn module includes what.
->>
->> CC'ing Nicholas Kazlauskas.
->>
-> Should add: The problem is only seen with 32-bit (i386) builds.
+>> What is userspace supposed to *do* with this, though?
+> 
+> This came as a scratch to my own itch. I wanted to start testing
+> more tiering patches overall that I see pop up, and wanted a way
+> to differentiate the slow vs the fast memories in order to better
+> configure workload(s) working set sizes beyond what is your typical
+> grep MemTotal /proc/meminfo. If there is a better way I'm all
+> for it.
 
-I found this while building on my Zen2 Thinkpad, which is definitely 64 bits. :)
+But how does this help you?  Does it save you a few lines in a shell
+script to find the nodes that have memory and CPUs?
 
--h
+>> Isn't it just asking for trouble to add (known) redundancy to the ABI?
+>> It seems like a recipe for future inconsistency.
+> 
+> Perhaps. It was mostly about the fact that the notion of top tier
+> could also change as technology evolves.
+
+It seems like something arbitrary that everyone will just disagree on.
+I think we should try to stick to cold, hard facts as must as possible
+rather than trying to have the *kernel* dictate as a policy what is fast
+versus slow.
