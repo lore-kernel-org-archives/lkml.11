@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 786ECC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7538C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244267AbiDRN5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41644 "EHLO
+        id S244671AbiDRN5d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:57:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244898AbiDRNbA (ORCPT
+        with ESMTP id S244897AbiDRNbA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:31:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD898E6A;
-        Mon, 18 Apr 2022 05:57:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CC2E51;
+        Mon, 18 Apr 2022 05:57:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97832B80E4B;
-        Mon, 18 Apr 2022 12:57:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E332FC385A1;
-        Mon, 18 Apr 2022 12:57:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4EF4B80E4B;
+        Mon, 18 Apr 2022 12:57:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E379BC385A7;
+        Mon, 18 Apr 2022 12:57:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286639;
-        bh=d1WhqMnR0SZYGD78p5l5bAJASVYV7v2GXdl4z6axBfQ=;
+        s=korg; t=1650286636;
+        bh=fzk8MKUGqmpclWYl7A30PfvIc3vCf2G+DHGNqab7TAM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nkiLQDX2i33nj7//4xxaUKFSzGSEumti3sBiNq5A/npzLnkVLOenKDDXMJfrbD+SG
-         wkB3aKD/vManvGNnYu/O89OEpTekfsVel5hntJ+dr3ckkcCgn7/KKviXYtnrTtrOlC
-         Et85hv2tVs11drIZX0eCAwYBKckUkytEaJCpHdU8=
+        b=Jc5T2q46t1Om+WxpvqAXcQith1Hmd7CWLK9/RWS+aUFy5Xxyc2GB8snC4Bw1PGVf/
+         9BOSEqJcW8hMavsnl+wxkOMPc4wMtL/CJwHzsUplxgRWJ5cOzio4HUI83z9wg6JuwW
+         XZpoM+qR9dby8Pot1b3o4LLRb6x0IaVm6cDqKAC8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 171/284] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
-Date:   Mon, 18 Apr 2022 14:12:32 +0200
-Message-Id: <20220418121216.606058063@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.14 197/284] ubi: fastmap: Return error code if memory allocation fails in add_aeb()
+Date:   Mon, 18 Apr 2022 14:12:58 +0200
+Message-Id: <20220418121217.330564674@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,62 +48,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Yao <yao.jing2@zte.com.cn>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
+commit c3c07fc25f37c157fde041b3a0c3dfcb1590cbce upstream.
 
-Use sysfs_emit instead of scnprintf, snprintf or sprintf.
+Abort fastmap scanning and return error code if memory allocation fails
+in add_aeb(). Otherwise ubi will get wrong peb statistics information
+after scanning.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: dbb7d2a88d2a7b ("UBI: Add fastmap core")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/mtd/ubi/fastmap.c |   28 +++++++++++++++++++---------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-index bef431530090..25cc0bcdfe19 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
-@@ -413,7 +413,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
- 	if (r)
- 		return r;
+--- a/drivers/mtd/ubi/fastmap.c
++++ b/drivers/mtd/ubi/fastmap.c
+@@ -478,7 +478,9 @@ static int scan_pool(struct ubi_device *
+ 			if (err == UBI_IO_FF_BITFLIPS)
+ 				scrub = 1;
  
--	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
-+	return sysfs_emit(buf, "%d\n", errors);
- }
+-			add_aeb(ai, free, pnum, ec, scrub);
++			ret = add_aeb(ai, free, pnum, ec, scrub);
++			if (ret)
++				goto out;
+ 			continue;
+ 		} else if (err == 0 || err == UBI_IO_BITFLIPS) {
+ 			dbg_bld("Found non empty PEB:%i in pool", pnum);
+@@ -648,8 +650,10 @@ static int ubi_attach_fastmap(struct ubi
+ 		if (fm_pos >= fm_size)
+ 			goto fail_bad;
  
- static ssize_t dsicm_hw_revision_show(struct device *dev,
-@@ -444,7 +444,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
- 	if (r)
- 		return r;
+-		add_aeb(ai, &ai->free, be32_to_cpu(fmec->pnum),
+-			be32_to_cpu(fmec->ec), 0);
++		ret = add_aeb(ai, &ai->free, be32_to_cpu(fmec->pnum),
++			      be32_to_cpu(fmec->ec), 0);
++		if (ret)
++			goto fail;
+ 	}
  
--	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
-+	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
- }
+ 	/* read EC values from used list */
+@@ -659,8 +663,10 @@ static int ubi_attach_fastmap(struct ubi
+ 		if (fm_pos >= fm_size)
+ 			goto fail_bad;
  
- static ssize_t dsicm_store_ulps(struct device *dev,
-@@ -494,7 +494,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
- 	t = ddata->ulps_enabled;
- 	mutex_unlock(&ddata->lock);
+-		add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
+-			be32_to_cpu(fmec->ec), 0);
++		ret = add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
++			      be32_to_cpu(fmec->ec), 0);
++		if (ret)
++			goto fail;
+ 	}
  
--	return snprintf(buf, PAGE_SIZE, "%u\n", t);
-+	return sysfs_emit(buf, "%u\n", t);
- }
+ 	/* read EC values from scrub list */
+@@ -670,8 +676,10 @@ static int ubi_attach_fastmap(struct ubi
+ 		if (fm_pos >= fm_size)
+ 			goto fail_bad;
  
- static ssize_t dsicm_store_ulps_timeout(struct device *dev,
-@@ -541,7 +541,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
- 	t = ddata->ulps_timeout;
- 	mutex_unlock(&ddata->lock);
+-		add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
+-			be32_to_cpu(fmec->ec), 1);
++		ret = add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
++			      be32_to_cpu(fmec->ec), 1);
++		if (ret)
++			goto fail;
+ 	}
  
--	return snprintf(buf, PAGE_SIZE, "%u\n", t);
-+	return sysfs_emit(buf, "%u\n", t);
- }
+ 	/* read EC values from erase list */
+@@ -681,8 +689,10 @@ static int ubi_attach_fastmap(struct ubi
+ 		if (fm_pos >= fm_size)
+ 			goto fail_bad;
  
- static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
--- 
-2.34.1
-
+-		add_aeb(ai, &ai->erase, be32_to_cpu(fmec->pnum),
+-			be32_to_cpu(fmec->ec), 1);
++		ret = add_aeb(ai, &ai->erase, be32_to_cpu(fmec->pnum),
++			      be32_to_cpu(fmec->ec), 1);
++		if (ret)
++			goto fail;
+ 	}
+ 
+ 	ai->mean_ec = div_u64(ai->ec_sum, ai->ec_count);
 
 
