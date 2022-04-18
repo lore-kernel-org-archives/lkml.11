@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC242C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06544C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241886AbiDRNRh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:17:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60562 "EHLO
+        id S242056AbiDRNSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:18:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242114AbiDRM7h (ORCPT
+        with ESMTP id S242233AbiDRM7n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3802F028;
-        Mon, 18 Apr 2022 05:40:10 -0700 (PDT)
+        Mon, 18 Apr 2022 08:59:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 381F330542;
+        Mon, 18 Apr 2022 05:40:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A405B80EDB;
-        Mon, 18 Apr 2022 12:40:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CCD3C385A1;
-        Mon, 18 Apr 2022 12:40:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8CD5B80EDE;
+        Mon, 18 Apr 2022 12:40:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03814C385A1;
+        Mon, 18 Apr 2022 12:40:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285607;
-        bh=8p+aReAVSXNj6og1QN3uqqCJu5j0sLTXlG5WVaeT6ko=;
+        s=korg; t=1650285626;
+        bh=epETK8RMdi/qHauVcO3oyZYPjLD8fCCYT0QAkxHcJgc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d2HoygYAypb58cGcntkTqioHWm7rDp7i+AtTNwBHKLudbYZ9xNX0Di3s5vpTHCQGB
-         9SrKz9uZDhc6RHpIc7G93nCthZmtVZMm6hdvclL1vGx28h0puYyS0niDdPxBkU1z+i
-         zaAq+ueagBcqVxcdBWgHHJN3U2KXYbFqJBY9EYhQ=
+        b=RsBj2/H9g6aj6UmGbT+mEMhMAhszreIyvSfAJzqJgi+1TffVOtac9j2aFfiASCIfv
+         UlhIkDZPlhfahsTcNAP7G64yy5ENzvvNIx30KOL1l+s1SKp0okdXTlSJNyPuYPsuFs
+         zoogEN7HV2u19eyuQaFNJAoYEKnmF2GVJO8OIDCA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Patrick Wang <patrick.wang.shcn@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 072/105] mm: kmemleak: take a full lowmem check in kmemleak_*_phys()
-Date:   Mon, 18 Apr 2022 14:13:14 +0200
-Message-Id: <20220418121148.536397803@linuxfoundation.org>
+        stable@vger.kernel.org, Bagas Sanjaya <bagasdotme@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.10 077/105] ath9k: Properly clear TX status area before reporting to mac80211
+Date:   Mon, 18 Apr 2022 14:13:19 +0200
+Message-Id: <20220418121148.818096123@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -50,96 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrick Wang <patrick.wang.shcn@gmail.com>
+From: Toke Høiland-Jørgensen <toke@toke.dk>
 
-commit 23c2d497de21f25898fbea70aeb292ab8acc8c94 upstream.
+commit 037250f0a45cf9ecf5b52d4b9ff8eadeb609c800 upstream.
 
-The kmemleak_*_phys() apis do not check the address for lowmem's min
-boundary, while the caller may pass an address below lowmem, which will
-trigger an oops:
+The ath9k driver was not properly clearing the status area in the
+ieee80211_tx_info struct before reporting TX status to mac80211. Instead,
+it was manually filling in fields, which meant that fields introduced later
+were left as-is.
 
-  # echo scan > /sys/kernel/debug/kmemleak
-  Unable to handle kernel paging request at virtual address ff5fffffffe00000
-  Oops [#1]
-  Modules linked in:
-  CPU: 2 PID: 134 Comm: bash Not tainted 5.18.0-rc1-next-20220407 #33
-  Hardware name: riscv-virtio,qemu (DT)
-  epc : scan_block+0x74/0x15c
-   ra : scan_block+0x72/0x15c
-  epc : ffffffff801e5806 ra : ffffffff801e5804 sp : ff200000104abc30
-   gp : ffffffff815cd4e8 tp : ff60000004cfa340 t0 : 0000000000000200
-   t1 : 00aaaaaac23954cc t2 : 00000000000003ff s0 : ff200000104abc90
-   s1 : ffffffff81b0ff28 a0 : 0000000000000000 a1 : ff5fffffffe01000
-   a2 : ffffffff81b0ff28 a3 : 0000000000000002 a4 : 0000000000000001
-   a5 : 0000000000000000 a6 : ff200000104abd7c a7 : 0000000000000005
-   s2 : ff5fffffffe00ff9 s3 : ffffffff815cd998 s4 : ffffffff815d0e90
-   s5 : ffffffff81b0ff28 s6 : 0000000000000020 s7 : ffffffff815d0eb0
-   s8 : ffffffffffffffff s9 : ff5fffffffe00000 s10: ff5fffffffe01000
-   s11: 0000000000000022 t3 : 00ffffffaa17db4c t4 : 000000000000000f
-   t5 : 0000000000000001 t6 : 0000000000000000
-  status: 0000000000000100 badaddr: ff5fffffffe00000 cause: 000000000000000d
-    scan_gray_list+0x12e/0x1a6
-    kmemleak_scan+0x2aa/0x57e
-    kmemleak_write+0x32a/0x40c
-    full_proxy_write+0x56/0x82
-    vfs_write+0xa6/0x2a6
-    ksys_write+0x6c/0xe2
-    sys_write+0x22/0x2a
-    ret_from_syscall+0x0/0x2
+Conveniently, mac80211 actually provides a helper to zero out the status
+area, so use that to make sure we zero everything.
 
-The callers may not quite know the actual address they pass(e.g. from
-devicetree).  So the kmemleak_*_phys() apis should guarantee the address
-they finally use is in lowmem range, so check the address for lowmem's
-min boundary.
+The last commit touching the driver function writing the status information
+seems to have actually been fixing an issue that was also caused by the
+area being uninitialised; but it only added clearing of a single field
+instead of the whole struct. That is now redundant, though, so revert that
+commit and use it as a convenient Fixes tag.
 
-Link: https://lkml.kernel.org/r/20220413122925.33856-1-patrick.wang.shcn@gmail.com
-Signed-off-by: Patrick Wang <patrick.wang.shcn@gmail.com>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Fixes: cc591d77aba1 ("ath9k: Make sure to zero status.tx_time before reporting TX status")
+Reported-by: Bagas Sanjaya <bagasdotme@gmail.com>
 Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220330164409.16645-1-toke@toke.dk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/kmemleak.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/wireless/ath/ath9k/xmit.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/mm/kmemleak.c
-+++ b/mm/kmemleak.c
-@@ -1123,7 +1123,7 @@ EXPORT_SYMBOL(kmemleak_no_scan);
- void __ref kmemleak_alloc_phys(phys_addr_t phys, size_t size, int min_count,
- 			       gfp_t gfp)
- {
--	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
-+	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
- 		kmemleak_alloc(__va(phys), size, min_count, gfp);
+--- a/drivers/net/wireless/ath/ath9k/xmit.c
++++ b/drivers/net/wireless/ath/ath9k/xmit.c
+@@ -2512,6 +2512,8 @@ static void ath_tx_rc_status(struct ath_
+ 	struct ath_hw *ah = sc->sc_ah;
+ 	u8 i, tx_rateindex;
+ 
++	ieee80211_tx_info_clear_status(tx_info);
++
+ 	if (txok)
+ 		tx_info->status.ack_signal = ts->ts_rssi;
+ 
+@@ -2554,9 +2556,6 @@ static void ath_tx_rc_status(struct ath_
+ 	}
+ 
+ 	tx_info->status.rates[tx_rateindex].count = ts->ts_longretry + 1;
+-
+-	/* we report airtime in ath_tx_count_airtime(), don't report twice */
+-	tx_info->status.tx_time = 0;
  }
- EXPORT_SYMBOL(kmemleak_alloc_phys);
-@@ -1137,7 +1137,7 @@ EXPORT_SYMBOL(kmemleak_alloc_phys);
-  */
- void __ref kmemleak_free_part_phys(phys_addr_t phys, size_t size)
- {
--	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
-+	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
- 		kmemleak_free_part(__va(phys), size);
- }
- EXPORT_SYMBOL(kmemleak_free_part_phys);
-@@ -1149,7 +1149,7 @@ EXPORT_SYMBOL(kmemleak_free_part_phys);
-  */
- void __ref kmemleak_not_leak_phys(phys_addr_t phys)
- {
--	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
-+	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
- 		kmemleak_not_leak(__va(phys));
- }
- EXPORT_SYMBOL(kmemleak_not_leak_phys);
-@@ -1161,7 +1161,7 @@ EXPORT_SYMBOL(kmemleak_not_leak_phys);
-  */
- void __ref kmemleak_ignore_phys(phys_addr_t phys)
- {
--	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
-+	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
- 		kmemleak_ignore(__va(phys));
- }
- EXPORT_SYMBOL(kmemleak_ignore_phys);
+ 
+ static void ath_tx_processq(struct ath_softc *sc, struct ath_txq *txq)
 
 
