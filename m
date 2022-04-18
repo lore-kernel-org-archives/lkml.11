@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 107BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F4CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239783AbiDRMxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:53:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38346 "EHLO
+        id S239841AbiDRMxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240988AbiDRMjw (ORCPT
+        with ESMTP id S240976AbiDRMjw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:39:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373B41D0D0;
-        Mon, 18 Apr 2022 05:31:42 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0731C127;
+        Mon, 18 Apr 2022 05:31:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C88B1610F4;
-        Mon, 18 Apr 2022 12:31:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8414C385A9;
-        Mon, 18 Apr 2022 12:31:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BB0B60F0A;
+        Mon, 18 Apr 2022 12:31:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D174C385A1;
+        Mon, 18 Apr 2022 12:31:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285101;
-        bh=t7MW28y9bnZxfYQjVUSmpEWDf75vE61ViCQNbKTnzN8=;
+        s=korg; t=1650285098;
+        bh=x0SDuVbfp/A3GZCfabigrSCHaxXPPPOnUuX1gdTvEm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TsgYJaxN1OLevYTbK93xklrHdhjkENcqPMpzBlRuID1Pdk0lJVtFKrlOh6xL4U6on
-         pbxj8Qaa+Rndlbm8VTjg6mDjKXvGO4INjLWiYMXo881xjlvZDlt7AL8ZRCbrRuvT/u
-         GaOKWtlRQsWh6eYFGbKnHwOzpen3F9NqIK0Ar2uo=
+        b=kIj/jrR2slrH+e/QPZZr3FzmbVuUD8ZcLZf4zA5pW0oQxzSkv7ilXGvq8NI5JBs4k
+         hQ7WjyICzf7PFBS5qv3ZdIJOr8D9IukgVIctQl16VJmDrNsJIAyKDZiqUBQdwe6JtK
+         yIC5BXmyGlAqxwcRIyLR2jb9k54MgC3hM7ZwWZis=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
-        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 104/189] block: fix offset/size check in bio_trim()
-Date:   Mon, 18 Apr 2022 14:12:04 +0200
-Message-Id: <20220418121203.454230323@linuxfoundation.org>
+Subject: [PATCH 5.15 103/189] net: bcmgenet: Revert "Use stronger register read/writes to assure ordering"
+Date:   Mon, 18 Apr 2022 14:12:03 +0200
+Message-Id: <20220418121203.426316292@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,38 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Jeremy Linton <jeremy.linton@arm.com>
 
-[ Upstream commit 8535c0185d14ea41f0efd6a357961b05daf6687e ]
+[ Upstream commit 2df3fc4a84e917a422935cc5bae18f43f9955d31 ]
 
-Unit of bio->bi_iter.bi_size is bytes, but unit of offset/size
-is sector.
+It turns out after digging deeper into this bug, that it was being
+triggered by GCC12 failing to call the bcmgenet_enable_dma()
+routine. Given that a gcc12 fix has been merged [1] and the genet
+driver now works properly when built with gcc12, this commit should
+be reverted.
 
-Fix the above issue in checking offset/size in bio_trim().
+[1]
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105160
+https://gcc.gnu.org/git/?p=gcc.git;a=commit;h=aabb9a261ef060cf24fd626713f1d7d9df81aa57
 
-Fixes: e83502ca5f1e ("block: fix argument type of bio_trim()")
-Cc: Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220414084443.1736850-1-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 8d3ea3d402db ("net: bcmgenet: Use stronger register read/writes to assure ordering")
+Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220412210420.1129430-1-jeremy.linton@arm.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/block/bio.c b/block/bio.c
-index 25f1ed261100..8906c9856a7d 100644
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -1552,7 +1552,7 @@ EXPORT_SYMBOL(bio_split);
- void bio_trim(struct bio *bio, sector_t offset, sector_t size)
- {
- 	if (WARN_ON_ONCE(offset > BIO_MAX_SECTORS || size > BIO_MAX_SECTORS ||
--			 offset + size > bio->bi_iter.bi_size))
-+			 offset + size > bio_sectors(bio)))
- 		return;
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index 510e0cf64fa9..b4f99dd284e5 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -76,7 +76,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		__raw_writel(value, offset);
+ 	else
+-		writel(value, offset);
++		writel_relaxed(value, offset);
+ }
  
- 	size <<= 9;
+ static inline u32 bcmgenet_readl(void __iomem *offset)
+@@ -84,7 +84,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		return __raw_readl(offset);
+ 	else
+-		return readl(offset);
++		return readl_relaxed(offset);
+ }
+ 
+ static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
 -- 
 2.35.1
 
