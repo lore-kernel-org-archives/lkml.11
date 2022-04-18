@@ -2,88 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA78C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 19:44:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F15AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 19:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347762AbiDRTrE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 15:47:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36392 "EHLO
+        id S242112AbiDRTuh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 15:50:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347753AbiDRTrB (ORCPT
+        with ESMTP id S233720AbiDRTuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 15:47:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3966A24BDD
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 12:44:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C8DE060F6A
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 19:44:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 510EBC385A1;
-        Mon, 18 Apr 2022 19:44:20 +0000 (UTC)
-Date:   Mon, 18 Apr 2022 15:44:18 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Ingo Molnar <mingo@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH v1 07/22] powerpc/ftrace: Use patch_instruction() return
- directly
-Message-ID: <20220418154418.72ccc00c@gandalf.local.home>
-In-Reply-To: <1650262058.altfknhzto.naveen@linux.ibm.com>
-References: <cover.1648131740.git.christophe.leroy@csgroup.eu>
-        <b4505e936e1aee411f7132a27791cf138102f35f.1648131740.git.christophe.leroy@csgroup.eu>
-        <1650262058.altfknhzto.naveen@linux.ibm.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Mon, 18 Apr 2022 15:50:35 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F5727FF0
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 12:47:55 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id g20so18602812edw.6
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 12:47:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NXg16T5RHzmRSU7fzbqLl5dRDSsIh5leaaKIVXJix2Y=;
+        b=n6TH58tO6Jf+8u5wbFfxZZ1rGSt9UpKEMo4zwn5SrzJg5kBLgAnwKPjEFKGOn1AsVS
+         BlTUiehQ1Zjs+vmeVNX+gknbYOIT7noOyWXV3+LClR4fl7XiIIaS/9Cc1rxU22dCtuaK
+         pQ/b93oy/yreNJvMQcrLjfcxDGUaFW/7+1GLVBne6lfgv+anTs0MIp60sRbuPxKfMUTS
+         mAdwxkPpboKUwwoyDwxwYgC5LimvdLfbqffeEt/evWZRKSDezMKAsw3qP4hQgLnBorKX
+         ND5e4C+abAw+VaSHw4ACJGqoi5sIyB7YGM8tQwYQ2tdzkxbJwnwNtfd2/1CkMBa6U87y
+         8F9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NXg16T5RHzmRSU7fzbqLl5dRDSsIh5leaaKIVXJix2Y=;
+        b=oK3M0/WS02Ty6uuuQ1vTTb2Umo/mNGh5x0M/Wasf6higp8ORMaiNdTO2JbQ4BM6rqe
+         A6dv8wkntPl8z3oJpXlGbESIbn/FRJRAaEHCX8ozQ7Y18sC4OsOpeSHqtp12ny1vZIq+
+         gnFhhkZ5eb4PDHAfrw32QzM3RbsrC0xSF0P8b4duqzlVtrMO/fCJypANlj1Q6I+VQEKV
+         iZgVcif511qEATw4UE3u8NmZDLm7Fh2h7HSSSwUM6F4/6PkbHtlM182oN8MQTVMSOQTk
+         5kYOksVCuEQY27H6qCEbJi5shh9C6iyo9aKXcPxCdAKttVqObuhC1yPMHh+xNS6jAMMg
+         DhJw==
+X-Gm-Message-State: AOAM531MGhGAEMKlActprbw3M8Si2/whyKoqJHWfaDUNYtboxAftOjZO
+        LWLsuLyZSaQ/3IBe1Y0m9luNn4Kl5wbLrll1XR63bQ==
+X-Google-Smtp-Source: ABdhPJwvoJ8S2SQnY/koE4FsNKMAxVbvlxW9QX5pT4ZaYsnS74IHedJObRxq4/ya8URo4hGKRxRf5E8Bb0WAjXdhtak=
+X-Received: by 2002:a05:6402:128f:b0:41d:7e85:8421 with SMTP id
+ w15-20020a056402128f00b0041d7e858421mr13502922edv.352.1650311273941; Mon, 18
+ Apr 2022 12:47:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220328005005.72492-1-kc@postmarketos.org> <20220328005005.72492-4-kc@postmarketos.org>
+In-Reply-To: <20220328005005.72492-4-kc@postmarketos.org>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Mon, 18 Apr 2022 21:47:43 +0200
+Message-ID: <CAMRc=MfmaW7QX6Q8JFi2-32E_JvE=z6EspnpiHD+4JjeNGFT4g@mail.gmail.com>
+Subject: Re: [PATCH 3/4] gpio/rockchip: handle deferring input-enable pinconfs
+To:     Caleb Connolly <kc@postmarketos.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, martijn@brixit.nl,
+        Arnaud Ferraris <arnaud.ferraris@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 18 Apr 2022 11:51:16 +0530
-"Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> wrote:
+On Mon, Mar 28, 2022 at 2:50 AM Caleb Connolly <kc@postmarketos.org> wrote:
+>
+> Add support for deferred PIN_CONFIG_INPUT_ENABLE handling.
+>
+> Signed-off-by: Caleb Connolly <kc@postmarketos.org>
+> ---
+>  drivers/gpio/gpio-rockchip.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/drivers/gpio/gpio-rockchip.c b/drivers/gpio/gpio-rockchip.c
+> index bcf5214e3586..e342a6dc4c6c 100644
+> --- a/drivers/gpio/gpio-rockchip.c
+> +++ b/drivers/gpio/gpio-rockchip.c
+> @@ -760,6 +760,11 @@ static int rockchip_gpio_probe(struct platform_device *pdev)
+>                                 dev_warn(dev, "setting output pin %u to %u failed\n", cfg->pin,
+>                                          cfg->arg);
+>                         break;
+> +               case PIN_CONFIG_INPUT_ENABLE:
+> +                       ret = rockchip_gpio_direction_input(&bank->gpio_chip, cfg->pin);
+> +                       if (ret)
+> +                               dev_warn(dev, "setting input pin %u failed\n", cfg->pin);
+> +                       break;
+>                 default:
+>                         dev_warn(dev, "unknown deferred config param %d\n", cfg->param);
+>                         break;
+> --
+> 2.35.1
+>
 
-> > --- a/arch/powerpc/kernel/trace/ftrace.c
-> > +++ b/arch/powerpc/kernel/trace/ftrace.c
-> > @@ -78,10 +78,7 @@ ftrace_modify_code(unsigned long ip, ppc_inst_t old, ppc_inst_t new)
-> >  	}
-> > 
-> >  	/* replace the text with the new text */
-> > -	if (patch_instruction((u32 *)ip, new))
-> > -		return -EPERM;
-> > -
-> > -	return 0;
-> > +	return patch_instruction((u32 *)ip, new);  
-> 
-> I think the reason we were returning -EPERM is so that ftrace_bug() can 
+Does this depend on patches 1 & 2 or does patch 4 depend on this one? If so:
 
-That is correct.
+Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
 
-> throw the right error message. That will change due to this patch, 
-> though I'm not sure how much it matters. -EFAULT and -EPERM seem to 
-> print almost the same error message.
+Otherwise I can take it through the GPIO tree.
 
-In these cases it helps to know the type of failure, as the way to debug it
-is different.
-
--EFAULT: It failed to read it the location. This means that the memory is
-likely not even mapped in, or the pointer is way off.
-
--EINVAL: Means that what was read did not match what was expected (the code
-was already updated, pointing to the wrong location, or simply the
-calculation of what to expect is incorrect).
-
--EPERM: Means the write failed. What was read was expected, but the
-permissions to write have not been updated properly.
-
-Differentiating the three is crucial to looking at where the issue lies
-when an ftrace_bug() triggers.
-
--- Steve
+Bart
