@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 069C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A85B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240082AbiDRMy0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:54:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38016 "EHLO
+        id S240111AbiDRMyb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:54:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240053AbiDRMih (ORCPT
+        with ESMTP id S237832AbiDRMlR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:38:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D8C275C2;
-        Mon, 18 Apr 2022 05:29:13 -0700 (PDT)
+        Mon, 18 Apr 2022 08:41:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103EE1F62E;
+        Mon, 18 Apr 2022 05:32:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89656B80EC1;
-        Mon, 18 Apr 2022 12:29:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B82AEC385A7;
-        Mon, 18 Apr 2022 12:29:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FDEC60F0E;
+        Mon, 18 Apr 2022 12:32:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 431EFC385A8;
+        Mon, 18 Apr 2022 12:32:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284951;
-        bh=i9onWB9tRvxnJHS7hD+ihyIKDO/WpE3i++NR8WHGdnA=;
+        s=korg; t=1650285122;
+        bh=TbfRJ417UhImkupEyeLSymcBvljdG4zIwdXdZW9xotc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aLBK5Bi2wIiS1P1DkdOpwAstoZOHOZ1s964rRUmU2/ECf1cNHR/O+mR0CF7VW+/HK
-         ks1tAMJWOvUcDLbWyBXJgYzHEixJmze4xZ6RaTSTQPg3Eojr5I0QAdKT8LlGasreO/
-         T+006/wrvwXiNGAk/clP5CTnQN5/pdW0ORzbeUCo=
+        b=2Y3ZAJoDA5/nGT9Y0XM7voG/F33aT2LoYFQKHjkzkQBSWrASb5B6Dcccnwwt8VElg
+         gabzzgY85yPij1w0/+5DDkzCIr5YJj7EJNxNTsBkvoYUfm2RfvZjNYyfjE9Y5k6bK1
+         gaJA77yMeOprTUg4tLfUJ7HtBBOJimTBmyL778Z0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
+        stable@vger.kernel.org, Alvin Lee <Alvin.Lee2@amd.com>,
+        Aric Cyr <Aric.Cyr@amd.com>, Alex Hung <alex.hung@amd.com>,
+        Charlene Liu <Charlene.Liu@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 060/189] firmware: arm_scmi: Fix sorting of retrieved clock rates
-Date:   Mon, 18 Apr 2022 14:11:20 +0200
-Message-Id: <20220418121202.213234033@linuxfoundation.org>
+Subject: [PATCH 5.15 110/189] drm/amd/display: fix audio format not updated after edid updated
+Date:   Mon, 18 Apr 2022 14:12:10 +0200
+Message-Id: <20220418121203.622892970@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,41 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cristian Marussi <cristian.marussi@arm.com>
+From: Charlene Liu <Charlene.Liu@amd.com>
 
-[ Upstream commit 23274739a5b6166f74d8d9cb5243d7bf6b46aab9 ]
+[ Upstream commit 5e8a71cf13bc9184fee915b2220be71b4c6cac74 ]
 
-During SCMI Clock protocol initialization, after having retrieved from the
-SCMI platform all the available discrete rates for a specific clock, the
-clock rates array is sorted, unfortunately using a pointer to its end as
-a base instead of its start, so that sorting does not work.
+[why]
+for the case edid change only changed audio format.
+driver still need to update stream.
 
-Fix invocation of sort() passing as base a pointer to the start of the
-retrieved clock rates array.
-
-Link: https://lore.kernel.org/r/20220318092813.49283-1-cristian.marussi@arm.com
-Fixes: dccec73de91d ("firmware: arm_scmi: Keep the discrete clock rates sorted")
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Reviewed-by: Alvin Lee <Alvin.Lee2@amd.com>
+Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Charlene Liu <Charlene.Liu@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/arm_scmi/clock.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/core/dc_resource.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/firmware/arm_scmi/clock.c b/drivers/firmware/arm_scmi/clock.c
-index 35b56c8ba0c0..492f3a9197ec 100644
---- a/drivers/firmware/arm_scmi/clock.c
-+++ b/drivers/firmware/arm_scmi/clock.c
-@@ -204,7 +204,8 @@ scmi_clock_describe_rates_get(const struct scmi_protocol_handle *ph, u32 clk_id,
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
+index 108f3854cd2a..82f1f27baaf3 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
+@@ -1626,8 +1626,8 @@ bool dc_is_stream_unchanged(
+ 	if (old_stream->ignore_msa_timing_param != stream->ignore_msa_timing_param)
+ 		return false;
  
- 	if (rate_discrete && rate) {
- 		clk->list.num_rates = tot_rate_cnt;
--		sort(rate, tot_rate_cnt, sizeof(*rate), rate_cmp_func, NULL);
-+		sort(clk->list.rates, tot_rate_cnt, sizeof(*rate),
-+		     rate_cmp_func, NULL);
- 	}
+-	// Only Have Audio left to check whether it is same or not. This is a corner case for Tiled sinks
+-	if (old_stream->audio_info.mode_count != stream->audio_info.mode_count)
++	/*compare audio info*/
++	if (memcmp(&old_stream->audio_info, &stream->audio_info, sizeof(stream->audio_info)) != 0)
+ 		return false;
  
- 	clk->rate_discrete = rate_discrete;
+ 	return true;
 -- 
 2.35.1
 
