@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84FE7C35296
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0206EC47084
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244547AbiDRNou (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:44:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
+        id S244686AbiDRNpT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:45:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243607AbiDRNUp (ORCPT
+        with ESMTP id S242138AbiDRNVR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:20:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B558C101C9;
-        Mon, 18 Apr 2022 05:52:20 -0700 (PDT)
+        Mon, 18 Apr 2022 09:21:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B693C720;
+        Mon, 18 Apr 2022 05:52:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47A5AB80D9C;
-        Mon, 18 Apr 2022 12:52:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DD9DC385A7;
-        Mon, 18 Apr 2022 12:52:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C96EB80EC4;
+        Mon, 18 Apr 2022 12:52:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AF3EC385A7;
+        Mon, 18 Apr 2022 12:52:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286337;
-        bh=4DzzX0WzJVjW6boSYS3W+arhKlppk9cW+qJ5wqH51FA=;
+        s=korg; t=1650286353;
+        bh=K2R+WIJWqbpCaufCB52wkjcA91D8s92Xua3AxRowpNA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SpBsiXe7RVno9YY87FacTEmwPwBb9JDkw4zdld7PCWWA58v8P+Uzh6ZoEQLb9eDnO
-         9rqhQWQJ2jJgh2H9OQDXhKlsG5n/ZeRoFVk8PJuf/0+aVjMqBYMzRJQGEHeFIwOBBK
-         QwR4AOtyDbfQ7/esHSl5qt1zptK1TXvHkfDc59g4=
+        b=Nx6lAwUUDo4CL8kq4aArkx/SIoXwdy3GH5+tr8UU18ivvzfpa7g9ZShRoYztjEQHj
+         T7d8VxVWyATgl5VflAOa1px57jXFq4wqoCpq47+XvsvB+MhNjOSByXCo2gV7lrnRIR
+         T/QZjvYLiJqeLS62HRHhGn4AQakLbHCBYgPbbvzM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.king@canonical.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 103/284] iwlwifi: Fix -EIO error code that is never returned
-Date:   Mon, 18 Apr 2022 14:11:24 +0200
-Message-Id: <20220418121213.775492380@linuxfoundation.org>
+Subject: [PATCH 4.14 108/284] scsi: pm8001: Fix abort all task initialization
+Date:   Mon, 18 Apr 2022 14:11:29 +0200
+Message-Id: <20220418121213.987183258@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,37 +50,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit c305c94bdc18e45b5ad1db54da4269f8cbfdff6b ]
+[ Upstream commit 7f12845c8389855dbcc67baa068b6832dc4a396e ]
 
-Currently the error -EIO is being assinged to variable ret when
-the READY_BIT is not set but the function iwlagn_mac_start returns
-0 rather than ret. Fix this by returning ret instead of 0.
+In pm80xx_send_abort_all(), the n_elem field of the ccb used is not
+initialized to 0. This missing initialization sometimes lead to the task
+completion path seeing the ccb with a non-zero n_elem resulting in the
+execution of invalid dma_unmap_sg() calls in pm8001_ccb_task_free(),
+causing a crash such as:
 
-Addresses-Coverity: ("Unused value")
-Fixes: 7335613ae27a ("iwlwifi: move all mac80211 related functions to one place")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Link: https://lore.kernel.org/r/20210907104658.14706-1-colin.king@canonical.com
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+[  197.676341] RIP: 0010:iommu_dma_unmap_sg+0x6d/0x280
+[  197.700204] RSP: 0018:ffff889bbcf89c88 EFLAGS: 00010012
+[  197.705485] RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff83d0bda0
+[  197.712687] RDX: 0000000000000002 RSI: 0000000000000000 RDI: ffff88810dffc0d0
+[  197.719887] RBP: 0000000000000000 R08: 0000000000000000 R09: ffff8881c790098b
+[  197.727089] R10: ffffed1038f20131 R11: 0000000000000001 R12: 0000000000000000
+[  197.734296] R13: ffff88810dffc0d0 R14: 0000000000000010 R15: 0000000000000000
+[  197.741493] FS:  0000000000000000(0000) GS:ffff889bbcf80000(0000) knlGS:0000000000000000
+[  197.749659] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  197.755459] CR2: 00007f16c1b42734 CR3: 0000000004814000 CR4: 0000000000350ee0
+[  197.762656] Call Trace:
+[  197.765127]  <IRQ>
+[  197.767162]  pm8001_ccb_task_free+0x5f1/0x820 [pm80xx]
+[  197.772364]  ? do_raw_spin_unlock+0x54/0x220
+[  197.776680]  pm8001_mpi_task_abort_resp+0x2ce/0x4f0 [pm80xx]
+[  197.782406]  process_oq+0xe85/0x7890 [pm80xx]
+[  197.786817]  ? lock_acquire+0x194/0x490
+[  197.790697]  ? handle_irq_event+0x10e/0x1b0
+[  197.794920]  ? mpi_sata_completion+0x2d70/0x2d70 [pm80xx]
+[  197.800378]  ? __wake_up_bit+0x100/0x100
+[  197.804340]  ? lock_is_held_type+0x98/0x110
+[  197.808565]  pm80xx_chip_isr+0x94/0x130 [pm80xx]
+[  197.813243]  tasklet_action_common.constprop.0+0x24b/0x2f0
+[  197.818785]  __do_softirq+0x1b5/0x82d
+[  197.822485]  ? do_raw_spin_unlock+0x54/0x220
+[  197.826799]  __irq_exit_rcu+0x17e/0x1e0
+[  197.830678]  irq_exit_rcu+0xa/0x20
+[  197.834114]  common_interrupt+0x78/0x90
+[  197.840051]  </IRQ>
+[  197.844236]  <TASK>
+[  197.848397]  asm_common_interrupt+0x1e/0x40
+
+Avoid this issue by always initializing the ccb n_elem field to 0 in
+pm8001_send_abort_all(), pm8001_send_read_log() and
+pm80xx_send_abort_all().
+
+Link: https://lore.kernel.org/r/20220220031810.738362-17-damien.lemoal@opensource.wdc.com
+Fixes: c6b9ef5779c3 ("[SCSI] pm80xx: NCQ error handling changes")
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/pm8001/pm8001_hwi.c | 2 ++
+ drivers/scsi/pm8001/pm80xx_hwi.c | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
-index 82caae02dd09..f2e0cfa2f4a2 100644
---- a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
-@@ -317,7 +317,7 @@ static int iwlagn_mac_start(struct ieee80211_hw *hw)
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index 2889717a770e..b44bf34499a9 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -1748,6 +1748,7 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
+ 	ccb->device = pm8001_ha_dev;
+ 	ccb->ccb_tag = ccb_tag;
+ 	ccb->task = task;
++	ccb->n_elem = 0;
  
- 	priv->is_open = 1;
- 	IWL_DEBUG_MAC80211(priv, "leave\n");
--	return 0;
-+	return ret;
- }
+ 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
  
- static void iwlagn_mac_stop(struct ieee80211_hw *hw)
+@@ -1810,6 +1811,7 @@ static void pm8001_send_read_log(struct pm8001_hba_info *pm8001_ha,
+ 	ccb->device = pm8001_ha_dev;
+ 	ccb->ccb_tag = ccb_tag;
+ 	ccb->task = task;
++	ccb->n_elem = 0;
+ 	pm8001_ha_dev->id |= NCQ_READ_LOG_FLAG;
+ 	pm8001_ha_dev->id |= NCQ_2ND_RLE_FLAG;
+ 
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index cf037e076235..4eae727ccfbc 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -1426,6 +1426,7 @@ static void pm80xx_send_abort_all(struct pm8001_hba_info *pm8001_ha,
+ 	ccb->device = pm8001_ha_dev;
+ 	ccb->ccb_tag = ccb_tag;
+ 	ccb->task = task;
++	ccb->n_elem = 0;
+ 
+ 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
+ 
 -- 
 2.34.1
 
