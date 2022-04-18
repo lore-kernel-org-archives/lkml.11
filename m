@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3B66C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 738A6C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243902AbiDRNmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34010 "EHLO
+        id S244063AbiDRNnQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242498AbiDRNOD (ORCPT
+        with ESMTP id S241503AbiDRNQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:14:03 -0400
+        Mon, 18 Apr 2022 09:16:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E223A5FB;
-        Mon, 18 Apr 2022 05:51:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364C23AA41;
+        Mon, 18 Apr 2022 05:51:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 266A761295;
-        Mon, 18 Apr 2022 12:51:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BFD6C385A7;
-        Mon, 18 Apr 2022 12:51:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B633561287;
+        Mon, 18 Apr 2022 12:51:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF746C385A1;
+        Mon, 18 Apr 2022 12:51:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286267;
-        bh=DGfFICk0ZyhZyp7gehgdnGZsI2rdjdBF6ht5fhvYKxI=;
+        s=korg; t=1650286280;
+        bh=uyKI9NfuAsg1H7QgPgrX80qRQkedSTzgCAc8mfglP2w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wLsQtiN/t58/BM5I2sSdRWfNFHXxWRNv5lkOahXxa065g+tD3eA28MZBPb5ZRdMlt
-         N6gcyfCXOV0NvOmZQwnMDJ9NT1e3kePWYpKsbN7RyxOm6aetFeenILxxPEJLGEDtzY
-         JCNoZtyM+cyrX6NcuNJ8zZ++Jpc+9/WjBk2OUIvw=
+        b=Jfj/535+N2UrLqDo7EDwnEMs26JqMi6YWMzgTcG99h4+UoDJDCqUQL+TVrEbmXigw
+         C4DYAvG0ex0+4dVmnBkbNXH3kN4PfS8lI4OrsfK44EMaM+lQu7IRIsIyqEeArIBLJJ
+         R3QRHIXNb1SqOryz9To15wcvACT8z+JDZTddcmwY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 079/284] arm64: dts: ns2: Fix spi-cpol and spi-cpha property
-Date:   Mon, 18 Apr 2022 14:11:00 +0200
-Message-Id: <20220418121212.932512374@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Subject: [PATCH 4.14 044/284] ARM: dts: exynos: add missing HDMI supplies on SMDK5420
+Date:   Mon, 18 Apr 2022 14:10:25 +0200
+Message-Id: <20220418121211.948260093@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -51,52 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-[ Upstream commit c953c764e505428f59ffe6afb1c73b89b5b1ac35 ]
+commit 453a24ded415f7fce0499c6b0a2c7b28f84911f2 upstream.
 
-Broadcom ns2 platform has spi-cpol and spi-cpho properties set
-incorrectly. As per spi-slave-peripheral-prop.yaml, these properties are
-of flag or boolean type and not integer type. Fix the values.
+Add required VDD supplies to HDMI block on SMDK5420.  Without them, the
+HDMI driver won't probe.  Because of lack of schematics, use same
+supplies as on Arndale Octa and Odroid XU3 boards (voltage matches).
 
-Fixes: d69dbd9f41a7c (arm64: dts: Add ARM PL022 SPI DT nodes for NS2)
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-CC: Ray Jui <rjui@broadcom.com>
-CC: Scott Branden <sbranden@broadcom.com>
-CC: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: <stable@vger.kernel.org> # v3.15+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
+Link: https://lore.kernel.org/r/20220208171823.226211-3-krzysztof.kozlowski@canonical.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/exynos5420-smdk5420.dts |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts b/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts
-index ec19fbf928a1..12a4b1c03390 100644
---- a/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts
-+++ b/arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dts
-@@ -111,8 +111,8 @@
- 		compatible = "silabs,si3226x";
- 		reg = <0>;
- 		spi-max-frequency = <5000000>;
--		spi-cpha = <1>;
--		spi-cpol = <1>;
-+		spi-cpha;
-+		spi-cpol;
- 		pl022,hierarchy = <0>;
- 		pl022,interface = <0>;
- 		pl022,slave-tx-disable = <0>;
-@@ -135,8 +135,8 @@
- 		at25,byte-len = <0x8000>;
- 		at25,addr-mode = <2>;
- 		at25,page-size = <64>;
--		spi-cpha = <1>;
--		spi-cpol = <1>;
-+		spi-cpha;
-+		spi-cpol;
- 		pl022,hierarchy = <0>;
- 		pl022,interface = <0>;
- 		pl022,slave-tx-disable = <0>;
--- 
-2.34.1
-
+--- a/arch/arm/boot/dts/exynos5420-smdk5420.dts
++++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
+@@ -133,6 +133,9 @@
+ 	hpd-gpios = <&gpx3 7 GPIO_ACTIVE_HIGH>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&hdmi_hpd_irq>;
++	vdd-supply = <&ldo6_reg>;
++	vdd_osc-supply = <&ldo7_reg>;
++	vdd_pll-supply = <&ldo6_reg>;
+ };
+ 
+ &hsi2c_4 {
 
 
