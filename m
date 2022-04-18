@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB603C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239905AbiDRMvW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:51:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37028 "EHLO
+        id S239917AbiDRMva (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:51:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240824AbiDRMjj (ORCPT
+        with ESMTP id S240836AbiDRMjk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005AEC0A;
-        Mon, 18 Apr 2022 05:31:00 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3E8CCF;
+        Mon, 18 Apr 2022 05:31:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C656B80ED6;
-        Mon, 18 Apr 2022 12:30:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1CB2C385A1;
-        Mon, 18 Apr 2022 12:30:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95323B80EC1;
+        Mon, 18 Apr 2022 12:31:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B42BEC385A1;
+        Mon, 18 Apr 2022 12:31:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285058;
-        bh=rA8OICJvC+vLZzHg5hHD8kepodIPft98BGpeRXaRoeI=;
+        s=korg; t=1650285068;
+        bh=SZJF1zbsC4uu0BF6I10onqFwthdm5Qnyw+4Kau8Mzbc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RtKrfw/E215Fi5aoCZjS+8isdkkov2ShXsyA1IBY93vBzDKLNXw9D/LZbqqrAVTfS
-         iFPWz6iP8jAq9jWWGjp/DKsL+t6Xf82kZugyDL57mPi9qYoAYiRhx+5BDKsKSzf9Dj
-         SIXW5G6xhB1ljH0Fs72auhLBCpbr614h+Qcihj/k=
+        b=EU9YeyogDHm8iBHNbYAhmBbpvplA/Yqi5YWYlRKnQaXBfIzZlMR4vunCPZ0OUdSjm
+         QncAiAn7tzazyXUc7D5b4qN4bXZdQL0aNDLTEQcckj3HcO3bMtTJ0brslmukaFe7eW
+         hTy162NH3iUGiatVce7nJQ4l2GE0/ZwwSbNg8sWU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Petr Malat <oss@malat.biz>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 086/189] sctp: Initialize daddr on peeled off socket
-Date:   Mon, 18 Apr 2022 14:11:46 +0200
-Message-Id: <20220418121202.948615989@linuxfoundation.org>
+Subject: [PATCH 5.15 096/189] perf tools: Fix misleading add event PMU debug message
+Date:   Mon, 18 Apr 2022 14:11:56 +0200
+Message-Id: <20220418121203.229108584@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,38 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Malat <oss@malat.biz>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit 8467dda0c26583547731e7f3ea73fc3856bae3bf ]
+[ Upstream commit f034fc50d3c7d9385c20d505ab4cf56b8fd18ac7 ]
 
-Function sctp_do_peeloff() wrongly initializes daddr of the original
-socket instead of the peeled off socket, which makes getpeername()
-return zeroes instead of the primary address. Initialize the new socket
-instead.
+Fix incorrect debug message:
 
-Fixes: d570ee490fb1 ("[SCTP]: Correctly set daddr for IPv6 sockets during peeloff")
-Signed-off-by: Petr Malat <oss@malat.biz>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Link: https://lore.kernel.org/r/20220409063611.673193-1-oss@malat.biz
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+   Attempting to add event pmu 'intel_pt' with '' that may result in
+   non-fatal errors
+
+which always appears with perf record -vv and intel_pt e.g.
+
+    perf record -vv -e intel_pt//u uname
+
+The message is incorrect because there will never be non-fatal errors.
+
+Suppress the message if the PMU is 'selectable' i.e. meant to be
+selected directly as an event.
+
+Fixes: 4ac22b484d4c79e8 ("perf parse-events: Make add PMU verbose output clearer")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Link: http://lore.kernel.org/lkml/20220411061758.2458417-1-adrian.hunter@intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/socket.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/perf/util/parse-events.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 6b3c32264cbc..5f6e6a6e91b3 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -5641,7 +5641,7 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
- 	 * Set the daddr and initialize id to something more random and also
- 	 * copy over any ip options.
- 	 */
--	sp->pf->to_sk_daddr(&asoc->peer.primary_addr, sk);
-+	sp->pf->to_sk_daddr(&asoc->peer.primary_addr, sock->sk);
- 	sp->pf->copy_ip_options(sk, sock->sk);
+diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
+index 51a2219df601..3bfe099d8643 100644
+--- a/tools/perf/util/parse-events.c
++++ b/tools/perf/util/parse-events.c
+@@ -1529,7 +1529,9 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
+ 	bool use_uncore_alias;
+ 	LIST_HEAD(config_terms);
  
- 	/* Populate the fields of the newsk from the oldsk and migrate the
+-	if (verbose > 1) {
++	pmu = parse_state->fake_pmu ?: perf_pmu__find(name);
++
++	if (verbose > 1 && !(pmu && pmu->selectable)) {
+ 		fprintf(stderr, "Attempting to add event pmu '%s' with '",
+ 			name);
+ 		if (head_config) {
+@@ -1542,7 +1544,6 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
+ 		fprintf(stderr, "' that may result in non-fatal errors\n");
+ 	}
+ 
+-	pmu = parse_state->fake_pmu ?: perf_pmu__find(name);
+ 	if (!pmu) {
+ 		char *err_str;
+ 
 -- 
 2.35.1
 
