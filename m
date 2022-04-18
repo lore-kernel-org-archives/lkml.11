@@ -2,259 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9363C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:49:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345771AbiDRPvb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43116 "EHLO
+        id S241364AbiDRPvs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345764AbiDRPvP (ORCPT
+        with ESMTP id S1345834AbiDRPvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:51:15 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BDA39810
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 08:29:22 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id l3-20020a05600c1d0300b0038ff89c938bso103244wms.0
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 08:29:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=vrull.eu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vpoZJEMaDfwGpxsvVFMgbbbkzSzrjetHuWBAngXn7p0=;
-        b=WjAwfl4Hxi9AsjZhUx26omH9CbIJExsNxL18rlLcJR2mpASAVkSLjVGy3QgH2eRH6A
-         pCLHeP4B9d9+FWcN1MWRFae7G2J5ZTSUVpBl2Lu66WRUlguTL4oGhb1kpBEbgkpTgE4y
-         hnzqKFSVw/oGEq+ArCyWKB6hPoH79rfq8rHlPgWqFWGCsf/z48FoQ104cm/b8nCklwaE
-         BWuHlIwI5iz6BAUjUGS7pKf+JG4mjGNDNeIOcK/wbbQ+pwjzuABA7rFMx0EHV/lXun4E
-         tKj3NlaHW6ZSe5J8zTYjKajaUaFV7b0Q6/EynvHIXwgSTWUwr3UYDtyXYoiLcGFTP33p
-         rdHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vpoZJEMaDfwGpxsvVFMgbbbkzSzrjetHuWBAngXn7p0=;
-        b=vbqX0oaTAaCAtCHRDrVSY5l2Vmz22QicMC4jAiQm2WM56G6YxFkkvyn5HEzCXtMAyL
-         5W0xllufrc0JJ8EHOgdQjhNO5L1D5p6VzwSqVNvBWDv7YfPqyZD03CokZu+OYaN7s0bH
-         mBDPGp1phKkO/gFH8DdQ68ExxofLLY/Zf/rRv5tLKjSG82KAtRR7vQdE7PyMhpOQZijr
-         MteKqVfGjlEAScBOB1bbi6S2M3j6jjdXdSM6hCksCd47fVI22St2C/gtaKpQZoohAYxV
-         vSUsDlZ/qvbKsm+Xm3Fh2DFs7Icp1/HLXH1YCUkhKDIXbyXWLUnCY6WISmBzcEqgJ1PG
-         jpmQ==
-X-Gm-Message-State: AOAM532w3vcCjTi7aqBZH5vi0hvageGa72MGfgACd3nqlHvgYps+hG1J
-        7rf5KppbnRZPLhJjziTLaWkdHMeF6wjCDEBKiHZzAg==
-X-Google-Smtp-Source: ABdhPJzMbjRaGf80CGJ7OM44xoA0Ga5ZVEEvnI9n2JLpycbGrJSTrFsLuS4AKw8EORV6Q+FCKUY7LCjpKGtR0R7LT3s=
-X-Received: by 2002:a05:600c:1c91:b0:392:6f01:5069 with SMTP id
- k17-20020a05600c1c9100b003926f015069mr12310836wms.199.1650295761340; Mon, 18
- Apr 2022 08:29:21 -0700 (PDT)
+        Mon, 18 Apr 2022 11:51:21 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A634DF9B;
+        Mon, 18 Apr 2022 08:29:40 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:6624:6d8d:f790:d5c]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1ngTJp-00046e-Rp; Mon, 18 Apr 2022 17:29:37 +0200
+Message-ID: <d61f561c-cccd-6d48-cc2a-2eb83df6925a@leemhuis.info>
+Date:   Mon, 18 Apr 2022 17:29:37 +0200
 MIME-Version: 1.0
-References: <20220307224620.1933061-1-heiko@sntech.de> <YllWTN+15CoskNBt@Red>
- <70da24dd-2d03-fc49-151d-daabb315a5f6@sholland.org> <YlpxsYREWv/LQ+HY@Red>
- <849a3728-7e84-4f26-0c73-4d68eae9ae01@sholland.org> <YlsZxVjgt3ZNQ7Ub@Red>
- <CAJF2gTSNzLfon7yH3zvOJfYwQnVRvNWW7KygShLqcagRfbyAkg@mail.gmail.com>
- <YlvTkfIO9Oz3ib5i@Red> <CAJF2gTQ5rYATTHj2UtwxKw0dpvdHBUAih1RJf0XuGM8b6euZwQ@mail.gmail.com>
- <YlxP26dklDj2y+cP@Red>
-In-Reply-To: <YlxP26dklDj2y+cP@Red>
-From:   Philipp Tomsich <philipp.tomsich@vrull.eu>
-Date:   Mon, 18 Apr 2022 17:29:10 +0200
-Message-ID: <CAAeLtUC=eF6hp2V2d7wEWWX=vkEcP8NoPLLz=hUrE4x4Q7u4mw@mail.gmail.com>
-Subject: Re: [PATCH 0/2] riscv: implement Zicbom-based CMO instructions + the
- t-head variant
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>
-Cc:     Guo Ren <guoren@kernel.org>, Samuel Holland <samuel@sholland.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wei Fu <wefu@redhat.com>, Atish Patra <atishp@atishpatra.org>,
-        Anup Patel <anup@brainfault.org>,
-        Nick Kossifidis <mick@ics.forth.gr>,
-        Christoph Muellner <cmuellner@linux.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-crypto@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] gpio: Request interrupts after IRQ is initialized
+Content-Language: en-US
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Mario Limonciello <mario.limonciello@amd.com>,
+        firew4lker <firew4lker@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Richard.Gong@amd.com, Stable <stable@vger.kernel.org>
+References: <20220414025705.598-1-mario.limonciello@amd.com>
+ <20966c6b-9045-9f8b-ba35-bf44091ce380@gmail.com>
+ <67df4178-5943-69d8-0d61-f533671a1248@amd.com>
+ <CAHp75VceVwAq68s_hnpXt8VvLBHVUMxFTJR+_Tnph_mvpxGVPw@mail.gmail.com>
+ <49dceaa1-7e8a-671a-0601-2ee92a5d3818@leemhuis.info>
+ <CAHp75Vd1VKeGx2EJnKnSBf-DvnPPajDNs=+kQ1f6j5JU8hNLMg@mail.gmail.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <CAHp75Vd1VKeGx2EJnKnSBf-DvnPPajDNs=+kQ1f6j5JU8hNLMg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1650295780;d9270d2e;
+X-HE-SMSGID: 1ngTJp-00046e-Rp
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 17 Apr 2022 at 19:35, Corentin Labbe <clabbe.montjoie@gmail.com> wr=
-ote:
->
-> Le Sun, Apr 17, 2022 at 04:49:34PM +0800, Guo Ren a =C3=A9crit :
-> > On Sun, Apr 17, 2022 at 4:45 PM Corentin Labbe
-> > <clabbe.montjoie@gmail.com> wrote:
-> > >
-> > > Le Sun, Apr 17, 2022 at 10:17:34AM +0800, Guo Ren a =C3=A9crit :
-> > > > On Sun, Apr 17, 2022 at 3:32 AM Corentin Labbe
-> > > > <clabbe.montjoie@gmail.com> wrote:
-> > > > >
-> > > > > Le Sat, Apr 16, 2022 at 12:47:29PM -0500, Samuel Holland a =C3=A9=
-crit :
-> > > > > > On 4/16/22 2:35 AM, Corentin Labbe wrote:
-> > > > > > > Le Fri, Apr 15, 2022 at 09:19:23PM -0500, Samuel Holland a =
-=C3=A9crit :
-> > > > > > >> On 4/15/22 6:26 AM, Corentin Labbe wrote:
-> > > > > > >>> Le Mon, Mar 07, 2022 at 11:46:18PM +0100, Heiko Stuebner a =
-=C3=A9crit :
-> > > > > > >>>> This series is based on the alternatives changes done in m=
-y svpbmt series
-> > > > > > >>>> and thus also depends on Atish's isa-extension parsing ser=
-ies.
-> > > > > > >>>>
-> > > > > > >>>> It implements using the cache-management instructions from=
- the  Zicbom-
-> > > > > > >>>> extension to handle cache flush, etc actions on platforms =
-needing them.
-> > > > > > >>>>
-> > > > > > >>>> SoCs using cpu cores from T-Head like the Allwinne D1 impl=
-ement a
-> > > > > > >>>> different set of cache instructions. But while they are di=
-fferent,
-> > > > > > >>>> instructions they provide the same functionality, so a var=
-iant can
-> > > > > > >>>> easly hook into the existing alternatives mechanism on tho=
-se.
-> > > > > > >>>>
-> > > > > > >>>>
-> > > > > > >>>
-> > > > > > >>> Hello
-> > > > > > >>>
-> > > > > > >>> I am testing https://github.com/smaeul/linux.git branch:ori=
-gin/riscv/d1-wip which contain this serie.
-> > > > > > >>>
-> > > > > > >>> I am hitting a buffer corruption problem with DMA.
-> > > > > > >>> The sun8i-ce crypto driver fail self tests due to "device o=
-verran destination buffer".
-> > > > > > >>> In fact the buffer is not overran by device but by dma_map_=
-single() operation.
-> > > > > > >>>
-> > > > > > >>> The following small code show the problem:
-> > > > > > >>>
-> > > > > > >>> dma_addr_t dma;
-> > > > > > >>> u8 *buf;
-> > > > > > >>> #define BSIZE 2048
-> > > > > > >>> #define DMASIZE 16
-> > > > > > >>>
-> > > > > > >>> buf =3D kmalloc(BSIZE, GFP_KERNEL | GFP_DMA);
-> > > > > > >>> for (i =3D 0; i < BSIZE; i++)
-> > > > > > >>>     buf[i] =3D 0xFE;
-> > > > > > >>> print_hex_dump(KERN_INFO, "DMATEST1:", DUMP_PREFIX_NONE, 16=
-, 4, buf, 256, false);
-> > > > > > >>> dma =3D dma_map_single(ce->dev, buf, DMASIZE, DMA_FROM_DEVI=
-CE);
-> > > > > > >>
-> > > > > > >> This function (through dma_direct_map_page()) ends up callin=
-g
-> > > > > > >> arch_sync_dma_for_device(..., ..., DMA_FROM_DEVICE), which i=
-nvalidates the CPU's
-> > > > > > >> cache. This is the same thing other architectures do (at lea=
-st arm, arm64,
-> > > > > > >> openrisc, and powerpc). So this appears to be working as int=
-ended.
-> > > > > > >
-> > > > > > > This behavour is not present at least on ARM and ARM64.
-> > > > > > > The sample code I provided does not corrupt the buffer on the=
-m.
-> > > > > >
-> > > > > > That can be explained by the 0xFE bytes having been flushed to =
-DRAM already in
-> > > > > > your ARM/ARM64 tests, whereas in your riscv64 case, the 0xFE by=
-tes were still in
-> > > > > > a dirty cache line. The cache topology and implementation is to=
-tally different
-> > > > > > across the SoCs, so this is not too surprising.
-> > > > > >
-> > > > > > Semantically, dma_map_single(..., DMA_FROM_DEVICE) means you ar=
-e doing a
-> > > > > > unidirectional DMA transfer from the device into that buffer. S=
-o the contents of
-> > > > > > the buffer are "undefined" until the DMA transfer completes. If=
- you are also
-> > > > > > writing data into the buffer from the CPU side, then you need D=
-MA_BIDIRECTIONAL.
-> > > > > >
-> > > > > > Regards,
-> > > > > > Samuel
-> > > > >
-> > > > > +CC crypto mailing list + maintainer
-> > > > >
-> > > > > My problem is that crypto selftest, for each buffer where I need =
-to do a cipher operation,
-> > > > > concat a poison buffer to check that device does write beyond buf=
-fer.
-> > > > >
-> > > > > But the dma_map_sg(FROM_DEVICE) corrupts this poison buffer and c=
-rypto selftests fails thinking my device did a buffer overrun.
-> > > > >
-> > > > > So you mean that on SoC D1, this crypto API check strategy is imp=
-ossible ?
-> > > >
-> > > > I think you could try to replace all CLEAN & INVAL ops with FLUSH o=
-ps
-> > > > for the testing. (All cache block-aligned data from the device for =
-the
-> > > > CPU should be invalided.)
-> > > >
-> > >
-> > > With:
-> > > diff --git a/arch/riscv/mm/dma-noncoherent.c b/arch/riscv/mm/dma-nonc=
-oherent.c
-> > > index 2c124bcc1932..608483522e05 100644
-> > > --- a/arch/riscv/mm/dma-noncoherent.c
-> > > +++ b/arch/riscv/mm/dma-noncoherent.c
-> > > @@ -21,7 +21,7 @@ void arch_sync_dma_for_device(phys_addr_t paddr, si=
-ze_t size, enum dma_data_dire
-> > >                 ALT_CMO_OP(CLEAN, (unsigned long)phys_to_virt(paddr),=
- size);
-> > >                 break;
-> > >         case DMA_FROM_DEVICE:
-> > > -               ALT_CMO_OP(INVAL, (unsigned long)phys_to_virt(paddr),=
- size);
-> > > +               ALT_CMO_OP(FLUSH, (unsigned long)phys_to_virt(paddr),=
- size);
-> > >                 break;
-> > >         case DMA_BIDIRECTIONAL:
-> > >                 ALT_CMO_OP(FLUSH, (unsigned long)phys_to_virt(paddr),=
- size);
-> > >
-> > >
-> > > The crypto self test works and I got no more buffer corruption.
-> > No, No ... it's not a solution. That means your driver has a problem.
-> > From device, we only need INVAL enough.
-> >
->
-> For me, my driver works fine, the problem came from dma_map_sg(), probabl=
-y I didnt explain right, I restart.
->
-> Example:
-> crypto self test send to my driver an AES cipher operation of 16 bytes in=
-side a SG, but the original buffer is greater (said 32 for the example).
-> So the first 16 bytes are used by the SG and the last 16 bytes are a pois=
-oned buffer (with value 0xFE) to check driver do not write beyong the norma=
-l operation of 16 bytes (and beyond the SG length).
->
-> Doing the dma_map_sg(FROM_DEVICE) on the SG corrupt the whole buffer.
+On 18.04.22 16:17, Andy Shevchenko wrote:
+> On Mon, Apr 18, 2022 at 4:58 PM Thorsten Leemhuis
+> <regressions@leemhuis.info> wrote:
+>>
+>> On 18.04.22 13:42, Andy Shevchenko wrote:
+>>> On Mon, Apr 18, 2022 at 7:34 AM Mario Limonciello
+>>> <mario.limonciello@amd.com> wrote:
+>>>> On 4/17/22 07:24, firew4lker wrote:
+>>>
+>>> ...
+>>>
+>>>> Linus Walleij,
+>>>>
+>>>> As this is backported to 5.15.y, 5.16.y, 5.17.y and those all had point
+>>>> releases a bunch of people are hitting it now.  If you choose to adopt
+>>>> this patch instead of revert the broken one, you can add to the commit
+>>>> message too:
+>>>>
+>>>> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1976
+>>>
+>>> I prefer to explicitly tell that this is a link to a bug report, hence BugLink:.
+>>> But this is just my 2 cents.
+>>
+>> Please use "Link:" as explained by the kernel's documentation in
+>> Documentation/process/submitting-patches.rst
+>> Documentation/process/5.Posting.rst (disclaimer: I recently made this
+>> more explicit, but the concept it old). That's important, as people have
+>> tools that rely on it -- I for example run one to track regressions, but
+>> I might not be the only one running a tool that relies on proper tags.
+> 
+> To me it looks like a documentation confusion since Link is what is
+> added automatically by `b4` tool.
 
-Doesn't the DMA_FROM_DEVICE indicate that there are no expected writes
-from the CPU to the buffer (and that any modifications to the
-underlying cache line can be dropped via an invalidation)?
-In other words: does the behavior change when mapping as
-DMA_BIDIRECTIONAL =E2=80=94 and: should a map/unmap sequence be used where =
-it
-is first mapped as DMA_TO_DEVICE when poisoning the buffer and later
-as DMA_FROM_DEVICE when in normal operation?
+Since some time now, yes, but the "Link:" tags are way older and used to
+ link to all sorts of places that are relevant.
 
-Philipp.
+> Having Link from the patch thread
+> (and not always the one with the discussion) as well as link to the
+> issue will be confusing.
 
-> My driver write normally via DMA the first 16 bytes.
-> Crypto API check the last bytes, no more 0xFE, so it fail believing my dr=
-iver wrote beyond the first 16 bytes.
->
-> But even If I disable my hardware operation, the buffer is still corrupte=
-d. (See my sample code which just do dma_map/dma_unmap)
->
-> So the problem is the dma_map(FROM_DEVICE) which change buffer content.
->
-> So if this behavour is normal on D1 SoC, how to fix the crypto self tests=
- ?
+Yup, but that's how it is for years already (and in the muscle memory of
+some -- that's why I might make sense to teach b4 to set something else,
+but that's a different story). Linus himself does it like that. Recent
+commits showing that are for example 901c7280ca0d or 0313bc278dac. And
+for links bug trackers, too, as 80d47f5de5e3 or 14e3e989f6a5 show.
+
+>> And FWIW: I'm all for making this more explicit, but people already use
+>> various different tags (BugLink is just one of them) for that and that
+>> just results in a mess.
+> Nope, it results otherwise. The Link is Link to the thread, which you
+> may find a lot in the kernel history. Making bug report links and
+> links to the patch threads that's what results in a mess.
+
+Yeah, but we are in that mess already and people inventing different
+tags; some of the DRM people for example use(d?) "References", but there
+were others iirc.
+
+>> I proposed consistent tags, but that didn't get
+>> much feedback. Maybe I should try again. Makes me wonder: where does
+>> BugLink come from? Is that something that people are used to from
+>> GitLab, GitHub, or something?
+> It comes from kernel history :-)
+
+Okay, thx, had just been wondering if people are used to it from some
+platform.
+
+Ciao, Thorsten
