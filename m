@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91CAAC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFBADC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239252AbiDRM2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37744 "EHLO
+        id S239311AbiDRM2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238741AbiDRM0W (ORCPT
+        with ESMTP id S238795AbiDRM02 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:26:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123B81261C;
-        Mon, 18 Apr 2022 05:20:30 -0700 (PDT)
+        Mon, 18 Apr 2022 08:26:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B332912624;
+        Mon, 18 Apr 2022 05:20:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A22AA60F0A;
-        Mon, 18 Apr 2022 12:20:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C591C385A9;
-        Mon, 18 Apr 2022 12:20:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D022B80EC1;
+        Mon, 18 Apr 2022 12:20:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3330C385A7;
+        Mon, 18 Apr 2022 12:20:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284429;
-        bh=X/2BiOYQf0Z+0ANkLJl9DPyLmi79vzg8bV9C5ksUvPc=;
+        s=korg; t=1650284432;
+        bh=xb0hS4BrdUP+xSIwy3hBDuYk5Yqiydpc9Eeeprbd1yE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rggj/U84T8lDs2trufusEq9lcdtJV1uJiTRHGUOHZs8unlzVAU1DgV2hIvXxGhKWZ
-         h31Cr6mDdFD5xqPhFVn2UOmF1WTsydQBZCv4B4xgyXLOtCFoUhEi9WeVwUfEYZvCJW
-         OB4Q0j3RdOQFRr4KHb2J+wVWLrg6YRHeSaiw7MNc=
+        b=RBrq6de2aZeBUlUB42ObQ7riA04uAhHt6Fnw/AVCWk6RU/5VTlmQe9D0z+9/RmdFU
+         VLeUbUnHYC40YSl9aeATkBRFzJ0yBXF4NiPGmzaNk8No5d1AEZcpkFdYouOqw4jBHk
+         Pmwk4Q44++/nIac4gRZkvCYAU0NuhadCI2j/A3gE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 112/219] io_uring: verify pad field is 0 in io_get_ext_arg
-Date:   Mon, 18 Apr 2022 14:11:21 +0200
-Message-Id: <20220418121210.034580519@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 113/219] testing/selftests/mqueue: Fix mq_perf_tests to free the allocated cpu set
+Date:   Mon, 18 Apr 2022 14:11:22 +0200
+Message-Id: <20220418121210.062683855@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,34 +50,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dylan Yudaken <dylany@fb.com>
+From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 
-[ Upstream commit d2347b9695dafe5c388a5f9aeb70e27a7a4d29cf ]
+[ Upstream commit ce64763c63854b4079f2e036638aa881a1fb3fbc ]
 
-Ensure that only 0 is passed for pad here.
+The selftest "mqueue/mq_perf_tests.c" use CPU_ALLOC to allocate
+CPU set. This cpu set is used further in pthread_attr_setaffinity_np
+and by pthread_create in the code. But in current code, allocated
+cpu set is not freed.
 
-Fixes: c73ebb685fb6 ("io_uring: add timeout support for io_uring_enter()")
-Signed-off-by: Dylan Yudaken <dylany@fb.com>
-Link: https://lore.kernel.org/r/20220412163042.2788062-5-dylany@fb.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fix this issue by adding CPU_FREE in the "shutdown" function which
+is called in most of the error/exit path for the cleanup. There are
+few error paths which exit without using shutdown. Add a common goto
+error path with CPU_FREE for these cases.
+
+Fixes: 7820b0715b6f ("tools/selftests: add mq_perf_tests")
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../testing/selftests/mqueue/mq_perf_tests.c  | 25 +++++++++++++------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 2838bc6cdbc8..7a652c8eeed2 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -10109,6 +10109,8 @@ static int io_get_ext_arg(unsigned flags, const void __user *argp, size_t *argsz
- 		return -EINVAL;
- 	if (copy_from_user(&arg, argp, sizeof(arg)))
- 		return -EFAULT;
-+	if (arg.pad)
-+		return -EINVAL;
- 	*sig = u64_to_user_ptr(arg.sigmask);
- 	*argsz = arg.sigmask_sz;
- 	*ts = u64_to_user_ptr(arg.ts);
+diff --git a/tools/testing/selftests/mqueue/mq_perf_tests.c b/tools/testing/selftests/mqueue/mq_perf_tests.c
+index b019e0b8221c..84fda3b49073 100644
+--- a/tools/testing/selftests/mqueue/mq_perf_tests.c
++++ b/tools/testing/selftests/mqueue/mq_perf_tests.c
+@@ -180,6 +180,9 @@ void shutdown(int exit_val, char *err_cause, int line_no)
+ 	if (in_shutdown++)
+ 		return;
+ 
++	/* Free the cpu_set allocated using CPU_ALLOC in main function */
++	CPU_FREE(cpu_set);
++
+ 	for (i = 0; i < num_cpus_to_pin; i++)
+ 		if (cpu_threads[i]) {
+ 			pthread_kill(cpu_threads[i], SIGUSR1);
+@@ -551,6 +554,12 @@ int main(int argc, char *argv[])
+ 		perror("sysconf(_SC_NPROCESSORS_ONLN)");
+ 		exit(1);
+ 	}
++
++	if (getuid() != 0)
++		ksft_exit_skip("Not running as root, but almost all tests "
++			"require root in order to modify\nsystem settings.  "
++			"Exiting.\n");
++
+ 	cpus_online = min(MAX_CPUS, sysconf(_SC_NPROCESSORS_ONLN));
+ 	cpu_set = CPU_ALLOC(cpus_online);
+ 	if (cpu_set == NULL) {
+@@ -589,7 +598,7 @@ int main(int argc, char *argv[])
+ 						cpu_set)) {
+ 					fprintf(stderr, "Any given CPU may "
+ 						"only be given once.\n");
+-					exit(1);
++					goto err_code;
+ 				} else
+ 					CPU_SET_S(cpus_to_pin[cpu],
+ 						  cpu_set_size, cpu_set);
+@@ -607,7 +616,7 @@ int main(int argc, char *argv[])
+ 				queue_path = malloc(strlen(option) + 2);
+ 				if (!queue_path) {
+ 					perror("malloc()");
+-					exit(1);
++					goto err_code;
+ 				}
+ 				queue_path[0] = '/';
+ 				queue_path[1] = 0;
+@@ -622,17 +631,12 @@ int main(int argc, char *argv[])
+ 		fprintf(stderr, "Must pass at least one CPU to continuous "
+ 			"mode.\n");
+ 		poptPrintUsage(popt_context, stderr, 0);
+-		exit(1);
++		goto err_code;
+ 	} else if (!continuous_mode) {
+ 		num_cpus_to_pin = 1;
+ 		cpus_to_pin[0] = cpus_online - 1;
+ 	}
+ 
+-	if (getuid() != 0)
+-		ksft_exit_skip("Not running as root, but almost all tests "
+-			"require root in order to modify\nsystem settings.  "
+-			"Exiting.\n");
+-
+ 	max_msgs = fopen(MAX_MSGS, "r+");
+ 	max_msgsize = fopen(MAX_MSGSIZE, "r+");
+ 	if (!max_msgs)
+@@ -740,4 +744,9 @@ int main(int argc, char *argv[])
+ 			sleep(1);
+ 	}
+ 	shutdown(0, "", 0);
++
++err_code:
++	CPU_FREE(cpu_set);
++	exit(1);
++
+ }
 -- 
 2.35.1
 
