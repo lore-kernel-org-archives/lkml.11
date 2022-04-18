@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8070C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 519FAC35295
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345600AbiDROTU (ORCPT
+        id S1344545AbiDROSI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56444 "EHLO
+        Mon, 18 Apr 2022 10:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244676AbiDROAC (ORCPT
+        with ESMTP id S244436AbiDRN5Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:00:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A692C114;
-        Mon, 18 Apr 2022 06:09:07 -0700 (PDT)
+        Mon, 18 Apr 2022 09:57:16 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A872AE1E;
+        Mon, 18 Apr 2022 06:07:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DC8360F9C;
-        Mon, 18 Apr 2022 13:08:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D70DC385C8;
-        Mon, 18 Apr 2022 13:08:27 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8FB9DCE10A2;
+        Mon, 18 Apr 2022 13:07:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75C7DC385A7;
+        Mon, 18 Apr 2022 13:07:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287308;
-        bh=XIPSXsMqXkgYWJscQGEr7EjgGojV+9HwO2YU2rmqgy4=;
+        s=korg; t=1650287236;
+        bh=f3e+vqqfFi+yOYOkwD6c5uvOfSo/vM7p0zi3JOoiFoE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KiWWd1b+XoUOXGNlEKl/CFgB0gT9aOrqYTOqWU5GD1o2hqGQhAqxtP9rZi9E2C1sM
-         yU/vWUCmYNNXkUIpwTr/p6tohJw3/8kMFFSPpTKOf4RUys1x9vg80m5RMk0FaQzNOH
-         5u9le01lTjh85elX8RvIs5FBiS9IEJ/19VkcBZa0=
+        b=WJ605g+4cC/exH2wJBru1ZZmSZE21xGM11gRh6uBWjxPADVaLKRYp4qk/7y+wkqHK
+         6BRU8p2KC3bLHvTbQhV2Y/J9QVTaAewXs9o9CJ2uVjDo9vLBAFYWdfkYJUw2A8wtmr
+         v53nfEttWpv7AhL7JenK5cL55CFv/q7ry7WZspKM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Auhagen <sven.auhagen@voleatech.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 119/218] netfilter: nf_conntrack_tcp: preserve liberal flag in tcp options
-Date:   Mon, 18 Apr 2022 14:13:05 +0200
-Message-Id: <20220418121202.998475889@linuxfoundation.org>
+Subject: [PATCH 4.9 099/218] USB: storage: ums-realtek: fix error code in rts51x_read_mem()
+Date:   Mon, 18 Apr 2022 14:12:45 +0200
+Message-Id: <20220418121202.437054399@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,69 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit f2dd495a8d589371289981d5ed33e6873df94ecc ]
+[ Upstream commit b07cabb8361dc692522538205552b1b9dab134be ]
 
-Do not reset IP_CT_TCP_FLAG_BE_LIBERAL flag in out-of-sync scenarios
-coming before the TCP window tracking, otherwise such connections will
-fail in the window check.
+The rts51x_read_mem() function should return negative error codes.
+Currently if the kmalloc() fails it returns USB_STOR_TRANSPORT_ERROR (3)
+which is treated as success by the callers.
 
-Update tcp_options() to leave this flag in place and add a new helper
-function to reset the tcp window state.
-
-Based on patch from Sven Auhagen.
-
-Fixes: c4832c7bbc3f ("netfilter: nf_ct_tcp: improve out-of-sync situation in TCP tracking")
-Tested-by: Sven Auhagen <sven.auhagen@voleatech.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 065e60964e29 ("ums_realtek: do not use stack memory for DMA")
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/20220304073504.GA26464@kili
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_proto_tcp.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ drivers/usb/storage/realtek_cr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
-index 69f687740c76..9e9ce570bb9e 100644
---- a/net/netfilter/nf_conntrack_proto_tcp.c
-+++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -390,8 +390,8 @@ static void tcp_options(const struct sk_buff *skb,
- 				 length, buff);
- 	BUG_ON(ptr == NULL);
+diff --git a/drivers/usb/storage/realtek_cr.c b/drivers/usb/storage/realtek_cr.c
+index d955761fce6f..d9d69637d614 100644
+--- a/drivers/usb/storage/realtek_cr.c
++++ b/drivers/usb/storage/realtek_cr.c
+@@ -377,7 +377,7 @@ static int rts51x_read_mem(struct us_data *us, u16 addr, u8 *data, u16 len)
  
--	state->td_scale =
--	state->flags = 0;
-+	state->td_scale = 0;
-+	state->flags &= IP_CT_TCP_FLAG_BE_LIBERAL;
+ 	buf = kmalloc(len, GFP_NOIO);
+ 	if (buf == NULL)
+-		return USB_STOR_TRANSPORT_ERROR;
++		return -ENOMEM;
  
- 	while (length > 0) {
- 		int opcode=*ptr++;
-@@ -806,6 +806,16 @@ static unsigned int *tcp_get_timeouts(struct net *net)
- 	return tcp_pernet(net)->timeouts;
- }
+ 	usb_stor_dbg(us, "addr = 0x%x, len = %d\n", addr, len);
  
-+static void nf_ct_tcp_state_reset(struct ip_ct_tcp_state *state)
-+{
-+	state->td_end		= 0;
-+	state->td_maxend	= 0;
-+	state->td_maxwin	= 0;
-+	state->td_maxack	= 0;
-+	state->td_scale		= 0;
-+	state->flags		&= IP_CT_TCP_FLAG_BE_LIBERAL;
-+}
-+
- /* Returns verdict for packet, or -1 for invalid. */
- static int tcp_packet(struct nf_conn *ct,
- 		      const struct sk_buff *skb,
-@@ -907,8 +917,7 @@ static int tcp_packet(struct nf_conn *ct,
- 			ct->proto.tcp.last_flags &= ~IP_CT_EXP_CHALLENGE_ACK;
- 			ct->proto.tcp.seen[ct->proto.tcp.last_dir].flags =
- 				ct->proto.tcp.last_flags;
--			memset(&ct->proto.tcp.seen[dir], 0,
--			       sizeof(struct ip_ct_tcp_state));
-+			nf_ct_tcp_state_reset(&ct->proto.tcp.seen[dir]);
- 			break;
- 		}
- 		ct->proto.tcp.last_index = index;
 -- 
 2.34.1
 
