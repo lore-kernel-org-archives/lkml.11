@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E74EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:53:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 886ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:53:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238380AbiDRM4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55022 "EHLO
+        id S240315AbiDRM4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:56:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240020AbiDRMnf (ORCPT
+        with ESMTP id S240100AbiDRMnp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:43:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C56205DD;
-        Mon, 18 Apr 2022 05:32:19 -0700 (PDT)
+        Mon, 18 Apr 2022 08:43:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BDC526AC2;
+        Mon, 18 Apr 2022 05:32:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C25EB80EC1;
-        Mon, 18 Apr 2022 12:32:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3D7EC385A1;
-        Mon, 18 Apr 2022 12:32:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 192C26118A;
+        Mon, 18 Apr 2022 12:32:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F9DBC385A1;
+        Mon, 18 Apr 2022 12:32:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285137;
-        bh=SkTxKGpq5IdnT24frrZD85hnt9CFrIND0AlDlK+IMmI=;
+        s=korg; t=1650285143;
+        bh=vrvMolG8lo4JH3qqZt9EOT/wyieZIrN3a3HPwwGwYl8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fsAQFTTPREskvHtWYb6JI7O642ckmxBBHp2nSTQ0Np7KOvUJ5GhFqaTQR0q6zY16+
-         2wkV26UwW1FBhYg6A5I3LFOmOaPJsa2qixlzfIJE7tq5Yqp+XzXnz1RHYSMT6k2EJd
-         ENm7f6aArnm+B9c+mWWJBDGLSicBEEmETnDMceLg=
+        b=ExGqEUS2WqpNDOwKmWF//l2wKsBmIl6OiBYPnl0JJ1B0o4vRgmRpyDWog9afb3OPr
+         169fEscZM+DtaqPl9rPtmPD2c8unUJiEQbOLW9QsU7GqGAKcLTLy48q1TchxBt6GVo
+         VvS1g9p0mwAwn5q1ds2mNulSKsBHs8A4E64S6PMM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Zhu <James.Zhu@amd.com>,
-        Tianci Yin <tianci.yin@amd.com>,
+        stable@vger.kernel.org, QintaoShen <unSimple1993@163.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 114/189] drm/amdgpu/vcn: improve vcn dpg stop procedure
-Date:   Mon, 18 Apr 2022 14:12:14 +0200
-Message-Id: <20220418121203.735337217@linuxfoundation.org>
+Subject: [PATCH 5.15 115/189] drm/amdkfd: Check for potential null return of kmalloc_array()
+Date:   Mon, 18 Apr 2022 14:12:15 +0200
+Message-Id: <20220418121203.762844331@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,37 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tianci Yin <tianci.yin@amd.com>
+From: QintaoShen <unSimple1993@163.com>
 
-[ Upstream commit 6ea239adc2a712eb318f04f5c29b018ba65ea38a ]
+[ Upstream commit ebbb7bb9e80305820dc2328a371c1b35679f2667 ]
 
-Prior to disabling dpg, VCN need unpausing dpg mode, or VCN will hang in
-S3 resuming.
+As the kmalloc_array() may return null, the 'event_waiters[i].wait' would lead to null-pointer dereference.
+Therefore, it is better to check the return value of kmalloc_array() to avoid this confusion.
 
-Reviewed-by: James Zhu <James.Zhu@amd.com>
-Signed-off-by: Tianci Yin <tianci.yin@amd.com>
+Signed-off-by: QintaoShen <unSimple1993@163.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/amd/amdkfd/kfd_events.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
-index 54b405fc600d..6e56bef4fdf8 100644
---- a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
-@@ -1508,8 +1508,11 @@ static int vcn_v3_0_start_sriov(struct amdgpu_device *adev)
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
+index 3eea4edee355..b8bdd796cd91 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_events.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
+@@ -531,6 +531,8 @@ static struct kfd_event_waiter *alloc_event_waiters(uint32_t num_events)
+ 	event_waiters = kmalloc_array(num_events,
+ 					sizeof(struct kfd_event_waiter),
+ 					GFP_KERNEL);
++	if (!event_waiters)
++		return NULL;
  
- static int vcn_v3_0_stop_dpg_mode(struct amdgpu_device *adev, int inst_idx)
- {
-+	struct dpg_pause_state state = {.fw_based = VCN_DPG_STATE__UNPAUSE};
- 	uint32_t tmp;
- 
-+	vcn_v3_0_pause_dpg_mode(adev, 0, &state);
-+
- 	/* Wait for power status to be 1 */
- 	SOC15_WAIT_ON_RREG(VCN, inst_idx, mmUVD_POWER_STATUS, 1,
- 		UVD_POWER_STATUS__UVD_POWER_STATUS_MASK);
+ 	for (i = 0; (event_waiters) && (i < num_events) ; i++) {
+ 		init_wait(&event_waiters[i].wait);
 -- 
 2.35.1
 
