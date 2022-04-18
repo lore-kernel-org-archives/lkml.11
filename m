@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 344EBC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9932EC3527C
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343898AbiDROIi (ORCPT
+        id S1344091AbiDROJC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:08:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35290 "EHLO
+        Mon, 18 Apr 2022 10:09:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245361AbiDRNx1 (ORCPT
+        with ESMTP id S1343515AbiDRNyD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:53:27 -0400
+        Mon, 18 Apr 2022 09:54:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5DD6583;
-        Mon, 18 Apr 2022 06:02:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B21473AD;
+        Mon, 18 Apr 2022 06:03:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CF7660B70;
-        Mon, 18 Apr 2022 13:02:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DBE1C385A8;
-        Mon, 18 Apr 2022 13:02:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E19060B73;
+        Mon, 18 Apr 2022 13:03:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 434C3C385A1;
+        Mon, 18 Apr 2022 13:03:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286958;
-        bh=j1ibkf07OPqJJuH+STE0U3Yp+RdmbtTkDExfewtsS1Q=;
+        s=korg; t=1650286993;
+        bh=9/c8yyTcOFyYLYaDkX0YZziuJm6ja6eJMCAFydHxggM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W1JH7E6Pf82vxD+tKdIkI6c5zSfGo5T03Zt0GCxAwvx0UNBE2MxSmswstxaUgGWSz
-         +SEUn+0FJ5+e7v4/ZtA37ifdgGqjzvWswWGAPjRl4CYFdKSgIsQGWwjHLfLq6sVR8B
-         zd88NTGaRMjzTD6bPUdZqtco7EOFcefzsgFSCJFk=
+        b=KnM3GFovo2Uir9ztU96GG5nMHrL8Nf/6PvJyK65EkHxCsHlmI5xD4hkzIEEIIJtC3
+         EWN1OPwjLwoYgJxymGtG52BM7Td2neEajo20lZLiGLXEQlnCK+464FRjmvUWeYktot
+         GlGZ/wInO5NW6bnmROCV4lUiEVX/sgbrYLxHblbs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 4.9 015/218] SUNRPC: avoid race between mod_timer() and del_timer_sync()
-Date:   Mon, 18 Apr 2022 14:11:21 +0200
-Message-Id: <20220418121159.475432000@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.9 025/218] ALSA: cs4236: fix an incorrect NULL check on list iterator
+Date:   Mon, 18 Apr 2022 14:11:31 +0200
+Message-Id: <20220418121159.997757362@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -49,49 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: NeilBrown <neilb@suse.de>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 3848e96edf4788f772d83990022fa7023a233d83 upstream.
+commit 0112f822f8a6d8039c94e0bc9b264d7ffc5d4704 upstream.
 
-xprt_destory() claims XPRT_LOCKED and then calls del_timer_sync().
-Both xprt_unlock_connect() and xprt_release() call
- ->release_xprt()
-which drops XPRT_LOCKED and *then* xprt_schedule_autodisconnect()
-which calls mod_timer().
+The bug is here:
+	err = snd_card_cs423x_pnp(dev, card->private_data, pdev, cdev);
 
-This may result in mod_timer() being called *after* del_timer_sync().
-When this happens, the timer may fire long after the xprt has been freed,
-and run_timer_softirq() will probably crash.
+The list iterator value 'cdev' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+is found.
 
-The pairing of ->release_xprt() and xprt_schedule_autodisconnect() is
-always called under ->transport_lock.  So if we take ->transport_lock to
-call del_timer_sync(), we can be sure that mod_timer() will run first
-(if it runs at all).
+To fix the bug, use a new variable 'iter' as the list iterator,
+while use the original variable 'cdev' as a dedicated pointer
+to point to the found element. And snd_card_cs423x_pnp() itself
+has NULL check for cdev.
 
 Cc: stable@vger.kernel.org
-Signed-off-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Fixes: c2b73d1458014 ("ALSA: cs4236: cs4232 and cs4236 driver merge to solve PnP BIOS detection")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327060822.4735-1-xiam0nd.tong@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/xprt.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ sound/isa/cs423x/cs4236.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/net/sunrpc/xprt.c
-+++ b/net/sunrpc/xprt.c
-@@ -1446,7 +1446,14 @@ static void xprt_destroy(struct rpc_xprt
- 	/* Exclude transport connect/disconnect handlers */
- 	wait_on_bit_lock(&xprt->state, XPRT_LOCKED, TASK_UNINTERRUPTIBLE);
+--- a/sound/isa/cs423x/cs4236.c
++++ b/sound/isa/cs423x/cs4236.c
+@@ -557,7 +557,7 @@ static int snd_cs423x_pnpbios_detect(str
+ 	static int dev;
+ 	int err;
+ 	struct snd_card *card;
+-	struct pnp_dev *cdev;
++	struct pnp_dev *cdev, *iter;
+ 	char cid[PNP_ID_LEN];
  
-+	/*
-+	 * xprt_schedule_autodisconnect() can run after XPRT_LOCKED
-+	 * is cleared.  We use ->transport_lock to ensure the mod_timer()
-+	 * can only run *before* del_time_sync(), never after.
-+	 */
-+	spin_lock(&xprt->transport_lock);
- 	del_timer_sync(&xprt->timer);
-+	spin_unlock(&xprt->transport_lock);
- 
- 	rpc_xprt_debugfs_unregister(xprt);
- 	rpc_destroy_wait_queue(&xprt->binding);
+ 	if (pnp_device_is_isapnp(pdev))
+@@ -573,9 +573,11 @@ static int snd_cs423x_pnpbios_detect(str
+ 	strcpy(cid, pdev->id[0].id);
+ 	cid[5] = '1';
+ 	cdev = NULL;
+-	list_for_each_entry(cdev, &(pdev->protocol->devices), protocol_list) {
+-		if (!strcmp(cdev->id[0].id, cid))
++	list_for_each_entry(iter, &(pdev->protocol->devices), protocol_list) {
++		if (!strcmp(iter->id[0].id, cid)) {
++			cdev = iter;
+ 			break;
++		}
+ 	}
+ 	err = snd_cs423x_card_new(&pdev->dev, dev, &card);
+ 	if (err < 0)
 
 
