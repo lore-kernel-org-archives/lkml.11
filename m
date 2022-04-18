@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15239C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344367AbiDROW2 (ORCPT
+        id S1344460AbiDROWe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:22:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41560 "EHLO
+        Mon, 18 Apr 2022 10:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343828AbiDROI3 (ORCPT
+        with ESMTP id S245636AbiDROHh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:08:29 -0400
+        Mon, 18 Apr 2022 10:07:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F7336334;
-        Mon, 18 Apr 2022 06:10:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6183617F;
+        Mon, 18 Apr 2022 06:10:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B8B2B80EE6;
-        Mon, 18 Apr 2022 13:10:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90506C385A7;
-        Mon, 18 Apr 2022 13:10:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEFDEB80EDF;
+        Mon, 18 Apr 2022 13:09:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BEECC385A1;
+        Mon, 18 Apr 2022 13:09:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287427;
-        bh=fzk8MKUGqmpclWYl7A30PfvIc3vCf2G+DHGNqab7TAM=;
+        s=korg; t=1650287392;
+        bh=yOixNhlpZ4hi4nNLQuWNnA+q4rzoDC/5+5Xy90XfWaE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wO7Ag/Gp4pLekTjfbkP+By4WJZKHloe20Vnda/zn8FeEuMUnl7XMgZzXWvtbkqeLp
-         nrZtHJVU6hA118b6H8TNzmGAoqQihXD6kEROXNVESFDvilogUCA4/Ze1R1G1qTGe+5
-         0z7Uz1BHAjsUuXCmMmUQ7Tt/qvopoGNgM1C4mLgg=
+        b=AGOyRE9pPNXkZ8ZQwSkHAIeWBg0RQHPbrmVjKb9NKs4C31M+1kDN3XGsuXUIHbaxu
+         s8bETATpLita2qDE6IlkWJ0A7JG2fwtZVEY+aIOx5UYEdx1rf9h/ubQ67Dmf7pKX5H
+         BuGfppPuNrfNjQpStSS33T/huwMKm3jwXwTIVvf4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 4.9 157/218] ubi: fastmap: Return error code if memory allocation fails in add_aeb()
-Date:   Mon, 18 Apr 2022 14:13:43 +0200
-Message-Id: <20220418121204.502286242@linuxfoundation.org>
+        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 147/218] mmc: host: Return an error when ->enable_sdio_irq() ops is missing
+Date:   Mon, 18 Apr 2022 14:13:33 +0200
+Message-Id: <20220418121203.795910282@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -49,86 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-commit c3c07fc25f37c157fde041b3a0c3dfcb1590cbce upstream.
+[ Upstream commit d6c9219ca1139b74541b2a98cee47a3426d754a9 ]
 
-Abort fastmap scanning and return error code if memory allocation fails
-in add_aeb(). Otherwise ubi will get wrong peb statistics information
-after scanning.
+Even if the current WARN() notifies the user that something is severely
+wrong, we can still end up in a PANIC() when trying to invoke the missing
+->enable_sdio_irq() ops. Therefore, let's also return an error code and
+prevent the host from being added.
 
-Fixes: dbb7d2a88d2a7b ("UBI: Add fastmap core")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+While at it, move the code into a separate function to prepare for
+subsequent changes and for further host caps validations.
+
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220303165142.129745-1-ulf.hansson@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/ubi/fastmap.c |   28 +++++++++++++++++++---------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+ drivers/mmc/core/host.c |   15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
---- a/drivers/mtd/ubi/fastmap.c
-+++ b/drivers/mtd/ubi/fastmap.c
-@@ -478,7 +478,9 @@ static int scan_pool(struct ubi_device *
- 			if (err == UBI_IO_FF_BITFLIPS)
- 				scrub = 1;
+--- a/drivers/mmc/core/host.c
++++ b/drivers/mmc/core/host.c
+@@ -403,6 +403,16 @@ again:
  
--			add_aeb(ai, free, pnum, ec, scrub);
-+			ret = add_aeb(ai, free, pnum, ec, scrub);
-+			if (ret)
-+				goto out;
- 			continue;
- 		} else if (err == 0 || err == UBI_IO_BITFLIPS) {
- 			dbg_bld("Found non empty PEB:%i in pool", pnum);
-@@ -648,8 +650,10 @@ static int ubi_attach_fastmap(struct ubi
- 		if (fm_pos >= fm_size)
- 			goto fail_bad;
+ EXPORT_SYMBOL(mmc_alloc_host);
  
--		add_aeb(ai, &ai->free, be32_to_cpu(fmec->pnum),
--			be32_to_cpu(fmec->ec), 0);
-+		ret = add_aeb(ai, &ai->free, be32_to_cpu(fmec->pnum),
-+			      be32_to_cpu(fmec->ec), 0);
-+		if (ret)
-+			goto fail;
- 	}
++static int mmc_validate_host_caps(struct mmc_host *host)
++{
++	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
++		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ /**
+  *	mmc_add_host - initialise host hardware
+  *	@host: mmc host
+@@ -415,8 +425,9 @@ int mmc_add_host(struct mmc_host *host)
+ {
+ 	int err;
  
- 	/* read EC values from used list */
-@@ -659,8 +663,10 @@ static int ubi_attach_fastmap(struct ubi
- 		if (fm_pos >= fm_size)
- 			goto fail_bad;
+-	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
+-		!host->ops->enable_sdio_irq);
++	err = mmc_validate_host_caps(host);
++	if (err)
++		return err;
  
--		add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
--			be32_to_cpu(fmec->ec), 0);
-+		ret = add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
-+			      be32_to_cpu(fmec->ec), 0);
-+		if (ret)
-+			goto fail;
- 	}
- 
- 	/* read EC values from scrub list */
-@@ -670,8 +676,10 @@ static int ubi_attach_fastmap(struct ubi
- 		if (fm_pos >= fm_size)
- 			goto fail_bad;
- 
--		add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
--			be32_to_cpu(fmec->ec), 1);
-+		ret = add_aeb(ai, &used, be32_to_cpu(fmec->pnum),
-+			      be32_to_cpu(fmec->ec), 1);
-+		if (ret)
-+			goto fail;
- 	}
- 
- 	/* read EC values from erase list */
-@@ -681,8 +689,10 @@ static int ubi_attach_fastmap(struct ubi
- 		if (fm_pos >= fm_size)
- 			goto fail_bad;
- 
--		add_aeb(ai, &ai->erase, be32_to_cpu(fmec->pnum),
--			be32_to_cpu(fmec->ec), 1);
-+		ret = add_aeb(ai, &ai->erase, be32_to_cpu(fmec->pnum),
-+			      be32_to_cpu(fmec->ec), 1);
-+		if (ret)
-+			goto fail;
- 	}
- 
- 	ai->mean_ec = div_u64(ai->ec_sum, ai->ec_count);
+ 	err = device_add(&host->class_dev);
+ 	if (err)
 
 
