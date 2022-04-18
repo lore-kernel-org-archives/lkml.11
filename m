@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF884C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:39:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA17EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:39:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243505AbiDRNl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
+        id S243744AbiDRNmG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242086AbiDRNNV (ORCPT
+        with ESMTP id S241999AbiDRNIk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:13:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D323A1AE;
-        Mon, 18 Apr 2022 05:51:02 -0700 (PDT)
+        Mon, 18 Apr 2022 09:08:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972A3344F5;
+        Mon, 18 Apr 2022 05:48:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD28D61287;
-        Mon, 18 Apr 2022 12:51:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3DE9C385A8;
-        Mon, 18 Apr 2022 12:51:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAA56B80D9C;
+        Mon, 18 Apr 2022 12:48:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FEADC385A1;
+        Mon, 18 Apr 2022 12:48:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286261;
-        bh=FJARBZBjsKTFIZCwEbBcLJQp8/d4yzz5kJwdbs6GYbI=;
+        s=korg; t=1650286091;
+        bh=UyDGyEQHkN4jo5VfUZ5gpnpySdseI/gx5qNUCF+oui0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ei3kUWxwt+VM3jeF+FgOyCJ2sZ/+oxzOxHEIkEGWlZ/r96EMPqQyqN67mMIByjNMh
-         erxm3TZi4TLrktSMQyUJAqkQdhwGjGnq5HJBSwrB+4ZSVAG9YRA3r1ADw/UDJa33Qt
-         8eajziq4RWonUZ/8v7KBLrJRiPEAmgTFcQmApro4=
+        b=cnlGzATyNJDjuv/yQRunzIRh8IJZ9qFlR2H8Dk49M/+4rF/IsfTWEZVBPy2zEqWpf
+         jPcy0i2hAAhGlqPtUHvvGiKz8vQqW+GPr6nbklm4S3GvG75xmv36czjSlFlcIVaBfx
+         QFptBmXTAu6h14whB8aAse8QjbZoxGR4sF7cQHiM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 077/284] ASoC: ti: davinci-i2s: Add check for clk_enable()
-Date:   Mon, 18 Apr 2022 14:10:58 +0200
-Message-Id: <20220418121212.876495581@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.14 026/284] jffs2: fix use-after-free in jffs2_clear_xattr_subsystem
+Date:   Mon, 18 Apr 2022 14:10:07 +0200
+Message-Id: <20220418121211.440524148@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,49 +49,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Baokun Li <libaokun1@huawei.com>
 
-[ Upstream commit ed7c9fef11931fc5d32a83d68017ff390bf5c280 ]
+commit 4c7c44ee1650677fbe89d86edbad9497b7679b5c upstream.
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+When we mount a jffs2 image, assume that the first few blocks of
+the image are normal and contain at least one xattr-related inode,
+but the next block is abnormal. As a result, an error is returned
+in jffs2_scan_eraseblock(). jffs2_clear_xattr_subsystem() is then
+called in jffs2_build_filesystem() and then again in
+jffs2_do_fill_super().
 
-Fixes: 5f9a50c3e55e ("ASoC: Davinci: McBSP: add device tree support for McBSP")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
-Link: https://lore.kernel.org/r/20220228031540.3571959-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Finally we can observe the following report:
+ ==================================================================
+ BUG: KASAN: use-after-free in jffs2_clear_xattr_subsystem+0x95/0x6ac
+ Read of size 8 at addr ffff8881243384e0 by task mount/719
+
+ Call Trace:
+  dump_stack+0x115/0x16b
+  jffs2_clear_xattr_subsystem+0x95/0x6ac
+  jffs2_do_fill_super+0x84f/0xc30
+  jffs2_fill_super+0x2ea/0x4c0
+  mtd_get_sb+0x254/0x400
+  mtd_get_sb_by_nr+0x4f/0xd0
+  get_tree_mtd+0x498/0x840
+  jffs2_get_tree+0x25/0x30
+  vfs_get_tree+0x8d/0x2e0
+  path_mount+0x50f/0x1e50
+  do_mount+0x107/0x130
+  __se_sys_mount+0x1c5/0x2f0
+  __x64_sys_mount+0xc7/0x160
+  do_syscall_64+0x45/0x70
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+ Allocated by task 719:
+  kasan_save_stack+0x23/0x60
+  __kasan_kmalloc.constprop.0+0x10b/0x120
+  kasan_slab_alloc+0x12/0x20
+  kmem_cache_alloc+0x1c0/0x870
+  jffs2_alloc_xattr_ref+0x2f/0xa0
+  jffs2_scan_medium.cold+0x3713/0x4794
+  jffs2_do_mount_fs.cold+0xa7/0x2253
+  jffs2_do_fill_super+0x383/0xc30
+  jffs2_fill_super+0x2ea/0x4c0
+ [...]
+
+ Freed by task 719:
+  kmem_cache_free+0xcc/0x7b0
+  jffs2_free_xattr_ref+0x78/0x98
+  jffs2_clear_xattr_subsystem+0xa1/0x6ac
+  jffs2_do_mount_fs.cold+0x5e6/0x2253
+  jffs2_do_fill_super+0x383/0xc30
+  jffs2_fill_super+0x2ea/0x4c0
+ [...]
+
+ The buggy address belongs to the object at ffff8881243384b8
+  which belongs to the cache jffs2_xattr_ref of size 48
+ The buggy address is located 40 bytes inside of
+  48-byte region [ffff8881243384b8, ffff8881243384e8)
+ [...]
+ ==================================================================
+
+The triggering of the BUG is shown in the following stack:
+-----------------------------------------------------------
+jffs2_fill_super
+  jffs2_do_fill_super
+    jffs2_do_mount_fs
+      jffs2_build_filesystem
+        jffs2_scan_medium
+          jffs2_scan_eraseblock        <--- ERROR
+        jffs2_clear_xattr_subsystem    <--- free
+    jffs2_clear_xattr_subsystem        <--- free again
+-----------------------------------------------------------
+
+An error is returned in jffs2_do_mount_fs(). If the error is returned
+by jffs2_sum_init(), the jffs2_clear_xattr_subsystem() does not need to
+be executed. If the error is returned by jffs2_build_filesystem(), the
+jffs2_clear_xattr_subsystem() also does not need to be executed again.
+So move jffs2_clear_xattr_subsystem() from 'out_inohash' to 'out_root'
+to fix this UAF problem.
+
+Fixes: aa98d7cf59b5 ("[JFFS2][XATTR] XATTR support on JFFS2 (version. 5)")
+Cc: stable@vger.kernel.org
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/davinci/davinci-i2s.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ fs/jffs2/fs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/davinci/davinci-i2s.c b/sound/soc/davinci/davinci-i2s.c
-index 384961651904..e5f61f1499c6 100644
---- a/sound/soc/davinci/davinci-i2s.c
-+++ b/sound/soc/davinci/davinci-i2s.c
-@@ -719,7 +719,9 @@ static int davinci_i2s_probe(struct platform_device *pdev)
- 	dev->clk = clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(dev->clk))
- 		return -ENODEV;
--	clk_enable(dev->clk);
-+	ret = clk_enable(dev->clk);
-+	if (ret)
-+		goto err_put_clk;
- 
- 	dev->dev = &pdev->dev;
- 	dev_set_drvdata(&pdev->dev, dev);
-@@ -741,6 +743,7 @@ static int davinci_i2s_probe(struct platform_device *pdev)
- 	snd_soc_unregister_component(&pdev->dev);
- err_release_clk:
- 	clk_disable(dev->clk);
-+err_put_clk:
- 	clk_put(dev->clk);
- 	return ret;
- }
--- 
-2.34.1
-
+--- a/fs/jffs2/fs.c
++++ b/fs/jffs2/fs.c
+@@ -597,8 +597,8 @@ out_root:
+ 	jffs2_free_ino_caches(c);
+ 	jffs2_free_raw_node_refs(c);
+ 	kvfree(c->blocks);
+- out_inohash:
+ 	jffs2_clear_xattr_subsystem(c);
++ out_inohash:
+ 	kfree(c->inocache_list);
+  out_wbuf:
+ 	jffs2_flash_cleanup(c);
 
 
