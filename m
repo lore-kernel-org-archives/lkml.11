@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DFA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:14:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC1F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245638AbiDRORI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:17:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45936 "EHLO
+        id S1343854AbiDRORQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244697AbiDRN5f (ORCPT
+        with ESMTP id S244687AbiDRN5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:57:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC7910A;
-        Mon, 18 Apr 2022 06:07:56 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BDA02AE23;
+        Mon, 18 Apr 2022 06:07:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DFD960F16;
-        Mon, 18 Apr 2022 13:07:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DDC8C385A1;
-        Mon, 18 Apr 2022 13:07:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 178EA60B41;
+        Mon, 18 Apr 2022 13:07:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0996FC385A7;
+        Mon, 18 Apr 2022 13:07:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287275;
-        bh=BRuUqAYpx7hVvQbjyAKSFqWzC7BwgXQsQmdvFvhsVmc=;
+        s=korg; t=1650287262;
+        bh=uez8C9IPVxjSLf8R8HtmVknPox6As/47CkkYCa9Emb8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kv4HiisFiJjEmZuZJEXf/UFUOfAxNq7OHsHFChYW000CuKI/DpTnY45Jkee1CUj+o
-         nqhfYMiMoxhXBZnUv5UcUIcWhoey5VoZcOSmFFD5i1lcyhooyUYAFtQ/WNwCPdy+rv
-         SNn7nXG+F2Ce1W6SBLsy7KIevvosLRd/92ZiuLyQ=
+        b=ClJilZaqwPhzFGbh9UGW55fzH1y209ptu9T/WSTqV4XVry0r8QsdLrOhu0w7dTOGG
+         pboYVLw0ZzSk7VyCEH9i1yajDuSQODO295rEUVWeateAheX/plWqAPFVxWvTZ94Q/7
+         8lk2ul7v5YM/YV+du2hhSkHS1big5yUxcF6VUU10=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 110/218] clk: tegra: tegra124-emc: Fix missing put_device() call in emc_ensure_emc_driver
-Date:   Mon, 18 Apr 2022 14:12:56 +0200
-Message-Id: <20220418121202.745675031@linuxfoundation.org>
+Subject: [PATCH 4.9 107/218] remoteproc: qcom_wcnss: Add missing of_node_put() in wcnss_alloc_memory_region
+Date:   Mon, 18 Apr 2022 14:12:53 +0200
+Message-Id: <20220418121202.661730861@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -52,34 +52,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 6d6ef58c2470da85a99119f74d34216c8074b9f0 ]
+[ Upstream commit 8f90161a66bc3d6b9fe8dde4d9028d20eae1b62a ]
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling path.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-Fixes: 2db04f16b589 ("clk: tegra: Add EMC clock driver")
+Fixes: aed361adca9f ("remoteproc: qcom: Introduce WCNSS peripheral image loader")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Thierry Reding <treding@nvidia.com>
-Link: https://lore.kernel.org/r/20220112104501.30655-1-linmq006@gmail.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220308063102.10049-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/tegra/clk-emc.c | 1 +
+ drivers/remoteproc/qcom_wcnss.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/clk/tegra/clk-emc.c b/drivers/clk/tegra/clk-emc.c
-index 74e7544f861b..348e7196b7b9 100644
---- a/drivers/clk/tegra/clk-emc.c
-+++ b/drivers/clk/tegra/clk-emc.c
-@@ -190,6 +190,7 @@ static struct tegra_emc *emc_ensure_emc_driver(struct tegra_clk_emc *tegra)
- 
- 	tegra->emc = platform_get_drvdata(pdev);
- 	if (!tegra->emc) {
-+		put_device(&pdev->dev);
- 		pr_err("%s: cannot find EMC driver\n", __func__);
- 		return NULL;
+diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
+index 323b629474a6..9f76ad9e959d 100644
+--- a/drivers/remoteproc/qcom_wcnss.c
++++ b/drivers/remoteproc/qcom_wcnss.c
+@@ -472,6 +472,7 @@ static int wcnss_alloc_memory_region(struct qcom_wcnss *wcnss)
  	}
+ 
+ 	ret = of_address_to_resource(node, 0, &r);
++	of_node_put(node);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
 2.34.1
 
