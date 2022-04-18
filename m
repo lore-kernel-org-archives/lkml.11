@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 943B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 557AFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:24:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241838AbiDRN0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:26:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41104 "EHLO
+        id S241572AbiDRN00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239214AbiDRNDw (ORCPT
+        with ESMTP id S240869AbiDRND6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:03:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17AC3BF5A;
-        Mon, 18 Apr 2022 05:45:06 -0700 (PDT)
+        Mon, 18 Apr 2022 09:03:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17938BF66;
+        Mon, 18 Apr 2022 05:45:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D6F96611E4;
-        Mon, 18 Apr 2022 12:45:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2DF8C385A7;
-        Mon, 18 Apr 2022 12:45:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A953760FB6;
+        Mon, 18 Apr 2022 12:45:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA6AAC385A1;
+        Mon, 18 Apr 2022 12:45:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285905;
-        bh=pZ9Cg/z8ut/ZxUUywIWgSASIaLci26urQY/3V/R3ssw=;
+        s=korg; t=1650285908;
+        bh=ALhvnJwo26FxvnTU0TvhN/+2rW3DOotXJx2CRK1NBOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2qBKOOuiboO77/EcxeOa++Edd1y32Zg2uG2g0wf3imON+pxTEOPtLPSY8xWXQbv8Z
-         Kn+SNFV7vCb7EKCiaja06t9YZnNzdkm64hgcYaHVRM5WpuqbopwFCF856ac441vjNP
-         NujLQ5NH7JTFwB1h1ECvKBF0LFurs2MSU51Dpq78=
+        b=YAhiFALG8seGacJAWIwLKBjMb9ogtvq3OEHryH1bWyUW6n6+iZ9+9MB5NsmF460ZM
+         rBp/VskoOhnHhiJkkvywKnco1czi1QU+vh3AlkhkD0P2EHZ4iUokhshzGugIqYFKzX
+         6v4ZhrWITK6yobVhRYGvQdWTSV20lYbRw4FPHzGM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tyrel Datwyler <tyreld@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 23/63] scsi: ibmvscsis: Increase INITIAL_SRP_LIMIT to 1024
-Date:   Mon, 18 Apr 2022 14:13:20 +0200
-Message-Id: <20220418121135.701345639@linuxfoundation.org>
+Subject: [PATCH 5.4 24/63] net: micrel: fix KS8851_MLL Kconfig
+Date:   Mon, 18 Apr 2022 14:13:21 +0200
+Message-Id: <20220418121135.765371939@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -49,42 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyrel Datwyler <tyreld@linux.ibm.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 0bade8e53279157c7cc9dd95d573b7e82223d78a ]
+[ Upstream commit c3efcedd272aa6dd5929e20cf902a52ddaa1197a ]
 
-The adapter request_limit is hardcoded to be INITIAL_SRP_LIMIT which is
-currently an arbitrary value of 800. Increase this value to 1024 which
-better matches the characteristics of the typical IBMi Initiator that
-supports 32 LUNs and a queue depth of 32.
+KS8851_MLL selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL,
+so make KS8851_MLL also depend on PTP_1588_CLOCK_OPTIONAL since
+'select' does not follow any dependency chains.
 
-This change also has the secondary benefit of being a power of two as
-required by the kfifo API. Since, Commit ab9bb6318b09 ("Partially revert
-"kfifo: fix kfifo_alloc() and kfifo_init()"") the size of IU pool for each
-target has been rounded down to 512 when attempting to kfifo_init() those
-pools with the current request_limit size of 800.
+Fixes kconfig warning and build errors:
 
-Link: https://lore.kernel.org/r/20220322194443.678433-1-tyreld@linux.ibm.com
-Signed-off-by: Tyrel Datwyler <tyreld@linux.ibm.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+WARNING: unmet direct dependencies detected for MICREL_PHY
+  Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
+  Selected by [y]:
+  - KS8851_MLL [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && HAS_IOMEM [=y]
+
+ld: drivers/net/phy/micrel.o: in function `lan8814_ts_info':
+micrel.c:(.text+0xb35): undefined reference to `ptp_clock_index'
+ld: drivers/net/phy/micrel.o: in function `lan8814_probe':
+micrel.c:(.text+0x2586): undefined reference to `ptp_clock_register'
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/micrel/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-index a929fe76102b..d5b2917aea44 100644
---- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-+++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-@@ -35,7 +35,7 @@
- 
- #define IBMVSCSIS_VERSION	"v0.2"
- 
--#define	INITIAL_SRP_LIMIT	800
-+#define	INITIAL_SRP_LIMIT	1024
- #define	DEFAULT_MAX_SECTORS	256
- #define MAX_TXU			1024 * 1024
- 
+diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
+index b9c4d48e28e4..120ed4633a09 100644
+--- a/drivers/net/ethernet/micrel/Kconfig
++++ b/drivers/net/ethernet/micrel/Kconfig
+@@ -37,6 +37,7 @@ config KS8851
+ config KS8851_MLL
+ 	tristate "Micrel KS8851 MLL"
+ 	depends on HAS_IOMEM
++	depends on PTP_1588_CLOCK_OPTIONAL
+ 	select MII
+ 	---help---
+ 	  This platform driver is for Micrel KS8851 Address/data bus
 -- 
 2.35.1
 
