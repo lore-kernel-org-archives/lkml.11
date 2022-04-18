@@ -2,93 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE65C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DCCDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346983AbiDRRYi (ORCPT
+        id S1346991AbiDRRYs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 13:24:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42798 "EHLO
+        Mon, 18 Apr 2022 13:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242820AbiDRRYe (ORCPT
+        with ESMTP id S242820AbiDRRYp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 13:24:34 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8516731539
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:21:55 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id bg24so13528574pjb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:21:55 -0700 (PDT)
+        Mon, 18 Apr 2022 13:24:45 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90586338BC;
+        Mon, 18 Apr 2022 10:22:06 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id 2so13523794pjw.2;
+        Mon, 18 Apr 2022 10:22:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Fogjq+0iPdBZBMK4jYk682UP+pZNG32fCLfhwIfhhXE=;
-        b=eNsdqSr4O0QCRIf4YJ6R7gSwH2ItG46kuqFE3YxpMmutZ5ERKfeckih7AFfsT7fdCL
-         CFAE+T+u5I+MrrH1+y7jkDyWp7pkiPj0FfQISV3uD6Zm6uG06OvHNLmOfKtPT1HPKnVm
-         xGK92DPetlM3mJFlh8cRBNSlHxiRnu2sWgKzniZSLjAx40SS+sbb/5zpAEyVzZkBIYlO
-         LoEcYR5DhSxXg9cwd+lOtsnfAhDou4odz+CsP/CjzG7jps3uU6zBMSjXvdcOFKvoyMBv
-         i+1u13PZQi8MB9klWrGMnkLy5fOhJy7dULdJkVuGuhFDsIbfaLv3+9DDSSy2CWJDmqGL
-         CAZg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=F0iRw3VgQscT6/0XFHxVh7cgsAmiEmZpweYGGHzkE3c=;
+        b=Vnc0dolzjhTYH+RUXDVsGRBcl3ihr+wXgH1YYpgicBJ6ojt04pBZxtqpY9GC2kzHCN
+         HoaEO77m/1nvx96MegKE+ctwSCP8m2gKgrhNj2zUZgnDQJIC2EaO6U3WivH8DVq6fqp3
+         RuJ7eAH+sakFgGO3vT7yyc1MCTcG+veIyWwLsgM5lbC2je92JHW/noAdXV/wC534Xw7R
+         y2lyZWLQzPtVVfzL/viNyJ+A9k5K53kx7pXvUPpMEwVcFs9LxgyCkX2qHQtu4dYrxKQI
+         EK5s2TjSlbv0c3gmVYaIrWjBpOBafuZ/iNS4C1DjnpNkO5FitrSguzKMyKGhW2ZUBejh
+         p1sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Fogjq+0iPdBZBMK4jYk682UP+pZNG32fCLfhwIfhhXE=;
-        b=XnUn9Q58TgZ2GpLxMel2BFCy+yOHRniJNOGwjvw/9R7mkPwiXuvfrvAZolLoeNLOZ8
-         kQsjLCL5gO3SCNxAl4H+X3YnL8Wg78A5NLOdO0C88UafFn1ishHFOJ+IoEP7O6Z8NDJc
-         O+dk+928jxrJ1f+x7IqsehjnXUGSGhrX/HZu2wJ0lQALHfbh+w84Ir7XJCLLS2OA7Hh7
-         kDHJeLVEJIAq4jsFncC2dYTsgTNtOj8i1uDhgZwr719ZtDKWZ0aL7WXLmr3raa3ICjoM
-         K6y83qWm5SyzZjMiDJidHXIdOppx/zRe83XNT8NIFt1rW5W/owTIuGa86dfG4dBRhIl+
-         lPzA==
-X-Gm-Message-State: AOAM5305eZ+3gRofko9twtODGuHvhHtfw61PEcIS9yvuSLs3fZCDACE0
-        YwTBTxEDouqDzXrWwngEdAQ=
-X-Google-Smtp-Source: ABdhPJwDJ0uJVfx2QrwbcFNBAgeqo9mTsjaUibpHBycw03Lj63qCZLrmvZN41QlydRogKqV/3XUqQA==
-X-Received: by 2002:a17:90b:1a8a:b0:1c7:c60b:f12 with SMTP id ng10-20020a17090b1a8a00b001c7c60b0f12mr13992859pjb.139.1650302514956;
-        Mon, 18 Apr 2022 10:21:54 -0700 (PDT)
-Received: from aliyar-HP-Laptop-15-da1xxx.domain.name ([14.139.241.88])
-        by smtp.gmail.com with ESMTPSA id y9-20020aa78f29000000b005098201d2f5sm13041394pfr.205.2022.04.18.10.21.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 10:21:54 -0700 (PDT)
-From:   Aliya Rahmani <aliyarahmani786@gmail.com>
-To:     clabbe@baylibre.com
-Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        outreachy@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Aliya Rahmani <aliyarahmani786@gmail.com>
-Subject: [PATCH v3 1/3] staging: media: zoran: use seq_puts() instead of seq_printf()
-Date:   Mon, 18 Apr 2022 22:44:52 +0530
-Message-Id: <20220418171453.16971-2-aliyarahmani786@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220418171453.16971-1-aliyarahmani786@gmail.com>
-References: <20220418171453.16971-1-aliyarahmani786@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=F0iRw3VgQscT6/0XFHxVh7cgsAmiEmZpweYGGHzkE3c=;
+        b=jc6U6jq6qnRzDfEgZZwtbotj6l8wxDMQZ3m8CdE2YBXhoCdpybTj0Ns2O0MTC0b/1s
+         hvlcs1p7OAv4dBqNXO5dNKkNKN48zJqmJYIEbGp88OePUDPMhtWRGT3+J0pZa+PcFDA5
+         eQLqdUGBw/yEWJlQFh27aBbzlj/9WWGGYe9DgLy7ECkie0xHiHlk9k1AruLZSIRPDY4y
+         hwRb95Ap12lNHM4Ot3mwqamO5t+peTfi0jNk8uEtKa1G3HlkSrzyqEUoqW0p79HmECsn
+         sLCVKfQzHCd8WM/yHufoSafJkM5Jz40l5OOjVkSHz3UGHBu0qVEOFplCHx8xIG4VUrGr
+         Gtuw==
+X-Gm-Message-State: AOAM532iaImQxZF9Vb4r+aXoMh7xE4amhvGu6MxS0lRqR8q1QAHboDQt
+        lRo8gjgdXxRIBpIDTLvixDU=
+X-Google-Smtp-Source: ABdhPJx+DqNOjCvlY1CVI4tjfVPfe5BuPrfNf+ircXuy8BT0iwtFFea5fHiIiUoZY3+TBuvXKHG8BA==
+X-Received: by 2002:a17:903:2281:b0:158:e95e:e0a9 with SMTP id b1-20020a170903228100b00158e95ee0a9mr11148558plh.157.1650302526031;
+        Mon, 18 Apr 2022 10:22:06 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id br10-20020a17090b0f0a00b001cd4fb89d38sm17054891pjb.9.2022.04.18.10.22.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 10:22:05 -0700 (PDT)
+Message-ID: <e4c167f7-bdbb-cf88-fcdc-fc0b07488b40@gmail.com>
+Date:   Mon, 18 Apr 2022 10:22:03 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 4.9 000/218] 4.9.311-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220418121158.636999985@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace seq_printf() with seq_puts() for a constant format without
-additional arguments, reported by checkpatch.
-
-Signed-off-by: Aliya Rahmani <aliyarahmani786@gmail.com>
----
- drivers/staging/media/zoran/videocodec.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/media/zoran/videocodec.c b/drivers/staging/media/zoran/videocodec.c
-index 3af7d02bd910..16a1f23a7f19 100644
---- a/drivers/staging/media/zoran/videocodec.c
-+++ b/drivers/staging/media/zoran/videocodec.c
-@@ -250,8 +250,8 @@ int videocodec_debugfs_show(struct seq_file *m)
- 	struct codec_list *h = codeclist_top;
- 	struct attached_list *a;
- 
--	seq_printf(m, "<S>lave or attached <M>aster name  type flags    magic    ");
--	seq_printf(m, "(connected as)\n");
-+	seq_puts(m, "<S>lave or attached <M>aster name  type flags    magic    ");
-+	seq_puts(m, "(connected as)\n");
 
 
+On 4/18/2022 5:11 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.311 release.
+> There are 218 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 20 Apr 2022 12:11:14 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.311-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.25.1
-
+Florian
