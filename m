@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE38C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8227BC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244236AbiDRNnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60338 "EHLO
+        id S244312AbiDRNn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242085AbiDRNSL (ORCPT
+        with ESMTP id S242530AbiDRNSu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:18:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255343B3DC;
-        Mon, 18 Apr 2022 05:51:38 -0700 (PDT)
+        Mon, 18 Apr 2022 09:18:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A817D3BA4F;
+        Mon, 18 Apr 2022 05:51:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A31A6124A;
-        Mon, 18 Apr 2022 12:51:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85154C385A7;
-        Mon, 18 Apr 2022 12:51:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A1E5B80EE2;
+        Mon, 18 Apr 2022 12:51:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B21D3C385A1;
+        Mon, 18 Apr 2022 12:51:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286296;
-        bh=3X5yPZmDQzoAnMRoFbTlEmaaQNUNd2P8pdHICpsssZU=;
+        s=korg; t=1650286303;
+        bh=0cNLl7cicECeRKenY9cJleGElIN2aSm8Y4NKmZ9mrpg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FOuG6r9HHbInerH4sFi5PMkPrwPuFqAZhFWys4FIYN4pSguWITgXOU42Ab0aL17IX
-         qH9hyOS68vTe/q6dCc+n3eoEtz3TNgQbiRNhqE2CxjBK1d5wbi/5zsleDMDlGE5i7m
-         JAAiXVrabvfazch4WthxwoSqoH7pY38ppnv6XK0c=
+        b=LKdyl89dXb75xp32U9vNkf6eJlPs96fiFq3YtbWuSx1onq9S1XUW0H7npucraYViz
+         GPKcjwTrM0+ImOpJzqb06MN0ntRWGDawWTCcpTFKgObucTTzYhqFUjoWQh/zWcqHv0
+         er7yo3oNCl1He6Gyzr08n6GKHuSvPWuD49yIIX4A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 091/284] video: fbdev: omapfb: Add missing of_node_put() in dvic_probe_of
-Date:   Mon, 18 Apr 2022 14:11:12 +0200
-Message-Id: <20220418121213.274113951@linuxfoundation.org>
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 093/284] ASoC: mxs: Fix error handling in mxs_sgtl5000_probe
+Date:   Mon, 18 Apr 2022 14:11:14 +0200
+Message-Id: <20220418121213.330186001@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,31 +51,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit a58c22cfbbf62fefca090334bbd35fd132e92a23 ]
+[ Upstream commit 6ae0a4d8fec551ec581d620f0eb1fe31f755551c ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+This function only calls of_node_put() in the regular path.
+And it will cause refcount leak in error paths.
+For example, when codec_np is NULL, saif_np[0] and saif_np[1]
+are not NULL, it will cause leaks.
 
-Fixes: f76ee892a99e ("omapfb: copy omapdss & displays for omapfb")
+of_node_put() will check if the node pointer is NULL, so we can
+call it directly to release the refcount of regular pointers.
+
+Fixes: e968194b45c4 ("ASoC: mxs: add device tree support for mxs-sgtl5000")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Link: https://lore.kernel.org/r/20220308020146.26496-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/mxs/mxs-sgtl5000.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c b/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
-index 06e1db34541e..41b0db0cc047 100644
---- a/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
-+++ b/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
-@@ -254,6 +254,7 @@ static int dvic_probe_of(struct platform_device *pdev)
- 	adapter_node = of_parse_phandle(node, "ddc-i2c-bus", 0);
- 	if (adapter_node) {
- 		adapter = of_get_i2c_adapter_by_node(adapter_node);
-+		of_node_put(adapter_node);
- 		if (adapter == NULL) {
- 			dev_err(&pdev->dev, "failed to parse ddc-i2c-bus\n");
- 			omap_dss_put_device(ddata->in);
+diff --git a/sound/soc/mxs/mxs-sgtl5000.c b/sound/soc/mxs/mxs-sgtl5000.c
+index 2ed3240cc682..d5e1a5e7c238 100644
+--- a/sound/soc/mxs/mxs-sgtl5000.c
++++ b/sound/soc/mxs/mxs-sgtl5000.c
+@@ -112,6 +112,9 @@ static int mxs_sgtl5000_probe(struct platform_device *pdev)
+ 	codec_np = of_parse_phandle(np, "audio-codec", 0);
+ 	if (!saif_np[0] || !saif_np[1] || !codec_np) {
+ 		dev_err(&pdev->dev, "phandle missing or invalid\n");
++		of_node_put(codec_np);
++		of_node_put(saif_np[0]);
++		of_node_put(saif_np[1]);
+ 		return -EINVAL;
+ 	}
+ 
 -- 
 2.34.1
 
