@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F81C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 482BFC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244234AbiDRNjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:39:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
+        id S242388AbiDRNjN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:39:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244003AbiDRNKl (ORCPT
+        with ESMTP id S240920AbiDRNK4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:10:41 -0400
+        Mon, 18 Apr 2022 09:10:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE42396B0;
-        Mon, 18 Apr 2022 05:50:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AF63982F;
+        Mon, 18 Apr 2022 05:50:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B3CA6124D;
-        Mon, 18 Apr 2022 12:50:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CDEDC385A1;
-        Mon, 18 Apr 2022 12:50:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80D236124D;
+        Mon, 18 Apr 2022 12:50:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7090BC385A7;
+        Mon, 18 Apr 2022 12:50:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286220;
-        bh=orYsiMU+k0qTfJ8VPyrMiFa07oD/Li21kpYPCvQblcw=;
+        s=korg; t=1650286230;
+        bh=Apzs0Kbg3O1yu1X8bywMUmaib7PZAYfI8Xg4iJER7UA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VKlWmfrUebCKzWNTfGeRKvXUZdZG0bgseHjnKM5BJeNb97LGzRJHkNrPmYLyZo2r9
-         OdHrW0Qow8aQk/L3utKPM7Ojg0jMgzfmEjyu9mlXcU68+1qxZZHp481UoiwChRK1fi
-         Li1iVfc5rRoZk6zuvIo3e/gadQPHX9D8mk3YnZ7U=
+        b=iHw/ui3b2YGrDgBZGO8VW21SKHhHgFjgVBqpVTfeGflRYk2d07NkpTN3PqFsF9P2h
+         8/sYoghzZObUwGTJ4RIj917uykmTeRK0kZTAqigWrVtLCsEips74VfPFwl8EmPyU8U
+         rRkTBWZvwJiWMuScEwDATQrcOnyrO0l5fhGxHt2s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brandon Wyman <bjwyman@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 066/284] hwmon: (pmbus) Add Vin unit off handling
-Date:   Mon, 18 Apr 2022 14:10:47 +0200
-Message-Id: <20220418121212.567383982@linuxfoundation.org>
+        stable@vger.kernel.org, Bharata B Rao <bharata@amd.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        Mel Gorman <mgorman@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 068/284] sched/debug: Remove mpol_get/put and task_lock/unlock from sched_show_numa
+Date:   Mon, 18 Apr 2022 14:10:49 +0200
+Message-Id: <20220418121212.623312922@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,59 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brandon Wyman <bjwyman@gmail.com>
+From: Bharata B Rao <bharata@amd.com>
 
-[ Upstream commit a5436af598779219b375c1977555c82def1c35d0 ]
+[ Upstream commit 28c988c3ec29db74a1dda631b18785958d57df4f ]
 
-If there is an input undervoltage fault, reported in STATUS_INPUT
-command response, there is quite likely a "Unit Off For Insufficient
-Input Voltage" condition as well.
+The older format of /proc/pid/sched printed home node info which
+required the mempolicy and task lock around mpol_get(). However
+the format has changed since then and there is no need for
+sched_show_numa() any more to have mempolicy argument,
+asssociated mpol_get/put and task_lock/unlock. Remove them.
 
-Add a constant for bit 3 of STATUS_INPUT. Update the Vin limit
-attributes to include both bits in the mask for clearing faults.
-
-If an input undervoltage fault occurs, causing a unit off for
-insufficient input voltage, but the unit is off bit is not cleared, the
-STATUS_WORD will not be updated to clear the input fault condition.
-Including the unit is off bit (bit 3) allows for the input fault
-condition to completely clear.
-
-Signed-off-by: Brandon Wyman <bjwyman@gmail.com>
-Link: https://lore.kernel.org/r/20220317232123.2103592-1-bjwyman@gmail.com
-Fixes: b4ce237b7f7d3 ("hwmon: (pmbus) Introduce infrastructure to detect sensors and limit registers")
-[groeck: Dropped unnecessary ()]
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: 397f2378f1361 ("sched/numa: Fix numa balancing stats in /proc/pid/sched")
+Signed-off-by: Bharata B Rao <bharata@amd.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Srikar Dronamraju <srikar@linux.vnet.ibm.com>
+Acked-by: Mel Gorman <mgorman@suse.de>
+Link: https://lore.kernel.org/r/20220118050515.2973-1-bharata@amd.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/pmbus/pmbus.h      | 1 +
- drivers/hwmon/pmbus/pmbus_core.c | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ kernel/sched/debug.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
-diff --git a/drivers/hwmon/pmbus/pmbus.h b/drivers/hwmon/pmbus/pmbus.h
-index fa613bd209e3..1fed8ed36d5e 100644
---- a/drivers/hwmon/pmbus/pmbus.h
-+++ b/drivers/hwmon/pmbus/pmbus.h
-@@ -262,6 +262,7 @@ enum pmbus_regs {
- /*
-  * STATUS_VOUT, STATUS_INPUT
-  */
-+#define PB_VOLTAGE_VIN_OFF		BIT(3)
- #define PB_VOLTAGE_UV_FAULT		BIT(4)
- #define PB_VOLTAGE_UV_WARNING		BIT(5)
- #define PB_VOLTAGE_OV_WARNING		BIT(6)
-diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
-index 66c72aedde5e..b736fe1a05b7 100644
---- a/drivers/hwmon/pmbus/pmbus_core.c
-+++ b/drivers/hwmon/pmbus/pmbus_core.c
-@@ -1162,7 +1162,7 @@ static const struct pmbus_limit_attr vin_limit_attrs[] = {
- 		.reg = PMBUS_VIN_UV_FAULT_LIMIT,
- 		.attr = "lcrit",
- 		.alarm = "lcrit_alarm",
--		.sbit = PB_VOLTAGE_UV_FAULT,
-+		.sbit = PB_VOLTAGE_UV_FAULT | PB_VOLTAGE_VIN_OFF,
- 	}, {
- 		.reg = PMBUS_VIN_OV_WARN_LIMIT,
- 		.attr = "max",
+diff --git a/kernel/sched/debug.c b/kernel/sched/debug.c
+index 187c04a34ba1..053c480f5382 100644
+--- a/kernel/sched/debug.c
++++ b/kernel/sched/debug.c
+@@ -899,25 +899,15 @@ void print_numa_stats(struct seq_file *m, int node, unsigned long tsf,
+ static void sched_show_numa(struct task_struct *p, struct seq_file *m)
+ {
+ #ifdef CONFIG_NUMA_BALANCING
+-	struct mempolicy *pol;
+-
+ 	if (p->mm)
+ 		P(mm->numa_scan_seq);
+ 
+-	task_lock(p);
+-	pol = p->mempolicy;
+-	if (pol && !(pol->flags & MPOL_F_MORON))
+-		pol = NULL;
+-	mpol_get(pol);
+-	task_unlock(p);
+-
+ 	P(numa_pages_migrated);
+ 	P(numa_preferred_nid);
+ 	P(total_numa_faults);
+ 	SEQ_printf(m, "current_node=%d, numa_group_id=%d\n",
+ 			task_node(p), task_numa_group_id(p));
+ 	show_numa_stats(p, m);
+-	mpol_put(pol);
+ #endif
+ }
+ 
 -- 
 2.34.1
 
