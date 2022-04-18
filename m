@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D5F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 407C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:22:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241339AbiDRNYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:24:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41138 "EHLO
+        id S241562AbiDRNYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:24:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241822AbiDRNDa (ORCPT
+        with ESMTP id S237501AbiDRNDc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:03:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9515333EA7;
-        Mon, 18 Apr 2022 05:44:36 -0700 (PDT)
+        Mon, 18 Apr 2022 09:03:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2290039D;
+        Mon, 18 Apr 2022 05:44:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 294966124B;
-        Mon, 18 Apr 2022 12:44:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B743C385A1;
-        Mon, 18 Apr 2022 12:44:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D11B6B80D9C;
+        Mon, 18 Apr 2022 12:44:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4250FC385A7;
+        Mon, 18 Apr 2022 12:44:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285875;
-        bh=qnqwhrdpHXehWZti7jwWW0CXMprTUZWAfoCcm83XbaA=;
+        s=korg; t=1650285884;
+        bh=YGmsR3ukDQB4LW5zlg+QCFvq5ydLZushvTqA92xUr9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WoW3qAIfljgVWwhwvXcmGfg2U5fxUPbJ1CGbcM08HQAOYVA07ItW8DQhT1xkzu1SC
-         NHdIpJ5ePWa0XVTe6Q7moEKiQMDPCHkrfflNnLOoVh4VXE+OS5D5i8W1kgZ12g4Rhw
-         f8jmXy53jp9Hw4x/228IIU9i0reXtfQWldrV0lUM=
+        b=ymhTOY5s9L6IE9uXLtQWS8X6qvmw0PNzSKxDuON5vNkAFhyMoNYxCl7MnTWlAORKt
+         6m0VUPLK/ETCE9WoyoXuQIDCMiY00fsooshc1tt80rFOz/jvrOV+JD90F3m52jFGag
+         1+OZNvplGdFcLj8KqhvcrSeb8ygqwpD8l6dfxcgA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.4 52/63] dm integrity: fix memory corruption when tag_size is less than digest size
-Date:   Mon, 18 Apr 2022 14:13:49 +0200
-Message-Id: <20220418121137.673942608@linuxfoundation.org>
+        stable@vger.kernel.org, Wang Zhaoyang1 <zhaoyang1.wang@intel.com>,
+        Gao Liang <liang.gao@intel.com>, Chao Gao <chao.gao@intel.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 5.4 55/63] dma-direct: avoid redundant memory sync for swiotlb
+Date:   Mon, 18 Apr 2022 14:13:52 +0200
+Message-Id: <20220418121137.867732963@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -48,53 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Chao Gao <chao.gao@intel.com>
 
-commit 08c1af8f1c13bbf210f1760132f4df24d0ed46d6 upstream.
+commit 9e02977bfad006af328add9434c8bffa40e053bb upstream.
 
-It is possible to set up dm-integrity in such a way that the
-"tag_size" parameter is less than the actual digest size. In this
-situation, a part of the digest beyond tag_size is ignored.
+When we looked into FIO performance with swiotlb enabled in VM, we found
+swiotlb_bounce() is always called one more time than expected for each DMA
+read request.
 
-In this case, dm-integrity would write beyond the end of the
-ic->recalc_tags array and corrupt memory. The corruption happened in
-integrity_recalc->integrity_sector_checksum->crypto_shash_final.
+It turns out that the bounce buffer is copied to original DMA buffer twice
+after the completion of a DMA request (one is done by in
+dma_direct_sync_single_for_cpu(), the other by swiotlb_tbl_unmap_single()).
+But the content in bounce buffer actually doesn't change between the two
+rounds of copy. So, one round of copy is redundant.
 
-Fix this corruption by increasing the tags array so that it has enough
-padding at the end to accomodate the loop in integrity_recalc() being
-able to write a full digest size for the last member of the tags
-array.
+Pass DMA_ATTR_SKIP_CPU_SYNC flag to swiotlb_tbl_unmap_single() to
+skip the memory copy in it.
 
-Cc: stable@vger.kernel.org # v4.19+
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+This fix increases FIO 64KB sequential read throughput in a guest with
+swiotlb=force by 5.6%.
+
+Fixes: 55897af63091 ("dma-direct: merge swiotlb_dma_ops into the dma_direct code")
+Reported-by: Wang Zhaoyang1 <zhaoyang1.wang@intel.com>
+Reported-by: Gao Liang <liang.gao@intel.com>
+Signed-off-by: Chao Gao <chao.gao@intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-integrity.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ kernel/dma/direct.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/md/dm-integrity.c
-+++ b/drivers/md/dm-integrity.c
-@@ -4054,6 +4054,7 @@ try_smaller_buffer:
- 	}
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -306,7 +306,8 @@ void dma_direct_unmap_page(struct device
+ 		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
  
- 	if (ic->internal_hash) {
-+		size_t recalc_tags_size;
- 		ic->recalc_wq = alloc_workqueue("dm-integrity-recalc", WQ_MEM_RECLAIM, 1);
- 		if (!ic->recalc_wq ) {
- 			ti->error = "Cannot allocate workqueue";
-@@ -4067,8 +4068,10 @@ try_smaller_buffer:
- 			r = -ENOMEM;
- 			goto bad;
- 		}
--		ic->recalc_tags = kvmalloc_array(RECALC_SECTORS >> ic->sb->log2_sectors_per_block,
--						 ic->tag_size, GFP_KERNEL);
-+		recalc_tags_size = (RECALC_SECTORS >> ic->sb->log2_sectors_per_block) * ic->tag_size;
-+		if (crypto_shash_digestsize(ic->internal_hash) > ic->tag_size)
-+			recalc_tags_size += crypto_shash_digestsize(ic->internal_hash) - ic->tag_size;
-+		ic->recalc_tags = kvmalloc(recalc_tags_size, GFP_KERNEL);
- 		if (!ic->recalc_tags) {
- 			ti->error = "Cannot allocate tags for recalculating";
- 			r = -ENOMEM;
+ 	if (unlikely(is_swiotlb_buffer(phys)))
+-		swiotlb_tbl_unmap_single(dev, phys, size, size, dir, attrs);
++		swiotlb_tbl_unmap_single(dev, phys, size, size, dir,
++					 attrs | DMA_ATTR_SKIP_CPU_SYNC);
+ }
+ EXPORT_SYMBOL(dma_direct_unmap_page);
+ 
 
 
