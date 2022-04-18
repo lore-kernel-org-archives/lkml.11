@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF1DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A761C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239133AbiDRMca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38530 "EHLO
+        id S239241AbiDRMcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:32:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239492AbiDRM2a (ORCPT
+        with ESMTP id S239710AbiDRM2m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:28:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3231BE98;
-        Mon, 18 Apr 2022 05:21:56 -0700 (PDT)
+        Mon, 18 Apr 2022 08:28:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D09201A9;
+        Mon, 18 Apr 2022 05:22:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3D5A60FAB;
-        Mon, 18 Apr 2022 12:21:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4427C385A1;
-        Mon, 18 Apr 2022 12:21:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C998EB80EC4;
+        Mon, 18 Apr 2022 12:22:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A730C385A1;
+        Mon, 18 Apr 2022 12:22:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284515;
-        bh=mfL2CmQ9NoDpEOv1VHHlZ0R3Tzoajclb7F4KvKPCUJ4=;
+        s=korg; t=1650284542;
+        bh=+Xd3EYsE54NRnjPktOTOQq1qGWDsUlebxiZdA2bq+tQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fd2JjUrS2npwGDlp2pKTRwCmsUmJW6dTYdJWDNbsWGSS69kiEgv8gWUrwWd1dJcdS
-         aVbF/5aly+VE1dO6qjblAKiJufm4k0lovDYtYbocLfSjk+0sw7sUxLr5Uj/7+1cySI
-         3XERbD6C2HQT8L/IIcT7CGoGcoesbEhBMm48Lalo=
+        b=SbMdng3lnVxpi7LIxW93Q5OhOjXPZ9dFrIjTf3ULagwDH8BCWQggGvdkhnXjYU4tv
+         ZTm1ElMEujdZFoEM2VQrgCENUH1AQYTP+UP5TcAQP/ZmYuGbHSopf7O2/suJxrBtek
+         3XBGRAIJp6P5Ldl7Hr7XVKhxrIka1cfEpq3jdWeM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 141/219] Drivers: hv: vmbus: Deactivate sysctl_record_panic_msg by default in isolated guests
-Date:   Mon, 18 Apr 2022 14:11:50 +0200
-Message-Id: <20220418121210.838543273@linuxfoundation.org>
+        stable@vger.kernel.org, Tyrel Datwyler <tyreld@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 149/219] scsi: ibmvscsis: Increase INITIAL_SRP_LIMIT to 1024
+Date:   Mon, 18 Apr 2022 14:11:58 +0200
+Message-Id: <20220418121211.058527039@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,74 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+From: Tyrel Datwyler <tyreld@linux.ibm.com>
 
-[ Upstream commit 9f8b577f7b43b2170628d6c537252785dcc2dcea ]
+[ Upstream commit 0bade8e53279157c7cc9dd95d573b7e82223d78a ]
 
-hv_panic_page might contain guest-sensitive information, do not dump it
-over to Hyper-V by default in isolated guests.
+The adapter request_limit is hardcoded to be INITIAL_SRP_LIMIT which is
+currently an arbitrary value of 800. Increase this value to 1024 which
+better matches the characteristics of the typical IBMi Initiator that
+supports 32 LUNs and a queue depth of 32.
 
-While at it, update some comments in hyperv_{panic,die}_event().
+This change also has the secondary benefit of being a power of two as
+required by the kfifo API. Since, Commit ab9bb6318b09 ("Partially revert
+"kfifo: fix kfifo_alloc() and kfifo_init()"") the size of IU pool for each
+target has been rounded down to 512 when attempting to kfifo_init() those
+pools with the current request_limit size of 800.
 
-Reported-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
-Link: https://lore.kernel.org/r/20220301141135.2232-1-parri.andrea@gmail.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Link: https://lore.kernel.org/r/20220322194443.678433-1-tyreld@linux.ibm.com
+Signed-off-by: Tyrel Datwyler <tyreld@linux.ibm.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hv/vmbus_drv.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 4bea1dfa41cd..6c057c76c2ca 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -77,8 +77,8 @@ static int hyperv_panic_event(struct notifier_block *nb, unsigned long val,
+diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
+index 61f06f6885a5..89b9fbce7488 100644
+--- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
++++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
+@@ -36,7 +36,7 @@
  
- 	/*
- 	 * Hyper-V should be notified only once about a panic.  If we will be
--	 * doing hyperv_report_panic_msg() later with kmsg data, don't do
--	 * the notification here.
-+	 * doing hv_kmsg_dump() with kmsg data later, don't do the notification
-+	 * here.
- 	 */
- 	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE
- 	    && hyperv_report_reg()) {
-@@ -100,8 +100,8 @@ static int hyperv_die_event(struct notifier_block *nb, unsigned long val,
+ #define IBMVSCSIS_VERSION	"v0.2"
  
- 	/*
- 	 * Hyper-V should be notified only once about a panic.  If we will be
--	 * doing hyperv_report_panic_msg() later with kmsg data, don't do
--	 * the notification here.
-+	 * doing hv_kmsg_dump() with kmsg data later, don't do the notification
-+	 * here.
- 	 */
- 	if (hyperv_report_reg())
- 		hyperv_report_panic(regs, val, true);
-@@ -1546,14 +1546,20 @@ static int vmbus_bus_init(void)
- 	if (ret)
- 		goto err_connect;
+-#define	INITIAL_SRP_LIMIT	800
++#define	INITIAL_SRP_LIMIT	1024
+ #define	DEFAULT_MAX_SECTORS	256
+ #define MAX_TXU			1024 * 1024
  
-+	if (hv_is_isolation_supported())
-+		sysctl_record_panic_msg = 0;
-+
- 	/*
- 	 * Only register if the crash MSRs are available
- 	 */
- 	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE) {
- 		u64 hyperv_crash_ctl;
- 		/*
--		 * Sysctl registration is not fatal, since by default
--		 * reporting is enabled.
-+		 * Panic message recording (sysctl_record_panic_msg)
-+		 * is enabled by default in non-isolated guests and
-+		 * disabled by default in isolated guests; the panic
-+		 * message recording won't be available in isolated
-+		 * guests should the following registration fail.
- 		 */
- 		hv_ctl_table_hdr = register_sysctl_table(hv_root_table);
- 		if (!hv_ctl_table_hdr)
 -- 
 2.35.1
 
