@@ -2,124 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B8DC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F33C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239837AbiDRMnM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:43:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
+        id S239857AbiDRMnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:43:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239801AbiDRMd2 (ORCPT
+        with ESMTP id S239822AbiDRMda (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3D81AD9A;
-        Mon, 18 Apr 2022 05:26:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C342CB80ED6;
-        Mon, 18 Apr 2022 12:26:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39784C385A7;
-        Mon, 18 Apr 2022 12:26:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284782;
-        bh=xFu/6ps/FGImg4czfVwgAz8kQ3cZkCR6wTgoeNmSRaE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qpwSFwDA9uSxg7bDH9mUmBgbCR/QcfAssNxTIvMWmfo6IdbkA/RrJT6UhxUbrlVnh
-         bEH6T8hHZ/Jw2ZX6HdnbAtxeirMN8X2A+Ix8XiGk/HuPPPPl9zOWkqpwSRfCxxgjbR
-         AFwJsv9lbiYKc1Qbz8HWkhWKmIQFUVmGIPQYigIc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.17 219/219] ax25: Fix UAF bugs in ax25 timers
-Date:   Mon, 18 Apr 2022 14:13:08 +0200
-Message-Id: <20220418121212.996027075@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
-References: <20220418121203.462784814@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 18 Apr 2022 08:33:30 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EA81BE99
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:26:50 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id s18so26659273ejr.0
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:26:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=I3d5udvKIjqAWucjjIKmuyn7gYiBA99VwyV2DIv8hOs=;
+        b=O6i40JuKQXOyvwtn8Dy33ZqEQOG5EHZzXGoOpqZzNZ9ieOhuYgUKLhfzpGxvbXiAfC
+         Vwf80nHGzunG0NFoscB2CnQZ0JQu4sPahErZnIz5NgO6On1mSrWR8+eqgUYGkK04Z/cm
+         am6eYB6HIbNfNKmvh6CfzcqdjEqDMZklnqPh2wvAj+hoM7Z/WC2jzgm+/aKNM463g1jw
+         g7uQ/8uHdj6HIoospz4Bv4O6YviYZPMRyTqevmkLEkrfzf/jDuJ6B+t56CgXYgzMzeUH
+         zqzjkk8aXXXyzV9RR8CD0OyiQVQF/FlvxcK4hkfLOu+q4NO8TFovZ3kQgN5AmwmO6rfZ
+         2wEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=I3d5udvKIjqAWucjjIKmuyn7gYiBA99VwyV2DIv8hOs=;
+        b=t6emigtQ6rN0RTEcgMAjFja5IfKjwdcQgm98A9aIwqXYBmHyMcsqrXArf6/miDjRK1
+         aWC+xUH/RZUuW4SGFcQrvX1s+tC610WwgA6zIB/A76A93s3V3KlxMTnJ2i7+1dmGD37f
+         nmPdWNqlPvkbvQAKiANxDuzgAmY7lbRNH5hYNrcMZZiwqMJUsaPB0OdPuKwkTaR/I+hW
+         K1lYlldN51oQRW56nSceHv6nSLpDPRbaHULOE6Q/jgrORZx1SVcNWnZ6AkCPfqKpNl+J
+         PfeOciOfQ6rFBYT8ftioerf8GmP0Z7EJbpl21qHp7cNTSgLje2ggntkC1KlUX/knQ9wf
+         228w==
+X-Gm-Message-State: AOAM532LHw3WOlaOuDdzsmnv9O1Jdv3Zi1i9sX+/qjDvQYdLPwrtBE7k
+        gR29n9Y4/df32YWWgglxD617RB0yVbP6hA==
+X-Google-Smtp-Source: ABdhPJw1EAebv52D0fGCecrKQNHXpvA1WtVaDZlB3PXnrtrkiLQTkMClotu0rgBrzw31XDzOlJMw2A==
+X-Received: by 2002:a17:906:7a51:b0:6e8:8e6c:f182 with SMTP id i17-20020a1709067a5100b006e88e6cf182mr8740413ejo.506.1650284808614;
+        Mon, 18 Apr 2022 05:26:48 -0700 (PDT)
+Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id gj3-20020a170906e10300b006e8ac161bcfsm4539377ejb.203.2022.04.18.05.26.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 05:26:47 -0700 (PDT)
+Message-ID: <a81e72f0-f01f-723e-fb0e-7667b2d3ff3f@linaro.org>
+Date:   Mon, 18 Apr 2022 14:26:46 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/3] dt-bindings: SPI: Add bindings for new Ingenic SoCs.
+Content-Language: en-US
+To:     =?UTF-8?B?5ZGo55Cw5p2wIChaaG91IFlhbmppZSk=?= 
+        <zhouyanjie@wanyeetech.com>, broonie@kernel.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     linux-spi@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        paul@crapouillou.net, contact@artur-rojek.eu,
+        dongsheng.qiu@ingenic.com, aric.pzqi@ingenic.com,
+        rick.tyliu@ingenic.com, sernia.zhou@foxmail.com,
+        zhenwenjin@gmail.com, reimu@sudomaker.com
+References: <1650032528-118220-1-git-send-email-zhouyanjie@wanyeetech.com>
+ <1650032528-118220-3-git-send-email-zhouyanjie@wanyeetech.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1650032528-118220-3-git-send-email-zhouyanjie@wanyeetech.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
-
-commit 82e31755e55fbcea6a9dfaae5fe4860ade17cbc0 upstream.
-
-There are race conditions that may lead to UAF bugs in
-ax25_heartbeat_expiry(), ax25_t1timer_expiry(), ax25_t2timer_expiry(),
-ax25_t3timer_expiry() and ax25_idletimer_expiry(), when we call
-ax25_release() to deallocate ax25_dev.
-
-One of the UAF bugs caused by ax25_release() is shown below:
-
-      (Thread 1)                    |      (Thread 2)
-ax25_dev_device_up() //(1)          |
-...                                 | ax25_kill_by_device()
-ax25_bind()          //(2)          |
-ax25_connect()                      | ...
- ax25_std_establish_data_link()     |
-  ax25_start_t1timer()              | ax25_dev_device_down() //(3)
-   mod_timer(&ax25->t1timer,..)     |
-                                    | ax25_release()
-   (wait a time)                    |  ...
-                                    |  ax25_dev_put(ax25_dev) //(4)FREE
-   ax25_t1timer_expiry()            |
-    ax25->ax25_dev->values[..] //USE|  ...
-     ...                            |
-
-We increase the refcount of ax25_dev in position (1) and (2), and
-decrease the refcount of ax25_dev in position (3) and (4).
-The ax25_dev will be freed in position (4) and be used in
-ax25_t1timer_expiry().
-
-The fail log is shown below:
-==============================================================
-
-[  106.116942] BUG: KASAN: use-after-free in ax25_t1timer_expiry+0x1c/0x60
-[  106.116942] Read of size 8 at addr ffff88800bda9028 by task swapper/0/0
-[  106.116942] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-06123-g0905eec574
-[  106.116942] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-14
-[  106.116942] Call Trace:
-...
-[  106.116942]  ax25_t1timer_expiry+0x1c/0x60
-[  106.116942]  call_timer_fn+0x122/0x3d0
-[  106.116942]  __run_timers.part.0+0x3f6/0x520
-[  106.116942]  run_timer_softirq+0x4f/0xb0
-[  106.116942]  __do_softirq+0x1c2/0x651
-...
-
-This patch adds del_timer_sync() in ax25_release(), which could ensure
-that all timers stop before we deallocate ax25_dev.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/ax25/af_ax25.c |    5 +++++
- 1 file changed, 5 insertions(+)
-
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -1053,6 +1053,11 @@ static int ax25_release(struct socket *s
- 		ax25_destroy_socket(ax25);
- 	}
- 	if (ax25_dev) {
-+		del_timer_sync(&ax25->timer);
-+		del_timer_sync(&ax25->t1timer);
-+		del_timer_sync(&ax25->t2timer);
-+		del_timer_sync(&ax25->t3timer);
-+		del_timer_sync(&ax25->idletimer);
- 		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
- 		ax25_dev_put(ax25_dev);
- 	}
+On 15/04/2022 16:22, 周琰杰 (Zhou Yanjie) wrote:
+> Add the SPI bindings for the JZ4775 SoC, the X1000 SoC,
+> and the X2000 SoC from Ingenic.
+> 
+> Signed-off-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
 
 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
