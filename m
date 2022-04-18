@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51702C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEBB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240657AbiDROAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57260 "EHLO
+        id S241186AbiDROAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243280AbiDRNhd (ORCPT
+        with ESMTP id S243254AbiDRNhd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:37:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE4E27B0E;
-        Mon, 18 Apr 2022 05:58:17 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA4327B37;
+        Mon, 18 Apr 2022 05:58:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E45AD612CF;
-        Mon, 18 Apr 2022 12:58:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D34FCC385A9;
-        Mon, 18 Apr 2022 12:58:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DF6B60FD9;
+        Mon, 18 Apr 2022 12:58:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 228C7C385A1;
+        Mon, 18 Apr 2022 12:58:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286696;
-        bh=4QpLtH7S8RdCIQtLmepIpbKl1cszcxf5LaxKnqz6APU=;
+        s=korg; t=1650286699;
+        bh=twzclvZsHbd4y+Um/gkqCg/aeIM7E1y+GK1Xfh8DT3Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uz2wBtK2FK5ZLVGdDZrCD5nZonYJEaBbOKJdevg2/qK9EG/qiQxqW/HmSYj0s7AkN
-         2fz15UKAwuN5el4adDQ29ixaK6FLsZbtpKROZkmHWWCjVuPNIoNCqmTnUoZXBfnAxU
-         PPM1/ceAhsZ0ov//YggbuTRHGsHVFr780wtnE0cM=
+        b=slEHDHHMgvWPv2FS/bYZMWKFfZPmgiMooNcrjmQEir4PiCQfq5DSEiXZ1fDJ0YsNZ
+         0nab7KkU6UICCe+Zs/OEa3it7AT6R6WOB6kemvR4MBgSDYO93f8h+KDHGKk9ZjwL3S
+         iOH7C+mCvRWr6zSf8p2sQjoo1LR/7S3BL/MQNH2w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 176/284] ARM: mmp: Fix failure to remove sram device
-Date:   Mon, 18 Apr 2022 14:12:37 +0200
-Message-Id: <20220418121216.744989715@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 177/284] video: fbdev: sm712fb: Fix crash in smtcfb_write()
+Date:   Mon, 18 Apr 2022 14:12:38 +0200
+Message-Id: <20220418121216.772667495@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,74 +48,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 4036b29a146b2749af3bb213b003eb69f3e5ecc4 ]
+[ Upstream commit 4f01d09b2bbfbcb47b3eb305560a7f4857a32260 ]
 
-Make sure in .probe() to set driver data before the function is left to
-make it possible in .remove() to undo the actions done.
+When the sm712fb driver writes three bytes to the framebuffer, the
+driver will crash:
 
-This fixes a potential memory leak and stops returning an error code in
-.remove() that is ignored by the driver core anyhow.
+    BUG: unable to handle page fault for address: ffffc90001ffffff
+    RIP: 0010:smtcfb_write+0x454/0x5b0
+    Call Trace:
+     vfs_write+0x291/0xd60
+     ? do_sys_openat2+0x27d/0x350
+     ? __fget_light+0x54/0x340
+     ksys_write+0xce/0x190
+     do_syscall_64+0x43/0x90
+     entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fix it by removing the open-coded endianness fixup-code.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-mmp/sram.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ drivers/video/fbdev/sm712fb.c | 21 ++++-----------------
+ 1 file changed, 4 insertions(+), 17 deletions(-)
 
-diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
-index bf5e64906e65..a41162dc4af4 100644
---- a/arch/arm/mach-mmp/sram.c
-+++ b/arch/arm/mach-mmp/sram.c
-@@ -75,6 +75,8 @@ static int sram_probe(struct platform_device *pdev)
- 	if (!info)
+diff --git a/drivers/video/fbdev/sm712fb.c b/drivers/video/fbdev/sm712fb.c
+index 0d80ee9766a6..f4396d1389e4 100644
+--- a/drivers/video/fbdev/sm712fb.c
++++ b/drivers/video/fbdev/sm712fb.c
+@@ -1119,7 +1119,7 @@ static ssize_t smtcfb_write(struct fb_info *info, const char __user *buf,
+ 		count = total_size - p;
+ 	}
+ 
+-	buffer = kmalloc((count > PAGE_SIZE) ? PAGE_SIZE : count, GFP_KERNEL);
++	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
+ 	if (!buffer)
  		return -ENOMEM;
  
-+	platform_set_drvdata(pdev, info);
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (res == NULL) {
- 		dev_err(&pdev->dev, "no memory resource defined\n");
-@@ -110,8 +112,6 @@ static int sram_probe(struct platform_device *pdev)
- 	list_add(&info->node, &sram_bank_list);
- 	mutex_unlock(&sram_lock);
+@@ -1137,24 +1137,11 @@ static ssize_t smtcfb_write(struct fb_info *info, const char __user *buf,
+ 			break;
+ 		}
  
--	platform_set_drvdata(pdev, info);
+-		for (i = c >> 2; i--;) {
+-			fb_writel(big_swap(*src), dst++);
++		for (i = (c + 3) >> 2; i--;) {
++			fb_writel(big_swap(*src), dst);
++			dst++;
+ 			src++;
+ 		}
+-		if (c & 3) {
+-			u8 *src8 = (u8 *)src;
+-			u8 __iomem *dst8 = (u8 __iomem *)dst;
 -
- 	dev_info(&pdev->dev, "initialized\n");
- 	return 0;
+-			for (i = c & 3; i--;) {
+-				if (i & 1) {
+-					fb_writeb(*src8++, ++dst8);
+-				} else {
+-					fb_writeb(*src8++, --dst8);
+-					dst8 += 2;
+-				}
+-			}
+-			dst = (u32 __iomem *)dst8;
+-		}
  
-@@ -130,17 +130,19 @@ static int sram_remove(struct platform_device *pdev)
- 	struct sram_bank_info *info;
- 
- 	info = platform_get_drvdata(pdev);
--	if (info == NULL)
--		return -ENODEV;
- 
--	mutex_lock(&sram_lock);
--	list_del(&info->node);
--	mutex_unlock(&sram_lock);
-+	if (info->sram_size) {
-+		mutex_lock(&sram_lock);
-+		list_del(&info->node);
-+		mutex_unlock(&sram_lock);
-+
-+		gen_pool_destroy(info->gpool);
-+		iounmap(info->sram_virt);
-+		kfree(info->pool_name);
-+	}
- 
--	gen_pool_destroy(info->gpool);
--	iounmap(info->sram_virt);
--	kfree(info->pool_name);
- 	kfree(info);
-+
- 	return 0;
- }
- 
+ 		*ppos += c;
+ 		buf += c;
 -- 
 2.34.1
 
