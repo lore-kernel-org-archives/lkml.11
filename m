@@ -2,171 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 06:22:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 654D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 06:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236751AbiDRGYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 02:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
+        id S236756AbiDRGYu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 02:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiDRGYl (ORCPT
+        with ESMTP id S236750AbiDRGYn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 02:24:41 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6AFF1837C
+        Mon, 18 Apr 2022 02:24:43 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711341837C
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 23:22:05 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id u18so16496302eda.3
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 23:22:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=R0p9SyM2Gw6ezgsQBgHwJlt6cnUQdSZIr2Akmm0cjIc=;
+        b=Bur8D9FzAagdjm0aTmG8lxdbZQSBX+S1iB2gHK6R/tkzttSR9FtCfwBNjrIvsxJkS5
+         bZdSK7WCvDEnspxJx4B0zK+YQidIQh0FdRHVycq3xBIYuelw2lrcYBA9pVFOclpqNA7Q
+         o6rr6cGN0F8093vbW3/OHtdLHM81o5SRn4cKE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=R0p9SyM2Gw6ezgsQBgHwJlt6cnUQdSZIr2Akmm0cjIc=;
+        b=t89tUJdsDESSkc+6UK8X+exOD++ujaTnMCWrJdJbtnFR40VlKiNiQGhdgKbTvU+PgG
+         QKbtculB1ri0z0acJTMDjCUneHrXjqTWdzxEuWroVCts5Kp+yVEj4yqRZMofI1bDwyqj
+         WaFEwHGykgfzDehOjjbh3G7U2xSnxAZ0qLPq0Zbe8g8Ds0vDgUp522QPoQwimPr60SAh
+         vSUxeOzoDDDTz2hmYC8kUgf+dEO1EDlwifH00RsJXBKqomUMu4sx5mSvjdI9gXAgizbS
+         nMy3gdTCnqKCgn7IP0/zh71Op8nXatUaswD+VfAo3WP1xUx9zkyFncez+thsFjUJQ/PY
+         tO4Q==
+X-Gm-Message-State: AOAM5304YmxQwALnwQs3DWkJp9PptEftid8k1nKXETib1WUGI5klygev
+        9C+zzJUxx+0HgJkZJP50oRnY9zAEMzVUdkRA
+X-Google-Smtp-Source: ABdhPJxID1yOMjT4HmM7LRUgnpy+7A1YSIU0u0Armb5lUpXQITzkHiHGiYclR5OFP7XzBzMoV10M5Q==
+X-Received: by 2002:a05:6402:b2c:b0:41d:7adc:e441 with SMTP id bo12-20020a0564020b2c00b0041d7adce441mr10780039edb.285.1650262923849;
+        Sun, 17 Apr 2022 23:22:03 -0700 (PDT)
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com. [209.85.128.46])
+        by smtp.gmail.com with ESMTPSA id q2-20020a056402032200b00423d4516387sm3120604edw.75.2022.04.17.23.22.03
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 17 Apr 2022 23:22:03 -0700 (PDT)
+Received: by mail-wm1-f46.google.com with SMTP id l3-20020a05600c1d0300b0038ff89c938bso3053909wms.0
         for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 23:22:03 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23I5XhN8026855;
-        Mon, 18 Apr 2022 06:21:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
- to : cc : references : in-reply-to : mime-version : message-id :
- content-type : content-transfer-encoding; s=pp1;
- bh=yG3tvuh/wkbdNu2Hnn37iYqP01H/spW/kJNWBKIP3Mk=;
- b=leUKqGQ5W4plr1aH07/FRL8t6grvfVdzUi+h/WxVbY9vFGPPUJFAMBY3iYtYeIEY3VVB
- zlEwkvQXg3scKFszCrQC0q+6X8gY946s9Ow4NYzkNvApuUbtFqZNAvKF6HfI6hjJijqv
- 0pL+94eUi85w87f3LnQHUfXClLx5VhHuuXh+G6uZlC9TvFcMFFqPK3uPK6MrBPRpjl7x
- NVEvDnb1hbZ0pJnYEn+YD1zFXJirAp28iRQGhGBcVP0jwx5MClARDMoqg6ZeEdfz+IIE
- ycQIZm38sBepwl+2Fyf/sItqyV3szPQuAu1YtyE12ZNshwd/tQkJRVxmNHj9v0ZAzdyx Gg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7k9dmmd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Apr 2022 06:21:22 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23I6LJ2e024528;
-        Mon, 18 Apr 2022 06:21:22 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3fg7k9dmky-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Apr 2022 06:21:22 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23I69d5g030270;
-        Mon, 18 Apr 2022 06:21:20 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03ams.nl.ibm.com with ESMTP id 3ffne8jb96-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Apr 2022 06:21:20 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23I6LINc44040660
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 18 Apr 2022 06:21:18 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EE920AE045;
-        Mon, 18 Apr 2022 06:21:17 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 82F03AE04D;
-        Mon, 18 Apr 2022 06:21:17 +0000 (GMT)
-Received: from localhost (unknown [9.43.2.186])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 18 Apr 2022 06:21:17 +0000 (GMT)
-Date:   Mon, 18 Apr 2022 11:51:16 +0530
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [PATCH v1 07/22] powerpc/ftrace: Use patch_instruction() return
- directly
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Ingo Molnar <mingo@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-References: <cover.1648131740.git.christophe.leroy@csgroup.eu>
-        <b4505e936e1aee411f7132a27791cf138102f35f.1648131740.git.christophe.leroy@csgroup.eu>
-In-Reply-To: <b4505e936e1aee411f7132a27791cf138102f35f.1648131740.git.christophe.leroy@csgroup.eu>
+X-Received: by 2002:a7b:cbc1:0:b0:38e:7c42:fe38 with SMTP id
+ n1-20020a7bcbc1000000b0038e7c42fe38mr14247667wmi.51.1650262606781; Sun, 17
+ Apr 2022 23:16:46 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
-Message-Id: <1650262058.altfknhzto.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: LCSBoDByS4Ci7hB89TZFIQrU8zICUT7R
-X-Proofpoint-GUID: Wn_hlXc4xkSYL9KmNaiODcLR1pcf1JUy
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-04-18_02,2022-04-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 spamscore=0
- priorityscore=1501 adultscore=0 malwarescore=0 suspectscore=0 phishscore=0
- mlxscore=0 mlxlogscore=802 bulkscore=0 lowpriorityscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2204180035
+References: <20220414025023.11516-1-Nick.Fan@mediatek.com> <20220414025023.11516-2-Nick.Fan@mediatek.com>
+In-Reply-To: <20220414025023.11516-2-Nick.Fan@mediatek.com>
+From:   Fei Shao <fshao@chromium.org>
+Date:   Mon, 18 Apr 2022 14:16:10 +0800
+X-Gmail-Original-Message-ID: <CAC=S1ni=pHPDAJUV2b=qWm-O26fS37wQjuL014eKoE491K6wGQ@mail.gmail.com>
+Message-ID: <CAC=S1ni=pHPDAJUV2b=qWm-O26fS37wQjuL014eKoE491K6wGQ@mail.gmail.com>
+Subject: Re: [PATCH v6 2/2] arm64: dts: mt8192: Add node for the Mali GPU
+To:     Nick Fan <Nick.Fan@mediatek.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        srv_heupstream@mediatek.com,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        devicetree@vger.kernel.org, wenst@chromium.org,
+        alyssa.rosenzweig@collabora.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christophe Leroy wrote:
-> Instead of returning -EPERM when patch_instruction() fails,
-> just return what patch_instruction returns.
->=20
-> That simplifies ftrace_modify_code():
->=20
-> 	   0:	94 21 ff c0 	stwu    r1,-64(r1)
-> 	   4:	93 e1 00 3c 	stw     r31,60(r1)
-> 	   8:	7c 7f 1b 79 	mr.     r31,r3
-> 	   c:	40 80 00 30 	bge     3c <ftrace_modify_code+0x3c>
-> 	  10:	93 c1 00 38 	stw     r30,56(r1)
-> 	  14:	7c 9e 23 78 	mr      r30,r4
-> 	  18:	7c a4 2b 78 	mr      r4,r5
-> 	  1c:	80 bf 00 00 	lwz     r5,0(r31)
-> 	  20:	7c 1e 28 40 	cmplw   r30,r5
-> 	  24:	40 82 00 34 	bne     58 <ftrace_modify_code+0x58>
-> 	  28:	83 c1 00 38 	lwz     r30,56(r1)
-> 	  2c:	7f e3 fb 78 	mr      r3,r31
-> 	  30:	83 e1 00 3c 	lwz     r31,60(r1)
-> 	  34:	38 21 00 40 	addi    r1,r1,64
-> 	  38:	48 00 00 00 	b       38 <ftrace_modify_code+0x38>
-> 				38: R_PPC_REL24	patch_instruction
->=20
-> Before:
->=20
-> 	   0:	94 21 ff c0 	stwu    r1,-64(r1)
-> 	   4:	93 e1 00 3c 	stw     r31,60(r1)
-> 	   8:	7c 7f 1b 79 	mr.     r31,r3
-> 	   c:	40 80 00 4c 	bge     58 <ftrace_modify_code+0x58>
-> 	  10:	93 c1 00 38 	stw     r30,56(r1)
-> 	  14:	7c 9e 23 78 	mr      r30,r4
-> 	  18:	7c a4 2b 78 	mr      r4,r5
-> 	  1c:	80 bf 00 00 	lwz     r5,0(r31)
-> 	  20:	7c 08 02 a6 	mflr    r0
-> 	  24:	90 01 00 44 	stw     r0,68(r1)
-> 	  28:	7c 1e 28 40 	cmplw   r30,r5
-> 	  2c:	40 82 00 48 	bne     74 <ftrace_modify_code+0x74>
-> 	  30:	7f e3 fb 78 	mr      r3,r31
-> 	  34:	48 00 00 01 	bl      34 <ftrace_modify_code+0x34>
-> 				34: R_PPC_REL24	patch_instruction
-> 	  38:	80 01 00 44 	lwz     r0,68(r1)
-> 	  3c:	20 63 00 00 	subfic  r3,r3,0
-> 	  40:	83 c1 00 38 	lwz     r30,56(r1)
-> 	  44:	7c 63 19 10 	subfe   r3,r3,r3
-> 	  48:	7c 08 03 a6 	mtlr    r0
-> 	  4c:	83 e1 00 3c 	lwz     r31,60(r1)
-> 	  50:	38 21 00 40 	addi    r1,r1,64
-> 	  54:	4e 80 00 20 	blr
->=20
-> It improves ftrace activation/deactivation duration by about 3%.
->=20
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-> ---
->  arch/powerpc/kernel/trace/ftrace.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
->=20
-> diff --git a/arch/powerpc/kernel/trace/ftrace.c b/arch/powerpc/kernel/tra=
-ce/ftrace.c
-> index 98e82fa4980f..1b05d33f96c6 100644
-> --- a/arch/powerpc/kernel/trace/ftrace.c
-> +++ b/arch/powerpc/kernel/trace/ftrace.c
-> @@ -78,10 +78,7 @@ ftrace_modify_code(unsigned long ip, ppc_inst_t old, p=
-pc_inst_t new)
->  	}
->=20
->  	/* replace the text with the new text */
-> -	if (patch_instruction((u32 *)ip, new))
-> -		return -EPERM;
-> -
-> -	return 0;
-> +	return patch_instruction((u32 *)ip, new);
+On Thu, Apr 14, 2022 at 10:53 AM Nick Fan <Nick.Fan@mediatek.com> wrote:
+>
+> Add a basic GPU node for mt8192.
+>
+> Signed-off-by: Nick Fan <Nick.Fan@mediatek.com>
 
-I think the reason we were returning -EPERM is so that ftrace_bug() can=20
-throw the right error message. That will change due to this patch,=20
-though I'm not sure how much it matters. -EFAULT and -EPERM seem to=20
-print almost the same error message.
-
-- Naveen
+Reviewed-by: Fei Shao <fshao@chromium.org>
