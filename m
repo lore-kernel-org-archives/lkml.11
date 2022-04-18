@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 492FFC3527D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE543C47081
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243625AbiDRNKU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60544 "EHLO
+        id S241718AbiDRNI3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:08:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241729AbiDRM7A (ORCPT
+        with ESMTP id S240033AbiDRMzj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC7B2E6AB;
-        Mon, 18 Apr 2022 05:39:31 -0700 (PDT)
+        Mon, 18 Apr 2022 08:55:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBD6633E;
+        Mon, 18 Apr 2022 05:37:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D587611E4;
-        Mon, 18 Apr 2022 12:39:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57ECBC385A7;
-        Mon, 18 Apr 2022 12:39:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 924B0B80EE0;
+        Mon, 18 Apr 2022 12:37:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C40F9C385A1;
+        Mon, 18 Apr 2022 12:37:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285570;
-        bh=yPzZImCeywqgb6Hi35+BrRKl0GUG10be3drdyior0oY=;
+        s=korg; t=1650285452;
+        bh=R/MGdFWFUYLX3NQgsrRnXg/2rEzuiwpwdvMcLPjmzJw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uOF2pZMj7/H7yYJdBOLhIpvtK3jLEqyGn56LFHHqozFaIFL4C2ygBVl3o+8WcJYPA
-         4WDMYiFLvl5uxrn7Ch6nrHJxfQoT5tSdhBrPrL6qg56Q8q1y8qKme5b6Qjbhr7byHj
-         glCxqBe5eCOFCfEgaxCkaMHVZHeJDLftb30sO7D0=
+        b=Ns35Ozz/zyQ7WJ2eVEjp9Csz3zH70eiKhmEkdboDGFUm9SmL2D0t4AAAmmGdcOYPb
+         JNLFj9DTNM7ma4xUtrHIMcBHu5lkVXKc5YQiXo7Ggoe38aFkiRc0Diu1VX1445d3bX
+         Ck0clqsWqqufNAm0nJ14HgxIcWM77QO5YfxEmfXI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Chiu <andy.chiu@sifive.com>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 061/105] net: axienet: setup mdio unconditionally
-Date:   Mon, 18 Apr 2022 14:13:03 +0200
-Message-Id: <20220418121148.219972068@linuxfoundation.org>
+Subject: [PATCH 5.10 022/105] drm/msm: Fix range size vs end confusion
+Date:   Mon, 18 Apr 2022 14:12:24 +0200
+Message-Id: <20220418121146.761869533@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -53,53 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Chiu <andy.chiu@sifive.com>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit d1c4f93e3f0a023024a6f022a61528c06cf1daa9 ]
+[ Upstream commit 537fef808be5ea56f6fc06932162550819a3b3c3 ]
 
-The call to axienet_mdio_setup should not depend on whether "phy-node"
-pressents on the DT. Besides, since `lp->phy_node` is used if PHY is in
-SGMII or 100Base-X modes, move it into the if statement. And the next patch
-will remove `lp->phy_node` from driver's private structure and do an
-of_node_put on it right away after use since it is not used elsewhere.
+The fourth param is size, rather than range_end.
 
-Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
-Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
-Reviewed-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Note that we could increase the address space size if we had a way to
+prevent buffers from spanning a 4G split, mostly just to avoid fw bugs
+with 64b math.
+
+Fixes: 84c31ee16f90 ("drm/msm/a6xx: Add support for per-instance pagetables")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Link: https://lore.kernel.org/r/20220407202836.1211268-1-robdclark@gmail.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index bbdcba88c021..3d91baf2e55a 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -2060,15 +2060,14 @@ static int axienet_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto cleanup_clk;
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index 9e09805575db..39563daff4a0 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -1222,7 +1222,7 @@ a6xx_create_private_address_space(struct msm_gpu *gpu)
+ 		return ERR_CAST(mmu);
  
--	lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
--	if (lp->phy_node) {
--		ret = axienet_mdio_setup(lp);
--		if (ret)
--			dev_warn(&pdev->dev,
--				 "error registering MDIO bus: %d\n", ret);
--	}
-+	ret = axienet_mdio_setup(lp);
-+	if (ret)
-+		dev_warn(&pdev->dev,
-+			 "error registering MDIO bus: %d\n", ret);
-+
- 	if (lp->phy_mode == PHY_INTERFACE_MODE_SGMII ||
- 	    lp->phy_mode == PHY_INTERFACE_MODE_1000BASEX) {
-+		lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
- 		if (!lp->phy_node) {
- 			dev_err(&pdev->dev, "phy-handle required for 1000BaseX/SGMII\n");
- 			ret = -EINVAL;
+ 	return msm_gem_address_space_create(mmu,
+-		"gpu", 0x100000000ULL, 0x1ffffffffULL);
++		"gpu", 0x100000000ULL, SZ_4G);
+ }
+ 
+ static uint32_t a6xx_get_rptr(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
 -- 
 2.35.1
 
