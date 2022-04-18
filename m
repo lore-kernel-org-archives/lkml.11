@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12866C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 046BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:03:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240323AbiDRNG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
+        id S241098AbiDRNGe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:06:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240380AbiDRMzC (ORCPT
+        with ESMTP id S240158AbiDRMzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:55:02 -0400
+        Mon, 18 Apr 2022 08:55:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D688F22BD7;
-        Mon, 18 Apr 2022 05:35:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4822122BDC;
+        Mon, 18 Apr 2022 05:35:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B90BB80EDB;
-        Mon, 18 Apr 2022 12:35:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6FF8C385A7;
-        Mon, 18 Apr 2022 12:35:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC894B80EC0;
+        Mon, 18 Apr 2022 12:35:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43DF3C385A7;
+        Mon, 18 Apr 2022 12:35:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285340;
-        bh=Z71X9RM4aTXHF7bNVRu/v2JwOKjmtU1VvJC+EzMdg/s=;
+        s=korg; t=1650285327;
+        bh=TstKqya9ioKeIOZjxHk0+Kpf/TACkNnwELrdZE0cwa0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b1Tu6IVcoi1Jen1ftouzwg6AXZuJoSjEDZFULG1wehwatwRema2GAnMvJsxDg+2Bw
-         joKDwi+AWJWrFSpKQpllVF9S0xSr9zbcjgv8ByaVtWgKq2QVNv9SbqGIl2HYxfSPnI
-         F1G4x0jalkx5j/jR9cgSnUGOKoeMOuuKAxDvB600=
+        b=W75Oji/ZK8FdBSutjqZMeHl/hAmsSf0ExAsgx7V4xbXcla1lS3lqRS+AEBhWeyPW+
+         7Egm30RCPupITzsT4U6MRTv0jpiDXEU6Tt41XUDqL0/GNCZoNFr2u24gKQX5NUopAi
+         1L9OmF6n0xNP4t1jvIH17Co4TFZ+RzexbiAgk1Ps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.15 170/189] dm integrity: fix memory corruption when tag_size is less than digest size
-Date:   Mon, 18 Apr 2022 14:13:10 +0200
-Message-Id: <20220418121207.499859966@linuxfoundation.org>
+        stable@vger.kernel.org, Anthony Koo <Anthony.Koo@amd.com>,
+        Eric Yang <Eric.Yang2@amd.com>, Alex Hung <alex.hung@amd.com>,
+        Roman Li <Roman.Li@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 133/189] drm/amd/display: Enable power gating before init_pipes
+Date:   Mon, 18 Apr 2022 14:12:33 +0200
+Message-Id: <20220418121204.994371024@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -48,53 +52,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Roman Li <Roman.Li@amd.com>
 
-commit 08c1af8f1c13bbf210f1760132f4df24d0ed46d6 upstream.
+[ Upstream commit 58e16c752e9540b28a873c44c3bee83e022007c1 ]
 
-It is possible to set up dm-integrity in such a way that the
-"tag_size" parameter is less than the actual digest size. In this
-situation, a part of the digest beyond tag_size is ignored.
+[Why]
+In init_hw() we call init_pipes() before enabling power gating.
+init_pipes() tries to power gate dsc but it may fail because
+required force-ons are not released yet.
+As a result with dsc config the following errors observed on resume:
+"REG_WAIT timeout 1us * 1000 tries - dcn20_dsc_pg_control"
+"REG_WAIT timeout 1us * 1000 tries - dcn20_dpp_pg_control"
+"REG_WAIT timeout 1us * 1000 tries - dcn20_hubp_pg_control"
 
-In this case, dm-integrity would write beyond the end of the
-ic->recalc_tags array and corrupt memory. The corruption happened in
-integrity_recalc->integrity_sector_checksum->crypto_shash_final.
+[How]
+Move enable_power_gating_plane() before init_pipes() in init_hw()
 
-Fix this corruption by increasing the tags array so that it has enough
-padding at the end to accomodate the loop in integrity_recalc() being
-able to write a full digest size for the last member of the tags
-array.
-
-Cc: stable@vger.kernel.org # v4.19+
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
+Reviewed-by: Eric Yang <Eric.Yang2@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Roman Li <Roman.Li@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-integrity.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c | 5 +++--
+ drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hwseq.c        | 5 +++--
+ drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hwseq.c        | 5 +++--
+ 3 files changed, 9 insertions(+), 6 deletions(-)
 
---- a/drivers/md/dm-integrity.c
-+++ b/drivers/md/dm-integrity.c
-@@ -4383,6 +4383,7 @@ try_smaller_buffer:
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+index b3a0499f8554..711b18d96eae 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+@@ -1439,6 +1439,9 @@ void dcn10_init_hw(struct dc *dc)
+ 		}
  	}
  
- 	if (ic->internal_hash) {
-+		size_t recalc_tags_size;
- 		ic->recalc_wq = alloc_workqueue("dm-integrity-recalc", WQ_MEM_RECLAIM, 1);
- 		if (!ic->recalc_wq ) {
- 			ti->error = "Cannot allocate workqueue";
-@@ -4396,8 +4397,10 @@ try_smaller_buffer:
- 			r = -ENOMEM;
- 			goto bad;
++	if (hws->funcs.enable_power_gating_plane)
++		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
++
+ 	/* If taking control over from VBIOS, we may want to optimize our first
+ 	 * mode set, so we need to skip powering down pipes until we know which
+ 	 * pipes we want to use.
+@@ -1491,8 +1494,6 @@ void dcn10_init_hw(struct dc *dc)
+ 
+ 		REG_UPDATE(DCFCLK_CNTL, DCFCLK_GATE_DIS, 0);
+ 	}
+-	if (hws->funcs.enable_power_gating_plane)
+-		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
+ 
+ 	if (dc->clk_mgr->funcs->notify_wm_ranges)
+ 		dc->clk_mgr->funcs->notify_wm_ranges(dc->clk_mgr);
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hwseq.c b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hwseq.c
+index 0950784bafa4..f83457375811 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hwseq.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hwseq.c
+@@ -570,6 +570,9 @@ void dcn30_init_hw(struct dc *dc)
  		}
--		ic->recalc_tags = kvmalloc_array(RECALC_SECTORS >> ic->sb->log2_sectors_per_block,
--						 ic->tag_size, GFP_KERNEL);
-+		recalc_tags_size = (RECALC_SECTORS >> ic->sb->log2_sectors_per_block) * ic->tag_size;
-+		if (crypto_shash_digestsize(ic->internal_hash) > ic->tag_size)
-+			recalc_tags_size += crypto_shash_digestsize(ic->internal_hash) - ic->tag_size;
-+		ic->recalc_tags = kvmalloc(recalc_tags_size, GFP_KERNEL);
- 		if (!ic->recalc_tags) {
- 			ti->error = "Cannot allocate tags for recalculating";
- 			r = -ENOMEM;
+ 	}
+ 
++	if (hws->funcs.enable_power_gating_plane)
++		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
++
+ 	/* If taking control over from VBIOS, we may want to optimize our first
+ 	 * mode set, so we need to skip powering down pipes until we know which
+ 	 * pipes we want to use.
+@@ -647,8 +650,6 @@ void dcn30_init_hw(struct dc *dc)
+ 
+ 		REG_UPDATE(DCFCLK_CNTL, DCFCLK_GATE_DIS, 0);
+ 	}
+-	if (hws->funcs.enable_power_gating_plane)
+-		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
+ 
+ 	if (!dcb->funcs->is_accelerated_mode(dcb) && dc->res_pool->hubbub->funcs->init_watermarks)
+ 		dc->res_pool->hubbub->funcs->init_watermarks(dc->res_pool->hubbub);
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hwseq.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hwseq.c
+index 3afa1159a5f7..b72d080b302a 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hwseq.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hwseq.c
+@@ -204,6 +204,9 @@ void dcn31_init_hw(struct dc *dc)
+ 		}
+ 	}
+ 
++	if (hws->funcs.enable_power_gating_plane)
++		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
++
+ 	/* If taking control over from VBIOS, we may want to optimize our first
+ 	 * mode set, so we need to skip powering down pipes until we know which
+ 	 * pipes we want to use.
+@@ -287,8 +290,6 @@ void dcn31_init_hw(struct dc *dc)
+ 
+ 		REG_UPDATE(DCFCLK_CNTL, DCFCLK_GATE_DIS, 0);
+ 	}
+-	if (hws->funcs.enable_power_gating_plane)
+-		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
+ 
+ 	if (!dcb->funcs->is_accelerated_mode(dcb) && dc->res_pool->hubbub->funcs->init_watermarks)
+ 		dc->res_pool->hubbub->funcs->init_watermarks(dc->res_pool->hubbub);
+-- 
+2.35.1
+
 
 
