@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C61C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78089C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343677AbiDROH5 (ORCPT
+        id S1343542AbiDROHr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:07:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57300 "EHLO
+        Mon, 18 Apr 2022 10:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245042AbiDRNvJ (ORCPT
+        with ESMTP id S244981AbiDRNvF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:51:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B246544A15;
-        Mon, 18 Apr 2022 06:02:11 -0700 (PDT)
+        Mon, 18 Apr 2022 09:51:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7EE444A06;
+        Mon, 18 Apr 2022 06:02:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B34260B35;
-        Mon, 18 Apr 2022 13:02:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10859C385BA;
-        Mon, 18 Apr 2022 13:02:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FA19B80E4B;
+        Mon, 18 Apr 2022 13:02:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D6DCC385A8;
+        Mon, 18 Apr 2022 13:02:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286930;
-        bh=9ptb2AvgTBNjYtiIEWQIWRJ+tyGVOrbHjqVSdH81hVY=;
+        s=korg; t=1650286927;
+        bh=1e+kMqmuq0XgPzihm05kZ+rHyIgwe3Ceg9otdTGMBhY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mwvrW72ruZBC3/RtuCPgl5lD/GjKyit7GbElNcTGd+MTO/A3OkESbnix23UOdZ7mF
-         tW1Aml1rt48P2goj/WwN8xMG16sxtH7TTw6JJ25M4CsrQoQFYACJ9dXHrcQR6dXabm
-         Y1W0swl/U3QYQMLXwcJoAPZxa+lLVXOLzOFXCzmA=
+        b=KbH0CF1ue9YS1wzx2Mqz3HoawYruPKouEI/MevVPbsTsFSnUXGz2bZBDcXv6iJEut
+         PGZYQhN5X44IEu38PGEUog7E5DV9ja5Dys/XR1eqv8kJqoORvbfzuKYArA6/XIV8D6
+         C1b/o4KDkKYqKZfyAd3xGPi2vbbT/xw/1Gr76XBE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 262/284] veth: Ensure eth header is in skbs linear part
-Date:   Mon, 18 Apr 2022 14:14:03 +0200
-Message-Id: <20220418121220.057568533@linuxfoundation.org>
+Subject: [PATCH 4.14 261/284] memory: atmel-ebi: Fix missing of_node_put in atmel_ebi_probe
+Date:   Mon, 18 Apr 2022 14:14:02 +0200
+Message-Id: <20220418121219.998650141@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,70 +51,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 726e2c5929de841fdcef4e2bf995680688ae1b87 ]
+[ Upstream commit 6f296a9665ba5ac68937bf11f96214eb9de81baa ]
 
-After feeding a decapsulated packet to a veth device with act_mirred,
-skb_headlen() may be 0. But veth_xmit() calls __dev_forward_skb(),
-which expects at least ETH_HLEN byte of linear data (as
-__dev_forward_skb2() calls eth_type_trans(), which pulls ETH_HLEN bytes
-unconditionally).
+The device_node pointer is returned by of_parse_phandle() with refcount
+incremented. We should use of_node_put() on it when done.
 
-Use pskb_may_pull() to ensure veth_xmit() respects this constraint.
-
-kernel BUG at include/linux/skbuff.h:2328!
-RIP: 0010:eth_type_trans+0xcf/0x140
-Call Trace:
- <IRQ>
- __dev_forward_skb2+0xe3/0x160
- veth_xmit+0x6e/0x250 [veth]
- dev_hard_start_xmit+0xc7/0x200
- __dev_queue_xmit+0x47f/0x520
- ? skb_ensure_writable+0x85/0xa0
- ? skb_mpls_pop+0x98/0x1c0
- tcf_mirred_act+0x442/0x47e [act_mirred]
- tcf_action_exec+0x86/0x140
- fl_classify+0x1d8/0x1e0 [cls_flower]
- ? dma_pte_clear_level+0x129/0x1a0
- ? dma_pte_clear_level+0x129/0x1a0
- ? prb_fill_curr_block+0x2f/0xc0
- ? skb_copy_bits+0x11a/0x220
- __tcf_classify+0x58/0x110
- tcf_classify_ingress+0x6b/0x140
- __netif_receive_skb_core.constprop.0+0x47d/0xfd0
- ? __iommu_dma_unmap_swiotlb+0x44/0x90
- __netif_receive_skb_one_core+0x3d/0xa0
- netif_receive_skb+0x116/0x170
- be_process_rx+0x22f/0x330 [be2net]
- be_poll+0x13c/0x370 [be2net]
- __napi_poll+0x2a/0x170
- net_rx_action+0x22f/0x2f0
- __do_softirq+0xca/0x2a8
- __irq_exit_rcu+0xc1/0xe0
- common_interrupt+0x83/0xa0
-
-Fixes: e314dbdc1c0d ("[NET]: Virtual ethernet device driver.")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 87108dc78eb8 ("memory: atmel-ebi: Enable the SMC clock if specified")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220309110144.22412-1-linmq006@gmail.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/veth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/memory/atmel-ebi.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index a69ad39ee57e..f0b26768a639 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -106,7 +106,7 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/memory/atmel-ebi.c b/drivers/memory/atmel-ebi.c
+index 2b9283d4fcb1..8e7b5a1d2983 100644
+--- a/drivers/memory/atmel-ebi.c
++++ b/drivers/memory/atmel-ebi.c
+@@ -524,20 +524,27 @@ static int atmel_ebi_probe(struct platform_device *pdev)
+ 	smc_np = of_parse_phandle(dev->of_node, "atmel,smc", 0);
  
- 	rcu_read_lock();
- 	rcv = rcu_dereference(priv->peer);
--	if (unlikely(!rcv)) {
-+	if (unlikely(!rcv) || !pskb_may_pull(skb, ETH_HLEN)) {
- 		kfree_skb(skb);
- 		goto drop;
+ 	ebi->smc.regmap = syscon_node_to_regmap(smc_np);
+-	if (IS_ERR(ebi->smc.regmap))
+-		return PTR_ERR(ebi->smc.regmap);
++	if (IS_ERR(ebi->smc.regmap)) {
++		ret = PTR_ERR(ebi->smc.regmap);
++		goto put_node;
++	}
+ 
+ 	ebi->smc.layout = atmel_hsmc_get_reg_layout(smc_np);
+-	if (IS_ERR(ebi->smc.layout))
+-		return PTR_ERR(ebi->smc.layout);
++	if (IS_ERR(ebi->smc.layout)) {
++		ret = PTR_ERR(ebi->smc.layout);
++		goto put_node;
++	}
+ 
+ 	ebi->smc.clk = of_clk_get(smc_np, 0);
+ 	if (IS_ERR(ebi->smc.clk)) {
+-		if (PTR_ERR(ebi->smc.clk) != -ENOENT)
+-			return PTR_ERR(ebi->smc.clk);
++		if (PTR_ERR(ebi->smc.clk) != -ENOENT) {
++			ret = PTR_ERR(ebi->smc.clk);
++			goto put_node;
++		}
+ 
+ 		ebi->smc.clk = NULL;
  	}
++	of_node_put(smc_np);
+ 	ret = clk_prepare_enable(ebi->smc.clk);
+ 	if (ret)
+ 		return ret;
+@@ -587,6 +594,10 @@ static int atmel_ebi_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	return of_platform_populate(np, NULL, NULL, dev);
++
++put_node:
++	of_node_put(smc_np);
++	return ret;
+ }
+ 
+ static __maybe_unused int atmel_ebi_resume(struct device *dev)
 -- 
 2.35.1
 
