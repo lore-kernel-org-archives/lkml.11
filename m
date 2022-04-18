@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99138C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:24:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE86DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238673AbiDRM0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38578 "EHLO
+        id S238786AbiDRM0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:26:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238736AbiDRMZk (ORCPT
+        with ESMTP id S238683AbiDRMZl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:25:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E4620F4E;
-        Mon, 18 Apr 2022 05:19:41 -0700 (PDT)
+        Mon, 18 Apr 2022 08:25:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB5EC13;
+        Mon, 18 Apr 2022 05:19:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81C0960EF4;
-        Mon, 18 Apr 2022 12:19:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76031C385B5;
-        Mon, 18 Apr 2022 12:19:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45C3BB80EDB;
+        Mon, 18 Apr 2022 12:19:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87972C385A9;
+        Mon, 18 Apr 2022 12:19:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284380;
-        bh=agCDIBbbtk1c65NvNmNwBPTDas9g5rHHdEy1c5V0PVQ=;
+        s=korg; t=1650284383;
+        bh=Xe2AbJ8/FRjja0awDq2I0DB0l+XsLNsfBPUqt1HnJaQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SIhXbkjolvcgYRMATDHJVqp/VYcJlxjyIn85WHuWpUoHoffftFMYKhFW7weBP8trp
-         tIW/F2PW3De7KpTjfn6RGRovA6MZjFy+NPHvKXh9EUHLHCexrv1lVeRk/tsPnvg063
-         9lU8OmkBjJwpY3Og8Xdk9NBS8IIDQm8S0pR/SzI8=
+        b=GGtHrZIS90sL7y3vUf3AbeBDbkquh5AtnSBbxLuZMPxJFX3RpMV3hEmErsNugehfq
+         iAgsMu9XPhQC2/sFUhFPzFS+TT7zKanUN6DO7dzkTcT5Yd8RaXHdWPpibt29bAdrOl
+         jwckVE7+9v34FtqjK0GkwdqwdI2+ZZGE1ObxYbtw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        stable@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Jack Wang <jinpu.wang@ionos.com>,
         Ajish Koshy <Ajish.Koshy@microchip.com>,
         Viswas G <Viswas.G@microchip.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 096/219] scsi: pm80xx: Mask and unmask upper interrupt vectors 32-63
-Date:   Mon, 18 Apr 2022 14:11:05 +0200
-Message-Id: <20220418121209.440553367@linuxfoundation.org>
+Subject: [PATCH 5.17 097/219] scsi: pm80xx: Enable upper inbound, outbound queues
+Date:   Mon, 18 Apr 2022 14:11:06 +0200
+Message-Id: <20220418121209.491526549@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -54,69 +55,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ajish Koshy <Ajish.Koshy@microchip.com>
 
-[ Upstream commit 294080eacf92a0781e6d43663448a55001ec8c64 ]
+[ Upstream commit bcd8a45223470e00b5f254018174d64a75db4bbe ]
 
-When upper inbound and outbound queues 32-63 are enabled, we see upper
-vectors 32-63 in interrupt service routine. We need corresponding registers
-to handle masking and unmasking of these upper interrupts.
+Executing driver on servers with more than 32 CPUs were faced with command
+timeouts. This is because we were not geting completions for commands
+submitted on IQ32 - IQ63.
 
-To achieve this, we use registers MSGU_ODMR_U(0x34) to mask and
-MSGU_ODMR_CLR_U(0x3C) to unmask the interrupts. In these registers bit 0-31
-represents interrupt vectors 32-63.
+Set E64Q bit to enable upper inbound and outbound queues 32 to 63 in the
+MPI main configuration table.
 
-Link: https://lore.kernel.org/r/20220411064603.668448-2-Ajish.Koshy@microchip.com
+Added 500ms delay after successful MPI initialization as mentioned in
+controller datasheet.
+
+Link: https://lore.kernel.org/r/20220411064603.668448-3-Ajish.Koshy@microchip.com
 Fixes: 05c6c029a44d ("scsi: pm80xx: Increase number of supported queues")
-Reviewed-by: John Garry <john.garry@huawei.com>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Acked-by: Jack Wang <jinpu.wang@ionos.com>
 Signed-off-by: Ajish Koshy <Ajish.Koshy@microchip.com>
 Signed-off-by: Viswas G <Viswas.G@microchip.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ drivers/scsi/pm8001/pm80xx_hwi.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 55163469030d..2dea48933ef9 100644
+index 2dea48933ef9..5853b3c0d76d 100644
 --- a/drivers/scsi/pm8001/pm80xx_hwi.c
 +++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -1734,10 +1734,11 @@ static void
- pm80xx_chip_interrupt_enable(struct pm8001_hba_info *pm8001_ha, u8 vec)
- {
- #ifdef PM8001_USE_MSIX
--	u32 mask;
--	mask = (u32)(1 << vec);
--
--	pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_CLR, (u32)(mask & 0xFFFFFFFF));
-+	if (vec < 32)
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_CLR, 1U << vec);
-+	else
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_CLR_U,
-+			    1U << (vec - 32));
- 	return;
- #endif
- 	pm80xx_chip_intx_interrupt_enable(pm8001_ha);
-@@ -1753,12 +1754,15 @@ static void
- pm80xx_chip_interrupt_disable(struct pm8001_hba_info *pm8001_ha, u8 vec)
- {
- #ifdef PM8001_USE_MSIX
--	u32 mask;
--	if (vec == 0xFF)
--		mask = 0xFFFFFFFF;
-+	if (vec == 0xFF) {
-+		/* disable all vectors 0-31, 32-63 */
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR, 0xFFFFFFFF);
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_U, 0xFFFFFFFF);
-+	} else if (vec < 32)
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR, 1U << vec);
- 	else
--		mask = (u32)(1 << vec);
--	pm8001_cw32(pm8001_ha, 0, MSGU_ODMR, (u32)(mask & 0xFFFFFFFF));
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_U,
-+			    1U << (vec - 32));
- 	return;
- #endif
- 	pm80xx_chip_intx_interrupt_disable(pm8001_ha);
+@@ -766,6 +766,10 @@ static void init_default_table_values(struct pm8001_hba_info *pm8001_ha)
+ 	pm8001_ha->main_cfg_tbl.pm80xx_tbl.pcs_event_log_severity	= 0x01;
+ 	pm8001_ha->main_cfg_tbl.pm80xx_tbl.fatal_err_interrupt		= 0x01;
+ 
++	/* Enable higher IQs and OQs, 32 to 63, bit 16 */
++	if (pm8001_ha->max_q_num > 32)
++		pm8001_ha->main_cfg_tbl.pm80xx_tbl.fatal_err_interrupt |=
++							1 << 16;
+ 	/* Disable end to end CRC checking */
+ 	pm8001_ha->main_cfg_tbl.pm80xx_tbl.crc_core_dump = (0x1 << 16);
+ 
+@@ -1027,6 +1031,13 @@ static int mpi_init_check(struct pm8001_hba_info *pm8001_ha)
+ 	if (0x0000 != gst_len_mpistate)
+ 		return -EBUSY;
+ 
++	/*
++	 *  As per controller datasheet, after successful MPI
++	 *  initialization minimum 500ms delay is required before
++	 *  issuing commands.
++	 */
++	msleep(500);
++
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
