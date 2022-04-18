@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCC3C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30370C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345007AbiDROYV (ORCPT
+        id S1345066AbiDROYl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51554 "EHLO
+        Mon, 18 Apr 2022 10:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245507AbiDROLr (ORCPT
+        with ESMTP id S245169AbiDROMA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:11:47 -0400
+        Mon, 18 Apr 2022 10:12:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45529377FD;
-        Mon, 18 Apr 2022 06:11:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9289637A0D;
+        Mon, 18 Apr 2022 06:11:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 019C7B80D9C;
-        Mon, 18 Apr 2022 13:11:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF28C385A1;
-        Mon, 18 Apr 2022 13:11:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B20AB80E4B;
+        Mon, 18 Apr 2022 13:11:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8310EC385A7;
+        Mon, 18 Apr 2022 13:11:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287462;
-        bh=/i+qRfJLI0Caekhzz2pVFcSmFC4gaWYovYsXh8+/HFk=;
+        s=korg; t=1650287468;
+        bh=akRYuLSjBQ13hS4+Fyg8i8M0irsu/T9eqSMsVclpsRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e9vGEmfdiTqoAttQ6xTBB6R9fVQ32Adc25yPD+NIMJqQfEiaQQL+5X4wNGu0qSED6
-         4YqnwW3PIihVdc3EWV1ayg7IqWeXwx2tmTtLrgXPTTxK8cFMiNH9rINgCxMVTOnJgL
-         5VeHmqYWbkVW8PHtC0ZDoXVE7rNWI04HBZPuQJCE=
+        b=Ue0Kovczaixh7Y/vOmwwfKLeAXBIX/oMq0nO4ET4qTGD5QfrSSjSZ1w7WI/5W3wAG
+         9QkyaN0XkAvtNWCXx2hJ6ItOyMDdM/jTrjGHOkLiYT6bY65gDtqyhypfTXnxNpaRxn
+         VjrSQd03iBLyxvcP6H9ym00HnkNTp5fePGrH+Hkg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com,
+        Lee Jones <lee.jones@linaro.org>, Theodore Tso <tytso@mit.edu>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 129/218] PM: core: keep irq flags in device_pm_check_callbacks()
-Date:   Mon, 18 Apr 2022 14:13:15 +0200
-Message-Id: <20220418121203.280921146@linuxfoundation.org>
+Subject: [PATCH 4.9 131/218] ext4: dont BUG if someone dirty pages without asking ext4 first
+Date:   Mon, 18 Apr 2022 14:13:17 +0200
+Message-Id: <20220418121203.336909160@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -51,103 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Theodore Ts'o <tytso@mit.edu>
 
-[ Upstream commit 524bb1da785a7ae43dd413cd392b5071c6c367f8 ]
+[ Upstream commit cc5095747edfb054ca2068d01af20be3fcc3634f ]
 
-The function device_pm_check_callbacks() can be called under the spin
-lock (in the reported case it happens from genpd_add_device() ->
-dev_pm_domain_set(), when the genpd uses spinlocks rather than mutexes.
+[un]pin_user_pages_remote is dirtying pages without properly warning
+the file system in advance.  A related race was noted by Jan Kara in
+2018[1]; however, more recently instead of it being a very hard-to-hit
+race, it could be reliably triggered by process_vm_writev(2) which was
+discovered by Syzbot[2].
 
-However this function uncoditionally uses spin_lock_irq() /
-spin_unlock_irq(), thus not preserving the CPU flags. Use the
-irqsave/irqrestore instead.
+This is technically a bug in mm/gup.c, but arguably ext4 is fragile in
+that if some other kernel subsystem dirty pages without properly
+notifying the file system using page_mkwrite(), ext4 will BUG, while
+other file systems will not BUG (although data will still be lost).
 
-The backtrace for the reference:
-[    2.752010] ------------[ cut here ]------------
-[    2.756769] raw_local_irq_restore() called with IRQs enabled
-[    2.762596] WARNING: CPU: 4 PID: 1 at kernel/locking/irqflag-debug.c:10 warn_bogus_irq_restore+0x34/0x50
-[    2.772338] Modules linked in:
-[    2.775487] CPU: 4 PID: 1 Comm: swapper/0 Tainted: G S                5.17.0-rc6-00384-ge330d0d82eff-dirty #684
-[    2.781384] Freeing initrd memory: 46024K
-[    2.785839] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[    2.785841] pc : warn_bogus_irq_restore+0x34/0x50
-[    2.785844] lr : warn_bogus_irq_restore+0x34/0x50
-[    2.785846] sp : ffff80000805b7d0
-[    2.785847] x29: ffff80000805b7d0 x28: 0000000000000000 x27: 0000000000000002
-[    2.785850] x26: ffffd40e80930b18 x25: ffff7ee2329192b8 x24: ffff7edfc9f60800
-[    2.785853] x23: ffffd40e80930b18 x22: ffffd40e80930d30 x21: ffff7edfc0dffa00
-[    2.785856] x20: ffff7edfc09e3768 x19: 0000000000000000 x18: ffffffffffffffff
-[    2.845775] x17: 6572206f74206465 x16: 6c696166203a3030 x15: ffff80008805b4f7
-[    2.853108] x14: 0000000000000000 x13: ffffd40e809550b0 x12: 00000000000003d8
-[    2.860441] x11: 0000000000000148 x10: ffffd40e809550b0 x9 : ffffd40e809550b0
-[    2.867774] x8 : 00000000ffffefff x7 : ffffd40e809ad0b0 x6 : ffffd40e809ad0b0
-[    2.875107] x5 : 000000000000bff4 x4 : 0000000000000000 x3 : 0000000000000000
-[    2.882440] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff7edfc03a8000
-[    2.889774] Call trace:
-[    2.892290]  warn_bogus_irq_restore+0x34/0x50
-[    2.896770]  _raw_spin_unlock_irqrestore+0x94/0xa0
-[    2.901690]  genpd_unlock_spin+0x20/0x30
-[    2.905724]  genpd_add_device+0x100/0x2d0
-[    2.909850]  __genpd_dev_pm_attach+0xa8/0x23c
-[    2.914329]  genpd_dev_pm_attach_by_id+0xc4/0x190
-[    2.919167]  genpd_dev_pm_attach_by_name+0x3c/0xd0
-[    2.924086]  dev_pm_domain_attach_by_name+0x24/0x30
-[    2.929102]  psci_dt_attach_cpu+0x24/0x90
-[    2.933230]  psci_cpuidle_probe+0x2d4/0x46c
-[    2.937534]  platform_probe+0x68/0xe0
-[    2.941304]  really_probe.part.0+0x9c/0x2fc
-[    2.945605]  __driver_probe_device+0x98/0x144
-[    2.950085]  driver_probe_device+0x44/0x15c
-[    2.954385]  __device_attach_driver+0xb8/0x120
-[    2.958950]  bus_for_each_drv+0x78/0xd0
-[    2.962896]  __device_attach+0xd8/0x180
-[    2.966843]  device_initial_probe+0x14/0x20
-[    2.971144]  bus_probe_device+0x9c/0xa4
-[    2.975092]  device_add+0x380/0x88c
-[    2.978679]  platform_device_add+0x114/0x234
-[    2.983067]  platform_device_register_full+0x100/0x190
-[    2.988344]  psci_idle_init+0x6c/0xb0
-[    2.992113]  do_one_initcall+0x74/0x3a0
-[    2.996060]  kernel_init_freeable+0x2fc/0x384
-[    3.000543]  kernel_init+0x28/0x130
-[    3.004132]  ret_from_fork+0x10/0x20
-[    3.007817] irq event stamp: 319826
-[    3.011404] hardirqs last  enabled at (319825): [<ffffd40e7eda0268>] __up_console_sem+0x78/0x84
-[    3.020332] hardirqs last disabled at (319826): [<ffffd40e7fd6d9d8>] el1_dbg+0x24/0x8c
-[    3.028458] softirqs last  enabled at (318312): [<ffffd40e7ec90410>] _stext+0x410/0x588
-[    3.036678] softirqs last disabled at (318299): [<ffffd40e7ed1bf68>] __irq_exit_rcu+0x158/0x174
-[    3.045607] ---[ end trace 0000000000000000 ]---
+So instead of crashing with a BUG, issue a warning (since there may be
+potential data loss) and just mark the page as clean to avoid
+unprivileged denial of service attacks until the problem can be
+properly fixed.  More discussion and background can be found in the
+thread starting at [2].
 
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+[1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
+[2] https://lore.kernel.org/r/Yg0m6IjcNmfaSokM@google.com
+
+Reported-by: syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com
+Reported-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Link: https://lore.kernel.org/r/YiDS9wVfq4mM2jGK@mit.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/power/main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ fs/ext4/inode.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/drivers/base/power/main.c b/drivers/base/power/main.c
-index d707cd16ed01..b4d50c5dcbf8 100644
---- a/drivers/base/power/main.c
-+++ b/drivers/base/power/main.c
-@@ -1766,7 +1766,9 @@ static bool pm_ops_is_empty(const struct dev_pm_ops *ops)
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 79c067f74253..e66aa8918dee 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -2048,6 +2048,15 @@ static int ext4_writepage(struct page *page,
+ 	else
+ 		len = PAGE_SIZE;
  
- void device_pm_check_callbacks(struct device *dev)
- {
--	spin_lock_irq(&dev->power.lock);
-+	unsigned long flags;
++	/* Should never happen but for bugs in other kernel subsystems */
++	if (!page_has_buffers(page)) {
++		ext4_warning_inode(inode,
++		   "page %lu does not have buffers attached", page->index);
++		ClearPageDirty(page);
++		unlock_page(page);
++		return 0;
++	}
 +
-+	spin_lock_irqsave(&dev->power.lock, flags);
- 	dev->power.no_pm_callbacks =
- 		(!dev->bus || (pm_ops_is_empty(dev->bus->pm) &&
- 		 !dev->bus->suspend && !dev->bus->resume)) &&
-@@ -1776,5 +1778,5 @@ void device_pm_check_callbacks(struct device *dev)
- 		(!dev->pm_domain || pm_ops_is_empty(&dev->pm_domain->ops)) &&
- 		(!dev->driver || (pm_ops_is_empty(dev->driver->pm) &&
- 		 !dev->driver->suspend && !dev->driver->resume));
--	spin_unlock_irq(&dev->power.lock);
-+	spin_unlock_irqrestore(&dev->power.lock, flags);
- }
+ 	page_bufs = page_buffers(page);
+ 	/*
+ 	 * We cannot do block allocation or other extent handling in this
+@@ -2608,6 +2617,22 @@ static int mpage_prepare_extent_to_map(struct mpage_da_data *mpd)
+ 			wait_on_page_writeback(page);
+ 			BUG_ON(PageWriteback(page));
+ 
++			/*
++			 * Should never happen but for buggy code in
++			 * other subsystems that call
++			 * set_page_dirty() without properly warning
++			 * the file system first.  See [1] for more
++			 * information.
++			 *
++			 * [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
++			 */
++			if (!page_has_buffers(page)) {
++				ext4_warning_inode(mpd->inode, "page %lu does not have buffers attached", page->index);
++				ClearPageDirty(page);
++				unlock_page(page);
++				continue;
++			}
++
+ 			if (mpd->map.m_len == 0)
+ 				mpd->first_page = page->index;
+ 			mpd->next_page = page->index + 1;
 -- 
 2.34.1
 
