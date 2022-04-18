@@ -2,85 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD25C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:06:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4900C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:06:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237228AbiDRPIm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:08:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38644 "EHLO
+        id S234267AbiDRPIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240134AbiDRPHG (ORCPT
+        with ESMTP id S1345369AbiDRPHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:07:06 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BDEE8BE3C;
-        Mon, 18 Apr 2022 06:58:33 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:6624:6d8d:f790:d5c]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1ngRtf-0001hG-3m; Mon, 18 Apr 2022 15:58:31 +0200
-Message-ID: <49dceaa1-7e8a-671a-0601-2ee92a5d3818@leemhuis.info>
-Date:   Mon, 18 Apr 2022 15:58:30 +0200
+        Mon, 18 Apr 2022 11:07:40 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B8C2CE0A;
+        Mon, 18 Apr 2022 06:59:33 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id D1D5A2161D;
+        Mon, 18 Apr 2022 13:59:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1650290371; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=dq8YNbXAE834M1QUb2YVyiKzk/PMukhaArBlMLDdUQI=;
+        b=rWsXoUFdmWF9h2C9XaehirIrKSiHsyys3BkFa41aY3eU6+iSH8UAhHCgH1OVBH+WyyrFpn
+        dw/5bsEZFNtpC0fNGp1rhDieaknlnpVdzs52+uRjlgEyVWXNjVkCzIpeHNj8k0kHiFjzpc
+        Yn+RpSOcON+u1e9weLFHkdJLRwPAHew=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1650290371;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=dq8YNbXAE834M1QUb2YVyiKzk/PMukhaArBlMLDdUQI=;
+        b=UXDhCsIm868KMg44CpXYMbAB/ityAQ4j4utoEulTatT+2ciKRW92IyiiqJdSBMmBxfac3M
+        wvLGt5hwSzfWaFBw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5343113A9B;
+        Mon, 18 Apr 2022 13:59:31 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id je1DEcNuXWLiOwAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Mon, 18 Apr 2022 13:59:31 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id a8b50ae4;
+        Mon, 18 Apr 2022 13:59:58 +0000 (UTC)
+From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+Subject: [PATCH v5 0/5] ceph: add support for snapshot names encryption
+Date:   Mon, 18 Apr 2022 14:59:52 +0100
+Message-Id: <20220418135957.12056-1-lhenriques@suse.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] gpio: Request interrupts after IRQ is initialized
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Cc:     firew4lker <firew4lker@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Shreeya Patel <shreeya.patel@collabora.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Richard.Gong@amd.com, Stable <stable@vger.kernel.org>
-References: <20220414025705.598-1-mario.limonciello@amd.com>
- <20966c6b-9045-9f8b-ba35-bf44091ce380@gmail.com>
- <67df4178-5943-69d8-0d61-f533671a1248@amd.com>
- <CAHp75VceVwAq68s_hnpXt8VvLBHVUMxFTJR+_Tnph_mvpxGVPw@mail.gmail.com>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <CAHp75VceVwAq68s_hnpXt8VvLBHVUMxFTJR+_Tnph_mvpxGVPw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1650290313;1fd021c4;
-X-HE-SMSGID: 1ngRtf-0001hG-3m
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18.04.22 13:42, Andy Shevchenko wrote:
-> On Mon, Apr 18, 2022 at 7:34 AM Mario Limonciello
-> <mario.limonciello@amd.com> wrote:
->> On 4/17/22 07:24, firew4lker wrote:
-> 
-> ...
-> 
->> Linus Walleij,
->>
->> As this is backported to 5.15.y, 5.16.y, 5.17.y and those all had point
->> releases a bunch of people are hitting it now.  If you choose to adopt
->> this patch instead of revert the broken one, you can add to the commit
->> message too:
->>
->> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1976
-> 
-> I prefer to explicitly tell that this is a link to a bug report, hence BugLink:.
-> But this is just my 2 cents.
+Hi!
 
-Please use "Link:" as explained by the kernel's documentation in
-Documentation/process/submitting-patches.rst
-Documentation/process/5.Posting.rst (disclaimer: I recently made this
-more explicit, but the concept it old). That's important, as people have
-tools that rely on it -- I for example run one to track regressions, but
-I might not be the only one running a tool that relies on proper tags.
+And here's yet another revision.  The main difference from v4 is the
+addition of a patch to prevent the creation of snapshots in directories
+that are encrypted but that are not unlocked (i.e. no key available).
 
-And FWIW: I'm all for making this more explicit, but people already use
-various different tags (BugLink is just one of them) for that and that
-just results in a mess. I proposed consistent tags, but that didn't get
-much feedback. Maybe I should try again. Makes me wonder: where does
-BugLink come from? Is that something that people are used to from
-GitLab, GitHub, or something?
+As before, the following ceph PRs are required:
 
-Ciao, Thorsten
+  mds: add protection from clients without fscrypt support #45073
+  mds: use the whole string as the snapshot long name #45192
+  mds: support alternate names for snapshots #45224
+  mds: limit the snapshot names to 240 characters #45312
+
+Changes since v4:
+
+- Explicitly added the encoding base for kstrtou64() as we do know that
+  the inode numbers are in decimal.
+
+- New patch to prevent the creation of snapshots in encrypted directories
+  that do not have the key loaded.
+
+Changes since v3:
+
+- Fixed WARN_ON() in ceph_encode_encrypted_dname()
+
+- Updated documentation and copyright notice for the base64
+  encoding/decoding implementaiton which was taken from the fscrypt base.
+
+Changes since v2:
+
+- Use ceph_find_inode() instead of ceph_get_inode() for finding a snapshot
+  parent in function parse_longname().  I've also added a fallback to
+  ceph_get_inode() in case we fail to find the inode.  This may happen if,
+  for example, the mount root doesn't include that inode.  The iput() was
+  also complemented by a discard_new_inode() if the inode is in the I_NEW
+  state. (patch 0002)
+
+- Move the check for '_' snapshots further up in the ceph_fname_to_usr()
+  and ceph_encode_encrypted_dname().  This fixes the case pointed out by
+  Xiubo in v2. (patch 0002)
+
+- Use NAME_MAX for tmp arrays (patch 0002)
+
+- Added an extra patch for replacing the base64url encoding by a different
+  encoding standard, the one used for IMAP mailboxes (which uses '+' and
+  ',' instead of '-' and '_').  This should fix the issue with snapshot
+  names starting with '_'. (patch 0003)
+
+Changes since v1:
+
+- Dropped the dentry->d_flags change in ceph_mkdir().  Thanks to Xiubo
+  suggestion, patch 0001 now skips calling ceph_fscrypt_prepare_context()
+  if we're handling a snapshot.
+
+- Added error handling to ceph_get_snapdir() in patch 0001 (Jeff had
+  already pointed that out but I forgot to include that change in previous
+  revision).
+
+- Rebased patch 0002 to the latest wip-fscrypt branch.
+
+- Added some documentation regarding snapshots naming restrictions.
+
+
+Luís Henriques (5):
+  ceph: add support for encrypted snapshot names
+  ceph: add support for handling encrypted snapshot names
+  ceph: update documentation regarding snapshot naming limitations
+  ceph: replace base64url by the encoding used for mailbox names
+  ceph: prevent snapshots to be created in encrypted locked directories
+
+ Documentation/filesystems/ceph.rst |  10 ++
+ fs/ceph/crypto.c                   | 252 +++++++++++++++++++++++++----
+ fs/ceph/crypto.h                   |  14 +-
+ fs/ceph/dir.c                      |   7 +-
+ fs/ceph/inode.c                    |  33 +++-
+ 5 files changed, 278 insertions(+), 38 deletions(-)
 
