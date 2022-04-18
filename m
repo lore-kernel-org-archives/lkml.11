@@ -2,129 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AB66C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:06:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0584DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241132AbiDRPJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34624 "EHLO
+        id S244083AbiDRPJN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:09:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243238AbiDRPAk (ORCPT
+        with ESMTP id S244069AbiDRPI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:00:40 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD07D44749;
-        Mon, 18 Apr 2022 06:48:37 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id bq30so24251581lfb.3;
-        Mon, 18 Apr 2022 06:48:37 -0700 (PDT)
+        Mon, 18 Apr 2022 11:08:56 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA46B8FE62;
+        Mon, 18 Apr 2022 07:00:40 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so8850632wmn.1;
+        Mon, 18 Apr 2022 07:00:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6s0/7WUuExY5QvSFDhYR/dpHqslKqd7vt8L+xMDv2JE=;
-        b=TL1IYGp2O8w+kYDDIMZDkAEKiFssAm31h+fR00bd5XoL+N4k4crVR4UTGh4zQ++O4M
-         GwOj7tgCREXNZzdTKIAoMXtC93wsHnKBvwfydzvnCMu7Gd/fZ48ZOvl59CDCZ2OwKyWz
-         OWWzDyylTI5mFQENEr23TIkjholwEhJoW8l0jaezwPuMaBYi+OECdFxzziH+SaeQDWlP
-         03FDYHvfAnqLsZNuIzmCFb0kpbLPghZ9y26gL2wqZtIOrBVvB9LP+TsZZwjeiqHERcCN
-         Ya0Qj2Hr07Q5adp5WCFIyIA18SlS+Znl/YYTcSH+vwwJjCUssDFbJ2c6xdooGSU0xSEQ
-         D+Hg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B6x/x31zD6jdr7v3jc1uXumCewA6SO4UbVpg60xKCXk=;
+        b=MzV3Dc04CvwAAiwc8eYESy/kUaiawkJiTKLqHR78r064hc0eGHjL0wY8jaNT6CT5u7
+         aCZsjaiV/ws6ZL/JvWYudvnvWAvGUfJJlxJ4Hb48PqzawA817UQTH3dsQKlPAWtkvFsj
+         Ih67M4YTAfVmXn4I2pee+/ksFZ5deFcTkONGa04NQt+PZ/j0UhBcY0BM34E8tJ5kzEdS
+         D4yCc3nSVc87XqniZVIvrb7MPFYr4rB/N5hydMUpF1gcWlilGGpa/plQeImgOjuVeQTw
+         EsICi6rN5bmvq/V+Z/aYb4kN6Pm808V2chgU+Zd/+k5ll2oQfbiAFEJv9J+FM8QdH+b3
+         yqXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6s0/7WUuExY5QvSFDhYR/dpHqslKqd7vt8L+xMDv2JE=;
-        b=knj8smyO/iJAX4JhKQFb6QYZyJ2j08oYEDiJSDI+qpZ4x9XoFiVYJQLtXW5AKYygqk
-         I4YvnJ7Mg7ya42GMs9jqWsBzggreoRICciNdS7keURqG3RtEWiFHevOxeNVshG93mk/S
-         UD9LfQHNJlPkWnmA0p+uX/EiYSbDiNyTL6yp4I7z95Oo4j4nE3gpeFIwz9CQmAf8ekV8
-         UZLA9qI7gbO3nYpH7xKrh/hk2TStrehTzlxjyk4ll7H5+k1fxnVpo7itisLQlWybXKPQ
-         U72y0sqE+pP1K6eOwf0rwPFu5fZ5t+9n8dCHvngFTEIK+GR/XXgmRG7xGJnmGjjDOssx
-         HQDA==
-X-Gm-Message-State: AOAM5335ROnbKnfY/x9lkam9nkjp4fpDQSUr6cVRg2FPi275SVFOdRYj
-        IYsov7DUFnOZQN0Vf6CRrdk=
-X-Google-Smtp-Source: ABdhPJzXZq+JgJ1TYtSuJip4RD7L1lnwXQ/RuA+GOhavTrB4JiUxKTBEVI10LhyQeITFJbOJLZOdTg==
-X-Received: by 2002:ac2:4e0f:0:b0:471:308f:1b9e with SMTP id e15-20020ac24e0f000000b00471308f1b9emr6079570lfr.514.1650289715822;
-        Mon, 18 Apr 2022 06:48:35 -0700 (PDT)
-Received: from mobilestation ([95.79.134.149])
-        by smtp.gmail.com with ESMTPSA id t15-20020a2e9d0f000000b0024ad0cf21a5sm1182968lji.137.2022.04.18.06.48.34
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B6x/x31zD6jdr7v3jc1uXumCewA6SO4UbVpg60xKCXk=;
+        b=AsEKwQBOMXBTscgTf4dqiOhvhAVxGHuVKBzwmbhtcH8LTtgAyOc1+j1x7yD1DT9d0n
+         UT6BheX5yytyDbZEEO3NrxptY7zKCRwa4Ub62aciKbyIE7lOQasMfPHFT49lz6SPsIES
+         WKwlQ2iqy5D7aDXvCLf1HpGi/GyA6Y8ZCJn0zlb7d41OX79c1f84HWmyoPqPGimX7whb
+         uF0Nz/z2egHX0Hl01r2cJRMjMFXS7NZjKTYP9yvHdXDnNqhxEr77uzAjk8+nkKPCxCJy
+         NeUVYHh5AQu9DU1QWtBJ5yyXFmq3xGRar+Fq6iMcwXm7F9+7G+B3NqGR4kzzjNofG2vS
+         ZUaQ==
+X-Gm-Message-State: AOAM530J7svxk9O6cjwZL/Y7cQBhhbyXqEaP01LinIcOwG7fmutxnhxp
+        DuQ9JN3c7awxSkPZzExrPzI=
+X-Google-Smtp-Source: ABdhPJymwRgSS/QTCpphJK2gWO5fWNVAensdOd5debCCtyT1eqh6vN7nhxp1YqM5axzZBxB5ViUQIA==
+X-Received: by 2002:a05:600c:34c5:b0:38f:fbcb:e45 with SMTP id d5-20020a05600c34c500b0038ffbcb0e45mr15309073wmq.66.1650290439536;
+        Mon, 18 Apr 2022 07:00:39 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id p14-20020a05600c1d8e00b0038ecb2d2feasm12977678wms.4.2022.04.18.07.00.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 06:48:35 -0700 (PDT)
-Date:   Mon, 18 Apr 2022 16:48:33 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 24/25] dmaengine: dw-edma: Skip cleanup procedure if no
- private data found
-Message-ID: <20220418134833.awogzzfq745mc5dm@mobilestation>
-References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
- <20220324014836.19149-25-Sergey.Semin@baikalelectronics.ru>
- <20220325181503.GB12218@thinkpad>
+        Mon, 18 Apr 2022 07:00:39 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
+        ntfs3@lists.linux.dev
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH] fs/ntfs3: remove redundant assignment to variable vcn
+Date:   Mon, 18 Apr 2022 15:00:38 +0100
+Message-Id: <20220418140038.82843-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325181503.GB12218@thinkpad>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 11:45:03PM +0530, Manivannan Sadhasivam wrote:
-> On Thu, Mar 24, 2022 at 04:48:35AM +0300, Serge Semin wrote:
-> > DW eDMA driver private data is preserved in the passed DW eDMA chip info
-> > structure. If either probe procedure failed or for some reason the passed
-> > info object doesn't have private data pointer initialized we need to halt
-> > the DMA device cleanup procedure in order to prevent possible system
-> > crashes.
-> > 
-> 
+Variable vcn is being assigned a value that is never read, it is
+being re-assigned again in the initialization of a for-loop.  The
+assignment is redundant and can be removed.
 
-> How come remove() could happen when probe() failed? If you hit this issue then
-> something else is utterly going wrong.
+Cleans up clang scan build warning:
+fs/ntfs3/attrib.c:1176:7: warning: Value stored to 'vcn' during its
+initialization is never read [deadcode.DeadStores]
 
-It fully depends on the DW eDMA client driver implementation, which
-can't and in general shouldn't be guessed. But what must be done in
-the DW eDMA driver is a protection against the invalid data being
-passed to the exported API methods. That wrong situation must be
-detected and handled in the API user code. It's much easier to do by
-having an error code returned from the dw_edma_remove() method than
-catching random system crashes.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ fs/ntfs3/attrib.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
--Sergey
+diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
+index e8c00dda42ad..fc0623b029e6 100644
+--- a/fs/ntfs3/attrib.c
++++ b/fs/ntfs3/attrib.c
+@@ -1173,7 +1173,7 @@ int attr_load_runs_range(struct ntfs_inode *ni, enum ATTR_TYPE type,
+ {
+ 	struct ntfs_sb_info *sbi = ni->mi.sbi;
+ 	u8 cluster_bits = sbi->cluster_bits;
+-	CLST vcn = from >> cluster_bits;
++	CLST vcn;
+ 	CLST vcn_last = (to - 1) >> cluster_bits;
+ 	CLST lcn, clen;
+ 	int err;
+-- 
+2.35.1
 
-> 
-> Thanks,
-> Mani
-> 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > ---
-> >  drivers/dma/dw-edma/dw-edma-core.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> > 
-> > diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
-> > index ca5cd7c99571..b932682a8ba8 100644
-> > --- a/drivers/dma/dw-edma/dw-edma-core.c
-> > +++ b/drivers/dma/dw-edma/dw-edma-core.c
-> > @@ -1030,6 +1030,10 @@ int dw_edma_remove(struct dw_edma_chip *chip)
-> >  	struct dw_edma *dw = chip->dw;
-> >  	int i;
-> >  
-> > +	/* Skip removal if no private data found */
-> > +	if (!dw)
-> > +		return -ENODEV;
-> > +
-> >  	/* Disable eDMA */
-> >  	dw_edma_v0_core_off(dw);
-> >  
-> > -- 
-> > 2.35.1
-> > 
