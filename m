@@ -2,34 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0508C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:13:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4293FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244710AbiDRPQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54392 "EHLO
+        id S1344096AbiDRPQ1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244144AbiDRPPo (ORCPT
+        with ESMTP id S244009AbiDRPPo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 11:15:44 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153D738BE1
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 07:12:34 -0700 (PDT)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D30C381A9
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 07:12:33 -0700 (PDT)
 Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KhpmB73sszhXWg;
-        Mon, 18 Apr 2022 22:12:26 +0800 (CST)
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KhplS4TlnzfYy5;
+        Mon, 18 Apr 2022 22:11:48 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 18 Apr
- 2022 22:12:31 +0800
+ 2022 22:12:30 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <vbabka@suse.cz>, <pintu@codeaurora.org>,
         <charante@codeaurora.org>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH 11/12] mm: compaction: simplify the code in __compact_finished
-Date:   Mon, 18 Apr 2022 22:12:52 +0800
-Message-ID: <20220418141253.24298-12-linmiaohe@huawei.com>
+Subject: [PATCH 09/12] mm: compaction: avoid possible NULL pointer dereference in kcompactd_cpu_online
+Date:   Mon, 18 Apr 2022 22:12:50 +0800
+Message-ID: <20220418141253.24298-10-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220418141253.24298-1-linmiaohe@huawei.com>
 References: <20220418141253.24298-1-linmiaohe@huawei.com>
@@ -44,60 +45,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit efe771c7603b ("mm, compaction: always finish scanning of a
-full pageblock"), compaction will always finish scanning a pageblock. And
-migrate_pfn is assured to align with pageblock_nr_pages when we reach here.
-So we will always return COMPACT_SUCCESS if a suitable fallback is found
-due to the below IS_ALIGNED check of migrate_pfn. Simplify the code to make
-this clear and improve the readability. No functional change intended.
+It's possible that kcompactd_run could fail to run kcompactd for a hot
+added node and leave pgdat->kcompactd as NULL. So pgdat->kcompactd should
+be checked here to avoid possible NULL pointer dereference.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- mm/compaction.c | 29 ++++++++---------------------
- 1 file changed, 8 insertions(+), 21 deletions(-)
+ mm/compaction.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/mm/compaction.c b/mm/compaction.c
-index 334a573485fe..609a76d7e051 100644
+index 562f274b2c51..82c54d70a978 100644
 --- a/mm/compaction.c
 +++ b/mm/compaction.c
-@@ -2134,29 +2134,16 @@ static enum compact_result __compact_finished(struct compact_control *cc)
- 		 * other migratetype buddy lists.
- 		 */
- 		if (find_suitable_fallback(area, order, migratetype,
--						true, &can_steal) != -1) {
--
--			/* movable pages are OK in any pageblock */
--			if (migratetype == MIGRATE_MOVABLE)
--				return COMPACT_SUCCESS;
--
-+						true, &can_steal) != -1)
- 			/*
--			 * We are stealing for a non-movable allocation. Make
--			 * sure we finish compacting the current pageblock
--			 * first so it is as free as possible and we won't
--			 * have to steal another one soon. This only applies
--			 * to sync compaction, as async compaction operates
--			 * on pageblocks of the same migratetype.
-+			 * Movable pages are OK in any pageblock. If we are
-+			 * stealing for a non-movable allocation, make sure
-+			 * we finish compacting the current pageblock first
-+			 * (which is assured by the above migrate_pfn align
-+			 * check) so it is as free as possible and we won't
-+			 * have to steal another one soon.
- 			 */
--			if (cc->mode == MIGRATE_ASYNC ||
--					IS_ALIGNED(cc->migrate_pfn,
--							pageblock_nr_pages)) {
--				return COMPACT_SUCCESS;
--			}
--
--			ret = COMPACT_CONTINUE;
--			break;
--		}
-+			return COMPACT_SUCCESS;
- 	}
+@@ -3052,7 +3052,8 @@ static int kcompactd_cpu_online(unsigned int cpu)
  
- out:
+ 		if (cpumask_any_and(cpu_online_mask, mask) < nr_cpu_ids)
+ 			/* One of our CPUs online: restore mask */
+-			set_cpus_allowed_ptr(pgdat->kcompactd, mask);
++			if (pgdat->kcompactd)
++				set_cpus_allowed_ptr(pgdat->kcompactd, mask);
+ 	}
+ 	return 0;
+ }
 -- 
 2.23.0
 
