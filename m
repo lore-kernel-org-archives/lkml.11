@@ -2,94 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA52CC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB822C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241979AbiDRNIk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41948 "EHLO
+        id S241881AbiDRNIg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:08:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240391AbiDRMzk (ORCPT
+        with ESMTP id S240390AbiDRMzk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:55:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790AC63D7;
-        Mon, 18 Apr 2022 05:37:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15825611EC;
-        Mon, 18 Apr 2022 12:37:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12561C385B2;
-        Mon, 18 Apr 2022 12:37:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285455;
-        bh=A0c8jWrim47aI1vvoqLwuBRVgPZtOLitZHMnc553NXo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vreiq0qulRR1/uG8Vfj/qUHZKX30JqWzwFofiyhx9+5lPSm431qYviE+jHmhoZAC0
-         3fAISmuZeD/YMbOcs/bYuapkfFJe8cBACq+IvIrYL3cC8WevPLdpwJOehf6/zOnmm3
-         cos96E7z4KLUhWKmSyt1XcNAeSXPU5Xj67BIXwZg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 023/105] drm/msm/dsi: Use connector directly in msm_dsi_manager_connector_init()
-Date:   Mon, 18 Apr 2022 14:12:25 +0200
-Message-Id: <20220418121146.817696550@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
-References: <20220418121145.140991388@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41E263B0;
+        Mon, 18 Apr 2022 05:37:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650285456; x=1681821456;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=1x4VyMPXIHgTtdoHhJRhQIKdvxvswuRWwu2tUv+TvXk=;
+  b=LlHlBdfYmdcViajTDoLFfJvy0Ty7AuzAMndCIn3U+J/Llq5j0lKSZlya
+   jLEzcc9VGEFHlJFXdo7BC0MFau8w9ZB2vkvaALYKFzzHGf0toLd225Vf8
+   fahSg5f2NfGI4A7NzA3/n8VWuYs1qsJHN1Oni27JsR8sbvK7y7yu792PO
+   M=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 18 Apr 2022 05:37:35 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 05:37:34 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 18 Apr 2022 05:37:34 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 18 Apr 2022 05:37:27 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
+        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
+        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>, Linus Walleij <linus.walleij@linaro.org>,
+        <linux-gpio@vger.kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v13 0/7] Add pin control support for lpass sc7280
+Date:   Mon, 18 Apr 2022 18:07:00 +0530
+Message-ID: <1650285427-19752-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+This patch series is to split lpass variant common pin control
+functions and SoC specific functions and to add lpass sc7280 pincontrol support.
+It also Adds dt-bindings for lpass sc7280 lpass lpi pincontrol.
 
-[ Upstream commit 47b7de6b88b962ef339a2427a023d2a23d161654 ]
+Changes Since V12:
+    -- Remove redundant comments in sc7280 and sm8250 lpass lpi drivers.
+    -- Rebased on top of latest kernel tip.
+Changes Since V11:
+    -- Add pinctrl_generic_remove_group in lpass lpi driver.
+    -- Make proper error handling in lpass lpi driver.
+Changes Since V10:
+    -- Modify driver's custom functions with pin control framework generic functions.
+    -- Update sm8250 and sc7280 pin control depedency list in Kconfig.
+    -- Update commit description of few patches.
+Changes Since V9:
+    -- Add pinctrl groups macro to Kconfig.
+Changes Since V8:
+    -- Remove redundant headers included in v8.
+Changes Since V7:
+    -- Update optional clock voting with conditional check.
+    -- Add const to lpi_pinctrl_variant_data structure.
+    -- Update required headers and remove redundant.
+    -- Change EXPORT_SYMBOL to EXPORT_SYMBOL_GPL
+    -- Fix typo errors.
+Changes Since V6:
+    -- Update conditional clock voting to optional clock voting.
+    -- Update Kconfig depends on field with select.
+    -- Fix typo errors. 
+Changes Since V5:
+    -- Create new patch by updating macro name to lpi specific.
+    -- Create new patch by updating lpi pin group structure with core group_desc structure.
+    -- Fix typo errors.
+    -- Sort macros in the make file and configuration file.
+Changes Since V4:
+    -- Update commit message and description of the chip specific extraction patch.
+    -- Sort macros in kconfig and makefile.
+    -- Update optional clock voting to conditional clock voting.
+    -- Fix typo errors.
+    -- Move to quicinc domain email id's.
+Changes Since V3:
+    -- Update separate Kconfig fields for sm8250 and sc7280.
+    -- Update module license and description.
+    -- Move static variables to corresponding .c files from header file.
 
-The member 'msm_dsi->connector' isn't assigned until
-msm_dsi_manager_connector_init() returns (see msm_dsi_modeset_init() and
-how it assigns the return value). Therefore this pointer is going to be
-NULL here. Let's use 'connector' which is what was intended.
+Changes Since V2:
+    -- Add new dt-bindings for sc7280 lpi driver.
+    -- Make clock voting change as separate patch.
+    -- Split existing pincontrol driver and make common functions 
+       as part of separate file.
+    -- Rename lpass pincontrol lpi dt-bindings to sm8250 specific dt-bindings
+		
+Changes Since V1:
+    -- Make lpi pinctrl variant data structure as constant
+    -- Add appropriate commit message
+    -- Change signedoff by sequence.
 
-Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: Sean Paul <seanpaul@chromium.org>
-Fixes: 6d5e78406991 ("drm/msm/dsi: Move dsi panel init into modeset init path")
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/478693/
-Link: https://lore.kernel.org/r/20220318000731.2823718-1-swboyd@chromium.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/msm/dsi/dsi_manager.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Srinivasa Rao Mandadapu (7):
+  dt-bindings: pinctrl: qcom: Update lpass lpi file name to SoC specific
+  dt-bindings: pinctrl: qcom: Add sc7280 lpass lpi pinctrl bindings
+  pinctrl: qcom: Update macro name to LPI specific
+  pinctrl: qcom: Update lpi pin group custiom functions with framework
+    generic functions
+  pinctrl: qcom: Extract chip specific LPASS LPI code
+  pinctrl: qcom: Add SC7280 lpass pin configuration
+  pinctrl: qcom: Update clock voting as optional
 
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
-index 1d28dfba2c9b..fb421ca56b3d 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
-@@ -644,7 +644,7 @@ struct drm_connector *msm_dsi_manager_connector_init(u8 id)
- 	return connector;
- 
- fail:
--	connector->funcs->destroy(msm_dsi->connector);
-+	connector->funcs->destroy(connector);
- 	return ERR_PTR(ret);
- }
- 
+Tested this on SM8250 MTP with WSA and WCD codecs.
+Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+
+ .../bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml   | 133 ---------
+ .../pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml     | 115 ++++++++
+ .../pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml     | 133 +++++++++
+ drivers/pinctrl/qcom/Kconfig                       |  19 ++
+ drivers/pinctrl/qcom/Makefile                      |   2 +
+ drivers/pinctrl/qcom/pinctrl-lpass-lpi.c           | 309 +++------------------
+ drivers/pinctrl/qcom/pinctrl-lpass-lpi.h           |  86 ++++++
+ drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c    | 167 +++++++++++
+ drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c    | 163 +++++++++++
+ 9 files changed, 730 insertions(+), 397 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c
+
 -- 
-2.35.1
-
-
+2.7.4
 
