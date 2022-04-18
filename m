@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E34C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FD6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:19:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240994AbiDRNVu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32932 "EHLO
+        id S241620AbiDRNV4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241579AbiDRNDM (ORCPT
+        with ESMTP id S241621AbiDRNDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:03:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0DB33A1C;
-        Mon, 18 Apr 2022 05:43:48 -0700 (PDT)
+        Mon, 18 Apr 2022 09:03:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D2FA33E09;
+        Mon, 18 Apr 2022 05:43:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85254611CF;
-        Mon, 18 Apr 2022 12:43:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ADBAC385A1;
-        Mon, 18 Apr 2022 12:43:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2192AB80E4B;
+        Mon, 18 Apr 2022 12:43:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85BCDC385A1;
+        Mon, 18 Apr 2022 12:43:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285828;
-        bh=a2xBHnPJyDKBwJonaR0NWDfW+muXT0jTlP/CpSrdOIk=;
+        s=korg; t=1650285836;
+        bh=dJzCn9cIQspghMBiSeA+o7H9D+g3/toGnQtHulXDBOU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=osFcJ0RNXQ5jglS1iCZZMGw8+xjpwhdCe7vHz95kcGfmbXl8EvYQQigrIs5Cpj58s
-         XsUGF+JLS6HVVna9EICkJc2PewrqGOKhyOZfwNVc0NHBKiK66XKVVCz34e+0DejwZ3
-         1RP2vYAg/6DgxX/0ipIShFBYS1z8bsiIzHbgXNQs=
+        b=akVM4UWqFTlLgkML3MVDeaYZX6x/0v5WosEfntwrpG9WmaGuRR9eKXH2LAFiZhqDI
+         Zy+6WwWxUgKAIVrNeXta/0oG3L8bOLGe5NNusoGlLwndne7DXoSgzATAPAG1hwfcL+
+         NfACfWI4H691M0twpIclG9l3W4oN67f3bGxpWxFo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, Michal Hocko <mhocko@suse.com>,
-        David Hildenbrand <david@redhat.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 37/63] mm, page_alloc: fix build_zonerefs_node()
-Date:   Mon, 18 Apr 2022 14:13:34 +0200
-Message-Id: <20220418121136.716926869@linuxfoundation.org>
+        stable@vger.kernel.org, PaX Team <pageexec@freemail.hu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.4 40/63] gcc-plugins: latent_entropy: use /dev/urandom
+Date:   Mon, 18 Apr 2022 14:13:37 +0200
+Message-Id: <20220418121136.903029339@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -53,66 +49,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit e553f62f10d93551eb883eca227ac54d1a4fad84 upstream.
+commit c40160f2998c897231f8454bf797558d30a20375 upstream.
 
-Since commit 6aa303defb74 ("mm, vmscan: only allocate and reclaim from
-zones with pages managed by the buddy allocator") only zones with free
-memory are included in a built zonelist.  This is problematic when e.g.
-all memory of a zone has been ballooned out when zonelists are being
-rebuilt.
+While the latent entropy plugin mostly doesn't derive entropy from
+get_random_const() for measuring the call graph, when __latent_entropy is
+applied to a constant, then it's initialized statically to output from
+get_random_const(). In that case, this data is derived from a 64-bit
+seed, which means a buffer of 512 bits doesn't really have that amount
+of compile-time entropy.
 
-The decision whether to rebuild the zonelists when onlining new memory
-is done based on populated_zone() returning 0 for the zone the memory
-will be added to.  The new zone is added to the zonelists only, if it
-has free memory pages (managed_zone() returns a non-zero value) after
-the memory has been onlined.  This implies, that onlining memory will
-always free the added pages to the allocator immediately, but this is
-not true in all cases: when e.g. running as a Xen guest the onlined new
-memory will be added only to the ballooned memory list, it will be freed
-only when the guest is being ballooned up afterwards.
+This patch fixes that shortcoming by just buffering chunks of
+/dev/urandom output and doling it out as requested.
 
-Another problem with using managed_zone() for the decision whether a
-zone is being added to the zonelists is, that a zone with all memory
-used will in fact be removed from all zonelists in case the zonelists
-happen to be rebuilt.
+At the same time, it's important that we don't break the use of
+-frandom-seed, for people who want the runtime benefits of the latent
+entropy plugin, while still having compile-time determinism. In that
+case, we detect whether gcc's set_random_seed() has been called by
+making a call to get_random_seed(noinit=true) in the plugin init
+function, which is called after set_random_seed() is called but before
+anything that calls get_random_seed(noinit=false), and seeing if it's
+zero or not. If it's not zero, we're in deterministic mode, and so we
+just generate numbers with a basic xorshift prng.
 
-Use populated_zone() when building a zonelist as it has been done before
-that commit.
+Note that we don't detect if -frandom-seed is being used using the
+documented local_tick variable, because it's assigned via:
+   local_tick = (unsigned) tv.tv_sec * 1000 + tv.tv_usec / 1000;
+which may well overflow and become -1 on its own, and so isn't
+reliable: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105171
 
-There was a report that QubesOS (based on Xen) is hitting this problem.
-Xen has switched to use the zone device functionality in kernel 5.9 and
-QubesOS wants to use memory hotplugging for guests in order to be able
-to start a guest with minimal memory and expand it as needed.  This was
-the report leading to the patch.
+[kees: The 256 byte rnd_buf size was chosen based on average (250),
+ median (64), and std deviation (575) bytes of used entropy for a
+ defconfig x86_64 build]
 
-Link: https://lkml.kernel.org/r/20220407120637.9035-1-jgross@suse.com
-Fixes: 6aa303defb74 ("mm, vmscan: only allocate and reclaim from zones with pages managed by the buddy allocator")
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Acked-by: David Hildenbrand <david@redhat.com>
-Cc: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Reviewed-by: Wei Yang <richard.weiyang@gmail.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
+Cc: stable@vger.kernel.org
+Cc: PaX Team <pageexec@freemail.hu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220405222815.21155-1-Jason@zx2c4.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/page_alloc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ scripts/gcc-plugins/latent_entropy_plugin.c |   44 +++++++++++++++++-----------
+ 1 file changed, 27 insertions(+), 17 deletions(-)
 
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5481,7 +5481,7 @@ static int build_zonerefs_node(pg_data_t
- 	do {
- 		zone_type--;
- 		zone = pgdat->node_zones + zone_type;
--		if (managed_zone(zone)) {
-+		if (populated_zone(zone)) {
- 			zoneref_set_zone(zone, &zonerefs[nr_zones++]);
- 			check_highest_zone(zone_type);
- 		}
+--- a/scripts/gcc-plugins/latent_entropy_plugin.c
++++ b/scripts/gcc-plugins/latent_entropy_plugin.c
+@@ -86,25 +86,31 @@ static struct plugin_info latent_entropy
+ 	.help		= "disable\tturn off latent entropy instrumentation\n",
+ };
+ 
+-static unsigned HOST_WIDE_INT seed;
+-/*
+- * get_random_seed() (this is a GCC function) generates the seed.
+- * This is a simple random generator without any cryptographic security because
+- * the entropy doesn't come from here.
+- */
++static unsigned HOST_WIDE_INT deterministic_seed;
++static unsigned HOST_WIDE_INT rnd_buf[32];
++static size_t rnd_idx = ARRAY_SIZE(rnd_buf);
++static int urandom_fd = -1;
++
+ static unsigned HOST_WIDE_INT get_random_const(void)
+ {
+-	unsigned int i;
+-	unsigned HOST_WIDE_INT ret = 0;
+-
+-	for (i = 0; i < 8 * sizeof(ret); i++) {
+-		ret = (ret << 1) | (seed & 1);
+-		seed >>= 1;
+-		if (ret & 1)
+-			seed ^= 0xD800000000000000ULL;
++	if (deterministic_seed) {
++		unsigned HOST_WIDE_INT w = deterministic_seed;
++		w ^= w << 13;
++		w ^= w >> 7;
++		w ^= w << 17;
++		deterministic_seed = w;
++		return deterministic_seed;
+ 	}
+ 
+-	return ret;
++	if (urandom_fd < 0) {
++		urandom_fd = open("/dev/urandom", O_RDONLY);
++		gcc_assert(urandom_fd >= 0);
++	}
++	if (rnd_idx >= ARRAY_SIZE(rnd_buf)) {
++		gcc_assert(read(urandom_fd, rnd_buf, sizeof(rnd_buf)) == sizeof(rnd_buf));
++		rnd_idx = 0;
++	}
++	return rnd_buf[rnd_idx++];
+ }
+ 
+ static tree tree_get_random_const(tree type)
+@@ -549,8 +555,6 @@ static void latent_entropy_start_unit(vo
+ 	tree type, id;
+ 	int quals;
+ 
+-	seed = get_random_seed(false);
+-
+ 	if (in_lto_p)
+ 		return;
+ 
+@@ -585,6 +589,12 @@ __visible int plugin_init(struct plugin_
+ 	const struct plugin_argument * const argv = plugin_info->argv;
+ 	int i;
+ 
++	/*
++	 * Call get_random_seed() with noinit=true, so that this returns
++	 * 0 in the case where no seed has been passed via -frandom-seed.
++	 */
++	deterministic_seed = get_random_seed(true);
++
+ 	static const struct ggc_root_tab gt_ggc_r_gt_latent_entropy[] = {
+ 		{
+ 			.base = &latent_entropy_decl,
 
 
