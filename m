@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C90C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240424AbiDRMxW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:53:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38022 "EHLO
+        id S240066AbiDRMyX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:54:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240612AbiDRMjX (ORCPT
+        with ESMTP id S240320AbiDRMix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0FCA11A33;
-        Mon, 18 Apr 2022 05:29:59 -0700 (PDT)
+        Mon, 18 Apr 2022 08:38:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C49324F25;
+        Mon, 18 Apr 2022 05:29:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31B3660FB6;
-        Mon, 18 Apr 2022 12:29:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27F83C385A7;
-        Mon, 18 Apr 2022 12:29:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A92761033;
+        Mon, 18 Apr 2022 12:29:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76735C385A1;
+        Mon, 18 Apr 2022 12:29:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284998;
-        bh=G++U9rtoxfQSlDamiCXkUBLmwjBH2Lkb15OC1vNC2oE=;
+        s=korg; t=1650284973;
+        bh=3GMgtImb+7S5Cm6mxL67P/qzHVn0at/En+PwwCh4UhE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x/VvbUXqmhln07+JuWlQWW3LougpKCD7lVGyyrBejKOZ/A3nAkucROovapA8onpyv
-         oS7AP33DJexFZBso4nxBtOeNhc8+dHpMaaDGfE6PI/PRCK9CcEKD/r09Qes/B3won0
-         GRBfQzT6FW7UiIAy7VZ7Aoe4B9O3nkW7hnKREd1c=
+        b=stGvEdE8M6wTM9YsnQHSpVilK/sEXRLxARh835QybmYLDmU8s1tSHfE5BgQgzsTAP
+         2nbaoSrJfIwkhlij7DK0WOqv3FsKtn6Toc6VmTa8v66RvKqvgdhpwLVCEMVxbdr9t3
+         GwP4TVNrD8T2OKApLJsPV2Di6HWvYCqMNfsx5mks=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Topi Miettinen <toiwoton@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 074/189] netfilter: nft_socket: make cgroup match work in input too
-Date:   Mon, 18 Apr 2022 14:11:34 +0200
-Message-Id: <20220418121202.610066540@linuxfoundation.org>
+Subject: [PATCH 5.15 067/189] net: mdio: dont defer probe forever if PHY IRQ provider is missing
+Date:   Mon, 18 Apr 2022 14:11:27 +0200
+Message-Id: <20220418121202.411017860@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,54 +51,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 05ae2fba821c4d122ab4ba3e52144e21586c4010 ]
+[ Upstream commit 74befa447e6839cdd90ed541159ec783726946f9 ]
 
-cgroupv2 helper function ignores the already-looked up sk
-and uses skb->sk instead.
+When a driver for an interrupt controller is missing, of_irq_get()
+returns -EPROBE_DEFER ad infinitum, causing
+fwnode_mdiobus_phy_device_register(), and ultimately, the entire
+of_mdiobus_register() call, to fail. In turn, any phy_connect() call
+towards a PHY on this MDIO bus will also fail.
 
-Just pass sk from the calling function instead; this will
-make cgroup matching work for udp and tcp in input even when
-edemux did not set skb->sk already.
+This is not what is expected to happen, because the PHY library falls
+back to poll mode when of_irq_get() returns a hard error code, and the
+MDIO bus, PHY and attached Ethernet controller work fine, albeit
+suboptimally, when the PHY library polls for link status. However,
+-EPROBE_DEFER has special handling given the assumption that at some
+point probe deferral will stop, and the driver for the supplier will
+kick in and create the IRQ domain.
 
-Fixes: e0bb96db96f8 ("netfilter: nft_socket: add support for cgroupsv2")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Tested-by: Topi Miettinen <toiwoton@gmail.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Reasons for which the interrupt controller may be missing:
+
+- It is not yet written. This may happen if a more recent DT blob (with
+  an interrupt-parent for the PHY) is used to boot an old kernel where
+  the driver didn't exist, and that kernel worked with the
+  vintage-correct DT blob using poll mode.
+
+- It is compiled out. Behavior is the same as above.
+
+- It is compiled as a module. The kernel will wait for a number of
+  seconds specified in the "deferred_probe_timeout" boot parameter for
+  user space to load the required module. The current default is 0,
+  which times out at the end of initcalls. It is possible that this
+  might cause regressions unless users adjust this boot parameter.
+
+The proposed solution is to use the driver_deferred_probe_check_state()
+helper function provided by the driver core, which gives up after some
+-EPROBE_DEFER attempts, taking "deferred_probe_timeout" into consideration.
+The return code is changed from -EPROBE_DEFER into -ENODEV or
+-ETIMEDOUT, depending on whether the kernel is compiled with support for
+modules or not.
+
+Fixes: 66bdede495c7 ("of_mdio: Fix broken PHY IRQ in case of probe deferral")
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220407165538.4084809-1-vladimir.oltean@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_socket.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/base/dd.c              | 1 +
+ drivers/net/mdio/fwnode_mdio.c | 5 +++++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/net/netfilter/nft_socket.c b/net/netfilter/nft_socket.c
-index d601974c9d2e..b8f011145765 100644
---- a/net/netfilter/nft_socket.c
-+++ b/net/netfilter/nft_socket.c
-@@ -36,12 +36,11 @@ static void nft_socket_wildcard(const struct nft_pktinfo *pkt,
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 64ce42b6c6b6..95ae347df137 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -296,6 +296,7 @@ int driver_deferred_probe_check_state(struct device *dev)
  
- #ifdef CONFIG_SOCK_CGROUP_DATA
- static noinline bool
--nft_sock_get_eval_cgroupv2(u32 *dest, const struct nft_pktinfo *pkt, u32 level)
-+nft_sock_get_eval_cgroupv2(u32 *dest, struct sock *sk, const struct nft_pktinfo *pkt, u32 level)
+ 	return -EPROBE_DEFER;
+ }
++EXPORT_SYMBOL_GPL(driver_deferred_probe_check_state);
+ 
+ static void deferred_probe_timeout_work_func(struct work_struct *work)
  {
--	struct sock *sk = skb_to_full_sk(pkt->skb);
- 	struct cgroup *cgrp;
+diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+index 1becb1a731f6..1c1584fca632 100644
+--- a/drivers/net/mdio/fwnode_mdio.c
++++ b/drivers/net/mdio/fwnode_mdio.c
+@@ -43,6 +43,11 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
+ 	int rc;
  
--	if (!sk || !sk_fullsock(sk) || !net_eq(nft_net(pkt), sock_net(sk)))
-+	if (!sk_fullsock(sk))
- 		return false;
+ 	rc = fwnode_irq_get(child, 0);
++	/* Don't wait forever if the IRQ provider doesn't become available,
++	 * just fall back to poll mode
++	 */
++	if (rc == -EPROBE_DEFER)
++		rc = driver_deferred_probe_check_state(&phy->mdio.dev);
+ 	if (rc == -EPROBE_DEFER)
+ 		return rc;
  
- 	cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-@@ -108,7 +107,7 @@ static void nft_socket_eval(const struct nft_expr *expr,
- 		break;
- #ifdef CONFIG_SOCK_CGROUP_DATA
- 	case NFT_SOCKET_CGROUPV2:
--		if (!nft_sock_get_eval_cgroupv2(dest, pkt, priv->level)) {
-+		if (!nft_sock_get_eval_cgroupv2(dest, sk, pkt, priv->level)) {
- 			regs->verdict.code = NFT_BREAK;
- 			return;
- 		}
 -- 
 2.35.1
 
