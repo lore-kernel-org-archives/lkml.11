@@ -2,122 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7084C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 18:50:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 565C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 18:50:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347496AbiDRSxN (ORCPT
+        id S1347515AbiDRSx0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 14:53:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39992 "EHLO
+        Mon, 18 Apr 2022 14:53:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347492AbiDRSxB (ORCPT
+        with ESMTP id S235921AbiDRSxZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 14:53:01 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A5F2F39B;
-        Mon, 18 Apr 2022 11:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1650307797; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gTydCTe/7cAyLlIMweK5uFG1GYH9QzGk2uqsrqg28Oo=;
-        b=HEvosaXqUAJaM43ThX9L/5w3WJ5BrXLFRg2EUIjxmL/MdlW+LOPXb1fnpElIc/Dgkc9Xng
-        aeTnMj+yhDrIWcGaCC964jixem3O3aRwgx1mr8OTX9vqrAhNRorIHgk/BaM4exFfF3q13i
-        23jRa11lv0AXN4W/s74zEnjewY7HOwI=
-From:   Paul Cercueil <paul@crapouillou.net>
-To:     Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     list@opendingux.net, linux-rtc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH 3/5] rtc: jz4740: Reset scratchpad register on power loss
-Date:   Mon, 18 Apr 2022 19:49:31 +0100
-Message-Id: <20220418184933.13172-4-paul@crapouillou.net>
-In-Reply-To: <20220418184933.13172-1-paul@crapouillou.net>
-References: <20220418184933.13172-1-paul@crapouillou.net>
+        Mon, 18 Apr 2022 14:53:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E62915822;
+        Mon, 18 Apr 2022 11:50:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 055BCB80EC4;
+        Mon, 18 Apr 2022 18:50:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99CACC385A7;
+        Mon, 18 Apr 2022 18:50:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650307842;
+        bh=ZUHtGIbbacXJsaEGrlloH94rXXIROUImW5cXopGA94E=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=pVY/ca2QGYXAxfaiNXrOjXrF/Cv+oANtUPQZ9ftGbux1DdwCCzASQDsVqFQWgihQ+
+         Gg3kkjD8Sw4JoM1y5e+J4AtSxYGoBoMv3uWmo+dlx7m8O3znrWGTfMem0UaOwhFSxf
+         C5pscSLCHlBUPGI76XgyJqn/hHHKn7QnpBZq7iKDPiT5S1ZtTok04581G2Gl0qV1ei
+         cxkdxLeNcGpB9D80JTlVMjsIFSyYXaax8QY6KubCb4a4GOJluOCdyJJXzyM73yc2Yf
+         97v+ZjkEduRsypmZQv2DF7U32Yb4j4Snsgn1gQFsoibpDu7Sl9DMzihfq1D2hOSR93
+         nS95oNm2+AFJg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 3CA755C0848; Mon, 18 Apr 2022 11:50:42 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 11:50:42 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Anna-Maria Behnsen <anna-maria@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, rcu@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Benedikt Spranger <b.spranger@linutronix.de>
+Subject: Re: [PATCH] rcu/torture: Change order of warning and trace dump
+Message-ID: <20220418185042.GA2420391@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220411151903.28167-1-anna-maria@linutronix.de>
+ <20220411180915.GY4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411180915.GY4285@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On power loss, reading the RTC value would fail as the scratchpad lost
-its magic value, until the hardware clock was set once again.
+On Mon, Apr 11, 2022 at 11:09:15AM -0700, Paul E. McKenney wrote:
+> On Mon, Apr 11, 2022 at 05:19:03PM +0200, Anna-Maria Behnsen wrote:
+> > Dumping a big ftrace buffer could lead to a RCU stall. So there is the
+> > ftrace buffer and the stall information which needs to be printed. When
+> > there is additionaly a WARN_ON() which describes the reason for the ftrace
+> > buffer dump and the WARN_ON() is executed _after_ ftrace buffer dump, the
+> > information get lost in the middle of the RCU stall information.
+> > 
+> > Therefore print WARN_ON() message before dumping the ftrace buffer in
+> > rcu_torture_writer().
+> > 
+> > Signed-off-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
+> > Reviewed-by: Benedikt Spranger <b.spranger@linutronix.de>
+> 
+> Hello, Anna-Maria!
+> 
+> Good point, but we get caught out either way.  Either we take the chance
+> of losing the WARN() message as you say, or we take the chance of the
+> activity in the WARN() message overwriting needed information in the
+> trace buffer.
+> 
+> Would it work to shut off tracing, do the WARN(), and only then do the
+> rcu_ftrace_dump()?
 
-To avoid that, reset the RTC value to Epoch in the probe if we detect
-that the scratchpad lost its magic value.
+For example, as shown the the updated patch below currently queued on -rcu
+for further review and testing?
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
- drivers/rtc/rtc-jz4740.c | 24 +++++++++++++++++++++---
- 1 file changed, 21 insertions(+), 3 deletions(-)
+If this is problematic, please let me know!
 
-diff --git a/drivers/rtc/rtc-jz4740.c b/drivers/rtc/rtc-jz4740.c
-index 119baf168b32..aac5f68bf626 100644
---- a/drivers/rtc/rtc-jz4740.c
-+++ b/drivers/rtc/rtc-jz4740.c
-@@ -42,6 +42,9 @@
- /* Magic value to enable writes on jz4780 */
- #define JZ_RTC_WENR_MAGIC	0xA55A
- 
-+/* Value written to the scratchpad to detect power losses */
-+#define JZ_RTC_SCRATCHPAD_MAGIC	0x12345678
-+
- #define JZ_RTC_WAKEUP_FILTER_MASK	0x0000FFE0
- #define JZ_RTC_RESET_COUNTER_MASK	0x00000FE0
- 
-@@ -134,10 +137,11 @@ static int jz4740_rtc_ctrl_set_bits(struct jz4740_rtc *rtc, uint32_t mask,
- static int jz4740_rtc_read_time(struct device *dev, struct rtc_time *time)
- {
- 	struct jz4740_rtc *rtc = dev_get_drvdata(dev);
--	uint32_t secs, secs2;
-+	uint32_t secs, secs2, magic;
- 	int timeout = 5;
- 
--	if (jz4740_rtc_reg_read(rtc, JZ_REG_RTC_SCRATCHPAD) != 0x12345678)
-+	magic = jz4740_rtc_reg_read(rtc, JZ_REG_RTC_SCRATCHPAD);
-+	if (magic != JZ_RTC_SCRATCHPAD_MAGIC)
- 		return -EINVAL;
- 
- 	/* If the seconds register is read while it is updated, it can contain a
-@@ -169,7 +173,8 @@ static int jz4740_rtc_set_time(struct device *dev, struct rtc_time *time)
- 	if (ret)
- 		return ret;
- 
--	return jz4740_rtc_reg_write(rtc, JZ_REG_RTC_SCRATCHPAD, 0x12345678);
-+	return jz4740_rtc_reg_write(rtc, JZ_REG_RTC_SCRATCHPAD,
-+				    JZ_RTC_SCRATCHPAD_MAGIC);
- }
- 
- static int jz4740_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
-@@ -307,6 +312,7 @@ static int jz4740_rtc_probe(struct platform_device *pdev)
- 	struct jz4740_rtc *rtc;
- 	unsigned long rate;
- 	struct clk *clk;
-+	uint32_t magic;
- 	int ret, irq;
- 
- 	rtc = devm_kzalloc(dev, sizeof(*rtc), GFP_KERNEL);
-@@ -369,6 +375,18 @@ static int jz4740_rtc_probe(struct platform_device *pdev)
- 	/* Each 1 Hz pulse should happen after (rate) ticks */
- 	jz4740_rtc_reg_write(rtc, JZ_REG_RTC_REGULATOR, rate - 1);
- 
-+	magic = jz4740_rtc_reg_read(rtc, JZ_REG_RTC_SCRATCHPAD);
-+	if (magic != JZ_RTC_SCRATCHPAD_MAGIC) {
-+		/*
-+		 * If the scratchpad doesn't hold our magic value, then a
-+		 * power loss occurred. Reset to Epoch.
-+		 */
-+		struct rtc_time time;
-+
-+		rtc_time64_to_tm(0, &time);
-+		jz4740_rtc_set_time(dev, &time);
-+	}
-+
- 	ret = devm_rtc_register_device(rtc->rtc);
- 	if (ret)
- 		return ret;
--- 
-2.35.1
+							Thanx, Paul
 
+------------------------------------------------------------------------
+
+commit cdbc93534da1bba3f498783473361b2f26dc65d6
+Author: Anna-Maria Behnsen <anna-maria@linutronix.de>
+Date:   Mon Apr 11 17:19:03 2022 +0200
+
+    rcu/torture: Change order of warning and trace dump
+    
+    Dumping a big ftrace buffer could lead to a RCU stall. So there is the
+    ftrace buffer and the stall information which needs to be printed. When
+    there is additionaly a WARN_ON() which describes the reason for the ftrace
+    buffer dump and the WARN_ON() is executed _after_ ftrace buffer dump, the
+    information get lost in the middle of the RCU stall information.
+    
+    Therefore print WARN_ON() message before dumping the ftrace buffer in
+    rcu_torture_writer().
+    
+    [ paulmck: Add tracing_off() to avoid cruft from WARN(). ]
+    
+    Signed-off-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
+    Reviewed-by: Benedikt Spranger <b.spranger@linutronix.de>
+    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+
+diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
+index 2b40a8f6d2a0..0885a66f9d76 100644
+--- a/kernel/rcu/rcutorture.c
++++ b/kernel/rcu/rcutorture.c
+@@ -1369,8 +1369,9 @@ rcu_torture_writer(void *arg)
+ 				if (list_empty(&rcu_tortures[i].rtort_free) &&
+ 				    rcu_access_pointer(rcu_torture_current) !=
+ 				    &rcu_tortures[i]) {
+-					rcu_ftrace_dump(DUMP_ALL);
++					tracing_off();
+ 					WARN(1, "%s: rtort_pipe_count: %d\n", __func__, rcu_tortures[i].rtort_pipe_count);
++					rcu_ftrace_dump(DUMP_ALL);
+ 				}
+ 		if (stutter_waited)
+ 			sched_set_normal(current, oldnice);
