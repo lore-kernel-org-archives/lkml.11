@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 540F8C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E966C4707F
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245690AbiDROD5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
+        id S1343522AbiDROEJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244619AbiDRNpH (ORCPT
+        with ESMTP id S243464AbiDRNqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:45:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E34B32043;
-        Mon, 18 Apr 2022 06:00:11 -0700 (PDT)
+        Mon, 18 Apr 2022 09:46:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3342C27143;
+        Mon, 18 Apr 2022 06:00:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84AFBB80D9C;
-        Mon, 18 Apr 2022 13:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF7B8C385A7;
-        Mon, 18 Apr 2022 13:00:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C28B060B3A;
+        Mon, 18 Apr 2022 13:00:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACC58C385A1;
+        Mon, 18 Apr 2022 13:00:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286809;
-        bh=1X3jVFBcdpgqeellWvIrk80zSJ9UX1SgA+Li3Hq5Ql4=;
+        s=korg; t=1650286844;
+        bh=G3r+WlNIzMT9anVEDUcHlMm/sERjt+PIsSqzrRHCOTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jlkw6hl+ZGZNpF3ilxXnW3XBfVMQjww75GtPrlyIHVyViAWpqijsJnlquTY52zYk3
-         N6AtcUqIhAhTjCF+lJjacHBczPYxB7Zze62q1yBRgT29r5aaLIMi8O9cLpRc8cpb+E
-         BCS0YzvsAjWgpveUX+dREZOW1Xg7siSGsELbP7N4=
+        b=OvOFsDUE50FjKk2GvNHpO1NTEq1QhLFBgt94dnOlqMeNvbLWZk+pqYrlrHXO8FX06
+         9AJQV/yh/Zrj6bo//HsOCAZ23X11u44QzVuXahhBxsem+7RjuxTAfLf5rlsweU3fPH
+         PiCnhl5m9JEUH+mHmOluVU2X2PyWmX9zXAQj/HaM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Guanghui <zhouguanghui1@huawei.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 215/284] iommu/arm-smmu-v3: fix event handling soft lockup
-Date:   Mon, 18 Apr 2022 14:13:16 +0200
-Message-Id: <20220418121217.828612769@linuxfoundation.org>
+        stable@vger.kernel.org, Vadim Pasternak <vadimp@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 264/284] mlxsw: i2c: Fix initialization error flow
+Date:   Mon, 18 Apr 2022 14:14:05 +0200
+Message-Id: <20220418121220.174376447@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -48,53 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Guanghui <zhouguanghui1@huawei.com>
+From: Vadim Pasternak <vadimp@nvidia.com>
 
-[ Upstream commit 30de2b541af98179780054836b48825fcfba4408 ]
+[ Upstream commit d452088cdfd5a4ad9d96d847d2273fe958d6339b ]
 
-During event processing, events are read from the event queue one
-by one until the queue is empty.If the master device continuously
-requests address access at the same time and the SMMU generates
-events, the cyclic processing of the event takes a long time and
-softlockup warnings may be reported.
+Add mutex_destroy() call in driver initialization error flow.
 
-arm-smmu-v3 arm-smmu-v3.34.auto: event 0x0a received:
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00007f220000280a
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x000010000000007e
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00000000034e8670
-watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [irq/268-arm-smm:247]
-Call trace:
- _dev_info+0x7c/0xa0
- arm_smmu_evtq_thread+0x1c0/0x230
- irq_thread_fn+0x30/0x80
- irq_thread+0x128/0x210
- kthread+0x134/0x138
- ret_from_fork+0x10/0x1c
-Kernel panic - not syncing: softlockup: hung tasks
-
-Fix this by calling cond_resched() after the event information is
-printed.
-
-Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
-Link: https://lore.kernel.org/r/20220119070754.26528-1-zhouguanghui1@huawei.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Fixes: 6882b0aee180f ("mlxsw: Introduce support for I2C bus")
+Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Link: https://lore.kernel.org/r/20220407070703.2421076-1-idosch@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 1 +
+ drivers/net/ethernet/mellanox/mlxsw/i2c.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 29feafa8007f..878087b9ddfe 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1210,6 +1210,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 				dev_info(smmu->dev, "\t0x%016llx\n",
- 					 (unsigned long long)evt[i]);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/i2c.c b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
+index c0dcfa05b077..3d10e6100748 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/i2c.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
+@@ -548,6 +548,7 @@ static int mlxsw_i2c_probe(struct i2c_client *client,
+ 	return 0;
  
-+			cond_resched();
- 		}
+ errout:
++	mutex_destroy(&mlxsw_i2c->cmd.lock);
+ 	i2c_set_clientdata(client, NULL);
  
- 		/*
+ 	return err;
 -- 
 2.35.1
 
