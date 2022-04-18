@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1BD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:20:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBB0EC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238471AbiDRMWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:22:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48808 "EHLO
+        id S238427AbiDRMXW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:23:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238406AbiDRMVb (ORCPT
+        with ESMTP id S238443AbiDRMWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:21:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C591C12C;
-        Mon, 18 Apr 2022 05:17:34 -0700 (PDT)
+        Mon, 18 Apr 2022 08:22:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CDD31DA43;
+        Mon, 18 Apr 2022 05:17:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8387660F09;
-        Mon, 18 Apr 2022 12:17:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 760F1C385A1;
-        Mon, 18 Apr 2022 12:17:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2536360F09;
+        Mon, 18 Apr 2022 12:17:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24B8FC385A7;
+        Mon, 18 Apr 2022 12:17:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284252;
-        bh=B8FQAJw9+VDk757S4dMVCrNEdd5tU9fGX7Vr2Zbfdos=;
+        s=korg; t=1650284262;
+        bh=8Gc79g/ewNAkBhYPJOhBtDDF+BWfLbtJud2ozjhSDOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ySmaY4tWB6JJBskJ//bgoEXKCsCXqyzPfO1oMf5MmeXsLZ96qVK0ZmybIE3+f6noJ
-         Gh8Qp7MsT+GM6xO1m9cHS7m5T249zmYa+vf1oBQ2Cb87uENPbUYQFIEEhP9L6erS4e
-         7m5FoTOYWI9LGHxmOOBoDBEKw33dA0SGlkrc5Bq8=
+        b=kuYjkCSeU5GwQ0/281OR2lBXX0ssl8BzRMK65gbw8nom2XqZuWZg2Fc7TxX3vNrie
+         agOVPMvGUIWfsr3Xa9wpHwoA9XrpmWIqTGh4P95RCu92SnfkuAmBId5f1xgpRcrXic
+         5okvWAZMQLsf+pJ86yh+UAnWJ4JoKlLuwbsCLzQI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 054/219] ALSA: via82xx: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:10:23 +0200
-Message-Id: <20220418121206.702514665@linuxfoundation.org>
+Subject: [PATCH 5.17 057/219] ALSA: nm256: Dont call card private_free at probe error path
+Date:   Mon, 18 Apr 2022 14:10:26 +0200
+Message-Id: <20220418121206.925490145@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,78 +49,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit 27a0963f9cea5be3c68281f07fe82cdf712ef333 upstream.
+commit f20ae5074dfb38f23b0c07c62bdf8e7254a0acf8 upstream.
 
-The previous cleanup with devres may lead to the incorrect release
-orders at the probe error handling due to the devres's nature.  Until
-we register the card, snd_card_free() has to be called at first for
-releasing the stuff properly when the driver tries to manage and
-release the stuff via card->private_free().
+The card destructor of nm256 driver does merely stopping the running
+streams, and it's superfluous for the probe error handling.  Moreover,
+calling this via the previous devres change would lead to another
+problem due to the reverse call order.
 
-This patch fixes it by calling snd_card_free() on the error from the
-probe callback using a new helper function.
+This patch moves the setup of the private_free callback after the card
+registration, so that it can be used only after fully set up.
 
-Fixes: afaf99751d0c ("ALSA: via82xx: Allocate resources with device-managed APIs")
+Fixes: c19935f04784 ("ALSA: nm256: Allocate resources with device-managed APIs")
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-26-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220412102636.16000-40-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/via82xx.c       |   10 ++++++++--
- sound/pci/via82xx_modem.c |   10 ++++++++--
- 2 files changed, 16 insertions(+), 4 deletions(-)
+ sound/pci/nm256/nm256.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/pci/via82xx.c
-+++ b/sound/pci/via82xx.c
-@@ -2458,8 +2458,8 @@ static int check_dxs_list(struct pci_dev
- 	return VIA_DXS_48K;
- };
+--- a/sound/pci/nm256/nm256.c
++++ b/sound/pci/nm256/nm256.c
+@@ -1573,7 +1573,6 @@ snd_nm256_create(struct snd_card *card,
+ 	chip->coeffs_current = 0;
  
--static int snd_via82xx_probe(struct pci_dev *pci,
--			     const struct pci_device_id *pci_id)
-+static int __snd_via82xx_probe(struct pci_dev *pci,
-+			       const struct pci_device_id *pci_id)
- {
- 	struct snd_card *card;
- 	struct via82xx *chip;
-@@ -2569,6 +2569,12 @@ static int snd_via82xx_probe(struct pci_
+ 	snd_nm256_init_chip(chip);
+-	card->private_free = snd_nm256_free;
+ 
+ 	// pci_set_master(pci); /* needed? */
  	return 0;
- }
+@@ -1680,6 +1679,7 @@ static int snd_nm256_probe(struct pci_de
+ 	err = snd_card_register(card);
+ 	if (err < 0)
+ 		return err;
++	card->private_free = snd_nm256_free;
  
-+static int snd_via82xx_probe(struct pci_dev *pci,
-+			     const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_via82xx_probe(pci, pci_id));
-+}
-+
- static struct pci_driver via82xx_driver = {
- 	.name = KBUILD_MODNAME,
- 	.id_table = snd_via82xx_ids,
---- a/sound/pci/via82xx_modem.c
-+++ b/sound/pci/via82xx_modem.c
-@@ -1103,8 +1103,8 @@ static int snd_via82xx_create(struct snd
- }
- 
- 
--static int snd_via82xx_probe(struct pci_dev *pci,
--			     const struct pci_device_id *pci_id)
-+static int __snd_via82xx_probe(struct pci_dev *pci,
-+			       const struct pci_device_id *pci_id)
- {
- 	struct snd_card *card;
- 	struct via82xx_modem *chip;
-@@ -1157,6 +1157,12 @@ static int snd_via82xx_probe(struct pci_
+ 	pci_set_drvdata(pci, card);
  	return 0;
- }
- 
-+static int snd_via82xx_probe(struct pci_dev *pci,
-+			     const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_via82xx_probe(pci, pci_id));
-+}
-+
- static struct pci_driver via82xx_modem_driver = {
- 	.name = KBUILD_MODNAME,
- 	.id_table = snd_via82xx_modem_ids,
 
 
