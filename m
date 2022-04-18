@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C90C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 069C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240066AbiDRMyX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
+        id S240082AbiDRMy0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:54:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240320AbiDRMix (ORCPT
+        with ESMTP id S240053AbiDRMih (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:38:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C49324F25;
-        Mon, 18 Apr 2022 05:29:35 -0700 (PDT)
+        Mon, 18 Apr 2022 08:38:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D8C275C2;
+        Mon, 18 Apr 2022 05:29:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A92761033;
-        Mon, 18 Apr 2022 12:29:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76735C385A1;
-        Mon, 18 Apr 2022 12:29:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89656B80EC1;
+        Mon, 18 Apr 2022 12:29:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B82AEC385A7;
+        Mon, 18 Apr 2022 12:29:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284973;
-        bh=3GMgtImb+7S5Cm6mxL67P/qzHVn0at/En+PwwCh4UhE=;
+        s=korg; t=1650284951;
+        bh=i9onWB9tRvxnJHS7hD+ihyIKDO/WpE3i++NR8WHGdnA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=stGvEdE8M6wTM9YsnQHSpVilK/sEXRLxARh835QybmYLDmU8s1tSHfE5BgQgzsTAP
-         2nbaoSrJfIwkhlij7DK0WOqv3FsKtn6Toc6VmTa8v66RvKqvgdhpwLVCEMVxbdr9t3
-         GwP4TVNrD8T2OKApLJsPV2Di6HWvYCqMNfsx5mks=
+        b=aLBK5Bi2wIiS1P1DkdOpwAstoZOHOZ1s964rRUmU2/ECf1cNHR/O+mR0CF7VW+/HK
+         ks1tAMJWOvUcDLbWyBXJgYzHEixJmze4xZ6RaTSTQPg3Eojr5I0QAdKT8LlGasreO/
+         T+006/wrvwXiNGAk/clP5CTnQN5/pdW0ORzbeUCo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 067/189] net: mdio: dont defer probe forever if PHY IRQ provider is missing
-Date:   Mon, 18 Apr 2022 14:11:27 +0200
-Message-Id: <20220418121202.411017860@linuxfoundation.org>
+Subject: [PATCH 5.15 060/189] firmware: arm_scmi: Fix sorting of retrieved clock rates
+Date:   Mon, 18 Apr 2022 14:11:20 +0200
+Message-Id: <20220418121202.213234033@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -51,87 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Cristian Marussi <cristian.marussi@arm.com>
 
-[ Upstream commit 74befa447e6839cdd90ed541159ec783726946f9 ]
+[ Upstream commit 23274739a5b6166f74d8d9cb5243d7bf6b46aab9 ]
 
-When a driver for an interrupt controller is missing, of_irq_get()
-returns -EPROBE_DEFER ad infinitum, causing
-fwnode_mdiobus_phy_device_register(), and ultimately, the entire
-of_mdiobus_register() call, to fail. In turn, any phy_connect() call
-towards a PHY on this MDIO bus will also fail.
+During SCMI Clock protocol initialization, after having retrieved from the
+SCMI platform all the available discrete rates for a specific clock, the
+clock rates array is sorted, unfortunately using a pointer to its end as
+a base instead of its start, so that sorting does not work.
 
-This is not what is expected to happen, because the PHY library falls
-back to poll mode when of_irq_get() returns a hard error code, and the
-MDIO bus, PHY and attached Ethernet controller work fine, albeit
-suboptimally, when the PHY library polls for link status. However,
--EPROBE_DEFER has special handling given the assumption that at some
-point probe deferral will stop, and the driver for the supplier will
-kick in and create the IRQ domain.
+Fix invocation of sort() passing as base a pointer to the start of the
+retrieved clock rates array.
 
-Reasons for which the interrupt controller may be missing:
-
-- It is not yet written. This may happen if a more recent DT blob (with
-  an interrupt-parent for the PHY) is used to boot an old kernel where
-  the driver didn't exist, and that kernel worked with the
-  vintage-correct DT blob using poll mode.
-
-- It is compiled out. Behavior is the same as above.
-
-- It is compiled as a module. The kernel will wait for a number of
-  seconds specified in the "deferred_probe_timeout" boot parameter for
-  user space to load the required module. The current default is 0,
-  which times out at the end of initcalls. It is possible that this
-  might cause regressions unless users adjust this boot parameter.
-
-The proposed solution is to use the driver_deferred_probe_check_state()
-helper function provided by the driver core, which gives up after some
--EPROBE_DEFER attempts, taking "deferred_probe_timeout" into consideration.
-The return code is changed from -EPROBE_DEFER into -ENODEV or
--ETIMEDOUT, depending on whether the kernel is compiled with support for
-modules or not.
-
-Fixes: 66bdede495c7 ("of_mdio: Fix broken PHY IRQ in case of probe deferral")
-Suggested-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220407165538.4084809-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lore.kernel.org/r/20220318092813.49283-1-cristian.marussi@arm.com
+Fixes: dccec73de91d ("firmware: arm_scmi: Keep the discrete clock rates sorted")
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/dd.c              | 1 +
- drivers/net/mdio/fwnode_mdio.c | 5 +++++
- 2 files changed, 6 insertions(+)
+ drivers/firmware/arm_scmi/clock.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 64ce42b6c6b6..95ae347df137 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -296,6 +296,7 @@ int driver_deferred_probe_check_state(struct device *dev)
+diff --git a/drivers/firmware/arm_scmi/clock.c b/drivers/firmware/arm_scmi/clock.c
+index 35b56c8ba0c0..492f3a9197ec 100644
+--- a/drivers/firmware/arm_scmi/clock.c
++++ b/drivers/firmware/arm_scmi/clock.c
+@@ -204,7 +204,8 @@ scmi_clock_describe_rates_get(const struct scmi_protocol_handle *ph, u32 clk_id,
  
- 	return -EPROBE_DEFER;
- }
-+EXPORT_SYMBOL_GPL(driver_deferred_probe_check_state);
+ 	if (rate_discrete && rate) {
+ 		clk->list.num_rates = tot_rate_cnt;
+-		sort(rate, tot_rate_cnt, sizeof(*rate), rate_cmp_func, NULL);
++		sort(clk->list.rates, tot_rate_cnt, sizeof(*rate),
++		     rate_cmp_func, NULL);
+ 	}
  
- static void deferred_probe_timeout_work_func(struct work_struct *work)
- {
-diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index 1becb1a731f6..1c1584fca632 100644
---- a/drivers/net/mdio/fwnode_mdio.c
-+++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -43,6 +43,11 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
- 	int rc;
- 
- 	rc = fwnode_irq_get(child, 0);
-+	/* Don't wait forever if the IRQ provider doesn't become available,
-+	 * just fall back to poll mode
-+	 */
-+	if (rc == -EPROBE_DEFER)
-+		rc = driver_deferred_probe_check_state(&phy->mdio.dev);
- 	if (rc == -EPROBE_DEFER)
- 		return rc;
- 
+ 	clk->rate_discrete = rate_discrete;
 -- 
 2.35.1
 
