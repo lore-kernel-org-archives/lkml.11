@@ -2,178 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0872C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:21:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2740C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238313AbiDRMYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:24:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48078 "EHLO
+        id S238356AbiDRMYX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:24:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238780AbiDRMWt (ORCPT
+        with ESMTP id S238863AbiDRMXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:22:49 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BCD71CB33;
-        Mon, 18 Apr 2022 05:18:16 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id y10so9116656ejw.8;
-        Mon, 18 Apr 2022 05:18:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rBeq7r1LUr17BD3wzjfHgTsyokZ2FymR+3nXomEXu6g=;
-        b=Xx1vnBsJpTyBssMLec8mWL15r4vB/b1/DWYrrTDsZnx2crQM4QEDvWC1X35cKEKTw5
-         7FVXpOzPkGNXScfkmXRupkAvTHLeBqzzDsn6HcCjyRW7QI9+CmkoALZK8AYNZxWy1Vtf
-         vYx5aG7d1KK2A6okFaDTud0BRjgIP9b+6mZyLgNkXsDWEII974cqla2ix6TR9p9HQ3Xu
-         5d+p4lAGna3lySSQ8/seWqb6pSTbfMBjtSZrSSkECgoy81rnwU5J1xlKf1Icv7aYoyQV
-         1JSwfjcmHfbMsGx2pcbuIfpx30qH+cx7UenAXVLXlG1SOEY15IjTJLYBHDh9cfpzvlfP
-         gzUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rBeq7r1LUr17BD3wzjfHgTsyokZ2FymR+3nXomEXu6g=;
-        b=ZRUdqZVj8KkYi8QjYtlTzhx1+7Rs4QqAcJf3qLyKGx5eKZRPYDNTJTyfn+2JlWHDVY
-         n64JPSzK7/RJGWC7Mq1INh0w3GpYnLGS4Dc8m1nwCxWUfkFMxyL+TiI1+N9Ad9WmB1Tp
-         BgQCJQeQ8y3xqKkPz1GTtinwbaRguyYvMg8hxgsEHVKfVtz/s2F7La8XTfFSIfovjZUU
-         IH7YjePYgM+8tZlbPZjVtCeYfB8iwB3bPj7qjHin3LwNZ5yLw7oUoTDaWiPbeJBJQgHW
-         wuoRJoyfYcvPWmtTzYrDMXBDOhkpxKMsF4XgdYbX8oKAI1Qr5gljjApiqEpruaQ6iwtg
-         w+6A==
-X-Gm-Message-State: AOAM533LDUpaamTixsN1iVbbr+svqg7VPc/OlzAkhbz8thqebTneu8ot
-        hVJt1k7RRpyPIhaXLdXdZq4PmXKsomg4so3Fv2g=
-X-Google-Smtp-Source: ABdhPJxP7RO/30UkizWDp1oKjdyab95YDtjf823TDAl+jEaenz5Jg7MGHYnl6v3ieJuCs7vAkX0IAv0IC6KFJDktHH4=
-X-Received: by 2002:a17:907:8a14:b0:6e8:9691:62f7 with SMTP id
- sc20-20020a1709078a1400b006e8969162f7mr8964573ejc.497.1650284294799; Mon, 18
- Apr 2022 05:18:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <alpine.DEB.2.21.2204161848030.9383@angie.orcam.me.uk> <alpine.DEB.2.21.2204162154250.9383@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2204162154250.9383@angie.orcam.me.uk>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 18 Apr 2022 15:17:38 +0300
-Message-ID: <CAHp75Vem7twcS4bKXJZM4SfE+g9qC3rxtytTKpQsyszZpnrLqw@mail.gmail.com>
-Subject: Re: [PATCH v4 3/5] serial: 8250: Export ICR access helpers for
- internal use
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+        Mon, 18 Apr 2022 08:23:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2DB1AF03;
+        Mon, 18 Apr 2022 05:18:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A41B6B80ED1;
+        Mon, 18 Apr 2022 12:18:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CEC3C385A7;
+        Mon, 18 Apr 2022 12:18:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650284303;
+        bh=7pK5U8DB1SfOfjUxdAwgUxoc0AkrGRkjWhwk7zGLpa4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AV/G9oxifRzV/h17c+iJr+ASRyGP7e/DHek8nfIX9LRAyuqBmkP4SFOjMfJ7++Mte
+         G4HNlkujo+erKrsa1jlDeprpL3S4tydmP0aQ5KNUO/4PE5hxwIr38QCu3T8rdEaUvT
+         zL7snHd7lM0UjEFSUz/WAE6LFruunDUXb0ijQi98=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 069/219] veth: Ensure eth header is in skbs linear part
+Date:   Mon, 18 Apr 2022 14:10:38 +0200
+Message-Id: <20220418121207.705456443@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
+References: <20220418121203.462784814@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 2:02 AM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
->
-> Make ICR access helpers available outside 8250_port.c, however retain
-> them as ordinary static functions so as not to regress code generation.
->
-> This is because `serial_icr_write' is currently automatically inlined by
-> GCC, however `serial_icr_read' is not.  Making them both static inline
-> would grow code produced, e.g.:
->
-> $ i386-linux-gnu-size --format=gnu 8250_port-{old,new}.o
->       text       data        bss      total filename
->      15065       3378          0      18443 8250_port-old.o
->      15289       3378          0      18667 8250_port-new.o
->
-> and:
->
-> $ riscv64-linux-gnu-size --format=gnu 8250_port-{old,new}.o
->       text       data        bss      total filename
->      16980       5306          0      22286 8250_port-old.o
->      17124       5306          0      22430 8250_port-new.o
->
-> while making them external would needlessly add a new module interface
-> and lose the benefit from `serial_icr_write' getting inlined outside
-> 8250_port.o.
+From: Guillaume Nault <gnault@redhat.com>
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-See one nit-pick below.
+[ Upstream commit 726e2c5929de841fdcef4e2bf995680688ae1b87 ]
 
-> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-> ---
-> New change in v4, factored out from 5/5.
-> ---
->  drivers/tty/serial/8250/8250.h      |   23 +++++++++++++++++++++++
->  drivers/tty/serial/8250/8250_port.c |   21 ---------------------
->  2 files changed, 23 insertions(+), 21 deletions(-)
->
-> linux-serial-8250-icr-access.diff
-> Index: linux-macro/drivers/tty/serial/8250/8250.h
-> ===================================================================
-> --- linux-macro.orig/drivers/tty/serial/8250/8250.h
-> +++ linux-macro/drivers/tty/serial/8250/8250.h
-> @@ -120,6 +120,29 @@ static inline void serial_out(struct uar
->         up->port.serial_out(&up->port, offset, value);
->  }
->
-> +/*
-> + * For the 16C950
-> + */
-> +static void __maybe_unused serial_icr_write(struct uart_8250_port *up,
-> +                                           int offset, int value)
+After feeding a decapsulated packet to a veth device with act_mirred,
+skb_headlen() may be 0. But veth_xmit() calls __dev_forward_skb(),
+which expects at least ETH_HLEN byte of linear data (as
+__dev_forward_skb2() calls eth_type_trans(), which pulls ETH_HLEN bytes
+unconditionally).
 
-I think you may drop __maybe_unused here, because it's always used by
-the code below. So it will be eliminated altogether when the below
-won't be used.
+Use pskb_may_pull() to ensure veth_xmit() respects this constraint.
 
-> +{
-> +       serial_out(up, UART_SCR, offset);
-> +       serial_out(up, UART_ICR, value);
-> +}
-> +
-> +static unsigned int __maybe_unused serial_icr_read(struct uart_8250_port *up,
-> +                                                  int offset)
-> +{
-> +       unsigned int value;
-> +
-> +       serial_icr_write(up, UART_ACR, up->acr | UART_ACR_ICRRD);
-> +       serial_out(up, UART_SCR, offset);
-> +       value = serial_in(up, UART_ICR);
-> +       serial_icr_write(up, UART_ACR, up->acr);
-> +
-> +       return value;
-> +}
-> +
->  void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p);
->
->  static inline int serial_dl_read(struct uart_8250_port *up)
-> Index: linux-macro/drivers/tty/serial/8250/8250_port.c
-> ===================================================================
-> --- linux-macro.orig/drivers/tty/serial/8250/8250_port.c
-> +++ linux-macro/drivers/tty/serial/8250/8250_port.c
-> @@ -538,27 +538,6 @@ serial_port_out_sync(struct uart_port *p
->  }
->
->  /*
-> - * For the 16C950
-> - */
-> -static void serial_icr_write(struct uart_8250_port *up, int offset, int value)
-> -{
-> -       serial_out(up, UART_SCR, offset);
-> -       serial_out(up, UART_ICR, value);
-> -}
-> -
-> -static unsigned int serial_icr_read(struct uart_8250_port *up, int offset)
-> -{
-> -       unsigned int value;
-> -
-> -       serial_icr_write(up, UART_ACR, up->acr | UART_ACR_ICRRD);
-> -       serial_out(up, UART_SCR, offset);
-> -       value = serial_in(up, UART_ICR);
-> -       serial_icr_write(up, UART_ACR, up->acr);
-> -
-> -       return value;
-> -}
-> -
-> -/*
->   * FIFO support.
->   */
->  static void serial8250_clear_fifos(struct uart_8250_port *p)
+kernel BUG at include/linux/skbuff.h:2328!
+RIP: 0010:eth_type_trans+0xcf/0x140
+Call Trace:
+ <IRQ>
+ __dev_forward_skb2+0xe3/0x160
+ veth_xmit+0x6e/0x250 [veth]
+ dev_hard_start_xmit+0xc7/0x200
+ __dev_queue_xmit+0x47f/0x520
+ ? skb_ensure_writable+0x85/0xa0
+ ? skb_mpls_pop+0x98/0x1c0
+ tcf_mirred_act+0x442/0x47e [act_mirred]
+ tcf_action_exec+0x86/0x140
+ fl_classify+0x1d8/0x1e0 [cls_flower]
+ ? dma_pte_clear_level+0x129/0x1a0
+ ? dma_pte_clear_level+0x129/0x1a0
+ ? prb_fill_curr_block+0x2f/0xc0
+ ? skb_copy_bits+0x11a/0x220
+ __tcf_classify+0x58/0x110
+ tcf_classify_ingress+0x6b/0x140
+ __netif_receive_skb_core.constprop.0+0x47d/0xfd0
+ ? __iommu_dma_unmap_swiotlb+0x44/0x90
+ __netif_receive_skb_one_core+0x3d/0xa0
+ netif_receive_skb+0x116/0x170
+ be_process_rx+0x22f/0x330 [be2net]
+ be_poll+0x13c/0x370 [be2net]
+ __napi_poll+0x2a/0x170
+ net_rx_action+0x22f/0x2f0
+ __do_softirq+0xca/0x2a8
+ __irq_exit_rcu+0xc1/0xe0
+ common_interrupt+0x83/0xa0
 
+Fixes: e314dbdc1c0d ("[NET]: Virtual ethernet device driver.")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/veth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index d29fb9759cc9..6c8f4f4dfc8a 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -320,7 +320,7 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	rcu_read_lock();
+ 	rcv = rcu_dereference(priv->peer);
+-	if (unlikely(!rcv)) {
++	if (unlikely(!rcv) || !pskb_may_pull(skb, ETH_HLEN)) {
+ 		kfree_skb(skb);
+ 		goto drop;
+ 	}
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.1
+
+
+
