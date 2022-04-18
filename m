@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40EB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 233A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245221AbiDROE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57508 "EHLO
+        id S238889AbiDROFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243885AbiDRNqt (ORCPT
+        with ESMTP id S243596AbiDRNqq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:46:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198CE29809;
-        Mon, 18 Apr 2022 06:01:05 -0700 (PDT)
+        Mon, 18 Apr 2022 09:46:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3492F27155;
+        Mon, 18 Apr 2022 06:00:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EAD160929;
-        Mon, 18 Apr 2022 13:01:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E3C3C385A1;
-        Mon, 18 Apr 2022 13:01:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C455960B3A;
+        Mon, 18 Apr 2022 13:00:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3787C385A7;
+        Mon, 18 Apr 2022 13:00:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286863;
-        bh=+hLm5oVQl3rCOm+Tv3ZDVA98eqa1DK4EZn9zi/zyyP0=;
+        s=korg; t=1650286854;
+        bh=tCcX0Tw/gXLjXPpMFidx0RO8EjYgNpW5KVHTBjTYbEY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ASE9RcXQMA/7Jw9AFJjfdZpPcp04Ahgk7s2soNEPEsUv9YLrNl2axB39+pLFz33Ut
-         15xU+kptUK3RiI/pX5mYG4uDEYVUbyYLS9157X0KxIITNa2j+lCv+3zVcA7DH4MUBS
-         EBoLgfpKcgtGi5uclezTXJqnr2Ec8rNbwRPVnPNk=
+        b=m+V6mmnd1zDPfVhzIhDrXPXXomsZaLj8GSX/wNx+kZmLqM9lvjojeL8emuuOzX7+L
+         WDd7YzdGLPYlYjqx+5ZNzmKGWPtu5kX+Ijeno2GDiqaQ0OKT31Vu4jd0tESmGuQrpx
+         uZsItvTZjBopvcG+9SRFiWwdrVC/3JTy6CkTpet8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 270/284] Drivers: hv: vmbus: Prevent load re-ordering when reading ring buffer
-Date:   Mon, 18 Apr 2022 14:14:11 +0200
-Message-Id: <20220418121220.532174076@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 267/284] cifs: potential buffer overflow in handling symlinks
+Date:   Mon, 18 Apr 2022 14:14:08 +0200
+Message-Id: <20220418121220.349297289@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,55 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Kelley <mikelley@microsoft.com>
+From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 
-[ Upstream commit b6cae15b5710c8097aad26a2e5e752c323ee5348 ]
+[ Upstream commit 64c4a37ac04eeb43c42d272f6e6c8c12bfcf4304 ]
 
-When reading a packet from a host-to-guest ring buffer, there is no
-memory barrier between reading the write index (to see if there is
-a packet to read) and reading the contents of the packet. The Hyper-V
-host uses store-release when updating the write index to ensure that
-writes of the packet data are completed first. On the guest side,
-the processor can reorder and read the packet data before the write
-index, and sometimes get stale packet data. Getting such stale packet
-data has been observed in a reproducible case in a VM on ARM64.
+Smatch printed a warning:
+	arch/x86/crypto/poly1305_glue.c:198 poly1305_update_arch() error:
+	__memcpy() 'dctx->buf' too small (16 vs u32max)
 
-Fix this by using virt_load_acquire() to read the write index,
-ensuring that reads of the packet data cannot be reordered
-before it. Preventing such reordering is logically correct, and
-with this change, getting stale data can no longer be reproduced.
+It's caused because Smatch marks 'link_len' as untrusted since it comes
+from sscanf(). Add a check to ensure that 'link_len' is not larger than
+the size of the 'link_str' buffer.
 
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Link: https://lore.kernel.org/r/1648394710-33480-1-git-send-email-mikelley@microsoft.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Fixes: c69c1b6eaea1 ("cifs: implement CIFSParseMFSymlink()")
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hv/ring_buffer.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ fs/cifs/link.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
-index 74c1dfb8183b..6b08e9d9b382 100644
---- a/drivers/hv/ring_buffer.c
-+++ b/drivers/hv/ring_buffer.c
-@@ -340,7 +340,16 @@ int hv_ringbuffer_read(struct vmbus_channel *channel,
- static u32 hv_pkt_iter_avail(const struct hv_ring_buffer_info *rbi)
- {
- 	u32 priv_read_loc = rbi->priv_read_index;
--	u32 write_loc = READ_ONCE(rbi->ring_buffer->write_index);
-+	u32 write_loc;
-+
-+	/*
-+	 * The Hyper-V host writes the packet data, then uses
-+	 * store_release() to update the write_index.  Use load_acquire()
-+	 * here to prevent loads of the packet data from being re-ordered
-+	 * before the read of the write_index and potentially getting
-+	 * stale data.
-+	 */
-+	write_loc = virt_load_acquire(&rbi->ring_buffer->write_index);
+diff --git a/fs/cifs/link.c b/fs/cifs/link.c
+index 9451a7f6893d..a89b8ff82040 100644
+--- a/fs/cifs/link.c
++++ b/fs/cifs/link.c
+@@ -97,6 +97,9 @@ parse_mf_symlink(const u8 *buf, unsigned int buf_len, unsigned int *_link_len,
+ 	if (rc != 1)
+ 		return -EINVAL;
  
- 	if (write_loc >= priv_read_loc)
- 		return write_loc - priv_read_loc;
++	if (link_len > CIFS_MF_SYMLINK_LINK_MAXLEN)
++		return -EINVAL;
++
+ 	rc = symlink_hash(link_len, link_str, md5_hash);
+ 	if (rc) {
+ 		cifs_dbg(FYI, "%s: MD5 hash failure: %d\n", __func__, rc);
 -- 
 2.35.1
 
