@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0206EC47084
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F39C4707F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244686AbiDRNpT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:45:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45876 "EHLO
+        id S244524AbiDRNoq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:44:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242138AbiDRNVR (ORCPT
+        with ESMTP id S243545AbiDRNUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:21:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B693C720;
-        Mon, 18 Apr 2022 05:52:36 -0700 (PDT)
+        Mon, 18 Apr 2022 09:20:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B8E13FA4;
+        Mon, 18 Apr 2022 05:52:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C96EB80EC4;
-        Mon, 18 Apr 2022 12:52:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AF3EC385A7;
-        Mon, 18 Apr 2022 12:52:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BFD0612B4;
+        Mon, 18 Apr 2022 12:52:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 786E0C385A1;
+        Mon, 18 Apr 2022 12:52:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286353;
-        bh=K2R+WIJWqbpCaufCB52wkjcA91D8s92Xua3AxRowpNA=;
+        s=korg; t=1650286335;
+        bh=1tiWxrqYPrAAaM/c/XVuoPXAq9gRwFSBq32ZwyucpU8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nx6lAwUUDo4CL8kq4aArkx/SIoXwdy3GH5+tr8UU18ivvzfpa7g9ZShRoYztjEQHj
-         T7d8VxVWyATgl5VflAOa1px57jXFq4wqoCpq47+XvsvB+MhNjOSByXCo2gV7lrnRIR
-         T/QZjvYLiJqeLS62HRHhGn4AQakLbHCBYgPbbvzM=
+        b=sYnsZjlSOZntHXlLAqiw8wTM4/jYTWgisNdWCdXSsPf+f3nUSY+wBh8YGwCZn0yXH
+         gYOE5P0XsP/4z8S7r2QIkJS1ZVLNN9mRjfbC/lSog5l8x+7HhsYkg4m55IBi9S9fdC
+         ZFyORFYCfQ/aKhir/2fiX0oNcbKlGWnPq540+HmI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 108/284] scsi: pm8001: Fix abort all task initialization
-Date:   Mon, 18 Apr 2022 14:11:29 +0200
-Message-Id: <20220418121213.987183258@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 102/284] HID: i2c-hid: fix GET/SET_REPORT for unnumbered reports
+Date:   Mon, 18 Apr 2022 14:11:23 +0200
+Message-Id: <20220418121213.731703841@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,94 +50,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-[ Upstream commit 7f12845c8389855dbcc67baa068b6832dc4a396e ]
+[ Upstream commit a5e5e03e94764148a01757b2fa4737d3445c13a6 ]
 
-In pm80xx_send_abort_all(), the n_elem field of the ccb used is not
-initialized to 0. This missing initialization sometimes lead to the task
-completion path seeing the ccb with a non-zero n_elem resulting in the
-execution of invalid dma_unmap_sg() calls in pm8001_ccb_task_free(),
-causing a crash such as:
+Internally kernel prepends all report buffers, for both numbered and
+unnumbered reports, with report ID, therefore to properly handle unnumbered
+reports we should prepend it ourselves.
 
-[  197.676341] RIP: 0010:iommu_dma_unmap_sg+0x6d/0x280
-[  197.700204] RSP: 0018:ffff889bbcf89c88 EFLAGS: 00010012
-[  197.705485] RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff83d0bda0
-[  197.712687] RDX: 0000000000000002 RSI: 0000000000000000 RDI: ffff88810dffc0d0
-[  197.719887] RBP: 0000000000000000 R08: 0000000000000000 R09: ffff8881c790098b
-[  197.727089] R10: ffffed1038f20131 R11: 0000000000000001 R12: 0000000000000000
-[  197.734296] R13: ffff88810dffc0d0 R14: 0000000000000010 R15: 0000000000000000
-[  197.741493] FS:  0000000000000000(0000) GS:ffff889bbcf80000(0000) knlGS:0000000000000000
-[  197.749659] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  197.755459] CR2: 00007f16c1b42734 CR3: 0000000004814000 CR4: 0000000000350ee0
-[  197.762656] Call Trace:
-[  197.765127]  <IRQ>
-[  197.767162]  pm8001_ccb_task_free+0x5f1/0x820 [pm80xx]
-[  197.772364]  ? do_raw_spin_unlock+0x54/0x220
-[  197.776680]  pm8001_mpi_task_abort_resp+0x2ce/0x4f0 [pm80xx]
-[  197.782406]  process_oq+0xe85/0x7890 [pm80xx]
-[  197.786817]  ? lock_acquire+0x194/0x490
-[  197.790697]  ? handle_irq_event+0x10e/0x1b0
-[  197.794920]  ? mpi_sata_completion+0x2d70/0x2d70 [pm80xx]
-[  197.800378]  ? __wake_up_bit+0x100/0x100
-[  197.804340]  ? lock_is_held_type+0x98/0x110
-[  197.808565]  pm80xx_chip_isr+0x94/0x130 [pm80xx]
-[  197.813243]  tasklet_action_common.constprop.0+0x24b/0x2f0
-[  197.818785]  __do_softirq+0x1b5/0x82d
-[  197.822485]  ? do_raw_spin_unlock+0x54/0x220
-[  197.826799]  __irq_exit_rcu+0x17e/0x1e0
-[  197.830678]  irq_exit_rcu+0xa/0x20
-[  197.834114]  common_interrupt+0x78/0x90
-[  197.840051]  </IRQ>
-[  197.844236]  <TASK>
-[  197.848397]  asm_common_interrupt+0x1e/0x40
+For the same reason we should skip the first byte of the buffer when
+calling i2c_hid_set_or_send_report() which then will take care of properly
+formatting the transfer buffer based on its separate report ID argument
+along with report payload.
 
-Avoid this issue by always initializing the ccb n_elem field to 0 in
-pm8001_send_abort_all(), pm8001_send_read_log() and
-pm80xx_send_abort_all().
-
-Link: https://lore.kernel.org/r/20220220031810.738362-17-damien.lemoal@opensource.wdc.com
-Fixes: c6b9ef5779c3 ("[SCSI] pm80xx: NCQ error handling changes")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+[jkosina@suse.cz: finalize trimmed sentence in changelog as spotted by Benjamin]
+Fixes: 9b5a9ae88573 ("HID: i2c-hid: implement ll_driver transport-layer callbacks")
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Tested-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 2 ++
- drivers/scsi/pm8001/pm80xx_hwi.c | 1 +
- 2 files changed, 3 insertions(+)
+ drivers/hid/i2c-hid/i2c-hid-core.c | 32 ++++++++++++++++++++++--------
+ 1 file changed, 24 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 2889717a770e..b44bf34499a9 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -1748,6 +1748,7 @@ static void pm8001_send_abort_all(struct pm8001_hba_info *pm8001_ha,
- 	ccb->device = pm8001_ha_dev;
- 	ccb->ccb_tag = ccb_tag;
- 	ccb->task = task;
-+	ccb->n_elem = 0;
+diff --git a/drivers/hid/i2c-hid/i2c-hid-core.c b/drivers/hid/i2c-hid/i2c-hid-core.c
+index b16bf4358485..9a070d65ed34 100644
+--- a/drivers/hid/i2c-hid/i2c-hid-core.c
++++ b/drivers/hid/i2c-hid/i2c-hid-core.c
+@@ -582,6 +582,17 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
+ 	if (report_type == HID_OUTPUT_REPORT)
+ 		return -EINVAL;
  
- 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
++	/*
++	 * In case of unnumbered reports the response from the device will
++	 * not have the report ID that the upper layers expect, so we need
++	 * to stash it the buffer ourselves and adjust the data size.
++	 */
++	if (!report_number) {
++		buf[0] = 0;
++		buf++;
++		count--;
++	}
++
+ 	/* +2 bytes to include the size of the reply in the query buffer */
+ 	ask_count = min(count + 2, (size_t)ihid->bufsize);
  
-@@ -1810,6 +1811,7 @@ static void pm8001_send_read_log(struct pm8001_hba_info *pm8001_ha,
- 	ccb->device = pm8001_ha_dev;
- 	ccb->ccb_tag = ccb_tag;
- 	ccb->task = task;
-+	ccb->n_elem = 0;
- 	pm8001_ha_dev->id |= NCQ_READ_LOG_FLAG;
- 	pm8001_ha_dev->id |= NCQ_2ND_RLE_FLAG;
+@@ -603,6 +614,9 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
+ 	count = min(count, ret_count - 2);
+ 	memcpy(buf, ihid->rawbuf + 2, count);
  
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index cf037e076235..4eae727ccfbc 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -1426,6 +1426,7 @@ static void pm80xx_send_abort_all(struct pm8001_hba_info *pm8001_ha,
- 	ccb->device = pm8001_ha_dev;
- 	ccb->ccb_tag = ccb_tag;
- 	ccb->task = task;
-+	ccb->n_elem = 0;
++	if (!report_number)
++		count++;
++
+ 	return count;
+ }
  
- 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
+@@ -619,17 +633,19 @@ static int i2c_hid_output_raw_report(struct hid_device *hid, __u8 *buf,
+ 
+ 	mutex_lock(&ihid->reset_lock);
+ 
+-	if (report_id) {
+-		buf++;
+-		count--;
+-	}
+-
++	/*
++	 * Note that both numbered and unnumbered reports passed here
++	 * are supposed to have report ID stored in the 1st byte of the
++	 * buffer, so we strip it off unconditionally before passing payload
++	 * to i2c_hid_set_or_send_report which takes care of encoding
++	 * everything properly.
++	 */
+ 	ret = i2c_hid_set_or_send_report(client,
+ 				report_type == HID_FEATURE_REPORT ? 0x03 : 0x02,
+-				report_id, buf, count, use_data);
++				report_id, buf + 1, count - 1, use_data);
+ 
+-	if (report_id && ret >= 0)
+-		ret++; /* add report_id to the number of transfered bytes */
++	if (ret >= 0)
++		ret++; /* add report_id to the number of transferred bytes */
+ 
+ 	mutex_unlock(&ihid->reset_lock);
  
 -- 
 2.34.1
