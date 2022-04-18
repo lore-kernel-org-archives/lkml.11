@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B111C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A925BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239390AbiDRMge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38622 "EHLO
+        id S234632AbiDRMgj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:36:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240193AbiDRM3Y (ORCPT
+        with ESMTP id S238853AbiDRM0p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:29:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA8420BE1;
-        Mon, 18 Apr 2022 05:23:24 -0700 (PDT)
+        Mon, 18 Apr 2022 08:26:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39DA1C923;
+        Mon, 18 Apr 2022 05:20:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 526FB60FD8;
-        Mon, 18 Apr 2022 12:23:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B69FC385A1;
-        Mon, 18 Apr 2022 12:23:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 142EEB80ED7;
+        Mon, 18 Apr 2022 12:20:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7502BC385A7;
+        Mon, 18 Apr 2022 12:20:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284603;
-        bh=dz4DyjCE1hkovpKUeU40FoIrDG+dduM3Lv3sZS9Qj9c=;
+        s=korg; t=1650284446;
+        bh=nalTxQnhUJKqDr2j0DbblOwFjGxGPdimyiSX8khqBHY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gAyj7lmHPYoahm09cYMOSrEP/qFF4rCFGJdF+QEeIdkj9kT9RqT/DvVMuV/TIhueJ
-         Zn+JuQSkZM1bQiQmrl5ob78hBOLXnfqt2npBF/eN/ePwFDJxl+IBMg+/xdjsDhhjjP
-         /Q7MdqhKcairJMqMCwU4fEDe3dK+ofzskZan7KPM=
+        b=eNPno7taa5p0/XXeA2teky/ZTST9ofpyGfI6cC8zrW3EqS8DkXV5K2La134kKu45x
+         58q5Kf0EG2tLbhuUzZzubj9l/4PJ8mBgsBr+oY06ZjFg7oAJ4xA951gQ2EQBFHOdsa
+         8+Z39/MkGoso14zGbiTCJmAhnEQoCC5+67XUlj2k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Dylan Hung <dylan_hung@aspeedtech.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 167/219] scsi: mpt3sas: Fail reset operation if config request timed out
-Date:   Mon, 18 Apr 2022 14:12:16 +0200
-Message-Id: <20220418121211.557252279@linuxfoundation.org>
+Subject: [PATCH 5.17 118/219] net: ftgmac100: access hardware register after clock ready
+Date:   Mon, 18 Apr 2022 14:11:27 +0200
+Message-Id: <20220418121210.202112283@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,43 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+From: Dylan Hung <dylan_hung@aspeedtech.com>
 
-[ Upstream commit f61eb1216c959f93ffabd3b8781fa5b2b22f8907 ]
+[ Upstream commit 3d2504524531990b32a0629cc984db44f399d161 ]
 
-As part of controller reset operation the driver issues a config request
-command. If this command gets times out, then fail the controller reset
-operation instead of retrying it.
+AST2600 MAC register 0x58 is writable only when the MAC clock is
+enabled.  Usually, the MAC clock is enabled by the bootloader so
+register 0x58 is set normally when the bootloader is involved.  To make
+ast2600 ftgmac100 work without the bootloader, postpone the register
+write until the clock is ready.
 
-Link: https://lore.kernel.org/r/20220405120637.20528-1-sreekanth.reddy@broadcom.com
-Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 137d23cea1c0 ("net: ftgmac100: Fix Aspeed ast2600 TX hang issue")
+Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mpt3sas/mpt3sas_config.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/faraday/ftgmac100.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_config.c b/drivers/scsi/mpt3sas/mpt3sas_config.c
-index 0563078227de..a8dd14c91efd 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_config.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_config.c
-@@ -394,10 +394,13 @@ _config_request(struct MPT3SAS_ADAPTER *ioc, Mpi2ConfigRequest_t
- 		retry_count++;
- 		if (ioc->config_cmds.smid == smid)
- 			mpt3sas_base_free_smid(ioc, smid);
--		if ((ioc->shost_recovery) || (ioc->config_cmds.status &
--		    MPT3_CMD_RESET) || ioc->pci_error_recovery)
-+		if (ioc->config_cmds.status & MPT3_CMD_RESET)
- 			goto retry_config;
--		issue_host_reset = 1;
-+		if (ioc->shost_recovery || ioc->pci_error_recovery) {
-+			issue_host_reset = 0;
-+			r = -EFAULT;
-+		} else
-+			issue_host_reset = 1;
- 		goto free_mem;
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+index d5356db7539a..caf48023f8ea 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.c
++++ b/drivers/net/ethernet/faraday/ftgmac100.c
+@@ -1835,11 +1835,6 @@ static int ftgmac100_probe(struct platform_device *pdev)
+ 		priv->rxdes0_edorr_mask = BIT(30);
+ 		priv->txdes0_edotr_mask = BIT(30);
+ 		priv->is_aspeed = true;
+-		/* Disable ast2600 problematic HW arbitration */
+-		if (of_device_is_compatible(np, "aspeed,ast2600-mac")) {
+-			iowrite32(FTGMAC100_TM_DEFAULT,
+-				  priv->base + FTGMAC100_OFFSET_TM);
+-		}
+ 	} else {
+ 		priv->rxdes0_edorr_mask = BIT(15);
+ 		priv->txdes0_edotr_mask = BIT(15);
+@@ -1911,6 +1906,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
+ 		err = ftgmac100_setup_clk(priv);
+ 		if (err)
+ 			goto err_phy_connect;
++
++		/* Disable ast2600 problematic HW arbitration */
++		if (of_device_is_compatible(np, "aspeed,ast2600-mac"))
++			iowrite32(FTGMAC100_TM_DEFAULT,
++				  priv->base + FTGMAC100_OFFSET_TM);
  	}
  
+ 	/* Default ring sizes */
 -- 
 2.35.1
 
