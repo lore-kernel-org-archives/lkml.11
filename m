@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F28C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 494C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244311AbiDRNte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:49:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58226 "EHLO
+        id S244960AbiDRNuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244168AbiDRNaG (ORCPT
+        with ESMTP id S244616AbiDRNal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DCCB40E7D;
-        Mon, 18 Apr 2022 05:54:12 -0700 (PDT)
+        Mon, 18 Apr 2022 09:30:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F28626C;
+        Mon, 18 Apr 2022 05:54:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A514B80E44;
-        Mon, 18 Apr 2022 12:54:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09F97C385A1;
-        Mon, 18 Apr 2022 12:54:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3461612B7;
+        Mon, 18 Apr 2022 12:54:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D42E9C385A8;
+        Mon, 18 Apr 2022 12:54:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286449;
-        bh=pEFGY82kW++W5E6RdEZX1L0cTVXtC2pmpTFDmucn2x0=;
+        s=korg; t=1650286487;
+        bh=9RRj2Lk/KOKCOnuvEkIEZrB2zstpFOYqmB2h5bfTBgI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NR3mEj8v8z3MRawVz2YUEE8qahlL9enj3FbUYnuPPXHs5drBE1KHaq09Yd8AJtcF7
-         LWrx9hwF8w8uY8iBU8/TdATxDSBmtyVRTsbv9lS+l0bdsK2bQwv5bDS6u3ldecBq0H
-         Z62pWN4JDEeVSrGWczf6yDaIGEf+KzkU4bp59RNE=
+        b=oGF2rh5aTMPgR5V1flzl4pgsSSN+i7mMghH1+MsCXbThQjnKPpW2HEIneLNUrpZIt
+         lWtEUvHpNVfZ8Hp8dqXaGujqsvDQl9cr0Lx46psliDp65nj3cg/3Lmbu23CZrCydc+
+         fZbErKjiMru3ikgZxl8W5pv4Asx0d2L6Jfgpc98k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 139/284] clk: tegra: tegra124-emc: Fix missing put_device() call in emc_ensure_emc_driver
-Date:   Mon, 18 Apr 2022 14:12:00 +0200
-Message-Id: <20220418121215.395941274@linuxfoundation.org>
+Subject: [PATCH 4.14 150/284] net: phy: broadcom: Fix brcm_fet_config_init()
+Date:   Mon, 18 Apr 2022 14:12:11 +0200
+Message-Id: <20220418121215.902643341@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,36 +49,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 6d6ef58c2470da85a99119f74d34216c8074b9f0 ]
+[ Upstream commit bf8bfc4336f7a34e48b3bbd19b1542bf085bdc3d ]
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling path.
+A Broadcom AC201 PHY (same entry as 5241) would be flagged by the
+Broadcom UniMAC MDIO controller as not completing the turn around
+properly since the PHY expects 65 MDC clock cycles to complete a write
+cycle, and the MDIO controller was only sending 64 MDC clock cycles as
+determined by looking at a scope shot.
 
-Fixes: 2db04f16b589 ("clk: tegra: Add EMC clock driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Thierry Reding <treding@nvidia.com>
-Link: https://lore.kernel.org/r/20220112104501.30655-1-linmq006@gmail.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+This would make the subsequent read fail with the UniMAC MDIO controller
+command field having MDIO_READ_FAIL set and we would abort the
+brcm_fet_config_init() function and thus not probe the PHY at all.
+
+After issuing a software reset, wait for at least 1ms which is well
+above the 1us reset delay advertised by the datasheet and issue a dummy
+read to let the PHY turn around the line properly. This read
+specifically ignores -EIO which would be returned by MDIO controllers
+checking for the line being turned around.
+
+If we have a genuine reaad failure, the next read of the interrupt
+status register would pick it up anyway.
+
+Fixes: d7a2ed9248a3 ("broadcom: Add AC131 phy support")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220324232438.1156812-1-f.fainelli@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/tegra/clk-emc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/phy/broadcom.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/drivers/clk/tegra/clk-emc.c b/drivers/clk/tegra/clk-emc.c
-index 11a5066e5c27..8b47d57cad17 100644
---- a/drivers/clk/tegra/clk-emc.c
-+++ b/drivers/clk/tegra/clk-emc.c
-@@ -190,6 +190,7 @@ static struct tegra_emc *emc_ensure_emc_driver(struct tegra_clk_emc *tegra)
+diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+index 1e9ad30a35c8..97e017a54eb5 100644
+--- a/drivers/net/phy/broadcom.c
++++ b/drivers/net/phy/broadcom.c
+@@ -15,6 +15,7 @@
+  */
  
- 	tegra->emc = platform_get_drvdata(pdev);
- 	if (!tegra->emc) {
-+		put_device(&pdev->dev);
- 		pr_err("%s: cannot find EMC driver\n", __func__);
- 		return NULL;
- 	}
+ #include "bcm-phy-lib.h"
++#include <linux/delay.h>
+ #include <linux/module.h>
+ #include <linux/phy.h>
+ #include <linux/brcmphy.h>
+@@ -444,6 +445,26 @@ static int brcm_fet_config_init(struct phy_device *phydev)
+ 	if (err < 0)
+ 		return err;
+ 
++	/* The datasheet indicates the PHY needs up to 1us to complete a reset,
++	 * build some slack here.
++	 */
++	usleep_range(1000, 2000);
++
++	/* The PHY requires 65 MDC clock cycles to complete a write operation
++	 * and turnaround the line properly.
++	 *
++	 * We ignore -EIO here as the MDIO controller (e.g.: mdio-bcm-unimac)
++	 * may flag the lack of turn-around as a read failure. This is
++	 * particularly true with this combination since the MDIO controller
++	 * only used 64 MDC cycles. This is not a critical failure in this
++	 * specific case and it has no functional impact otherwise, so we let
++	 * that one go through. If there is a genuine bus error, the next read
++	 * of MII_BRCM_FET_INTREG will error out.
++	 */
++	err = phy_read(phydev, MII_BMCR);
++	if (err < 0 && err != -EIO)
++		return err;
++
+ 	reg = phy_read(phydev, MII_BRCM_FET_INTREG);
+ 	if (reg < 0)
+ 		return reg;
 -- 
 2.34.1
 
