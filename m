@@ -2,134 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 372B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 22:59:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C1B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 23:08:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234211AbiDRXBu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 19:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
+        id S234299AbiDRXL1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 19:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234163AbiDRXBr (ORCPT
+        with ESMTP id S231876AbiDRXLW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 19:01:47 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E9752D1F4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 15:59:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650322747; x=1681858747;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Qb24R7mKiVGUdMVc7ONgEkmnK/atyRN5jqb3qYtPfig=;
-  b=Ftd53XdM506ufa/F6uWwdt+xR7/ORgUXrHKlQYGkIMhBrXlXlvba0wc+
-   4XtXtTlOoZxnv9+NBvQl1UjuO9XiRLZdQ+JpEpZxYcV5WFZLNovc5k8JS
-   8Nfvc9rNC9gnIrCmg9rSEXDWI0QBcyzOpz+qZCdZz+YCWF50qVzWco83E
-   Xa0Z90LdRUdPssbqpCsA4oHC+6tPCtOxjB54nFvr/kRilwQBpCA3okXDz
-   IQqqL2yNm3cxeURjwRsm0NC6AENM/8fvTiArgtjqSSvhorc51633JWRz5
-   ps1bjNNadAp9kS7N6ikw0ZpDXukJUhgPv0IG2ycfNLeBgF5sdxtX8zMnh
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="243560840"
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="243560840"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 15:59:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="647033809"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 18 Apr 2022 15:59:04 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngaKl-00054C-98;
-        Mon, 18 Apr 2022 22:59:03 +0000
-Date:   Tue, 19 Apr 2022 06:58:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tom Rix <trix@redhat.com>, nsaenz@kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, gregkh@linuxfoundation.org,
-        stefan.wahren@i2se.com, gascoar@gmail.com, ojaswin98@gmail.com
-Cc:     kbuild-all@lists.01.org, linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: Re: [PATCH] staging: vchiq_arm: change vchiq_platform_init from
- global to static
-Message-ID: <202204190650.yy0x0YCl-lkp@intel.com>
-References: <20220418164356.3532969-1-trix@redhat.com>
+        Mon, 18 Apr 2022 19:11:22 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209121DA65
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:08:42 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id s137so21555584pgs.5
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:08:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Pl4a1fMymhH/XaPiTy1w0Dc08PXzaBVwflpLSOoW8Yk=;
+        b=jy1VZlNcq/9U5Ar0F5s7yclwR/2ytq2kRRt4Ot66e+/0Rjaq862/Zkd9XN88f4dXsF
+         UUgCogzKzwuZt0iOzB+5xfW6FC+NLWYzAs6P5wItYRAb6fcHWKkRHSLtPZxo0HtkF+/z
+         EXs89xdD8yLcudimZPW2W7TGRJpdOCmg9Nw8I=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Pl4a1fMymhH/XaPiTy1w0Dc08PXzaBVwflpLSOoW8Yk=;
+        b=gpUNBgEWd7rZIND67VKW5fFa+PKmfALB9W93uSF2iFOo9t3Epgmab20j6JP/DasnmU
+         TGDQXQ+ydksCA4dxSOkVmjMTlpk7lyzqLE/oMtuLJCNo7uliBoWwNlNe5CrEYuKMoUHA
+         53B+n/0wsACn1L467FfZHO0palHs4+fXs81QK6rw5yBcDYK6HtpTTlEqHSUCu71t8XmS
+         YWo2DGWnQZ5G2tYovPOJJZV32zl2RwmXs7SFX2TV2VMvjG1PMgmGeKXjF+fu7GdNtuE8
+         8tHAuLkE/JWPFb0wjCnqahq4PZ2dDA3H7xDJWfOyYkM52UI0IpfixkrVYL14XBImyzjs
+         mYJA==
+X-Gm-Message-State: AOAM532UYX1QoqaH4lmyyJ86h/CVGl9KdOQrkLlB2Mjqbej+S4VSkQfP
+        Thb2KF49Bl+0vaBrDa+oRiBh4g==
+X-Google-Smtp-Source: ABdhPJzrMMgiVgnGS1tb2dOQcYsLll9fc4XWRYNTU66SXevGjIRh1B/3P0/A/mZpsI05/pWOguDuNg==
+X-Received: by 2002:aa7:9ad8:0:b0:50a:49e1:164c with SMTP id x24-20020aa79ad8000000b0050a49e1164cmr14593991pfp.8.1650323321628;
+        Mon, 18 Apr 2022 16:08:41 -0700 (PDT)
+Received: from chromium.org (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id y9-20020a62ce09000000b0050a6516573esm6959461pfg.67.2022.04.18.16.08.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 16:08:41 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 23:08:39 +0000
+From:   Prashant Malani <pmalani@chromium.org>
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Benson Leung <bleung@chromium.org>, linux-kernel@vger.kernel.org,
+        patches@lists.linux.dev, Lee Jones <lee.jones@linaro.org>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        chrome-platform@lists.linux.dev
+Subject: Re: [PATCH 1/3] platform/chrome: cros_ec_proto: Add peripheral
+ charger count API
+Message-ID: <Yl3vd4kfgwJXMs/w@chromium.org>
+References: <20220415003253.1973106-1-swboyd@chromium.org>
+ <20220415003253.1973106-2-swboyd@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220418164356.3532969-1-trix@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220415003253.1973106-2-swboyd@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tom,
+Hey Stephen,
 
-I love your patch! Perhaps something to improve:
+On Apr 14 17:32, Stephen Boyd wrote:
+> Add a peripheral charger count API similar to the one implemented in the
+> ChromeOS PCHG driver so we can use it to decide whether or not to
+> register the PCHG device in the cros_ec MFD driver.
+> 
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Daisuke Nojiri <dnojiri@chromium.org>
+> Cc: Benson Leung <bleung@chromium.org>
+> Cc: Guenter Roeck <groeck@chromium.org>
+> Cc: <chrome-platform@lists.linux.dev>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>  drivers/platform/chrome/cros_ec_proto.c     | 31 +++++++++++++++++++++
+>  include/linux/platform_data/cros_ec_proto.h |  1 +
+>  2 files changed, 32 insertions(+)
+> 
+> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> index c4caf2e2de82..42269703ca6c 100644
+> --- a/drivers/platform/chrome/cros_ec_proto.c
+> +++ b/drivers/platform/chrome/cros_ec_proto.c
+> @@ -832,6 +832,37 @@ bool cros_ec_check_features(struct cros_ec_dev *ec, int feature)
+>  }
+>  EXPORT_SYMBOL_GPL(cros_ec_check_features);
+>  
+> +/**
+> + * cros_ec_pchg_port_count() - Return the number of peripheral charger ports.
+> + * @ec: EC device.
+> + *
+> + * Return: Number of peripheral charger ports, or 0 in case of error.
+> + */
+> +unsigned int cros_ec_pchg_port_count(struct cros_ec_dev *ec)
+> +{
+> +	struct cros_ec_command *msg;
+> +	const struct ec_response_pchg_count *rsp;
+> +	struct cros_ec_device *ec_dev = ec->ec_dev;
+> +	int ret, count = 0;
+> +
+> +	msg = kzalloc(sizeof(*msg) + sizeof(*rsp), GFP_KERNEL);
+> +	if (!msg)
+> +		return 0;
+> +
+> +	msg->command = EC_CMD_PCHG_COUNT + ec->cmd_offset;
+> +	msg->insize = sizeof(*rsp);
+> +
+> +	ret = cros_ec_cmd_xfer_status(ec_dev, msg);
+> +	if (ret >= 0) {
+> +		rsp = (const struct ec_response_pchg_count *)msg->data;
+> +		count = rsp->port_count;
+> +	}
+> +	kfree(msg);
 
-[auto build test WARNING on staging/staging-testing]
+Can we use the wrapper function cros_ec_command() [1] here, which does
+the kzalloc and msg construction?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Tom-Rix/staging-vchiq_arm-change-vchiq_platform_init-from-global-to-static/20220419-004611
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git bed6d200f8ca38e1ecbdd8fb7e0564884002abd1
-config: sparc-randconfig-c004-20220417 (https://download.01.org/0day-ci/archive/20220419/202204190650.yy0x0YCl-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/192ca8cdfd692f17162557c64e8d533c816eccff
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Tom-Rix/staging-vchiq_arm-change-vchiq_platform_init-from-global-to-static/20220419-004611
-        git checkout 192ca8cdfd692f17162557c64e8d533c816eccff
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash drivers/staging/vc04_services/
+Best regards,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+-Prashant
 
-All warnings (new ones prefixed by >>):
-
-   In file included from include/linux/string.h:20,
-                    from include/linux/bitmap.h:11,
-                    from include/linux/cpumask.h:12,
-                    from include/linux/mm_types_task.h:14,
-                    from include/linux/mm_types.h:5,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:8:
-   In function 'memcpy_to_page',
-       inlined from 'free_pagelist' at drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:434:4:
->> arch/sparc/include/asm/string.h:15:25: warning: argument 2 null where non-null expected [-Wnonnull]
-      15 | #define memcpy(t, f, n) __builtin_memcpy(t, f, n)
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/highmem.h:353:9: note: in expansion of macro 'memcpy'
-     353 |         memcpy(to + offset, from, len);
-         |         ^~~~~~
-   drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c: In function 'free_pagelist':
-   arch/sparc/include/asm/string.h:15:25: note: in a call to built-in function '__builtin_memcpy'
-      15 | #define memcpy(t, f, n) __builtin_memcpy(t, f, n)
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/highmem.h:353:9: note: in expansion of macro 'memcpy'
-     353 |         memcpy(to + offset, from, len);
-         |         ^~~~~~
-   In function 'memcpy_to_page',
-       inlined from 'free_pagelist' at drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c:441:4:
-   arch/sparc/include/asm/string.h:15:25: warning: '__builtin_memcpy' offset 0 is out of the bounds [0, 0] [-Warray-bounds]
-      15 | #define memcpy(t, f, n) __builtin_memcpy(t, f, n)
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/highmem.h:353:9: note: in expansion of macro 'memcpy'
-     353 |         memcpy(to + offset, from, len);
-         |         ^~~~~~
-
-
-vim +15 arch/sparc/include/asm/string.h
-
-70a6fcf3283a0a Al Viro 2016-01-17  13  
-70a6fcf3283a0a Al Viro 2016-01-17  14  #define __HAVE_ARCH_MEMCPY
-70a6fcf3283a0a Al Viro 2016-01-17 @15  #define memcpy(t, f, n) __builtin_memcpy(t, f, n)
-70a6fcf3283a0a Al Viro 2016-01-17  16  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+[1] https://elixir.bootlin.com/linux/latest/source/drivers/platform/chrome/cros_ec_proto.c#L914
