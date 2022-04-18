@@ -2,89 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95CA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 10:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 930B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 10:20:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237637AbiDRKVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 06:21:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33670 "EHLO
+        id S237647AbiDRKW6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 06:22:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237634AbiDRKU6 (ORCPT
+        with ESMTP id S237640AbiDRKWs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 06:20:58 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8E419034;
-        Mon, 18 Apr 2022 03:18:20 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id k29so18060419pgm.12;
-        Mon, 18 Apr 2022 03:18:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FgfhznoEwlI1gZ4RwiNHpMGAMQaG/XKY7H6WtjqDG8M=;
-        b=lHoVeiM8H9bA2eBLAqPdQQ0GNfndniP6f54WpBLOiATsNbv3uH/gzQYz+y3A3hTd02
-         62azlrYt/zWYfbNvTk/dU7zval1wXAH6IhhY1QCODzCh9g7USBWH7pSJzKwnDKvni5n+
-         vSLUZ1cKGVj68Jo+bkjlM4fDt3T0qvz/OE82UwQcASNQ34lfxFh9Q5o8A+XYzBye5iPw
-         rBVsiYkEhiMyeertPSU80kW0JKZT1jp6mG0SDyrKAbat3SncZ7S6VGfZDEMUHDWaQrql
-         0CF7/IQHCptHRqlk2eYj0xFfXt0Nnt8YRk88GRWweQcMEWvIjdu7S9/qhtb4ihBXIEvD
-         3yug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FgfhznoEwlI1gZ4RwiNHpMGAMQaG/XKY7H6WtjqDG8M=;
-        b=Z0k+UQo0j1mhzwKpOAf4s3x980BEsKVxiux+kbEqJvZ30KHjQorh3bl8MriQjsC73J
-         0iIWGCeIpxnCa/D8t33oqMznEdNEt9JazjuxCE3vW5sRkZc2F4gdZrEHFySOf6gsQiCo
-         M8HwlvaMEJOKwzbBtO4zwC8kDmLdsdGkrP5RS+1YLutRpiGjc53eMBuyJi2AXQFrQ5XF
-         KW1Pf1pMaRMUVmyYkIoCU6m27P/lnMUsNDBdCtHm519qAgfauHgmdHmSMq1swuUx8tdW
-         PxvIKPGikwLZ9UdkRBtnt9Zf1plOF2j5/3W3VTUXM2bZBM6C2NR35Tsm+yELz8zbWARP
-         r/Bw==
-X-Gm-Message-State: AOAM533HJ8kNykBrF8Ku0nFOk4sf8fNAH0OLjN9NH7LktffCGgcJh+AZ
-        7vMgt8Zdz647/sJVFtHlrSQ8XQDwFPV6LZ52
-X-Google-Smtp-Source: ABdhPJxtthY78qV0jQEj4SNMVC5cDIobAmelUAJAgQUoM8P9FAHgSpQA46MZ85hWQF/57vQMQ/yHfw==
-X-Received: by 2002:a05:6a00:1a91:b0:4fa:b21d:2ce with SMTP id e17-20020a056a001a9100b004fab21d02cemr11519916pfv.75.1650277099931;
-        Mon, 18 Apr 2022 03:18:19 -0700 (PDT)
-Received: from localhost.localdomain ([103.84.139.165])
-        by smtp.gmail.com with ESMTPSA id y6-20020a626406000000b005060889f2cdsm12011331pfb.191.2022.04.18.03.18.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 03:18:19 -0700 (PDT)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
-        arnaud.pouliquen@foss.st.com
-Cc:     linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH] rpmsg: virtio: fix possible double free in rpmsg_virtio_add_ctrl_dev()
-Date:   Mon, 18 Apr 2022 18:17:24 +0800
-Message-Id: <20220418101724.42174-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 18 Apr 2022 06:22:48 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD38DA1A9;
+        Mon, 18 Apr 2022 03:20:09 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b58ab329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:58ab:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E2FCD1EC04D6;
+        Mon, 18 Apr 2022 12:20:03 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1650277204;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=NXeX+tW5CYGuT5f0Ebev+zI07XzqiYURQIBYynhO5Qk=;
+        b=YW53q01ClnUEQTNIheCh8GhlWA9j3LsGXRbjG55/M01BaYex4+zL4Xiw6ynImsZApshNaf
+        zH2li/dc7oI60c462Vbo89ZF9vg8kO77hrUDstxlXWoT9z3ibKIrfQjZdUWa86ymXbHNeX
+        2718YnaGvQa4fOmUCLDiltG9M6n5JgY=
+Date:   Mon, 18 Apr 2022 12:20:03 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Sherry Sun <sherry.sun@nxp.com>
+Cc:     "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "mchehab@kernel.org" <mchehab@kernel.org>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "james.morse@arm.com" <james.morse@arm.com>,
+        "rric@kernel.org" <rric@kernel.org>,
+        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH 0/2] fix some bugs in V3.X Synopsys EDAC DDR driver
+Message-ID: <Yl07U34H0V+XM8aV@zn.tnic>
+References: <20220318111742.15730-1-sherry.sun@nxp.com>
+ <AS8PR04MB84044DD3E5EC879F7C281B9792F39@AS8PR04MB8404.eurprd04.prod.outlook.com>
+ <Yl0iqXnsFm8rMBms@zn.tnic>
+ <AS8PR04MB840435F6BACFF0C7F9B6D90792F39@AS8PR04MB8404.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <AS8PR04MB840435F6BACFF0C7F9B6D90792F39@AS8PR04MB8404.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vch will be free in virtio_rpmsg_release_device() when
-rpmsg_ctrldev_register_device() fails. There is no need to call
-kfree() again.
+On Mon, Apr 18, 2022 at 10:12:14AM +0000, Sherry Sun wrote:
+> Hi Borislav, thanks for the info.
 
-Fixes: c486682ae1e2 ("rpmsg: virtio: Register the rpmsg_char device")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
----
- drivers/rpmsg/virtio_rpmsg_bus.c | 1 -
- 1 file changed, 1 deletion(-)
+You're welcome.
 
-diff --git a/drivers/rpmsg/virtio_rpmsg_bus.c b/drivers/rpmsg/virtio_rpmsg_bus.c
-index 603233f0686e..3b7b47f785cf 100644
---- a/drivers/rpmsg/virtio_rpmsg_bus.c
-+++ b/drivers/rpmsg/virtio_rpmsg_bus.c
-@@ -851,7 +851,6 @@ static struct rpmsg_device *rpmsg_virtio_add_ctrl_dev(struct virtio_device *vdev
- 
- 	err = rpmsg_ctrldev_register_device(rpdev_ctrl);
- 	if (err) {
--		kfree(vch);
- 		return ERR_PTR(err);
- 	}
- 
+I'd appreciate it, though, if you do not top-post on public mailing
+lists but reply underneath the text you're quoting, just like I did.
+
+Thx.
+
 -- 
-2.25.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
