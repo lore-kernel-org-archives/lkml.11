@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11EC0C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243573AbiDRNUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41192 "EHLO
+        id S243623AbiDRNUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241216AbiDRNCz (ORCPT
+        with ESMTP id S241326AbiDRNC7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:02:55 -0400
+        Mon, 18 Apr 2022 09:02:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE30432EC9;
-        Mon, 18 Apr 2022 05:43:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30AE26AEF;
+        Mon, 18 Apr 2022 05:43:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45DD96101A;
-        Mon, 18 Apr 2022 12:43:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52044C385A1;
-        Mon, 18 Apr 2022 12:43:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 247D06101A;
+        Mon, 18 Apr 2022 12:43:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33EA3C385A7;
+        Mon, 18 Apr 2022 12:43:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285780;
-        bh=pYN5YaqPMVrIYNkemgBBg6Hg5c93OoTRnwHTBkHfFdI=;
+        s=korg; t=1650285789;
+        bh=5//ejySP/m8Za6V1mX4cfBY+Hy8DJlrANs1FjbVt1rg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=stvaRkrki0/fU+ND/sedBQv43jsIWMkynl2ftq2HKUrBj+rfHR7oG8goAjb/F6S8S
-         VPNPdGLkB+dIdGm18nxdzDGlK82kob+/0h3Juee3UHUuiXxPiAEZceFpjJ1KxdG18y
-         xxADT4A06pf0Q6NSbXWsLfHGNzi9T7djYDB99/YM=
+        b=x7TzXAsP2Pi8M7amluLUEJ51bkoGjHBFpn09XU2boO4B6Vb0SMlHvjes1ubsJP2Gy
+         yb58075lSXrpPBQuZJ4Wuo9vQSXw9j/4rFMh7qSwIfxRBxIP6roakQFf7yZHYPBae6
+         2JiIV3brx4A+RcAvs5ZkZC3NEGI9sbwLaW23ODwU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benedikt Spranger <b.spranger@linutronix.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Alvin Lee <Alvin.Lee2@amd.com>,
+        Aric Cyr <Aric.Cyr@amd.com>, Alex Hung <alex.hung@amd.com>,
+        Charlene Liu <Charlene.Liu@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 08/63] net/sched: taprio: Check if socket flags are valid
-Date:   Mon, 18 Apr 2022 14:13:05 +0200
-Message-Id: <20220418121134.709843105@linuxfoundation.org>
+Subject: [PATCH 5.4 17/63] drm/amd/display: fix audio format not updated after edid updated
+Date:   Mon, 18 Apr 2022 14:13:14 +0200
+Message-Id: <20220418121135.320393409@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -52,46 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benedikt Spranger <b.spranger@linutronix.de>
+From: Charlene Liu <Charlene.Liu@amd.com>
 
-[ Upstream commit e8a64bbaaad1f6548cec5508297bc6d45e8ab69e ]
+[ Upstream commit 5e8a71cf13bc9184fee915b2220be71b4c6cac74 ]
 
-A user may set the SO_TXTIME socket option to ensure a packet is send
-at a given time. The taprio scheduler has to confirm, that it is allowed
-to send a packet at that given time, by a check against the packet time
-schedule. The scheduler drop the packet, if the gates are closed at the
-given send time.
+[why]
+for the case edid change only changed audio format.
+driver still need to update stream.
 
-The check, if SO_TXTIME is set, may fail since sk_flags are part of an
-union and the union is used otherwise. This happen, if a socket is not
-a full socket, like a request socket for example.
-
-Add a check to verify, if the union is used for sk_flags.
-
-Fixes: 4cfd5779bd6e ("taprio: Add support for txtime-assist mode")
-Signed-off-by: Benedikt Spranger <b.spranger@linutronix.de>
-Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
-Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reviewed-by: Alvin Lee <Alvin.Lee2@amd.com>
+Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Charlene Liu <Charlene.Liu@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_taprio.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/core/dc_resource.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index b268e6130451..4c26f7fb32b3 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -427,7 +427,8 @@ static int taprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 	if (unlikely(!child))
- 		return qdisc_drop(skb, sch, to_free);
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
+index 95a5310e9e66..de246e183d6b 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
+@@ -1546,8 +1546,8 @@ bool dc_is_stream_unchanged(
+ 	if (old_stream->ignore_msa_timing_param != stream->ignore_msa_timing_param)
+ 		return false;
  
--	if (skb->sk && sock_flag(skb->sk, SOCK_TXTIME)) {
-+	/* sk_flags are only safe to use on full sockets. */
-+	if (skb->sk && sk_fullsock(skb->sk) && sock_flag(skb->sk, SOCK_TXTIME)) {
- 		if (!is_valid_interval(skb, sch))
- 			return qdisc_drop(skb, sch, to_free);
- 	} else if (TXTIME_ASSIST_IS_ENABLED(q->flags)) {
+-	// Only Have Audio left to check whether it is same or not. This is a corner case for Tiled sinks
+-	if (old_stream->audio_info.mode_count != stream->audio_info.mode_count)
++	/*compare audio info*/
++	if (memcmp(&old_stream->audio_info, &stream->audio_info, sizeof(stream->audio_info)) != 0)
+ 		return false;
+ 
+ 	return true;
 -- 
 2.35.1
 
