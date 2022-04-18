@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D423AC47085
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 356A6C388F3
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242213AbiDRNNg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:13:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60496 "EHLO
+        id S242396AbiDRNNy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:13:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242314AbiDRM7r (ORCPT
+        with ESMTP id S242373AbiDRM7u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:47 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D3443057D;
-        Mon, 18 Apr 2022 05:40:42 -0700 (PDT)
+        Mon, 18 Apr 2022 08:59:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89B1205C3;
+        Mon, 18 Apr 2022 05:41:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 84E68CE106B;
-        Mon, 18 Apr 2022 12:40:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 593FEC385A1;
-        Mon, 18 Apr 2022 12:40:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51625611FE;
+        Mon, 18 Apr 2022 12:41:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EF11C385A1;
+        Mon, 18 Apr 2022 12:40:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285638;
-        bh=Y+MsGdG0Q3lcTQI4YTnOgQCzZdWexdV20tzI8swenUA=;
+        s=korg; t=1650285659;
+        bh=0pNCm8cPtRNE2lPaj50F4TUTtqGyvvsngKx3mqhnaVw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZaHJ2R3nrtfwi8Occ5LCNxjNPnTlGW4Uqc+eswdvlFLDPG7dkxBImxv/iR++vnF10
-         GWbfZ4Lf/4v8t5NMSeoy1zaC6XYzihlpCC/puCLMlOxfiU5uSu/09i57dCPLK4lj4g
-         rJ1p0g7+DT2q74PmO3+s4bxcGnsGTDXnTqox4AVE=
+        b=AqIHTnzUMpX1GsCnY6tII6dexTo2YqF7H3DoFOtA286rj2HrFT7o1J+qbSlSS+5iH
+         RVVbVzUpr/whMuVtKG040wHepVGtCdWxgOiEdU7gjcAZ7HfXL9p0rQ0ZWZ4cdm1M5Q
+         GvU0BgN73yg3us+rLVRo1lkC4mJt3pA+pGEK1/Sg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 081/105] ALSA: hda/realtek: Add quirk for Clevo PD50PNT
-Date:   Mon, 18 Apr 2022 14:13:23 +0200
-Message-Id: <20220418121148.933433451@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Tomasz=20Mo=C5=84?= <desowin@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.10 087/105] drm/amdgpu: Enable gfxoff quirk on MacBook Pro
+Date:   Mon, 18 Apr 2022 14:13:29 +0200
+Message-Id: <20220418121149.104870040@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -48,30 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Crawford <tcrawford@system76.com>
+From: Tomasz Moń <desowin@gmail.com>
 
-commit 9eb6f5c388060d8cef3c8b616cc31b765e022359 upstream.
+commit 4593c1b6d159f1e5c35c07a7f125e79e5a864302 upstream.
 
-Fixes speaker output and headset detection on Clevo PD50PNT.
+Enabling gfxoff quirk results in perfectly usable graphical user
+interface on MacBook Pro (15-inch, 2019) with Radeon Pro Vega 20 4 GB.
 
-Signed-off-by: Tim Crawford <tcrawford@system76.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220405182029.27431-1-tcrawford@system76.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Without the quirk, X server is completely unusable as every few seconds
+there is gpu reset due to ring gfx timeout.
+
+Signed-off-by: Tomasz Moń <desowin@gmail.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -2626,6 +2626,7 @@ static const struct snd_pci_quirk alc882
- 	SND_PCI_QUIRK(0x1558, 0x65e1, "Clevo PB51[ED][DF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x65e5, "Clevo PC50D[PRS](?:-D|-G)?", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x65f1, "Clevo PC50HS", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
-+	SND_PCI_QUIRK(0x1558, 0x65f5, "Clevo PD50PN[NRT]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x67d1, "Clevo PB71[ER][CDF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x67e1, "Clevo PB71[DE][CDF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x67e5, "Clevo PC70D[PRS](?:-D|-G)?", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
+--- a/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
+@@ -1248,6 +1248,8 @@ static const struct amdgpu_gfxoff_quirk
+ 	{ 0x1002, 0x15dd, 0x103c, 0x83e7, 0xd3 },
+ 	/* GFXOFF is unstable on C6 parts with a VBIOS 113-RAVEN-114 */
+ 	{ 0x1002, 0x15dd, 0x1002, 0x15dd, 0xc6 },
++	/* Apple MacBook Pro (15-inch, 2019) Radeon Pro Vega 20 4 GB */
++	{ 0x1002, 0x69af, 0x106b, 0x019a, 0xc0 },
+ 	{ 0, 0, 0, 0, 0 },
+ };
+ 
 
 
