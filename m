@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C940FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB05BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:37:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243035AbiDRNj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:39:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
+        id S241099AbiDRNjn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:39:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240391AbiDRNKy (ORCPT
+        with ESMTP id S241138AbiDRNLP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:10:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 666AA39804;
-        Mon, 18 Apr 2022 05:50:27 -0700 (PDT)
+        Mon, 18 Apr 2022 09:11:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C03E3983D;
+        Mon, 18 Apr 2022 05:50:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6FD3B80E4B;
-        Mon, 18 Apr 2022 12:50:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7952BC385A7;
-        Mon, 18 Apr 2022 12:50:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09FEAB80E4B;
+        Mon, 18 Apr 2022 12:50:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A51EC385A1;
+        Mon, 18 Apr 2022 12:50:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286224;
-        bh=i7d4IMjg68LsHEXJVgI+Q2DYKMuVrFSB7ixi9ScfLgg=;
+        s=korg; t=1650286233;
+        bh=HQCpx33vyRLby1m3u6tUxCLiMO0pt5p7L09eWaKirC0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NyaRY2PwjjAv2GaaEEWM4dGghFIMojlKHuSt0JUwn9bQlnHAFbnWG6js8mxuAyVX3
-         cUI5XayAw1WETRHA/xmjyGG0PiQDM50QQlLp4t6a3ZyGvWSi1CQJIWdCxUPaGR4+np
-         X5im3nvUFaFBK8hradAwRCG2euPeMn9UVQ9nu0C0=
+        b=QDshMKBbxNWVEhS+q+kiVGmWdEyfl7gYCH8qLRl1fu9cfg7XtCGz2IE0qeIKGz52C
+         snGoN5qpJsvu4c3ThZEI9y+2c10UQXMOA9tPYJ/m9RevborTLbDO+4RqBT+1dGySis
+         7uoHYr+BD7mCL5u8rOIhj7psmAMxLENhczQrBJ9w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michael Schmitz <schmitzmic@gmail.com>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 4.14 040/284] video: fbdev: atari: Atari 2 bpp (STe) palette bugfix
-Date:   Mon, 18 Apr 2022 14:10:21 +0200
-Message-Id: <20220418121211.834573736@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 069/284] perf/core: Fix address filter parser for multiple filters
+Date:   Mon, 18 Apr 2022 14:10:50 +0200
+Message-Id: <20220418121212.651325774@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,62 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Schmitz <schmitzmic@gmail.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-commit c8be5edbd36ceed2ff3d6b8f8e40643c3f396ea3 upstream.
+[ Upstream commit d680ff24e9e14444c63945b43a37ede7cd6958f9 ]
 
-The code to set the shifter STe palette registers has a long
-standing operator precedence bug, manifesting as colors set
-on a 2 bits per pixel frame buffer coming up with a distinctive
-blue tint.
+Reset appropriate variables in the parser loop between parsing separate
+filters, so that they do not interfere with parsing the next filter.
 
-Add parentheses around the calculation of the per-color palette
-data before shifting those into their respective bit field position.
-
-This bug goes back a long way (2.4 days at the very least) so there
-won't be a Fixes: tag.
-
-Tested on ARAnyM as well on Falcon030 hardware.
-
-Cc: stable@vger.kernel.org
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Link: https://lore.kernel.org/all/CAMuHMdU3ievhXxKR_xi_v3aumnYW7UNUO6qMdhgfyWTyVSsCkQ@mail.gmail.com
-Tested-by: Michael Schmitz <schmitzmic@gmail.com>
-Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 375637bc524952 ("perf/core: Introduce address range filtering")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220131072453.2839535-4-adrian.hunter@intel.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/atafb.c |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ kernel/events/core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/video/fbdev/atafb.c
-+++ b/drivers/video/fbdev/atafb.c
-@@ -1713,9 +1713,9 @@ static int falcon_setcolreg(unsigned int
- 			   ((blue & 0xfc00) >> 8));
- 	if (regno < 16) {
- 		shifter_tt.color_reg[regno] =
--			(((red & 0xe000) >> 13) | ((red & 0x1000) >> 12) << 8) |
--			(((green & 0xe000) >> 13) | ((green & 0x1000) >> 12) << 4) |
--			((blue & 0xe000) >> 13) | ((blue & 0x1000) >> 12);
-+			((((red & 0xe000) >> 13)   | ((red & 0x1000) >> 12)) << 8)   |
-+			((((green & 0xe000) >> 13) | ((green & 0x1000) >> 12)) << 4) |
-+			   ((blue & 0xe000) >> 13) | ((blue & 0x1000) >> 12);
- 		((u32 *)info->pseudo_palette)[regno] = ((red & 0xf800) |
- 						       ((green & 0xfc00) >> 5) |
- 						       ((blue & 0xf800) >> 11));
-@@ -2001,9 +2001,9 @@ static int stste_setcolreg(unsigned int
- 	green >>= 12;
- 	if (ATARIHW_PRESENT(EXTD_SHIFTER))
- 		shifter_tt.color_reg[regno] =
--			(((red & 0xe) >> 1) | ((red & 1) << 3) << 8) |
--			(((green & 0xe) >> 1) | ((green & 1) << 3) << 4) |
--			((blue & 0xe) >> 1) | ((blue & 1) << 3);
-+			((((red & 0xe)   >> 1) | ((red & 1)   << 3)) << 8) |
-+			((((green & 0xe) >> 1) | ((green & 1) << 3)) << 4) |
-+			  ((blue & 0xe)  >> 1) | ((blue & 1)  << 3);
- 	else
- 		shifter_tt.color_reg[regno] =
- 			((red & 0xe) << 7) |
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 54da9e12381f..0f49ab48cb14 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -8641,8 +8641,11 @@ perf_event_parse_addr_filter(struct perf_event *event, char *fstr,
+ 			}
+ 
+ 			/* ready to consume more filters */
++			kfree(filename);
++			filename = NULL;
+ 			state = IF_STATE_ACTION;
+ 			filter = NULL;
++			kernel = 0;
+ 		}
+ 	}
+ 
+-- 
+2.34.1
+
 
 
