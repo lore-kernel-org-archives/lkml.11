@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B25CC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C95A8C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245117AbiDRNwb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:52:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57214 "EHLO
+        id S245167AbiDRNwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242879AbiDRN2q (ORCPT
+        with ESMTP id S244239AbiDRNaN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:28:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E8E3ED12;
-        Mon, 18 Apr 2022 05:53:23 -0700 (PDT)
+        Mon, 18 Apr 2022 09:30:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F0241625;
+        Mon, 18 Apr 2022 05:54:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F3386124E;
-        Mon, 18 Apr 2022 12:53:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58382C385A1;
-        Mon, 18 Apr 2022 12:53:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 929F9B80D9C;
+        Mon, 18 Apr 2022 12:54:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F02FAC385A7;
+        Mon, 18 Apr 2022 12:54:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286401;
-        bh=L+U2PjbOPSfXSjNB64PGA1oFCZtfSLRYyyvwrXR+O0Q=;
+        s=korg; t=1650286455;
+        bh=rk88CqsmYPt2GYpQNqnGaUUD5zAsEFFFkLN2OQiBwXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sl9FkzPmvdhNgVWVvJW0vPSLdvHze3qDY2HoNUNTnowqMQLbKIgklZnfpgPbkVNkA
-         TK13yAudBJWRHBrUjeVXeEkLXi67F3CRWmOe+5jl6qmukn3G4HEYZRHRZIh74MVad6
-         vqfdzPPubl1TeDELI1WKuBkf/8r38/jMnB7sIhpc=
+        b=r4/dD8Znx6U2BMdteLRn8bURLpenbRhnrBfW9kHM7TFda5Auk6uQXO6MvRB9jnOf8
+         NJgxg1X3EvH+PDDWO0uQbP6mU6l7uSfxJmkkMRJr6EBF2u+5TaNZ/uozsVrpg3z9dG
+         AjABn88qLryUzswvruNsEY3cjT5KAu0sIkAyYblE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 121/284] vxcan: enable local echo for sent CAN frames
-Date:   Mon, 18 Apr 2022 14:11:42 +0200
-Message-Id: <20220418121214.565347809@linuxfoundation.org>
+Subject: [PATCH 4.14 141/284] pinctrl: mediatek: Fix missing of_node_put() in mtk_pctrl_init
+Date:   Mon, 18 Apr 2022 14:12:02 +0200
+Message-Id: <20220418121215.483405255@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,44 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 259bdba27e32368b4404f69d613b1c1014c07cbf ]
+[ Upstream commit dab4df9ca919f59e5b9dd84385eaf34d4f20dbb0 ]
 
-The vxcan driver provides a pair of virtual CAN interfaces to exchange
-CAN traffic between different namespaces - analogue to veth.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-In opposite to the vcan driver the local sent CAN traffic on this interface
-is not echo'ed back but only sent to the remote peer. This is unusual and
-can be easily fixed by removing IFF_ECHO from the netdevice flags that
-are set for vxcan interfaces by default at startup.
-
-Without IFF_ECHO set on driver level, the local sent CAN frames are echo'ed
-in af_can.c in can_send(). This patch makes vxcan interfaces adopt the
-same local echo behavior and procedures as known from the vcan interfaces.
-
-Fixes: a8f820a380a2 ("can: add Virtual CAN Tunnel driver (vxcan)")
-Link: https://lore.kernel.org/all/20220309120416.83514-5-socketcan@hartkopp.net
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: a6df410d420a ("pinctrl: mediatek: Add Pinctrl/GPIO driver for mt8135.")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220308071155.21114-1-linmq006@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/vxcan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pinctrl/mediatek/pinctrl-mtk-common.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
-index fc9197f14a3f..4b5355226f58 100644
---- a/drivers/net/can/vxcan.c
-+++ b/drivers/net/can/vxcan.c
-@@ -156,7 +156,7 @@ static void vxcan_setup(struct net_device *dev)
- 	dev->hard_header_len	= 0;
- 	dev->addr_len		= 0;
- 	dev->tx_queue_len	= 0;
--	dev->flags		= (IFF_NOARP|IFF_ECHO);
-+	dev->flags		= IFF_NOARP;
- 	dev->netdev_ops		= &vxcan_netdev_ops;
- 	dev->needs_free_netdev	= true;
- }
+diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
+index 3cf384f8b122..8b07439bb694 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
++++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
+@@ -1367,6 +1367,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
+ 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 0);
+ 	if (node) {
+ 		pctl->regmap1 = syscon_node_to_regmap(node);
++		of_node_put(node);
+ 		if (IS_ERR(pctl->regmap1))
+ 			return PTR_ERR(pctl->regmap1);
+ 	} else if (regmap) {
+@@ -1380,6 +1381,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
+ 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 1);
+ 	if (node) {
+ 		pctl->regmap2 = syscon_node_to_regmap(node);
++		of_node_put(node);
+ 		if (IS_ERR(pctl->regmap2))
+ 			return PTR_ERR(pctl->regmap2);
+ 	}
 -- 
 2.34.1
 
