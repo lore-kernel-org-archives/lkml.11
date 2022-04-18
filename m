@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55BEDC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:36:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C940FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:36:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242789AbiDRNjS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54002 "EHLO
+        id S243035AbiDRNj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:39:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240524AbiDRNKz (ORCPT
+        with ESMTP id S240391AbiDRNKy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:10:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA06439815;
-        Mon, 18 Apr 2022 05:50:28 -0700 (PDT)
+        Mon, 18 Apr 2022 09:10:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 666AA39804;
+        Mon, 18 Apr 2022 05:50:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A92D61257;
-        Mon, 18 Apr 2022 12:50:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44E62C385A8;
-        Mon, 18 Apr 2022 12:50:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6FD3B80E4B;
+        Mon, 18 Apr 2022 12:50:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7952BC385A7;
+        Mon, 18 Apr 2022 12:50:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286227;
-        bh=n4XZKIqAnxf38ktFeInvlW1RzeqznHZYpBRS8tv0/98=;
+        s=korg; t=1650286224;
+        bh=i7d4IMjg68LsHEXJVgI+Q2DYKMuVrFSB7ixi9ScfLgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mdX0f0wz6LR71ubo++dzfnASesPaoxClnXZ+nm29qvnzY3fh+VyXqwOmd+a7ueU/Y
-         6QqfI8DkxrhwrlZbYcsQjbRBM5IyTONbym/T4G1jeKJW4+lOu9KoG9pmkh1+kdXXb4
-         XmChR/PPxgX2aee8pjhTS9P/Aato1XnbGTtuQ7U0=
+        b=NyaRY2PwjjAv2GaaEEWM4dGghFIMojlKHuSt0JUwn9bQlnHAFbnWG6js8mxuAyVX3
+         cUI5XayAw1WETRHA/xmjyGG0PiQDM50QQlLp4t6a3ZyGvWSi1CQJIWdCxUPaGR4+np
+         X5im3nvUFaFBK8hradAwRCG2euPeMn9UVQ9nu0C0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 067/284] clocksource: acpi_pm: fix return value of __setup handler
-Date:   Mon, 18 Apr 2022 14:10:48 +0200
-Message-Id: <20220418121212.595244590@linuxfoundation.org>
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Schmitz <schmitzmic@gmail.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 4.14 040/284] video: fbdev: atari: Atari 2 bpp (STe) palette bugfix
+Date:   Mon, 18 Apr 2022 14:10:21 +0200
+Message-Id: <20220418121211.834573736@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,50 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Michael Schmitz <schmitzmic@gmail.com>
 
-[ Upstream commit 6a861abceecb68497dd82a324fee45a5332dcece ]
+commit c8be5edbd36ceed2ff3d6b8f8e40643c3f396ea3 upstream.
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) environment strings.
+The code to set the shifter STe palette registers has a long
+standing operator precedence bug, manifesting as colors set
+on a 2 bits per pixel frame buffer coming up with a distinctive
+blue tint.
 
-The __setup() handler interface isn't meant to handle negative return
-values -- they are non-zero, so they mean "handled" (like a return
-value of 1 does), but that's just a quirk. So return 1 from
-parse_pmtmr(). Also print a warning message if kstrtouint() returns
-an error.
+Add parentheses around the calculation of the per-color palette
+data before shifting those into their respective bit field position.
 
-Fixes: 6b148507d3d0 ("pmtmr: allow command line override of ioport")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This bug goes back a long way (2.4 days at the very least) so there
+won't be a Fixes: tag.
+
+Tested on ARAnyM as well on Falcon030 hardware.
+
+Cc: stable@vger.kernel.org
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Link: https://lore.kernel.org/all/CAMuHMdU3ievhXxKR_xi_v3aumnYW7UNUO6qMdhgfyWTyVSsCkQ@mail.gmail.com
+Tested-by: Michael Schmitz <schmitzmic@gmail.com>
+Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clocksource/acpi_pm.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/video/fbdev/atafb.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/clocksource/acpi_pm.c b/drivers/clocksource/acpi_pm.c
-index 1961e3539b57..05cc8d4e49ad 100644
---- a/drivers/clocksource/acpi_pm.c
-+++ b/drivers/clocksource/acpi_pm.c
-@@ -230,8 +230,10 @@ static int __init parse_pmtmr(char *arg)
- 	int ret;
- 
- 	ret = kstrtouint(arg, 16, &base);
--	if (ret)
--		return ret;
-+	if (ret) {
-+		pr_warn("PMTMR: invalid 'pmtmr=' value: '%s'\n", arg);
-+		return 1;
-+	}
- 
- 	pr_info("PMTMR IOPort override: 0x%04x -> 0x%04x\n", pmtmr_ioport,
- 		base);
--- 
-2.34.1
-
+--- a/drivers/video/fbdev/atafb.c
++++ b/drivers/video/fbdev/atafb.c
+@@ -1713,9 +1713,9 @@ static int falcon_setcolreg(unsigned int
+ 			   ((blue & 0xfc00) >> 8));
+ 	if (regno < 16) {
+ 		shifter_tt.color_reg[regno] =
+-			(((red & 0xe000) >> 13) | ((red & 0x1000) >> 12) << 8) |
+-			(((green & 0xe000) >> 13) | ((green & 0x1000) >> 12) << 4) |
+-			((blue & 0xe000) >> 13) | ((blue & 0x1000) >> 12);
++			((((red & 0xe000) >> 13)   | ((red & 0x1000) >> 12)) << 8)   |
++			((((green & 0xe000) >> 13) | ((green & 0x1000) >> 12)) << 4) |
++			   ((blue & 0xe000) >> 13) | ((blue & 0x1000) >> 12);
+ 		((u32 *)info->pseudo_palette)[regno] = ((red & 0xf800) |
+ 						       ((green & 0xfc00) >> 5) |
+ 						       ((blue & 0xf800) >> 11));
+@@ -2001,9 +2001,9 @@ static int stste_setcolreg(unsigned int
+ 	green >>= 12;
+ 	if (ATARIHW_PRESENT(EXTD_SHIFTER))
+ 		shifter_tt.color_reg[regno] =
+-			(((red & 0xe) >> 1) | ((red & 1) << 3) << 8) |
+-			(((green & 0xe) >> 1) | ((green & 1) << 3) << 4) |
+-			((blue & 0xe) >> 1) | ((blue & 1) << 3);
++			((((red & 0xe)   >> 1) | ((red & 1)   << 3)) << 8) |
++			((((green & 0xe) >> 1) | ((green & 1) << 3)) << 4) |
++			  ((blue & 0xe)  >> 1) | ((blue & 1)  << 3);
+ 	else
+ 		shifter_tt.color_reg[regno] =
+ 			((red & 0xe) << 7) |
 
 
