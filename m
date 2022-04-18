@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B49C3527E
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C520EC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344240AbiDROJ3 (ORCPT
+        id S1344463AbiDROKQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45832 "EHLO
+        Mon, 18 Apr 2022 10:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343777AbiDRNyW (ORCPT
+        with ESMTP id S1343860AbiDRNy2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:54:22 -0400
+        Mon, 18 Apr 2022 09:54:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF09A4839F;
-        Mon, 18 Apr 2022 06:03:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52ED1488AE;
+        Mon, 18 Apr 2022 06:03:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF0ED60B3C;
-        Mon, 18 Apr 2022 13:03:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6763C385A7;
-        Mon, 18 Apr 2022 13:03:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFE3460F07;
+        Mon, 18 Apr 2022 13:03:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBA7EC385B9;
+        Mon, 18 Apr 2022 13:03:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287016;
-        bh=+BVEvKK6KBDTZzLTDrh4ergjRMvkmu+q3Ofgz22BoWo=;
+        s=korg; t=1650287030;
+        bh=HAMF7RtDRM16WjkhlhsJXOOYjeQ9pPa38o2jupLn+0U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VF8nhlqOmzcjXBgFX49TgLWw/dei8+Ix1cCszXYchNR+Vwyb1aI5lUiwm+PBvDp3a
-         iDbBiq10q4FDt4Q4M2s3x+a4nqN0Dq/o92eat7WvKF1sxSW4o7/jtNGe/eohQJ6aeK
-         T8dD6tgho4ae9wkPZ7KzG20L6xUa6gLH55mEX9/4=
+        b=BHna+x1uVjkYL3ZL+h/Z6yRqKRE8VijxMtYZ3hGRmrVlKGAmkFKHoe4wFJhMi6bTl
+         HYeoo8HHJYteQymLuqzT6CKwRQ85YAIiGZx9Zz1MNq0bAd7DsEpVeWgmWK7XFRVMBs
+         7Rlv9Dz/MUDQMqsOyn3c5ze6HSy8TI8rUyzRisIw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Subject: [PATCH 4.9 031/218] ARM: dts: exynos: add missing HDMI supplies on SMDK5420
-Date:   Mon, 18 Apr 2022 14:11:37 +0200
-Message-Id: <20220418121200.281548572@linuxfoundation.org>
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 005/218] ethernet: sun: Free the coherent when failing in probing
+Date:   Mon, 18 Apr 2022 14:11:11 +0200
+Message-Id: <20220418121158.931196096@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,34 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-commit 453a24ded415f7fce0499c6b0a2c7b28f84911f2 upstream.
+[ Upstream commit bb77bd31c281f70ec77c9c4f584950a779e05cf8 ]
 
-Add required VDD supplies to HDMI block on SMDK5420.  Without them, the
-HDMI driver won't probe.  Because of lack of schematics, use same
-supplies as on Arndale Octa and Odroid XU3 boards (voltage matches).
+When the driver fails to register net device, it should free the DMA
+region first, and then do other cleanup.
 
-Cc: <stable@vger.kernel.org> # v3.15+
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Link: https://lore.kernel.org/r/20220208171823.226211-3-krzysztof.kozlowski@canonical.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/exynos5420-smdk5420.dts |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/sun/sunhme.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/arch/arm/boot/dts/exynos5420-smdk5420.dts
-+++ b/arch/arm/boot/dts/exynos5420-smdk5420.dts
-@@ -134,6 +134,9 @@
- 	hpd-gpios = <&gpx3 7 GPIO_ACTIVE_HIGH>;
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&hdmi_hpd_irq>;
-+	vdd-supply = <&ldo6_reg>;
-+	vdd_osc-supply = <&ldo7_reg>;
-+	vdd_pll-supply = <&ldo6_reg>;
- };
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index cf4dcff051d5..b38106a7cb5d 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -3160,7 +3160,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	if (err) {
+ 		printk(KERN_ERR "happymeal(PCI): Cannot register net device, "
+ 		       "aborting.\n");
+-		goto err_out_iounmap;
++		goto err_out_free_coherent;
+ 	}
  
- &hsi2c_4 {
+ 	pci_set_drvdata(pdev, hp);
+@@ -3193,6 +3193,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 
+ 	return 0;
+ 
++err_out_free_coherent:
++	dma_free_coherent(hp->dma_dev, PAGE_SIZE,
++			  hp->happy_block, hp->hblock_dvma);
++
+ err_out_iounmap:
+ 	iounmap(hp->gregs);
+ 
+-- 
+2.34.1
+
 
 
