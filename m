@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 923F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8656C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239613AbiDRMqd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37006 "EHLO
+        id S239621AbiDRMqg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:46:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239738AbiDRMiE (ORCPT
+        with ESMTP id S239736AbiDRMiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:38:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA09A23BE0;
-        Mon, 18 Apr 2022 05:28:33 -0700 (PDT)
+        Mon, 18 Apr 2022 08:38:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A9F23BDB;
+        Mon, 18 Apr 2022 05:28:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7736160F7C;
-        Mon, 18 Apr 2022 12:28:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70216C385A7;
-        Mon, 18 Apr 2022 12:28:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EB8A2B80EC4;
+        Mon, 18 Apr 2022 12:28:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13289C385A7;
+        Mon, 18 Apr 2022 12:28:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284912;
-        bh=a619yfC6AOd8vrd72rgdfYtRdrJf7N4gH9Ed6qYTT0I=;
+        s=korg; t=1650284909;
+        bh=6yRikiXgifF7TJwpdBeWfSQIjgxtM8EHGIus7nzIZwQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z87dHj7y+LRU8BLhfhKPFkr1qwSOpqzjxcaCfKLV+Tm3MvWjRgt5DkHvqRBumvnLY
-         RhcyEAqAeQc1uzIh9RFqkxW/HnR3RbBLWvFV5S7r8rToIs0bmE7noi6DbQlZrJkCbI
-         rKJuMJScWWMayaGfg4hR6TZ4vg2r2HX2vJ44E/xU=
+        b=cTZwfQvWqXZzB5om1DgoolE5RY//vW4PhXmNCcWrnabTSfdOEEqLtGK6F6ppX22K6
+         BZAKYU9LNoFke0wGkjBMLy3qYA0bvWm1tu7Q9hKKkSyHQZV22LHVxvP5Eg+3gKfjmH
+         ZLnL3e1Bi7oipBYIH3TkNnKe8kOboOAIkyZGY3RE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 5.15 010/189] btrfs: remove no longer used counter when reading data page
-Date:   Mon, 18 Apr 2022 14:10:30 +0200
-Message-Id: <20220418121200.768642734@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 045/189] ALSA: maestro3: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:11:05 +0200
+Message-Id: <20220418121201.792916152@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -51,44 +47,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit ad3fc7946b1829213bbdbb2b9ad0d124b31ae4a7 upstream.
+commit ae86bf5c2a8d81418eadf1c31dd9253b609e3093 upstream.
 
-After commit 92082d40976ed0 ("btrfs: integrate page status update for
-data read path into begin/end_page_read"), the 'nr' counter at
-btrfs_do_readpage() is no longer used, we increment it but we never
-read from it. So just remove it.
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Cc: Nathan Chancellor <nathan@kernel.org>
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
+
+Fixes: 5c0939253c3c ("ALSA: maestro3: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-21-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/extent_io.c |    5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ sound/pci/maestro3.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/fs/btrfs/extent_io.c
-+++ b/fs/btrfs/extent_io.c
-@@ -3561,7 +3561,6 @@ int btrfs_do_readpage(struct page *page,
- 	u64 cur_end;
- 	struct extent_map *em;
- 	int ret = 0;
--	int nr = 0;
- 	size_t pg_offset = 0;
- 	size_t iosize;
- 	size_t blocksize = inode->i_sb->s_blocksize;
-@@ -3727,9 +3726,7 @@ int btrfs_do_readpage(struct page *page,
- 					 end_bio_extent_readpage, 0,
- 					 this_bio_flag,
- 					 force_bio_submit);
--		if (!ret) {
--			nr++;
--		} else {
-+		if (ret) {
- 			unlock_extent(tree, cur, cur + iosize - 1);
- 			end_page_read(page, false, cur, iosize);
- 			goto out;
+diff --git a/sound/pci/maestro3.c b/sound/pci/maestro3.c
+index 056838ead21d..261850775c80 100644
+--- a/sound/pci/maestro3.c
++++ b/sound/pci/maestro3.c
+@@ -2637,7 +2637,7 @@ snd_m3_create(struct snd_card *card, struct pci_dev *pci,
+ /*
+  */
+ static int
+-snd_m3_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
++__snd_m3_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+ {
+ 	static int dev;
+ 	struct snd_card *card;
+@@ -2702,6 +2702,12 @@ snd_m3_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+ 	return 0;
+ }
+ 
++static int
++snd_m3_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_m3_probe(pci, pci_id));
++}
++
+ static struct pci_driver m3_driver = {
+ 	.name = KBUILD_MODNAME,
+ 	.id_table = snd_m3_ids,
+-- 
+2.35.2
+
 
 
