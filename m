@@ -2,91 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7DFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237966AbiDRMGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34210 "EHLO
+        id S237979AbiDRMHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:07:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234686AbiDRMGS (ORCPT
+        with ESMTP id S237968AbiDRMG5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:06:18 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F9A17A88
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:03:39 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id h5so18495728pgc.7
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:03:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=NnfylWN7MavTPT553g+jrwdoRsttSRF9ea+q5wroK2g=;
-        b=SXVE+pR8devV3hO4tWlgoxCYNAdT0Ru6k53XSx5WS1V7guQJZqXF8ndR5M3UPGPryX
-         preJK3/gW+63QwRNfoPx6ZtriC621Oq+FkCL6drTNIh/HRWLzHbUGf2IPoX7n5X4zmXX
-         DOHLFuiRIigUu3TNkQw8E0AE09g6RMFWg2NuKJNlFvl9WHksO8vijte7fP0g2D2sIvW6
-         cjf/kHgxe3bUrrvBB1cpRYs6NnwocbAxBZ+d91sUaqoDCFnI2YmlkAmeOSVVFGgg+E5L
-         FxhzYqayBHTPeyO4t2FIhCvufk0Wklhv0jvy7Bw7sgh4KWBIE4TrMpm74eEZ3RuR0IWn
-         PXzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=NnfylWN7MavTPT553g+jrwdoRsttSRF9ea+q5wroK2g=;
-        b=WDO+hYhsPNpFfBFyfR44Yzrbqs73R+/A9Au8BKmWWxuDtuYDuQNDSwFPyB1DrAfle5
-         g+F7bI2SX+k20fOd4nYaywsmQre3/Jb/NoDm7kAx7BNishh0PpKTSb17HJCUdV7uvYEa
-         ldCIG+a43A/AgtFSJ//7EmGLfOd9lke5FXSxFQE/088unIDFMRdyRn7/HlJyXRnnvuQz
-         4Z6wbFrNtt8yOg9n+S2r7bOJW+5CYLmxDrM86fRffr+eAdup1bC86s0r1YmuNBrXGxyE
-         k67MWlfF4MkiVuyqC3UZLiN47cbfKnlztwqbCYDDEZ37OVyh2rKz18/S9GtyRVQmu+Gz
-         48YA==
-X-Gm-Message-State: AOAM5307FDINZ5ushJcHNkr7QdGC37Kf5hsdw2sjlQk0uAg5P0qsraqu
-        j6dXts8E6v6ja/Pi9izeLpw=
-X-Google-Smtp-Source: ABdhPJxVYwRdke1zYGoWe8PpudWD0LJmyZsh75gb25UTnIp8YT9ms1lZ7EG2nblYE9sNVU+WooJIrQ==
-X-Received: by 2002:a63:1d5f:0:b0:39d:b5e4:ae24 with SMTP id d31-20020a631d5f000000b0039db5e4ae24mr9551819pgm.502.1650283419258;
-        Mon, 18 Apr 2022 05:03:39 -0700 (PDT)
-Received: from aliyar-HP-Laptop-15-da1xxx.domain.name ([14.139.241.88])
-        by smtp.gmail.com with ESMTPSA id p1-20020a17090a680100b001d28905b214sm3840628pjj.39.2022.04.18.05.03.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 05:03:38 -0700 (PDT)
-From:   Aliya Rahmani <aliyarahmani786@gmail.com>
-To:     clabbe@baylibre.com
-Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        outreachy@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Aliya Rahmani <aliyarahmani786@gmail.com>
-Subject: [PATCH 2/3] staging: media: zoran: Code cleanup - else is not generally useful after a break or return
-Date:   Mon, 18 Apr 2022 17:29:50 +0530
-Message-Id: <20220418115948.5456-3-aliyarahmani786@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220418115948.5456-1-aliyarahmani786@gmail.com>
-References: <20220418115948.5456-1-aliyarahmani786@gmail.com>
+        Mon, 18 Apr 2022 08:06:57 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5011B15FDA;
+        Mon, 18 Apr 2022 05:04:18 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 34DB422175;
+        Mon, 18 Apr 2022 14:04:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1650283456;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OOruPXULnAoAti7zK9CIqg2Yvot+7zRgvmQ60wa4z+o=;
+        b=M8C4AIhWHlFgBT/ZWxIY6IFRlmKw7xBLhdPb0w5dc/BusXwRU1ZVXxb4Gj+J9buPd/VjEg
+        DbSwmcgcwAGOmjlASvzxAgodj/RSp7+Re4q4xX5bDsGWAwrc1rbW3Ivf1CBiIuvitgjM95
+        aZfqXyrmJ0sXVfw0TuuzGdlwXhjyJhQ=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 18 Apr 2022 14:04:16 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Paul Burton <paulburton@kernel.org>,
+        Quentin Schulz <quentin.schulz@bootlin.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        UNGLinuxDriver@microchip.com, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org
+Subject: Re: [PATCH v3 6/6] dt-bindings: pinctrl: convert ocelot-pinctrl to
+ YAML format
+In-Reply-To: <de9b0114-23b5-04b4-86b3-0d393441a267@kernel.org>
+References: <20220319204628.1759635-1-michael@walle.cc>
+ <20220319204628.1759635-7-michael@walle.cc>
+ <CACRpkdbrw7Hjt9mB9pr_iNsGi71g_d8BGhpT_ih1RVgKJ5U0qQ@mail.gmail.com>
+ <e02e22920ffe23b49237c0c1379e888b@walle.cc>
+ <de9b0114-23b5-04b4-86b3-0d393441a267@kernel.org>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <735863d6476605e4ff72032d8971ac0d@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the else without affecting the logic. Fixes the checkpatch warning: else is not generally useful after a break or return
+Am 2022-04-18 13:13, schrieb Krzysztof Kozlowski:
+> On 18/04/2022 10:19, Michael Walle wrote:
+>> [resend, use Krysztof's new email address]
+>> 
+>> Am 2022-04-18 01:41, schrieb Linus Walleij:
+>>> On Sat, Mar 19, 2022 at 9:47 PM Michael Walle <michael@walle.cc> 
+>>> wrote:
+>>> 
+>>>> Convert the ocelot-pinctrl device tree binding to the new YAML 
+>>>> format.
+>>>> 
+>>>> Additionally to the original binding documentation, add interrupt
+>>>> properties which are optional and already used on several SoCs like
+>>>> SparX-5, Luton, Ocelot and LAN966x but were not documented before.
+>>>> 
+>>>> Also, on the sparx5 and the lan966x SoCs there are two items for the
+>>>> reg property.
+>>>> 
+>>>> Signed-off-by: Michael Walle <michael@walle.cc>
+>>> 
+>>> So is this single patch something I should apply to the pin control
+>>> tree?
+>> 
+>> The first five patches will fix the validation errrors once the
+>> binding is converted to the YAML format. So, do they need to go
+>> through the same tree?
+>> 
+>> Also as mentioned, there is this pending series [1] which is the
+>> reason I've converted the binding to YAML in the first place. So
+>> at least the first patch of this series will have to go through
+>> the same tree as the YAML conversion patch.
+>> 
+>> How can we move forward here? Krzysztof, maybe all of the dt
+>> bindings patches can go through your tree and I'll reposting
+>> the second patch of [1] afterwards?
+> 
+> I think you got all necessary acks for this pinctrl bindings change and
+> the dependency ("add reset property"), so both can go via Linus' tree.
+> That's preferred.
+> 
+> DTS patches goes through your SoC maintainer tree.
 
-Signed-off-by: Aliya Rahmani <aliyarahmani786@gmail.com>
----
- drivers/staging/media/zoran/videocodec.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Ah, ok, I wasn't aware of that. Then yes, please go ahead and
+pick this and the first patch of [1] up, Linus.
 
-diff --git a/drivers/staging/media/zoran/videocodec.c b/drivers/staging/media/zoran/videocodec.c
-index 16a1f23a7f19..19732a47c8bd 100644
---- a/drivers/staging/media/zoran/videocodec.c
-+++ b/drivers/staging/media/zoran/videocodec.c
-@@ -98,9 +98,8 @@ struct videocodec *videocodec_attach(struct videocodec_master *master)
- 
- 				h->attached += 1;
- 				return codec;
--			} else {
--				kfree(codec);
- 			}
-+			kfree(codec);
- 		}
- 		h = h->next;
- 	}
--- 
-2.25.1
+Of course if you like you can pick the second patch of [1],
+too. But I can also repost it without the RFC tag if that is
+preferred.
 
+-michael
+
+[1] 
+https://lore.kernel.org/linux-gpio/20220313154640.63813-1-michael@walle.cc/
