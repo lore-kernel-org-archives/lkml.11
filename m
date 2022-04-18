@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25031C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 916D3C3527E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:11:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241682AbiDRNMs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:12:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
+        id S241927AbiDRNNG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:13:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240833AbiDRM55 (ORCPT
+        with ESMTP id S242264AbiDRM7p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:57:57 -0400
+        Mon, 18 Apr 2022 08:59:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A6523BE2;
-        Mon, 18 Apr 2022 05:38:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4240420181;
+        Mon, 18 Apr 2022 05:40:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 796D4B80EDC;
-        Mon, 18 Apr 2022 12:38:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3FF9C385A7;
-        Mon, 18 Apr 2022 12:38:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC8A4B80EC0;
+        Mon, 18 Apr 2022 12:40:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E604C385A1;
+        Mon, 18 Apr 2022 12:40:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285493;
-        bh=zf+c42DAV0GN0eJ5S2P+F9YIgesB9POh7WPlYDoIUWo=;
+        s=korg; t=1650285629;
+        bh=zfFhwuW+2QehhZz510GLnDsyoSabLcv+Oi0qhLXKq+8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kdPxTrpwRamBv6Sj1aVeflUgOR9uzHUlBYCk/bo02yEVBAXVeGcXFAPAxY680fopx
-         HkvSbajk/rHQMCDlUTs9niorR1QiTK/7fjhU9eglAuieKxCSkffj4Tdi9KQyvCsi1q
-         5F120RkqeIXG61dWZSTg26DLYQrvLWmKf1jyDjBA=
+        b=JkGXa1SktDPIybrOwKM20Lc9p2xy+pF3AjGSpqHIa0OYVdMRwAtclUSumDhpMfBTj
+         TliWrIvPd2/2gI2di6V3OSWbg9jNd0bp0W+gm54XgcYkflldXpTHg3FrWReHfAP7+i
+         WrflHcDtddHgR2hAT3vsLeDc8O/5sAIc8WLO+Dd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 034/105] scsi: iscsi: Fix conn cleanup and stop race during iscsid restart
-Date:   Mon, 18 Apr 2022 14:12:36 +0200
-Message-Id: <20220418121147.380776788@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Seiderer <ps.report@gmx.net>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.10 078/105] ath9k: Fix usage of driver-private space in tx_info
+Date:   Mon, 18 Apr 2022 14:13:20 +0200
+Message-Id: <20220418121148.847148334@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -51,152 +49,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Christie <michael.christie@oracle.com>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-[ Upstream commit 7c6e99c18167ed89729bf167ccb4a7e3ab3115ba ]
+commit 5a6b06f5927c940fa44026695779c30b7536474c upstream.
 
-If iscsid is doing a stop_conn at the same time the kernel is starting
-error recovery we can hit a race that allows the cleanup work to run on a
-valid connection. In the race, iscsi_if_stop_conn sees the cleanup bit set,
-but it calls flush_work on the clean_work before iscsi_conn_error_event has
-queued it. The flush then returns before the queueing and so the
-cleanup_work can run later and disconnect/stop a conn while it's in a
-connected state.
+The ieee80211_tx_info_clear_status() helper also clears the rate counts and
+the driver-private part of struct ieee80211_tx_info, so using it breaks
+quite a few other things. So back out of using it, and instead define a
+ath-internal helper that only clears the area between the
+status_driver_data and the rates info. Combined with moving the
+ath_frame_info struct to status_driver_data, this avoids clearing anything
+we shouldn't be, and so we can keep the existing code for handling the rate
+information.
 
-The patch:
+While fixing this I also noticed that the setting of
+tx_info->status.rates[tx_rateindex].count on hardware underrun errors was
+always immediately overridden by the normal setting of the same fields, so
+rearrange the code so that the underrun detection actually takes effect.
 
-Commit 0ab710458da1 ("scsi: iscsi: Perform connection failure entirely in
-kernel space")
+The new helper could be generalised to a 'memset_between()' helper, but
+leave it as a driver-internal helper for now since this needs to go to
+stable.
 
-added the late stop_conn call bug originally, and the patch:
-
-Commit 23d6fefbb3f6 ("scsi: iscsi: Fix in-kernel conn failure handling")
-
-attempted to fix it but only fixed the normal EH case and left the above
-race for the iscsid restart case. For the normal EH case we don't hit the
-race because we only signal userspace to start recovery after we have done
-the queueing, so the flush will always catch the queued work or see it
-completed.
-
-For iscsid restart cases like boot, we can hit the race because iscsid will
-call down to the kernel before the kernel has signaled any error, so both
-code paths can be running at the same time. This adds a lock around the
-setting of the cleanup bit and queueing so they happen together.
-
-Link: https://lore.kernel.org/r/20220408001314.5014-6-michael.christie@oracle.com
-Fixes: 0ab710458da1 ("scsi: iscsi: Perform connection failure entirely in kernel space")
-Tested-by: Manish Rangankar <mrangankar@marvell.com>
-Reviewed-by: Lee Duncan <lduncan@suse.com>
-Reviewed-by: Chris Leech <cleech@redhat.com>
-Signed-off-by: Mike Christie <michael.christie@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Reported-by: Peter Seiderer <ps.report@gmx.net>
+Fixes: 037250f0a45c ("ath9k: Properly clear TX status area before reporting to mac80211")
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Reviewed-by: Peter Seiderer <ps.report@gmx.net>
+Tested-by: Peter Seiderer <ps.report@gmx.net>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220404204800.2681133-1-toke@toke.dk
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/scsi_transport_iscsi.c | 17 +++++++++++++++++
- include/scsi/scsi_transport_iscsi.h |  2 ++
- 2 files changed, 19 insertions(+)
+ drivers/net/wireless/ath/ath9k/main.c |    2 +-
+ drivers/net/wireless/ath/ath9k/xmit.c |   30 ++++++++++++++++++++----------
+ 2 files changed, 21 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
-index 38abc3a15692..21cc306a0f11 100644
---- a/drivers/scsi/scsi_transport_iscsi.c
-+++ b/drivers/scsi/scsi_transport_iscsi.c
-@@ -2263,9 +2263,12 @@ static void iscsi_if_disconnect_bound_ep(struct iscsi_cls_conn *conn,
- 					 bool is_active)
+--- a/drivers/net/wireless/ath/ath9k/main.c
++++ b/drivers/net/wireless/ath/ath9k/main.c
+@@ -839,7 +839,7 @@ static bool ath9k_txq_list_has_key(struc
+ 			continue;
+ 
+ 		txinfo = IEEE80211_SKB_CB(bf->bf_mpdu);
+-		fi = (struct ath_frame_info *)&txinfo->rate_driver_data[0];
++		fi = (struct ath_frame_info *)&txinfo->status.status_driver_data[0];
+ 		if (fi->keyix == keyix)
+ 			return true;
+ 	}
+--- a/drivers/net/wireless/ath/ath9k/xmit.c
++++ b/drivers/net/wireless/ath/ath9k/xmit.c
+@@ -141,8 +141,8 @@ static struct ath_frame_info *get_frame_
  {
- 	/* Check if this was a conn error and the kernel took ownership */
-+	spin_lock_irq(&conn->lock);
- 	if (!test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
-+		spin_unlock_irq(&conn->lock);
- 		iscsi_ep_disconnect(conn, is_active);
- 	} else {
-+		spin_unlock_irq(&conn->lock);
- 		ISCSI_DBG_TRANS_CONN(conn, "flush kernel conn cleanup.\n");
- 		mutex_unlock(&conn->ep_mutex);
+ 	struct ieee80211_tx_info *tx_info = IEEE80211_SKB_CB(skb);
+ 	BUILD_BUG_ON(sizeof(struct ath_frame_info) >
+-		     sizeof(tx_info->rate_driver_data));
+-	return (struct ath_frame_info *) &tx_info->rate_driver_data[0];
++		     sizeof(tx_info->status.status_driver_data));
++	return (struct ath_frame_info *) &tx_info->status.status_driver_data[0];
+ }
  
-@@ -2308,9 +2311,12 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ static void ath_send_bar(struct ath_atx_tid *tid, u16 seqno)
+@@ -2501,6 +2501,16 @@ skip_tx_complete:
+ 	spin_unlock_irqrestore(&sc->tx.txbuflock, flags);
+ }
+ 
++static void ath_clear_tx_status(struct ieee80211_tx_info *tx_info)
++{
++	void *ptr = &tx_info->status;
++
++	memset(ptr + sizeof(tx_info->status.rates), 0,
++	       sizeof(tx_info->status) -
++	       sizeof(tx_info->status.rates) -
++	       sizeof(tx_info->status.status_driver_data));
++}
++
+ static void ath_tx_rc_status(struct ath_softc *sc, struct ath_buf *bf,
+ 			     struct ath_tx_status *ts, int nframes, int nbad,
+ 			     int txok)
+@@ -2512,7 +2522,7 @@ static void ath_tx_rc_status(struct ath_
+ 	struct ath_hw *ah = sc->sc_ah;
+ 	u8 i, tx_rateindex;
+ 
+-	ieee80211_tx_info_clear_status(tx_info);
++	ath_clear_tx_status(tx_info);
+ 
+ 	if (txok)
+ 		tx_info->status.ack_signal = ts->ts_rssi;
+@@ -2528,6 +2538,13 @@ static void ath_tx_rc_status(struct ath_
+ 	tx_info->status.ampdu_len = nframes;
+ 	tx_info->status.ampdu_ack_len = nframes - nbad;
+ 
++	tx_info->status.rates[tx_rateindex].count = ts->ts_longretry + 1;
++
++	for (i = tx_rateindex + 1; i < hw->max_rates; i++) {
++		tx_info->status.rates[i].count = 0;
++		tx_info->status.rates[i].idx = -1;
++	}
++
+ 	if ((ts->ts_status & ATH9K_TXERR_FILT) == 0 &&
+ 	    (tx_info->flags & IEEE80211_TX_CTL_NO_ACK) == 0) {
  		/*
- 		 * Figure out if it was the kernel or userspace initiating this.
- 		 */
-+		spin_lock_irq(&conn->lock);
- 		if (!test_and_set_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
-+			spin_unlock_irq(&conn->lock);
- 			iscsi_stop_conn(conn, flag);
- 		} else {
-+			spin_unlock_irq(&conn->lock);
- 			ISCSI_DBG_TRANS_CONN(conn,
- 					     "flush kernel conn cleanup.\n");
- 			flush_work(&conn->cleanup_work);
-@@ -2319,7 +2325,9 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
- 		 * Only clear for recovery to avoid extra cleanup runs during
- 		 * termination.
- 		 */
-+		spin_lock_irq(&conn->lock);
- 		clear_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags);
-+		spin_unlock_irq(&conn->lock);
+@@ -2549,13 +2566,6 @@ static void ath_tx_rc_status(struct ath_
+ 			tx_info->status.rates[tx_rateindex].count =
+ 				hw->max_rate_tries;
  	}
- 	ISCSI_DBG_TRANS_CONN(conn, "iscsi if conn stop done.\n");
- 	return 0;
-@@ -2340,7 +2348,9 @@ static void iscsi_cleanup_conn_work_fn(struct work_struct *work)
- 	 */
- 	if (conn->state != ISCSI_CONN_BOUND && conn->state != ISCSI_CONN_UP) {
- 		ISCSI_DBG_TRANS_CONN(conn, "Got error while conn is already failed. Ignoring.\n");
-+		spin_lock_irq(&conn->lock);
- 		clear_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags);
-+		spin_unlock_irq(&conn->lock);
- 		mutex_unlock(&conn->ep_mutex);
- 		return;
- 	}
-@@ -2400,6 +2410,7 @@ iscsi_create_conn(struct iscsi_cls_session *session, int dd_size, uint32_t cid)
- 		conn->dd_data = &conn[1];
+-
+-	for (i = tx_rateindex + 1; i < hw->max_rates; i++) {
+-		tx_info->status.rates[i].count = 0;
+-		tx_info->status.rates[i].idx = -1;
+-	}
+-
+-	tx_info->status.rates[tx_rateindex].count = ts->ts_longretry + 1;
+ }
  
- 	mutex_init(&conn->ep_mutex);
-+	spin_lock_init(&conn->lock);
- 	INIT_LIST_HEAD(&conn->conn_list);
- 	INIT_WORK(&conn->cleanup_work, iscsi_cleanup_conn_work_fn);
- 	conn->transport = transport;
-@@ -2591,9 +2602,12 @@ void iscsi_conn_error_event(struct iscsi_cls_conn *conn, enum iscsi_err error)
- 	struct iscsi_uevent *ev;
- 	struct iscsi_internal *priv;
- 	int len = nlmsg_total_size(sizeof(*ev));
-+	unsigned long flags;
- 
-+	spin_lock_irqsave(&conn->lock, flags);
- 	if (!test_and_set_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags))
- 		queue_work(iscsi_conn_cleanup_workq, &conn->cleanup_work);
-+	spin_unlock_irqrestore(&conn->lock, flags);
- 
- 	priv = iscsi_if_transport_lookup(conn->transport);
- 	if (!priv)
-@@ -3736,11 +3750,14 @@ static int iscsi_if_transport_conn(struct iscsi_transport *transport,
- 		return -EINVAL;
- 
- 	mutex_lock(&conn->ep_mutex);
-+	spin_lock_irq(&conn->lock);
- 	if (test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
-+		spin_unlock_irq(&conn->lock);
- 		mutex_unlock(&conn->ep_mutex);
- 		ev->r.retcode = -ENOTCONN;
- 		return 0;
- 	}
-+	spin_unlock_irq(&conn->lock);
- 
- 	switch (nlh->nlmsg_type) {
- 	case ISCSI_UEVENT_BIND_CONN:
-diff --git a/include/scsi/scsi_transport_iscsi.h b/include/scsi/scsi_transport_iscsi.h
-index c5d7810fd792..037c77fb5dc5 100644
---- a/include/scsi/scsi_transport_iscsi.h
-+++ b/include/scsi/scsi_transport_iscsi.h
-@@ -211,6 +211,8 @@ struct iscsi_cls_conn {
- 	struct mutex ep_mutex;
- 	struct iscsi_endpoint *ep;
- 
-+	/* Used when accessing flags and queueing work. */
-+	spinlock_t lock;
- 	unsigned long flags;
- 	struct work_struct cleanup_work;
- 
--- 
-2.35.1
-
+ static void ath_tx_processq(struct ath_softc *sc, struct ath_txq *txq)
 
 
