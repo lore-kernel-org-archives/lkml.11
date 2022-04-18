@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B3FFC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED89FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239767AbiDRMml (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:42:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54018 "EHLO
+        id S239711AbiDRMm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239779AbiDRMd2 (ORCPT
+        with ESMTP id S239699AbiDRMdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:28 -0400
+        Mon, 18 Apr 2022 08:33:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9313C1B78C;
-        Mon, 18 Apr 2022 05:25:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3839064C7;
+        Mon, 18 Apr 2022 05:25:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31E9C60FB6;
-        Mon, 18 Apr 2022 12:25:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21E64C385A1;
-        Mon, 18 Apr 2022 12:25:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5F1160B40;
+        Mon, 18 Apr 2022 12:25:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2874C385A1;
+        Mon, 18 Apr 2022 12:25:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284758;
-        bh=Axpk3aHDU/KFEP/kw1BzLaJ460vI15II9oA+dh++VWA=;
+        s=korg; t=1650284708;
+        bh=PVzG1MWzkJT1O9czAbwBC3AKAl6ssTuVyBQ1P7VACoc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lXgO8G9FXrA1qp/XzWa230EuomJtMI+5wOXyMpH1RBCzXkOAynrhUOY8dEFEUNi8K
-         8uQPh+WwRAXa8JN1iEjbcCZWA2gOCnSX82ObtVDpwGWrgs0TWRnOTWXqUTpizE7rBe
-         E+aGQR55RAkdq2zU7KECYEdEEZP3lnuCPn6A3gZo=
+        b=JiaucOZ9AqEYirYCFIWhqRLDwu37BMTR997C495c9Hko+rJDaKzRzUMBCPUXeHVaw
+         JB/bplPbtLrcDefFX4Ie8/scQvqZylMavK3ngEI8q8G7TKXaq1QMbPYvRXNmeYRgZe
+         2Hziq8xl31/dkFhXIZSaYhni3B8sXJYwzPCN+eNY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Patrick Wang <patrick.wang.shcn@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org, Axel Rasmussen <axelrasmussen@google.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        kernel test robot <lkp@intel.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 178/219] mm: kmemleak: take a full lowmem check in kmemleak_*_phys()
-Date:   Mon, 18 Apr 2022 14:12:27 +0200
-Message-Id: <20220418121211.860028614@linuxfoundation.org>
+Subject: [PATCH 5.17 175/219] mm/secretmem: fix panic when growing a memfd_secret
+Date:   Mon, 18 Apr 2022 14:12:24 +0200
+Message-Id: <20220418121211.776725349@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,96 +52,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrick Wang <patrick.wang.shcn@gmail.com>
+From: Axel Rasmussen <axelrasmussen@google.com>
 
-commit 23c2d497de21f25898fbea70aeb292ab8acc8c94 upstream.
+commit f9b141f93659e09a52e28791ccbaf69c273b8e92 upstream.
 
-The kmemleak_*_phys() apis do not check the address for lowmem's min
-boundary, while the caller may pass an address below lowmem, which will
-trigger an oops:
+When one tries to grow an existing memfd_secret with ftruncate, one gets
+a panic [1].  For example, doing the following reliably induces the
+panic:
 
-  # echo scan > /sys/kernel/debug/kmemleak
-  Unable to handle kernel paging request at virtual address ff5fffffffe00000
-  Oops [#1]
-  Modules linked in:
-  CPU: 2 PID: 134 Comm: bash Not tainted 5.18.0-rc1-next-20220407 #33
-  Hardware name: riscv-virtio,qemu (DT)
-  epc : scan_block+0x74/0x15c
-   ra : scan_block+0x72/0x15c
-  epc : ffffffff801e5806 ra : ffffffff801e5804 sp : ff200000104abc30
-   gp : ffffffff815cd4e8 tp : ff60000004cfa340 t0 : 0000000000000200
-   t1 : 00aaaaaac23954cc t2 : 00000000000003ff s0 : ff200000104abc90
-   s1 : ffffffff81b0ff28 a0 : 0000000000000000 a1 : ff5fffffffe01000
-   a2 : ffffffff81b0ff28 a3 : 0000000000000002 a4 : 0000000000000001
-   a5 : 0000000000000000 a6 : ff200000104abd7c a7 : 0000000000000005
-   s2 : ff5fffffffe00ff9 s3 : ffffffff815cd998 s4 : ffffffff815d0e90
-   s5 : ffffffff81b0ff28 s6 : 0000000000000020 s7 : ffffffff815d0eb0
-   s8 : ffffffffffffffff s9 : ff5fffffffe00000 s10: ff5fffffffe01000
-   s11: 0000000000000022 t3 : 00ffffffaa17db4c t4 : 000000000000000f
-   t5 : 0000000000000001 t6 : 0000000000000000
-  status: 0000000000000100 badaddr: ff5fffffffe00000 cause: 000000000000000d
-    scan_gray_list+0x12e/0x1a6
-    kmemleak_scan+0x2aa/0x57e
-    kmemleak_write+0x32a/0x40c
-    full_proxy_write+0x56/0x82
-    vfs_write+0xa6/0x2a6
-    ksys_write+0x6c/0xe2
-    sys_write+0x22/0x2a
-    ret_from_syscall+0x0/0x2
+    fd = memfd_secret();
 
-The callers may not quite know the actual address they pass(e.g. from
-devicetree).  So the kmemleak_*_phys() apis should guarantee the address
-they finally use is in lowmem range, so check the address for lowmem's
-min boundary.
+    ftruncate(fd, 10);
+    ptr = mmap(NULL, 10, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    strcpy(ptr, "123456789");
 
-Link: https://lkml.kernel.org/r/20220413122925.33856-1-patrick.wang.shcn@gmail.com
-Signed-off-by: Patrick Wang <patrick.wang.shcn@gmail.com>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+    munmap(ptr, 10);
+    ftruncate(fd, 20);
+
+The basic reason for this is, when we grow with ftruncate, we call down
+into simple_setattr, and then truncate_inode_pages_range, and eventually
+we try to zero part of the memory.  The normal truncation code does this
+via the direct map (i.e., it calls page_address() and hands that to
+memset()).
+
+For memfd_secret though, we specifically don't map our pages via the
+direct map (i.e.  we call set_direct_map_invalid_noflush() on every
+fault).  So the address returned by page_address() isn't useful, and
+when we try to memset() with it we panic.
+
+This patch avoids the panic by implementing a custom setattr for
+memfd_secret, which detects resizes specifically (setting the size for
+the first time works just fine, since there are no existing pages to try
+to zero), and rejects them with EINVAL.
+
+One could argue growing should be supported, but I think that will
+require a significantly more lengthy change.  So, I propose a minimal
+fix for the benefit of stable kernels, and then perhaps to extend
+memfd_secret to support growing in a separate patch.
+
+[1]:
+
+  BUG: unable to handle page fault for address: ffffa0a889277028
+  #PF: supervisor write access in kernel mode
+  #PF: error_code(0x0002) - not-present page
+  PGD afa01067 P4D afa01067 PUD 83f909067 PMD 83f8bf067 PTE 800ffffef6d88060
+  Oops: 0002 [#1] PREEMPT SMP DEBUG_PAGEALLOC PTI
+  CPU: 0 PID: 281 Comm: repro Not tainted 5.17.0-dbg-DEV #1
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+  RIP: 0010:memset_erms+0x9/0x10
+  Code: c1 e9 03 40 0f b6 f6 48 b8 01 01 01 01 01 01 01 01 48 0f af c6 f3 48 ab 89 d1 f3 aa 4c 89 c8 c3 90 49 89 f9 40 88 f0 48 89 d1 <f3> aa 4c 89 c8 c3 90 49 89 fa 40 0f b6 ce 48 b8 01 01 01 01 01 01
+  RSP: 0018:ffffb932c09afbf0 EFLAGS: 00010246
+  RAX: 0000000000000000 RBX: ffffda63c4249dc0 RCX: 0000000000000fd8
+  RDX: 0000000000000fd8 RSI: 0000000000000000 RDI: ffffa0a889277028
+  RBP: ffffb932c09afc00 R08: 0000000000001000 R09: ffffa0a889277028
+  R10: 0000000000020023 R11: 0000000000000000 R12: ffffda63c4249dc0
+  R13: ffffa0a890d70d98 R14: 0000000000000028 R15: 0000000000000fd8
+  FS:  00007f7294899580(0000) GS:ffffa0af9bc00000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: ffffa0a889277028 CR3: 0000000107ef6006 CR4: 0000000000370ef0
+  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+  Call Trace:
+   ? zero_user_segments+0x82/0x190
+   truncate_inode_partial_folio+0xd4/0x2a0
+   truncate_inode_pages_range+0x380/0x830
+   truncate_setsize+0x63/0x80
+   simple_setattr+0x37/0x60
+   notify_change+0x3d8/0x4d0
+   do_sys_ftruncate+0x162/0x1d0
+   __x64_sys_ftruncate+0x1c/0x20
+   do_syscall_64+0x44/0xa0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+  Modules linked in: xhci_pci xhci_hcd virtio_net net_failover failover virtio_blk virtio_balloon uhci_hcd ohci_pci ohci_hcd evdev ehci_pci ehci_hcd 9pnet_virtio 9p netfs 9pnet
+  CR2: ffffa0a889277028
+
+[lkp@intel.com: secretmem_iops can be static]
+  Signed-off-by: kernel test robot <lkp@intel.com>
+[axelrasmussen@google.com: return EINVAL]
+
+Link: https://lkml.kernel.org/r/20220324210909.1843814-1-axelrasmussen@google.com
+Link: https://lkml.kernel.org/r/20220412193023.279320-1-axelrasmussen@google.com
+Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+Cc: Mike Rapoport <rppt@kernel.org>
+Cc: Matthew Wilcox <willy@infradead.org>
 Cc: <stable@vger.kernel.org>
+Cc: kernel test robot <lkp@intel.com>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/kmemleak.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ mm/secretmem.c |   17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
---- a/mm/kmemleak.c
-+++ b/mm/kmemleak.c
-@@ -1132,7 +1132,7 @@ EXPORT_SYMBOL(kmemleak_no_scan);
- void __ref kmemleak_alloc_phys(phys_addr_t phys, size_t size, int min_count,
- 			       gfp_t gfp)
- {
--	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
-+	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
- 		kmemleak_alloc(__va(phys), size, min_count, gfp);
- }
- EXPORT_SYMBOL(kmemleak_alloc_phys);
-@@ -1146,7 +1146,7 @@ EXPORT_SYMBOL(kmemleak_alloc_phys);
-  */
- void __ref kmemleak_free_part_phys(phys_addr_t phys, size_t size)
- {
--	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
-+	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
- 		kmemleak_free_part(__va(phys), size);
- }
- EXPORT_SYMBOL(kmemleak_free_part_phys);
-@@ -1158,7 +1158,7 @@ EXPORT_SYMBOL(kmemleak_free_part_phys);
-  */
- void __ref kmemleak_not_leak_phys(phys_addr_t phys)
- {
--	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
-+	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
- 		kmemleak_not_leak(__va(phys));
- }
- EXPORT_SYMBOL(kmemleak_not_leak_phys);
-@@ -1170,7 +1170,7 @@ EXPORT_SYMBOL(kmemleak_not_leak_phys);
-  */
- void __ref kmemleak_ignore_phys(phys_addr_t phys)
- {
--	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
-+	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
- 		kmemleak_ignore(__va(phys));
- }
- EXPORT_SYMBOL(kmemleak_ignore_phys);
+--- a/mm/secretmem.c
++++ b/mm/secretmem.c
+@@ -158,6 +158,22 @@ const struct address_space_operations se
+ 	.isolate_page	= secretmem_isolate_page,
+ };
+ 
++static int secretmem_setattr(struct user_namespace *mnt_userns,
++			     struct dentry *dentry, struct iattr *iattr)
++{
++	struct inode *inode = d_inode(dentry);
++	unsigned int ia_valid = iattr->ia_valid;
++
++	if ((ia_valid & ATTR_SIZE) && inode->i_size)
++		return -EINVAL;
++
++	return simple_setattr(mnt_userns, dentry, iattr);
++}
++
++static const struct inode_operations secretmem_iops = {
++	.setattr = secretmem_setattr,
++};
++
+ static struct vfsmount *secretmem_mnt;
+ 
+ static struct file *secretmem_file_create(unsigned long flags)
+@@ -177,6 +193,7 @@ static struct file *secretmem_file_creat
+ 	mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
+ 	mapping_set_unevictable(inode->i_mapping);
+ 
++	inode->i_op = &secretmem_iops;
+ 	inode->i_mapping->a_ops = &secretmem_aops;
+ 
+ 	/* pretend we are a normal file with zero size */
 
 
