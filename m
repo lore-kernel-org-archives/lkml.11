@@ -2,103 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6176C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E86C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240068AbiDRMnj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:43:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
+        id S240098AbiDRMnp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:43:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239263AbiDRMco (ORCPT
+        with ESMTP id S239211AbiDRMce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:32:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B07126112;
-        Mon, 18 Apr 2022 05:24:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E688860FD7;
-        Mon, 18 Apr 2022 12:24:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA47EC385A7;
-        Mon, 18 Apr 2022 12:24:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284664;
-        bh=z/Mk8EdyPU3wldlUmqLKlaYC3CgDe+9Ov5RINbFMnyk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=llNipg52terkyTnp1ZXNXFq8rmAUPJuCbCg1gaWG5SmcWgoB/9YPzRn1H1gqttN26
-         rJtXVBdlucWCLE7/5OoR4aQVwsWEL4bqw+fplhUeKU8qK3KGMguxd9nLFotG0MK9IH
-         YdPCezhiXgsowTTqUBCmkw18KWsQmrXs3IucC6/w=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bagas Sanjaya <bagasdotme@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.17 189/219] ath9k: Properly clear TX status area before reporting to mac80211
-Date:   Mon, 18 Apr 2022 14:12:38 +0200
-Message-Id: <20220418121212.166178489@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
-References: <20220418121203.462784814@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 18 Apr 2022 08:32:34 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E3525C5D
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:24:22 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id y10so9141419ejw.8
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:24:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=5BNPomPjSt5hiIea69EjTytPpEqikhMJXfLRqSI0kqc=;
+        b=I5SuOIQtfj+q49dWAfkSqB3QEoGkcQfwsNlbTI9LRwxKGBca6C8FMO+RPcsStXcouw
+         2FsU+EMejcQ0Xq1EFdGgKf/N0JaDRNSS6bl0roXE2RYiN5oKXz8I6gVyJfznys9CUYX8
+         +CoXwOuhTicBgujPYcRgqJdLf7vzTFMmxZd6d7Hgji5Z7cuQcx5Lyjj14s7fbAO7JEzb
+         DNDK4/EVWvedwBSd1WFiEqgWHULj7pdR4Hl2iE1K0m1Vgbd0rO1/L/frFwRlQzFaNgAA
+         QAce4D+vkqhUF8XTQcjzsAPhK7Gh33ZJmRF2v24MjS1kRSmbU2jYVlHOo2ZL7hzsz/Zc
+         NB/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5BNPomPjSt5hiIea69EjTytPpEqikhMJXfLRqSI0kqc=;
+        b=lFn2AwSROyutU/xzjw2iY9eiU7u1E2AP7IySQoi9wdmH/2WDepxF7Dt+2+Ao2NBS3j
+         ynVrJC9i25/03bVBEpRwmcuxQaM7Ym7aItJv2Ay/6A4GYAuKPHuyhkSmT8WJr96ENnuV
+         lDDf+GHmvHuAXraPK1xGCYJgy6Zyw/jvvA0ysB168Dq+nPIyLPpq26hRKdlNPYcT5IUz
+         tvEco63jEFYeEOYgvPqEUOooi19VSGQ/hme7GOZnivQc3TnWw6R0xJfs2ycnVcnS4D23
+         ril9dAkygonnX1tK2QT3KGK5OE1gVHuXWVN1oj40D8VMRXsS4Iq3tNwd7doqisecGTtg
+         NE0A==
+X-Gm-Message-State: AOAM531sv6yiwd8iR/J25A+xHBcMaJSKbhMbVg6C6akZ80nzrIpFYhOi
+        kPH0M63/cA5Q66cvBVO5MYejyw==
+X-Google-Smtp-Source: ABdhPJzA+mjTWUhOE3zIGZp8dEO8EaZ9s5olb+oYT5/uf26kP4FWKUquYw+4VYBh+7qW1k0QWLNFNg==
+X-Received: by 2002:a17:907:a40b:b0:6da:b4a1:33fa with SMTP id sg11-20020a170907a40b00b006dab4a133famr8628973ejc.22.1650284661044;
+        Mon, 18 Apr 2022 05:24:21 -0700 (PDT)
+Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id v21-20020a1709064e9500b006e8973a14d0sm4596498eju.174.2022.04.18.05.24.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 05:24:20 -0700 (PDT)
+Message-ID: <d441a648-a85c-6610-fc07-0956395f903d@linaro.org>
+Date:   Mon, 18 Apr 2022 14:24:19 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 1/4] dt-bindings: input: Add the PinePhone keyboard
+ binding
+Content-Language: en-US
+To:     Samuel Holland <samuel@sholland.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-input@vger.kernel.org
+Cc:     devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, Ondrej Jirman <x@xff.cz>,
+        linux-kernel@vger.kernel.org
+References: <20220417021633.56127-1-samuel@sholland.org>
+ <20220417021633.56127-2-samuel@sholland.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220417021633.56127-2-samuel@sholland.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@toke.dk>
+On 17/04/2022 04:16, Samuel Holland wrote:
 
-commit 037250f0a45cf9ecf5b52d4b9ff8eadeb609c800 upstream.
+(...)
 
-The ath9k driver was not properly clearing the status area in the
-ieee80211_tx_info struct before reporting TX status to mac80211. Instead,
-it was manually filling in fields, which meant that fields introduced later
-were left as-is.
+> +properties:
+> +  compatible:
+> +    const: pine64,pinephone-keyboard
+> +
+> +  reg:
+> +    const: 0x15
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  vbat-supply:
+> +    description: Supply for the keyboard MCU
+> +
+> +  wakeup-source: true
+> +
+> +  i2c-bus:
 
-Conveniently, mac80211 actually provides a helper to zero out the status
-area, so use that to make sure we zero everything.
+Generic node names, so just "i2c".
 
-The last commit touching the driver function writing the status information
-seems to have actually been fixing an issue that was also caused by the
-area being uninitialised; but it only added clearing of a single field
-instead of the whole struct. That is now redundant, though, so revert that
-commit and use it as a convenient Fixes tag.
+> +    $ref: /schemas/i2c/i2c-controller.yaml#
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +
+> +unevaluatedProperties: false
 
-Fixes: cc591d77aba1 ("ath9k: Make sure to zero status.tx_time before reporting TX status")
-Reported-by: Bagas Sanjaya <bagasdotme@gmail.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220330164409.16645-1-toke@toke.dk
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/wireless/ath/ath9k/xmit.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+You do not include any other schema at this level, so this should be
+additionalProperties:false.
 
---- a/drivers/net/wireless/ath/ath9k/xmit.c
-+++ b/drivers/net/wireless/ath/ath9k/xmit.c
-@@ -2553,6 +2553,8 @@ static void ath_tx_rc_status(struct ath_
- 	struct ath_hw *ah = sc->sc_ah;
- 	u8 i, tx_rateindex;
- 
-+	ieee80211_tx_info_clear_status(tx_info);
-+
- 	if (txok)
- 		tx_info->status.ack_signal = ts->ts_rssi;
- 
-@@ -2595,9 +2597,6 @@ static void ath_tx_rc_status(struct ath_
- 	}
- 
- 	tx_info->status.rates[tx_rateindex].count = ts->ts_longretry + 1;
--
--	/* we report airtime in ath_tx_count_airtime(), don't report twice */
--	tx_info->status.tx_time = 0;
- }
- 
- static void ath_tx_processq(struct ath_softc *sc, struct ath_txq *txq)
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/input/input.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +
+> +    i2c {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      keyboard@15 {
+> +        compatible = "pine64,pinephone-keyboard";
+> +        reg = <0x15>;
+> +        interrupt-parent = <&r_pio>;
+> +        interrupts = <0 12 IRQ_TYPE_EDGE_FALLING>; /* PL12 */
+> +
+> +        i2c-bus {
+> +          #address-cells = <1>;
+> +          #size-cells = <0>;
+> +
+> +          charger@75 {
+> +            reg = <0x75>;
+> +          };
+> +        };
+> +      };
+> +    };
 
 
+Best regards,
+Krzysztof
