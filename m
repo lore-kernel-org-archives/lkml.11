@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DED3C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60621C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245408AbiDROCz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:02:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
+        id S245502AbiDRODQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244332AbiDRNn7 (ORCPT
+        with ESMTP id S244545AbiDRNot (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:43:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABE43A723;
-        Mon, 18 Apr 2022 05:59:54 -0700 (PDT)
+        Mon, 18 Apr 2022 09:44:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFBE03FDAF;
+        Mon, 18 Apr 2022 06:00:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 079B9609FB;
-        Mon, 18 Apr 2022 12:59:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1406FC385A1;
-        Mon, 18 Apr 2022 12:59:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 615CAB80E44;
+        Mon, 18 Apr 2022 13:00:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC8E1C385A7;
+        Mon, 18 Apr 2022 13:00:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286793;
-        bh=PEaXFzMkDHYkPb3G0Mpf3R+xyJLmQHdq0HhfbNpRfKY=;
+        s=korg; t=1650286806;
+        bh=cTBkjuk3vanXhL5avaFHMwMgSOJmO4C0TO4RiJ5R6g8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aPyWLjc9yqyDWIetPPkuIu7kTjiOkzq3RWwUO5OGEHPfnFd6WnxBlHjkqsy2xtRi4
-         1d3jCC3qnlSY0GxNjZRdEBnTulzTAt0vbtrDJp7l6eWgGySHSCHT1iHaKrPx0Vv6aa
-         POycbMjHfrLLojKJyGA221dC6YArDDvDTOOy31G0=
+        b=RighYm4c01xw3OBJM3N83csq5ALHObAT92vCy4iSdQhtKmGgR+N0KGLtO4BRvpt8k
+         SPpfYmVbLmhYo3Xy9K9a9CLB6DPKNiZ2U+8gaVY/jicfbblbOtRV0GgESaQJuZK5Jb
+         r5I7rR8SRSrM0bGDY22aUHDgujmX1bXi0mWvUhdc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        Michal Hocko <mhocko@suse.com>,
-        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.14 246/284] mm/mempolicy: fix mpol_new leak in shared_policy_replace
-Date:   Mon, 18 Apr 2022 14:13:47 +0200
-Message-Id: <20220418121219.122820428@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 4.14 250/284] arm64: patch_text: Fixup last cpu should be master
+Date:   Mon, 18 Apr 2022 14:13:51 +0200
+Message-Id: <20220418121219.341947555@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -52,51 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-commit 4ad099559b00ac01c3726e5c95dc3108ef47d03e upstream.
+commit 31a099dbd91e69fcab55eef4be15ed7a8c984918 upstream.
 
-If mpol_new is allocated but not used in restart loop, mpol_new will be
-freed via mpol_put before returning to the caller.  But refcnt is not
-initialized yet, so mpol_put could not do the right things and might
-leak the unused mpol_new.  This would happen if mempolicy was updated on
-the shared shmem file while the sp->lock has been dropped during the
-memory allocation.
+These patch_text implementations are using stop_machine_cpuslocked
+infrastructure with atomic cpu_count. The original idea: When the
+master CPU patch_text, the others should wait for it. But current
+implementation is using the first CPU as master, which couldn't
+guarantee the remaining CPUs are waiting. This patch changes the
+last CPU as the master to solve the potential risk.
 
-This issue could be triggered easily with the below code snippet if
-there are many processes doing the below work at the same time:
-
-  shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
-  shm = shmat(shmid, 0, 0);
-  loop many times {
-    mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
-    mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
-          maxnode, 0);
-  }
-
-Link: https://lkml.kernel.org/r/20220329111416.27954-1-linmiaohe@huawei.com
-Fixes: 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: <stable@vger.kernel.org>	[3.8]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: ae16480785de ("arm64: introduce interfaces to hotpatch kernel and module code")
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220407073323.743224-2-guoren@kernel.org
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mempolicy.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/kernel/insn.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/mm/mempolicy.c
-+++ b/mm/mempolicy.c
-@@ -2479,6 +2479,7 @@ alloc_new:
- 	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
- 	if (!mpol_new)
- 		goto err_out;
-+	atomic_set(&mpol_new->refcnt, 1);
- 	goto restart;
- }
+--- a/arch/arm64/kernel/insn.c
++++ b/arch/arm64/kernel/insn.c
+@@ -233,8 +233,8 @@ static int __kprobes aarch64_insn_patch_
+ 	int i, ret = 0;
+ 	struct aarch64_insn_patch *pp = arg;
  
+-	/* The first CPU becomes master */
+-	if (atomic_inc_return(&pp->cpu_count) == 1) {
++	/* The last CPU becomes master */
++	if (atomic_inc_return(&pp->cpu_count) == num_online_cpus()) {
+ 		for (i = 0; ret == 0 && i < pp->insn_cnt; i++)
+ 			ret = aarch64_insn_patch_text_nosync(pp->text_addrs[i],
+ 							     pp->new_insns[i]);
 
 
