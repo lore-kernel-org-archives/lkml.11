@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02727C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13766C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244743AbiDRN5p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:57:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41656 "EHLO
+        id S244778AbiDRN5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244915AbiDRNbB (ORCPT
+        with ESMTP id S244917AbiDRNbB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:31:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBCAA10DA;
-        Mon, 18 Apr 2022 05:57:23 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC0721B8;
+        Mon, 18 Apr 2022 05:57:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5485C612BB;
-        Mon, 18 Apr 2022 12:57:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31830C385A1;
-        Mon, 18 Apr 2022 12:57:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 471E2B80E59;
+        Mon, 18 Apr 2022 12:57:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7757DC385A7;
+        Mon, 18 Apr 2022 12:57:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286642;
-        bh=gXO1PiuaPxfHEKD3y/fnagc/Wbe/+V8iujq2vnaYE1A=;
+        s=korg; t=1650286645;
+        bh=TtEuCSySUoleU+Sw6EzEPbql2kI+3nlYtifVMMkERWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CfM5DJPko9IxJlSAjRJ2trl0Pg4r9SUmv8dRHGvYjiq1MCkeZ/plpFs35ts02OhO9
-         wasjIcIgnAAXMXWL31c/vJhjUf1igeYyl0jYEOt1NcQoGZsmI4IUZpI+4dezP816rJ
-         1fUpk2QC79dSCR3vJdHLBJLfLvbx83qgpQje+q/o=
+        b=cYxYeDFDw8cfNPopUq+qzeuPh1bfjyRKG6RpXF3bD2rIdfpQsg9b1exYR4n6i9StU
+         Gx+d184o3eozKglZvdEl75QvfhUKIv0oOCiA+lJaTpYTKtlzbLKSQF8CV/2fomYZTu
+         3kBSb11MmJEmErTnXS4VNrvRdCxs77LpjFgSwBgY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.14 198/284] ASoC: topology: Allow TLV control to be either read or write
-Date:   Mon, 18 Apr 2022 14:12:59 +0200
-Message-Id: <20220418121217.358568080@linuxfoundation.org>
+        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 4.14 199/284] ARM: dts: spear1340: Update serial node properties
+Date:   Mon, 18 Apr 2022 14:13:00 +0200
+Message-Id: <20220418121217.386312360@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -52,40 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
 
-commit feb00b736af64875560f371fe7f58b0b7f239046 upstream.
+commit 583d6b0062640def86f3265aa1042ecb6672516e upstream.
 
-There is no reason to force readwrite access on TLV controls. It can be
-either read, write or both. This is further evidenced in code where it
-performs following checks:
-                if ((k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READ) && !sbe->get)
-                        return -EINVAL;
-                if ((k->access & SNDRV_CTL_ELEM_ACCESS_TLV_WRITE) && !sbe->put)
-                        return -EINVAL;
+Reorder dma and dma-names property for serial node to make it compliant
+with bindings.
 
-Fixes: 1a3232d2f61d ("ASoC: topology: Add support for TLV bytes controls")
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20220112170030.569712-3-amadeuszx.slawinski@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 6e8887f60f60 ("ARM: SPEAr13xx: Pass generic DW DMAC platform data from DT")
+Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Link: https://lore.kernel.org/r/20220326042313.97862-3-singh.kuldeep87k@gmail.com'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/soc-topology.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/spear1340.dtsi |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/sound/soc/soc-topology.c
-+++ b/sound/soc/soc-topology.c
-@@ -599,7 +599,8 @@ static int soc_tplg_kcontrol_bind_io(str
+--- a/arch/arm/boot/dts/spear1340.dtsi
++++ b/arch/arm/boot/dts/spear1340.dtsi
+@@ -142,9 +142,9 @@
+ 				reg = <0xb4100000 0x1000>;
+ 				interrupts = <0 105 0x4>;
+ 				status = "disabled";
+-				dmas = <&dwdma0 12 0 1>,
+-					<&dwdma0 13 1 0>;
+-				dma-names = "tx", "rx";
++				dmas = <&dwdma0 13 0 1>,
++					<&dwdma0 12 1 0>;
++				dma-names = "rx", "tx";
+ 			};
  
- 	if (hdr->ops.info == SND_SOC_TPLG_CTL_BYTES
- 		&& k->iface & SNDRV_CTL_ELEM_IFACE_MIXER
--		&& k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READWRITE
-+		&& (k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READ
-+		    || k->access & SNDRV_CTL_ELEM_ACCESS_TLV_WRITE)
- 		&& k->access & SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK) {
- 		struct soc_bytes_ext *sbe;
- 		struct snd_soc_tplg_bytes_control *be;
+ 			thermal@e07008c4 {
 
 
