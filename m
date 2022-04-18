@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B0AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:44:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4671C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:44:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239630AbiDRMqo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:46:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
+        id S233460AbiDRMqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240021AbiDRMif (ORCPT
+        with ESMTP id S240096AbiDRMik (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:38:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB7824F2D;
-        Mon, 18 Apr 2022 05:29:07 -0700 (PDT)
+        Mon, 18 Apr 2022 08:38:40 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F9F2528E;
+        Mon, 18 Apr 2022 05:29:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 350B2B80EC1;
-        Mon, 18 Apr 2022 12:29:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62977C385A7;
-        Mon, 18 Apr 2022 12:29:04 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D9409CE1099;
+        Mon, 18 Apr 2022 12:29:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BABFEC385A1;
+        Mon, 18 Apr 2022 12:29:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284944;
-        bh=Cu46Bdgl+yE5t+90F19Ck9p/+iZOgO5izkFcQgHGeA0=;
+        s=korg; t=1650284954;
+        bh=AVO+MOL+bqK/XmS+YnMfmQ7LUvClj07a1xA0LE9tqAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rucQ7kpVz/KOa12Rw4mB2CzDuj/DCRvts7EIRAuDhiJ9myuRXapoxIIW2nmfJL8XF
-         5/U7Dt70ZW6Ref8Dq6K8DCzh8uHTqgjli9vPMo9xFUBM6QlDUq2fLuShNH+clwOOBX
-         ZF1Fr8CeYzdKXm0892W/toL/9V8lNzVStOogSHuM=
+        b=PEihDcDk2ULAOvB27uYwexCbdWNEhsgvt26j24OHnsv/3EVe0K46VaroOQ8bMOuPm
+         tH6TtrhVk1qc6uQHfmR1s/EYNnA8J1PFuDH9HSj1ue9suuIu3i67RzKx7eod/F8spA
+         BR0po25784pAhfPCON1BBLC56pW/plo97/DqImKM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.15 006/189] ACPI: processor idle: Check for architectural support for LPI
-Date:   Mon, 18 Apr 2022 14:10:26 +0200
-Message-Id: <20220418121200.597748506@linuxfoundation.org>
+        stable@vger.kernel.org, Dragan Simic <dragan.simic@gmail.com>,
+        Kyle Copperfield <kmcopper@danwin1210.me>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 061/189] media: rockchip/rga: do proper error checking in probe
+Date:   Mon, 18 Apr 2022 14:11:21 +0200
+Message-Id: <20220418121202.241741556@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,68 +53,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Kyle Copperfield <kmcopper@danwin1210.me>
 
-commit eb087f305919ee8169ad65665610313e74260463 upstream.
+[ Upstream commit 6150f276073a1480030242a7e006a89e161d6cd6 ]
 
-When `osc_pc_lpi_support_confirmed` is set through `_OSC` and `_LPI` is
-populated then the cpuidle driver assumes that LPI is fully functional.
+The latest fix for probe error handling contained a typo that causes
+probing to fail with the following message:
 
-However currently the kernel only provides architectural support for LPI
-on ARM.  This leads to high power consumption on X86 platforms that
-otherwise try to enable LPI.
+  rockchip-rga: probe of ff680000.rga failed with error -12
 
-So probe whether or not LPI support is implemented before enabling LPI in
-the kernel.  This is done by overloading `acpi_processor_ffh_lpi_probe` to
-check whether it returns `-EOPNOTSUPP`. It also means that all future
-implementations of `acpi_processor_ffh_lpi_probe` will need to follow
-these semantics as well.
+This patch fixes the typo.
 
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e58430e1d4fd (media: rockchip/rga: fix error handling in probe)
+Reviewed-by: Dragan Simic <dragan.simic@gmail.com>
+Signed-off-by: Kyle Copperfield <kmcopper@danwin1210.me>
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/processor_idle.c |   15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/media/platform/rockchip/rga/rga.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/acpi/processor_idle.c
-+++ b/drivers/acpi/processor_idle.c
-@@ -1075,6 +1075,11 @@ static int flatten_lpi_states(struct acp
- 	return 0;
- }
- 
-+int __weak acpi_processor_ffh_lpi_probe(unsigned int cpu)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
- static int acpi_processor_get_lpi_info(struct acpi_processor *pr)
- {
- 	int ret, i;
-@@ -1083,6 +1088,11 @@ static int acpi_processor_get_lpi_info(s
- 	struct acpi_device *d = NULL;
- 	struct acpi_lpi_states_array info[2], *tmp, *prev, *curr;
- 
-+	/* make sure our architecture has support */
-+	ret = acpi_processor_ffh_lpi_probe(pr->id);
-+	if (ret == -EOPNOTSUPP)
-+		return ret;
-+
- 	if (!osc_pc_lpi_support_confirmed)
- 		return -EOPNOTSUPP;
- 
-@@ -1134,11 +1144,6 @@ static int acpi_processor_get_lpi_info(s
- 	return 0;
- }
- 
--int __weak acpi_processor_ffh_lpi_probe(unsigned int cpu)
--{
--	return -ENODEV;
--}
--
- int __weak acpi_processor_ffh_lpi_enter(struct acpi_lpi_state *lpi)
- {
- 	return -ENODEV;
+diff --git a/drivers/media/platform/rockchip/rga/rga.c b/drivers/media/platform/rockchip/rga/rga.c
+index 6759091b15e0..d99ea8973b67 100644
+--- a/drivers/media/platform/rockchip/rga/rga.c
++++ b/drivers/media/platform/rockchip/rga/rga.c
+@@ -895,7 +895,7 @@ static int rga_probe(struct platform_device *pdev)
+ 	}
+ 	rga->dst_mmu_pages =
+ 		(unsigned int *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 3);
+-	if (rga->dst_mmu_pages) {
++	if (!rga->dst_mmu_pages) {
+ 		ret = -ENOMEM;
+ 		goto free_src_pages;
+ 	}
+-- 
+2.35.1
+
 
 
