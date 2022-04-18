@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD86C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29EE8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238646AbiDRMZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:25:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
+        id S238718AbiDRMZd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:25:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238398AbiDRMXV (ORCPT
+        with ESMTP id S238407AbiDRMXV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:23:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D659A1B797;
-        Mon, 18 Apr 2022 05:18:53 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1E81AD8B;
+        Mon, 18 Apr 2022 05:18:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C47CB80EDA;
-        Mon, 18 Apr 2022 12:18:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C85AFC385AB;
-        Mon, 18 Apr 2022 12:18:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CBEE60F61;
+        Mon, 18 Apr 2022 12:18:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A76B9C385A1;
+        Mon, 18 Apr 2022 12:18:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284331;
-        bh=qChVbIlFtuidMZRuxLHN8CXCO/NsypRaqy9iBBV8y0w=;
+        s=korg; t=1650284334;
+        bh=wSl0RSmMP5FG7F0lSP+jyXCPimrudFUp31FNYCu0rYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O0ctSg5TEwWBS1hw/465mEUH7r9KRlwM74CzYaTHTXvttGYs5spkOuPsHIF3yKGSc
-         CxH2IRTnhWWO00ZhT6/ZuJw234dxGdvAg+2Wn80QDiPiH6tyaMuoEMK2RpqpQuEJ0H
-         97HJ3095JbVj5VAkk7+80LivKBiW1ZkSS8AJUoGI=
+        b=pKvl+n86lAfIWNKKhMNLQxQYlYONm+YO6j5tVBcZQuN98ZZp93VczLsLjDtN87BNi
+         +jWTYVpUdkbBUuGmkCDpNx6GnEmyiNU6w0lbCmWm4zX3DodstJ9YFvkMW+mNyZI6tB
+         b2cBNyunb7l8sW22LN/3msh1g8lRAEEypMukdI94=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Gao Xiang <hsiangkao@linux.alibaba.com>,
+        Jeffle Xu <jefflexu@linux.alibaba.com>,
+        David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 077/219] net/sched: fix initialization order when updating chain 0 head
-Date:   Mon, 18 Apr 2022 14:10:46 +0200
-Message-Id: <20220418121208.242608101@linuxfoundation.org>
+Subject: [PATCH 5.17 078/219] cachefiles: unmark inode in use in error path
+Date:   Mon, 18 Apr 2022 14:10:47 +0200
+Message-Id: <20220418121208.315766551@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -52,64 +50,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+From: Jeffle Xu <jefflexu@linux.alibaba.com>
 
-[ Upstream commit e65812fd22eba32f11abe28cb377cbd64cfb1ba0 ]
+[ Upstream commit ea5dc046127e857a7873ae55fd57c866e9e86fb2 ]
 
-Currently, when inserting a new filter that needs to sit at the head
-of chain 0, it will first update the heads pointer on all devices using
-the (shared) block, and only then complete the initialization of the new
-element so that it has a "next" element.
+Unmark inode in use if error encountered. If the in-use flag leakage
+occurs in cachefiles_open_file(), Cachefiles will complain "Inode
+already in use" when later another cookie with the same index key is
+looked up.
 
-This can lead to a situation that the chain 0 head is propagated to
-another CPU before the "next" initialization is done. When this race
-condition is triggered, packets being matched on that CPU will simply
-miss all other filters, and will flow through the stack as if there were
-no other filters installed. If the system is using OVS + TC, such
-packets will get handled by vswitchd via upcall, which results in much
-higher latency and reordering. For other applications it may result in
-packet drops.
+If the in-use flag leakage occurs in cachefiles_create_tmpfile(), though
+the "Inode already in use" warning won't be triggered, fix the leakage
+anyway.
 
-This is reproducible with a tc only setup, but it varies from system to
-system. It could be reproduced with a shared block amongst 10 veth
-tunnels, and an ingress filter mirroring packets to another veth.
-That's because using the last added veth tunnel to the shared block to
-do the actual traffic, it makes the race window bigger and easier to
-trigger.
-
-The fix is rather simple, to just initialize the next pointer of the new
-filter instance (tp) before propagating the head change.
-
-The fixes tag is pointing to the original code though this issue should
-only be observed when using it unlocked.
-
-Fixes: 2190d1d0944f ("net: sched: introduce helpers to work with filter chains")
-Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-Reviewed-by: Davide Caratti <dcaratti@redhat.com>
-Link: https://lore.kernel.org/r/b97d5f4eaffeeb9d058155bcab63347527261abf.1649341369.git.marcelo.leitner@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Fixes: 1f08c925e7a3 ("cachefiles: Implement backing file wrangling")
+Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-cachefs@redhat.com
+Link: https://listman.redhat.com/archives/linux-cachefs/2022-March/006615.html # v1
+Link: https://listman.redhat.com/archives/linux-cachefs/2022-March/006618.html # v2
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/cls_api.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/cachefiles/namei.c | 33 ++++++++++++++++++++++++---------
+ 1 file changed, 24 insertions(+), 9 deletions(-)
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 5ce1208a6ea3..130b5fda9c51 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -1653,10 +1653,10 @@ static int tcf_chain_tp_insert(struct tcf_chain *chain,
- 	if (chain->flushing)
- 		return -EAGAIN;
+diff --git a/fs/cachefiles/namei.c b/fs/cachefiles/namei.c
+index f256c8aff7bb..ca9f3e4ec4b3 100644
+--- a/fs/cachefiles/namei.c
++++ b/fs/cachefiles/namei.c
+@@ -57,6 +57,16 @@ static void __cachefiles_unmark_inode_in_use(struct cachefiles_object *object,
+ 	trace_cachefiles_mark_inactive(object, inode);
+ }
  
-+	RCU_INIT_POINTER(tp->next, tcf_chain_tp_prev(chain, chain_info));
- 	if (*chain_info->pprev == chain->filter_chain)
- 		tcf_chain0_head_change(chain, tp);
- 	tcf_proto_get(tp);
--	RCU_INIT_POINTER(tp->next, tcf_chain_tp_prev(chain, chain_info));
- 	rcu_assign_pointer(*chain_info->pprev, tp);
++static void cachefiles_do_unmark_inode_in_use(struct cachefiles_object *object,
++					      struct dentry *dentry)
++{
++	struct inode *inode = d_backing_inode(dentry);
++
++	inode_lock(inode);
++	__cachefiles_unmark_inode_in_use(object, dentry);
++	inode_unlock(inode);
++}
++
+ /*
+  * Unmark a backing inode and tell cachefilesd that there's something that can
+  * be culled.
+@@ -68,9 +78,7 @@ void cachefiles_unmark_inode_in_use(struct cachefiles_object *object,
+ 	struct inode *inode = file_inode(file);
  
- 	return 0;
+ 	if (inode) {
+-		inode_lock(inode);
+-		__cachefiles_unmark_inode_in_use(object, file->f_path.dentry);
+-		inode_unlock(inode);
++		cachefiles_do_unmark_inode_in_use(object, file->f_path.dentry);
+ 
+ 		if (!test_bit(CACHEFILES_OBJECT_USING_TMPFILE, &object->flags)) {
+ 			atomic_long_add(inode->i_blocks, &cache->b_released);
+@@ -484,7 +492,7 @@ struct file *cachefiles_create_tmpfile(struct cachefiles_object *object)
+ 				object, d_backing_inode(path.dentry), ret,
+ 				cachefiles_trace_trunc_error);
+ 			file = ERR_PTR(ret);
+-			goto out_dput;
++			goto out_unuse;
+ 		}
+ 	}
+ 
+@@ -494,15 +502,20 @@ struct file *cachefiles_create_tmpfile(struct cachefiles_object *object)
+ 		trace_cachefiles_vfs_error(object, d_backing_inode(path.dentry),
+ 					   PTR_ERR(file),
+ 					   cachefiles_trace_open_error);
+-		goto out_dput;
++		goto out_unuse;
+ 	}
+ 	if (unlikely(!file->f_op->read_iter) ||
+ 	    unlikely(!file->f_op->write_iter)) {
+ 		fput(file);
+ 		pr_notice("Cache does not support read_iter and write_iter\n");
+ 		file = ERR_PTR(-EINVAL);
++		goto out_unuse;
+ 	}
+ 
++	goto out_dput;
++
++out_unuse:
++	cachefiles_do_unmark_inode_in_use(object, path.dentry);
+ out_dput:
+ 	dput(path.dentry);
+ out:
+@@ -590,14 +603,16 @@ static bool cachefiles_open_file(struct cachefiles_object *object,
+ check_failed:
+ 	fscache_cookie_lookup_negative(object->cookie);
+ 	cachefiles_unmark_inode_in_use(object, file);
+-	if (ret == -ESTALE) {
+-		fput(file);
+-		dput(dentry);
++	fput(file);
++	dput(dentry);
++	if (ret == -ESTALE)
+ 		return cachefiles_create_file(object);
+-	}
++	return false;
++
+ error_fput:
+ 	fput(file);
+ error:
++	cachefiles_do_unmark_inode_in_use(object, dentry);
+ 	dput(dentry);
+ 	return false;
+ }
 -- 
 2.35.1
 
