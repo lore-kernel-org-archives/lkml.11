@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ECC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:04:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C67C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:04:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245293AbiDROG7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:06:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34932 "EHLO
+        id S245678AbiDROHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239972AbiDRNuh (ORCPT
+        with ESMTP id S244982AbiDRNuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:50:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABC943AFE;
-        Mon, 18 Apr 2022 06:01:53 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4728043ED9;
+        Mon, 18 Apr 2022 06:01:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25285B80EC3;
-        Mon, 18 Apr 2022 13:01:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F780C385A7;
-        Mon, 18 Apr 2022 13:01:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 992D160B3C;
+        Mon, 18 Apr 2022 13:01:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FB1EC385A1;
+        Mon, 18 Apr 2022 13:01:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286910;
-        bh=GR6Dfnbb9uN0r2QYDYz1vhQwHWD3lOdfcpRoWQ+ksZ4=;
+        s=korg; t=1650286914;
+        bh=qt6zVlScKlgp/UWRwAPjnLop5XpVwyg8xY7P3/aVvDE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yP1xb6P2ws+Uvo3C+XwyFqJDVA8Oof7xCet1o00FrZUlRWbRLp1dIs3Lliwkh12p0
-         h+RXuz2hrZsdB67zvKJu03t+0vv7woa7go9/9U5UEWU/sUPHN7Gu8SyNtmJ0Mp8q5O
-         9bNd0UpqBS66N49xnIDWNK9DONulvIjujcwhylr4=
+        b=yMDhF77/khFo99jstRfZI/L93PJkyoDeuzvTVTKU+P67MKsByE9vF2loQ5CQqWanC
+         la2O0dk+lmv4b15F5S1Tll9l0uAac23WIPA2k99RaG3q0t6nkGl+WRtqaQ6TF8Cv2H
+         sg6aHyg4dwTOti2+qL2jXcVUDZZzQVDPQNJ/o9/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linuxfoundation.org>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Tejun Heo <tj@kernel.org>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.14 257/284] cgroup: Use open-time credentials for process migraton perm checks
-Date:   Mon, 18 Apr 2022 14:13:58 +0200
-Message-Id: <20220418121219.735989441@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Sven Peter <sven@svenpeter.dev>, Wolfram Sang <wsa@kernel.org>
+Subject: [PATCH 4.14 284/284] i2c: pasemi: Wait for write xfers to finish
+Date:   Mon, 18 Apr 2022 14:14:25 +0200
+Message-Id: <20220418121221.361218307@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -51,102 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tejun Heo <tj@kernel.org>
+From: Martin Povišer <povik+lin@cutebit.org>
 
-commit 1756d7994ad85c2479af6ae5a9750b92324685af upstream.
+commit bd8963e602c77adc76dbbbfc3417c3cf14fed76b upstream.
 
-cgroup process migration permission checks are performed at write time as
-whether a given operation is allowed or not is dependent on the content of
-the write - the PID. This currently uses current's credentials which is a
-potential security weakness as it may allow scenarios where a less
-privileged process tricks a more privileged one into writing into a fd that
-it created.
+Wait for completion of write transfers before returning from the driver.
+At first sight it may seem advantageous to leave write transfers queued
+for the controller to carry out on its own time, but there's a couple of
+issues with it:
 
-This patch makes both cgroup2 and cgroup1 process migration interfaces to
-use the credentials saved at the time of open (file->f_cred) instead of
-current's.
+ * Driver doesn't check for FIFO space.
 
-Reported-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
-Fixes: 187fe84067bd ("cgroup: require write perm on common ancestor when moving processes on the default hierarchy")
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
-[OP: backport to v4.14: apply original __cgroup_procs_write() changes to
-cgroup_threads_write() and cgroup_procs_write()]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+ * The queued writes can complete while the driver is in its I2C read
+   transfer path which means it will get confused by the raising of
+   XEN (the 'transaction ended' signal). This can cause a spurious
+   ENODATA error due to premature reading of the MRXFIFO register.
+
+Adding the wait fixes some unreliability issues with the driver. There's
+some efficiency cost to it (especially with pasemi_smb_waitready doing
+its polling), but that will be alleviated once the driver receives
+interrupt support.
+
+Fixes: beb58aa39e6e ("i2c: PA Semi SMBus driver")
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+Reviewed-by: Sven Peter <sven@svenpeter.dev>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cgroup-v1.c |    7 ++++---
- kernel/cgroup/cgroup.c    |   17 ++++++++++++++++-
- 2 files changed, 20 insertions(+), 4 deletions(-)
+ drivers/i2c/busses/i2c-pasemi.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/kernel/cgroup/cgroup-v1.c
-+++ b/kernel/cgroup/cgroup-v1.c
-@@ -535,10 +535,11 @@ static ssize_t __cgroup1_procs_write(str
- 		goto out_unlock;
+--- a/drivers/i2c/busses/i2c-pasemi.c
++++ b/drivers/i2c/busses/i2c-pasemi.c
+@@ -145,6 +145,12 @@ static int pasemi_i2c_xfer_msg(struct i2
  
- 	/*
--	 * Even if we're attaching all tasks in the thread group, we only
--	 * need to check permissions on one of them.
-+	 * Even if we're attaching all tasks in the thread group, we only need
-+	 * to check permissions on one of them. Check permissions using the
-+	 * credentials from file open to protect against inherited fd attacks.
- 	 */
--	cred = current_cred();
-+	cred = of->file->f_cred;
- 	tcred = get_task_cred(task);
- 	if (!uid_eq(cred->euid, GLOBAL_ROOT_UID) &&
- 	    !uid_eq(cred->euid, tcred->uid) &&
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -4381,6 +4381,7 @@ static ssize_t cgroup_procs_write(struct
- {
- 	struct cgroup *src_cgrp, *dst_cgrp;
- 	struct task_struct *task;
-+	const struct cred *saved_cred;
- 	ssize_t ret;
+ 		TXFIFO_WR(smbus, msg->buf[msg->len-1] |
+ 			  (stop ? MTXFIFO_STOP : 0));
++
++		if (stop) {
++			err = pasemi_smb_waitready(smbus);
++			if (err)
++				goto reset_out;
++		}
+ 	}
  
- 	dst_cgrp = cgroup_kn_lock_live(of->kn, false);
-@@ -4397,8 +4398,15 @@ static ssize_t cgroup_procs_write(struct
- 	src_cgrp = task_cgroup_from_root(task, &cgrp_dfl_root);
- 	spin_unlock_irq(&css_set_lock);
- 
-+	/*
-+	 * Process and thread migrations follow same delegation rule. Check
-+	 * permissions using the credentials from file open to protect against
-+	 * inherited fd attacks.
-+	 */
-+	saved_cred = override_creds(of->file->f_cred);
- 	ret = cgroup_procs_write_permission(src_cgrp, dst_cgrp,
- 					    of->file->f_path.dentry->d_sb);
-+	revert_creds(saved_cred);
- 	if (ret)
- 		goto out_finish;
- 
-@@ -4422,6 +4430,7 @@ static ssize_t cgroup_threads_write(stru
- {
- 	struct cgroup *src_cgrp, *dst_cgrp;
- 	struct task_struct *task;
-+	const struct cred *saved_cred;
- 	ssize_t ret;
- 
- 	buf = strstrip(buf);
-@@ -4440,9 +4449,15 @@ static ssize_t cgroup_threads_write(stru
- 	src_cgrp = task_cgroup_from_root(task, &cgrp_dfl_root);
- 	spin_unlock_irq(&css_set_lock);
- 
--	/* thread migrations follow the cgroup.procs delegation rule */
-+	/*
-+	 * Process and thread migrations follow same delegation rule. Check
-+	 * permissions using the credentials from file open to protect against
-+	 * inherited fd attacks.
-+	 */
-+	saved_cred = override_creds(of->file->f_cred);
- 	ret = cgroup_procs_write_permission(src_cgrp, dst_cgrp,
- 					    of->file->f_path.dentry->d_sb);
-+	revert_creds(saved_cred);
- 	if (ret)
- 		goto out_finish;
- 
+ 	return 0;
 
 
