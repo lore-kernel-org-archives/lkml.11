@@ -2,49 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B598DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04408C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:47:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243866AbiDRNuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57242 "EHLO
+        id S243810AbiDRNuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244470AbiDRNab (ORCPT
+        with ESMTP id S244543AbiDRNag (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB4412742;
-        Mon, 18 Apr 2022 05:54:35 -0700 (PDT)
+        Mon, 18 Apr 2022 09:30:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 211213FBE6;
+        Mon, 18 Apr 2022 05:54:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2623B80EBA;
-        Mon, 18 Apr 2022 12:54:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6DC8C385A1;
-        Mon, 18 Apr 2022 12:54:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2FE660FF7;
+        Mon, 18 Apr 2022 12:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C66FEC385A7;
+        Mon, 18 Apr 2022 12:54:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286471;
-        bh=+GLEJZPMdNnOUodzXhHjndU9yOjabO6mSPPMQ04fUSI=;
+        s=korg; t=1650286481;
+        bh=JZZmyJXJTfR9m3f1cBsQ6R4p/0iYOIJFlYrSFLblW2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IZyBdW363Qe1CsiBn9FwpousON2bfn6DAGexiNUKZr4q225/di2ffGlbPiT6k3tPI
-         CE7xg4bkyKl2GS4XNrKNzAk4UMry9bZQjYY7pNlFC2wpFhcXbEE0tyPTAfnzcsrZBn
-         m3Ig4UlvvrlrVvzuAxGja3Ls8BxTBJIPdXhhpYII=
+        b=k6OHHc/zHZEcGaaLF68cUFDjRRH6Y//RO9uCesTMQjJtOs9YnoEiXsy9FVte8QUZC
+         tL8is8djPAqEFLx6ZX6hAYY6rCZEq0BIJveCfITYGfzkEsT0k6o04RNec9rifaBK2Y
+         Vli1K+sbdqX8WFUydzUMv7nrxwgoJBkGobCjJ0kg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, He Zhe <zhe.he@windriver.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        linux-serial@vger.kernel.org,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
+        stable@vger.kernel.org, Sven Auhagen <sven.auhagen@voleatech.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 145/284] kgdboc: fix return value of __setup handler
-Date:   Mon, 18 Apr 2022 14:12:06 +0200
-Message-Id: <20220418121215.677608345@linuxfoundation.org>
+Subject: [PATCH 4.14 148/284] netfilter: nf_conntrack_tcp: preserve liberal flag in tcp options
+Date:   Mon, 18 Apr 2022 14:12:09 +0200
+Message-Id: <20220418121215.811257073@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -56,74 +49,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit ab818c7aa7544bf8d2dd4bdf68878b17a02eb332 ]
+[ Upstream commit f2dd495a8d589371289981d5ed33e6873df94ecc ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) environment strings.
-So return 1 from kgdboc_option_setup().
+Do not reset IP_CT_TCP_FLAG_BE_LIBERAL flag in out-of-sync scenarios
+coming before the TCP window tracking, otherwise such connections will
+fail in the window check.
 
-Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
-  kgdboc=kbd kgdbts=", will be passed to user space.
+Update tcp_options() to leave this flag in place and add a new helper
+function to reset the tcp window state.
 
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc7
-     kgdboc=kbd
-     kgdbts=
+Based on patch from Sven Auhagen.
 
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: 1bd54d851f50 ("kgdboc: Passing ekgdboc to command line causes panic")
-Fixes: f2d937f3bf00 ("consoles: polling support, kgdboc")
-Cc: He Zhe <zhe.he@windriver.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: kgdb-bugreport@lists.sourceforge.net
-Cc: Jason Wessel <jason.wessel@windriver.com>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: linux-serial@vger.kernel.org
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Link: https://lore.kernel.org/r/20220309033018.17936-1-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c4832c7bbc3f ("netfilter: nf_ct_tcp: improve out-of-sync situation in TCP tracking")
+Tested-by: Sven Auhagen <sven.auhagen@voleatech.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/kgdboc.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/netfilter/nf_conntrack_proto_tcp.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index 0314e78e31ff..72b89702d008 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -304,16 +304,16 @@ static int kgdboc_option_setup(char *opt)
- {
- 	if (!opt) {
- 		pr_err("config string not provided\n");
--		return -EINVAL;
-+		return 1;
- 	}
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
+index cba1c6ffe51a..5239c502c016 100644
+--- a/net/netfilter/nf_conntrack_proto_tcp.c
++++ b/net/netfilter/nf_conntrack_proto_tcp.c
+@@ -383,8 +383,8 @@ static void tcp_options(const struct sk_buff *skb,
+ 				 length, buff);
+ 	BUG_ON(ptr == NULL);
  
- 	if (strlen(opt) >= MAX_CONFIG_LEN) {
- 		pr_err("config string too long\n");
--		return -ENOSPC;
-+		return 1;
- 	}
- 	strcpy(config, opt);
+-	state->td_scale =
+-	state->flags = 0;
++	state->td_scale = 0;
++	state->flags &= IP_CT_TCP_FLAG_BE_LIBERAL;
  
--	return 0;
-+	return 1;
+ 	while (length > 0) {
+ 		int opcode=*ptr++;
+@@ -797,6 +797,16 @@ static unsigned int *tcp_get_timeouts(struct net *net)
+ 	return tcp_pernet(net)->timeouts;
  }
  
- __setup("kgdboc=", kgdboc_option_setup);
++static void nf_ct_tcp_state_reset(struct ip_ct_tcp_state *state)
++{
++	state->td_end		= 0;
++	state->td_maxend	= 0;
++	state->td_maxwin	= 0;
++	state->td_maxack	= 0;
++	state->td_scale		= 0;
++	state->flags		&= IP_CT_TCP_FLAG_BE_LIBERAL;
++}
++
+ /* Returns verdict for packet, or -1 for invalid. */
+ static int tcp_packet(struct nf_conn *ct,
+ 		      const struct sk_buff *skb,
+@@ -897,8 +907,7 @@ static int tcp_packet(struct nf_conn *ct,
+ 			ct->proto.tcp.last_flags &= ~IP_CT_EXP_CHALLENGE_ACK;
+ 			ct->proto.tcp.seen[ct->proto.tcp.last_dir].flags =
+ 				ct->proto.tcp.last_flags;
+-			memset(&ct->proto.tcp.seen[dir], 0,
+-			       sizeof(struct ip_ct_tcp_state));
++			nf_ct_tcp_state_reset(&ct->proto.tcp.seen[dir]);
+ 			break;
+ 		}
+ 		ct->proto.tcp.last_index = index;
 -- 
 2.34.1
 
