@@ -2,101 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECBB1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 00:50:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06406C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 00:52:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235463AbiDRAxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 20:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49772 "EHLO
+        id S235469AbiDRAzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 20:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235471AbiDRAxR (ORCPT
+        with ESMTP id S231322AbiDRAzJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 20:53:17 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFB613EB4
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 17:50:40 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id l9-20020a056830268900b006054381dd35so2760675otu.4
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 17:50:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rbBsewLQ28VXBD2dckSK5/fcybm99fyel6P5elhP/LM=;
-        b=cTjE64825xtXj3L0x+9E2BwW3a6Ki9Ik09giBL8q9qFRPl8gVayqHwdxROR5jc+PP3
-         ZNUumDHiMFN4XJtNsuD2FpPzratE4o67M4tB9ZUPDNu4EQXyboAXIF+9bjHpvlRqrcjd
-         ARN6FVfkkKPdaRAYxmYNd65JEk0A+Zc2kNSagsRN84QJ2+r315rSrVjpcUZgmIzhh9uT
-         u2Bya1mRfRIpxCUsONAXS4zSFcWEfIeaHFlScdldYoqsPfl6OXfrKyePPLaswi/dOcZL
-         4b4puryY50j0ANudn2jbquBuZST52PxEWXvife+HwRqEyAdoKSzvDJ1cgYKU47rsZLuT
-         rp0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=rbBsewLQ28VXBD2dckSK5/fcybm99fyel6P5elhP/LM=;
-        b=KGEmefwldeyCXTVOYRwic6Uyws/2jfd/QcgCJlTBrJ65i1/IQda0tOMHmRrtJMBCqK
-         m/mY9NboCzGlwcLOJjIoa/hD3bIBgYVGA6whjKZ/7f4kb5+YgNeGOwwYiKEzqcZmeTLx
-         Pd151LZPBVbL6/3pxd9aelelQqrbZwNtCGghGZNShdFnBTKu/hA/VBbNIR0Q0lQVSdW8
-         VHrWeTeXfgjGpmKPBc/ENg/ZOU0y+BdhPzBRCb+biLLcDEF6GDkVk4wXH4NmlVJO04Pj
-         256uZMMOBAC+q471dwdB6t3r+HchLkLbDfUNAytrUXkBvDwyxpTEH2/Pb+x0RPxPteL6
-         a1IQ==
-X-Gm-Message-State: AOAM533dYbR2YV9DbWW6dhx/YJdCG59Eij99SmiGHsQmoZmkRdmuvKA1
-        UxAhKCVDTygpqan6K4LtHzKgKOPgQ74=
-X-Google-Smtp-Source: ABdhPJxOPZBc53jD1LNhllw3e8fw+cGAHjoIYDvs0Nty84nLBvaI7U69yeGhcsXQy9zDqJEatNQn7Q==
-X-Received: by 2002:a9d:644b:0:b0:5cd:a627:c439 with SMTP id m11-20020a9d644b000000b005cda627c439mr3164477otl.112.1650243039825;
-        Sun, 17 Apr 2022 17:50:39 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id o133-20020acaf08b000000b002ef7562e07csm3484242oih.41.2022.04.17.17.50.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Apr 2022 17:50:38 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Sun, 17 Apr 2022 17:50:37 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: Linux 5.18-rc3
-Message-ID: <20220418005037.GA1094849@roeck-us.net>
-References: <CAHk-=wgBR6P8EseYMjfMjxQ_oTpoQmL0qvKpAw04kP-HBgSGFg@mail.gmail.com>
+        Sun, 17 Apr 2022 20:55:09 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115E313E3F
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 17:52:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650243153; x=1681779153;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=szoCLBC/pIys3NwbIzrfbRFurpriz5wEpftUR2JNNlw=;
+  b=giQmoFeeA4n9lrN3XXVEHmjc3hJ6tAUaA2TJ1ORojvcSZ5bVuO/TB9qD
+   PrD3aGOQr42Q44/AhI7Ujtzo8uyvB1Ci0pUPRu2Ch8JhXUZAclwKUUGY3
+   unsiEgwHs+fJaTpeFS4maRpRr4avAlmCEcRiN4XHG7/z7dhBn++nmRW+w
+   FCAUSbx5IaxAzXuI6chFWsUyxSGGT+KFkOORrvr5v2dA3Oy46H3tr2Oaa
+   P8uqJUZIwGGXLUrahT8GYlSpT7HrTIGWHJRBKHwyehXL06HIKshwqjAsx
+   4kKuc61kAVl4RVDybYIf8AEZIuVIRx7D4Mtle9D+C6YHn6PveFOqLwHxI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10320"; a="245313205"
+X-IronPort-AV: E=Sophos;i="5.90,267,1643702400"; 
+   d="scan'208";a="245313205"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2022 17:52:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,267,1643702400"; 
+   d="scan'208";a="701651270"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by fmsmga001.fm.intel.com with ESMTP; 17 Apr 2022 17:52:30 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: [RESEND PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
+Date:   Mon, 18 Apr 2022 08:49:49 +0800
+Message-Id: <20220418005000.897664-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgBR6P8EseYMjfMjxQ_oTpoQmL0qvKpAw04kP-HBgSGFg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 17, 2022 at 02:19:01PM -0700, Linus Torvalds wrote:
-> It's Sunday afternoon, and you all know what that means. It's time for
-> another release candidate.
-> 
-> (Yes, yes, it's also Easter Sunday, but priorities, people!)
-> 
-> Things continue to look quite regular, although the diffstat may look
-> a bit odd due to some email  updates that ended up causing a lot of
-> spread-out one-liner updates in the devicetree files.
-> 
-> There's also a series to sound card probing error handling fixes ("Fix
-> the missing snd_card_free() call at probe error") which ends up
-> showing as a lot of few-lines across a number of sound drivers.
-> 
-> But it all looks pretty small and fairly simple. Famous last words.
-> 
-> Please do test,
+Hi Joerg,
 
-Build results:
-	total: 151 pass: 150 fail: 1
-Failed builds:
-	m68k:allmodconfig
-Qemu test results:
-	total: 489 pass: 489 fail: 0
+This is a resend version of v8 posted here:
+https://lore.kernel.org/linux-iommu/20220308054421.847385-1-baolu.lu@linux.intel.com/
+as we discussed in this thread:
+https://lore.kernel.org/linux-iommu/Yk%2Fq1BGN8pC5HVZp@8bytes.org/
 
-Building m68k:allmodconfig ... failed
---------------
-Error log:
-sound/oss/dmasound/dmasound_core.c:1431:12: error:
-	'dmasound_setup' defined but not used
- 
-Caused by commit 9dd7c46346ca ("sound/oss/dmasound: fix build when drivers
-are mixed =y/=m"). Fixed with
-https://vanko.io/project/alsa-devel/patch/20220414091940.2216-1-miles.chen@mediatek.com/
+All patches can be applied perfectly except this one:
+ - [PATCH v8 02/11] driver core: Add dma_cleanup callback in bus_type
+It conflicts with below refactoring commit:
+ - 4b775aaf1ea99 "driver core: Refactor sysfs and drv/bus remove hooks"
+The conflict has been fixed in this post.
 
-Guenter
+No functional changes in this series. I suppress cc-ing this series to
+all v8 reviewers in order to avoid spam.
+
+Please consider it for your iommu tree.
+
+Best regards,
+baolu
+
+Change log:
+- v8 and before:
+  - Please refer to v8 post for all the change history.
+
+- v8-resend
+  - Rebase the series on top of v5.18-rc3.
+  - Add Reviewed-by's granted by Robin.
+  - Add a Tested-by granted by Eric.
+
+Jason Gunthorpe (1):
+  vfio: Delete the unbound_list
+
+Lu Baolu (10):
+  iommu: Add DMA ownership management interfaces
+  driver core: Add dma_cleanup callback in bus_type
+  amba: Stop sharing platform_dma_configure()
+  bus: platform,amba,fsl-mc,PCI: Add device DMA ownership management
+  PCI: pci_stub: Set driver_managed_dma
+  PCI: portdrv: Set driver_managed_dma
+  vfio: Set DMA ownership for VFIO devices
+  vfio: Remove use of vfio_group_viable()
+  vfio: Remove iommu group notifier
+  iommu: Remove iommu group changes notifier
+
+ include/linux/amba/bus.h              |   8 +
+ include/linux/device/bus.h            |   3 +
+ include/linux/fsl/mc.h                |   8 +
+ include/linux/iommu.h                 |  54 +++---
+ include/linux/pci.h                   |   8 +
+ include/linux/platform_device.h       |  10 +-
+ drivers/amba/bus.c                    |  37 +++-
+ drivers/base/dd.c                     |   5 +
+ drivers/base/platform.c               |  21 ++-
+ drivers/bus/fsl-mc/fsl-mc-bus.c       |  24 ++-
+ drivers/iommu/iommu.c                 | 228 ++++++++++++++++--------
+ drivers/pci/pci-driver.c              |  18 ++
+ drivers/pci/pci-stub.c                |   1 +
+ drivers/pci/pcie/portdrv_pci.c        |   2 +
+ drivers/vfio/fsl-mc/vfio_fsl_mc.c     |   1 +
+ drivers/vfio/pci/vfio_pci.c           |   1 +
+ drivers/vfio/platform/vfio_amba.c     |   1 +
+ drivers/vfio/platform/vfio_platform.c |   1 +
+ drivers/vfio/vfio.c                   | 245 ++------------------------
+ 19 files changed, 338 insertions(+), 338 deletions(-)
+
+-- 
+2.25.1
+
