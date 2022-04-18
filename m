@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE543C47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F566C35280
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241718AbiDRNI3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41762 "EHLO
+        id S243858AbiDRNKa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:10:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240033AbiDRMzj (ORCPT
+        with ESMTP id S241315AbiDRM6h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:55:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBD6633E;
-        Mon, 18 Apr 2022 05:37:35 -0700 (PDT)
+        Mon, 18 Apr 2022 08:58:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D3D27B3E;
+        Mon, 18 Apr 2022 05:38:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 924B0B80EE0;
-        Mon, 18 Apr 2022 12:37:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C40F9C385A1;
-        Mon, 18 Apr 2022 12:37:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E300B80EDB;
+        Mon, 18 Apr 2022 12:38:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA657C385A1;
+        Mon, 18 Apr 2022 12:38:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285452;
-        bh=R/MGdFWFUYLX3NQgsrRnXg/2rEzuiwpwdvMcLPjmzJw=;
+        s=korg; t=1650285533;
+        bh=tv4zKBl+I3vxx2xHCn4Ct8zhqbx9Pth5UP2RUme5oVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ns35Ozz/zyQ7WJ2eVEjp9Csz3zH70eiKhmEkdboDGFUm9SmL2D0t4AAAmmGdcOYPb
-         JNLFj9DTNM7ma4xUtrHIMcBHu5lkVXKc5YQiXo7Ggoe38aFkiRc0Diu1VX1445d3bX
-         Ck0clqsWqqufNAm0nJ14HgxIcWM77QO5YfxEmfXI=
+        b=Fq9CW8hKpq3SMnzeoEmYyWfI0CTNJYXzMlz62JRvhtlO6smZEcVBBrS9xoTq9AnHZ
+         fRHgMX0/K+3RvvpU8Sff+8G/p7EuxwnWkpODuKAubWxh47eOlL4CETe0F+9AdFdliL
+         2m+2GY62x3lWeoKcfAML+PT0+1vW0LZCKI6rRi9I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 022/105] drm/msm: Fix range size vs end confusion
-Date:   Mon, 18 Apr 2022 14:12:24 +0200
-Message-Id: <20220418121146.761869533@linuxfoundation.org>
+Subject: [PATCH 5.10 008/105] memory: atmel-ebi: Fix missing of_node_put in atmel_ebi_probe
+Date:   Mon, 18 Apr 2022 14:12:10 +0200
+Message-Id: <20220418121145.725814242@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -48,38 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 537fef808be5ea56f6fc06932162550819a3b3c3 ]
+[ Upstream commit 6f296a9665ba5ac68937bf11f96214eb9de81baa ]
 
-The fourth param is size, rather than range_end.
+The device_node pointer is returned by of_parse_phandle() with refcount
+incremented. We should use of_node_put() on it when done.
 
-Note that we could increase the address space size if we had a way to
-prevent buffers from spanning a 4G split, mostly just to avoid fw bugs
-with 64b math.
-
-Fixes: 84c31ee16f90 ("drm/msm/a6xx: Add support for per-instance pagetables")
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Link: https://lore.kernel.org/r/20220407202836.1211268-1-robdclark@gmail.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Fixes: 87108dc78eb8 ("memory: atmel-ebi: Enable the SMC clock if specified")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220309110144.22412-1-linmq006@gmail.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/memory/atmel-ebi.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 9e09805575db..39563daff4a0 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -1222,7 +1222,7 @@ a6xx_create_private_address_space(struct msm_gpu *gpu)
- 		return ERR_CAST(mmu);
+diff --git a/drivers/memory/atmel-ebi.c b/drivers/memory/atmel-ebi.c
+index c267283b01fd..e749dcb3ddea 100644
+--- a/drivers/memory/atmel-ebi.c
++++ b/drivers/memory/atmel-ebi.c
+@@ -544,20 +544,27 @@ static int atmel_ebi_probe(struct platform_device *pdev)
+ 	smc_np = of_parse_phandle(dev->of_node, "atmel,smc", 0);
  
- 	return msm_gem_address_space_create(mmu,
--		"gpu", 0x100000000ULL, 0x1ffffffffULL);
-+		"gpu", 0x100000000ULL, SZ_4G);
+ 	ebi->smc.regmap = syscon_node_to_regmap(smc_np);
+-	if (IS_ERR(ebi->smc.regmap))
+-		return PTR_ERR(ebi->smc.regmap);
++	if (IS_ERR(ebi->smc.regmap)) {
++		ret = PTR_ERR(ebi->smc.regmap);
++		goto put_node;
++	}
+ 
+ 	ebi->smc.layout = atmel_hsmc_get_reg_layout(smc_np);
+-	if (IS_ERR(ebi->smc.layout))
+-		return PTR_ERR(ebi->smc.layout);
++	if (IS_ERR(ebi->smc.layout)) {
++		ret = PTR_ERR(ebi->smc.layout);
++		goto put_node;
++	}
+ 
+ 	ebi->smc.clk = of_clk_get(smc_np, 0);
+ 	if (IS_ERR(ebi->smc.clk)) {
+-		if (PTR_ERR(ebi->smc.clk) != -ENOENT)
+-			return PTR_ERR(ebi->smc.clk);
++		if (PTR_ERR(ebi->smc.clk) != -ENOENT) {
++			ret = PTR_ERR(ebi->smc.clk);
++			goto put_node;
++		}
+ 
+ 		ebi->smc.clk = NULL;
+ 	}
++	of_node_put(smc_np);
+ 	ret = clk_prepare_enable(ebi->smc.clk);
+ 	if (ret)
+ 		return ret;
+@@ -608,6 +615,10 @@ static int atmel_ebi_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	return of_platform_populate(np, NULL, NULL, dev);
++
++put_node:
++	of_node_put(smc_np);
++	return ret;
  }
  
- static uint32_t a6xx_get_rptr(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
+ static __maybe_unused int atmel_ebi_resume(struct device *dev)
 -- 
 2.35.1
 
