@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E646C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:29:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DC90C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:29:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233504AbiDRMbl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49740 "EHLO
+        id S238911AbiDRMbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239283AbiDRM2P (ORCPT
+        with ESMTP id S239427AbiDRM20 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:28:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80701EEDC;
-        Mon, 18 Apr 2022 05:21:34 -0700 (PDT)
+        Mon, 18 Apr 2022 08:28:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBAC2127F;
+        Mon, 18 Apr 2022 05:21:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3159260F0C;
-        Mon, 18 Apr 2022 12:21:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38C7DC385A1;
-        Mon, 18 Apr 2022 12:21:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EEE760FAB;
+        Mon, 18 Apr 2022 12:21:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 435FFC385A9;
+        Mon, 18 Apr 2022 12:21:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284493;
-        bh=p7NdsMGXXKY2Y4BdmKFIYeZ2BS38rKxgfbm27drUnCI=;
+        s=korg; t=1650284505;
+        bh=tGzXzQhqgL+alx1Q6zWeqj7q4zL1AuwH2it+jAec/5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C13KDllqz9UFfVKIeYzjIgzs6DI/9qRO4Eagu+HMzBy3I6DW8vcfZvPz38+Xm3ja7
-         0fEq+VB3vQ5DCFNMVASiIxS4lWycqOXn1qnPLtHaG17bLLe4DzJ266d0+6Z4/kVyS/
-         Y6aXHrExXJ/XCctszav3xoAP8rC/kE39zrDaPMx8=
+        b=EDJtjoUrmETwlgKTr35UZ/f2C/QJT0eb+S7XrfAEccAQw1OuNv7XFcnUS+FN2uiVy
+         nXxCOcW9/nenxRmh7gdBzC+tkVmetGOpiM1MnfLMEVw5X27+RDYpjr8saa8mVJ+V5O
+         ypAtKMIoSBBqk7lVA9gExPiq6SzMC7tSPztqn6C4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        stable@vger.kernel.org,
+        Aurabindo Pillai <aurabindo.pillai@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 109/219] ALSA: mtpav: Dont call card private_free at probe error path
-Date:   Mon, 18 Apr 2022 14:11:18 +0200
-Message-Id: <20220418121209.950400644@linuxfoundation.org>
+Subject: [PATCH 5.17 130/219] drm/amd: Add USBC connector ID
+Date:   Mon, 18 Apr 2022 14:11:39 +0200
+Message-Id: <20220418121210.535248226@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,48 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Aurabindo Pillai <aurabindo.pillai@amd.com>
 
-[ Upstream commit 4fb27190879b82e48ce89a56e9d6c04437dbc065 ]
+[ Upstream commit c5c948aa894a831f96fccd025e47186b1ee41615 ]
 
-The card destructor of nm256 driver does merely stopping the running
-timer, and it's superfluous for the probe error handling.  Moreover,
-calling this via the previous devres change would lead to another
-problem due to the reverse call order.
+[Why&How] Add a dedicated AMDGPU specific ID for use with
+newer ASICs that support USB-C output
 
-This patch moves the setup of the private_free callback after the card
-registration, so that it can be used only after fully set up.
-
-Fixes: aa92050f10f0 ("ALSA: mtpav: Allocate resources with device-managed APIs")
-Link: https://lore.kernel.org/r/20220412102636.16000-39-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/drivers/mtpav.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/ObjectID.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/drivers/mtpav.c b/sound/drivers/mtpav.c
-index 11235baaf6fa..f212f233ea61 100644
---- a/sound/drivers/mtpav.c
-+++ b/sound/drivers/mtpav.c
-@@ -693,8 +693,6 @@ static int snd_mtpav_probe(struct platform_device *dev)
- 	mtp_card->outmidihwport = 0xffffffff;
- 	timer_setup(&mtp_card->timer, snd_mtpav_output_timer, 0);
+diff --git a/drivers/gpu/drm/amd/amdgpu/ObjectID.h b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
+index 5b393622f592..a0f0a17e224f 100644
+--- a/drivers/gpu/drm/amd/amdgpu/ObjectID.h
++++ b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
+@@ -119,6 +119,7 @@
+ #define CONNECTOR_OBJECT_ID_eDP                   0x14
+ #define CONNECTOR_OBJECT_ID_MXM                   0x15
+ #define CONNECTOR_OBJECT_ID_LVDS_eDP              0x16
++#define CONNECTOR_OBJECT_ID_USBC                  0x17
  
--	card->private_free = snd_mtpav_free;
--
- 	err = snd_mtpav_get_RAWMIDI(mtp_card);
- 	if (err < 0)
- 		return err;
-@@ -716,6 +714,8 @@ static int snd_mtpav_probe(struct platform_device *dev)
- 	if (err < 0)
- 		return err;
+ /* deleted */
  
-+	card->private_free = snd_mtpav_free;
-+
- 	platform_set_drvdata(dev, card);
- 	printk(KERN_INFO "Motu MidiTimePiece on parallel port irq: %d ioport: 0x%lx\n", irq, port);
- 	return 0;
 -- 
 2.35.1
 
