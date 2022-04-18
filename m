@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC594C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:02:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B83C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241144AbiDRNEn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:04:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46376 "EHLO
+        id S240838AbiDRNEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240249AbiDRMzI (ORCPT
+        with ESMTP id S239858AbiDRMzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:55:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8ACECE1;
-        Mon, 18 Apr 2022 05:36:07 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFBD20F4F;
+        Mon, 18 Apr 2022 05:35:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A7D1B80EC0;
-        Mon, 18 Apr 2022 12:36:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF861C385A7;
-        Mon, 18 Apr 2022 12:36:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4924F61014;
+        Mon, 18 Apr 2022 12:35:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39F71C385A1;
+        Mon, 18 Apr 2022 12:35:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285365;
-        bh=25r0ygHmMIVpJ6SGyRsf6ColFcDlcGe4kr1a2+L053Q=;
+        s=korg; t=1650285346;
+        bh=tCeOiBqGrp+xpXOvWNxrImRBzOezrzh5RKwZ8svsIrI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oV+fPJxqP++laYykPbfMQKVv3XPvhTR75n4932wAsJkhKYYZK1rCFaBzYYgmhd5gc
-         TXrEOYHxiOTE6JJKjsa6axznDVKNcHpblOISQjqDYkR21Y1tYN17fzBVa6S8FNLSwP
-         d7lScvwwuVXDC7ZZ6UqFen+YOsUnpbOUVjWeD7tk=
+        b=AYMyyx21CatBmqeUfDodF+W4HhJCOrgvw+2aNqysI8w5RDyizP2yi3e2kYXKCGF16
+         kHqSB7zr8ifwalIVd2wIqopAH1JPII5OvIeQUSGnN+9GqQyJkdPa1gnWZkt47u9UZD
+         qDA3QO9ulZWbYNhAQ4muLyva+4LqS5hZtrO3RjD4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.15 186/189] ax25: fix UAF bug in ax25_send_control()
-Date:   Mon, 18 Apr 2022 14:13:26 +0200
-Message-Id: <20220418121208.640032310@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Alex Elder <elder@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 180/189] net: ipa: fix a build dependency
+Date:   Mon, 18 Apr 2022 14:13:20 +0200
+Message-Id: <20220418121208.223621522@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,87 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Alex Elder <elder@linaro.org>
 
-commit 5352a761308397a0e6250fdc629bb3f615b94747 upstream.
+commit caef14b7530c065fb85d54492768fa48fdb5093e upstream.
 
-There are UAF bugs in ax25_send_control(), when we call ax25_release()
-to deallocate ax25_dev. The possible race condition is shown below:
+An IPA build problem arose in the linux-next tree the other day.
+The problem is that a recent commit adds a new dependency on some
+code, and the Kconfig file for IPA doesn't reflect that dependency.
+As a result, some configurations can fail to build (particularly
+when COMPILE_TEST is enabled).
 
-      (Thread 1)              |     (Thread 2)
-ax25_dev_device_up() //(1)    |
-                              | ax25_kill_by_device()
-ax25_bind()          //(2)    |
-ax25_connect()                | ...
- ax25->state = AX25_STATE_1   |
- ...                          | ax25_dev_device_down() //(3)
+The recent patch adds calls to qmp_get(), qmp_put(), and qmp_send(),
+and those are built based on the QCOM_AOSS_QMP config option.  If
+that symbol is not defined, stubs are defined, so we just need to
+ensure QCOM_AOSS_QMP is compatible with QCOM_IPA, or it's not
+defined.
 
-      (Thread 3)
-ax25_release()                |
- ax25_dev_put()  //(4) FREE   |
- case AX25_STATE_1:           |
-  ax25_send_control()         |
-   alloc_skb()       //USE    |
-
-The refcount of ax25_dev increases in position (1) and (2), and
-decreases in position (3) and (4). The ax25_dev will be freed
-before dereference sites in ax25_send_control().
-
-The following is part of the report:
-
-[  102.297448] BUG: KASAN: use-after-free in ax25_send_control+0x33/0x210
-[  102.297448] Read of size 8 at addr ffff888009e6e408 by task ax25_close/602
-[  102.297448] Call Trace:
-[  102.303751]  ax25_send_control+0x33/0x210
-[  102.303751]  ax25_release+0x356/0x450
-[  102.305431]  __sock_release+0x6d/0x120
-[  102.305431]  sock_close+0xf/0x20
-[  102.305431]  __fput+0x11f/0x420
-[  102.305431]  task_work_run+0x86/0xd0
-[  102.307130]  get_signal+0x1075/0x1220
-[  102.308253]  arch_do_signal_or_restart+0x1df/0xc00
-[  102.308253]  exit_to_user_mode_prepare+0x150/0x1e0
-[  102.308253]  syscall_exit_to_user_mode+0x19/0x50
-[  102.308253]  do_syscall_64+0x48/0x90
-[  102.308253]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  102.308253] RIP: 0033:0x405ae7
-
-This patch defers the free operation of ax25_dev and net_device after
-all corresponding dereference sites in ax25_release() to avoid UAF.
-
-Fixes: 9fd75b66b8f6 ("ax25: Fix refcount leaks caused by ax25_cb_del()")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-[OP: backport to 5.15: adjust dev_put_track()->dev_put()]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Fixes: 34a081761e4e3 ("net: ipa: request IPA register values be retained")
+Signed-off-by: Alex Elder <elder@linaro.org>
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ax25/af_ax25.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ipa/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -991,10 +991,6 @@ static int ax25_release(struct socket *s
- 	sock_orphan(sk);
- 	ax25 = sk_to_ax25(sk);
- 	ax25_dev = ax25->ax25_dev;
--	if (ax25_dev) {
--		dev_put(ax25_dev->dev);
--		ax25_dev_put(ax25_dev);
--	}
- 
- 	if (sk->sk_type == SOCK_SEQPACKET) {
- 		switch (ax25->state) {
-@@ -1056,6 +1052,10 @@ static int ax25_release(struct socket *s
- 		sk->sk_state_change(sk);
- 		ax25_destroy_socket(ax25);
- 	}
-+	if (ax25_dev) {
-+		dev_put(ax25_dev->dev);
-+		ax25_dev_put(ax25_dev);
-+	}
- 
- 	sock->sk   = NULL;
- 	release_sock(sk);
+--- a/drivers/net/ipa/Kconfig
++++ b/drivers/net/ipa/Kconfig
+@@ -4,6 +4,7 @@ config QCOM_IPA
+ 	depends on ARCH_QCOM || COMPILE_TEST
+ 	depends on INTERCONNECT
+ 	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
++	depends on QCOM_AOSS_QMP || QCOM_AOSS_QMP=n
+ 	select QCOM_MDT_LOADER if ARCH_QCOM
+ 	select QCOM_SCM
+ 	select QCOM_QMI_HELPERS
 
 
