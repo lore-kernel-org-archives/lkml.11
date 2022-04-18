@@ -2,41 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 537E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:39:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29656C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:39:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237809AbiDRMmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:42:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54024 "EHLO
+        id S237283AbiDRMmS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:42:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239778AbiDRMd2 (ORCPT
+        with ESMTP id S239777AbiDRMd2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:33:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3281B78F;
-        Mon, 18 Apr 2022 05:26:03 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285041AD89;
+        Mon, 18 Apr 2022 05:25:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F0D3660FB6;
-        Mon, 18 Apr 2022 12:26:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF8F8C385A7;
-        Mon, 18 Apr 2022 12:25:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8120B80EC1;
+        Mon, 18 Apr 2022 12:25:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1A46C385A1;
+        Mon, 18 Apr 2022 12:25:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284732;
-        bh=tBpwUdixRcwh0wUsFNynhdOn/ivLTX5IRZZzK9fsF6Y=;
+        s=korg; t=1650284755;
+        bh=Z9gvILnq8qAN5mKp2WG4oy8iFeMwiV8WFhHAtNYT8WA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0Rgmj8buU2drCi5x/zv2zv5WqJtnaIApK6tJzdOYsscffmnQMy59TXevA9b6pFEoZ
-         L62wRA5iLqdte6qCrwyqASlP4LQH2NmXn5hXdv+3y8AY5Qjz4n28e6yy1Ga+uOaHOu
-         oK8L/hdfsreMjXEMVwcvikc+NKxsQGVTHWS/rTeo=
+        b=BnthfHNwus+JQtWMBDc2KHI3JlSTJ+47T5BiYiZlkNypdG6qLfxxbDle+4U4+X+Lg
+         SiIGIvyQQZXYW4vSHJZttMzG5He22f6E9Joo4Du73yg2KLR0dSukWKeyeU60TaQbcq
+         vrzJpz/eUrD2diGaw8vWQSiUn0Q7bC553zbnfCww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.17 209/219] Revert "net: dsa: setup master before ports"
-Date:   Mon, 18 Apr 2022 14:12:58 +0200
-Message-Id: <20220418121212.717936708@linuxfoundation.org>
+        stable@vger.kernel.org, Ivan Babrou <ivan@cloudflare.com>,
+        Minchan Kim <minchan@kernel.org>,
+        Nitin Gupta <ngupta@vflare.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Hildenbrand <david@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.17 177/219] mm: fix unexpected zeroed page mapping with zram swap
+Date:   Mon, 18 Apr 2022 14:12:26 +0200
+Message-Id: <20220418121211.831849378@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,114 +54,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Minchan Kim <minchan@kernel.org>
 
-commit 762c2998c9625f642f0d23da7d3f7e4f90665fdf upstream.
+commit e914d8f00391520ecc4495dd0ca0124538ab7119 upstream.
 
-This reverts commit 11fd667dac315ea3f2469961f6d2869271a46cae.
+Two processes under CLONE_VM cloning, user process can be corrupted by
+seeing zeroed page unexpectedly.
 
-dsa_slave_change_mtu() updates the MTU of the DSA master and of the
-associated CPU port, but only if it detects a change to the master MTU.
+      CPU A                        CPU B
 
-The blamed commit in the Fixes: tag below addressed a regression where
-dsa_slave_change_mtu() would return early and not do anything due to
-ds->ops->port_change_mtu() not being implemented.
+  do_swap_page                do_swap_page
+  SWP_SYNCHRONOUS_IO path     SWP_SYNCHRONOUS_IO path
+  swap_readpage valid data
+    swap_slot_free_notify
+      delete zram entry
+                              swap_readpage zeroed(invalid) data
+                              pte_lock
+                              map the *zero data* to userspace
+                              pte_unlock
+  pte_lock
+  if (!pte_same)
+    goto out_nomap;
+  pte_unlock
+  return and next refault will
+  read zeroed data
 
-However, that commit also had the effect that the master MTU got set up
-to the correct value by dsa_master_setup(), but the associated CPU port's
-MTU did not get updated. This causes breakage for drivers that rely on
-the ->port_change_mtu() DSA call to account for the tagging overhead on
-the CPU port, and don't set up the initial MTU during the setup phase.
+The swap_slot_free_notify is bogus for CLONE_VM case since it doesn't
+increase the refcount of swap slot at copy_mm so it couldn't catch up
+whether it's safe or not to discard data from backing device.  In the
+case, only the lock it could rely on to synchronize swap slot freeing is
+page table lock.  Thus, this patch gets rid of the swap_slot_free_notify
+function.  With this patch, CPU A will see correct data.
 
-Things actually worked before because they were in a fragile equilibrium
-where dsa_slave_change_mtu() was called before dsa_master_setup() was.
-So dsa_slave_change_mtu() could actually detect a change and update the
-CPU port MTU too.
+      CPU A                        CPU B
 
-Restore the code to the way things used to work by reverting the reorder
-of dsa_tree_setup_master() and dsa_tree_setup_ports(). That change did
-not have a concrete motivation going for it anyway, it just looked
-better.
+  do_swap_page                do_swap_page
+  SWP_SYNCHRONOUS_IO path     SWP_SYNCHRONOUS_IO path
+                              swap_readpage original data
+                              pte_lock
+                              map the original data
+                              swap_free
+                                swap_range_free
+                                  bd_disk->fops->swap_slot_free_notify
+  swap_readpage read zeroed data
+                              pte_unlock
+  pte_lock
+  if (!pte_same)
+    goto out_nomap;
+  pte_unlock
+  return
+  on next refault will see mapped data by CPU B
 
-Fixes: 066dfc429040 ("Revert "net: dsa: stop updating master MTU from master.c"")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The concern of the patch would increase memory consumption since it
+could keep wasted memory with compressed form in zram as well as
+uncompressed form in address space.  However, most of cases of zram uses
+no readahead and do_swap_page is followed by swap_free so it will free
+the compressed form from in zram quickly.
+
+Link: https://lkml.kernel.org/r/YjTVVxIAsnKAXjTd@google.com
+Fixes: 0bcac06f27d7 ("mm, swap: skip swapcache for swapin of synchronous device")
+Reported-by: Ivan Babrou <ivan@cloudflare.com>
+Tested-by: Ivan Babrou <ivan@cloudflare.com>
+Signed-off-by: Minchan Kim <minchan@kernel.org>
+Cc: Nitin Gupta <ngupta@vflare.org>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc: Jens Axboe <axboe@kernel.dk>
+Cc: David Hildenbrand <david@redhat.com>
+Cc: <stable@vger.kernel.org>	[4.14+]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/dsa/dsa2.c |   23 ++++++++++-------------
- 1 file changed, 10 insertions(+), 13 deletions(-)
+ mm/page_io.c |   54 ------------------------------------------------------
+ 1 file changed, 54 deletions(-)
 
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -561,7 +561,6 @@ static void dsa_port_teardown(struct dsa
- 	struct devlink_port *dlp = &dp->devlink_port;
- 	struct dsa_switch *ds = dp->ds;
- 	struct dsa_mac_addr *a, *tmp;
--	struct net_device *slave;
+--- a/mm/page_io.c
++++ b/mm/page_io.c
+@@ -51,54 +51,6 @@ void end_swap_bio_write(struct bio *bio)
+ 	bio_put(bio);
+ }
  
- 	if (!dp->setup)
- 		return;
-@@ -583,11 +582,9 @@ static void dsa_port_teardown(struct dsa
- 		dsa_port_link_unregister_of(dp);
- 		break;
- 	case DSA_PORT_TYPE_USER:
--		slave = dp->slave;
+-static void swap_slot_free_notify(struct page *page)
+-{
+-	struct swap_info_struct *sis;
+-	struct gendisk *disk;
+-	swp_entry_t entry;
 -
--		if (slave) {
-+		if (dp->slave) {
-+			dsa_slave_destroy(dp->slave);
- 			dp->slave = NULL;
--			dsa_slave_destroy(slave);
- 		}
- 		break;
+-	/*
+-	 * There is no guarantee that the page is in swap cache - the software
+-	 * suspend code (at least) uses end_swap_bio_read() against a non-
+-	 * swapcache page.  So we must check PG_swapcache before proceeding with
+-	 * this optimization.
+-	 */
+-	if (unlikely(!PageSwapCache(page)))
+-		return;
+-
+-	sis = page_swap_info(page);
+-	if (data_race(!(sis->flags & SWP_BLKDEV)))
+-		return;
+-
+-	/*
+-	 * The swap subsystem performs lazy swap slot freeing,
+-	 * expecting that the page will be swapped out again.
+-	 * So we can avoid an unnecessary write if the page
+-	 * isn't redirtied.
+-	 * This is good for real swap storage because we can
+-	 * reduce unnecessary I/O and enhance wear-leveling
+-	 * if an SSD is used as the as swap device.
+-	 * But if in-memory swap device (eg zram) is used,
+-	 * this causes a duplicated copy between uncompressed
+-	 * data in VM-owned memory and compressed data in
+-	 * zram-owned memory.  So let's free zram-owned memory
+-	 * and make the VM-owned decompressed page *dirty*,
+-	 * so the page should be swapped out somewhere again if
+-	 * we again wish to reclaim it.
+-	 */
+-	disk = sis->bdev->bd_disk;
+-	entry.val = page_private(page);
+-	if (disk->fops->swap_slot_free_notify && __swap_count(entry) == 1) {
+-		unsigned long offset;
+-
+-		offset = swp_offset(entry);
+-
+-		SetPageDirty(page);
+-		disk->fops->swap_slot_free_notify(sis->bdev,
+-				offset);
+-	}
+-}
+-
+ static void end_swap_bio_read(struct bio *bio)
+ {
+ 	struct page *page = bio_first_page_all(bio);
+@@ -114,7 +66,6 @@ static void end_swap_bio_read(struct bio
  	}
-@@ -1137,17 +1134,17 @@ static int dsa_tree_setup(struct dsa_swi
- 	if (err)
- 		goto teardown_cpu_ports;
  
--	err = dsa_tree_setup_master(dst);
-+	err = dsa_tree_setup_ports(dst);
- 	if (err)
- 		goto teardown_switches;
- 
--	err = dsa_tree_setup_ports(dst);
-+	err = dsa_tree_setup_master(dst);
- 	if (err)
--		goto teardown_master;
-+		goto teardown_ports;
- 
- 	err = dsa_tree_setup_lags(dst);
- 	if (err)
--		goto teardown_ports;
-+		goto teardown_master;
- 
- 	dst->setup = true;
- 
-@@ -1155,10 +1152,10 @@ static int dsa_tree_setup(struct dsa_swi
- 
- 	return 0;
- 
--teardown_ports:
--	dsa_tree_teardown_ports(dst);
- teardown_master:
- 	dsa_tree_teardown_master(dst);
-+teardown_ports:
-+	dsa_tree_teardown_ports(dst);
- teardown_switches:
- 	dsa_tree_teardown_switches(dst);
- teardown_cpu_ports:
-@@ -1176,10 +1173,10 @@ static void dsa_tree_teardown(struct dsa
- 
- 	dsa_tree_teardown_lags(dst);
- 
--	dsa_tree_teardown_ports(dst);
+ 	SetPageUptodate(page);
+-	swap_slot_free_notify(page);
+ out:
+ 	unlock_page(page);
+ 	WRITE_ONCE(bio->bi_private, NULL);
+@@ -392,11 +343,6 @@ int swap_readpage(struct page *page, boo
+ 	if (sis->flags & SWP_SYNCHRONOUS_IO) {
+ 		ret = bdev_read_page(sis->bdev, swap_page_sector(page), page);
+ 		if (!ret) {
+-			if (trylock_page(page)) {
+-				swap_slot_free_notify(page);
+-				unlock_page(page);
+-			}
 -
- 	dsa_tree_teardown_master(dst);
- 
-+	dsa_tree_teardown_ports(dst);
-+
- 	dsa_tree_teardown_switches(dst);
- 
- 	dsa_tree_teardown_cpu_ports(dst);
+ 			count_vm_event(PSWPIN);
+ 			goto out;
+ 		}
 
 
