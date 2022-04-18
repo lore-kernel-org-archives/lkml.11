@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 647F0C3525B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A64C3527A
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344863AbiDROSb (ORCPT
+        id S1344957AbiDROSh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45520 "EHLO
+        Mon, 18 Apr 2022 10:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244856AbiDRN6A (ORCPT
+        with ESMTP id S244842AbiDRN57 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:58:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80115E6B;
-        Mon, 18 Apr 2022 06:08:09 -0700 (PDT)
+        Mon, 18 Apr 2022 09:57:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B984BFF;
+        Mon, 18 Apr 2022 06:08:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1602760F24;
-        Mon, 18 Apr 2022 13:08:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C590C385A7;
-        Mon, 18 Apr 2022 13:08:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A2BAB80E4B;
+        Mon, 18 Apr 2022 13:08:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F90CC385A1;
+        Mon, 18 Apr 2022 13:08:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287288;
-        bh=TCCHLWZjI2lOSY90qAUVqxi++CpwCH2A11H+mYpGMHw=;
+        s=korg; t=1650287281;
+        bh=YUV1OXIkRHuZ2oAkHqjnVHkk/yQd4mxc4AY70g9ACY0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UDbOR7HMznvD82PdYEy1Lgyaeve3FfM+EA0YCPGtEp8TYYOuZHwhI1kEPZTaUR0lx
-         nf5pkQ4HzZ8zUK7mgCLvCmIQi2QOm8stuhnQc+yPTHh2T8vLqZqeZmIfqXcFybUvKO
-         TFuEz19hhuzoUJ9eSnqmkL7tfuxrGty+e0O2vN3s=
+        b=sCECPCia/PYeWmxwDiqyhBrqyi2ptaFckTN6GX3+n2JywP04eDOKi3X6QmjCkDND/
+         ctUIqNmRrvS9TwNf/OhX4cE1WvDyX+RVf1bhWweQKk3vfnKxVi7DEc7dZncK3Rrd8h
+         Zb0PzyhCXyyrdCn4WEbDcJcNLjiPj8GCgnJq+R3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 114/218] pinctrl/rockchip: Add missing of_node_put() in rockchip_pinctrl_probe
-Date:   Mon, 18 Apr 2022 14:13:00 +0200
-Message-Id: <20220418121202.857520763@linuxfoundation.org>
+Subject: [PATCH 4.9 112/218] pinctrl: mediatek: Fix missing of_node_put() in mtk_pctrl_init
+Date:   Mon, 18 Apr 2022 14:12:58 +0200
+Message-Id: <20220418121202.801456954@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -52,40 +54,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 89388f8730699c259f8090ec435fb43569efe4ac ]
+[ Upstream commit dab4df9ca919f59e5b9dd84385eaf34d4f20dbb0 ]
 
 The device_node pointer is returned by of_parse_phandle()  with refcount
 incremented. We should use of_node_put() on it when done.
 
-Fixes: 1e747e59cc4d ("pinctrl: rockchip: base regmap supplied by a syscon")
-Fixes: 14dee8677e19 ("pinctrl: rockchip: let pmu registers be supplied by a syscon")
+Fixes: a6df410d420a ("pinctrl: mediatek: Add Pinctrl/GPIO driver for mt8135.")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220307120234.28657-1-linmq006@gmail.com
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220308071155.21114-1-linmq006@gmail.com
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-rockchip.c | 2 ++
+ drivers/pinctrl/mediatek/pinctrl-mtk-common.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
-index 17827a88b85e..9bcb238c2e12 100644
---- a/drivers/pinctrl/pinctrl-rockchip.c
-+++ b/drivers/pinctrl/pinctrl-rockchip.c
-@@ -2414,6 +2414,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
- 	node = of_parse_phandle(np, "rockchip,grf", 0);
+diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
+index f9aef2ac03a1..4cce72017109 100644
+--- a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
++++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
+@@ -1355,6 +1355,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
+ 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 0);
  	if (node) {
- 		info->regmap_base = syscon_node_to_regmap(node);
+ 		pctl->regmap1 = syscon_node_to_regmap(node);
 +		of_node_put(node);
- 		if (IS_ERR(info->regmap_base))
- 			return PTR_ERR(info->regmap_base);
- 	} else {
-@@ -2450,6 +2451,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
- 	node = of_parse_phandle(np, "rockchip,pmu", 0);
+ 		if (IS_ERR(pctl->regmap1))
+ 			return PTR_ERR(pctl->regmap1);
+ 	} else if (regmap) {
+@@ -1368,6 +1369,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
+ 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 1);
  	if (node) {
- 		info->regmap_pmu = syscon_node_to_regmap(node);
+ 		pctl->regmap2 = syscon_node_to_regmap(node);
 +		of_node_put(node);
- 		if (IS_ERR(info->regmap_pmu))
- 			return PTR_ERR(info->regmap_pmu);
+ 		if (IS_ERR(pctl->regmap2))
+ 			return PTR_ERR(pctl->regmap2);
  	}
 -- 
 2.34.1
