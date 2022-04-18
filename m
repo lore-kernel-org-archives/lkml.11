@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F87C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7216FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:19:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239269AbiDROVg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:21:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41574 "EHLO
+        id S1344315AbiDROVn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:21:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245737AbiDROGR (ORCPT
+        with ESMTP id S245685AbiDROFm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:06:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A03A35A96;
-        Mon, 18 Apr 2022 06:10:14 -0700 (PDT)
+        Mon, 18 Apr 2022 10:05:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A47235861;
+        Mon, 18 Apr 2022 06:10:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C450DB80E4B;
-        Mon, 18 Apr 2022 13:10:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26682C385A1;
-        Mon, 18 Apr 2022 13:10:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1328F60F17;
+        Mon, 18 Apr 2022 13:09:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03072C385A7;
+        Mon, 18 Apr 2022 13:09:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287411;
-        bh=7HJbMF3zmLCagiZkdwJEMsz4drTw9nF5Gup7f1gKG20=;
+        s=korg; t=1650287376;
+        bh=JNB0ox2IAOZfzRXVAXo4eWspjGDe62bw5yVCsUBIspQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0UjFiWuNgNlQqnn+2/34/TFSgqkMXcy34hr3xIfLMgJ0/lmgYvZDpjI8CBjElSY7E
-         jIBOTjybFv3qXNW1ACGG4w4/5ousocqj4rzj+R06av87P69oH8KB/jELS76RR/iXsQ
-         M7JF0QT9cNUdYwkWKQ4AjievaLzyKfOhwOuFPwxM=
+        b=DHmuDxVA5l2gewt1UlfhNnumKlyJpnNOcRHIYF3mpyC9VRLG/lLnOMAngKPWkwEMb
+         /XK+SOn/MAkSTs4oY1/8b/M3tieM1Q1wPPqouT2RRpQMI17v2IkFLT/+UYZvrfGEyD
+         KWZhJ37cbWho5A00jFiPOxE8/72qa2H9GMnt/eEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Price <anprice@redhat.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>
-Subject: [PATCH 4.9 152/218] gfs2: Make sure FITRIM minlen is rounded up to fs block size
-Date:   Mon, 18 Apr 2022 14:13:38 +0200
-Message-Id: <20220418121204.068608704@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 142/218] media: cx88-mpeg: clear interrupt status register before streaming video
+Date:   Mon, 18 Apr 2022 14:13:28 +0200
+Message-Id: <20220418121203.653850945@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -48,42 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrew Price <anprice@redhat.com>
+From: Daniel González Cabanelas <dgcbueu@gmail.com>
 
-commit 27ca8273fda398638ca994a207323a85b6d81190 upstream.
+[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
 
-Per fstrim(8) we must round up the minlen argument to the fs block size.
-The current calculation doesn't take into account devices that have a
-discard granularity and requested minlen less than 1 fs block, so the
-value can get shifted away to zero in the translation to fs blocks.
+Some cx88 video cards may have transport stream status interrupts set
+to 1 from cold start, causing errors like this:
 
-The zero minlen passed to gfs2_rgrp_send_discards() then allows
-sb_issue_discard() to be called with nr_sects == 0 which returns -EINVAL
-and results in gfs2_rgrp_send_discards() returning -EIO.
+  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
+  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
 
-Make sure minlen is never < 1 fs block by taking the max of the
-requested minlen and the fs block size before comparing to the device's
-discard granularity and shifting to fs blocks.
+According to CX2388x datasheet, the interrupt status register should be
+cleared before enabling IRQs to stream video.
 
-Fixes: 076f0faa764ab ("GFS2: Fix FITRIM argument handling")
-Signed-off-by: Andrew Price <anprice@redhat.com>
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix it by clearing the Transport Stream Interrupt Status register.
+
+Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/rgrp.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/fs/gfs2/rgrp.c
-+++ b/fs/gfs2/rgrp.c
-@@ -1390,7 +1390,8 @@ int gfs2_fitrim(struct file *filp, void
+diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
+index 245357adbc25..37d4512f3eb8 100644
+--- a/drivers/media/pci/cx88/cx88-mpeg.c
++++ b/drivers/media/pci/cx88/cx88-mpeg.c
+@@ -175,6 +175,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
+ 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
+ 	q->count = 0;
  
- 	start = r.start >> bs_shift;
- 	end = start + (r.len >> bs_shift);
--	minlen = max_t(u64, r.minlen,
-+	minlen = max_t(u64, r.minlen, sdp->sd_sb.sb_bsize);
-+	minlen = max_t(u64, minlen,
- 		       q->limits.discard_granularity) >> bs_shift;
- 
- 	if (end <= start || minlen > sdp->sd_max_rg_data)
++	/* clear interrupt status register */
++	cx_write(MO_TS_INTSTAT,  0x1f1111);
++
+ 	/* enable irqs */
+ 	dprintk( 1, "setting the interrupt mask\n" );
+ 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
+-- 
+2.34.1
+
 
 
