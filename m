@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05D5CC35294
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A508C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345689AbiDROT0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:19:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57222 "EHLO
+        id S244443AbiDROTn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:19:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240673AbiDROAq (ORCPT
+        with ESMTP id S244903AbiDROBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:00:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA222B255;
-        Mon, 18 Apr 2022 06:09:23 -0700 (PDT)
+        Mon, 18 Apr 2022 10:01:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246E92CE0B;
+        Mon, 18 Apr 2022 06:09:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88AC9B80E59;
-        Mon, 18 Apr 2022 13:08:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7766C385A1;
-        Mon, 18 Apr 2022 13:08:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB303B80D9C;
+        Mon, 18 Apr 2022 13:09:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37214C385A1;
+        Mon, 18 Apr 2022 13:09:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287311;
-        bh=4dvxpgY0PMs2FnGrlQP1Tssyec05K+DaanBcZRXoVao=;
+        s=korg; t=1650287356;
+        bh=dIgepHg2u5QCwwLh7ZLHSryTO5H5pf0+HHyZ6n09e5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1EaM3W72+OI4iKD6nmlEqsJsUxaxg766RxbKQDOVI11XL+dE2gFGjRvvxPRwB7GFx
-         Kd506UrXB8pk5RjrF9MG/Ipon0KbQPrk6wFR8QpfVKyWCIyPGi3qCCFWI7FptZC0oh
-         EbhQ8UxgrbtOicdWSDIYWFf1HAmRHwhAV0FsTMlU=
+        b=NAxOvLLsPCm/3vaMuUgVbWHk14Zb3LfbNOmIelGOHBiZyo6NPbCgC+WaXhH3TBmbv
+         DlEE3qXaQaG8vjRbkUbaF3xnKbb8sN3pDsn6RjLCBpxUGvod6J8gugHmPDo9gnZzzp
+         Pr+3vnDzmxe99M29h5MEjPrG0PVMZhjxf+y3Gb6M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 120/218] net: phy: broadcom: Fix brcm_fet_config_init()
-Date:   Mon, 18 Apr 2022 14:13:06 +0200
-Message-Id: <20220418121203.026291358@linuxfoundation.org>
+        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>,
+        LogicalErzor <logicalerzor@gmail.com>
+Subject: [PATCH 4.9 137/218] ARM: dts: qcom: fix gic_irq_domain_translate warnings for msm8960
+Date:   Mon, 18 Apr 2022 14:13:23 +0200
+Message-Id: <20220418121203.508317845@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,77 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: David Heidelberg <david@ixit.cz>
 
-[ Upstream commit bf8bfc4336f7a34e48b3bbd19b1542bf085bdc3d ]
+[ Upstream commit 6f7e221e7a5cfc3299616543fce42b36e631497b ]
 
-A Broadcom AC201 PHY (same entry as 5241) would be flagged by the
-Broadcom UniMAC MDIO controller as not completing the turn around
-properly since the PHY expects 65 MDC clock cycles to complete a write
-cycle, and the MDIO controller was only sending 64 MDC clock cycles as
-determined by looking at a scope shot.
+IRQ types blindly copied from very similar APQ8064.
 
-This would make the subsequent read fail with the UniMAC MDIO controller
-command field having MDIO_READ_FAIL set and we would abort the
-brcm_fet_config_init() function and thus not probe the PHY at all.
+Fixes warnings as:
+WARNING: CPU: 0 PID: 1 at drivers/irqchip/irq-gic.c:1080 gic_irq_domain_translate+0x118/0x120
+...
 
-After issuing a software reset, wait for at least 1ms which is well
-above the 1us reset delay advertised by the datasheet and issue a dummy
-read to let the PHY turn around the line properly. This read
-specifically ignores -EIO which would be returned by MDIO controllers
-checking for the line being turned around.
-
-If we have a genuine reaad failure, the next read of the interrupt
-status register would pick it up anyway.
-
-Fixes: d7a2ed9248a3 ("broadcom: Add AC131 phy support")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220324232438.1156812-1-f.fainelli@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Tested-by: LogicalErzor <logicalerzor@gmail.com> # boot-tested on Samsung S3
+Signed-off-by: David Heidelberg <david@ixit.cz>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220108174229.60384-1-david@ixit.cz
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/broadcom.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ arch/arm/boot/dts/qcom-msm8960.dtsi | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index 870327efccf7..6bea2b219e00 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -15,6 +15,7 @@
-  */
+diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
+index 288f56e0ccf5..819d0f085f8c 100644
+--- a/arch/arm/boot/dts/qcom-msm8960.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
+@@ -139,7 +139,9 @@
+ 			reg		= <0x108000 0x1000>;
+ 			qcom,ipc	= <&l2cc 0x8 2>;
  
- #include "bcm-phy-lib.h"
-+#include <linux/delay.h>
- #include <linux/module.h>
- #include <linux/phy.h>
- #include <linux/brcmphy.h>
-@@ -357,6 +358,26 @@ static int brcm_fet_config_init(struct phy_device *phydev)
- 	if (err < 0)
- 		return err;
+-			interrupts	= <0 19 0>, <0 21 0>, <0 22 0>;
++			interrupts	= <GIC_SPI 19 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
+ 			interrupt-names	= "ack", "err", "wakeup";
  
-+	/* The datasheet indicates the PHY needs up to 1us to complete a reset,
-+	 * build some slack here.
-+	 */
-+	usleep_range(1000, 2000);
-+
-+	/* The PHY requires 65 MDC clock cycles to complete a write operation
-+	 * and turnaround the line properly.
-+	 *
-+	 * We ignore -EIO here as the MDIO controller (e.g.: mdio-bcm-unimac)
-+	 * may flag the lack of turn-around as a read failure. This is
-+	 * particularly true with this combination since the MDIO controller
-+	 * only used 64 MDC cycles. This is not a critical failure in this
-+	 * specific case and it has no functional impact otherwise, so we let
-+	 * that one go through. If there is a genuine bus error, the next read
-+	 * of MII_BRCM_FET_INTREG will error out.
-+	 */
-+	err = phy_read(phydev, MII_BMCR);
-+	if (err < 0 && err != -EIO)
-+		return err;
-+
- 	reg = phy_read(phydev, MII_BRCM_FET_INTREG);
- 	if (reg < 0)
- 		return reg;
+ 			regulators {
+@@ -185,7 +187,7 @@
+ 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+ 				reg = <0x16440000 0x1000>,
+ 				      <0x16400000 0x1000>;
+-				interrupts = <0 154 0x0>;
++				interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&gcc GSBI5_UART_CLK>, <&gcc GSBI5_H_CLK>;
+ 				clock-names = "core", "iface";
+ 				status = "disabled";
+@@ -311,7 +313,7 @@
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+ 				reg = <0x16080000 0x1000>;
+-				interrupts = <0 147 0>;
++				interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
+ 				spi-max-frequency = <24000000>;
+ 				cs-gpios = <&msmgpio 8 0>;
+ 
 -- 
 2.34.1
 
