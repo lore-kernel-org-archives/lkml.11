@@ -2,96 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E44E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0872C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:21:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238450AbiDRMYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48104 "EHLO
+        id S238313AbiDRMYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:24:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238616AbiDRMWk (ORCPT
+        with ESMTP id S238780AbiDRMWt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:22:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B301EAC5;
-        Mon, 18 Apr 2022 05:17:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4D2C60F0A;
-        Mon, 18 Apr 2022 12:17:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD4BFC385A7;
-        Mon, 18 Apr 2022 12:17:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284275;
-        bh=u2vTfM59zCoYXkVZjjnb6Jnt62iRrSVgGWuK04ScvMo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G7UY44JKz8bHwLstUtUOTLTDgdWjkhXwqm7ui2hG48lXURI3lTeFO9EXTocbWIQPc
-         e4cXlR+02r1+VxjDZM5tkbPsA841mBuAUb3ODATJKxBqN3V+gXclrwYG+f0guf5eOX
-         hGKbihUBjMhds/MUgc7sG8mfD/Oqq7qVT6sG9BQQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 060/219] firmware: arm_scmi: Remove clear channel call on the TX channel
-Date:   Mon, 18 Apr 2022 14:10:29 +0200
-Message-Id: <20220418121207.111634909@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
-References: <20220418121203.462784814@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 18 Apr 2022 08:22:49 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BCD71CB33;
+        Mon, 18 Apr 2022 05:18:16 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id y10so9116656ejw.8;
+        Mon, 18 Apr 2022 05:18:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rBeq7r1LUr17BD3wzjfHgTsyokZ2FymR+3nXomEXu6g=;
+        b=Xx1vnBsJpTyBssMLec8mWL15r4vB/b1/DWYrrTDsZnx2crQM4QEDvWC1X35cKEKTw5
+         7FVXpOzPkGNXScfkmXRupkAvTHLeBqzzDsn6HcCjyRW7QI9+CmkoALZK8AYNZxWy1Vtf
+         vYx5aG7d1KK2A6okFaDTud0BRjgIP9b+6mZyLgNkXsDWEII974cqla2ix6TR9p9HQ3Xu
+         5d+p4lAGna3lySSQ8/seWqb6pSTbfMBjtSZrSSkECgoy81rnwU5J1xlKf1Icv7aYoyQV
+         1JSwfjcmHfbMsGx2pcbuIfpx30qH+cx7UenAXVLXlG1SOEY15IjTJLYBHDh9cfpzvlfP
+         gzUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rBeq7r1LUr17BD3wzjfHgTsyokZ2FymR+3nXomEXu6g=;
+        b=ZRUdqZVj8KkYi8QjYtlTzhx1+7Rs4QqAcJf3qLyKGx5eKZRPYDNTJTyfn+2JlWHDVY
+         n64JPSzK7/RJGWC7Mq1INh0w3GpYnLGS4Dc8m1nwCxWUfkFMxyL+TiI1+N9Ad9WmB1Tp
+         BgQCJQeQ8y3xqKkPz1GTtinwbaRguyYvMg8hxgsEHVKfVtz/s2F7La8XTfFSIfovjZUU
+         IH7YjePYgM+8tZlbPZjVtCeYfB8iwB3bPj7qjHin3LwNZ5yLw7oUoTDaWiPbeJBJQgHW
+         wuoRJoyfYcvPWmtTzYrDMXBDOhkpxKMsF4XgdYbX8oKAI1Qr5gljjApiqEpruaQ6iwtg
+         w+6A==
+X-Gm-Message-State: AOAM533LDUpaamTixsN1iVbbr+svqg7VPc/OlzAkhbz8thqebTneu8ot
+        hVJt1k7RRpyPIhaXLdXdZq4PmXKsomg4so3Fv2g=
+X-Google-Smtp-Source: ABdhPJxP7RO/30UkizWDp1oKjdyab95YDtjf823TDAl+jEaenz5Jg7MGHYnl6v3ieJuCs7vAkX0IAv0IC6KFJDktHH4=
+X-Received: by 2002:a17:907:8a14:b0:6e8:9691:62f7 with SMTP id
+ sc20-20020a1709078a1400b006e8969162f7mr8964573ejc.497.1650284294799; Mon, 18
+ Apr 2022 05:18:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <alpine.DEB.2.21.2204161848030.9383@angie.orcam.me.uk> <alpine.DEB.2.21.2204162154250.9383@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2204162154250.9383@angie.orcam.me.uk>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 18 Apr 2022 15:17:38 +0300
+Message-ID: <CAHp75Vem7twcS4bKXJZM4SfE+g9qC3rxtytTKpQsyszZpnrLqw@mail.gmail.com>
+Subject: Re: [PATCH v4 3/5] serial: 8250: Export ICR access helpers for
+ internal use
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cristian Marussi <cristian.marussi@arm.com>
+On Mon, Apr 18, 2022 at 2:02 AM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
+>
+> Make ICR access helpers available outside 8250_port.c, however retain
+> them as ordinary static functions so as not to regress code generation.
+>
+> This is because `serial_icr_write' is currently automatically inlined by
+> GCC, however `serial_icr_read' is not.  Making them both static inline
+> would grow code produced, e.g.:
+>
+> $ i386-linux-gnu-size --format=gnu 8250_port-{old,new}.o
+>       text       data        bss      total filename
+>      15065       3378          0      18443 8250_port-old.o
+>      15289       3378          0      18667 8250_port-new.o
+>
+> and:
+>
+> $ riscv64-linux-gnu-size --format=gnu 8250_port-{old,new}.o
+>       text       data        bss      total filename
+>      16980       5306          0      22286 8250_port-old.o
+>      17124       5306          0      22430 8250_port-new.o
+>
+> while making them external would needlessly add a new module interface
+> and lose the benefit from `serial_icr_write' getting inlined outside
+> 8250_port.o.
 
-[ Upstream commit 98f0d68f94ea21541e0050cc64fa108ade779839 ]
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+See one nit-pick below.
 
-On SCMI transports whose channels are based on a shared resource the TX
-channel area has to be acquired by the agent before placing the desired
-command into the channel and it will be then relinquished by the platform
-once the related reply has been made available into the channel.
-On an RX channel the logic is reversed with the platform acquiring the
-channel area and the agent reliquishing it once done by calling the
-scmi_clear_channel() helper.
+> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+> ---
+> New change in v4, factored out from 5/5.
+> ---
+>  drivers/tty/serial/8250/8250.h      |   23 +++++++++++++++++++++++
+>  drivers/tty/serial/8250/8250_port.c |   21 ---------------------
+>  2 files changed, 23 insertions(+), 21 deletions(-)
+>
+> linux-serial-8250-icr-access.diff
+> Index: linux-macro/drivers/tty/serial/8250/8250.h
+> ===================================================================
+> --- linux-macro.orig/drivers/tty/serial/8250/8250.h
+> +++ linux-macro/drivers/tty/serial/8250/8250.h
+> @@ -120,6 +120,29 @@ static inline void serial_out(struct uar
+>         up->port.serial_out(&up->port, offset, value);
+>  }
+>
+> +/*
+> + * For the 16C950
+> + */
+> +static void __maybe_unused serial_icr_write(struct uart_8250_port *up,
+> +                                           int offset, int value)
 
-As a consequence, even in case of error, the agent must never try to clear
-a TX channel from its side: restrict the existing clear channel call on the
-the reply path only to delayed responses since they are indeed coming from
-the RX channel.
+I think you may drop __maybe_unused here, because it's always used by
+the code below. So it will be eliminated altogether when the below
+won't be used.
 
-Link: https://lore.kernel.org/r/20220224152404.12877-1-cristian.marussi@arm.com
-Fixes: e9b21c96181c ("firmware: arm_scmi: Make .clear_channel optional")
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/firmware/arm_scmi/driver.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> +{
+> +       serial_out(up, UART_SCR, offset);
+> +       serial_out(up, UART_ICR, value);
+> +}
+> +
+> +static unsigned int __maybe_unused serial_icr_read(struct uart_8250_port *up,
+> +                                                  int offset)
+> +{
+> +       unsigned int value;
+> +
+> +       serial_icr_write(up, UART_ACR, up->acr | UART_ACR_ICRRD);
+> +       serial_out(up, UART_SCR, offset);
+> +       value = serial_in(up, UART_ICR);
+> +       serial_icr_write(up, UART_ACR, up->acr);
+> +
+> +       return value;
+> +}
+> +
+>  void serial8250_clear_and_reinit_fifos(struct uart_8250_port *p);
+>
+>  static inline int serial_dl_read(struct uart_8250_port *up)
+> Index: linux-macro/drivers/tty/serial/8250/8250_port.c
+> ===================================================================
+> --- linux-macro.orig/drivers/tty/serial/8250/8250_port.c
+> +++ linux-macro/drivers/tty/serial/8250/8250_port.c
+> @@ -538,27 +538,6 @@ serial_port_out_sync(struct uart_port *p
+>  }
+>
+>  /*
+> - * For the 16C950
+> - */
+> -static void serial_icr_write(struct uart_8250_port *up, int offset, int value)
+> -{
+> -       serial_out(up, UART_SCR, offset);
+> -       serial_out(up, UART_ICR, value);
+> -}
+> -
+> -static unsigned int serial_icr_read(struct uart_8250_port *up, int offset)
+> -{
+> -       unsigned int value;
+> -
+> -       serial_icr_write(up, UART_ACR, up->acr | UART_ACR_ICRRD);
+> -       serial_out(up, UART_SCR, offset);
+> -       value = serial_in(up, UART_ICR);
+> -       serial_icr_write(up, UART_ACR, up->acr);
+> -
+> -       return value;
+> -}
+> -
+> -/*
+>   * FIFO support.
+>   */
+>  static void serial8250_clear_fifos(struct uart_8250_port *p)
 
-diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
-index d76bab3aaac4..e815b8f98739 100644
---- a/drivers/firmware/arm_scmi/driver.c
-+++ b/drivers/firmware/arm_scmi/driver.c
-@@ -652,7 +652,8 @@ static void scmi_handle_response(struct scmi_chan_info *cinfo,
- 
- 	xfer = scmi_xfer_command_acquire(cinfo, msg_hdr);
- 	if (IS_ERR(xfer)) {
--		scmi_clear_channel(info, cinfo);
-+		if (MSG_XTRACT_TYPE(msg_hdr) == MSG_TYPE_DELAYED_RESP)
-+			scmi_clear_channel(info, cinfo);
- 		return;
- 	}
- 
+
+
 -- 
-2.35.1
-
-
-
+With Best Regards,
+Andy Shevchenko
