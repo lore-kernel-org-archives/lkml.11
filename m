@@ -2,112 +2,297 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C721C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:45:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9430BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:45:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346405AbiDRQr3 (ORCPT
+        id S1344032AbiDRQr7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 12:47:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47762 "EHLO
+        Mon, 18 Apr 2022 12:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346373AbiDRQrZ (ORCPT
+        with ESMTP id S1346407AbiDRQr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 12:47:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E934CE08
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:44:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37923B80FE4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:44:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBFFFC385A7;
-        Mon, 18 Apr 2022 16:44:40 +0000 (UTC)
-Date:   Mon, 18 Apr 2022 17:44:37 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Ard Biesheuvel <ardb@kernel.org>, Will Deacon <will@kernel.org>,
-        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
- ARCH_KMALLOC_MINALIGN
-Message-ID: <Yl2Vda/8S7qAvMjC@arm.com>
-References: <CAMj1kXFjLbtpJLFh-C_k3Ydcg4M7NqrCfOXnBY2iSxusWtBLbA@mail.gmail.com>
- <YllM24eca/uxf9y7@gondor.apana.org.au>
- <CAMj1kXH5O32H1nnm6y7=3KiH7R-_oakxzBpZ20wK+8kaD46aKw@mail.gmail.com>
- <YlvK9iefUECy361O@gondor.apana.org.au>
- <YlvQTci7RP5evtTy@arm.com>
- <YlvRbvWSWMTtBJiN@gondor.apana.org.au>
- <YlvU6ou14okbAbgW@arm.com>
- <YlvWtc/dJ6luXzZf@gondor.apana.org.au>
- <YlxAo5BAy+ARlvqj@arm.com>
- <Yl0jPdfdUkaStDN5@gondor.apana.org.au>
+        Mon, 18 Apr 2022 12:47:57 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE84B326EB
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:45:17 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id s137so19840110pgs.5
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:45:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4xwTXGyMiRwQRbK7umG3ZynWZ3Dw576AsZDOR95/gXU=;
+        b=B2EWZ80+i+OxKDK4aG1UbaOkuqHEb3Qp0nagwb7VyMcVLJCoOV5edrOdNc4hq5gp/4
+         37HAOe2WOYlwTQPlhCzMHONQzGpLuG6MpmUTAIXlmeuWi+TEP1aE9eZNDeVnq8ekL9Vh
+         ky6BvKBDjOwM3WC59Xcofqh6srmpHLzTtdDVA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4xwTXGyMiRwQRbK7umG3ZynWZ3Dw576AsZDOR95/gXU=;
+        b=UPRuHCtti4YYj1n6L/Ved+FigY9GHytaVc99C4UJAlvJzvEqhdVKDuNjFUfr+1QCTq
+         309ozkGBdoc4GeBGRM2cd5Cn2X0+C5M9o/h9qan1C6ppZFMCN0pxjdCPppIoub7NzNVg
+         M1vVhq9aO8vJl3uzgtg842y2LLr4J0qaqrKbKOiVVYNz8HHO6pmikIRb8Ix2hc+1RmD9
+         YmaJSj7raUXPdQUrI6EPkC4LFwSWZhUFhSQUxQOf4dTZcWRff8BDvH7cMtY8jiJWRsVI
+         ndM9cwraShCYGIYwCa0lfgM8Y0DOjVRwxSkD87dfLBrj4HP96G5tWKZxhCaknZEGYfAc
+         WjPg==
+X-Gm-Message-State: AOAM531278hapM+qfCxXtwKtzhvpVc/GKgodIu073MAOp3UFFe+vkvpl
+        fqty4MsAKEPa/JsMNfuev4iL2A==
+X-Google-Smtp-Source: ABdhPJwRJZtekdiefz/R1D51gc7pQIKgOwr5/nKXzzfb1qXbeZEcEiLIiitOAbOMJnmAR2Tk0AGPbQ==
+X-Received: by 2002:a63:d915:0:b0:39d:3f7d:1850 with SMTP id r21-20020a63d915000000b0039d3f7d1850mr10870714pgg.10.1650300315780;
+        Mon, 18 Apr 2022 09:45:15 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:6b32:a0a5:ec32:c287])
+        by smtp.gmail.com with UTF8SMTPSA id r33-20020a63fc61000000b003a9f98905e9sm3995484pgk.76.2022.04.18.09.45.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 09:45:15 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 09:45:13 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
+        srinivas.kandagatla@linaro.org, dianders@chromium.org,
+        swboyd@chromium.org, judyhsiao@chromium.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v8 2/4] arm64: dts: qcom: sc7280: Add nodes for wcd9385
+ and max98360a codec
+Message-ID: <Yl2VmW18QAJl9v+m@google.com>
+References: <1650291252-30398-1-git-send-email-quic_srivasam@quicinc.com>
+ <1650291252-30398-3-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Yl0jPdfdUkaStDN5@gondor.apana.org.au>
+In-Reply-To: <1650291252-30398-3-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 04:37:17PM +0800, Herbert Xu wrote:
-> On Sun, Apr 17, 2022 at 05:30:27PM +0100, Catalin Marinas wrote:
-> > Do you mean as per Ard's proposal here:
-> > 
-> > https://lore.kernel.org/r/CAMj1kXH0x5Va7Wgs+mU1ONDwwsazOBuN4z4ihVzO2uG-n41Kbg@mail.gmail.com
-> > 
-> > struct crypto_request {
-> > 	union {
-> > 		struct {
-> > 			... fields ...
-> > 		};
-> > 		u8 __padding[ARCH_DMA_MINALIGN];
-> > 	};
-> > 	void __ctx[]  __aligned(CRYPTO_MINALIGN);
-> > };
-> > 
-> > If CRYPTO_MINALIGN is lowered to, say, 8 (to be the same as lowest
-> > ARCH_KMALLOC_MINALIGN), the __alignof__(req->__ctx) would be 8.
-> > Functions like crypto_tfm_ctx_alignment() will return 8 when what you
-> > need is 128. We can change those functions to return ARCH_DMA_MINALIGN
-> > instead or always bump cra_alignmask to ARCH_DMA_MINALIGN-1.
+On Mon, Apr 18, 2022 at 07:44:10PM +0530, Srinivasa Rao Mandadapu wrote:
+> Add wcd938x and  max98360a codecs for audio use case on
+> sc7280 based platforms.
+> Add tlmm gpio property in wcd938x node for switching CTIA/OMTP Headset.
+> Add amp_en node for  max98360a codec.
+
+General note: I don't think it's a good practice to add stuff like this to
+multiple boards in a single patch. Why?
+
+First the subject of such a patch tends to be vague ("arm64: dts: qcom:
+sc7280: Add nodes for wcd9385 and max98360a codec"), in this case it gives
+no hint about the boards. If someone was interested in picking changes
+for a given board they can't easily identify from the subject that the
+change is relevant for them.
+
+Changes touching multiple boards are more likely to cause conflicts when
+being picked (or reverted), both upstream and in downstream trees (which
+unfortunately have to exist for product development). Downstream trees
+might only pick changes for the board(s) they target, patches that touch
+mutiple boards often cause conflicts due to context deltas in the
+'irrelevant' boards.
+
+Lastly it's usually easier to get a patch reviewed (in the sense of
+getting a 'Reviewed-by' tag) and landed that does a single thing.
+
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts     |  6 ++
+>  arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi |  8 +++
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi       | 97 ++++++++++++++++++++++++++
+>  3 files changed, 111 insertions(+)
 > 
-> OK, at this point I think we need to let the code do the talking :)
-> 
-> I've seen Ard's patches already and I think I understand what your
-> needs are.  So let me whip up some code to show you guys what I
-> think needs to be done.
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
+> index 344338a..aa0bf6e2 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
+> @@ -87,6 +87,12 @@ ap_ts_pen_1v8: &i2c13 {
+>  	pins = "gpio51";
+>  };
+>  
+> +&wcd938x {
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&us_euro_hs_sel>;
+> +	us-euro-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
+> +};
 
-BTW before you have a go at this, there's also Linus' idea that does not
-change the crypto code (at least not functionally). Of course, you and
-Ard can still try to figure out how to reduce the padding but if we go
-with Linus' idea of a new GFP_NODMA flag, there won't be any changes to
-the crypto code as long as it doesn't pass such flag. So, the options:
+Since this is added for the CRD rev3 it probably should also be added to
+sc7280-herobrine-crd.dts
 
-1. Change ARCH_KMALLOC_MINALIGN to 8 (or ARCH_SLAB_MINALIGN if higher)
-   while keeping ARCH_DMA_MINALIGN to 128. By default kmalloc() will
-   honour the 128-byte alignment, unless GDP_NODMA is passed. This still
-   requires changing CRYPTO_MINALIGN to ARCH_DMA_MINALIGN but there is
-   no functional change, kmalloc() without the new flag will return
-   CRYPTO_MINALIGN-aligned pointers.
+> +
+>  &tlmm {
+>  	tp_int_odl: tp-int-odl {
+>  		pins = "gpio7";
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> index d58045d..f247403 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
+> @@ -20,6 +20,14 @@
+>  #include "sc7280-chrome-common.dtsi"
+>  
+>  / {
+> +	max98360a: audio-codec-0 {
+> +		compatible = "maxim,max98360a";
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&amp_en>;
+> +		sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
+> +		#sound-dai-cells = <0>;
+> +	};
+> +
+>  	chosen {
+>  		stdout-path = "serial0:115200n8";
+>  	};
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> index 2f863c0..8dad599 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> @@ -20,6 +20,42 @@
+>  		serial1 = &uart7;
+>  	};
+>  
+> +	max98360a: audio-codec-0 {
+> +		compatible = "maxim,max98360a";
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&amp_en>;
+> +		sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
+> +		#sound-dai-cells = <0>;
+> +	};
+> +
+> +	wcd938x: audio-codec-1 {
 
-2. Leave ARCH_KMALLOC_MINALIGN as ARCH_DMA_MINALIGN (128) and introduce
-   a new GFP_PACKED (I think it fits better than 'NODMA') flag that
-   reduces the minimum kmalloc() below ARCH_KMALLOC_MINALIGN (and
-   probably at least ARCH_SLAB_MINALIGN). It's equivalent to (1) but
-   does not touch the crypto code at all.
+Why 'wcd938x' and not 'wcd9385'?
 
-(1) and (2) are the same, just minor naming difference. Happy to go with
-any of them. They still have the downside that we need to add the new
-GFP_ flag to those hotspots that allocate small objects (Arnd provided
-an idea on how to find them with ftrace) but at least we know it won't
-inadvertently break anything.
+> +		compatible = "qcom,wcd9385-codec";
+> +		pinctrl-names = "default", "sleep";
+> +		pinctrl-0 = <&wcd_reset_n>;
+> +		pinctrl-1 = <&wcd_reset_n_sleep>;
+> +
+> +		reset-gpios = <&tlmm 83 GPIO_ACTIVE_HIGH>;
+> +
+> +		qcom,rx-device = <&wcd_rx>;
+> +		qcom,tx-device = <&wcd_tx>;
+> +
+> +		vdd-rxtx-supply = <&vreg_l18b_1p8>;
+> +		vdd-io-supply = <&vreg_l18b_1p8>;
+> +		vdd-buck-supply = <&vreg_l17b_1p8>;
+> +		vdd-mic-bias-supply = <&vreg_bob>;
+> +
+> +		qcom,micbias1-microvolt = <1800000>;
+> +		qcom,micbias2-microvolt = <1800000>;
+> +		qcom,micbias3-microvolt = <1800000>;
+> +		qcom,micbias4-microvolt = <1800000>;
+> +
+> +		qcom,mbhc-buttons-vthreshold-microvolt = <75000 150000 237000 500000 500000
+> +							  500000 500000 500000>;
+> +		qcom,mbhc-headset-vthreshold-microvolt = <1700000>;
+> +		qcom,mbhc-headphone-vthreshold-microvolt = <50000>;
+> +		#sound-dai-cells = <1>;
+> +	};
 
--- 
-Catalin
+Also add this node to sc7280-herobrine-crd.dts?
+
+> +
+>  	gpio-keys {
+>  		compatible = "gpio-keys";
+>  		label = "gpio-keys";
+> @@ -238,6 +274,19 @@
+>  	modem-init;
+>  };
+>  
+> +&lpass_rx_macro {
+> +	status = "okay";
+> +};
+> +
+> +&lpass_tx_macro {
+> +	status = "okay";
+> +};
+> +
+> +&lpass_va_macro {
+> +	status = "okay";
+> +	vdd-micb-supply = <&vreg_bob>;
+> +};
+
+Enable these also in sc7280-herobrine.dtsi if other nodes are added to
+sc7280-herobrine-crd.dts.
+
+> +
+>  &pcie1 {
+>  	status = "okay";
+>  	perst-gpio = <&tlmm 2 GPIO_ACTIVE_LOW>;
+> @@ -298,6 +347,26 @@
+>  	cd-gpios = <&tlmm 91 GPIO_ACTIVE_LOW>;
+>  };
+>  
+> +&swr0 {
+> +	status = "okay";
+
+nit: add an empty line between properties and nodes
+
+> +	wcd_rx: codec@0,4 {
+> +		compatible = "sdw20217010d00";
+> +		reg = <0 4>;
+> +		#sound-dai-cells = <1>;
+> +		qcom,rx-port-mapping = <1 2 3 4 5>;
+> +	};
+> +};
+> +
+> +&swr1 {
+> +	status = "okay";
+
+ditto
+
+> +	wcd_tx: codec@0,3 {
+> +		compatible = "sdw20217010d00";
+> +		reg = <0 3>;
+> +		#sound-dai-cells = <1>;
+> +		qcom,tx-port-mapping = <1 2 3 4>;
+> +	};
+> +};
+
+Also add these to sc7280-herobrine-crd.dts?
+
+> +
+>  &uart5 {
+>  	compatible = "qcom,geni-debug-uart";
+>  	status = "okay";
+> @@ -561,6 +630,12 @@
+>  };
+>  
+>  &tlmm {
+> +	amp_en: amp-en {
+> +		pins = "gpio63";
+> +		bias-pull-down;
+> +		drive-strength = <2>;
+> +	};
+> +
+>  	bt_en: bt-en {
+>  		pins = "gpio85";
+>  		function = "gpio";
+> @@ -643,6 +718,28 @@
+>  		function = "gpio";
+>  		bias-pull-down;
+>  	};
+> +
+> +	us_euro_hs_sel: us-euro-hs-sel {
+> +		pins = "gpio81";
+> +		function = "gpio";
+> +		bias-pull-down;
+> +		drive-strength = <2>;
+> +	};
+> +
+> +	wcd_reset_n: wcd-reset-n {
+> +		pins = "gpio83";
+> +		function = "gpio";
+> +		drive-strength = <8>;
+> +		output-high;
+> +	};
+> +
+> +	wcd_reset_n_sleep: wcd-reset-n-sleep {
+> +		pins = "gpio83";
+> +		function = "gpio";
+> +		drive-strength = <8>;
+> +		bias-disable;
+> +		output-low;
+> +	};
+
+Also add to sc7280-herobrine-crd.dts if the other nodes are added.
