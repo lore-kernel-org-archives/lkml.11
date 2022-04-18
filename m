@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2C1C47087
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70EFBC38A2D
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243859AbiDRNed (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:34:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53636 "EHLO
+        id S243884AbiDRNeg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241690AbiDRNI3 (ORCPT
+        with ESMTP id S241937AbiDRNIi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:08:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3902BB10;
-        Mon, 18 Apr 2022 05:47:56 -0700 (PDT)
+        Mon, 18 Apr 2022 09:08:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E910340F6;
+        Mon, 18 Apr 2022 05:48:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76BFE6124A;
-        Mon, 18 Apr 2022 12:47:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67303C385A7;
-        Mon, 18 Apr 2022 12:47:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6136961254;
+        Mon, 18 Apr 2022 12:48:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D5CCC385A7;
+        Mon, 18 Apr 2022 12:48:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286075;
-        bh=zhJ5U1YZxDlUhpAyqcBaDDvBQU/WxbXPrdfuwDDlr7c=;
+        s=korg; t=1650286088;
+        bh=A4b2a4onVwfZ3Z/PUXwNCCP2ru+RSO2yvt2SPsiVLO4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bFKi10us4LI2umGymyFPdfAv4iPpC9obFYtQtokpn00BYEb4iSLxxWVKhk/Y3rcze
-         W5g8wbKo38LD3Xg+BbcnOhmpD3qX48T7F4+5Ypwj3whM6DSyn+1qDXIXBZmIP9jXCe
-         7W6hIAsKbW6fmayK+oV1MlingjGUQcurPCVrcEW4=
+        b=vZUiAURXMoVqIk2BzNb69/bW+mXjHeNW8hOVboFrSsqIsRyfOjnxRevjUul2xYtmH
+         sTtdacnpJUUVW2ah+lWNd/Dv2kBavLM01L2fNS+4NKd0RO+iBN132dPJwpHCsfQHXI
+         KsSKsVG3jvLnqkUOoZh8gdnrDp8mTXH+2mLsSm1Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 4.14 021/284] Documentation: update stable tree link
-Date:   Mon, 18 Apr 2022 14:10:02 +0200
-Message-Id: <20220418121211.299972977@linuxfoundation.org>
+        stable@vger.kernel.org, Sebastian Haas <haas@ems-wuensche.com>,
+        Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 4.14 025/284] can: ems_usb: ems_usb_start_xmit(): fix double dev_kfree_skb() in error path
+Date:   Mon, 18 Apr 2022 14:10:06 +0200
+Message-Id: <20220418121211.412923013@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,36 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bagas Sanjaya <bagasdotme@gmail.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 555d44932c67e617d89bc13c81c7efac5b51fcfa upstream.
+commit c70222752228a62135cee3409dccefd494a24646 upstream.
 
-The link to stable tree is redirected to
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git. Update
-accordingly.
+There is no need to call dev_kfree_skb() when usb_submit_urb() fails
+beacause can_put_echo_skb() deletes the original skb and
+can_free_echo_skb() deletes the cloned skb.
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Sasha Levin <sashal@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
+Link: https://lore.kernel.org/all/20220228083639.38183-1-hbh25y@gmail.com
+Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
 Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
-Link: https://lore.kernel.org/r/20220314113329.485372-6-bagasdotme@gmail.com
+Cc: Sebastian Haas <haas@ems-wuensche.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/process/stable-kernel-rules.rst |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/usb/ems_usb.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/Documentation/process/stable-kernel-rules.rst
-+++ b/Documentation/process/stable-kernel-rules.rst
-@@ -171,7 +171,7 @@ Trees
-  - The finalized and tagged releases of all stable kernels can be found
-    in separate branches per version at:
+--- a/drivers/net/can/usb/ems_usb.c
++++ b/drivers/net/can/usb/ems_usb.c
+@@ -834,7 +834,6 @@ static netdev_tx_t ems_usb_start_xmit(st
  
--	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-+	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+ 		usb_unanchor_urb(urb);
+ 		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
+-		dev_kfree_skb(skb);
  
-  - The release candidate of all stable kernel versions can be found at:
+ 		atomic_dec(&dev->active_tx_urbs);
  
 
 
