@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB95C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20810C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240910AbiDRMjr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:39:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51070 "EHLO
+        id S241022AbiDRMjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:39:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239817AbiDRMda (ORCPT
+        with ESMTP id S239789AbiDRMd2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:30 -0400
+        Mon, 18 Apr 2022 08:33:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C66C71BE8C;
-        Mon, 18 Apr 2022 05:26:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1CA61B796;
+        Mon, 18 Apr 2022 05:26:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7677BB80EC1;
-        Mon, 18 Apr 2022 12:26:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BA15C385A8;
-        Mon, 18 Apr 2022 12:26:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9E86B80EDB;
+        Mon, 18 Apr 2022 12:26:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED991C385A1;
+        Mon, 18 Apr 2022 12:26:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284807;
-        bh=F7jFz2PUQMud+q2P4/1QywOPlW8/vTq6rZs6faxrbOw=;
+        s=korg; t=1650284770;
+        bh=7lAvJYzy1QYp8+7W7uKPyGmGnOkYsJY8pHmnEPIg9bA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dFFYGJYVj8Eimic9Jl1OZlbN/vltusj/Nlt0MVd8Cinc223PzLAYYPCuUSPCGHhti
-         5NKkOoLT0ui3pAblp59Il0FQYLpnRm1gNC7gnu8oAI1YbiXDDzzmLqRT4aB+w7Sbbq
-         fRQYf5qv1rRLfXSkhhpuphKsRsgdmWM5epspNjDo=
+        b=wCNrP5y617BKmWRSvpd9+RguckciNKFVLb2DNsoyAMOXMXeILJEQrgBxaaTkDDEHH
+         Etb5bIigvpPyQQpoXr/ijOD7an3rloW6q+qgoxlY2s2lkOvXaHuihNTWGKDukRuuxj
+         Jc2qhVgjaAH+Z1T+apuUtZ9RAa71f741noaDyFuo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Richard Gong <richard.gong@amd.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.15 007/189] ACPI: processor idle: Allow playing dead in C3 state
-Date:   Mon, 18 Apr 2022 14:10:27 +0200
-Message-Id: <20220418121200.641255207@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 172/219] io_uring: zero tag on rsrc removal
+Date:   Mon, 18 Apr 2022 14:12:21 +0200
+Message-Id: <20220418121211.694562414@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
-References: <20220418121200.312988959@linuxfoundation.org>
+In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
+References: <20220418121203.462784814@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Gong <richard.gong@amd.com>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-commit d6b88ce2eb9d2698eb24451eb92c0a1649b17bb1 upstream.
+[ Upstream commit 8f0a24801bb44aa58496945aabb904c729176772 ]
 
-When some cores are disabled on AMD platforms, the system will no longer
-be able to enter suspend-to-idle s0ix.
+Automatically default rsrc tag in io_queue_rsrc_removal(), it's safer
+than leaving it there and relying on the rest of the code to behave and
+not use it.
 
-Update to allow playing dead in C3 state so that the CPUs can enter the
-deepest state on AMD platforms.
-
-BugLink: https://gitlab.freedesktop.org/drm/amd/-/issues/1708
-Suggested-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Richard Gong <richard.gong@amd.com>
-[ rjw: Fixed coding style ]
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Link: https://lore.kernel.org/r/1cf262a50df17478ea25b22494dcc19f3a80301f.1649336342.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/processor_idle.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/io_uring.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/acpi/processor_idle.c
-+++ b/drivers/acpi/processor_idle.c
-@@ -789,7 +789,8 @@ static int acpi_processor_setup_cstates(
- 		state->enter = acpi_idle_enter;
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 6f93bff7633c..53b20d8b1129 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -8536,13 +8536,15 @@ static int io_sqe_file_register(struct io_ring_ctx *ctx, struct file *file,
+ static int io_queue_rsrc_removal(struct io_rsrc_data *data, unsigned idx,
+ 				 struct io_rsrc_node *node, void *rsrc)
+ {
++	u64 *tag_slot = io_get_tag_slot(data, idx);
+ 	struct io_rsrc_put *prsrc;
  
- 		state->flags = 0;
--		if (cx->type == ACPI_STATE_C1 || cx->type == ACPI_STATE_C2) {
-+		if (cx->type == ACPI_STATE_C1 || cx->type == ACPI_STATE_C2 ||
-+		    cx->type == ACPI_STATE_C3) {
- 			state->enter_dead = acpi_idle_play_dead;
- 			drv->safe_state_index = count;
- 		}
+ 	prsrc = kzalloc(sizeof(*prsrc), GFP_KERNEL);
+ 	if (!prsrc)
+ 		return -ENOMEM;
+ 
+-	prsrc->tag = *io_get_tag_slot(data, idx);
++	prsrc->tag = *tag_slot;
++	*tag_slot = 0;
+ 	prsrc->rsrc = rsrc;
+ 	list_add(&prsrc->list, &node->rsrc_list);
+ 	return 0;
+-- 
+2.35.1
+
 
 
