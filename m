@@ -2,53 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C392C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA989C3527C
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345050AbiDROSn (ORCPT
+        id S1345102AbiDROSs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:18:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56446 "EHLO
+        Mon, 18 Apr 2022 10:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244901AbiDRN6D (ORCPT
+        with ESMTP id S244924AbiDRN6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:58:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8791A3B3;
-        Mon, 18 Apr 2022 06:08:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 18 Apr 2022 09:58:05 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C31726D9;
+        Mon, 18 Apr 2022 06:08:15 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F05A3B80D9C;
-        Mon, 18 Apr 2022 13:08:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 279FBC385A8;
-        Mon, 18 Apr 2022 13:08:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287291;
-        bh=J8tUB+BiV4zZV4I6SH2xKV9r1G8xQiet/Q5zMgRZqqM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ji5wvozm+D2LwdEMQ/x1ULw6PK8kFZuKkfl6iJZ7zbueiJDCSOCLsktKJwEa05gwQ
-         Xc7zgYqTwg4dR/+ga5V/UD/6UYj8fJiMASvJPtckhqJhrhq1T8gIE2DoOxTl7eBBsa
-         4D/PCWhGKLCdCwUSsv6sODRK5b+kho5CKdwBoKj0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Julian Wiedmann <jwi@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 115/218] tty: hvc: fix return value of __setup handler
-Date:   Mon, 18 Apr 2022 14:13:01 +0200
-Message-Id: <20220418121202.885947895@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
-References: <20220418121158.636999985@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D29A81F381;
+        Mon, 18 Apr 2022 13:08:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1650287293; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iBYQm7Rp5LG8jKxerzOsfwWsTzE/H7NffrHSL2IyD+s=;
+        b=TocHSoPX9e5EcicfNhzjUIFR8D2OXV/K3lKZJSWWVrMF+nTO7p7lqWZukGYiNMgRhCcI2S
+        HJTiKL4rTD0OvGEQAOmlFBlwQU9KUgEqfF2NSk75WGi21Uhzu2sWGHOdZf5AjIbAxK3aiV
+        lCTohJTbyaE21PBqte+yxlpTjKOPTik=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1650287293;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iBYQm7Rp5LG8jKxerzOsfwWsTzE/H7NffrHSL2IyD+s=;
+        b=xGtN1dHwZEvL/X5HVK+Vrt3cgkkqhFrdYXZs9AO3qJxgafORU/jLMoBegjJTpsRHqcEzFE
+        xlEstEnrU2eBGDAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 68C5D13ACB;
+        Mon, 18 Apr 2022 13:08:13 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Dj9SFr1iXWLcLwAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Mon, 18 Apr 2022 13:08:13 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id 150a3546;
+        Mon, 18 Apr 2022 13:08:40 +0000 (UTC)
+From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+Subject: [PATCH] ceph: prevent snapshots to be created in encrypted locked directories
+Date:   Mon, 18 Apr 2022 14:08:39 +0100
+Message-Id: <20220418130839.9862-1-lhenriques@suse.de>
+In-Reply-To: <20220414135122.26821-1-lhenriques@suse.de>
+References: <20220414135122.26821-1-lhenriques@suse.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -56,50 +70,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+With snapshot names encryption we can not allow snapshots to be created in
+locked directories because the names wouldn't be encrypted.  This patch
+forces the directory to be unlocked to allow a snapshot to be created.
 
-[ Upstream commit 53819a0d97aace1425bb042829e3446952a9e8a9 ]
-
-__setup() handlers should return 1 to indicate that the boot option
-has been handled or 0 to indicate that it was not handled.
-Add a pr_warn() message if the option value is invalid and then
-always return 1.
-
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: 86b40567b917 ("tty: replace strict_strtoul() with kstrtoul()")
-Cc: Jingoo Han <jg1.han@samsung.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Julian Wiedmann <jwi@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: linuxppc-dev@lists.ozlabs.org
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Link: https://lore.kernel.org/r/20220308024228.20477-1-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
 ---
- drivers/tty/hvc/hvc_iucv.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/ceph/dir.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/tty/hvc/hvc_iucv.c b/drivers/tty/hvc/hvc_iucv.c
-index 8b70a1627356..799bc191982c 100644
---- a/drivers/tty/hvc/hvc_iucv.c
-+++ b/drivers/tty/hvc/hvc_iucv.c
-@@ -1469,7 +1469,9 @@ static int __init hvc_iucv_init(void)
-  */
- static	int __init hvc_iucv_config(char *val)
- {
--	 return kstrtoul(val, 10, &hvc_iucv_devices);
-+	if (kstrtoul(val, 10, &hvc_iucv_devices))
-+		pr_warn("hvc_iucv= invalid parameter value '%s'\n", val);
-+	return 1;
- }
+diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+index f48f1ff20927..93e2f08102a1 100644
+--- a/fs/ceph/dir.c
++++ b/fs/ceph/dir.c
+@@ -1071,6 +1071,10 @@ static int ceph_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
+ 		err = -EDQUOT;
+ 		goto out;
+ 	}
++	if ((op == CEPH_MDS_OP_MKSNAP) && !fscrypt_has_encryption_key(dir)) {
++		err = -ENOKEY;
++		goto out;
++	}
  
  
--- 
-2.34.1
-
-
-
+ 	req = ceph_mdsc_create_request(mdsc, op, USE_AUTH_MDS);
