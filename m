@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A85B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240111AbiDRMyb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:54:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48288 "EHLO
+        id S240170AbiDRMyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:54:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237832AbiDRMlR (ORCPT
+        with ESMTP id S239994AbiDRMid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:41:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103EE1F62E;
-        Mon, 18 Apr 2022 05:32:03 -0700 (PDT)
+        Mon, 18 Apr 2022 08:38:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABCC5F40;
+        Mon, 18 Apr 2022 05:29:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FDEC60F0E;
-        Mon, 18 Apr 2022 12:32:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 431EFC385A8;
-        Mon, 18 Apr 2022 12:32:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8989B80ED1;
+        Mon, 18 Apr 2022 12:29:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 510D8C385A1;
+        Mon, 18 Apr 2022 12:29:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285122;
-        bh=TbfRJ417UhImkupEyeLSymcBvljdG4zIwdXdZW9xotc=;
+        s=korg; t=1650284941;
+        bh=E7/1BbysndzDFVbdCTayQBPnTXaL+5SZ72S1P3tDG0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Y3ZAJoDA5/nGT9Y0XM7voG/F33aT2LoYFQKHjkzkQBSWrASb5B6Dcccnwwt8VElg
-         gabzzgY85yPij1w0/+5DDkzCIr5YJj7EJNxNTsBkvoYUfm2RfvZjNYyfjE9Y5k6bK1
-         gaJA77yMeOprTUg4tLfUJ7HtBBOJimTBmyL778Z0=
+        b=0KVYlQ21cjjVBftITEM345TRD2x/O6gaAavVEYlSMAUidd1fASytx47jxIdFPoi8T
+         79peDWAGsd7pnxvmCDmZBsHYjB/RAmzrxkmAx5im8WylBRG1D6Netbcu4jhTGMdtai
+         OLEn6UCNJht7r0opj7TDD5eUN3qj3c77F10nyHOI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alvin Lee <Alvin.Lee2@amd.com>,
-        Aric Cyr <Aric.Cyr@amd.com>, Alex Hung <alex.hung@amd.com>,
-        Charlene Liu <Charlene.Liu@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 110/189] drm/amd/display: fix audio format not updated after edid updated
-Date:   Mon, 18 Apr 2022 14:12:10 +0200
-Message-Id: <20220418121203.622892970@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 015/189] btrfs: release correct delalloc amount in direct IO write path
+Date:   Mon, 18 Apr 2022 14:10:35 +0200
+Message-Id: <20220418121200.941209603@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -52,42 +51,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charlene Liu <Charlene.Liu@amd.com>
+From: Naohiro Aota <naohiro.aota@wdc.com>
 
-[ Upstream commit 5e8a71cf13bc9184fee915b2220be71b4c6cac74 ]
+commit 6d82ad13c4110e73c7b0392f00534a1502a1b520 upstream.
 
-[why]
-for the case edid change only changed audio format.
-driver still need to update stream.
+Running generic/406 causes the following WARNING in btrfs_destroy_inode()
+which tells there are outstanding extents left.
 
-Reviewed-by: Alvin Lee <Alvin.Lee2@amd.com>
-Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
-Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Charlene Liu <Charlene.Liu@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In btrfs_get_blocks_direct_write(), we reserve a temporary outstanding
+extents with btrfs_delalloc_reserve_metadata() (or indirectly from
+btrfs_delalloc_reserve_space(()). We then release the outstanding extents
+with btrfs_delalloc_release_extents(). However, the "len" can be modified
+in the COW case, which releases fewer outstanding extents than expected.
+
+Fix it by calling btrfs_delalloc_release_extents() for the original length.
+
+To reproduce the warning, the filesystem should be 1 GiB.  It's
+triggering a short-write, due to not being able to allocate a large
+extent and instead allocating a smaller one.
+
+  WARNING: CPU: 0 PID: 757 at fs/btrfs/inode.c:8848 btrfs_destroy_inode+0x1e6/0x210 [btrfs]
+  Modules linked in: btrfs blake2b_generic xor lzo_compress
+  lzo_decompress raid6_pq zstd zstd_decompress zstd_compress xxhash zram
+  zsmalloc
+  CPU: 0 PID: 757 Comm: umount Not tainted 5.17.0-rc8+ #101
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS d55cb5a 04/01/2014
+  RIP: 0010:btrfs_destroy_inode+0x1e6/0x210 [btrfs]
+  RSP: 0018:ffffc9000327bda8 EFLAGS: 00010206
+  RAX: 0000000000000000 RBX: ffff888100548b78 RCX: 0000000000000000
+  RDX: 0000000000026900 RSI: 0000000000000000 RDI: ffff888100548b78
+  RBP: ffff888100548940 R08: 0000000000000000 R09: ffff88810b48aba8
+  R10: 0000000000000001 R11: ffff8881004eb240 R12: ffff88810b48a800
+  R13: ffff88810b48ec08 R14: ffff88810b48ed00 R15: ffff888100490c68
+  FS:  00007f8549ea0b80(0000) GS:ffff888237c00000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 00007f854a09e733 CR3: 000000010a2e9003 CR4: 0000000000370eb0
+  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+  Call Trace:
+   <TASK>
+   destroy_inode+0x33/0x70
+   dispose_list+0x43/0x60
+   evict_inodes+0x161/0x1b0
+   generic_shutdown_super+0x2d/0x110
+   kill_anon_super+0xf/0x20
+   btrfs_kill_super+0xd/0x20 [btrfs]
+   deactivate_locked_super+0x27/0x90
+   cleanup_mnt+0x12c/0x180
+   task_work_run+0x54/0x80
+   exit_to_user_mode_prepare+0x152/0x160
+   syscall_exit_to_user_mode+0x12/0x30
+   do_syscall_64+0x42/0x80
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+   RIP: 0033:0x7f854a000fb7
+
+Fixes: f0bfa76a11e9 ("btrfs: fix ENOSPC failure when attempting direct IO write into NOCOW range")
+CC: stable@vger.kernel.org # 5.17
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Tested-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc_resource.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/btrfs/inode.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-index 108f3854cd2a..82f1f27baaf3 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-@@ -1626,8 +1626,8 @@ bool dc_is_stream_unchanged(
- 	if (old_stream->ignore_msa_timing_param != stream->ignore_msa_timing_param)
- 		return false;
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -7772,6 +7772,7 @@ static int btrfs_get_blocks_direct_write
+ 	u64 block_start, orig_start, orig_block_len, ram_bytes;
+ 	bool can_nocow = false;
+ 	bool space_reserved = false;
++	u64 prev_len;
+ 	int ret = 0;
  
--	// Only Have Audio left to check whether it is same or not. This is a corner case for Tiled sinks
--	if (old_stream->audio_info.mode_count != stream->audio_info.mode_count)
-+	/*compare audio info*/
-+	if (memcmp(&old_stream->audio_info, &stream->audio_info, sizeof(stream->audio_info)) != 0)
- 		return false;
+ 	/*
+@@ -7799,6 +7800,7 @@ static int btrfs_get_blocks_direct_write
+ 			can_nocow = true;
+ 	}
  
- 	return true;
--- 
-2.35.1
-
++	prev_len = len;
+ 	if (can_nocow) {
+ 		struct extent_map *em2;
+ 
+@@ -7828,8 +7830,6 @@ static int btrfs_get_blocks_direct_write
+ 			goto out;
+ 		}
+ 	} else {
+-		const u64 prev_len = len;
+-
+ 		/* Our caller expects us to free the input extent map. */
+ 		free_extent_map(em);
+ 		*map = NULL;
+@@ -7860,7 +7860,7 @@ static int btrfs_get_blocks_direct_write
+ 	 * We have created our ordered extent, so we can now release our reservation
+ 	 * for an outstanding extent.
+ 	 */
+-	btrfs_delalloc_release_extents(BTRFS_I(inode), len);
++	btrfs_delalloc_release_extents(BTRFS_I(inode), prev_len);
+ 
+ 	/*
+ 	 * Need to update the i_size under the extent lock so buffered
 
 
