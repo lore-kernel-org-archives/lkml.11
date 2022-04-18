@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73257C3527C
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F6F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236166AbiDRMkH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54078 "EHLO
+        id S236197AbiDRMkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239676AbiDRMdU (ORCPT
+        with ESMTP id S240083AbiDRMdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0AB63C2;
-        Mon, 18 Apr 2022 05:25:04 -0700 (PDT)
+        Mon, 18 Apr 2022 08:33:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88F71FCEE;
+        Mon, 18 Apr 2022 05:27:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 792A2B80ED1;
-        Mon, 18 Apr 2022 12:25:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE469C385A7;
-        Mon, 18 Apr 2022 12:25:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 554A960B40;
+        Mon, 18 Apr 2022 12:27:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6580BC385A1;
+        Mon, 18 Apr 2022 12:27:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284702;
-        bh=2pRgpl+ehN+GQk+VgDxgZnQU0ERx1IPYjSzEqeOKiso=;
+        s=korg; t=1650284826;
+        bh=glnq+QS0iQg+Z4Catr5hrs0n4Z7GiFQTcj0rj5oEa64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z4K0PNXl88I6UrA4jp55S4/GHMQnWQMqHMwiEfs8nj6+LFCLJppBz2N/Xh8bCko5h
-         KNCdmBoZgyj+CFnbCVRMxYiU+D/wUftLt26jddZ8otU3EounHbYyASRlD28KkReRCe
-         cl/zI2ShwEuNjU88rIPySr6Kf9WB8k+ZtqWQ6EQM=
+        b=1VUq0qpce6CK1e99rFrtiQgGaDwKGknab4BM9urh6d03oDyB/nLGgT1OZ2bxQ21rd
+         aCWqq95WD1U3LeRwRB0aYyK8ub8RHT0rALZvN5mYQDZZ1//taNRPteTC5bT3loWOro
+         lOFkAD7zAcZJKoXEfYR/vlGidtNRIOhBYyyeXIko=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <desowin@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.17 200/219] drm/amdgpu: Enable gfxoff quirk on MacBook Pro
-Date:   Mon, 18 Apr 2022 14:12:49 +0200
-Message-Id: <20220418121212.469733435@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 021/189] ALSA: atiixp: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:10:41 +0200
+Message-Id: <20220418121201.117340080@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
-References: <20220418121203.462784814@linuxfoundation.org>
+In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
+References: <20220418121200.312988959@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,34 +47,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomasz Moń <desowin@gmail.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 4593c1b6d159f1e5c35c07a7f125e79e5a864302 upstream.
+commit 48e8adde8d1c586c799dab123fc1ebc8b8db620f upstream.
 
-Enabling gfxoff quirk results in perfectly usable graphical user
-interface on MacBook Pro (15-inch, 2019) with Radeon Pro Vega 20 4 GB.
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-Without the quirk, X server is completely unusable as every few seconds
-there is gpu reset due to ring gfx timeout.
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
 
-Signed-off-by: Tomasz Moń <desowin@gmail.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+Fixes: 86bde74dbf09 ("ALSA: atiixp: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-7-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c |    2 ++
- 1 file changed, 2 insertions(+)
+ sound/pci/atiixp.c       | 10 ++++++++--
+ sound/pci/atiixp_modem.c | 10 ++++++++--
+ 2 files changed, 16 insertions(+), 4 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
-@@ -1334,6 +1334,8 @@ static const struct amdgpu_gfxoff_quirk
- 	{ 0x1002, 0x15dd, 0x103c, 0x83e7, 0xd3 },
- 	/* GFXOFF is unstable on C6 parts with a VBIOS 113-RAVEN-114 */
- 	{ 0x1002, 0x15dd, 0x1002, 0x15dd, 0xc6 },
-+	/* Apple MacBook Pro (15-inch, 2019) Radeon Pro Vega 20 4 GB */
-+	{ 0x1002, 0x69af, 0x106b, 0x019a, 0xc0 },
- 	{ 0, 0, 0, 0, 0 },
- };
+diff --git a/sound/pci/atiixp.c b/sound/pci/atiixp.c
+index b8e035d5930d..43d01f1847ed 100644
+--- a/sound/pci/atiixp.c
++++ b/sound/pci/atiixp.c
+@@ -1572,8 +1572,8 @@ static int snd_atiixp_init(struct snd_card *card, struct pci_dev *pci)
+ }
  
+ 
+-static int snd_atiixp_probe(struct pci_dev *pci,
+-			    const struct pci_device_id *pci_id)
++static int __snd_atiixp_probe(struct pci_dev *pci,
++			      const struct pci_device_id *pci_id)
+ {
+ 	struct snd_card *card;
+ 	struct atiixp *chip;
+@@ -1623,6 +1623,12 @@ static int snd_atiixp_probe(struct pci_dev *pci,
+ 	return 0;
+ }
+ 
++static int snd_atiixp_probe(struct pci_dev *pci,
++			    const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_atiixp_probe(pci, pci_id));
++}
++
+ static struct pci_driver atiixp_driver = {
+ 	.name = KBUILD_MODNAME,
+ 	.id_table = snd_atiixp_ids,
+diff --git a/sound/pci/atiixp_modem.c b/sound/pci/atiixp_modem.c
+index 178dce8ef1e9..8864c4c3c7e1 100644
+--- a/sound/pci/atiixp_modem.c
++++ b/sound/pci/atiixp_modem.c
+@@ -1201,8 +1201,8 @@ static int snd_atiixp_init(struct snd_card *card, struct pci_dev *pci)
+ }
+ 
+ 
+-static int snd_atiixp_probe(struct pci_dev *pci,
+-			    const struct pci_device_id *pci_id)
++static int __snd_atiixp_probe(struct pci_dev *pci,
++			      const struct pci_device_id *pci_id)
+ {
+ 	struct snd_card *card;
+ 	struct atiixp_modem *chip;
+@@ -1247,6 +1247,12 @@ static int snd_atiixp_probe(struct pci_dev *pci,
+ 	return 0;
+ }
+ 
++static int snd_atiixp_probe(struct pci_dev *pci,
++			    const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_atiixp_probe(pci, pci_id));
++}
++
+ static struct pci_driver atiixp_modem_driver = {
+ 	.name = KBUILD_MODNAME,
+ 	.id_table = snd_atiixp_ids,
+-- 
+2.35.2
+
 
 
