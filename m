@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB447C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9635C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346086AbiDROZe (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:25:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
+        id S242211AbiDROZy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:25:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245734AbiDROM0 (ORCPT
+        with ESMTP id S1343505AbiDROO0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:12:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BBF381A0;
-        Mon, 18 Apr 2022 06:11:56 -0700 (PDT)
+        Mon, 18 Apr 2022 10:14:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57BF38BEB;
+        Mon, 18 Apr 2022 06:12:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FB51B80EE2;
-        Mon, 18 Apr 2022 13:11:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 662E8C385A8;
-        Mon, 18 Apr 2022 13:11:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45EA160F5A;
+        Mon, 18 Apr 2022 13:12:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38958C385A1;
+        Mon, 18 Apr 2022 13:12:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287513;
-        bh=3yzvAodLOE8G2QKyg5PZZsSv/bFd6eznMK/fTDThLUA=;
+        s=korg; t=1650287526;
+        bh=HxnzN19eCAiQ4QRHhaOWATvx081oeOQnV1r2b2Tt/zs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QCYOhFDn5cKtG1b5JOHgoex4gcrBMkbcZxP0FBtguJSZL2g03QuVgPghqVHGqPQ8h
-         EOU3hW4xQnfKx+W32k80TNmL5WrDNg4GU7tK1NfLNzQxctmHzOWX0/FudquOkxxsOg
-         XMkx7LAWmGhLOp8mmGm3mvRM31EmBRKq2yruzWh0=
+        b=HtLUR/PV921CY1wAFmYrux2f7dBfT0fNdAKYbJw00vcLL7zc1E+cneHr06dw463gZ
+         nZT3rSBcRLs+L9qJg2V+FXDaO0P6hv6dcLEQXzYwFtoAVqHU7q+1rZ5DzN8kxUirk3
+         UOnkBWQR5NZWTzPoHkJoXK3w/lAkNUg7JMA0ao8c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Amit Shah <amit@kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 185/218] virtio_console: eliminate anonymous module_init & module_exit
-Date:   Mon, 18 Apr 2022 14:14:11 +0200
-Message-Id: <20220418121206.380989124@linuxfoundation.org>
+        stable@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 189/218] net: stmmac: Fix unset max_speed difference between DT and non-DT platforms
+Date:   Mon, 18 Apr 2022 14:14:15 +0200
+Message-Id: <20220418121206.652216597@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -51,74 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Chen-Yu Tsai <wens@csie.org>
 
-[ Upstream commit fefb8a2a941338d871e2d83fbd65fbfa068857bd ]
+[ Upstream commit c21cabb0fd0b54b8b54235fc1ecfe1195a23bcb2 ]
 
-Eliminate anonymous module_init() and module_exit(), which can lead to
-confusion or ambiguity when reading System.map, crashes/oops/bugs,
-or an initcall_debug log.
+In commit 9cbadf094d9d ("net: stmmac: support max-speed device tree
+property"), when DT platforms don't set "max-speed", max_speed is set to
+-1; for non-DT platforms, it stays the default 0.
 
-Give each of these init and exit functions unique driver-specific
-names to eliminate the anonymous names.
+Prior to commit eeef2f6b9f6e ("net: stmmac: Start adding phylink support"),
+the check for a valid max_speed setting was to check if it was greater
+than zero. This commit got it right, but subsequent patches just checked
+for non-zero, which is incorrect for DT platforms.
 
-Example 1: (System.map)
- ffffffff832fc78c t init
- ffffffff832fc79e t init
- ffffffff832fc8f8 t init
+In commit 92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
+the conversion switched completely to checking for non-zero value as a
+valid value, which caused 1000base-T to stop getting advertised by
+default.
 
-Example 2: (initcall_debug log)
- calling  init+0x0/0x12 @ 1
- initcall init+0x0/0x12 returned 0 after 15 usecs
- calling  init+0x0/0x60 @ 1
- initcall init+0x0/0x60 returned 0 after 2 usecs
- calling  init+0x0/0x9a @ 1
- initcall init+0x0/0x9a returned 0 after 74 usecs
+Instead of trying to fix all the checks, simply leave max_speed alone if
+DT property parsing fails.
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Amit Shah <amit@kernel.org>
-Cc: virtualization@lists.linux-foundation.org
-Cc: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20220316192010.19001-3-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9cbadf094d9d ("net: stmmac: support max-speed device tree property")
+Fixes: 92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
+Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220331184832.16316-1-wens@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/virtio_console.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
-index a6b6dc204c1f..ba4c546db756 100644
---- a/drivers/char/virtio_console.c
-+++ b/drivers/char/virtio_console.c
-@@ -2284,7 +2284,7 @@ static struct virtio_driver virtio_rproc_serial = {
- 	.remove =	virtcons_remove,
- };
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index 2019e163e0e9..cbdd0deb7c56 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -221,8 +221,7 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
+ 	plat->interface = of_get_phy_mode(np);
  
--static int __init init(void)
-+static int __init virtio_console_init(void)
- {
- 	int err;
+ 	/* Get max speed of operation from device tree */
+-	if (of_property_read_u32(np, "max-speed", &plat->max_speed))
+-		plat->max_speed = -1;
++	of_property_read_u32(np, "max-speed", &plat->max_speed);
  
-@@ -2321,7 +2321,7 @@ static int __init init(void)
- 	return err;
- }
- 
--static void __exit fini(void)
-+static void __exit virtio_console_fini(void)
- {
- 	reclaim_dma_bufs();
- 
-@@ -2331,8 +2331,8 @@ static void __exit fini(void)
- 	class_destroy(pdrvdata.class);
- 	debugfs_remove_recursive(pdrvdata.debugfs_dir);
- }
--module_init(init);
--module_exit(fini);
-+module_init(virtio_console_init);
-+module_exit(virtio_console_fini);
- 
- MODULE_DESCRIPTION("Virtio console driver");
- MODULE_LICENSE("GPL");
+ 	plat->bus_id = of_alias_get_id(np, "ethernet");
+ 	if (plat->bus_id < 0)
 -- 
 2.35.1
 
