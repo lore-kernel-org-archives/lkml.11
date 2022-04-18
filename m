@@ -2,299 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E44C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A91BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239571AbiDRMuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
+        id S239635AbiDRMuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:50:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240732AbiDRMjf (ORCPT
+        with ESMTP id S240731AbiDRMjf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:39:35 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C96D5B867;
-        Mon, 18 Apr 2022 05:30:20 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23ICUEVT077195;
-        Mon, 18 Apr 2022 07:30:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650285014;
-        bh=I/t+xmnDJGTb6Sj7qnoARf6U41lWDD9b3MiTlBc2680=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=RkomM0jYtvDT3LFqCeTHVYqilSFdnmweV3mS65RsLyhBtmxK6/qBNcuvjOK8oI425
-         DcU4Zo9kuIvtKq2H4HrW1nGN6ThL5c7dHBQzDmK+p0H1s48yfhnICHwqVLXOgoVwB1
-         1fAlirnlf/c55aZMG1jJgBt9d8BV1f3Ti38Z6e+g=
-Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23ICUDba045415
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 18 Apr 2022 07:30:14 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 18
- Apr 2022 07:30:11 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 18 Apr 2022 07:30:11 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23ICUA0c011156;
-        Mon, 18 Apr 2022 07:30:11 -0500
-From:   Puranjay Mohan <p-mohan@ti.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
-        <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
-        <rogerq@kernel.org>, <grygorii.strashko@ti.com>, <vigneshr@ti.com>,
-        <kishon@ti.com>
-Subject: [PATCH v2 2/6] soc: ti: pruss: Add pruss_{request,release}_mem_region() API
-Date:   Mon, 18 Apr 2022 18:00:00 +0530
-Message-ID: <20220418123004.9332-3-p-mohan@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220418123004.9332-1-p-mohan@ti.com>
-References: <20220418123004.9332-1-p-mohan@ti.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C754D13D0D;
+        Mon, 18 Apr 2022 05:30:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89753B80EC1;
+        Mon, 18 Apr 2022 12:30:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED19FC385AB;
+        Mon, 18 Apr 2022 12:30:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650285017;
+        bh=fyWxE0RF41ZGhWxkgiw4q/uIMlEk6YN9STlfHJYsxII=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ohq4ZIrZaxC5J65P2XbL5RLEUI74AcNuQpaFhgr1EWmyy2d5qTfdsnOCJTtpA9Vqm
+         o71r7WowEhKUX69c9XxkOFwxkiZZqmRTHhXlBqKBRdaXwlrY1rOr1KSw4TqfOqVNZv
+         Qu5Z/ovVOuDbCiAJazz/3wHlAfkegbQrIJ4Y1YQs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 053/189] ALSA: via82xx: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:11:13 +0200
+Message-Id: <20220418121202.017171306@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
+References: <20220418121200.312988959@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Andrew F. Davis" <afd@ti.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-Add two new API - pruss_request_mem_region() & pruss_release_mem_region(),
-to the PRUSS platform driver to allow client drivers to acquire and release
-the common memory resources present within a PRU-ICSS subsystem. This
-allows the client drivers to directly manipulate the respective memories,
-as per their design contract with the associated firmware.
+commit 27a0963f9cea5be3c68281f07fe82cdf712ef333 upstream.
 
-Co-developed-by: Suman Anna <s-anna@ti.com>
-Signed-off-by: Suman Anna <s-anna@ti.com>
-Signed-off-by: Andrew F. Davis <afd@ti.com>
-Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
+
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
+
+Fixes: afaf99751d0c ("ALSA: via82xx: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-26-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soc/ti/pruss.c       | 77 ++++++++++++++++++++++++++++++++++++
- include/linux/pruss.h        | 39 ++++++++++++++++++
- include/linux/pruss_driver.h | 27 +++----------
- 3 files changed, 121 insertions(+), 22 deletions(-)
+ sound/pci/via82xx.c       | 10 ++++++++--
+ sound/pci/via82xx_modem.c | 10 ++++++++--
+ 2 files changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
-index fb0a0b4a9663..95c0cbd7c52f 100644
---- a/drivers/soc/ti/pruss.c
-+++ b/drivers/soc/ti/pruss.c
-@@ -88,6 +88,82 @@ void pruss_put(struct pruss *pruss)
- }
- EXPORT_SYMBOL_GPL(pruss_put);
+diff --git a/sound/pci/via82xx.c b/sound/pci/via82xx.c
+index 65514f7e42d7..361b83fd721e 100644
+--- a/sound/pci/via82xx.c
++++ b/sound/pci/via82xx.c
+@@ -2458,8 +2458,8 @@ static int check_dxs_list(struct pci_dev *pci, int revision)
+ 	return VIA_DXS_48K;
+ };
  
-+/**
-+ * pruss_request_mem_region() - request a memory resource
-+ * @pruss: the pruss instance
-+ * @mem_id: the memory resource id
-+ * @region: pointer to memory region structure to be filled in
-+ *
-+ * This function allows a client driver to request a memory resource,
-+ * and if successful, will let the client driver own the particular
-+ * memory region until released using the pruss_release_mem_region()
-+ * API.
-+ *
-+ * Return: 0 if requested memory region is available (in such case pointer to
-+ * memory region is returned via @region), an error otherwise
-+ */
-+int pruss_request_mem_region(struct pruss *pruss, enum pruss_mem mem_id,
-+			     struct pruss_mem_region *region)
-+{
-+	if (!pruss || !region || mem_id >= PRUSS_MEM_MAX)
-+		return -EINVAL;
-+
-+	mutex_lock(&pruss->lock);
-+
-+	if (pruss->mem_in_use[mem_id]) {
-+		mutex_unlock(&pruss->lock);
-+		return -EBUSY;
-+	}
-+
-+	*region = pruss->mem_regions[mem_id];
-+	pruss->mem_in_use[mem_id] = region;
-+
-+	mutex_unlock(&pruss->lock);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(pruss_request_mem_region);
-+
-+/**
-+ * pruss_release_mem_region() - release a memory resource
-+ * @pruss: the pruss instance
-+ * @region: the memory region to release
-+ *
-+ * This function is the complimentary function to
-+ * pruss_request_mem_region(), and allows the client drivers to
-+ * release back a memory resource.
-+ *
-+ * Return: 0 on success, an error code otherwise
-+ */
-+int pruss_release_mem_region(struct pruss *pruss,
-+			     struct pruss_mem_region *region)
-+{
-+	int id;
-+
-+	if (!pruss || !region)
-+		return -EINVAL;
-+
-+	mutex_lock(&pruss->lock);
-+
-+	/* find out the memory region being released */
-+	for (id = 0; id < PRUSS_MEM_MAX; id++) {
-+		if (pruss->mem_in_use[id] == region)
-+			break;
-+	}
-+
-+	if (id == PRUSS_MEM_MAX) {
-+		mutex_unlock(&pruss->lock);
-+		return -EINVAL;
-+	}
-+
-+	pruss->mem_in_use[id] = NULL;
-+
-+	mutex_unlock(&pruss->lock);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(pruss_release_mem_region);
-+
- static void pruss_of_free_clk_provider(void *data)
+-static int snd_via82xx_probe(struct pci_dev *pci,
+-			     const struct pci_device_id *pci_id)
++static int __snd_via82xx_probe(struct pci_dev *pci,
++			       const struct pci_device_id *pci_id)
  {
- 	struct device_node *clk_mux_np = data;
-@@ -290,6 +366,7 @@ static int pruss_probe(struct platform_device *pdev)
- 		return -ENOMEM;
+ 	struct snd_card *card;
+ 	struct via82xx *chip;
+@@ -2569,6 +2569,12 @@ static int snd_via82xx_probe(struct pci_dev *pci,
+ 	return 0;
+ }
  
- 	pruss->dev = dev;
-+	mutex_init(&pruss->lock);
- 
- 	child = of_get_child_by_name(np, "memories");
- 	if (!child) {
-diff --git a/include/linux/pruss.h b/include/linux/pruss.h
-index 23d556e0dd72..689ef243bcbc 100644
---- a/include/linux/pruss.h
-+++ b/include/linux/pruss.h
-@@ -39,6 +39,28 @@ enum pru_ctable_idx {
- 	PRU_C31,
- };
- 
-+/*
-+ * enum pruss_mem - PRUSS memory range identifiers
-+ */
-+enum pruss_mem {
-+	PRUSS_MEM_DRAM0 = 0,
-+	PRUSS_MEM_DRAM1,
-+	PRUSS_MEM_SHRD_RAM2,
-+	PRUSS_MEM_MAX,
-+};
-+
-+/**
-+ * struct pruss_mem_region - PRUSS memory region structure
-+ * @va: kernel virtual address of the PRUSS memory region
-+ * @pa: physical (bus) address of the PRUSS memory region
-+ * @size: size of the PRUSS memory region
-+ */
-+struct pruss_mem_region {
-+	void __iomem *va;
-+	phys_addr_t pa;
-+	size_t size;
-+};
-+
- struct device_node;
- struct rproc;
- struct pruss;
-@@ -47,6 +69,10 @@ struct pruss;
- 
- struct pruss *pruss_get(struct rproc *rproc);
- void pruss_put(struct pruss *pruss);
-+int pruss_request_mem_region(struct pruss *pruss, enum pruss_mem mem_id,
-+			     struct pruss_mem_region *region);
-+int pruss_release_mem_region(struct pruss *pruss,
-+			     struct pruss_mem_region *region);
- 
- #else
- 
-@@ -57,6 +83,19 @@ static inline struct pruss *pruss_get(struct rproc *rproc)
- 
- static inline void pruss_put(struct pruss *pruss) { }
- 
-+static inline int pruss_request_mem_region(struct pruss *pruss,
-+					   enum pruss_mem mem_id,
-+					   struct pruss_mem_region *region)
++static int snd_via82xx_probe(struct pci_dev *pci,
++			     const struct pci_device_id *pci_id)
 +{
-+	return -EOPNOTSUPP;
++	return snd_card_free_on_error(&pci->dev, __snd_via82xx_probe(pci, pci_id));
 +}
 +
-+static inline int pruss_release_mem_region(struct pruss *pruss,
-+					   struct pruss_mem_region *region)
+ static struct pci_driver via82xx_driver = {
+ 	.name = KBUILD_MODNAME,
+ 	.id_table = snd_via82xx_ids,
+diff --git a/sound/pci/via82xx_modem.c b/sound/pci/via82xx_modem.c
+index 234f7fbed236..ca7f024bf8ec 100644
+--- a/sound/pci/via82xx_modem.c
++++ b/sound/pci/via82xx_modem.c
+@@ -1103,8 +1103,8 @@ static int snd_via82xx_create(struct snd_card *card,
+ }
+ 
+ 
+-static int snd_via82xx_probe(struct pci_dev *pci,
+-			     const struct pci_device_id *pci_id)
++static int __snd_via82xx_probe(struct pci_dev *pci,
++			       const struct pci_device_id *pci_id)
+ {
+ 	struct snd_card *card;
+ 	struct via82xx_modem *chip;
+@@ -1157,6 +1157,12 @@ static int snd_via82xx_probe(struct pci_dev *pci,
+ 	return 0;
+ }
+ 
++static int snd_via82xx_probe(struct pci_dev *pci,
++			     const struct pci_device_id *pci_id)
 +{
-+	return -EOPNOTSUPP;
++	return snd_card_free_on_error(&pci->dev, __snd_via82xx_probe(pci, pci_id));
 +}
 +
- #endif /* CONFIG_TI_PRUSS */
- 
- #if IS_ENABLED(CONFIG_PRU_REMOTEPROC)
-diff --git a/include/linux/pruss_driver.h b/include/linux/pruss_driver.h
-index d054d2179d82..e2d5477225c6 100644
---- a/include/linux/pruss_driver.h
-+++ b/include/linux/pruss_driver.h
-@@ -9,37 +9,18 @@
- #ifndef _PRUSS_DRIVER_H_
- #define _PRUSS_DRIVER_H_
- 
-+#include <linux/mutex.h>
- #include <linux/pruss.h>
- #include <linux/types.h>
- 
--/*
-- * enum pruss_mem - PRUSS memory range identifiers
-- */
--enum pruss_mem {
--	PRUSS_MEM_DRAM0 = 0,
--	PRUSS_MEM_DRAM1,
--	PRUSS_MEM_SHRD_RAM2,
--	PRUSS_MEM_MAX,
--};
--
--/**
-- * struct pruss_mem_region - PRUSS memory region structure
-- * @va: kernel virtual address of the PRUSS memory region
-- * @pa: physical (bus) address of the PRUSS memory region
-- * @size: size of the PRUSS memory region
-- */
--struct pruss_mem_region {
--	void __iomem *va;
--	phys_addr_t pa;
--	size_t size;
--};
--
- /**
-  * struct pruss - PRUSS parent structure
-  * @dev: pruss device pointer
-  * @cfg_base: base iomap for CFG region
-  * @cfg_regmap: regmap for config region
-  * @mem_regions: data for each of the PRUSS memory regions
-+ * @mem_in_use: to indicate if memory resource is in use
-+ * @lock: mutex to serialize access to resources
-  * @core_clk_mux: clk handle for PRUSS CORE_CLK_MUX
-  * @iep_clk_mux: clk handle for PRUSS IEP_CLK_MUX
-  */
-@@ -48,6 +29,8 @@ struct pruss {
- 	void __iomem *cfg_base;
- 	struct regmap *cfg_regmap;
- 	struct pruss_mem_region mem_regions[PRUSS_MEM_MAX];
-+	struct pruss_mem_region *mem_in_use[PRUSS_MEM_MAX];
-+	struct mutex lock; /* PRU resource lock */
- 	struct clk *core_clk_mux;
- 	struct clk *iep_clk_mux;
- };
+ static struct pci_driver via82xx_modem_driver = {
+ 	.name = KBUILD_MODNAME,
+ 	.id_table = snd_via82xx_modem_ids,
 -- 
-2.17.1
+2.35.2
+
+
 
