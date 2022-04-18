@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7882BC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 490DCC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344051AbiDROIy (ORCPT
+        id S1343971AbiDROIo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:08:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45686 "EHLO
+        Mon, 18 Apr 2022 10:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245717AbiDRNx7 (ORCPT
+        with ESMTP id S245389AbiDRNx2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:53:59 -0400
+        Mon, 18 Apr 2022 09:53:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4A013CDE;
-        Mon, 18 Apr 2022 06:03:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FE945AEE;
+        Mon, 18 Apr 2022 06:02:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6827CB80E44;
-        Mon, 18 Apr 2022 13:03:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC6B7C385A7;
-        Mon, 18 Apr 2022 13:03:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2BB3B80D9C;
+        Mon, 18 Apr 2022 13:02:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 394D0C385A1;
+        Mon, 18 Apr 2022 13:02:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286984;
-        bh=qE8UWPbT8RelWyN+oYq7RD4XhY8JxIrrtUCXbV049Zw=;
+        s=korg; t=1650286961;
+        bh=PACYSDL0hP9BWct9PtTZMs8lOn8HGAqoXGmAb94qJnk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kpIzJfmydQ4IvAhJv+7BNdaFeJOTwjHhH7rLdFPR5yXl07P7LzTmbp8ohCJkzRDbG
-         PMoEa853ICbaUGsHCqs/hOtbl1i1rb/NapxIRr6Xj7/kLDbILtnk2Gb/YGzrMTvaoJ
-         ov/kfEz19R37Rmrj87MbsNhTkE+xHtlFfJGkAO2g=
+        b=x8FjB6XzVlxvKbzsZtGztZJ4HOseLKQCW9VnYsyXD5kAOMxaUYYK3qm0APl1Edobi
+         XLtHLku1+1f4fAf3CguS5LnjHng+YcnXAcvnfh7ecGj3caW707qSu+ikjrBCkaf3E8
+         S7G+s8O+tRcI3BL5APoGD5IulNzJJEYNxFfmuv5c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.9 022/218] mempolicy: mbind_range() set_policy() after vma_merge()
-Date:   Mon, 18 Apr 2022 14:11:28 +0200
-Message-Id: <20220418121159.849894095@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 4.9 016/218] NFSD: prevent underflow in nfssvc_decode_writeargs()
+Date:   Mon, 18 Apr 2022 14:11:22 +0200
+Message-Id: <20220418121159.538182766@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -53,79 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hugh Dickins <hughd@google.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 4e0906008cdb56381638aa17d9c32734eae6d37a upstream.
+commit 184416d4b98509fb4c3d8fc3d6dc1437896cc159 upstream.
 
-v2.6.34 commit 9d8cebd4bcd7 ("mm: fix mbind vma merge problem") introduced
-vma_merge() to mbind_range(); but unlike madvise, mlock and mprotect, it
-put a "continue" to next vma where its precedents go to update flags on
-current vma before advancing: that left vma with the wrong setting in the
-infamous vma_merge() case 8.
+Smatch complains:
 
-v3.10 commit 1444f92c8498 ("mm: merging memory blocks resets mempolicy")
-tried to fix that in vma_adjust(), without fully understanding the issue.
+	fs/nfsd/nfsxdr.c:341 nfssvc_decode_writeargs()
+	warn: no lower bound on 'args->len'
 
-v3.11 commit 3964acd0dbec ("mm: mempolicy: fix mbind_range() &&
-vma_adjust() interaction") reverted that, and went about the fix in the
-right way, but chose to optimize out an unnecessary mpol_dup() with a
-prior mpol_equal() test.  But on tmpfs, that also pessimized out the vital
-call to its ->set_policy(), leaving the new mbind unenforced.
+Change the type to unsigned to prevent this issue.
 
-The user visible effect was that the pages got allocated on the local
-node (happened to be 0), after the mbind() caller had specifically
-asked for them to be allocated on node 1.  There was not any page
-migration involved in the case reported: the pages simply got allocated
-on the wrong node.
-
-Just delete that optimization now (though it could be made conditional on
-vma not having a set_policy).  Also remove the "next" variable: it turned
-out to be blameless, but also pointless.
-
-Link: https://lkml.kernel.org/r/319e4db9-64ae-4bca-92f0-ade85d342ff@google.com
-Fixes: 3964acd0dbec ("mm: mempolicy: fix mbind_range() && vma_adjust() interaction")
-Signed-off-by: Hugh Dickins <hughd@google.com>
-Acked-by: Oleg Nesterov <oleg@redhat.com>
-Reviewed-by: Liam R. Howlett <Liam.Howlett@oracle.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mempolicy.c |    8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ fs/nfsd/nfsproc.c |    2 +-
+ fs/nfsd/xdr.h     |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/mm/mempolicy.c
-+++ b/mm/mempolicy.c
-@@ -734,7 +734,6 @@ static int vma_replace_policy(struct vm_
- static int mbind_range(struct mm_struct *mm, unsigned long start,
- 		       unsigned long end, struct mempolicy *new_pol)
- {
--	struct vm_area_struct *next;
- 	struct vm_area_struct *prev;
- 	struct vm_area_struct *vma;
- 	int err = 0;
-@@ -750,8 +749,7 @@ static int mbind_range(struct mm_struct
- 	if (start > vma->vm_start)
- 		prev = vma;
+--- a/fs/nfsd/nfsproc.c
++++ b/fs/nfsd/nfsproc.c
+@@ -207,7 +207,7 @@ nfsd_proc_write(struct svc_rqst *rqstp,
+ 	int	stable = 1;
+ 	unsigned long cnt = argp->len;
  
--	for (; vma && vma->vm_start < end; prev = vma, vma = next) {
--		next = vma->vm_next;
-+	for (; vma && vma->vm_start < end; prev = vma, vma = vma->vm_next) {
- 		vmstart = max(start, vma->vm_start);
- 		vmend   = min(end, vma->vm_end);
+-	dprintk("nfsd: WRITE    %s %d bytes at %d\n",
++	dprintk("nfsd: WRITE    %s %u bytes at %d\n",
+ 		SVCFH_fmt(&argp->fh),
+ 		argp->len, argp->offset);
  
-@@ -765,10 +763,6 @@ static int mbind_range(struct mm_struct
- 				 new_pol, vma->vm_userfaultfd_ctx);
- 		if (prev) {
- 			vma = prev;
--			next = vma->vm_next;
--			if (mpol_equal(vma_policy(vma), new_pol))
--				continue;
--			/* vma_merge() joined vma && vma->next, case 8 */
- 			goto replace;
- 		}
- 		if (vma->vm_start != vmstart) {
+--- a/fs/nfsd/xdr.h
++++ b/fs/nfsd/xdr.h
+@@ -32,7 +32,7 @@ struct nfsd_readargs {
+ struct nfsd_writeargs {
+ 	svc_fh			fh;
+ 	__u32			offset;
+-	int			len;
++	__u32			len;
+ 	int			vlen;
+ };
+ 
 
 
