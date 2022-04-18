@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 773F1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AACC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:49:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230075AbiDRMwB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:52:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
+        id S236375AbiDRMwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240937AbiDRMjt (ORCPT
+        with ESMTP id S240811AbiDRMji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4955A65FA;
-        Mon, 18 Apr 2022 05:31:32 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4FBCBB8;
+        Mon, 18 Apr 2022 05:30:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5B1160F0A;
-        Mon, 18 Apr 2022 12:31:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC8A1C385A8;
-        Mon, 18 Apr 2022 12:31:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70DCBB80EC1;
+        Mon, 18 Apr 2022 12:30:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDB99C385A1;
+        Mon, 18 Apr 2022 12:30:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285091;
-        bh=NodVTfbBo4kPp+4JKLC1nc+6gVfRmn1PlEy2ow5AuWY=;
+        s=korg; t=1650285047;
+        bh=u2vTfM59zCoYXkVZjjnb6Jnt62iRrSVgGWuK04ScvMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UrWiaaAxS+2BlD943oCdXvsUgBrbes+E0uaf91NciqwhunNlhN3869IjT5DsR6ur1
-         TIbDnpT1aRsRHYSiu2I1seoxJpiBpeg25FxeSr7/KIsTrxQj5t8+88VHnSMYmzSnH9
-         GQIURO6YUBqFSj8OuC9Kvv/2luaoQCeWBrMa9Ss4=
+        b=ogFcfkpMMnW5dkkWLbCVshbMe50x7DHS4kY1md32Oz6bE3+8ssVTLb3TVYNluX4zD
+         ulN/sqR6v0G14G4qwvCbLNR8pqFLc6Sq0Btt9L+crzwzZ+OI8um6zqKpB/VH1ODapk
+         9b1uFbWmf0vaG7jF5lSiWFjylgFRUjv3ynSZqBKA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Khazhismel Kumykov <khazhy@google.com>,
-        Mike Snitzer <snitzer@kernel.org>,
+        stable@vger.kernel.org,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 101/189] dm mpath: only use ktime_get_ns() in historical selector
-Date:   Mon, 18 Apr 2022 14:12:01 +0200
-Message-Id: <20220418121203.369856490@linuxfoundation.org>
+Subject: [PATCH 5.15 057/189] firmware: arm_scmi: Remove clear channel call on the TX channel
+Date:   Mon, 18 Apr 2022 14:11:17 +0200
+Message-Id: <20220418121202.128702482@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,60 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Khazhismel Kumykov <khazhy@google.com>
+From: Cristian Marussi <cristian.marussi@arm.com>
 
-[ Upstream commit ce40426fdc3c92acdba6b5ca74bc7277ffaa6a3d ]
+[ Upstream commit 98f0d68f94ea21541e0050cc64fa108ade779839 ]
 
-Mixing sched_clock() and ktime_get_ns() usage will give bad results.
+On SCMI transports whose channels are based on a shared resource the TX
+channel area has to be acquired by the agent before placing the desired
+command into the channel and it will be then relinquished by the platform
+once the related reply has been made available into the channel.
+On an RX channel the logic is reversed with the platform acquiring the
+channel area and the agent reliquishing it once done by calling the
+scmi_clear_channel() helper.
 
-Switch hst_select_path() from using sched_clock() to ktime_get_ns().
-Also rename path_service_time()'s 'sched_now' variable to 'now'.
+As a consequence, even in case of error, the agent must never try to clear
+a TX channel from its side: restrict the existing clear channel call on the
+the reply path only to delayed responses since they are indeed coming from
+the RX channel.
 
-Fixes: 2613eab11996 ("dm mpath: add Historical Service Time Path Selector")
-Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Link: https://lore.kernel.org/r/20220224152404.12877-1-cristian.marussi@arm.com
+Fixes: e9b21c96181c ("firmware: arm_scmi: Make .clear_channel optional")
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-ps-historical-service-time.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/firmware/arm_scmi/driver.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/md/dm-ps-historical-service-time.c b/drivers/md/dm-ps-historical-service-time.c
-index 1856a1b125cc..82f2a06153dc 100644
---- a/drivers/md/dm-ps-historical-service-time.c
-+++ b/drivers/md/dm-ps-historical-service-time.c
-@@ -432,7 +432,7 @@ static struct dm_path *hst_select_path(struct path_selector *ps,
- {
- 	struct selector *s = ps->context;
- 	struct path_info *pi = NULL, *best = NULL;
--	u64 time_now = sched_clock();
-+	u64 time_now = ktime_get_ns();
- 	struct dm_path *ret = NULL;
- 	unsigned long flags;
+diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
+index d76bab3aaac4..e815b8f98739 100644
+--- a/drivers/firmware/arm_scmi/driver.c
++++ b/drivers/firmware/arm_scmi/driver.c
+@@ -652,7 +652,8 @@ static void scmi_handle_response(struct scmi_chan_info *cinfo,
  
-@@ -473,7 +473,7 @@ static int hst_start_io(struct path_selector *ps, struct dm_path *path,
+ 	xfer = scmi_xfer_command_acquire(cinfo, msg_hdr);
+ 	if (IS_ERR(xfer)) {
+-		scmi_clear_channel(info, cinfo);
++		if (MSG_XTRACT_TYPE(msg_hdr) == MSG_TYPE_DELAYED_RESP)
++			scmi_clear_channel(info, cinfo);
+ 		return;
+ 	}
  
- static u64 path_service_time(struct path_info *pi, u64 start_time)
- {
--	u64 sched_now = ktime_get_ns();
-+	u64 now = ktime_get_ns();
- 
- 	/* if a previous disk request has finished after this IO was
- 	 * sent to the hardware, pretend the submission happened
-@@ -482,11 +482,11 @@ static u64 path_service_time(struct path_info *pi, u64 start_time)
- 	if (time_after64(pi->last_finish, start_time))
- 		start_time = pi->last_finish;
- 
--	pi->last_finish = sched_now;
--	if (time_before64(sched_now, start_time))
-+	pi->last_finish = now;
-+	if (time_before64(now, start_time))
- 		return 0;
- 
--	return sched_now - start_time;
-+	return now - start_time;
- }
- 
- static int hst_end_io(struct path_selector *ps, struct dm_path *path,
 -- 
 2.35.1
 
