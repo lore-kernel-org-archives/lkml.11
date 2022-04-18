@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE721C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:11:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 320A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:11:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245634AbiDROON (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:14:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
+        id S1343492AbiDROO0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244645AbiDRN5J (ORCPT
+        with ESMTP id S244647AbiDRN5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:57:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AECE2AC74;
-        Mon, 18 Apr 2022 06:06:53 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6902AC71;
+        Mon, 18 Apr 2022 06:06:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1900260B42;
-        Mon, 18 Apr 2022 13:06:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2039C385A1;
-        Mon, 18 Apr 2022 13:06:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBD27B80EDB;
+        Mon, 18 Apr 2022 13:06:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AE90C385A1;
+        Mon, 18 Apr 2022 13:06:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287212;
-        bh=v+fV2FTUnMcbAmM9fFyazBBSOL7DKbZIxl4aUYPVLSk=;
+        s=korg; t=1650287205;
+        bh=18ooWGe6T/Oe8WQdSBw7OV3RQzYgi+roP2OWtW8HRzg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XwuGn4XdP1KEwCCy0001GJMGMkyT8tDhJ++Z9ly9kkqwciIEfKJFHxBaNW4dYUyuj
-         3x0LiC8UJkpLQs9DqvcGHxH3H5Zc/ZE3LaMLVDzAo2W7JXOkLmUmymf79Ort23syNk
-         YAcfHr6PuclVJCXL9XpC0MclV88DR2BlnRRENV7Q=
+        b=ni43NV2ja43f7TOL5UgfrF+fVrvP4ibOj5DGsgQKkYJgxg+WpxnP9PB1fVlFJdBY3
+         bdmEC7ddcbT8AxYUnUmmS42O6mcvr5xj6fbe1SB7IF+jZ55d9yaiVl8dbDEXnDpVq+
+         N+lhPcuwD5KKt274QEiXyEKXQWliOERtIbbkjFLU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Hou Wenlong <houwenlong.hwl@antgroup.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Thierry Reding <treding@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 092/218] KVM: x86/emulator: Defer not-present segment check in __load_segment_descriptor()
-Date:   Mon, 18 Apr 2022 14:12:38 +0200
-Message-Id: <20220418121202.239025018@linuxfoundation.org>
+Subject: [PATCH 4.9 090/218] drm/tegra: Fix reference leak in tegra_dsi_ganged_probe
+Date:   Mon, 18 Apr 2022 14:12:36 +0200
+Message-Id: <20220418121202.182611664@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,66 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Wenlong <houwenlong.hwl@antgroup.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit ca85f002258fdac3762c57d12d5e6e401b6a41af ]
+[ Upstream commit 221e3638feb8bc42143833c9a704fa89b6c366bb ]
 
-Per Intel's SDM on the "Instruction Set Reference", when
-loading segment descriptor, not-present segment check should
-be after all type and privilege checks. But the emulator checks
-it first, then #NP is triggered instead of #GP if privilege fails
-and segment is not present. Put not-present segment check after
-type and privilege checks in __load_segment_descriptor().
+The reference taken by 'of_find_device_by_node()' must be released when
+not needed anymore. Add put_device() call to fix this.
 
-Fixes: 38ba30ba51a00 (KVM: x86 emulator: Emulate task switch in emulator.c)
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
-Message-Id: <52573c01d369f506cadcf7233812427cf7db81a7.1644292363.git.houwenlong.hwl@antgroup.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: e94236cde4d5 ("drm/tegra: dsi: Add ganged mode support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/emulate.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/tegra/dsi.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 2e5553091f90..3edafdffa687 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -1674,11 +1674,6 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 		goto exception;
- 	}
+diff --git a/drivers/gpu/drm/tegra/dsi.c b/drivers/gpu/drm/tegra/dsi.c
+index 3dea1216bafd..dfd9e0b9582d 100644
+--- a/drivers/gpu/drm/tegra/dsi.c
++++ b/drivers/gpu/drm/tegra/dsi.c
+@@ -1475,8 +1475,10 @@ static int tegra_dsi_ganged_probe(struct tegra_dsi *dsi)
+ 		dsi->slave = platform_get_drvdata(gangster);
+ 		of_node_put(np);
  
--	if (!seg_desc.p) {
--		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
--		goto exception;
--	}
--
- 	dpl = seg_desc.dpl;
- 
- 	switch (seg) {
-@@ -1718,6 +1713,10 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 	case VCPU_SREG_TR:
- 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
- 			goto exception;
-+		if (!seg_desc.p) {
-+			err_vec = NP_VECTOR;
-+			goto exception;
+-		if (!dsi->slave)
++		if (!dsi->slave) {
++			put_device(&gangster->dev);
+ 			return -EPROBE_DEFER;
 +		}
- 		old_desc = seg_desc;
- 		seg_desc.type |= 2; /* busy */
- 		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
-@@ -1742,6 +1741,11 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 		break;
- 	}
  
-+	if (!seg_desc.p) {
-+		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
-+		goto exception;
-+	}
-+
- 	if (seg_desc.s) {
- 		/* mark segment as accessed */
- 		if (!(seg_desc.type & 1)) {
+ 		dsi->slave->master = dsi;
+ 	}
 -- 
 2.34.1
 
