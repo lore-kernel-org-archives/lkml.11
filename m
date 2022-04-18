@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC94C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238941AbiDRMfd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:35:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38620 "EHLO
+        id S239282AbiDRMfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240015AbiDRM3O (ORCPT
+        with ESMTP id S240121AbiDRM3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:29:14 -0400
+        Mon, 18 Apr 2022 08:29:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58564205F0;
-        Mon, 18 Apr 2022 05:23:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C883237E9;
+        Mon, 18 Apr 2022 05:23:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D0D0060F0C;
-        Mon, 18 Apr 2022 12:23:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFD71C385A8;
-        Mon, 18 Apr 2022 12:23:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3136E60F01;
+        Mon, 18 Apr 2022 12:23:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 286D4C385A7;
+        Mon, 18 Apr 2022 12:23:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284584;
-        bh=Y1aB9MwLiATjOiD+6V5TB0Qd/gFN1usrajp7Ns/Ldzs=;
+        s=korg; t=1650284597;
+        bh=+ejOrvs9N56pFSmkdeef6otjykKTRwH3KNG1uuMcZYU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KKdjB+b3/lhhsIrsJcLkKOzhZ6EC+pNunPNsBZuCRhjg3xPSHYlY6ymFPzjwLSZm8
-         BarNK/9iVd0IepHbtKGy2aNG5P1G9d4P7XQEJQjCR1v9mfyJblwI3qAgikaagt9ptW
-         84SO/JhuxKsAr0Tb2VI2abFx19ScUrAldXwY92SU=
+        b=kJtK3qFTYjo9bIioRvdf3jUYHlC8cBfP8ETwx3Kqecn6Xz8ljCGRQtetL29VMZJtM
+         VlOx/hgr8ROa3aQbXTqAiZS9odqP4ow3FBUtuGg9res5uo4z/K2Yb0cNAobNQJoIQr
+         s1Zip1XUv1DIWXR6k5mZfndXvLO7hU1E0XXpHX4A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Wayne Lin <Wayne.Lin@amd.com>,
+        Alex Hung <alex.hung@amd.com>, Roman Li <Roman.Li@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 161/219] spi: cadence-quadspi: fix protocol setup for non-1-1-X operations
-Date:   Mon, 18 Apr 2022 14:12:10 +0200
-Message-Id: <20220418121211.390290803@linuxfoundation.org>
+Subject: [PATCH 5.17 165/219] drm/amd/display: Fix allocate_mst_payload assert on resume
+Date:   Mon, 18 Apr 2022 14:12:14 +0200
+Message-Id: <20220418121211.501993388@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,129 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Roman Li <Roman.Li@amd.com>
 
-[ Upstream commit 97e4827d775faa9a32b5e1a97959c69dd77d17a3 ]
+[ Upstream commit f4346fb3edf7720db3f7f5e1cab1f667cd024280 ]
 
-cqspi_set_protocol() only set the data width, but ignored the command
-and address width (except for 8-8-8 DTR ops), leading to corruption of
-all transfers using 1-X-X or X-X-X ops. Fix by setting the other two
-widths as well.
+[Why]
+On resume we do link detection for all non-MST connectors.
+MST is handled separately. However the condition for telling
+if connector is on mst branch is not enough for mst hub case.
+Link detection for mst branch link leads to mst topology reset.
+That causes assert in dc_link_allocate_mst_payload()
 
-While we're at it, simplify the code a bit by replacing the
-CQSPI_INST_TYPE_* constants with ilog2().
+[How]
+Use link type as indicator for mst link.
 
-Tested on a TI AM64x with a Macronix MX25U51245G QSPI flash with 1-4-4
-read and write operations.
-
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Link: https://lore.kernel.org/r/20220331110819.133392-1-matthias.schiffer@ew.tq-group.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Wayne Lin <Wayne.Lin@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Roman Li <Roman.Li@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-cadence-quadspi.c | 46 ++++++++-----------------------
- 1 file changed, 12 insertions(+), 34 deletions(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
-index b808c94641fa..75f356041138 100644
---- a/drivers/spi/spi-cadence-quadspi.c
-+++ b/drivers/spi/spi-cadence-quadspi.c
-@@ -19,6 +19,7 @@
- #include <linux/iopoll.h>
- #include <linux/jiffies.h>
- #include <linux/kernel.h>
-+#include <linux/log2.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
- #include <linux/of.h>
-@@ -102,12 +103,6 @@ struct cqspi_driver_platdata {
- #define CQSPI_TIMEOUT_MS			500
- #define CQSPI_READ_TIMEOUT_MS			10
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 90c017859ad4..24db2297857b 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -2693,7 +2693,8 @@ static int dm_resume(void *handle)
+ 		 * this is the case when traversing through already created
+ 		 * MST connectors, should be skipped
+ 		 */
+-		if (aconnector->mst_port)
++		if (aconnector->dc_link &&
++		    aconnector->dc_link->type == dc_connection_mst_branch)
+ 			continue;
  
--/* Instruction type */
--#define CQSPI_INST_TYPE_SINGLE			0
--#define CQSPI_INST_TYPE_DUAL			1
--#define CQSPI_INST_TYPE_QUAD			2
--#define CQSPI_INST_TYPE_OCTAL			3
--
- #define CQSPI_DUMMY_CLKS_PER_BYTE		8
- #define CQSPI_DUMMY_BYTES_MAX			4
- #define CQSPI_DUMMY_CLKS_MAX			31
-@@ -376,10 +371,6 @@ static unsigned int cqspi_calc_dummy(const struct spi_mem_op *op, bool dtr)
- static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 			      const struct spi_mem_op *op)
- {
--	f_pdata->inst_width = CQSPI_INST_TYPE_SINGLE;
--	f_pdata->addr_width = CQSPI_INST_TYPE_SINGLE;
--	f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
--
- 	/*
- 	 * For an op to be DTR, cmd phase along with every other non-empty
- 	 * phase should have dtr field set to 1. If an op phase has zero
-@@ -389,32 +380,23 @@ static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 		       (!op->addr.nbytes || op->addr.dtr) &&
- 		       (!op->data.nbytes || op->data.dtr);
- 
--	switch (op->data.buswidth) {
--	case 0:
--		break;
--	case 1:
--		f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
--		break;
--	case 2:
--		f_pdata->data_width = CQSPI_INST_TYPE_DUAL;
--		break;
--	case 4:
--		f_pdata->data_width = CQSPI_INST_TYPE_QUAD;
--		break;
--	case 8:
--		f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
--		break;
--	default:
--		return -EINVAL;
--	}
-+	f_pdata->inst_width = 0;
-+	if (op->cmd.buswidth)
-+		f_pdata->inst_width = ilog2(op->cmd.buswidth);
-+
-+	f_pdata->addr_width = 0;
-+	if (op->addr.buswidth)
-+		f_pdata->addr_width = ilog2(op->addr.buswidth);
-+
-+	f_pdata->data_width = 0;
-+	if (op->data.buswidth)
-+		f_pdata->data_width = ilog2(op->data.buswidth);
- 
- 	/* Right now we only support 8-8-8 DTR mode. */
- 	if (f_pdata->dtr) {
- 		switch (op->cmd.buswidth) {
- 		case 0:
--			break;
- 		case 8:
--			f_pdata->inst_width = CQSPI_INST_TYPE_OCTAL;
- 			break;
- 		default:
- 			return -EINVAL;
-@@ -422,9 +404,7 @@ static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 
- 		switch (op->addr.buswidth) {
- 		case 0:
--			break;
- 		case 8:
--			f_pdata->addr_width = CQSPI_INST_TYPE_OCTAL;
- 			break;
- 		default:
- 			return -EINVAL;
-@@ -432,9 +412,7 @@ static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 
- 		switch (op->data.buswidth) {
- 		case 0:
--			break;
- 		case 8:
--			f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
- 			break;
- 		default:
- 			return -EINVAL;
+ 		mutex_lock(&aconnector->hpd_lock);
 -- 
 2.35.1
 
