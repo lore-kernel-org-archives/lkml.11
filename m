@@ -2,162 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C47DC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58716C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243618AbiDRNiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:38:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51360 "EHLO
+        id S243671AbiDRNiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243920AbiDRNKg (ORCPT
+        with ESMTP id S243913AbiDRNKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:10:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A5ED439159
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:50:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650286194;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HRGj6ZeyXr2MKkcn+2M4NipClwwwr9qizAjtQu5feTE=;
-        b=RppG+vvZYDm5P1vLUGCV6E5ZyUlbMiURq3D6C8FkCAi/obYSmgwhplHnePQhlDEj0MGHpV
-        Xr/TZMMEU1h85QMsq/b7QO22XaXh0VjBw6dsT9+C5Y5hggPw0HErhC5tVqjDsFXwoxolJp
-        Kx8VOpBNQA6E/wdPRI1+n2vbZ2VHEhI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-527-0yj2YEJiMemgVMRe122n-Q-1; Mon, 18 Apr 2022 08:49:52 -0400
-X-MC-Unique: 0yj2YEJiMemgVMRe122n-Q-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE4F21833;
+        Mon, 18 Apr 2022 05:50:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4A2C3299E750;
-        Mon, 18 Apr 2022 12:49:51 +0000 (UTC)
-Received: from starship (unknown [10.40.194.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F305540F9D60;
-        Mon, 18 Apr 2022 12:49:48 +0000 (UTC)
-Message-ID: <e28c547ac0c3e69d3c55664069aecbb87aeb2230.camel@redhat.com>
-Subject: Re: [PATCH 3/4] KVM: x86: Pend KVM_REQ_APICV_UPDATE during vCPU
- creation to fix a race
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Gaoning Pan <pgn@zju.edu.cn>,
-        Yongkang Jia <kangel@zju.edu.cn>
-Date:   Mon, 18 Apr 2022 15:49:47 +0300
-In-Reply-To: <20220416034249.2609491-4-seanjc@google.com>
-References: <20220416034249.2609491-1-seanjc@google.com>
-         <20220416034249.2609491-4-seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BEC0061257;
+        Mon, 18 Apr 2022 12:50:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C49E6C385A7;
+        Mon, 18 Apr 2022 12:50:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650286208;
+        bh=5ei0AvfUFz5VyRFx6wipvp0Rm05AiCHILJrtzFpMfyM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fmOQD4DDCT4I7oo0x03HPTIhijZKImZ5MYuOWeFARrs22OiOcBuQShh+BWgGyb4O+
+         49zqfPo29Z/TYdd2b1UUN1LAno+BZbqQX7L+4a2cK+fj+cwmniCpxI7NB/v0rLH5EK
+         vgK7HWZUf9Oyt7sKo0FmxwVCb8WGjJ59Lreg1VJs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 062/284] hwrng: atmel - disable trng on failure path
+Date:   Mon, 18 Apr 2022 14:10:43 +0200
+Message-Id: <20220418121212.455206444@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
+References: <20220418121210.689577360@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-04-16 at 03:42 +0000, Sean Christopherson wrote:
-> Make a KVM_REQ_APICV_UPDATE request when creating a vCPU with an
-> in-kernel local APIC and APICv enabled at the module level.  Consuming
-> kvm_apicv_activated() and stuffing vcpu->arch.apicv_active directly can
-> race with __kvm_set_or_clear_apicv_inhibit(), as vCPU creation happens
-> before the vCPU is fully onlined, i.e. it won't get the request made to
-> "all" vCPUs.  If APICv is globally inhibited between setting apicv_active
-> and onlining the vCPU, the vCPU will end up running with APICv enabled
-> and trigger KVM's sanity check.
-> 
-> Mark APICv as active during vCPU creation if APICv is enabled at the
-> module level, both to be optimistic about it's final state, e.g. to avoid
-> additional VMWRITEs on VMX, and because there are likely bugs lurking
-> since KVM checks apicv_active in multiple vCPU creation paths.  While
-> keeping the current behavior of consuming kvm_apicv_activated() is
-> arguably safer from a regression perspective, force apicv_active so that
-> vCPU creation runs with deterministic state and so that if there are bugs,
-> they are found sooner than later, i.e. not when some crazy race condition
-> is hit.
-> 
->   WARNING: CPU: 0 PID: 484 at arch/x86/kvm/x86.c:9877 vcpu_enter_guest+0x2ae3/0x3ee0 arch/x86/kvm/x86.c:9877
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-I told you that this warning catches bugs. I am not disappointed!
+[ Upstream commit a223ea9f89ab960eb254ba78429efd42eaf845eb ]
 
->   Modules linked in:
->   CPU: 0 PID: 484 Comm: syz-executor361 Not tainted 5.16.13 #2
->   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1~cloud0 04/01/2014
->   RIP: 0010:vcpu_enter_guest+0x2ae3/0x3ee0 arch/x86/kvm/x86.c:9877
->   Call Trace:
->    <TASK>
->    vcpu_run arch/x86/kvm/x86.c:10039 [inline]
->    kvm_arch_vcpu_ioctl_run+0x337/0x15e0 arch/x86/kvm/x86.c:10234
->    kvm_vcpu_ioctl+0x4d2/0xc80 arch/x86/kvm/../../../virt/kvm/kvm_main.c:3727
->    vfs_ioctl fs/ioctl.c:51 [inline]
->    __do_sys_ioctl fs/ioctl.c:874 [inline]
->    __se_sys_ioctl fs/ioctl.c:860 [inline]
->    __x64_sys_ioctl+0x16d/0x1d0 fs/ioctl.c:860
->    do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->    do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
->    entry_SYSCALL_64_after_hwframe+0x44/0xae
-> 
-> The bug was hit by a syzkaller spamming VM creation with 2 vCPUs and a
-> call to KVM_SET_GUEST_DEBUG.
-> 
->   r0 = openat$kvm(0xffffffffffffff9c, &(0x7f0000000000), 0x0, 0x0)
->   r1 = ioctl$KVM_CREATE_VM(r0, 0xae01, 0x0)
->   ioctl$KVM_CAP_SPLIT_IRQCHIP(r1, 0x4068aea3, &(0x7f0000000000)) (async)
->   r2 = ioctl$KVM_CREATE_VCPU(r1, 0xae41, 0x0) (async)
->   r3 = ioctl$KVM_CREATE_VCPU(r1, 0xae41, 0x400000000000002)
->   ioctl$KVM_SET_GUEST_DEBUG(r3, 0x4048ae9b, &(0x7f00000000c0)={0x5dda9c14aa95f5c5})
->   ioctl$KVM_RUN(r2, 0xae80, 0x0)
-> 
-> Reported-by: Gaoning Pan <pgn@zju.edu.cn>
-> Reported-by: Yongkang Jia <kangel@zju.edu.cn>
-> Fixes: 8df14af42f00 ("kvm: x86: Add support for dynamic APICv activation")
-> Cc: stable@vger.kernel.org
-> Cc: Maxim Levitsky <mlevitsk@redhat.com>
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/kvm/x86.c | 15 ++++++++++++++-
->  1 file changed, 14 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 753296902535..09a270cc1c8f 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -11259,8 +11259,21 @@ int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
->  		r = kvm_create_lapic(vcpu, lapic_timer_advance_ns);
->  		if (r < 0)
->  			goto fail_mmu_destroy;
-> -		if (kvm_apicv_activated(vcpu->kvm))
-> +
-> +		/*
-> +		 * Defer evaluating inhibits until the vCPU is first run, as
-> +		 * this vCPU will not get notified of any changes until this
-> +		 * vCPU is visible to other vCPUs (marked online and added to
-> +		 * the set of vCPUs).  Opportunistically mark APICv active as
-> +		 * VMX in particularly is highly unlikely to have inhibits.
-> +		 * Ignore the current per-VM APICv state so that vCPU creation
-> +		 * is guaranteed to run with a deterministic value, the request
-> +		 * will ensure the vCPU gets the correct state before VM-Entry.
-> +		 */
-> +		if (enable_apicv) {
->  			vcpu->arch.apicv_active = true;
-> +			kvm_make_request(KVM_REQ_APICV_UPDATE, vcpu);
-> +		}
->  	} else
->  		static_branch_inc(&kvm_has_noapic_vcpu);
->  
+Call atmel_trng_disable() on failure path of probe.
+
+Fixes: a1fa98d8116f ("hwrng: atmel - disable TRNG during suspend")
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/char/hw_random/atmel-rng.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/char/hw_random/atmel-rng.c b/drivers/char/hw_random/atmel-rng.c
+index 661c82cde0f2..92a8960ceba5 100644
+--- a/drivers/char/hw_random/atmel-rng.c
++++ b/drivers/char/hw_random/atmel-rng.c
+@@ -95,6 +95,7 @@ static int atmel_trng_probe(struct platform_device *pdev)
+ 
+ err_register:
+ 	clk_disable_unprepare(trng->clk);
++	atmel_trng_disable(trng);
+ 	return ret;
+ }
+ 
+-- 
+2.34.1
 
 
-Makes sense.
-
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-
-Best regards,
-	Maxim Levitsky
 
