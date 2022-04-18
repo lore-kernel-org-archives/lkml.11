@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43831C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:52:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D7AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240231AbiDRMzD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
+        id S240276AbiDRMzL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239858AbiDRMiL (ORCPT
+        with ESMTP id S239689AbiDRMiA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:38:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E844D24598;
-        Mon, 18 Apr 2022 05:28:46 -0700 (PDT)
+        Mon, 18 Apr 2022 08:38:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913E6237E4;
+        Mon, 18 Apr 2022 05:28:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 814CF60FDF;
-        Mon, 18 Apr 2022 12:28:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FE70C385A9;
-        Mon, 18 Apr 2022 12:28:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2338F60F7C;
+        Mon, 18 Apr 2022 12:28:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30A15C385A1;
+        Mon, 18 Apr 2022 12:28:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284925;
-        bh=MLjCz8AqeORP/5DdnvkYhJEBc8DfgTNnq0cfKf6/iK0=;
+        s=korg; t=1650284906;
+        bh=a5UozIjxCMAdXXVBz172OKTsd8UCvW/iH5gCKiemRRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eRtTyH63xxuNZhHSRxNkwWFaYau/uuPe7Eeqf7v2MHg5yMAKLilW1RcbryIeLHbWi
-         QiFllhk6vBd1o7iUCgGWx/xVmXvi4BfAXSMZ/koxk4DBTEpwqZTp5eVD3dR8cL+KWa
-         knW42PshWB+uyVmF1OJxXKnvQBmDx0FtxQNcNzlI=
+        b=w05iKt10b9NxFHoDjwxWM8mLT/5EDteO8cP1QuHF1nKw514Ozzs5PvsPUEZvhn4ta
+         ojk284V0DxcWbMepAPO5kyaL2FHrVsv6u6szv0akwL8I+jVHFCvBxJacIH1KhA2jT6
+         0HNrjlSMb+1U2Y28ygWpMZfxNPWS2eNOuuZ+XJEk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 049/189] ALSA: rme9652: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:11:09 +0200
-Message-Id: <20220418121201.904869631@linuxfoundation.org>
+Subject: [PATCH 5.15 044/189] ALSA: lx6464es: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:11:04 +0200
+Message-Id: <20220418121201.764548420@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,7 +49,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit b2aa4f80693b7841e5ac4eadbd2d8cec56b10a51 upstream.
+commit 60797a21dd8360a99ba797f8ca587087c07bb54c upstream.
 
 The previous cleanup with devres may lead to the incorrect release
 orders at the probe error handling due to the devres's nature.  Until
@@ -60,34 +60,36 @@ release the stuff via card->private_free().
 This patch fixes it by calling snd_card_free() manually on the error
 from the probe callback.
 
-Fixes: b1002b2d41c5 ("ALSA: rme9652: Allocate resources with device-managed APIs")
+Fixes: 6f16c19b115e ("ALSA: lx6464es: Allocate resources with device-managed APIs")
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-38-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220412102636.16000-34-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/rme9652/rme9652.c | 8 ++++++--
+ sound/pci/lx6464es/lx6464es.c | 8 ++++++--
  1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/sound/pci/rme9652/rme9652.c b/sound/pci/rme9652/rme9652.c
-index 7755e19aa776..1d614fe89a6a 100644
---- a/sound/pci/rme9652/rme9652.c
-+++ b/sound/pci/rme9652/rme9652.c
-@@ -2572,7 +2572,7 @@ static int snd_rme9652_probe(struct pci_dev *pci,
- 	rme9652->pci = pci;
- 	err = snd_rme9652_create(card, rme9652, precise_ptr[dev]);
- 	if (err)
+diff --git a/sound/pci/lx6464es/lx6464es.c b/sound/pci/lx6464es/lx6464es.c
+index 168a1084f730..bd9b6148dd6f 100644
+--- a/sound/pci/lx6464es/lx6464es.c
++++ b/sound/pci/lx6464es/lx6464es.c
+@@ -1019,7 +1019,7 @@ static int snd_lx6464es_probe(struct pci_dev *pci,
+ 	err = snd_lx6464es_create(card, pci);
+ 	if (err < 0) {
+ 		dev_err(card->dev, "error during snd_lx6464es_create\n");
 -		return err;
 +		goto error;
+ 	}
  
- 	strcpy(card->shortname, rme9652->card_name);
+ 	strcpy(card->driver, "LX6464ES");
+@@ -1036,12 +1036,16 @@ static int snd_lx6464es_probe(struct pci_dev *pci,
  
-@@ -2580,10 +2580,14 @@ static int snd_rme9652_probe(struct pci_dev *pci,
- 		card->shortname, rme9652->port, rme9652->irq);
  	err = snd_card_register(card);
- 	if (err)
+ 	if (err < 0)
 -		return err;
 +		goto error;
+ 
+ 	dev_dbg(chip->card->dev, "initialization successful\n");
  	pci_set_drvdata(pci, card);
  	dev++;
  	return 0;
@@ -97,7 +99,7 @@ index 7755e19aa776..1d614fe89a6a 100644
 +	return err;
  }
  
- static struct pci_driver rme9652_driver = {
+ static struct pci_driver lx6464es_driver = {
 -- 
 2.35.2
 
