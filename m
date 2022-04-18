@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38832C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22185C3527E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242993AbiDRNT2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:19:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
+        id S242927AbiDRNTW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:19:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239634AbiDRNAO (ORCPT
+        with ESMTP id S242621AbiDRNAN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:00:14 -0400
+        Mon, 18 Apr 2022 09:00:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B911B3153A;
-        Mon, 18 Apr 2022 05:41:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CD4831500;
+        Mon, 18 Apr 2022 05:41:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2861C60FB6;
-        Mon, 18 Apr 2022 12:41:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15E07C385A8;
-        Mon, 18 Apr 2022 12:41:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2556E60FB6;
+        Mon, 18 Apr 2022 12:41:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B82FC385A1;
+        Mon, 18 Apr 2022 12:41:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285707;
-        bh=PRKKSlC++3tu0htGySyF7EK6m/IfUhB+bYRdOYfYruw=;
+        s=korg; t=1650285704;
+        bh=TpOrTXLV4U5pm4BdcV8eLd+g6FUlDQpHQ/skxzlTGSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aMKbI9dwnPxEWWOfe+ynqFLoB4+1GDXqHoiw+nkoqgiVYk7zZF6uau0DILP973hcW
-         v2F4KYMem8odoR0ladnaWYjFYRrwBlWNwbuJMWazPqkGGu7P6u0P/Ul9e+1OErMOTx
-         cZZiIwr69lazYQKU4bKp8wvAZrf0pKWavWWykm90=
+        b=SciOf3ZQHI86ipRsT9Dmz73eCcPWxKuOG/YOypWx0kvyA/TZ5BPdBKQcCAe8dQ58/
+         lZmnEpjgshuu5plSslJY8tVfFaiH4x0alxK4QEynW3o9oFOvlq2sF+ando17tEr/EO
+         KciiJHGilruRc+EF064hOOC47VNiSiprABX9+8pk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ming Lei <ming.lei@redhat.com>
-Subject: [PATCH 5.10 088/105] genirq/affinity: Consider that CPUs on nodes can be unbalanced
-Date:   Mon, 18 Apr 2022 14:13:30 +0200
-Message-Id: <20220418121149.133631295@linuxfoundation.org>
+        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.10 096/105] scsi: iscsi: Fix endpoint reuse regression
+Date:   Mon, 18 Apr 2022 14:13:38 +0200
+Message-Id: <20220418121149.362048140@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -49,47 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
+From: Mike Christie <michael.christie@oracle.com>
 
-commit 08d835dff916bfe8f45acc7b92c7af6c4081c8a7 upstream.
+commit 0aadafb5c34403a7cced1a8d61877048dc059f70 upstream.
 
-If CPUs on a node are offline at boot time, the number of nodes is
-different when building affinity masks for present cpus and when building
-affinity masks for possible cpus. This causes the following problem:
+This patch fixes a bug where when using iSCSI offload we can free an
+endpoint while userspace still thinks it's active. That then causes the
+endpoint ID to be reused for a new connection's endpoint while userspace
+still thinks the ID is for the original connection. Userspace will then end
+up disconnecting a running connection's endpoint or trying to bind to
+another connection's endpoint.
 
-In the case that the number of vectors is less than the number of nodes
-there are cases where bits of masks for present cpus are overwritten when
-building masks for possible cpus.
+This bug is a regression added in:
 
-Fix this by excluding CPUs, which are not part of the current build mask
-(present/possible).
+Commit 23d6fefbb3f6 ("scsi: iscsi: Fix in-kernel conn failure handling")
 
-[ tglx: Massaged changelog and added comment ]
+where we added a in kernel ep_disconnect call to fix a bug in:
 
-Fixes: b82592199032 ("genirq/affinity: Spread IRQs to all available NUMA nodes")
-Signed-off-by: Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220331003309.10891-1-yamamoto.rei@jp.fujitsu.com
+Commit 0ab710458da1 ("scsi: iscsi: Perform connection failure entirely in
+kernel space")
+
+where we would call stop_conn without having done ep_disconnect. This early
+ep_disconnect call will then free the endpoint and it's ID while userspace
+still thinks the ID is valid.
+
+Fix the early release of the ID by having the in kernel recovery code keep
+a reference to the endpoint until userspace has called into the kernel to
+finish cleaning up the endpoint/connection. It requires the previous commit
+"scsi: iscsi: Release endpoint ID when its freed" which moved the freeing
+of the ID until when the endpoint is released.
+
+Link: https://lore.kernel.org/r/20220408001314.5014-5-michael.christie@oracle.com
+Fixes: 23d6fefbb3f6 ("scsi: iscsi: Fix in-kernel conn failure handling")
+Tested-by: Manish Rangankar <mrangankar@marvell.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Reviewed-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/irq/affinity.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/scsi/scsi_transport_iscsi.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/kernel/irq/affinity.c
-+++ b/kernel/irq/affinity.c
-@@ -269,8 +269,9 @@ static int __irq_build_affinity_masks(un
- 	 */
- 	if (numvecs <= nodes) {
- 		for_each_node_mask(n, nodemsk) {
--			cpumask_or(&masks[curvec].mask, &masks[curvec].mask,
--				   node_to_cpumask[n]);
-+			/* Ensure that only CPUs which are in both masks are set */
-+			cpumask_and(nmsk, cpu_mask, node_to_cpumask[n]);
-+			cpumask_or(&masks[curvec].mask, &masks[curvec].mask, nmsk);
- 			if (++curvec == last_affv)
- 				curvec = firstvec;
- 		}
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -2273,7 +2273,11 @@ static void iscsi_if_disconnect_bound_ep
+ 		mutex_unlock(&conn->ep_mutex);
+ 
+ 		flush_work(&conn->cleanup_work);
+-
++		/*
++		 * Userspace is now done with the EP so we can release the ref
++		 * iscsi_cleanup_conn_work_fn took.
++		 */
++		iscsi_put_endpoint(ep);
+ 		mutex_lock(&conn->ep_mutex);
+ 	}
+ }
+@@ -2355,6 +2359,12 @@ static void iscsi_cleanup_conn_work_fn(s
+ 		return;
+ 	}
+ 
++	/*
++	 * Get a ref to the ep, so we don't release its ID until after
++	 * userspace is done referencing it in iscsi_if_disconnect_bound_ep.
++	 */
++	if (conn->ep)
++		get_device(&conn->ep->dev);
+ 	iscsi_ep_disconnect(conn, false);
+ 
+ 	if (system_state != SYSTEM_RUNNING) {
 
 
