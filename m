@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A2ADC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7059C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344679AbiDROXD (ORCPT
+        id S1344770AbiDROXN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41664 "EHLO
+        Mon, 18 Apr 2022 10:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343941AbiDROIo (ORCPT
+        with ESMTP id S1344036AbiDROIw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:08:44 -0400
+        Mon, 18 Apr 2022 10:08:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F1A369DE;
-        Mon, 18 Apr 2022 06:10:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3AD36B5B;
+        Mon, 18 Apr 2022 06:10:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87578B80EE2;
-        Mon, 18 Apr 2022 13:10:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B578BC385A1;
-        Mon, 18 Apr 2022 13:09:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33876B80EE4;
+        Mon, 18 Apr 2022 13:10:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32EE8C385A1;
+        Mon, 18 Apr 2022 13:10:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287399;
-        bh=kymdnvnWNXlaCUrx7uukA6gOXPLoD3FPQfpxymIhMeg=;
+        s=korg; t=1650287423;
+        bh=101V+6oKB4yshqJK7l/T8aqNH7Hs8kisFnI1Dy/+a1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZycvV4A+gOgw2BGye9f5Au3SzpFPQKV/lGaWeQiFa/8sYvJwY5tsuHBGas7lK2svt
-         /Y5O/1TPG8AbTXkjLYmmD8xRkfywfxBisxNeKKQCbMR7y2fttrmaPU1y10AVQLKSzM
-         YyQkJHWp1mMp9nVSZ0VjlHRUi00Od5a2nEirLLn4=
+        b=TtGbHkCDYKtJNA/LTWQV2t7zTPP7FlmrliNpLjeh4xPxyxnhJDvdDcB5EqumEXAGN
+         Q4qamlKfGp0S85P/njOy6kBCZAdqlvLYX7bf7qO9Vn27SgqhR6Wo2QoChvQ5z6beAy
+         F2OlHfdBEdUWZnsPl3+ZrS2U+2AVC4JZXCmusBfk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Gardon <bgardon@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 4.9 149/218] KVM: Prevent module exit until all VMs are freed
-Date:   Mon, 18 Apr 2022 14:13:35 +0200
-Message-Id: <20220418121203.852833533@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.9 156/218] mm/memcontrol: return 1 from cgroup.memory __setup() handler
+Date:   Mon, 18 Apr 2022 14:13:42 +0200
+Message-Id: <20220418121204.442483803@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,75 +56,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Matlack <dmatlack@google.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 5f6de5cbebee925a612856fce6f9182bb3eee0db upstream.
+commit 460a79e18842caca6fa0c415de4a3ac1e671ac50 upstream.
 
-Tie the lifetime the KVM module to the lifetime of each VM via
-kvm.users_count. This way anything that grabs a reference to the VM via
-kvm_get_kvm() cannot accidentally outlive the KVM module.
+__setup() handlers should return 1 if the command line option is handled
+and 0 if not (or maybe never return 0; it just pollutes init's
+environment).
 
-Prior to this commit, the lifetime of the KVM module was tied to the
-lifetime of /dev/kvm file descriptors, VM file descriptors, and vCPU
-file descriptors by their respective file_operations "owner" field.
-This approach is insufficient because references grabbed via
-kvm_get_kvm() do not prevent closing any of the aforementioned file
-descriptors.
+The only reason that this particular __setup handler does not pollute
+init's environment is that the setup string contains a '.', as in
+"cgroup.memory".  This causes init/main.c::unknown_boottoption() to
+consider it to be an "Unused module parameter" and ignore it.  (This is
+for parsing of loadable module parameters any time after kernel init.)
+Otherwise the string "cgroup.memory=whatever" would be added to init's
+environment strings.
 
-This fixes a long standing theoretical bug in KVM that at least affects
-async page faults. kvm_setup_async_pf() grabs a reference via
-kvm_get_kvm(), and drops it in an asynchronous work callback. Nothing
-prevents the VM file descriptor from being closed and the KVM module
-from being unloaded before this callback runs.
+Instead of relying on this '.' quirk, just return 1 to indicate that the
+boot option has been handled.
 
-Fixes: af585b921e5d ("KVM: Halt vcpu if page it tries to access is swapped out")
-Fixes: 3d3aab1b973b ("KVM: set owner of cpu and vm file operations")
-Cc: stable@vger.kernel.org
-Suggested-by: Ben Gardon <bgardon@google.com>
-[ Based on a patch from Ben implemented for Google's kernel. ]
-Signed-off-by: David Matlack <dmatlack@google.com>
-Message-Id: <20220303183328.1499189-2-dmatlack@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Note that there is no warning message if someone enters:
+	cgroup.memory=anything_invalid
+
+Link: https://lkml.kernel.org/r/20220222005811.10672-1-rdunlap@infradead.org
+Fixes: f7e1cb6ec51b0 ("mm: memcontrol: account socket memory in unified hierarchy memory controller")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
+Cc: Roman Gushchin <roman.gushchin@linux.dev>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- virt/kvm/kvm_main.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ mm/memcontrol.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -107,6 +107,8 @@ EXPORT_SYMBOL_GPL(kvm_debugfs_dir);
- static int kvm_debugfs_num_entries;
- static const struct file_operations *stat_fops_per_vm[];
- 
-+static struct file_operations kvm_chardev_ops;
-+
- static long kvm_vcpu_ioctl(struct file *file, unsigned int ioctl,
- 			   unsigned long arg);
- #ifdef CONFIG_KVM_COMPAT
-@@ -714,6 +716,16 @@ static struct kvm *kvm_create_vm(unsigne
- 
- 	preempt_notifier_inc();
- 
-+	/*
-+	 * When the fd passed to this ioctl() is opened it pins the module,
-+	 * but try_module_get() also prevents getting a reference if the module
-+	 * is in MODULE_STATE_GOING (e.g. if someone ran "rmmod --wait").
-+	 */
-+	if (!try_module_get(kvm_chardev_ops.owner)) {
-+		r = -ENODEV;
-+		goto out_err;
-+	}
-+
- 	return kvm;
- 
- out_err:
-@@ -798,6 +810,7 @@ static void kvm_destroy_vm(struct kvm *k
- 	preempt_notifier_dec();
- 	hardware_disable_all();
- 	mmdrop(mm);
-+	module_put(kvm_chardev_ops.owner);
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -5840,7 +5840,7 @@ static int __init cgroup_memory(char *s)
+ 		if (!strcmp(token, "nokmem"))
+ 			cgroup_memory_nokmem = true;
+ 	}
+-	return 0;
++	return 1;
  }
+ __setup("cgroup.memory=", cgroup_memory);
  
- void kvm_get_kvm(struct kvm *kvm)
 
 
