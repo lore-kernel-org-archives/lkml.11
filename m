@@ -2,51 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B25CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:24:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D304C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:24:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344248AbiDRO0o (ORCPT
+        id S1344302AbiDRO0s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34454 "EHLO
+        Mon, 18 Apr 2022 10:26:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343601AbiDROQI (ORCPT
+        with ESMTP id S1343911AbiDROPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:16:08 -0400
+        Mon, 18 Apr 2022 10:15:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0682393E7;
-        Mon, 18 Apr 2022 06:12:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A897D393D2;
+        Mon, 18 Apr 2022 06:12:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2B2060F5D;
-        Mon, 18 Apr 2022 13:12:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60A16C385A1;
-        Mon, 18 Apr 2022 13:12:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F90160F9E;
+        Mon, 18 Apr 2022 13:12:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67393C385A1;
+        Mon, 18 Apr 2022 13:12:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287555;
-        bh=Ct3Z8JcrfFbNyKARuB9w5qVtGQ0IISxETKl3CPVyniM=;
+        s=korg; t=1650287551;
+        bh=mVo4UmQIIjFD79mpgLYNeOvHMT7O3IVl7jFF4a7Vh44=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hui+UAt9auF5a879jjN7/gPrhS0QXjTZRY4t3msdsV6T5W1mKzKG8wtH2Px0r4sMu
-         Q8mdEE+boUfJUu6+g+bwHQ8/OJVi1vPlw6nRQfIEKejKZPLmLBdZnm57hKgF/KRD7I
-         qasZRHcJo525gJL+COADrv8a7CrmGvXFI+x7awAI=
+        b=1tOUx6HeqOgctR28sZrinOj2eAXYMV5EFxn9JP3wmBWmHS+eD19Sm8ahmr3Esqwa4
+         Cl13UBvIHckxkpZ8eUj7M02JlXMovLMM6kmxZrLZeBw8VhioYxVAi91rR6C9FrlaqE
+         VF/S2IiyvmTOhvrNcas5lmlO5vemCK3S4ppcnfCs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Fangrui Song <maskray@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Subject: [PATCH 4.9 197/218] tools build: Use $(shell ) instead of `` to get embedded libperls ccopts
-Date:   Mon, 18 Apr 2022 14:14:23 +0200
-Message-Id: <20220418121207.211341124@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 4.9 196/218] arm64: patch_text: Fixup last cpu should be master
+Date:   Mon, 18 Apr 2022 14:14:22 +0200
+Message-Id: <20220418121207.133915106@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -58,48 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Guo Ren <guoren@linux.alibaba.com>
 
-commit 541f695cbcb6932c22638b06e0cbe1d56177e2e9 upstream.
+commit 31a099dbd91e69fcab55eef4be15ed7a8c984918 upstream.
 
-Just like its done for ldopts and for both in tools/perf/Makefile.config.
+These patch_text implementations are using stop_machine_cpuslocked
+infrastructure with atomic cpu_count. The original idea: When the
+master CPU patch_text, the others should wait for it. But current
+implementation is using the first CPU as master, which couldn't
+guarantee the remaining CPUs are waiting. This patch changes the
+last CPU as the master to solve the potential risk.
 
-Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
-
-  $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
-
-And we need to do it to allow for building with versions of clang where
-some gcc options selected by distros are not available.
-
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Fangrui Song <maskray@google.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Keeping <john@metanate.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Michael Petlan <mpetlan@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Link: http://lore.kernel.org/lkml/YktYX2OnLtyobRYD@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: ae16480785de ("arm64: introduce interfaces to hotpatch kernel and module code")
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220407073323.743224-2-guoren@kernel.org
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/build/feature/Makefile |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/kernel/insn.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/tools/build/feature/Makefile
-+++ b/tools/build/feature/Makefile
-@@ -162,7 +162,7 @@ strip-libs = $(filter-out -l%,$(1))
- PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
- PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
- PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
--PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
-+PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
- FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+--- a/arch/arm64/kernel/insn.c
++++ b/arch/arm64/kernel/insn.c
+@@ -234,8 +234,8 @@ static int __kprobes aarch64_insn_patch_
+ 	int i, ret = 0;
+ 	struct aarch64_insn_patch *pp = arg;
  
- $(OUTPUT)test-libperl.bin:
+-	/* The first CPU becomes master */
+-	if (atomic_inc_return(&pp->cpu_count) == 1) {
++	/* The last CPU becomes master */
++	if (atomic_inc_return(&pp->cpu_count) == num_online_cpus()) {
+ 		for (i = 0; ret == 0 && i < pp->insn_cnt; i++)
+ 			ret = aarch64_insn_patch_text_nosync(pp->text_addrs[i],
+ 							     pp->new_insns[i]);
 
 
