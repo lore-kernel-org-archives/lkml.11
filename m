@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EA8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:57:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88DEDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:58:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244641AbiDROAf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:00:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35768 "EHLO
+        id S244574AbiDROAi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:00:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244018AbiDRNiw (ORCPT
+        with ESMTP id S243567AbiDRNiH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:38:52 -0400
+        Mon, 18 Apr 2022 09:38:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A208527FE5;
-        Mon, 18 Apr 2022 05:58:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB9327FC2;
+        Mon, 18 Apr 2022 05:58:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23653B80E44;
-        Mon, 18 Apr 2022 12:58:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EBC3C385A1;
-        Mon, 18 Apr 2022 12:58:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05900B80EC3;
+        Mon, 18 Apr 2022 12:58:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EF15C385A1;
+        Mon, 18 Apr 2022 12:58:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286705;
-        bh=0Ib93hmg98wm1ej2ga6KkRVGgiVh+k+ut6GZoNMZN/M=;
+        s=korg; t=1650286702;
+        bh=Owx5cXHHiohKZCzYmdkV7BuW9d3Ur7SqGy69wNLF/4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OXam3EG7ImAB9ofeyUGw6lowZvxpuWXX6bC5v/sFk6bvojlIBFQBDwBsyeHz4YJf2
-         JcrPMod84gDtFsceoWkLHTY8DyqnzAt42WML2qaAgnIVUuR/KoG2N4IG7tvbhiPa52
-         cplY08IDLN/CrhUrgTIGBL50M84v6rQkzivx0U5A=
+        b=E6gmYNztcVDWLyk5BUauNWjbZpqPhvb2lpUw47QPOThbplCsHUjKi46Y7z/1XBOcT
+         ufvrJQ5LxObC1Yk3Xac9F5J4wtc41t5CyVSU64VnhUPbjmAxlqxBEZzUIeV44mLGk+
+         q4y6etqzsFg/xqy1OfCcCuB7nFo4k4XvUliMjbyA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evgeny Boger <boger@wirenboard.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 212/284] power: supply: axp20x_battery: properly report current when discharging
-Date:   Mon, 18 Apr 2022 14:13:13 +0200
-Message-Id: <20220418121217.746357295@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Yang Guang <yang.guang5@zte.com.cn>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 168/284] video: fbdev: omapfb: acx565akm: replace snprintf with sysfs_emit
+Date:   Mon, 18 Apr 2022 14:12:29 +0200
+Message-Id: <20220418121216.520780553@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,62 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evgeny Boger <boger@wirenboard.com>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
+[ Upstream commit 24565bc4115961db7ee64fcc7ad2a7437c0d0a49 ]
 
-As stated in [1], negative current values are used for discharging
-batteries.
+coccinelle report:
+./drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c:
+479:9-17: WARNING: use scnprintf or sprintf
 
-AXP PMICs internally have two different ADC channels for shunt current
-measurement: one used during charging and one during discharging.
-The values reported by these ADCs are unsigned.
-While the driver properly selects ADC channel to get the data from,
-it doesn't apply negative sign when reporting discharging current.
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
 
-[1] Documentation/ABI/testing/sysfs-class-power
-
-Signed-off-by: Evgeny Boger <boger@wirenboard.com>
-Acked-by: Chen-Yu Tsai <wens@csie.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/axp20x_battery.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ .../video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c    | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 7494f0f0eadb..a2e2443357fa 100644
---- a/drivers/power/supply/axp20x_battery.c
-+++ b/drivers/power/supply/axp20x_battery.c
-@@ -160,7 +160,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 				   union power_supply_propval *val)
- {
- 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
--	struct iio_channel *chan;
- 	int ret = 0, reg, val1;
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
+index f2c2fef3db74..87c4f420a9d9 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-sony-acx565akm.c
+@@ -487,7 +487,7 @@ static ssize_t show_cabc_available_modes(struct device *dev,
+ 	int i;
  
- 	switch (psp) {
-@@ -240,12 +239,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 		if (ret)
- 			return ret;
+ 	if (!ddata->has_cabc)
+-		return snprintf(buf, PAGE_SIZE, "%s\n", cabc_modes[0]);
++		return sysfs_emit(buf, "%s\n", cabc_modes[0]);
  
--		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
--			chan = axp20x_batt->batt_chrg_i;
--		else
--			chan = axp20x_batt->batt_dischrg_i;
--
--		ret = iio_read_channel_processed(chan, &val->intval);
-+		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
-+		} else {
-+			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
-+			val->intval = -val1;
-+		}
- 		if (ret)
- 			return ret;
- 
+ 	for (i = 0, len = 0;
+ 	     len < PAGE_SIZE && i < ARRAY_SIZE(cabc_modes); i++)
 -- 
-2.35.1
+2.34.1
 
 
 
