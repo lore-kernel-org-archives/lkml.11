@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C62ACC47081
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 272DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244604AbiDRNpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44268 "EHLO
+        id S244722AbiDRNp0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:45:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239915AbiDRNVH (ORCPT
+        with ESMTP id S241717AbiDRNWC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:21:07 -0400
+        Mon, 18 Apr 2022 09:22:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91B713F33;
-        Mon, 18 Apr 2022 05:52:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B5B3CFC5;
+        Mon, 18 Apr 2022 05:52:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76F7FB80E59;
-        Mon, 18 Apr 2022 12:52:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C71A1C385A1;
-        Mon, 18 Apr 2022 12:52:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FA50B80E4E;
+        Mon, 18 Apr 2022 12:52:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75107C385A1;
+        Mon, 18 Apr 2022 12:52:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286344;
-        bh=I9+hmMEX95nBcS2rDU1DWsybxkUdrLHSzo3sdWdHvhs=;
+        s=korg; t=1650286359;
+        bh=X4agHIZC3A5ifOkPB8H4mPYnLiT/PXjzYc8brK2su9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sne+qbE9A7iT3qNmav247NLxuUz38WBjgujgvL1ehMnDsDg8x/x8vP2DhdHmEhYMZ
-         DdvZvxFAXp0bPAUvtM0+3OUhabJdCIrzaQVLW5aT5T53tnrha6Tqhklilok8gmkAWk
-         S/CdOcn6OJRukeJrB8gHNmF16HYwMwrQBlXQtzkQ=
+        b=evwgts2va4nuAmcGLyEPAI5notWlDa2OlxqAqt0CVBo5nNV/dqX1rTRE76LG9FF+2
+         Yzav3mQhxyUi22p6+JDj5sHZHQ5Yk1DPGD4cuCczysw9EI7Gob82ARlux6i4PO2Xst
+         eYCvNmHPdbN26/wXTwXbjSQJQVGJZfNtG6Xt8xSg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 105/284] scsi: pm8001: Fix command initialization in pm80XX_send_read_log()
-Date:   Mon, 18 Apr 2022 14:11:26 +0200
-Message-Id: <20220418121213.859927557@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
+        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 110/284] ext2: correct max file size computing
+Date:   Mon, 18 Apr 2022 14:11:31 +0200
+Message-Id: <20220418121214.071981508@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -51,57 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Zhang Yi <yi.zhang@huawei.com>
 
-[ Upstream commit 1a37b6738b58d86f6b144b3fc754ace0f2e0166d ]
+[ Upstream commit 50b3a818991074177a56c87124c7a7bdf5fa4f67 ]
 
-Since the sata_cmd struct is zeroed out before its fields are initialized,
-there is no need for using "|=" to initialize the ncqtag_atap_dir_m
-field. Using a standard assignment removes the sparse warning:
+We need to calculate the max file size accurately if the total blocks
+that can address by block tree exceed the upper_limit. But this check is
+not correct now, it only compute the total data blocks but missing
+metadata blocks are needed. So in the case of "data blocks < upper_limit
+&& total blocks > upper_limit", we will get wrong result. Fortunately,
+this case could not happen in reality, but it's confused and better to
+correct the computing.
 
-warning: invalid assignment: |=
+  bits   data blocks   metadatablocks   upper_limit
+  10        16843020            66051    2147483647
+  11       134480396           263171    1073741823
+  12      1074791436          1050627     536870911 (*)
+  13      8594130956          4198403     268435455 (*)
+  14     68736258060         16785411     134217727 (*)
+  15    549822930956         67125251      67108863 (*)
+  16   4398314962956        268468227      33554431 (*)
 
-Also, since the ncqtag_atap_dir_m field has type __le32, use cpu_to_le32()
-to generate the assigned value.
+  [*] Need to calculate in depth.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-5-damien.lemoal@opensource.wdc.com
-Fixes: c6b9ef5779c3 ("[SCSI] pm80xx: NCQ error handling changes")
-Reviewed-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 1c2d14212b15 ("ext2: Fix underflow in ext2_max_size()")
+Link: https://lore.kernel.org/r/20220212050532.179055-1-yi.zhang@huawei.com
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 2 +-
- drivers/scsi/pm8001/pm80xx_hwi.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ fs/ext2/super.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index f374abfb7f1f..853dba857239 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -1826,7 +1826,7 @@ static void pm8001_send_read_log(struct pm8001_hba_info *pm8001_ha,
+diff --git a/fs/ext2/super.c b/fs/ext2/super.c
+index 4a338576ebb1..f3d55f1c0ce4 100644
+--- a/fs/ext2/super.c
++++ b/fs/ext2/super.c
+@@ -773,8 +773,12 @@ static loff_t ext2_max_size(int bits)
+ 	res += 1LL << (bits-2);
+ 	res += 1LL << (2*(bits-2));
+ 	res += 1LL << (3*(bits-2));
++	/* Compute how many metadata blocks are needed */
++	meta_blocks = 1;
++	meta_blocks += 1 + ppb;
++	meta_blocks += 1 + ppb + ppb * ppb;
+ 	/* Does block tree limit file size? */
+-	if (res < upper_limit)
++	if (res + meta_blocks <= upper_limit)
+ 		goto check_lfs;
  
- 	sata_cmd.tag = cpu_to_le32(ccb_tag);
- 	sata_cmd.device_id = cpu_to_le32(pm8001_ha_dev->device_id);
--	sata_cmd.ncqtag_atap_dir_m |= ((0x1 << 7) | (0x5 << 9));
-+	sata_cmd.ncqtag_atap_dir_m = cpu_to_le32((0x1 << 7) | (0x5 << 9));
- 	memcpy(&sata_cmd.sata_fis, &fis, sizeof(struct host_to_dev_fis));
- 
- 	res = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sata_cmd, 0);
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index df5f0bc29587..162b819f3a89 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -1504,7 +1504,7 @@ static void pm80xx_send_read_log(struct pm8001_hba_info *pm8001_ha,
- 
- 	sata_cmd.tag = cpu_to_le32(ccb_tag);
- 	sata_cmd.device_id = cpu_to_le32(pm8001_ha_dev->device_id);
--	sata_cmd.ncqtag_atap_dir_m_dad |= ((0x1 << 7) | (0x5 << 9));
-+	sata_cmd.ncqtag_atap_dir_m_dad = cpu_to_le32(((0x1 << 7) | (0x5 << 9)));
- 	memcpy(&sata_cmd.sata_fis, &fis, sizeof(struct host_to_dev_fis));
- 
- 	res = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sata_cmd, 0);
+ 	res = upper_limit;
 -- 
 2.34.1
 
