@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E1E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242020AbiDRN0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41054 "EHLO
+        id S240772AbiDRN0w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:26:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241128AbiDRNCv (ORCPT
+        with ESMTP id S241019AbiDRNET (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:02:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC3E3299E;
-        Mon, 18 Apr 2022 05:42:47 -0700 (PDT)
+        Mon, 18 Apr 2022 09:04:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293DEE0F9;
+        Mon, 18 Apr 2022 05:45:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 104A6B80EC0;
-        Mon, 18 Apr 2022 12:42:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71920C385A7;
-        Mon, 18 Apr 2022 12:42:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB0EB6124D;
+        Mon, 18 Apr 2022 12:45:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE925C385A7;
+        Mon, 18 Apr 2022 12:45:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285764;
-        bh=eXFfelGgqfm3R5kiwxdEW3QWJ/+S0FkWoA9IXNooyIY=;
+        s=korg; t=1650285914;
+        bh=tGzXzQhqgL+alx1Q6zWeqj7q4zL1AuwH2it+jAec/5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HMQyRzGfYIFHAZh/5QozTgbGu8wq5TLwGJMJVaBSlaVorlcXK56u+jhNv8zavN+P4
-         4ORm7pyC4pZ5g69hGA0zjL6/8FAwuTbpYMDmqpl5PInhp6aAO2TBU8Uy8PxVU3YFwY
-         wMeU3VhWrjjhqxUdjOKRdqA4D1PA9/6nv7N7gDns=
+        b=F5KKYZ92PkjN7A6g1Np5UZ9DrfuHCthDUd6Az83KtV7AnYjR/72X9tUZ3+TXsj8CA
+         ++l9Qt4NGsN6cHxAK2vLxJ9fp7ahn9QRKPZtd7DfsqZb8OQDeVoJDDKNYIQUUT0esn
+         Cw6lAsnZeclZAkeijYAMd4OogfcqGBdEbrpcLZak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Aurabindo Pillai <aurabindo.pillai@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 03/63] veth: Ensure eth header is in skbs linear part
-Date:   Mon, 18 Apr 2022 14:13:00 +0200
-Message-Id: <20220418121134.379598277@linuxfoundation.org>
+Subject: [PATCH 5.4 16/63] drm/amd: Add USBC connector ID
+Date:   Mon, 18 Apr 2022 14:13:13 +0200
+Message-Id: <20220418121135.245990562@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -49,70 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Aurabindo Pillai <aurabindo.pillai@amd.com>
 
-[ Upstream commit 726e2c5929de841fdcef4e2bf995680688ae1b87 ]
+[ Upstream commit c5c948aa894a831f96fccd025e47186b1ee41615 ]
 
-After feeding a decapsulated packet to a veth device with act_mirred,
-skb_headlen() may be 0. But veth_xmit() calls __dev_forward_skb(),
-which expects at least ETH_HLEN byte of linear data (as
-__dev_forward_skb2() calls eth_type_trans(), which pulls ETH_HLEN bytes
-unconditionally).
+[Why&How] Add a dedicated AMDGPU specific ID for use with
+newer ASICs that support USB-C output
 
-Use pskb_may_pull() to ensure veth_xmit() respects this constraint.
-
-kernel BUG at include/linux/skbuff.h:2328!
-RIP: 0010:eth_type_trans+0xcf/0x140
-Call Trace:
- <IRQ>
- __dev_forward_skb2+0xe3/0x160
- veth_xmit+0x6e/0x250 [veth]
- dev_hard_start_xmit+0xc7/0x200
- __dev_queue_xmit+0x47f/0x520
- ? skb_ensure_writable+0x85/0xa0
- ? skb_mpls_pop+0x98/0x1c0
- tcf_mirred_act+0x442/0x47e [act_mirred]
- tcf_action_exec+0x86/0x140
- fl_classify+0x1d8/0x1e0 [cls_flower]
- ? dma_pte_clear_level+0x129/0x1a0
- ? dma_pte_clear_level+0x129/0x1a0
- ? prb_fill_curr_block+0x2f/0xc0
- ? skb_copy_bits+0x11a/0x220
- __tcf_classify+0x58/0x110
- tcf_classify_ingress+0x6b/0x140
- __netif_receive_skb_core.constprop.0+0x47d/0xfd0
- ? __iommu_dma_unmap_swiotlb+0x44/0x90
- __netif_receive_skb_one_core+0x3d/0xa0
- netif_receive_skb+0x116/0x170
- be_process_rx+0x22f/0x330 [be2net]
- be_poll+0x13c/0x370 [be2net]
- __napi_poll+0x2a/0x170
- net_rx_action+0x22f/0x2f0
- __do_softirq+0xca/0x2a8
- __irq_exit_rcu+0xc1/0xe0
- common_interrupt+0x83/0xa0
-
-Fixes: e314dbdc1c0d ("[NET]: Virtual ethernet device driver.")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/veth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/ObjectID.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 10a876f8831c..683425e3a353 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -245,7 +245,7 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/gpu/drm/amd/amdgpu/ObjectID.h b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
+index 5b393622f592..a0f0a17e224f 100644
+--- a/drivers/gpu/drm/amd/amdgpu/ObjectID.h
++++ b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
+@@ -119,6 +119,7 @@
+ #define CONNECTOR_OBJECT_ID_eDP                   0x14
+ #define CONNECTOR_OBJECT_ID_MXM                   0x15
+ #define CONNECTOR_OBJECT_ID_LVDS_eDP              0x16
++#define CONNECTOR_OBJECT_ID_USBC                  0x17
  
- 	rcu_read_lock();
- 	rcv = rcu_dereference(priv->peer);
--	if (unlikely(!rcv)) {
-+	if (unlikely(!rcv) || !pskb_may_pull(skb, ETH_HLEN)) {
- 		kfree_skb(skb);
- 		goto drop;
- 	}
+ /* deleted */
+ 
 -- 
 2.35.1
 
