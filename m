@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 544E3C35296
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C5DC35294
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344378AbiDROJz (ORCPT
+        id S1344262AbiDROJb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34946 "EHLO
+        Mon, 18 Apr 2022 10:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245260AbiDRNxJ (ORCPT
+        with ESMTP id S1343815AbiDRNy0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:53:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9E345AC0;
-        Mon, 18 Apr 2022 06:02:36 -0700 (PDT)
+        Mon, 18 Apr 2022 09:54:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2FB48887;
+        Mon, 18 Apr 2022 06:03:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B78560B70;
-        Mon, 18 Apr 2022 13:02:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22C71C385A7;
-        Mon, 18 Apr 2022 13:02:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4919C60B3C;
+        Mon, 18 Apr 2022 13:03:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40235C385AB;
+        Mon, 18 Apr 2022 13:03:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286955;
-        bh=Os+qxn1DhxDjshDTdAdlcK8Fy8Mz/bgvQq9b255khpM=;
+        s=korg; t=1650287019;
+        bh=pUGtlsi/3YpPfmSZEWEbmrqmUcAyVelXqsO2JwfRcZg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=preuBGKJ0mzjpeZSfevrIAMQ9hOReme5yy5Hjfr7Pa0v5wRVMYDXL+oA9UmpfIStP
-         UB7JcyMb2loV/TDGbeZw36jeAkq8jqubC1yV03pPUu1NLdLZgsbaLGNnV75I2aRBOJ
-         Fxj4vTuFpE42M+v2Zv+7kgN/bb+Q4mKijPbtruL8=
+        b=sBKKIyHUsAYIx0ZDvoaZQbW/XPfJM7C6beQG6Z+b5YoYB7uSzhWMuO4Z3hymsPcFK
+         KS6Ty5y1WyIksPtmSwxwps6VgJF4es5eMbGy/9u0fue9TPtgJ0Zaf+oBuaWJRDCwBh
+         ahoA2H1tS8GYPgumjQVFv9k+hp5g8P+/rg/vZApc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Jann Horn <jannh@google.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 4.9 014/218] ptrace: Check PTRACE_O_SUSPEND_SECCOMP permission on PTRACE_SEIZE
-Date:   Mon, 18 Apr 2022 14:11:20 +0200
-Message-Id: <20220418121159.422178664@linuxfoundation.org>
+        stable@vger.kernel.org, Colin Ian King <colin.i.king@gmail.com>,
+        Stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>
+Subject: [PATCH 4.9 032/218] carl9170: fix missing bit-wise or operator for tx_params
+Date:   Mon, 18 Apr 2022 14:11:38 +0200
+Message-Id: <20220418121200.329028354@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,105 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Colin Ian King <colin.i.king@gmail.com>
 
-commit ee1fee900537b5d9560e9f937402de5ddc8412f3 upstream.
+commit 02a95374b5eebdbd3b6413fd7ddec151d2ea75a1 upstream.
 
-Setting PTRACE_O_SUSPEND_SECCOMP is supposed to be a highly privileged
-operation because it allows the tracee to completely bypass all seccomp
-filters on kernels with CONFIG_CHECKPOINT_RESTORE=y. It is only supposed to
-be settable by a process with global CAP_SYS_ADMIN, and only if that
-process is not subject to any seccomp filters at all.
+Currently tx_params is being re-assigned with a new value and the
+previous setting IEEE80211_HT_MCS_TX_RX_DIFF is being overwritten.
+The assignment operator is incorrect, the original intent was to
+bit-wise or the value in. Fix this by replacing the = operator
+with |= instead.
 
-However, while these permission checks were done on the PTRACE_SETOPTIONS
-path, they were missing on the PTRACE_SEIZE path, which also sets
-user-specified ptrace flags.
+Kudos to Christian Lamparter for suggesting the correct fix.
 
-Move the permissions checks out into a helper function and let both
-ptrace_attach() and ptrace_setoptions() call it.
-
-Cc: stable@kernel.org
-Fixes: 13c4a90119d2 ("seccomp: add ptrace options for suspend/resume")
-Signed-off-by: Jann Horn <jannh@google.com>
-Link: https://lkml.kernel.org/r/20220319010838.1386861-1-jannh@google.com
-Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
+Fixes: fe8ee9ad80b2 ("carl9170: mac80211 glue and command interface")
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Cc: <Stable@vger.kernel.org>
+Acked-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220125004406.344422-1-colin.i.king@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/ptrace.c |   47 ++++++++++++++++++++++++++++++++---------------
- 1 file changed, 32 insertions(+), 15 deletions(-)
+ drivers/net/wireless/ath/carl9170/main.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/ptrace.c
-+++ b/kernel/ptrace.c
-@@ -371,6 +371,26 @@ bool ptrace_may_access(struct task_struc
- 	return !err;
- }
+--- a/drivers/net/wireless/ath/carl9170/main.c
++++ b/drivers/net/wireless/ath/carl9170/main.c
+@@ -1920,7 +1920,7 @@ static int carl9170_parse_eeprom(struct
+ 		WARN_ON(!(tx_streams >= 1 && tx_streams <=
+ 			IEEE80211_HT_MCS_TX_MAX_STREAMS));
  
-+static int check_ptrace_options(unsigned long data)
-+{
-+	if (data & ~(unsigned long)PTRACE_O_MASK)
-+		return -EINVAL;
-+
-+	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
-+		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
-+		    !IS_ENABLED(CONFIG_SECCOMP))
-+			return -EINVAL;
-+
-+		if (!capable(CAP_SYS_ADMIN))
-+			return -EPERM;
-+
-+		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
-+		    current->ptrace & PT_SUSPEND_SECCOMP)
-+			return -EPERM;
-+	}
-+	return 0;
-+}
-+
- static int ptrace_attach(struct task_struct *task, long request,
- 			 unsigned long addr,
- 			 unsigned long flags)
-@@ -382,8 +402,16 @@ static int ptrace_attach(struct task_str
- 	if (seize) {
- 		if (addr != 0)
- 			goto out;
-+		/*
-+		 * This duplicates the check in check_ptrace_options() because
-+		 * ptrace_attach() and ptrace_setoptions() have historically
-+		 * used different error codes for unknown ptrace options.
-+		 */
- 		if (flags & ~(unsigned long)PTRACE_O_MASK)
- 			goto out;
-+		retval = check_ptrace_options(flags);
-+		if (retval)
-+			return retval;
- 		flags = PT_PTRACED | PT_SEIZED | (flags << PT_OPT_FLAG_SHIFT);
- 	} else {
- 		flags = PT_PTRACED;
-@@ -656,22 +684,11 @@ int ptrace_writedata(struct task_struct
- static int ptrace_setoptions(struct task_struct *child, unsigned long data)
- {
- 	unsigned flags;
-+	int ret;
+-		tx_params = (tx_streams - 1) <<
++		tx_params |= (tx_streams - 1) <<
+ 			    IEEE80211_HT_MCS_TX_MAX_STREAMS_SHIFT;
  
--	if (data & ~(unsigned long)PTRACE_O_MASK)
--		return -EINVAL;
--
--	if (unlikely(data & PTRACE_O_SUSPEND_SECCOMP)) {
--		if (!IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) ||
--		    !IS_ENABLED(CONFIG_SECCOMP))
--			return -EINVAL;
--
--		if (!capable(CAP_SYS_ADMIN))
--			return -EPERM;
--
--		if (seccomp_mode(&current->seccomp) != SECCOMP_MODE_DISABLED ||
--		    current->ptrace & PT_SUSPEND_SECCOMP)
--			return -EPERM;
--	}
-+	ret = check_ptrace_options(data);
-+	if (ret)
-+		return ret;
- 
- 	/* Avoid intermediate state when all opts are cleared */
- 	flags = child->ptrace;
+ 		carl9170_band_2GHz.ht_cap.mcs.tx_params |= tx_params;
 
 
