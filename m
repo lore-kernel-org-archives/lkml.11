@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41822C352A7
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243311AbiDRNUS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:20:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59788 "EHLO
+        id S243573AbiDRNUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241030AbiDRNCf (ORCPT
+        with ESMTP id S241216AbiDRNCz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:02:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE178326F7;
-        Mon, 18 Apr 2022 05:42:34 -0700 (PDT)
+        Mon, 18 Apr 2022 09:02:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE30432EC9;
+        Mon, 18 Apr 2022 05:43:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4205B80EDB;
-        Mon, 18 Apr 2022 12:42:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6554C385A7;
-        Mon, 18 Apr 2022 12:42:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45DD96101A;
+        Mon, 18 Apr 2022 12:43:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52044C385A1;
+        Mon, 18 Apr 2022 12:43:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285752;
-        bh=xb0hS4BrdUP+xSIwy3hBDuYk5Yqiydpc9Eeeprbd1yE=;
+        s=korg; t=1650285780;
+        bh=pYN5YaqPMVrIYNkemgBBg6Hg5c93OoTRnwHTBkHfFdI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lh/r3Y/BjpzewcspVSycNOkfQJ0826VpjMkiZMFvrUKqkKqDpm4I/w2kYkdhSjAjs
-         Iu92u5WnRCda5ioi8fAP5PkZxoJAGMpMO9PqqlHjg+0C8x/emuJ6ePJJ0K97wuE0O4
-         53Rwcp0nM7qeQB1ES/0aWcwpFKZprMUA9yMC72N0=
+        b=stvaRkrki0/fU+ND/sedBQv43jsIWMkynl2ftq2HKUrBj+rfHR7oG8goAjb/F6S8S
+         VPNPdGLkB+dIdGm18nxdzDGlK82kob+/0h3Juee3UHUuiXxPiAEZceFpjJ1KxdG18y
+         xxADT4A06pf0Q6NSbXWsLfHGNzi9T7djYDB99/YM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        Benedikt Spranger <b.spranger@linutronix.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 13/63] testing/selftests/mqueue: Fix mq_perf_tests to free the allocated cpu set
-Date:   Mon, 18 Apr 2022 14:13:10 +0200
-Message-Id: <20220418121135.027937801@linuxfoundation.org>
+Subject: [PATCH 5.4 08/63] net/sched: taprio: Check if socket flags are valid
+Date:   Mon, 18 Apr 2022 14:13:05 +0200
+Message-Id: <20220418121134.709843105@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -50,102 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+From: Benedikt Spranger <b.spranger@linutronix.de>
 
-[ Upstream commit ce64763c63854b4079f2e036638aa881a1fb3fbc ]
+[ Upstream commit e8a64bbaaad1f6548cec5508297bc6d45e8ab69e ]
 
-The selftest "mqueue/mq_perf_tests.c" use CPU_ALLOC to allocate
-CPU set. This cpu set is used further in pthread_attr_setaffinity_np
-and by pthread_create in the code. But in current code, allocated
-cpu set is not freed.
+A user may set the SO_TXTIME socket option to ensure a packet is send
+at a given time. The taprio scheduler has to confirm, that it is allowed
+to send a packet at that given time, by a check against the packet time
+schedule. The scheduler drop the packet, if the gates are closed at the
+given send time.
 
-Fix this issue by adding CPU_FREE in the "shutdown" function which
-is called in most of the error/exit path for the cleanup. There are
-few error paths which exit without using shutdown. Add a common goto
-error path with CPU_FREE for these cases.
+The check, if SO_TXTIME is set, may fail since sk_flags are part of an
+union and the union is used otherwise. This happen, if a socket is not
+a full socket, like a request socket for example.
 
-Fixes: 7820b0715b6f ("tools/selftests: add mq_perf_tests")
-Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Add a check to verify, if the union is used for sk_flags.
+
+Fixes: 4cfd5779bd6e ("taprio: Add support for txtime-assist mode")
+Signed-off-by: Benedikt Spranger <b.spranger@linutronix.de>
+Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
+Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../testing/selftests/mqueue/mq_perf_tests.c  | 25 +++++++++++++------
- 1 file changed, 17 insertions(+), 8 deletions(-)
+ net/sched/sch_taprio.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/mqueue/mq_perf_tests.c b/tools/testing/selftests/mqueue/mq_perf_tests.c
-index b019e0b8221c..84fda3b49073 100644
---- a/tools/testing/selftests/mqueue/mq_perf_tests.c
-+++ b/tools/testing/selftests/mqueue/mq_perf_tests.c
-@@ -180,6 +180,9 @@ void shutdown(int exit_val, char *err_cause, int line_no)
- 	if (in_shutdown++)
- 		return;
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index b268e6130451..4c26f7fb32b3 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -427,7 +427,8 @@ static int taprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	if (unlikely(!child))
+ 		return qdisc_drop(skb, sch, to_free);
  
-+	/* Free the cpu_set allocated using CPU_ALLOC in main function */
-+	CPU_FREE(cpu_set);
-+
- 	for (i = 0; i < num_cpus_to_pin; i++)
- 		if (cpu_threads[i]) {
- 			pthread_kill(cpu_threads[i], SIGUSR1);
-@@ -551,6 +554,12 @@ int main(int argc, char *argv[])
- 		perror("sysconf(_SC_NPROCESSORS_ONLN)");
- 		exit(1);
- 	}
-+
-+	if (getuid() != 0)
-+		ksft_exit_skip("Not running as root, but almost all tests "
-+			"require root in order to modify\nsystem settings.  "
-+			"Exiting.\n");
-+
- 	cpus_online = min(MAX_CPUS, sysconf(_SC_NPROCESSORS_ONLN));
- 	cpu_set = CPU_ALLOC(cpus_online);
- 	if (cpu_set == NULL) {
-@@ -589,7 +598,7 @@ int main(int argc, char *argv[])
- 						cpu_set)) {
- 					fprintf(stderr, "Any given CPU may "
- 						"only be given once.\n");
--					exit(1);
-+					goto err_code;
- 				} else
- 					CPU_SET_S(cpus_to_pin[cpu],
- 						  cpu_set_size, cpu_set);
-@@ -607,7 +616,7 @@ int main(int argc, char *argv[])
- 				queue_path = malloc(strlen(option) + 2);
- 				if (!queue_path) {
- 					perror("malloc()");
--					exit(1);
-+					goto err_code;
- 				}
- 				queue_path[0] = '/';
- 				queue_path[1] = 0;
-@@ -622,17 +631,12 @@ int main(int argc, char *argv[])
- 		fprintf(stderr, "Must pass at least one CPU to continuous "
- 			"mode.\n");
- 		poptPrintUsage(popt_context, stderr, 0);
--		exit(1);
-+		goto err_code;
- 	} else if (!continuous_mode) {
- 		num_cpus_to_pin = 1;
- 		cpus_to_pin[0] = cpus_online - 1;
- 	}
- 
--	if (getuid() != 0)
--		ksft_exit_skip("Not running as root, but almost all tests "
--			"require root in order to modify\nsystem settings.  "
--			"Exiting.\n");
--
- 	max_msgs = fopen(MAX_MSGS, "r+");
- 	max_msgsize = fopen(MAX_MSGSIZE, "r+");
- 	if (!max_msgs)
-@@ -740,4 +744,9 @@ int main(int argc, char *argv[])
- 			sleep(1);
- 	}
- 	shutdown(0, "", 0);
-+
-+err_code:
-+	CPU_FREE(cpu_set);
-+	exit(1);
-+
- }
+-	if (skb->sk && sock_flag(skb->sk, SOCK_TXTIME)) {
++	/* sk_flags are only safe to use on full sockets. */
++	if (skb->sk && sk_fullsock(skb->sk) && sock_flag(skb->sk, SOCK_TXTIME)) {
+ 		if (!is_valid_interval(skb, sch))
+ 			return qdisc_drop(skb, sch, to_free);
+ 	} else if (TXTIME_ASSIST_IS_ENABLED(q->flags)) {
 -- 
 2.35.1
 
