@@ -2,129 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84174C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:13:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF84C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238056AbiDRMQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42950 "EHLO
+        id S238063AbiDRMRI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:17:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233086AbiDRMQI (ORCPT
+        with ESMTP id S231868AbiDRMRD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:16:08 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E15F1A82E
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:13:30 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 920A122175;
-        Mon, 18 Apr 2022 14:13:28 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1650284008;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sDTjYlCaBa9GLh++sa/WCQdXuUrcubJCdTwx3SdcA1Q=;
-        b=hzXAChF9N1ILebUw69v7FcCfSE9sAXERxDXW3a/CotuLCpZBsGXKG1XdWjLEjkWmngXnWn
-        gUazAnZpwYWZz0SfXIFiXCWZAbIDjBnh1xOoOE3zQl21SBxUiY9RKR1vj9Sd+tf27qs1U2
-        qgWiIvXubT6htCbhqMTTfZv3JAd4bBc=
+        Mon, 18 Apr 2022 08:17:03 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26DB61A82E;
+        Mon, 18 Apr 2022 05:14:22 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id c64so17219105edf.11;
+        Mon, 18 Apr 2022 05:14:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9Yi3JLK4e1JeX9Duse43qaRJcbvheP09jxiZrAgIDBU=;
+        b=DxLelIcLuvrBmf7L8udOP+AY3bWeeIv36zEOdsZuLI+OadRQs5Tj2cNMLfYjQabwPA
+         YL240QfjEFUTl4D1PGG3Nt7vYLxEZlrvgSl1R3KUVvXsOLzXLweH+1gjr9fPAHAbWV6p
+         X6QPcD5V0fGP1kEuqp8b2pnI4LKKRkTLOjfANG55K0CA33htMblD8hAyzXSxoepuRoWp
+         Oizl9sDGNVU/myD7YD9Ks5QeYeZtiQGQOPMjYDWHHhnA9BfumJMsob+KvM3mVq2VSnER
+         t3QbDq3FMzEQThxSnZKojKFHBo/DrQuRe9lW0xkHoz+xpkuHdI589Vh/HuRxEYdGk6bf
+         BPQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9Yi3JLK4e1JeX9Duse43qaRJcbvheP09jxiZrAgIDBU=;
+        b=e8X4Us+/Za9OxNlTw5zadBWh81gmC5p7Jke3wLxJ5IVJrdgNSNLk2cjxnkXGQMH4Gt
+         lIKikSumIWXsQJJX279p3ViUBImQ7Nx6pkM5nW54G/XJWw6qTKVnvYHCgt21W7F8Mlca
+         SiZlAEvAegqP15Lb915Re+oOAd5Oj/fOd2ug2dHb7Tg6mC7btqYETuTrnb7hguQTwBRf
+         /0qloluy4GGkUN0Q67nSmxE+fvtVApMa9BNNHVIVFXM5Upvr7fKZX97tt6RVzHkPyjHP
+         1sIMF/lAvWjNc51NMBiKrnfIc5qe3HKpwWIMoMH32wS6pBaSpzti8/825tTcG2yq/tm3
+         xEbw==
+X-Gm-Message-State: AOAM5303xGnRvCzqvZjF5qapTaY4swEOq++sVaQb0ETUTSL2uG97JXCT
+        rcyIEHoa9hTJC10QjbSs2ywla93almM5fUmhBrMj/GHfqJ9kzw==
+X-Google-Smtp-Source: ABdhPJw9OLFzWqDY5GO1qkj761DGYpTL/KDZbxcg1DmwEBkgenFKvVhRHy5LQTjCOPt3MrdJ9RmgO06nOEDblpXd9HE=
+X-Received: by 2002:a50:e696:0:b0:419:998d:5feb with SMTP id
+ z22-20020a50e696000000b00419998d5febmr12073094edm.122.1650284060716; Mon, 18
+ Apr 2022 05:14:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 18 Apr 2022 14:13:28 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC v1 2/2] mtd: spi-nor: expose internal parameters via
- debugfs
-In-Reply-To: <20220418121044.2825448-2-michael@walle.cc>
-References: <20220418121044.2825448-1-michael@walle.cc>
- <20220418121044.2825448-2-michael@walle.cc>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <fca7f401141caee41f574cdd0339a6e1@walle.cc>
-X-Sender: michael@walle.cc
+References: <alpine.DEB.2.21.2204161848030.9383@angie.orcam.me.uk> <alpine.DEB.2.21.2204162123320.9383@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2204162123320.9383@angie.orcam.me.uk>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 18 Apr 2022 15:13:44 +0300
+Message-ID: <CAHp75VdTzd56DzWsjf9GW3zfCtYh4ej3U6KTS7j3aXSVkWOOig@mail.gmail.com>
+Subject: Re: [PATCH v4 1/5] serial: 8250: Correct the clock for EndRun
+ PTP/1588 PCIe device
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-04-18 14:10, schrieb Michael Walle:
-> There is no way to gather all information to verify support for a new
-> flash chip. Also if you want to convert an existing flash chip to the
-> new SFDP parsing, there is not enough information to determine if the
-> flash will work like before. To ease this development, expose internal
-> parameters via the debugfs.
+On Mon, Apr 18, 2022 at 2:02 AM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
+>
+> The EndRun PTP/1588 dual serial port device is based on the Oxford
+> Semiconductor OXPCIe952 UART device with the PCI vendor:device ID set
+> for EndRun Technologies and is therefore driven by a fixed 62.5MHz clock
+> input derived from the 100MHz PCI Express clock.  The clock rate is
+> divided by the oversampling rate of 16 as it is supplied to the baud
+> rate generator, yielding the baud base of 3906250.
+>
+> Replace the incorrect baud base of 4000000 with the right value of
+> 3906250 then, complementing commit 6cbe45d8ac93 ("serial: 8250: Correct
+> the clock for OxSemi PCIe devices").
 
-Here's an example:
-# cat params
-name		w25q32dw
-id		ef6016
-size		4.00 MiB
-write size	1
-page size	256
-address width	3
-flags		HAS_SR_TB|HAS_LOCK|HAS_16BIT_SR|NO_READ_CR|SOFT_RESET
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-opcodes
-  read		3b
-   dummy cycles	8
-  erase		20
-  program	02
-  8D extension	none
+> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+> Fixes: 1bc8cde46a159 ("8250_pci: Added driver for Endrun Technologies PTP PCIe card.")
+> ---
+> New change in v4, factored out from 2/5.
+> ---
+>  drivers/tty/serial/8250/8250_pci.c |    8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> linux-serial-8250-endrun-pcie-clock.diff
+> Index: linux-macro/drivers/tty/serial/8250/8250_pci.c
+> ===================================================================
+> --- linux-macro.orig/drivers/tty/serial/8250/8250_pci.c
+> +++ linux-macro/drivers/tty/serial/8250/8250_pci.c
+> @@ -2667,7 +2667,7 @@ enum pci_board_num_t {
+>         pbn_panacom2,
+>         pbn_panacom4,
+>         pbn_plx_romulus,
+> -       pbn_endrun_2_4000000,
+> +       pbn_endrun_2_3906250,
+>         pbn_oxsemi,
+>         pbn_oxsemi_1_3906250,
+>         pbn_oxsemi_2_3906250,
+> @@ -3195,10 +3195,10 @@ static struct pciserial_board pci_boards
+>         * signal now many ports are available
+>         * 2 port 952 Uart support
+>         */
+> -       [pbn_endrun_2_4000000] = {
+> +       [pbn_endrun_2_3906250] = {
+>                 .flags          = FL_BASE0,
+>                 .num_ports      = 2,
+> -               .base_baud      = 4000000,
+> +               .base_baud      = 3906250,
+>                 .uart_offset    = 0x200,
+>                 .first_offset   = 0x1000,
+>         },
+> @@ -4128,7 +4128,7 @@ static const struct pci_device_id serial
+>         */
+>         {       PCI_VENDOR_ID_ENDRUN, PCI_DEVICE_ID_ENDRUN_1588,
+>                 PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+> -               pbn_endrun_2_4000000 },
+> +               pbn_endrun_2_3906250 },
+>         /*
+>          * Quatech cards. These actually have configurable clocks but for
+>          * now we just use the default.
 
-protocols
-  read		1S-1S-2S
-  write		1S-1S-1S
-  register	1S-1S-1S
 
-erase commands
-  20 (4.00 KiB) [1]
-  52 (32.0 KiB) [2]
-  d8 (64.0 KiB) [3]
-  c7 (4.00 MiB)
 
-sector map
-  region              | erase mask | flags
-  --------------------+------------+----------
-  00000000 - 003fffff |     [ 123] |
-
-# cat capabilities
-Supported read modes by the flash
-1S-1S-1S
-   opcode	03
-   mode cycles	00
-   dummy cycles	00
-1S-1S-1S (fast read)
-   opcode	0b
-   mode cycles	00
-   dummy cycles	08
-1S-1S-2S
-   opcode	3b
-   mode cycles	00
-   dummy cycles	08
-1S-2S-2S
-   opcode	bb
-   mode cycles	02
-   dummy cycles	02
-1S-1S-4S
-   opcode	6b
-   mode cycles	00
-   dummy cycles	08
-1S-4S-4S
-   opcode	eb
-   mode cycles	02
-   dummy cycles	04
-4S-4S-4S
-   opcode	eb
-   mode cycles	02
-   dummy cycles	00
-
-Supported page program modes by the flash
-1S-1S-1S
-   opcode	02
+-- 
+With Best Regards,
+Andy Shevchenko
