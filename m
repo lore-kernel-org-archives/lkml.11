@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B1AC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:56:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B65C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244535AbiDRN7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42300 "EHLO
+        id S244695AbiDRN73 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242707AbiDRNfk (ORCPT
+        with ESMTP id S244177AbiDRNjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:35:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC11F252B6;
-        Mon, 18 Apr 2022 05:58:08 -0700 (PDT)
+        Mon, 18 Apr 2022 09:39:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B856E2BB09;
+        Mon, 18 Apr 2022 05:58:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8DBF612DB;
-        Mon, 18 Apr 2022 12:58:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ECEAC385A1;
-        Mon, 18 Apr 2022 12:58:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4995C612D4;
+        Mon, 18 Apr 2022 12:58:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C067C385A1;
+        Mon, 18 Apr 2022 12:58:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286687;
-        bh=KILYHveAm1KA+QDA4KsMbD9x4kEXUusNdRBZBi+Vj3M=;
+        s=korg; t=1650286721;
+        bh=X/XV6dqIM01stGb6muJgsi2Mox5PAsrFHhzqwvCyAKg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P5rgXukKKlEDX3UDAhRmvwO4zBGlaJly6TETrfCj+Y2geOW3yDE5Tit2/0omke74q
-         9zw7jbn5Q3euL0+2Kfs0pQX0cuk+c11vpaRyOJNj3NkrMpEamI1F/CX3MOY7tIjBnZ
-         tTgRQQEe3lGbtHqvZY/tJUDPBXrjJ97BJyDbZ+DU=
+        b=M/gExmugfEFisi6REOZ5Mw7jS+Ei1r+A0Mr28ACE6Hq0yzhG+aDkf/Dwj4zLHRIrS
+         H7xe3x05kdDcsjeP81bEuZB1rYOd/boesVdwcEiMH9KciXRQgO5yBPa6FPeC0HROct
+         nwSxyqih4HNQvfSJxrIanJoXv3MuqVuo7Z7thTIA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 173/284] ASoC: soc-core: skip zero num_dai component in searching dai name
-Date:   Mon, 18 Apr 2022 14:12:34 +0200
-Message-Id: <20220418121216.661379213@linuxfoundation.org>
+Subject: [PATCH 4.14 225/284] xtensa: fix DTC warning unit_address_format
+Date:   Mon, 18 Apr 2022 14:13:26 +0200
+Message-Id: <20220418121218.109428757@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,47 +48,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Max Filippov <jcmvbkbc@gmail.com>
 
-[ Upstream commit f7d344a2bd5ec81fbd1ce76928fd059e57ec9bea ]
+[ Upstream commit e85d29ba4b24f68e7a78cb85c55e754362eeb2de ]
 
-In the case like dmaengine which's not a dai but as a component, the
-num_dai is zero, dmaengine component has the same component_of_node
-as cpu dai, when cpu dai component is not ready, but dmaengine component
-is ready, try to get cpu dai name, the snd_soc_get_dai_name() return
--EINVAL, not -EPROBE_DEFER, that cause below error:
+DTC issues the following warnings when building xtfpga device trees:
 
-asoc-simple-card <card name>: parse error -22
-asoc-simple-card: probe of <card name> failed with error -22
+ /soc/flash@00000000/partition@0x0: unit name should not have leading "0x"
+ /soc/flash@00000000/partition@0x6000000: unit name should not have leading "0x"
+ /soc/flash@00000000/partition@0x6800000: unit name should not have leading "0x"
+ /soc/flash@00000000/partition@0x7fe0000: unit name should not have leading "0x"
 
-The sound card failed to probe.
+Drop leading 0x from flash partition unit names.
 
-So this patch fixes the issue above by skipping the zero num_dai
-component in searching dai name.
-
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1644491952-7457-1-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi | 8 ++++----
+ arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi  | 8 ++++----
+ arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi   | 4 ++--
+ 3 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
-index 2a172de37466..febf2b649b96 100644
---- a/sound/soc/soc-core.c
-+++ b/sound/soc/soc-core.c
-@@ -4243,7 +4243,7 @@ int snd_soc_get_dai_name(struct of_phandle_args *args,
- 		if (!component_of_node && pos->dev->parent)
- 			component_of_node = pos->dev->parent->of_node;
- 
--		if (component_of_node != args->np)
-+		if (component_of_node != args->np || !pos->num_dai)
- 			continue;
- 
- 		if (pos->driver->of_xlate_dai_name) {
+diff --git a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
+index 9bf8bad1dd18..c33932568aa7 100644
+--- a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
++++ b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
+@@ -8,19 +8,19 @@
+ 			reg = <0x00000000 0x08000000>;
+ 			bank-width = <2>;
+ 			device-width = <2>;
+-			partition@0x0 {
++			partition@0 {
+ 				label = "data";
+ 				reg = <0x00000000 0x06000000>;
+ 			};
+-			partition@0x6000000 {
++			partition@6000000 {
+ 				label = "boot loader area";
+ 				reg = <0x06000000 0x00800000>;
+ 			};
+-			partition@0x6800000 {
++			partition@6800000 {
+ 				label = "kernel image";
+ 				reg = <0x06800000 0x017e0000>;
+ 			};
+-			partition@0x7fe0000 {
++			partition@7fe0000 {
+ 				label = "boot environment";
+ 				reg = <0x07fe0000 0x00020000>;
+ 			};
+diff --git a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
+index 40c2f81f7cb6..7bde2ab2d6fb 100644
+--- a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
++++ b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
+@@ -8,19 +8,19 @@
+ 			reg = <0x08000000 0x01000000>;
+ 			bank-width = <2>;
+ 			device-width = <2>;
+-			partition@0x0 {
++			partition@0 {
+ 				label = "boot loader area";
+ 				reg = <0x00000000 0x00400000>;
+ 			};
+-			partition@0x400000 {
++			partition@400000 {
+ 				label = "kernel image";
+ 				reg = <0x00400000 0x00600000>;
+ 			};
+-			partition@0xa00000 {
++			partition@a00000 {
+ 				label = "data";
+ 				reg = <0x00a00000 0x005e0000>;
+ 			};
+-			partition@0xfe0000 {
++			partition@fe0000 {
+ 				label = "boot environment";
+ 				reg = <0x00fe0000 0x00020000>;
+ 			};
+diff --git a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
+index fb8d3a9f33c2..0655b868749a 100644
+--- a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
++++ b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
+@@ -8,11 +8,11 @@
+ 			reg = <0x08000000 0x00400000>;
+ 			bank-width = <2>;
+ 			device-width = <2>;
+-			partition@0x0 {
++			partition@0 {
+ 				label = "boot loader area";
+ 				reg = <0x00000000 0x003f0000>;
+ 			};
+-			partition@0x3f0000 {
++			partition@3f0000 {
+ 				label = "boot environment";
+ 				reg = <0x003f0000 0x00010000>;
+ 			};
 -- 
-2.34.1
+2.35.1
 
 
 
