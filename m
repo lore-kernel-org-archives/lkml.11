@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B908FC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F338BC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343760AbiDROIO (ORCPT
+        id S1343818AbiDROI3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:08:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57298 "EHLO
+        Mon, 18 Apr 2022 10:08:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245048AbiDRNvn (ORCPT
+        with ESMTP id S245244AbiDRNxJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:51:43 -0400
+        Mon, 18 Apr 2022 09:53:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9395C45508;
-        Mon, 18 Apr 2022 06:02:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B640457AC;
+        Mon, 18 Apr 2022 06:02:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08780B80D9C;
-        Mon, 18 Apr 2022 13:02:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64639C385A7;
-        Mon, 18 Apr 2022 13:02:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF401B80EBA;
+        Mon, 18 Apr 2022 13:02:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13455C385A1;
+        Mon, 18 Apr 2022 13:02:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286939;
-        bh=4hh+LoM8/WDaQLd5hhkQVmlbmtA1OtqASP6tgTYUp3A=;
+        s=korg; t=1650286952;
+        bh=Hi+qGAM0+K6aRhN2ffkWQJ1vVgUzo9g09tmdPd5/DCc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y+c+PhBC6AvbiYgBykSvR8ZslNIby3Gn8PJsfeffVPIU7CA/oYGZhHvsNQ7W3bwpO
-         GpICV29HKajjvilap7rmwu0jT4zP7bvVuYnh2I32GGCUGXuBQH4ndXrE1uQ1dfyeuh
-         DAkhP4uwb2rNRk0vmdLo4p6rXvSncVfNC9MstcN8=
+        b=cOsuXgiUj41zg/jb7FsqneN2hgTUMQBrTDLyQkshNcy/JOfN3I0h6lXaQ09t27MXD
+         Rj9DtnoNbc7XHX5/O8k8QS3FHhu+DVG3JYDLw5pMoa6S7GQqOJUTWhYeiqabjLq2k/
+         +CWQ2FSvRP9HuV8PS5PawsKG7LPG5UsqVem4+eFU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eddie James <eajames@linux.ibm.com>,
-        Joel Stanley <joel@jms.id.au>, Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.9 001/218] USB: serial: pl2303: add IBM device IDs
-Date:   Mon, 18 Apr 2022 14:11:07 +0200
-Message-Id: <20220418121158.720250088@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH 4.9 013/218] clk: uniphier: Fix fixed-rate initialization
+Date:   Mon, 18 Apr 2022 14:11:19 +0200
+Message-Id: <20220418121159.373216134@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,47 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eddie James <eajames@linux.ibm.com>
+From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 
-commit e1d15646565b284e9ef2433234d6cfdaf66695f1 upstream.
+commit ca85a66710a8a1f6b0719397225c3e9ee0abb692 upstream.
 
-IBM manufactures a PL2303 device for UPS communications. Add the vendor
-and product IDs so that the PL2303 driver binds to the device.
+Fixed-rate clocks in UniPhier don't have any parent clocks, however,
+initial data "init.flags" isn't initialized, so it might be determined
+that there is a parent clock for fixed-rate clock.
 
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220301224446.21236-1-eajames@linux.ibm.com
-Cc: stable@vger.kernel.org
-[ johan: amend the SoB chain ]
-Signed-off-by: Johan Hovold <johan@kernel.org>
+This sets init.flags to zero as initialization.
+
+Cc: <stable@vger.kernel.org>
+Fixes: 734d82f4a678 ("clk: uniphier: add core support code for UniPhier clock driver")
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Link: https://lore.kernel.org/r/1646808918-30899-1-git-send-email-hayashi.kunihiko@socionext.com
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/pl2303.c |    1 +
- drivers/usb/serial/pl2303.h |    3 +++
- 2 files changed, 4 insertions(+)
+ drivers/clk/uniphier/clk-uniphier-fixed-rate.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/serial/pl2303.c
-+++ b/drivers/usb/serial/pl2303.c
-@@ -105,6 +105,7 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(ADLINK_VENDOR_ID, ADLINK_ND6530GC_PRODUCT_ID) },
- 	{ USB_DEVICE(SMART_VENDOR_ID, SMART_PRODUCT_ID) },
- 	{ USB_DEVICE(AT_VENDOR_ID, AT_VTKIT3_PRODUCT_ID) },
-+	{ USB_DEVICE(IBM_VENDOR_ID, IBM_PRODUCT_ID) },
- 	{ }					/* Terminating entry */
- };
+--- a/drivers/clk/uniphier/clk-uniphier-fixed-rate.c
++++ b/drivers/clk/uniphier/clk-uniphier-fixed-rate.c
+@@ -33,6 +33,7 @@ struct clk_hw *uniphier_clk_register_fix
  
---- a/drivers/usb/serial/pl2303.h
-+++ b/drivers/usb/serial/pl2303.h
-@@ -33,6 +33,9 @@
- #define ATEN_PRODUCT_UC485	0x2021
- #define ATEN_PRODUCT_ID2	0x2118
+ 	init.name = name;
+ 	init.ops = &clk_fixed_rate_ops;
++	init.flags = 0;
+ 	init.parent_names = NULL;
+ 	init.num_parents = 0;
  
-+#define IBM_VENDOR_ID		0x04b3
-+#define IBM_PRODUCT_ID		0x4016
-+
- #define IODATA_VENDOR_ID	0x04bb
- #define IODATA_PRODUCT_ID	0x0a03
- #define IODATA_PRODUCT_ID_RSAQ5	0x0a0e
 
 
