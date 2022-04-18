@@ -2,96 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 751F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:02:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0694C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:02:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240702AbiDRNFX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:05:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42304 "EHLO
+        id S241027AbiDRNF2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240265AbiDRMzJ (ORCPT
+        with ESMTP id S240310AbiDRMzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:55:09 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D74A6558
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:36:20 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id g18so26571427ejc.10
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:36:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=KIwsXQoVYuaJT+XhBvopyVp04YidsTycNWZlsexYoV8=;
-        b=TDZPLnwCwj43QLyh01A29lvHe9rB0Yzy9mqnx7koLAdQ2GcZz1hXFcZe9lQ77HpV6p
-         VuvSPHruw/fsTjhhmVnE+15WnETzgfSkF56IFI/nlaffQzJqcuOVoyHHtq3jAI6jRtmR
-         bHqAoIR1KdYspNc1vE5hbtev2jK4G0rWGTUB1QYGxcU0VMOnrckaOimd9YE90mDRggVw
-         sFaoz9Ls73gPsMBAZK3/phasY95gnv0EBMQcrmppO7Uf/zN7n/g3ondTXXj1Q+Bb9nMK
-         p4e1c/5KqMmMr7cAYg21hZYR0TG6BHuswrce9gd3bkVuRV1Y8kmJBJr5/DKo3CWQNze9
-         Plww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KIwsXQoVYuaJT+XhBvopyVp04YidsTycNWZlsexYoV8=;
-        b=vRsYBHSKFy0P+ApDm97f+zQUpsBijYdFXlsWvuI+rLxtXi2tPhIeGfQRRDbLKZr7Du
-         u6HC/aBT86kZ56Nto9ovloPdE6eSsB9KeUZbOQEqx6rUjeUIu88pYu6TI/YCBcz3WsQM
-         BXlx8RQ/l2MAHWaFiGVW+4P4wOOS8eTCLSfOUNwW3DcfhSrBfJwvkjU8sTpHFEKKtYgP
-         8EEk1HXR+TRXC6sbWtq9w3X5WL+G+CSuXEl5IzZvRtTPslgmMbGmIaVB768U/OnS5U9h
-         k/GnNAwdooLPzyXe9E7/12WL9K1UGIfapWm7874o7dKx7BQE8+BWfi5up6YNmgyNjYyL
-         xcfg==
-X-Gm-Message-State: AOAM531Suu6BP5VHGinFvhPUBrxU4CMdPLIcfQE9MG63288EAFu/dREQ
-        MCEAbWoVdH8dO8Svl32rz4AMxA==
-X-Google-Smtp-Source: ABdhPJylYq9wtloVACt/9TIMLxl8PbADYHU7rrVgCfap+famI3Nog+m29OKqmQCeEkz5lghiq46Tug==
-X-Received: by 2002:a17:907:2d90:b0:6e8:720c:d8e1 with SMTP id gt16-20020a1709072d9000b006e8720cd8e1mr8882601ejc.514.1650285378686;
-        Mon, 18 Apr 2022 05:36:18 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id a18-20020a170906671200b006e05929e66csm4539348ejp.20.2022.04.18.05.36.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 05:36:18 -0700 (PDT)
-Message-ID: <2b0f8488-0fe2-80e8-1b49-a3eadbc8dad3@linaro.org>
-Date:   Mon, 18 Apr 2022 14:36:17 +0200
+        Mon, 18 Apr 2022 08:55:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8417655;
+        Mon, 18 Apr 2022 05:36:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5CF69B80EC4;
+        Mon, 18 Apr 2022 12:36:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2B9FC385A1;
+        Mon, 18 Apr 2022 12:36:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650285384;
+        bh=X0t+T/PV6H7afRr7VxLAQykE69EkNrL4/q4ZlSkuoE4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ec5LpsY0Y4eCY89WvJb9JgOIj/XnKZhuxUDmSO3+LSO7UmbWR5ZQx1AnXDCz0djek
+         vHzdLZrbMT+cmRhnWKqn2E1sm+/aE9qkpL91Opj8+tdyj98/Musg7cb3EyJ/R9Ro9u
+         2meltaV4Q1xoqDUfSIVct7V2m3Xmg7/CLi9d52+k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Sven Peter <sven@svenpeter.dev>, Wolfram Sang <wsa@kernel.org>
+Subject: [PATCH 5.15 173/189] i2c: pasemi: Wait for write xfers to finish
+Date:   Mon, 18 Apr 2022 14:13:13 +0200
+Message-Id: <20220418121207.732245569@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
+References: <20220418121200.312988959@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 09/23] ARM: dts: qcom-msm8974-fp2: Use &labels
-Content-Language: en-US
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220415115633.575010-1-konrad.dybcio@somainline.org>
- <20220415115633.575010-10-konrad.dybcio@somainline.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220415115633.575010-10-konrad.dybcio@somainline.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/04/2022 13:56, Konrad Dybcio wrote:
-> Use &labels to align with the style used in new DTS and apply tiny
-> style fixes.
-> 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> ---
->  .../boot/dts/qcom-msm8974-fairphone-fp2.dts   | 579 +++++++++---------
->  arch/arm/boot/dts/qcom-msm8974.dtsi           |   2 +-
->  2 files changed, 277 insertions(+), 304 deletions(-)
-> 
+From: Martin Povišer <povik+lin@cutebit.org>
 
-Unfortunately you duplicated quite a lot of work :(
+commit bd8963e602c77adc76dbbbfc3417c3cf14fed76b upstream.
 
-https://lore.kernel.org/all/20220401201035.189106-7-krzysztof.kozlowski@linaro.org/
+Wait for completion of write transfers before returning from the driver.
+At first sight it may seem advantageous to leave write transfers queued
+for the controller to carry out on its own time, but there's a couple of
+issues with it:
+
+ * Driver doesn't check for FIFO space.
+
+ * The queued writes can complete while the driver is in its I2C read
+   transfer path which means it will get confused by the raising of
+   XEN (the 'transaction ended' signal). This can cause a spurious
+   ENODATA error due to premature reading of the MRXFIFO register.
+
+Adding the wait fixes some unreliability issues with the driver. There's
+some efficiency cost to it (especially with pasemi_smb_waitready doing
+its polling), but that will be alleviated once the driver receives
+interrupt support.
+
+Fixes: beb58aa39e6e ("i2c: PA Semi SMBus driver")
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+Reviewed-by: Sven Peter <sven@svenpeter.dev>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/i2c/busses/i2c-pasemi.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+--- a/drivers/i2c/busses/i2c-pasemi.c
++++ b/drivers/i2c/busses/i2c-pasemi.c
+@@ -137,6 +137,12 @@ static int pasemi_i2c_xfer_msg(struct i2
+ 
+ 		TXFIFO_WR(smbus, msg->buf[msg->len-1] |
+ 			  (stop ? MTXFIFO_STOP : 0));
++
++		if (stop) {
++			err = pasemi_smb_waitready(smbus);
++			if (err)
++				goto reset_out;
++		}
+ 	}
+ 
+ 	return 0;
 
 
-Best regards,
-Krzysztof
