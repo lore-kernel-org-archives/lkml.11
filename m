@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8725C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7358C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236156AbiDRMeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38626 "EHLO
+        id S236385AbiDRMeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:34:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240109AbiDRM3U (ORCPT
+        with ESMTP id S238972AbiDRM1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:29:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1816237D9;
-        Mon, 18 Apr 2022 05:23:16 -0700 (PDT)
+        Mon, 18 Apr 2022 08:27:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A881D0CB;
+        Mon, 18 Apr 2022 05:21:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75DDAB80EC1;
-        Mon, 18 Apr 2022 12:23:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1B24C385A1;
-        Mon, 18 Apr 2022 12:23:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9C7CB80EDB;
+        Mon, 18 Apr 2022 12:20:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2086CC385A8;
+        Mon, 18 Apr 2022 12:20:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284594;
-        bh=6FfosFgPnqCO8t6F3ne4p9X9Bvqf9hbtPexi0zCsIbQ=;
+        s=korg; t=1650284458;
+        bh=wcPlPnh2qViyo5jp28WdnDo3WOOO2Zu7J2KmS57eJt0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d797JT7akxCGjuW4jl9FDOezag9BJousAh96g8tAOXokPtfHs8pACz8Hkb1GbI2Ii
-         dGT/qx1sHRFNhdqzIRPFQFr4OWouVqhmtI60eUeoTbzXjM8T6PEZvdlCk16bzjusq4
-         8YZ1YvV+gJwIPjOKMD9GcNMwSplwfjRtxWtPL8YE=
+        b=n/8ZTNxuc71KzKRGtdorkfs+7NSBQbrZp8ByxSNHb9fKK3rEcSDBAEwjGjEBx9yFh
+         gRCruPtnD3CWZx/Y5h/HfykqD5bPNyjzyCDhsQGgbjt3WxXZaeCI0VHuo1VxYkkLdX
+         6siLUh5bD88uYbEGJj/0AIIpXUl5iBVrYkjzHc2o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, George Shen <George.Shen@amd.com>,
-        Alex Hung <alex.hung@amd.com>,
-        Martin Leung <Martin.Leung@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 164/219] drm/amd/display: Revert FEC check in validation
-Date:   Mon, 18 Apr 2022 14:12:13 +0200
-Message-Id: <20220418121211.474037565@linuxfoundation.org>
+Subject: [PATCH 5.17 104/219] net: lan966x: Fix when a ports upper is changed.
+Date:   Mon, 18 Apr 2022 14:11:13 +0200
+Message-Id: <20220418121209.804793703@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -52,38 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Leung <Martin.Leung@amd.com>
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-[ Upstream commit b2075fce104b88b789c15ef1ed2b91dc94198e26 ]
+[ Upstream commit d7a947d289dc205fc717c004dcebe33b15305afd ]
 
-why and how:
-causes failure on install on certain machines
+On lan966x it is not allowed to have foreign interfaces under a bridge
+which already contains lan966x ports. So when a port leaves the bridge
+it would call switchdev_bridge_port_unoffload which eventually will
+notify the other ports that bridge left the vlan group but that is not
+true because the bridge is still part of the vlan group.
 
-Reviewed-by: George Shen <George.Shen@amd.com>
-Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Martin Leung <Martin.Leung@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Therefore when a port leaves the bridge, stop generating replays because
+already the HW cleared after itself and the other ports don't need to do
+anything else.
+
+Fixes: cf2f60897e921e ("net: lan966x: Add support to offload the forwarding.")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
-index 78e17a4af4ab..62bc6ce88753 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
-@@ -1495,10 +1495,6 @@ bool dc_validate_seamless_boot_timing(const struct dc *dc,
- 	if (!link->link_enc->funcs->is_dig_enabled(link->link_enc))
- 		return false;
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+index 7de55f6a4da8..3c987fd6b9e2 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+@@ -261,8 +261,7 @@ static int lan966x_port_prechangeupper(struct net_device *dev,
  
--	/* Check for FEC status*/
--	if (link->link_enc->funcs->fec_is_active(link->link_enc))
--		return false;
--
- 	enc_inst = link->link_enc->funcs->get_dig_frontend(link->link_enc);
+ 	if (netif_is_bridge_master(info->upper_dev) && !info->linking)
+ 		switchdev_bridge_port_unoffload(port->dev, port,
+-						&lan966x_switchdev_nb,
+-						&lan966x_switchdev_blocking_nb);
++						NULL, NULL);
  
- 	if (enc_inst == ENGINE_ID_UNKNOWN)
+ 	return NOTIFY_DONE;
+ }
 -- 
 2.35.1
 
