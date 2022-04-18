@@ -2,40 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4793CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB86C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240444AbiDRMzp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:55:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38308 "EHLO
+        id S240118AbiDRMzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:55:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235464AbiDRMhP (ORCPT
+        with ESMTP id S237951AbiDRMlZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:37:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D299522506;
-        Mon, 18 Apr 2022 05:27:48 -0700 (PDT)
+        Mon, 18 Apr 2022 08:41:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AAB12019D;
+        Mon, 18 Apr 2022 05:32:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0909DCE1077;
-        Mon, 18 Apr 2022 12:27:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC0DDC385A1;
-        Mon, 18 Apr 2022 12:27:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2C4861115;
+        Mon, 18 Apr 2022 12:32:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B7E1C385A1;
+        Mon, 18 Apr 2022 12:32:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284865;
-        bh=4EBvZeOEAhDiqOHBsMJfdmp2KwC38WvlYt5u7dLpZm4=;
+        s=korg; t=1650285125;
+        bh=DDpiuvyZPMOVx2gNhL7oXsN4aLctbYZMvh6l2bO/8k4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fG0dm+kPfQatjEsLZOHK+xTnVggt7UV72x8o/q34yzb1HXFoW0tSVC5kXn1u/iTJS
-         PrKQO9WxQmcDG9bWq/Ie2UYS+LRpFVsqw6r5D6CrO1HjuCQK0AUqGKR2ViJRIBpUqI
-         7DvW/uzqhCYWm06hEBa6NtgudypWRF5GlmpP/Bek=
+        b=DgkaOx6fLpbS6JaeZxMEBl8A/5nztGY8HR+kyoDeuTPg493y4Fyvijd57p2ttozin
+         h/Ihi4dsaGykelXPqx3jbp32cZ3OeJ3GUWdOcNNOCttOO5Y+cqkvbn2L3ABuUy+Vzo
+         Kj5e4LpY4AB9PyRKIGJGfy0Pxlt0u+n3b/H7Iwog=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 032/189] ALSA: ens137x: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:10:52 +0200
-Message-Id: <20220418121201.426981923@linuxfoundation.org>
+        stable@vger.kernel.org, Anthony Koo <Anthony.Koo@amd.com>,
+        Alex Hung <alex.hung@amd.com>,
+        Chiawen Huang <chiawen.huang@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 111/189] drm/amd/display: FEC check in timing validation
+Date:   Mon, 18 Apr 2022 14:12:11 +0200
+Message-Id: <20220418121203.650886422@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -47,58 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Chiawen Huang <chiawen.huang@amd.com>
 
-commit c2dc46932d117a1505f589ad1db3095aa6789058 upstream.
+[ Upstream commit 7d56a154e22ffb3613fdebf83ec34d5225a22993 ]
 
-The previous cleanup with devres may lead to the incorrect release
-orders at the probe error handling due to the devres's nature.  Until
-we register the card, snd_card_free() has to be called at first for
-releasing the stuff properly when the driver tries to manage and
-release the stuff via card->private_free().
+[Why]
+disable/enable leads FEC mismatch between hw/sw FEC state.
 
-This patch fixes it by calling snd_card_free() on the error from the
-probe callback using a new helper function.
+[How]
+check FEC status to fastboot on/off.
 
-Fixes: 10ed6eaf9d72 ("ALSA: ens137x: Allocate resources with device-managed APIs")
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-14-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Chiawen Huang <chiawen.huang@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/ens1370.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/dc/core/dc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/sound/pci/ens1370.c b/sound/pci/ens1370.c
-index 2651f0c64c06..94efe347a97a 100644
---- a/sound/pci/ens1370.c
-+++ b/sound/pci/ens1370.c
-@@ -2304,8 +2304,8 @@ static irqreturn_t snd_audiopci_interrupt(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
+index b37c4d2e7a1e..35a27fe48f66 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
+@@ -1377,6 +1377,10 @@ bool dc_validate_seamless_boot_timing(const struct dc *dc,
+ 	if (!link->link_enc->funcs->is_dig_enabled(link->link_enc))
+ 		return false;
  
--static int snd_audiopci_probe(struct pci_dev *pci,
--			      const struct pci_device_id *pci_id)
-+static int __snd_audiopci_probe(struct pci_dev *pci,
-+				const struct pci_device_id *pci_id)
- {
- 	static int dev;
- 	struct snd_card *card;
-@@ -2369,6 +2369,12 @@ static int snd_audiopci_probe(struct pci_dev *pci,
- 	return 0;
- }
- 
-+static int snd_audiopci_probe(struct pci_dev *pci,
-+			      const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_audiopci_probe(pci, pci_id));
-+}
++	/* Check for FEC status*/
++	if (link->link_enc->funcs->fec_is_active(link->link_enc))
++		return false;
 +
- static struct pci_driver ens137x_driver = {
- 	.name = KBUILD_MODNAME,
- 	.id_table = snd_audiopci_ids,
+ 	enc_inst = link->link_enc->funcs->get_dig_frontend(link->link_enc);
+ 
+ 	if (enc_inst == ENGINE_ID_UNKNOWN)
 -- 
-2.35.2
+2.35.1
 
 
 
