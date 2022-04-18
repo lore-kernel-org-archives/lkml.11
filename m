@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E76C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8773CC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242866AbiDRNJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:09:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
+        id S242983AbiDRNJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:09:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240920AbiDRM6E (ORCPT
+        with ESMTP id S241063AbiDRM6U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:58:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3AE624584;
-        Mon, 18 Apr 2022 05:38:22 -0700 (PDT)
+        Mon, 18 Apr 2022 08:58:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1DA24BE9;
+        Mon, 18 Apr 2022 05:38:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 516EE60FB6;
-        Mon, 18 Apr 2022 12:38:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59237C385A1;
-        Mon, 18 Apr 2022 12:38:21 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A4984CE10A1;
+        Mon, 18 Apr 2022 12:38:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 985B3C385A1;
+        Mon, 18 Apr 2022 12:38:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285501;
-        bh=LPhHKOINSstWKQi+2gwthSkdUK3cVynKL2KKJd2TJDg=;
+        s=korg; t=1650285512;
+        bh=OVLTAbOrvMnEDfWeixHUkUQ3+om6Pi0e+oQHgaH7RC4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PagOwU5RS5DMAPfwhAis63yCw2fKsIJl1dqVRHmrC239M9+6Aj4VAf2AA0vMvUjtU
-         CioY2t5EFw4Ry8EzpbCYZlKOYMtY66VNBiFhCSYvXbW+cMAED2XcaG51th8iZ5WePA
-         2WB6dMu2/anKiWaSkluCMHhRo/Je5RSBCnh3efwM=
+        b=ql07T+5Ikd27H2rtKLvPyqPKshEynuhzlGrt7t0xrvBycC6bVjWdEfnhzYnceWhx3
+         axK8SYP4oIkTFP1S7ATxgk9W30htAK3Pe88TkmBCgz6ubWM0ZtG7yqoea0vudcYQzi
+         dt+CiZn0SaFWRJCIJn1MW+c8ySMG7Y05d6HByQ1c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Khazhismel Kumykov <khazhy@google.com>,
+        Mike Snitzer <snitzer@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 037/105] perf tools: Fix misleading add event PMU debug message
-Date:   Mon, 18 Apr 2022 14:12:39 +0200
-Message-Id: <20220418121147.514584230@linuxfoundation.org>
+Subject: [PATCH 5.10 040/105] dm mpath: only use ktime_get_ns() in historical selector
+Date:   Mon, 18 Apr 2022 14:12:42 +0200
+Message-Id: <20220418121147.616159582@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -50,58 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Khazhismel Kumykov <khazhy@google.com>
 
-[ Upstream commit f034fc50d3c7d9385c20d505ab4cf56b8fd18ac7 ]
+[ Upstream commit ce40426fdc3c92acdba6b5ca74bc7277ffaa6a3d ]
 
-Fix incorrect debug message:
+Mixing sched_clock() and ktime_get_ns() usage will give bad results.
 
-   Attempting to add event pmu 'intel_pt' with '' that may result in
-   non-fatal errors
+Switch hst_select_path() from using sched_clock() to ktime_get_ns().
+Also rename path_service_time()'s 'sched_now' variable to 'now'.
 
-which always appears with perf record -vv and intel_pt e.g.
-
-    perf record -vv -e intel_pt//u uname
-
-The message is incorrect because there will never be non-fatal errors.
-
-Suppress the message if the PMU is 'selectable' i.e. meant to be
-selected directly as an event.
-
-Fixes: 4ac22b484d4c79e8 ("perf parse-events: Make add PMU verbose output clearer")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Link: http://lore.kernel.org/lkml/20220411061758.2458417-1-adrian.hunter@intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 2613eab11996 ("dm mpath: add Historical Service Time Path Selector")
+Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/parse-events.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/md/dm-historical-service-time.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index 3b273580fb84..3a0a7930cd10 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -1442,7 +1442,9 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
- 	bool use_uncore_alias;
- 	LIST_HEAD(config_terms);
+diff --git a/drivers/md/dm-historical-service-time.c b/drivers/md/dm-historical-service-time.c
+index 186f91e2752c..06fe43c13ba3 100644
+--- a/drivers/md/dm-historical-service-time.c
++++ b/drivers/md/dm-historical-service-time.c
+@@ -429,7 +429,7 @@ static struct dm_path *hst_select_path(struct path_selector *ps,
+ {
+ 	struct selector *s = ps->context;
+ 	struct path_info *pi = NULL, *best = NULL;
+-	u64 time_now = sched_clock();
++	u64 time_now = ktime_get_ns();
+ 	struct dm_path *ret = NULL;
+ 	unsigned long flags;
  
--	if (verbose > 1) {
-+	pmu = parse_state->fake_pmu ?: perf_pmu__find(name);
-+
-+	if (verbose > 1 && !(pmu && pmu->selectable)) {
- 		fprintf(stderr, "Attempting to add event pmu '%s' with '",
- 			name);
- 		if (head_config) {
-@@ -1455,7 +1457,6 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
- 		fprintf(stderr, "' that may result in non-fatal errors\n");
- 	}
+@@ -470,7 +470,7 @@ static int hst_start_io(struct path_selector *ps, struct dm_path *path,
  
--	pmu = parse_state->fake_pmu ?: perf_pmu__find(name);
- 	if (!pmu) {
- 		char *err_str;
+ static u64 path_service_time(struct path_info *pi, u64 start_time)
+ {
+-	u64 sched_now = ktime_get_ns();
++	u64 now = ktime_get_ns();
  
+ 	/* if a previous disk request has finished after this IO was
+ 	 * sent to the hardware, pretend the submission happened
+@@ -479,11 +479,11 @@ static u64 path_service_time(struct path_info *pi, u64 start_time)
+ 	if (time_after64(pi->last_finish, start_time))
+ 		start_time = pi->last_finish;
+ 
+-	pi->last_finish = sched_now;
+-	if (time_before64(sched_now, start_time))
++	pi->last_finish = now;
++	if (time_before64(now, start_time))
+ 		return 0;
+ 
+-	return sched_now - start_time;
++	return now - start_time;
+ }
+ 
+ static int hst_end_io(struct path_selector *ps, struct dm_path *path,
 -- 
 2.35.1
 
