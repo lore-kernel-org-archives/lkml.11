@@ -2,134 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B068C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:31:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 002FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:31:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239618AbiDRMdR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38218 "EHLO
+        id S238970AbiDRMd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:33:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239853AbiDRM3F (ORCPT
+        with ESMTP id S240043AbiDRM3P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:29:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F92B22532;
-        Mon, 18 Apr 2022 05:22:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26613B80EC4;
-        Mon, 18 Apr 2022 12:22:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 547D2C385A1;
-        Mon, 18 Apr 2022 12:22:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284561;
-        bh=WX8SUB5uw2THr7n8LMX3BwGIz8LUCa60mm8HUIvICWk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yxlSt9bEhoDx1a0rGfNM0EkTGvj9AdedH8zpTxrIKzBHfou4ScV/Wh7u6xMrfDXCt
-         jy6beV4TGrNIem1OZFRMyATef8gplRXR/AWGdCauOpkcJApHIlUbBfd5JYJiQO+0bs
-         /lM4PEbiVVBTDj/cPnO1U9iZTSqC0qBXXUPkD/Wg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 155/219] arm64: alternatives: mark patch_alternative() as `noinstr`
-Date:   Mon, 18 Apr 2022 14:12:04 +0200
-Message-Id: <20220418121211.223981719@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
-References: <20220418121203.462784814@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 18 Apr 2022 08:29:15 -0400
+X-Greylist: delayed 344 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Apr 2022 05:23:07 PDT
+Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECDA20BD2
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:23:07 -0700 (PDT)
+Received: from submission (posteo.de [185.67.36.169]) 
+        by mout01.posteo.de (Postfix) with ESMTPS id A1393240028
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 14:17:20 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
+        t=1650284240; bh=m06zaNElDOLmrPptGcaA5mPzK3FeCBh7vUpbw9C7Aao=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PFZZxCFbQ17Ssq3wyEkcGBdFPYCwMHyIDbKvhPleIr85vIie4UqvbQNKhnVmGidS0
+         3oU9t1NILe0vMOF30091NH+BeUPu+PEm6ZuvG6HdK7rdchWEEyWiy4Wf3XwMoqtnFc
+         R6ctNhP1N695Oj6YnZtJPhevczhrWq/ongOFWK2JOFbwNtC28h44oHWe34rhabck+G
+         13IIdpX7tWN1x7++8HtODTfYkmg0X4QT3zfpkp/Dy5C6aiqAkGuoJVOQ+o1X7bv5DC
+         neFJ7hxsfWoqU6LHzVzCzYxHPFWzA4Tt46LGSVMEaApbPw0M8CVYzQESfDHr4DvUpM
+         x95yMcyYs1BGA==
+Received: from customer (localhost [127.0.0.1])
+        by submission (posteo.de) with ESMTPSA id 4KhmC30fQpz6trV;
+        Mon, 18 Apr 2022 14:17:03 +0200 (CEST)
+From:   Manuel Ullmann <labre@posteo.de>
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        regressions@lists.linux.dev
+Subject: [PATCH] net: atlantic: invert deep par in pm functions, preventing
+ null derefs
+Date:   Mon, 18 Apr 2022 12:17:02 +0000
+Message-ID: <87sfqaa8n5.fsf@posteo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+From: Manuel Ullmann <labre@posteo.de>
+From 6c4cd8210835489da84bf4ee5049945dc0f2c986 Mon Sep 17 00:00:00 2001
+Date: Mon, 18 Apr 2022 00:20:01 +0200
 
-[ Upstream commit a2c0b0fbe01419f8f5d1c0b9c581631f34ffce8b ]
+This will reset deeply on freeze and thaw instead of suspend and
+resume and prevent null pointer dereferences of the uninitialized ring
+0 buffer while thawing.
 
-The alternatives code must be `noinstr` such that it does not patch itself,
-as the cache invalidation is only performed after all the alternatives have
-been applied.
+The impact is an indefinitely hanging kernel. You can't switch
+consoles after this and the only possible user interaction is SysRq.
 
-Mark patch_alternative() as `noinstr`. Mark branch_insn_requires_update()
-and get_alt_insn() with `__always_inline` since they are both only called
-through patch_alternative().
+BUG: kernel NULL pointer dereference
+RIP: 0010:aq_ring_rx_fill+0xcf/0x210 [atlantic]
+aq_vec_init+0x85/0xe0 [atlantic]
+aq_nic_init+0xf7/0x1d0 [atlantic]
+atl_resume_common+0x4f/0x100 [atlantic]
+pci_pm_thaw+0x42/0xa0
 
-Booting a kernel in QEMU TCG with KCSAN=y and ARM64_USE_LSE_ATOMICS=y caused
-a boot hang:
-[    0.241121] CPU: All CPU(s) started at EL2
+resolves in aq_ring.o to
 
-The alternatives code was patching the atomics in __tsan_read4() from LL/SC
-atomics to LSE atomics.
+```
+0000000000000ae0 <aq_ring_rx_fill>:
+{
+/* ... */
+ baf:	48 8b 43 08          	mov    0x8(%rbx),%rax
+ 		buff->flags = 0U; /* buff is NULL */
+```
 
-The following fragment is using LL/SC atomics in the .text section:
-  | <__tsan_unaligned_read4+304>:     ldxr    x6, [x2]
-  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
-  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
-  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
+The bug has been present since the introduction of the new pm code in
+8aaa112a57c1 ("net: atlantic: refactoring pm logic") and was hidden
+until 8ce84271697a ("net: atlantic: changes for multi-TC support"),
+which refactored the aq_vec_{free,alloc} functions into
+aq_vec_{,ring}_{free,alloc}, but is technically not wrong. The
+original functions just always reinitialized the buffers on S3/S4. If
+the interface is down before freezing, the bug does not occur. It does
+not matter, whether the initrd contains and loads the module before
+thawing.
 
-This LL/SC atomic sequence was to be replaced with LSE atomics. However since
-the alternatives code was instrumentable, __tsan_read4() was being called after
-only the first instruction was replaced, which led to the following code in memory:
-  | <__tsan_unaligned_read4+304>:     ldadd   x5, x6, [x2]
-  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
-  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
-  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
+So the fix is to invert the boolean parameter deep in all pm function
+calls, which was clearly intended to be set like that.
 
-This caused an infinite loop as the `stxr` instruction never completed successfully,
-so `w7` was always 0.
+First report was on Github [1], which you have to guess from the
+resume logs in the posted dmesg snippet. Recently I posted one on
+Bugzilla [2], since I did not have an AQC device so far.
 
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20220405104733.11476-1-joey.gouly@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+#regzbot introduced: 8ce84271697a
+#regzbot from: koo5 <kolman.jindrich@gmail.com>
+#regzbot monitor: https://github.com/Aquantia/AQtion/issues/32
+
+Fixes: 8aaa112a57c1 ("net: atlantic: refactoring pm logic")
+Link: https://github.com/Aquantia/AQtion/issues/32 [1]
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215798 [2]
+Cc: stable@vger.kernel.org
+Reported-by: koo5 <kolman.jindrich@gmail.com>
+Signed-off-by: Manuel Ullmann <labre@posteo.de>
 ---
- arch/arm64/kernel/alternative.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Once in mainline, this should be backported to 5.10 and newer
+supported stable branches. Although 5.4 includes the bug, it is not
+affected (see above).
 
-diff --git a/arch/arm64/kernel/alternative.c b/arch/arm64/kernel/alternative.c
-index 3fb79b76e9d9..7bbf5104b7b7 100644
---- a/arch/arm64/kernel/alternative.c
-+++ b/arch/arm64/kernel/alternative.c
-@@ -42,7 +42,7 @@ bool alternative_is_applied(u16 cpufeature)
- /*
-  * Check if the target PC is within an alternative block.
-  */
--static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
-+static __always_inline bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
+As a side effect, this might increase suspend/resume performance,
+although I did no measurements.
+ 
+ drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+index 797a95142d1f..3a529ee8c834 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+@@ -444,22 +444,22 @@ static int atl_resume_common(struct device *dev, bool deep)
+ 
+ static int aq_pm_freeze(struct device *dev)
  {
- 	unsigned long replptr = (unsigned long)ALT_REPL_PTR(alt);
- 	return !(pc >= replptr && pc <= (replptr + alt->alt_len));
-@@ -50,7 +50,7 @@ static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
- 
- #define align_down(x, a)	((unsigned long)(x) & ~(((unsigned long)(a)) - 1))
- 
--static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
-+static __always_inline u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
- {
- 	u32 insn;
- 
-@@ -95,7 +95,7 @@ static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnp
- 	return insn;
+-	return aq_suspend_common(dev, false);
++	return aq_suspend_common(dev, true);
  }
  
--static void patch_alternative(struct alt_instr *alt,
-+static noinstr void patch_alternative(struct alt_instr *alt,
- 			      __le32 *origptr, __le32 *updptr, int nr_inst)
+ static int aq_pm_suspend_poweroff(struct device *dev)
  {
- 	__le32 *replptr;
+-	return aq_suspend_common(dev, true);
++	return aq_suspend_common(dev, false);
+ }
+ 
+ static int aq_pm_thaw(struct device *dev)
+ {
+-	return atl_resume_common(dev, false);
++	return atl_resume_common(dev, true);
+ }
+ 
+ static int aq_pm_resume_restore(struct device *dev)
+ {
+-	return atl_resume_common(dev, true);
++	return atl_resume_common(dev, false);
+ }
+ 
+ static const struct dev_pm_ops aq_pm_ops = {
+
+base-commit: ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e
 -- 
 2.35.1
-
-
-
