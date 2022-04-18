@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E61CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:21:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E44E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238300AbiDRMYG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:24:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49058 "EHLO
+        id S238450AbiDRMYJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:24:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238646AbiDRMWl (ORCPT
+        with ESMTP id S238616AbiDRMWk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:22:41 -0400
+        Mon, 18 Apr 2022 08:22:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D231EAE7;
-        Mon, 18 Apr 2022 05:17:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B301EAC5;
+        Mon, 18 Apr 2022 05:17:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 03A5060F39;
-        Mon, 18 Apr 2022 12:17:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D56FBC385A8;
-        Mon, 18 Apr 2022 12:17:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D4D2C60F0A;
+        Mon, 18 Apr 2022 12:17:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD4BFC385A7;
+        Mon, 18 Apr 2022 12:17:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284278;
-        bh=tv4zKBl+I3vxx2xHCn4Ct8zhqbx9Pth5UP2RUme5oVg=;
+        s=korg; t=1650284275;
+        bh=u2vTfM59zCoYXkVZjjnb6Jnt62iRrSVgGWuK04ScvMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gtmM5SB0MyCPXXO7rbSgqhK383kpGlrsaT22nNwSkwp0zGCpNjWT1ZCXWok1e2/GA
-         tcExNSfq0A33TvtYI8MxzSSfxD8Uj3kA4ZEWhn4tThZhT3L3mX20+uqTEmgReV/qgF
-         0Zqf9KR/+zS7bR2mSatj+RVdTZ1zsnXS9k2LkkqY=
+        b=G7UY44JKz8bHwLstUtUOTLTDgdWjkhXwqm7ui2hG48lXURI3lTeFO9EXTocbWIQPc
+         e4cXlR+02r1+VxjDZM5tkbPsA841mBuAUb3ODATJKxBqN3V+gXclrwYG+f0guf5eOX
+         hGKbihUBjMhds/MUgc7sG8mfD/Oqq7qVT6sG9BQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        stable@vger.kernel.org,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 061/219] memory: atmel-ebi: Fix missing of_node_put in atmel_ebi_probe
-Date:   Mon, 18 Apr 2022 14:10:30 +0200
-Message-Id: <20220418121207.176081250@linuxfoundation.org>
+Subject: [PATCH 5.17 060/219] firmware: arm_scmi: Remove clear channel call on the TX channel
+Date:   Mon, 18 Apr 2022 14:10:29 +0200
+Message-Id: <20220418121207.111634909@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,72 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Cristian Marussi <cristian.marussi@arm.com>
 
-[ Upstream commit 6f296a9665ba5ac68937bf11f96214eb9de81baa ]
+[ Upstream commit 98f0d68f94ea21541e0050cc64fa108ade779839 ]
 
-The device_node pointer is returned by of_parse_phandle() with refcount
-incremented. We should use of_node_put() on it when done.
+On SCMI transports whose channels are based on a shared resource the TX
+channel area has to be acquired by the agent before placing the desired
+command into the channel and it will be then relinquished by the platform
+once the related reply has been made available into the channel.
+On an RX channel the logic is reversed with the platform acquiring the
+channel area and the agent reliquishing it once done by calling the
+scmi_clear_channel() helper.
 
-Fixes: 87108dc78eb8 ("memory: atmel-ebi: Enable the SMC clock if specified")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220309110144.22412-1-linmq006@gmail.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+As a consequence, even in case of error, the agent must never try to clear
+a TX channel from its side: restrict the existing clear channel call on the
+the reply path only to delayed responses since they are indeed coming from
+the RX channel.
+
+Link: https://lore.kernel.org/r/20220224152404.12877-1-cristian.marussi@arm.com
+Fixes: e9b21c96181c ("firmware: arm_scmi: Make .clear_channel optional")
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/atmel-ebi.c | 23 +++++++++++++++++------
- 1 file changed, 17 insertions(+), 6 deletions(-)
+ drivers/firmware/arm_scmi/driver.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/memory/atmel-ebi.c b/drivers/memory/atmel-ebi.c
-index c267283b01fd..e749dcb3ddea 100644
---- a/drivers/memory/atmel-ebi.c
-+++ b/drivers/memory/atmel-ebi.c
-@@ -544,20 +544,27 @@ static int atmel_ebi_probe(struct platform_device *pdev)
- 	smc_np = of_parse_phandle(dev->of_node, "atmel,smc", 0);
+diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
+index d76bab3aaac4..e815b8f98739 100644
+--- a/drivers/firmware/arm_scmi/driver.c
++++ b/drivers/firmware/arm_scmi/driver.c
+@@ -652,7 +652,8 @@ static void scmi_handle_response(struct scmi_chan_info *cinfo,
  
- 	ebi->smc.regmap = syscon_node_to_regmap(smc_np);
--	if (IS_ERR(ebi->smc.regmap))
--		return PTR_ERR(ebi->smc.regmap);
-+	if (IS_ERR(ebi->smc.regmap)) {
-+		ret = PTR_ERR(ebi->smc.regmap);
-+		goto put_node;
-+	}
- 
- 	ebi->smc.layout = atmel_hsmc_get_reg_layout(smc_np);
--	if (IS_ERR(ebi->smc.layout))
--		return PTR_ERR(ebi->smc.layout);
-+	if (IS_ERR(ebi->smc.layout)) {
-+		ret = PTR_ERR(ebi->smc.layout);
-+		goto put_node;
-+	}
- 
- 	ebi->smc.clk = of_clk_get(smc_np, 0);
- 	if (IS_ERR(ebi->smc.clk)) {
--		if (PTR_ERR(ebi->smc.clk) != -ENOENT)
--			return PTR_ERR(ebi->smc.clk);
-+		if (PTR_ERR(ebi->smc.clk) != -ENOENT) {
-+			ret = PTR_ERR(ebi->smc.clk);
-+			goto put_node;
-+		}
- 
- 		ebi->smc.clk = NULL;
- 	}
-+	of_node_put(smc_np);
- 	ret = clk_prepare_enable(ebi->smc.clk);
- 	if (ret)
- 		return ret;
-@@ -608,6 +615,10 @@ static int atmel_ebi_probe(struct platform_device *pdev)
+ 	xfer = scmi_xfer_command_acquire(cinfo, msg_hdr);
+ 	if (IS_ERR(xfer)) {
+-		scmi_clear_channel(info, cinfo);
++		if (MSG_XTRACT_TYPE(msg_hdr) == MSG_TYPE_DELAYED_RESP)
++			scmi_clear_channel(info, cinfo);
+ 		return;
  	}
  
- 	return of_platform_populate(np, NULL, NULL, dev);
-+
-+put_node:
-+	of_node_put(smc_np);
-+	return ret;
- }
- 
- static __maybe_unused int atmel_ebi_resume(struct device *dev)
 -- 
 2.35.1
 
