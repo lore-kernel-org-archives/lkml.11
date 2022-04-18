@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7959BC352AA
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96506C47084
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:26:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344938AbiDRO2i (ORCPT
+        id S1344133AbiDRO3F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
+        Mon, 18 Apr 2022 10:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344133AbiDRORi (ORCPT
+        with ESMTP id S1344402AbiDROSC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:17:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96EBF3A5CE;
-        Mon, 18 Apr 2022 06:13:39 -0700 (PDT)
+        Mon, 18 Apr 2022 10:18:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C2649FBD;
+        Mon, 18 Apr 2022 06:13:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F74CB80D9C;
-        Mon, 18 Apr 2022 13:13:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF32EC385A1;
-        Mon, 18 Apr 2022 13:13:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90211B80EE5;
+        Mon, 18 Apr 2022 13:13:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C06CEC385A1;
+        Mon, 18 Apr 2022 13:13:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287581;
-        bh=U2aqSQRcO3Ua6VHdsYF7eOR1PZBWh0HF8CK6JHPZJr8=;
+        s=korg; t=1650287631;
+        bh=3emzYE6OqH2X4RboyukyTjyLdp+12K93UJSU5EGJ9Eg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u13bp0Ee1kQNm2F3VwOB6FZ8gLcZShKhTeI1TncHli8qPzLDFPt7YCnAemTHHxxUr
-         +xkJ9qHxWhg4CacsGwECscGuaWnVA4DSTO4YaAulMC0effPYnVqSgjNx/b0nS3iDbH
-         OWrijBb4OqK6GYN9Xld9mXXW1KNV8phrc/OSK4DY=
+        b=sfr+w1N+0Nsfw+ThL683ILA5kqJa9BtuqHMJpIAcm8ghbIfq7JL6ShPbkQ+wpnDoa
+         2krFyGHbkQVOTbSQISU20KNe5o9ymBMtxnwBFGO+D91pgC3vlupeVbtYn4mSa8ega9
+         RzoRQV3RrhWfJKhCT79MgxzphjP1pO24AkdBtSo8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Yang Guang <yang.guang5@zte.com.cn>,
-        David Yang <davidcomponentone@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 169/218] scsi: mvsas: Replace snprintf() with sysfs_emit()
-Date:   Mon, 18 Apr 2022 14:13:55 +0200
-Message-Id: <20220418121205.308836125@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>,
+        syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
+Subject: [PATCH 4.9 214/218] ALSA: pcm: Test for "silence" field in struct "pcm_format_data"
+Date:   Mon, 18 Apr 2022 14:14:40 +0200
+Message-Id: <20220418121208.408395990@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -52,52 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+From: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 
-[ Upstream commit 0ad3867b0f13e45cfee5a1298bfd40eef096116c ]
+commit 2f7a26abb8241a0208c68d22815aa247c5ddacab upstream.
 
-coccinelle report:
-./drivers/scsi/mvsas/mv_init.c:699:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/mvsas/mv_init.c:747:8-16:
-WARNING: use scnprintf or sprintf
+Syzbot reports "KASAN: null-ptr-deref Write in
+snd_pcm_format_set_silence".[1]
 
-Use sysfs_emit() instead of scnprintf() or sprintf().
+It is due to missing validation of the "silence" field of struct
+"pcm_format_data" in "pcm_formats" array.
 
-Link: https://lore.kernel.org/r/c1711f7cf251730a8ceb5bdfc313bf85662b3395.1643182948.git.yang.guang5@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Add a test for valid "pat" and, if it is not so, return -EINVAL.
+
+[1] https://lore.kernel.org/lkml/000000000000d188ef05dc2c7279@google.com/
+
+Reported-and-tested-by: syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220409012655.9399-1-fmdefrancesco@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/mvsas/mv_init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/core/pcm_misc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
-index 8280046fd1f0..230697f9df78 100644
---- a/drivers/scsi/mvsas/mv_init.c
-+++ b/drivers/scsi/mvsas/mv_init.c
-@@ -730,7 +730,7 @@ static ssize_t
- mvs_show_driver_version(struct device *cdev,
- 		struct device_attribute *attr,  char *buffer)
- {
--	return snprintf(buffer, PAGE_SIZE, "%s\n", DRV_VERSION);
-+	return sysfs_emit(buffer, "%s\n", DRV_VERSION);
- }
- 
- static DEVICE_ATTR(driver_version,
-@@ -782,7 +782,7 @@ mvs_store_interrupt_coalescing(struct device *cdev,
- static ssize_t mvs_show_interrupt_coalescing(struct device *cdev,
- 			struct device_attribute *attr, char *buffer)
- {
--	return snprintf(buffer, PAGE_SIZE, "%d\n", interrupt_coalescing);
-+	return sysfs_emit(buffer, "%d\n", interrupt_coalescing);
- }
- 
- static DEVICE_ATTR(interrupt_coalescing,
--- 
-2.35.1
-
+--- a/sound/core/pcm_misc.c
++++ b/sound/core/pcm_misc.c
+@@ -412,7 +412,7 @@ int snd_pcm_format_set_silence(snd_pcm_f
+ 		return 0;
+ 	width = pcm_formats[(INT)format].phys; /* physical width */
+ 	pat = pcm_formats[(INT)format].silence;
+-	if (! width)
++	if (!width || !pat)
+ 		return -EINVAL;
+ 	/* signed or 1 byte data */
+ 	if (pcm_formats[(INT)format].signd == 1 || width <= 8) {
 
 
