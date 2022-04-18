@@ -2,41 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53D70C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:47:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 933EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:47:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244481AbiDRNtx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57240 "EHLO
+        id S244451AbiDRNuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244354AbiDRNaV (ORCPT
+        with ESMTP id S244483AbiDRNac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC5AF41F86;
-        Mon, 18 Apr 2022 05:54:26 -0700 (PDT)
+        Mon, 18 Apr 2022 09:30:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8614424B7;
+        Mon, 18 Apr 2022 05:54:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C25C760FE8;
-        Mon, 18 Apr 2022 12:54:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B84F0C385AC;
-        Mon, 18 Apr 2022 12:54:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C63A60FD9;
+        Mon, 18 Apr 2022 12:54:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43BFAC385A9;
+        Mon, 18 Apr 2022 12:54:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286465;
-        bh=tujD3gEKZucgrkP7MVUobqvYvWoGXFEMjlEavGHipPg=;
+        s=korg; t=1650286474;
+        bh=QMcp877Zax0IjNCX3CTenXmlpZoqiZ2TdkvZcP7v3a0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uo0NZaPZA8olxbUjF4Sb+68fKJ8FeuGQWqNwKW9DyQu3rJIn6fEBIuLjj6hZFPben
-         9/yurJW75e/3mXWpSBpOE5umGLQJ9mA5q7B1VGJPI9haSx7GlpOSPN3BUYizHOKXe3
-         hUaB1UjWPjAb1Q3xvSMsOULrRimT9/4t3XZpnUxs=
+        b=NMjGvZHkaPNLcBr8XgWa3YfJY8UryNNNAQydiGCH5lCqTP7PZwH9410jb/C3HtKQ5
+         pWpixTzZtNiitAZbD9/HHXNfkpvSbPb/2/j/O0BDJad8xv4+KY5bbctqIMn+X0Eago
+         uqDL5oJoAMlt1J0pBuKFL43ZTtqRefOYnz9ETmDU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Rosin <peda@axentia.se>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 126/284] i2c: mux: demux-pinctrl: do not deactivate a master that is not active
-Date:   Mon, 18 Apr 2022 14:11:47 +0200
-Message-Id: <20220418121214.798717337@linuxfoundation.org>
+        stable@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 146/284] kgdbts: fix return value of __setup handler
+Date:   Mon, 18 Apr 2022 14:12:07 +0200
+Message-Id: <20220418121215.724241110@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -48,50 +54,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Rosin <peda@axentia.se>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 1a22aabf20adf89cb216f566913196128766f25b ]
+[ Upstream commit 96c9e802c64014a7716865332d732cc9c7f24593 ]
 
-Attempting to rollback the activation of the current master when
-the current master has not been activated is bad. priv->cur_chan
-and priv->cur_adap are both still zeroed out and the rollback
-may result in attempts to revert an of changeset that has not been
-applied and do result in calls to both del and put the zeroed out
-i2c_adapter. Maybe it crashes, or whatever, but it's bad in any
-case.
+__setup() handlers should return 1 to indicate that the boot option
+has been handled. A return of 0 causes the boot option/value to be
+listed as an Unknown kernel parameter and added to init's (limited)
+environment strings. So return 1 from kgdbts_option_setup().
 
-Fixes: e9d1a0a41d44 ("i2c: mux: demux-pinctrl: Fix an error handling path in 'i2c_demux_pinctrl_probe()'")
-Signed-off-by: Peter Rosin <peda@axentia.se>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
+  kgdboc=kbd kgdbts=", will be passed to user space.
+
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc7
+     kgdboc=kbd
+     kgdbts=
+
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: e8d31c204e36 ("kgdb: add kgdb internal test suite")
+Cc: kgdb-bugreport@lists.sourceforge.net
+Cc: Jason Wessel <jason.wessel@windriver.com>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220308033255.22118-1-rdunlap@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/muxes/i2c-demux-pinctrl.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/misc/kgdbts.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/i2c/muxes/i2c-demux-pinctrl.c b/drivers/i2c/muxes/i2c-demux-pinctrl.c
-index 0c637ae81404..c638b2fc7fa2 100644
---- a/drivers/i2c/muxes/i2c-demux-pinctrl.c
-+++ b/drivers/i2c/muxes/i2c-demux-pinctrl.c
-@@ -259,7 +259,7 @@ static int i2c_demux_pinctrl_probe(struct platform_device *pdev)
+diff --git a/drivers/misc/kgdbts.c b/drivers/misc/kgdbts.c
+index aa70e22e247b..d14b4b0a1d7c 100644
+--- a/drivers/misc/kgdbts.c
++++ b/drivers/misc/kgdbts.c
+@@ -1068,10 +1068,10 @@ static int kgdbts_option_setup(char *opt)
+ {
+ 	if (strlen(opt) >= MAX_CONFIG_LEN) {
+ 		printk(KERN_ERR "kgdbts: config string too long\n");
+-		return -ENOSPC;
++		return 1;
+ 	}
+ 	strcpy(config, opt);
+-	return 0;
++	return 1;
+ }
  
- 	err = device_create_file(&pdev->dev, &dev_attr_available_masters);
- 	if (err)
--		goto err_rollback;
-+		goto err_rollback_activation;
- 
- 	err = device_create_file(&pdev->dev, &dev_attr_current_master);
- 	if (err)
-@@ -269,8 +269,9 @@ static int i2c_demux_pinctrl_probe(struct platform_device *pdev)
- 
- err_rollback_available:
- 	device_remove_file(&pdev->dev, &dev_attr_available_masters);
--err_rollback:
-+err_rollback_activation:
- 	i2c_demux_deactivate_master(priv);
-+err_rollback:
- 	for (j = 0; j < i; j++) {
- 		of_node_put(priv->chan[j].parent_np);
- 		of_changeset_destroy(&priv->chan[j].chgset);
+ __setup("kgdbts=", kgdbts_option_setup);
 -- 
 2.34.1
 
