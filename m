@@ -2,125 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C45C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B94ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:33:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242693AbiDRNfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:35:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53248 "EHLO
+        id S242275AbiDRNfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:35:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242816AbiDRNJ3 (ORCPT
+        with ESMTP id S242824AbiDRNJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:09:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9512369C6;
-        Mon, 18 Apr 2022 05:49:01 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 370F4369ED;
+        Mon, 18 Apr 2022 05:49:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2E87B80EDB;
-        Mon, 18 Apr 2022 12:48:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 005B7C385A1;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3377F61259;
         Mon, 18 Apr 2022 12:48:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650286138;
-        bh=l5dooTjbgCNig025z/CpTFdhYCb1guxzIXi8auXSJ1I=;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1D50C385A8;
+        Mon, 18 Apr 2022 12:48:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650286134;
+        bh=m010D5kfjHCZrOKrDHaOt/zruGT7jWSVi3xsW6bm/1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hGZlpXTtzMxkqwRnpBxWwuPLvnGxRVMlX30XmdfK4s5DDoy4MeBWTXsxtuBxaoEWH
-         mJSpRi1BCInVFtuCO9qofR4+zv4imTIvfHyi0yYgKojUwiPYXB9GD7Di/zCJBDJRyK
-         vN3oMA1gHMjtL0zuyhh3n2NGJcSWc0TQ98zBUaLSE4cr63h/rMPBYXd5JrYbhNCO5C
-         GE9LcDw5GUXzaJPtmvlTk664jj7fO4+X3gVKajpRXZTUAIzhI4w5OPR+87Q96NwZuK
-         DpKvjLvmQFiGdc+YtZRrz+gv5LzHcZY6QPa2bF0E7rboV0zTxmcmpKtbOzQzjEntjn
-         HW8Y2h9Kng27A==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [PATCHv2 bpf-next 2/4] fprobe: Resolve symbols with kallsyms_lookup_names
-Date:   Mon, 18 Apr 2022 14:48:32 +0200
-Message-Id: <20220418124834.829064-3-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220418124834.829064-1-jolsa@kernel.org>
-References: <20220418124834.829064-1-jolsa@kernel.org>
+        b=WHPHmsEUL3AIZ9jjrWDcWE1/myKT/fJ4fEJ7YvIKN9iAPiXsWgG/4je8Sct6KBS+K
+         S8YSHn3np8yJ8zYaUvcirxtl2jTL1+AXcQwLaOW8R742dpu53BmPGVWIi7gmTx9z/K
+         e1JLKEio6/v2v0mtvIAs63kTAlQVBJdvKnsGVbJI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 005/284] ethernet: sun: Free the coherent when failing in probing
+Date:   Mon, 18 Apr 2022 14:09:46 +0200
+Message-Id: <20220418121210.849128396@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
+References: <20220418121210.689577360@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using kallsyms_lookup_names to speed up symbols lookup
-in register_fprobe_syms API.
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-This requires syms array to be alphabetically sorted.
+[ Upstream commit bb77bd31c281f70ec77c9c4f584950a779e05cf8 ]
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+When the driver fails to register net device, it should free the DMA
+region first, and then do other cleanup.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/fprobe.c | 32 ++++++++++++--------------------
- 1 file changed, 12 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/sun/sunhme.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
-index 89d9f994ebb0..6419501a0036 100644
---- a/kernel/trace/fprobe.c
-+++ b/kernel/trace/fprobe.c
-@@ -85,39 +85,31 @@ static void fprobe_exit_handler(struct rethook_node *rh, void *data,
- }
- NOKPROBE_SYMBOL(fprobe_exit_handler);
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index 9e983e1d8249..7522f277e912 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -3165,7 +3165,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	if (err) {
+ 		printk(KERN_ERR "happymeal(PCI): Cannot register net device, "
+ 		       "aborting.\n");
+-		goto err_out_iounmap;
++		goto err_out_free_coherent;
+ 	}
  
-+static int symbols_cmp(const void *a, const void *b)
-+{
-+	const char **str_a = (const char **) a;
-+	const char **str_b = (const char **) b;
+ 	pci_set_drvdata(pdev, hp);
+@@ -3198,6 +3198,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 
+ 	return 0;
+ 
++err_out_free_coherent:
++	dma_free_coherent(hp->dma_dev, PAGE_SIZE,
++			  hp->happy_block, hp->hblock_dvma);
 +
-+	return strcmp(*str_a, *str_b);
-+}
-+
- /* Convert ftrace location address from symbols */
- static unsigned long *get_ftrace_locations(const char **syms, int num)
- {
--	unsigned long addr, size;
- 	unsigned long *addrs;
--	int i;
- 
- 	/* Convert symbols to symbol address */
- 	addrs = kcalloc(num, sizeof(*addrs), GFP_KERNEL);
- 	if (!addrs)
- 		return ERR_PTR(-ENOMEM);
- 
--	for (i = 0; i < num; i++) {
--		addr = kallsyms_lookup_name(syms[i]);
--		if (!addr)	/* Maybe wrong symbol */
--			goto error;
--
--		/* Convert symbol address to ftrace location. */
--		if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
--			goto error;
-+	/* kallsyms_lookup_names expects sorted symbols */
-+	sort(syms, num, sizeof(*syms), symbols_cmp, NULL);
- 
--		addr = ftrace_location_range(addr, addr + size - 1);
--		if (!addr) /* No dynamic ftrace there. */
--			goto error;
-+	if (!kallsyms_lookup_names(syms, num, addrs))
-+		return addrs;
- 
--		addrs[i] = addr;
--	}
--
--	return addrs;
--
--error:
- 	kfree(addrs);
--
- 	return ERR_PTR(-ENOENT);
- }
+ err_out_iounmap:
+ 	iounmap(hp->gregs);
  
 -- 
-2.35.1
+2.34.1
+
+
 
