@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDAB1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FF6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:21:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238503AbiDRMXy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:23:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
+        id S238375AbiDRMYA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238743AbiDRMWr (ORCPT
+        with ESMTP id S238763AbiDRMWs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:22:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98EB41EEC3;
-        Mon, 18 Apr 2022 05:18:10 -0700 (PDT)
+        Mon, 18 Apr 2022 08:22:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923601CB28;
+        Mon, 18 Apr 2022 05:18:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50AEEB80ED6;
-        Mon, 18 Apr 2022 12:18:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94616C385A1;
-        Mon, 18 Apr 2022 12:18:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0303560F37;
+        Mon, 18 Apr 2022 12:18:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E97A4C385A7;
+        Mon, 18 Apr 2022 12:18:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284288;
-        bh=DC7RGW7TlXPwWdtO/BTt0iavJEYKJ2Rg0B/NHcdSQzk=;
+        s=korg; t=1650284294;
+        bh=Tw1PzyLZ5Vo3JmM4ucjbj28v6t/GDkoYGnUxHCrh9CM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W+PLHkA+YlUb2G+P1BOSa+1/IqZcEtCZjXvnGFEo21pTgmeolkxGcnVdUpKol9DCo
-         fMcZ4uE9YBVVZq+6nEBkD/qhskNfX9ixZB080mflk/PNkrJhHpDeB1vbnIOw4GS9FK
-         0TkJuipba90+u3YMzTc+Xz5BNFytEmnsu0jJxjjc=
+        b=TKXW82w982qBELUvVDprtxctOEKtID34lo5tGdzKssrCcWPD7M639ptFae9Be5Cv+
+         0zD0pY9bt314C616L1eaC+9hfTBHkz9GdAMYmolrQrHgIs8exEF214BrMd0glO11Uz
+         id+CTiO9u2/MLsC7T72zLv4SNb3ZyxIegSQ27a6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dragan Simic <dragan.simic@gmail.com>,
-        Kyle Copperfield <kmcopper@danwin1210.me>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 064/219] media: rockchip/rga: do proper error checking in probe
-Date:   Mon, 18 Apr 2022 14:10:33 +0200
-Message-Id: <20220418121207.390409830@linuxfoundation.org>
+        stable@vger.kernel.org, Reiji Watanabe <reijiw@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 066/219] KVM: arm64: mixed-width check should be skipped for uninitialized vCPUs
+Date:   Mon, 18 Apr 2022 14:10:35 +0200
+Message-Id: <20220418121207.515916525@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -53,42 +49,215 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kyle Copperfield <kmcopper@danwin1210.me>
+From: Reiji Watanabe <reijiw@google.com>
 
-[ Upstream commit 6150f276073a1480030242a7e006a89e161d6cd6 ]
+[ Upstream commit 26bf74bd9f6ff0f1545b4f0c92a37c232d076014 ]
 
-The latest fix for probe error handling contained a typo that causes
-probing to fail with the following message:
+KVM allows userspace to configure either all EL1 32bit or 64bit vCPUs
+for a guest.  At vCPU reset, vcpu_allowed_register_width() checks
+if the vcpu's register width is consistent with all other vCPUs'.
+Since the checking is done even against vCPUs that are not initialized
+(KVM_ARM_VCPU_INIT has not been done) yet, the uninitialized vCPUs
+are erroneously treated as 64bit vCPU, which causes the function to
+incorrectly detect a mixed-width VM.
 
-  rockchip-rga: probe of ff680000.rga failed with error -12
+Introduce KVM_ARCH_FLAG_EL1_32BIT and KVM_ARCH_FLAG_REG_WIDTH_CONFIGURED
+bits for kvm->arch.flags.  A value of the EL1_32BIT bit indicates that
+the guest needs to be configured with all 32bit or 64bit vCPUs, and
+a value of the REG_WIDTH_CONFIGURED bit indicates if a value of the
+EL1_32BIT bit is valid (already set up). Values in those bits are set at
+the first KVM_ARM_VCPU_INIT for the guest based on KVM_ARM_VCPU_EL1_32BIT
+configuration for the vCPU.
 
-This patch fixes the typo.
+Check vcpu's register width against those new bits at the vcpu's
+KVM_ARM_VCPU_INIT (instead of against other vCPUs' register width).
 
-Fixes: e58430e1d4fd (media: rockchip/rga: fix error handling in probe)
-Reviewed-by: Dragan Simic <dragan.simic@gmail.com>
-Signed-off-by: Kyle Copperfield <kmcopper@danwin1210.me>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 66e94d5cafd4 ("KVM: arm64: Prevent mixed-width VM creation")
+Signed-off-by: Reiji Watanabe <reijiw@google.com>
+Reviewed-by: Oliver Upton <oupton@google.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220329031924.619453-2-reijiw@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/rockchip/rga/rga.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/include/asm/kvm_emulate.h | 27 ++++++++----
+ arch/arm64/include/asm/kvm_host.h    | 10 +++++
+ arch/arm64/kvm/reset.c               | 65 +++++++++++++++++++---------
+ 3 files changed, 74 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/media/platform/rockchip/rga/rga.c b/drivers/media/platform/rockchip/rga/rga.c
-index 4de5e8d2b261..3d3d1062e212 100644
---- a/drivers/media/platform/rockchip/rga/rga.c
-+++ b/drivers/media/platform/rockchip/rga/rga.c
-@@ -892,7 +892,7 @@ static int rga_probe(struct platform_device *pdev)
+diff --git a/arch/arm64/include/asm/kvm_emulate.h b/arch/arm64/include/asm/kvm_emulate.h
+index d62405ce3e6d..7496deab025a 100644
+--- a/arch/arm64/include/asm/kvm_emulate.h
++++ b/arch/arm64/include/asm/kvm_emulate.h
+@@ -43,10 +43,22 @@ void kvm_inject_pabt(struct kvm_vcpu *vcpu, unsigned long addr);
+ 
+ void kvm_vcpu_wfi(struct kvm_vcpu *vcpu);
+ 
++#if defined(__KVM_VHE_HYPERVISOR__) || defined(__KVM_NVHE_HYPERVISOR__)
+ static __always_inline bool vcpu_el1_is_32bit(struct kvm_vcpu *vcpu)
+ {
+ 	return !(vcpu->arch.hcr_el2 & HCR_RW);
+ }
++#else
++static __always_inline bool vcpu_el1_is_32bit(struct kvm_vcpu *vcpu)
++{
++	struct kvm *kvm = vcpu->kvm;
++
++	WARN_ON_ONCE(!test_bit(KVM_ARCH_FLAG_REG_WIDTH_CONFIGURED,
++			       &kvm->arch.flags));
++
++	return test_bit(KVM_ARCH_FLAG_EL1_32BIT, &kvm->arch.flags);
++}
++#endif
+ 
+ static inline void vcpu_reset_hcr(struct kvm_vcpu *vcpu)
+ {
+@@ -72,15 +84,14 @@ static inline void vcpu_reset_hcr(struct kvm_vcpu *vcpu)
+ 		vcpu->arch.hcr_el2 |= HCR_TVM;
  	}
- 	rga->dst_mmu_pages =
- 		(unsigned int *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 3);
--	if (rga->dst_mmu_pages) {
-+	if (!rga->dst_mmu_pages) {
- 		ret = -ENOMEM;
- 		goto free_src_pages;
+ 
+-	if (test_bit(KVM_ARM_VCPU_EL1_32BIT, vcpu->arch.features))
++	if (vcpu_el1_is_32bit(vcpu))
+ 		vcpu->arch.hcr_el2 &= ~HCR_RW;
+-
+-	/*
+-	 * TID3: trap feature register accesses that we virtualise.
+-	 * For now this is conditional, since no AArch32 feature regs
+-	 * are currently virtualised.
+-	 */
+-	if (!vcpu_el1_is_32bit(vcpu))
++	else
++		/*
++		 * TID3: trap feature register accesses that we virtualise.
++		 * For now this is conditional, since no AArch32 feature regs
++		 * are currently virtualised.
++		 */
+ 		vcpu->arch.hcr_el2 |= HCR_TID3;
+ 
+ 	if (cpus_have_const_cap(ARM64_MISMATCHED_CACHE_TYPE) ||
+diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
+index 2619fda42ca2..b5ae92f77c61 100644
+--- a/arch/arm64/include/asm/kvm_host.h
++++ b/arch/arm64/include/asm/kvm_host.h
+@@ -127,6 +127,16 @@ struct kvm_arch {
+ #define KVM_ARCH_FLAG_MTE_ENABLED			1
+ 	/* At least one vCPU has ran in the VM */
+ #define KVM_ARCH_FLAG_HAS_RAN_ONCE			2
++	/*
++	 * The following two bits are used to indicate the guest's EL1
++	 * register width configuration. A value of KVM_ARCH_FLAG_EL1_32BIT
++	 * bit is valid only when KVM_ARCH_FLAG_REG_WIDTH_CONFIGURED is set.
++	 * Otherwise, the guest's EL1 register width has not yet been
++	 * determined yet.
++	 */
++#define KVM_ARCH_FLAG_REG_WIDTH_CONFIGURED		3
++#define KVM_ARCH_FLAG_EL1_32BIT				4
++
+ 	unsigned long flags;
+ 
+ 	/*
+diff --git a/arch/arm64/kvm/reset.c b/arch/arm64/kvm/reset.c
+index ecc40c8cd6f6..6c70c6f61c70 100644
+--- a/arch/arm64/kvm/reset.c
++++ b/arch/arm64/kvm/reset.c
+@@ -181,27 +181,51 @@ static int kvm_vcpu_enable_ptrauth(struct kvm_vcpu *vcpu)
+ 	return 0;
+ }
+ 
+-static bool vcpu_allowed_register_width(struct kvm_vcpu *vcpu)
++/**
++ * kvm_set_vm_width() - set the register width for the guest
++ * @vcpu: Pointer to the vcpu being configured
++ *
++ * Set both KVM_ARCH_FLAG_EL1_32BIT and KVM_ARCH_FLAG_REG_WIDTH_CONFIGURED
++ * in the VM flags based on the vcpu's requested register width, the HW
++ * capabilities and other options (such as MTE).
++ * When REG_WIDTH_CONFIGURED is already set, the vcpu settings must be
++ * consistent with the value of the FLAG_EL1_32BIT bit in the flags.
++ *
++ * Return: 0 on success, negative error code on failure.
++ */
++static int kvm_set_vm_width(struct kvm_vcpu *vcpu)
+ {
+-	struct kvm_vcpu *tmp;
++	struct kvm *kvm = vcpu->kvm;
+ 	bool is32bit;
+-	unsigned long i;
+ 
+ 	is32bit = vcpu_has_feature(vcpu, KVM_ARM_VCPU_EL1_32BIT);
++
++	lockdep_assert_held(&kvm->lock);
++
++	if (test_bit(KVM_ARCH_FLAG_REG_WIDTH_CONFIGURED, &kvm->arch.flags)) {
++		/*
++		 * The guest's register width is already configured.
++		 * Make sure that the vcpu is consistent with it.
++		 */
++		if (is32bit == test_bit(KVM_ARCH_FLAG_EL1_32BIT, &kvm->arch.flags))
++			return 0;
++
++		return -EINVAL;
++	}
++
+ 	if (!cpus_have_const_cap(ARM64_HAS_32BIT_EL1) && is32bit)
+-		return false;
++		return -EINVAL;
+ 
+ 	/* MTE is incompatible with AArch32 */
+-	if (kvm_has_mte(vcpu->kvm) && is32bit)
+-		return false;
++	if (kvm_has_mte(kvm) && is32bit)
++		return -EINVAL;
+ 
+-	/* Check that the vcpus are either all 32bit or all 64bit */
+-	kvm_for_each_vcpu(i, tmp, vcpu->kvm) {
+-		if (vcpu_has_feature(tmp, KVM_ARM_VCPU_EL1_32BIT) != is32bit)
+-			return false;
+-	}
++	if (is32bit)
++		set_bit(KVM_ARCH_FLAG_EL1_32BIT, &kvm->arch.flags);
+ 
+-	return true;
++	set_bit(KVM_ARCH_FLAG_REG_WIDTH_CONFIGURED, &kvm->arch.flags);
++
++	return 0;
+ }
+ 
+ /**
+@@ -230,10 +254,16 @@ int kvm_reset_vcpu(struct kvm_vcpu *vcpu)
+ 	u32 pstate;
+ 
+ 	mutex_lock(&vcpu->kvm->lock);
+-	reset_state = vcpu->arch.reset_state;
+-	WRITE_ONCE(vcpu->arch.reset_state.reset, false);
++	ret = kvm_set_vm_width(vcpu);
++	if (!ret) {
++		reset_state = vcpu->arch.reset_state;
++		WRITE_ONCE(vcpu->arch.reset_state.reset, false);
++	}
+ 	mutex_unlock(&vcpu->kvm->lock);
+ 
++	if (ret)
++		return ret;
++
+ 	/* Reset PMU outside of the non-preemptible section */
+ 	kvm_pmu_vcpu_reset(vcpu);
+ 
+@@ -260,14 +290,9 @@ int kvm_reset_vcpu(struct kvm_vcpu *vcpu)
+ 		}
  	}
+ 
+-	if (!vcpu_allowed_register_width(vcpu)) {
+-		ret = -EINVAL;
+-		goto out;
+-	}
+-
+ 	switch (vcpu->arch.target) {
+ 	default:
+-		if (test_bit(KVM_ARM_VCPU_EL1_32BIT, vcpu->arch.features)) {
++		if (vcpu_el1_is_32bit(vcpu)) {
+ 			pstate = VCPU_RESET_PSTATE_SVC;
+ 		} else {
+ 			pstate = VCPU_RESET_PSTATE_EL1;
 -- 
 2.35.1
 
