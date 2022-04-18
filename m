@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 490DCC46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D07C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343971AbiDROIo (ORCPT
+        id S1343739AbiDROIK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45522 "EHLO
+        Mon, 18 Apr 2022 10:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245389AbiDRNx2 (ORCPT
+        with ESMTP id S245050AbiDRNvx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:53:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FE945AEE;
-        Mon, 18 Apr 2022 06:02:44 -0700 (PDT)
+        Mon, 18 Apr 2022 09:51:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B5354551C;
+        Mon, 18 Apr 2022 06:02:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2BB3B80D9C;
-        Mon, 18 Apr 2022 13:02:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 394D0C385A1;
-        Mon, 18 Apr 2022 13:02:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 908F560AAD;
+        Mon, 18 Apr 2022 13:02:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8840FC385A1;
+        Mon, 18 Apr 2022 13:02:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286961;
-        bh=PACYSDL0hP9BWct9PtTZMs8lOn8HGAqoXGmAb94qJnk=;
+        s=korg; t=1650286943;
+        bh=4bSNL2HCuVxfuFYn5tC2mBPJ2xyv9VI4fvWzI2d5KBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x8FjB6XzVlxvKbzsZtGztZJ4HOseLKQCW9VnYsyXD5kAOMxaUYYK3qm0APl1Edobi
-         XLtHLku1+1f4fAf3CguS5LnjHng+YcnXAcvnfh7ecGj3caW707qSu+ikjrBCkaf3E8
-         S7G+s8O+tRcI3BL5APoGD5IulNzJJEYNxFfmuv5c=
+        b=u15U340K9H0n9NgZF3+Ph860jJxrMhlBFCPDJVnOFY/VAMWVde7vaRqqn8txbI5x3
+         dtXCnRbaslzqUH0yfGGZAgZEMhL4v0zvl1hMFlVrxrm9zCnKmj/JbdF42JBJkvBgw0
+         Qe5lTRs9Cxg7p4DQ0/3o/pQkePKRlvpPg5TERDsc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 4.9 016/218] NFSD: prevent underflow in nfssvc_decode_writeargs()
-Date:   Mon, 18 Apr 2022 14:11:22 +0200
-Message-Id: <20220418121159.538182766@linuxfoundation.org>
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Subject: [PATCH 4.9 010/218] coresight: Fix TRCCONFIGR.QE sysfs interface
+Date:   Mon, 18 Apr 2022 14:11:16 +0200
+Message-Id: <20220418121159.205396993@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -49,47 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: James Clark <james.clark@arm.com>
 
-commit 184416d4b98509fb4c3d8fc3d6dc1437896cc159 upstream.
+commit ea75a342aed5ed72c87f38fbe0df2f5df7eae374 upstream.
 
-Smatch complains:
+It's impossible to program a valid value for TRCCONFIGR.QE
+when TRCIDR0.QSUPP==0b10. In that case the following is true:
 
-	fs/nfsd/nfsxdr.c:341 nfssvc_decode_writeargs()
-	warn: no lower bound on 'args->len'
+  Q element support is implemented, and only supports Q elements without
+  instruction counts. TRCCONFIGR.QE can only take the values 0b00 or 0b11.
 
-Change the type to unsigned to prevent this issue.
+Currently the low bit of QSUPP is checked to see if the low bit of QE can
+be written to, but as you can see when QSUPP==0b10 the low bit is cleared
+making it impossible to ever write the only valid value of 0b11 to QE.
+0b10 would be written instead, which is a reserved QE value even for all
+values of QSUPP.
 
+The fix is to allow writing the low bit of QE for any non zero value of
+QSUPP.
+
+This change also ensures that the low bit is always set, even when the
+user attempts to only set the high bit.
+
+Signed-off-by: James Clark <james.clark@arm.com>
+Reviewed-by: Mike Leach <mike.leach@linaro.org>
+Fixes: d8c66962084f ("coresight-etm4x: Controls pertaining to the reset, mode, pe and events")
 Cc: stable@vger.kernel.org
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Link: https://lore.kernel.org/r/20220120113047.2839622-2-james.clark@arm.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/nfsproc.c |    2 +-
- fs/nfsd/xdr.h     |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/hwtracing/coresight/coresight-etm4x-sysfs.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/fs/nfsd/nfsproc.c
-+++ b/fs/nfsd/nfsproc.c
-@@ -207,7 +207,7 @@ nfsd_proc_write(struct svc_rqst *rqstp,
- 	int	stable = 1;
- 	unsigned long cnt = argp->len;
- 
--	dprintk("nfsd: WRITE    %s %d bytes at %d\n",
-+	dprintk("nfsd: WRITE    %s %u bytes at %d\n",
- 		SVCFH_fmt(&argp->fh),
- 		argp->len, argp->offset);
- 
---- a/fs/nfsd/xdr.h
-+++ b/fs/nfsd/xdr.h
-@@ -32,7 +32,7 @@ struct nfsd_readargs {
- struct nfsd_writeargs {
- 	svc_fh			fh;
- 	__u32			offset;
--	int			len;
-+	__u32			len;
- 	int			vlen;
- };
- 
+--- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
++++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+@@ -379,8 +379,12 @@ static ssize_t mode_store(struct device
+ 	mode = ETM_MODE_QELEM(config->mode);
+ 	/* start by clearing QE bits */
+ 	config->cfg &= ~(BIT(13) | BIT(14));
+-	/* if supported, Q elements with instruction counts are enabled */
+-	if ((mode & BIT(0)) && (drvdata->q_support & BIT(0)))
++	/*
++	 * if supported, Q elements with instruction counts are enabled.
++	 * Always set the low bit for any requested mode. Valid combos are
++	 * 0b00, 0b01 and 0b11.
++	 */
++	if (mode && drvdata->q_support)
+ 		config->cfg |= BIT(13);
+ 	/*
+ 	 * if supported, Q elements with and without instruction
 
 
