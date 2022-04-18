@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88089C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 107BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233247AbiDRMxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
+        id S239783AbiDRMxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241014AbiDRMjy (ORCPT
+        with ESMTP id S240988AbiDRMjw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458701EAD5;
-        Mon, 18 Apr 2022 05:31:48 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373B41D0D0;
+        Mon, 18 Apr 2022 05:31:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7AF960FB6;
-        Mon, 18 Apr 2022 12:31:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB314C385A1;
-        Mon, 18 Apr 2022 12:31:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C88B1610F4;
+        Mon, 18 Apr 2022 12:31:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8414C385A9;
+        Mon, 18 Apr 2022 12:31:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285107;
-        bh=tGzXzQhqgL+alx1Q6zWeqj7q4zL1AuwH2it+jAec/5w=;
+        s=korg; t=1650285101;
+        bh=t7MW28y9bnZxfYQjVUSmpEWDf75vE61ViCQNbKTnzN8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jShaV9Hj5DCCnrJAZRo/Rmw8XE60D0yWqX7rWIHAwlQfJovSR++o39sjwEMjswT5N
-         no0BZDi6jikpMujHpe8inh9caNZIN4AP/tzSiTI6P80LAB2xuIvVamkPx8LpUtiuI+
-         tD0g5bREoLkvQoYDXNQup5mPXuCkWBDO1IFfyfv8=
+        b=TsgYJaxN1OLevYTbK93xklrHdhjkENcqPMpzBlRuID1Pdk0lJVtFKrlOh6xL4U6on
+         pbxj8Qaa+Rndlbm8VTjg6mDjKXvGO4INjLWiYMXo881xjlvZDlt7AL8ZRCbrRuvT/u
+         GaOKWtlRQsWh6eYFGbKnHwOzpen3F9NqIK0Ar2uo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Aurabindo Pillai <aurabindo.pillai@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
+        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 105/189] drm/amd: Add USBC connector ID
-Date:   Mon, 18 Apr 2022 14:12:05 +0200
-Message-Id: <20220418121203.482500430@linuxfoundation.org>
+Subject: [PATCH 5.15 104/189] block: fix offset/size check in bio_trim()
+Date:   Mon, 18 Apr 2022 14:12:04 +0200
+Message-Id: <20220418121203.454230323@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,33 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aurabindo Pillai <aurabindo.pillai@amd.com>
+From: Ming Lei <ming.lei@redhat.com>
 
-[ Upstream commit c5c948aa894a831f96fccd025e47186b1ee41615 ]
+[ Upstream commit 8535c0185d14ea41f0efd6a357961b05daf6687e ]
 
-[Why&How] Add a dedicated AMDGPU specific ID for use with
-newer ASICs that support USB-C output
+Unit of bio->bi_iter.bi_size is bytes, but unit of offset/size
+is sector.
 
-Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fix the above issue in checking offset/size in bio_trim().
+
+Fixes: e83502ca5f1e ("block: fix argument type of bio_trim()")
+Cc: Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/20220414084443.1736850-1-ming.lei@redhat.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/ObjectID.h | 1 +
- 1 file changed, 1 insertion(+)
+ block/bio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/ObjectID.h b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-index 5b393622f592..a0f0a17e224f 100644
---- a/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-+++ b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-@@ -119,6 +119,7 @@
- #define CONNECTOR_OBJECT_ID_eDP                   0x14
- #define CONNECTOR_OBJECT_ID_MXM                   0x15
- #define CONNECTOR_OBJECT_ID_LVDS_eDP              0x16
-+#define CONNECTOR_OBJECT_ID_USBC                  0x17
+diff --git a/block/bio.c b/block/bio.c
+index 25f1ed261100..8906c9856a7d 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -1552,7 +1552,7 @@ EXPORT_SYMBOL(bio_split);
+ void bio_trim(struct bio *bio, sector_t offset, sector_t size)
+ {
+ 	if (WARN_ON_ONCE(offset > BIO_MAX_SECTORS || size > BIO_MAX_SECTORS ||
+-			 offset + size > bio->bi_iter.bi_size))
++			 offset + size > bio_sectors(bio)))
+ 		return;
  
- /* deleted */
- 
+ 	size <<= 9;
 -- 
 2.35.1
 
