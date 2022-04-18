@@ -2,113 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAF01C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 10:54:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0BFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 10:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237742AbiDRK5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 06:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58546 "EHLO
+        id S236897AbiDRK5z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 06:57:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237362AbiDRK45 (ORCPT
+        with ESMTP id S231597AbiDRK5y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 06:56:57 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2816519C2E
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 03:54:16 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id k62so12158976pgd.2
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 03:54:16 -0700 (PDT)
+        Mon, 18 Apr 2022 06:57:54 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86E915FEF;
+        Mon, 18 Apr 2022 03:55:15 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id q75so2211736qke.6;
+        Mon, 18 Apr 2022 03:55:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sX9W0jJI3V+TTQxrILZfbGus1iz/Yao2DvXh0KaNAVk=;
-        b=dfq5nxRHRr6Vx5qEgX57IF65zgE2vVmhCiwB5zffgAqsMWTu6wr1CGxCNlu8DTUa0t
-         DTvlRdOymlFXFt06/SzX29Vm8lZvm8Pyu8QrvBgX56wA4ds/WDOAaihVGK5qGPG2dxvb
-         nGv2r6YjuIsulVRF2Q6Og5Ftk5FeuGQOMDjWH08IexikHcBNlJ1gdPuUMuJnka7VRbek
-         mmYv5dNZCLa0qClq4I3MTTY/MOP2gRYD6vVe7Or1sjkxeOGGw3bMtD1mH6Pj5F+EDtwG
-         mVFSMv/wt7jILCuDfg/yqBLjcL8UTqcNejXS4SbEFzmMni5ubNGpfLvQVDXVxjNaq1AI
-         QjRA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mJYathoFEIzfoBsN3XEQLNGQPaiEyKTpa9HUFEQqI7g=;
+        b=otiHr0bhsPiEU8mmgnUvrKkI2Hme7D0hd1f1xUpHNTxAtDGxbXw9qmpRIQM6ZHTWe5
+         NIHfSibH1l72sCyeyrbuauPKdGlrlNA8FnuLZ66avEHTeGDchDF8A7qq701Js0eX6wio
+         /vNqY5mmF7uugqodylWVPUwWcxxPkdMTo/CMOAkNzQAB9wG+chcbUaUnSzr3awWtnsHk
+         yU/wYJx6EEUNHF9MadCIfmp1nfv7+9ZUOcfv8qlGqGP3KXYD6855+yrEAN0j8MbwB9oY
+         ZdMgcLn7RLOc8R7f0AIpFLRoWErnEG3YKu8jXNx27x/1LQ8NTQms4mc8NNP1lPCV4NAE
+         Oi2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sX9W0jJI3V+TTQxrILZfbGus1iz/Yao2DvXh0KaNAVk=;
-        b=cZBg/nlsNx4Y2lG2HL0NR7otaa/YPHUoMiBbCjrVTcKMLfanf3IMUrn807k6l4ycpM
-         slD3JLksiCDLfa6iHqk1IHPzAqj+PmGi4lbUVFR8T89ylP3vDiv0w8pVKXGjx6E6YK3d
-         56NGt8LhxxRCKGNRfIN5XQ0iliFENiESqa5LDT+L6lxiTX+gzM97lZBQdSfajmzHSbrU
-         1AqppTtdndMcL+gdyLXW/vqEBNnN7LiuFwt11jffD/5EdhHNS5ugbaYHm6px/EsoM9pd
-         OZf7CrcMfHTWoCcjXwtRpoFED3IFB7ePPpNiIKohYTSixmaVVABQrZ1KSCbbSqliy01w
-         Y7IQ==
-X-Gm-Message-State: AOAM530faDSZr79eTLvFb8R5BgCo91oRJvqewTrNpGY5fSvgkvJkyhbw
-        b9hFry94QYeECkc5RS0Qa5hYwA==
-X-Google-Smtp-Source: ABdhPJwLL+wp8GjQBIxTmwnulmQuTS6sDMH8dVFmsKsJdWwsnXB7OAisEOQpLEWJBpXDRZiR9Rbvgw==
-X-Received: by 2002:a05:6a00:1ad2:b0:50a:8181:fed4 with SMTP id f18-20020a056a001ad200b0050a8181fed4mr1628046pfv.16.1650279255667;
-        Mon, 18 Apr 2022 03:54:15 -0700 (PDT)
-Received: from localhost.localdomain ([122.172.241.223])
-        by smtp.gmail.com with ESMTPSA id j13-20020a056a00130d00b004f1025a4361sm12986278pfu.202.2022.04.18.03.54.11
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mJYathoFEIzfoBsN3XEQLNGQPaiEyKTpa9HUFEQqI7g=;
+        b=x/RIdtHsJ8COIPQDLyd9KPpcgYprtWfJ8mndYBwz2lq2++fGR/ZFI9zMmRDjVS24Nz
+         EPxTgkXT6T/dTH1O8rccxbMudK5Zc5VKZEuCo4kBB6SzBauOvTY5hR/xg03GuyoK9dw4
+         qDgwmcWz0910qM7lGP/wAss2kPNlw9Z+iUX3I3UE6u+j+JfLdzek/tPfWG9fV8fdvoNF
+         Zd9VJmLPe1q4DeWVhXThXiOGIDKwryTpOwau9UywV7zJEEKCwrzcb2CBq+vteml8ijYO
+         5BAetMT10U9Rk3JLC1xJhIUvW8gL2jnZbHCTNKD/ksKjwj9VI0F5FAEXyB35fkFXqUQU
+         GHag==
+X-Gm-Message-State: AOAM531jqgbdcRg4C5VlnHYjVBeS2cqIcnxLPplK7tDjuLrtHjGWon87
+        o/iqZ1HatpynUhN1wVJeMlPWxakmj4I=
+X-Google-Smtp-Source: ABdhPJy+BvVT6h3LQ1zXnfSsqa+cdvoxW7L+2hRCS6LsGQccYUmqYIb9DnXTiZn1BzbGJ4c2WDPN+A==
+X-Received: by 2002:a05:620a:2415:b0:69e:784d:3a4c with SMTP id d21-20020a05620a241500b0069e784d3a4cmr5166230qkn.14.1650279315087;
+        Mon, 18 Apr 2022 03:55:15 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id d126-20020a37b484000000b0067e60283d08sm6287438qkf.40.2022.04.18.03.55.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 03:54:15 -0700 (PDT)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Anup Patel <anup@brainfault.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v6 7/7] RISC-V: Use IPIs for remote icache flush when possible
-Date:   Mon, 18 Apr 2022 16:23:05 +0530
-Message-Id: <20220418105305.1196665-8-apatel@ventanamicro.com>
+        Mon, 18 Apr 2022 03:55:14 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     ohad@wizery.com
+Cc:     bjorn.andersson@linaro.org, linux-omap@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] hwspinlock: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Mon, 18 Apr 2022 10:55:08 +0000
+Message-Id: <20220418105508.2558696-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220418105305.1196665-1-apatel@ventanamicro.com>
-References: <20220418105305.1196665-1-apatel@ventanamicro.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If we have specialized interrupt controller (such as AIA IMSIC) which
-allows supervisor mode to directly inject IPIs without any assistance
-from M-mode or HS-mode then using such specialized interrupt controller,
-we can do remote icache flushe directly from supervisor mode instead of
-using the SBI RFENCE calls.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-This patch extends remote icache flush functions to use supervisor mode
-IPIs whenever direct supervisor mode IPIs.are supported by interrupt
-controller.
+Using pm_runtime_resume_and_get is more appropriate
+for simplifing code
 
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- arch/riscv/mm/cacheflush.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/hwspinlock/omap_hwspinlock.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/arch/riscv/mm/cacheflush.c b/arch/riscv/mm/cacheflush.c
-index 6cb7d96ad9c7..7c7e44aaf791 100644
---- a/arch/riscv/mm/cacheflush.c
-+++ b/arch/riscv/mm/cacheflush.c
-@@ -18,7 +18,7 @@ void flush_icache_all(void)
- {
- 	local_flush_icache_all();
+diff --git a/drivers/hwspinlock/omap_hwspinlock.c b/drivers/hwspinlock/omap_hwspinlock.c
+index 33eeff94fc2a..1fb3a2550e29 100644
+--- a/drivers/hwspinlock/omap_hwspinlock.c
++++ b/drivers/hwspinlock/omap_hwspinlock.c
+@@ -94,11 +94,9 @@ static int omap_hwspinlock_probe(struct platform_device *pdev)
+ 	 * the module SYSSTATUS register
+ 	 */
+ 	pm_runtime_enable(&pdev->dev);
+-	ret = pm_runtime_get_sync(&pdev->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(&pdev->dev);
++	ret = pm_runtime_resume_and_get(&pdev->dev);
++	if (ret < 0)
+ 		goto runtime_err;
+-	}
  
--	if (IS_ENABLED(CONFIG_RISCV_SBI))
-+	if (IS_ENABLED(CONFIG_RISCV_SBI) && !riscv_use_ipi_for_rfence())
- 		sbi_remote_fence_i(NULL);
- 	else
- 		on_each_cpu(ipi_remote_fence_i, NULL, 1);
-@@ -66,7 +66,8 @@ void flush_icache_mm(struct mm_struct *mm, bool local)
- 		 * with flush_icache_deferred().
- 		 */
- 		smp_mb();
--	} else if (IS_ENABLED(CONFIG_RISCV_SBI)) {
-+	} else if (IS_ENABLED(CONFIG_RISCV_SBI) &&
-+		   !riscv_use_ipi_for_rfence()) {
- 		sbi_remote_fence_i(&others);
- 	} else {
- 		on_each_cpu_mask(&others, ipi_remote_fence_i, NULL, 1);
+ 	/* Determine number of locks */
+ 	i = readl(io_base + SYSSTATUS_OFFSET);
 -- 
 2.25.1
+
 
