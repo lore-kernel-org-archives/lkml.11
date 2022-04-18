@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81033C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD1EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239140AbiDRMef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38620 "EHLO
+        id S239150AbiDRMek (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:34:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239181AbiDRM1u (ORCPT
+        with ESMTP id S239464AbiDRM22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:27:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BB01EEFD;
-        Mon, 18 Apr 2022 05:21:27 -0700 (PDT)
+        Mon, 18 Apr 2022 08:28:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307CF21825;
+        Mon, 18 Apr 2022 05:21:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E737FB80EDC;
-        Mon, 18 Apr 2022 12:21:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 134B9C385A8;
-        Mon, 18 Apr 2022 12:21:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADE3E60F0C;
+        Mon, 18 Apr 2022 12:21:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1438C385A1;
+        Mon, 18 Apr 2022 12:21:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284484;
-        bh=Tz8etSiYKMM7cHcBHuerXjlDFxuy+vKXDjCA1BuI+eg=;
+        s=korg; t=1650284512;
+        bh=65Kk+qldAVoXasIuRHp7X0cnQR6pzfjYHtj7UyV3JM4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xG3Ioe5uyA4Wjt2g53MXx/9PLLNGDon2OU3OgW3t9ibAfgjCniWUARtDlMa6yr00x
-         bMfesURg0pz6g1L3rjai31xxa9h36Ng53bTKJkYtlB4nGIKtLpWVmsejPC5QLnWRIi
-         PGQgalmIhLR0Wdlmdsjnhj1fG8AQ3bRpVodi2TKU=
+        b=k2hWUgKji47BOZrgJKtmCHBEFY9haO4FfHTOM9HxTfZ+bMAMWagCOJ5i/vy3vcLB2
+         JY6qq4WUmZxz7AuWi97O3635ZRbZA+X9b6ANDoRPOM/eriD5FxojvyejcS+Jbvh+R+
+         bffkA2afGPnkxf68Pb+rE00ZNHhTSGZmXziceims=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, QintaoShen <unSimple1993@163.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 106/219] netfilter: nf_tables: nft_parse_register can return a negative value
-Date:   Mon, 18 Apr 2022 14:11:15 +0200
-Message-Id: <20220418121209.864337143@linuxfoundation.org>
+Subject: [PATCH 5.17 140/219] drm/amdkfd: Check for potential null return of kmalloc_array()
+Date:   Mon, 18 Apr 2022 14:11:49 +0200
+Message-Id: <20220418121210.811287033@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,35 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antoine Tenart <atenart@kernel.org>
+From: QintaoShen <unSimple1993@163.com>
 
-[ Upstream commit 6c6f9f31ecd47dce1d0dafca4bec8805f9bc97cd ]
+[ Upstream commit ebbb7bb9e80305820dc2328a371c1b35679f2667 ]
 
-Since commit 6e1acfa387b9 ("netfilter: nf_tables: validate registers
-coming from userspace.") nft_parse_register can return a negative value,
-but the function prototype is still returning an unsigned int.
+As the kmalloc_array() may return null, the 'event_waiters[i].wait' would lead to null-pointer dereference.
+Therefore, it is better to check the return value of kmalloc_array() to avoid this confusion.
 
-Fixes: 6e1acfa387b9 ("netfilter: nf_tables: validate registers coming from userspace.")
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: QintaoShen <unSimple1993@163.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_events.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 1f5a0eece0d1..30d29d038d09 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -9275,7 +9275,7 @@ int nft_parse_u32_check(const struct nlattr *attr, int max, u32 *dest)
- }
- EXPORT_SYMBOL_GPL(nft_parse_u32_check);
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
+index afe72dd11325..6ca7e12bdab8 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_events.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
+@@ -531,6 +531,8 @@ static struct kfd_event_waiter *alloc_event_waiters(uint32_t num_events)
+ 	event_waiters = kmalloc_array(num_events,
+ 					sizeof(struct kfd_event_waiter),
+ 					GFP_KERNEL);
++	if (!event_waiters)
++		return NULL;
  
--static unsigned int nft_parse_register(const struct nlattr *attr, u32 *preg)
-+static int nft_parse_register(const struct nlattr *attr, u32 *preg)
- {
- 	unsigned int reg;
- 
+ 	for (i = 0; (event_waiters) && (i < num_events) ; i++) {
+ 		init_wait(&event_waiters[i].wait);
 -- 
 2.35.1
 
