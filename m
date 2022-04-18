@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C95A8C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A7F4C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245167AbiDRNwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41350 "EHLO
+        id S245135AbiDRNwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244239AbiDRNaN (ORCPT
+        with ESMTP id S243355AbiDRN24 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F0241625;
-        Mon, 18 Apr 2022 05:54:18 -0700 (PDT)
+        Mon, 18 Apr 2022 09:28:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89E63F309;
+        Mon, 18 Apr 2022 05:53:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 929F9B80D9C;
-        Mon, 18 Apr 2022 12:54:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F02FAC385A7;
-        Mon, 18 Apr 2022 12:54:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E259BB80D9C;
+        Mon, 18 Apr 2022 12:53:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DB42C385A1;
+        Mon, 18 Apr 2022 12:53:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286455;
-        bh=rk88CqsmYPt2GYpQNqnGaUUD5zAsEFFFkLN2OQiBwXs=;
+        s=korg; t=1650286408;
+        bh=uwWUHcocqa18DATC5hnFI4mO2NFYAmc2DXMf4447H+g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r4/dD8Znx6U2BMdteLRn8bURLpenbRhnrBfW9kHM7TFda5Auk6uQXO6MvRB9jnOf8
-         NJgxg1X3EvH+PDDWO0uQbP6mU6l7uSfxJmkkMRJr6EBF2u+5TaNZ/uozsVrpg3z9dG
-         AjABn88qLryUzswvruNsEY3cjT5KAu0sIkAyYblE=
+        b=Pi/ISS/Dd2aCLujLLobdstcNOLxeMiv6fLn+cZMGJ2KJt0ul0g8j2rG2H4VKGBsWD
+         z4oyfNKrbcyJYH+2jSwYgrK32XPFAuauvah+wuCc+7i7MS6QEnlKaorLVjz2oq0Mp6
+         2+TkdFsy+4TgQJSMhp0esouGNBRR88F/5wfLeqKQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Xin Xiong <xiongx18@fudan.edu.cn>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 141/284] pinctrl: mediatek: Fix missing of_node_put() in mtk_pctrl_init
-Date:   Mon, 18 Apr 2022 14:12:02 +0200
-Message-Id: <20220418121215.483405255@linuxfoundation.org>
+Subject: [PATCH 4.14 123/284] mtd: rawnand: atmel: fix refcount issue in atmel_nand_controller_init
+Date:   Mon, 18 Apr 2022 14:11:44 +0200
+Message-Id: <20220418121214.658422150@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -51,43 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-[ Upstream commit dab4df9ca919f59e5b9dd84385eaf34d4f20dbb0 ]
+[ Upstream commit fecbd4a317c95d73c849648c406bcf1b6a0ec1cf ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+The reference counting issue happens in several error handling paths
+on a refcounted object "nc->dmac". In these paths, the function simply
+returns the error code, forgetting to balance the reference count of
+"nc->dmac", increased earlier by dma_request_channel(), which may
+cause refcount leaks.
 
-Fixes: a6df410d420a ("pinctrl: mediatek: Add Pinctrl/GPIO driver for mt8135.")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308071155.21114-1-linmq006@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fix it by decrementing the refcount of specific object in those error
+paths.
+
+Fixes: f88fc122cc34 ("mtd: nand: Cleanup/rework the atmel_nand driver")
+Co-developed-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Co-developed-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220304085330.3610-1-xiongx18@fudan.edu.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mediatek/pinctrl-mtk-common.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/mtd/nand/atmel/nand-controller.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-index 3cf384f8b122..8b07439bb694 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-@@ -1367,6 +1367,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
- 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 0);
- 	if (node) {
- 		pctl->regmap1 = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(pctl->regmap1))
- 			return PTR_ERR(pctl->regmap1);
- 	} else if (regmap) {
-@@ -1380,6 +1381,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
- 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 1);
- 	if (node) {
- 		pctl->regmap2 = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(pctl->regmap2))
- 			return PTR_ERR(pctl->regmap2);
+diff --git a/drivers/mtd/nand/atmel/nand-controller.c b/drivers/mtd/nand/atmel/nand-controller.c
+index d5a493e8ee08..475c751f2d1e 100644
+--- a/drivers/mtd/nand/atmel/nand-controller.c
++++ b/drivers/mtd/nand/atmel/nand-controller.c
+@@ -1998,13 +1998,15 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
+ 	nc->mck = of_clk_get(dev->parent->of_node, 0);
+ 	if (IS_ERR(nc->mck)) {
+ 		dev_err(dev, "Failed to retrieve MCK clk\n");
+-		return PTR_ERR(nc->mck);
++		ret = PTR_ERR(nc->mck);
++		goto out_release_dma;
  	}
+ 
+ 	np = of_parse_phandle(dev->parent->of_node, "atmel,smc", 0);
+ 	if (!np) {
+ 		dev_err(dev, "Missing or invalid atmel,smc property\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto out_release_dma;
+ 	}
+ 
+ 	nc->smc = syscon_node_to_regmap(np);
+@@ -2012,10 +2014,16 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
+ 	if (IS_ERR(nc->smc)) {
+ 		ret = PTR_ERR(nc->smc);
+ 		dev_err(dev, "Could not get SMC regmap (err = %d)\n", ret);
+-		return ret;
++		goto out_release_dma;
+ 	}
+ 
+ 	return 0;
++
++out_release_dma:
++	if (nc->dmac)
++		dma_release_channel(nc->dmac);
++
++	return ret;
+ }
+ 
+ static int
 -- 
 2.34.1
 
