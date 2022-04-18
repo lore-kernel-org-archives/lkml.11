@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE43C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:34:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D17FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240027AbiDRNg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:36:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53942 "EHLO
+        id S242523AbiDRNhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:37:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243729AbiDRNKY (ORCPT
+        with ESMTP id S243707AbiDRNKY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:10:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1375E272A;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07DD26DE;
         Mon, 18 Apr 2022 05:49:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7814F61254;
-        Mon, 18 Apr 2022 12:49:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ACF6C385A1;
-        Mon, 18 Apr 2022 12:49:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 613F7B80EE1;
+        Mon, 18 Apr 2022 12:49:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3C81C385A8;
+        Mon, 18 Apr 2022 12:49:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286191;
-        bh=77qcZ1Uzak7g1HQpiucAyiTuDej5Yx4twTR1oQQDeQw=;
+        s=korg; t=1650286176;
+        bh=jSmZMcvSkSe1LBly2aT57pfhxF45RhCNh/KbiUBO+tw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gj1XhWoB2wkVx2xVwEOklXDy40a5yHHNV01nUiGtZ/dAhVLiTFwDT7ENsJVvSCtPf
-         iKYzsoA3g4LjH2SBPTkEf4tz+1gAJmyXOa9WX7U3uokmC4UEYW57ttDIKjCYBFwQh+
-         f89Z/Icenfs24Z8s9CBHeQfo/AcW+p4WkeO5OgJQ=
+        b=Vy4bwrnYISuvWwKwfO7p1TLc1gv9M7OKAucsHyrWPjdwURYO6bFkd0ny7TU8tv6L8
+         Fq9YmyYWaJIm6PVUvtmNwahaUbHIJh0XNKOr8bpTNvyvBK5jUeoVqQb8ag/U7pPRYK
+         NOumCVJUKIeR9vZm+HI8zZhT1yjTEHI/xY9Sdyyo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Qing <wangqing@vivo.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 057/284] spi: pxa2xx-pci: Balance reference count for PCI DMA device
-Date:   Mon, 18 Apr 2022 14:10:38 +0200
-Message-Id: <20220418121212.315243090@linuxfoundation.org>
+Subject: [PATCH 4.14 053/284] crypto: authenc - Fix sleep in atomic context in decrypt_tail
+Date:   Mon, 18 Apr 2022 14:10:34 +0200
+Message-Id: <20220418121212.204177542@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,75 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-[ Upstream commit 609d7ffdc42199a0ec949db057e3b4be6745d6c5 ]
+[ Upstream commit 66eae850333d639fc278d6f915c6fc01499ea893 ]
 
-The pci_get_slot() increases its reference count, the caller
-must decrement the reference count by calling pci_dev_put().
+The function crypto_authenc_decrypt_tail discards its flags
+argument and always relies on the flags from the original request
+when starting its sub-request.
 
-Fixes: 743485ea3bee ("spi: pxa2xx-pci: Do a specific setup in a separate function")
-Fixes: 25014521603f ("spi: pxa2xx-pci: Enable DMA for Intel Merrifield")
-Reported-by: Wang Qing <wangqing@vivo.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/r/20220223191637.31147-1-andriy.shevchenko@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This is clearly wrong as it may cause the SLEEPABLE flag to be
+set when it shouldn't.
+
+Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-pxa2xx-pci.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ crypto/authenc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-pxa2xx-pci.c b/drivers/spi/spi-pxa2xx-pci.c
-index 1736a48bbcce..54e316eb0891 100644
---- a/drivers/spi/spi-pxa2xx-pci.c
-+++ b/drivers/spi/spi-pxa2xx-pci.c
-@@ -72,14 +72,23 @@ static bool lpss_dma_filter(struct dma_chan *chan, void *param)
- 	return true;
- }
+diff --git a/crypto/authenc.c b/crypto/authenc.c
+index 053287dfad65..533e811a0899 100644
+--- a/crypto/authenc.c
++++ b/crypto/authenc.c
+@@ -268,7 +268,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
+ 		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
  
-+static void lpss_dma_put_device(void *dma_dev)
-+{
-+	pci_dev_put(dma_dev);
-+}
-+
- static int lpss_spi_setup(struct pci_dev *dev, struct pxa_spi_info *c)
- {
- 	struct pci_dev *dma_dev;
-+	int ret;
- 
- 	c->num_chipselect = 1;
- 	c->max_clk_rate = 50000000;
- 
- 	dma_dev = pci_get_slot(dev->bus, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
-+	ret = devm_add_action_or_reset(&dev->dev, lpss_dma_put_device, dma_dev);
-+	if (ret)
-+		return ret;
- 
- 	if (c->tx_param) {
- 		struct dw_dma_slave *slave = c->tx_param;
-@@ -103,8 +112,9 @@ static int lpss_spi_setup(struct pci_dev *dev, struct pxa_spi_info *c)
- 
- static int mrfld_spi_setup(struct pci_dev *dev, struct pxa_spi_info *c)
- {
--	struct pci_dev *dma_dev = pci_get_slot(dev->bus, PCI_DEVFN(21, 0));
- 	struct dw_dma_slave *tx, *rx;
-+	struct pci_dev *dma_dev;
-+	int ret;
- 
- 	switch (PCI_FUNC(dev->devfn)) {
- 	case 0:
-@@ -129,6 +139,11 @@ static int mrfld_spi_setup(struct pci_dev *dev, struct pxa_spi_info *c)
- 		return -ENODEV;
- 	}
- 
-+	dma_dev = pci_get_slot(dev->bus, PCI_DEVFN(21, 0));
-+	ret = devm_add_action_or_reset(&dev->dev, lpss_dma_put_device, dma_dev);
-+	if (ret)
-+		return ret;
-+
- 	tx = c->tx_param;
- 	tx->dma_dev = &dma_dev->dev;
- 
+ 	skcipher_request_set_tfm(skreq, ctx->enc);
+-	skcipher_request_set_callback(skreq, aead_request_flags(req),
++	skcipher_request_set_callback(skreq, flags,
+ 				      req->base.complete, req->base.data);
+ 	skcipher_request_set_crypt(skreq, src, dst,
+ 				   req->cryptlen - authsize, req->iv);
 -- 
 2.34.1
 
