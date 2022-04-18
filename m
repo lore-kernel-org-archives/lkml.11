@@ -2,98 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86183C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 01:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04048C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 01:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235656AbiDRBll (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 21:41:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50094 "EHLO
+        id S235666AbiDRBn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 21:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235645AbiDRBlg (ORCPT
+        with ESMTP id S235676AbiDRBnX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 21:41:36 -0400
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1161834C
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 18:38:59 -0700 (PDT)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 23I1QhuP071544;
-        Mon, 18 Apr 2022 09:26:43 +0800 (GMT-8)
-        (envelope-from dylan_hung@aspeedtech.com)
-Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 18 Apr
- 2022 09:38:41 +0800
-From:   Dylan Hung <dylan_hung@aspeedtech.com>
-To:     <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
-        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <p.zabel@pengutronix.de>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <krzk+dt@kernel.org>
-CC:     <BMC-SW@aspeedtech.com>
-Subject: [PATCH net-next RESEND v5 3/3] ARM: dts: aspeed: add reset properties into MDIO nodes
-Date:   Mon, 18 Apr 2022 09:40:59 +0800
-Message-ID: <20220418014059.3054-4-dylan_hung@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220418014059.3054-1-dylan_hung@aspeedtech.com>
-References: <20220418014059.3054-1-dylan_hung@aspeedtech.com>
+        Sun, 17 Apr 2022 21:43:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 092D01836E
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 18:40:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650246045;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=js3VMr6f+ww/wTyt0zXjSjPTLatJCvLXjxHWV+1RMnE=;
+        b=LMQj6u90tbOSTew9KqJ4UpcRVqu03gYsIr2RSvxP5/gOKtItNEXdvGmeQBgJu2VQyVht2j
+        SO57+4qQCcSonzPnylZZHaF8XLnDLX+ycZboilyEWm+l8RHU2fg/R6Xs0x9J0X7xWENSoY
+        uLw1g3dpNsz4cL5kgH85p366h8DfOgo=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-498-Bzp9SVxpPSClpvqTJHACFA-1; Sun, 17 Apr 2022 21:40:42 -0400
+X-MC-Unique: Bzp9SVxpPSClpvqTJHACFA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8115D833961;
+        Mon, 18 Apr 2022 01:40:41 +0000 (UTC)
+Received: from localhost (ovpn-12-21.pek2.redhat.com [10.72.12.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id AB4944047296;
+        Mon, 18 Apr 2022 01:40:40 +0000 (UTC)
+Date:   Mon, 18 Apr 2022 09:40:36 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Coiby Xu <coxu@redhat.com>
+Cc:     kexec@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+        Michal Suchanek <msuchanek@suse.de>,
+        Dave Young <dyoung@redhat.com>, Will Deacon <will@kernel.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Mimi Zohar <zohar@linux.ibm.com>, Chun-Yi Lee <jlee@suse.com>,
+        stable@kernel.org, open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6 1/4] kexec: clean up arch_kexec_kernel_verify_sig
+Message-ID: <YlzBlPWXWeg6ABen@MiWiFi-R3L-srv>
+References: <20220414014344.228523-1-coxu@redhat.com>
+ <20220414014344.228523-2-coxu@redhat.com>
+ <YleYmZAAnF5aOan3@MiWiFi-R3L-srv>
+ <20220415093735.74eusyuuboa32aqs@Rk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.216]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 23I1QhuP071544
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220415093735.74eusyuuboa32aqs@Rk>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add reset control properties into MDIO nodes.  The 4 MDIO controllers in
-AST2600 SOC share one reset control bit SCU50[3].
+On 04/15/22 at 05:37pm, Coiby Xu wrote:
+> On Thu, Apr 14, 2022 at 11:44:25AM +0800, Baoquan He wrote:
+> > On 04/14/22 at 09:43am, Coiby Xu wrote:
+> > > Currently there is no arch-specific implementation of
+> > > arch_kexec_kernel_verify_sig. Even if we want to add an implementation
+> > > for an architecture in the future, we can simply use "(struct
+> > > kexec_file_ops*)->verify_sig". So clean it up.
+> > > 
+> > > Suggested-by: Eric W. Biederman <ebiederm@xmission.com>
+> > > Cc: stable@kernel.org
+> > 
+> > It should be not worth noticing stable kernel that a clean up patch need
+> > be back ported.
+> 
+> Thanks for the suggestion! For the 2nd and 3rd patch, I'll add prerequisite
+> info,
+> 
+> Cc: stable@kernel.org # 34d5960af253: kexec: clean up arch_kexec_kernel_verify_sig
+> 
+> and
+> 
+> Cc: stable@kernel.org # 34d5960af253: kexec: clean up arch_kexec_kernel_verify_sig
+> Cc: stable@kernel.org # 83b7bb2d49ae: kexec, KEYS: make the code in bzImage64_verify_sig generic
+> 
+> respectively.
 
-Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
-Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
----
- arch/arm/boot/dts/aspeed-g6.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
-index c32e87fad4dc..ab20ea8d829d 100644
---- a/arch/arm/boot/dts/aspeed-g6.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g6.dtsi
-@@ -181,6 +181,7 @@ mdio0: mdio@1e650000 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio1_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mdio1: mdio@1e650008 {
-@@ -191,6 +192,7 @@ mdio1: mdio@1e650008 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio2_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mdio2: mdio@1e650010 {
-@@ -201,6 +203,7 @@ mdio2: mdio@1e650010 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio3_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mdio3: mdio@1e650018 {
-@@ -211,6 +214,7 @@ mdio3: mdio@1e650018 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio4_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mac0: ftgmac@1e660000 {
--- 
-2.25.1
+That sounds good, thx.
 
