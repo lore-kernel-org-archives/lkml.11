@@ -2,100 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FCF6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:46:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE37C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345060AbiDROtM (ORCPT
+        id S1345167AbiDROta (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:49:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42504 "EHLO
+        Mon, 18 Apr 2022 10:49:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241954AbiDROsw (ORCPT
+        with ESMTP id S1345367AbiDROtA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:48:52 -0400
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4526580B;
-        Mon, 18 Apr 2022 06:35:50 -0700 (PDT)
-Received: by mail-ot1-f52.google.com with SMTP id i11-20020a9d4a8b000000b005cda3b9754aso9868918otf.12;
-        Mon, 18 Apr 2022 06:35:50 -0700 (PDT)
+        Mon, 18 Apr 2022 10:49:00 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FF92654E;
+        Mon, 18 Apr 2022 06:36:18 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id g19so10337999lfv.2;
+        Mon, 18 Apr 2022 06:36:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ctahVpxYVe7pa97C6ZwRQ8zFh/8uy2grZsYwheAauuE=;
+        b=NxMyNxmv7McG7vfliC1sRp0myrwa6Wv7BfcUYKikzQmk5Mt510X3E+12/xtEyYLMfe
+         GNuYAaVLux+ypQXaJJzRunyq+wC5RbMjsyTrCqfGs+c2oWrVJzmWqZRSpz11s9ix67hK
+         u7cE+aTPuABrOJuDDLPbZAlpW17f4t1G6wDveD93J3bBsLVnE3Hjkgd0IR7hjog2ExRz
+         Tx9s7Q6kk5FDd80+FIeyAGQA2tOgLViV1EGqlt+dV0SSLKv2+Izl9pbBq+xVxkqgRfTy
+         nNJIPGlQ5DlotePRLQQLkox40caEv55Slmb+wQuQWdyMnnN6M7pRkLmEVPd7ePXhOCTn
+         Jf+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=nM2L+6+JapegEUukuEtNkUpnQ327ArTz1PQHCESkekc=;
-        b=CexFq6HtRzwSWzsSvbqg4a32Aj7UI2EJsoMtsW6d+y7prBEsVvPdhjNcbusGspsfiJ
-         fN83AbqHAYJmTA1fHps92Mo7I13lE1DOcnl5pdwIhMnwFRvLwLj9VZOmsTdsWBwXMeXc
-         5JwA7XLhQrkjIMGEYjMt8OzTIYyVFWXQpz8vn6Yx0er9tbV2n/UuoqH2noxTnhXQse6/
-         57+oXvmVVD2uamMObSYzxjWyim+BnewmGoCDycbSN+we9KXKgFHaM63zCTtKfO8bvYvd
-         6+uN65N3C2U80wMW4pYoBLcT7NvYjd+qdILfoyz822vyq8d+eII9q5s12bSg9yir1XZn
-         e8UQ==
-X-Gm-Message-State: AOAM530lCj09BiTfVjlmpPnvw2mPGlLOMrilkPYvVk+oEhieENCLZ3IT
-        zREw+m/jIZAp9O7Xx/LWXw==
-X-Google-Smtp-Source: ABdhPJz752ki2JeGrma0W1R0R7N4ZOPRVgO5nDcQ0xNX/FR870hfxRKpCIQJR1irqpOLZhDrCrSUGg==
-X-Received: by 2002:a9d:5d16:0:b0:5ce:127a:1c42 with SMTP id b22-20020a9d5d16000000b005ce127a1c42mr3876612oti.350.1650288949590;
-        Mon, 18 Apr 2022 06:35:49 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id g8-20020acab608000000b002ecf38fb699sm3990505oif.38.2022.04.18.06.35.48
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ctahVpxYVe7pa97C6ZwRQ8zFh/8uy2grZsYwheAauuE=;
+        b=4QydTPEl6l70aCX4yi09fLCIQ5lVvjm/vKlsuCOdIbBtQlvdQXoQ3x1+AenjeAtsSW
+         n7IPa6Up/aeIu2zpse3Ahmbj/L6G84KCtZe5dpeMB9WS1ggEA4Ahtf3tO7ouRI3l4vEs
+         DFbd4URriLcErmFblqs8Px5oRC6r3J+Hb0hUSKXrW3BNZI8vvGyZZ/rWvwRqGOyvEQMP
+         ktudUaZyvjLvefuX1z9/NHTbf5PWDQmulQw/5R5e4CTpiG9qO39nlRGZ4O2vx28GcUmp
+         dNEYI+7w7olijtjEIIj7EC0AtiL5XsIstbRa2QSnq6WzzMfIuOkYKHe4BHwlH2lb27YK
+         JWRA==
+X-Gm-Message-State: AOAM531v1/lEDuXVd3aBRbc/nj5RS1W7ZR2f2846tVCRAucm2aFRBytA
+        Yo4eQmLZXRqex0yO0AdeGNIn8vs+azv0GQ==
+X-Google-Smtp-Source: ABdhPJxqojB+379Aoz4aRU9p0SqnQukj3Oda4tTeABagBaaNG6KqN67puNwm0y9Ptz+xYXNKnB7few==
+X-Received: by 2002:a19:6046:0:b0:46e:e5c5:12c2 with SMTP id p6-20020a196046000000b0046ee5c512c2mr7826936lfk.625.1650288976716;
+        Mon, 18 Apr 2022 06:36:16 -0700 (PDT)
+Received: from mobilestation ([95.79.134.149])
+        by smtp.gmail.com with ESMTPSA id m17-20020a197111000000b0046d0f737777sm1221369lfc.178.2022.04.18.06.36.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 06:35:49 -0700 (PDT)
-Received: (nullmailer pid 3125296 invoked by uid 1000);
-        Mon, 18 Apr 2022 13:35:48 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     devicetree@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Ondrej Jirman <x@xff.cz>, linux-input@vger.kernel.org
-In-Reply-To: <20220417021633.56127-2-samuel@sholland.org>
-References: <20220417021633.56127-1-samuel@sholland.org> <20220417021633.56127-2-samuel@sholland.org>
-Subject: Re: [PATCH v2 1/4] dt-bindings: input: Add the PinePhone keyboard binding
-Date:   Mon, 18 Apr 2022 08:35:48 -0500
-Message-Id: <1650288948.488026.3125295.nullmailer@robh.at.kernel.org>
+        Mon, 18 Apr 2022 06:36:16 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 16:36:14 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 23/25] dmaengine: dw-edma: Bypass dma-ranges mapping for
+ the local setup
+Message-ID: <20220418133614.atbndfymcn45i3id@mobilestation>
+References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
+ <20220324014836.19149-24-Sergey.Semin@baikalelectronics.ru>
+ <20220325181042.GA12218@thinkpad>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220325181042.GA12218@thinkpad>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 16 Apr 2022 21:16:29 -0500, Samuel Holland wrote:
-> Add devicetree support for the PinePhone keyboard case, which provides a
-> matrix keyboard interface and a proxied I2C bus.
+On Fri, Mar 25, 2022 at 11:40:42PM +0530, Manivannan Sadhasivam wrote:
+> On Thu, Mar 24, 2022 at 04:48:34AM +0300, Serge Semin wrote:
+> > DW eDMA doesn't perform any translation of the traffic generated on the
+> > CPU/Application side. It just generates read/write AXI-bus requests with
+> > the specified addresses. But in case if the dma-ranges DT-property is
+> > specified for a platform device node, Linux will use it to map the CPU
+> > memory regions into the DMAable bus ranges. This isn't what we want for
+> > the eDMA embedded into the locally accessed DW PCIe Root Port and
+> > End-point. In order to work that around let's set the chan_dma_dev flag
+> > for each DW eDMA channel thus forcing the client drivers to getting a
+> > custom dma-ranges-less parental device for the mappings.
+> > 
+> > Note it will only work for the client drivers using the
+> > dmaengine_get_dma_device() method to get the parental DMA device.
+> > 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > ---
+> >  drivers/dma/dw-edma/dw-edma-core.c | 15 +++++++++++++++
+> >  1 file changed, 15 insertions(+)
+> > 
+> > diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
+> > index 72a51970bfba..ca5cd7c99571 100644
+> > --- a/drivers/dma/dw-edma/dw-edma-core.c
+> > +++ b/drivers/dma/dw-edma/dw-edma-core.c
+> > @@ -716,6 +716,21 @@ static int dw_edma_alloc_chan_resources(struct dma_chan *dchan)
+> >  	if (chan->status != EDMA_ST_IDLE)
+> >  		return -EBUSY;
+> >  
+> > +	/* Bypass the dma-ranges based memory regions mapping since the
+> > +	 * inbound iATU only affects the traffic incoming from the
+> > +	 * PCIe bus.
+> > +	 */
 > 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-> ---
+
+> Bypass the dma-ranges based memory regions mapping since eDMA doesn't do any
+> address translation for the CPU address?
+
+Seems reasonable. I'll fix the comment to being clearer.
+
+BTW since we omit setting the DMA_BYPASS flag of the outbound iATU
+windows, the DMA address is actually affected by the DW PCIe
+controller but in a bit of a sophisticated way. AFAIU if no DMA_BYPASS
+flag specified and the resultant TLP address falls into any outbound
+iATU window, the address will be translated in accordance with that
+window translation rule. So happen the chains like this:
++ DMA write:
+CPU memory <-,-> eDMA LLi:SAR(CPU address, data) -> eDMA LLi:DAR(DMA address, data) ->
+Outbound iATU TLP MWr(PCIe address, data) -> PCIe memory.
++ DMA read:
+eDMA SAR(DMA address, ?) -> Outbound iATU TLP MRd(PCIe address, ?) ->
+PCIe memory -> Outbound iATU TLP MRd(PCIe address, data) -> eDMA
+SAR(DMA address, data) -> eDMA DAR(CPU address, data) -> CPU memory
+
+Due to that handy feature we don't need to search for the PCIe bus
+memory range matching the passed source and destination DMA addresses
+of the SG-lists. It is done by the Outbound iATU engine automatically.
+If the DMA_BYPASS flag was set, all the Outbound iATU-related stages
+would have been omitted from the diagram above and the DMA<->PCIe
+translations would have needed to be performed in the eDMA driver
+code.
+
+-Sergey
+
 > 
-> Changes in v2:
->  - Drop keymap DT properties
->  - Add vbat-supply property
+> Other than this,
 > 
->  .../input/pine64,pinephone-keyboard.yaml      | 66 +++++++++++++++++++
->  1 file changed, 66 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/input/pine64,pinephone-keyboard.yaml
+> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 > 
-
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/input/pine64,pinephone-keyboard.yaml: 'additionalProperties' is a required property
-	hint: A schema without a "$ref" to another schema must define all properties and use "additionalProperties"
-	from schema $id: http://devicetree.org/meta-schemas/base.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/input/pine64,pinephone-keyboard.yaml: ignoring, error in schema: 
-Documentation/devicetree/bindings/input/pine64,pinephone-keyboard.example.dtb:0:0: /example-0/i2c/keyboard@15: failed to match any schema with compatible: ['pine64,pinephone-keyboard']
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+> Thanks,
+> Mani
+> 
+> > +	if (chan->dw->chip->flags & DW_EDMA_CHIP_LOCAL) {
+> > +		dchan->dev->chan_dma_dev = true;
+> > +
+> > +		dchan->dev->device.dma_coherent = chan->dw->chip->dev->dma_coherent;
+> > +		dma_coerce_mask_and_coherent(&dchan->dev->device,
+> > +					     dma_get_mask(chan->dw->chip->dev));
+> > +		dchan->dev->device.dma_parms = chan->dw->chip->dev->dma_parms;
+> > +	} else {
+> > +		dchan->dev->chan_dma_dev = false;
+> > +	}
+> > +
+> >  	pm_runtime_get(chan->dw->chip->dev);
+> >  
+> >  	return 0;
+> > -- 
+> > 2.35.1
+> > 
