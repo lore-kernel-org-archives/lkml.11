@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57196C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:17:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FDFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233331AbiDRMUO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:20:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
+        id S238331AbiDRMUW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:20:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238293AbiDRMTr (ORCPT
+        with ESMTP id S238178AbiDRMTr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:19:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B7F1AD82;
-        Mon, 18 Apr 2022 05:16:29 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BFC61AD89;
+        Mon, 18 Apr 2022 05:16:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBE0CB80ED7;
-        Mon, 18 Apr 2022 12:16:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4119AC385A7;
-        Mon, 18 Apr 2022 12:16:26 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 481B6CE1077;
+        Mon, 18 Apr 2022 12:16:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07671C385A7;
+        Mon, 18 Apr 2022 12:16:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284186;
-        bh=EZMe7uLrGbWSPYQn3i6lEKA3laK3wH5AEgSfDubv4Tc=;
+        s=korg; t=1650284183;
+        bh=g2rNjQNG0sDfRmDtZRk544KJU8K+uBrjsb5r0xlxa6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ypx3IEepbadPpHuT36C7Au9XgvPSa5RLiTgEY4X+XgL/sfY8+LK/T2odexNhEd+EX
-         FjdSfJqe1cIkzsnfJqGDT0aNNpIMwdG4U74/C8zvUnWfzQNVi/44UrRjIHDaV7qXGD
-         CM1T1djVI6BD2kOpqR/YVlyGd2vmqLg7tyvXnFQs=
+        b=bpXrXURarOuRc5HJ7Kgft5Q2jDbw1CCU5cCTh+W9Bt8VN38EaZM1HQo5+YGEF9LeY
+         caaau25kPVZJsrCYNzJKrjfGUcVwr7yjB5gOZBOg7kOLtbRF/eT4Fkw6iuQ2lJ2gJ4
+         R1JdU4jxLAy82RqJLTI055IsvXGmILEiY8egl55s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 030/219] ALSA: cs5535audio: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:09:59 +0200
-Message-Id: <20220418121205.081892124@linuxfoundation.org>
+Subject: [PATCH 5.17 029/219] ALSA: cs4281: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:09:58 +0200
+Message-Id: <20220418121205.009137322@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,7 +49,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit 2a56314798e0227cf51e3d1d184a419dc07bc173 upstream.
+commit 9bf5ed9a4e623583f15202d99f4521bc39050f61 upstream.
 
 The previous cleanup with devres may lead to the incorrect release
 orders at the probe error handling due to the devres's nature.  Until
@@ -57,40 +57,43 @@ we register the card, snd_card_free() has to be called at first for
 releasing the stuff properly when the driver tries to manage and
 release the stuff via card->private_free().
 
-Fixes: 5eba4c646dfe ("ALSA: cs5535audio: Allocate resources with device-managed APIs")
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
+
+Fixes: 99041fea70d0 ("ALSA: cs4281: Allocate resources with device-managed APIs")
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-12-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220412102636.16000-11-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/cs5535audio/cs5535audio.c |   10 ++++++++--
+ sound/pci/cs4281.c |   10 ++++++++--
  1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/sound/pci/cs5535audio/cs5535audio.c
-+++ b/sound/pci/cs5535audio/cs5535audio.c
-@@ -281,8 +281,8 @@ static int snd_cs5535audio_create(struct
- 	return 0;
+--- a/sound/pci/cs4281.c
++++ b/sound/pci/cs4281.c
+@@ -1827,8 +1827,8 @@ static void snd_cs4281_opl3_command(stru
+ 	spin_unlock_irqrestore(&opl3->reg_lock, flags);
  }
  
--static int snd_cs5535audio_probe(struct pci_dev *pci,
--				 const struct pci_device_id *pci_id)
-+static int __snd_cs5535audio_probe(struct pci_dev *pci,
-+				   const struct pci_device_id *pci_id)
+-static int snd_cs4281_probe(struct pci_dev *pci,
+-			    const struct pci_device_id *pci_id)
++static int __snd_cs4281_probe(struct pci_dev *pci,
++			      const struct pci_device_id *pci_id)
  {
  	static int dev;
  	struct snd_card *card;
-@@ -331,6 +331,12 @@ static int snd_cs5535audio_probe(struct
+@@ -1888,6 +1888,12 @@ static int snd_cs4281_probe(struct pci_d
  	return 0;
  }
  
-+static int snd_cs5535audio_probe(struct pci_dev *pci,
-+				 const struct pci_device_id *pci_id)
++static int snd_cs4281_probe(struct pci_dev *pci,
++			    const struct pci_device_id *pci_id)
 +{
-+	return snd_card_free_on_error(&pci->dev, __snd_cs5535audio_probe(pci, pci_id));
++	return snd_card_free_on_error(&pci->dev, __snd_cs4281_probe(pci, pci_id));
 +}
 +
- static struct pci_driver cs5535audio_driver = {
- 	.name = KBUILD_MODNAME,
- 	.id_table = snd_cs5535audio_ids,
+ /*
+  * Power Management
+  */
 
 
