@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD02C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:49:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37239C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239667AbiDRMwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
+        id S239683AbiDRMwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240792AbiDRMjh (ORCPT
+        with ESMTP id S240810AbiDRMji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DB625EBC;
-        Mon, 18 Apr 2022 05:30:36 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AE13B20;
+        Mon, 18 Apr 2022 05:30:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9160160F0A;
-        Mon, 18 Apr 2022 12:30:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CF82C385A1;
-        Mon, 18 Apr 2022 12:30:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7017B80EC1;
+        Mon, 18 Apr 2022 12:30:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39C20C385A7;
+        Mon, 18 Apr 2022 12:30:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285036;
-        bh=sYKgYCNXYY7NWfzqTrI1rSUEOBPar9134KFA0tFiBMk=;
+        s=korg; t=1650285044;
+        bh=8/1RHy4MdpZjC7sA0dq68BKq+gTwySVBh9ogwJc4L54=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=icB+WUA1KWLlWrD/Gf0IrPohz3K3qAqLPeP2wpvY0bX1+R85CCawgmGl51XbFtIF+
-         qQ3oGUpMWZQXt8aZige0+nbjroYMLP/0WR15ryw2DcksLw5O28hPCISu9HqPDsvtFE
-         HlgvWtD02FRiMUVvoWC18RPMN/KDw/kEXuTMGD4A=
+        b=jnJVWwO+94szZmtoEVf0M0ZX7yobzN6gy1wP2pVsLNohilkRbPAZ26pb8krIhzwMO
+         K6E4lVKb0kmqi1PnIkLCGanvYAq66RqkJ3mbWy6C7njqSzZfRpF/EV/TXi2DJ3lr31
+         LVuOJftmQzlTqySVwK3ap1RGS8Q2TADIY8F1TluY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 054/189] ALSA: usb-audio: Cap upper limits of buffer/period bytes for implicit fb
-Date:   Mon, 18 Apr 2022 14:11:14 +0200
-Message-Id: <20220418121202.044765582@linuxfoundation.org>
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 056/189] drm/msm: Add missing put_task_struct() in debugfs path
+Date:   Mon, 18 Apr 2022 14:11:16 +0200
+Message-Id: <20220418121202.100734649@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -47,161 +48,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Rob Clark <robdclark@chromium.org>
 
-commit 98c27add5d96485db731a92dac31567b0486cae8 upstream.
+[ Upstream commit ac3e4f42d5ec459f701743debd9c1ad2f2247402 ]
 
-In the implicit feedback mode, some parameters are tied between both
-playback and capture streams.  One of the tied parameters is the
-period size, and this can be a problem if the device has different
-number of channels to both streams.  Assume that an application opens
-a playback stream that has an implicit feedback from a capture stream,
-and it allocates up to the max period and buffer size as much as
-possible.  When the capture device supports only more channels than
-the playback, the minimum period and buffer sizes become larger than
-the sizes the playback stream took.  That is, the minimum size will be
-over the max size the driver limits, and PCM core sees as if no
-available configuration is found, returning -EINVAL mercilessly.
-
-For avoiding this problem, we have to look through the counter part of
-audioformat list for each sync ep, and checks the channels.  If more
-channels are found there, we reduce the max period and buffer sizes
-accordingly.
-
-You may wonder that the patch adds only the evaluation of channels
-between streams, and what about other parameters?  Both the format and
-the rate are tied in the implicit fb mode, hence they are always
-identical.
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215792
-Fixes: 5a6c3e11c9c9 ("ALSA: usb-audio: Add hw constraint for implicit fb sync")
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220407211657.15087-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 25faf2f2e065 ("drm/msm: Show process names in gem_describe")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Link: https://lore.kernel.org/r/20220317184550.227991-1-robdclark@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/pcm.c |   89 ++++++++++++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 87 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/msm_gem.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/usb/pcm.c
-+++ b/sound/usb/pcm.c
-@@ -659,6 +659,9 @@ static int snd_usb_pcm_prepare(struct sn
- #define hwc_debug(fmt, args...) do { } while(0)
- #endif
- 
-+#define MAX_BUFFER_BYTES	(1024 * 1024)
-+#define MAX_PERIOD_BYTES	(512 * 1024)
-+
- static const struct snd_pcm_hardware snd_usb_hardware =
- {
- 	.info =			SNDRV_PCM_INFO_MMAP |
-@@ -669,9 +672,9 @@ static const struct snd_pcm_hardware snd
- 				SNDRV_PCM_INFO_PAUSE,
- 	.channels_min =		1,
- 	.channels_max =		256,
--	.buffer_bytes_max =	1024 * 1024,
-+	.buffer_bytes_max =	MAX_BUFFER_BYTES,
- 	.period_bytes_min =	64,
--	.period_bytes_max =	512 * 1024,
-+	.period_bytes_max =	MAX_PERIOD_BYTES,
- 	.periods_min =		2,
- 	.periods_max =		1024,
- };
-@@ -971,6 +974,78 @@ static int hw_rule_periods_implicit_fb(s
- 				      ep->cur_buffer_periods);
- }
- 
-+/* get the adjusted max buffer (or period) bytes that can fit with the
-+ * paired format for implicit fb
-+ */
-+static unsigned int
-+get_adjusted_max_bytes(struct snd_usb_substream *subs,
-+		       struct snd_usb_substream *pair,
-+		       struct snd_pcm_hw_params *params,
-+		       unsigned int max_bytes,
-+		       bool reverse_map)
-+{
-+	const struct audioformat *fp, *pp;
-+	unsigned int rmax = 0, r;
-+
-+	list_for_each_entry(fp, &subs->fmt_list, list) {
-+		if (!fp->implicit_fb)
-+			continue;
-+		if (!reverse_map &&
-+		    !hw_check_valid_format(subs, params, fp))
-+			continue;
-+		list_for_each_entry(pp, &pair->fmt_list, list) {
-+			if (pp->iface != fp->sync_iface ||
-+			    pp->altsetting != fp->sync_altsetting ||
-+			    pp->ep_idx != fp->sync_ep_idx)
-+				continue;
-+			if (reverse_map &&
-+			    !hw_check_valid_format(pair, params, pp))
-+				break;
-+			if (!reverse_map && pp->channels > fp->channels)
-+				r = max_bytes * fp->channels / pp->channels;
-+			else if (reverse_map && pp->channels < fp->channels)
-+				r = max_bytes * pp->channels / fp->channels;
-+			else
-+				r = max_bytes;
-+			rmax = max(rmax, r);
-+			break;
-+		}
-+	}
-+	return rmax;
-+}
-+
-+/* Reduce the period or buffer bytes depending on the paired substream;
-+ * when a paired configuration for implicit fb has a higher number of channels,
-+ * we need to reduce the max size accordingly, otherwise it may become unusable
-+ */
-+static int hw_rule_bytes_implicit_fb(struct snd_pcm_hw_params *params,
-+				     struct snd_pcm_hw_rule *rule)
-+{
-+	struct snd_usb_substream *subs = rule->private;
-+	struct snd_usb_substream *pair;
-+	struct snd_interval *it;
-+	unsigned int max_bytes;
-+	unsigned int rmax;
-+
-+	pair = &subs->stream->substream[!subs->direction];
-+	if (!pair->ep_num)
-+		return 0;
-+
-+	if (rule->var == SNDRV_PCM_HW_PARAM_PERIOD_BYTES)
-+		max_bytes = MAX_PERIOD_BYTES;
-+	else
-+		max_bytes = MAX_BUFFER_BYTES;
-+
-+	rmax = get_adjusted_max_bytes(subs, pair, params, max_bytes, false);
-+	if (!rmax)
-+		rmax = get_adjusted_max_bytes(pair, subs, params, max_bytes, true);
-+	if (!rmax)
-+		return 0;
-+
-+	it = hw_param_interval(params, rule->var);
-+	return apply_hw_params_minmax(it, 0, rmax);
-+}
-+
- /*
-  * set up the runtime hardware information.
-  */
-@@ -1085,6 +1160,16 @@ static int setup_hw_info(struct snd_pcm_
- 				  SNDRV_PCM_HW_PARAM_PERIODS, -1);
- 	if (err < 0)
- 		return err;
-+	err = snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
-+				  hw_rule_bytes_implicit_fb, subs,
-+				  SNDRV_PCM_HW_PARAM_BUFFER_BYTES, -1);
-+	if (err < 0)
-+		return err;
-+	err = snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
-+				  hw_rule_bytes_implicit_fb, subs,
-+				  SNDRV_PCM_HW_PARAM_PERIOD_BYTES, -1);
-+	if (err < 0)
-+		return err;
- 
- 	return 0;
- }
+diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
+index cb52ac01e512..d280dd64744d 100644
+--- a/drivers/gpu/drm/msm/msm_gem.c
++++ b/drivers/gpu/drm/msm/msm_gem.c
+@@ -937,6 +937,7 @@ void msm_gem_describe(struct drm_gem_object *obj, struct seq_file *m,
+ 					get_pid_task(aspace->pid, PIDTYPE_PID);
+ 				if (task) {
+ 					comm = kstrdup(task->comm, GFP_KERNEL);
++					put_task_struct(task);
+ 				} else {
+ 					comm = NULL;
+ 				}
+-- 
+2.35.1
+
 
 
