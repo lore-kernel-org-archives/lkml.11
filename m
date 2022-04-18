@@ -2,67 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AAF4C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 08:08:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B32C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 08:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237104AbiDRIL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 04:11:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40552 "EHLO
+        id S237113AbiDRINa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 04:13:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231859AbiDRIL2 (ORCPT
+        with ESMTP id S231859AbiDRIN2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 04:11:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A529A11C32;
-        Mon, 18 Apr 2022 01:08:50 -0700 (PDT)
+        Mon, 18 Apr 2022 04:13:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B5B8165BE;
+        Mon, 18 Apr 2022 01:10:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FD346104C;
-        Mon, 18 Apr 2022 08:08:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D834C385A8;
-        Mon, 18 Apr 2022 08:08:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 999AA61046;
+        Mon, 18 Apr 2022 08:10:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB6CFC385A7;
+        Mon, 18 Apr 2022 08:10:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650269329;
-        bh=NvQzA8r3CpfN3EEOE+dzR+OC5JOdLMsVh5Lvn23crhA=;
+        s=k20201202; t=1650269450;
+        bh=uDVHGLR+7FEpycAkRSMAIJLdA9Ly3JUX4oXF8BJ9DT0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YHHaw/xnv0FhFCoI7OBu5iGoO8G/dtyKx6A4psBQjjaufFL4ylKUsTcZB29bKhcbs
-         PlbQwXbKp15iJk4zI1b00CKnMocs8aFpEZlRbcc+kbPoZWrriYjURPtgotnorrHob1
-         fCkz5HYZv0OUUw221TDerNviDZOHfWtM74q3PlMSmsr6F49dG+Wg21BYsvvKo0v2RK
-         KdDj/XmhvDgGc4sGjzDLTrT+YJjTbiIR6LgfLeBcPATwenYN1lDncs0ylKZGvs+6uu
-         GHlJD4KLuxYZY5YN64YvtrLtiDsoV2YS90mDxC6oBnsa+43HKEkV6amWxbTBlIhTTe
-         K5CxM6WS5mmxw==
-Date:   Mon, 18 Apr 2022 16:08:42 +0800
+        b=qHeBUye4vdfRwtzPQJ4TYkf/bvAzXEjzSa7IvjHioLoFfg35jttsgTRjtFabro8lO
+         HZVYBvI+BfGQoRAQwKpQHGs5uOavpvR6htUpJhtPjcOSWlakR4u0HGbVFxonIc/OP9
+         EDTfP6SvFGHCduqtBqS55QB4YFiasKrwayjj0WB2M4GAX8EiFu86J6YJJ5OtLzI1fU
+         0sHy188hcq83WgY7UfhxW9ojQwGNxjpApjDUv6mf9cxJ46TZWcdvd4CnHV7vywoEmT
+         sJm1ejpRebKFthFdB5R1+G1oWjG6SixEcD8hNBXBoWJOppNxnV4kTk9vqk7YmHssx4
+         vCd+S5+UfsSdQ==
+Date:   Mon, 18 Apr 2022 16:10:43 +0800
 From:   Shawn Guo <shawnguo@kernel.org>
-To:     Adam Ford <aford173@gmail.com>
-Cc:     linux-mmc@vger.kernel.org, aford@beaconembedded.com,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V4 2/3] arm64: dts: imx8mn: Enable HS400-ES
-Message-ID: <20220418080842.GC391514@dragon>
-References: <20220410193544.1745684-1-aford173@gmail.com>
- <20220410193544.1745684-2-aford173@gmail.com>
+To:     Ming Qian <ming.qian@nxp.com>
+Cc:     mchehab@kernel.org, hverkuil-cisco@xs4all.nl, robh+dt@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, aisheng.dong@nxp.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v20] arm64: dts: freescale: imx8q: add imx vpu codec
+ entries
+Message-ID: <20220418081043.GD391514@dragon>
+References: <20220411065049.13188-1-ming.qian@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220410193544.1745684-2-aford173@gmail.com>
+In-Reply-To: <20220411065049.13188-1-ming.qian@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 10, 2022 at 02:35:42PM -0500, Adam Ford wrote:
-> The SDHC controller in the imx8mn has the same controller
-> as the imx8mm which supports HS400-ES. Change the compatible
-> fallback to imx8mm to enable it, but keep the imx7d-usdhc
-> to prevent breaking backwards compatibility.
+On Mon, Apr 11, 2022 at 02:50:49PM +0800, Ming Qian wrote:
+> Add the Video Processing Unit node for IMX8Q SoC.
 > 
-> Signed-off-by: Adam Ford <aford173@gmail.com>
+> Signed-off-by: Ming Qian <ming.qian@nxp.com>
+> Signed-off-by: Shijie Qin <shijie.qin@nxp.com>
+> Signed-off-by: Zhou Peng <eagle.zhou@nxp.com>
 
-Applied #2 and #3, thanks!
+Applied, thanks!
