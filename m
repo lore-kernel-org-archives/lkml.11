@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4501EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:38:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F08C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:38:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234592AbiDRMlJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:41:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50950 "EHLO
+        id S237012AbiDRMlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239342AbiDRMcz (ORCPT
+        with ESMTP id S239062AbiDRMbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:32:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A88512636;
-        Mon, 18 Apr 2022 05:24:30 -0700 (PDT)
+        Mon, 18 Apr 2022 08:31:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51188DF44;
+        Mon, 18 Apr 2022 05:24:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02637B80ED6;
-        Mon, 18 Apr 2022 12:24:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31953C385A1;
-        Mon, 18 Apr 2022 12:24:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FC8BB80EDC;
+        Mon, 18 Apr 2022 12:24:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB7C8C385A8;
+        Mon, 18 Apr 2022 12:24:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284667;
-        bh=V8V5mAr7zBx9cxmrp+J0vEBBBiURzpMjSAMqXAV01lQ=;
+        s=korg; t=1650284643;
+        bh=wJm47E6R0VD1i5A84/nqrHc9/278wZiiN/0GWqJeu/g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1DKfXpuLEGkXeYBri3+hi3epgWbfUQ8OYvd7fYcvFPlH03CNnCvCxj26xzwD/oZYF
-         x7g34VMInvE1aSB9kQwmVIgarEsSmYwa4q7YrY44N17w6npRs8icJJquLvj8O7Ap9c
-         RG9Fq36v6Yee6P8ynuw+GeBG0uc2nLKd7O6VI9W0=
+        b=kjrtrl0yo8+RmRUOhPGMaNtxlTD8W6CFYaZFZIa2Kt1gueRpglUsSBkFFMkjYPL3i
+         dtS8BQorGe2mStNnbd9rpFP2+854hiwzF1A/TARBhLnkDuYu5ehDTR2G9It2nIfjtp
+         pGOKVxBgo9DwZQaS1tEoW2C+UyzNBRpGGGgO7ZdY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Seiderer <ps.report@gmx.net>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.17 190/219] ath9k: Fix usage of driver-private space in tx_info
-Date:   Mon, 18 Apr 2022 14:12:39 +0200
-Message-Id: <20220418121212.194099689@linuxfoundation.org>
+        stable@vger.kernel.org, Bruno Goncalves <bgoncalv@redhat.com>,
+        Jan Stancek <jstancek@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.17 182/219] KVM: x86/mmu: Resolve nx_huge_pages when kvm.ko is loaded
+Date:   Mon, 18 Apr 2022 14:12:31 +0200
+Message-Id: <20220418121211.971773008@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,119 +50,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 5a6b06f5927c940fa44026695779c30b7536474c upstream.
+commit 1d0e84806047f38027d7572adb4702ef7c09b317 upstream.
 
-The ieee80211_tx_info_clear_status() helper also clears the rate counts and
-the driver-private part of struct ieee80211_tx_info, so using it breaks
-quite a few other things. So back out of using it, and instead define a
-ath-internal helper that only clears the area between the
-status_driver_data and the rates info. Combined with moving the
-ath_frame_info struct to status_driver_data, this avoids clearing anything
-we shouldn't be, and so we can keep the existing code for handling the rate
-information.
+Resolve nx_huge_pages to true/false when kvm.ko is loaded, leaving it as
+-1 is technically undefined behavior when its value is read out by
+param_get_bool(), as boolean values are supposed to be '0' or '1'.
 
-While fixing this I also noticed that the setting of
-tx_info->status.rates[tx_rateindex].count on hardware underrun errors was
-always immediately overridden by the normal setting of the same fields, so
-rearrange the code so that the underrun detection actually takes effect.
+Alternatively, KVM could define a custom getter for the param, but the
+auto value doesn't depend on the vendor module in any way, and printing
+"auto" would be unnecessarily unfriendly to the user.
 
-The new helper could be generalised to a 'memset_between()' helper, but
-leave it as a driver-internal helper for now since this needs to go to
-stable.
+In addition to fixing the undefined behavior, resolving the auto value
+also fixes the scenario where the auto value resolves to N and no vendor
+module is loaded.  Previously, -1 would result in Y being printed even
+though KVM would ultimately disable the mitigation.
 
+Rename the existing MMU module init/exit helpers to clarify that they're
+invoked with respect to the vendor module, and add comments to document
+why KVM has two separate "module init" flows.
+
+  =========================================================================
+  UBSAN: invalid-load in kernel/params.c:320:33
+  load of value 255 is not a valid value for type '_Bool'
+  CPU: 6 PID: 892 Comm: tail Not tainted 5.17.0-rc3+ #799
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x34/0x44
+   ubsan_epilogue+0x5/0x40
+   __ubsan_handle_load_invalid_value.cold+0x43/0x48
+   param_get_bool.cold+0xf/0x14
+   param_attr_show+0x55/0x80
+   module_attr_show+0x1c/0x30
+   sysfs_kf_seq_show+0x93/0xc0
+   seq_read_iter+0x11c/0x450
+   new_sync_read+0x11b/0x1a0
+   vfs_read+0xf0/0x190
+   ksys_read+0x5f/0xe0
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+   </TASK>
+  =========================================================================
+
+Fixes: b8e8c8303ff2 ("kvm: mmu: ITLB_MULTIHIT mitigation")
 Cc: stable@vger.kernel.org
-Reported-by: Peter Seiderer <ps.report@gmx.net>
-Fixes: 037250f0a45c ("ath9k: Properly clear TX status area before reporting to mac80211")
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Reviewed-by: Peter Seiderer <ps.report@gmx.net>
-Tested-by: Peter Seiderer <ps.report@gmx.net>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220404204800.2681133-1-toke@toke.dk
+Reported-by: Bruno Goncalves <bgoncalv@redhat.com>
+Reported-by: Jan Stancek <jstancek@redhat.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220331221359.3912754-1-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/ath9k/main.c |    2 +-
- drivers/net/wireless/ath/ath9k/xmit.c |   30 ++++++++++++++++++++----------
- 2 files changed, 21 insertions(+), 11 deletions(-)
+ arch/x86/include/asm/kvm_host.h |    5 +++--
+ arch/x86/kvm/mmu/mmu.c          |   20 ++++++++++++++++----
+ arch/x86/kvm/x86.c              |   20 ++++++++++++++++++--
+ 3 files changed, 37 insertions(+), 8 deletions(-)
 
---- a/drivers/net/wireless/ath/ath9k/main.c
-+++ b/drivers/net/wireless/ath/ath9k/main.c
-@@ -839,7 +839,7 @@ static bool ath9k_txq_list_has_key(struc
- 			continue;
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1574,8 +1574,9 @@ static inline int kvm_arch_flush_remote_
+ #define kvm_arch_pmi_in_guest(vcpu) \
+ 	((vcpu) && (vcpu)->arch.handling_intr_from_guest)
  
- 		txinfo = IEEE80211_SKB_CB(bf->bf_mpdu);
--		fi = (struct ath_frame_info *)&txinfo->rate_driver_data[0];
-+		fi = (struct ath_frame_info *)&txinfo->status.status_driver_data[0];
- 		if (fi->keyix == keyix)
- 			return true;
- 	}
---- a/drivers/net/wireless/ath/ath9k/xmit.c
-+++ b/drivers/net/wireless/ath/ath9k/xmit.c
-@@ -141,8 +141,8 @@ static struct ath_frame_info *get_frame_
+-int kvm_mmu_module_init(void);
+-void kvm_mmu_module_exit(void);
++void kvm_mmu_x86_module_init(void);
++int kvm_mmu_vendor_module_init(void);
++void kvm_mmu_vendor_module_exit(void);
+ 
+ void kvm_mmu_destroy(struct kvm_vcpu *vcpu);
+ int kvm_mmu_create(struct kvm_vcpu *vcpu);
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -6144,12 +6144,24 @@ static int set_nx_huge_pages(const char
+ 	return 0;
+ }
+ 
+-int kvm_mmu_module_init(void)
++/*
++ * nx_huge_pages needs to be resolved to true/false when kvm.ko is loaded, as
++ * its default value of -1 is technically undefined behavior for a boolean.
++ */
++void kvm_mmu_x86_module_init(void)
  {
- 	struct ieee80211_tx_info *tx_info = IEEE80211_SKB_CB(skb);
- 	BUILD_BUG_ON(sizeof(struct ath_frame_info) >
--		     sizeof(tx_info->rate_driver_data));
--	return (struct ath_frame_info *) &tx_info->rate_driver_data[0];
-+		     sizeof(tx_info->status.status_driver_data));
-+	return (struct ath_frame_info *) &tx_info->status.status_driver_data[0];
- }
- 
- static void ath_send_bar(struct ath_atx_tid *tid, u16 seqno)
-@@ -2542,6 +2542,16 @@ skip_tx_complete:
- 	spin_unlock_irqrestore(&sc->tx.txbuflock, flags);
- }
- 
-+static void ath_clear_tx_status(struct ieee80211_tx_info *tx_info)
-+{
-+	void *ptr = &tx_info->status;
-+
-+	memset(ptr + sizeof(tx_info->status.rates), 0,
-+	       sizeof(tx_info->status) -
-+	       sizeof(tx_info->status.rates) -
-+	       sizeof(tx_info->status.status_driver_data));
+-	int ret = -ENOMEM;
+-
+ 	if (nx_huge_pages == -1)
+ 		__set_nx_huge_pages(get_nx_auto_mode());
 +}
 +
- static void ath_tx_rc_status(struct ath_softc *sc, struct ath_buf *bf,
- 			     struct ath_tx_status *ts, int nframes, int nbad,
- 			     int txok)
-@@ -2553,7 +2563,7 @@ static void ath_tx_rc_status(struct ath_
- 	struct ath_hw *ah = sc->sc_ah;
- 	u8 i, tx_rateindex;
++/*
++ * The bulk of the MMU initialization is deferred until the vendor module is
++ * loaded as many of the masks/values may be modified by VMX or SVM, i.e. need
++ * to be reset when a potentially different vendor module is loaded.
++ */
++int kvm_mmu_vendor_module_init(void)
++{
++	int ret = -ENOMEM;
  
--	ieee80211_tx_info_clear_status(tx_info);
-+	ath_clear_tx_status(tx_info);
- 
- 	if (txok)
- 		tx_info->status.ack_signal = ts->ts_rssi;
-@@ -2569,6 +2579,13 @@ static void ath_tx_rc_status(struct ath_
- 	tx_info->status.ampdu_len = nframes;
- 	tx_info->status.ampdu_ack_len = nframes - nbad;
- 
-+	tx_info->status.rates[tx_rateindex].count = ts->ts_longretry + 1;
-+
-+	for (i = tx_rateindex + 1; i < hw->max_rates; i++) {
-+		tx_info->status.rates[i].count = 0;
-+		tx_info->status.rates[i].idx = -1;
-+	}
-+
- 	if ((ts->ts_status & ATH9K_TXERR_FILT) == 0 &&
- 	    (tx_info->flags & IEEE80211_TX_CTL_NO_ACK) == 0) {
- 		/*
-@@ -2590,13 +2607,6 @@ static void ath_tx_rc_status(struct ath_
- 			tx_info->status.rates[tx_rateindex].count =
- 				hw->max_rate_tries;
- 	}
--
--	for (i = tx_rateindex + 1; i < hw->max_rates; i++) {
--		tx_info->status.rates[i].count = 0;
--		tx_info->status.rates[i].idx = -1;
--	}
--
--	tx_info->status.rates[tx_rateindex].count = ts->ts_longretry + 1;
+ 	/*
+ 	 * MMU roles use union aliasing which is, generally speaking, an
+@@ -6197,7 +6209,7 @@ void kvm_mmu_destroy(struct kvm_vcpu *vc
+ 	mmu_free_memory_caches(vcpu);
  }
  
- static void ath_tx_processq(struct ath_softc *sc, struct ath_txq *txq)
+-void kvm_mmu_module_exit(void)
++void kvm_mmu_vendor_module_exit(void)
+ {
+ 	mmu_destroy_caches();
+ 	percpu_counter_destroy(&kvm_total_used_mmu_pages);
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8846,7 +8846,7 @@ int kvm_arch_init(void *opaque)
+ 	}
+ 	kvm_nr_uret_msrs = 0;
+ 
+-	r = kvm_mmu_module_init();
++	r = kvm_mmu_vendor_module_init();
+ 	if (r)
+ 		goto out_free_percpu;
+ 
+@@ -8894,7 +8894,7 @@ void kvm_arch_exit(void)
+ 	cancel_work_sync(&pvclock_gtod_work);
+ #endif
+ 	kvm_x86_ops.hardware_enable = NULL;
+-	kvm_mmu_module_exit();
++	kvm_mmu_vendor_module_exit();
+ 	free_percpu(user_return_msrs);
+ 	kmem_cache_destroy(x86_emulator_cache);
+ #ifdef CONFIG_KVM_XEN
+@@ -12887,3 +12887,19 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_vmgexit
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_vmgexit_exit);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_vmgexit_msr_protocol_enter);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_vmgexit_msr_protocol_exit);
++
++static int __init kvm_x86_init(void)
++{
++	kvm_mmu_x86_module_init();
++	return 0;
++}
++module_init(kvm_x86_init);
++
++static void __exit kvm_x86_exit(void)
++{
++	/*
++	 * If module_init() is implemented, module_exit() must also be
++	 * implemented to allow module unload.
++	 */
++}
++module_exit(kvm_x86_exit);
 
 
