@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20220C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:04:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ECC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:04:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245073AbiDROGw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:06:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57094 "EHLO
+        id S245293AbiDROG7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:06:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244488AbiDRNuC (ORCPT
+        with ESMTP id S239972AbiDRNuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:50:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B8443AD8;
-        Mon, 18 Apr 2022 06:01:48 -0700 (PDT)
+        Mon, 18 Apr 2022 09:50:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABC943AFE;
+        Mon, 18 Apr 2022 06:01:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EF7F609EE;
-        Mon, 18 Apr 2022 13:01:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E08AC385A1;
-        Mon, 18 Apr 2022 13:01:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25285B80EC3;
+        Mon, 18 Apr 2022 13:01:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F780C385A7;
+        Mon, 18 Apr 2022 13:01:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286908;
-        bh=GWct4j8vHMTNJlD+w0aPeGQoSvV2bVI6BpkNRMBq7SU=;
+        s=korg; t=1650286910;
+        bh=GR6Dfnbb9uN0r2QYDYz1vhQwHWD3lOdfcpRoWQ+ksZ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=go6cCsnkCiBPQVN1KXm1HfeRflzYCHlr7fdMQl99F35nEZozC+WdfTdxC5/YOIcey
-         KL/IXaP8S0Yo63VjoPnRivKeX9sKufx0nwkXjFssHimwTP5E+Kd5gpc7n+soce2nAR
-         5EMto/sgEnxQ5E5Bkn36PvEMr5/IaDPlnqgxFMm0=
+        b=yP1xb6P2ws+Uvo3C+XwyFqJDVA8Oof7xCet1o00FrZUlRWbRLp1dIs3Lliwkh12p0
+         h+RXuz2hrZsdB67zvKJu03t+0vv7woa7go9/9U5UEWU/sUPHN7Gu8SyNtmJ0Mp8q5O
+         9bNd0UpqBS66N49xnIDWNK9DONulvIjujcwhylr4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nadav Amit <namit@vmware.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 4.14 283/284] smp: Fix offline cpu check in flush_smp_call_function_queue()
-Date:   Mon, 18 Apr 2022 14:14:24 +0200
-Message-Id: <20220418121221.302446221@linuxfoundation.org>
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Tejun Heo <tj@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 4.14 257/284] cgroup: Use open-time credentials for process migraton perm checks
+Date:   Mon, 18 Apr 2022 14:13:58 +0200
+Message-Id: <20220418121219.735989441@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -48,42 +51,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nadav Amit <namit@vmware.com>
+From: Tejun Heo <tj@kernel.org>
 
-commit 9e949a3886356fe9112c6f6f34a6e23d1d35407f upstream.
+commit 1756d7994ad85c2479af6ae5a9750b92324685af upstream.
 
-The check in flush_smp_call_function_queue() for callbacks that are sent
-to offline CPUs currently checks whether the queue is empty.
+cgroup process migration permission checks are performed at write time as
+whether a given operation is allowed or not is dependent on the content of
+the write - the PID. This currently uses current's credentials which is a
+potential security weakness as it may allow scenarios where a less
+privileged process tricks a more privileged one into writing into a fd that
+it created.
 
-However, flush_smp_call_function_queue() has just deleted all the
-callbacks from the queue and moved all the entries into a local list.
-This checks would only be positive if some callbacks were added in the
-short time after llist_del_all() was called. This does not seem to be
-the intention of this check.
+This patch makes both cgroup2 and cgroup1 process migration interfaces to
+use the credentials saved at the time of open (file->f_cred) instead of
+current's.
 
-Change the check to look at the local list to which the entries were
-moved instead of the queue from which all the callbacks were just
-removed.
-
-Fixes: 8d056c48e4862 ("CPU hotplug, smp: flush any pending IPI callbacks before CPU offline")
-Signed-off-by: Nadav Amit <namit@vmware.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/20220319072015.1495036-1-namit@vmware.com
+Reported-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
+Fixes: 187fe84067bd ("cgroup: require write perm on common ancestor when moving processes on the default hierarchy")
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+[OP: backport to v4.14: apply original __cgroup_procs_write() changes to
+cgroup_threads_write() and cgroup_procs_write()]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/smp.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/cgroup/cgroup-v1.c |    7 ++++---
+ kernel/cgroup/cgroup.c    |   17 ++++++++++++++++-
+ 2 files changed, 20 insertions(+), 4 deletions(-)
 
---- a/kernel/smp.c
-+++ b/kernel/smp.c
-@@ -221,7 +221,7 @@ static void flush_smp_call_function_queu
+--- a/kernel/cgroup/cgroup-v1.c
++++ b/kernel/cgroup/cgroup-v1.c
+@@ -535,10 +535,11 @@ static ssize_t __cgroup1_procs_write(str
+ 		goto out_unlock;
  
- 	/* There shouldn't be any pending callbacks on an offline CPU. */
- 	if (unlikely(warn_cpu_offline && !cpu_online(smp_processor_id()) &&
--		     !warned && !llist_empty(head))) {
-+		     !warned && entry != NULL)) {
- 		warned = true;
- 		WARN(1, "IPI on offline CPU %d\n", smp_processor_id());
+ 	/*
+-	 * Even if we're attaching all tasks in the thread group, we only
+-	 * need to check permissions on one of them.
++	 * Even if we're attaching all tasks in the thread group, we only need
++	 * to check permissions on one of them. Check permissions using the
++	 * credentials from file open to protect against inherited fd attacks.
+ 	 */
+-	cred = current_cred();
++	cred = of->file->f_cred;
+ 	tcred = get_task_cred(task);
+ 	if (!uid_eq(cred->euid, GLOBAL_ROOT_UID) &&
+ 	    !uid_eq(cred->euid, tcred->uid) &&
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -4381,6 +4381,7 @@ static ssize_t cgroup_procs_write(struct
+ {
+ 	struct cgroup *src_cgrp, *dst_cgrp;
+ 	struct task_struct *task;
++	const struct cred *saved_cred;
+ 	ssize_t ret;
+ 
+ 	dst_cgrp = cgroup_kn_lock_live(of->kn, false);
+@@ -4397,8 +4398,15 @@ static ssize_t cgroup_procs_write(struct
+ 	src_cgrp = task_cgroup_from_root(task, &cgrp_dfl_root);
+ 	spin_unlock_irq(&css_set_lock);
+ 
++	/*
++	 * Process and thread migrations follow same delegation rule. Check
++	 * permissions using the credentials from file open to protect against
++	 * inherited fd attacks.
++	 */
++	saved_cred = override_creds(of->file->f_cred);
+ 	ret = cgroup_procs_write_permission(src_cgrp, dst_cgrp,
+ 					    of->file->f_path.dentry->d_sb);
++	revert_creds(saved_cred);
+ 	if (ret)
+ 		goto out_finish;
+ 
+@@ -4422,6 +4430,7 @@ static ssize_t cgroup_threads_write(stru
+ {
+ 	struct cgroup *src_cgrp, *dst_cgrp;
+ 	struct task_struct *task;
++	const struct cred *saved_cred;
+ 	ssize_t ret;
+ 
+ 	buf = strstrip(buf);
+@@ -4440,9 +4449,15 @@ static ssize_t cgroup_threads_write(stru
+ 	src_cgrp = task_cgroup_from_root(task, &cgrp_dfl_root);
+ 	spin_unlock_irq(&css_set_lock);
+ 
+-	/* thread migrations follow the cgroup.procs delegation rule */
++	/*
++	 * Process and thread migrations follow same delegation rule. Check
++	 * permissions using the credentials from file open to protect against
++	 * inherited fd attacks.
++	 */
++	saved_cred = override_creds(of->file->f_cred);
+ 	ret = cgroup_procs_write_permission(src_cgrp, dst_cgrp,
+ 					    of->file->f_path.dentry->d_sb);
++	revert_creds(saved_cred);
+ 	if (ret)
+ 		goto out_finish;
  
 
 
