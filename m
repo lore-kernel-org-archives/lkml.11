@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73122C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50217C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344910AbiDROSf (ORCPT
+        id S1344800AbiDROSY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:18:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45526 "EHLO
+        Mon, 18 Apr 2022 10:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244843AbiDRN57 (ORCPT
+        with ESMTP id S244473AbiDRN5S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:57:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C620E0A;
-        Mon, 18 Apr 2022 06:08:06 -0700 (PDT)
+        Mon, 18 Apr 2022 09:57:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AED2182A;
+        Mon, 18 Apr 2022 06:07:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ACC7760B41;
-        Mon, 18 Apr 2022 13:08:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3834C385B7;
-        Mon, 18 Apr 2022 13:08:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4F8860B42;
+        Mon, 18 Apr 2022 13:07:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A915FC385A7;
+        Mon, 18 Apr 2022 13:07:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287285;
-        bh=Huw4QjVEokonEiJdubj4pjRrSnu/+1KgJw3o/eDiWOA=;
+        s=korg; t=1650287256;
+        bh=vtTbVCi71M/vupRdG1i2l/f6E5cOBsbYNAh9OHVODNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EqnhnS7/2+ywopUYSIxYxW+w06233QSdE3cComR337FTBh0MlAFfrrVCrwmXrhr1B
-         uWZqCFp7D5X+U0odDnxKPEW3alspjKaVTUpSk2PHRMMh85zP6Y5MEbduPRldaVfg0D
-         ti1X2n2ru16RYywbXYUmWhBFnegkRuyMqEYGFMj4=
+        b=CrJrNWCKyj40VYfvZiPVHq2v8jOCpAu1Ih29J2T5S97QBAe8itdDT7kjhk1W1Nz+P
+         syAxgiFLNjEHEZmJKCaLQO2yQ+fGtQYZkFktLBk79Hn967W+fXtw0lUFQ9GFEWm8QO
+         +fw4+OLt+Vdk1ttAcbBvkWxJJERHufh2p9kv0nyE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 113/218] pinctrl: nomadik: Add missing of_node_put() in nmk_pinctrl_probe
-Date:   Mon, 18 Apr 2022 14:12:59 +0200
-Message-Id: <20220418121202.829787704@linuxfoundation.org>
+Subject: [PATCH 4.9 105/218] iio: adc: Add check for devm_request_threaded_irq
+Date:   Mon, 18 Apr 2022 14:12:51 +0200
+Message-Id: <20220418121202.605159703@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,39 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit c09ac191b1f97cfa06f394dbfd7a5db07986cefc ]
+[ Upstream commit b30537a4cedcacf0ade2f33ebb7610178ed1e7d7 ]
 
-This node pointer is returned by of_parse_phandle() with refcount
-incremented in this function. Calling of_node_put() to avoid
-the refcount leak.
+As the potential failure of the devm_request_threaded_irq(),
+it should be better to check the return value and return
+error if fails.
 
-Fixes: 32e67eee670e ("pinctrl: nomadik: Allow prcm_base to be extracted from Device Tree")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220307115116.25316-1-linmq006@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: fa659a40b80b ("iio: adc: twl6030-gpadc: Use devm_* API family")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220224062849.3280966-1-jiasheng@iscas.ac.cn
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/nomadik/pinctrl-nomadik.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iio/adc/twl6030-gpadc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pinctrl/nomadik/pinctrl-nomadik.c b/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-index d318ca055489..6e237c46e1bd 100644
---- a/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-+++ b/drivers/pinctrl/nomadik/pinctrl-nomadik.c
-@@ -1916,8 +1916,10 @@ static int nmk_pinctrl_probe(struct platform_device *pdev)
- 	}
+diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
+index becbb0aef232..5075f594d97f 100644
+--- a/drivers/iio/adc/twl6030-gpadc.c
++++ b/drivers/iio/adc/twl6030-gpadc.c
+@@ -927,6 +927,8 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
+ 	ret = devm_request_threaded_irq(dev, irq, NULL,
+ 				twl6030_gpadc_irq_handler,
+ 				IRQF_ONESHOT, "twl6030_gpadc", indio_dev);
++	if (ret)
++		return ret;
  
- 	prcm_np = of_parse_phandle(np, "prcm", 0);
--	if (prcm_np)
-+	if (prcm_np) {
- 		npct->prcm_base = of_iomap(prcm_np, 0);
-+		of_node_put(prcm_np);
-+	}
- 	if (!npct->prcm_base) {
- 		if (version == PINCTRL_NMK_STN8815) {
- 			dev_info(&pdev->dev,
+ 	ret = twl6030_gpadc_enable_irq(TWL6030_GPADC_RT_SW1_EOC_MASK);
+ 	if (ret < 0) {
 -- 
 2.34.1
 
