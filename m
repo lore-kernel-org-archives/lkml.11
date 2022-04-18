@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 459FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3670CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238687AbiDRMZ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:25:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37728 "EHLO
+        id S235605AbiDRM0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238509AbiDRMYP (ORCPT
+        with ESMTP id S238568AbiDRMYc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:24:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DAD41FCE9;
-        Mon, 18 Apr 2022 05:19:05 -0700 (PDT)
+        Mon, 18 Apr 2022 08:24:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29F2D201A4;
+        Mon, 18 Apr 2022 05:19:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1784B80EDB;
-        Mon, 18 Apr 2022 12:19:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 380D0C385A7;
-        Mon, 18 Apr 2022 12:19:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C84E0B80EC1;
+        Mon, 18 Apr 2022 12:19:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C130C385A7;
+        Mon, 18 Apr 2022 12:19:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284342;
-        bh=PAFCrRodbMCnD8YoxVOpfLdTf4ZEapSnQx6p+QAFK7A=;
+        s=korg; t=1650284351;
+        bh=l5GEYdVvrpq7rDwXrThnXTWrkiC1z6bXt6boBcfW+9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q4Yfp7K41nkwCLzVAK54MZuE900TGQFrIdraJ0f3AMAoKLPNrj1obC/WVU+PMmxQs
-         nrll1YnSnY92yw0qxeJiiOu1h/5rsoUyU0O2mUOIpqLuGvZMKRwbO334Z2RcFdfL3/
-         D1p9/zlqQ0wwjQts8slLb3tHJW6rCE9QiM3NS4Wg=
+        b=2HDXnhyW09kZtfBYRuhL6uhVXUVFvK+IDe6RB6PTEQrk46CIJ4rU6izE0RMemsA4r
+         XvipWPUV58AjFmqBmJsesciL29rlMm9XW5bFxYkySN/0SJZ/EDoiV3w/qpoAZFPDTb
+         fpjPbiV9pCGhMfxq8HAeC94X8NbbU2FGEByi3fo8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 080/219] net: dsa: felix: suppress -EPROBE_DEFER errors
-Date:   Mon, 18 Apr 2022 14:10:49 +0200
-Message-Id: <20220418121208.444631808@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 045/219] ALSA: lx6464es: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:10:14 +0200
+Message-Id: <20220418121206.083885210@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,42 +47,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit e6934e4048c91502efcb21da92b7ae37cd8fa741 ]
+commit 60797a21dd8360a99ba797f8ca587087c07bb54c upstream.
 
-The DSA master might not have been probed yet in which case the probe of
-the felix switch fails with -EPROBE_DEFER:
-[    4.435305] mscc_felix 0000:00:00.5: Failed to register DSA switch: -517
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-It is not an error. Use dev_err_probe() to demote this particular error
-to a debug message.
+This patch fixes it by calling snd_card_free() manually on the error
+from the probe callback.
 
-Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220408101521.281886-1-michael@walle.cc
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6f16c19b115e ("ALSA: lx6464es: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-34-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/pci/lx6464es/lx6464es.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 2875b5250856..443d34ce2853 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -2328,7 +2328,7 @@ static int felix_pci_probe(struct pci_dev *pdev,
- 
- 	err = dsa_register_switch(ds);
- 	if (err) {
--		dev_err(&pdev->dev, "Failed to register DSA switch: %d\n", err);
-+		dev_err_probe(&pdev->dev, err, "Failed to register DSA switch\n");
- 		goto err_register_ds;
+--- a/sound/pci/lx6464es/lx6464es.c
++++ b/sound/pci/lx6464es/lx6464es.c
+@@ -1019,7 +1019,7 @@ static int snd_lx6464es_probe(struct pci
+ 	err = snd_lx6464es_create(card, pci);
+ 	if (err < 0) {
+ 		dev_err(card->dev, "error during snd_lx6464es_create\n");
+-		return err;
++		goto error;
  	}
  
--- 
-2.35.1
-
+ 	strcpy(card->driver, "LX6464ES");
+@@ -1036,12 +1036,16 @@ static int snd_lx6464es_probe(struct pci
+ 
+ 	err = snd_card_register(card);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 
+ 	dev_dbg(chip->card->dev, "initialization successful\n");
+ 	pci_set_drvdata(pci, card);
+ 	dev++;
+ 	return 0;
++
++ error:
++	snd_card_free(card);
++	return err;
+ }
+ 
+ static struct pci_driver lx6464es_driver = {
 
 
