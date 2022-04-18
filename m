@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC9DC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0937C352A1
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241503AbiDRNpx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57200 "EHLO
+        id S244585AbiDRNpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241883AbiDRNZl (ORCPT
+        with ESMTP id S240373AbiDRNVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:25:41 -0400
+        Mon, 18 Apr 2022 09:21:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B1E115819;
-        Mon, 18 Apr 2022 05:52:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1BA13F43;
+        Mon, 18 Apr 2022 05:52:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE5D4612B5;
-        Mon, 18 Apr 2022 12:52:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCCD0C385A1;
-        Mon, 18 Apr 2022 12:52:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39B456124E;
+        Mon, 18 Apr 2022 12:52:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F389C385A1;
+        Mon, 18 Apr 2022 12:52:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286375;
-        bh=XHhJvtTAVSezNouZIbqSrgobfO0e7Br0xeWb1Sc4/XM=;
+        s=korg; t=1650286347;
+        bh=yd/PIrVhYLRbTH3zwdEWESN2Dz9/FjzPd4jm3AGP9OY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KeTAKfat5jtd0jDaTkxyVQ1fSTWVdq1J8mBUH/fiUnj2mKtAoUNSAGEeM9OAdi1Qg
-         1DlYqq90qhtY9Rkz7uaB6pL/+XUQa3CIyDvJxX+9CBOa73Ro9A7Gu6Ei4xEV8HeS44
-         83GRZ/kZ66KL/YeFgvx4lIYc33us6ujLs5E1XKL4=
+        b=O6Al30281se7px/9sJdOZl7hcb0rnvRxO8V6j1nWeyPOagk/XPYra1YBF9DhJ5P5k
+         SVDaPoShawU6V9l8mngbvTuAkiDxD72Lc7/wSXp/E5YfomFQCqVeQSxhaKoEllqAzK
+         xNwFm5I0qWWPdWMgQ8tLWDPgccB/M8pHDacceucQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Hou Wenlong <houwenlong.hwl@antgroup.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 114/284] KVM: x86/emulator: Defer not-present segment check in __load_segment_descriptor()
-Date:   Mon, 18 Apr 2022 14:11:35 +0200
-Message-Id: <20220418121214.252056985@linuxfoundation.org>
+Subject: [PATCH 4.14 106/284] scsi: pm8001: Fix command initialization in pm8001_chip_ssp_tm_req()
+Date:   Mon, 18 Apr 2022 14:11:27 +0200
+Message-Id: <20220418121213.901612832@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,66 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Wenlong <houwenlong.hwl@antgroup.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit ca85f002258fdac3762c57d12d5e6e401b6a41af ]
+[ Upstream commit cd2268a180117aa8ebb23e090ba204324b2d0e93 ]
 
-Per Intel's SDM on the "Instruction Set Reference", when
-loading segment descriptor, not-present segment check should
-be after all type and privilege checks. But the emulator checks
-it first, then #NP is triggered instead of #GP if privilege fails
-and segment is not present. Put not-present segment check after
-type and privilege checks in __load_segment_descriptor().
+The ds_ads_m field of struct ssp_ini_tm_start_req has the type __le32.
+Assigning a value to it should thus use cpu_to_le32(). This fixes the
+sparse warning:
 
-Fixes: 38ba30ba51a00 (KVM: x86 emulator: Emulate task switch in emulator.c)
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
-Message-Id: <52573c01d369f506cadcf7233812427cf7db81a7.1644292363.git.houwenlong.hwl@antgroup.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+warning: incorrect type in assignment (different base types)
+   expected restricted __le32 [addressable] [assigned] [usertype] ds_ads_m
+   got int
+
+Link: https://lore.kernel.org/r/20220220031810.738362-7-damien.lemoal@opensource.wdc.com
+Fixes: dbf9bfe61571 ("[SCSI] pm8001: add SAS/SATA HBA driver")
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/emulate.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/scsi/pm8001/pm8001_hwi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 23d3329e1c73..c5f2a72343e3 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -1682,11 +1682,6 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 		goto exception;
- 	}
- 
--	if (!seg_desc.p) {
--		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
--		goto exception;
--	}
--
- 	dpl = seg_desc.dpl;
- 
- 	switch (seg) {
-@@ -1726,6 +1721,10 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 	case VCPU_SREG_TR:
- 		if (seg_desc.s || (seg_desc.type != 1 && seg_desc.type != 9))
- 			goto exception;
-+		if (!seg_desc.p) {
-+			err_vec = NP_VECTOR;
-+			goto exception;
-+		}
- 		old_desc = seg_desc;
- 		seg_desc.type |= 2; /* busy */
- 		ret = ctxt->ops->cmpxchg_emulated(ctxt, desc_addr, &old_desc, &seg_desc,
-@@ -1750,6 +1749,11 @@ static int __load_segment_descriptor(struct x86_emulate_ctxt *ctxt,
- 		break;
- 	}
- 
-+	if (!seg_desc.p) {
-+		err_vec = (seg == VCPU_SREG_SS) ? SS_VECTOR : NP_VECTOR;
-+		goto exception;
-+	}
-+
- 	if (seg_desc.s) {
- 		/* mark segment as accessed */
- 		if (!(seg_desc.type & 1)) {
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index 853dba857239..2889717a770e 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -4718,7 +4718,7 @@ int pm8001_chip_ssp_tm_req(struct pm8001_hba_info *pm8001_ha,
+ 	memcpy(sspTMCmd.lun, task->ssp_task.LUN, 8);
+ 	sspTMCmd.tag = cpu_to_le32(ccb->ccb_tag);
+ 	if (pm8001_ha->chip_id != chip_8001)
+-		sspTMCmd.ds_ads_m = 0x08;
++		sspTMCmd.ds_ads_m = cpu_to_le32(0x08);
+ 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
+ 	ret = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sspTMCmd, 0);
+ 	return ret;
 -- 
 2.34.1
 
