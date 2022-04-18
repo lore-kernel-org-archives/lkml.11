@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5F4C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAAB9C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239750AbiDRMiF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:38:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51964 "EHLO
+        id S239895AbiDRMiP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:38:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239231AbiDRMcl (ORCPT
+        with ESMTP id S239484AbiDRMdG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:32:41 -0400
+        Mon, 18 Apr 2022 08:33:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BAB26104;
-        Mon, 18 Apr 2022 05:24:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCA1427155;
+        Mon, 18 Apr 2022 05:24:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A24BCB80EDA;
-        Mon, 18 Apr 2022 12:24:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBE91C385A8;
-        Mon, 18 Apr 2022 12:24:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A89AB80EDA;
+        Mon, 18 Apr 2022 12:24:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87886C385A7;
+        Mon, 18 Apr 2022 12:24:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284661;
-        bh=xykrMrmiv5+u/RvlY5+4iaJ7HcGO82DMt1+l6pSg8os=;
+        s=korg; t=1650284679;
+        bh=EqglRn5xcFl+tW4PtwzUZdnUb5d1rVO9ltXvhrXeKqw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vdwA3fwPMQ9noXcaQca1I1a3nxhol1MGI5dJGS6pPXb4Qpd+APZn2GID0Pyt0fuBg
-         cq8Icl2CbHEYOAAoamiHZ0fnGd5bYTS2NcQuSssvGMtRRlotO+IjebzpPnchOykJVe
-         PlIp4Zh+yIm2RmcW5akN339VBtMJCuWnCZJH8/+A=
+        b=T7oKNROoD5P/XD7/cGChroTMJQFGimW8zzLD8VGo4OTR85+RDP0rjChlh1fXq6MsT
+         eWqHTHgGoVyXTJFOKzVlOgHcIKTpRoYrEKkkUW7+OugHEsB4S6j1r02udb0BKMPdMQ
+         BMqsU/c5V9fMiDXc0x11Pn4hQO6Y/qO4tRG6JMXI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH 5.17 188/219] gpio: sim: fix setting and getting multiple lines
-Date:   Mon, 18 Apr 2022 14:12:37 +0200
-Message-Id: <20220418121212.139304618@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.17 193/219] btrfs: mark resumed async balance as writing
+Date:   Mon, 18 Apr 2022 14:12:42 +0200
+Message-Id: <20220418121212.277352250@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,41 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bartosz Golaszewski <brgl@bgdev.pl>
+From: Naohiro Aota <naohiro.aota@wdc.com>
 
-commit 3836c73e6a2585561af928c6641d74528a8bdfa4 upstream.
+commit a690e5f2db4d1dca742ce734aaff9f3112d63764 upstream.
 
-We need to take mask into account in the set/get_multiple() callbacks.
-Use bitmap_replace() instead of bitmap_copy().
+When btrfs balance is interrupted with umount, the background balance
+resumes on the next mount. There is a potential deadlock with FS freezing
+here like as described in commit 26559780b953 ("btrfs: zoned: mark
+relocation as writing"). Mark the process as sb_writing to avoid it.
 
-Fixes: cb8c474e79be ("gpio: sim: new testing module")
-Cc: stable@vger.kernel.org
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+CC: stable@vger.kernel.org # 4.9+
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpio-sim.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/btrfs/volumes.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/gpio/gpio-sim.c
-+++ b/drivers/gpio/gpio-sim.c
-@@ -134,7 +134,7 @@ static int gpio_sim_get_multiple(struct
- 	struct gpio_sim_chip *chip = gpiochip_get_data(gc);
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -4467,10 +4467,12 @@ static int balance_kthread(void *data)
+ 	struct btrfs_fs_info *fs_info = data;
+ 	int ret = 0;
  
- 	mutex_lock(&chip->lock);
--	bitmap_copy(bits, chip->value_map, gc->ngpio);
-+	bitmap_replace(bits, bits, chip->value_map, mask, gc->ngpio);
- 	mutex_unlock(&chip->lock);
++	sb_start_write(fs_info->sb);
+ 	mutex_lock(&fs_info->balance_mutex);
+ 	if (fs_info->balance_ctl)
+ 		ret = btrfs_balance(fs_info, fs_info->balance_ctl, NULL);
+ 	mutex_unlock(&fs_info->balance_mutex);
++	sb_end_write(fs_info->sb);
  
- 	return 0;
-@@ -146,7 +146,7 @@ static void gpio_sim_set_multiple(struct
- 	struct gpio_sim_chip *chip = gpiochip_get_data(gc);
- 
- 	mutex_lock(&chip->lock);
--	bitmap_copy(chip->value_map, bits, gc->ngpio);
-+	bitmap_replace(chip->value_map, chip->value_map, bits, mask, gc->ngpio);
- 	mutex_unlock(&chip->lock);
+ 	return ret;
  }
- 
 
 
