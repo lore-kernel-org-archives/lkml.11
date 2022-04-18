@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55FD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239879AbiDRMvT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44386 "EHLO
+        id S239905AbiDRMvW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:51:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240822AbiDRMjj (ORCPT
+        with ESMTP id S240824AbiDRMjj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:39:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E072BF9;
-        Mon, 18 Apr 2022 05:30:56 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005AEC0A;
+        Mon, 18 Apr 2022 05:31:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE72460F04;
-        Mon, 18 Apr 2022 12:30:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFC8BC385A7;
-        Mon, 18 Apr 2022 12:30:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C656B80ED6;
+        Mon, 18 Apr 2022 12:30:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1CB2C385A1;
+        Mon, 18 Apr 2022 12:30:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285055;
-        bh=E3d15w7RgC9OkRukB1YAWsbpXjPeSSQyE0CQCeK1vTM=;
+        s=korg; t=1650285058;
+        bh=rA8OICJvC+vLZzHg5hHD8kepodIPft98BGpeRXaRoeI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e1ss9fDpxgvo505X9wtWLd9lL7+1LKhhNRqhzoVlDApTqRMyQbrMCmLHHVDEyxPyT
-         06RagDyAdrnMO6Z++6Tz6I+opma7Dob2JHxx+clXbjohAgVRYasbd5uveT/LS8I9xk
-         EMgIhVZxUilDSkLK5UgpQBXZIc+eVX2DqG5JW1cA=
+        b=RtKrfw/E215Fi5aoCZjS+8isdkkov2ShXsyA1IBY93vBzDKLNXw9D/LZbqqrAVTfS
+         iFPWz6iP8jAq9jWWGjp/DKsL+t6Xf82kZugyDL57mPi9qYoAYiRhx+5BDKsKSzf9Dj
+         SIXW5G6xhB1ljH0Fs72auhLBCpbr614h+Qcihj/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 050/189] ALSA: rme96: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:11:10 +0200
-Message-Id: <20220418121201.932931967@linuxfoundation.org>
+        stable@vger.kernel.org, Petr Malat <oss@malat.biz>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 086/189] sctp: Initialize daddr on peeled off socket
+Date:   Mon, 18 Apr 2022 14:11:46 +0200
+Message-Id: <20220418121202.948615989@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -47,58 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Petr Malat <oss@malat.biz>
 
-commit 93b884f8d82f08c7af542703a724cc23cd2d5bfc upstream.
+[ Upstream commit 8467dda0c26583547731e7f3ea73fc3856bae3bf ]
 
-The previous cleanup with devres may lead to the incorrect release
-orders at the probe error handling due to the devres's nature.  Until
-we register the card, snd_card_free() has to be called at first for
-releasing the stuff properly when the driver tries to manage and
-release the stuff via card->private_free().
+Function sctp_do_peeloff() wrongly initializes daddr of the original
+socket instead of the peeled off socket, which makes getpeername()
+return zeroes instead of the primary address. Initialize the new socket
+instead.
 
-This patch fixes it by calling snd_card_free() on the error from the
-probe callback using a new helper function.
-
-Fixes: df06df7cc997 ("ALSA: rme96: Allocate resources with device-managed APIs")
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-24-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d570ee490fb1 ("[SCTP]: Correctly set daddr for IPv6 sockets during peeloff")
+Signed-off-by: Petr Malat <oss@malat.biz>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Link: https://lore.kernel.org/r/20220409063611.673193-1-oss@malat.biz
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/rme96.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ net/sctp/socket.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/pci/rme96.c b/sound/pci/rme96.c
-index 8fc811504920..bccb7e0d3d11 100644
---- a/sound/pci/rme96.c
-+++ b/sound/pci/rme96.c
-@@ -2430,8 +2430,8 @@ static void snd_rme96_card_free(struct snd_card *card)
- }
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index 6b3c32264cbc..5f6e6a6e91b3 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -5641,7 +5641,7 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
+ 	 * Set the daddr and initialize id to something more random and also
+ 	 * copy over any ip options.
+ 	 */
+-	sp->pf->to_sk_daddr(&asoc->peer.primary_addr, sk);
++	sp->pf->to_sk_daddr(&asoc->peer.primary_addr, sock->sk);
+ 	sp->pf->copy_ip_options(sk, sock->sk);
  
- static int
--snd_rme96_probe(struct pci_dev *pci,
--		const struct pci_device_id *pci_id)
-+__snd_rme96_probe(struct pci_dev *pci,
-+		  const struct pci_device_id *pci_id)
- {
- 	static int dev;
- 	struct rme96 *rme96;
-@@ -2498,6 +2498,12 @@ snd_rme96_probe(struct pci_dev *pci,
- 	return 0;
- }
- 
-+static int snd_rme96_probe(struct pci_dev *pci,
-+			   const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_rme96_probe(pci, pci_id));
-+}
-+
- static struct pci_driver rme96_driver = {
- 	.name = KBUILD_MODNAME,
- 	.id_table = snd_rme96_ids,
+ 	/* Populate the fields of the newsk from the oldsk and migrate the
 -- 
-2.35.2
+2.35.1
 
 
 
