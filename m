@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA767C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:29:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241698AbiDRNbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41514 "EHLO
+        id S241908AbiDRNbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239002AbiDRNFm (ORCPT
+        with ESMTP id S240949AbiDRNFj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:05:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B38F829CBF;
-        Mon, 18 Apr 2022 05:46:34 -0700 (PDT)
+        Mon, 18 Apr 2022 09:05:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CCD529CBB;
+        Mon, 18 Apr 2022 05:46:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E28F60FB6;
-        Mon, 18 Apr 2022 12:46:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DFE7C385A7;
-        Mon, 18 Apr 2022 12:46:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2019CB80E44;
+        Mon, 18 Apr 2022 12:46:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EFBCC385A7;
+        Mon, 18 Apr 2022 12:46:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285993;
-        bh=olGAV6P3/bdfp4ZsB1dE9ZnWfbk+IEVsCX5kp+ufGzY=;
+        s=korg; t=1650285990;
+        bh=PIKSrYrmqMtZ8E664NQk1+Mn3l/xkzBH+ARjWDPYrzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VzOUlG60u7Ot0u6pnAKe8f1OnMLMpdIC/QUfzX2t3XngKdTiH8x8sTcCpBy6otHBu
-         0ryFqfYU9IJm8z15FZpqcoRdlu3i4yEb5NX2bnC2ta5tfwokmUPRj7W1rkC/HtYaak
-         w+7t2WdEV/4wyaAK+owjU6J4XHDRp9YxGKZE04p4=
+        b=ZMJ62DDQsPJztoZ5KpUl5fe/NpDmrqa80Gq8ixXkGRys6PIb/2PSHtfSatb5Bp8dE
+         7EN+Wpm53Jd24ZLX0xmx1UhgVn+0qIGPIufcXWmZD4U/qtxJqykzMZOKsRpnsRdfco
+         o/CESniF7XedclwPkKC7Bgm6NC6vhypwQeK4o9Oc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Petr Malat <oss@malat.biz>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 07/32] sctp: Initialize daddr on peeled off socket
-Date:   Mon, 18 Apr 2022 14:13:47 +0200
-Message-Id: <20220418121127.343178003@linuxfoundation.org>
+Subject: [PATCH 4.19 06/32] net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link
+Date:   Mon, 18 Apr 2022 14:13:46 +0200
+Message-Id: <20220418121127.313985949@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
 References: <20220418121127.127656835@linuxfoundation.org>
@@ -50,38 +49,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Malat <oss@malat.biz>
+From: Dinh Nguyen <dinguyen@kernel.org>
 
-[ Upstream commit 8467dda0c26583547731e7f3ea73fc3856bae3bf ]
+[ Upstream commit a6aaa00324240967272b451bfa772547bd576ee6 ]
 
-Function sctp_do_peeloff() wrongly initializes daddr of the original
-socket instead of the peeled off socket, which makes getpeername()
-return zeroes instead of the primary address. Initialize the new socket
-instead.
+When using a fixed-link, the altr_tse_pcs driver crashes
+due to null-pointer dereference as no phy_device is provided to
+tse_pcs_fix_mac_speed function. Fix this by adding a check for
+phy_dev before calling the tse_pcs_fix_mac_speed() function.
 
-Fixes: d570ee490fb1 ("[SCTP]: Correctly set daddr for IPv6 sockets during peeloff")
-Signed-off-by: Petr Malat <oss@malat.biz>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Link: https://lore.kernel.org/r/20220409063611.673193-1-oss@malat.biz
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Also clean up the tse_pcs_fix_mac_speed function a bit. There is
+no need to check for splitter_base and sgmii_adapter_base
+because the driver will fail if these 2 variables are not
+derived from the device tree.
+
+Fixes: fb3bbdb85989 ("net: ethernet: Add TSE PCS support to dwmac-socfpga")
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/socket.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c  |  8 --------
+ drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h  |  4 ++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c | 13 +++++--------
+ 3 files changed, 9 insertions(+), 16 deletions(-)
 
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index d429d5922804..8901bb7afa2b 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -5333,7 +5333,7 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
- 	 * Set the daddr and initialize id to something more random and also
- 	 * copy over any ip options.
- 	 */
--	sp->pf->to_sk_daddr(&asoc->peer.primary_addr, sk);
-+	sp->pf->to_sk_daddr(&asoc->peer.primary_addr, sock->sk);
- 	sp->pf->copy_ip_options(sk, sock->sk);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
+index 8b50afcdb52d..729df169faa2 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
++++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
+@@ -68,10 +68,6 @@
+ #define TSE_PCS_USE_SGMII_ENA				BIT(0)
+ #define TSE_PCS_IF_USE_SGMII				0x03
  
- 	/* Populate the fields of the newsk from the oldsk and migrate the
+-#define SGMII_ADAPTER_CTRL_REG				0x00
+-#define SGMII_ADAPTER_DISABLE				0x0001
+-#define SGMII_ADAPTER_ENABLE				0x0000
+-
+ #define AUTONEGO_LINK_TIMER				20
+ 
+ static int tse_pcs_reset(void __iomem *base, struct tse_pcs *pcs)
+@@ -213,12 +209,8 @@ void tse_pcs_fix_mac_speed(struct tse_pcs *pcs, struct phy_device *phy_dev,
+ 			   unsigned int speed)
+ {
+ 	void __iomem *tse_pcs_base = pcs->tse_pcs_base;
+-	void __iomem *sgmii_adapter_base = pcs->sgmii_adapter_base;
+ 	u32 val;
+ 
+-	writew(SGMII_ADAPTER_ENABLE,
+-	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+-
+ 	pcs->autoneg = phy_dev->autoneg;
+ 
+ 	if (phy_dev->autoneg == AUTONEG_ENABLE) {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
+index 2f5882450b06..254199f2efdb 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
++++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
+@@ -21,6 +21,10 @@
+ #include <linux/phy.h>
+ #include <linux/timer.h>
+ 
++#define SGMII_ADAPTER_CTRL_REG		0x00
++#define SGMII_ADAPTER_ENABLE		0x0000
++#define SGMII_ADAPTER_DISABLE		0x0001
++
+ struct tse_pcs {
+ 	struct device *dev;
+ 	void __iomem *tse_pcs_base;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+index 33407df6bea6..32ead4a4b460 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+@@ -29,9 +29,6 @@
+ 
+ #include "altr_tse_pcs.h"
+ 
+-#define SGMII_ADAPTER_CTRL_REG                          0x00
+-#define SGMII_ADAPTER_DISABLE                           0x0001
+-
+ #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII 0x0
+ #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII 0x1
+ #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII 0x2
+@@ -65,16 +62,14 @@ static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
+ {
+ 	struct socfpga_dwmac *dwmac = (struct socfpga_dwmac *)priv;
+ 	void __iomem *splitter_base = dwmac->splitter_base;
+-	void __iomem *tse_pcs_base = dwmac->pcs.tse_pcs_base;
+ 	void __iomem *sgmii_adapter_base = dwmac->pcs.sgmii_adapter_base;
+ 	struct device *dev = dwmac->dev;
+ 	struct net_device *ndev = dev_get_drvdata(dev);
+ 	struct phy_device *phy_dev = ndev->phydev;
+ 	u32 val;
+ 
+-	if ((tse_pcs_base) && (sgmii_adapter_base))
+-		writew(SGMII_ADAPTER_DISABLE,
+-		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
++	writew(SGMII_ADAPTER_DISABLE,
++	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+ 
+ 	if (splitter_base) {
+ 		val = readl(splitter_base + EMAC_SPLITTER_CTRL_REG);
+@@ -96,7 +91,9 @@ static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
+ 		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
+ 	}
+ 
+-	if (tse_pcs_base && sgmii_adapter_base)
++	writew(SGMII_ADAPTER_ENABLE,
++	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
++	if (phy_dev)
+ 		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
+ }
+ 
 -- 
 2.35.1
 
