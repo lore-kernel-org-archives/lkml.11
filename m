@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B41CFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:23:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B85CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234787AbiDRNZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32982 "EHLO
+        id S241631AbiDRNZx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:25:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240571AbiDRNDm (ORCPT
+        with ESMTP id S241182AbiDRNCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:03:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E726329;
-        Mon, 18 Apr 2022 05:45:00 -0700 (PDT)
+        Mon, 18 Apr 2022 09:02:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9039F205FE;
+        Mon, 18 Apr 2022 05:42:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA52F611E4;
-        Mon, 18 Apr 2022 12:44:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC606C385A7;
-        Mon, 18 Apr 2022 12:44:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48BE3B80E59;
+        Mon, 18 Apr 2022 12:42:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A37FAC385AB;
+        Mon, 18 Apr 2022 12:42:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285899;
-        bh=9T8bL2EPWJPPlfceRC/6fA7bh51kA+mxwyKL6iDHjn8=;
+        s=korg; t=1650285775;
+        bh=/pmbGVed1QynH04LNNFMYKg9d+inH3YumC2wrFxBQ2s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=psuSjgD22FQidQkJAT75RiTsxiSAHGJ7osGh3MDm1FJPUV37Vy7aTP6kwtVcbJuFr
-         DxVhO3/uZWZrr+EveP7VAYTlH7kncfmn/lq6WN7sZUxOQYeJfVnre+W+Q9H3qo/DzX
-         Q8EQJ3TpNOsNYAowAO6NJhffBrf9stYAIqlwzvpI=
+        b=uQyZLB6G8Z9xhEhSTrPA1CfSxJ4noaMPBAXeorEHWkOjDgaCSuvSKW2EU+9lT3Gbd
+         cBAU0NstDcT1M1kJOZ1fiZ+Wc2QsXXEh82Sz67NkbBvCJKfBrdSUOi+Tt/TLQt54Ch
+         xJulfzDJAPs3QEOxu0uw27VnQRZiuEZVamFvUAqM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 21/63] Drivers: hv: vmbus: Prevent load re-ordering when reading ring buffer
-Date:   Mon, 18 Apr 2022 14:13:18 +0200
-Message-Id: <20220418121135.573232247@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 06/63] net/sched: fix initialization order when updating chain 0 head
+Date:   Mon, 18 Apr 2022 14:13:03 +0200
+Message-Id: <20220418121134.570518425@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -49,55 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Kelley <mikelley@microsoft.com>
+From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-[ Upstream commit b6cae15b5710c8097aad26a2e5e752c323ee5348 ]
+[ Upstream commit e65812fd22eba32f11abe28cb377cbd64cfb1ba0 ]
 
-When reading a packet from a host-to-guest ring buffer, there is no
-memory barrier between reading the write index (to see if there is
-a packet to read) and reading the contents of the packet. The Hyper-V
-host uses store-release when updating the write index to ensure that
-writes of the packet data are completed first. On the guest side,
-the processor can reorder and read the packet data before the write
-index, and sometimes get stale packet data. Getting such stale packet
-data has been observed in a reproducible case in a VM on ARM64.
+Currently, when inserting a new filter that needs to sit at the head
+of chain 0, it will first update the heads pointer on all devices using
+the (shared) block, and only then complete the initialization of the new
+element so that it has a "next" element.
 
-Fix this by using virt_load_acquire() to read the write index,
-ensuring that reads of the packet data cannot be reordered
-before it. Preventing such reordering is logically correct, and
-with this change, getting stale data can no longer be reproduced.
+This can lead to a situation that the chain 0 head is propagated to
+another CPU before the "next" initialization is done. When this race
+condition is triggered, packets being matched on that CPU will simply
+miss all other filters, and will flow through the stack as if there were
+no other filters installed. If the system is using OVS + TC, such
+packets will get handled by vswitchd via upcall, which results in much
+higher latency and reordering. For other applications it may result in
+packet drops.
 
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Link: https://lore.kernel.org/r/1648394710-33480-1-git-send-email-mikelley@microsoft.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+This is reproducible with a tc only setup, but it varies from system to
+system. It could be reproduced with a shared block amongst 10 veth
+tunnels, and an ingress filter mirroring packets to another veth.
+That's because using the last added veth tunnel to the shared block to
+do the actual traffic, it makes the race window bigger and easier to
+trigger.
+
+The fix is rather simple, to just initialize the next pointer of the new
+filter instance (tp) before propagating the head change.
+
+The fixes tag is pointing to the original code though this issue should
+only be observed when using it unlocked.
+
+Fixes: 2190d1d0944f ("net: sched: introduce helpers to work with filter chains")
+Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Davide Caratti <dcaratti@redhat.com>
+Link: https://lore.kernel.org/r/b97d5f4eaffeeb9d058155bcab63347527261abf.1649341369.git.marcelo.leitner@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hv/ring_buffer.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ net/sched/cls_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
-index 9a03b163cbbd..59f1e64908b1 100644
---- a/drivers/hv/ring_buffer.c
-+++ b/drivers/hv/ring_buffer.c
-@@ -378,7 +378,16 @@ int hv_ringbuffer_read(struct vmbus_channel *channel,
- static u32 hv_pkt_iter_avail(const struct hv_ring_buffer_info *rbi)
- {
- 	u32 priv_read_loc = rbi->priv_read_index;
--	u32 write_loc = READ_ONCE(rbi->ring_buffer->write_index);
-+	u32 write_loc;
-+
-+	/*
-+	 * The Hyper-V host writes the packet data, then uses
-+	 * store_release() to update the write_index.  Use load_acquire()
-+	 * here to prevent loads of the packet data from being re-ordered
-+	 * before the read of the write_index and potentially getting
-+	 * stale data.
-+	 */
-+	write_loc = virt_load_acquire(&rbi->ring_buffer->write_index);
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 80205b138d11..919c7fa5f02d 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1639,10 +1639,10 @@ static int tcf_chain_tp_insert(struct tcf_chain *chain,
+ 	if (chain->flushing)
+ 		return -EAGAIN;
  
- 	if (write_loc >= priv_read_loc)
- 		return write_loc - priv_read_loc;
++	RCU_INIT_POINTER(tp->next, tcf_chain_tp_prev(chain, chain_info));
+ 	if (*chain_info->pprev == chain->filter_chain)
+ 		tcf_chain0_head_change(chain, tp);
+ 	tcf_proto_get(tp);
+-	RCU_INIT_POINTER(tp->next, tcf_chain_tp_prev(chain, chain_info));
+ 	rcu_assign_pointer(*chain_info->pprev, tp);
+ 
+ 	return 0;
 -- 
 2.35.1
 
