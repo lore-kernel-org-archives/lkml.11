@@ -2,43 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D11C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A4FC3525B
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245539AbiDROD2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:03:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
+        id S245637AbiDRODu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244784AbiDRNpk (ORCPT
+        with ESMTP id S244744AbiDRNp1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:45:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3771205FE;
-        Mon, 18 Apr 2022 06:00:27 -0700 (PDT)
+        Mon, 18 Apr 2022 09:45:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55571326CC;
+        Mon, 18 Apr 2022 06:00:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D04BB80E44;
-        Mon, 18 Apr 2022 13:00:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 014F8C385A1;
-        Mon, 18 Apr 2022 13:00:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07DAEB80E4B;
+        Mon, 18 Apr 2022 13:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E868C385A1;
+        Mon, 18 Apr 2022 13:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286825;
-        bh=4u1Jvvv2pbUf9XthyG8tcQZkvx7qduq9Oa0K4FNjAyw=;
+        s=korg; t=1650286816;
+        bh=3gzAc5HRkotLkERtM6Li6802T+AHua+fysF9OPRupfI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U/Z73t6eYq5WMHZ5XngQUIVDHHXapBUk5bPIqG+4ZDbug8ImUY38kBqcTLVQZPS/S
-         6kyhW5sFIVHmW40LW1Wm07KeffV0vkNQ+lrN9wzyDUX7IMrSjNI0TavQ/cwwSwY3zG
-         uGWrPRwRuy1jnBhlmj3Ea/kSD0kezemuiKdIY44o=
+        b=vUXlltcRj/S4dVbOUVvjr61bpuwBXKnS6r7Uf1vMKdIwOulaIRFscajzAnDnPJUHJ
+         WVWE44aeFCxQMhVVrQ9zB5lyKdbdV7SA//6iyHEcxPFp3/Bv8S/CtnHiEnREPuyy00
+         K0KQxZqohph5RYJoJVfvD9UwIkVoAeRa8DXtpnKk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 217/284] scsi: pm8001: Fix pm8001_mpi_task_abort_resp()
-Date:   Mon, 18 Apr 2022 14:13:18 +0200
-Message-Id: <20220418121217.883967238@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Fangrui Song <maskray@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Subject: [PATCH 4.14 252/284] tools build: Use $(shell ) instead of `` to get embedded libperls ccopts
+Date:   Mon, 18 Apr 2022 14:13:53 +0200
+Message-Id: <20220418121219.451238577@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,46 +57,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-[ Upstream commit 7e6b7e740addcea450041b5be8e42f0a4ceece0f ]
+commit 541f695cbcb6932c22638b06e0cbe1d56177e2e9 upstream.
 
-The call to pm8001_ccb_task_free() at the end of
-pm8001_mpi_task_abort_resp() already frees the ccb tag. So when the device
-NCQ_ABORT_ALL_FLAG is set, the tag should not be freed again.  Also change
-the hardcoded 0xBFFFFFFF value to ~NCQ_ABORT_ALL_FLAG as it ought to be.
+Just like its done for ldopts and for both in tools/perf/Makefile.config.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-19-damien.lemoal@opensource.wdc.com
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
+
+  $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
+
+And we need to do it to allow for building with versions of clang where
+some gcc options selected by distros are not available.
+
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Fangrui Song <maskray@google.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Keeping <john@metanate.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Link: http://lore.kernel.org/lkml/YktYX2OnLtyobRYD@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ tools/build/feature/Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index b44bf34499a9..cc90b5c8d462 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -3768,12 +3768,11 @@ int pm8001_mpi_task_abort_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
- 	mb();
+--- a/tools/build/feature/Makefile
++++ b/tools/build/feature/Makefile
+@@ -184,7 +184,7 @@ strip-libs = $(filter-out -l%,$(1))
+ PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
+ PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
+ PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
+-PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
++PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
+ FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
  
- 	if (pm8001_dev->id & NCQ_ABORT_ALL_FLAG) {
--		pm8001_tag_free(pm8001_ha, tag);
- 		sas_free_task(t);
--		/* clear the flag */
--		pm8001_dev->id &= 0xBFFFFFFF;
--	} else
-+		pm8001_dev->id &= ~NCQ_ABORT_ALL_FLAG;
-+	} else {
- 		t->task_done(t);
-+	}
- 
- 	return 0;
- }
--- 
-2.35.1
-
+ $(OUTPUT)test-libperl.bin:
 
 
