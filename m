@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D50C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 492FFC3527D
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243555AbiDRNKR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59826 "EHLO
+        id S243625AbiDRNKU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241682AbiDRM65 (ORCPT
+        with ESMTP id S241729AbiDRM7A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:58:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EFB2DD79;
-        Mon, 18 Apr 2022 05:39:27 -0700 (PDT)
+        Mon, 18 Apr 2022 08:59:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC7B2E6AB;
+        Mon, 18 Apr 2022 05:39:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FBF9B80EDB;
-        Mon, 18 Apr 2022 12:39:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AF86C385AC;
-        Mon, 18 Apr 2022 12:39:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D587611E4;
+        Mon, 18 Apr 2022 12:39:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57ECBC385A7;
+        Mon, 18 Apr 2022 12:39:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285564;
-        bh=brtuF43pM50XqWsrLtaTVNwuTiY5ZTnr6ySqkkguyiw=;
+        s=korg; t=1650285570;
+        bh=yPzZImCeywqgb6Hi35+BrRKl0GUG10be3drdyior0oY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cJ0QvUxo0dGED9bEoAR7GvBWRCtgvtdgCmM0XWWe3vXA9v7pTLUJoLXJx47cyXuwR
-         cTwxKP3OremulL0Jb52MmjLbSsnKnEse3pypodR61qPi1uUTos6FnXjp2/cJhtCL+N
-         O2ZSePoGpk2zeFPrhi+ZnJcp1GQ9IcE6JmFLL2SY=
+        b=uOF2pZMj7/H7yYJdBOLhIpvtK3jLEqyGn56LFHHqozFaIFL4C2ygBVl3o+8WcJYPA
+         4WDMYiFLvl5uxrn7Ch6nrHJxfQoT5tSdhBrPrL6qg56Q8q1y8qKme5b6Qjbhr7byHj
+         glCxqBe5eCOFCfEgaxCkaMHVZHeJDLftb30sO7D0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 059/105] arm64: alternatives: mark patch_alternative() as `noinstr`
-Date:   Mon, 18 Apr 2022 14:13:01 +0200
-Message-Id: <20220418121148.162990767@linuxfoundation.org>
+        stable@vger.kernel.org, Andy Chiu <andy.chiu@sifive.com>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 061/105] net: axienet: setup mdio unconditionally
+Date:   Mon, 18 Apr 2022 14:13:03 +0200
+Message-Id: <20220418121148.219972068@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -50,84 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+From: Andy Chiu <andy.chiu@sifive.com>
 
-[ Upstream commit a2c0b0fbe01419f8f5d1c0b9c581631f34ffce8b ]
+[ Upstream commit d1c4f93e3f0a023024a6f022a61528c06cf1daa9 ]
 
-The alternatives code must be `noinstr` such that it does not patch itself,
-as the cache invalidation is only performed after all the alternatives have
-been applied.
+The call to axienet_mdio_setup should not depend on whether "phy-node"
+pressents on the DT. Besides, since `lp->phy_node` is used if PHY is in
+SGMII or 100Base-X modes, move it into the if statement. And the next patch
+will remove `lp->phy_node` from driver's private structure and do an
+of_node_put on it right away after use since it is not used elsewhere.
 
-Mark patch_alternative() as `noinstr`. Mark branch_insn_requires_update()
-and get_alt_insn() with `__always_inline` since they are both only called
-through patch_alternative().
-
-Booting a kernel in QEMU TCG with KCSAN=y and ARM64_USE_LSE_ATOMICS=y caused
-a boot hang:
-[    0.241121] CPU: All CPU(s) started at EL2
-
-The alternatives code was patching the atomics in __tsan_read4() from LL/SC
-atomics to LSE atomics.
-
-The following fragment is using LL/SC atomics in the .text section:
-  | <__tsan_unaligned_read4+304>:     ldxr    x6, [x2]
-  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
-  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
-  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
-
-This LL/SC atomic sequence was to be replaced with LSE atomics. However since
-the alternatives code was instrumentable, __tsan_read4() was being called after
-only the first instruction was replaced, which led to the following code in memory:
-  | <__tsan_unaligned_read4+304>:     ldadd   x5, x6, [x2]
-  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
-  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
-  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
-
-This caused an infinite loop as the `stxr` instruction never completed successfully,
-so `w7` was always 0.
-
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20220405104733.11476-1-joey.gouly@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
+Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
+Reviewed-by: Robert Hancock <robert.hancock@calian.com>
+Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/alternative.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm64/kernel/alternative.c b/arch/arm64/kernel/alternative.c
-index 73039949b5ce..5f8e4c2df53c 100644
---- a/arch/arm64/kernel/alternative.c
-+++ b/arch/arm64/kernel/alternative.c
-@@ -41,7 +41,7 @@ bool alternative_is_applied(u16 cpufeature)
- /*
-  * Check if the target PC is within an alternative block.
-  */
--static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
-+static __always_inline bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
- {
- 	unsigned long replptr = (unsigned long)ALT_REPL_PTR(alt);
- 	return !(pc >= replptr && pc <= (replptr + alt->alt_len));
-@@ -49,7 +49,7 @@ static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index bbdcba88c021..3d91baf2e55a 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -2060,15 +2060,14 @@ static int axienet_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto cleanup_clk;
  
- #define align_down(x, a)	((unsigned long)(x) & ~(((unsigned long)(a)) - 1))
- 
--static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
-+static __always_inline u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
- {
- 	u32 insn;
- 
-@@ -94,7 +94,7 @@ static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnp
- 	return insn;
- }
- 
--static void patch_alternative(struct alt_instr *alt,
-+static noinstr void patch_alternative(struct alt_instr *alt,
- 			      __le32 *origptr, __le32 *updptr, int nr_inst)
- {
- 	__le32 *replptr;
+-	lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+-	if (lp->phy_node) {
+-		ret = axienet_mdio_setup(lp);
+-		if (ret)
+-			dev_warn(&pdev->dev,
+-				 "error registering MDIO bus: %d\n", ret);
+-	}
++	ret = axienet_mdio_setup(lp);
++	if (ret)
++		dev_warn(&pdev->dev,
++			 "error registering MDIO bus: %d\n", ret);
++
+ 	if (lp->phy_mode == PHY_INTERFACE_MODE_SGMII ||
+ 	    lp->phy_mode == PHY_INTERFACE_MODE_1000BASEX) {
++		lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+ 		if (!lp->phy_node) {
+ 			dev_err(&pdev->dev, "phy-handle required for 1000BaseX/SGMII\n");
+ 			ret = -EINVAL;
 -- 
 2.35.1
 
