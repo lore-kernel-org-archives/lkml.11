@@ -2,58 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B92BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 446B8C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239743AbiDRMme (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:42:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50956 "EHLO
+        id S239789AbiDRMmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239785AbiDRMd2 (ORCPT
+        with ESMTP id S239766AbiDRMdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:28 -0400
+        Mon, 18 Apr 2022 08:33:24 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1451B793;
-        Mon, 18 Apr 2022 05:26:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32971B781;
+        Mon, 18 Apr 2022 05:25:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4411B80ED1;
-        Mon, 18 Apr 2022 12:26:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF5DCC385A8;
-        Mon, 18 Apr 2022 12:26:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5F5CB80ED6;
+        Mon, 18 Apr 2022 12:25:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B733C385A1;
+        Mon, 18 Apr 2022 12:25:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284764;
-        bh=wQRtzgEkDYGCBwc27A4NaGeUAook0WSpqblp9joZd3k=;
+        s=korg; t=1650284738;
+        bh=Dw8ApTS/5aAFeYoRxwG0Dkawb7rlxYyR4Csuh9f3TbI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i+YE8anutDpyRQxOyIV81ewiahvq2W4O6Si/fdRCWu4dJPjUXNcU33XmsX09SzfUY
-         T2MJKbaXLvepGHe+DZZ2U1q3ldduH4APMRepTbYX6IGNjXXXviTmz/GESTKXeQlBiV
-         EDAvmpznELz3YohNB12LzHc+HWD1RXjRf9Kpr35k=
+        b=yf7c+IUJ8dcrWEereXd/qBWT7dlM4F7WrYd4Jb1eBbVE+o+laymccCpB8OMQDIeoD
+         tXOM0SfnlG8SLIanjsoPOnkQXfHfbCtkQir97S1fLZ820CTZlco93DwLnmLW0llto4
+         grkkyOTiNo2tDbkkP9NYPjwT2SguriqqI1FGAeys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "H.J. Lu" <hjl.tools@gmail.com>,
-        Chris Kennelly <ckennelly@google.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Song Liu <songliubraving@fb.com>,
-        David Rientjes <rientjes@google.com>,
-        Ian Rogers <irogers@google.com>,
-        Hugh Dickins <hughd@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sandeep Patil <sspatil@google.com>,
-        Fangrui Song <maskray@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        Mike Rapoport <rppt@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 180/219] revert "fs/binfmt_elf: fix PT_LOAD p_align values for loaders"
-Date:   Mon, 18 Apr 2022 14:12:29 +0200
-Message-Id: <20220418121211.915190224@linuxfoundation.org>
+        stable@vger.kernel.org, Sherry Sun <sherry.sun@nxp.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 5.17 211/219] dt-bindings: memory: snps,ddrc-3.80a compatible also need interrupts
+Date:   Mon, 18 Apr 2022 14:13:00 +0200
+Message-Id: <20220418121212.773799708@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -65,58 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrew Morton <akpm@linux-foundation.org>
+From: Sherry Sun <sherry.sun@nxp.com>
 
-commit 354e923df042a11d1ab8ca06b3ebfab3a018a4ec upstream.
+commit 4f9f45d0eb0e7d449bc9294459df79b9c66edfac upstream.
 
-Commit 925346c129da11 ("fs/binfmt_elf: fix PT_LOAD p_align values for
-loaders") was an attempt to fix regressions due to 9630f0d60fec5f
-("fs/binfmt_elf: use PT_LOAD p_align values for static PIE").
+For the snps,ddrc-3.80a compatible, the interrupts property is also
+required, also order the compatibles by name (s goes before x).
 
-But regressionss continue to be reported:
-
-  https://lore.kernel.org/lkml/cb5b81bd-9882-e5dc-cd22-54bdbaaefbbc@leemhuis.info/
-  https://bugzilla.kernel.org/show_bug.cgi?id=215720
-  https://lkml.kernel.org/r/b685f3d0-da34-531d-1aa9-479accd3e21b@leemhuis.info
-
-This patch reverts the fix, so the original can also be reverted.
-
-Fixes: 925346c129da11 ("fs/binfmt_elf: fix PT_LOAD p_align values for loaders")
-Cc: H.J. Lu <hjl.tools@gmail.com>
-Cc: Chris Kennelly <ckennelly@google.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Alexey Dobriyan <adobriyan@gmail.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: Suren Baghdasaryan <surenb@google.com>
-Cc: Sandeep Patil <sspatil@google.com>
-Cc: Fangrui Song <maskray@google.com>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: Thorsten Leemhuis <regressions@leemhuis.info>
-Cc: Mike Rapoport <rppt@kernel.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Fixes: a9e6b3819b36 ("dt-bindings: memory: Add entry for version 3.80a")
+Link: https://lore.kernel.org/r/20220321075131.17811-2-sherry.sun@nxp.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/binfmt_elf.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/memory-controllers/synopsys,ddrc-ecc.yaml |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/fs/binfmt_elf.c
-+++ b/fs/binfmt_elf.c
-@@ -1117,7 +1117,7 @@ out_free_interp:
- 			 * without MAP_FIXED nor MAP_FIXED_NOREPLACE).
- 			 */
- 			alignment = maximum_alignment(elf_phdata, elf_ex->e_phnum);
--			if (interpreter || alignment > ELF_MIN_ALIGN) {
-+			if (alignment > ELF_MIN_ALIGN) {
- 				load_bias = ELF_ET_DYN_BASE;
- 				if (current->flags & PF_RANDOMIZE)
- 					load_bias += arch_mmap_rnd();
+--- a/Documentation/devicetree/bindings/memory-controllers/synopsys,ddrc-ecc.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/synopsys,ddrc-ecc.yaml
+@@ -24,9 +24,9 @@ description: |
+ properties:
+   compatible:
+     enum:
++      - snps,ddrc-3.80a
+       - xlnx,zynq-ddrc-a05
+       - xlnx,zynqmp-ddrc-2.40a
+-      - snps,ddrc-3.80a
+ 
+   interrupts:
+     maxItems: 1
+@@ -43,7 +43,9 @@ allOf:
+       properties:
+         compatible:
+           contains:
+-            const: xlnx,zynqmp-ddrc-2.40a
++            enum:
++              - snps,ddrc-3.80a
++              - xlnx,zynqmp-ddrc-2.40a
+     then:
+       required:
+         - interrupts
 
 
