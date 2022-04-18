@@ -2,40 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76796C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:22:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD86C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:22:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235897AbiDRMZW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
+        id S238646AbiDRMZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238453AbiDRMV4 (ORCPT
+        with ESMTP id S238398AbiDRMXV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:21:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E639B1D0F5;
-        Mon, 18 Apr 2022 05:17:38 -0700 (PDT)
+        Mon, 18 Apr 2022 08:23:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D659A1B797;
+        Mon, 18 Apr 2022 05:18:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 759F0B80EC4;
-        Mon, 18 Apr 2022 12:17:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0C08C385A7;
-        Mon, 18 Apr 2022 12:17:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C47CB80EDA;
+        Mon, 18 Apr 2022 12:18:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C85AFC385AB;
+        Mon, 18 Apr 2022 12:18:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284256;
-        bh=34W3T14ZyvuTjSBt3LK3XZum8D6tggDeBg81HxRc4to=;
+        s=korg; t=1650284331;
+        bh=qChVbIlFtuidMZRuxLHN8CXCO/NsypRaqy9iBBV8y0w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=07zr/yAdkwn+WBXChzHl6tO6NwHhS4o/XwNAImB8fr+gQmi3D5rMxdkSdK8yOSY74
-         j/uVgjTb8XRAhdoxlIfBPw+DDMO1TTN0afGIqBtksFmiSBZjTlni9AMpsqEJqu3V33
-         QcMJfTPei9yH7gtAJJmwhDDvtVLurXYnvQRBycNU=
+        b=O0ctSg5TEwWBS1hw/465mEUH7r9KRlwM74CzYaTHTXvttGYs5spkOuPsHIF3yKGSc
+         CxH2IRTnhWWO00ZhT6/ZuJw234dxGdvAg+2Wn80QDiPiH6tyaMuoEMK2RpqpQuEJ0H
+         97HJ3095JbVj5VAkk7+80LivKBiW1ZkSS8AJUoGI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 055/219] ALSA: usb-audio: Cap upper limits of buffer/period bytes for implicit fb
-Date:   Mon, 18 Apr 2022 14:10:24 +0200
-Message-Id: <20220418121206.770245526@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 077/219] net/sched: fix initialization order when updating chain 0 head
+Date:   Mon, 18 Apr 2022 14:10:46 +0200
+Message-Id: <20220418121208.242608101@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -47,161 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-commit 98c27add5d96485db731a92dac31567b0486cae8 upstream.
+[ Upstream commit e65812fd22eba32f11abe28cb377cbd64cfb1ba0 ]
 
-In the implicit feedback mode, some parameters are tied between both
-playback and capture streams.  One of the tied parameters is the
-period size, and this can be a problem if the device has different
-number of channels to both streams.  Assume that an application opens
-a playback stream that has an implicit feedback from a capture stream,
-and it allocates up to the max period and buffer size as much as
-possible.  When the capture device supports only more channels than
-the playback, the minimum period and buffer sizes become larger than
-the sizes the playback stream took.  That is, the minimum size will be
-over the max size the driver limits, and PCM core sees as if no
-available configuration is found, returning -EINVAL mercilessly.
+Currently, when inserting a new filter that needs to sit at the head
+of chain 0, it will first update the heads pointer on all devices using
+the (shared) block, and only then complete the initialization of the new
+element so that it has a "next" element.
 
-For avoiding this problem, we have to look through the counter part of
-audioformat list for each sync ep, and checks the channels.  If more
-channels are found there, we reduce the max period and buffer sizes
-accordingly.
+This can lead to a situation that the chain 0 head is propagated to
+another CPU before the "next" initialization is done. When this race
+condition is triggered, packets being matched on that CPU will simply
+miss all other filters, and will flow through the stack as if there were
+no other filters installed. If the system is using OVS + TC, such
+packets will get handled by vswitchd via upcall, which results in much
+higher latency and reordering. For other applications it may result in
+packet drops.
 
-You may wonder that the patch adds only the evaluation of channels
-between streams, and what about other parameters?  Both the format and
-the rate are tied in the implicit fb mode, hence they are always
-identical.
+This is reproducible with a tc only setup, but it varies from system to
+system. It could be reproduced with a shared block amongst 10 veth
+tunnels, and an ingress filter mirroring packets to another veth.
+That's because using the last added veth tunnel to the shared block to
+do the actual traffic, it makes the race window bigger and easier to
+trigger.
 
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215792
-Fixes: 5a6c3e11c9c9 ("ALSA: usb-audio: Add hw constraint for implicit fb sync")
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220407211657.15087-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The fix is rather simple, to just initialize the next pointer of the new
+filter instance (tp) before propagating the head change.
+
+The fixes tag is pointing to the original code though this issue should
+only be observed when using it unlocked.
+
+Fixes: 2190d1d0944f ("net: sched: introduce helpers to work with filter chains")
+Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Davide Caratti <dcaratti@redhat.com>
+Link: https://lore.kernel.org/r/b97d5f4eaffeeb9d058155bcab63347527261abf.1649341369.git.marcelo.leitner@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/pcm.c |   89 ++++++++++++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 87 insertions(+), 2 deletions(-)
+ net/sched/cls_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/usb/pcm.c
-+++ b/sound/usb/pcm.c
-@@ -659,6 +659,9 @@ static int snd_usb_pcm_prepare(struct sn
- #define hwc_debug(fmt, args...) do { } while(0)
- #endif
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 5ce1208a6ea3..130b5fda9c51 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1653,10 +1653,10 @@ static int tcf_chain_tp_insert(struct tcf_chain *chain,
+ 	if (chain->flushing)
+ 		return -EAGAIN;
  
-+#define MAX_BUFFER_BYTES	(1024 * 1024)
-+#define MAX_PERIOD_BYTES	(512 * 1024)
-+
- static const struct snd_pcm_hardware snd_usb_hardware =
- {
- 	.info =			SNDRV_PCM_INFO_MMAP |
-@@ -669,9 +672,9 @@ static const struct snd_pcm_hardware snd
- 				SNDRV_PCM_INFO_PAUSE,
- 	.channels_min =		1,
- 	.channels_max =		256,
--	.buffer_bytes_max =	1024 * 1024,
-+	.buffer_bytes_max =	MAX_BUFFER_BYTES,
- 	.period_bytes_min =	64,
--	.period_bytes_max =	512 * 1024,
-+	.period_bytes_max =	MAX_PERIOD_BYTES,
- 	.periods_min =		2,
- 	.periods_max =		1024,
- };
-@@ -971,6 +974,78 @@ static int hw_rule_periods_implicit_fb(s
- 				      ep->cur_buffer_periods);
- }
++	RCU_INIT_POINTER(tp->next, tcf_chain_tp_prev(chain, chain_info));
+ 	if (*chain_info->pprev == chain->filter_chain)
+ 		tcf_chain0_head_change(chain, tp);
+ 	tcf_proto_get(tp);
+-	RCU_INIT_POINTER(tp->next, tcf_chain_tp_prev(chain, chain_info));
+ 	rcu_assign_pointer(*chain_info->pprev, tp);
  
-+/* get the adjusted max buffer (or period) bytes that can fit with the
-+ * paired format for implicit fb
-+ */
-+static unsigned int
-+get_adjusted_max_bytes(struct snd_usb_substream *subs,
-+		       struct snd_usb_substream *pair,
-+		       struct snd_pcm_hw_params *params,
-+		       unsigned int max_bytes,
-+		       bool reverse_map)
-+{
-+	const struct audioformat *fp, *pp;
-+	unsigned int rmax = 0, r;
-+
-+	list_for_each_entry(fp, &subs->fmt_list, list) {
-+		if (!fp->implicit_fb)
-+			continue;
-+		if (!reverse_map &&
-+		    !hw_check_valid_format(subs, params, fp))
-+			continue;
-+		list_for_each_entry(pp, &pair->fmt_list, list) {
-+			if (pp->iface != fp->sync_iface ||
-+			    pp->altsetting != fp->sync_altsetting ||
-+			    pp->ep_idx != fp->sync_ep_idx)
-+				continue;
-+			if (reverse_map &&
-+			    !hw_check_valid_format(pair, params, pp))
-+				break;
-+			if (!reverse_map && pp->channels > fp->channels)
-+				r = max_bytes * fp->channels / pp->channels;
-+			else if (reverse_map && pp->channels < fp->channels)
-+				r = max_bytes * pp->channels / fp->channels;
-+			else
-+				r = max_bytes;
-+			rmax = max(rmax, r);
-+			break;
-+		}
-+	}
-+	return rmax;
-+}
-+
-+/* Reduce the period or buffer bytes depending on the paired substream;
-+ * when a paired configuration for implicit fb has a higher number of channels,
-+ * we need to reduce the max size accordingly, otherwise it may become unusable
-+ */
-+static int hw_rule_bytes_implicit_fb(struct snd_pcm_hw_params *params,
-+				     struct snd_pcm_hw_rule *rule)
-+{
-+	struct snd_usb_substream *subs = rule->private;
-+	struct snd_usb_substream *pair;
-+	struct snd_interval *it;
-+	unsigned int max_bytes;
-+	unsigned int rmax;
-+
-+	pair = &subs->stream->substream[!subs->direction];
-+	if (!pair->ep_num)
-+		return 0;
-+
-+	if (rule->var == SNDRV_PCM_HW_PARAM_PERIOD_BYTES)
-+		max_bytes = MAX_PERIOD_BYTES;
-+	else
-+		max_bytes = MAX_BUFFER_BYTES;
-+
-+	rmax = get_adjusted_max_bytes(subs, pair, params, max_bytes, false);
-+	if (!rmax)
-+		rmax = get_adjusted_max_bytes(pair, subs, params, max_bytes, true);
-+	if (!rmax)
-+		return 0;
-+
-+	it = hw_param_interval(params, rule->var);
-+	return apply_hw_params_minmax(it, 0, rmax);
-+}
-+
- /*
-  * set up the runtime hardware information.
-  */
-@@ -1085,6 +1160,16 @@ static int setup_hw_info(struct snd_pcm_
- 				  SNDRV_PCM_HW_PARAM_PERIODS, -1);
- 	if (err < 0)
- 		return err;
-+	err = snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
-+				  hw_rule_bytes_implicit_fb, subs,
-+				  SNDRV_PCM_HW_PARAM_BUFFER_BYTES, -1);
-+	if (err < 0)
-+		return err;
-+	err = snd_pcm_hw_rule_add(runtime, 0, SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
-+				  hw_rule_bytes_implicit_fb, subs,
-+				  SNDRV_PCM_HW_PARAM_PERIOD_BYTES, -1);
-+	if (err < 0)
-+		return err;
- 
- 	list_for_each_entry(fp, &subs->fmt_list, list) {
- 		if (fp->implicit_fb) {
+ 	return 0;
+-- 
+2.35.1
+
 
 
