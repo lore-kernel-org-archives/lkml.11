@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B7EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:12:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1502C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:12:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242406AbiDRNOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:14:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59854 "EHLO
+        id S242425AbiDRNN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:13:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242427AbiDRM74 (ORCPT
+        with ESMTP id S242365AbiDRM7u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:56 -0400
+        Mon, 18 Apr 2022 08:59:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A66B26114;
-        Mon, 18 Apr 2022 05:41:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6E9201BF;
+        Mon, 18 Apr 2022 05:40:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A32761203;
-        Mon, 18 Apr 2022 12:41:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CF6CC385BC;
-        Mon, 18 Apr 2022 12:41:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 86928611FE;
+        Mon, 18 Apr 2022 12:40:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91101C385A9;
+        Mon, 18 Apr 2022 12:40:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285675;
-        bh=s9Rpwm6delKvf/66BvJD66oF5cgx4gOOaaAMGNKINik=;
+        s=korg; t=1650285657;
+        bh=X1NBGVEBB4H5wW2n3F/zW1shQ120PbUXesGnU0MJgW8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hpum7N+W18g0k68DZkB1kW5/0O2gHtZ39yAZxHhmVeldMtcAQrsfF+0XbbtAlDEnV
-         pJPsC0JZC6H/skfrI/GNb86AdfhfwtL4Z7ySaEzjmUrNs3AZ+AobG+UqLYivoVI4Io
-         Q3N2vRqp7LbC/R0bPgVJppxlwJ4waKUJuSn01QTc=
+        b=2hvtBPBa6ExS0ndzkGcn7LSHoysc1V4ThGku8s2CpmAnwpDNUmrfsT6q91Gqk30lM
+         GOrAmKgvT5qG8OX0wYDH8Pz1gzjeL4HU3xDVcD8RNvEDwSjV9vcBmZoLjdOKQSaFWA
+         X+YSw3YAWsly0W3++18lSjQco26vhNncrMYK9kyQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tyrel Datwyler <tyreld@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 054/105] scsi: ibmvscsis: Increase INITIAL_SRP_LIMIT to 1024
-Date:   Mon, 18 Apr 2022 14:12:56 +0200
-Message-Id: <20220418121148.020490911@linuxfoundation.org>
+        stable@vger.kernel.org, Melissa Wen <mwen@igalia.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Simon Ser <contact@emersion.fr>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.10 086/105] drm/amd/display: dont ignore alpha property on pre-multiplied mode
+Date:   Mon, 18 Apr 2022 14:13:28 +0200
+Message-Id: <20220418121149.076222948@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -49,44 +51,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyrel Datwyler <tyreld@linux.ibm.com>
+From: Melissa Wen <mwen@igalia.com>
 
-[ Upstream commit 0bade8e53279157c7cc9dd95d573b7e82223d78a ]
+commit e4f1541caf60fcbe5a59e9d25805c0b5865e546a upstream.
 
-The adapter request_limit is hardcoded to be INITIAL_SRP_LIMIT which is
-currently an arbitrary value of 800. Increase this value to 1024 which
-better matches the characteristics of the typical IBMi Initiator that
-supports 32 LUNs and a queue depth of 32.
+"Pre-multiplied" is the default pixel blend mode for KMS/DRM, as
+documented in supported_modes of drm_plane_create_blend_mode_property():
+https://cgit.freedesktop.org/drm/drm-misc/tree/drivers/gpu/drm/drm_blend.c
 
-This change also has the secondary benefit of being a power of two as
-required by the kfifo API. Since, Commit ab9bb6318b09 ("Partially revert
-"kfifo: fix kfifo_alloc() and kfifo_init()"") the size of IU pool for each
-target has been rounded down to 512 when attempting to kfifo_init() those
-pools with the current request_limit size of 800.
+In this mode, both 'pixel alpha' and 'plane alpha' participate in the
+calculation, as described by the pixel blend mode formula in KMS/DRM
+documentation:
 
-Link: https://lore.kernel.org/r/20220322194443.678433-1-tyreld@linux.ibm.com
-Signed-off-by: Tyrel Datwyler <tyreld@linux.ibm.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+out.rgb = plane_alpha * fg.rgb +
+          (1 - (plane_alpha * fg.alpha)) * bg.rgb
+
+Considering the blend config mechanisms we have in the driver so far,
+the alpha mode that better fits this blend mode is the
+_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN, where the value for global_gain
+is the plane alpha (global_alpha).
+
+With this change, alpha property stops to be ignored. It also addresses
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1734
+
+v2:
+ * keep the 8-bit value for global_alpha_value (Nicholas)
+ * correct the logical ordering for combined global gain (Nicholas)
+ * apply to dcn10 too (Nicholas)
+
+Signed-off-by: Melissa Wen <mwen@igalia.com>
+Tested-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Tested-by: Simon Ser <contact@emersion.fr>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c |   14 +++++++++-----
+ drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c        |   14 +++++++++-----
+ 2 files changed, 18 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-index cc3908c2d2f9..a3431485def8 100644
---- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-+++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-@@ -35,7 +35,7 @@
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+@@ -2387,14 +2387,18 @@ void dcn10_update_mpcc(struct dc *dc, st
+ 				&blnd_cfg.black_color);
+ 	}
  
- #define IBMVSCSIS_VERSION	"v0.2"
+-	if (per_pixel_alpha)
+-		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
+-	else
+-		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
+-
+ 	blnd_cfg.overlap_only = false;
+ 	blnd_cfg.global_gain = 0xff;
  
--#define	INITIAL_SRP_LIMIT	800
-+#define	INITIAL_SRP_LIMIT	1024
- #define	DEFAULT_MAX_SECTORS	256
- #define MAX_TXU			1024 * 1024
++	if (per_pixel_alpha && pipe_ctx->plane_state->global_alpha) {
++		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN;
++		blnd_cfg.global_gain = pipe_ctx->plane_state->global_alpha_value;
++	} else if (per_pixel_alpha) {
++		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
++	} else {
++		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
++	}
++
+ 	if (pipe_ctx->plane_state->global_alpha)
+ 		blnd_cfg.global_alpha = pipe_ctx->plane_state->global_alpha_value;
+ 	else
+--- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
+@@ -2270,14 +2270,18 @@ void dcn20_update_mpcc(struct dc *dc, st
+ 				pipe_ctx, &blnd_cfg.black_color);
+ 	}
  
--- 
-2.35.1
-
+-	if (per_pixel_alpha)
+-		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
+-	else
+-		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
+-
+ 	blnd_cfg.overlap_only = false;
+ 	blnd_cfg.global_gain = 0xff;
+ 
++	if (per_pixel_alpha && pipe_ctx->plane_state->global_alpha) {
++		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN;
++		blnd_cfg.global_gain = pipe_ctx->plane_state->global_alpha_value;
++	} else if (per_pixel_alpha) {
++		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
++	} else {
++		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
++	}
++
+ 	if (pipe_ctx->plane_state->global_alpha)
+ 		blnd_cfg.global_alpha = pipe_ctx->plane_state->global_alpha_value;
+ 	else
 
 
