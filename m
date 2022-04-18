@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42EBAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C0E5C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241199AbiDRNL1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59694 "EHLO
+        id S241264AbiDRNLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:11:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241872AbiDRM7J (ORCPT
+        with ESMTP id S241948AbiDRM72 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84342ED6A;
-        Mon, 18 Apr 2022 05:39:44 -0700 (PDT)
+        Mon, 18 Apr 2022 08:59:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FF6B7C1;
+        Mon, 18 Apr 2022 05:39:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EC09611E4;
-        Mon, 18 Apr 2022 12:39:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70BC3C385A8;
-        Mon, 18 Apr 2022 12:39:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5CCFCB80EDB;
+        Mon, 18 Apr 2022 12:39:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5EB1C385A1;
+        Mon, 18 Apr 2022 12:39:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285582;
-        bh=YRvKQF4TGz2MGn3Qs1SdkPzV6jURwCpAx/ukdGPJ5Jc=;
+        s=korg; t=1650285589;
+        bh=xukcHtLpxHrdsA4nZAemtS+kGBMlnhaTnD9PbJpFc+0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LGswZX1aQYZrpeo7kLHyp2/YBLnCZzQG4P4DnQQuTrm3xHQMAo1gEhYw9d9hF3A2a
-         /v3Z2jM/hlJVYkvryxV1JTwvH7Fg53D+9q1cn5EL64Kn2WBPvGbBHbon017C35B43p
-         bQU2R5aikVSL4ebZQvCkjB4sn+eB8ZezIBNV6jqg=
+        b=rLnIQ2jqI6g3UF1NzXXHMACokSD31T9D5G/wbKjH0x3vvaRtQxvoZN15RvorWtDcM
+         tFebI8u5OMgpNzFWRJHNtDz/4IYeWplBaQSld/7lJ9Azj1xsIQgN5xeCWHmUBNP3cw
+         VJHgUL3RxDDPNIJa/xP7tvd0LmssyijXTSOt/j+s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chris Park <Chris.Park@amd.com>,
-        Alex Hung <alex.hung@amd.com>,
-        "Leo (Hanghong) Ma" <hanghong.ma@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Alexey Galakhov <agalakhov@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 047/105] drm/amd/display: Update VTEM Infopacket definition
-Date:   Mon, 18 Apr 2022 14:12:49 +0200
-Message-Id: <20220418121147.816426452@linuxfoundation.org>
+Subject: [PATCH 5.10 066/105] scsi: mvsas: Add PCI ID of RocketRaid 2640
+Date:   Mon, 18 Apr 2022 14:13:08 +0200
+Message-Id: <20220418121148.363727596@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -52,48 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo (Hanghong) Ma <hanghong.ma@amd.com>
+From: Alexey Galakhov <agalakhov@gmail.com>
 
-[ Upstream commit c9fbf6435162ed5fb7201d1d4adf6585c6a8c327 ]
+[ Upstream commit 5f2bce1e222028dc1c15f130109a17aa654ae6e8 ]
 
-[Why & How]
-The latest HDMI SPEC has updated the VTEM packet structure,
-so change the VTEM Infopacket defined in the driver side to align
-with the SPEC.
+The HighPoint RocketRaid 2640 is a low-cost SAS controller based on Marvell
+chip. The chip in question was already supported by the kernel, just the
+PCI ID of this particular board was missing.
 
-Reviewed-by: Chris Park <Chris.Park@amd.com>
-Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Leo (Hanghong) Ma <hanghong.ma@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Link: https://lore.kernel.org/r/20220309212535.402987-1-agalakhov@gmail.com
+Signed-off-by: Alexey Galakhov <agalakhov@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../gpu/drm/amd/display/modules/info_packet/info_packet.c    | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/scsi/mvsas/mv_init.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c b/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
-index 0fdf7a3e96de..96e18050a617 100644
---- a/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
-+++ b/drivers/gpu/drm/amd/display/modules/info_packet/info_packet.c
-@@ -100,7 +100,8 @@ enum vsc_packet_revision {
- //PB7 = MD0
- #define MASK_VTEM_MD0__VRR_EN         0x01
- #define MASK_VTEM_MD0__M_CONST        0x02
--#define MASK_VTEM_MD0__RESERVED2      0x0C
-+#define MASK_VTEM_MD0__QMS_EN         0x04
-+#define MASK_VTEM_MD0__RESERVED2      0x08
- #define MASK_VTEM_MD0__FVA_FACTOR_M1  0xF0
- 
- //MD1
-@@ -109,7 +110,7 @@ enum vsc_packet_revision {
- //MD2
- #define MASK_VTEM_MD2__BASE_REFRESH_RATE_98  0x03
- #define MASK_VTEM_MD2__RB                    0x04
--#define MASK_VTEM_MD2__RESERVED3             0xF8
-+#define MASK_VTEM_MD2__NEXT_TFR              0xF8
- 
- //MD3
- #define MASK_VTEM_MD3__BASE_REFRESH_RATE_07  0xFF
+diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
+index 0cfea7b2ab13..85ca8421fb86 100644
+--- a/drivers/scsi/mvsas/mv_init.c
++++ b/drivers/scsi/mvsas/mv_init.c
+@@ -646,6 +646,7 @@ static struct pci_device_id mvs_pci_table[] = {
+ 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1300), chip_1300 },
+ 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1320), chip_1320 },
+ 	{ PCI_VDEVICE(ADAPTEC2, 0x0450), chip_6440 },
++	{ PCI_VDEVICE(TTI, 0x2640), chip_6440 },
+ 	{ PCI_VDEVICE(TTI, 0x2710), chip_9480 },
+ 	{ PCI_VDEVICE(TTI, 0x2720), chip_9480 },
+ 	{ PCI_VDEVICE(TTI, 0x2721), chip_9480 },
 -- 
 2.35.1
 
