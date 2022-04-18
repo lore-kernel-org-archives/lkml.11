@@ -2,69 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1716C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A716EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:38:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243272AbiDRNlF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:41:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53472 "EHLO
+        id S243441AbiDRNlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242966AbiDRNJn (ORCPT
+        with ESMTP id S242965AbiDRNJn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:09:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D1F836B7C;
-        Mon, 18 Apr 2022 05:49:08 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A424236E0B;
+        Mon, 18 Apr 2022 05:49:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C418AB80D9C;
-        Mon, 18 Apr 2022 12:48:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8EE0C385BA;
-        Mon, 18 Apr 2022 12:48:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650286136;
-        bh=ihICU86jZLqrg+rCTyEXVS33fBSPZSaeOuWzRAs+kM8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UZl9Lrgko67ZlcWXKE5gdGvcXe4FnFDT8gmOCIofeja06AOJWoc7OrUoFesMhYCWa
-         AZutFRknK1RO3nNQMq1ffWeiJ62N0kRXFX8zg3ZcWk/O41r2pq8vdqMoYQ8J6jC8OS
-         GeP4FBiPyw1Lo0bmjWfupiReQG0G1NFjoFdtztBA8gt39b5/c9Rndx9FHn2przlBFG
-         wArvdPg7SH3SxT4KiUfvYa1ZOP6T34ij6qvEORwVy0FeeaJKxzo3eCjPKo2UvYQiPi
-         UeJ3s2RxLcj8aV56TJMpVqlFJLi4+b9/+TFBaZLSNMQWlCW+NojdqTvR/nM9Fl52Uv
-         LiZ1nDimSK4Pw==
-Date:   Mon, 18 Apr 2022 20:48:50 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-Subject: Re: [PATCH v2 1/2] dt-bindings: arm: Add i.MX8M Plus Gateworks
- GW74xx board
-Message-ID: <20220418124850.GP391514@dragon>
-References: <20220414161505.15524-1-tharvey@gateworks.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75A08B80EE1;
+        Mon, 18 Apr 2022 12:49:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC030C385A7;
+        Mon, 18 Apr 2022 12:49:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650286144;
+        bh=K+tDWAFZJnPKREwEHMhg1Ie2OWCsnVXB7aQ07ZjAkp4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=o46xS19S1wp8QQxfxVEGWTuv+gPXGkUYy43/MUfVidbN/EP0J7vps0mPL4kAGYUXd
+         2IXAuhex//Ej+klpWaIhrmGBIIKOrYixv4H7isSNbmEKlf3BLX1qNIVR12nWMS9kZV
+         JaNZtuqrc5c6DX6wTIHHeQdIIVxmJMxCTTPHWNHg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, TCS Robot <tcs_robot@tencent.com>,
+        Haimin Zhang <tcs_kernel@tencent.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 008/284] af_key: add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
+Date:   Mon, 18 Apr 2022 14:09:49 +0200
+Message-Id: <20220418121210.933615085@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
+References: <20220418121210.689577360@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220414161505.15524-1-tharvey@gateworks.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 14, 2022 at 09:15:04AM -0700, Tim Harvey wrote:
-> Add DT compatible string for i.MX8M Plus based Gateworks GW74xx board.
-> 
-> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
-> Cc: Shawn Guo <shawnguo@kernel.org>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-> Cc: Fabio Estevam <festevam@gmail.com>
-> Cc: NXP Linux Team <linux-imx@nxp.com>
+From: Haimin Zhang <tcs_kernel@tencent.com>
 
-Applied both, thanks!
+[ Upstream commit 9a564bccb78a76740ea9d75a259942df8143d02c ]
+
+Add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
+to initialize the buffer of supp_skb to fix a kernel-info-leak issue.
+1) Function pfkey_register calls compose_sadb_supported to request
+a sk_buff. 2) compose_sadb_supported calls alloc_sbk to allocate
+a sk_buff, but it doesn't zero it. 3) If auth_len is greater 0, then
+compose_sadb_supported treats the memory as a struct sadb_supported and
+begins to initialize. But it just initializes the field sadb_supported_len
+and field sadb_supported_exttype without field sadb_supported_reserved.
+
+Reported-by: TCS Robot <tcs_robot@tencent.com>
+Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/key/af_key.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index a10336cd7f97..9b3756aa7ca2 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -1709,7 +1709,7 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
+ 
+ 	xfrm_probe_algs();
+ 
+-	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL);
++	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
+ 	if (!supp_skb) {
+ 		if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
+ 			pfk->registered &= ~(1<<hdr->sadb_msg_satype);
+-- 
+2.34.1
+
+
+
