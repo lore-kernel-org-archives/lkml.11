@@ -2,92 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED10C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7AAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236832AbiDRNBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:01:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60564 "EHLO
+        id S240806AbiDRNBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236403AbiDRMuF (ORCPT
+        with ESMTP id S239652AbiDRMuZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:50:05 -0400
-Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4984F2CCAB
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:34:13 -0700 (PDT)
-Received: from omf09.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay07.hostedemail.com (Postfix) with ESMTP id C98A621F48;
-        Mon, 18 Apr 2022 12:34:10 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf09.hostedemail.com (Postfix) with ESMTPA id BABB22002B;
-        Mon, 18 Apr 2022 12:34:03 +0000 (UTC)
-Message-ID: <d56ad1bc0ef918cc8395b7c0ec7bdd10baf4c1f6.camel@perches.com>
-Subject: Re: [PATCH v4 2/5] fpga: fix for coding style issues
-From:   Joe Perches <joe@perches.com>
-To:     Nava kishore Manne <navam@xilinx.com>,
-        "mdf@kernel.org" <mdf@kernel.org>,
-        "hao.wu@intel.com" <hao.wu@intel.com>,
-        "yilun.xu@intel.com" <yilun.xu@intel.com>,
-        "trix@redhat.com" <trix@redhat.com>,
-        Michal Simek <michals@xilinx.com>,
-        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>, git <git@xilinx.com>
-Date:   Mon, 18 Apr 2022 05:34:02 -0700
-In-Reply-To: <SN6PR02MB45763D1B949353F99AAFE7D8C2F39@SN6PR02MB4576.namprd02.prod.outlook.com>
-References: <20220416133719.3382895-1-nava.manne@xilinx.com>
-         <20220416133719.3382895-3-nava.manne@xilinx.com>
-         <ac22068dad06fd61f2e82c0bf7c0f58a4e5df050.camel@perches.com>
-         <SN6PR02MB45763D1B949353F99AAFE7D8C2F39@SN6PR02MB4576.namprd02.prod.outlook.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Mon, 18 Apr 2022 08:50:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B772CCB7;
+        Mon, 18 Apr 2022 05:34:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1EEEBB80EDC;
+        Mon, 18 Apr 2022 12:34:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F8CDC385A1;
+        Mon, 18 Apr 2022 12:34:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650285252;
+        bh=6/aVB/eAzoB2Sz2DHvIrvyJiFvWJ+nwIA8Dtc/D44Yc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WuA9qrZpE2E7CxgB0aHVPYd1EeGSXqN6lCCO1BApf1brKAuQdjMam+M4Sa06s9pmy
+         9nbllwG5BDzHc/KPV8Z6t06TPotQqZmacoJmW5VHr3RUhVLGBRZZUKHM6TotJP2yBF
+         3lpjrS8YS3y26GoXmlww+aNS26HukUBtXPRVi8Gc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Trond Myklebust <trondmy@hammerspace.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.15 150/189] SUNRPC: Fix NFSDs request deferral on RDMA transports
+Date:   Mon, 18 Apr 2022 14:12:50 +0200
+Message-Id: <20220418121206.130360041@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
+References: <20220418121200.312988959@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: epzo5oz5kfdybfgi53hfa7jj89tnxo9k
-X-Rspamd-Server: rspamout06
-X-Rspamd-Queue-Id: BABB22002B
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+NFs9m+djNp+pOCjBVEkayfxYTc+TurQw=
-X-HE-Tag: 1650285243-748919
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-18 at 09:54 +0000, Nava kishore Manne wrote:
-> Hi Joe,
-> 
-> 	Please find my response inline.
-> 
-> > -----Original Message-----
-> > From: Joe Perches <joe@perches.com>
-> > Sent: Saturday, April 16, 2022 10:29 PM
+From: Chuck Lever <chuck.lever@oracle.com>
 
-> > On Sat, 2022-04-16 at 19:07 +0530, Nava kishore Manne wrote:
-> > > fixes the below checks reported by checkpatch.pl Lines should not end
-> > > with a '('
-> > > Alignment should match open parenthesis
-> > 
-> > in fpga-mgr:
-> > 	Another possibillty would be to change the function arguments
-> > 
-> > and
-> > 
-> > in fpga-region:
-> > 	Ideally keep the include declaration and definition styles synced
-> 
-> These changes are targeted to fix the checks reported by checkpatch.pl without touching the actual functionality.
+commit 773f91b2cf3f52df0d7508fdbf60f37567cdaee4 upstream.
 
-Hello.
+Trond Myklebust reports an NFSD crash in svc_rdma_sendto(). Further
+investigation shows that the crash occurred while NFSD was handling
+a deferred request.
 
-I am the checkpatch maintainer.
+This patch addresses two inter-related issues that prevent request
+deferral from working correctly for RPC/RDMA requests:
 
-The goal of the checkpatch script is simply to mark things that
-generally don't conform to the typical kernel coding style not
-to mandate that all of the messages it emits is dicta.
+1. Prevent the crash by ensuring that the original
+   svc_rqst::rq_xprt_ctxt value is available when the request is
+   revisited. Otherwise svc_rdma_sendto() does not have a Receive
+   context available with which to construct its reply.
 
-checkpatch is a stupid little script.  It has no taste.
+2. Possibly since before commit 71641d99ce03 ("svcrdma: Properly
+   compute .len and .buflen for received RPC Calls"),
+   svc_rdma_recvfrom() did not include the transport header in the
+   returned xdr_buf. There should have been no need for svc_defer()
+   and friends to save and restore that header, as of that commit.
+   This issue is addressed in a backport-friendly way by simply
+   having svc_rdma_recvfrom() set rq_xprt_hlen to zero
+   unconditionally, just as svc_tcp_recvfrom() does. This enables
+   svc_deferred_recv() to correctly reconstruct an RPC message
+   received via RPC/RDMA.
 
-Please take what I wrote with a little consideration rather than
-follow the advise of a brainless script.
+Reported-by: Trond Myklebust <trondmy@hammerspace.com>
+Link: https://lore.kernel.org/linux-nfs/82662b7190f26fb304eb0ab1bb04279072439d4e.camel@hammerspace.com/
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/sunrpc/svc.h              |    1 +
+ net/sunrpc/svc_xprt.c                   |    3 +++
+ net/sunrpc/xprtrdma/svc_rdma_recvfrom.c |    2 +-
+ 3 files changed, 5 insertions(+), 1 deletion(-)
+
+--- a/include/linux/sunrpc/svc.h
++++ b/include/linux/sunrpc/svc.h
+@@ -384,6 +384,7 @@ struct svc_deferred_req {
+ 	size_t			addrlen;
+ 	struct sockaddr_storage	daddr;	/* where reply must come from */
+ 	size_t			daddrlen;
++	void			*xprt_ctxt;
+ 	struct cache_deferred_req handle;
+ 	size_t			xprt_hlen;
+ 	int			argslen;
+--- a/net/sunrpc/svc_xprt.c
++++ b/net/sunrpc/svc_xprt.c
+@@ -1213,6 +1213,8 @@ static struct cache_deferred_req *svc_de
+ 		dr->daddr = rqstp->rq_daddr;
+ 		dr->argslen = rqstp->rq_arg.len >> 2;
+ 		dr->xprt_hlen = rqstp->rq_xprt_hlen;
++		dr->xprt_ctxt = rqstp->rq_xprt_ctxt;
++		rqstp->rq_xprt_ctxt = NULL;
+ 
+ 		/* back up head to the start of the buffer and copy */
+ 		skip = rqstp->rq_arg.len - rqstp->rq_arg.head[0].iov_len;
+@@ -1251,6 +1253,7 @@ static noinline int svc_deferred_recv(st
+ 	rqstp->rq_xprt_hlen   = dr->xprt_hlen;
+ 	rqstp->rq_daddr       = dr->daddr;
+ 	rqstp->rq_respages    = rqstp->rq_pages;
++	rqstp->rq_xprt_ctxt   = dr->xprt_ctxt;
+ 	svc_xprt_received(rqstp->rq_xprt);
+ 	return (dr->argslen<<2) - dr->xprt_hlen;
+ }
+--- a/net/sunrpc/xprtrdma/svc_rdma_recvfrom.c
++++ b/net/sunrpc/xprtrdma/svc_rdma_recvfrom.c
+@@ -826,7 +826,7 @@ int svc_rdma_recvfrom(struct svc_rqst *r
+ 		goto out_err;
+ 	if (ret == 0)
+ 		goto out_drop;
+-	rqstp->rq_xprt_hlen = ret;
++	rqstp->rq_xprt_hlen = 0;
+ 
+ 	if (svc_rdma_is_reverse_direction_reply(xprt, ctxt))
+ 		goto out_backchannel;
 
 
