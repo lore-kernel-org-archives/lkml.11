@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 842BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0970AC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237996AbiDRMys (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:54:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38014 "EHLO
+        id S237687AbiDRMyz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:54:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239909AbiDRMiP (ORCPT
+        with ESMTP id S239891AbiDRMiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:38:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76CC724966;
-        Mon, 18 Apr 2022 05:28:56 -0700 (PDT)
+        Mon, 18 Apr 2022 08:38:14 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F50D245A0;
+        Mon, 18 Apr 2022 05:28:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED59460F0A;
-        Mon, 18 Apr 2022 12:28:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0925AC385A1;
-        Mon, 18 Apr 2022 12:28:54 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C1DF8CE1077;
+        Mon, 18 Apr 2022 12:28:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B302C385A1;
+        Mon, 18 Apr 2022 12:28:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284935;
-        bh=KOUe/lAFuhPOql6scBSqAJ2DZMesDB+VOq8XWsiv5FM=;
+        s=korg; t=1650284929;
+        bh=nrYe9b8ZryklTVeVSOhKWsQwQKecSmUeNeKxQ9My95U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=biCEnO6+D187VHvZno3AaXoo3f2frAmGZVaS3C+JFhtblRgMwEip7a6UueCYv1349
-         ePtOz7iL5OWVCKv1vWrS/Kv8MdeKEW0Dxa63bloTYu7Ox3G0gETss6OJTgxwi3h6PL
-         t9Pd4SBCT+F8M6LF+OjUKNc3fvCqgncSQKXKjNFs=
+        b=sXDKm8i0qvO7yKgjqL4E2WKlMpu9Phds64FJY8l+kBYQ4aV4uVybMbkp9no9nqV+9
+         4f+FOm2aeWx2IiLY+3O0FGFnnM9MPHIspK3hqFGTeOFfDcwitoqZxlhFgeF3iEdW5q
+         1YhECVd3qR9ZrtS8xjxtnYU/3tZdx1p19dCJzwBw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 013/189] dt-bindings: net: qcom,ipa: add optional qcom,qmp property
-Date:   Mon, 18 Apr 2022 14:10:33 +0200
-Message-Id: <20220418121200.875703142@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 011/189] btrfs: remove unused variable in btrfs_{start,write}_dirty_block_groups()
+Date:   Mon, 18 Apr 2022 14:10:31 +0200
+Message-Id: <20220418121200.811035886@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -48,43 +48,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit ac62a0174d62ae0f4447c0c8cf35a8e5d793df56 upstream.
+commit 6d4a6b515c39f1f8763093e0f828959b2fbc2f45 upstream.
 
-For some systems, the IPA driver must make a request to ensure that
-its registers are retained across power collapse of the IPA hardware.
-On such systems, we'll use the existence of the "qcom,qmp" property
-as a signal that this request is required.
+Clang's version of -Wunused-but-set-variable recently gained support for
+unary operations, which reveals two unused variables:
 
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  fs/btrfs/block-group.c:2949:6: error: variable 'num_started' set but not used [-Werror,-Wunused-but-set-variable]
+          int num_started = 0;
+              ^
+  fs/btrfs/block-group.c:3116:6: error: variable 'num_started' set but not used [-Werror,-Wunused-but-set-variable]
+          int num_started = 0;
+              ^
+  2 errors generated.
+
+These variables appear to be unused from their introduction, so just
+remove them to silence the warnings.
+
+Fixes: c9dc4c657850 ("Btrfs: two stage dirty block group writeout")
+Fixes: 1bbc621ef284 ("Btrfs: allow block group cache writeout outside critical section in commit")
+CC: stable@vger.kernel.org # 5.4+
+Link: https://github.com/ClangBuiltLinux/linux/issues/1614
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/net/qcom,ipa.yaml |    6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/btrfs/block-group.c |    4 ----
+ 1 file changed, 4 deletions(-)
 
---- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-+++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-@@ -106,6 +106,10 @@ properties:
-           - const: imem
-           - const: config
+--- a/fs/btrfs/block-group.c
++++ b/fs/btrfs/block-group.c
+@@ -2882,7 +2882,6 @@ int btrfs_start_dirty_block_groups(struc
+ 	struct btrfs_path *path = NULL;
+ 	LIST_HEAD(dirty);
+ 	struct list_head *io = &cur_trans->io_bgs;
+-	int num_started = 0;
+ 	int loops = 0;
  
-+  qcom,qmp:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: phandle to the AOSS side-channel message RAM
-+
-   qcom,smem-states:
-     $ref: /schemas/types.yaml#/definitions/phandle-array
-     description: State bits used in by the AP to signal the modem.
-@@ -221,6 +225,8 @@ examples:
-                                      "imem",
-                                      "config";
+ 	spin_lock(&cur_trans->dirty_bgs_lock);
+@@ -2948,7 +2947,6 @@ again:
+ 			cache->io_ctl.inode = NULL;
+ 			ret = btrfs_write_out_cache(trans, cache, path);
+ 			if (ret == 0 && cache->io_ctl.inode) {
+-				num_started++;
+ 				should_put = 0;
  
-+                qcom,qmp = <&aoss_qmp>;
-+
-                 qcom,smem-states = <&ipa_smp2p_out 0>,
-                                    <&ipa_smp2p_out 1>;
-                 qcom,smem-state-names = "ipa-clock-enabled-valid",
+ 				/*
+@@ -3049,7 +3047,6 @@ int btrfs_write_dirty_block_groups(struc
+ 	int should_put;
+ 	struct btrfs_path *path;
+ 	struct list_head *io = &cur_trans->io_bgs;
+-	int num_started = 0;
+ 
+ 	path = btrfs_alloc_path();
+ 	if (!path)
+@@ -3107,7 +3104,6 @@ int btrfs_write_dirty_block_groups(struc
+ 			cache->io_ctl.inode = NULL;
+ 			ret = btrfs_write_out_cache(trans, cache, path);
+ 			if (ret == 0 && cache->io_ctl.inode) {
+-				num_started++;
+ 				should_put = 0;
+ 				list_add_tail(&cache->io_list, io);
+ 			} else {
 
 
