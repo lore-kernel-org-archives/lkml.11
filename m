@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A9C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:16:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D56C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:16:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231430AbiDRMTR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:19:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48254 "EHLO
+        id S238258AbiDRMTV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:19:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238104AbiDRMSP (ORCPT
+        with ESMTP id S238213AbiDRMSj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:18:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D523A1A066;
-        Mon, 18 Apr 2022 05:15:33 -0700 (PDT)
+        Mon, 18 Apr 2022 08:18:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8CE1B790;
+        Mon, 18 Apr 2022 05:15:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62B7860F1A;
-        Mon, 18 Apr 2022 12:15:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E2A8C385A7;
-        Mon, 18 Apr 2022 12:15:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5187EB80EC1;
+        Mon, 18 Apr 2022 12:15:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DDBEC385A1;
+        Mon, 18 Apr 2022 12:15:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284132;
-        bh=hnXxtEBUA5ZxcilPT0tseZET3rfXT3b/XiaIGhqWjCs=;
+        s=korg; t=1650284150;
+        bh=IerkZ3grBNTOfrFLSCzoo3e0r4RUyaZwXYa50HoRnMI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PbF72GmOHA81fne+hITSEE7twNljrgi1TUzF9wgpgTcN23Gw/+7jlCDMdtVDlADba
-         4zwAPZLxeyUTeDIAOhwlNGNUepGPrW6KCfp122cK5YWzRoM9jRI1pDFZZ8KDmrv7QH
-         W7/kKPWW96gXDXGqonqObEyiYbI0P4ucYJNO+kv4=
+        b=tokkL+wubTRk5nEOjT26E5X+rQPiFSMi7TNESWTMFjDPP2K5Di31Qnpqf+vzomiCk
+         LhJgQZNd7Q5rWU/mqtqeDwfcf34mpET7zuuNNpIipB6MI+GgUCK6YzESezA7jS8L8W
+         TxqQgKCdeyH78+Lh+KRMhZSxjVmGd0l+xvYh5xdM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 017/219] ALSA: core: Add snd_card_free_on_error() helper
-Date:   Mon, 18 Apr 2022 14:09:46 +0200
-Message-Id: <20220418121204.214119268@linuxfoundation.org>
+Subject: [PATCH 5.17 021/219] ALSA: als4000: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:09:50 +0200
+Message-Id: <20220418121204.515366861@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,94 +49,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit fee2b871d8d6389c9b4bdf9346a99ccc1c98c9b8 upstream.
+commit d616a0246da88d811f9f4c3aa83003c05efd3af0 upstream.
 
-This is a small helper function to handle the error path more easily
-when an error happens during the probe for the device with the
-device-managed card.  Since devres releases in the reverser order of
-the creations, usually snd_card_free() gets called at the last in the
-probe error path unless it already reached snd_card_register() calls.
-Due to this nature, when a driver expects the resource releases in
-card->private_free, this might be called too lately.
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-As a workaround, one should call the probe like:
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
 
- static int __some_probe(...) { // do real probe.... }
-
- static int some_probe(...)
- {
-	return snd_card_free_on_error(dev, __some_probe(dev, ...));
- }
-
-so that the snd_card_free() is called explicitly at the beginning of
-the error path from the probe.
-
-This function will be used in the upcoming fixes to address the
-regressions by devres usages.
-
-Fixes: e8ad415b7a55 ("ALSA: core: Add managed card creation")
+Fixes: 0e175f665960 ("ALSA: als4000: Allocate resources with device-managed APIs")
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412093141.8008-2-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220412102636.16000-6-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/sound/core.h |    1 +
- sound/core/init.c    |   28 ++++++++++++++++++++++++++++
- 2 files changed, 29 insertions(+)
+ sound/pci/als4000.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/include/sound/core.h
-+++ b/include/sound/core.h
-@@ -284,6 +284,7 @@ int snd_card_disconnect(struct snd_card
- void snd_card_disconnect_sync(struct snd_card *card);
- int snd_card_free(struct snd_card *card);
- int snd_card_free_when_closed(struct snd_card *card);
-+int snd_card_free_on_error(struct device *dev, int ret);
- void snd_card_set_id(struct snd_card *card, const char *id);
- int snd_card_register(struct snd_card *card);
- int snd_card_info_init(void);
---- a/sound/core/init.c
-+++ b/sound/core/init.c
-@@ -209,6 +209,12 @@ static void __snd_card_release(struct de
-  * snd_card_register(), the very first devres action to call snd_card_free()
-  * is added automatically.  In that way, the resource disconnection is assured
-  * at first, then released in the expected order.
-+ *
-+ * If an error happens at the probe before snd_card_register() is called and
-+ * there have been other devres resources, you'd need to free the card manually
-+ * via snd_card_free() call in the error; otherwise it may lead to UAF due to
-+ * devres call orders.  You can use snd_card_free_on_error() helper for
-+ * handling it more easily.
-  */
- int snd_devm_card_new(struct device *parent, int idx, const char *xid,
- 		      struct module *module, size_t extra_size,
-@@ -235,6 +241,28 @@ int snd_devm_card_new(struct device *par
+--- a/sound/pci/als4000.c
++++ b/sound/pci/als4000.c
+@@ -806,8 +806,8 @@ static void snd_card_als4000_free( struc
+ 	snd_als4000_free_gameport(acard);
  }
- EXPORT_SYMBOL_GPL(snd_devm_card_new);
  
-+/**
-+ * snd_card_free_on_error - a small helper for handling devm probe errors
-+ * @dev: the managed device object
-+ * @ret: the return code from the probe callback
-+ *
-+ * This function handles the explicit snd_card_free() call at the error from
-+ * the probe callback.  It's just a small helper for simplifying the error
-+ * handling with the managed devices.
-+ */
-+int snd_card_free_on_error(struct device *dev, int ret)
+-static int snd_card_als4000_probe(struct pci_dev *pci,
+-				  const struct pci_device_id *pci_id)
++static int __snd_card_als4000_probe(struct pci_dev *pci,
++				    const struct pci_device_id *pci_id)
+ {
+ 	static int dev;
+ 	struct snd_card *card;
+@@ -930,6 +930,12 @@ static int snd_card_als4000_probe(struct
+ 	return 0;
+ }
+ 
++static int snd_card_als4000_probe(struct pci_dev *pci,
++				  const struct pci_device_id *pci_id)
 +{
-+	struct snd_card *card;
-+
-+	if (!ret)
-+		return 0;
-+	card = devres_find(dev, __snd_card_release, NULL, NULL);
-+	if (card)
-+		snd_card_free(card);
-+	return ret;
++	return snd_card_free_on_error(&pci->dev, __snd_card_als4000_probe(pci, pci_id));
 +}
-+EXPORT_SYMBOL_GPL(snd_card_free_on_error);
 +
- static int snd_card_init(struct snd_card *card, struct device *parent,
- 			 int idx, const char *xid, struct module *module,
- 			 size_t extra_size)
+ #ifdef CONFIG_PM_SLEEP
+ static int snd_als4000_suspend(struct device *dev)
+ {
 
 
