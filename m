@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FBE0C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25031C3527A
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:11:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239862AbiDRNMl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:12:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59810 "EHLO
+        id S241682AbiDRNMs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:12:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242151AbiDRM7j (ORCPT
+        with ESMTP id S240833AbiDRM55 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E1F2F3AB;
-        Mon, 18 Apr 2022 05:40:15 -0700 (PDT)
+        Mon, 18 Apr 2022 08:57:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A6523BE2;
+        Mon, 18 Apr 2022 05:38:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B3A36101A;
-        Mon, 18 Apr 2022 12:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9069DC385A9;
-        Mon, 18 Apr 2022 12:40:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 796D4B80EDC;
+        Mon, 18 Apr 2022 12:38:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3FF9C385A7;
+        Mon, 18 Apr 2022 12:38:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285614;
-        bh=5k8FW0xfgGxI6vUMlHLTkoJOHhqS69JmSk5lxa58BJ0=;
+        s=korg; t=1650285493;
+        bh=zf+c42DAV0GN0eJ5S2P+F9YIgesB9POh7WPlYDoIUWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W01ore2y11CYw1abn/b6jdmnQVxH38VXEB9Bn/0d0ubOhE/c+5bNT81u/oZI26vnq
-         uk7QPj3kFqlmi4Ov5Lyj8Z+oZT0jTAy0xqfI0M5+bTQPoEik3gW3DEgZMslCWT+wi4
-         luT3rvV/PjM/FD5Lb1/Hmnu5hWZD3SGn4Il0J81s=
+        b=kdPxTrpwRamBv6Sj1aVeflUgOR9uzHUlBYCk/bo02yEVBAXVeGcXFAPAxY680fopx
+         HkvSbajk/rHQMCDlUTs9niorR1QiTK/7fjhU9eglAuieKxCSkffj4Tdi9KQyvCsi1q
+         5F120RkqeIXG61dWZSTg26DLYQrvLWmKf1jyDjBA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Oliver Upton <oupton@google.com>, Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 5.10 074/105] KVM: Dont create VM debugfs files outside of the VM directory
-Date:   Mon, 18 Apr 2022 14:13:16 +0200
-Message-Id: <20220418121148.729694346@linuxfoundation.org>
+        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 034/105] scsi: iscsi: Fix conn cleanup and stop race during iscsid restart
+Date:   Mon, 18 Apr 2022 14:12:36 +0200
+Message-Id: <20220418121147.380776788@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -48,68 +51,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Upton <oupton@google.com>
+From: Mike Christie <michael.christie@oracle.com>
 
-commit a44a4cc1c969afec97dbb2aedaf6f38eaa6253bb upstream.
+[ Upstream commit 7c6e99c18167ed89729bf167ccb4a7e3ab3115ba ]
 
-Unfortunately, there is no guarantee that KVM was able to instantiate a
-debugfs directory for a particular VM. To that end, KVM shouldn't even
-attempt to create new debugfs files in this case. If the specified
-parent dentry is NULL, debugfs_create_file() will instantiate files at
-the root of debugfs.
+If iscsid is doing a stop_conn at the same time the kernel is starting
+error recovery we can hit a race that allows the cleanup work to run on a
+valid connection. In the race, iscsi_if_stop_conn sees the cleanup bit set,
+but it calls flush_work on the clean_work before iscsi_conn_error_event has
+queued it. The flush then returns before the queueing and so the
+cleanup_work can run later and disconnect/stop a conn while it's in a
+connected state.
 
-For arm64, it is possible to create the vgic-state file outside of a
-VM directory, the file is not cleaned up when a VM is destroyed.
-Nonetheless, the corresponding struct kvm is freed when the VM is
-destroyed.
+The patch:
 
-Nip the problem in the bud for all possible errant debugfs file
-creations by initializing kvm->debugfs_dentry to -ENOENT. In so doing,
-debugfs_create_file() will fail instead of creating the file in the root
-directory.
+Commit 0ab710458da1 ("scsi: iscsi: Perform connection failure entirely in
+kernel space")
 
-Cc: stable@kernel.org
-Fixes: 929f45e32499 ("kvm: no need to check return value of debugfs_create functions")
-Signed-off-by: Oliver Upton <oupton@google.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220406235615.1447180-2-oupton@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+added the late stop_conn call bug originally, and the patch:
+
+Commit 23d6fefbb3f6 ("scsi: iscsi: Fix in-kernel conn failure handling")
+
+attempted to fix it but only fixed the normal EH case and left the above
+race for the iscsid restart case. For the normal EH case we don't hit the
+race because we only signal userspace to start recovery after we have done
+the queueing, so the flush will always catch the queued work or see it
+completed.
+
+For iscsid restart cases like boot, we can hit the race because iscsid will
+call down to the kernel before the kernel has signaled any error, so both
+code paths can be running at the same time. This adds a lock around the
+setting of the cleanup bit and queueing so they happen together.
+
+Link: https://lore.kernel.org/r/20220408001314.5014-6-michael.christie@oracle.com
+Fixes: 0ab710458da1 ("scsi: iscsi: Perform connection failure entirely in kernel space")
+Tested-by: Manish Rangankar <mrangankar@marvell.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Reviewed-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- virt/kvm/kvm_main.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/scsi/scsi_transport_iscsi.c | 17 +++++++++++++++++
+ include/scsi/scsi_transport_iscsi.h |  2 ++
+ 2 files changed, 19 insertions(+)
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -673,7 +673,7 @@ static void kvm_destroy_vm_debugfs(struc
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index 38abc3a15692..21cc306a0f11 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -2263,9 +2263,12 @@ static void iscsi_if_disconnect_bound_ep(struct iscsi_cls_conn *conn,
+ 					 bool is_active)
  {
- 	int i;
+ 	/* Check if this was a conn error and the kernel took ownership */
++	spin_lock_irq(&conn->lock);
+ 	if (!test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++		spin_unlock_irq(&conn->lock);
+ 		iscsi_ep_disconnect(conn, is_active);
+ 	} else {
++		spin_unlock_irq(&conn->lock);
+ 		ISCSI_DBG_TRANS_CONN(conn, "flush kernel conn cleanup.\n");
+ 		mutex_unlock(&conn->ep_mutex);
  
--	if (!kvm->debugfs_dentry)
-+	if (IS_ERR(kvm->debugfs_dentry))
- 		return;
- 
- 	debugfs_remove_recursive(kvm->debugfs_dentry);
-@@ -693,6 +693,12 @@ static int kvm_create_vm_debugfs(struct
- 	struct kvm_stat_data *stat_data;
- 	struct kvm_stats_debugfs_item *p;
- 
-+	/*
-+	 * Force subsequent debugfs file creations to fail if the VM directory
-+	 * is not created.
-+	 */
-+	kvm->debugfs_dentry = ERR_PTR(-ENOENT);
-+
- 	if (!debugfs_initialized())
- 		return 0;
- 
-@@ -4731,7 +4737,7 @@ static void kvm_uevent_notify_change(uns
+@@ -2308,9 +2311,12 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 		/*
+ 		 * Figure out if it was the kernel or userspace initiating this.
+ 		 */
++		spin_lock_irq(&conn->lock);
+ 		if (!test_and_set_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++			spin_unlock_irq(&conn->lock);
+ 			iscsi_stop_conn(conn, flag);
+ 		} else {
++			spin_unlock_irq(&conn->lock);
+ 			ISCSI_DBG_TRANS_CONN(conn,
+ 					     "flush kernel conn cleanup.\n");
+ 			flush_work(&conn->cleanup_work);
+@@ -2319,7 +2325,9 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 		 * Only clear for recovery to avoid extra cleanup runs during
+ 		 * termination.
+ 		 */
++		spin_lock_irq(&conn->lock);
+ 		clear_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags);
++		spin_unlock_irq(&conn->lock);
  	}
- 	add_uevent_var(env, "PID=%d", kvm->userspace_pid);
+ 	ISCSI_DBG_TRANS_CONN(conn, "iscsi if conn stop done.\n");
+ 	return 0;
+@@ -2340,7 +2348,9 @@ static void iscsi_cleanup_conn_work_fn(struct work_struct *work)
+ 	 */
+ 	if (conn->state != ISCSI_CONN_BOUND && conn->state != ISCSI_CONN_UP) {
+ 		ISCSI_DBG_TRANS_CONN(conn, "Got error while conn is already failed. Ignoring.\n");
++		spin_lock_irq(&conn->lock);
+ 		clear_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags);
++		spin_unlock_irq(&conn->lock);
+ 		mutex_unlock(&conn->ep_mutex);
+ 		return;
+ 	}
+@@ -2400,6 +2410,7 @@ iscsi_create_conn(struct iscsi_cls_session *session, int dd_size, uint32_t cid)
+ 		conn->dd_data = &conn[1];
  
--	if (kvm->debugfs_dentry) {
-+	if (!IS_ERR(kvm->debugfs_dentry)) {
- 		char *tmp, *p = kmalloc(PATH_MAX, GFP_KERNEL_ACCOUNT);
+ 	mutex_init(&conn->ep_mutex);
++	spin_lock_init(&conn->lock);
+ 	INIT_LIST_HEAD(&conn->conn_list);
+ 	INIT_WORK(&conn->cleanup_work, iscsi_cleanup_conn_work_fn);
+ 	conn->transport = transport;
+@@ -2591,9 +2602,12 @@ void iscsi_conn_error_event(struct iscsi_cls_conn *conn, enum iscsi_err error)
+ 	struct iscsi_uevent *ev;
+ 	struct iscsi_internal *priv;
+ 	int len = nlmsg_total_size(sizeof(*ev));
++	unsigned long flags;
  
- 		if (p) {
++	spin_lock_irqsave(&conn->lock, flags);
+ 	if (!test_and_set_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags))
+ 		queue_work(iscsi_conn_cleanup_workq, &conn->cleanup_work);
++	spin_unlock_irqrestore(&conn->lock, flags);
+ 
+ 	priv = iscsi_if_transport_lookup(conn->transport);
+ 	if (!priv)
+@@ -3736,11 +3750,14 @@ static int iscsi_if_transport_conn(struct iscsi_transport *transport,
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&conn->ep_mutex);
++	spin_lock_irq(&conn->lock);
+ 	if (test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++		spin_unlock_irq(&conn->lock);
+ 		mutex_unlock(&conn->ep_mutex);
+ 		ev->r.retcode = -ENOTCONN;
+ 		return 0;
+ 	}
++	spin_unlock_irq(&conn->lock);
+ 
+ 	switch (nlh->nlmsg_type) {
+ 	case ISCSI_UEVENT_BIND_CONN:
+diff --git a/include/scsi/scsi_transport_iscsi.h b/include/scsi/scsi_transport_iscsi.h
+index c5d7810fd792..037c77fb5dc5 100644
+--- a/include/scsi/scsi_transport_iscsi.h
++++ b/include/scsi/scsi_transport_iscsi.h
+@@ -211,6 +211,8 @@ struct iscsi_cls_conn {
+ 	struct mutex ep_mutex;
+ 	struct iscsi_endpoint *ep;
+ 
++	/* Used when accessing flags and queueing work. */
++	spinlock_t lock;
+ 	unsigned long flags;
+ 	struct work_struct cleanup_work;
+ 
+-- 
+2.35.1
+
 
 
