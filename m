@@ -2,47 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC5CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20220C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343546AbiDROGq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:06:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57342 "EHLO
+        id S245073AbiDROGw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:06:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243822AbiDRNt2 (ORCPT
+        with ESMTP id S244488AbiDRNuC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:49:28 -0400
+        Mon, 18 Apr 2022 09:50:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1070833E9B;
-        Mon, 18 Apr 2022 06:01:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B8443AD8;
+        Mon, 18 Apr 2022 06:01:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D20860B71;
-        Mon, 18 Apr 2022 13:01:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B93BC385A7;
-        Mon, 18 Apr 2022 13:01:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EF7F609EE;
+        Mon, 18 Apr 2022 13:01:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E08AC385A1;
+        Mon, 18 Apr 2022 13:01:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286891;
-        bh=B233ZbEmtQGrhBpokOcxFigC/8UDYIojH37NgqQyG0k=;
+        s=korg; t=1650286908;
+        bh=GWct4j8vHMTNJlD+w0aPeGQoSvV2bVI6BpkNRMBq7SU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wduep64I0oXJR2S86GmTbQ3vGVh0Hl6WmTmVe/BFYps0Vh3qJtB9hUs2ggsI3cRzb
-         jqIy1O47iswbu4kRNBFNAc6mYYNbJUyOxoN+a8oIOeDsKxWu49avUDz62Voy3oSHJh
-         AL4RxH6Cegxqxy8ZXBG00s4Qw2tpTrW7MYlcxdao=
+        b=go6cCsnkCiBPQVN1KXm1HfeRflzYCHlr7fdMQl99F35nEZozC+WdfTdxC5/YOIcey
+         KL/IXaP8S0Yo63VjoPnRivKeX9sKufx0nwkXjFssHimwTP5E+Kd5gpc7n+soce2nAR
+         5EMto/sgEnxQ5E5Bkn36PvEMr5/IaDPlnqgxFMm0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, Michal Hocko <mhocko@suse.com>,
-        David Hildenbrand <david@redhat.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.14 278/284] mm, page_alloc: fix build_zonerefs_node()
-Date:   Mon, 18 Apr 2022 14:14:19 +0200
-Message-Id: <20220418121221.000615347@linuxfoundation.org>
+        stable@vger.kernel.org, Nadav Amit <namit@vmware.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 4.14 283/284] smp: Fix offline cpu check in flush_smp_call_function_queue()
+Date:   Mon, 18 Apr 2022 14:14:24 +0200
+Message-Id: <20220418121221.302446221@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -54,66 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Nadav Amit <namit@vmware.com>
 
-commit e553f62f10d93551eb883eca227ac54d1a4fad84 upstream.
+commit 9e949a3886356fe9112c6f6f34a6e23d1d35407f upstream.
 
-Since commit 6aa303defb74 ("mm, vmscan: only allocate and reclaim from
-zones with pages managed by the buddy allocator") only zones with free
-memory are included in a built zonelist.  This is problematic when e.g.
-all memory of a zone has been ballooned out when zonelists are being
-rebuilt.
+The check in flush_smp_call_function_queue() for callbacks that are sent
+to offline CPUs currently checks whether the queue is empty.
 
-The decision whether to rebuild the zonelists when onlining new memory
-is done based on populated_zone() returning 0 for the zone the memory
-will be added to.  The new zone is added to the zonelists only, if it
-has free memory pages (managed_zone() returns a non-zero value) after
-the memory has been onlined.  This implies, that onlining memory will
-always free the added pages to the allocator immediately, but this is
-not true in all cases: when e.g. running as a Xen guest the onlined new
-memory will be added only to the ballooned memory list, it will be freed
-only when the guest is being ballooned up afterwards.
+However, flush_smp_call_function_queue() has just deleted all the
+callbacks from the queue and moved all the entries into a local list.
+This checks would only be positive if some callbacks were added in the
+short time after llist_del_all() was called. This does not seem to be
+the intention of this check.
 
-Another problem with using managed_zone() for the decision whether a
-zone is being added to the zonelists is, that a zone with all memory
-used will in fact be removed from all zonelists in case the zonelists
-happen to be rebuilt.
+Change the check to look at the local list to which the entries were
+moved instead of the queue from which all the callbacks were just
+removed.
 
-Use populated_zone() when building a zonelist as it has been done before
-that commit.
-
-There was a report that QubesOS (based on Xen) is hitting this problem.
-Xen has switched to use the zone device functionality in kernel 5.9 and
-QubesOS wants to use memory hotplugging for guests in order to be able
-to start a guest with minimal memory and expand it as needed.  This was
-the report leading to the patch.
-
-Link: https://lkml.kernel.org/r/20220407120637.9035-1-jgross@suse.com
-Fixes: 6aa303defb74 ("mm, vmscan: only allocate and reclaim from zones with pages managed by the buddy allocator")
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Acked-by: David Hildenbrand <david@redhat.com>
-Cc: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Reviewed-by: Wei Yang <richard.weiyang@gmail.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 8d056c48e4862 ("CPU hotplug, smp: flush any pending IPI callbacks before CPU offline")
+Signed-off-by: Nadav Amit <namit@vmware.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20220319072015.1495036-1-namit@vmware.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/page_alloc.c |    2 +-
+ kernel/smp.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -4879,7 +4879,7 @@ static int build_zonerefs_node(pg_data_t
- 	do {
- 		zone_type--;
- 		zone = pgdat->node_zones + zone_type;
--		if (managed_zone(zone)) {
-+		if (populated_zone(zone)) {
- 			zoneref_set_zone(zone, &zonerefs[nr_zones++]);
- 			check_highest_zone(zone_type);
- 		}
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -221,7 +221,7 @@ static void flush_smp_call_function_queu
+ 
+ 	/* There shouldn't be any pending callbacks on an offline CPU. */
+ 	if (unlikely(warn_cpu_offline && !cpu_online(smp_processor_id()) &&
+-		     !warned && !llist_empty(head))) {
++		     !warned && entry != NULL)) {
+ 		warned = true;
+ 		WARN(1, "IPI on offline CPU %d\n", smp_processor_id());
+ 
 
 
