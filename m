@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 031FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A73C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239411AbiDRMgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51068 "EHLO
+        id S239296AbiDRMg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:36:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238989AbiDRMa0 (ORCPT
+        with ESMTP id S238795AbiDRMa2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:30:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B540E20BF0;
-        Mon, 18 Apr 2022 05:23:40 -0700 (PDT)
+        Mon, 18 Apr 2022 08:30:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C6C26D2;
+        Mon, 18 Apr 2022 05:23:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3609660FA7;
-        Mon, 18 Apr 2022 12:23:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BC5FC385A1;
-        Mon, 18 Apr 2022 12:23:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7363B80EC1;
+        Mon, 18 Apr 2022 12:23:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49696C385A7;
+        Mon, 18 Apr 2022 12:23:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284619;
-        bh=oknzdsPyyYxHHeLKbM5fyYkIpdaUMdm8VabbP461qHc=;
+        s=korg; t=1650284622;
+        bh=fDD8IhH9m96y6dBr8zEZRwcTHy7HPF8YLEDIQKohlcQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DmC8YeFXWISbS7BWbJmSWFu34N14XDw79cqTsnO8ZzstEz5DJwBJEPLseXwGCVeAA
-         CNLEAceVcxaee6v2mw0STsSg4hlbUTj/Ag2B7u4ZvPue0mIIQqiB0K40L94qicl7AL
-         sHRPUHcrjKDdUwTrpTuAK8ld0wCw5hqnnTvZ0F04=
+        b=Y2N1ThTbpq8Sg4GZoWXXOeVikoKIu945gZQzAghg2092L3sfFZpHP+RMX7dnKkzcn
+         egs593Pv8eB9nEm+4vZdsm+Dpmv+FELpwIhgv35gE8rPbgM8TFlG0Jp5RFPo2/IvE+
+         JZ1tlXWb/txyas0UPiud7WUM4kBljxjG0xTPrTSc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        =?UTF-8?q?Michel=20D=C3=A4nzer?= <mdaenzer@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 171/219] x86,bpf: Avoid IBT objtool warning
-Date:   Mon, 18 Apr 2022 14:12:20 +0200
-Message-Id: <20220418121211.667290215@linuxfoundation.org>
+Subject: [PATCH 5.17 134/219] drm/amdgpu/gmc: use PCI BARs for APUs in passthrough
+Date:   Mon, 18 Apr 2022 14:11:43 +0200
+Message-Id: <20220418121210.645214144@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,41 +51,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit be8a096521ca1a252bf078b347f96ce94582612e ]
+[ Upstream commit b818a5d374542ccec73dcfe578a081574029820e ]
 
-Clang can inline emit_indirect_jump() and then folds constants, which
-results in:
+If the GPU is passed through to a guest VM, use the PCI
+BAR for CPU FB access rather than the physical address of
+carve out.  The physical address is not valid in a guest.
 
-  | vmlinux.o: warning: objtool: emit_bpf_dispatcher()+0x6a4: relocation to !ENDBR: .text.__x86.indirect_thunk+0x40
-  | vmlinux.o: warning: objtool: emit_bpf_dispatcher()+0x67d: relocation to !ENDBR: .text.__x86.indirect_thunk+0x40
-  | vmlinux.o: warning: objtool: emit_bpf_tail_call_indirect()+0x386: relocation to !ENDBR: .text.__x86.indirect_thunk+0x20
-  | vmlinux.o: warning: objtool: emit_bpf_tail_call_indirect()+0x35d: relocation to !ENDBR: .text.__x86.indirect_thunk+0x20
+v2: Fix HDP handing as suggested by Michel
 
-Suppress the optimization such that it must emit a code reference to
-the __x86_indirect_thunk_array[] base.
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lkml.kernel.org/r/20220405075531.GB30877@worktop.programming.kicks-ass.net
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Michel Dänzer <mdaenzer@redhat.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/net/bpf_jit_comp.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 4 ++--
+ drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c     | 2 +-
+ drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c      | 5 +++--
+ drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c      | 2 +-
+ drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c      | 2 +-
+ 5 files changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 0ecb140864b2..b272e963388c 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -398,6 +398,7 @@ static void emit_indirect_jump(u8 **pprog, int reg, u8 *ip)
- 		EMIT_LFENCE();
- 		EMIT2(0xFF, 0xE0 + reg);
- 	} else if (cpu_feature_enabled(X86_FEATURE_RETPOLINE)) {
-+		OPTIMIZER_HIDE_VAR(reg);
- 		emit_jump(&prog, &__x86_indirect_thunk_array[reg], ip);
- 	} else
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+index b87dca6d09fa..052816f0efed 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -5678,7 +5678,7 @@ void amdgpu_device_flush_hdp(struct amdgpu_device *adev,
+ 		struct amdgpu_ring *ring)
+ {
+ #ifdef CONFIG_X86_64
+-	if (adev->flags & AMD_IS_APU)
++	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev))
+ 		return;
  #endif
+ 	if (adev->gmc.xgmi.connected_to_cpu)
+@@ -5694,7 +5694,7 @@ void amdgpu_device_invalidate_hdp(struct amdgpu_device *adev,
+ 		struct amdgpu_ring *ring)
+ {
+ #ifdef CONFIG_X86_64
+-	if (adev->flags & AMD_IS_APU)
++	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev))
+ 		return;
+ #endif
+ 	if (adev->gmc.xgmi.connected_to_cpu)
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
+index a2f8ed0e6a64..f1b794d5d87d 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
+@@ -788,7 +788,7 @@ static int gmc_v10_0_mc_init(struct amdgpu_device *adev)
+ 	adev->gmc.aper_size = pci_resource_len(adev->pdev, 0);
+ 
+ #ifdef CONFIG_X86_64
+-	if (adev->flags & AMD_IS_APU) {
++	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev)) {
+ 		adev->gmc.aper_base = adev->gfxhub.funcs->get_mc_fb_offset(adev);
+ 		adev->gmc.aper_size = adev->gmc.real_vram_size;
+ 	}
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c
+index ab8adbff9e2d..5206e2da334a 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c
+@@ -381,8 +381,9 @@ static int gmc_v7_0_mc_init(struct amdgpu_device *adev)
+ 	adev->gmc.aper_size = pci_resource_len(adev->pdev, 0);
+ 
+ #ifdef CONFIG_X86_64
+-	if (adev->flags & AMD_IS_APU &&
+-	    adev->gmc.real_vram_size > adev->gmc.aper_size) {
++	if ((adev->flags & AMD_IS_APU) &&
++	    adev->gmc.real_vram_size > adev->gmc.aper_size &&
++	    !amdgpu_passthrough(adev)) {
+ 		adev->gmc.aper_base = ((u64)RREG32(mmMC_VM_FB_OFFSET)) << 22;
+ 		adev->gmc.aper_size = adev->gmc.real_vram_size;
+ 	}
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
+index 054733838292..d07d36786836 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
+@@ -581,7 +581,7 @@ static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
+ 	adev->gmc.aper_size = pci_resource_len(adev->pdev, 0);
+ 
+ #ifdef CONFIG_X86_64
+-	if (adev->flags & AMD_IS_APU) {
++	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev)) {
+ 		adev->gmc.aper_base = ((u64)RREG32(mmMC_VM_FB_OFFSET)) << 22;
+ 		adev->gmc.aper_size = adev->gmc.real_vram_size;
+ 	}
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
+index 34ee75cf7954..2fb24178eaef 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
+@@ -1420,7 +1420,7 @@ static int gmc_v9_0_mc_init(struct amdgpu_device *adev)
+ 	 */
+ 
+ 	/* check whether both host-gpu and gpu-gpu xgmi links exist */
+-	if ((adev->flags & AMD_IS_APU) ||
++	if (((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev)) ||
+ 	    (adev->gmc.xgmi.supported &&
+ 	     adev->gmc.xgmi.connected_to_cpu)) {
+ 		adev->gmc.aper_base =
 -- 
 2.35.1
 
