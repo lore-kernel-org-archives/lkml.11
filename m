@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73362C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FBD8C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239230AbiDRM2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37700 "EHLO
+        id S239083AbiDRM1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238739AbiDRM0W (ORCPT
+        with ESMTP id S238781AbiDRM0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:26:22 -0400
+        Mon, 18 Apr 2022 08:26:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BEF1261E;
-        Mon, 18 Apr 2022 05:20:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A86E089;
+        Mon, 18 Apr 2022 05:20:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E59F60F0A;
-        Mon, 18 Apr 2022 12:20:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EDBEC385A7;
-        Mon, 18 Apr 2022 12:20:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83D0E60F0C;
+        Mon, 18 Apr 2022 12:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9400AC385A7;
+        Mon, 18 Apr 2022 12:20:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284426;
-        bh=SRfsMOKuudIG6+hJWDySYLdGJYrbURX3cFpwcDX6Gn8=;
+        s=korg; t=1650284410;
+        bh=G++U9rtoxfQSlDamiCXkUBLmwjBH2Lkb15OC1vNC2oE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FyqttEe5vL4BYBRbcozQbTdqZUChjyEbu9MX3UiafG2azJNIUBnZ5G/JGvDhW6Kig
-         y1bcetrDtxSWfzIaAqQGwxbeFoJE9TyUZ8jntTYlNFu/sQGeKcOvksqNaKJN66R4Lz
-         mVTpFY2Jvi0GgW5srbxLziub9beToPMaTZ7Tg00w=
+        b=CeuRRLWBSVLYllrUnpR27u/pllWMc0yLo5FpXFCIw/da3O/OX4RLrq8/XrOYoWgQN
+         rCtoyOzoZZoX50UVPEOnunHlz9w4gdsXgrNciv6b4UWqcxJcG/x/oKSSDOLlGCSnJC
+         M1d/JolXB7hLiwEtpWFbj0EJjqLs7GVJ47SW0u6A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Petr Malat <oss@malat.biz>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Topi Miettinen <toiwoton@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 103/219] sctp: Initialize daddr on peeled off socket
-Date:   Mon, 18 Apr 2022 14:11:12 +0200
-Message-Id: <20220418121209.774257674@linuxfoundation.org>
+Subject: [PATCH 5.17 089/219] netfilter: nft_socket: make cgroup match work in input too
+Date:   Mon, 18 Apr 2022 14:10:58 +0200
+Message-Id: <20220418121209.039001224@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,38 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Malat <oss@malat.biz>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 8467dda0c26583547731e7f3ea73fc3856bae3bf ]
+[ Upstream commit 05ae2fba821c4d122ab4ba3e52144e21586c4010 ]
 
-Function sctp_do_peeloff() wrongly initializes daddr of the original
-socket instead of the peeled off socket, which makes getpeername()
-return zeroes instead of the primary address. Initialize the new socket
-instead.
+cgroupv2 helper function ignores the already-looked up sk
+and uses skb->sk instead.
 
-Fixes: d570ee490fb1 ("[SCTP]: Correctly set daddr for IPv6 sockets during peeloff")
-Signed-off-by: Petr Malat <oss@malat.biz>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Link: https://lore.kernel.org/r/20220409063611.673193-1-oss@malat.biz
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Just pass sk from the calling function instead; this will
+make cgroup matching work for udp and tcp in input even when
+edemux did not set skb->sk already.
+
+Fixes: e0bb96db96f8 ("netfilter: nft_socket: add support for cgroupsv2")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Tested-by: Topi Miettinen <toiwoton@gmail.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/socket.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/nft_socket.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 3e1a9600be5e..7b0427658056 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -5636,7 +5636,7 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
- 	 * Set the daddr and initialize id to something more random and also
- 	 * copy over any ip options.
- 	 */
--	sp->pf->to_sk_daddr(&asoc->peer.primary_addr, sk);
-+	sp->pf->to_sk_daddr(&asoc->peer.primary_addr, sock->sk);
- 	sp->pf->copy_ip_options(sk, sock->sk);
+diff --git a/net/netfilter/nft_socket.c b/net/netfilter/nft_socket.c
+index d601974c9d2e..b8f011145765 100644
+--- a/net/netfilter/nft_socket.c
++++ b/net/netfilter/nft_socket.c
+@@ -36,12 +36,11 @@ static void nft_socket_wildcard(const struct nft_pktinfo *pkt,
  
- 	/* Populate the fields of the newsk from the oldsk and migrate the
+ #ifdef CONFIG_SOCK_CGROUP_DATA
+ static noinline bool
+-nft_sock_get_eval_cgroupv2(u32 *dest, const struct nft_pktinfo *pkt, u32 level)
++nft_sock_get_eval_cgroupv2(u32 *dest, struct sock *sk, const struct nft_pktinfo *pkt, u32 level)
+ {
+-	struct sock *sk = skb_to_full_sk(pkt->skb);
+ 	struct cgroup *cgrp;
+ 
+-	if (!sk || !sk_fullsock(sk) || !net_eq(nft_net(pkt), sock_net(sk)))
++	if (!sk_fullsock(sk))
+ 		return false;
+ 
+ 	cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
+@@ -108,7 +107,7 @@ static void nft_socket_eval(const struct nft_expr *expr,
+ 		break;
+ #ifdef CONFIG_SOCK_CGROUP_DATA
+ 	case NFT_SOCKET_CGROUPV2:
+-		if (!nft_sock_get_eval_cgroupv2(dest, pkt, priv->level)) {
++		if (!nft_sock_get_eval_cgroupv2(dest, sk, pkt, priv->level)) {
+ 			regs->verdict.code = NFT_BREAK;
+ 			return;
+ 		}
 -- 
 2.35.1
 
