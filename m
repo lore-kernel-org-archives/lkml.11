@@ -2,40 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B72C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69611C3527C
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245657AbiDRODx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:03:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47816 "EHLO
+        id S1343493AbiDROEE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244746AbiDRNp1 (ORCPT
+        with ESMTP id S242361AbiDRNqA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:45:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F2F326D0;
-        Mon, 18 Apr 2022 06:00:20 -0700 (PDT)
+        Mon, 18 Apr 2022 09:46:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F02E26AF3;
+        Mon, 18 Apr 2022 06:00:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 332856097A;
-        Mon, 18 Apr 2022 13:00:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 429CFC385A1;
-        Mon, 18 Apr 2022 13:00:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F0E6B80E59;
+        Mon, 18 Apr 2022 13:00:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65C79C385A8;
+        Mon, 18 Apr 2022 13:00:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286819;
-        bh=6qmuWssJE8BGwTQm90LV/eDA7PH3hvnsKvgw2QngIXw=;
+        s=korg; t=1650286834;
+        bh=qrkvQeMpr0ey3HLw1OJ8GVC0W/w0tk3it/LT1Se4FDc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J5IQdmmPPc0nl6bhA/IHIi7h/q1XE7orO61bUQF2TGhwaI9rXOteOFvzdA8Vhlpfp
-         dhObSKR39iFxVnxysTRvJvcQYi9G+/SusX20IFwhHxK/fi2ZdDxFRL+yPVLMBD5ocG
-         F9AE9SnIptA6lAxv1WLDAyqNjNXVdE67bMZ5IQ7o=
+        b=hiwmNzDYtvxizm95Le6N8DCM4CywPgPyXesyRoKJrQe9u3nP8eXwS13XDFjoRDtFE
+         IDa2nJW4Z/vyUMgDXMKRxRXAv6qDMY0oLkaEkTLNjAz+ijnirqKXWae6WoSHlQvpoW
+         bQNr/KZDO6uYtz1urpG5PcP2s0mwSXFZ5qe/1Bs8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 4.14 253/284] dmaengine: Revert "dmaengine: shdma: Fix runtime PM imbalance on error"
-Date:   Mon, 18 Apr 2022 14:13:54 +0200
-Message-Id: <20220418121219.505902220@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
+        Sven Eckelmann <sven@narfation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 220/284] macvtap: advertise link netns via netlink
+Date:   Mon, 18 Apr 2022 14:13:21 +0200
+Message-Id: <20220418121217.968808267@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -47,33 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinod Koul <vkoul@kernel.org>
+From: Sven Eckelmann <sven@narfation.org>
 
-commit d143f939a95696d38ff800ada14402fa50ebbd6c upstream.
+[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
 
-This reverts commit 455896c53d5b ("dmaengine: shdma: Fix runtime PM
-imbalance on error") as the patch wrongly reduced the count on error and
-did not bail out. So drop the count by reverting the patch .
+Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
+added to rtnetlink messages. This fixes iproute2 which otherwise resolved
+the link interface to an interface in the wrong namespace.
 
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Test commands:
+
+  ip netns add nst
+  ip link add dummy0 type dummy
+  ip link add link macvtap0 link dummy0 type macvtap
+  ip link set macvtap0 netns nst
+  ip -netns nst link show macvtap0
+
+Before:
+
+  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
+
+After:
+
+  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+
+Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/sh/shdma-base.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/macvtap.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/dma/sh/shdma-base.c
-+++ b/drivers/dma/sh/shdma-base.c
-@@ -118,10 +118,8 @@ static dma_cookie_t shdma_tx_submit(stru
- 		ret = pm_runtime_get(schan->dev);
+diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
+index cba5cb3b849a..dc89019ca876 100644
+--- a/drivers/net/macvtap.c
++++ b/drivers/net/macvtap.c
+@@ -132,11 +132,17 @@ static void macvtap_setup(struct net_device *dev)
+ 	dev->tx_queue_len = TUN_READQ_SIZE;
+ }
  
- 		spin_unlock_irq(&schan->chan_lock);
--		if (ret < 0) {
-+		if (ret < 0)
- 			dev_err(schan->dev, "%s(): GET = %d\n", __func__, ret);
--			pm_runtime_put(schan->dev);
--		}
++static struct net *macvtap_link_net(const struct net_device *dev)
++{
++	return dev_net(macvlan_dev_real_dev(dev));
++}
++
+ static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
+ 	.kind		= "macvtap",
+ 	.setup		= macvtap_setup,
+ 	.newlink	= macvtap_newlink,
+ 	.dellink	= macvtap_dellink,
++	.get_link_net	= macvtap_link_net,
+ 	.priv_size      = sizeof(struct macvtap_dev),
+ };
  
- 		pm_runtime_barrier(schan->dev);
- 
+-- 
+2.35.1
+
 
 
