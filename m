@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C74C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6102C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240018AbiDRMyH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:54:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
+        id S240026AbiDRMyR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:54:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240455AbiDRMjP (ORCPT
+        with ESMTP id S239568AbiDRMkm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6287E289BB;
-        Mon, 18 Apr 2022 05:29:43 -0700 (PDT)
+        Mon, 18 Apr 2022 08:40:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82CF1F63E;
+        Mon, 18 Apr 2022 05:32:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 842CAB80EC1;
-        Mon, 18 Apr 2022 12:29:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B240C385A7;
-        Mon, 18 Apr 2022 12:29:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D8ED61033;
+        Mon, 18 Apr 2022 12:32:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35A01C385A7;
+        Mon, 18 Apr 2022 12:31:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284980;
-        bh=nfX52RkVnetWwd66fWma/1wj7lQr4GstsX8X9M8mg3k=;
+        s=korg; t=1650285119;
+        bh=RO4VURSzGblH2Wzjw1WVHexM3Ohq0iWaMKap2YwaHcc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mH0nBEtUCDuMPn7ErTKe5mfO6eO6Fqi1343VuwuMm6JylVW6JAeTHIQNYbKpJhcy4
-         Y4wGRFwnizpbaYd1dz28iezDHlMmgI0/gjjvGTkUA5+CJbBaRMePQyb2uWMSqcuYa6
-         jbZTx0ZM/Xz/arzqJ7Uj45USj8u4q4kNMRSkUM7U=
+        b=BVqAGQRkqgsgyzBf1Xl1Es8iLbUpxG3VsOxtl/ogiRvoojEAQ7j8WOSsqY4snHdOi
+         JgdQsHohGPlGCRVW4HrHVDsbL8AyPHUqRYsOvJam3LvIPTgPv2V2HCEpgq+cFK9z9h
+         FHDWMZ8eDdMTJsN2tyTv3AZlifscQafR9An8u9Cs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        =?UTF-8?q?Michel=20D=C3=A4nzer?= <mdaenzer@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 069/189] net/sched: fix initialization order when updating chain 0 head
-Date:   Mon, 18 Apr 2022 14:11:29 +0200
-Message-Id: <20220418121202.467365834@linuxfoundation.org>
+Subject: [PATCH 5.15 109/189] drm/amdgpu/gmc: use PCI BARs for APUs in passthrough
+Date:   Mon, 18 Apr 2022 14:12:09 +0200
+Message-Id: <20220418121203.594746025@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -52,64 +51,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit e65812fd22eba32f11abe28cb377cbd64cfb1ba0 ]
+[ Upstream commit b818a5d374542ccec73dcfe578a081574029820e ]
 
-Currently, when inserting a new filter that needs to sit at the head
-of chain 0, it will first update the heads pointer on all devices using
-the (shared) block, and only then complete the initialization of the new
-element so that it has a "next" element.
+If the GPU is passed through to a guest VM, use the PCI
+BAR for CPU FB access rather than the physical address of
+carve out.  The physical address is not valid in a guest.
 
-This can lead to a situation that the chain 0 head is propagated to
-another CPU before the "next" initialization is done. When this race
-condition is triggered, packets being matched on that CPU will simply
-miss all other filters, and will flow through the stack as if there were
-no other filters installed. If the system is using OVS + TC, such
-packets will get handled by vswitchd via upcall, which results in much
-higher latency and reordering. For other applications it may result in
-packet drops.
+v2: Fix HDP handing as suggested by Michel
 
-This is reproducible with a tc only setup, but it varies from system to
-system. It could be reproduced with a shared block amongst 10 veth
-tunnels, and an ingress filter mirroring packets to another veth.
-That's because using the last added veth tunnel to the shared block to
-do the actual traffic, it makes the race window bigger and easier to
-trigger.
-
-The fix is rather simple, to just initialize the next pointer of the new
-filter instance (tp) before propagating the head change.
-
-The fixes tag is pointing to the original code though this issue should
-only be observed when using it unlocked.
-
-Fixes: 2190d1d0944f ("net: sched: introduce helpers to work with filter chains")
-Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-Reviewed-by: Davide Caratti <dcaratti@redhat.com>
-Link: https://lore.kernel.org/r/b97d5f4eaffeeb9d058155bcab63347527261abf.1649341369.git.marcelo.leitner@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Michel Dänzer <mdaenzer@redhat.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/cls_api.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 4 ++--
+ drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c     | 2 +-
+ drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c      | 5 +++--
+ drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c      | 2 +-
+ drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c      | 2 +-
+ 5 files changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index cd44cac7fbcf..4b552c10e7b9 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -1653,10 +1653,10 @@ static int tcf_chain_tp_insert(struct tcf_chain *chain,
- 	if (chain->flushing)
- 		return -EAGAIN;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+index 33026b3eafd2..2f2ae26a8068 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -5625,7 +5625,7 @@ void amdgpu_device_flush_hdp(struct amdgpu_device *adev,
+ 		struct amdgpu_ring *ring)
+ {
+ #ifdef CONFIG_X86_64
+-	if (adev->flags & AMD_IS_APU)
++	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev))
+ 		return;
+ #endif
+ 	if (adev->gmc.xgmi.connected_to_cpu)
+@@ -5641,7 +5641,7 @@ void amdgpu_device_invalidate_hdp(struct amdgpu_device *adev,
+ 		struct amdgpu_ring *ring)
+ {
+ #ifdef CONFIG_X86_64
+-	if (adev->flags & AMD_IS_APU)
++	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev))
+ 		return;
+ #endif
+ 	if (adev->gmc.xgmi.connected_to_cpu)
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
+index 3c01be661014..93a4da4284ed 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
+@@ -788,7 +788,7 @@ static int gmc_v10_0_mc_init(struct amdgpu_device *adev)
+ 	adev->gmc.aper_size = pci_resource_len(adev->pdev, 0);
  
-+	RCU_INIT_POINTER(tp->next, tcf_chain_tp_prev(chain, chain_info));
- 	if (*chain_info->pprev == chain->filter_chain)
- 		tcf_chain0_head_change(chain, tp);
- 	tcf_proto_get(tp);
--	RCU_INIT_POINTER(tp->next, tcf_chain_tp_prev(chain, chain_info));
- 	rcu_assign_pointer(*chain_info->pprev, tp);
+ #ifdef CONFIG_X86_64
+-	if (adev->flags & AMD_IS_APU) {
++	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev)) {
+ 		adev->gmc.aper_base = adev->gfxhub.funcs->get_mc_fb_offset(adev);
+ 		adev->gmc.aper_size = adev->gmc.real_vram_size;
+ 	}
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c
+index 0a50fdaced7e..63c47f61d0df 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c
+@@ -381,8 +381,9 @@ static int gmc_v7_0_mc_init(struct amdgpu_device *adev)
+ 	adev->gmc.aper_size = pci_resource_len(adev->pdev, 0);
  
- 	return 0;
+ #ifdef CONFIG_X86_64
+-	if (adev->flags & AMD_IS_APU &&
+-	    adev->gmc.real_vram_size > adev->gmc.aper_size) {
++	if ((adev->flags & AMD_IS_APU) &&
++	    adev->gmc.real_vram_size > adev->gmc.aper_size &&
++	    !amdgpu_passthrough(adev)) {
+ 		adev->gmc.aper_base = ((u64)RREG32(mmMC_VM_FB_OFFSET)) << 22;
+ 		adev->gmc.aper_size = adev->gmc.real_vram_size;
+ 	}
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
+index 63b890f1e8af..bef9610084f1 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
+@@ -581,7 +581,7 @@ static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
+ 	adev->gmc.aper_size = pci_resource_len(adev->pdev, 0);
+ 
+ #ifdef CONFIG_X86_64
+-	if (adev->flags & AMD_IS_APU) {
++	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev)) {
+ 		adev->gmc.aper_base = ((u64)RREG32(mmMC_VM_FB_OFFSET)) << 22;
+ 		adev->gmc.aper_size = adev->gmc.real_vram_size;
+ 	}
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
+index 6dc16ccf6c81..0e731016921b 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
+@@ -1387,7 +1387,7 @@ static int gmc_v9_0_mc_init(struct amdgpu_device *adev)
+ 	 */
+ 
+ 	/* check whether both host-gpu and gpu-gpu xgmi links exist */
+-	if ((adev->flags & AMD_IS_APU) ||
++	if (((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev)) ||
+ 	    (adev->gmc.xgmi.supported &&
+ 	     adev->gmc.xgmi.connected_to_cpu)) {
+ 		adev->gmc.aper_base =
 -- 
 2.35.1
 
