@@ -2,87 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B913BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F98C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238032AbiDRMOD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:14:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
+        id S238044AbiDRMOM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230296AbiDRMOB (ORCPT
+        with ESMTP id S238034AbiDRMOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:14:01 -0400
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA13E1A810
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:11:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=nlZTs2EHSVsUyk1Bfx1ucHBhq1nc96y85fwK/m4VS8o=;
-  b=Ztt7IfzFy0k4GPLo5+lWjD1pdUNA//BQgMpRhdMXMTeRKWFiqkQ5s6Yc
-   t8Jzt/OY2XlpCdk1Kxb6l5CDVSGiIXObShwXElOiEWXJwzfUFxxpuEDf6
-   bIwlHANpRUE0P8LMwUlHpB3f/AL79uBMKoCG1ec3roHLgtNwdq82vuRcV
-   8=;
-Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=julia.lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="5.90,269,1643670000"; 
-   d="scan'208";a="11791770"
-Received: from 203.107.68.85.rev.sfr.net (HELO hadrien) ([85.68.107.203])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 14:11:21 +0200
-Date:   Mon, 18 Apr 2022 14:11:21 +0200 (CEST)
-From:   Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To:     Aliya Rahmani <aliyarahmani786@gmail.com>
-cc:     clabbe@baylibre.com, gregkh@linuxfoundation.org,
-        linux-staging@lists.linux.dev, outreachy@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] staging: media: zoran: Code cleanup - else is not
- generally useful after a break or return
-In-Reply-To: <20220418115948.5456-3-aliyarahmani786@gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2204181409550.11986@hadrien>
-References: <20220418115948.5456-1-aliyarahmani786@gmail.com> <20220418115948.5456-3-aliyarahmani786@gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Mon, 18 Apr 2022 08:14:09 -0400
+Received: from abedmanico.biharhotel.com (abedmanico.biharhotel.com [194.31.98.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAC21A816
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:11:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=biharhotel.com;
+ h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=mar.veg@biharhotel.com;
+ bh=dnkE0QHVOCf1aNji21hnkG44FB8=;
+ b=cJ9ikhMLEvxAfpDGzdEHJBJROoy8TW3/czW39vQGB7eMJORaFM4fjrpdoVrU57/It+z0FI68eIiX
+   M/bdbGezQQHfNFUbF2vylp+PggXFZsbshjhzyLo4eIB8kNDUUSdvyc2ErBZVUr7dlvW1dCiMXgD1
+   CFyFYNf4+ElRl5lQLxmDkmVF4eS194mVNfLcN31727/IImNmcDa/sLz/OY5SMZTFOiNubTqpwDaO
+   2N36gN9oMY8ht7Q6C35WGxXYyq65famQtio+m3NTUdq7m1ajFGLef4ac4qQmgDQgrHNvygFNAkm/
+   SZ/bkmVylPp8KtdSMXn50ncwMvEqcclucqvskg==
+DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=biharhotel.com;
+ b=G0IEJSyzl3dScCnbFZxJ+x1w28Pp6wcDDlZmgFZUuEcoj5sHEMQD/mB54CAbIDtW+zxtZQmO6isu
+   id0g8sfKekkkLyTZriRdF1SMH77kw1eKTLQfA6xe1M+AxYyykz06r7atKqNI0+qtWCASAuHN8W+u
+   b+iZmxLw/BgtFZgBBStEToIFOlAInsl6kAL+RqiweiDvBWUHCVuDOYFt73w+B72dHZTrgBKVbsx3
+   TaSSm9bFsFsnXMsyjB5vxYat32q1tznYvdmMFxqeS/K8wtuo12Z1QiUngg+xQK4bf9bBh8f5lka2
+   C2pFQkt/092qwDWCABnf5CUAksa+8dvt2ctsig==;
+Reply-To: bradleywrubel@scotfoundation.org
+From:   "MACKENZIE SCOTT (Scott Foundation)" <mar.veg@biharhotel.com>
+To:     linux-kernel@vger.kernel.org
+Subject: CONGRATULATIONS...
+Date:   18 Apr 2022 14:03:33 +0200
+Message-ID: <20220418140333.8799D6E5AF9759E0@biharhotel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just say concisely what you did in the subject line.  For example, "remove
-unneeded else".  The reader can wait to see the message to find out the
-details.  "Code cleanup" takes up a lot of space, and doesn't give much
-information.
+Hello,
 
-On Mon, 18 Apr 2022, Aliya Rahmani wrote:
+I'm Mackenzie Scott, Ex-wife to Jeff Bezos (Amazon Founder and=20
+CEO). I'm donating $4 billion to charities, churches, individuals,=20
+colleges and businesses across the Globe from Scott's Foundation to=20
+provide immediate support to people and businesses suffering=20
+economically from the impact of COVID-19 pandemic and the ongoing=20
+war in Ukraine. Your email emerged as one of the lucky winners=20
+after an electronically conducted ballot process.
 
-> Remove the else without affecting the logic. Fixes the checkpatch warning: else is not generally useful after a break or return
+I have a donation grant worth $8,500,000.00 Dollars for you. You=20
+are to contact Mr. BRADLEY WRUBEL for more information if you're=20
+interested.
 
-Commit log messages should be limited to around 70 characters per line.
+Mr. BRADLEY WRUBEL
+bradleywrubel@scotfoundation.org
 
-julia
+Congratulations.
 
-> Signed-off-by: Aliya Rahmani <aliyarahmani786@gmail.com>
-> ---
->  drivers/staging/media/zoran/videocodec.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/staging/media/zoran/videocodec.c b/drivers/staging/media/zoran/videocodec.c
-> index 16a1f23a7f19..19732a47c8bd 100644
-> --- a/drivers/staging/media/zoran/videocodec.c
-> +++ b/drivers/staging/media/zoran/videocodec.c
-> @@ -98,9 +98,8 @@ struct videocodec *videocodec_attach(struct videocodec_master *master)
->
->  				h->attached += 1;
->  				return codec;
-> -			} else {
-> -				kfree(codec);
->  			}
-> +			kfree(codec);
->  		}
->  		h = h->next;
->  	}
-> --
-> 2.25.1
->
->
->
+Yours Sincerely
+Mackenzie Scott
+The Scott Foundation
+P.O. Box 1513
+Los Gatos, CA 95031-1513
+USA.
