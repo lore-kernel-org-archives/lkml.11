@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60113C35295
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74AB8C352B6
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244508AbiDRNoh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:44:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
+        id S244804AbiDRNpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:45:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243501AbiDRNUk (ORCPT
+        with ESMTP id S242775AbiDRNXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:20:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584259FF4;
-        Mon, 18 Apr 2022 05:52:12 -0700 (PDT)
+        Mon, 18 Apr 2022 09:23:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0BB53D1F3;
+        Mon, 18 Apr 2022 05:52:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5D9B6124E;
-        Mon, 18 Apr 2022 12:52:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD833C385A1;
-        Mon, 18 Apr 2022 12:52:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31AF8B80E4E;
+        Mon, 18 Apr 2022 12:52:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CAFEC385A1;
+        Mon, 18 Apr 2022 12:52:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286331;
-        bh=02DSsES2uVeWdw+4MPPxYttCirfYH3j4aoXuU3cDQj8=;
+        s=korg; t=1650286366;
+        bh=WW3r6Av5ZQTo0xWPPP+SF/JDkwvoBP72mSz5rgXKNxA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yNpSZX+pb8nJ2+w1HOM6670ZjJninYHYiTU5Xw2mDXY9yoaWn3LnEZ+Gsdamjz9IN
-         HSKROAShgzlXUrSpPSi3N4xyNv97kAnHCHUo3SGABn0V6J9F7U0GqWBgi19uapfLAt
-         oI9SgF8ErUSVxA/sqZBRpGl+b5+Eehy9wM7yaKEk=
+        b=P23KTnD92IFBzbYWnbyzShf4Xp2HHhzA5kmRh06yqSYfPH4CoxlJw2z1eyvx3xN66
+         OpHR29qH5mi/6doQCChKph6H/SkyYB9zD86yORBxlLniQ5t6yUB+t11s/F3pS+Gkij
+         BHbqxjOdnsx6RzUcQ7p0HNklV33lCTwt8ucZnMFc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Thierry Reding <treding@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 101/284] power: supply: ab8500: Fix memory leak in ab8500_fg_sysfs_init
-Date:   Mon, 18 Apr 2022 14:11:22 +0200
-Message-Id: <20220418121213.688343057@linuxfoundation.org>
+Subject: [PATCH 4.14 111/284] drm/tegra: Fix reference leak in tegra_dsi_ganged_probe
+Date:   Mon, 18 Apr 2022 14:11:32 +0200
+Message-Id: <20220418121214.112709123@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -51,40 +51,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 6a4760463dbc6b603690938c468839985189ce0a ]
+[ Upstream commit 221e3638feb8bc42143833c9a704fa89b6c366bb ]
 
-kobject_init_and_add() takes reference even when it fails.
-According to the doc of kobject_init_and_add()：
+The reference taken by 'of_find_device_by_node()' must be released when
+not needed anymore. Add put_device() call to fix this.
 
-   If this function returns an error, kobject_put() must be called to
-   properly clean up the memory associated with the object.
-
-Fix memory leak by calling kobject_put().
-
-Fixes: 8c0984e5a753 ("power: move power supply drivers to power/supply")
+Fixes: e94236cde4d5 ("drm/tegra: dsi: Add ganged mode support")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/ab8500_fg.c | 4 +++-
+ drivers/gpu/drm/tegra/dsi.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/power/supply/ab8500_fg.c b/drivers/power/supply/ab8500_fg.c
-index 2677592ed7af..b00844103a07 100644
---- a/drivers/power/supply/ab8500_fg.c
-+++ b/drivers/power/supply/ab8500_fg.c
-@@ -2545,8 +2545,10 @@ static int ab8500_fg_sysfs_init(struct ab8500_fg *di)
- 	ret = kobject_init_and_add(&di->fg_kobject,
- 		&ab8500_fg_ktype,
- 		NULL, "battery");
--	if (ret < 0)
-+	if (ret < 0) {
-+		kobject_put(&di->fg_kobject);
- 		dev_err(di->dev, "failed to create sysfs entry\n");
-+	}
+diff --git a/drivers/gpu/drm/tegra/dsi.c b/drivers/gpu/drm/tegra/dsi.c
+index 046649ec9441..4e06af34c048 100644
+--- a/drivers/gpu/drm/tegra/dsi.c
++++ b/drivers/gpu/drm/tegra/dsi.c
+@@ -1480,8 +1480,10 @@ static int tegra_dsi_ganged_probe(struct tegra_dsi *dsi)
+ 		dsi->slave = platform_get_drvdata(gangster);
+ 		of_node_put(np);
  
- 	return ret;
- }
+-		if (!dsi->slave)
++		if (!dsi->slave) {
++			put_device(&gangster->dev);
+ 			return -EPROBE_DEFER;
++		}
+ 
+ 		dsi->slave->master = dsi;
+ 	}
 -- 
 2.34.1
 
