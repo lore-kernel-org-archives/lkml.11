@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD0E8C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA8AC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242528AbiDRN2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41028 "EHLO
+        id S242428AbiDRN1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241177AbiDRNEx (ORCPT
+        with ESMTP id S241172AbiDRNEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:04:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C738813D17;
-        Mon, 18 Apr 2022 05:45:30 -0700 (PDT)
+        Mon, 18 Apr 2022 09:04:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D8313CEF;
+        Mon, 18 Apr 2022 05:45:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A91060FB6;
-        Mon, 18 Apr 2022 12:45:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57573C385A1;
-        Mon, 18 Apr 2022 12:45:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2342B80EC0;
+        Mon, 18 Apr 2022 12:45:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 356DEC385A7;
+        Mon, 18 Apr 2022 12:45:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285929;
-        bh=PG+RrHdGqLlH1ceAWfJzFLS8C+fihc8VG8FcY4gBHas=;
+        s=korg; t=1650285926;
+        bh=mojVL1QzffXoVVdfe87igzvxcXwQsQdaFZO8jKOu6gc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0CF5ONrVHp+34zftJ0BGBkvoduUzbe38fOODrLu8QCAcpudAuCWEvK2dO7D6vlP4Y
-         QmqqrSR2ki7T7CPweK+L7r4loBS0/VZeEOg+pO1Mip4iNenidu1cr7ymeMSRPlkU/z
-         tqOalikZuSmQy/BQ0Umut+FfXD086H54Kr9BTioI=
+        b=IjPATnPFlOJDeut9xLTj64/n7fmeMz4S6joINKB84HqZNotDK/jJEqQFlQxx6LsWj
+         Uym56wxNl571CgJVLiFdCUUXfAdEJNRl2iSywrYYHJVAAtyKuZjbLo76CIDdMY08D/
+         E2qUwYFRRpS1Wg0iXt88pZ/vhFbLV5AIXPXEpREc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Osterried <thomas@osterried.de>,
         Duoming Zhou <duoming@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
         Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.4 59/63] ax25: Fix refcount leaks caused by ax25_cb_del()
-Date:   Mon, 18 Apr 2022 14:13:56 +0200
-Message-Id: <20220418121138.108560865@linuxfoundation.org>
+Subject: [PATCH 5.4 63/63] ax25: Fix UAF bugs in ax25 timers
+Date:   Mon, 18 Apr 2022 14:14:00 +0200
+Message-Id: <20220418121138.364771542@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -52,98 +51,76 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 9fd75b66b8f68498454d685dc4ba13192ae069b0 upstream.
+commit 82e31755e55fbcea6a9dfaae5fe4860ade17cbc0 upstream.
 
-The previous commit d01ffb9eee4a ("ax25: add refcount in ax25_dev to
-avoid UAF bugs") and commit feef318c855a ("ax25: fix UAF bugs of
-net_device caused by rebinding operation") increase the refcounts of
-ax25_dev and net_device in ax25_bind() and decrease the matching refcounts
-in ax25_kill_by_device() in order to prevent UAF bugs, but there are
-reference count leaks.
+There are race conditions that may lead to UAF bugs in
+ax25_heartbeat_expiry(), ax25_t1timer_expiry(), ax25_t2timer_expiry(),
+ax25_t3timer_expiry() and ax25_idletimer_expiry(), when we call
+ax25_release() to deallocate ax25_dev.
 
-The root cause of refcount leaks is shown below:
+One of the UAF bugs caused by ax25_release() is shown below:
 
-     (Thread 1)                      |      (Thread 2)
-ax25_bind()                          |
- ...                                 |
- ax25_addr_ax25dev()                 |
-  ax25_dev_hold()   //(1)            |
-  ...                                |
- dev_hold_track()   //(2)            |
- ...                                 | ax25_destroy_socket()
-                                     |  ax25_cb_del()
-                                     |   ...
-                                     |   hlist_del_init() //(3)
-                                     |
-                                     |
-     (Thread 3)                      |
-ax25_kill_by_device()                |
- ...                                 |
- ax25_for_each(s, &ax25_list) {      |
-  if (s->ax25_dev == ax25_dev) //(4) |
-   ...                               |
+      (Thread 1)                    |      (Thread 2)
+ax25_dev_device_up() //(1)          |
+...                                 | ax25_kill_by_device()
+ax25_bind()          //(2)          |
+ax25_connect()                      | ...
+ ax25_std_establish_data_link()     |
+  ax25_start_t1timer()              | ax25_dev_device_down() //(3)
+   mod_timer(&ax25->t1timer,..)     |
+                                    | ax25_release()
+   (wait a time)                    |  ...
+                                    |  ax25_dev_put(ax25_dev) //(4)FREE
+   ax25_t1timer_expiry()            |
+    ax25->ax25_dev->values[..] //USE|  ...
+     ...                            |
 
-Firstly, we use ax25_bind() to increase the refcount of ax25_dev in
-position (1) and increase the refcount of net_device in position (2).
-Then, we use ax25_cb_del() invoked by ax25_destroy_socket() to delete
-ax25_cb in hlist in position (3) before calling ax25_kill_by_device().
-Finally, the decrements of refcounts in ax25_kill_by_device() will not
-be executed, because no s->ax25_dev equals to ax25_dev in position (4).
+We increase the refcount of ax25_dev in position (1) and (2), and
+decrease the refcount of ax25_dev in position (3) and (4).
+The ax25_dev will be freed in position (4) and be used in
+ax25_t1timer_expiry().
 
-This patch adds decrements of refcounts in ax25_release() and use
-lock_sock() to do synchronization. If refcounts decrease in ax25_release(),
-the decrements of refcounts in ax25_kill_by_device() will not be
-executed and vice versa.
+The fail log is shown below:
+==============================================================
 
-Fixes: d01ffb9eee4a ("ax25: add refcount in ax25_dev to avoid UAF bugs")
-Fixes: 87563a043cef ("ax25: fix reference count leaks of ax25_dev")
-Fixes: feef318c855a ("ax25: fix UAF bugs of net_device caused by rebinding operation")
-Reported-by: Thomas Osterried <thomas@osterried.de>
+[  106.116942] BUG: KASAN: use-after-free in ax25_t1timer_expiry+0x1c/0x60
+[  106.116942] Read of size 8 at addr ffff88800bda9028 by task swapper/0/0
+[  106.116942] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-06123-g0905eec574
+[  106.116942] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-14
+[  106.116942] Call Trace:
+...
+[  106.116942]  ax25_t1timer_expiry+0x1c/0x60
+[  106.116942]  call_timer_fn+0x122/0x3d0
+[  106.116942]  __run_timers.part.0+0x3f6/0x520
+[  106.116942]  run_timer_softirq+0x4f/0xb0
+[  106.116942]  __do_softirq+0x1c2/0x651
+...
+
+This patch adds del_timer_sync() in ax25_release(), which could ensure
+that all timers stop before we deallocate ax25_dev.
+
 Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-[OP: backport to 5.4: adjust dev_put_track()->dev_put()]
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+[OP: backport to 5.4: adjust context]
 Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ax25/af_ax25.c |   14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ net/ax25/af_ax25.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
 --- a/net/ax25/af_ax25.c
 +++ b/net/ax25/af_ax25.c
-@@ -98,8 +98,10 @@ again:
- 			spin_unlock_bh(&ax25_list_lock);
- 			lock_sock(sk);
- 			s->ax25_dev = NULL;
--			dev_put(ax25_dev->dev);
--			ax25_dev_put(ax25_dev);
-+			if (sk->sk_socket) {
-+				dev_put(ax25_dev->dev);
-+				ax25_dev_put(ax25_dev);
-+			}
- 			release_sock(sk);
- 			ax25_disconnect(s, ENETUNREACH);
- 			spin_lock_bh(&ax25_list_lock);
-@@ -978,14 +980,20 @@ static int ax25_release(struct socket *s
- {
- 	struct sock *sk = sock->sk;
- 	ax25_cb *ax25;
-+	ax25_dev *ax25_dev;
- 
- 	if (sk == NULL)
- 		return 0;
- 
- 	sock_hold(sk);
--	sock_orphan(sk);
- 	lock_sock(sk);
-+	sock_orphan(sk);
- 	ax25 = sk_to_ax25(sk);
-+	ax25_dev = ax25->ax25_dev;
-+	if (ax25_dev) {
-+		dev_put(ax25_dev->dev);
-+		ax25_dev_put(ax25_dev);
-+	}
- 
- 	if (sk->sk_type == SOCK_SEQPACKET) {
- 		switch (ax25->state) {
+@@ -1052,6 +1052,11 @@ static int ax25_release(struct socket *s
+ 		ax25_destroy_socket(ax25);
+ 	}
+ 	if (ax25_dev) {
++		del_timer_sync(&ax25->timer);
++		del_timer_sync(&ax25->t1timer);
++		del_timer_sync(&ax25->t2timer);
++		del_timer_sync(&ax25->t3timer);
++		del_timer_sync(&ax25->idletimer);
+ 		dev_put(ax25_dev->dev);
+ 		ax25_dev_put(ax25_dev);
+ 	}
 
 
