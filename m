@@ -2,86 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2468C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67219C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:51:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235313AbiDRPxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40808 "EHLO
+        id S1345825AbiDRPxh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346362AbiDRPw4 (ORCPT
+        with ESMTP id S1346066AbiDRPwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:52:56 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1762B190
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 08:36:01 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id q19so19511151pgm.6
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 08:36:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QviqotR2gz/eMDzQiY33X7gSHfXUDsED7iwPy8uZ8ik=;
-        b=YRHLSgzUndeIFUkty4Lmq/0J9dKNIekDC9tgukXyxi0heyP2Q5YwFHIR4QOKMge983
-         +dkkaXjhgCr4bGk4fnhTquTeuwlQqE2diD4U4vk8ZZq3L3l1mrandDqHCVKBdEVXElyE
-         9CyeGdXhx122zipo/+pcnDNxkAHdxfr03G1318xWNIkadw9CxHhobfV+yTdy1/X/+piQ
-         k4VBNAa6Czb/bByfTLtVVGC6KSmBn66clYOCRyKX5J633+LiO/rQE2OaF9+BFf/Nu5Li
-         xxfudcdPAdBg9TqaDdnMoquyh5xWSS5OfnpajZPi9UUdoTH8CK4DjHLgS+Lce7X3pjYS
-         kaNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QviqotR2gz/eMDzQiY33X7gSHfXUDsED7iwPy8uZ8ik=;
-        b=AtRv16VXPjho8N3Vqhs7AMT7jOP3hAKbjRwRXnb4htTc6EGdDgB615Upi15zUXrJgL
-         ke7murIZ2dnIlkRgjmE1hVsFm1xcNSJ0dDt65WtEJmLquhQlUL8QWgcCNWiVREi2Waeo
-         k3Htnk77s8mqmBlGsm0g4s3oW+7+CdYUVq5MstxSLeY64P4g94UyZe3SR9jKT8HRgjGG
-         VWnOg30vy4VBePX7MQAdmDAxXH3qRkx4TDoXE7D1z889mO7fDraFQm7TZT9pPXTwW2EJ
-         w46mxdKtqETVkMSbphhPYRwlV1LPUYd1C6ys9Qjf5pHib0O0pfQfDnOE+VYVGlJhlN1E
-         yzRg==
-X-Gm-Message-State: AOAM532V5g9wP49+tKIJdqIxIDp2am9kIcIXSrmQTyIPucgQUXln+8ub
-        Hn4yr5NtY8RO23walI3XXzaMjQ==
-X-Google-Smtp-Source: ABdhPJwGRrtNegpZSzpZ1sifIOwowHypSLOZC0tItIpT/pTq/gRtnL+nJ7wOBcg1VcHkJVSC7myJYA==
-X-Received: by 2002:a65:6d09:0:b0:3aa:1ecf:8848 with SMTP id bf9-20020a656d09000000b003aa1ecf8848mr1369951pgb.55.1650296161135;
-        Mon, 18 Apr 2022 08:36:01 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id g3-20020a056a000b8300b0050a833a491bsm3104774pfj.197.2022.04.18.08.36.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 08:36:00 -0700 (PDT)
-Date:   Mon, 18 Apr 2022 15:35:57 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Gaoning Pan <pgn@zju.edu.cn>,
-        Yongkang Jia <kangel@zju.edu.cn>
-Subject: Re: [PATCH 2/4] KVM: nVMX: Defer APICv updates while L2 is active
- until L1 is active
-Message-ID: <Yl2FXfCjvkNgM4w3@google.com>
-References: <20220416034249.2609491-1-seanjc@google.com>
- <20220416034249.2609491-3-seanjc@google.com>
- <227adbe6e8d82ad4c5a803c117d4231808a0e451.camel@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <227adbe6e8d82ad4c5a803c117d4231808a0e451.camel@redhat.com>
+        Mon, 18 Apr 2022 11:52:39 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6430A13D22;
+        Mon, 18 Apr 2022 08:33:31 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app3 (Coremail) with SMTP id cC_KCgD3ScrDhF1i+V5vAg--.33517S2;
+        Mon, 18 Apr 2022 23:33:27 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-kernel@vger.kernel.org, shiraz.saleem@intel.com
+Cc:     mustafa.ismail@intel.com, jgg@ziepe.ca, leon@kernel.org,
+        linux-rdma@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH V6] RDMA/irdma: Fix deadlock in irdma_cleanup_cm_core()
+Date:   Mon, 18 Apr 2022 23:33:22 +0800
+Message-Id: <20220418153322.42524-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgD3ScrDhF1i+V5vAg--.33517S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Aw13Ar15Xw1rZryxtF43Jrb_yoW8ArWrpr
+        WDWw1Skryq9F42ka18Xw1kAF9xXw1kXa9Fvryqv395ZFn5XFyUAFnFyr10qFZ8JF9Fgr4f
+        GF1FvryrCasIvr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
+        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
+        x4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg0EAVZdtZQIiwADsg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022, Maxim Levitsky wrote:
-> On Sat, 2022-04-16 at 03:42 +0000, Sean Christopherson wrote:
-> When L2 uses APICv/AVIC, we just safely passthrough its usage to the real hardware.
-> 
-> If we were to to need to inhibit it, we would have to emulate APICv/AVIC so that L1 would
-> still think that it can use it - thankfully there is no need for that.
+There is a deadlock in irdma_cleanup_cm_core(), which is shown
+below:
 
-What if L1 passes through IRQs and all MSRs to L2?  E.g. if L2 activates Auto EOI
-via WRMSR, then arguably it is KVM's responsibility to disable APICv in vmcs02 _and_
-vmcs01 in order to handle the Auto EOI properly.  L1 isn't expecting a VM-Exit, so
-KVM can't safely punt to L1 even if conceptually we think that it's L1's problem.
+   (Thread 1)              |      (Thread 2)
+                           | irdma_schedule_cm_timer()
+irdma_cleanup_cm_core()    |  add_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | irdma_cm_timer_tick()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-It's a contrived scenario, but technically possible.
+We hold cm_core->ht_lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need cm_core->ht_lock in position (2) of thread 2.
+As a result, irdma_cleanup_cm_core() will block forever.
+
+This patch removes the check of timer_pending() in
+irdma_cleanup_cm_core(), because the del_timer_sync()
+function will just return directly if there isn't a
+pending timer. As a result, the lock is redundant,
+because there is no resource it could protect.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+---
+Changes in V6:
+  - Change subject line prefixed with "RDMA/irdma: ".
+
+ drivers/infiniband/hw/irdma/cm.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
+index dedb3b7edd8..4b6b1065f85 100644
+--- a/drivers/infiniband/hw/irdma/cm.c
++++ b/drivers/infiniband/hw/irdma/cm.c
+@@ -3251,10 +3251,7 @@ void irdma_cleanup_cm_core(struct irdma_cm_core *cm_core)
+ 	if (!cm_core)
+ 		return;
+ 
+-	spin_lock_irqsave(&cm_core->ht_lock, flags);
+-	if (timer_pending(&cm_core->tcp_timer))
+-		del_timer_sync(&cm_core->tcp_timer);
+-	spin_unlock_irqrestore(&cm_core->ht_lock, flags);
++	del_timer_sync(&cm_core->tcp_timer);
+ 
+ 	destroy_workqueue(cm_core->event_wq);
+ 	cm_core->dev->ws_reset(&cm_core->iwdev->vsi);
+-- 
+2.17.1
+
