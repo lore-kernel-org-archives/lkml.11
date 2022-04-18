@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0710C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:52:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E31DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240184AbiDRMyf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
+        id S240189AbiDRMyp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239951AbiDRMiW (ORCPT
+        with ESMTP id S239907AbiDRMiP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:38:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2674B7644;
-        Mon, 18 Apr 2022 05:29:02 -0700 (PDT)
+        Mon, 18 Apr 2022 08:38:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D30AD24957;
+        Mon, 18 Apr 2022 05:28:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 70104CE1077;
-        Mon, 18 Apr 2022 12:29:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FEFEC385A7;
-        Mon, 18 Apr 2022 12:28:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E4FEB80EC1;
+        Mon, 18 Apr 2022 12:28:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF0D7C385A1;
+        Mon, 18 Apr 2022 12:28:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284938;
-        bh=jhYVlAq+c39CVsH+sSlPV4y+433+nEv9z7fvwQl2K7U=;
+        s=korg; t=1650284932;
+        bh=KS6SliFmK5MnBCfg+AP6JICc3H5SykJshEU/9N9nCoo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GuQHPO75TK4GeQUqGMZKy+ZCW1nCbDGGUgMVHHXD62Ifoz4t4Pu2FzJaOF/AqoOt/
-         UbHGMh2GFz9FO6qqoZZGU7D8kqwCKHCb+4VhXhEMoZmkwDNwo3wN5yDyD4FCzZ0tZ5
-         K1PjWPYerscr9e2C384Nxy461taLjAfd8Rjj2xYI=
+        b=10tU6ygxkxiMvBSyUGLGQQDQ03W4eyyOa08lVtwsgvc0vJ+C0WTzz1u0UBuzT56lL
+         z8NBE6Y/V3qPTd2/Z3wwCB0haMXrWcfdU3etYRhHuJ9uvjGnhJzyPWVAIXjy0ib9fd
+         ++xsOGFyYcQtKlA/zqKoQWKb2XMF8zuuMqcqjW0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 014/189] net: ipa: request IPA register values be retained
-Date:   Mon, 18 Apr 2022 14:10:34 +0200
-Message-Id: <20220418121200.906114631@linuxfoundation.org>
+        stable@vger.kernel.org, Chris Lew <clew@codeaurora.org>,
+        Deepak Kumar Singh <deesin@codeaurora.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Alex Elder <elder@linaro.org>
+Subject: [PATCH 5.15 012/189] soc: qcom: aoss: Expose send for generic usecase
+Date:   Mon, 18 Apr 2022 14:10:32 +0200
+Message-Id: <20220418121200.845220233@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -48,176 +51,166 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Deepak Kumar Singh <deesin@codeaurora.org>
 
-commit 34a081761e4e3c35381cbfad609ebae2962fe2f8 upstream.
+commit 8c75d585b931ac874fbe4ee5a8f1811d20c2817f upstream.
 
-In some cases, the IPA hardware needs to request the always-on
-subsystem (AOSS) to coordinate with the IPA microcontroller to
-retain IPA register values at power collapse.  This is done by
-issuing a QMP request to the AOSS microcontroller.  A similar
-request ondoes that request.
+Not all upcoming usecases will have an interface to allow the aoss
+driver to hook onto. Expose the send api and create a get function to
+enable drivers to send their own messages to aoss.
 
-We must get and hold the "QMP" handle early, because we might get
-back EPROBE_DEFER for that.  But the actual request should be sent
-while we know the IPA clock is active, and when we know the
-microcontroller is operational.
-
-Fixes: 1aac309d3207 ("net: ipa: use autosuspend")
+Signed-off-by: Chris Lew <clew@codeaurora.org>
+Signed-off-by: Deepak Kumar Singh <deesin@codeaurora.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1630420228-31075-2-git-send-email-deesin@codeaurora.org
 Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipa/ipa_power.c |   52 ++++++++++++++++++++++++++++++++++++++++++++
- drivers/net/ipa/ipa_power.h |    7 +++++
- drivers/net/ipa/ipa_uc.c    |    5 ++++
- 3 files changed, 64 insertions(+)
+ drivers/soc/qcom/qcom_aoss.c       |   54 ++++++++++++++++++++++++++++++++++++-
+ include/linux/soc/qcom/qcom_aoss.h |   38 ++++++++++++++++++++++++++
+ 2 files changed, 91 insertions(+), 1 deletion(-)
+ create mode 100644 include/linux/soc/qcom/qcom_aoss.h
 
---- a/drivers/net/ipa/ipa_power.c
-+++ b/drivers/net/ipa/ipa_power.c
-@@ -11,6 +11,8 @@
- #include <linux/pm_runtime.h>
- #include <linux/bitops.h>
+--- a/drivers/soc/qcom/qcom_aoss.c
++++ b/drivers/soc/qcom/qcom_aoss.c
+@@ -8,10 +8,12 @@
+ #include <linux/io.h>
+ #include <linux/mailbox_client.h>
+ #include <linux/module.h>
++#include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_domain.h>
+ #include <linux/thermal.h>
+ #include <linux/slab.h>
++#include <linux/soc/qcom/qcom_aoss.h>
  
-+#include "linux/soc/qcom/qcom_aoss.h"
+ #define QMP_DESC_MAGIC			0x0
+ #define QMP_DESC_VERSION		0x4
+@@ -223,11 +225,14 @@ static bool qmp_message_empty(struct qmp
+  *
+  * Return: 0 on success, negative errno on failure
+  */
+-static int qmp_send(struct qmp *qmp, const void *data, size_t len)
++int qmp_send(struct qmp *qmp, const void *data, size_t len)
+ {
+ 	long time_left;
+ 	int ret;
+ 
++	if (WARN_ON(IS_ERR_OR_NULL(qmp) || !data))
++		return -EINVAL;
 +
- #include "ipa.h"
- #include "ipa_power.h"
- #include "ipa_endpoint.h"
-@@ -64,6 +66,7 @@ enum ipa_power_flag {
-  * struct ipa_power - IPA power management information
-  * @dev:		IPA device pointer
-  * @core:		IPA core clock
-+ * @qmp:		QMP handle for AOSS communication
-  * @spinlock:		Protects modem TX queue enable/disable
-  * @flags:		Boolean state flags
-  * @interconnect_count:	Number of elements in interconnect[]
-@@ -72,6 +75,7 @@ enum ipa_power_flag {
- struct ipa_power {
- 	struct device *dev;
- 	struct clk *core;
-+	struct qmp *qmp;
- 	spinlock_t spinlock;	/* used with STOPPED/STARTED power flags */
- 	DECLARE_BITMAP(flags, IPA_POWER_FLAG_COUNT);
- 	u32 interconnect_count;
-@@ -382,6 +386,47 @@ void ipa_power_modem_queue_active(struct
- 	clear_bit(IPA_POWER_FLAG_STARTED, ipa->power->flags);
+ 	if (WARN_ON(len + sizeof(u32) > qmp->size))
+ 		return -EINVAL;
+ 
+@@ -261,6 +266,7 @@ static int qmp_send(struct qmp *qmp, con
+ 
+ 	return ret;
+ }
++EXPORT_SYMBOL(qmp_send);
+ 
+ static int qmp_qdss_clk_prepare(struct clk_hw *hw)
+ {
+@@ -519,6 +525,51 @@ static void qmp_cooling_devices_remove(s
+ 		thermal_cooling_device_unregister(qmp->cooling_devs[i].cdev);
  }
  
-+static int ipa_power_retention_init(struct ipa_power *power)
-+{
-+	struct qmp *qmp = qmp_get(power->dev);
-+
-+	if (IS_ERR(qmp)) {
-+		if (PTR_ERR(qmp) == -EPROBE_DEFER)
-+			return -EPROBE_DEFER;
-+
-+		/* We assume any other error means it's not defined/needed */
-+		qmp = NULL;
-+	}
-+	power->qmp = qmp;
-+
-+	return 0;
-+}
-+
-+static void ipa_power_retention_exit(struct ipa_power *power)
-+{
-+	qmp_put(power->qmp);
-+	power->qmp = NULL;
-+}
-+
-+/* Control register retention on power collapse */
-+void ipa_power_retention(struct ipa *ipa, bool enable)
-+{
-+	static const char fmt[] = "{ class: bcm, res: ipa_pc, val: %c }";
-+	struct ipa_power *power = ipa->power;
-+	char buf[36];	/* Exactly enough for fmt[]; size a multiple of 4 */
-+	int ret;
-+
-+	if (!power->qmp)
-+		return;		/* Not needed on this platform */
-+
-+	(void)snprintf(buf, sizeof(buf), fmt, enable ? '1' : '0');
-+
-+	ret = qmp_send(power->qmp, buf, sizeof(buf));
-+	if (ret)
-+		dev_err(power->dev, "error %d sending QMP %sable request\n",
-+			ret, enable ? "en" : "dis");
-+}
-+
- int ipa_power_setup(struct ipa *ipa)
- {
- 	int ret;
-@@ -438,12 +483,18 @@ ipa_power_init(struct device *dev, const
- 	if (ret)
- 		goto err_kfree;
- 
-+	ret = ipa_power_retention_init(power);
-+	if (ret)
-+		goto err_interconnect_exit;
-+
- 	pm_runtime_set_autosuspend_delay(dev, IPA_AUTOSUSPEND_DELAY);
- 	pm_runtime_use_autosuspend(dev);
- 	pm_runtime_enable(dev);
- 
- 	return power;
- 
-+err_interconnect_exit:
-+	ipa_interconnect_exit(power);
- err_kfree:
- 	kfree(power);
- err_clk_put:
-@@ -460,6 +511,7 @@ void ipa_power_exit(struct ipa_power *po
- 
- 	pm_runtime_disable(dev);
- 	pm_runtime_dont_use_autosuspend(dev);
-+	ipa_power_retention_exit(power);
- 	ipa_interconnect_exit(power);
- 	kfree(power);
- 	clk_put(clk);
---- a/drivers/net/ipa/ipa_power.h
-+++ b/drivers/net/ipa/ipa_power.h
-@@ -41,6 +41,13 @@ void ipa_power_modem_queue_wake(struct i
- void ipa_power_modem_queue_active(struct ipa *ipa);
- 
- /**
-+ * ipa_power_retention() - Control register retention on power collapse
-+ * @ipa:	IPA pointer
-+ * @enable:	Whether retention should be enabled or disabled
++/**
++ * qmp_get() - get a qmp handle from a device
++ * @dev: client device pointer
++ *
++ * Return: handle to qmp device on success, ERR_PTR() on failure
 + */
-+void ipa_power_retention(struct ipa *ipa, bool enable);
++struct qmp *qmp_get(struct device *dev)
++{
++	struct platform_device *pdev;
++	struct device_node *np;
++	struct qmp *qmp;
++
++	if (!dev || !dev->of_node)
++		return ERR_PTR(-EINVAL);
++
++	np = of_parse_phandle(dev->of_node, "qcom,qmp", 0);
++	if (!np)
++		return ERR_PTR(-ENODEV);
++
++	pdev = of_find_device_by_node(np);
++	of_node_put(np);
++	if (!pdev)
++		return ERR_PTR(-EINVAL);
++
++	qmp = platform_get_drvdata(pdev);
++
++	return qmp ? qmp : ERR_PTR(-EPROBE_DEFER);
++}
++EXPORT_SYMBOL(qmp_get);
 +
 +/**
-  * ipa_power_setup() - Set up IPA power management
-  * @ipa:	IPA pointer
-  *
---- a/drivers/net/ipa/ipa_uc.c
-+++ b/drivers/net/ipa/ipa_uc.c
-@@ -11,6 +11,7 @@
- 
- #include "ipa.h"
- #include "ipa_uc.h"
-+#include "ipa_power.h"
- 
- /**
-  * DOC:  The IPA embedded microcontroller
-@@ -154,6 +155,7 @@ static void ipa_uc_response_hdlr(struct
- 	case IPA_UC_RESPONSE_INIT_COMPLETED:
- 		if (ipa->uc_powered) {
- 			ipa->uc_loaded = true;
-+			ipa_power_retention(ipa, true);
- 			pm_runtime_mark_last_busy(dev);
- 			(void)pm_runtime_put_autosuspend(dev);
- 			ipa->uc_powered = false;
-@@ -184,6 +186,9 @@ void ipa_uc_deconfig(struct ipa *ipa)
- 
- 	ipa_interrupt_remove(ipa->interrupt, IPA_IRQ_UC_1);
- 	ipa_interrupt_remove(ipa->interrupt, IPA_IRQ_UC_0);
-+	if (ipa->uc_loaded)
-+		ipa_power_retention(ipa, false);
++ * qmp_put() - release a qmp handle
++ * @qmp: qmp handle obtained from qmp_get()
++ */
++void qmp_put(struct qmp *qmp)
++{
++	/*
++	 * Match get_device() inside of_find_device_by_node() in
++	 * qmp_get()
++	 */
++	if (!IS_ERR_OR_NULL(qmp))
++		put_device(qmp->dev);
++}
++EXPORT_SYMBOL(qmp_put);
 +
- 	if (!ipa->uc_powered)
- 		return;
- 
+ static int qmp_probe(struct platform_device *pdev)
+ {
+ 	struct resource *res;
+@@ -615,6 +666,7 @@ static struct platform_driver qmp_driver
+ 	.driver = {
+ 		.name		= "qcom_aoss_qmp",
+ 		.of_match_table	= qmp_dt_match,
++		.suppress_bind_attrs = true,
+ 	},
+ 	.probe = qmp_probe,
+ 	.remove	= qmp_remove,
+--- /dev/null
++++ b/include/linux/soc/qcom/qcom_aoss.h
+@@ -0,0 +1,38 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (c) 2021, The Linux Foundation. All rights reserved.
++ */
++
++#ifndef __QCOM_AOSS_H__
++#define __QCOM_AOSS_H__
++
++#include <linux/err.h>
++#include <linux/device.h>
++
++struct qmp;
++
++#if IS_ENABLED(CONFIG_QCOM_AOSS_QMP)
++
++int qmp_send(struct qmp *qmp, const void *data, size_t len);
++struct qmp *qmp_get(struct device *dev);
++void qmp_put(struct qmp *qmp);
++
++#else
++
++static inline int qmp_send(struct qmp *qmp, const void *data, size_t len)
++{
++	return -ENODEV;
++}
++
++static inline struct qmp *qmp_get(struct device *dev)
++{
++	return ERR_PTR(-ENODEV);
++}
++
++static inline void qmp_put(struct qmp *qmp)
++{
++}
++
++#endif
++
++#endif
 
 
