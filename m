@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06568C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 773F1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:49:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239981AbiDRMvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
+        id S230075AbiDRMwB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:52:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240920AbiDRMjr (ORCPT
+        with ESMTP id S240937AbiDRMjt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1E11B78F;
-        Mon, 18 Apr 2022 05:31:29 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4955A65FA;
+        Mon, 18 Apr 2022 05:31:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 63A7560F0A;
-        Mon, 18 Apr 2022 12:31:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E343C385A7;
-        Mon, 18 Apr 2022 12:31:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5B1160F0A;
+        Mon, 18 Apr 2022 12:31:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC8A1C385A8;
+        Mon, 18 Apr 2022 12:31:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285087;
-        bh=1ZR11ZiS9Zx+BLT5iJLPGmUOQMhGcjaQF2rDXTOW1JA=;
+        s=korg; t=1650285091;
+        bh=NodVTfbBo4kPp+4JKLC1nc+6gVfRmn1PlEy2ow5AuWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GQyKXcrFtnc2z6jGw9Sm8efQd1B/gYrV76FhFHkOrQDWdo5OBsUZuAhRcJSjiOhiF
-         5v5P/gENOPAsR3KxcsrGowcR24xvuUpPNBOu/kOe6Fjwp1IwyBcDLAykpnqGMjXtPX
-         BP5/tX8/KhYv+Jl7S2uK7wquJ0A1THerrc1qJC4o=
+        b=UrWiaaAxS+2BlD943oCdXvsUgBrbes+E0uaf91NciqwhunNlhN3869IjT5DsR6ur1
+         TIbDnpT1aRsRHYSiu2I1seoxJpiBpeg25FxeSr7/KIsTrxQj5t8+88VHnSMYmzSnH9
+         GQIURO6YUBqFSj8OuC9Kvv/2luaoQCeWBrMa9Ss4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Khazhismel Kumykov <khazhy@google.com>,
+        Mike Snitzer <snitzer@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 100/189] cifs: potential buffer overflow in handling symlinks
-Date:   Mon, 18 Apr 2022 14:12:00 +0200
-Message-Id: <20220418121203.341805767@linuxfoundation.org>
+Subject: [PATCH 5.15 101/189] dm mpath: only use ktime_get_ns() in historical selector
+Date:   Mon, 18 Apr 2022 14:12:01 +0200
+Message-Id: <20220418121203.369856490@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -51,41 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+From: Khazhismel Kumykov <khazhy@google.com>
 
-[ Upstream commit 64c4a37ac04eeb43c42d272f6e6c8c12bfcf4304 ]
+[ Upstream commit ce40426fdc3c92acdba6b5ca74bc7277ffaa6a3d ]
 
-Smatch printed a warning:
-	arch/x86/crypto/poly1305_glue.c:198 poly1305_update_arch() error:
-	__memcpy() 'dctx->buf' too small (16 vs u32max)
+Mixing sched_clock() and ktime_get_ns() usage will give bad results.
 
-It's caused because Smatch marks 'link_len' as untrusted since it comes
-from sscanf(). Add a check to ensure that 'link_len' is not larger than
-the size of the 'link_str' buffer.
+Switch hst_select_path() from using sched_clock() to ktime_get_ns().
+Also rename path_service_time()'s 'sched_now' variable to 'now'.
 
-Fixes: c69c1b6eaea1 ("cifs: implement CIFSParseMFSymlink()")
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Fixes: 2613eab11996 ("dm mpath: add Historical Service Time Path Selector")
+Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/link.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/md/dm-ps-historical-service-time.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/fs/cifs/link.c b/fs/cifs/link.c
-index 852e54ee82c2..bbdf3281559c 100644
---- a/fs/cifs/link.c
-+++ b/fs/cifs/link.c
-@@ -85,6 +85,9 @@ parse_mf_symlink(const u8 *buf, unsigned int buf_len, unsigned int *_link_len,
- 	if (rc != 1)
- 		return -EINVAL;
+diff --git a/drivers/md/dm-ps-historical-service-time.c b/drivers/md/dm-ps-historical-service-time.c
+index 1856a1b125cc..82f2a06153dc 100644
+--- a/drivers/md/dm-ps-historical-service-time.c
++++ b/drivers/md/dm-ps-historical-service-time.c
+@@ -432,7 +432,7 @@ static struct dm_path *hst_select_path(struct path_selector *ps,
+ {
+ 	struct selector *s = ps->context;
+ 	struct path_info *pi = NULL, *best = NULL;
+-	u64 time_now = sched_clock();
++	u64 time_now = ktime_get_ns();
+ 	struct dm_path *ret = NULL;
+ 	unsigned long flags;
  
-+	if (link_len > CIFS_MF_SYMLINK_LINK_MAXLEN)
-+		return -EINVAL;
-+
- 	rc = symlink_hash(link_len, link_str, md5_hash);
- 	if (rc) {
- 		cifs_dbg(FYI, "%s: MD5 hash failure: %d\n", __func__, rc);
+@@ -473,7 +473,7 @@ static int hst_start_io(struct path_selector *ps, struct dm_path *path,
+ 
+ static u64 path_service_time(struct path_info *pi, u64 start_time)
+ {
+-	u64 sched_now = ktime_get_ns();
++	u64 now = ktime_get_ns();
+ 
+ 	/* if a previous disk request has finished after this IO was
+ 	 * sent to the hardware, pretend the submission happened
+@@ -482,11 +482,11 @@ static u64 path_service_time(struct path_info *pi, u64 start_time)
+ 	if (time_after64(pi->last_finish, start_time))
+ 		start_time = pi->last_finish;
+ 
+-	pi->last_finish = sched_now;
+-	if (time_before64(sched_now, start_time))
++	pi->last_finish = now;
++	if (time_before64(now, start_time))
+ 		return 0;
+ 
+-	return sched_now - start_time;
++	return now - start_time;
+ }
+ 
+ static int hst_end_io(struct path_selector *ps, struct dm_path *path,
 -- 
 2.35.1
 
