@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C63C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02727C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244711AbiDRN5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57306 "EHLO
+        id S244743AbiDRN5p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242054AbiDRN1a (ORCPT
+        with ESMTP id S244915AbiDRNbB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:27:30 -0400
+        Mon, 18 Apr 2022 09:31:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC583E5FD;
-        Mon, 18 Apr 2022 05:53:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBCAA10DA;
+        Mon, 18 Apr 2022 05:57:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D88F612B5;
-        Mon, 18 Apr 2022 12:53:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04D0AC385A1;
-        Mon, 18 Apr 2022 12:53:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5485C612BB;
+        Mon, 18 Apr 2022 12:57:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31830C385A1;
+        Mon, 18 Apr 2022 12:57:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286391;
-        bh=HTDpf9gOSoN+0VRBjXQ2P84SInQ0QONH+i4WXzJpWGo=;
+        s=korg; t=1650286642;
+        bh=gXO1PiuaPxfHEKD3y/fnagc/Wbe/+V8iujq2vnaYE1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y3m6topkf2htaAvHIano2vK79WPIm/pLAGE7bkWNEIsKh4BINXD8Hvqfnl0CsZD1U
-         HRkCWo9oKu10g6kNxBzHlHB31RO54l7ODL6CcuavxLXwTWZKtvaPnVgcJSrQL5CKQ/
-         1E3v8a+TlCho/y++MVtnxRGyJbXPVBAJcpNClk5Y=
+        b=CfM5DJPko9IxJlSAjRJ2trl0Pg4r9SUmv8dRHGvYjiq1MCkeZ/plpFs35ts02OhO9
+         wasjIcIgnAAXMXWL31c/vJhjUf1igeYyl0jYEOt1NcQoGZsmI4IUZpI+4dezP816rJ
+         1fUpk2QC79dSCR3vJdHLBJLfLvbx83qgpQje+q/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 119/284] powerpc/sysdev: fix incorrect use to determine if list is empty
-Date:   Mon, 18 Apr 2022 14:11:40 +0200
-Message-Id: <20220418121214.476001943@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 4.14 198/284] ASoC: topology: Allow TLV control to be either read or write
+Date:   Mon, 18 Apr 2022 14:12:59 +0200
+Message-Id: <20220418121217.358568080@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,50 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
 
-[ Upstream commit fa1321b11bd01752f5be2415e74a0e1a7c378262 ]
+commit feb00b736af64875560f371fe7f58b0b7f239046 upstream.
 
-'gtm' will *always* be set by list_for_each_entry().
-It is incorrect to assume that the iterator value will be NULL if the
-list is empty.
+There is no reason to force readwrite access on TLV controls. It can be
+either read, write or both. This is further evidenced in code where it
+performs following checks:
+                if ((k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READ) && !sbe->get)
+                        return -EINVAL;
+                if ((k->access & SNDRV_CTL_ELEM_ACCESS_TLV_WRITE) && !sbe->put)
+                        return -EINVAL;
 
-Instead of checking the pointer it should be checked if
-the list is empty.
-
-Fixes: 83ff9dcf375c ("powerpc/sysdev: implement FSL GTM support")
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220228142434.576226-1-jakobkoschel@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1a3232d2f61d ("ASoC: topology: Add support for TLV bytes controls")
+Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220112170030.569712-3-amadeuszx.slawinski@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/sysdev/fsl_gtm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/soc-topology.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/sysdev/fsl_gtm.c b/arch/powerpc/sysdev/fsl_gtm.c
-index d902306f4718..42fe959f6fc2 100644
---- a/arch/powerpc/sysdev/fsl_gtm.c
-+++ b/arch/powerpc/sysdev/fsl_gtm.c
-@@ -90,7 +90,7 @@ static LIST_HEAD(gtms);
-  */
- struct gtm_timer *gtm_get_timer16(void)
- {
--	struct gtm *gtm = NULL;
-+	struct gtm *gtm;
- 	int i;
+--- a/sound/soc/soc-topology.c
++++ b/sound/soc/soc-topology.c
+@@ -599,7 +599,8 @@ static int soc_tplg_kcontrol_bind_io(str
  
- 	list_for_each_entry(gtm, &gtms, list_node) {
-@@ -107,7 +107,7 @@ struct gtm_timer *gtm_get_timer16(void)
- 		spin_unlock_irq(&gtm->lock);
- 	}
- 
--	if (gtm)
-+	if (!list_empty(&gtms))
- 		return ERR_PTR(-EBUSY);
- 	return ERR_PTR(-ENODEV);
- }
--- 
-2.34.1
-
+ 	if (hdr->ops.info == SND_SOC_TPLG_CTL_BYTES
+ 		&& k->iface & SNDRV_CTL_ELEM_IFACE_MIXER
+-		&& k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READWRITE
++		&& (k->access & SNDRV_CTL_ELEM_ACCESS_TLV_READ
++		    || k->access & SNDRV_CTL_ELEM_ACCESS_TLV_WRITE)
+ 		&& k->access & SNDRV_CTL_ELEM_ACCESS_TLV_CALLBACK) {
+ 		struct soc_bytes_ext *sbe;
+ 		struct snd_soc_tplg_bytes_control *be;
 
 
