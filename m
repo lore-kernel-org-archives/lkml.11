@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EA3C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E28C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245279AbiDRNxO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41622 "EHLO
+        id S245297AbiDRNxV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:53:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244665AbiDRNaq (ORCPT
+        with ESMTP id S244713AbiDRNat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:46 -0400
+        Mon, 18 Apr 2022 09:30:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81F26AE74;
-        Mon, 18 Apr 2022 05:55:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA30E0FE;
+        Mon, 18 Apr 2022 05:55:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 004836115A;
-        Mon, 18 Apr 2022 12:55:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE304C385A7;
-        Mon, 18 Apr 2022 12:54:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 13ED160FE8;
+        Mon, 18 Apr 2022 12:55:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 192E8C385A7;
+        Mon, 18 Apr 2022 12:55:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286499;
-        bh=miqRHSWNMvnPzu+jL7/xPjP28EqRFCnRxSQo4b4ZCfU=;
+        s=korg; t=1650286502;
+        bh=ArEFoaSFryx8GdalJQBJX+zoEu1WRX8cLaTmZZD7D+s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=civBfYZngBXn9YjS0gv5KV8HT58gQMV1MePhyzEB4PQjiXSU+9cu3z5oS8CCHa0SH
-         84GMuptB/mF58hz/M8NTj0ebBayX9JStPyTPCH0aEqzeM+sZbi8Jr81lopHiUK81ce
-         20VPAjEl1Z64BA4Og0I5h2l52F9nfOkKOowXX6m4=
+        b=nRZ8dSVWG2J6chj9ksHThBrsAU6PgejwaobxZOuOfnOWROyqfeSljSOqGDyh5h8ci
+         BDUM6ZcyEHLBNb3SNI10VCeLc5ssqS1fgp8sE9pzeLZmvvz5Cc34Nt23388tUKClMJ
+         rodIoDXPJvfVyQ2v99zLhuQXZYe6ZH4s2oro3CXY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Nash <alnash@fb.com>,
-        Neil Spring <ntspring@fb.com>, Wei Wang <weiwan@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 127/284] tcp: ensure PMTU updates are processed during fastopen
-Date:   Mon, 18 Apr 2022 14:11:48 +0200
-Message-Id: <20220418121214.847947368@linuxfoundation.org>
+Subject: [PATCH 4.14 154/284] lib/test: use after free in register_test_dev_kmod()
+Date:   Mon, 18 Apr 2022 14:12:15 +0200
+Message-Id: <20220418121216.079476391@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -53,66 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit ed0c99dc0f499ff8b6e75b5ae6092ab42be1ad39 ]
+[ Upstream commit dc0ce6cc4b133f5f2beb8b47dacae13a7d283c2c ]
 
-tp->rx_opt.mss_clamp is not populated, yet, during TFO send so we
-rise it to the local MSS. tp->mss_cache is not updated, however:
+The "test_dev" pointer is freed but then returned to the caller.
 
-tcp_v6_connect():
-  tp->rx_opt.mss_clamp = IPV6_MIN_MTU - headers;
-  tcp_connect():
-     tcp_connect_init():
-       tp->mss_cache = min(mtu, tp->rx_opt.mss_clamp)
-     tcp_send_syn_data():
-       tp->rx_opt.mss_clamp = tp->advmss
-
-After recent fixes to ICMPv6 PTB handling we started dropping
-PMTU updates higher than tp->mss_cache. Because of the stale
-tp->mss_cache value PMTU updates during TFO are always dropped.
-
-Thanks to Wei for helping zero in on the problem and the fix!
-
-Fixes: c7bb4b89033b ("ipv6: tcp: drop silly ICMPv6 packet too big messages")
-Reported-by: Andre Nash <alnash@fb.com>
-Reported-by: Neil Spring <ntspring@fb.com>
-Reviewed-by: Wei Wang <weiwan@google.com>
-Acked-by: Yuchung Cheng <ycheng@google.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220321165957.1769954-1-kuba@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: d9c6a72d6fa2 ("kmod: add test driver to stress test the module loader")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_output.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ lib/test_kmod.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 99ab936a9cd3..83c0e859bb33 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3419,6 +3419,7 @@ static void tcp_connect_queue_skb(struct sock *sk, struct sk_buff *skb)
-  */
- static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
- {
-+	struct inet_connection_sock *icsk = inet_csk(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct tcp_fastopen_request *fo = tp->fastopen_req;
- 	int space, err = 0;
-@@ -3433,8 +3434,10 @@ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
- 	 * private TCP options. The cost is reduced data space in SYN :(
- 	 */
- 	tp->rx_opt.mss_clamp = tcp_mss_clamp(tp, tp->rx_opt.mss_clamp);
-+	/* Sync mss_cache after updating the mss_clamp */
-+	tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
+diff --git a/lib/test_kmod.c b/lib/test_kmod.c
+index c0ce0156d54b..74f8d386f85e 100644
+--- a/lib/test_kmod.c
++++ b/lib/test_kmod.c
+@@ -1162,6 +1162,7 @@ static struct kmod_test_device *register_test_dev_kmod(void)
+ 	if (ret) {
+ 		pr_err("could not register misc device: %d\n", ret);
+ 		free_test_dev_kmod(test_dev);
++		test_dev = NULL;
+ 		goto out;
+ 	}
  
--	space = __tcp_mtu_to_mss(sk, inet_csk(sk)->icsk_pmtu_cookie) -
-+	space = __tcp_mtu_to_mss(sk, icsk->icsk_pmtu_cookie) -
- 		MAX_TCP_OPTION_SPACE;
- 
- 	space = min_t(size_t, space, fo->size);
 -- 
 2.34.1
 
