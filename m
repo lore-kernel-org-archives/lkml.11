@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74AB8C352B6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D2BC352AA
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244804AbiDRNpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43872 "EHLO
+        id S244759AbiDRNpb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:45:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242775AbiDRNXg (ORCPT
+        with ESMTP id S242584AbiDRNX0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:23:36 -0400
+        Mon, 18 Apr 2022 09:23:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0BB53D1F3;
-        Mon, 18 Apr 2022 05:52:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B29E53D1DA;
+        Mon, 18 Apr 2022 05:52:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31AF8B80E4E;
-        Mon, 18 Apr 2022 12:52:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CAFEC385A1;
-        Mon, 18 Apr 2022 12:52:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F7E1B80E59;
+        Mon, 18 Apr 2022 12:52:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 865F8C385A1;
+        Mon, 18 Apr 2022 12:52:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286366;
-        bh=WW3r6Av5ZQTo0xWPPP+SF/JDkwvoBP72mSz5rgXKNxA=;
+        s=korg; t=1650286362;
+        bh=WUAPkXaX+FIRxRV6F+q0jv1YQE4laA/FQC2MJMuYRH0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P23KTnD92IFBzbYWnbyzShf4Xp2HHhzA5kmRh06yqSYfPH4CoxlJw2z1eyvx3xN66
-         OpHR29qH5mi/6doQCChKph6H/SkyYB9zD86yORBxlLniQ5t6yUB+t11s/F3pS+Gkij
-         BHbqxjOdnsx6RzUcQ7p0HNklV33lCTwt8ucZnMFc=
+        b=rrIxQlEKXSMZ1yjmvZQHUo6a6gY2Hh02SdZrs9qMTvhf0fMMahvPdu4HfgE7fcHUq
+         n4KmbigA40EYCOUdCLaYOYYHQW0A5B9t4b4oIRs+P45ps35nhEaUpkMe1ITU9dGEBe
+         s+FsPLOXhzZhCwHQpNacUqNuhpxErJC3HPjFJkUg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Thierry Reding <treding@nvidia.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 111/284] drm/tegra: Fix reference leak in tegra_dsi_ganged_probe
-Date:   Mon, 18 Apr 2022 14:11:32 +0200
-Message-Id: <20220418121214.112709123@linuxfoundation.org>
+Subject: [PATCH 4.14 084/284] memory: emif: Add check for setup_interrupts
+Date:   Mon, 18 Apr 2022 14:11:05 +0200
+Message-Id: <20220418121213.074400308@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,37 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 221e3638feb8bc42143833c9a704fa89b6c366bb ]
+[ Upstream commit fd7bd80b46373887b390852f490f21b07e209498 ]
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore. Add put_device() call to fix this.
+As the potential failure of the devm_request_threaded_irq(),
+it should be better to check the return value of the
+setup_interrupts() and return error if fails.
 
-Fixes: e94236cde4d5 ("drm/tegra: dsi: Add ganged mode support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+Fixes: 68b4aee35d1f ("memory: emif: add interrupt and temperature handling")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220224025444.3256530-1-jiasheng@iscas.ac.cn
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/tegra/dsi.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/memory/emif.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/tegra/dsi.c b/drivers/gpu/drm/tegra/dsi.c
-index 046649ec9441..4e06af34c048 100644
---- a/drivers/gpu/drm/tegra/dsi.c
-+++ b/drivers/gpu/drm/tegra/dsi.c
-@@ -1480,8 +1480,10 @@ static int tegra_dsi_ganged_probe(struct tegra_dsi *dsi)
- 		dsi->slave = platform_get_drvdata(gangster);
- 		of_node_put(np);
+diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
+index 88c32b8dc88a..ed6c5fcb136f 100644
+--- a/drivers/memory/emif.c
++++ b/drivers/memory/emif.c
+@@ -1517,7 +1517,7 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
+ {
+ 	struct emif_data	*emif;
+ 	struct resource		*res;
+-	int			irq;
++	int			irq, ret;
  
--		if (!dsi->slave)
-+		if (!dsi->slave) {
-+			put_device(&gangster->dev);
- 			return -EPROBE_DEFER;
-+		}
+ 	if (pdev->dev.of_node)
+ 		emif = of_get_memory_device_details(pdev->dev.of_node, &pdev->dev);
+@@ -1551,7 +1551,9 @@ static int __init_or_module emif_probe(struct platform_device *pdev)
+ 	emif_onetime_settings(emif);
+ 	emif_debugfs_init(emif);
+ 	disable_and_clear_all_interrupts(emif);
+-	setup_interrupts(emif, irq);
++	ret = setup_interrupts(emif, irq);
++	if (ret)
++		goto error;
  
- 		dsi->slave->master = dsi;
- 	}
+ 	/* One-time actions taken on probing the first device */
+ 	if (!emif1) {
 -- 
 2.34.1
 
