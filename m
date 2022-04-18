@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A867C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:58:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A58C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240566AbiDRNAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36306 "EHLO
+        id S240690AbiDRNAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240385AbiDRMte (ORCPT
+        with ESMTP id S240589AbiDRMto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:49:34 -0400
+        Mon, 18 Apr 2022 08:49:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87C42B197;
-        Mon, 18 Apr 2022 05:33:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B122C12E;
+        Mon, 18 Apr 2022 05:33:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3FE8EB80EDC;
-        Mon, 18 Apr 2022 12:33:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71023C385BA;
-        Mon, 18 Apr 2022 12:33:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E98AB80ED6;
+        Mon, 18 Apr 2022 12:33:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99CEEC385A1;
+        Mon, 18 Apr 2022 12:33:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285220;
-        bh=9KPFsXyNlSibgf458VjxpKttCCI7QLhJZMPkhmVqe00=;
+        s=korg; t=1650285237;
+        bh=EcZIn9B50ER/b5XM1sUKQIjm37ZI2VynoYO5vl94STY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PZz6Fvko+o9a8I+03xylR0WlVNDrTry7JcQJlzv42Zy4S8P22OCR2hDMUXXhXO/gK
-         Xn08JGtx4geIGAmX1msS6cqn69rWoWTQquds2LWGPbNWcAR1J0+JmX/c42sJ23j3Rx
-         WT097jDuzrrpEwNoViBbaaNIz2SHZq3MyhEq16zE=
+        b=OWH2XQeHPaOmtUMMlQ5ltbYCwz0jv8Rs1vBgHvrH99So28tUtQQrbgUEYU5wJj9iA
+         dZBvQf8Zxxud6dNwjd3DGWISsLCra36qoxMrrLPrKObvQyLA0UScrN5VQhGQIrEWF6
+         ka3UGxlFYjUIZVa0BZ4572fnQF+qgwclLfJiLB+o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 141/189] io_uring: zero tag on rsrc removal
-Date:   Mon, 18 Apr 2022 14:12:41 +0200
-Message-Id: <20220418121205.527241427@linuxfoundation.org>
+        stable@vger.kernel.org, Andy Chiu <andy.chiu@sifive.com>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 128/189] net: axienet: setup mdio unconditionally
+Date:   Mon, 18 Apr 2022 14:12:28 +0200
+Message-Id: <20220418121204.671340317@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -48,43 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Andy Chiu <andy.chiu@sifive.com>
 
-[ Upstream commit 8f0a24801bb44aa58496945aabb904c729176772 ]
+[ Upstream commit d1c4f93e3f0a023024a6f022a61528c06cf1daa9 ]
 
-Automatically default rsrc tag in io_queue_rsrc_removal(), it's safer
-than leaving it there and relying on the rest of the code to behave and
-not use it.
+The call to axienet_mdio_setup should not depend on whether "phy-node"
+pressents on the DT. Besides, since `lp->phy_node` is used if PHY is in
+SGMII or 100Base-X modes, move it into the if statement. And the next patch
+will remove `lp->phy_node` from driver's private structure and do an
+of_node_put on it right away after use since it is not used elsewhere.
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/1cf262a50df17478ea25b22494dcc19f3a80301f.1649336342.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
+Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
+Reviewed-by: Robert Hancock <robert.hancock@calian.com>
+Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index cc0a07a9fe9c..ca207e9a87cd 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -8413,13 +8413,15 @@ static int io_sqe_file_register(struct io_ring_ctx *ctx, struct file *file,
- static int io_queue_rsrc_removal(struct io_rsrc_data *data, unsigned idx,
- 				 struct io_rsrc_node *node, void *rsrc)
- {
-+	u64 *tag_slot = io_get_tag_slot(data, idx);
- 	struct io_rsrc_put *prsrc;
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index 80637ffcca93..fbbbcfe0e891 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -2127,15 +2127,14 @@ static int axienet_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto cleanup_clk;
  
- 	prsrc = kzalloc(sizeof(*prsrc), GFP_KERNEL);
- 	if (!prsrc)
- 		return -ENOMEM;
- 
--	prsrc->tag = *io_get_tag_slot(data, idx);
-+	prsrc->tag = *tag_slot;
-+	*tag_slot = 0;
- 	prsrc->rsrc = rsrc;
- 	list_add(&prsrc->list, &node->rsrc_list);
- 	return 0;
+-	lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+-	if (lp->phy_node) {
+-		ret = axienet_mdio_setup(lp);
+-		if (ret)
+-			dev_warn(&pdev->dev,
+-				 "error registering MDIO bus: %d\n", ret);
+-	}
++	ret = axienet_mdio_setup(lp);
++	if (ret)
++		dev_warn(&pdev->dev,
++			 "error registering MDIO bus: %d\n", ret);
++
+ 	if (lp->phy_mode == PHY_INTERFACE_MODE_SGMII ||
+ 	    lp->phy_mode == PHY_INTERFACE_MODE_1000BASEX) {
++		lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+ 		if (!lp->phy_node) {
+ 			dev_err(&pdev->dev, "phy-handle required for 1000BaseX/SGMII\n");
+ 			ret = -EINVAL;
 -- 
 2.35.1
 
