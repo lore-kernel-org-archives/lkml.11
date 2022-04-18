@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD16C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:04:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CC6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245447AbiDROH1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
+        id S245720AbiDROHk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:07:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243861AbiDRNty (ORCPT
+        with ESMTP id S244801AbiDRNvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:49:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8301434B1;
-        Mon, 18 Apr 2022 06:01:45 -0700 (PDT)
+        Mon, 18 Apr 2022 09:51:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B90044762;
+        Mon, 18 Apr 2022 06:02:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E3DE60B3C;
-        Mon, 18 Apr 2022 13:01:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E116C385A7;
-        Mon, 18 Apr 2022 13:01:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A31E2B80D9C;
+        Mon, 18 Apr 2022 13:02:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBD8FC385A1;
+        Mon, 18 Apr 2022 13:02:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286904;
-        bh=zMLP5TNIBiQ355nvXboytYzyDZtwOuVe7iSxgjN8PE4=;
+        s=korg; t=1650286923;
+        bh=JHX+u6lY9EHfEH4aLHrplvtn94n7PjEXcl31WuzP428=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oo9197C7XejWPwZQETt1jGVZcA7yCYq4+xt7H2ly51dRPGIFuHGwiTHoYJmacpp78
-         N1j3Kcm+mSLXjQw0B2F22uJfxsakEK0Lt2CXz6/hbSHoU4ceC391UJZo6vK75Fgw8A
-         bl8Gt6MlIbXKz2HJObAAJgPv2KL5LEKRxN8g1gzM=
+        b=XctGIf55yTNSFyHFEp0zIL1vhKC/aYfnAwHb0OnGK9KmDkKVboBYokpwfsde2uV9W
+         nOAHWpb1fJzgxTrQYT8JcE8waXbEedXXl2IVTrpzbMfN1dNgFPbCI+zJhmc6ww7mmq
+         19ezbRqgKSEzXk9/u7ZSvvdmFwGYNKvP/1hSANcw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: [PATCH 4.14 282/284] ARM: davinci: da850-evm: Avoid NULL pointer dereference
-Date:   Mon, 18 Apr 2022 14:14:23 +0200
-Message-Id: <20220418121221.236242740@linuxfoundation.org>
+        stable@vger.kernel.org, Tobias Brunner <tobias@strongswan.org>,
+        Xin Long <lucien.xin@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 4.14 260/284] xfrm: policy: match with both mark and mask on user interfaces
+Date:   Mon, 18 Apr 2022 14:14:01 +0200
+Message-Id: <20220418121219.925012759@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,58 +49,218 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Xin Long <lucien.xin@gmail.com>
 
-commit 83a1cde5c74bfb44b49cb2a940d044bb2380f4ea upstream.
+commit 4f47e8ab6ab796b5380f74866fa5287aca4dcc58 upstream.
 
-With newer versions of GCC, there is a panic in da850_evm_config_emac()
-when booting multi_v5_defconfig in QEMU under the palmetto-bmc machine:
+In commit ed17b8d377ea ("xfrm: fix a warning in xfrm_policy_insert_list"),
+it would take 'priority' to make a policy unique, and allow duplicated
+policies with different 'priority' to be added, which is not expected
+by userland, as Tobias reported in strongswan.
 
-Unable to handle kernel NULL pointer dereference at virtual address 00000020
-pgd = (ptrval)
-[00000020] *pgd=00000000
-Internal error: Oops: 5 [#1] PREEMPT ARM
-Modules linked in:
-CPU: 0 PID: 1 Comm: swapper Not tainted 5.15.0 #1
-Hardware name: Generic DT based system
-PC is at da850_evm_config_emac+0x1c/0x120
-LR is at do_one_initcall+0x50/0x1e0
+To fix this duplicated policies issue, and also fix the issue in
+commit ed17b8d377ea ("xfrm: fix a warning in xfrm_policy_insert_list"),
+when doing add/del/get/update on user interfaces, this patch is to change
+to look up a policy with both mark and mask by doing:
 
-The emac_pdata pointer in soc_info is NULL because davinci_soc_info only
-gets populated on davinci machines but da850_evm_config_emac() is called
-on all machines via device_initcall().
+  mark.v == pol->mark.v && mark.m == pol->mark.m
 
-Move the rmii_en assignment below the machine check so that it is only
-dereferenced when running on a supported SoC.
+and leave the check:
 
-Fixes: bae105879f2f ("davinci: DA850/OMAP-L138 EVM: implement autodetect of RMII PHY")
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/YcS4xVWs6bQlQSPC@archlinux-ax161/
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+  (mark & pol->mark.m) == pol->mark.v
+
+for tx/rx path only.
+
+As the userland expects an exact mark and mask match to manage policies.
+
+v1->v2:
+  - make xfrm_policy_mark_match inline and fix the changelog as
+    Tobias suggested.
+
+Fixes: 295fae568885 ("xfrm: Allow user space manipulation of SPD mark")
+Fixes: ed17b8d377ea ("xfrm: fix a warning in xfrm_policy_insert_list")
+Reported-by: Tobias Brunner <tobias@strongswan.org>
+Tested-by: Tobias Brunner <tobias@strongswan.org>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-davinci/board-da850-evm.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/net/xfrm.h     |    9 ++++++---
+ net/key/af_key.c       |    4 ++--
+ net/xfrm/xfrm_policy.c |   24 ++++++++++--------------
+ net/xfrm/xfrm_user.c   |   14 ++++++++------
+ 4 files changed, 26 insertions(+), 25 deletions(-)
 
---- a/arch/arm/mach-davinci/board-da850-evm.c
-+++ b/arch/arm/mach-davinci/board-da850-evm.c
-@@ -1035,11 +1035,13 @@ static int __init da850_evm_config_emac(
- 	int ret;
- 	u32 val;
- 	struct davinci_soc_info *soc_info = &davinci_soc_info;
--	u8 rmii_en = soc_info->emac_pdata->rmii_en;
-+	u8 rmii_en;
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1674,13 +1674,16 @@ int xfrm_policy_walk(struct net *net, st
+ 		     void *);
+ void xfrm_policy_walk_done(struct xfrm_policy_walk *walk, struct net *net);
+ int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl);
+-struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net, u32 mark,
++struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net,
++					  const struct xfrm_mark *mark,
+ 					  u8 type, int dir,
+ 					  struct xfrm_selector *sel,
+ 					  struct xfrm_sec_ctx *ctx, int delete,
+ 					  int *err);
+-struct xfrm_policy *xfrm_policy_byid(struct net *net, u32 mark, u8, int dir,
+-				     u32 id, int delete, int *err);
++struct xfrm_policy *xfrm_policy_byid(struct net *net,
++				     const struct xfrm_mark *mark,
++				     u8 type, int dir, u32 id, int delete,
++				     int *err);
+ int xfrm_policy_flush(struct net *net, u8 type, bool task_valid);
+ void xfrm_policy_hash_rebuild(struct net *net);
+ u32 xfrm_get_acqseq(void);
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2411,7 +2411,7 @@ static int pfkey_spddelete(struct sock *
+ 			return err;
+ 	}
  
- 	if (!machine_is_davinci_da850_evm())
- 		return 0;
+-	xp = xfrm_policy_bysel_ctx(net, DUMMY_MARK, XFRM_POLICY_TYPE_MAIN,
++	xp = xfrm_policy_bysel_ctx(net, &dummy_mark, XFRM_POLICY_TYPE_MAIN,
+ 				   pol->sadb_x_policy_dir - 1, &sel, pol_ctx,
+ 				   1, &err);
+ 	security_xfrm_policy_free(pol_ctx);
+@@ -2662,7 +2662,7 @@ static int pfkey_spdget(struct sock *sk,
+ 		return -EINVAL;
  
-+	rmii_en = soc_info->emac_pdata->rmii_en;
+ 	delete = (hdr->sadb_msg_type == SADB_X_SPDDELETE2);
+-	xp = xfrm_policy_byid(net, DUMMY_MARK, XFRM_POLICY_TYPE_MAIN,
++	xp = xfrm_policy_byid(net, &dummy_mark, XFRM_POLICY_TYPE_MAIN,
+ 			      dir, pol->sadb_x_policy_id, delete, &err);
+ 	if (xp == NULL)
+ 		return -ENOENT;
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -719,14 +719,10 @@ static void xfrm_policy_requeue(struct x
+ 	spin_unlock_bh(&pq->hold_queue.lock);
+ }
+ 
+-static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
+-				   struct xfrm_policy *pol)
++static inline bool xfrm_policy_mark_match(const struct xfrm_mark *mark,
++					  struct xfrm_policy *pol)
+ {
+-	if (policy->mark.v == pol->mark.v &&
+-	    policy->priority == pol->priority)
+-		return true;
+-
+-	return false;
++	return mark->v == pol->mark.v && mark->m == pol->mark.m;
+ }
+ 
+ int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl)
+@@ -744,7 +740,7 @@ int xfrm_policy_insert(int dir, struct x
+ 	hlist_for_each_entry(pol, chain, bydst) {
+ 		if (pol->type == policy->type &&
+ 		    !selector_cmp(&pol->selector, &policy->selector) &&
+-		    xfrm_policy_mark_match(policy, pol) &&
++		    xfrm_policy_mark_match(&policy->mark, pol) &&
+ 		    xfrm_sec_ctx_match(pol->security, policy->security) &&
+ 		    !WARN_ON(delpol)) {
+ 			if (excl) {
+@@ -794,8 +790,8 @@ int xfrm_policy_insert(int dir, struct x
+ }
+ EXPORT_SYMBOL(xfrm_policy_insert);
+ 
+-struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net, u32 mark, u8 type,
+-					  int dir, struct xfrm_selector *sel,
++struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net, const struct xfrm_mark *mark,
++					  u8 type, int dir, struct xfrm_selector *sel,
+ 					  struct xfrm_sec_ctx *ctx, int delete,
+ 					  int *err)
+ {
+@@ -808,7 +804,7 @@ struct xfrm_policy *xfrm_policy_bysel_ct
+ 	ret = NULL;
+ 	hlist_for_each_entry(pol, chain, bydst) {
+ 		if (pol->type == type &&
+-		    (mark & pol->mark.m) == pol->mark.v &&
++		    xfrm_policy_mark_match(mark, pol) &&
+ 		    !selector_cmp(sel, &pol->selector) &&
+ 		    xfrm_sec_ctx_match(ctx, pol->security)) {
+ 			xfrm_pol_hold(pol);
+@@ -833,8 +829,8 @@ struct xfrm_policy *xfrm_policy_bysel_ct
+ }
+ EXPORT_SYMBOL(xfrm_policy_bysel_ctx);
+ 
+-struct xfrm_policy *xfrm_policy_byid(struct net *net, u32 mark, u8 type,
+-				     int dir, u32 id, int delete, int *err)
++struct xfrm_policy *xfrm_policy_byid(struct net *net, const struct xfrm_mark *mark,
++					 u8 type, int dir, u32 id, int delete, int *err)
+ {
+ 	struct xfrm_policy *pol, *ret;
+ 	struct hlist_head *chain;
+@@ -849,7 +845,7 @@ struct xfrm_policy *xfrm_policy_byid(str
+ 	ret = NULL;
+ 	hlist_for_each_entry(pol, chain, byidx) {
+ 		if (pol->type == type && pol->index == id &&
+-		    (mark & pol->mark.m) == pol->mark.v) {
++		    xfrm_policy_mark_match(mark, pol)) {
+ 			xfrm_pol_hold(pol);
+ 			if (delete) {
+ 				*err = security_xfrm_policy_delete(
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -1814,7 +1814,6 @@ static int xfrm_get_policy(struct sk_buf
+ 	struct km_event c;
+ 	int delete;
+ 	struct xfrm_mark m;
+-	u32 mark = xfrm_mark_get(attrs, &m);
+ 
+ 	p = nlmsg_data(nlh);
+ 	delete = nlh->nlmsg_type == XFRM_MSG_DELPOLICY;
+@@ -1827,8 +1826,10 @@ static int xfrm_get_policy(struct sk_buf
+ 	if (err)
+ 		return err;
+ 
++	xfrm_mark_get(attrs, &m);
 +
- 	cfg_chip3_base = DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP3_REG);
+ 	if (p->index)
+-		xp = xfrm_policy_byid(net, mark, type, p->dir, p->index, delete, &err);
++		xp = xfrm_policy_byid(net, &m, type, p->dir, p->index, delete, &err);
+ 	else {
+ 		struct nlattr *rt = attrs[XFRMA_SEC_CTX];
+ 		struct xfrm_sec_ctx *ctx;
+@@ -1845,7 +1846,7 @@ static int xfrm_get_policy(struct sk_buf
+ 			if (err)
+ 				return err;
+ 		}
+-		xp = xfrm_policy_bysel_ctx(net, mark, type, p->dir, &p->sel,
++		xp = xfrm_policy_bysel_ctx(net, &m, type, p->dir, &p->sel,
+ 					   ctx, delete, &err);
+ 		security_xfrm_policy_free(ctx);
+ 	}
+@@ -2108,7 +2109,6 @@ static int xfrm_add_pol_expire(struct sk
+ 	u8 type = XFRM_POLICY_TYPE_MAIN;
+ 	int err = -ENOENT;
+ 	struct xfrm_mark m;
+-	u32 mark = xfrm_mark_get(attrs, &m);
  
- 	val = __raw_readl(cfg_chip3_base);
+ 	err = copy_from_user_policy_type(&type, attrs);
+ 	if (err)
+@@ -2118,8 +2118,10 @@ static int xfrm_add_pol_expire(struct sk
+ 	if (err)
+ 		return err;
+ 
++	xfrm_mark_get(attrs, &m);
++
+ 	if (p->index)
+-		xp = xfrm_policy_byid(net, mark, type, p->dir, p->index, 0, &err);
++		xp = xfrm_policy_byid(net, &m, type, p->dir, p->index, 0, &err);
+ 	else {
+ 		struct nlattr *rt = attrs[XFRMA_SEC_CTX];
+ 		struct xfrm_sec_ctx *ctx;
+@@ -2136,7 +2138,7 @@ static int xfrm_add_pol_expire(struct sk
+ 			if (err)
+ 				return err;
+ 		}
+-		xp = xfrm_policy_bysel_ctx(net, mark, type, p->dir,
++		xp = xfrm_policy_bysel_ctx(net, &m, type, p->dir,
+ 					   &p->sel, ctx, 0, &err);
+ 		security_xfrm_policy_free(ctx);
+ 	}
 
 
