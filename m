@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB05BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D5AEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241099AbiDRNjn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54022 "EHLO
+        id S243145AbiDRNjx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241138AbiDRNLP (ORCPT
+        with ESMTP id S241239AbiDRNLi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:11:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C03E3983D;
-        Mon, 18 Apr 2022 05:50:36 -0700 (PDT)
+        Mon, 18 Apr 2022 09:11:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68EB82D1E5;
+        Mon, 18 Apr 2022 05:50:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09FEAB80E4B;
-        Mon, 18 Apr 2022 12:50:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A51EC385A1;
-        Mon, 18 Apr 2022 12:50:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6565661254;
+        Mon, 18 Apr 2022 12:50:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58C2BC385A1;
+        Mon, 18 Apr 2022 12:50:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286233;
-        bh=HQCpx33vyRLby1m3u6tUxCLiMO0pt5p7L09eWaKirC0=;
+        s=korg; t=1650286239;
+        bh=H2E+hkoWrFyiw9Yw9enrsHb/6o1hrtPFBfEID+qRoMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QDshMKBbxNWVEhS+q+kiVGmWdEyfl7gYCH8qLRl1fu9cfg7XtCGz2IE0qeIKGz52C
-         snGoN5qpJsvu4c3ThZEI9y+2c10UQXMOA9tPYJ/m9RevborTLbDO+4RqBT+1dGySis
-         7uoHYr+BD7mCL5u8rOIhj7psmAMxLENhczQrBJ9w=
+        b=W9bsQ8i4+GuJEgh6CL6+ftOfmsbYjYS2an8Rwwh+7sByVMnmSxSirghWbsyGE2mmq
+         +9N6bNcvjQ2TY14dDvloEOdsjUSIFv2xlazLb9ZRp8sAomH5zScBRNNh5ZKxuNy/pm
+         M/BdhUWaVResTLQKnSjArFVJZDrcv/0LxpjPB3bI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 069/284] perf/core: Fix address filter parser for multiple filters
-Date:   Mon, 18 Apr 2022 14:10:50 +0200
-Message-Id: <20220418121212.651325774@linuxfoundation.org>
+Subject: [PATCH 4.14 071/284] media: coda: Fix missing put_device() call in coda_get_vdoa_data
+Date:   Mon, 18 Apr 2022 14:10:52 +0200
+Message-Id: <20220418121212.707431987@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,38 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit d680ff24e9e14444c63945b43a37ede7cd6958f9 ]
+[ Upstream commit ca85d271531a1e1c86f24b892f57b7d0a3ddb5a6 ]
 
-Reset appropriate variables in the parser loop between parsing separate
-filters, so that they do not interfere with parsing the next filter.
+The reference taken by 'of_find_device_by_node()' must be released when
+not needed anymore.
+Add the corresponding 'put_device()' in the error handling path.
 
-Fixes: 375637bc524952 ("perf/core: Introduce address range filtering")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220131072453.2839535-4-adrian.hunter@intel.com
+Fixes: e7f3c5481035 ("[media] coda: use VDOA for un-tiling custom macroblock format")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/events/core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/media/platform/coda/coda-common.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 54da9e12381f..0f49ab48cb14 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -8641,8 +8641,11 @@ perf_event_parse_addr_filter(struct perf_event *event, char *fstr,
- 			}
+diff --git a/drivers/media/platform/coda/coda-common.c b/drivers/media/platform/coda/coda-common.c
+index 5b87c488ee11..993208944ace 100644
+--- a/drivers/media/platform/coda/coda-common.c
++++ b/drivers/media/platform/coda/coda-common.c
+@@ -360,6 +360,7 @@ static struct vdoa_data *coda_get_vdoa_data(void)
+ 	if (!vdoa_data)
+ 		vdoa_data = ERR_PTR(-EPROBE_DEFER);
  
- 			/* ready to consume more filters */
-+			kfree(filename);
-+			filename = NULL;
- 			state = IF_STATE_ACTION;
- 			filter = NULL;
-+			kernel = 0;
- 		}
- 	}
- 
++	put_device(&vdoa_pdev->dev);
+ out:
+ 	if (vdoa_node)
+ 		of_node_put(vdoa_node);
 -- 
 2.34.1
 
