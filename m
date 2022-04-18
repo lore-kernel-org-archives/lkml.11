@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5CB4C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC36BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:24:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238695AbiDRM0e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:26:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37104 "EHLO
+        id S238818AbiDRM0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:26:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238690AbiDRMZQ (ORCPT
+        with ESMTP id S238655AbiDRMZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:25:16 -0400
+        Mon, 18 Apr 2022 08:25:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F58F1D0DE;
-        Mon, 18 Apr 2022 05:19:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4662520BEC;
+        Mon, 18 Apr 2022 05:19:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C4EC60F0A;
-        Mon, 18 Apr 2022 12:19:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7AF2C385A1;
-        Mon, 18 Apr 2022 12:19:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EE8A60F0A;
+        Mon, 18 Apr 2022 12:19:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 990EFC385A1;
+        Mon, 18 Apr 2022 12:19:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284369;
-        bh=N8CxiVuHzPHJ0BNRM4lnhe/0TLjk3RtN46UbVkEKNtA=;
+        s=korg; t=1650284375;
+        bh=nPwFMTObJZF4cTLhVCXsSyXs7ixQvWyzMUK/7568deg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ElVlyqyCaO/tbKCSTsVV4fc0vkIFAneKLdNQPkKvMjfUV44DWIj5N2DG6Oiscewf+
-         +FpfB8avy4kY5epN/dBkvirjrGKsklE4VbclnCIy5+g84Qmh0zgyViq0OAVY4Ep/RA
-         Rhf8keD6NV2ESggOAPXDi+mTzmt7YmoOY+LN12Ww=
+        b=oifCUZBIJtIaBI0/OLYdQ6/lYfCg5X02ewUSR7DkSIABB2FidCnpljgFswg4+irh0
+         OmHLBCK6iXuIegShMPWZAWr0zIoM1l1kyQUtVw0r54PMr+UaVlEYuuv/jwtrD0Ld1d
+         CGtIOFcrfkeOn2wF+JvKRhn9Qc+JhR0nmRou/How=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Karsten Graul <kgraul@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 084/219] io_uring: flag the fact that linked file assignment is sane
-Date:   Mon, 18 Apr 2022 14:10:53 +0200
-Message-Id: <20220418121208.719185493@linuxfoundation.org>
+Subject: [PATCH 5.17 094/219] net/smc: use memcpy instead of snprintf to avoid out of bounds read
+Date:   Mon, 18 Apr 2022 14:11:03 +0200
+Message-Id: <20220418121209.336563326@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,52 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Karsten Graul <kgraul@linux.ibm.com>
 
-[ Upstream commit c4212f3eb89fd5654f0a6ed2ee1d13fcb86cb664 ]
+[ Upstream commit b1871fd48efc567650dbdc974e5a2342a03fe0d2 ]
 
-Give applications a way to tell if the kernel supports sane linked files,
-as in files being assigned at the right time to be able to reliably
-do <open file direct into slot X><read file from slot X> while using
-IOSQE_IO_LINK to order them.
+Using snprintf() to convert not null-terminated strings to null
+terminated strings may cause out of bounds read in the source string.
+Therefore use memcpy() and terminate the target string with a null
+afterwards.
 
-Not really a bug fix, but flag it as such so that it gets pulled in with
-backports of the deferred file assignment.
-
-Fixes: 6bf9c47a3989 ("io_uring: defer file assignment")
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: fa0866625543 ("net/smc: add support for user defined EIDs")
+Fixes: 3c572145c24e ("net/smc: add generic netlink support for system EID")
+Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c                 | 3 ++-
- include/uapi/linux/io_uring.h | 1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ net/smc/smc_clc.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 1a9630dc5361..d13f142793f2 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -10566,7 +10566,8 @@ static __cold int io_uring_create(unsigned entries, struct io_uring_params *p,
- 			IORING_FEAT_CUR_PERSONALITY | IORING_FEAT_FAST_POLL |
- 			IORING_FEAT_POLL_32BITS | IORING_FEAT_SQPOLL_NONFIXED |
- 			IORING_FEAT_EXT_ARG | IORING_FEAT_NATIVE_WORKERS |
--			IORING_FEAT_RSRC_TAGS | IORING_FEAT_CQE_SKIP;
-+			IORING_FEAT_RSRC_TAGS | IORING_FEAT_CQE_SKIP |
-+			IORING_FEAT_LINKED_FILE;
+diff --git a/net/smc/smc_clc.c b/net/smc/smc_clc.c
+index ce27399b38b1..f9f3f59c79de 100644
+--- a/net/smc/smc_clc.c
++++ b/net/smc/smc_clc.c
+@@ -191,7 +191,8 @@ static int smc_nl_ueid_dumpinfo(struct sk_buff *skb, u32 portid, u32 seq,
+ 			  flags, SMC_NETLINK_DUMP_UEID);
+ 	if (!hdr)
+ 		return -ENOMEM;
+-	snprintf(ueid_str, sizeof(ueid_str), "%s", ueid);
++	memcpy(ueid_str, ueid, SMC_MAX_EID_LEN);
++	ueid_str[SMC_MAX_EID_LEN] = 0;
+ 	if (nla_put_string(skb, SMC_NLA_EID_TABLE_ENTRY, ueid_str)) {
+ 		genlmsg_cancel(skb, hdr);
+ 		return -EMSGSIZE;
+@@ -252,7 +253,8 @@ int smc_nl_dump_seid(struct sk_buff *skb, struct netlink_callback *cb)
+ 		goto end;
  
- 	if (copy_to_user(params, p, sizeof(*p))) {
- 		ret = -EFAULT;
-diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
-index 787f491f0d2a..1e45368ad33f 100644
---- a/include/uapi/linux/io_uring.h
-+++ b/include/uapi/linux/io_uring.h
-@@ -293,6 +293,7 @@ struct io_uring_params {
- #define IORING_FEAT_NATIVE_WORKERS	(1U << 9)
- #define IORING_FEAT_RSRC_TAGS		(1U << 10)
- #define IORING_FEAT_CQE_SKIP		(1U << 11)
-+#define IORING_FEAT_LINKED_FILE		(1U << 12)
- 
- /*
-  * io_uring_register(2) opcodes and arguments
+ 	smc_ism_get_system_eid(&seid);
+-	snprintf(seid_str, sizeof(seid_str), "%s", seid);
++	memcpy(seid_str, seid, SMC_MAX_EID_LEN);
++	seid_str[SMC_MAX_EID_LEN] = 0;
+ 	if (nla_put_string(skb, SMC_NLA_SEID_ENTRY, seid_str))
+ 		goto err;
+ 	read_lock(&smc_clc_eid_table.lock);
 -- 
 2.35.1
 
