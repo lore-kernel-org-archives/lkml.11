@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7BD3C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C91ACC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:57:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240610AbiDRM52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60482 "EHLO
+        id S240626AbiDRM5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239634AbiDRMqr (ORCPT
+        with ESMTP id S239529AbiDRMqr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:46:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE1129823;
-        Mon, 18 Apr 2022 05:33:00 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6954F2983D;
+        Mon, 18 Apr 2022 05:33:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ED0F61014;
-        Mon, 18 Apr 2022 12:32:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77467C385A8;
-        Mon, 18 Apr 2022 12:32:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8B3C60F04;
+        Mon, 18 Apr 2022 12:33:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBA28C385A1;
+        Mon, 18 Apr 2022 12:33:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285178;
-        bh=PdqZVzizgk6/NDj9Gpg1f+LUl/smdkF9TxT+ushn/pk=;
+        s=korg; t=1650285182;
+        bh=4VgAjfKSnI6qCbQ36M+LpNuBGABeOeuS7Sf5Kx1qs8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VQAiG0sQ3yfCc+15vAtVXoyQ5idV9mlWcjU+1f6hHrZIbSIHkT2/KQXrGZSN5QqYF
-         lZcYOe2NNxJaz2CdVqV36jK02hpC1l21VlE0ovRSl216uAnDHsn5VxK0PCvX6bilbC
-         ocoh8c6VOKkUwtyeQgH/nD+DUHRTxkEFderM5q8s=
+        b=IDvaGIfx3zVzitT7B6GMq0gIIU3p2eYmiTz6TAUXZAQvTrFV/NX9ibfvXPXAw0HOQ
+         QnZtt2FG+Ar9AQakYCMT9ODwbPVfZfT9m5kXsUzwuwtIK9mOQhnapoGhIdMgRlCD6U
+         01sLmcJwPwhRkjj6hJ4GRO/nEacYmAtoI53ZMaAg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Bakker <xc-racer2@live.ca>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 125/189] regulator: wm8994: Add an off-on delay for WM8994 variant
-Date:   Mon, 18 Apr 2022 14:12:25 +0200
-Message-Id: <20220418121204.476721313@linuxfoundation.org>
+        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 090/189] io_uring: move io_uring_rsrc_update2 validation
+Date:   Mon, 18 Apr 2022 14:11:50 +0200
+Message-Id: <20220418121203.061156741@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,92 +48,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Bakker <xc-racer2@live.ca>
+From: Dylan Yudaken <dylany@fb.com>
 
-[ Upstream commit 92d96b603738ec4f35cde7198c303ae264dd47cb ]
+[ Upstream commit 565c5e616e8061b40a2e1d786c418a7ac3503a8d ]
 
-As per Table 130 of the wm8994 datasheet at [1], there is an off-on
-delay for LDO1 and LDO2.  In the wm8958 datasheet [2], I could not
-find any reference to it.  I could not find a wm1811 datasheet to
-double-check there, but as no one has complained presumably it works
-without it.
+Move validation to be more consistently straight after
+copy_from_user. This is already done in io_register_rsrc_update and so
+this removes that redundant check.
 
-This solves the issue on Samsung Aries boards with a wm8994 where
-register writes fail when the device is powered off and back-on
-quickly.
-
-[1] https://statics.cirrus.com/pubs/proDatasheet/WM8994_Rev4.6.pdf
-[2] https://statics.cirrus.com/pubs/proDatasheet/WM8958_v3.5.pdf
-
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/CY4PR04MB056771CFB80DC447C30D5A31CB1D9@CY4PR04MB0567.namprd04.prod.outlook.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Dylan Yudaken <dylany@fb.com>
+Link: https://lore.kernel.org/r/20220412163042.2788062-2-dylany@fb.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/wm8994-regulator.c | 42 ++++++++++++++++++++++++++--
- 1 file changed, 39 insertions(+), 3 deletions(-)
+ fs/io_uring.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/regulator/wm8994-regulator.c b/drivers/regulator/wm8994-regulator.c
-index cadea0344486..40befdd9dfa9 100644
---- a/drivers/regulator/wm8994-regulator.c
-+++ b/drivers/regulator/wm8994-regulator.c
-@@ -71,6 +71,35 @@ static const struct regulator_ops wm8994_ldo2_ops = {
- };
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 3d44d48b35ea..0568304a597a 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -10595,8 +10595,6 @@ static int __io_register_rsrc_update(struct io_ring_ctx *ctx, unsigned type,
+ 	__u32 tmp;
+ 	int err;
  
- static const struct regulator_desc wm8994_ldo_desc[] = {
-+	{
-+		.name = "LDO1",
-+		.id = 1,
-+		.type = REGULATOR_VOLTAGE,
-+		.n_voltages = WM8994_LDO1_MAX_SELECTOR + 1,
-+		.vsel_reg = WM8994_LDO_1,
-+		.vsel_mask = WM8994_LDO1_VSEL_MASK,
-+		.ops = &wm8994_ldo1_ops,
-+		.min_uV = 2400000,
-+		.uV_step = 100000,
-+		.enable_time = 3000,
-+		.off_on_delay = 36000,
-+		.owner = THIS_MODULE,
-+	},
-+	{
-+		.name = "LDO2",
-+		.id = 2,
-+		.type = REGULATOR_VOLTAGE,
-+		.n_voltages = WM8994_LDO2_MAX_SELECTOR + 1,
-+		.vsel_reg = WM8994_LDO_2,
-+		.vsel_mask = WM8994_LDO2_VSEL_MASK,
-+		.ops = &wm8994_ldo2_ops,
-+		.enable_time = 3000,
-+		.off_on_delay = 36000,
-+		.owner = THIS_MODULE,
-+	},
-+};
-+
-+static const struct regulator_desc wm8958_ldo_desc[] = {
- 	{
- 		.name = "LDO1",
- 		.id = 1,
-@@ -172,9 +201,16 @@ static int wm8994_ldo_probe(struct platform_device *pdev)
- 	 * regulator core and we need not worry about it on the
- 	 * error path.
- 	 */
--	ldo->regulator = devm_regulator_register(&pdev->dev,
--						 &wm8994_ldo_desc[id],
--						 &config);
-+	if (ldo->wm8994->type == WM8994) {
-+		ldo->regulator = devm_regulator_register(&pdev->dev,
-+							 &wm8994_ldo_desc[id],
-+							 &config);
-+	} else {
-+		ldo->regulator = devm_regulator_register(&pdev->dev,
-+							 &wm8958_ldo_desc[id],
-+							 &config);
-+	}
-+
- 	if (IS_ERR(ldo->regulator)) {
- 		ret = PTR_ERR(ldo->regulator);
- 		dev_err(wm8994->dev, "Failed to register LDO%d: %d\n",
+-	if (up->resv)
+-		return -EINVAL;
+ 	if (check_add_overflow(up->offset, nr_args, &tmp))
+ 		return -EOVERFLOW;
+ 	err = io_rsrc_node_switch_start(ctx);
+@@ -10622,6 +10620,8 @@ static int io_register_files_update(struct io_ring_ctx *ctx, void __user *arg,
+ 	memset(&up, 0, sizeof(up));
+ 	if (copy_from_user(&up, arg, sizeof(struct io_uring_rsrc_update)))
+ 		return -EFAULT;
++	if (up.resv)
++		return -EINVAL;
+ 	return __io_register_rsrc_update(ctx, IORING_RSRC_FILE, &up, nr_args);
+ }
+ 
 -- 
 2.35.1
 
