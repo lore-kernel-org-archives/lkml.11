@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B832C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA06FC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240927AbiDRM6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34364 "EHLO
+        id S240643AbiDRM5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240229AbiDRMtS (ORCPT
+        with ESMTP id S239681AbiDRMqs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:49:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 014FB2126A;
-        Mon, 18 Apr 2022 05:33:27 -0700 (PDT)
+        Mon, 18 Apr 2022 08:46:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5022929C96;
+        Mon, 18 Apr 2022 05:33:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D2BFB80EDC;
-        Mon, 18 Apr 2022 12:33:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF234C385B7;
-        Mon, 18 Apr 2022 12:33:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9A3A60FDF;
+        Mon, 18 Apr 2022 12:33:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEA22C385A1;
+        Mon, 18 Apr 2022 12:33:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285205;
-        bh=/5HPItxFIZfMlhG76iLXGwbpMNMv5fQZGhvnKRZ1lhg=;
+        s=korg; t=1650285185;
+        bh=bs4wak5tOlOoHf4lGS50VhwN10Kt87nFI36ASnPYkPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lq0dmgfbu+cmyIOCd6J+Ke95lXFgrd4R15NhN5r2TT7kqvlifhvV0Upcijdrx46mK
-         eK3UzI/EsBe0IbGwhbRIDmREqthaSKBnUwiOfHlfsvYzWYdj4dFz+d6WVjKkrIBSqB
-         G3+75IqnLcH0MrOye5O4M5EeUEMDu8SXQU43RX08=
+        b=pQ0Au9vkGzbvJRo2iYZ4JXP8kLhgJJAkkoLTohzvXucbxVY9SSyinY/XB760pAuxk
+         ZiDEM7PkZD8ZMLELz5oRp3Ly7GhXX1q12/h2QXkinNfcqj+Y+j/LYneXVbb7O+snF5
+         hx6nEbohAG+jtsXS8i7qRZo64AIePJOpNUAhWDks=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 136/189] drbd: set QUEUE_FLAG_STABLE_WRITES
-Date:   Mon, 18 Apr 2022 14:12:36 +0200
-Message-Id: <20220418121205.195742487@linuxfoundation.org>
+        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 091/189] io_uring: verify that resv2 is 0 in io_uring_rsrc_update2
+Date:   Mon, 18 Apr 2022 14:11:51 +0200
+Message-Id: <20220418121203.088735896@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,31 +48,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Böhmwalder <christoph@boehmwalder.at>
+From: Dylan Yudaken <dylany@fb.com>
 
-[ Upstream commit 286901941fd18a52b2138fddbbf589ad3639eb00 ]
+[ Upstream commit d8a3ba9c143bf89c032deced8a686ffa53b46098 ]
 
-We want our pages not to change while they are being written.
+Verify that the user does not pass in anything but 0 for this field.
 
-Signed-off-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
+Fixes: 992da01aa932 ("io_uring: change registration/upd/rsrc tagging ABI")
+Signed-off-by: Dylan Yudaken <dylany@fb.com>
+Link: https://lore.kernel.org/r/20220412163042.2788062-3-dylany@fb.com
 Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/drbd/drbd_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/io_uring.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index 55234a558e98..548e0dd53528 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -2737,6 +2737,7 @@ enum drbd_ret_code drbd_create_device(struct drbd_config_context *adm_ctx, unsig
- 	sprintf(disk->disk_name, "drbd%d", minor);
- 	disk->private_data = device;
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 0568304a597a..66671c0bd864 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -6403,6 +6403,7 @@ static int io_files_update(struct io_kiocb *req, unsigned int issue_flags)
+ 	up.nr = 0;
+ 	up.tags = 0;
+ 	up.resv = 0;
++	up.resv2 = 0;
  
-+	blk_queue_flag_set(QUEUE_FLAG_STABLE_WRITES, disk->queue);
- 	blk_queue_write_cache(disk->queue, true, true);
- 	/* Setting the max_hw_sectors to an odd value of 8kibyte here
- 	   This triggers a max_bio_size message upon first attach or connect */
+ 	io_ring_submit_lock(ctx, !(issue_flags & IO_URING_F_NONBLOCK));
+ 	ret = __io_register_rsrc_update(ctx, IORING_RSRC_FILE,
+@@ -10620,7 +10621,7 @@ static int io_register_files_update(struct io_ring_ctx *ctx, void __user *arg,
+ 	memset(&up, 0, sizeof(up));
+ 	if (copy_from_user(&up, arg, sizeof(struct io_uring_rsrc_update)))
+ 		return -EFAULT;
+-	if (up.resv)
++	if (up.resv || up.resv2)
+ 		return -EINVAL;
+ 	return __io_register_rsrc_update(ctx, IORING_RSRC_FILE, &up, nr_args);
+ }
+@@ -10634,7 +10635,7 @@ static int io_register_rsrc_update(struct io_ring_ctx *ctx, void __user *arg,
+ 		return -EINVAL;
+ 	if (copy_from_user(&up, arg, sizeof(up)))
+ 		return -EFAULT;
+-	if (!up.nr || up.resv)
++	if (!up.nr || up.resv || up.resv2)
+ 		return -EINVAL;
+ 	return __io_register_rsrc_update(ctx, type, &up, up.nr);
+ }
 -- 
 2.35.1
 
