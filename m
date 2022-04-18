@@ -2,86 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5338FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A98A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:28:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234802AbiDRMbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38592 "EHLO
+        id S236791AbiDRMbL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239066AbiDRM1m (ORCPT
+        with ESMTP id S239065AbiDRM1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:27:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E4C1EAF7;
-        Mon, 18 Apr 2022 05:21:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59E0060FBC;
-        Mon, 18 Apr 2022 12:21:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A0B5C385A7;
-        Mon, 18 Apr 2022 12:21:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284475;
-        bh=fqp40Y9UjZn+SQBAxw+bQ8zFxntrr6A8v5QsewFp2MY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DHHW67GyJc0n4hZ6a5SwZsNN8CAhFhIIlOrOf7DutWfNBVxAg2ycx4WbZZDbRM21k
-         S5tTGCHMMG9EbpazOOhjQ26CKJ501Dg9UmpKPD1p6wiv1cyYyTFEu4kqYI81jJMfpp
-         VQUpC5Jelt6Ub1UtyXYVI6w7F4XLp4C/42l4hUt8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Lei <ming.lei@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 127/219] block: null_blk: end timed out poll request
-Date:   Mon, 18 Apr 2022 14:11:36 +0200
-Message-Id: <20220418121210.451529719@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
-References: <20220418121203.462784814@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5661EAE2;
+        Mon, 18 Apr 2022 05:21:15 -0700 (PDT)
+X-UUID: b811c212176d458ba2304f238765a734-20220418
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:4aca5b84-e3fb-43f0-8bad-9a3a070ef629,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:faefae9,CLOUDID:bfcb40ef-06b0-4305-bfbf-554bfc9d151a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: b811c212176d458ba2304f238765a734-20220418
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <xinlei.lee@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1993276974; Mon, 18 Apr 2022 20:21:09 +0800
+Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 18 Apr 2022 20:21:08 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS34N1.mediatek.inc
+ (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 18 Apr
+ 2022 20:21:07 +0800
+Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
+ MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Mon, 18 Apr 2022 20:21:06 +0800
+From:   <xinlei.lee@mediatek.com>
+To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
+        <lee.jones@linaro.org>, <robh+dt@kernel.org>,
+        <matthias.bgg@gmail.com>
+CC:     <linux-pwm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <rex-bc.chen@mediatek.com>,
+        <jitao.shi@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>
+Subject: [PATCH v6,3/5] dt-bindings: pwm: Add compatible for MediaTek MT8195
+Date:   Mon, 18 Apr 2022 20:20:54 +0800
+Message-ID: <1650284456-16407-4-git-send-email-xinlei.lee@mediatek.com>
+X-Mailer: git-send-email 2.6.4
+In-Reply-To: <1650284456-16407-1-git-send-email-xinlei.lee@mediatek.com>
+References: <1650284456-16407-1-git-send-email-xinlei.lee@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-[ Upstream commit 3e3876d322aef82416ecc496a4d4a587e0fdf7a3 ]
+Add dt-binding documentation of pwm for MediaTek MT8195 SoC.
 
-When poll request is timed out, it is removed from the poll list,
-but not completed, so the request is leaked, and never get chance
-to complete.
-
-Fix the issue by ending it in timeout handler.
-
-Fixes: 0a593fbbc245 ("null_blk: poll queue support")
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220413084836.1571995-1-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/block/null_blk/main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/block/null_blk/main.c b/drivers/block/null_blk/main.c
-index 13004beb48ca..233577b14141 100644
---- a/drivers/block/null_blk/main.c
-+++ b/drivers/block/null_blk/main.c
-@@ -1606,7 +1606,7 @@ static enum blk_eh_timer_return null_timeout_rq(struct request *rq, bool res)
- 	 * Only fake timeouts need to execute blk_mq_complete_request() here.
- 	 */
- 	cmd->error = BLK_STS_TIMEOUT;
--	if (cmd->fake_timeout)
-+	if (cmd->fake_timeout || hctx->type == HCTX_TYPE_POLL)
- 		blk_mq_complete_request(rq);
- 	return BLK_EH_DONE;
- }
+diff --git a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+index 4bfa8eb42186..e5da918eaa33 100644
+--- a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
++++ b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
+@@ -27,6 +27,7 @@ properties:
+       - items:
+           - enum:
+               - mediatek,mt8192-disp-pwm
++              - mediatek,mt8195-disp-pwm
+           - const: mediatek,mt8183-disp-pwm
+ 
+   reg:
 -- 
-2.35.1
-
-
+2.18.0
 
