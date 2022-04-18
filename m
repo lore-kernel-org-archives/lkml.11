@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24350C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D8EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229723AbiDRMlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:41:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
+        id S234335AbiDRMlr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:41:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239630AbiDRMdR (ORCPT
+        with ESMTP id S239728AbiDRMdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7F75F76;
-        Mon, 18 Apr 2022 05:24:59 -0700 (PDT)
+        Mon, 18 Apr 2022 08:33:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EA913DCE;
+        Mon, 18 Apr 2022 05:25:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BB6660B40;
-        Mon, 18 Apr 2022 12:24:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3970AC385A1;
-        Mon, 18 Apr 2022 12:24:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7CAFDB80ED6;
+        Mon, 18 Apr 2022 12:25:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3C4CC385A7;
+        Mon, 18 Apr 2022 12:25:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284698;
-        bh=QwI77yTeU38JG+pXWwgQj4xcJc1iPuDDqVCKq80Oph8=;
+        s=korg; t=1650284720;
+        bh=8aq8etiejXnzTulB0gCT3uDujb/HFTZyXETxFWIJ2lg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x3EmZde3jOTO926ZoVUTCQT/a8MuzfD5SSnIxc9i3nkJ4dGldD5E0OWT+BMlkqMH9
-         /O0EH2dzruPXEzc5jZPuOGmzG7FRSePJXUKaHj0Jf5GaxuNgmR5ETZFQHka8IiVjfM
-         74A/FfOzZRcAmb6qO7eoEkw0BBgwrGafx26ckjps=
+        b=u+3Q8AB9lg6UMUk1gpEH2LCoPM6CXp1H5QJoQ1Ht+4+tzFtx3ozt6WF0EbyIpaq7/
+         zl2OzQCx1kqpC0th1xBvkuTucQnGbvzFgSxOMFKACxyNsAISSCbwvw7YUuSp9w7IQe
+         RMaG1P+dQT3KWP9i3Y8eH+3cI8kIKKUxnqCtJqX0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Melissa Wen <mwen@igalia.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Simon Ser <contact@emersion.fr>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.17 199/219] drm/amd/display: dont ignore alpha property on pre-multiplied mode
-Date:   Mon, 18 Apr 2022 14:12:48 +0200
-Message-Id: <20220418121212.442319183@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH 5.17 205/219] ARM: davinci: da850-evm: Avoid NULL pointer dereference
+Date:   Mon, 18 Apr 2022 14:12:54 +0200
+Message-Id: <20220418121212.607071973@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -51,97 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Melissa Wen <mwen@igalia.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit e4f1541caf60fcbe5a59e9d25805c0b5865e546a upstream.
+commit 83a1cde5c74bfb44b49cb2a940d044bb2380f4ea upstream.
 
-"Pre-multiplied" is the default pixel blend mode for KMS/DRM, as
-documented in supported_modes of drm_plane_create_blend_mode_property():
-https://cgit.freedesktop.org/drm/drm-misc/tree/drivers/gpu/drm/drm_blend.c
+With newer versions of GCC, there is a panic in da850_evm_config_emac()
+when booting multi_v5_defconfig in QEMU under the palmetto-bmc machine:
 
-In this mode, both 'pixel alpha' and 'plane alpha' participate in the
-calculation, as described by the pixel blend mode formula in KMS/DRM
-documentation:
+Unable to handle kernel NULL pointer dereference at virtual address 00000020
+pgd = (ptrval)
+[00000020] *pgd=00000000
+Internal error: Oops: 5 [#1] PREEMPT ARM
+Modules linked in:
+CPU: 0 PID: 1 Comm: swapper Not tainted 5.15.0 #1
+Hardware name: Generic DT based system
+PC is at da850_evm_config_emac+0x1c/0x120
+LR is at do_one_initcall+0x50/0x1e0
 
-out.rgb = plane_alpha * fg.rgb +
-          (1 - (plane_alpha * fg.alpha)) * bg.rgb
+The emac_pdata pointer in soc_info is NULL because davinci_soc_info only
+gets populated on davinci machines but da850_evm_config_emac() is called
+on all machines via device_initcall().
 
-Considering the blend config mechanisms we have in the driver so far,
-the alpha mode that better fits this blend mode is the
-_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN, where the value for global_gain
-is the plane alpha (global_alpha).
+Move the rmii_en assignment below the machine check so that it is only
+dereferenced when running on a supported SoC.
 
-With this change, alpha property stops to be ignored. It also addresses
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1734
-
-v2:
- * keep the 8-bit value for global_alpha_value (Nicholas)
- * correct the logical ordering for combined global gain (Nicholas)
- * apply to dcn10 too (Nicholas)
-
-Signed-off-by: Melissa Wen <mwen@igalia.com>
-Tested-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Tested-by: Simon Ser <contact@emersion.fr>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: bae105879f2f ("davinci: DA850/OMAP-L138 EVM: implement autodetect of RMII PHY")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/YcS4xVWs6bQlQSPC@archlinux-ax161/
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c |   14 +++++++++-----
- drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c        |   14 +++++++++-----
- 2 files changed, 18 insertions(+), 10 deletions(-)
+ arch/arm/mach-davinci/board-da850-evm.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
-@@ -2520,14 +2520,18 @@ void dcn10_update_mpcc(struct dc *dc, st
- 	struct mpc *mpc = dc->res_pool->mpc;
- 	struct mpc_tree *mpc_tree_params = &(pipe_ctx->stream_res.opp->mpc_tree_params);
+--- a/arch/arm/mach-davinci/board-da850-evm.c
++++ b/arch/arm/mach-davinci/board-da850-evm.c
+@@ -1101,11 +1101,13 @@ static int __init da850_evm_config_emac(
+ 	int ret;
+ 	u32 val;
+ 	struct davinci_soc_info *soc_info = &davinci_soc_info;
+-	u8 rmii_en = soc_info->emac_pdata->rmii_en;
++	u8 rmii_en;
  
--	if (per_pixel_alpha)
--		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
--	else
--		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
--
- 	blnd_cfg.overlap_only = false;
- 	blnd_cfg.global_gain = 0xff;
+ 	if (!machine_is_davinci_da850_evm())
+ 		return 0;
  
-+	if (per_pixel_alpha && pipe_ctx->plane_state->global_alpha) {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN;
-+		blnd_cfg.global_gain = pipe_ctx->plane_state->global_alpha_value;
-+	} else if (per_pixel_alpha) {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
-+	} else {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
-+	}
++	rmii_en = soc_info->emac_pdata->rmii_en;
 +
- 	if (pipe_ctx->plane_state->global_alpha)
- 		blnd_cfg.global_alpha = pipe_ctx->plane_state->global_alpha_value;
- 	else
---- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
-@@ -2313,14 +2313,18 @@ void dcn20_update_mpcc(struct dc *dc, st
- 	struct mpc *mpc = dc->res_pool->mpc;
- 	struct mpc_tree *mpc_tree_params = &(pipe_ctx->stream_res.opp->mpc_tree_params);
+ 	cfg_chip3_base = DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP3_REG);
  
--	if (per_pixel_alpha)
--		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
--	else
--		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
--
- 	blnd_cfg.overlap_only = false;
- 	blnd_cfg.global_gain = 0xff;
- 
-+	if (per_pixel_alpha && pipe_ctx->plane_state->global_alpha) {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN;
-+		blnd_cfg.global_gain = pipe_ctx->plane_state->global_alpha_value;
-+	} else if (per_pixel_alpha) {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
-+	} else {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
-+	}
-+
- 	if (pipe_ctx->plane_state->global_alpha)
- 		blnd_cfg.global_alpha = pipe_ctx->plane_state->global_alpha_value;
- 	else
+ 	val = __raw_readl(cfg_chip3_base);
 
 
