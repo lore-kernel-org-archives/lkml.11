@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C95B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AD3FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239855AbiDRMxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:53:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38242 "EHLO
+        id S239978AbiDRMx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239421AbiDRMkW (ORCPT
+        with ESMTP id S239456AbiDRMkX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:40:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335B51EEE9;
-        Mon, 18 Apr 2022 05:31:56 -0700 (PDT)
+        Mon, 18 Apr 2022 08:40:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6C61F601;
+        Mon, 18 Apr 2022 05:31:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B3F3B80EDE;
-        Mon, 18 Apr 2022 12:31:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8172C385A7;
-        Mon, 18 Apr 2022 12:31:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49D18610F4;
+        Mon, 18 Apr 2022 12:31:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD23FC385D0;
+        Mon, 18 Apr 2022 12:31:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285113;
-        bh=8nW6a3rDYio70rAaKujXP3Zx0pxGwoqaU63B55HBSO8=;
+        s=korg; t=1650285116;
+        bh=Ya7afj+D7KNw3CZW5DvBGMDCxih98osk7a0l9Chxy6M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0m7rcCveBR/RQL9cqdTp0Op5ljr9p1pj22z8GYm1TJghLQYLGhO91mYgyWG05nQTF
-         rTMShtbZ4gXSv9EvYJUoWluSC6J8DSDeLU2vDQGHKjhxme6IR3D5/3RrAasevNFkJe
-         jXaOJJhJnaQtAqG7pMiPCqlpH++qzSavZrPdYiFs=
+        b=N1F1ejZ7H1KQfPcKqymBQCyP8Iqs67f8V92jrka3jLprUjwefmVIymype7Z7Qhzbp
+         7+75qmbZEcfivkASgEAhZYyTUWXBCJQMnLRCaNoa6zrx9n5moUuTZHoCbjVVzBiKhZ
+         uLdF7lG+2IwDa2g4YlcBR8vZEIjvJHbyz7EqgeLU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org, Guchun Chen <guchun.chen@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 107/189] btrfs: do not warn for free space inode in cow_file_range
-Date:   Mon, 18 Apr 2022 14:12:07 +0200
-Message-Id: <20220418121203.538470775@linuxfoundation.org>
+Subject: [PATCH 5.15 108/189] drm/amdgpu: conduct a proper cleanup of PDB bo
+Date:   Mon, 18 Apr 2022 14:12:08 +0200
+Message-Id: <20220418121203.566541869@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,43 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Guchun Chen <guchun.chen@amd.com>
 
-[ Upstream commit a7d16d9a07bbcb7dcd5214a1bea75c808830bc0d ]
+[ Upstream commit 2d505453f38e18d42ba7d5428aaa17aaa7752c65 ]
 
-This is a long time leftover from when I originally added the free space
-inode, the point was to catch cases where we weren't honoring the NOCOW
-flag.  However there exists a race with relocation, if we allocate our
-free space inode in a block group that is about to be relocated, we
-could trigger the COW path before the relocation has the opportunity to
-find the extents and delete the free space cache.  In production where
-we have auto-relocation enabled we're seeing this WARN_ON_ONCE() around
-5k times in a 2 week period, so not super common but enough that it's at
-the top of our metrics.
+Use amdgpu_bo_free_kernel instead of amdgpu_bo_unref to
+perform a proper cleanup of PDB bo.
 
-We're properly handling the error here, and with us phasing out v1 space
-cache anyway just drop the WARN_ON_ONCE.
+v2: update subject to be more accurate
 
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Guchun Chen <guchun.chen@amd.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/inode.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
-index 7465ef012e22..6266a706bff7 100644
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -1075,7 +1075,6 @@ static noinline int cow_file_range(struct btrfs_inode *inode,
- 	int ret = 0;
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
+index c67e21244342..6dc16ccf6c81 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
+@@ -1652,7 +1652,7 @@ static int gmc_v9_0_sw_fini(void *handle)
+ 	amdgpu_gem_force_release(adev);
+ 	amdgpu_vm_manager_fini(adev);
+ 	amdgpu_gart_table_vram_free(adev);
+-	amdgpu_bo_unref(&adev->gmc.pdb0_bo);
++	amdgpu_bo_free_kernel(&adev->gmc.pdb0_bo, NULL, &adev->gmc.ptr_pdb0);
+ 	amdgpu_bo_fini(adev);
  
- 	if (btrfs_is_free_space_inode(inode)) {
--		WARN_ON_ONCE(1);
- 		ret = -EINVAL;
- 		goto out_unlock;
- 	}
+ 	return 0;
 -- 
 2.35.1
 
