@@ -2,40 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99829C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C74C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240003AbiDRMyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37732 "EHLO
+        id S240018AbiDRMyH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240477AbiDRMjQ (ORCPT
+        with ESMTP id S240455AbiDRMjP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C95A286FD;
-        Mon, 18 Apr 2022 05:29:44 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6287E289BB;
+        Mon, 18 Apr 2022 05:29:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EFE86112C;
-        Mon, 18 Apr 2022 12:29:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1C96C385A7;
-        Mon, 18 Apr 2022 12:29:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 842CAB80EC1;
+        Mon, 18 Apr 2022 12:29:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B240C385A7;
+        Mon, 18 Apr 2022 12:29:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284983;
-        bh=kw+P+Q2um2sfgDyO73eLtQasUJ3xATpBMsqOEloUQsg=;
+        s=korg; t=1650284980;
+        bh=nfX52RkVnetWwd66fWma/1wj7lQr4GstsX8X9M8mg3k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LstOI/JXU51y7Nfoz6dEqjR3oO+OayU3WmyP6mY04jT66CAOxObExmQD2SljPH8dX
-         g5AD4O34niya2G/3YofgtDMgQsZUws9dPubmpUxMvKQ503jBWCBWRaAT00xGQAnQSI
-         HVfJ3ddZa11xa3l16M8EBfoL5FX4cjOnNw9SwJsg=
+        b=mH0nBEtUCDuMPn7ErTKe5mfO6eO6Fqi1343VuwuMm6JylVW6JAeTHIQNYbKpJhcy4
+         Y4wGRFwnizpbaYd1dz28iezDHlMmgI0/gjjvGTkUA5+CJbBaRMePQyb2uWMSqcuYa6
+         jbZTx0ZM/Xz/arzqJ7Uj45USj8u4q4kNMRSkUM7U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 052/189] ALSA: sonicvibes: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:11:12 +0200
-Message-Id: <20220418121201.989013889@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 069/189] net/sched: fix initialization order when updating chain 0 head
+Date:   Mon, 18 Apr 2022 14:11:29 +0200
+Message-Id: <20220418121202.467365834@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -47,58 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-commit b087a381d7386ec95803222d0d9b1ac499550713 upstream.
+[ Upstream commit e65812fd22eba32f11abe28cb377cbd64cfb1ba0 ]
 
-The previous cleanup with devres may lead to the incorrect release
-orders at the probe error handling due to the devres's nature.  Until
-we register the card, snd_card_free() has to be called at first for
-releasing the stuff properly when the driver tries to manage and
-release the stuff via card->private_free().
+Currently, when inserting a new filter that needs to sit at the head
+of chain 0, it will first update the heads pointer on all devices using
+the (shared) block, and only then complete the initialization of the new
+element so that it has a "next" element.
 
-This patch fixes it by calling snd_card_free() on the error from the
-probe callback using a new helper function.
+This can lead to a situation that the chain 0 head is propagated to
+another CPU before the "next" initialization is done. When this race
+condition is triggered, packets being matched on that CPU will simply
+miss all other filters, and will flow through the stack as if there were
+no other filters installed. If the system is using OVS + TC, such
+packets will get handled by vswitchd via upcall, which results in much
+higher latency and reordering. For other applications it may result in
+packet drops.
 
-Fixes: 2ca6cbde6ad7 ("ALSA: sonicvibes: Allocate resources with device-managed APIs")
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-25-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This is reproducible with a tc only setup, but it varies from system to
+system. It could be reproduced with a shared block amongst 10 veth
+tunnels, and an ingress filter mirroring packets to another veth.
+That's because using the last added veth tunnel to the shared block to
+do the actual traffic, it makes the race window bigger and easier to
+trigger.
+
+The fix is rather simple, to just initialize the next pointer of the new
+filter instance (tp) before propagating the head change.
+
+The fixes tag is pointing to the original code though this issue should
+only be observed when using it unlocked.
+
+Fixes: 2190d1d0944f ("net: sched: introduce helpers to work with filter chains")
+Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Davide Caratti <dcaratti@redhat.com>
+Link: https://lore.kernel.org/r/b97d5f4eaffeeb9d058155bcab63347527261abf.1649341369.git.marcelo.leitner@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/sonicvibes.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ net/sched/cls_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/pci/sonicvibes.c b/sound/pci/sonicvibes.c
-index c8c49881008f..f91cbf6eeca0 100644
---- a/sound/pci/sonicvibes.c
-+++ b/sound/pci/sonicvibes.c
-@@ -1387,8 +1387,8 @@ static int snd_sonicvibes_midi(struct sonicvibes *sonic,
- 	return 0;
- }
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index cd44cac7fbcf..4b552c10e7b9 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1653,10 +1653,10 @@ static int tcf_chain_tp_insert(struct tcf_chain *chain,
+ 	if (chain->flushing)
+ 		return -EAGAIN;
  
--static int snd_sonic_probe(struct pci_dev *pci,
--			   const struct pci_device_id *pci_id)
-+static int __snd_sonic_probe(struct pci_dev *pci,
-+			     const struct pci_device_id *pci_id)
- {
- 	static int dev;
- 	struct snd_card *card;
-@@ -1459,6 +1459,12 @@ static int snd_sonic_probe(struct pci_dev *pci,
- 	return 0;
- }
++	RCU_INIT_POINTER(tp->next, tcf_chain_tp_prev(chain, chain_info));
+ 	if (*chain_info->pprev == chain->filter_chain)
+ 		tcf_chain0_head_change(chain, tp);
+ 	tcf_proto_get(tp);
+-	RCU_INIT_POINTER(tp->next, tcf_chain_tp_prev(chain, chain_info));
+ 	rcu_assign_pointer(*chain_info->pprev, tp);
  
-+static int snd_sonic_probe(struct pci_dev *pci,
-+			   const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_sonic_probe(pci, pci_id));
-+}
-+
- static struct pci_driver sonicvibes_driver = {
- 	.name = KBUILD_MODNAME,
- 	.id_table = snd_sonic_ids,
+ 	return 0;
 -- 
-2.35.2
+2.35.1
 
 
 
