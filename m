@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFCBEC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED18C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343832AbiDRNy1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:54:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
+        id S243756AbiDRNyn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244855AbiDRNa6 (ORCPT
+        with ESMTP id S244867AbiDRNa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755691EC73;
-        Mon, 18 Apr 2022 05:56:17 -0700 (PDT)
+        Mon, 18 Apr 2022 09:30:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785631EEEF;
+        Mon, 18 Apr 2022 05:56:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 349F1B80E44;
-        Mon, 18 Apr 2022 12:56:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65ACBC385A7;
-        Mon, 18 Apr 2022 12:56:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2BB26115A;
+        Mon, 18 Apr 2022 12:56:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5F1FC385A1;
+        Mon, 18 Apr 2022 12:56:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286574;
-        bh=TjnvLi83cOFFJf6NtahCnNbN2EUZK9664M/61JhVXLI=;
+        s=korg; t=1650286601;
+        bh=A/6IH/eVbD7pC1jgqsxa90n8fT6Oo4kz+pG3eQZ/lBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IcjOBfFIzBfvrSIxdmx+CnXUvDanq6IsaKIxEaTtBvgvU2BgIeHZPEEzAOfz5Yafs
-         dVQiOgh0GrVDo37e6MjttfBc09PeSdw2kuAXmKoK7FCt3fcRwgcqzwUdFJO3V4qGTe
-         NBi1EiMVtmnzYEJJd4P6VCUxQfU2qaCsd7AlEyAE=
+        b=j3DwvvqAY606eE03kTZfhXxflHiuxEycdenqQ7yRIUKltuceK5KB6bnNpFnOhauyN
+         0jree+UZLLqjJpyIU+wsEVQoNg2SiFDkxqdubEgsf7kGnEldQospE94nuNf+HSqxEF
+         JDgbJX/NfJ0NLpyXo6n4bSKGi/mT1iGSEkmREdhs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 179/284] mmc: host: Return an error when ->enable_sdio_irq() ops is missing
-Date:   Mon, 18 Apr 2022 14:12:40 +0200
-Message-Id: <20220418121216.828086987@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.14 187/284] ubifs: setflags: Make dirtied_ino_d 8 bytes aligned
+Date:   Mon, 18 Apr 2022 14:12:48 +0200
+Message-Id: <20220418121217.054752068@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,60 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-[ Upstream commit d6c9219ca1139b74541b2a98cee47a3426d754a9 ]
+commit 1b83ec057db16b4d0697dc21ef7a9743b6041f72 upstream.
 
-Even if the current WARN() notifies the user that something is severely
-wrong, we can still end up in a PANIC() when trying to invoke the missing
-->enable_sdio_irq() ops. Therefore, let's also return an error code and
-prevent the host from being added.
+Make 'ui->data_len' aligned with 8 bytes before it is assigned to
+dirtied_ino_d. Since 8871d84c8f8b0c6b("ubifs: convert to fileattr")
+applied, 'setflags()' only affects regular files and directories, only
+xattr inode, symlink inode and special inode(pipe/char_dev/block_dev)
+have none- zero 'ui->data_len' field, so assertion
+'!(req->dirtied_ino_d & 7)' cannot fail in ubifs_budget_space().
+To avoid assertion fails in future evolution(eg. setflags can operate
+special inodes), it's better to make dirtied_ino_d 8 bytes aligned,
+after all aligned size is still zero for regular files.
 
-While at it, move the code into a separate function to prepare for
-subsequent changes and for further host caps validations.
-
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20220303165142.129745-1-ulf.hansson@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1e51764a3c2ac05a ("UBIFS: add new flash file system")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/host.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ fs/ubifs/ioctl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
-index 3740fb0052a4..4da2bcfd0649 100644
---- a/drivers/mmc/core/host.c
-+++ b/drivers/mmc/core/host.c
-@@ -401,6 +401,16 @@ struct mmc_host *mmc_alloc_host(int extra, struct device *dev)
+--- a/fs/ubifs/ioctl.c
++++ b/fs/ubifs/ioctl.c
+@@ -110,7 +110,7 @@ static int setflags(struct inode *inode,
+ 	struct ubifs_inode *ui = ubifs_inode(inode);
+ 	struct ubifs_info *c = inode->i_sb->s_fs_info;
+ 	struct ubifs_budget_req req = { .dirtied_ino = 1,
+-					.dirtied_ino_d = ui->data_len };
++			.dirtied_ino_d = ALIGN(ui->data_len, 8) };
  
- EXPORT_SYMBOL(mmc_alloc_host);
- 
-+static int mmc_validate_host_caps(struct mmc_host *host)
-+{
-+	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
-+		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- /**
-  *	mmc_add_host - initialise host hardware
-  *	@host: mmc host
-@@ -413,8 +423,9 @@ int mmc_add_host(struct mmc_host *host)
- {
- 	int err;
- 
--	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
--		!host->ops->enable_sdio_irq);
-+	err = mmc_validate_host_caps(host);
-+	if (err)
-+		return err;
- 
- 	err = device_add(&host->class_dev);
+ 	err = ubifs_budget_space(c, &req);
  	if (err)
--- 
-2.34.1
-
 
 
