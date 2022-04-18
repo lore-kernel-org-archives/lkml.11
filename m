@@ -2,114 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D21E8C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED10C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240745AbiDRNBd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:01:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60364 "EHLO
+        id S236832AbiDRNBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240422AbiDRMuB (ORCPT
+        with ESMTP id S236403AbiDRMuF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:50:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25A62C670;
-        Mon, 18 Apr 2022 05:34:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 328E060F0A;
+        Mon, 18 Apr 2022 08:50:05 -0400
+Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4984F2CCAB
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:34:13 -0700 (PDT)
+Received: from omf09.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay07.hostedemail.com (Postfix) with ESMTP id C98A621F48;
         Mon, 18 Apr 2022 12:34:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24622C385A8;
-        Mon, 18 Apr 2022 12:34:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285249;
-        bh=r4KJeC1hq/dLbL0hwHTFO4ZUpTu4Ri7ks3FGBX/69GA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZlBkbAksYhcmgw+ejtsNAFG8a9i1axVRFYe+nl+Fb75SUloOBgIeG4IBFNkwN5JV5
-         RM7WcUo13rk4IsIaaKmoJCHz6u7NkeuU9/7CSAOdtGb90JDakyiSBGaBU38iypBBCf
-         ftCdwKyjWpSQi1TO0cLnhpAISNJb1E9K9sxC4Os0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Oliver Upton <oupton@google.com>, Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 5.15 149/189] KVM: Dont create VM debugfs files outside of the VM directory
-Date:   Mon, 18 Apr 2022 14:12:49 +0200
-Message-Id: <20220418121206.062496106@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
-References: <20220418121200.312988959@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf09.hostedemail.com (Postfix) with ESMTPA id BABB22002B;
+        Mon, 18 Apr 2022 12:34:03 +0000 (UTC)
+Message-ID: <d56ad1bc0ef918cc8395b7c0ec7bdd10baf4c1f6.camel@perches.com>
+Subject: Re: [PATCH v4 2/5] fpga: fix for coding style issues
+From:   Joe Perches <joe@perches.com>
+To:     Nava kishore Manne <navam@xilinx.com>,
+        "mdf@kernel.org" <mdf@kernel.org>,
+        "hao.wu@intel.com" <hao.wu@intel.com>,
+        "yilun.xu@intel.com" <yilun.xu@intel.com>,
+        "trix@redhat.com" <trix@redhat.com>,
+        Michal Simek <michals@xilinx.com>,
+        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>, git <git@xilinx.com>
+Date:   Mon, 18 Apr 2022 05:34:02 -0700
+In-Reply-To: <SN6PR02MB45763D1B949353F99AAFE7D8C2F39@SN6PR02MB4576.namprd02.prod.outlook.com>
+References: <20220416133719.3382895-1-nava.manne@xilinx.com>
+         <20220416133719.3382895-3-nava.manne@xilinx.com>
+         <ac22068dad06fd61f2e82c0bf7c0f58a4e5df050.camel@perches.com>
+         <SN6PR02MB45763D1B949353F99AAFE7D8C2F39@SN6PR02MB4576.namprd02.prod.outlook.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: epzo5oz5kfdybfgi53hfa7jj89tnxo9k
+X-Rspamd-Server: rspamout06
+X-Rspamd-Queue-Id: BABB22002B
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+NFs9m+djNp+pOCjBVEkayfxYTc+TurQw=
+X-HE-Tag: 1650285243-748919
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Upton <oupton@google.com>
+On Mon, 2022-04-18 at 09:54 +0000, Nava kishore Manne wrote:
+> Hi Joe,
+> 
+> 	Please find my response inline.
+> 
+> > -----Original Message-----
+> > From: Joe Perches <joe@perches.com>
+> > Sent: Saturday, April 16, 2022 10:29 PM
 
-commit a44a4cc1c969afec97dbb2aedaf6f38eaa6253bb upstream.
+> > On Sat, 2022-04-16 at 19:07 +0530, Nava kishore Manne wrote:
+> > > fixes the below checks reported by checkpatch.pl Lines should not end
+> > > with a '('
+> > > Alignment should match open parenthesis
+> > 
+> > in fpga-mgr:
+> > 	Another possibillty would be to change the function arguments
+> > 
+> > and
+> > 
+> > in fpga-region:
+> > 	Ideally keep the include declaration and definition styles synced
+> 
+> These changes are targeted to fix the checks reported by checkpatch.pl without touching the actual functionality.
 
-Unfortunately, there is no guarantee that KVM was able to instantiate a
-debugfs directory for a particular VM. To that end, KVM shouldn't even
-attempt to create new debugfs files in this case. If the specified
-parent dentry is NULL, debugfs_create_file() will instantiate files at
-the root of debugfs.
+Hello.
 
-For arm64, it is possible to create the vgic-state file outside of a
-VM directory, the file is not cleaned up when a VM is destroyed.
-Nonetheless, the corresponding struct kvm is freed when the VM is
-destroyed.
+I am the checkpatch maintainer.
 
-Nip the problem in the bud for all possible errant debugfs file
-creations by initializing kvm->debugfs_dentry to -ENOENT. In so doing,
-debugfs_create_file() will fail instead of creating the file in the root
-directory.
+The goal of the checkpatch script is simply to mark things that
+generally don't conform to the typical kernel coding style not
+to mandate that all of the messages it emits is dicta.
 
-Cc: stable@kernel.org
-Fixes: 929f45e32499 ("kvm: no need to check return value of debugfs_create functions")
-Signed-off-by: Oliver Upton <oupton@google.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220406235615.1447180-2-oupton@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- virt/kvm/kvm_main.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+checkpatch is a stupid little script.  It has no taste.
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -911,7 +911,7 @@ static void kvm_destroy_vm_debugfs(struc
- 	int kvm_debugfs_num_entries = kvm_vm_stats_header.num_desc +
- 				      kvm_vcpu_stats_header.num_desc;
- 
--	if (!kvm->debugfs_dentry)
-+	if (IS_ERR(kvm->debugfs_dentry))
- 		return;
- 
- 	debugfs_remove_recursive(kvm->debugfs_dentry);
-@@ -934,6 +934,12 @@ static int kvm_create_vm_debugfs(struct
- 	int kvm_debugfs_num_entries = kvm_vm_stats_header.num_desc +
- 				      kvm_vcpu_stats_header.num_desc;
- 
-+	/*
-+	 * Force subsequent debugfs file creations to fail if the VM directory
-+	 * is not created.
-+	 */
-+	kvm->debugfs_dentry = ERR_PTR(-ENOENT);
-+
- 	if (!debugfs_initialized())
- 		return 0;
- 
-@@ -5373,7 +5379,7 @@ static void kvm_uevent_notify_change(uns
- 	}
- 	add_uevent_var(env, "PID=%d", kvm->userspace_pid);
- 
--	if (kvm->debugfs_dentry) {
-+	if (!IS_ERR(kvm->debugfs_dentry)) {
- 		char *tmp, *p = kmalloc(PATH_MAX, GFP_KERNEL_ACCOUNT);
- 
- 		if (p) {
+Please take what I wrote with a little consideration rather than
+follow the advise of a brainless script.
 
 
