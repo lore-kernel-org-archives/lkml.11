@@ -2,102 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FAAC4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C7EC46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:00:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241518AbiDRNDI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45124 "EHLO
+        id S241675AbiDRNDY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240237AbiDRMyr (ORCPT
+        with ESMTP id S240353AbiDRMys (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:54:47 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8BC313DFC;
-        Mon, 18 Apr 2022 05:35:01 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id u5-20020a17090a6a8500b001d0b95031ebso6985564pjj.3;
-        Mon, 18 Apr 2022 05:35:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BwBQWoszPE0WyBmS8eEzNdPIlmwnL6neVdJfMqZdeYs=;
-        b=puV6g1yAwYY4foiMBzImH0StiMfyjOvPeJvoVgBw5FXrWP12gxeBSDewkBPPDL0UMP
-         OnsiSeTUOtD2dt28KD7TjjUfMcvCct7teSPmd01Mi++avp/moQxkogI9938ZARZOvatB
-         C4EScWnZgyPc73V+fzOmIWkXlnn8OLQTiVroOwHGt5yhPvFJkoyINAFS87YaVa3mGo38
-         VEGR6u6xAArgzgf7QhRhwcvQ75y5W/MgnOYNyz4cJ+9uIeKR2I13+vuEW7Zr/EKeibDw
-         shtLw3sOFM7PuhJQANQts3YHpCDaT3zWuqzqNXCIuetd6O1sjU+ogdCSvutPYNDmBp60
-         ffKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BwBQWoszPE0WyBmS8eEzNdPIlmwnL6neVdJfMqZdeYs=;
-        b=Xb8utgI4FArzRafGLJgLFuTd4xNzbFxyF3GkDn85H0HNmSTMcVbFTVeumyFDkBeDqX
-         z4h78P2QFEzjjVW0zTkYWbbCpnWxI+6HGmebgQw8Yd8GavDG9UArZ65ixsgI8KrPWglo
-         vRDlLuMGOrnugl5uYUj2ZPtuDEcwzKHuhpI+liiEF1GViP19Sstf7CmCRA0jXG3VL41S
-         w4c5a/njDXV2GJXFVC9DZRhkl7QXcJXlCfX764R1EZbdribBq/6agKvlmjhjqJa3DH0W
-         vWIgJrCgV+5Z7CJxvHHwQE734RR366P/jIR+9qnvfFmjWDdK+Q6ctS97tc5QKSwZwhvK
-         ipdQ==
-X-Gm-Message-State: AOAM533zzDQtTM6xXsKiJlKWNTduKJwwArHlLf3YTqM4TrdSJGTcHoo2
-        E+IwuDTiqZR+eDYJpL7318U=
-X-Google-Smtp-Source: ABdhPJzzDcDZsjDzFZEes1dI7IHd8sgP2uwsDyC+87JYg88yja6QtTIVb54SIoCzIBV43/NDyFAWCA==
-X-Received: by 2002:a17:902:e9c4:b0:158:f77d:afb7 with SMTP id 4-20020a170902e9c400b00158f77dafb7mr6454683plk.143.1650285300765;
-        Mon, 18 Apr 2022 05:35:00 -0700 (PDT)
-Received: from localhost ([58.251.76.82])
-        by smtp.gmail.com with ESMTPSA id y131-20020a626489000000b00505a8f36965sm12354645pfb.184.2022.04.18.05.35.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 05:35:00 -0700 (PDT)
-From:   Yunbo Yu <yuyunbo519@gmail.com>
-To:     oliver@neukum.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yunbo Yu <yuyunbo519@gmail.com>
-Subject: [PATCH] net: cdc-ncm:  Move spin_lock_bh() to spin_lock()
-Date:   Mon, 18 Apr 2022 20:34:38 +0800
-Message-Id: <20220418123438.1240676-1-yuyunbo519@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 18 Apr 2022 08:54:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AFF14012;
+        Mon, 18 Apr 2022 05:35:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32FA060F0E;
+        Mon, 18 Apr 2022 12:35:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AC4CC385A7;
+        Mon, 18 Apr 2022 12:35:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650285304;
+        bh=PR1E3ZPlJQI92WZdb6Vzp2GTXD7XvS1wO5FB00WKHTs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=e+5w2x2+Xy7MlMipHBOSSZ5Cd856gFepm+fPo7bHmg155mJ2LHkwI3aIHtU4dotUx
+         dYvWX3RnSQIbnR2TZO+b76eZW9y6pOp71LHS+Hdrygs63fZ0PHEKRl9uH0dB8ans9Y
+         z2pSDMo439B4HG1Sf2N65ty0xvyjb1PhpJExSsq8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Neelima Krishnan <neelima.krishnan@intel.com>
+Subject: [PATCH 5.15 165/189] x86/tsx: Use MSR_TSX_CTRL to clear CPUID bits
+Date:   Mon, 18 Apr 2022 14:13:05 +0200
+Message-Id: <20220418121207.139650216@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
+References: <20220418121200.312988959@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is unnecessary to call spin_lock_bh() for you are already in a tasklet.
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-Signed-off-by: Yunbo Yu <yuyunbo519@gmail.com>
+commit 258f3b8c3210b03386e4ad92b4bd8652b5c1beb3 upstream.
+
+tsx_clear_cpuid() uses MSR_TSX_FORCE_ABORT to clear CPUID.RTM and
+CPUID.HLE. Not all CPUs support MSR_TSX_FORCE_ABORT, alternatively use
+MSR_IA32_TSX_CTRL when supported.
+
+  [ bp: Document how and why TSX gets disabled. ]
+
+Fixes: 293649307ef9 ("x86/tsx: Clear CPUID bits when TSX always force aborts")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Tested-by: Neelima Krishnan <neelima.krishnan@intel.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/5b323e77e251a9c8bcdda498c5cc0095be1e1d3c.1646943780.git.pawan.kumar.gupta@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/cdc_ncm.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/kernel/cpu/intel.c |    1 
+ arch/x86/kernel/cpu/tsx.c   |   54 ++++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 48 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index 15f91d691bba..cdca00c0dc1f 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -1492,19 +1492,19 @@ static void cdc_ncm_txpath_bh(struct tasklet_struct *t)
- 	struct cdc_ncm_ctx *ctx = from_tasklet(ctx, t, bh);
- 	struct usbnet *dev = ctx->dev;
+--- a/arch/x86/kernel/cpu/intel.c
++++ b/arch/x86/kernel/cpu/intel.c
+@@ -722,6 +722,7 @@ static void init_intel(struct cpuinfo_x8
+ 	else if (tsx_ctrl_state == TSX_CTRL_DISABLE)
+ 		tsx_disable();
+ 	else if (tsx_ctrl_state == TSX_CTRL_RTM_ALWAYS_ABORT)
++		/* See comment over that function for more details. */
+ 		tsx_clear_cpuid();
  
--	spin_lock_bh(&ctx->mtx);
-+	spin_lock(&ctx->mtx);
- 	if (ctx->tx_timer_pending != 0) {
- 		ctx->tx_timer_pending--;
- 		cdc_ncm_tx_timeout_start(ctx);
--		spin_unlock_bh(&ctx->mtx);
-+		spin_unlock(&ctx->mtx);
- 	} else if (dev->net != NULL) {
- 		ctx->tx_reason_timeout++;	/* count reason for transmitting */
--		spin_unlock_bh(&ctx->mtx);
-+		spin_unlock(&ctx->mtx);
- 		netif_tx_lock_bh(dev->net);
- 		usbnet_start_xmit(NULL, dev->net);
- 		netif_tx_unlock_bh(dev->net);
- 	} else {
--		spin_unlock_bh(&ctx->mtx);
-+		spin_unlock(&ctx->mtx);
+ 	split_lock_init();
+--- a/arch/x86/kernel/cpu/tsx.c
++++ b/arch/x86/kernel/cpu/tsx.c
+@@ -58,7 +58,7 @@ void tsx_enable(void)
+ 	wrmsrl(MSR_IA32_TSX_CTRL, tsx);
+ }
+ 
+-static bool __init tsx_ctrl_is_supported(void)
++static bool tsx_ctrl_is_supported(void)
+ {
+ 	u64 ia32_cap = x86_read_arch_cap_msr();
+ 
+@@ -84,6 +84,44 @@ static enum tsx_ctrl_states x86_get_tsx_
+ 	return TSX_CTRL_ENABLE;
+ }
+ 
++/*
++ * Disabling TSX is not a trivial business.
++ *
++ * First of all, there's a CPUID bit: X86_FEATURE_RTM_ALWAYS_ABORT
++ * which says that TSX is practically disabled (all transactions are
++ * aborted by default). When that bit is set, the kernel unconditionally
++ * disables TSX.
++ *
++ * In order to do that, however, it needs to dance a bit:
++ *
++ * 1. The first method to disable it is through MSR_TSX_FORCE_ABORT and
++ * the MSR is present only when *two* CPUID bits are set:
++ *
++ * - X86_FEATURE_RTM_ALWAYS_ABORT
++ * - X86_FEATURE_TSX_FORCE_ABORT
++ *
++ * 2. The second method is for CPUs which do not have the above-mentioned
++ * MSR: those use a different MSR - MSR_IA32_TSX_CTRL and disable TSX
++ * through that one. Those CPUs can also have the initially mentioned
++ * CPUID bit X86_FEATURE_RTM_ALWAYS_ABORT set and for those the same strategy
++ * applies: TSX gets disabled unconditionally.
++ *
++ * When either of the two methods are present, the kernel disables TSX and
++ * clears the respective RTM and HLE feature flags.
++ *
++ * An additional twist in the whole thing presents late microcode loading
++ * which, when done, may cause for the X86_FEATURE_RTM_ALWAYS_ABORT CPUID
++ * bit to be set after the update.
++ *
++ * A subsequent hotplug operation on any logical CPU except the BSP will
++ * cause for the supported CPUID feature bits to get re-detected and, if
++ * RTM and HLE get cleared all of a sudden, but, userspace did consult
++ * them before the update, then funny explosions will happen. Long story
++ * short: the kernel doesn't modify CPUID feature bits after booting.
++ *
++ * That's why, this function's call in init_intel() doesn't clear the
++ * feature flags.
++ */
+ void tsx_clear_cpuid(void)
+ {
+ 	u64 msr;
+@@ -97,6 +135,10 @@ void tsx_clear_cpuid(void)
+ 		rdmsrl(MSR_TSX_FORCE_ABORT, msr);
+ 		msr |= MSR_TFA_TSX_CPUID_CLEAR;
+ 		wrmsrl(MSR_TSX_FORCE_ABORT, msr);
++	} else if (tsx_ctrl_is_supported()) {
++		rdmsrl(MSR_IA32_TSX_CTRL, msr);
++		msr |= TSX_CTRL_CPUID_CLEAR;
++		wrmsrl(MSR_IA32_TSX_CTRL, msr);
  	}
  }
  
--- 
-2.25.1
+@@ -106,13 +148,11 @@ void __init tsx_init(void)
+ 	int ret;
+ 
+ 	/*
+-	 * Hardware will always abort a TSX transaction if both CPUID bits
+-	 * RTM_ALWAYS_ABORT and TSX_FORCE_ABORT are set. In this case, it is
+-	 * better not to enumerate CPUID.RTM and CPUID.HLE bits. Clear them
+-	 * here.
++	 * Hardware will always abort a TSX transaction when the CPUID bit
++	 * RTM_ALWAYS_ABORT is set. In this case, it is better not to enumerate
++	 * CPUID.RTM and CPUID.HLE bits. Clear them here.
+ 	 */
+-	if (boot_cpu_has(X86_FEATURE_RTM_ALWAYS_ABORT) &&
+-	    boot_cpu_has(X86_FEATURE_TSX_FORCE_ABORT)) {
++	if (boot_cpu_has(X86_FEATURE_RTM_ALWAYS_ABORT)) {
+ 		tsx_ctrl_state = TSX_CTRL_RTM_ALWAYS_ABORT;
+ 		tsx_clear_cpuid();
+ 		setup_clear_cpu_cap(X86_FEATURE_RTM);
+
 
