@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E20FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E0ABC3525B
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243465AbiDRN3A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41140 "EHLO
+        id S243320AbiDRN2z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240983AbiDRNFX (ORCPT
+        with ESMTP id S239762AbiDRNFS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:05:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CF4340DA;
-        Mon, 18 Apr 2022 05:45:58 -0700 (PDT)
+        Mon, 18 Apr 2022 09:05:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BEE819017;
+        Mon, 18 Apr 2022 05:45:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EA5660FB6;
-        Mon, 18 Apr 2022 12:45:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F97EC385A1;
-        Mon, 18 Apr 2022 12:45:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0671E6124D;
+        Mon, 18 Apr 2022 12:45:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB30FC385A7;
+        Mon, 18 Apr 2022 12:45:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285957;
-        bh=Ro/CPlPrB2+4gFbWWaN9lTICA1APWeL2RMTpJRBah8s=;
+        s=korg; t=1650285945;
+        bh=h7wCG4XjaYle+ieR3ESj44+7lHbRR0+fYce5PBuCF8I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xn92+hcy9+NTb+DYG857wQHhNWrzJGTb7Nzwz6HFUWdk4m8zv+gOyXOd+6wuskMx7
-         pXcuPgpGjdC+q52iZgOFjuNIrvuZGzeq6nF/W4ieCOlMuhdYiuj+XfQGgpidKkC2ZZ
-         B7pOwLjYIig2Zib6W8kZ/QFn2OKCrV3/nLxpvnGE=
+        b=PVvEEHRY7u5ChLhf2rBwoBdhhBeikv3quzMxFrjGsbOOjuVYIfVVD437yrGIU/egK
+         Us4NudR38hsoinGrc5dJVGecG5I55xwLDUHpOUWfPV/RiWM4/gSMJTpuw1ICgulZjk
+         Qc16j5LEzeRxJ0AJUOrKC6+pUO08+Bbd/1NsrC1M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 17/32] ata: libata-core: Disable READ LOG DMA EXT for Samsung 840 EVOs
-Date:   Mon, 18 Apr 2022 14:13:57 +0200
-Message-Id: <20220418121127.630064036@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
+        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 13/32] Drivers: hv: vmbus: Prevent load re-ordering when reading ring buffer
+Date:   Mon, 18 Apr 2022 14:13:53 +0200
+Message-Id: <20220418121127.515948805@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
 References: <20220418121127.127656835@linuxfoundation.org>
@@ -49,43 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Lamparter <chunkeey@gmail.com>
+From: Michael Kelley <mikelley@microsoft.com>
 
-[ Upstream commit 5399752299396a3c9df6617f4b3c907d7aa4ded8 ]
+[ Upstream commit b6cae15b5710c8097aad26a2e5e752c323ee5348 ]
 
-Samsung' 840 EVO with the latest firmware (EXT0DB6Q) locks up with
-the a message: "READ LOG DMA EXT failed, trying PIO" during boot.
+When reading a packet from a host-to-guest ring buffer, there is no
+memory barrier between reading the write index (to see if there is
+a packet to read) and reading the contents of the packet. The Hyper-V
+host uses store-release when updating the write index to ensure that
+writes of the packet data are completed first. On the guest side,
+the processor can reorder and read the packet data before the write
+index, and sometimes get stale packet data. Getting such stale packet
+data has been observed in a reproducible case in a VM on ARM64.
 
-Initially this was discovered because it caused a crash
-with the sata_dwc_460ex controller on a WD MyBook Live DUO.
+Fix this by using virt_load_acquire() to read the write index,
+ensuring that reads of the packet data cannot be reordered
+before it. Preventing such reordering is logically correct, and
+with this change, getting stale data can no longer be reproduced.
 
-The reporter "Tice Rex" which has the unique opportunity that he
-has two Samsung 840 EVO SSD! One with the older firmware "EXT0BB0Q"
-which booted fine and didn't expose "READ LOG DMA EXT". But the
-newer/latest firmware "EXT0DB6Q" caused the headaches.
-
-BugLink: https://github.com/openwrt/openwrt/issues/9505
-Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+Reviewed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Link: https://lore.kernel.org/r/1648394710-33480-1-git-send-email-mikelley@microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ata/libata-core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/hv/ring_buffer.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
-index 33d3728f3622..0c10d9557754 100644
---- a/drivers/ata/libata-core.c
-+++ b/drivers/ata/libata-core.c
-@@ -4598,6 +4598,9 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
- 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
- 	{ "Crucial_CT*MX100*",		"MU01",	ATA_HORKAGE_NO_NCQ_TRIM |
- 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
-+	{ "Samsung SSD 840 EVO*",	NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
-+						ATA_HORKAGE_NO_DMA_LOG |
-+						ATA_HORKAGE_ZERO_AFTER_TRIM, },
- 	{ "Samsung SSD 840*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
- 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
- 	{ "Samsung SSD 850*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
+index 6cb45f256107..d97b30af9e03 100644
+--- a/drivers/hv/ring_buffer.c
++++ b/drivers/hv/ring_buffer.c
+@@ -365,7 +365,16 @@ int hv_ringbuffer_read(struct vmbus_channel *channel,
+ static u32 hv_pkt_iter_avail(const struct hv_ring_buffer_info *rbi)
+ {
+ 	u32 priv_read_loc = rbi->priv_read_index;
+-	u32 write_loc = READ_ONCE(rbi->ring_buffer->write_index);
++	u32 write_loc;
++
++	/*
++	 * The Hyper-V host writes the packet data, then uses
++	 * store_release() to update the write_index.  Use load_acquire()
++	 * here to prevent loads of the packet data from being re-ordered
++	 * before the read of the write_index and potentially getting
++	 * stale data.
++	 */
++	write_loc = virt_load_acquire(&rbi->ring_buffer->write_index);
+ 
+ 	if (write_loc >= priv_read_loc)
+ 		return write_loc - priv_read_loc;
 -- 
 2.35.1
 
