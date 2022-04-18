@@ -2,46 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F23C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 22:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E3BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 22:54:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233680AbiDRW5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 18:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44354 "EHLO
+        id S233729AbiDRW5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 18:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233256AbiDRW4t (ORCPT
+        with ESMTP id S233512AbiDRW4t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 18:56:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88A82CC9D;
-        Mon, 18 Apr 2022 15:54:03 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D745A2D1C5;
+        Mon, 18 Apr 2022 15:54:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77511B81135;
-        Mon, 18 Apr 2022 22:54:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3588FC385A8;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24BEDB8114B;
+        Mon, 18 Apr 2022 22:54:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89EBDC385B7;
         Mon, 18 Apr 2022 22:54:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1650322441;
-        bh=3/4SJxZl7LRSsaEhih4xR7lzgf/M6pQIEs1EAdF+8Xg=;
+        bh=4F6D4WuqV0uCGvWLKe5pephkIMgIflKcXAmI/XqzuiM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t/MDb//Dx1aVAuwdSFZUrhtpeY5xRFXWDcqAFKG9dd54tI2v/+dDd+iUaG9JUUqLj
-         gpUM8xB2YJpklamaW8j7k0VXsAFV3QePxlcNb9YMlZnWZb1jnuRXS3rVdv8TFL00zO
-         KQaTFfBLM5xOOOtVUXVxSx/uWcgrv82TDyDTZKJ8GGjO7EPBxHIs7HCd3Ss5tw/Lcw
-         KQ3kPD9x+7xMUG5ETaT/FVVVOEyLxJdV9Owk1LmBjyQ00cAmFHa4/N0siDX5fMtVYV
-         yfsqpDZD+m+DJESF1aIRlwpQqQCtxx/rBYK2rNp6vQF5bfHKoxMDgKelyezv2VKCBI
-         045K4+Yqen8fA==
+        b=gOM59wfhUB1kqFMcXsEmM5bKcvdKaiD3+q6Zib+RPbrKMoVMSsuOr7RBuFLCQzYl/
+         5+cBSz2UNlUw+GQSAdi+bKckBf/ElV1qLqwk4vW08TqWfzLC8yZC9kTeTlDjfvyhi2
+         DZg0x/NSb3mgB9+i+MtZbwtFB92ZhtyEMoCam64HW3uVeiBGKvQNJKX592R/+JI+W9
+         1f9hnn36lb5tKosT29CjONUO/Awx+GE5csr2m0E+Npo7G5a8Ac4HevL/8gTRIMEbjT
+         ZPw/VPOsG6OMbnwFTSEZ4bY2b232I5+4bYEA/33JKw1Wa5vdydGeaufkSIMb+QSU6F
+         0r8VixORs1C0w==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id E36075C0848; Mon, 18 Apr 2022 15:54:00 -0700 (PDT)
+        id EAF665C0DFD; Mon, 18 Apr 2022 15:54:00 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>,
-        Saravanan D <sarvanand@fb.com>
-Subject: [PATCH rcu 03/11] rcu: Check for jiffies going backwards
-Date:   Mon, 18 Apr 2022 15:53:51 -0700
-Message-Id: <20220418225359.3945217-3-paulmck@kernel.org>
+        rostedt@goodmis.org, Frederic Weisbecker <frederic@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Valentin Schneider <valentin.schneider@arm.com>
+Subject: [PATCH rcu 07/11] rcu: Fix preemption mode check on synchronize_rcu[_expedited]()
+Date:   Mon, 18 Apr 2022 15:53:55 -0700
+Message-Id: <20220418225359.3945217-7-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220418225345.GA3945110@paulmck-ThinkPad-P17-Gen-1>
 References: <20220418225345.GA3945110@paulmck-ThinkPad-P17-Gen-1>
@@ -51,66 +57,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A report of a 12-jiffy normal RCU CPU stall warning raises interesting
-questions about the nature of time on the offending system.  This commit
-instruments rcu_sched_clock_irq(), which is RCU's hook into the
-scheduling-clock interrupt, checking for the jiffies counter going
-backwards.
+From: Frederic Weisbecker <frederic@kernel.org>
 
-Reported-by: Saravanan D <sarvanand@fb.com>
+An early check on synchronize_rcu[_expedited]() tries to determine if
+the current CPU is in UP mode on an SMP no-preempt kernel, in which case
+there is no need to start a grace period since the current assumed
+quiescent state is all we need.
+
+However the preemption mode doesn't take into account the boot selected
+preemption mode under CONFIG_PREEMPT_DYNAMIC=y, missing a possible
+early return if the running flavour is "none" or "voluntary".
+
+Use the shiny new preempt mode accessors to fix this.  However,
+avoid invoking them during early boot because doing so triggers a
+WARN_ON_ONCE().
+
+[ paulmck: Update for mainlined API. ]
+
+Reported-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Cc: Boqun Feng <boqun.feng@gmail.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc: Valentin Schneider <valentin.schneider@arm.com>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- kernel/rcu/tree.c | 10 ++++++++++
- kernel/rcu/tree.h |  1 +
- 2 files changed, 11 insertions(+)
+ kernel/rcu/tree.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index a4b8189455d5..a5ea67454640 100644
+index 29669070348e..d3caa82b9954 100644
 --- a/kernel/rcu/tree.c
 +++ b/kernel/rcu/tree.c
-@@ -1679,6 +1679,8 @@ static bool __note_gp_changes(struct rcu_node *rnp, struct rcu_data *rdp)
- 	rdp->gp_seq = rnp->gp_seq;  /* Remember new grace-period state. */
- 	if (ULONG_CMP_LT(rdp->gp_seq_needed, rnp->gp_seq_needed) || rdp->gpwrap)
- 		WRITE_ONCE(rdp->gp_seq_needed, rnp->gp_seq_needed);
-+	if (IS_ENABLED(CONFIG_PROVE_RCU) && READ_ONCE(rdp->gpwrap))
-+		WRITE_ONCE(rdp->last_sched_clock, jiffies);
- 	WRITE_ONCE(rdp->gpwrap, false);
- 	rcu_gpnum_ovf(rnp, rdp);
- 	return ret;
-@@ -2609,6 +2611,13 @@ static void rcu_do_batch(struct rcu_data *rdp)
-  */
- void rcu_sched_clock_irq(int user)
+@@ -3741,7 +3741,9 @@ static int rcu_blocking_is_gp(void)
  {
-+	unsigned long j;
-+
-+	if (IS_ENABLED(CONFIG_PROVE_RCU)) {
-+		j = jiffies;
-+		WARN_ON_ONCE(time_before(j, __this_cpu_read(rcu_data.last_sched_clock)));
-+		__this_cpu_write(rcu_data.last_sched_clock, j);
-+	}
- 	trace_rcu_utilization(TPS("Start scheduler-tick"));
- 	lockdep_assert_irqs_disabled();
- 	raw_cpu_inc(rcu_data.ticks_this_gp);
-@@ -4179,6 +4188,7 @@ rcu_boot_init_percpu_data(int cpu)
- 	rdp->rcu_ofl_gp_flags = RCU_GP_CLEANED;
- 	rdp->rcu_onl_gp_seq = rcu_state.gp_seq;
- 	rdp->rcu_onl_gp_flags = RCU_GP_CLEANED;
-+	rdp->last_sched_clock = jiffies;
- 	rdp->cpu = cpu;
- 	rcu_boot_init_nocb_percpu_data(rdp);
- }
-diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
-index 926673ebe355..94b55f669915 100644
---- a/kernel/rcu/tree.h
-+++ b/kernel/rcu/tree.h
-@@ -254,6 +254,7 @@ struct rcu_data {
- 	unsigned long rcu_onl_gp_seq;	/* ->gp_seq at last online. */
- 	short rcu_onl_gp_flags;		/* ->gp_flags at last online. */
- 	unsigned long last_fqs_resched;	/* Time of last rcu_resched(). */
-+	unsigned long last_sched_clock;	/* Jiffies of last rcu_sched_clock_irq(). */
+ 	int ret;
  
- 	int cpu;
- };
+-	if (IS_ENABLED(CONFIG_PREEMPTION))
++	// Invoking preempt_model_*() too early gets a splat.
++	if (rcu_scheduler_active == RCU_SCHEDULER_INACTIVE ||
++	    preempt_model_full() || preempt_model_rt())
+ 		return rcu_scheduler_active == RCU_SCHEDULER_INACTIVE;
+ 	might_sleep();  /* Check for RCU read-side critical section. */
+ 	preempt_disable();
 -- 
 2.31.1.189.g2e36527f23
 
