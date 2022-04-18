@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E0D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EA8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245011AbiDROA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41612 "EHLO
+        id S244641AbiDROAf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:00:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244054AbiDRNiy (ORCPT
+        with ESMTP id S244018AbiDRNiw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:38:54 -0400
+        Mon, 18 Apr 2022 09:38:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E48727B3C;
-        Mon, 18 Apr 2022 05:58:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A208527FE5;
+        Mon, 18 Apr 2022 05:58:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 807A9B80E4B;
-        Mon, 18 Apr 2022 12:58:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB8F9C385A8;
-        Mon, 18 Apr 2022 12:58:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23653B80E44;
+        Mon, 18 Apr 2022 12:58:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EBC3C385A1;
+        Mon, 18 Apr 2022 12:58:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286709;
-        bh=u3oljpL6Q3BI7yOHYh2I9e9zUcg05CmiAXsiNFDCGks=;
+        s=korg; t=1650286705;
+        bh=0Ib93hmg98wm1ej2ga6KkRVGgiVh+k+ut6GZoNMZN/M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XKJRMFznD+ThYvXId8hbZs/bbuXq8OW4FxTBeI67lP9B1SRpGz2GQO32WpA5HLora
-         uxgc0m6Z/NyYE18/0mclDesR8XVqufcXtsw343VzUPWNVgbr+x3DYxOzXdVd+gZab/
-         aEmEtnS5auu3FLiiaDFyOWEPD2qSBrHflajm3Lpw=
+        b=OXam3EG7ImAB9ofeyUGw6lowZvxpuWXX6bC5v/sFk6bvojlIBFQBDwBsyeHz4YJf2
+         JcrPMod84gDtFsceoWkLHTY8DyqnzAt42WML2qaAgnIVUuR/KoG2N4IG7tvbhiPa52
+         cplY08IDLN/CrhUrgTIGBL50M84v6rQkzivx0U5A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Colin Winegarden <colin.winegarden@broadcom.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Evgeny Boger <boger@wirenboard.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 221/284] bnxt_en: Eliminate unintended link toggle during FW reset
-Date:   Mon, 18 Apr 2022 14:13:22 +0200
-Message-Id: <20220418121217.996780401@linuxfoundation.org>
+Subject: [PATCH 4.14 212/284] power: supply: axp20x_battery: properly report current when discharging
+Date:   Mon, 18 Apr 2022 14:13:13 +0200
+Message-Id: <20220418121217.746357295@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -52,45 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
+From: Evgeny Boger <boger@wirenboard.com>
 
-[ Upstream commit 7c492a2530c1f05441da541307c2534230dfd59b ]
+[ Upstream commit d4f408cdcd26921c1268cb8dcbe8ffb6faf837f3 ]
 
-If the flow control settings have been changed, a subsequent FW reset
-may cause the ethernet link to toggle unnecessarily.  This link toggle
-will increase the down time by a few seconds.
+As stated in [1], negative current values are used for discharging
+batteries.
 
-The problem is caused by bnxt_update_phy_setting() detecting a false
-mismatch in the flow control settings between the stored software
-settings and the current FW settings after the FW reset.  This mismatch
-is caused by the AUTONEG bit added to link_info->req_flow_ctrl in an
-inconsistent way in bnxt_set_pauseparam() in autoneg mode.  The AUTONEG
-bit should not be added to link_info->req_flow_ctrl.
+AXP PMICs internally have two different ADC channels for shunt current
+measurement: one used during charging and one during discharging.
+The values reported by these ADCs are unsigned.
+While the driver properly selects ADC channel to get the data from,
+it doesn't apply negative sign when reporting discharging current.
 
-Reviewed-by: Colin Winegarden <colin.winegarden@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+[1] Documentation/ABI/testing/sysfs-class-power
+
+Signed-off-by: Evgeny Boger <boger@wirenboard.com>
+Acked-by: Chen-Yu Tsai <wens@csie.org>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/power/supply/axp20x_battery.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index e3123cb0fb70..82e16b2d1f7a 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -1272,9 +1272,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
- 		}
+diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
+index 7494f0f0eadb..a2e2443357fa 100644
+--- a/drivers/power/supply/axp20x_battery.c
++++ b/drivers/power/supply/axp20x_battery.c
+@@ -160,7 +160,6 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 				   union power_supply_propval *val)
+ {
+ 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
+-	struct iio_channel *chan;
+ 	int ret = 0, reg, val1;
  
- 		link_info->autoneg |= BNXT_AUTONEG_FLOW_CTRL;
--		if (bp->hwrm_spec_code >= 0x10201)
--			link_info->req_flow_ctrl =
--				PORT_PHY_CFG_REQ_AUTO_PAUSE_AUTONEG_PAUSE;
-+		link_info->req_flow_ctrl = 0;
- 	} else {
- 		/* when transition from auto pause to force pause,
- 		 * force a link change
+ 	switch (psp) {
+@@ -240,12 +239,12 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 		if (ret)
+ 			return ret;
+ 
+-		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
+-			chan = axp20x_batt->batt_chrg_i;
+-		else
+-			chan = axp20x_batt->batt_dischrg_i;
+-
+-		ret = iio_read_channel_processed(chan, &val->intval);
++		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING) {
++			ret = iio_read_channel_processed(axp20x_batt->batt_chrg_i, &val->intval);
++		} else {
++			ret = iio_read_channel_processed(axp20x_batt->batt_dischrg_i, &val1);
++			val->intval = -val1;
++		}
+ 		if (ret)
+ 			return ret;
+ 
 -- 
 2.35.1
 
