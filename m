@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C770BC3527D
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97204C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345218AbiDROS4 (ORCPT
+        id S1343742AbiDROT5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
+        Mon, 18 Apr 2022 10:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244996AbiDRN6W (ORCPT
+        with ESMTP id S245086AbiDROCC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:58:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10542273D;
-        Mon, 18 Apr 2022 06:08:16 -0700 (PDT)
+        Mon, 18 Apr 2022 10:02:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94070344DE;
+        Mon, 18 Apr 2022 06:09:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74C9360F59;
-        Mon, 18 Apr 2022 13:08:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43BD1C385BA;
-        Mon, 18 Apr 2022 13:08:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 236D560F16;
+        Mon, 18 Apr 2022 13:08:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1231BC385BA;
+        Mon, 18 Apr 2022 13:08:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287294;
-        bh=+GLEJZPMdNnOUodzXhHjndU9yOjabO6mSPPMQ04fUSI=;
+        s=korg; t=1650287337;
+        bh=zZZ8+bt+swbdKgisPUds2B86Lnz7Y1ZXyD/TXnFQ/U8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y3sMW3ILLoWAq13e0VS4iwkeDkg3eukmK69yUCKr7/qIGD7iiKuyY8PkIeK8WdaLJ
-         Hgo48ttzmNA7Y1UcN5dyzyMdfz5z33613OOADaQjLKG01aLvH6y69HS2AZ27U6N0fj
-         ShjSK5DDBxlXxn1/32745LMOAEgHozMJM6BhfKCQ=
+        b=VgeS0APSRDD4K2mLsMnwxSXW1nKL0884VAN/6bE8vLac5aN+yd/gIm41KhUw+W+X5
+         viUJ5ZylHUtEmGlMGveRh3WDRJHJK1w55vbH+A0+h4BVOPNG8oiJGpTFzSpOzE7/rs
+         jBF8aih4BIuisrgcFIwY/u8KhwulvOiFCP3VhyWI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, He Zhe <zhe.he@windriver.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        linux-serial@vger.kernel.org,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 116/218] kgdboc: fix return value of __setup handler
-Date:   Mon, 18 Apr 2022 14:13:02 +0200
-Message-Id: <20220418121202.914576118@linuxfoundation.org>
+Subject: [PATCH 4.9 123/218] selinux: use correct type for context length
+Date:   Mon, 18 Apr 2022 14:13:09 +0200
+Message-Id: <20220418121203.111822121@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -57,74 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Christian Göttsche <cgzones@googlemail.com>
 
-[ Upstream commit ab818c7aa7544bf8d2dd4bdf68878b17a02eb332 ]
+[ Upstream commit b97df7c098c531010e445da88d02b7bf7bf59ef6 ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) environment strings.
-So return 1 from kgdboc_option_setup().
+security_sid_to_context() expects a pointer to an u32 as the address
+where to store the length of the computed context.
 
-Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
-  kgdboc=kbd kgdbts=", will be passed to user space.
+Reported by sparse:
 
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc7
-     kgdboc=kbd
-     kgdbts=
+    security/selinux/xfrm.c:359:39: warning: incorrect type in arg 4
+                                    (different signedness)
+    security/selinux/xfrm.c:359:39:    expected unsigned int
+                                       [usertype] *scontext_len
+    security/selinux/xfrm.c:359:39:    got int *
 
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Fixes: 1bd54d851f50 ("kgdboc: Passing ekgdboc to command line causes panic")
-Fixes: f2d937f3bf00 ("consoles: polling support, kgdboc")
-Cc: He Zhe <zhe.he@windriver.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: kgdb-bugreport@lists.sourceforge.net
-Cc: Jason Wessel <jason.wessel@windriver.com>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: linux-serial@vger.kernel.org
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Link: https://lore.kernel.org/r/20220309033018.17936-1-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+[PM: wrapped commit description]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/kgdboc.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ security/selinux/xfrm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index 0314e78e31ff..72b89702d008 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -304,16 +304,16 @@ static int kgdboc_option_setup(char *opt)
- {
- 	if (!opt) {
- 		pr_err("config string not provided\n");
--		return -EINVAL;
-+		return 1;
- 	}
+diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
+index 56e354fcdfc6..5304dd49e054 100644
+--- a/security/selinux/xfrm.c
++++ b/security/selinux/xfrm.c
+@@ -344,7 +344,7 @@ int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
+ 	int rc;
+ 	struct xfrm_sec_ctx *ctx;
+ 	char *ctx_str = NULL;
+-	int str_len;
++	u32 str_len;
  
- 	if (strlen(opt) >= MAX_CONFIG_LEN) {
- 		pr_err("config string too long\n");
--		return -ENOSPC;
-+		return 1;
- 	}
- 	strcpy(config, opt);
- 
--	return 0;
-+	return 1;
- }
- 
- __setup("kgdboc=", kgdboc_option_setup);
+ 	if (!polsec)
+ 		return 0;
 -- 
 2.34.1
 
