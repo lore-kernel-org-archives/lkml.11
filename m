@@ -2,168 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47EC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 10:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F20B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 10:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237730AbiDRKmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 06:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48398 "EHLO
+        id S237289AbiDRKoN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 06:44:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237719AbiDRKmI (ORCPT
+        with ESMTP id S232617AbiDRKoJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 06:42:08 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B8315A32
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 03:39:29 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-de3eda6b5dso13844335fac.0
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 03:39:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=62c026OOLAuNuBuSioyVpnipO8MJFXscIe6Hv24ZM6o=;
-        b=zJvN5SlP/3qCHDqJo/ZWanngiLrVz0gsXPmvbKN3q4nbnTv+VZ4W/LAl+DZ2KJrnrd
-         1C1sQ6Bde0CLweFJXSZ7icY3DY9ml2+FqluhS7m5A4EUIyznFTrVjjYYQbReT2UZKGrk
-         tew0f801Qq34i4eMznEJgmjrjiOVHVfclvubXogmUZFXwms1MkwMc4Pvu37vkdKtRkmR
-         +ZfczKhD+qFmDmFSbjj5OuxVs/WGPnvhkeRiqTefDiYDtdf8Ou9xh949bfo4msBBIYbp
-         n6VoEqFZA5H14v2w9fJTS0Vgd+tEE1pXFr3vk80xG6p/sb2PWhpDBNHX8KYsMQN40+X3
-         R7tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=62c026OOLAuNuBuSioyVpnipO8MJFXscIe6Hv24ZM6o=;
-        b=ncVgyFrzQzFihuggKbixw5wnqDTmncG2jK3lHJVpvsdqGYJK1uDn0oANYCJiktL3X5
-         jEPWX+bsYG4eUOwR2LJyXaudtnmabjF7gW8KFE2jfP2D9R7PFerTNKus17enXjAgDJ41
-         OzVPA9C9Wv3avprhK8+S1faJYnFhJWJJEtA7+4U//TPk6JgHRiXhKrOlqtFGJk+uCqr+
-         YlYaIE81KUZ1kl5PB0fuzaHs/on5QQJlbi0bhkAy1b1JktS+0Aq1QT610oSAlC2nCYZE
-         6YT916OhWQz1W0G90LNVUDf2tvaME5wBnzcka2C/8/JCRdB0yTSjyOHAZRDgFg1+QHSS
-         J/3g==
-X-Gm-Message-State: AOAM533gWmuUaSeirvbkXImGWM9K4K0wIKKOKCAoVEu+ed+J0J5tKFiN
-        M69P/1Ap+BCiDdKET6E2J9oVWvURDk3gimdRZzgCch4YZM/5nw==
-X-Google-Smtp-Source: ABdhPJxID8TnHzn6Zu3SHNeySQA/uhoKQT25r6qemvJbcXOXJ0tLPlPVCU0Nm7LeAugRnXZew0nK3yGf2zipJw+03Xw=
-X-Received: by 2002:a05:6870:2156:b0:e5:bb8d:f6e3 with SMTP id
- g22-20020a056870215600b000e5bb8df6e3mr3434816oae.48.1650278369148; Mon, 18
- Apr 2022 03:39:29 -0700 (PDT)
+        Mon, 18 Apr 2022 06:44:09 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D3A15A1E;
+        Mon, 18 Apr 2022 03:41:31 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23IAfNZU006928;
+        Mon, 18 Apr 2022 05:41:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1650278483;
+        bh=wCAObR3+LfGJ2/+LQ8UgdUib7pa4Mr+mx6gtlLNXw9Q=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=avMr3cGhJ8A5dd9NvtNofyXJWaMkUzc46XKHzgebIKMX7COQMBh0vKzh08Tr1jQ2K
+         0gsZuyNQBJViGEimH0r5yUkkM0MMGWMO6iTw/crK3Yf8y6RPDpOSuC0KTrLYFkXTPf
+         cjXl0qo1e7sVY1ZcIcvgNYGP7+wJ04u1byeAVcVs=
+Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23IAfNF9019535
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 18 Apr 2022 05:41:23 -0500
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 18
+ Apr 2022 05:41:22 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 18 Apr 2022 05:41:22 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23IAfLcD115666;
+        Mon, 18 Apr 2022 05:41:22 -0500
+From:   Puranjay Mohan <p-mohan@ti.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
+        <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
+        <rogerq@kernel.org>, <grygorii.strashko@ti.com>, <vigneshr@ti.com>,
+        <kishon@ti.com>
+Subject: [PATCH v3 1/5] dt-bindings: remoteproc: Add PRU consumer bindings
+Date:   Mon, 18 Apr 2022 16:11:14 +0530
+Message-ID: <20220418104118.12878-2-p-mohan@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220418104118.12878-1-p-mohan@ti.com>
+References: <20220418104118.12878-1-p-mohan@ti.com>
 MIME-Version: 1.0
-References: <20220414122928.349126-1-bhupesh.sharma@linaro.org> <20220414141107.sazz72sl6giehpjx@SoMainline.org>
-In-Reply-To: <20220414141107.sazz72sl6giehpjx@SoMainline.org>
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Date:   Mon, 18 Apr 2022 16:09:18 +0530
-Message-ID: <CAH=2NtzFGYAxc_0aEWUV-Jn4JwV4UtCNRui_KL7RRiG4BWF92g@mail.gmail.com>
-Subject: Re: [PATCH 1/1] arm64: dts: qcom: sm8350-sagami: UFS phy - add
- 'vdda-pll-supply' & 'vdda-phy-supply'
-To:     Marijn Suijten <marijn.suijten@somainline.org>
-Cc:     linux-arm-msm@vger.kernel.org, bhupesh.linux@gmail.com,
-        agross@kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org,
-        bjorn.andersson@linaro.org, konrad.dybcio@somainline.org,
-        Vinod Koul <vkoul@kernel.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Martin Botka <martin.botka@somainline.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Apr 2022 at 19:41, Marijn Suijten
-<marijn.suijten@somainline.org> wrote:
->
-> On 2022-04-14 17:59:28, Bhupesh Sharma wrote:
-> > As suggested by Bjorn during review of [1], the vdda-pll-supply' &
-> > 'vdda-phy-supply' supplies denote the power for the bus and the
-> > clock of the UFS PHY.
-> >
-> > For pdx215 to have a functional UFS [..] safe to assume [..]
->
-> By "functional" you are referring to sending a certain UFS command that
-> accidentally wipes the bootloader [1] [2], turning the device into a
-> _very_ expensive (+$1000) paperweight?
->
-> [1]: https://lore.kernel.org/lkml/20211111184630.605035-1-konrad.dybcio@somainline.org/
-> [2]: https://github.com/kholk/kernel/commit/2e7a9ee1c91a016baa0b826a7752ec45663a0561
->
-> > In absence of the same 'make dtbs_check' leads to following warnings:
-> >
-> > arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami-pdx215.dt.yaml:
-> >  phy-wrapper@88e9000: 'vdda-phy-supply' is a required property
-> >
-> > arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami-pdx215.dt.yaml:
-> >  phy-wrapper@88e9000: 'vdda-pll-supply' is a required property
-> >
-> > [1]. https://lore.kernel.org/lkml/20220228123019.382037-9-bhupesh.sharma@linaro.org/
-> >
-> > Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > Cc: konrad.dybcio@somainline.org
-> > Cc: Vinod Koul <vkoul@kernel.org>
-> > Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
-> > ---
-> >  .../dts/qcom/sm8350-sony-xperia-sagami.dtsi   | 25 +++++++++++++++++++
-> >  1 file changed, 25 insertions(+)
-> >
-> > diff --git a/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi b/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi
-> > index 90b13cbe2fa6..238ac9380ca2 100644
-> > --- a/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi
-> > +++ b/arch/arm64/boot/dts/qcom/sm8350-sony-xperia-sagami.dtsi
-> > @@ -3,6 +3,7 @@
-> >   * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
-> >   */
-> >
-> > +#include <dt-bindings/regulator/qcom,rpmh-regulator.h>
-> >  #include "sm8350.dtsi"
-> >  #include "pm8350.dtsi"
-> >  #include "pm8350b.dtsi"
-> > @@ -75,6 +76,27 @@ ramoops@ffc00000 {
-> >       };
-> >  };
-> >
-> > +&apps_rsc {
-> > +     pm8350-rpmh-regulators {
-> > +             compatible = "qcom,pm8350-rpmh-regulators";
-> > +             qcom,pmic-id = "b";
-> > +
-> > +             vreg_l1b_0p88: ldo1 {
-> > +                     regulator-name = "vreg_l1b_0p88";
-> > +                     regulator-min-microvolt = <912000>;
-> > +                     regulator-max-microvolt = <920000>;
-> > +                     regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-> > +             };
-> > +
-> > +             vreg_l6b_1p2: ldo6 {
-> > +                     regulator-name = "vreg_l6b_1p2";
-> > +                     regulator-min-microvolt = <1200000>;
-> > +                     regulator-max-microvolt = <1208000>;
-> > +                     regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-> > +             };
-> > +     };
-> > +};
-> > +
-> >  &adsp {
-> >       status = "okay";
-> >       firmware-name = "qcom/adsp.mbn";
-> > @@ -256,4 +278,7 @@ &usb_1_hsphy {
-> >
-> >  &usb_1_qmpphy {
-> >       status = "okay";
-> > +
-> > +     vdda-phy-supply = <&vreg_l6b_1p2>;
-> > +     vdda-pll-supply = <&vreg_l1b_0p88>;
->
-> I'm probably understanding your patch wrong, but this is the USB phy,
-> not the UFS phy?  The warning from dtbs_check on `phy-wrapper@88e9000`
-> is also the `qmp-usb3-phy`, not the `qmp-ufs-phy` - seems this patch has
-> little to do with UFS after all?
+From: Suman Anna <s-anna@ti.com>
 
-Indeed, it should be the qmp USB3 phy, instead.. my bad.. I will fix it in v2.
+Add a YAML binding document for PRU consumers. The binding includes
+all the common properties that can be used by different PRU consumer
+or application nodes and supported by the PRU remoteproc driver.
+These are used to configure the PRU hardware for specific user
+applications.
 
-Do you see any issues with enabling these two regulators in the
-'sm8350-sony-xperia-sagami-pdx215' dts?
+The application nodes themselves should define their own bindings.
 
-Thanks,
-Bhupesh
+Co-developed-by: Tero Kristo <t-kristo@ti.com>
+Signed-off-by: Tero Kristo <t-kristo@ti.com>
+Signed-off-by: Suman Anna <s-anna@ti.com>
+Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+---
+ .../bindings/remoteproc/ti,pru-consumer.yaml  | 70 +++++++++++++++++++
+ 1 file changed, 70 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
 
-> >  };
-> > --
-> > 2.35.1
-> >
+diff --git a/Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml b/Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
+new file mode 100644
+index 000000000000..5b1f1cb2f098
+--- /dev/null
++++ b/Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
+@@ -0,0 +1,70 @@
++# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/remoteproc/ti,pru-consumer.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Common TI PRU Consumer Binding
++
++maintainers:
++  - Suman Anna <s-anna@ti.com>
++
++description: |
++  A PRU application/consumer/user node typically uses one or more PRU device
++  nodes to implement a PRU application/functionality. Each application/client
++  node would need a reference to at least a PRU node, and optionally define
++  some properties needed for hardware/firmware configuration. The below
++  properties are a list of common properties supported by the PRU remoteproc
++  infrastructure.
++
++  The application nodes shall define their own bindings like regular platform
++  devices, so below are in addition to each node's bindings.
++
++properties:
++  ti,prus:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    description: phandles to the PRU, RTU or Tx_PRU nodes used
++    minItems: 1
++    maxItems: 6
++    items:
++      maxItems: 1
++
++  firmware-name:
++    $ref: /schemas/types.yaml#/definitions/string-array
++    description: |
++      firmwares for the PRU cores, the default firmware for the core from
++      the PRU node will be used if not provided. The firmware names should
++      correspond to the PRU cores listed in the 'ti,prus' property
++
++  ti,pruss-gp-mux-sel:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    maxItems: 6
++    items:
++      enum: [0, 1, 2, 3, 4]
++    description: |
++      array of values for the GP_MUX_SEL under PRUSS_GPCFG register for a PRU.
++      This selects the internal muxing scheme for the PRU instance. Values
++      should correspond to the PRU cores listed in the 'ti,prus' property. The
++      GP_MUX_SEL setting is a per-slice setting (one setting for PRU0, RTU0,
++      and Tx_PRU0 on K3 SoCs). Use the same value for all cores within the
++      same slice in the associative array. If the array size is smaller than
++      the size of 'ti,prus' property, the default out-of-reset value (0) for the
++      PRU core is used.
++
++required:
++  - ti,prus
++
++dependencies:
++  firmware-name: [ 'ti,prus' ]
++  ti,pruss-gp-mux-sel: [ 'ti,prus' ]
++
++additionalProperties: true
++
++examples:
++  - |
++    /* PRU application node example */
++    pru-app {
++        ti,prus = <&pru0>, <&pru1>;
++        firmware-name = "pruss-app-fw0", "pruss-app-fw1";
++        ti,pruss-gp-mux-sel = <2>, <1>;
++    };
+-- 
+2.17.1
+
