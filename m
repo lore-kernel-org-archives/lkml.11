@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D251C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9415C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:48:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229448AbiDRMuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38014 "EHLO
+        id S239771AbiDRMuu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:50:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240768AbiDRMjg (ORCPT
+        with ESMTP id S240787AbiDRMjh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50CFB12A86;
-        Mon, 18 Apr 2022 05:30:28 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7C025EB9;
+        Mon, 18 Apr 2022 05:30:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E08A260F04;
-        Mon, 18 Apr 2022 12:30:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECAEBC385A7;
-        Mon, 18 Apr 2022 12:30:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A2B4B80ED6;
+        Mon, 18 Apr 2022 12:30:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 992A7C385A7;
+        Mon, 18 Apr 2022 12:30:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285027;
-        bh=X7qBUUgV1LaOs2vD6Ys+38lRH+s//Ob0CYGiP9aS3nI=;
+        s=korg; t=1650285033;
+        bh=Wx4NCEWlH2dKwa1cDmSNLQyZi3kQ6S5UPpNLcHYn7bk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d9hGPNhm22shkrIWhIRDYTy3OMN1/MSUDQaI6HvUaOrtmdfue/Q99PmPYVEYwQ7T5
-         CfZxFG80GKM5Drh7A5a0dqeGg5yuVWHa0JfXro89q/1v4hJaYsSa2kdZgguS8QW+14
-         oen6kjh/lY7alPQ4UA73D2uU3p/fCuXmjq7ERUX8=
+        b=dT6kFkOBHSoF1afbLvpVFvCy06PGQcohi+2fcOZoDyaiS5c8/Mxp6GXQG36jbHRT+
+         B56rC8EYTxvuWInkS8CSZZznbFF3bFjz0+tZWPs74zGr+0mxu9hf0m+aN/ZzPm7Mwx
+         pjN26ecUPrX0PkJWeJL2+DSRLQSrZGyybWWpunG8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Mike Christie <michael.christie@oracle.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 082/189] scsi: iscsi: Fix offload conn cleanup when iscsid restarts
-Date:   Mon, 18 Apr 2022 14:11:42 +0200
-Message-Id: <20220418121202.835906512@linuxfoundation.org>
+Subject: [PATCH 5.15 084/189] scsi: iscsi: Fix conn cleanup and stop race during iscsid restart
+Date:   Mon, 18 Apr 2022 14:11:44 +0200
+Message-Id: <20220418121202.892499540@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -53,21 +53,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mike Christie <michael.christie@oracle.com>
 
-[ Upstream commit cbd2283aaf47fef4ded4b29124b1ef3beb515f3a ]
+[ Upstream commit 7c6e99c18167ed89729bf167ccb4a7e3ab3115ba ]
 
-When userspace restarts during boot or upgrades it won't know about the
-offload driver's endpoint and connection mappings. iscsid will start by
-cleaning up the old session by doing a stop_conn call. Later, if we are
-able to create a new connection, we clean up the old endpoint during the
-binding stage. The problem is that if we do stop_conn before doing the
-ep_disconnect call offload, drivers can still be executing I/O. We then
-might free tasks from the under the card/driver.
+If iscsid is doing a stop_conn at the same time the kernel is starting
+error recovery we can hit a race that allows the cleanup work to run on a
+valid connection. In the race, iscsi_if_stop_conn sees the cleanup bit set,
+but it calls flush_work on the clean_work before iscsi_conn_error_event has
+queued it. The flush then returns before the queueing and so the
+cleanup_work can run later and disconnect/stop a conn while it's in a
+connected state.
 
-This moves the ep_disconnect call to before we do the stop_conn call for
-this case. It will then work and look like a normal recovery/cleanup
-procedure from the driver's point of view.
+The patch:
 
-Link: https://lore.kernel.org/r/20220408001314.5014-3-michael.christie@oracle.com
+Commit 0ab710458da1 ("scsi: iscsi: Perform connection failure entirely in
+kernel space")
+
+added the late stop_conn call bug originally, and the patch:
+
+Commit 23d6fefbb3f6 ("scsi: iscsi: Fix in-kernel conn failure handling")
+
+attempted to fix it but only fixed the normal EH case and left the above
+race for the iscsid restart case. For the normal EH case we don't hit the
+race because we only signal userspace to start recovery after we have done
+the queueing, so the flush will always catch the queued work or see it
+completed.
+
+For iscsid restart cases like boot, we can hit the race because iscsid will
+call down to the kernel before the kernel has signaled any error, so both
+code paths can be running at the same time. This adds a lock around the
+setting of the cleanup bit and queueing so they happen together.
+
+Link: https://lore.kernel.org/r/20220408001314.5014-6-michael.christie@oracle.com
+Fixes: 0ab710458da1 ("scsi: iscsi: Perform connection failure entirely in kernel space")
 Tested-by: Manish Rangankar <mrangankar@marvell.com>
 Reviewed-by: Lee Duncan <lduncan@suse.com>
 Reviewed-by: Chris Leech <cleech@redhat.com>
@@ -75,89 +92,109 @@ Signed-off-by: Mike Christie <michael.christie@oracle.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/scsi_transport_iscsi.c | 48 +++++++++++++++++------------
- 1 file changed, 28 insertions(+), 20 deletions(-)
+ drivers/scsi/scsi_transport_iscsi.c | 17 +++++++++++++++++
+ include/scsi/scsi_transport_iscsi.h |  2 ++
+ 2 files changed, 19 insertions(+)
 
 diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
-index 126f6f23bffa..03cda2da80ef 100644
+index 4fa2fd7f4c72..ed289e1242c9 100644
 --- a/drivers/scsi/scsi_transport_iscsi.c
 +++ b/drivers/scsi/scsi_transport_iscsi.c
-@@ -2255,6 +2255,23 @@ static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
- 	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
- }
- 
-+static void iscsi_if_disconnect_bound_ep(struct iscsi_cls_conn *conn,
-+					 struct iscsi_endpoint *ep,
-+					 bool is_active)
-+{
-+	/* Check if this was a conn error and the kernel took ownership */
-+	if (!test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
-+		iscsi_ep_disconnect(conn, is_active);
-+	} else {
-+		ISCSI_DBG_TRANS_CONN(conn, "flush kernel conn cleanup.\n");
-+		mutex_unlock(&conn->ep_mutex);
-+
-+		flush_work(&conn->cleanup_work);
-+
-+		mutex_lock(&conn->ep_mutex);
-+	}
-+}
-+
- static int iscsi_if_stop_conn(struct iscsi_transport *transport,
- 			      struct iscsi_uevent *ev)
+@@ -2260,9 +2260,12 @@ static void iscsi_if_disconnect_bound_ep(struct iscsi_cls_conn *conn,
+ 					 bool is_active)
  {
-@@ -2275,6 +2292,16 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
- 		cancel_work_sync(&conn->cleanup_work);
- 		iscsi_stop_conn(conn, flag);
+ 	/* Check if this was a conn error and the kernel took ownership */
++	spin_lock_irq(&conn->lock);
+ 	if (!test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++		spin_unlock_irq(&conn->lock);
+ 		iscsi_ep_disconnect(conn, is_active);
  	} else {
-+		/*
-+		 * For offload, when iscsid is restarted it won't know about
-+		 * existing endpoints so it can't do a ep_disconnect. We clean
-+		 * it up here for userspace.
-+		 */
-+		mutex_lock(&conn->ep_mutex);
-+		if (conn->ep)
-+			iscsi_if_disconnect_bound_ep(conn, conn->ep, true);
-+		mutex_unlock(&conn->ep_mutex);
-+
++		spin_unlock_irq(&conn->lock);
+ 		ISCSI_DBG_TRANS_CONN(conn, "flush kernel conn cleanup.\n");
+ 		mutex_unlock(&conn->ep_mutex);
+ 
+@@ -2309,9 +2312,12 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
  		/*
  		 * Figure out if it was the kernel or userspace initiating this.
  		 */
-@@ -3003,16 +3030,7 @@ static int iscsi_if_ep_disconnect(struct iscsi_transport *transport,
++		spin_lock_irq(&conn->lock);
+ 		if (!test_and_set_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++			spin_unlock_irq(&conn->lock);
+ 			iscsi_stop_conn(conn, flag);
+ 		} else {
++			spin_unlock_irq(&conn->lock);
+ 			ISCSI_DBG_TRANS_CONN(conn,
+ 					     "flush kernel conn cleanup.\n");
+ 			flush_work(&conn->cleanup_work);
+@@ -2320,7 +2326,9 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 		 * Only clear for recovery to avoid extra cleanup runs during
+ 		 * termination.
+ 		 */
++		spin_lock_irq(&conn->lock);
+ 		clear_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags);
++		spin_unlock_irq(&conn->lock);
  	}
+ 	ISCSI_DBG_TRANS_CONN(conn, "iscsi if conn stop done.\n");
+ 	return 0;
+@@ -2341,7 +2349,9 @@ static void iscsi_cleanup_conn_work_fn(struct work_struct *work)
+ 	 */
+ 	if (conn->state != ISCSI_CONN_BOUND && conn->state != ISCSI_CONN_UP) {
+ 		ISCSI_DBG_TRANS_CONN(conn, "Got error while conn is already failed. Ignoring.\n");
++		spin_lock_irq(&conn->lock);
+ 		clear_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags);
++		spin_unlock_irq(&conn->lock);
+ 		mutex_unlock(&conn->ep_mutex);
+ 		return;
+ 	}
+@@ -2407,6 +2417,7 @@ iscsi_create_conn(struct iscsi_cls_session *session, int dd_size, uint32_t cid)
+ 		conn->dd_data = &conn[1];
+ 
+ 	mutex_init(&conn->ep_mutex);
++	spin_lock_init(&conn->lock);
+ 	INIT_LIST_HEAD(&conn->conn_list);
+ 	INIT_WORK(&conn->cleanup_work, iscsi_cleanup_conn_work_fn);
+ 	conn->transport = transport;
+@@ -2598,9 +2609,12 @@ void iscsi_conn_error_event(struct iscsi_cls_conn *conn, enum iscsi_err error)
+ 	struct iscsi_uevent *ev;
+ 	struct iscsi_internal *priv;
+ 	int len = nlmsg_total_size(sizeof(*ev));
++	unsigned long flags;
+ 
++	spin_lock_irqsave(&conn->lock, flags);
+ 	if (!test_and_set_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags))
+ 		queue_work(iscsi_conn_cleanup_workq, &conn->cleanup_work);
++	spin_unlock_irqrestore(&conn->lock, flags);
+ 
+ 	priv = iscsi_if_transport_lookup(conn->transport);
+ 	if (!priv)
+@@ -3743,11 +3757,14 @@ static int iscsi_if_transport_conn(struct iscsi_transport *transport,
+ 		return -EINVAL;
  
  	mutex_lock(&conn->ep_mutex);
--	/* Check if this was a conn error and the kernel took ownership */
--	if (test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
--		ISCSI_DBG_TRANS_CONN(conn, "flush kernel conn cleanup.\n");
--		mutex_unlock(&conn->ep_mutex);
--
--		flush_work(&conn->cleanup_work);
--		goto put_ep;
--	}
--
--	iscsi_ep_disconnect(conn, false);
-+	iscsi_if_disconnect_bound_ep(conn, ep, false);
- 	mutex_unlock(&conn->ep_mutex);
- put_ep:
- 	iscsi_put_endpoint(ep);
-@@ -3723,16 +3741,6 @@ static int iscsi_if_transport_conn(struct iscsi_transport *transport,
++	spin_lock_irq(&conn->lock);
+ 	if (test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++		spin_unlock_irq(&conn->lock);
+ 		mutex_unlock(&conn->ep_mutex);
+ 		ev->r.retcode = -ENOTCONN;
+ 		return 0;
+ 	}
++	spin_unlock_irq(&conn->lock);
  
  	switch (nlh->nlmsg_type) {
  	case ISCSI_UEVENT_BIND_CONN:
--		if (conn->ep) {
--			/*
--			 * For offload boot support where iscsid is restarted
--			 * during the pivot root stage, the ep will be intact
--			 * here when the new iscsid instance starts up and
--			 * reconnects.
--			 */
--			iscsi_ep_disconnect(conn, true);
--		}
--
- 		session = iscsi_session_lookup(ev->u.b_conn.sid);
- 		if (!session) {
- 			err = -EINVAL;
+diff --git a/include/scsi/scsi_transport_iscsi.h b/include/scsi/scsi_transport_iscsi.h
+index c5d7810fd792..037c77fb5dc5 100644
+--- a/include/scsi/scsi_transport_iscsi.h
++++ b/include/scsi/scsi_transport_iscsi.h
+@@ -211,6 +211,8 @@ struct iscsi_cls_conn {
+ 	struct mutex ep_mutex;
+ 	struct iscsi_endpoint *ep;
+ 
++	/* Used when accessing flags and queueing work. */
++	spinlock_t lock;
+ 	unsigned long flags;
+ 	struct work_struct cleanup_work;
+ 
 -- 
 2.35.1
 
