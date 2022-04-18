@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3410C47084
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A647C352A7
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344621AbiDROKk (ORCPT
+        id S1344414AbiDROKA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45546 "EHLO
+        Mon, 18 Apr 2022 10:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240445AbiDRNyh (ORCPT
+        with ESMTP id S245401AbiDRNx2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:54:37 -0400
+        Mon, 18 Apr 2022 09:53:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07C04969E;
-        Mon, 18 Apr 2022 06:04:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6403146140;
+        Mon, 18 Apr 2022 06:02:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70A56B80EE3;
-        Mon, 18 Apr 2022 13:04:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C489CC385A1;
-        Mon, 18 Apr 2022 13:04:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BF39B80E59;
+        Mon, 18 Apr 2022 13:02:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AEB9C385A7;
+        Mon, 18 Apr 2022 13:02:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287056;
-        bh=bHnvJd1/T2GkymnmYI0gnf1hvtn80eWyGRE2mvn2cUk=;
+        s=korg; t=1650286964;
+        bh=A4b2a4onVwfZ3Z/PUXwNCCP2ru+RSO2yvt2SPsiVLO4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xyu5rwfAOrVhlhfJ5Ren2zZ01oRoXdO438mFMx+JBdVm3hbzP7BAfU3RHFAFw7oci
-         eVZtiodBCbNLkz0fbJ0SBZpguyHF2lSstRP6p3H6zEMtws5zT1QeomGiOTRiGdEXjv
-         zCb+KjUmBIKxnAkx4N4jQWEJaR9LPKUXm0UtJwP4=
+        b=iK4+8E5BiawUrWP69WuV52Cz9PAdfcYVuPCKhuQioWEju5ukQ0zGtupLuL5+Z541R
+         0m8iZpgiaVR7reevALJuzVWpyoJUAAwd6+RfcOX2z2pN6kkRDZhHLMN8fBNYYdIVBA
+         b9LEGX2tKqVzFapNctHDsRWsRRbBOcKqwI/Yi450=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Armin Wolf <W_Armin@gmx.de>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 045/218] hwmon: (sch56xx-common) Replace WDOG_ACTIVE with WDOG_HW_RUNNING
-Date:   Mon, 18 Apr 2022 14:11:51 +0200
-Message-Id: <20220418121200.881839260@linuxfoundation.org>
+        stable@vger.kernel.org, Sebastian Haas <haas@ems-wuensche.com>,
+        Hangyu Hua <hbh25y@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 4.9 017/218] can: ems_usb: ems_usb_start_xmit(): fix double dev_kfree_skb() in error path
+Date:   Mon, 18 Apr 2022 14:11:23 +0200
+Message-Id: <20220418121159.589629050@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -51,45 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Armin Wolf <W_Armin@gmx.de>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 647d6f09bea7dacf4cdb6d4ea7e3051883955297 ]
+commit c70222752228a62135cee3409dccefd494a24646 upstream.
 
-If the watchdog was already enabled by the BIOS after booting, the
-watchdog infrastructure needs to regularly send keepalives to
-prevent a unexpected reset.
-WDOG_ACTIVE only serves as an status indicator for userspace,
-we want to use WDOG_HW_RUNNING instead.
+There is no need to call dev_kfree_skb() when usb_submit_urb() fails
+beacause can_put_echo_skb() deletes the original skb and
+can_free_echo_skb() deletes the cloned skb.
 
-Since my Fujitsu Esprimo P720 does not support the watchdog,
-this change is compile-tested only.
-
-Suggested-by: Guenter Roeck <linux@roeck-us.net>
-Fixes: fb551405c0f8 (watchdog: sch56xx: Use watchdog core)
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-Link: https://lore.kernel.org/r/20220131211935.3656-5-W_Armin@gmx.de
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/all/20220228083639.38183-1-hbh25y@gmail.com
+Fixes: 702171adeed3 ("ems_usb: Added support for EMS CPC-USB/ARM7 CAN/USB interface")
+Cc: stable@vger.kernel.org
+Cc: Sebastian Haas <haas@ems-wuensche.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/sch56xx-common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/usb/ems_usb.c |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/hwmon/sch56xx-common.c b/drivers/hwmon/sch56xx-common.c
-index 68c350c704fb..5fd9b6769d42 100644
---- a/drivers/hwmon/sch56xx-common.c
-+++ b/drivers/hwmon/sch56xx-common.c
-@@ -438,7 +438,7 @@ struct sch56xx_watchdog_data *sch56xx_watchdog_register(struct device *parent,
- 	if (nowayout)
- 		set_bit(WDOG_NO_WAY_OUT, &data->wddev.status);
- 	if (output_enable & SCH56XX_WDOG_OUTPUT_ENABLE)
--		set_bit(WDOG_ACTIVE, &data->wddev.status);
-+		set_bit(WDOG_HW_RUNNING, &data->wddev.status);
+--- a/drivers/net/can/usb/ems_usb.c
++++ b/drivers/net/can/usb/ems_usb.c
+@@ -834,7 +834,6 @@ static netdev_tx_t ems_usb_start_xmit(st
  
- 	/* Since the watchdog uses a downcounter there is no register to read
- 	   the BIOS set timeout from (if any was set at all) ->
--- 
-2.34.1
-
+ 		usb_unanchor_urb(urb);
+ 		usb_free_coherent(dev->udev, size, buf, urb->transfer_dma);
+-		dev_kfree_skb(skb);
+ 
+ 		atomic_dec(&dev->active_tx_urbs);
+ 
 
 
