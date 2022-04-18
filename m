@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7AF5C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:57:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F97C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240821AbiDRM5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:57:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60574 "EHLO
+        id S241091AbiDRM6X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239768AbiDRMrh (ORCPT
+        with ESMTP id S240428AbiDRMtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:47:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B841D2A24F;
-        Mon, 18 Apr 2022 05:33:15 -0700 (PDT)
+        Mon, 18 Apr 2022 08:49:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11B22B1BD;
+        Mon, 18 Apr 2022 05:33:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4817D61170;
-        Mon, 18 Apr 2022 12:33:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F840C385A7;
-        Mon, 18 Apr 2022 12:33:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57995B80ED6;
+        Mon, 18 Apr 2022 12:33:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D6A8C385A7;
+        Mon, 18 Apr 2022 12:33:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285194;
-        bh=i4z+os5u3h4C2r/+ZIZBW6EK61j0wr3aOjEa0iZMvrY=;
+        s=korg; t=1650285224;
+        bh=g8Q2+7CHiKjILami8t6hn7pMcUNJyhDrXAmITMxT9QM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JLUSYTMoOLp+aKHiDWTImuj91O3hKA8MGwUBGVw0R4lbh6bE59qL4H1X67muhZCx3
-         GmeuXfuOoJXMuCwe+ZzEU9vIQgIgEke/+nyX4sK65AuDyu56hbHEaYzqJkf0ilxABC
-         BKb1ZuKRduT3uFhfyQYMrmsABVWFL0WjbtTfD/90=
+        b=u1HXsKbKnAHlq26JRJZDOUgjpyH2y3El7GkHPTOvtmMr4yynzNy9b2zOS8qxtvNUW
+         Slev7VFn2PLet6Xd19pPViyZ6HfFpbMhFjdXDLN5ufm/9Gh5DT3cTjJj8qd4UxW2QF
+         wY8y+OjesHUu2jIw+4bIMlb+v7mEVJCaIU6B4ZHg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 094/189] ALSA: usb-audio: Increase max buffer size
-Date:   Mon, 18 Apr 2022 14:11:54 +0200
-Message-Id: <20220418121203.174073547@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 142/189] io_uring: use nospec annotation for more indexes
+Date:   Mon, 18 Apr 2022 14:12:42 +0200
+Message-Id: <20220418121205.588146582@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -48,35 +48,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-[ Upstream commit fee2ec8cceb33b8886bc5894fb07e0b2e34148af ]
+[ Upstream commit 4cdd158be9d09223737df83136a1fb65269d809a ]
 
-The current limit of max buffer size 1MB seems too small for modern
-devices with lots of channels and high sample rates.
-Let's make bigger, 4MB.
+There are still several places that using pre array_index_nospec()
+indexes, fix them up.
 
-Reviewed-by: Jaroslav Kysela <perex@perex.cz>
-Link: https://lore.kernel.org/r/20220407212740.17920-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Link: https://lore.kernel.org/r/b01ef5ee83f72ed35ad525912370b729f5d145f4.1649336342.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/pcm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/io_uring.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/sound/usb/pcm.c b/sound/usb/pcm.c
-index 6fa9115e322b..866a82b69d8d 100644
---- a/sound/usb/pcm.c
-+++ b/sound/usb/pcm.c
-@@ -659,7 +659,7 @@ static int snd_usb_pcm_prepare(struct snd_pcm_substream *substream)
- #define hwc_debug(fmt, args...) do { } while(0)
- #endif
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index ca207e9a87cd..1bf1ea2cd8b0 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -8489,7 +8489,7 @@ static int io_close_fixed(struct io_kiocb *req, unsigned int issue_flags)
+ 	struct io_ring_ctx *ctx = req->ctx;
+ 	struct io_fixed_file *file_slot;
+ 	struct file *file;
+-	int ret, i;
++	int ret;
  
--#define MAX_BUFFER_BYTES	(1024 * 1024)
-+#define MAX_BUFFER_BYTES	(4 * 1024 * 1024)
- #define MAX_PERIOD_BYTES	(512 * 1024)
+ 	io_ring_submit_lock(ctx, !(issue_flags & IO_URING_F_NONBLOCK));
+ 	ret = -ENXIO;
+@@ -8502,8 +8502,8 @@ static int io_close_fixed(struct io_kiocb *req, unsigned int issue_flags)
+ 	if (ret)
+ 		goto out;
  
- static const struct snd_pcm_hardware snd_usb_hardware =
+-	i = array_index_nospec(offset, ctx->nr_user_files);
+-	file_slot = io_fixed_file_slot(&ctx->file_table, i);
++	offset = array_index_nospec(offset, ctx->nr_user_files);
++	file_slot = io_fixed_file_slot(&ctx->file_table, offset);
+ 	ret = -EBADF;
+ 	if (!file_slot->file_ptr)
+ 		goto out;
+@@ -8559,8 +8559,7 @@ static int __io_sqe_files_update(struct io_ring_ctx *ctx,
+ 
+ 		if (file_slot->file_ptr) {
+ 			file = (struct file *)(file_slot->file_ptr & FFS_MASK);
+-			err = io_queue_rsrc_removal(data, up->offset + done,
+-						    ctx->rsrc_node, file);
++			err = io_queue_rsrc_removal(data, i, ctx->rsrc_node, file);
+ 			if (err)
+ 				break;
+ 			file_slot->file_ptr = 0;
+@@ -9229,7 +9228,7 @@ static int __io_sqe_buffers_update(struct io_ring_ctx *ctx,
+ 
+ 		i = array_index_nospec(offset, ctx->nr_user_bufs);
+ 		if (ctx->user_bufs[i] != ctx->dummy_ubuf) {
+-			err = io_queue_rsrc_removal(ctx->buf_data, offset,
++			err = io_queue_rsrc_removal(ctx->buf_data, i,
+ 						    ctx->rsrc_node, ctx->user_bufs[i]);
+ 			if (unlikely(err)) {
+ 				io_buffer_unmap(ctx, &imu);
 -- 
 2.35.1
 
