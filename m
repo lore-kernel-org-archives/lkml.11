@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF226C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:09:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 668DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:09:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245540AbiDROLz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:11:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44868 "EHLO
+        id S245595AbiDROMC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:12:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245169AbiDRNws (ORCPT
+        with ESMTP id S243897AbiDRNzm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:52:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D7145524;
-        Mon, 18 Apr 2022 06:02:28 -0700 (PDT)
+        Mon, 18 Apr 2022 09:55:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E53201FA;
+        Mon, 18 Apr 2022 06:04:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 832D6B80EBA;
-        Mon, 18 Apr 2022 13:02:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B160EC385A1;
-        Mon, 18 Apr 2022 13:02:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A8DE60EF6;
+        Mon, 18 Apr 2022 13:04:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A8ACC385A7;
+        Mon, 18 Apr 2022 13:04:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286946;
-        bh=9h3qWQIunid/b67NFowk2rqFeeunuJL9m4q9QgAi42k=;
+        s=korg; t=1650287084;
+        bh=aJDnQahAdolgCm31aFSMor8WM5Dq3BlzHYzAoX8UhME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CkloBIRrQBwjM+tKTXqwaso1tgIzbjlXMCXjIRa01zL6jCq/x0Yl3YT4k4mYNoliX
-         6R1GjZh4Qa76lqG6oDeMoLgY8GQ8OedVyRDXMo7zxDzLkrQS7THdvLnav9GUZoNBYK
-         gNRGbWMU4OJtGwdoq/hS4OYwaeoZxiqmVzHq2gPw=
+        b=iXYK3ZCbzE5lhVeS3dDRmqCNLX9rT26EncnpKw06M2wMgnL4OiBms3xgHhB3S0Rp7
+         iQVsUjx8on+K4vX+7eG5c2znZtURpwmjMdom2kZ7s5khRzg/WzysWclcaRtB8c3irt
+         s3VIYjKbmMR0AMJVcf0p7zUzZqh1Fm4P1QmkCDtc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
-        Peter Rosin <peda@axentia.se>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 4.9 011/218] iio: inkern: apply consumer scale on IIO_VAL_INT cases
-Date:   Mon, 18 Apr 2022 14:11:17 +0200
-Message-Id: <20220418121159.264718626@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 053/218] perf/core: Fix address filter parser for multiple filters
+Date:   Mon, 18 Apr 2022 14:11:59 +0200
+Message-Id: <20220418121201.130751827@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -51,42 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liam Beguin <liambeguin@gmail.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-commit 1bca97ff95c732a516ebb68da72814194980e0a5 upstream.
+[ Upstream commit d680ff24e9e14444c63945b43a37ede7cd6958f9 ]
 
-When a consumer calls iio_read_channel_processed() and the channel has
-an integer scale, the scale channel scale is applied and the processed
-value is returned as expected.
+Reset appropriate variables in the parser loop between parsing separate
+filters, so that they do not interfere with parsing the next filter.
 
-On the other hand, if the consumer calls iio_convert_raw_to_processed()
-the scaling factor requested by the consumer is not applied.
-
-This for example causes the consumer to process mV when expecting uV.
-Make sure to always apply the scaling factor requested by the consumer.
-
-Fixes: 48e44ce0f881 ("iio:inkern: Add function to read the processed value")
-Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-Reviewed-by: Peter Rosin <peda@axentia.se>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220108205319.2046348-2-liambeguin@gmail.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 375637bc524952 ("perf/core: Introduce address range filtering")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220131072453.2839535-4-adrian.hunter@intel.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/inkern.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/events/core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -606,7 +606,7 @@ static int iio_convert_raw_to_processed_
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index e56a74fd5c81..396abd52962b 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -8306,8 +8306,11 @@ perf_event_parse_addr_filter(struct perf_event *event, char *fstr,
+ 			}
  
- 	switch (scale_type) {
- 	case IIO_VAL_INT:
--		*processed = raw64 * scale_val;
-+		*processed = raw64 * scale_val * scale;
- 		break;
- 	case IIO_VAL_INT_PLUS_MICRO:
- 		if (scale_val2 < 0)
+ 			/* ready to consume more filters */
++			kfree(filename);
++			filename = NULL;
+ 			state = IF_STATE_ACTION;
+ 			filter = NULL;
++			kernel = 0;
+ 		}
+ 	}
+ 
+-- 
+2.34.1
+
 
 
