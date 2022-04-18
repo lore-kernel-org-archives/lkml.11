@@ -2,46 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B25CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344086AbiDRO0h (ORCPT
+        id S1344248AbiDRO0o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60354 "EHLO
+        Mon, 18 Apr 2022 10:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343723AbiDROOi (ORCPT
+        with ESMTP id S1343601AbiDROQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:14:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B73638DBE;
-        Mon, 18 Apr 2022 06:12:21 -0700 (PDT)
+        Mon, 18 Apr 2022 10:16:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0682393E7;
+        Mon, 18 Apr 2022 06:12:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5225DB80EE6;
-        Mon, 18 Apr 2022 13:12:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F19BC385A7;
-        Mon, 18 Apr 2022 13:12:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2B2060F5D;
+        Mon, 18 Apr 2022 13:12:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60A16C385A1;
+        Mon, 18 Apr 2022 13:12:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287539;
-        bh=dk99TOL+/VO++yqo8+/tiH/fNUnVRRMiKxtzJMmGFyk=;
+        s=korg; t=1650287555;
+        bh=Ct3Z8JcrfFbNyKARuB9w5qVtGQ0IISxETKl3CPVyniM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fmvn6QIQiZOoYGuhGrnAO885XEulEU38ziqgk6GrDAynlg+L9wQKuxWFSQt4uIceV
-         sCxS8CJPPyse1fACmdJZr1SY4lA0LiXDifLuf0DZ8R2z8mMPFE5R7rrSxrudnhq9g0
-         74ZC/h6zIlh6pjyV8HPIi4PDSsiEiNr99PxG9940=
+        b=Hui+UAt9auF5a879jjN7/gPrhS0QXjTZRY4t3msdsV6T5W1mKzKG8wtH2Px0r4sMu
+         Q8mdEE+boUfJUu6+g+bwHQ8/OJVi1vPlw6nRQfIEKejKZPLmLBdZnm57hKgF/KRD7I
+         qasZRHcJo525gJL+COADrv8a7CrmGvXFI+x7awAI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        Michal Hocko <mhocko@suse.com>,
-        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.9 193/218] mm/mempolicy: fix mpol_new leak in shared_policy_replace
-Date:   Mon, 18 Apr 2022 14:14:19 +0200
-Message-Id: <20220418121206.922460672@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Fangrui Song <maskray@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Subject: [PATCH 4.9 197/218] tools build: Use $(shell ) instead of `` to get embedded libperls ccopts
+Date:   Mon, 18 Apr 2022 14:14:23 +0200
+Message-Id: <20220418121207.211341124@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -53,51 +58,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit 4ad099559b00ac01c3726e5c95dc3108ef47d03e upstream.
+commit 541f695cbcb6932c22638b06e0cbe1d56177e2e9 upstream.
 
-If mpol_new is allocated but not used in restart loop, mpol_new will be
-freed via mpol_put before returning to the caller.  But refcnt is not
-initialized yet, so mpol_put could not do the right things and might
-leak the unused mpol_new.  This would happen if mempolicy was updated on
-the shared shmem file while the sp->lock has been dropped during the
-memory allocation.
+Just like its done for ldopts and for both in tools/perf/Makefile.config.
 
-This issue could be triggered easily with the below code snippet if
-there are many processes doing the below work at the same time:
+Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
 
-  shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
-  shm = shmat(shmid, 0, 0);
-  loop many times {
-    mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
-    mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
-          maxnode, 0);
-  }
+  $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
 
-Link: https://lkml.kernel.org/r/20220329111416.27954-1-linmiaohe@huawei.com
-Fixes: 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: <stable@vger.kernel.org>	[3.8]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+And we need to do it to allow for building with versions of clang where
+some gcc options selected by distros are not available.
+
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Fangrui Song <maskray@google.com>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: John Keeping <john@metanate.com>
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Michael Petlan <mpetlan@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Link: http://lore.kernel.org/lkml/YktYX2OnLtyobRYD@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mempolicy.c |    1 +
- 1 file changed, 1 insertion(+)
+ tools/build/feature/Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/mempolicy.c
-+++ b/mm/mempolicy.c
-@@ -2499,6 +2499,7 @@ alloc_new:
- 	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
- 	if (!mpol_new)
- 		goto err_out;
-+	atomic_set(&mpol_new->refcnt, 1);
- 	goto restart;
- }
+--- a/tools/build/feature/Makefile
++++ b/tools/build/feature/Makefile
+@@ -162,7 +162,7 @@ strip-libs = $(filter-out -l%,$(1))
+ PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
+ PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
+ PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
+-PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
++PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
+ FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
  
+ $(OUTPUT)test-libperl.bin:
 
 
