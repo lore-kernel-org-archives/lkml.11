@@ -2,81 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE497C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FAAC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241569AbiDRNDM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
+        id S241518AbiDRNDI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240309AbiDRMyr (ORCPT
+        with ESMTP id S240237AbiDRMyr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:54:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410F013F36;
-        Mon, 18 Apr 2022 05:35:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C947E611C9;
-        Mon, 18 Apr 2022 12:35:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B961EC385A7;
-        Mon, 18 Apr 2022 12:35:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285301;
-        bh=f9YULfdDdfUm3+QZ9PxqPMzL3D8AJK7//f2Q9oOG6b8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jd4NfeYCyzbQhiFaXRpjnlTbUM5XFRkK8GMS7GONu6jAy8Q4SAEJ/8p8FhGkOdV3d
-         m6Taz8upYtcEZr5eYEbqBXB6g3aew7Ng+dVv46b/McsXHbVs48AopWf76igeoi2YfS
-         yXQ6jwlxK/U+lMWCrHD7lU6E4ezacAOXLu4gDb6Q=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <desowin@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 164/189] drm/amdgpu: Enable gfxoff quirk on MacBook Pro
-Date:   Mon, 18 Apr 2022 14:13:04 +0200
-Message-Id: <20220418121207.074886389@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
-References: <20220418121200.312988959@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8BC313DFC;
+        Mon, 18 Apr 2022 05:35:01 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id u5-20020a17090a6a8500b001d0b95031ebso6985564pjj.3;
+        Mon, 18 Apr 2022 05:35:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BwBQWoszPE0WyBmS8eEzNdPIlmwnL6neVdJfMqZdeYs=;
+        b=puV6g1yAwYY4foiMBzImH0StiMfyjOvPeJvoVgBw5FXrWP12gxeBSDewkBPPDL0UMP
+         OnsiSeTUOtD2dt28KD7TjjUfMcvCct7teSPmd01Mi++avp/moQxkogI9938ZARZOvatB
+         C4EScWnZgyPc73V+fzOmIWkXlnn8OLQTiVroOwHGt5yhPvFJkoyINAFS87YaVa3mGo38
+         VEGR6u6xAArgzgf7QhRhwcvQ75y5W/MgnOYNyz4cJ+9uIeKR2I13+vuEW7Zr/EKeibDw
+         shtLw3sOFM7PuhJQANQts3YHpCDaT3zWuqzqNXCIuetd6O1sjU+ogdCSvutPYNDmBp60
+         ffKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BwBQWoszPE0WyBmS8eEzNdPIlmwnL6neVdJfMqZdeYs=;
+        b=Xb8utgI4FArzRafGLJgLFuTd4xNzbFxyF3GkDn85H0HNmSTMcVbFTVeumyFDkBeDqX
+         z4h78P2QFEzjjVW0zTkYWbbCpnWxI+6HGmebgQw8Yd8GavDG9UArZ65ixsgI8KrPWglo
+         vRDlLuMGOrnugl5uYUj2ZPtuDEcwzKHuhpI+liiEF1GViP19Sstf7CmCRA0jXG3VL41S
+         w4c5a/njDXV2GJXFVC9DZRhkl7QXcJXlCfX764R1EZbdribBq/6agKvlmjhjqJa3DH0W
+         vWIgJrCgV+5Z7CJxvHHwQE734RR366P/jIR+9qnvfFmjWDdK+Q6ctS97tc5QKSwZwhvK
+         ipdQ==
+X-Gm-Message-State: AOAM533zzDQtTM6xXsKiJlKWNTduKJwwArHlLf3YTqM4TrdSJGTcHoo2
+        E+IwuDTiqZR+eDYJpL7318U=
+X-Google-Smtp-Source: ABdhPJzzDcDZsjDzFZEes1dI7IHd8sgP2uwsDyC+87JYg88yja6QtTIVb54SIoCzIBV43/NDyFAWCA==
+X-Received: by 2002:a17:902:e9c4:b0:158:f77d:afb7 with SMTP id 4-20020a170902e9c400b00158f77dafb7mr6454683plk.143.1650285300765;
+        Mon, 18 Apr 2022 05:35:00 -0700 (PDT)
+Received: from localhost ([58.251.76.82])
+        by smtp.gmail.com with ESMTPSA id y131-20020a626489000000b00505a8f36965sm12354645pfb.184.2022.04.18.05.35.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 05:35:00 -0700 (PDT)
+From:   Yunbo Yu <yuyunbo519@gmail.com>
+To:     oliver@neukum.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yunbo Yu <yuyunbo519@gmail.com>
+Subject: [PATCH] net: cdc-ncm:  Move spin_lock_bh() to spin_lock()
+Date:   Mon, 18 Apr 2022 20:34:38 +0800
+Message-Id: <20220418123438.1240676-1-yuyunbo519@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomasz Moń <desowin@gmail.com>
+It is unnecessary to call spin_lock_bh() for you are already in a tasklet.
 
-commit 4593c1b6d159f1e5c35c07a7f125e79e5a864302 upstream.
-
-Enabling gfxoff quirk results in perfectly usable graphical user
-interface on MacBook Pro (15-inch, 2019) with Radeon Pro Vega 20 4 GB.
-
-Without the quirk, X server is completely unusable as every few seconds
-there is gpu reset due to ring gfx timeout.
-
-Signed-off-by: Tomasz Moń <desowin@gmail.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Yunbo Yu <yuyunbo519@gmail.com>
 ---
- drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/usb/cdc_ncm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
-@@ -1272,6 +1272,8 @@ static const struct amdgpu_gfxoff_quirk
- 	{ 0x1002, 0x15dd, 0x103c, 0x83e7, 0xd3 },
- 	/* GFXOFF is unstable on C6 parts with a VBIOS 113-RAVEN-114 */
- 	{ 0x1002, 0x15dd, 0x1002, 0x15dd, 0xc6 },
-+	/* Apple MacBook Pro (15-inch, 2019) Radeon Pro Vega 20 4 GB */
-+	{ 0x1002, 0x69af, 0x106b, 0x019a, 0xc0 },
- 	{ 0, 0, 0, 0, 0 },
- };
+diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+index 15f91d691bba..cdca00c0dc1f 100644
+--- a/drivers/net/usb/cdc_ncm.c
++++ b/drivers/net/usb/cdc_ncm.c
+@@ -1492,19 +1492,19 @@ static void cdc_ncm_txpath_bh(struct tasklet_struct *t)
+ 	struct cdc_ncm_ctx *ctx = from_tasklet(ctx, t, bh);
+ 	struct usbnet *dev = ctx->dev;
  
-
+-	spin_lock_bh(&ctx->mtx);
++	spin_lock(&ctx->mtx);
+ 	if (ctx->tx_timer_pending != 0) {
+ 		ctx->tx_timer_pending--;
+ 		cdc_ncm_tx_timeout_start(ctx);
+-		spin_unlock_bh(&ctx->mtx);
++		spin_unlock(&ctx->mtx);
+ 	} else if (dev->net != NULL) {
+ 		ctx->tx_reason_timeout++;	/* count reason for transmitting */
+-		spin_unlock_bh(&ctx->mtx);
++		spin_unlock(&ctx->mtx);
+ 		netif_tx_lock_bh(dev->net);
+ 		usbnet_start_xmit(NULL, dev->net);
+ 		netif_tx_unlock_bh(dev->net);
+ 	} else {
+-		spin_unlock_bh(&ctx->mtx);
++		spin_unlock(&ctx->mtx);
+ 	}
+ }
+ 
+-- 
+2.25.1
 
