@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E02EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244296AbiDRNvN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
+        id S244418AbiDRNvT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244756AbiDRNax (ORCPT
+        with ESMTP id S244827AbiDRNa4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:53 -0400
+        Mon, 18 Apr 2022 09:30:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 952CB1E3EB;
-        Mon, 18 Apr 2022 05:55:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E92823178;
+        Mon, 18 Apr 2022 05:55:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2830CB80E59;
-        Mon, 18 Apr 2022 12:55:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D345C385A7;
-        Mon, 18 Apr 2022 12:55:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B5FAB80E59;
+        Mon, 18 Apr 2022 12:55:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E0BEC385A7;
+        Mon, 18 Apr 2022 12:55:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286511;
-        bh=/vo9wHODavLrYY0UOvwE17d6nscfMAo4Qh6ACDAZ+g0=;
+        s=korg; t=1650286534;
+        bh=9ZccqI90b3qVX+4AoLo9RewB1wZ3Yplw1h5YSy2D9L0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qrriEQerAho5LfnZPx0QzV+MU4VHWnl7pe6WPt7bKN2kTyOcsNdiF51hxOq0lNDuA
-         S2J/uxc01pa+1YaEp78kA/T0xDeS5uKgDgy8FvG8afMxyQb5uOGzhBxLViaJOvad5V
-         U9lzPlO6wJzk3VSLaqhVT6h3XrmLRNXy6Jd3K7Yc=
+        b=vrrVhSREw/t7N+lrT6hjaSluzkxYO7AlArU4Kf9+vffpGo7yWFtX+3E4GCZKXrSvh
+         o5o6Jb6eI/ZDstsnDL/lCRxVkwdp/F5rutl3B09f4N52EVSxlVa2KKIyeDqL65YMmG
+         DYB7IDf/0a3VHVWZD8ogu9Ad3/JZOxv62wkOLdAc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Casey Schaufler <casey@schaufler-ca.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 157/284] Fix incorrect type in assignment of ipv6 port for audit
-Date:   Mon, 18 Apr 2022 14:12:18 +0200
-Message-Id: <20220418121216.202810958@linuxfoundation.org>
+Subject: [PATCH 4.14 128/284] mfd: asic3: Add missing iounmap() on error asic3_mfd_probe
+Date:   Mon, 18 Apr 2022 14:11:49 +0200
+Message-Id: <20220418121214.893176962@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,33 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Casey Schaufler <casey@schaufler-ca.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit a5cd1ab7ab679d252a6d2f483eee7d45ebf2040c ]
+[ Upstream commit e84ee1a75f944a0fe3c277aaa10c426603d2b0bc ]
 
-Remove inappropriate use of ntohs() and assign the
-port value directly.
+Add the missing iounmap() before return from asic3_mfd_probe
+in the error handling case.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+Fixes: 64e8867ba809 ("mfd: tmio_mmc hardware abstraction for CNF area")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20220307072947.5369-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/smack/smack_lsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mfd/asic3.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
-index a0e1b99212b2..fe070669dc18 100644
---- a/security/smack/smack_lsm.c
-+++ b/security/smack/smack_lsm.c
-@@ -2563,7 +2563,7 @@ static int smk_ipv6_check(struct smack_known *subject,
- #ifdef CONFIG_AUDIT
- 	smk_ad_init_net(&ad, __func__, LSM_AUDIT_DATA_NET, &net);
- 	ad.a.u.net->family = PF_INET6;
--	ad.a.u.net->dport = ntohs(address->sin6_port);
-+	ad.a.u.net->dport = address->sin6_port;
- 	if (act == SMK_RECEIVING)
- 		ad.a.u.net->v6info.saddr = address->sin6_addr;
- 	else
+diff --git a/drivers/mfd/asic3.c b/drivers/mfd/asic3.c
+index cf2e25ab2940..21424c43ba72 100644
+--- a/drivers/mfd/asic3.c
++++ b/drivers/mfd/asic3.c
+@@ -915,14 +915,14 @@ static int __init asic3_mfd_probe(struct platform_device *pdev,
+ 		ret = mfd_add_devices(&pdev->dev, pdev->id,
+ 			&asic3_cell_ds1wm, 1, mem, asic->irq_base, NULL);
+ 		if (ret < 0)
+-			goto out;
++			goto out_unmap;
+ 	}
+ 
+ 	if (mem_sdio && (irq >= 0)) {
+ 		ret = mfd_add_devices(&pdev->dev, pdev->id,
+ 			&asic3_cell_mmc, 1, mem_sdio, irq, NULL);
+ 		if (ret < 0)
+-			goto out;
++			goto out_unmap;
+ 	}
+ 
+ 	ret = 0;
+@@ -936,8 +936,12 @@ static int __init asic3_mfd_probe(struct platform_device *pdev,
+ 		ret = mfd_add_devices(&pdev->dev, 0,
+ 			asic3_cell_leds, ASIC3_NUM_LEDS, NULL, 0, NULL);
+ 	}
++	return ret;
+ 
+- out:
++out_unmap:
++	if (asic->tmio_cnf)
++		iounmap(asic->tmio_cnf);
++out:
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
