@@ -2,104 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA89C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:57:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C6AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:57:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240361AbiDRNAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56212 "EHLO
+        id S240546AbiDRNAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239795AbiDRMro (ORCPT
+        with ESMTP id S239866AbiDRMrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:47:44 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3768E2A263
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:33:18 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id i27so26576948ejd.9
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:33:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9HCxKtGYnrYzRWcKvwUpWOME3pq91zTtzI7mYRWUSFk=;
-        b=omx+m7v2RoJtfSG2aBLdGa7HxZ7GfNpOCDmVlxW4PKxzVm+w1oFeS8L9arLKLYcJzv
-         RMWOd/zQBkle+usHZmChfJtCBv8azcEwloUbGAH+KoQrcSvqN+lI3h/c5RGmSYGpaOR0
-         GYEEnaUljNV5D0jBjC6fDBOkm77MBEHlezkgNINExr594gl09vf249YnLxV2fwa4YGR8
-         MkmUxSHxuEF8guisk3KJ3SXsWc2RX8N5BZsaapUsrsTLSYJwhWTxVoKkqoTmMXRf3WSP
-         m8eNnbMvQ1XYQ8Lif8H8RBk2yImxaPrH/tlSLOhUybUgsqAx059etvXaxcpEhaNINH5+
-         IGXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9HCxKtGYnrYzRWcKvwUpWOME3pq91zTtzI7mYRWUSFk=;
-        b=6KewlSP69/Rd9l4c6nXqm95ObThaHdsH4jKxvA03295Xn4q+R98VlocVlQFUDNK+UF
-         0YIi+xoQMh1nVj3nbS/CcomwNPLo7HpPRI4UhS6VPoIY1sxUhWflL8LKQzdl0E9uJx1h
-         SwnZ6AYGJU/v/GAef4qsh2b5Mbphu1EZkrewMleGWoFTQvmdnRz69MA+47GHx0dJZcRP
-         prtuHY1wUiDRWDwoJ5hrPVWyKjwMBwShXegzFoc9ZF+DFzVsqOenKpaI1Yzebna6oF3F
-         akp2TS2rCdTLY1I/Kgq4Z4fy283mk5HVzo5UTrCtq0+7o97lquNlDEZh3m85DmKq11Bg
-         q78A==
-X-Gm-Message-State: AOAM532+xkD0AA3OejmjVUm9P13YmU5V72u4Oed8cmWtFx5L8K50jp+R
-        7un5elfCPveWANazZGZ5ZUd+7Q==
-X-Google-Smtp-Source: ABdhPJySfcNdNNLWRKDZXDnSJYYxL3w0tDnKnsqG//kUAd5ueSM6aLRRtj+zFxoAvXaGXWkDSeWGFg==
-X-Received: by 2002:a17:907:86a8:b0:6e8:d649:5e2e with SMTP id qa40-20020a17090786a800b006e8d6495e2emr8989506ejc.276.1650285196630;
-        Mon, 18 Apr 2022 05:33:16 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i1-20020a1709064ec100b006e89dfff2d6sm4596844ejv.141.2022.04.18.05.33.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 05:33:16 -0700 (PDT)
-Message-ID: <8c880b7a-ddb8-dea1-40c1-892247c6439d@linaro.org>
-Date:   Mon, 18 Apr 2022 14:33:15 +0200
+        Mon, 18 Apr 2022 08:47:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBCA2A719;
+        Mon, 18 Apr 2022 05:33:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA22E60F0E;
+        Mon, 18 Apr 2022 12:33:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B39DC385A7;
+        Mon, 18 Apr 2022 12:33:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650285202;
+        bh=k0wSfYR0ig7xQ4rb/4er1kpUOZcttmdGmeX4lBcM9V8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PXRTHkOkQ5PvKVEbhbOv/oIXY05ETF3r6b0LiPkT54EuymrufwT7rWB59Jn86KFQX
+         veot/9yer1aXujVGchVJ4eJGyYkYX9s8tzF0+zup1wban9s/m1HRRsiixWUogNjtqo
+         ldIIVjbDB6IubEpojybt5iMaVomGTGoEGFpTkprQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steve Capper <steve.capper@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 127/189] tlb: hugetlb: Add more sizes to tlb_remove_huge_tlb_entry
+Date:   Mon, 18 Apr 2022 14:12:27 +0200
+Message-Id: <20220418121204.606416389@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
+References: <20220418121200.312988959@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 02/23] ARM: dts: qcom-msm8974: Remove properties that are
- always overriden
-Content-Language: en-US
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220415115633.575010-1-konrad.dybcio@somainline.org>
- <20220415115633.575010-3-konrad.dybcio@somainline.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220415115633.575010-3-konrad.dybcio@somainline.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/04/2022 13:56, Konrad Dybcio wrote:
-> Model and compatible are set per-device, so having them in the SoC DTSI is
-> superfluous. Remove them.
-> 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> ---
->  arch/arm/boot/dts/qcom-msm8974.dtsi | 2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-> index 412d94736c35..e216630a1d02 100644
-> --- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-> +++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-> @@ -12,8 +12,6 @@
->  / {
->  	#address-cells = <1>;
->  	#size-cells = <1>;
-> -	model = "Qualcomm MSM8974";
-> -	compatible = "qcom,msm8974";
+From: Steve Capper <steve.capper@arm.com>
 
-The compatible by convention is in the DTSI, even if it is not actually
-used, it gives clear information what is the expected fallback.
+[ Upstream commit 697a1d44af8ba0477ee729e632f4ade37999249a ]
 
-Best regards,
-Krzysztof
+tlb_remove_huge_tlb_entry only considers PMD_SIZE and PUD_SIZE when
+updating the mmu_gather structure.
+
+Unfortunately on arm64 there are two additional huge page sizes that
+need to be covered: CONT_PTE_SIZE and CONT_PMD_SIZE. Where an end-user
+attempts to employ contiguous huge pages, a VM_BUG_ON can be experienced
+due to the fact that the tlb structure hasn't been correctly updated by
+the relevant tlb_flush_p.._range() call from tlb_remove_huge_tlb_entry.
+
+This patch adds inequality logic to the generic implementation of
+tlb_remove_huge_tlb_entry s.t. CONT_PTE_SIZE and CONT_PMD_SIZE are
+effectively covered on arm64. Also, as well as ptes, pmds and puds;
+p4ds are now considered too.
+
+Reported-by: David Hildenbrand <david@redhat.com>
+Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/linux-mm/811c5c8e-b3a2-85d2-049c-717f17c3a03a@redhat.com/
+Signed-off-by: Steve Capper <steve.capper@arm.com>
+Acked-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220330112543.863-1-steve.capper@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ include/asm-generic/tlb.h | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
+index 2c68a545ffa7..71942a1c642d 100644
+--- a/include/asm-generic/tlb.h
++++ b/include/asm-generic/tlb.h
+@@ -565,10 +565,14 @@ static inline void tlb_flush_p4d_range(struct mmu_gather *tlb,
+ #define tlb_remove_huge_tlb_entry(h, tlb, ptep, address)	\
+ 	do {							\
+ 		unsigned long _sz = huge_page_size(h);		\
+-		if (_sz == PMD_SIZE)				\
+-			tlb_flush_pmd_range(tlb, address, _sz);	\
+-		else if (_sz == PUD_SIZE)			\
++		if (_sz >= P4D_SIZE)				\
++			tlb_flush_p4d_range(tlb, address, _sz);	\
++		else if (_sz >= PUD_SIZE)			\
+ 			tlb_flush_pud_range(tlb, address, _sz);	\
++		else if (_sz >= PMD_SIZE)			\
++			tlb_flush_pmd_range(tlb, address, _sz);	\
++		else						\
++			tlb_flush_pte_range(tlb, address, _sz);	\
+ 		__tlb_remove_tlb_entry(tlb, ptep, address);	\
+ 	} while (0)
+ 
+-- 
+2.35.1
+
+
+
