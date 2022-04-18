@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53203C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C2C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239371AbiDRMgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50958 "EHLO
+        id S239377AbiDRMg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238968AbiDRMaZ (ORCPT
+        with ESMTP id S238894AbiDRMaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:30:25 -0400
+        Mon, 18 Apr 2022 08:30:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC65720BF9;
-        Mon, 18 Apr 2022 05:23:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA482458E;
+        Mon, 18 Apr 2022 05:23:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9FC860FB6;
-        Mon, 18 Apr 2022 12:23:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDC69C385A7;
-        Mon, 18 Apr 2022 12:23:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B73DD60FB6;
+        Mon, 18 Apr 2022 12:23:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BFFAC385A1;
+        Mon, 18 Apr 2022 12:23:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284616;
-        bh=hV4sZbdWRl5CDXKOmPmgx+SZXH3jUf1gWjRJWhZ0+J0=;
+        s=korg; t=1650284610;
+        bh=bjCjhv8haIP+MHw/BiUZCXR2FoFiviSuC5QqBleHCf0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1YhncvQ6uCWbEAAas/P4Gemf6kcFdNQ5xHrQz7L8cEqPSeEVV7wMk4oSDSkazYLE/
-         50FI/76TPxpcrLw5KORCXJXBSg/CyLNXJqtdi7gKJ+z5qiWowgzRLDcoKbxBTq2kgL
-         WbQUya+7E2/atwD5ArFs7tABot85lxYO57k72tUI=
+        b=p4pZX3nDQwv789XLOKKFXUBLfVoQGJdv7QFWKsxri31bPpHd6snxODgxVguTj1p/B
+         b58CM2ord8+TZiAkm6IFeMj5UDiFrSbXqb6th2WTIWX131Urvw9nauVGt95NnvoJ3g
+         W200j89S4H2INhYqlcICGayG8aqvBIM6kGzZCFxM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Guchun Chen <guchun.chen@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 170/219] drivers: net: slip: fix NPD bug in sl_tx_timeout()
-Date:   Mon, 18 Apr 2022 14:12:19 +0200
-Message-Id: <20220418121211.639853201@linuxfoundation.org>
+Subject: [PATCH 5.17 133/219] drm/amdgpu: conduct a proper cleanup of PDB bo
+Date:   Mon, 18 Apr 2022 14:11:42 +0200
+Message-Id: <20220418121210.617946033@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,58 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Guchun Chen <guchun.chen@amd.com>
 
-[ Upstream commit ec4eb8a86ade4d22633e1da2a7d85a846b7d1798 ]
+[ Upstream commit 2d505453f38e18d42ba7d5428aaa17aaa7752c65 ]
 
-When a slip driver is detaching, the slip_close() will act to
-cleanup necessary resources and sl->tty is set to NULL in
-slip_close(). Meanwhile, the packet we transmit is blocked,
-sl_tx_timeout() will be called. Although slip_close() and
-sl_tx_timeout() use sl->lock to synchronize, we don`t judge
-whether sl->tty equals to NULL in sl_tx_timeout() and the
-null pointer dereference bug will happen.
+Use amdgpu_bo_free_kernel instead of amdgpu_bo_unref to
+perform a proper cleanup of PDB bo.
 
-   (Thread 1)                 |      (Thread 2)
-                              | slip_close()
-                              |   spin_lock_bh(&sl->lock)
-                              |   ...
-...                           |   sl->tty = NULL //(1)
-sl_tx_timeout()               |   spin_unlock_bh(&sl->lock)
-  spin_lock(&sl->lock);       |
-  ...                         |   ...
-  tty_chars_in_buffer(sl->tty)|
-    if (tty->ops->..) //(2)   |
-    ...                       |   synchronize_rcu()
+v2: update subject to be more accurate
 
-We set NULL to sl->tty in position (1) and dereference sl->tty
-in position (2).
-
-This patch adds check in sl_tx_timeout(). If sl->tty equals to
-NULL, sl_tx_timeout() will goto out.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Link: https://lore.kernel.org/r/20220405132206.55291-1-duoming@zju.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Guchun Chen <guchun.chen@amd.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/slip/slip.c | 2 +-
+ drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
-index 98f586f910fb..8ed4fcf70b9b 100644
---- a/drivers/net/slip/slip.c
-+++ b/drivers/net/slip/slip.c
-@@ -469,7 +469,7 @@ static void sl_tx_timeout(struct net_device *dev, unsigned int txqueue)
- 	spin_lock(&sl->lock);
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
+index 88c1eb9ad068..34ee75cf7954 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
+@@ -1684,7 +1684,7 @@ static int gmc_v9_0_sw_fini(void *handle)
+ 	amdgpu_gem_force_release(adev);
+ 	amdgpu_vm_manager_fini(adev);
+ 	amdgpu_gart_table_vram_free(adev);
+-	amdgpu_bo_unref(&adev->gmc.pdb0_bo);
++	amdgpu_bo_free_kernel(&adev->gmc.pdb0_bo, NULL, &adev->gmc.ptr_pdb0);
+ 	amdgpu_bo_fini(adev);
  
- 	if (netif_queue_stopped(dev)) {
--		if (!netif_running(dev))
-+		if (!netif_running(dev) || !sl->tty)
- 			goto out;
- 
- 		/* May be we must check transmitter timeout here ?
+ 	return 0;
 -- 
 2.35.1
 
