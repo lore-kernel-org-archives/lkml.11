@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF022C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE29FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343801AbiDRO0L (ORCPT
+        id S1344149AbiDRO0U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:26:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52090 "EHLO
+        Mon, 18 Apr 2022 10:26:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343727AbiDROOi (ORCPT
+        with ESMTP id S1343789AbiDROPL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:14:38 -0400
+        Mon, 18 Apr 2022 10:15:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D1439157;
-        Mon, 18 Apr 2022 06:12:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4134D39174;
+        Mon, 18 Apr 2022 06:12:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FE6760F61;
-        Mon, 18 Apr 2022 13:12:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 942E3C385AF;
-        Mon, 18 Apr 2022 13:12:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E40BE60F5E;
+        Mon, 18 Apr 2022 13:12:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D59BEC385A1;
+        Mon, 18 Apr 2022 13:12:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287542;
-        bh=D9jDLCe4MqfUvLSNeM+CrpvYnD79pR+M4WZpoFClI+o=;
+        s=korg; t=1650287545;
+        bh=WPAAcC7kSapU3mc21ao52WZ8etMOXiQhVcSzwi8OGu4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eu1OELzEStTt0dNL5A/Pd4yE4Xgm089glfTHDKoHy1e15h3lQC6hTdlSxr6kleC4u
-         EpZnXNehVgJcvA/ghoGTa1BMN7gdjvlCaIwavHPQsIAd3LB5Tl1jdB9k6J6rYhAaO5
-         fkP6G9L5KfaN34qhA2cIr/DJIR8K6r1uf5HBneHE=
+        b=dhYtmZYT4OO3HR6YUPlWbxbmWXhKtbTjulzGGjnwSS1zjYksnd4Y4zt4KQj51+Znx
+         +G/5hGGPgqDC6kfZeY9YYU5U/ljAqkuQqhVWnRq6vsS4hNqRIjHY68xAuO2r7mqE0j
+         FOJwi0AybCAQQ6cnACAyJjZZseiRLQ4djJJI0KNk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.9 194/218] x86/pm: Save the MSR validity status at context setup
-Date:   Mon, 18 Apr 2022 14:14:20 +0200
-Message-Id: <20220418121206.989865358@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Kiselev <bigunclemax@gmail.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 168/218] powerpc: dts: t104xrdb: fix phy type for FMAN 4/5
+Date:   Mon, 18 Apr 2022 14:13:54 +0200
+Message-Id: <20220418121205.237320854@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -51,55 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Maxim Kiselev <bigunclemax@gmail.com>
 
-commit 73924ec4d560257004d5b5116b22a3647661e364 upstream.
+[ Upstream commit 17846485dff91acce1ad47b508b633dffc32e838 ]
 
-The mechanism to save/restore MSRs during S3 suspend/resume checks for
-the MSR validity during suspend, and only restores the MSR if its a
-valid MSR.  This is not optimal, as an invalid MSR will unnecessarily
-throw an exception for every suspend cycle.  The more invalid MSRs,
-higher the impact will be.
+T1040RDB has two RTL8211E-VB phys which requires setting
+of internal delays for correct work.
 
-Check and save the MSR validity at setup.  This ensures that only valid
-MSRs that are guaranteed to not throw an exception will be attempted
-during suspend.
+Changing the phy-connection-type property to `rgmii-id`
+will fix this issue.
 
-Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Acked-by: Borislav Petkov <bp@suse.de>
-Cc: stable@vger.kernel.org
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
+Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211230151123.1258321-1-bigunclemax@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/power/cpu.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/powerpc/boot/dts/fsl/t104xrdb.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/x86/power/cpu.c
-+++ b/arch/x86/power/cpu.c
-@@ -41,7 +41,8 @@ static void msr_save_context(struct save
- 	struct saved_msr *end = msr + ctxt->saved_msrs.num;
+diff --git a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
+index 5fdddbd2a62b..b0a9beab1c26 100644
+--- a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
++++ b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
+@@ -139,12 +139,12 @@
+ 		fman@400000 {
+ 			ethernet@e6000 {
+ 				phy-handle = <&phy_rgmii_0>;
+-				phy-connection-type = "rgmii";
++				phy-connection-type = "rgmii-id";
+ 			};
  
- 	while (msr < end) {
--		msr->valid = !rdmsrl_safe(msr->info.msr_no, &msr->info.reg.q);
-+		if (msr->valid)
-+			rdmsrl(msr->info.msr_no, msr->info.reg.q);
- 		msr++;
- 	}
- }
-@@ -419,8 +420,10 @@ static int msr_build_context(const u32 *
- 	}
+ 			ethernet@e8000 {
+ 				phy-handle = <&phy_rgmii_1>;
+-				phy-connection-type = "rgmii";
++				phy-connection-type = "rgmii-id";
+ 			};
  
- 	for (i = saved_msrs->num, j = 0; i < total_num; i++, j++) {
-+		u64 dummy;
-+
- 		msr_array[i].info.msr_no	= msr_id[j];
--		msr_array[i].valid		= false;
-+		msr_array[i].valid		= !rdmsrl_safe(msr_id[j], &dummy);
- 		msr_array[i].info.reg.q		= 0;
- 	}
- 	saved_msrs->num   = total_num;
+ 			mdio0: mdio@fc000 {
+-- 
+2.35.1
+
 
 
