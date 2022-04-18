@@ -2,204 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50521C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 10:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D91E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 10:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237556AbiDRK6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 06:58:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60714 "EHLO
+        id S237760AbiDRK6g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 06:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231597AbiDRK6E (ORCPT
+        with ESMTP id S231597AbiDRK6e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 06:58:04 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6896F15FEF
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 03:55:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650279325; x=1681815325;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=llwcnFLx36bN1ZmcQDa7xMt2LunjsAua0nmOtxR10c4=;
-  b=Nb7svxvtaCHagn9ZnarJodisKNoOKW4R1tiDnije3aDEJLa7tEn66SDd
-   r5Fi+jm0IwaSlV7Ocp3Cvv8stlZFv6T7tRjrQbct9xm2roH8w+ZC655uA
-   MVY6oVQxDwvb0R3B81UAADM8HQUuLx1PNDENHSGXzOmj+UwJ++U6D66Ow
-   XRV+8KokmoCNNjSuql7kfih6/xpTVl6B0XEiqWJkgWcdknmK3Z71p2VBM
-   cfkAulP2sFs6+r3AayegB114a4IriXwKDyGqC2ipR1xRT2vyS2B8Fm2JE
-   kLpZmzelkusyH4tOLr34sqYiDcjz9OEg6CGRxLLLHWfFOr65dZTY+1STd
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10320"; a="326397817"
-X-IronPort-AV: E=Sophos;i="5.90,269,1643702400"; 
-   d="scan'208";a="326397817"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 03:55:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,269,1643702400"; 
-   d="scan'208";a="646829638"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 18 Apr 2022 03:55:23 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngP2Q-0004Z5-FV;
-        Mon, 18 Apr 2022 10:55:22 +0000
-Date:   Mon, 18 Apr 2022 18:54:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nemanja Rakovic <nemanja.rakovic@syrmia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: mips64-linux-ld: warning: orphan section `.ctors.65436' from
- `init/main.o' being placed in section `.ctors.65436'
-Message-ID: <202204181801.r3MMkwJv-lkp@intel.com>
+        Mon, 18 Apr 2022 06:58:34 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2415119C2E
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 03:55:56 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id d14so1823247qtw.5
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 03:55:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=04JNQ4bNSWDf9nai4sAo8uNf8YU45zdAqbc+gwJY/Os=;
+        b=L8QgQHgaLGvKMHF5Cn0gPx8KthUCv7F5DASuU0w83wfC4qP1QWP5tnjqNJ/PL0IW+s
+         qwxtvzrSE8oMw24QsmvtNkh1flxQNxzT44tOV8LtU/Ch0Do1KPbQ1IHzVVgy279vv/Gc
+         BmTWjXqltOCRGhFjwMe4q0P6Q2wuro597uPlXhjBAzvpQTRc1wdvZ312A5zHF3iA7i0a
+         W1qnDSqEheJnoc7P+U51c5+h4Wg/7TdDltSOO31YR5DHhbVJXMuYmbwzPg7R0P/kgQ+J
+         77zdLt3Cpk5US/tnSdytC2TB4GteNhxdD90NA4lZYHwMJknFv5cNBUA9g5ysHTejwTZB
+         V5Tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=04JNQ4bNSWDf9nai4sAo8uNf8YU45zdAqbc+gwJY/Os=;
+        b=kAkz8LCKiwuzuJF3HKLz50+YVof7i81l+Ss5vc90RcSb53qlxmw2q+Z1QHQ/QaNtnm
+         VwtzExjSc7YUoiK5WPeWqlWm6EIU9Us+C3gvpM80FYA6Q7vb48NlomoXGOlGcpLUUE+J
+         bj+rwso56Bwm3sv+FVVq+q3O/gUYjEeK0y9sGxbDKDU3zwvCkE0wcsb+9MXj/pjtYImY
+         3ZaIjI9f3wJ5iD3ChZFT7XRVUWQL2hit/UHitpANXXHkkxY8MhSaqWt3z+WxbdnnPxWz
+         7q8HKbKwJcWG4soQASzBpUCx8eOn0FkkAmay5NKUY+yDnp22RU27WWmwvkZUI7icpfCt
+         Lg7Q==
+X-Gm-Message-State: AOAM533hsBKWfTW39INR7K+WQ5yfawGW8BYMiOvGxhzVMxBRwpSNy5xs
+        pT8ZF34y4KRSkx9JKJbaYio=
+X-Google-Smtp-Source: ABdhPJyIahOd8LheVs5dSWdbwkvdAFmtzyN6uLbgaP4/mPBCrW3brMLgzIUVShvTAGKnO2Vh6xzAsg==
+X-Received: by 2002:ac8:7fcc:0:b0:2f2:5bf:6c with SMTP id b12-20020ac87fcc000000b002f205bf006cmr501496qtk.655.1650279355332;
+        Mon, 18 Apr 2022 03:55:55 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id i17-20020a05620a405100b0069c45deb548sm6909392qko.130.2022.04.18.03.55.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 03:55:55 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     han.xu@nxp.com
+Cc:     miquel.raynal@bootlin.com, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] mtd: nand: gpmi-nand: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Mon, 18 Apr 2022 10:55:49 +0000
+Message-Id: <20220418105549.2558765-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   59250f8a7f3a60a2661b84cbafc1e0eb5d05ec9b
-commit: e0a8b93efa2382d370be44bf289157de7e5dacb4 mips: Enable KCSAN
-date:   2 months ago
-config: mips-randconfig-r015-20220414 (https://download.01.org/0day-ci/archive/20220418/202204181801.r3MMkwJv-lkp@intel.com/config)
-compiler: mips64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e0a8b93efa2382d370be44bf289157de7e5dacb4
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout e0a8b93efa2382d370be44bf289157de7e5dacb4
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Using pm_runtime_resume_and_get is more appropriate
+for simplifing code
 
-All warnings (new ones prefixed by >>):
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `init/main.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `init/version.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `init/do_mounts.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `init/do_mounts_initrd.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `init/initramfs.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `init/calibrate.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `init/init_task.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/sgi-ip22/ip22-mc.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/sgi-ip22/ip22-hpc.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/sgi-ip22/ip22-int.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/sgi-ip22/ip22-time.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/sgi-ip22/ip22-nvram.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/sgi-ip22/ip22-platform.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/sgi-ip22/ip22-reset.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/sgi-ip22/ip22-setup.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/sgi-ip22/ip22-gio.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/sgi-ip22/ip28-berr.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/sgi-ip22/ip22-eisa.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/branch.o' being placed in section `.ctors.65436'
->> mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/cmpxchg.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/elf.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/idle.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/irq.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/process.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/prom.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/ptrace.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/reset.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/setup.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/signal.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/syscall.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/time.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/topology.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/traps.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/unaligned.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/watch.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/vdso.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/cacheinfo.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/cpu-probe.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/cevt-r4k.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/csrc-r4k.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/segment.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/stacktrace.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/module.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/ftrace.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/fpu-probe.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/kprobes.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/proc.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/sysrq.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/i8253.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/machine_kexec.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/crash.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/crash_dump.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/early_printk.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/spinlock_test.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/jump_label.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/kernel/pm.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/cache.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/context.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/extable.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/fault.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/init.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/mmap.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/page.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/pgtable.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/tlbex.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/uasm-mips.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/maccess.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/ioremap64.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/pgtable-64.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/hugetlbpage.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/dma-noncoherent.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/c-r4k.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/tlb-r4k.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/mm/sc-debugfs.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/net/bpf_jit_comp.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `arch/mips/net/bpf_jit_comp64.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/fork.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/exec_domain.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/panic.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/cpu.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/exit.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/resource.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/sysctl.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/capability.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/ptrace.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/user.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/signal.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/sys.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/umh.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/workqueue.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/pid.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/task_work.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/extable.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/params.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/kthread.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/sys_ni.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/nsproxy.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/notifier.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/ksysfs.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/cred.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/reboot.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/async.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/range.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/smpboot.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/ucount.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/regset.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/kmod.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/groups.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/locking/mutex.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/locking/semaphore.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/locking/rwsem.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/locking/percpu-rwsem.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/locking/irqflag-debug.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/locking/mutex-debug.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/locking/lockdep_proc.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/locking/spinlock.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/locking/rtmutex_api.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/locking/spinlock_debug.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/locking/test-ww_mutex.o' being placed in section `.ctors.65436'
-   mips64-linux-ld: warning: orphan section `.ctors.65436' from `kernel/locking/lock_events.o' being placed in section `.ctors.65436'
-
+diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+index 44b14c9dc9a7..6e7477aef8a7 100644
+--- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
++++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+@@ -148,11 +148,9 @@ static int gpmi_init(struct gpmi_nand_data *this)
+ 	struct resources *r = &this->resources;
+ 	int ret;
+ 
+-	ret = pm_runtime_get_sync(this->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(this->dev);
++	ret = pm_runtime_resume_and_get(this->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	ret = gpmi_reset_block(r->gpmi_regs, false);
+ 	if (ret)
+@@ -544,11 +542,9 @@ static int bch_set_geometry(struct gpmi_nand_data *this)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = pm_runtime_get_sync(this->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_autosuspend(this->dev);
++	ret = pm_runtime_resume_and_get(this->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	/*
+ 	* Due to erratum #2847 of the MX23, the BCH cannot be soft reset on this
+@@ -2286,11 +2282,9 @@ static int gpmi_nfc_exec_op(struct nand_chip *chip,
+ 	for (i = 0; i < GPMI_MAX_TRANSFERS; i++)
+ 		this->transfers[i].direction = DMA_NONE;
+ 
+-	ret = pm_runtime_get_sync(this->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(this->dev);
++	ret = pm_runtime_resume_and_get(this->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	/*
+ 	 * This driver currently supports only one NAND chip. Plus, dies share
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
+
