@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A64C3527A
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D3D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344957AbiDROSh (ORCPT
+        id S1345345AbiDROTB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:18:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49820 "EHLO
+        Mon, 18 Apr 2022 10:19:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244842AbiDRN57 (ORCPT
+        with ESMTP id S244620AbiDRN73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:57:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B984BFF;
-        Mon, 18 Apr 2022 06:08:04 -0700 (PDT)
+        Mon, 18 Apr 2022 09:59:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB60D2B267;
+        Mon, 18 Apr 2022 06:08:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A2BAB80E4B;
-        Mon, 18 Apr 2022 13:08:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F90CC385A1;
-        Mon, 18 Apr 2022 13:08:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7301760EFE;
+        Mon, 18 Apr 2022 13:08:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84143C385A1;
+        Mon, 18 Apr 2022 13:08:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287281;
-        bh=YUV1OXIkRHuZ2oAkHqjnVHkk/yQd4mxc4AY70g9ACY0=;
+        s=korg; t=1650287304;
+        bh=ofJ4spLJs3LiYL83YZiZiU6lv3R1zdUaKtVleqjM0Us=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sCECPCia/PYeWmxwDiqyhBrqyi2ptaFckTN6GX3+n2JywP04eDOKi3X6QmjCkDND/
-         ctUIqNmRrvS9TwNf/OhX4cE1WvDyX+RVf1bhWweQKk3vfnKxVi7DEc7dZncK3Rrd8h
-         Zb0PzyhCXyyrdCn4WEbDcJcNLjiPj8GCgnJq+R3g=
+        b=jNLKZN+gdxNxa7H2zR67sFw+yOxQrYES/sCgsu8Sskc4qvrPjCZ3tKkdfILFfSTcW
+         3njDtvlk/WNkUaFb3hxXYCLt5QkgPWsnruBS+DijP486wdBhrYTK2NRaF4JcZDsIY8
+         5+mYa4OGvj60/hkpsDEOcjfVrX/bGNyMKlp6kuqk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 112/218] pinctrl: mediatek: Fix missing of_node_put() in mtk_pctrl_init
-Date:   Mon, 18 Apr 2022 14:12:58 +0200
-Message-Id: <20220418121202.801456954@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+46f5c25af73eb8330eb6@syzkaller.appspotmail.com
+Subject: [PATCH 4.9 118/218] jfs: fix divide error in dbNextAG
+Date:   Mon, 18 Apr 2022 14:13:04 +0200
+Message-Id: <20220418121202.970689228@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -52,43 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit dab4df9ca919f59e5b9dd84385eaf34d4f20dbb0 ]
+[ Upstream commit 2cc7cc01c15f57d056318c33705647f87dcd4aab ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+Syzbot reported divide error in dbNextAG(). The problem was in missing
+validation check for malicious image.
 
-Fixes: a6df410d420a ("pinctrl: mediatek: Add Pinctrl/GPIO driver for mt8135.")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220308071155.21114-1-linmq006@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Syzbot crafted an image with bmp->db_numag equal to 0. There wasn't any
+validation checks, but dbNextAG() blindly use bmp->db_numag in divide
+expression
+
+Fix it by validating bmp->db_numag in dbMount() and return an error if
+image is malicious
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-and-tested-by: syzbot+46f5c25af73eb8330eb6@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mediatek/pinctrl-mtk-common.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/jfs/jfs_dmap.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-index f9aef2ac03a1..4cce72017109 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-@@ -1355,6 +1355,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
- 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 0);
- 	if (node) {
- 		pctl->regmap1 = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(pctl->regmap1))
- 			return PTR_ERR(pctl->regmap1);
- 	} else if (regmap) {
-@@ -1368,6 +1369,7 @@ int mtk_pctrl_init(struct platform_device *pdev,
- 	node = of_parse_phandle(np, "mediatek,pctl-regmap", 1);
- 	if (node) {
- 		pctl->regmap2 = syscon_node_to_regmap(node);
-+		of_node_put(node);
- 		if (IS_ERR(pctl->regmap2))
- 			return PTR_ERR(pctl->regmap2);
- 	}
+diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
+index 9ff510a489cb..6dac48e29d28 100644
+--- a/fs/jfs/jfs_dmap.c
++++ b/fs/jfs/jfs_dmap.c
+@@ -161,6 +161,7 @@ static const s8 budtab[256] = {
+  *	0	- success
+  *	-ENOMEM	- insufficient memory
+  *	-EIO	- i/o error
++ *	-EINVAL - wrong bmap data
+  */
+ int dbMount(struct inode *ipbmap)
+ {
+@@ -192,6 +193,12 @@ int dbMount(struct inode *ipbmap)
+ 	bmp->db_nfree = le64_to_cpu(dbmp_le->dn_nfree);
+ 	bmp->db_l2nbperpage = le32_to_cpu(dbmp_le->dn_l2nbperpage);
+ 	bmp->db_numag = le32_to_cpu(dbmp_le->dn_numag);
++	if (!bmp->db_numag) {
++		release_metapage(mp);
++		kfree(bmp);
++		return -EINVAL;
++	}
++
+ 	bmp->db_maxlevel = le32_to_cpu(dbmp_le->dn_maxlevel);
+ 	bmp->db_maxag = le32_to_cpu(dbmp_le->dn_maxag);
+ 	bmp->db_agpref = le32_to_cpu(dbmp_le->dn_agpref);
 -- 
 2.34.1
 
