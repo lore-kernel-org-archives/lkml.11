@@ -2,147 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 002FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 204F7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238970AbiDRMd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:33:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
+        id S239013AbiDRMeD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:34:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240043AbiDRM3P (ORCPT
+        with ESMTP id S240090AbiDRM3T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:29:15 -0400
-X-Greylist: delayed 344 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Apr 2022 05:23:07 PDT
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECDA20BD2
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:23:07 -0700 (PDT)
-Received: from submission (posteo.de [185.67.36.169]) 
-        by mout01.posteo.de (Postfix) with ESMTPS id A1393240028
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 14:17:20 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
-        t=1650284240; bh=m06zaNElDOLmrPptGcaA5mPzK3FeCBh7vUpbw9C7Aao=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PFZZxCFbQ17Ssq3wyEkcGBdFPYCwMHyIDbKvhPleIr85vIie4UqvbQNKhnVmGidS0
-         3oU9t1NILe0vMOF30091NH+BeUPu+PEm6ZuvG6HdK7rdchWEEyWiy4Wf3XwMoqtnFc
-         R6ctNhP1N695Oj6YnZtJPhevczhrWq/ongOFWK2JOFbwNtC28h44oHWe34rhabck+G
-         13IIdpX7tWN1x7++8HtODTfYkmg0X4QT3zfpkp/Dy5C6aiqAkGuoJVOQ+o1X7bv5DC
-         neFJ7hxsfWoqU6LHzVzCzYxHPFWzA4Tt46LGSVMEaApbPw0M8CVYzQESfDHr4DvUpM
-         x95yMcyYs1BGA==
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 4KhmC30fQpz6trV;
-        Mon, 18 Apr 2022 14:17:03 +0200 (CEST)
-From:   Manuel Ullmann <labre@posteo.de>
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        regressions@lists.linux.dev
-Subject: [PATCH] net: atlantic: invert deep par in pm functions, preventing
- null derefs
-Date:   Mon, 18 Apr 2022 12:17:02 +0000
-Message-ID: <87sfqaa8n5.fsf@posteo.de>
+        Mon, 18 Apr 2022 08:29:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB75C23174;
+        Mon, 18 Apr 2022 05:23:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DCC7B80ED6;
+        Mon, 18 Apr 2022 12:23:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BCEFC385A8;
+        Mon, 18 Apr 2022 12:23:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650284591;
+        bh=Baju3h8I6ftmB2znulzDklc3kpii9XeoY0YmYHSSxk4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QZliK3l4liWjTMUNNASSTvbfOAaFf0G90TduOGXVoUTzNMnXbrxS2Tr+5LWI6d94e
+         FjljkXXMl2hu9An1U1EihWH0jDOVG1yKQIa5Zh3bSoGiwmnMM4eE55s3ja+0pHm1qb
+         gKMAz2QmAF8dV+r/rUzySepB90eb1mlHG7VUnHOM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Anthony Koo <Anthony.Koo@amd.com>,
+        Eric Yang <Eric.Yang2@amd.com>, Alex Hung <alex.hung@amd.com>,
+        Roman Li <Roman.Li@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 163/219] drm/amd/display: Enable power gating before init_pipes
+Date:   Mon, 18 Apr 2022 14:12:12 +0200
+Message-Id: <20220418121211.446404520@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
+References: <20220418121203.462784814@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manuel Ullmann <labre@posteo.de>
-From 6c4cd8210835489da84bf4ee5049945dc0f2c986 Mon Sep 17 00:00:00 2001
-Date: Mon, 18 Apr 2022 00:20:01 +0200
+From: Roman Li <Roman.Li@amd.com>
 
-This will reset deeply on freeze and thaw instead of suspend and
-resume and prevent null pointer dereferences of the uninitialized ring
-0 buffer while thawing.
+[ Upstream commit 58e16c752e9540b28a873c44c3bee83e022007c1 ]
 
-The impact is an indefinitely hanging kernel. You can't switch
-consoles after this and the only possible user interaction is SysRq.
+[Why]
+In init_hw() we call init_pipes() before enabling power gating.
+init_pipes() tries to power gate dsc but it may fail because
+required force-ons are not released yet.
+As a result with dsc config the following errors observed on resume:
+"REG_WAIT timeout 1us * 1000 tries - dcn20_dsc_pg_control"
+"REG_WAIT timeout 1us * 1000 tries - dcn20_dpp_pg_control"
+"REG_WAIT timeout 1us * 1000 tries - dcn20_hubp_pg_control"
 
-BUG: kernel NULL pointer dereference
-RIP: 0010:aq_ring_rx_fill+0xcf/0x210 [atlantic]
-aq_vec_init+0x85/0xe0 [atlantic]
-aq_nic_init+0xf7/0x1d0 [atlantic]
-atl_resume_common+0x4f/0x100 [atlantic]
-pci_pm_thaw+0x42/0xa0
+[How]
+Move enable_power_gating_plane() before init_pipes() in init_hw()
 
-resolves in aq_ring.o to
-
-```
-0000000000000ae0 <aq_ring_rx_fill>:
-{
-/* ... */
- baf:	48 8b 43 08          	mov    0x8(%rbx),%rax
- 		buff->flags = 0U; /* buff is NULL */
-```
-
-The bug has been present since the introduction of the new pm code in
-8aaa112a57c1 ("net: atlantic: refactoring pm logic") and was hidden
-until 8ce84271697a ("net: atlantic: changes for multi-TC support"),
-which refactored the aq_vec_{free,alloc} functions into
-aq_vec_{,ring}_{free,alloc}, but is technically not wrong. The
-original functions just always reinitialized the buffers on S3/S4. If
-the interface is down before freezing, the bug does not occur. It does
-not matter, whether the initrd contains and loads the module before
-thawing.
-
-So the fix is to invert the boolean parameter deep in all pm function
-calls, which was clearly intended to be set like that.
-
-First report was on Github [1], which you have to guess from the
-resume logs in the posted dmesg snippet. Recently I posted one on
-Bugzilla [2], since I did not have an AQC device so far.
-
-#regzbot introduced: 8ce84271697a
-#regzbot from: koo5 <kolman.jindrich@gmail.com>
-#regzbot monitor: https://github.com/Aquantia/AQtion/issues/32
-
-Fixes: 8aaa112a57c1 ("net: atlantic: refactoring pm logic")
-Link: https://github.com/Aquantia/AQtion/issues/32 [1]
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215798 [2]
-Cc: stable@vger.kernel.org
-Reported-by: koo5 <kolman.jindrich@gmail.com>
-Signed-off-by: Manuel Ullmann <labre@posteo.de>
+Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
+Reviewed-by: Eric Yang <Eric.Yang2@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Roman Li <Roman.Li@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-Once in mainline, this should be backported to 5.10 and newer
-supported stable branches. Although 5.4 includes the bug, it is not
-affected (see above).
+ drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c | 5 +++--
+ drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hwseq.c        | 5 +++--
+ drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hwseq.c        | 5 +++--
+ 3 files changed, 9 insertions(+), 6 deletions(-)
 
-As a side effect, this might increase suspend/resume performance,
-although I did no measurements.
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+index a6703d17fcb6..c6a0daa56fa0 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+@@ -1501,6 +1501,9 @@ void dcn10_init_hw(struct dc *dc)
+ 	if (dc->config.power_down_display_on_boot)
+ 		dc_link_blank_all_dp_displays(dc);
  
- drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-index 797a95142d1f..3a529ee8c834 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-@@ -444,22 +444,22 @@ static int atl_resume_common(struct device *dev, bool deep)
++	if (hws->funcs.enable_power_gating_plane)
++		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
++
+ 	/* If taking control over from VBIOS, we may want to optimize our first
+ 	 * mode set, so we need to skip powering down pipes until we know which
+ 	 * pipes we want to use.
+@@ -1553,8 +1556,6 @@ void dcn10_init_hw(struct dc *dc)
  
- static int aq_pm_freeze(struct device *dev)
- {
--	return aq_suspend_common(dev, false);
-+	return aq_suspend_common(dev, true);
- }
+ 		REG_UPDATE(DCFCLK_CNTL, DCFCLK_GATE_DIS, 0);
+ 	}
+-	if (hws->funcs.enable_power_gating_plane)
+-		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
  
- static int aq_pm_suspend_poweroff(struct device *dev)
- {
--	return aq_suspend_common(dev, true);
-+	return aq_suspend_common(dev, false);
- }
+ 	if (dc->clk_mgr->funcs->notify_wm_ranges)
+ 		dc->clk_mgr->funcs->notify_wm_ranges(dc->clk_mgr);
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hwseq.c b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hwseq.c
+index 1db1ca19411d..05dc0a3ae2a3 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hwseq.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hwseq.c
+@@ -548,6 +548,9 @@ void dcn30_init_hw(struct dc *dc)
+ 	if (dc->config.power_down_display_on_boot)
+ 		dc_link_blank_all_dp_displays(dc);
  
- static int aq_pm_thaw(struct device *dev)
- {
--	return atl_resume_common(dev, false);
-+	return atl_resume_common(dev, true);
- }
++	if (hws->funcs.enable_power_gating_plane)
++		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
++
+ 	/* If taking control over from VBIOS, we may want to optimize our first
+ 	 * mode set, so we need to skip powering down pipes until we know which
+ 	 * pipes we want to use.
+@@ -625,8 +628,6 @@ void dcn30_init_hw(struct dc *dc)
  
- static int aq_pm_resume_restore(struct device *dev)
- {
--	return atl_resume_common(dev, true);
-+	return atl_resume_common(dev, false);
- }
+ 		REG_UPDATE(DCFCLK_CNTL, DCFCLK_GATE_DIS, 0);
+ 	}
+-	if (hws->funcs.enable_power_gating_plane)
+-		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
  
- static const struct dev_pm_ops aq_pm_ops = {
-
-base-commit: ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e
+ 	if (!dcb->funcs->is_accelerated_mode(dcb) && dc->res_pool->hubbub->funcs->init_watermarks)
+ 		dc->res_pool->hubbub->funcs->init_watermarks(dc->res_pool->hubbub);
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hwseq.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hwseq.c
+index 1e156f398065..bdc4467b40d7 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hwseq.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_hwseq.c
+@@ -200,6 +200,9 @@ void dcn31_init_hw(struct dc *dc)
+ 	if (dc->config.power_down_display_on_boot)
+ 		dc_link_blank_all_dp_displays(dc);
+ 
++	if (hws->funcs.enable_power_gating_plane)
++		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
++
+ 	/* If taking control over from VBIOS, we may want to optimize our first
+ 	 * mode set, so we need to skip powering down pipes until we know which
+ 	 * pipes we want to use.
+@@ -249,8 +252,6 @@ void dcn31_init_hw(struct dc *dc)
+ 
+ 		REG_UPDATE(DCFCLK_CNTL, DCFCLK_GATE_DIS, 0);
+ 	}
+-	if (hws->funcs.enable_power_gating_plane)
+-		hws->funcs.enable_power_gating_plane(dc->hwseq, true);
+ 
+ 	if (!dcb->funcs->is_accelerated_mode(dcb) && dc->res_pool->hubbub->funcs->init_watermarks)
+ 		dc->res_pool->hubbub->funcs->init_watermarks(dc->res_pool->hubbub);
 -- 
 2.35.1
+
+
+
