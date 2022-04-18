@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48649C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:39:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5259BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229840AbiDRMlz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53740 "EHLO
+        id S235110AbiDRMmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:42:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239725AbiDRMdW (ORCPT
+        with ESMTP id S239780AbiDRMd2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BC77BC97;
-        Mon, 18 Apr 2022 05:25:18 -0700 (PDT)
+        Mon, 18 Apr 2022 08:33:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43AE41B791;
+        Mon, 18 Apr 2022 05:26:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE43E60FDF;
-        Mon, 18 Apr 2022 12:25:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A27D1C385A7;
-        Mon, 18 Apr 2022 12:25:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3A02B80EC4;
+        Mon, 18 Apr 2022 12:26:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CCC8C385AC;
+        Mon, 18 Apr 2022 12:26:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284717;
-        bh=1JykyhsvrgAJMNPlqTzg89ghRr1ddfmnxPAANLww/Ho=;
+        s=korg; t=1650284761;
+        bh=k6ThlEZYjczdMB9/EZpDeNWEqo0mO1axpTlVDPr7w40=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=okkD8Kx1ZbUAc6F4ZoFvw6pX7901TnPsLHEqTsOvHU1PPLtnD+o5BvGYOI3RIMMdS
-         NG8chS0dWxv9lCVVuvldQ01AZ5HGGoANcumGZP63HK6ApksjScDRn3sE4486WrsgFk
-         IUAruogB/YTgNnV2E0yB0NCNSdodOZ3mmVp/oln4=
+        b=YomlO909fTkxBsXEGFURv73+xDGVTFoBI/zenJMOuveQPiDVKXKV3tLM7Qa4fnwWL
+         +K7YNFpD4utCMeIDFrFyyAyVqCS4j+hyswu1hNsV1SLekUCP+7qNQebid68S/FZwdP
+         pr0y5Vc4GTQD2aqDgI2bOwR4tp+g3ssyz+Tm3r3w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.17 204/219] tick/nohz: Use WARN_ON_ONCE() to prevent console saturation
-Date:   Mon, 18 Apr 2022 14:12:53 +0200
-Message-Id: <20220418121212.579747555@linuxfoundation.org>
+        stable@vger.kernel.org, Mike Kravetz <mike.kravetz@oracle.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.17 179/219] hugetlb: do not demote poisoned hugetlb pages
+Date:   Mon, 18 Apr 2022 14:12:28 +0200
+Message-Id: <20220418121211.887283123@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,43 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
+From: Mike Kravetz <mike.kravetz@oracle.com>
 
-commit 40e97e42961f8c6cc7bd5fe67cc18417e02d78f1 upstream.
+commit 5a317412ef884763fdf7aa17f9f3636959d11d8f upstream.
 
-While running some testing on code that happened to allow the variable
-tick_nohz_full_running to get set but with no "possible" NOHZ cores to
-back up that setting, this warning triggered:
+It is possible for poisoned hugetlb pages to reside on the free lists.
+The huge page allocation routines which dequeue entries from the free
+lists make a point of avoiding poisoned pages.  There is no such check
+and avoidance in the demote code path.
 
-        if (unlikely(tick_do_timer_cpu == TICK_DO_TIMER_NONE))
-                WARN_ON(tick_nohz_full_running);
+If a hugetlb page on the is on a free list, poison will only be set in
+the head page rather then the page with the actual error.  If such a
+page is demoted, then the poison flag may follow the wrong page.  A page
+without error could have poison set, and a page with poison could not
+have the flag set.
 
-The console was overwhemled with an endless stream of one WARN per tick
-per core and there was no way to even see what was going on w/o using a
-serial console to capture it and then trace it back to this.
+Check for poison before attempting to demote a hugetlb page.  Also,
+return -EBUSY to the caller if only poisoned pages are on the free list.
 
-Change it to WARN_ON_ONCE().
-
-Fixes: 08ae95f4fd3b ("nohz_full: Allow the boot CPU to be nohz_full")
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20211206145950.10927-3-paul.gortmaker@windriver.com
+Link: https://lkml.kernel.org/r/20220307215707.50916-1-mike.kravetz@oracle.com
+Fixes: 8531fc6f52f5 ("hugetlb: add hugetlb demote page support")
+Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+Reviewed-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/time/tick-sched.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/hugetlb.c |   17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
---- a/kernel/time/tick-sched.c
-+++ b/kernel/time/tick-sched.c
-@@ -186,7 +186,7 @@ static void tick_sched_do_timer(struct t
- 	 */
- 	if (unlikely(tick_do_timer_cpu == TICK_DO_TIMER_NONE)) {
- #ifdef CONFIG_NO_HZ_FULL
--		WARN_ON(tick_nohz_full_running);
-+		WARN_ON_ONCE(tick_nohz_full_running);
- #endif
- 		tick_do_timer_cpu = cpu;
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -3469,7 +3469,6 @@ static int demote_pool_huge_page(struct
+ {
+ 	int nr_nodes, node;
+ 	struct page *page;
+-	int rc = 0;
+ 
+ 	lockdep_assert_held(&hugetlb_lock);
+ 
+@@ -3480,15 +3479,19 @@ static int demote_pool_huge_page(struct
  	}
+ 
+ 	for_each_node_mask_to_free(h, nr_nodes, node, nodes_allowed) {
+-		if (!list_empty(&h->hugepage_freelists[node])) {
+-			page = list_entry(h->hugepage_freelists[node].next,
+-					struct page, lru);
+-			rc = demote_free_huge_page(h, page);
+-			break;
++		list_for_each_entry(page, &h->hugepage_freelists[node], lru) {
++			if (PageHWPoison(page))
++				continue;
++
++			return demote_free_huge_page(h, page);
+ 		}
+ 	}
+ 
+-	return rc;
++	/*
++	 * Only way to get here is if all pages on free lists are poisoned.
++	 * Return -EBUSY so that caller will not retry.
++	 */
++	return -EBUSY;
+ }
+ 
+ #define HSTATE_ATTR_RO(_name) \
 
 
