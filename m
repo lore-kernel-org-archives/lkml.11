@@ -2,135 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3498FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 532DDC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240180AbiDRMwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38040 "EHLO
+        id S240211AbiDRMww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240756AbiDRMjg (ORCPT
+        with ESMTP id S240804AbiDRMji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:36 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0164B12627;
-        Mon, 18 Apr 2022 05:30:26 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23ICULIK120040;
-        Mon, 18 Apr 2022 07:30:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1650285021;
-        bh=V24Pg9flw1bNbkBXpcqZ1XDD4yowcEtZAzI4rpfzD24=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=HM7pxqH4EpECKH9mLgBhzBdlvQSeWZqPpWuu8+laRvVipNu7r2pPFrE5uWuTaqw+R
-         a3EytiP4bIwXUZbtP19jVsJCk+mpgQT1QuvfIELQU6X2cQTd4MMwnFoN7LSeV5IXg5
-         bvIuwNwkTH2Os7IB1TXl6OCX/ItiXLIpB2aUjQ7A=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23ICUL66015761
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 18 Apr 2022 07:30:21 -0500
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 18
- Apr 2022 07:30:20 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 18 Apr 2022 07:30:20 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23ICUJRH032161;
-        Mon, 18 Apr 2022 07:30:20 -0500
-From:   Puranjay Mohan <p-mohan@ti.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
-        <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
-        <rogerq@kernel.org>, <grygorii.strashko@ti.com>, <vigneshr@ti.com>,
-        <kishon@ti.com>
-Subject: [PATCH v2 6/6] soc: ti: pruss: Add helper functions to get/set PRUSS_CFG_GPMUX
-Date:   Mon, 18 Apr 2022 18:00:04 +0530
-Message-ID: <20220418123004.9332-7-p-mohan@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220418123004.9332-1-p-mohan@ti.com>
-References: <20220418123004.9332-1-p-mohan@ti.com>
+        Mon, 18 Apr 2022 08:39:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94AD42FD;
+        Mon, 18 Apr 2022 05:30:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 306D260F04;
+        Mon, 18 Apr 2022 12:30:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 161F7C385A1;
+        Mon, 18 Apr 2022 12:30:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650285040;
+        bh=8OKQIQQZsaln7GT2sWzd5OsKT2yNQHkboQCMYcljvFI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MIaPRZItuzOEIGBC76F0w/XnT9GkUCYG3skFS91IcZWt0e/EYqrf8G9r3rVtHr54h
+         S1SQ3x9d2yw1Hg75fTjvHl4jkfPpGbegXDNkGqVVsAqJGshJaLMUOAa56wE0cBUY9Z
+         xMOs60l6esD8715uvpS3H4HLt714psBC7Ghup3Ik=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 055/189] ALSA: nm256: Dont call card private_free at probe error path
+Date:   Mon, 18 Apr 2022 14:11:15 +0200
+Message-Id: <20220418121202.073042721@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
+References: <20220418121200.312988959@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tero Kristo <t-kristo@ti.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-Add two new helper functions pruss_cfg_get_gpmux() & pruss_cfg_set_gpmux()
-to get and set the GP MUX mode for programming the PRUSS internal wrapper
-mux functionality as needed by usecases.
+commit f20ae5074dfb38f23b0c07c62bdf8e7254a0acf8 upstream.
 
-Co-developed-by: Suman Anna <s-anna@ti.com>
-Signed-off-by: Suman Anna <s-anna@ti.com>
-Signed-off-by: Tero Kristo <t-kristo@ti.com>
-Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+The card destructor of nm256 driver does merely stopping the running
+streams, and it's superfluous for the probe error handling.  Moreover,
+calling this via the previous devres change would lead to another
+problem due to the reverse call order.
+
+This patch moves the setup of the private_free callback after the card
+registration, so that it can be used only after fully set up.
+
+Fixes: c19935f04784 ("ALSA: nm256: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-40-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/pruss_driver.h | 44 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
+ sound/pci/nm256/nm256.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/pruss_driver.h b/include/linux/pruss_driver.h
-index e2d5477225c6..3312281ef4c1 100644
---- a/include/linux/pruss_driver.h
-+++ b/include/linux/pruss_driver.h
-@@ -35,4 +35,48 @@ struct pruss {
- 	struct clk *iep_clk_mux;
- };
+diff --git a/sound/pci/nm256/nm256.c b/sound/pci/nm256/nm256.c
+index c9c178504959..f99a1e96e923 100644
+--- a/sound/pci/nm256/nm256.c
++++ b/sound/pci/nm256/nm256.c
+@@ -1573,7 +1573,6 @@ snd_nm256_create(struct snd_card *card, struct pci_dev *pci)
+ 	chip->coeffs_current = 0;
  
-+/**
-+ * pruss_cfg_get_gpmux() - get the current GPMUX value for a PRU device
-+ * @pruss: pruss instance
-+ * @pru_id: PRU identifier (0-1)
-+ * @mux: pointer to store the current mux value into
-+ *
-+ * Return: 0 on success, or an error code otherwise
-+ */
-+static inline int pruss_cfg_get_gpmux(struct pruss *pruss,
-+				      enum pruss_pru_id pru_id, u8 *mux)
-+{
-+	int ret = 0;
-+	u32 val;
-+
-+	if (pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
-+		return -EINVAL;
-+
-+	ret = pruss_cfg_read(pruss, PRUSS_CFG_GPCFG(pru_id), &val);
-+	if (!ret)
-+		*mux = (u8)((val & PRUSS_GPCFG_PRU_MUX_SEL_MASK) >>
-+			    PRUSS_GPCFG_PRU_MUX_SEL_SHIFT);
-+	return ret;
-+}
-+
-+/**
-+ * pruss_cfg_set_gpmux() - set the GPMUX value for a PRU device
-+ * @pruss: pruss instance
-+ * @pru_id: PRU identifier (0-1)
-+ * @mux: new mux value for PRU
-+ *
-+ * Return: 0 on success, or an error code otherwise
-+ */
-+static inline int pruss_cfg_set_gpmux(struct pruss *pruss,
-+				      enum pruss_pru_id pru_id, u8 mux)
-+{
-+	if (mux >= PRUSS_GP_MUX_SEL_MAX ||
-+	    pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
-+		return -EINVAL;
-+
-+	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
-+				PRUSS_GPCFG_PRU_MUX_SEL_MASK,
-+				(u32)mux << PRUSS_GPCFG_PRU_MUX_SEL_SHIFT);
-+}
-+
- #endif	/* _PRUSS_DRIVER_H_ */
+ 	snd_nm256_init_chip(chip);
+-	card->private_free = snd_nm256_free;
+ 
+ 	// pci_set_master(pci); /* needed? */
+ 	return 0;
+@@ -1680,6 +1679,7 @@ static int snd_nm256_probe(struct pci_dev *pci,
+ 	err = snd_card_register(card);
+ 	if (err < 0)
+ 		return err;
++	card->private_free = snd_nm256_free;
+ 
+ 	pci_set_drvdata(pci, card);
+ 	return 0;
 -- 
-2.17.1
+2.35.2
+
+
 
