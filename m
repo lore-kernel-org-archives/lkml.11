@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2740C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0245BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238356AbiDRMYX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:24:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48826 "EHLO
+        id S238416AbiDRMYa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:24:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238863AbiDRMXC (ORCPT
+        with ESMTP id S238881AbiDRMXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:23:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2DB1AF03;
-        Mon, 18 Apr 2022 05:18:26 -0700 (PDT)
+        Mon, 18 Apr 2022 08:23:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9049E1CFD3;
+        Mon, 18 Apr 2022 05:18:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A41B6B80ED1;
-        Mon, 18 Apr 2022 12:18:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CEC3C385A7;
-        Mon, 18 Apr 2022 12:18:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F406460F61;
+        Mon, 18 Apr 2022 12:18:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09084C385A9;
+        Mon, 18 Apr 2022 12:18:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284303;
-        bh=7pK5U8DB1SfOfjUxdAwgUxoc0AkrGRkjWhwk7zGLpa4=;
+        s=korg; t=1650284306;
+        bh=6BulvjKUbeRQDaOj3kIv8/xZ4bxLmc4IPuw61TvDASU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AV/G9oxifRzV/h17c+iJr+ASRyGP7e/DHek8nfIX9LRAyuqBmkP4SFOjMfJ7++Mte
-         G4HNlkujo+erKrsa1jlDeprpL3S4tydmP0aQ5KNUO/4PE5hxwIr38QCu3T8rdEaUvT
-         zL7snHd7lM0UjEFSUz/WAE6LFruunDUXb0ijQi98=
+        b=ajYO7saeRxAYW3vjqsM2NA7mz8W0I0JiAVs5PgmWhobFwf1XYYffL33ycohttSGPG
+         k54l9D+Y1YiO2cCIbyEypW0kNFLOYTI42tAKdUabrAZF20RrPTTtF4xK/zJKrlZwwZ
+         sYYAF+FIL8H/wJGbEn9bEAAsEyRwfTWnQrJUzUc0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 069/219] veth: Ensure eth header is in skbs linear part
-Date:   Mon, 18 Apr 2022 14:10:38 +0200
-Message-Id: <20220418121207.705456443@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 043/219] ALSA: korg1212: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:10:12 +0200
+Message-Id: <20220418121205.948728781@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,72 +47,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 726e2c5929de841fdcef4e2bf995680688ae1b87 ]
+commit c01b723a56ce18ae66ff18c5803942badc15fbcd upstream.
 
-After feeding a decapsulated packet to a veth device with act_mirred,
-skb_headlen() may be 0. But veth_xmit() calls __dev_forward_skb(),
-which expects at least ETH_HLEN byte of linear data (as
-__dev_forward_skb2() calls eth_type_trans(), which pulls ETH_HLEN bytes
-unconditionally).
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-Use pskb_may_pull() to ensure veth_xmit() respects this constraint.
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
 
-kernel BUG at include/linux/skbuff.h:2328!
-RIP: 0010:eth_type_trans+0xcf/0x140
-Call Trace:
- <IRQ>
- __dev_forward_skb2+0xe3/0x160
- veth_xmit+0x6e/0x250 [veth]
- dev_hard_start_xmit+0xc7/0x200
- __dev_queue_xmit+0x47f/0x520
- ? skb_ensure_writable+0x85/0xa0
- ? skb_mpls_pop+0x98/0x1c0
- tcf_mirred_act+0x442/0x47e [act_mirred]
- tcf_action_exec+0x86/0x140
- fl_classify+0x1d8/0x1e0 [cls_flower]
- ? dma_pte_clear_level+0x129/0x1a0
- ? dma_pte_clear_level+0x129/0x1a0
- ? prb_fill_curr_block+0x2f/0xc0
- ? skb_copy_bits+0x11a/0x220
- __tcf_classify+0x58/0x110
- tcf_classify_ingress+0x6b/0x140
- __netif_receive_skb_core.constprop.0+0x47d/0xfd0
- ? __iommu_dma_unmap_swiotlb+0x44/0x90
- __netif_receive_skb_one_core+0x3d/0xa0
- netif_receive_skb+0x116/0x170
- be_process_rx+0x22f/0x330 [be2net]
- be_poll+0x13c/0x370 [be2net]
- __napi_poll+0x2a/0x170
- net_rx_action+0x22f/0x2f0
- __do_softirq+0xca/0x2a8
- __irq_exit_rcu+0xc1/0xe0
- common_interrupt+0x83/0xa0
-
-Fixes: e314dbdc1c0d ("[NET]: Virtual ethernet device driver.")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b5cde369b618 ("ALSA: korg1212: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-20-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/veth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/pci/korg1212/korg1212.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index d29fb9759cc9..6c8f4f4dfc8a 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -320,7 +320,7 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
+--- a/sound/pci/korg1212/korg1212.c
++++ b/sound/pci/korg1212/korg1212.c
+@@ -2355,7 +2355,7 @@ snd_korg1212_probe(struct pci_dev *pci,
  
- 	rcu_read_lock();
- 	rcv = rcu_dereference(priv->peer);
--	if (unlikely(!rcv)) {
-+	if (unlikely(!rcv) || !pskb_may_pull(skb, ETH_HLEN)) {
- 		kfree_skb(skb);
- 		goto drop;
- 	}
--- 
-2.35.1
-
+ 	err = snd_korg1212_create(card, pci);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 
+ 	strcpy(card->driver, "korg1212");
+ 	strcpy(card->shortname, "korg1212");
+@@ -2366,10 +2366,14 @@ snd_korg1212_probe(struct pci_dev *pci,
+ 
+ 	err = snd_card_register(card);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 	pci_set_drvdata(pci, card);
+ 	dev++;
+ 	return 0;
++
++ error:
++	snd_card_free(card);
++	return err;
+ }
+ 
+ static struct pci_driver korg1212_driver = {
 
 
