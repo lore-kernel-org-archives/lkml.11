@@ -2,118 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A61C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD6BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:37:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242349AbiDRNk1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:40:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53774 "EHLO
+        id S242800AbiDRNkf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:40:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243146AbiDRNJv (ORCPT
+        with ESMTP id S243140AbiDRNJv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:09:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA33377E6;
-        Mon, 18 Apr 2022 05:49:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F65377C8;
+        Mon, 18 Apr 2022 05:49:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB30861267;
-        Mon, 18 Apr 2022 12:49:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92AF5C385A8;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01BEB6124A;
         Mon, 18 Apr 2022 12:49:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286160;
-        bh=3SzeC/Gz/Ac+TTZClLIUog0e21eiXA/HtE2IFS8FnkE=;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE41C385A8;
+        Mon, 18 Apr 2022 12:49:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650286158;
+        bh=lBl8uds7Jfl9k1iKeNXaVIGGGJfONnxxms9Sd0YLPoo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Am3RNPLkFGglxlpZZjJxeNhypSOK1vnpDNQmLX/eRU+ZRYs8PiPwkvIFMfdM8ErJw
-         2Lw68/AYCZnK2Zn4dzJA+ENSers/e8iK/MQQcRL+eDpJ7lJC0CM1r6d0+HzBaSdjtS
-         gkEHh3YOcYIv6/yeFMbX99WSfPrQ4l2HcC5Ccx0s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan-Benedict Glaw <jbglaw@lug-owl.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 4.14 048/284] DEC: Limit PMAX memory probing to R3k systems
-Date:   Mon, 18 Apr 2022 14:10:29 +0200
-Message-Id: <20220418121212.062614390@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
-References: <20220418121210.689577360@linuxfoundation.org>
-User-Agent: quilt/0.66
+        b=NF63zzSyYP9XW4uApY83MraFba3LZD9+2F5T+tpML1DyFTcjL9dIcO8PB0wjD7p5d
+         JmKifUGp7XxNpv9eMA5sq3ecPlpGySyQDNiKfSL5viOSTAqVBT2F71dA2TARQ2Vux+
+         yGD+20a4Ggd0V7HkOG98Z+yFGf6CwiO8ys5jrsWiMqK7tH5w8ML3dGBpsUhX9shBVZ
+         doXnbLhiZqhoAGgM8sYTqY3bLvK5xYllo4bLj32+6SgOmuxva+7ZE6w4FjmFCfwwYr
+         TIxHtVP0gO2hlfGqM453QCfA+B8lqC3e/OKhM7Z7tjlgBCRfjHx94Muj8GoNKZhu4e
+         AD35I4qdvek9g==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCHv2 bpf-next 4/4] selftests/bpf: Add attach bench test
+Date:   Mon, 18 Apr 2022 14:48:34 +0200
+Message-Id: <20220418124834.829064-5-jolsa@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220418124834.829064-1-jolsa@kernel.org>
+References: <20220418124834.829064-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+Adding test that reads all functions from ftrace available_filter_functions
+file and attach them all through kprobe_multi API.
 
-commit 244eae91a94c6dab82b3232967d10eeb9dfa21c6 upstream.
+It also prints stats info with -v option, like on my setup:
 
-Recent tightening of the opcode table in binutils so as to consistently
-disallow the assembly or disassembly of CP0 instructions not supported
-by the processor architecture chosen has caused a regression like below:
+  test_bench_attach: found 48712 functions
+  test_bench_attach: attached in   1.069s
+  test_bench_attach: detached in   0.373s
 
-arch/mips/dec/prom/locore.S: Assembler messages:
-arch/mips/dec/prom/locore.S:29: Error: opcode not supported on this processor: r4600 (mips3) `rfe'
-
-in a piece of code used to probe for memory with PMAX DECstation models,
-which have non-REX firmware.  Those computers always have an R2000 CPU
-and consequently the exception handler used in memory probing uses the
-RFE instruction, which those processors use.
-
-While adding 64-bit support this code was correctly excluded for 64-bit
-configurations, however it should have also been excluded for irrelevant
-32-bit configurations.  Do this now then, and only enable PMAX memory
-probing for R3k systems.
-
-Reported-by: Jan-Benedict Glaw <jbglaw@lug-owl.de>
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: stable@vger.kernel.org # v2.6.12+
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- arch/mips/dec/prom/Makefile      |    2 +-
- arch/mips/include/asm/dec/prom.h |   15 +++++----------
- 2 files changed, 6 insertions(+), 11 deletions(-)
+ .../bpf/prog_tests/kprobe_multi_test.c        | 136 ++++++++++++++++++
+ .../selftests/bpf/progs/kprobe_multi_empty.c  |  12 ++
+ 2 files changed, 148 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
 
---- a/arch/mips/dec/prom/Makefile
-+++ b/arch/mips/dec/prom/Makefile
-@@ -5,4 +5,4 @@
+diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+index b9876b55fc0c..05f0fab8af89 100644
+--- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
++++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+@@ -2,6 +2,9 @@
+ #include <test_progs.h>
+ #include "kprobe_multi.skel.h"
+ #include "trace_helpers.h"
++#include "kprobe_multi_empty.skel.h"
++#include "bpf/libbpf_internal.h"
++#include "bpf/hashmap.h"
  
- lib-y			+= init.o memory.o cmdline.o identify.o console.o
+ static void kprobe_multi_test_run(struct kprobe_multi *skel, bool test_return)
+ {
+@@ -301,6 +304,137 @@ static void test_attach_api_fails(void)
+ 	kprobe_multi__destroy(skel);
+ }
  
--lib-$(CONFIG_32BIT)	+= locore.o
-+lib-$(CONFIG_CPU_R3000)	+= locore.o
---- a/arch/mips/include/asm/dec/prom.h
-+++ b/arch/mips/include/asm/dec/prom.h
-@@ -47,16 +47,11 @@
-  */
- #define REX_PROM_MAGIC		0x30464354
- 
--#ifdef CONFIG_64BIT
--
--#define prom_is_rex(magic)	1	/* KN04 and KN05 are REX PROMs.  */
--
--#else /* !CONFIG_64BIT */
--
--#define prom_is_rex(magic)	((magic) == REX_PROM_MAGIC)
--
--#endif /* !CONFIG_64BIT */
--
-+/* KN04 and KN05 are REX PROMs, so only do the check for R3k systems.  */
-+static inline bool prom_is_rex(u32 magic)
++static inline __u64 get_time_ns(void)
 +{
-+	return !IS_ENABLED(CONFIG_CPU_R3000) || magic == REX_PROM_MAGIC;
++	struct timespec t;
++
++	clock_gettime(CLOCK_MONOTONIC, &t);
++	return (__u64) t.tv_sec * 1000000000 + t.tv_nsec;
 +}
- 
- /*
-  * 3MIN/MAXINE PROM entry points for DS5000/1xx's, DS5000/xx's and
-
++
++static size_t symbol_hash(const void *key, void *ctx __maybe_unused)
++{
++	return str_hash((const char *) key);
++}
++
++static bool symbol_equal(const void *key1, const void *key2, void *ctx __maybe_unused)
++{
++	return strcmp((const char *) key1, (const char *) key2) == 0;
++}
++
++#define DEBUGFS "/sys/kernel/debug/tracing/"
++
++static int get_syms(char ***symsp, size_t *cntp)
++{
++	size_t cap = 0, cnt = 0, i;
++	char *name, **syms = NULL;
++	struct hashmap *map;
++	char buf[256];
++	FILE *f;
++	int err;
++
++	/*
++	 * The available_filter_functions contains many duplicates,
++	 * but other than that all symbols are usable in kprobe multi
++	 * interface.
++	 * Filtering out duplicates by using hashmap__add, which won't
++	 * add existing entry.
++	 */
++	f = fopen(DEBUGFS "available_filter_functions", "r");
++	if (!f)
++		return -EINVAL;
++
++	map = hashmap__new(symbol_hash, symbol_equal, NULL);
++	err = libbpf_get_error(map);
++	if (err)
++		goto error;
++
++	while (fgets(buf, sizeof(buf), f)) {
++		/* skip modules */
++		if (strchr(buf, '['))
++			continue;
++		if (sscanf(buf, "%ms$*[^\n]\n", &name) != 1)
++			continue;
++		err = hashmap__add(map, name, NULL);
++		if (err) {
++			free(name);
++			if (err == -EEXIST)
++				continue;
++			goto error;
++		}
++		err = libbpf_ensure_mem((void **) &syms, &cap,
++					sizeof(*syms), cnt + 1);
++		if (err) {
++			free(name);
++			goto error;
++		}
++		syms[cnt] = name;
++		cnt++;
++	}
++
++	*symsp = syms;
++	*cntp = cnt;
++
++error:
++	fclose(f);
++	hashmap__free(map);
++	if (err) {
++		for (i = 0; i < cnt; i++)
++			free(syms[cnt]);
++		free(syms);
++	}
++	return err;
++}
++
++static void test_bench_attach(void)
++{
++	LIBBPF_OPTS(bpf_kprobe_multi_opts, opts);
++	struct kprobe_multi_empty *skel = NULL;
++	long attach_start_ns, attach_end_ns;
++	long detach_start_ns, detach_end_ns;
++	double attach_delta, detach_delta;
++	struct bpf_link *link = NULL;
++	char **syms = NULL;
++	size_t cnt, i;
++
++	if (!ASSERT_OK(get_syms(&syms, &cnt), "get_syms"))
++		return;
++
++	skel = kprobe_multi_empty__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "kprobe_multi_empty__open_and_load"))
++		goto cleanup;
++
++	opts.syms = (const char **) syms;
++	opts.cnt = cnt;
++
++	attach_start_ns = get_time_ns();
++	link = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kprobe_empty,
++						     NULL, &opts);
++	attach_end_ns = get_time_ns();
++
++	if (!ASSERT_OK_PTR(link, "bpf_program__attach_kprobe_multi_opts"))
++		goto cleanup;
++
++	detach_start_ns = get_time_ns();
++	bpf_link__destroy(link);
++	detach_end_ns = get_time_ns();
++
++	attach_delta = (attach_end_ns - attach_start_ns) / 1000000000.0;
++	detach_delta = (detach_end_ns - detach_start_ns) / 1000000000.0;
++
++	fprintf(stderr, "%s: found %lu functions\n", __func__, cnt);
++	fprintf(stderr, "%s: attached in %7.3lfs\n", __func__, attach_delta);
++	fprintf(stderr, "%s: detached in %7.3lfs\n", __func__, detach_delta);
++
++cleanup:
++	kprobe_multi_empty__destroy(skel);
++	if (syms) {
++		for (i = 0; i < cnt; i++)
++			free(syms[i]);
++		free(syms);
++	}
++}
++
+ void test_kprobe_multi_test(void)
+ {
+ 	if (!ASSERT_OK(load_kallsyms(), "load_kallsyms"))
+@@ -320,4 +454,6 @@ void test_kprobe_multi_test(void)
+ 		test_attach_api_syms();
+ 	if (test__start_subtest("attach_api_fails"))
+ 		test_attach_api_fails();
++	if (test__start_subtest("bench_attach"))
++		test_bench_attach();
+ }
+diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+new file mode 100644
+index 000000000000..be9e3d891d46
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+@@ -0,0 +1,12 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++char _license[] SEC("license") = "GPL";
++
++SEC("kprobe.multi/*")
++int test_kprobe_empty(struct pt_regs *ctx)
++{
++	return 0;
++}
+-- 
+2.35.1
 
