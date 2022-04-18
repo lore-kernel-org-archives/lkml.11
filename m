@@ -2,159 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50AB5C3527E
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A650C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344154AbiDROar (ORCPT
+        id S1344359AbiDROaE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55052 "EHLO
+        Mon, 18 Apr 2022 10:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345508AbiDROZA (ORCPT
+        with ESMTP id S1345198AbiDROSy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:25:00 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F13506CE
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 06:20:34 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id k29so18816800pgm.12
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 06:20:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=29+EQDW4PzB6PGPDYNZxij95Jg8dyZKWVfgccFNsSMY=;
-        b=idDBiRzJlr0Trq4/zQOVkSmvC2K6ySSJGG/M9NFOI+2vN8nYQtN9xzKtOD/+Yjf0ge
-         gV35GWEh2ejQqiU8SpEbc+AfnI2Z3vHFw1isbgpYpUQy++wILIx6ErfxZdor9rpwQ4wl
-         OJ2LZD4qIw+z3nJFlUTPIfJUqTri6NdTutDpYD2au/YBngarCw4HoaMmbcqlNiJ8Z6Hy
-         FJUZlAOcaC1wfheVUIDNamFICR1Sz3o44y3r9/UzR3Equjdz7X38zLxH5oIcAneKO3DN
-         LWQ0eWwieLN0+1mnpSUYOKQCZMB7AD/BRqkdX67f/J/Fdedu/UKNDVcXBmBYE4Rw2irn
-         /7jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=29+EQDW4PzB6PGPDYNZxij95Jg8dyZKWVfgccFNsSMY=;
-        b=IVadm5w/ICXvgwXhh99p/hTYkrP4OZg0gpYvWNMOiyUlcL4eEOL3h5ztu3uqfs0NKo
-         7yUfPLsj8p5lwkjAba7WiGX4UAc8NQIhQKxrALBx6iHnYV+g/RAcF6g9mqVIjQ6/bOsk
-         bNrROrOmeE8xaMg3dfwNhNQHpJJcWRhisB4fPcor5FlqZQdLg/ovPT83VTOEVEjVaeW3
-         WQH58h8B4QmVkuG+XLoknBe+LKhcb4FxoIw5mgniJLbh2kPLYvp7pUYmjNfEw1YJZIU1
-         WYXpDiE2e1dxFtK22V5bsxSYbzDsi95zNCg7QahUnm/WFlf9cqd4OKMrMxm7kSElcU6o
-         T0Pg==
-X-Gm-Message-State: AOAM531A+BeWM340p5fxPoAsVHNQjxUPTkthUqYLKAPhNaZ+5yx3hR9p
-        NYQxVnwFpBiX/3SSvgovMCWmeA==
-X-Google-Smtp-Source: ABdhPJwCPuixMbb5o3UXUNYnrASSeIe1KhG7qvYeu117vLTR67xtV6wNHDIb8Moy/pMO3PnNXjV+2A==
-X-Received: by 2002:a63:fd53:0:b0:386:66d:b40c with SMTP id m19-20020a63fd53000000b00386066db40cmr10044968pgj.266.1650288033475;
-        Mon, 18 Apr 2022 06:20:33 -0700 (PDT)
-Received: from [10.254.152.226] ([139.177.225.231])
-        by smtp.gmail.com with ESMTPSA id j6-20020aa79286000000b004fdf02851eesm12475019pfa.4.2022.04.18.06.20.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 06:20:32 -0700 (PDT)
-Message-ID: <1edf3ea4-6c77-1cc1-9537-13acdfe67cf1@bytedance.com>
-Date:   Mon, 18 Apr 2022 21:20:25 +0800
+        Mon, 18 Apr 2022 10:18:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A204C42D;
+        Mon, 18 Apr 2022 06:14:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23D0760F5E;
+        Mon, 18 Apr 2022 13:14:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE4ABC385A1;
+        Mon, 18 Apr 2022 13:14:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650287649;
+        bh=OWZ971jw8CZNKUwPBGYVYpdeU3kKngi7ozqIslI6Rfs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=h9oegXdiYR48VEerZeEyCqMhFnXVHu04eV4QvHBGw7p/UfDUT/RUdbUWDKHlx+sXW
+         9ZIqRFGNYXmVsGDKl6nOgdLzNfsa0DCAO9Z9C59LQYeiLPOtmMNHeh6k9VvDvRKcqG
+         L4ldbVjs6VlIJYuy4Z0KUTobXUB9ZQJe93DVnOhlQ9+8YberOQFw0ZiFo1epSjCLip
+         AHNFpcLXjdWrP3z1rDpPsp/GGmMi8welusHv8+9tiSpeXJ0l7Bn15TxnU/1OVd+qeR
+         P1BAblfqfrr4/VLcigsguEkKPNqHSoeIx61fWgpOY9ri1CiaSgmPKK1XKCR3T8+vK7
+         ZsqaBFD/dIhOA==
+Date:   Mon, 18 Apr 2022 21:14:02 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Abel Vesa <abel.vesa@nxp.com>
+Cc:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <fabio.estevam@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-mmc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Jacky Bai <ping.bai@nxp.com>
+Subject: Re: [PATCH v6 03/13] arm64: dts: freescale: Add the imx8dxl
+ connectivity subsys dtsi
+Message-ID: <20220418131402.GQ391514@dragon>
+References: <20220413103356.3433637-1-abel.vesa@nxp.com>
+ <20220413103356.3433637-4-abel.vesa@nxp.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.0
-Subject: Re: [External] Re: [PATCH] sched/fair: update tg->load_avg and
- se->load in throttle_cfs_rq()
-Content-Language: en-US
-To:     Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     Benjamin Segall <bsegall@google.com>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        duanxiongchun@bytedance.com, songmuchun@bytedance.com,
-        zhengqi.arch@bytedance.com
-References: <20220413041627.41521-1-zhouchengming@bytedance.com>
- <xm26h76wvql9.fsf@bsegall-linux.svl.corp.google.com>
- <14737e0f-3d33-125b-57cc-966de00430be@bytedance.com>
- <CAKfTPtBWXyamX0jFSvgP3VnZacd5SNb_Yg9jAq1y0koHwr7DxQ@mail.gmail.com>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <CAKfTPtBWXyamX0jFSvgP3VnZacd5SNb_Yg9jAq1y0koHwr7DxQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220413103356.3433637-4-abel.vesa@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/15 15:51, Vincent Guittot wrote:
-> On Fri, 15 Apr 2022 at 07:42, Chengming Zhou
-> <zhouchengming@bytedance.com> wrote:
->>
->> On 2022/4/14 01:30, Benjamin Segall wrote:
->>> Chengming Zhou <zhouchengming@bytedance.com> writes:
->>>
->>>> We use update_load_avg(cfs_rq, se, 0) in throttle_cfs_rq(), so the
->>>> cfs_rq->tg_load_avg_contrib and task_group->load_avg won't be updated
->>>> even when the cfs_rq's load_avg has changed.
->>>>
->>>> And we also don't call update_cfs_group(se), so the se->load won't
->>>> be updated too.
->>>>
->>>> Change to use update_load_avg(cfs_rq, se, UPDATE_TG) and add
->>>> update_cfs_group(se) in throttle_cfs_rq(), like we do in
->>>> dequeue_task_fair().
->>>
->>> Hmm, this does look more correct; Vincent, was having this not do
->>> UPDATE_TG deliberate, or an accident that we all missed when checking?
+On Wed, Apr 13, 2022 at 01:33:46PM +0300, Abel Vesa wrote:
+> From: Jacky Bai <ping.bai@nxp.com>
 > 
-> The cost of UPDATE_TG/update_tg_load_avg() is not free and the parent
-> cfs->load_avg should not change because of the throttling but only the
-> cfs->weight so I don't see a real benefit of UPDATE_TG.
-
-Hi Vincent,
-
-If the current task has dequeued before throttle_cfs_rq() when pick_next_task_fair,
-the parent cfs_rq will wait to update_tg_load_avg() until the throttle_cfs_rq()
-when enqueue_entity(), cause delay update of parent cfs_rq->load_avg and the
-load.weight of that group_se, so the fairness of task_groups may be delayed.
-
-update_tg_load_avg() won't touch tg->load_avg if (delta <= cfs_rq->tg_load_avg_contrib / 64).
-So the cost may have been avoided if the load_avg is really unchanged ?
-
+> On i.MX8DXL, the Connectivity subsystem includes below peripherals:
+> 1x ENET with AVB support, 1x ENET with TSN support, 2x USB OTG,
+> 1x eMMC, 2x SD, 1x NAND.
 > 
-> Chengming,
-> have you faced an issue or this change is based on code review ?
+> Signed-off-by: Jacky Bai <ping.bai@nxp.com>
+> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 
-Yes, this change is based on code review and git log history.
+I got following warning with 'W=1' build flag.
 
-Thanks.
+../arch/arm64/boot/dts/freescale/imx8dxl-ss-conn.dtsi:10.45-15.4: Warning (simple_bus_reg): /bus@5b000000/clock-conn-enet0-root: missing or empty reg/ranges property
+../arch/arm64/boot/dts/freescale/imx8dxl-ss-conn.dtsi:63.29-68.4: Warning (simple_bus_reg): /bus@5b000000/usbphy@0x5b110000: simple-bus unit address format error, expected "5b110000"
+../arch/arm64/boot/dts/freescale/imx8dxl-ss-ddr.dtsi:7.27-12.4: Warning (simple_bus_reg): /bus@5c000000/clock-db-ipg: missing or empty reg/ranges property
 
+Shawn
+
+> ---
+>  .../boot/dts/freescale/imx8dxl-ss-conn.dtsi   | 134 ++++++++++++++++++
+>  1 file changed, 134 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/freescale/imx8dxl-ss-conn.dtsi
 > 
->>>
->>> It looks like the unthrottle_cfs_rq side got UPDATE_TG added later in
->>> the two-loops pass, but not the throttle_cfs_rq side.
->>
->> Yes, UPDATE_TG was added in unthrottle_cfs_rq() in commit 39f23ce07b93
->> ("sched/fair: Fix unthrottle_cfs_rq() for leaf_cfs_rq list").
->>
->>>
->>> Also unthrottle_cfs_rq I'm guessing could still use update_cfs_group(se)
->>
->> It looks like we should also add update_cfs_group(se) in unthrottle_cfs_rq().
->>
->> Thanks.
->>
->>>
->>>
->>>>
->>>> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
->>>> ---
->>>>  kernel/sched/fair.c | 3 ++-
->>>>  1 file changed, 2 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
->>>> index d4bd299d67ab..b37dc1db7be7 100644
->>>> --- a/kernel/sched/fair.c
->>>> +++ b/kernel/sched/fair.c
->>>> @@ -4936,8 +4936,9 @@ static bool throttle_cfs_rq(struct cfs_rq *cfs_rq)
->>>>              if (!se->on_rq)
->>>>                      goto done;
->>>>
->>>> -            update_load_avg(qcfs_rq, se, 0);
->>>> +            update_load_avg(qcfs_rq, se, UPDATE_TG);
->>>>              se_update_runnable(se);
->>>> +            update_cfs_group(se);
->>>>
->>>>              if (cfs_rq_is_idle(group_cfs_rq(se)))
->>>>                      idle_task_delta = cfs_rq->h_nr_running;
+> diff --git a/arch/arm64/boot/dts/freescale/imx8dxl-ss-conn.dtsi b/arch/arm64/boot/dts/freescale/imx8dxl-ss-conn.dtsi
+> new file mode 100644
+> index 000000000000..b776d0ed42b4
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/freescale/imx8dxl-ss-conn.dtsi
+> @@ -0,0 +1,134 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * Copyright 2019-2021 NXP
+> + */
+> +
+> +/delete-node/ &enet1_lpcg;
+> +/delete-node/ &fec2;
+> +
+> +&conn_subsys {
+> +	conn_enet0_root_clk: clock-conn-enet0-root {
+> +		compatible = "fixed-clock";
+> +		#clock-cells = <0>;
+> +		clock-frequency = <250000000>;
+> +		clock-output-names = "conn_enet0_root_clk";
+> +	};
+> +
+> +	eqos: ethernet@5b050000 {
+> +		compatible = "nxp,imx8dxl-dwmac-eqos", "snps,dwmac-5.10a";
+> +		reg = <0x5b050000 0x10000>;
+> +		interrupt-parent = <&gic>;
+> +		interrupts = <GIC_SPI 163 IRQ_TYPE_LEVEL_HIGH>,
+> +			     <GIC_SPI 162 IRQ_TYPE_LEVEL_HIGH>;
+> +		interrupt-names = "eth_wake_irq", "macirq";
+> +		clocks = <&eqos_lpcg IMX_LPCG_CLK_2>,
+> +			 <&eqos_lpcg IMX_LPCG_CLK_4>,
+> +			 <&eqos_lpcg IMX_LPCG_CLK_0>,
+> +			 <&eqos_lpcg IMX_LPCG_CLK_3>,
+> +			 <&eqos_lpcg IMX_LPCG_CLK_1>;
+> +		clock-names = "stmmaceth", "pclk", "ptp_ref", "tx", "mem";
+> +		assigned-clocks = <&clk IMX_SC_R_ENET_1 IMX_SC_PM_CLK_PER>;
+> +		assigned-clock-rates = <125000000>;
+> +		power-domains = <&pd IMX_SC_R_ENET_1>;
+> +		status = "disabled";
+> +	};
+> +
+> +	usbotg2: usb@5b0e0000 {
+> +		compatible = "fsl,imx8dxl-usb", "fsl,imx7ulp-usb";
+> +		reg = <0x5b0e0000 0x200>;
+> +		interrupt-parent = <&gic>;
+> +		interrupts = <GIC_SPI 166 IRQ_TYPE_LEVEL_HIGH>;
+> +		fsl,usbphy = <&usbphy2>;
+> +		fsl,usbmisc = <&usbmisc2 0>;
+> +		/*
+> +		 * usbotg1 and usbotg2 share one clock
+> +		 * scfw disable clock access and keep it always on
+> +		 * in case other core (M4) use one of these.
+> +		 */
+> +		clocks = <&clk_dummy>;
+> +		ahb-burst-config = <0x0>;
+> +		tx-burst-size-dword = <0x10>;
+> +		rx-burst-size-dword = <0x10>;
+> +		#stream-id-cells = <1>;
+
+Where do I find bindings for this property?
+
+Shawn
+
+> +		power-domains = <&pd IMX_SC_R_USB_1>;
+> +		status = "disabled";
+> +	};
+> +
+> +	usbmisc2: usbmisc@5b0e0200 {
+> +		#index-cells = <1>;
+> +		compatible = "fsl,imx8dxl-usbmisc", "fsl,imx7ulp-usbmisc";
+> +		reg = <0x5b0e0200 0x200>;
+> +	};
+> +
+> +	usbphy2: usbphy@0x5b110000 {
+> +		compatible = "fsl,imx8dxl-usbphy", "fsl,imx7ulp-usbphy";
+> +		reg = <0x5b110000 0x1000>;
+> +		clocks = <&usb2_2_lpcg IMX_LPCG_CLK_7>;
+> +		status = "disabled";
+> +	};
+> +
+> +	eqos_lpcg: clock-controller@5b240000 {
+> +		compatible = "fsl,imx8qxp-lpcg";
+> +		reg = <0x5b240000 0x10000>;
+> +		#clock-cells = <1>;
+> +		clocks = <&conn_enet0_root_clk>,
+> +			 <&conn_axi_clk>,
+> +			 <&conn_axi_clk>,
+> +			 <&clk IMX_SC_R_ENET_1 IMX_SC_PM_CLK_PER>,
+> +			 <&conn_ipg_clk>;
+> +		clock-indices = <IMX_LPCG_CLK_0>,
+> +				<IMX_LPCG_CLK_2>,
+> +				<IMX_LPCG_CLK_4>,
+> +				<IMX_LPCG_CLK_5>,
+> +				<IMX_LPCG_CLK_6>;
+> +		clock-output-names = "eqos_ptp",
+> +				     "eqos_mem_clk",
+> +				     "eqos_aclk",
+> +				     "eqos_clk",
+> +				     "eqos_csr_clk";
+> +		power-domains = <&pd IMX_SC_R_ENET_1>;
+> +	};
+> +
+> +	usb2_2_lpcg: clock-controller@5b280000 {
+> +		compatible = "fsl,imx8qxp-lpcg";
+> +		reg = <0x5b280000 0x10000>;
+> +		#clock-cells = <1>;
+> +		clock-indices = <IMX_LPCG_CLK_7>;
+> +		clocks = <&conn_ipg_clk>;
+> +		clock-output-names = "usboh3_2_phy_ipg_clk";
+> +	};
+> +};
+> +
+> +&enet0_lpcg {
+> +	clocks = <&conn_enet0_root_clk>,
+> +		 <&conn_enet0_root_clk>,
+> +		 <&conn_axi_clk>,
+> +		 <&clk IMX_SC_R_ENET_0 IMX_SC_C_TXCLK>,
+> +		 <&conn_ipg_clk>,
+> +		 <&conn_ipg_clk>;
+> +};
+> +
+> +&fec1 {
+> +	compatible = "fsl,imx8dxl-fec", "fsl,imx8qm-fec";
+> +	interrupts = <GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>,
+> +		     <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH>,
+> +		     <GIC_SPI 159 IRQ_TYPE_LEVEL_HIGH>,
+> +		     <GIC_SPI 161 IRQ_TYPE_LEVEL_HIGH>;
+> +	assigned-clocks = <&clk IMX_SC_R_ENET_0 IMX_SC_C_CLKDIV>;
+> +	assigned-clock-rates = <125000000>;
+> +};
+> +
+> +&usdhc1 {
+> +	compatible = "fsl,imx8dxl-usdhc", "fsl,imx8qxp-usdhc";
+> +	interrupts = <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
+> +};
+> +
+> +&usdhc2 {
+> +	compatible = "fsl,imx8dxl-usdhc", "fsl,imx8qxp-usdhc";
+> +	interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_HIGH>;
+> +};
+> +
+> +&usdhc3 {
+> +	compatible = "fsl,imx8dxl-usdhc", "fsl,imx8qxp-usdhc";
+> +	interrupts = <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
+> +};
+> -- 
+> 2.34.1
+> 
