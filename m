@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61FB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BCAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239185AbiDRMf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38414 "EHLO
+        id S239347AbiDRMgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240149AbiDRM3V (ORCPT
+        with ESMTP id S239136AbiDRM1r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:29:21 -0400
+        Mon, 18 Apr 2022 08:27:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A5A23BC4;
-        Mon, 18 Apr 2022 05:23:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0351EC47;
+        Mon, 18 Apr 2022 05:21:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6051760FD6;
-        Mon, 18 Apr 2022 12:23:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 529B1C385A1;
-        Mon, 18 Apr 2022 12:23:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E58DB60EF4;
+        Mon, 18 Apr 2022 12:21:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2F34C385A7;
+        Mon, 18 Apr 2022 12:21:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284600;
-        bh=TXP33MxQcoGXqH6pSq59ip2G3OXzzhTeruKASjNglEw=;
+        s=korg; t=1650284481;
+        bh=rYRFrmduGK9OPApLKSoWYm1uIg6/U0nzJAGC+goYJts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wKtl8zD6V+B9hSW8trAQfLNWpQb3rAC4ROZMjnxxuhS+2fY9kSeT7Ofqg7GZLbVS5
-         5JCazhkyQkXDcWKH2YmeVfPSYrvk6FFqhoZyWwMo8yYrEulVOB6CPY7cjHbDlk/gwj
-         7g2SONt4kx6yQLLML+FjQjfbEO1EJDS1aN0ESTmU=
+        b=qWmTlZyPd/lu4anGFFdtyBqhUjQxRSLKRA+FrVD975Mw+aOElgHPstbuUYYBVThVb
+         VPTutI3+0CjdJG3Wvd4ceXz1KjdjBQFMU8Eypp7CRM+abX0oi9Qw6ea/E1QwuGRBwG
+         yghdled1ZiaurCmVgvwBvDGt3gd02eXbf7GjS66A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 166/219] drbd: set QUEUE_FLAG_STABLE_WRITES
-Date:   Mon, 18 Apr 2022 14:12:15 +0200
-Message-Id: <20220418121211.529665024@linuxfoundation.org>
+Subject: [PATCH 5.17 105/219] net: lan966x: Stop processing the MAC entry is port is wrong.
+Date:   Mon, 18 Apr 2022 14:11:14 +0200
+Message-Id: <20220418121209.833152383@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,31 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Böhmwalder <christoph@boehmwalder.at>
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-[ Upstream commit 286901941fd18a52b2138fddbbf589ad3639eb00 ]
+[ Upstream commit 269219321eb7d7645a3122cf40a420c5dc655eb9 ]
 
-We want our pages not to change while they are being written.
+Currently when getting a new MAC is learn, the HW generates an
+interrupt. So then the SW will check the new entry and checks if it
+arrived on a correct port. If it didn't just generate a warning.
+But this could still crash the system. Therefore stop processing that
+entry when an issue is seen.
 
-Signed-off-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 5ccd66e01cbef8 ("net: lan966x: add support for interrupts from analyzer")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/drbd/drbd_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/microchip/lan966x/lan966x_mac.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index 5d5beeba3ed4..478ba959362c 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -2739,6 +2739,7 @@ enum drbd_ret_code drbd_create_device(struct drbd_config_context *adm_ctx, unsig
- 	sprintf(disk->disk_name, "drbd%d", minor);
- 	disk->private_data = device;
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
+index ce5970bdcc6a..2679111ef669 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
+@@ -346,7 +346,8 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
  
-+	blk_queue_flag_set(QUEUE_FLAG_STABLE_WRITES, disk->queue);
- 	blk_queue_write_cache(disk->queue, true, true);
- 	/* Setting the max_hw_sectors to an odd value of 8kibyte here
- 	   This triggers a max_bio_size message upon first attach or connect */
+ 			lan966x_mac_process_raw_entry(&raw_entries[column],
+ 						      mac, &vid, &dest_idx);
+-			WARN_ON(dest_idx > lan966x->num_phys_ports);
++			if (WARN_ON(dest_idx > lan966x->num_phys_ports))
++				continue;
+ 
+ 			/* If the entry in SW is found, then there is nothing
+ 			 * to do
+@@ -392,7 +393,8 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
+ 
+ 		lan966x_mac_process_raw_entry(&raw_entries[column],
+ 					      mac, &vid, &dest_idx);
+-		WARN_ON(dest_idx > lan966x->num_phys_ports);
++		if (WARN_ON(dest_idx > lan966x->num_phys_ports))
++			continue;
+ 
+ 		mac_entry = lan966x_mac_alloc_entry(mac, vid, dest_idx);
+ 		if (!mac_entry)
 -- 
 2.35.1
 
