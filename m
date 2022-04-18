@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E58FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBE5C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:03:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238717AbiDRNFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:05:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42306 "EHLO
+        id S240318AbiDRNFs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:05:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240318AbiDRMzK (ORCPT
+        with ESMTP id S240308AbiDRMzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:55:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB737644;
-        Mon, 18 Apr 2022 05:36:20 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D8B764F;
+        Mon, 18 Apr 2022 05:36:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 173C4B80EC4;
-        Mon, 18 Apr 2022 12:36:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B7F8C385A7;
-        Mon, 18 Apr 2022 12:36:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74DB461033;
+        Mon, 18 Apr 2022 12:36:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69EC2C385A7;
+        Mon, 18 Apr 2022 12:36:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285377;
-        bh=4hjNYSm6Wj/1vPSJiNLmluQsl5jfLcqmtgk+7KExBpQ=;
+        s=korg; t=1650285380;
+        bh=OheKLmfXH/0ETv6AsmLPpvnGotO5nZR5o2vxS0ci7Fg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k7XLMQ7bRpItoIdBjAMjZZ6Pak5cRoRZApTWgfrKcUuyq3MTgcfHYsWeNHf1VK27I
-         ywt6VPb685MrD6Qu/r/21mRbAhvDyJArJUBVVFTmgAbDMlr9DDHRKl6/IwMlOVgOzQ
-         HBJU7eQcZgBptGgfc/2KZiQ7VXzgMOuyQf4RC8qA=
+        b=STXlt6fljl6e5zLUIR7nH75gYgpMFD51hdTKuvQXLLWEp7NoqwiYUTe9veAC2znKR
+         BUG7JE1JTC/jNM76KiEHZsXZdc78XBC/8pTU10VGINF1gsBw1PsqqXUGClmGwTIwYc
+         x6RtZ5BkoQ+nhgKcK5xfrzNZnv82QCA+ShJH0ueg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.15 189/189] ax25: Fix UAF bugs in ax25 timers
-Date:   Mon, 18 Apr 2022 14:13:29 +0200
-Message-Id: <20220418121208.834969824@linuxfoundation.org>
+        stable@vger.kernel.org, Nadav Amit <namit@vmware.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 5.15 172/189] smp: Fix offline cpu check in flush_smp_call_function_queue()
+Date:   Mon, 18 Apr 2022 14:13:12 +0200
+Message-Id: <20220418121207.655441253@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,78 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Nadav Amit <namit@vmware.com>
 
-commit 82e31755e55fbcea6a9dfaae5fe4860ade17cbc0 upstream.
+commit 9e949a3886356fe9112c6f6f34a6e23d1d35407f upstream.
 
-There are race conditions that may lead to UAF bugs in
-ax25_heartbeat_expiry(), ax25_t1timer_expiry(), ax25_t2timer_expiry(),
-ax25_t3timer_expiry() and ax25_idletimer_expiry(), when we call
-ax25_release() to deallocate ax25_dev.
+The check in flush_smp_call_function_queue() for callbacks that are sent
+to offline CPUs currently checks whether the queue is empty.
 
-One of the UAF bugs caused by ax25_release() is shown below:
+However, flush_smp_call_function_queue() has just deleted all the
+callbacks from the queue and moved all the entries into a local list.
+This checks would only be positive if some callbacks were added in the
+short time after llist_del_all() was called. This does not seem to be
+the intention of this check.
 
-      (Thread 1)                    |      (Thread 2)
-ax25_dev_device_up() //(1)          |
-...                                 | ax25_kill_by_device()
-ax25_bind()          //(2)          |
-ax25_connect()                      | ...
- ax25_std_establish_data_link()     |
-  ax25_start_t1timer()              | ax25_dev_device_down() //(3)
-   mod_timer(&ax25->t1timer,..)     |
-                                    | ax25_release()
-   (wait a time)                    |  ...
-                                    |  ax25_dev_put(ax25_dev) //(4)FREE
-   ax25_t1timer_expiry()            |
-    ax25->ax25_dev->values[..] //USE|  ...
-     ...                            |
+Change the check to look at the local list to which the entries were
+moved instead of the queue from which all the callbacks were just
+removed.
 
-We increase the refcount of ax25_dev in position (1) and (2), and
-decrease the refcount of ax25_dev in position (3) and (4).
-The ax25_dev will be freed in position (4) and be used in
-ax25_t1timer_expiry().
-
-The fail log is shown below:
-==============================================================
-
-[  106.116942] BUG: KASAN: use-after-free in ax25_t1timer_expiry+0x1c/0x60
-[  106.116942] Read of size 8 at addr ffff88800bda9028 by task swapper/0/0
-[  106.116942] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-06123-g0905eec574
-[  106.116942] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-14
-[  106.116942] Call Trace:
-...
-[  106.116942]  ax25_t1timer_expiry+0x1c/0x60
-[  106.116942]  call_timer_fn+0x122/0x3d0
-[  106.116942]  __run_timers.part.0+0x3f6/0x520
-[  106.116942]  run_timer_softirq+0x4f/0xb0
-[  106.116942]  __do_softirq+0x1c2/0x651
-...
-
-This patch adds del_timer_sync() in ax25_release(), which could ensure
-that all timers stop before we deallocate ax25_dev.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-[OP: backport to 5.15: adjust context]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Fixes: 8d056c48e4862 ("CPU hotplug, smp: flush any pending IPI callbacks before CPU offline")
+Signed-off-by: Nadav Amit <namit@vmware.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20220319072015.1495036-1-namit@vmware.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ax25/af_ax25.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ kernel/smp.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -1053,6 +1053,11 @@ static int ax25_release(struct socket *s
- 		ax25_destroy_socket(ax25);
- 	}
- 	if (ax25_dev) {
-+		del_timer_sync(&ax25->timer);
-+		del_timer_sync(&ax25->t1timer);
-+		del_timer_sync(&ax25->t2timer);
-+		del_timer_sync(&ax25->t3timer);
-+		del_timer_sync(&ax25->idletimer);
- 		dev_put(ax25_dev->dev);
- 		ax25_dev_put(ax25_dev);
- 	}
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -579,7 +579,7 @@ static void flush_smp_call_function_queu
+ 
+ 	/* There shouldn't be any pending callbacks on an offline CPU. */
+ 	if (unlikely(warn_cpu_offline && !cpu_online(smp_processor_id()) &&
+-		     !warned && !llist_empty(head))) {
++		     !warned && entry != NULL)) {
+ 		warned = true;
+ 		WARN(1, "IPI on offline CPU %d\n", smp_processor_id());
+ 
 
 
