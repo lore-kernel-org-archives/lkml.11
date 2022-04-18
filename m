@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB2EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A2ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345461AbiDRPps (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60884 "EHLO
+        id S244580AbiDRPqg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:46:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345479AbiDRPpQ (ORCPT
+        with ESMTP id S1345456AbiDRPpr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:45:16 -0400
-Received: from sonic311-30.consmr.mail.ne1.yahoo.com (sonic311-30.consmr.mail.ne1.yahoo.com [66.163.188.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4295A0A4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 08:11:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1650294676; bh=SEZ5yGN4WuR3EQqQcVrWwReXijssZ/504JFMBxTlkAE=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=kyLPaL4WeF7F2AiLwOcftuMtQNiMP8QoG3pG81D6aaybK7T6+sg8BLPGATx0rJWpOnba/s05Ib+vLMGEkCYROnoCBWATVt2ZxOj+8T1GXtjAKUFZEmmjnc2zUU6rcIo7Cgjq9C6lOXw4ee11Y9ZjbXvjRi6Qo4xl/qxAk9JqRxt1EuX5bYnkWoYUTyPgpbJf5AXJYCtgeXfGi2a1l2BO+B0g6aMdsI71MrMl3F6fpF0bTzvkFLRj0dIafAODcaFPA0t2zVCqIKokVPKZaoK9L3M3rYXZHCVNxNI8Zbi9vJyG8axWPuxpOdpzpccqJQ2/ESGwM+l4BrVoT8oybb25Kw==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1650294676; bh=GX05bKaWTQ6G1QuVuiX9cQQL7jCv+vajwL8haslE5F9=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=UgyfWZVwVxuYq9b4kUieHyR/yqDLpOS7dxfM03rSuyI/ebaxqavw6bC9EP5o+x8liSUMbkGogifi5xXEF77lEeQP1UDAtHlFZ5B9DeC2iH3pWP706vhLkWbasAvWENtw2O5Mg1gYUzwWcD/VeKXCIyqOlt+i9Vvt2UEsJtPaEkSVbLDhOz1rtrNlo2ER9PkR4KY7OFOE1F2zVV+PntT41+t/WSgUSK6pY5h1Fh6V+jVH1ZoU9O/HXOqD2NJAcJuEeg/5wdlTHq55eQI2yK2I6uVr8ZbRQc5Wv7z5ObBs2CCQrORALz39Zq0GzzWAq30Y+QfHFBjnGiiPkBO49JkUdg==
-X-YMail-OSG: qCH712UVM1nyvCBnbiv3IIt8QeVbofMXB5wdpb.szoeoxNDKs7Nkh5CTW3EV.1n
- zzRfLQlf8Soi6.hsDFnF7HC_dALgqTmjq6Nx9etzIs4Za0ClkYCy_UhDoh0LTMe1MvE6PCroBbBf
- HJnb97azTFt7z3E957G_eFOXlmBlscoJ08ENHYXizkSc_2tywx.7wIvLag9s5262htiC.7gEezxs
- mHNATzUDPfxGGqYSVfphxhN17FmD4sdnmOH4HG.XlR1dGf4zNM5Ohpd2apLwmmPGhooXpJ2k.bd2
- NCjqpPJRKqEnz_cQ_vPbAZ4HvUo8KQIozp9MZAXemnFkxzxOoWR76RJhU7GdcsY16tEiSg72bgyY
- fEzF5zggqpigMZjeM1noiKJGD3Bl3DUGVOX3Mt9X0uSrnk_hR9ms0jmKw4wiQWqY6JVA07NifBUG
- ZWCLKlb8m8z3jk7vcB3go_6ppSfYaiMxtOCz99ni2RG4ERHFbQHMBzMHjrSDw2t8MQRLt0Rwlz8g
- vzGS_nIq84kW17CiBPeY9az6yd9h1LTfK69ry8jRcwGzBoLz3gOWAUizdqoyHlrR18Ko5pz5PpnM
- npV0zUtHNeuyPbantarBOWWIMG8r3cDhJ0cfvkEUiqPR01NiTRZ31WGmhK7K20VuZCvNcXD8reUj
- 4H2pro3R6s445mcG8Y6vehc4lhwP0ApAe24imKaR0i46KgUtVPOZlJktiVRBLBhmlJ4MtzyqwGTv
- HxgQ6GIRjRu5tXRBqo0V2BYRGrHJwizftQ6ttuKX6yMK3MUPw0vhtinmyVzPV9uohKexjhR30VaY
- i540UdBMoj.8U4Gc.hraS7PH9egqtV1tBI5t26Yx95N1WuroaR6loyz8cFXAjI2DkT4x4YWWKQyS
- qvE1Dus2_tu3xSGlCTGcZfR5BMsDMeqia9u9UI9kyRNPL_hPiWl0t_hRhvn4mc9zbqCfghODQGCH
- 5GYKjQnfW.BMqlp8StpONtuZz52CCx20I3xtxa_3isFpxPO._EMSNfTNQc0vKmmQG1uuTeiMWn0D
- tm.YChqb4c0XpUan2HVU7e3RLoEO8cI1zANOhk22klroo_zid1NnJ.qbR9ns82gkdz8qnyOES46v
- 5L4VHENVZ0uQ8Yvf4721txvLD7BY0yTpqO4BklBZWmqERrCr4OoTNrxCRwbvTYzh8yxHF.EyFzyQ
- 01.NxYsNBeRcrkiOu4skwT1QOEH3Witt7QBGkNJerKWxjCGhB4Mcqwq9TMmWfhx7FJZX9g6IYbRU
- .lGu7UdmYa59u6FeUvMYeMnbbfXghDf51SpHm03PJObP9UEjjhSN2ZYi.KRWrpc7R3ateG9r4UiJ
- tBz2rLJ6CDjCr1_TFcoYv77OHtaNOvT3ezNMp_01qtDluT4.MeEx.6_kg.jOYJWVMkBMoHbU8DA8
- DsASTLcepHCXqt.29ojVNilF8hH8U0QZAIFf23rsdyqID87Ewljj7ZOLkqUs0aijkVk3k9ehYSGG
- D2w2mrErx2Rhp6sUKo6DtokuiIsjyW1OkiCmfOO_FMplOUTPg2mpl0V01k.88cubls.ea8r5W1DD
- cjC4UpgUw6Inj.nLYyOwPr5w6NLj2D3GoSKZpHUkgbGL9ztIaL.9aT3r65IAFWWfX6LNaZqNes04
- 3iZIw8aPaKjO0Z.mrZAOSozRrH5xc2ZkLXYUyKMH4aDqOmbZO3s16Cp.VTYgB.k1EFooFTFC3WVk
- JFlqw9uxT182XnUxPi2QdBCurUU8IDaDFk5tqOq2jNTKjW.DC_y4eLss4PlqGDyFWneUKNSOQISF
- xxoKN66kThtdje99eLSM8WLo3h3xM_x2yx89n52rUJl_A57cl_jAWm3XrN1zwo_4zsMwq77JbiW9
- UrCVeWoKjy1zuyxICpVT3KgyruVlS9q7tk6RuH3Wu7n3n7P.0Z4iM55E5Gs7sz9mjt.9gPAM5vfz
- IMtBUwidExBs3LusMonh1Ze.p02M75u6MFEHYSVOicm9z5NR7tIyj4MAL48PozDJdtCGIvxoItHY
- 6J3aCD5Yo645RCm9mO3Fx.D7NBcfYjJ4UjkyO.IfiWg0VZOVr8lCrq1u49x2bD4AkmZv4gVJsPfU
- F4GTIBbCIFG_Azr9cl0r6NXtk48pB.Jxz6XtBk0Ygq65iSJ80T_QsbeK2qtsF8cTQNmlYuKZhl.D
- x.BPaf1Csb8B4wxh1gSjytAm.ZajKiHuW1Mk2loxrG4WDppVLTh_fOrQGZfyosBj0jG4jAQX_V7G
- n07h5l.3fuyx.GN1lK.5cmgjz0BUQEx5m7p5T8W_YuwnkEa7eOIyot9vZydrXUfeG90ci8W5tmr_
- .Ws6N2Cmd5aMgwzsrmTiB.pOZ0iufOEf0Zh8jmzwsAHhalwyEejnr4E.pKw--
+        Mon, 18 Apr 2022 11:45:47 -0400
+Received: from sonic317-38.consmr.mail.ne1.yahoo.com (sonic317-38.consmr.mail.ne1.yahoo.com [66.163.184.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9AE5A0BD
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 08:12:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1650294772; bh=ClsMUKhtMLE7a7NDrpNFEcSlIfUCv643dLWMaDabIbg=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=X5kw5fclF0fxinjx1XQai4e+a1qJ2Cjl96g0VM9Jeox+WbR5B7COXDnwc14OwXS17h1ASNzcsEmlrkRbv6PwTHIlgbFmuubXOtfe+gzF52sMoRRNIi+J4cOMehaB68UqL+HC+Ykt6JZyRpsZcAgiP7cfTNxxKHDuoV+mqrumy4TLj8c9D/Rq70BKPH+qcEsp/1tuW4uknWZv0fQZBgBBoRGC3HFjhRRTnMj3LvjMkXX2GSqVuxnLheHajfxmGOBTkFxIIvnoVdTsQjcpmsVzvS7Mh2sM4vXA8PVm+cviyDRPeSi90lkuYIgP7DtpDw4aM9P19HjqEwqjKGg2CztdQQ==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1650294772; bh=/pK/xmZRUjcShdUOKrB8IKcCqk6Fal/YzeqwKrWyrkL=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=kjNKjuDtA7HFYPsMeP2apufQC360b8mrFE0icHJURCu6gtiZuMf+XW28DHAmQjDTcuxX87dOmHe/K2+FPHxRqLPaZPGc6rMB7I1jx+rQ9YgCBmODHDyBDxRutzsicI7WGphnln87F3lnZSIht+M2YTMqSfgnObAvryLE0/IHnu97rwSedjRYnT7xZI3GkLWQQv5XYeqX2Ciup6CZFHRu4C++CSWO1pHPkY+bb6sXhRPfdyqx5b6vDVUqvHqq+nlCi/yRAQ9WwlALOMnU8eSBbd4TRsXemrY6f3xaHNGu2S2nqzMPniGg1Bp0UCTh6wMLuVnFbXh7CHWOHockStkWqg==
+X-YMail-OSG: 3uT_ewIVM1nTDx1gnW_LgXd9XAPjFXUoKoEnTEAlcduyf_WthJuSyEHaoEeBk3V
+ Ebevb2z.wQtVsIB1Q7SUIPUWFHChTiWytipvSYO8uddvV60ALdPjPNZj8W_XBDIxIZ0COGqGa9dg
+ MnG0Vptg9t52VztSMtmv5PmHwvcgMYTKqSivCvKIQUdkdWmq56.LQsyCg9_QwrXZQls4TWCBlipp
+ Fml74AR8BDxLP1e_ynsgq7tVpd3.ooC57l18V14lAkKg6xIxyiJSyxkhrdz7TDkw2TngeA8y_ihs
+ zOSTNd7AsZ7ul.ADIz2xhoEM0pcuj0DBDj2KSwzXfSqNOtaemJ4nYHHftx5evpmIZ9VO_pNP1NBl
+ 7Cn3PsdnnUbmfhxTvb6lFppvGr8V8iZKktfoaMSQe6Hl1GWN7evnDd8FQ1nX0m_3LNR71oN3wyLz
+ T_OSfkBJYyewebwnNzDPknSpU4QGR1VYM4h4O1QoPLCW5bHTW66lzgw_0cSrRcJRRKy0lzIQwrIy
+ jxjqTnLMAAHi_isvKZVIO9JyjYhPb_8pm2apW54mnK_3H4CvcIYis5xxqN_y_Gb2992QogMsL2Hn
+ H4gUE.TOTRP_z2bt6cNOtgDiQ086eZKKFYQVoH3hvPpFd80v7T_ubXuavo9S0teblxKOdidCNFAy
+ vPk9SWQ_vwtkqIJTjD56GVMmVh_Y56H4.3KHAtWQ9mEq.HDJ_Qt9IQUWHYKLkKEoa8hB92Z0KKzd
+ f_Y8iZ9FR00tvYScZ4gnRxueGH.ZJNi_mC1ABjogbje3rABxgiELWi1jDJo7ceEzqCuqBgzJqZss
+ zK0A_E52S2LhIm8kiAhWF1qZicBoQo_MFfGOwZVbGnKlB9J.NNuI8_biSB6nUWwCvlfx_.kGmFy.
+ lg1OoydIaPjFXY1YkRllH3tWTvQscSRK1KBeOwQuWJhjifpDmO39Wbt.Gk6tK2fcDsH8V4S0Atkd
+ .oFwxihHD.3z0S5tExekHt5ea3P6wXhjkraNwHQuoLNzfefyw_UQxiztivp71V4CWiLfh6S4GCFv
+ kRbbyc0IhgT.GVvdCEJLvCj6wVmQJsPCfHJ00uW7uKCEpYTv6.r.lPHCZPkUlMbkYcTBB913aYHD
+ GsKH0EPa.UdMB6I2ZopZ0yjvOn8Dfg20pFHc0pJ68HYt7tYI4j42PdfZck0CC5sVcg_m5PeNSviW
+ lD_Nah5.yoM6dLIA0Z3TxkURnnAlOWt5lQUQZzdBFqUltLuVwzhylEGfQ_rjURbe3t3nw0fRibOU
+ kNWZQQj3brBKbj9GeSvnvvl2H24KG890V.jb8QKuIHT82Pft_5FAXza1ZR9F.5QuARBUDcVP3RU6
+ dhMn.x67qKNOIq0vtIVIRDdpnb2Zz42_4vj4ZYlnaHO1fsMhfD13VoXfScRizleSZQSs0JtuUyOT
+ aFi8iRZvu_YQmMdh5hRG4O41CVm2vERbpQ7orjLuYSBLupJvYtDssB8jm3tVHvBkDgGCC5yZO2R2
+ kv3Kbl4NwOJLlkAgx0.DuY5Ng2pT8BuQF08kCHbIpPM9KnLd0_8XiIb_C5z3LCeBJvO3ZUuiLdvo
+ xjAyWGhFA18IEPYb0NB8E9vSXnWDeMWabKYpIyAqesjL0yPYCfloLMOtc21vlwGtitE6_ufRbkJi
+ MfmqUvWA7RboZgObCYFmCVxc5j9AVrke1k6WSSyzwPDtWwUdxrNDQdXsNub0tBLQiw64oeNoRafk
+ 0K8pJSe3IJvw7wsGl7aAcYYZaUQYgpAX5L0ao0etRpZQYeeHfZ0AHLlawLhZafpGZopVpHH5IL6R
+ 8WMD46IfLxgOb9NyV7topZHvnw7YNRK2V2ROWsi4y42t8_YtcD.iB5hTwaweh2O3SCQnL_S602hN
+ Xnl8e42clC6uiRil.rNAXW.LBfS.vPMZKFLTF2oaVsJ7pXVzgUjmlWJoh8rZNZ4fQzNcyQ5TAb4W
+ Q3tpgVS5F0WDNceQ6YnApnm_LaXIFr9abmQznVaxl.yphjIm0HZGRRjD3ZqdikwmKW34r1MzHSoc
+ dpL1sbny0SlLuebC8Cf0TlD1CCFMYeOsXj265ILDDVOodu450HXhBOj9zJaS9lQuzxgmDdHO495Z
+ 7OH8z29BdADq9H5HdU.oF_cSojE543.HQG1MguT70FpWXxFpiFCMgbPPAapwRWVrnjWMCZxTmIze
+ fTmP3Yl9uv1T3em7VYLqniy1xytBDLaN1TjiDkGUHCxqeiwglR8P6mlDUCk72ulfI8cBT4szVTPy
+ vaNJ_bOGye3IWrDBnOtQsCSOP5jm1eFpDtLZGo_xg.Mz5Lh22.3igSzdUs8mQGEL2jKKfBTG7IFO
+ 7WQ--
 X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic311.consmr.mail.ne1.yahoo.com with HTTP; Mon, 18 Apr 2022 15:11:16 +0000
-Received: by hermes--canary-production-gq1-665697845d-2b87j (VZM Hermes SMTP Server) with ESMTPA ID 325f6f931fdc97e0cc6b332f80cb9e73;
-          Mon, 18 Apr 2022 15:11:12 +0000 (UTC)
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic317.consmr.mail.ne1.yahoo.com with HTTP; Mon, 18 Apr 2022 15:12:52 +0000
+Received: by hermes--canary-production-ne1-c7c4f6977-qcc8c (VZM Hermes SMTP Server) with ESMTPA ID ee952e2418b7fa05874502fbf35997b4;
+          Mon, 18 Apr 2022 15:12:47 +0000 (UTC)
 From:   Casey Schaufler <casey@schaufler-ca.com>
 To:     casey.schaufler@intel.com, jmorris@namei.org,
         linux-security-module@vger.kernel.org, selinux@vger.kernel.org
@@ -61,9 +60,9 @@ Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
         keescook@chromium.org, john.johansen@canonical.com,
         penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
         stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v35 23/29] Audit: Create audit_stamp structure
-Date:   Mon, 18 Apr 2022 07:59:39 -0700
-Message-Id: <20220418145945.38797-24-casey@schaufler-ca.com>
+Subject: [PATCH v35 25/29] Audit: Allow multiple records in an audit_buffer
+Date:   Mon, 18 Apr 2022 07:59:41 -0700
+Message-Id: <20220418145945.38797-26-casey@schaufler-ca.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220418145945.38797-1-casey@schaufler-ca.com>
 References: <20220418145945.38797-1-casey@schaufler-ca.com>
@@ -73,173 +72,149 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace the timestamp and serial number pair used in audit records
-with a structure containing the two elements.
+Replace the single skb pointer in an audit_buffer with
+a list of skb pointers. Add the audit_stamp information
+to the audit_buffer as there's no guarantee that there
+will be an audit_context containing the stamp associated
+with the event. At audit_log_end() time create auxiliary
+records (none are currently defined) as have been added
+to the list.
 
+Suggested-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-Acked-by: Paul Moore <paul@paul-moore.com>
 ---
- kernel/audit.c   | 17 +++++++++--------
- kernel/audit.h   | 12 +++++++++---
- kernel/auditsc.c | 22 +++++++++-------------
- 3 files changed, 27 insertions(+), 24 deletions(-)
+ kernel/audit.c | 62 +++++++++++++++++++++++++++++++-------------------
+ 1 file changed, 39 insertions(+), 23 deletions(-)
 
 diff --git a/kernel/audit.c b/kernel/audit.c
-index 28ff7a5f90bd..6b6c089512f7 100644
+index 6b6c089512f7..4d44c05053b0 100644
 --- a/kernel/audit.c
 +++ b/kernel/audit.c
-@@ -1822,11 +1822,11 @@ unsigned int audit_serial(void)
- }
+@@ -197,8 +197,10 @@ static struct audit_ctl_mutex {
+  * to place it on a transmit queue.  Multiple audit_buffers can be in
+  * use simultaneously. */
+ struct audit_buffer {
+-	struct sk_buff       *skb;	/* formatted skb ready to send */
++	struct sk_buff       *skb;	/* the skb for audit_log functions */
++	struct sk_buff_head  skb_list;	/* formatted skbs, ready to send */
+ 	struct audit_context *ctx;	/* NULL or associated context */
++	struct audit_stamp   stamp;	/* audit stamp for these records */
+ 	gfp_t		     gfp_mask;
+ };
  
- static inline void audit_get_stamp(struct audit_context *ctx,
--				   struct timespec64 *t, unsigned int *serial)
-+				   struct audit_stamp *stamp)
+@@ -1765,10 +1767,13 @@ __setup("audit_backlog_limit=", audit_backlog_limit_set);
+ 
+ static void audit_buffer_free(struct audit_buffer *ab)
  {
--	if (!ctx || !auditsc_get_stamp(ctx, t, serial)) {
--		ktime_get_coarse_real_ts64(t);
--		*serial = audit_serial();
-+	if (!ctx || !auditsc_get_stamp(ctx, stamp)) {
-+		ktime_get_coarse_real_ts64(&stamp->ctime);
-+		stamp->serial = audit_serial();
- 	}
++	struct sk_buff *skb;
++
+ 	if (!ab)
+ 		return;
+ 
+-	kfree_skb(ab->skb);
++	while((skb = skb_dequeue(&ab->skb_list)))
++		kfree_skb(skb);
+ 	kmem_cache_free(audit_buffer_cache, ab);
  }
  
-@@ -1849,8 +1849,7 @@ struct audit_buffer *audit_log_start(struct audit_context *ctx, gfp_t gfp_mask,
+@@ -1784,8 +1789,12 @@ static struct audit_buffer *audit_buffer_alloc(struct audit_context *ctx,
+ 	ab->skb = nlmsg_new(AUDIT_BUFSIZ, gfp_mask);
+ 	if (!ab->skb)
+ 		goto err;
++
++	skb_queue_head_init(&ab->skb_list);
++	skb_queue_tail(&ab->skb_list, ab->skb);
++
+ 	if (!nlmsg_put(ab->skb, 0, 0, type, 0, 0))
+-		goto err;
++		kfree_skb(ab->skb);
+ 
+ 	ab->ctx = ctx;
+ 	ab->gfp_mask = gfp_mask;
+@@ -1849,7 +1858,6 @@ struct audit_buffer *audit_log_start(struct audit_context *ctx, gfp_t gfp_mask,
  				     int type)
  {
  	struct audit_buffer *ab;
--	struct timespec64 t;
--	unsigned int serial;
-+	struct audit_stamp stamp;
+-	struct audit_stamp stamp;
  
  	if (audit_initialized != AUDIT_INITIALIZED)
  		return NULL;
-@@ -1905,12 +1904,14 @@ struct audit_buffer *audit_log_start(struct audit_context *ctx, gfp_t gfp_mask,
+@@ -1904,14 +1912,14 @@ struct audit_buffer *audit_log_start(struct audit_context *ctx, gfp_t gfp_mask,
  		return NULL;
  	}
  
--	audit_get_stamp(ab->ctx, &t, &serial);
-+	audit_get_stamp(ab->ctx, &stamp);
+-	audit_get_stamp(ab->ctx, &stamp);
++	audit_get_stamp(ab->ctx, &ab->stamp);
  	/* cancel dummy context to enable supporting records */
  	if (ctx)
  		ctx->dummy = 0;
  	audit_log_format(ab, "audit(%llu.%03lu:%u): ",
--			 (unsigned long long)t.tv_sec, t.tv_nsec/1000000, serial);
-+			 (unsigned long long)stamp.ctime.tv_sec,
-+			 stamp.ctime.tv_nsec/1000000,
-+			 stamp.serial);
+-			 (unsigned long long)stamp.ctime.tv_sec,
+-			 stamp.ctime.tv_nsec/1000000,
+-			 stamp.serial);
++			 (unsigned long long)ab->stamp.ctime.tv_sec,
++			 ab->stamp.ctime.tv_nsec/1000000,
++			 ab->stamp.serial);
  
  	return ab;
  }
-diff --git a/kernel/audit.h b/kernel/audit.h
-index 4af63e7dde17..260dab6e0e15 100644
---- a/kernel/audit.h
-+++ b/kernel/audit.h
-@@ -99,6 +99,12 @@ struct audit_proctitle {
- 	char	*value;	/* the cmdline field */
- };
- 
-+/* A timestamp/serial pair to identify an event */
-+struct audit_stamp {
-+	struct timespec64	ctime;	/* time of syscall entry */
-+	unsigned int		serial;	/* serial number for record */
-+};
-+
- /* The per-task audit context. */
- struct audit_context {
- 	int		    dummy;	/* must be the first element */
-@@ -108,10 +114,10 @@ struct audit_context {
- 		AUDIT_CTX_URING,	/* in use by io_uring */
- 	} context;
- 	enum audit_state    state, current_state;
-+	struct audit_stamp  stamp;	/* event identifier */
- 	unsigned int	    serial;     /* serial number for record */
- 	int		    major;      /* syscall number */
- 	int		    uring_op;   /* uring operation */
--	struct timespec64   ctime;      /* time of syscall entry */
- 	unsigned long	    argv[4];    /* syscall arguments */
- 	long		    return_code;/* syscall return code */
- 	u64		    prio;
-@@ -265,7 +271,7 @@ extern void audit_put_tty(struct tty_struct *tty);
- #ifdef CONFIG_AUDITSYSCALL
- extern unsigned int audit_serial(void);
- extern int auditsc_get_stamp(struct audit_context *ctx,
--			      struct timespec64 *t, unsigned int *serial);
-+			     struct audit_stamp *stamp);
- 
- extern void audit_put_watch(struct audit_watch *watch);
- extern void audit_get_watch(struct audit_watch *watch);
-@@ -306,7 +312,7 @@ extern void audit_filter_inodes(struct task_struct *tsk,
- 				struct audit_context *ctx);
- extern struct list_head *audit_killed_trees(void);
- #else /* CONFIG_AUDITSYSCALL */
--#define auditsc_get_stamp(c, t, s) 0
-+#define auditsc_get_stamp(c, s) 0
- #define audit_put_watch(w) do { } while (0)
- #define audit_get_watch(w) do { } while (0)
- #define audit_to_watch(k, p, l, o) (-EINVAL)
-diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-index 6fe9f2525fc1..557713954a69 100644
---- a/kernel/auditsc.c
-+++ b/kernel/auditsc.c
-@@ -992,10 +992,10 @@ static void audit_reset_context(struct audit_context *ctx)
- 	 */
- 
- 	ctx->current_state = ctx->state;
--	ctx->serial = 0;
-+	ctx->stamp.serial = 0;
- 	ctx->major = 0;
- 	ctx->uring_op = 0;
--	ctx->ctime = (struct timespec64){ .tv_sec = 0, .tv_nsec = 0 };
-+	ctx->stamp.ctime = (struct timespec64){ .tv_sec = 0, .tv_nsec = 0 };
- 	memset(ctx->argv, 0, sizeof(ctx->argv));
- 	ctx->return_code = 0;
- 	ctx->prio = (ctx->state == AUDIT_STATE_RECORD ? ~0ULL : 0);
-@@ -1950,7 +1950,7 @@ void __audit_uring_entry(u8 op)
- 
- 	ctx->context = AUDIT_CTX_URING;
- 	ctx->current_state = ctx->state;
--	ktime_get_coarse_real_ts64(&ctx->ctime);
-+	ktime_get_coarse_real_ts64(&ctx->stamp.ctime);
+@@ -2402,26 +2410,14 @@ int audit_signal_info(int sig, struct task_struct *t)
  }
  
  /**
-@@ -2066,7 +2066,7 @@ void __audit_syscall_entry(int major, unsigned long a1, unsigned long a2,
- 	context->argv[3]    = a4;
- 	context->context = AUDIT_CTX_SYSCALL;
- 	context->current_state  = state;
--	ktime_get_coarse_real_ts64(&context->ctime);
-+	ktime_get_coarse_real_ts64(&context->stamp.ctime);
- }
- 
- /**
-@@ -2535,21 +2535,17 @@ EXPORT_SYMBOL_GPL(__audit_inode_child);
- /**
-  * auditsc_get_stamp - get local copies of audit_context values
-  * @ctx: audit_context for the task
-- * @t: timespec64 to store time recorded in the audit_context
-- * @serial: serial value that is recorded in the audit_context
-+ * @stamp: timestamp to record
-  *
-  * Also sets the context as auditable.
+- * audit_log_end - end one audit record
+- * @ab: the audit_buffer
+- *
+- * We can not do a netlink send inside an irq context because it blocks (last
+- * arg, flags, is not set to MSG_DONTWAIT), so the audit buffer is placed on a
+- * queue and a kthread is scheduled to remove them from the queue outside the
+- * irq context.  May be called in any context.
++ * __audit_log_end - enqueue one audit record
++ * @skb: the buffer to send
   */
--int auditsc_get_stamp(struct audit_context *ctx,
--		       struct timespec64 *t, unsigned int *serial)
-+int auditsc_get_stamp(struct audit_context *ctx, struct audit_stamp *stamp)
+-void audit_log_end(struct audit_buffer *ab)
++static void __audit_log_end(struct sk_buff *skb)
  {
- 	if (ctx->context == AUDIT_CTX_UNUSED)
- 		return 0;
--	if (!ctx->serial)
--		ctx->serial = audit_serial();
--	t->tv_sec  = ctx->ctime.tv_sec;
--	t->tv_nsec = ctx->ctime.tv_nsec;
--	*serial    = ctx->serial;
-+	if (!ctx->stamp.serial)
-+		ctx->stamp.serial = audit_serial();
-+	*stamp = ctx->stamp;
- 	if (!ctx->prio) {
- 		ctx->prio = 1;
- 		ctx->current_state = AUDIT_STATE_RECORD;
+-	struct sk_buff *skb;
+ 	struct nlmsghdr *nlh;
+ 
+-	if (!ab)
+-		return;
+-
+ 	if (audit_rate_check()) {
+-		skb = ab->skb;
+-		ab->skb = NULL;
+-
+ 		/* setup the netlink header, see the comments in
+ 		 * kauditd_send_multicast_skb() for length quirks */
+ 		nlh = nlmsg_hdr(skb);
+@@ -2432,6 +2428,26 @@ void audit_log_end(struct audit_buffer *ab)
+ 		wake_up_interruptible(&kauditd_wait);
+ 	} else
+ 		audit_log_lost("rate limit exceeded");
++}
++
++/**
++ * audit_log_end - end one audit record
++ * @ab: the audit_buffer
++ *
++ * We can not do a netlink send inside an irq context because it blocks (last
++ * arg, flags, is not set to MSG_DONTWAIT), so the audit buffer is placed on a
++ * queue and a kthread is scheduled to remove them from the queue outside the
++ * irq context.  May be called in any context.
++ */
++void audit_log_end(struct audit_buffer *ab)
++{
++	struct sk_buff *skb;
++
++	if (!ab)
++		return;
++
++	while ((skb = skb_dequeue(&ab->skb_list)))
++		__audit_log_end(skb);
+ 
+ 	audit_buffer_free(ab);
+ }
 -- 
 2.35.1
 
