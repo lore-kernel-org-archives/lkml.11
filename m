@@ -2,94 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 041DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:51:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 733F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244612AbiDRNwY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:52:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60118 "EHLO
+        id S245107AbiDRNw1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:52:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244830AbiDRNa5 (ORCPT
+        with ESMTP id S244834AbiDRNa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:30:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7171823173;
-        Mon, 18 Apr 2022 05:55:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B2722315A
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:55:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650286541;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qFJ3DlKb+eUPu+S4bA6qaKNO41i7hF7RhsehUeP4a78=;
+        b=CiS/5yCWSHLu1WZRmQgbP0geShkAJ7ACi1icWDoonTQ+hUl7b/MH6SJqKRBDRSottghp4b
+        Wkd9P/zZAZ5xm79nHEjMWNKoGCAU2HvZv3xcV3ABnz4LhhGkS5S3YXGL7lFb29WreJgSE9
+        8NxqvucOWDGQXvqB8ZFUvy3f5j4WyfQ=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-655-ZAkUvhHMMkGL2Y6gwUNtQQ-1; Mon, 18 Apr 2022 08:55:38 -0400
+X-MC-Unique: ZAkUvhHMMkGL2Y6gwUNtQQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E625B80D9C;
-        Mon, 18 Apr 2022 12:55:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87936C385A7;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C309438149A3;
         Mon, 18 Apr 2022 12:55:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286538;
-        bh=ingGZxMaEc9r5alfLYbLed9tPRonczPlahQ4UPFgo+s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GkIFyvBG9KI7FqCzDBNxvYNWeGfgG9wVcBv/mt9rdAVLK5HfdSfdQZd120kCR+hDi
-         qiaAeXkFDwR5DQftDG0UhcCkHP9UGVP3cJ6UkBAhTRPUOQhWnvmmcpoD74r36gQz2q
-         5lFimwVuGe9Ob2OU4m7BX7D0Xn/BJbQJRW4d3gEI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Anton Altaparmakov <anton@tuxera.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 164/284] ntfs: add sanity check on allocation size
-Date:   Mon, 18 Apr 2022 14:12:25 +0200
-Message-Id: <20220418121216.408812730@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
-References: <20220418121210.689577360@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from starship (unknown [10.40.194.231])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A995340FD371;
+        Mon, 18 Apr 2022 12:55:35 +0000 (UTC)
+Message-ID: <dff229a39e30f84dcf8cc8caffc41f83bd5ece73.camel@redhat.com>
+Subject: Re: [PATCH v2 12/12] kvm/x86: Remove APICV activate mode
+ inconsistency check
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
+        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
+Date:   Mon, 18 Apr 2022 15:55:34 +0300
+In-Reply-To: <20220412115822.14351-13-suravee.suthikulpanit@amd.com>
+References: <20220412115822.14351-1-suravee.suthikulpanit@amd.com>
+         <20220412115822.14351-13-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+On Tue, 2022-04-12 at 06:58 -0500, Suravee Suthikulpanit wrote:
+> When launching a VM with x2APIC and specify more than 255 vCPUs,
+> the guest kernel can disable x2APIC (e.g. specify nox2apic kernel option).
+> The VM fallbacks to xAPIC mode, and disable the vCPU ID 255.
+> 
+> In this case, APICV should be disabled for the vCPU ID 255.
+> Therefore, the APICV mode consisency check is no longer valid.
+> 
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>  arch/x86/kvm/x86.c | 13 +++++--------
+>  1 file changed, 5 insertions(+), 8 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 0c0ca599a353..d0fac57e9996 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -9765,6 +9765,11 @@ void kvm_vcpu_update_apicv(struct kvm_vcpu *vcpu)
+>  	down_read(&vcpu->kvm->arch.apicv_update_lock);
+>  
+>  	activate = kvm_apicv_activated(vcpu->kvm);
+> +
+> +	/* Do not activate AVIC when APIC is disabled */
+> +	if (kvm_get_apic_mode(vcpu) == LAPIC_MODE_DISABLED)
+> +		activate = false;
+> +
+>  	if (vcpu->arch.apicv_active == activate)
+>  		goto out;
+>  
+> @@ -10159,14 +10164,6 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+>  	guest_timing_enter_irqoff();
+>  
+>  	for (;;) {
+> -		/*
+> -		 * Assert that vCPU vs. VM APICv state is consistent.  An APICv
+> -		 * update must kick and wait for all vCPUs before toggling the
+> -		 * per-VM state, and responsing vCPUs must wait for the update
+> -		 * to complete before servicing KVM_REQ_APICV_UPDATE.
+> -		 */
+> -		WARN_ON_ONCE(kvm_apicv_activated(vcpu->kvm) != kvm_vcpu_apicv_active(vcpu));
+> -
+>  		exit_fastpath = static_call(kvm_x86_vcpu_run)(vcpu);
+>  		if (likely(exit_fastpath != EXIT_FASTPATH_REENTER_GUEST))
+>  			break;
 
-[ Upstream commit 714fbf2647b1a33d914edd695d4da92029c7e7c0 ]
+That warning catches bugs, please don't remove it.
 
-ntfs_read_inode_mount invokes ntfs_malloc_nofs with zero allocation
-size.  It triggers one BUG in the __ntfs_malloc function.
+It can be made conditional on this vCPU having APIC enabled instead.
 
-Fix this by adding sanity check on ni->attr_list_size.
-
-Link: https://lkml.kernel.org/r/20220120094914.47736-1-dzm91@hust.edu.cn
-Reported-by: syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Acked-by: Anton Altaparmakov <anton@tuxera.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/ntfs/inode.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/fs/ntfs/inode.c b/fs/ntfs/inode.c
-index 8cd134750ebb..4150b3633f77 100644
---- a/fs/ntfs/inode.c
-+++ b/fs/ntfs/inode.c
-@@ -1915,6 +1915,10 @@ int ntfs_read_inode_mount(struct inode *vi)
- 		}
- 		/* Now allocate memory for the attribute list. */
- 		ni->attr_list_size = (u32)ntfs_attr_size(a);
-+		if (!ni->attr_list_size) {
-+			ntfs_error(sb, "Attr_list_size is zero");
-+			goto put_err_out;
-+		}
- 		ni->attr_list = ntfs_malloc_nofs(ni->attr_list_size);
- 		if (!ni->attr_list) {
- 			ntfs_error(sb, "Not enough memory to allocate buffer "
--- 
-2.34.1
-
-
+Best regards,
+	Maxim Levitsky
 
