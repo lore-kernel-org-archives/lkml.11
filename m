@@ -2,113 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAFF0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 21:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25525C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 21:04:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347926AbiDRVE2 (ORCPT
+        id S1347929AbiDRVHG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 17:04:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43966 "EHLO
+        Mon, 18 Apr 2022 17:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347893AbiDRVER (ORCPT
+        with ESMTP id S242971AbiDRVHE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 17:04:17 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA822A248
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 14:01:36 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id s14so13316694plk.8
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 14:01:36 -0700 (PDT)
+        Mon, 18 Apr 2022 17:07:04 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 578B22A70A
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 14:04:23 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id c10so19936710wrb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 14:04:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=k9zAsbJbbMkbkhGPC3AiZK56sfvnFwgtRHAzZ3j6nuo=;
-        b=LXaDrlWX1IzYqRN2I3vgl3tGCggTtV1OtXzNrURe7q91ArQBRtZK39bEfj1eR2FSJN
-         U5QWDaSAL43GTHUwnJPVIXuSz4jZGctINjNXSlnl+HXZci4ELdfcUBNccDAhW0SFPVb7
-         XnaFLHO3P7c55YnsXK9dBmYtmM5mCnDTn5IuQ=
+        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2xC56SbahR+A86XAZ1Xr5CheL4zTUR2Yl2PX5kgsh60=;
+        b=jVefXpeaUqA2UhMsfdWRxwA6dVOS/OubaUhUbzQiNiw6Sh3TSAJzNrupAImg7ews6u
+         ouky8CJKsd6yjdaomtrNrSxPMKZP+c97cnIiq7aCvfyOB3Zo2igqk7ZzmDrKYxU+tRSO
+         KQDZwYpTzB/quuQMmvwf+tJfSs56zyhk/X1TmvSqzjrNzoiyiPuOgilveEhPfr6UrDik
+         LMDrw2bn4aNZwLp0nSoYHc3bU6cNSlhsY/a960ueZeONiv4HRR+50dS6yF1nnlKXtx+h
+         4Ahw7F5i6QXCSQxeJ7S+OQuPdWULZcgWYcHIbC+AL6xSQF993ov+8VTg+Ti7DdcevQrz
+         WlVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=k9zAsbJbbMkbkhGPC3AiZK56sfvnFwgtRHAzZ3j6nuo=;
-        b=4mx4NZnp2TP4hcENC2hNgpYSjWNpMz11yrPWa+kUjxMdfwXMn9qD3e5Me3b5NiZcaI
-         4JcaRB/UGC3kI8lQiWlfTwby9B41fdnXJU5cTvH9nh5kgNGh9sFSlRBw6AAxVKqUjQkv
-         qJI3x7jct6PeL42xAYwSy6sl8Ya7pEtJCINp5IDDCyWxRsvB5x4+FMfcYb9syzys0KKd
-         304WI8NHtP+nrBcRSt1bBDBCta3JcqkHzOmxqb44gt65WW/wRW9ASb0cWR15HA+v7MMI
-         bhJzhNL3nAPd/+Kp/wfcIJR7n13qeN7qwkZSVPiuYbzzmv34Jih+J/EVyu+0zKCuQ3Pm
-         wm3Q==
-X-Gm-Message-State: AOAM530mjIXOkzJMy0T5U6IYlDXch4auE2wBrkyfJfztFjIfrvZlBALa
-        /wdTs1sYmKxoJRZmxn4D5gwz1A==
-X-Google-Smtp-Source: ABdhPJxDQoIjPsWukM/9io/GhkgaoR5AO2cMZ4/8BJxG9Tm1JsIno+GplwiXnrxrFareEk5G+VGfQA==
-X-Received: by 2002:a17:902:e3c1:b0:158:faf5:a0be with SMTP id r1-20020a170902e3c100b00158faf5a0bemr6899956ple.102.1650315696029;
-        Mon, 18 Apr 2022 14:01:36 -0700 (PDT)
-Received: from evgreen-glaptop.lan ([98.47.98.87])
-        by smtp.gmail.com with ESMTPSA id y15-20020a17090a1f4f00b001c7ecaf9e13sm14047973pjy.35.2022.04.18.14.01.34
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2xC56SbahR+A86XAZ1Xr5CheL4zTUR2Yl2PX5kgsh60=;
+        b=XjJfdOr6Ae2vsD1t+I4VZ+XWggrpFarGRa/tqCjDLzPozIZygUoTHX5ZvB1Xlm3675
+         ev7sQkp42zTiYNLdfBrVK7m39Sq9tKzOKM2d41dlZiESJxsqON+0ueYLpCixHYMVOAC8
+         i8uKYZ0H1FvH1dJs4IjTILz7kABlNS1AQ2uoueyaZT8WII0KAMmqmEwscpqCYisIR68H
+         vxH+63Bd7mbIoLgdQurDu2bpv9aDu3ZYMTHFlYM3NQtLt1OK9cdPHmX0ym4l4HQjvnPb
+         XQm54+Mzuu/WNZz6YIEzcTEkvpEYh/c1HUfNIKM9DauaqZW3SRJ3ylWcQa/dzIEcdYU2
+         ai5w==
+X-Gm-Message-State: AOAM533Q3saPZfUqV8X/+iSU4hU5IUNsgntVJDMDAUiMA3FLS/dy17q2
+        O/Nv2u94tTNihpPcIHYpPaVoSg==
+X-Google-Smtp-Source: ABdhPJyEZlaRcGyCo1uMJOZOgoyGccFvv75S9XwuahzLFfjLlKLpcoWdx5eV5TRokdsECQsOSl9nyA==
+X-Received: by 2002:a5d:47aa:0:b0:20a:8b96:5b2c with SMTP id 10-20020a5d47aa000000b0020a8b965b2cmr8152221wrb.621.1650315861737;
+        Mon, 18 Apr 2022 14:04:21 -0700 (PDT)
+Received: from equinox (2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0::2])
+        by smtp.gmail.com with ESMTPSA id n5-20020adf8b05000000b00207a4fd0185sm11234964wra.7.2022.04.18.14.04.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 14:01:35 -0700 (PDT)
-From:   Evan Green <evgreen@chromium.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Rajat Jain <rajatja@chromium.org>,
-        Evan Green <evgreen@chromium.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Youngjin Jang <yj84.jang@samsung.com>,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: [PATCH v2 2/2] USB: hcd-pci: Fully suspend across freeze/thaw cycle
-Date:   Mon, 18 Apr 2022 14:00:46 -0700
-Message-Id: <20220418135819.v2.2.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220418210046.2060937-1-evgreen@chromium.org>
-References: <20220418210046.2060937-1-evgreen@chromium.org>
+        Mon, 18 Apr 2022 14:04:21 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 22:04:18 +0100
+From:   Phillip Potter <phil@philpotter.co.uk>
+To:     Jens Axboe <axboe@kernel.dk>, Enze Li <lienze@kylinos.cn>
+Cc:     linux-kernel@vger.kernel.org, linux-block@vger.kernel.org
+Subject: Re: [PATCH] cdrom: do not print info list when there is no cdrom
+ device
+Message-ID: <Yl3SUr9+qzoRlQt8@equinox>
+References: <20220408084221.1681592-1-lienze@kylinos.cn>
+ <25390602-cfa0-dba3-bfbc-a35ed6b44bcf@kernel.dk>
+ <20220409122530.60353fcd@asus>
+ <YlFA7USiCtqsFvVD@equinox>
+ <f74b6933-5357-6b2c-3127-7a3465dadbdf@kylinos.cn>
+ <226c4072-a3ca-a5a4-1b7f-f7104b43af03@kernel.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <226c4072-a3ca-a5a4-1b7f-f7104b43af03@kernel.dk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The documentation for the freeze() method says that it "should quiesce
-the device so that it doesn't generate IRQs or DMA". The unspoken
-consequence of not doing this is that MSIs aimed at non-boot CPUs may
-get fully lost if they're sent during the period where the target CPU is
-offline.
+On Mon, Apr 11, 2022 at 10:51:28AM -0600, Jens Axboe wrote:
+> >   20  -- Modify sysctl/proc interface. I plan on having one directory per                 
+> >   21  drive, with entries for outputing general drive information, and sysctl             
+> >   22  based tunable parameters such as whether the tray should auto-close for             
+> >   23  that drive. Suggestions (or patches) for this welcome!
+> > ================================================
+> > I'd like to know if the relevant patches are still welcome?
+> > 
+> > IIUC, the TODO List says that we need to implement a modification of the
+> > following form:
+> > ----------------------------------------------------------------------------------------------------------
+> > $ tree /proc/sys/dev/cdrom
+> > /proc/sys/dev/cdrom
+> > |--sr0--autoclose
+> > |       |-autoeject
+> > |       |-check_media
+> > |       |-debug
+> > |       |-info
+> > |       |-lock
+> > |
+> > |--sr1--autoclose
+> > |       |-autoeject
+> > |       |-check_media
+> > |       |-debug
+> > |       |-info
+> > |       |-lock
+> > |
+> > |--sr2 ...
+> > .
+> > .
+> > .
+> > ----------------------------------------------------------------------------------------------------------
+> > I would appreciate it if you could give me some advice.
+> 
+> Let's not do that, this advice is perhaps 20 years old. /proc isn't to
+> be used for anything like that these days.
+> 
+> -- 
+> Jens Axboe
+>
 
-The current callbacks for USB HCD do not fully quiesce interrupts,
-specifically on XHCI. Change to use the full suspend/resume flow for
-freeze/thaw to ensure interrupts are fully quiesced. This fixes issues
-where USB devices fail to thaw during hibernation because XHCI misses
-its interrupt and cannot recover.
+Hi Both,
 
-Signed-off-by: Evan Green <evgreen@chromium.org>
+I will send a patch alongside others during the next merge window to
+remove this TODO section for now. It was part of the initial mainline
+git commit (17 years and two days ago), so it (as Jens says) is almost
+certainly even older than this.
 
----
-
-Changes in v2:
- - Added the patch modifying the remote wakeup state
- - Removed the change to freeze_noirq/thaw_noirq
-
- drivers/usb/core/hcd-pci.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/usb/core/hcd-pci.c b/drivers/usb/core/hcd-pci.c
-index 8176bc81a635d6..ae5e6d572376be 100644
---- a/drivers/usb/core/hcd-pci.c
-+++ b/drivers/usb/core/hcd-pci.c
-@@ -616,10 +616,10 @@ const struct dev_pm_ops usb_hcd_pci_pm_ops = {
- 	.suspend_noirq	= hcd_pci_suspend_noirq,
- 	.resume_noirq	= hcd_pci_resume_noirq,
- 	.resume		= hcd_pci_resume,
--	.freeze		= check_root_hub_suspended,
-+	.freeze		= hcd_pci_suspend,
- 	.freeze_noirq	= check_root_hub_suspended,
- 	.thaw_noirq	= NULL,
--	.thaw		= NULL,
-+	.thaw		= hcd_pci_resume,
- 	.poweroff	= hcd_pci_suspend,
- 	.poweroff_noirq	= hcd_pci_suspend_noirq,
- 	.restore_noirq	= hcd_pci_resume_noirq,
--- 
-2.31.0
-
+Regards,
+Phil
