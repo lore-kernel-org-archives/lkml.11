@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7216FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:19:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7733C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344315AbiDROVn (ORCPT
+        id S1343622AbiDROVs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:21:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42022 "EHLO
+        Mon, 18 Apr 2022 10:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245685AbiDROFm (ORCPT
+        with ESMTP id S245608AbiDROFk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:05:42 -0400
+        Mon, 18 Apr 2022 10:05:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A47235861;
-        Mon, 18 Apr 2022 06:10:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C38135266;
+        Mon, 18 Apr 2022 06:10:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1328F60F17;
-        Mon, 18 Apr 2022 13:09:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03072C385A7;
-        Mon, 18 Apr 2022 13:09:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34A0E60F0C;
+        Mon, 18 Apr 2022 13:10:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29532C385A7;
+        Mon, 18 Apr 2022 13:10:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287376;
-        bh=JNB0ox2IAOZfzRXVAXo4eWspjGDe62bw5yVCsUBIspQ=;
+        s=korg; t=1650287408;
+        bh=DKxsw4JmfpR/Bg/dltox9tnnAlydmzRJ553cHujidoY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DHmuDxVA5l2gewt1UlfhNnumKlyJpnNOcRHIYF3mpyC9VRLG/lLnOMAngKPWkwEMb
-         /XK+SOn/MAkSTs4oY1/8b/M3tieM1Q1wPPqouT2RRpQMI17v2IkFLT/+UYZvrfGEyD
-         KWZhJ37cbWho5A00jFiPOxE8/72qa2H9GMnt/eEA=
+        b=2bidyGG/PAr/fV2K8HYJkIOKrubNCEbkwcdufNzLO7XQUG8UtRmlslTihgHXhPau3
+         9UyHRc+yUs5lOoX6lCVanV5iyJzfT/+OGh+4TKoBy+MIL1XQPJJPcnPTFb++yxu2lA
+         HwVbHyzl7+mBa61g7L0BBgcuvVO2+E6stJFio4h0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Casey Schaufler <casey@schaufler-ca.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 142/218] media: cx88-mpeg: clear interrupt status register before streaming video
-Date:   Mon, 18 Apr 2022 14:13:28 +0200
-Message-Id: <20220418121203.653850945@linuxfoundation.org>
+Subject: [PATCH 4.9 125/218] Fix incorrect type in assignment of ipv6 port for audit
+Date:   Mon, 18 Apr 2022 14:13:11 +0200
+Message-Id: <20220418121203.167819076@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,41 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel González Cabanelas <dgcbueu@gmail.com>
+From: Casey Schaufler <casey@schaufler-ca.com>
 
-[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
+[ Upstream commit a5cd1ab7ab679d252a6d2f483eee7d45ebf2040c ]
 
-Some cx88 video cards may have transport stream status interrupts set
-to 1 from cold start, causing errors like this:
+Remove inappropriate use of ntohs() and assign the
+port value directly.
 
-  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
-  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
-
-According to CX2388x datasheet, the interrupt status register should be
-cleared before enabling IRQs to stream video.
-
-Fix it by clearing the Transport Stream Interrupt Status register.
-
-Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
- 1 file changed, 3 insertions(+)
+ security/smack/smack_lsm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
-index 245357adbc25..37d4512f3eb8 100644
---- a/drivers/media/pci/cx88/cx88-mpeg.c
-+++ b/drivers/media/pci/cx88/cx88-mpeg.c
-@@ -175,6 +175,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
- 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
- 	q->count = 0;
- 
-+	/* clear interrupt status register */
-+	cx_write(MO_TS_INTSTAT,  0x1f1111);
-+
- 	/* enable irqs */
- 	dprintk( 1, "setting the interrupt mask\n" );
- 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
+diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
+index 589c1c2ae6db..84ed47195cdd 100644
+--- a/security/smack/smack_lsm.c
++++ b/security/smack/smack_lsm.c
+@@ -2567,7 +2567,7 @@ static int smk_ipv6_check(struct smack_known *subject,
+ #ifdef CONFIG_AUDIT
+ 	smk_ad_init_net(&ad, __func__, LSM_AUDIT_DATA_NET, &net);
+ 	ad.a.u.net->family = PF_INET6;
+-	ad.a.u.net->dport = ntohs(address->sin6_port);
++	ad.a.u.net->dport = address->sin6_port;
+ 	if (act == SMK_RECEIVING)
+ 		ad.a.u.net->v6info.saddr = address->sin6_addr;
+ 	else
 -- 
 2.34.1
 
