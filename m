@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45FE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242449AbiDRNgS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53540 "EHLO
+        id S242589AbiDRNfU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243516AbiDRNKM (ORCPT
+        with ESMTP id S242736AbiDRNJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:10:12 -0400
+        Mon, 18 Apr 2022 09:09:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2CA838793;
-        Mon, 18 Apr 2022 05:49:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA75536333;
+        Mon, 18 Apr 2022 05:48:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1661061254;
-        Mon, 18 Apr 2022 12:49:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A9A6C385A1;
-        Mon, 18 Apr 2022 12:49:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D404F6124A;
+        Mon, 18 Apr 2022 12:48:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD619C385A1;
+        Mon, 18 Apr 2022 12:48:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286166;
-        bh=3ONAA+db7xXX+XCtiELFowQDfk4co1geMc+6o3v+NJ8=;
+        s=korg; t=1650286131;
+        bh=pbmnvJMpAqebIetUAqMQen3WmrQy0z43KJeIZmjeLA8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SrwmrRWsrkzFoVNM3J7ecedrPdR3W+yc7rK6YX8RQgMDlkuo2AbiHr0YuXzzVsJ4r
-         3Kxm1XPyzByUlha+DWmoI0vuHxJgFDayGJgy3Okd2JlXGqR3u0ZYBs5Y/Jpo2CywY8
-         3XnmtJOsnDIqE9YF1AYdGprCEBWjcu7RbZ+DYdSQ=
+        b=B0QQvd1Fu7t/wWCaQZstufk384vwW7hIvovbYzCAfvABSRnIO6UXBq/XV9JgHI+Qi
+         FhXqyQlwDnoVrf5dJPQ8jsJk+AW43pIrqzGXyCqVnlU7dItWBcwVCewW9f1Ea6dzYb
+         uxEwJABpZqJk0OUR/CwwFg3MdaAmhMDEEG8jb7Gg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Hector Martin <marcan@marcan.st>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 4.14 050/284] brcmfmac: firmware: Allocate space for default boardrev in nvram
-Date:   Mon, 18 Apr 2022 14:10:31 +0200
-Message-Id: <20220418121212.119599509@linuxfoundation.org>
+        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 004/284] virtio_console: break out of buf poll on remove
+Date:   Mon, 18 Apr 2022 14:09:45 +0200
+Message-Id: <20220418121210.819571886@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -51,36 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Michael S. Tsirkin <mst@redhat.com>
 
-commit d19d8e3ba256f81ea4a27209dbbd1f0a00ef1903 upstream.
+[ Upstream commit 0e7174b9d5877130fec41fb4a16e0c2ee4958d44 ]
 
-If boardrev is missing from the NVRAM we add a default one, but this
-might need more space in the output buffer than was allocated. Ensure
-we have enough padding for this in the buffer.
+A common pattern for device reset is currently:
+vdev->config->reset(vdev);
+.. cleanup ..
 
-Fixes: 46f2b38a91b0 ("brcmfmac: insert default boardrev in nvram data if missing")
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220131160713.245637-3-marcan@marcan.st
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+reset prevents new interrupts from arriving and waits for interrupt
+handlers to finish.
+
+However if - as is common - the handler queues a work request which is
+flushed during the cleanup stage, we have code adding buffers / trying
+to get buffers while device is reset. Not good.
+
+This was reproduced by running
+	modprobe virtio_console
+	modprobe -r virtio_console
+in a loop.
+
+Fix this up by calling virtio_break_device + flush before reset.
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1786239
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/char/virtio_console.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-@@ -216,6 +216,8 @@ static int brcmf_init_nvram_parser(struc
- 		size = BRCMF_FW_MAX_NVRAM_SIZE;
- 	else
- 		size = data_len;
-+	/* Add space for properties we may add */
-+	size += strlen(BRCMF_FW_DEFAULT_BOARDREV) + 1;
- 	/* Alloc for extra 0 byte + roundup by 4 + length field */
- 	size += 1 + 3 + sizeof(u32);
- 	nvp->nvram = kzalloc(size, GFP_KERNEL);
+diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
+index 0fb3a8e62e62..2140d401523f 100644
+--- a/drivers/char/virtio_console.c
++++ b/drivers/char/virtio_console.c
+@@ -2001,6 +2001,13 @@ static void virtcons_remove(struct virtio_device *vdev)
+ 	list_del(&portdev->list);
+ 	spin_unlock_irq(&pdrvdata_lock);
+ 
++	/* Device is going away, exit any polling for buffers */
++	virtio_break_device(vdev);
++	if (use_multiport(portdev))
++		flush_work(&portdev->control_work);
++	else
++		flush_work(&portdev->config_work);
++
+ 	/* Disable interrupts for vqs */
+ 	vdev->config->reset(vdev);
+ 	/* Finish up work that's lined up */
+-- 
+2.34.1
+
 
 
