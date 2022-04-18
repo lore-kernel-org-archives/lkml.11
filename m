@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03426C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6421CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239352AbiDRMgQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:36:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51930 "EHLO
+        id S239361AbiDRMgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229937AbiDRM3n (ORCPT
+        with ESMTP id S238935AbiDRMaW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:29:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA77240B2;
-        Mon, 18 Apr 2022 05:23:29 -0700 (PDT)
+        Mon, 18 Apr 2022 08:30:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D1E245A4;
+        Mon, 18 Apr 2022 05:23:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35386B80ED6;
-        Mon, 18 Apr 2022 12:23:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 757FAC385A1;
-        Mon, 18 Apr 2022 12:23:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3D5060FA7;
+        Mon, 18 Apr 2022 12:23:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E341FC385A9;
+        Mon, 18 Apr 2022 12:23:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284606;
-        bh=8p6sHrCNWDb/b9rRZVYP6ujSYlaRGOqUN5v6ThNtLsU=;
+        s=korg; t=1650284613;
+        bh=w55IroD1ketdAcUPL7kbVGOTtGkFF2/DhAwI312KWh0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IpC+mhCbnex3Q2nIj+AUgSPRt3MUauFo3JndkSU7v7fnjJ80QQMWRvTVeLon6kJY6
-         8wgdzCpFoKUgOYBMII8sPtdMvzplXp4p4Ej04aHSRntJkqAEo2yCwk1/Oj2PT/vxXm
-         /qziu8lOTGT/oFVNNa7E1L0xb7J/UByiH9FIwQcw=
+        b=HJA0Y4n6NHdU0sQtdFkzseCk+DFlDQg4PGSxWOuP61HanrltbyVD+rIKYFZjD2sEE
+         c1DDy5M8T0ymCKgTfbPaIxdparOnqPk2H/gWKGGDoJkxaQnxG0f/jWNEaBYRaObnDi
+         1UO5WqBi3VvvtNtQ0FIJJ/5XqievP6FdbGNtieLE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Galakhov <agalakhov@gmail.com>,
+        stable@vger.kernel.org,
+        Chandrakanth patil <chandrakanth.patil@broadcom.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 168/219] scsi: mvsas: Add PCI ID of RocketRaid 2640
-Date:   Mon, 18 Apr 2022 14:12:17 +0200
-Message-Id: <20220418121211.584691472@linuxfoundation.org>
+Subject: [PATCH 5.17 169/219] scsi: megaraid_sas: Target with invalid LUN ID is deleted during scan
+Date:   Mon, 18 Apr 2022 14:12:18 +0200
+Message-Id: <20220418121211.612438030@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,34 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Galakhov <agalakhov@gmail.com>
+From: Chandrakanth patil <chandrakanth.patil@broadcom.com>
 
-[ Upstream commit 5f2bce1e222028dc1c15f130109a17aa654ae6e8 ]
+[ Upstream commit 56495f295d8e021f77d065b890fc0100e3f9f6d8 ]
 
-The HighPoint RocketRaid 2640 is a low-cost SAS controller based on Marvell
-chip. The chip in question was already supported by the kernel, just the
-PCI ID of this particular board was missing.
+The megaraid_sas driver supports single LUN for RAID devices. That is LUN
+0. All other LUNs are unsupported. When a device scan on a logical target
+with invalid LUN number is invoked through sysfs, that target ends up
+getting removed.
 
-Link: https://lore.kernel.org/r/20220309212535.402987-1-agalakhov@gmail.com
-Signed-off-by: Alexey Galakhov <agalakhov@gmail.com>
+Add LUN ID validation in the slave destroy function to avoid the target
+deletion.
+
+Link: https://lore.kernel.org/r/20220324094711.48833-1-chandrakanth.patil@broadcom.com
+Signed-off-by: Chandrakanth patil <chandrakanth.patil@broadcom.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mvsas/mv_init.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/megaraid/megaraid_sas.h      | 3 +++
+ drivers/scsi/megaraid/megaraid_sas_base.c | 7 +++++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
-index 44df7c03aab8..605a8eb7344a 100644
---- a/drivers/scsi/mvsas/mv_init.c
-+++ b/drivers/scsi/mvsas/mv_init.c
-@@ -646,6 +646,7 @@ static struct pci_device_id mvs_pci_table[] = {
- 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1300), chip_1300 },
- 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1320), chip_1320 },
- 	{ PCI_VDEVICE(ADAPTEC2, 0x0450), chip_6440 },
-+	{ PCI_VDEVICE(TTI, 0x2640), chip_6440 },
- 	{ PCI_VDEVICE(TTI, 0x2710), chip_9480 },
- 	{ PCI_VDEVICE(TTI, 0x2720), chip_9480 },
- 	{ PCI_VDEVICE(TTI, 0x2721), chip_9480 },
+diff --git a/drivers/scsi/megaraid/megaraid_sas.h b/drivers/scsi/megaraid/megaraid_sas.h
+index 2c9d1b796475..ae2aef9ba8cf 100644
+--- a/drivers/scsi/megaraid/megaraid_sas.h
++++ b/drivers/scsi/megaraid/megaraid_sas.h
+@@ -2558,6 +2558,9 @@ struct megasas_instance_template {
+ #define MEGASAS_IS_LOGICAL(sdev)					\
+ 	((sdev->channel < MEGASAS_MAX_PD_CHANNELS) ? 0 : 1)
+ 
++#define MEGASAS_IS_LUN_VALID(sdev)					\
++	(((sdev)->lun == 0) ? 1 : 0)
++
+ #define MEGASAS_DEV_INDEX(scp)						\
+ 	(((scp->device->channel % 2) * MEGASAS_MAX_DEV_PER_CHANNEL) +	\
+ 	scp->device->id)
+diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
+index 82e1e24257bc..ca563498dcdb 100644
+--- a/drivers/scsi/megaraid/megaraid_sas_base.c
++++ b/drivers/scsi/megaraid/megaraid_sas_base.c
+@@ -2126,6 +2126,9 @@ static int megasas_slave_alloc(struct scsi_device *sdev)
+ 			goto scan_target;
+ 		}
+ 		return -ENXIO;
++	} else if (!MEGASAS_IS_LUN_VALID(sdev)) {
++		sdev_printk(KERN_INFO, sdev, "%s: invalid LUN\n", __func__);
++		return -ENXIO;
+ 	}
+ 
+ scan_target:
+@@ -2156,6 +2159,10 @@ static void megasas_slave_destroy(struct scsi_device *sdev)
+ 	instance = megasas_lookup_instance(sdev->host->host_no);
+ 
+ 	if (MEGASAS_IS_LOGICAL(sdev)) {
++		if (!MEGASAS_IS_LUN_VALID(sdev)) {
++			sdev_printk(KERN_INFO, sdev, "%s: invalid LUN\n", __func__);
++			return;
++		}
+ 		ld_tgt_id = MEGASAS_TARGET_ID(sdev);
+ 		instance->ld_tgtid_status[ld_tgt_id] = LD_TARGET_ID_DELETED;
+ 		if (megasas_dbg_lvl & LD_PD_DEBUG)
 -- 
 2.35.1
 
