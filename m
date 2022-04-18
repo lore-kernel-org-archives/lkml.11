@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4994CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C61C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245550AbiDROHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:07:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54144 "EHLO
+        id S1343677AbiDROH5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244445AbiDRNtw (ORCPT
+        with ESMTP id S245042AbiDRNvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:49:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A68A434A2;
-        Mon, 18 Apr 2022 06:01:42 -0700 (PDT)
+        Mon, 18 Apr 2022 09:51:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B246544A15;
+        Mon, 18 Apr 2022 06:02:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BB8260B73;
-        Mon, 18 Apr 2022 13:01:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25429C385AB;
-        Mon, 18 Apr 2022 13:01:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B34260B35;
+        Mon, 18 Apr 2022 13:02:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10859C385BA;
+        Mon, 18 Apr 2022 13:02:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286901;
-        bh=v5N7atVabdYmknc+NlpOF9iBuklO7MWoN0onHb00TMM=;
+        s=korg; t=1650286930;
+        bh=9ptb2AvgTBNjYtiIEWQIWRJ+tyGVOrbHjqVSdH81hVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sMbt2K/j8lyekMJIgjK8bhZkqdaxeoHzzxRUV9LS0gVZL1kdZY0Q4LUrMA2VT/cIi
-         ULcWQBfanc/5asmOunrr8bkAOg4agWtRMv/cbMf+GtIye3nT62Vnx+TkTX0vQ2CEeJ
-         Fq0fWqDA+t0Mj0PJhfyTYCp7JwWRx9SYdNgTZrmY=
+        b=mwvrW72ruZBC3/RtuCPgl5lD/GjKyit7GbElNcTGd+MTO/A3OkESbnix23UOdZ7mF
+         tW1Aml1rt48P2goj/WwN8xMG16sxtH7TTw6JJ25M4CsrQoQFYACJ9dXHrcQR6dXabm
+         Y1W0swl/U3QYQMLXwcJoAPZxa+lLVXOLzOFXCzmA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>,
-        syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
-Subject: [PATCH 4.14 281/284] ALSA: pcm: Test for "silence" field in struct "pcm_format_data"
-Date:   Mon, 18 Apr 2022 14:14:22 +0200
-Message-Id: <20220418121221.180353013@linuxfoundation.org>
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 262/284] veth: Ensure eth header is in skbs linear part
+Date:   Mon, 18 Apr 2022 14:14:03 +0200
+Message-Id: <20220418121220.057568533@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,40 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+From: Guillaume Nault <gnault@redhat.com>
 
-commit 2f7a26abb8241a0208c68d22815aa247c5ddacab upstream.
+[ Upstream commit 726e2c5929de841fdcef4e2bf995680688ae1b87 ]
 
-Syzbot reports "KASAN: null-ptr-deref Write in
-snd_pcm_format_set_silence".[1]
+After feeding a decapsulated packet to a veth device with act_mirred,
+skb_headlen() may be 0. But veth_xmit() calls __dev_forward_skb(),
+which expects at least ETH_HLEN byte of linear data (as
+__dev_forward_skb2() calls eth_type_trans(), which pulls ETH_HLEN bytes
+unconditionally).
 
-It is due to missing validation of the "silence" field of struct
-"pcm_format_data" in "pcm_formats" array.
+Use pskb_may_pull() to ensure veth_xmit() respects this constraint.
 
-Add a test for valid "pat" and, if it is not so, return -EINVAL.
+kernel BUG at include/linux/skbuff.h:2328!
+RIP: 0010:eth_type_trans+0xcf/0x140
+Call Trace:
+ <IRQ>
+ __dev_forward_skb2+0xe3/0x160
+ veth_xmit+0x6e/0x250 [veth]
+ dev_hard_start_xmit+0xc7/0x200
+ __dev_queue_xmit+0x47f/0x520
+ ? skb_ensure_writable+0x85/0xa0
+ ? skb_mpls_pop+0x98/0x1c0
+ tcf_mirred_act+0x442/0x47e [act_mirred]
+ tcf_action_exec+0x86/0x140
+ fl_classify+0x1d8/0x1e0 [cls_flower]
+ ? dma_pte_clear_level+0x129/0x1a0
+ ? dma_pte_clear_level+0x129/0x1a0
+ ? prb_fill_curr_block+0x2f/0xc0
+ ? skb_copy_bits+0x11a/0x220
+ __tcf_classify+0x58/0x110
+ tcf_classify_ingress+0x6b/0x140
+ __netif_receive_skb_core.constprop.0+0x47d/0xfd0
+ ? __iommu_dma_unmap_swiotlb+0x44/0x90
+ __netif_receive_skb_one_core+0x3d/0xa0
+ netif_receive_skb+0x116/0x170
+ be_process_rx+0x22f/0x330 [be2net]
+ be_poll+0x13c/0x370 [be2net]
+ __napi_poll+0x2a/0x170
+ net_rx_action+0x22f/0x2f0
+ __do_softirq+0xca/0x2a8
+ __irq_exit_rcu+0xc1/0xe0
+ common_interrupt+0x83/0xa0
 
-[1] https://lore.kernel.org/lkml/000000000000d188ef05dc2c7279@google.com/
-
-Reported-and-tested-by: syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220409012655.9399-1-fmdefrancesco@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e314dbdc1c0d ("[NET]: Virtual ethernet device driver.")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/core/pcm_misc.c |    2 +-
+ drivers/net/veth.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/core/pcm_misc.c
-+++ b/sound/core/pcm_misc.c
-@@ -406,7 +406,7 @@ int snd_pcm_format_set_silence(snd_pcm_f
- 		return 0;
- 	width = pcm_formats[(INT)format].phys; /* physical width */
- 	pat = pcm_formats[(INT)format].silence;
--	if (! width)
-+	if (!width || !pat)
- 		return -EINVAL;
- 	/* signed or 1 byte data */
- 	if (pcm_formats[(INT)format].signd == 1 || width <= 8) {
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index a69ad39ee57e..f0b26768a639 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -106,7 +106,7 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	rcu_read_lock();
+ 	rcv = rcu_dereference(priv->peer);
+-	if (unlikely(!rcv)) {
++	if (unlikely(!rcv) || !pskb_may_pull(skb, ETH_HLEN)) {
+ 		kfree_skb(skb);
+ 		goto drop;
+ 	}
+-- 
+2.35.1
+
 
 
