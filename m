@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6AE2C352A8
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AE50C47080
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244663AbiDRNpP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45900 "EHLO
+        id S244568AbiDRNox (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:44:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243464AbiDRNUh (ORCPT
+        with ESMTP id S243605AbiDRNUp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:20:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23929D67;
-        Mon, 18 Apr 2022 05:52:08 -0700 (PDT)
+        Mon, 18 Apr 2022 09:20:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129F8DFC1;
+        Mon, 18 Apr 2022 05:52:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BA12B80EC0;
-        Mon, 18 Apr 2022 12:52:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D544AC385A7;
-        Mon, 18 Apr 2022 12:52:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3DC5612B8;
+        Mon, 18 Apr 2022 12:52:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B09D7C385A1;
+        Mon, 18 Apr 2022 12:52:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286325;
-        bh=1hBGvoDUQ8oK2e2NrWc1/JduXPO8/pqmlEm+Me1KFmM=;
+        s=korg; t=1650286341;
+        bh=5Vu58Yk2Zx4cG8gAi8bvaJonI26eB80nSuLfPciLTAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VEwhY/DWQeQZUQtY+GLrDEQ9bK0PwAmmXFqDFH4zvQZA1V3ihK8fgkYeggHoKhw1q
-         2MCoCa7WDDYyTafvxDNJPvJLinrW/y3snlAnGLVFya3xCxYiPzRICy7qYBgHeFpsHo
-         vwO2qcSFxeOp/e42RWQ0ZqlicKY2gN6fa7eq2+6w=
+        b=0hvOobZK1YQhF6A45pHuZ1N1IBlu1nGIuDdDcHtGi9ihCFwqfxbw32NK79RE1uEdy
+         XpFbOkVX/J0PwohBtX+dS6T9ivJmSvhfbljiiTqQ+RoDi+FXw/8FTaUazVqBHzQGxk
+         2BpRyvmEq5JaIz0B+r5pdmYKzHx5m7gFwH6zgxu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 100/284] ray_cs: Check ioremap return value
-Date:   Mon, 18 Apr 2022 14:11:21 +0200
-Message-Id: <20220418121213.614449852@linuxfoundation.org>
+        stable@vger.kernel.org, Aashish Sharma <shraash@google.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 104/284] dm crypt: fix get_key_size compiler warning if !CONFIG_KEYS
+Date:   Mon, 18 Apr 2022 14:11:25 +0200
+Message-Id: <20220418121213.818218543@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -48,55 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Aashish Sharma <shraash@google.com>
 
-[ Upstream commit 7e4760713391ee46dc913194b33ae234389a174e ]
+[ Upstream commit 6fc51504388c1a1a53db8faafe9fff78fccc7c87 ]
 
-As the possible failure of the ioremap(), the 'local->sram' and other
-two could be NULL.
-Therefore it should be better to check it in order to avoid the later
-dev_dbg.
+Explicitly convert unsigned int in the right of the conditional
+expression to int to match the left side operand and the return type,
+fixing the following compiler warning:
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20211230022926.1846757-1-jiasheng@iscas.ac.cn
+drivers/md/dm-crypt.c:2593:43: warning: signed and unsigned
+type in conditional expression [-Wsign-compare]
+
+Fixes: c538f6ec9f56 ("dm crypt: add ability to use keys from the kernel key retention service")
+Signed-off-by: Aashish Sharma <shraash@google.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ray_cs.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/md/dm-crypt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
-index 170cd504e8ff..1ee150563260 100644
---- a/drivers/net/wireless/ray_cs.c
-+++ b/drivers/net/wireless/ray_cs.c
-@@ -395,6 +395,8 @@ static int ray_config(struct pcmcia_device *link)
- 		goto failed;
- 	local->sram = ioremap(link->resource[2]->start,
- 			resource_size(link->resource[2]));
-+	if (!local->sram)
-+		goto failed;
+diff --git a/drivers/md/dm-crypt.c b/drivers/md/dm-crypt.c
+index b8a9695af141..0b6d4337aaab 100644
+--- a/drivers/md/dm-crypt.c
++++ b/drivers/md/dm-crypt.c
+@@ -2114,7 +2114,7 @@ static int crypt_set_keyring_key(struct crypt_config *cc, const char *key_string
  
- /*** Set up 16k window for shared memory (receive buffer) ***************/
- 	link->resource[3]->flags |=
-@@ -409,6 +411,8 @@ static int ray_config(struct pcmcia_device *link)
- 		goto failed;
- 	local->rmem = ioremap(link->resource[3]->start,
- 			resource_size(link->resource[3]));
-+	if (!local->rmem)
-+		goto failed;
+ static int get_key_size(char **key_string)
+ {
+-	return (*key_string[0] == ':') ? -EINVAL : strlen(*key_string) >> 1;
++	return (*key_string[0] == ':') ? -EINVAL : (int)(strlen(*key_string) >> 1);
+ }
  
- /*** Set up window for attribute memory ***********************************/
- 	link->resource[4]->flags |=
-@@ -423,6 +427,8 @@ static int ray_config(struct pcmcia_device *link)
- 		goto failed;
- 	local->amem = ioremap(link->resource[4]->start,
- 			resource_size(link->resource[4]));
-+	if (!local->amem)
-+		goto failed;
- 
- 	dev_dbg(&link->dev, "ray_config sram=%p\n", local->sram);
- 	dev_dbg(&link->dev, "ray_config rmem=%p\n", local->rmem);
+ #endif
 -- 
 2.34.1
 
