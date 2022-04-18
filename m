@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF53C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE497C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241348AbiDRNDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36314 "EHLO
+        id S241569AbiDRNDM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:03:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240463AbiDRMxY (ORCPT
+        with ESMTP id S240309AbiDRMyr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:53:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAC45F68;
-        Mon, 18 Apr 2022 05:34:49 -0700 (PDT)
+        Mon, 18 Apr 2022 08:54:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410F013F36;
+        Mon, 18 Apr 2022 05:35:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79A676116E;
-        Mon, 18 Apr 2022 12:34:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73D04C385A9;
-        Mon, 18 Apr 2022 12:34:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C947E611C9;
+        Mon, 18 Apr 2022 12:35:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B961EC385A7;
+        Mon, 18 Apr 2022 12:35:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285288;
-        bh=c/3SbLS1EA2AxoaIQFhF0FgLVJKgO8/XqZhIPUJY6TY=;
+        s=korg; t=1650285301;
+        bh=f9YULfdDdfUm3+QZ9PxqPMzL3D8AJK7//f2Q9oOG6b8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xVZBzUuPlpTJZ3rGN8DEkVu789IK+K3/eK8st0jvbM/bljmR2TlnI35Esc3boJy4c
-         Gq09q/cFdbM0plBhcF/9+q5x+e7NKAEv3k6bx3+i2TE+77Zj4wDIVxc5AN3IOaHKEw
-         hNUmAxmQm+ggFiosmgInhmRzAmyk+m7Ffb51XqlA=
+        b=Jd4NfeYCyzbQhiFaXRpjnlTbUM5XFRkK8GMS7GONu6jAy8Q4SAEJ/8p8FhGkOdV3d
+         m6Taz8upYtcEZr5eYEbqBXB6g3aew7Ng+dVv46b/McsXHbVs48AopWf76igeoi2YfS
+         yXQ6jwlxK/U+lMWCrHD7lU6E4ezacAOXLu4gDb6Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>,
-        syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 160/189] ALSA: pcm: Test for "silence" field in struct "pcm_format_data"
-Date:   Mon, 18 Apr 2022 14:13:00 +0200
-Message-Id: <20220418121206.822429347@linuxfoundation.org>
+        =?UTF-8?q?Tomasz=20Mo=C5=84?= <desowin@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 164/189] drm/amdgpu: Enable gfxoff quirk on MacBook Pro
+Date:   Mon, 18 Apr 2022 14:13:04 +0200
+Message-Id: <20220418121207.074886389@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,40 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+From: Tomasz Moń <desowin@gmail.com>
 
-commit 2f7a26abb8241a0208c68d22815aa247c5ddacab upstream.
+commit 4593c1b6d159f1e5c35c07a7f125e79e5a864302 upstream.
 
-Syzbot reports "KASAN: null-ptr-deref Write in
-snd_pcm_format_set_silence".[1]
+Enabling gfxoff quirk results in perfectly usable graphical user
+interface on MacBook Pro (15-inch, 2019) with Radeon Pro Vega 20 4 GB.
 
-It is due to missing validation of the "silence" field of struct
-"pcm_format_data" in "pcm_formats" array.
+Without the quirk, X server is completely unusable as every few seconds
+there is gpu reset due to ring gfx timeout.
 
-Add a test for valid "pat" and, if it is not so, return -EINVAL.
-
-[1] https://lore.kernel.org/lkml/000000000000d188ef05dc2c7279@google.com/
-
-Reported-and-tested-by: syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220409012655.9399-1-fmdefrancesco@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Tomasz Moń <desowin@gmail.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/pcm_misc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/sound/core/pcm_misc.c
-+++ b/sound/core/pcm_misc.c
-@@ -433,7 +433,7 @@ int snd_pcm_format_set_silence(snd_pcm_f
- 		return 0;
- 	width = pcm_formats[(INT)format].phys; /* physical width */
- 	pat = pcm_formats[(INT)format].silence;
--	if (! width)
-+	if (!width || !pat)
- 		return -EINVAL;
- 	/* signed or 1 byte data */
- 	if (pcm_formats[(INT)format].signd == 1 || width <= 8) {
+--- a/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
+@@ -1272,6 +1272,8 @@ static const struct amdgpu_gfxoff_quirk
+ 	{ 0x1002, 0x15dd, 0x103c, 0x83e7, 0xd3 },
+ 	/* GFXOFF is unstable on C6 parts with a VBIOS 113-RAVEN-114 */
+ 	{ 0x1002, 0x15dd, 0x1002, 0x15dd, 0xc6 },
++	/* Apple MacBook Pro (15-inch, 2019) Radeon Pro Vega 20 4 GB */
++	{ 0x1002, 0x69af, 0x106b, 0x019a, 0xc0 },
+ 	{ 0, 0, 0, 0, 0 },
+ };
+ 
 
 
