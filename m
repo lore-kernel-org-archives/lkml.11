@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4CDFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:46:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D454C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244268AbiDRNr1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57308 "EHLO
+        id S244285AbiDRNrc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:47:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243720AbiDRN3E (ORCPT
+        with ESMTP id S243810AbiDRN3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:29:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D183FBEE;
-        Mon, 18 Apr 2022 05:53:45 -0700 (PDT)
+        Mon, 18 Apr 2022 09:29:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32AB72183;
+        Mon, 18 Apr 2022 05:53:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21799612C3;
-        Mon, 18 Apr 2022 12:53:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16FE7C385A1;
-        Mon, 18 Apr 2022 12:53:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8601B80E44;
+        Mon, 18 Apr 2022 12:53:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22286C385A7;
+        Mon, 18 Apr 2022 12:53:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286424;
-        bh=pbWOlWjYLriqB3tA+WF6LhE82z+m6RnhJZXV0L8KsbI=;
+        s=korg; t=1650286430;
+        bh=imPm8s3163js/UbzvT+fhP1EWKFf3vbLroPYzRpbxfQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mY2w91xtZp1i+7NfZ6C4pUiLgL/Sx+NA5YMOG5fOOpymAHiBMHQY9lgAfDAnxKrfE
-         XQcQLtbM629/GtnJ5PdaAhrZMZaCu3q+627QVZKKrVQl8BMU2MwHD7M5oa07WmF/XI
-         oRVITD8ko1RMFoxPYo+BP5jBsgoAWrkecGsOnqQk=
+        b=ly8JZqrQVoIFgcHyNmbzX8OxLvJegTdCw3AX5AIa67qacl7B/y+MtqMLobP8SpLsj
+         u7H+9asZuzaCppIOnQC1idUKfjBNeZL+B0NsyNAwE0uoQg4duzIHiFbg+oTKZb7abv
+         bLzIeRLDWhxUlr2InY2yP58NHwqEDFXDMCfucjok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 090/284] ASoC: fsi: Add check for clk_enable
-Date:   Mon, 18 Apr 2022 14:11:11 +0200
-Message-Id: <20220418121213.245644392@linuxfoundation.org>
+Subject: [PATCH 4.14 125/284] af_netlink: Fix shift out of bounds in group mask calculation
+Date:   Mon, 18 Apr 2022 14:11:46 +0200
+Message-Id: <20220418121214.755164993@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,58 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit 405afed8a728f23cfaa02f75bbc8bdd6b7322123 ]
+[ Upstream commit 0caf6d9922192dd1afa8dc2131abfb4df1443b9f ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+When a netlink message is received, netlink_recvmsg() fills in the address
+of the sender. One of the fields is the 32-bit bitfield nl_groups, which
+carries the multicast group on which the message was received. The least
+significant bit corresponds to group 1, and therefore the highest group
+that the field can represent is 32. Above that, the UB sanitizer flags the
+out-of-bounds shift attempts.
 
-Fixes: ab6f6d85210c ("ASoC: fsi: add master clock control functions")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220302062844.46869-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Which bits end up being set in such case is implementation defined, but
+it's either going to be a wrong non-zero value, or zero, which is at least
+not misleading. Make the latter choice deterministic by always setting to 0
+for higher-numbered multicast groups.
+
+To get information about membership in groups >= 32, userspace is expected
+to use nl_pktinfo control messages[0], which are enabled by NETLINK_PKTINFO
+socket option.
+[0] https://lwn.net/Articles/147608/
+
+The way to trigger this issue is e.g. through monitoring the BRVLAN group:
+
+	# bridge monitor vlan &
+	# ip link add name br type bridge
+
+Which produces the following citation:
+
+	UBSAN: shift-out-of-bounds in net/netlink/af_netlink.c:162:19
+	shift exponent 32 is too large for 32-bit type 'int'
+
+Fixes: f7fa9b10edbb ("[NETLINK]: Support dynamic number of multicast groups per netlink family")
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Link: https://lore.kernel.org/r/2bef6aabf201d1fc16cca139a744700cff9dcb04.1647527635.git.petrm@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sh/fsi.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
+ net/netlink/af_netlink.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/sound/soc/sh/fsi.c b/sound/soc/sh/fsi.c
-index 6d3c7706d93f..b564accb6098 100644
---- a/sound/soc/sh/fsi.c
-+++ b/sound/soc/sh/fsi.c
-@@ -820,14 +820,27 @@ static int fsi_clk_enable(struct device *dev,
- 			return ret;
- 		}
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 0563b4d34eae..24e8ac2b724e 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -154,6 +154,8 @@ static const struct rhashtable_params netlink_rhashtable_params;
  
--		clk_enable(clock->xck);
--		clk_enable(clock->ick);
--		clk_enable(clock->div);
-+		ret = clk_enable(clock->xck);
-+		if (ret)
-+			goto err;
-+		ret = clk_enable(clock->ick);
-+		if (ret)
-+			goto disable_xck;
-+		ret = clk_enable(clock->div);
-+		if (ret)
-+			goto disable_ick;
- 
- 		clock->count++;
- 	}
- 
- 	return ret;
-+
-+disable_ick:
-+	clk_disable(clock->ick);
-+disable_xck:
-+	clk_disable(clock->xck);
-+err:
-+	return ret;
+ static inline u32 netlink_group_mask(u32 group)
+ {
++	if (group > 32)
++		return 0;
+ 	return group ? 1 << (group - 1) : 0;
  }
  
- static int fsi_clk_disable(struct device *dev,
 -- 
 2.34.1
 
