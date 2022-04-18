@@ -2,84 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F6FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC7DC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 00:50:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235444AbiDRAlp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 20:41:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35282 "EHLO
+        id S235456AbiDRAxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 20:53:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235050AbiDRAlo (ORCPT
+        with ESMTP id S235050AbiDRAxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 20:41:44 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A46F13CE9
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 17:39:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650242347; x=1681778347;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=W/FOGbfBO1uzsedtaXhnrQ7XRiDUUeWu0fO23cE8nbg=;
-  b=JnxFnNvygYUZN3yxKHfiXKMnf0yqzEBKOPupm9b4ry0qcDXZ7UiUV2kb
-   I7Gu8zedtot23zjAHxueeSKglunvq9C9136wrAeQNb9A7GQ5EYlKSU6Ep
-   H6RRfP+NdqklcxditeD3G1CIsAXA8fqTwxbCQLwdx+AN9T5J0kHN5pHC8
-   wC/QvAmblgszQr54XgZAtQyGExjSNeNg5mzrjaRbDD8uRb0tmB59sywZJ
-   YDl30q9EZL/lVHFpbEqAVgyA328TsPpydJrOjq0srUfNjAz1slpwhmFyJ
-   /7UDUIptVyHeFN7DvhOBiysUc2hDwFDbfi48UByTukwZHZKinhcMIuW/z
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10320"; a="349875288"
-X-IronPort-AV: E=Sophos;i="5.90,267,1643702400"; 
-   d="scan'208";a="349875288"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2022 17:39:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,267,1643702400"; 
-   d="scan'208";a="664869489"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 17 Apr 2022 17:39:05 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngFQ0-0004El-ND;
-        Mon, 18 Apr 2022 00:39:04 +0000
-Date:   Mon, 18 Apr 2022 08:38:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ilya Maximets <i.maximets@ovn.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [linux-stable-rc:queue/5.17 1407/1567]
- net/openvswitch/flow_netlink.o: warning: objtool:
- ovs_nla_free_nested_actions()+0x59: unreachable instruction
-Message-ID: <202204180805.B20PtvEM-lkp@intel.com>
+        Sun, 17 Apr 2022 20:53:03 -0400
+X-Greylist: delayed 28523 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 17 Apr 2022 17:50:25 PDT
+Received: from mail-4322.protonmail.ch (mail-4322.protonmail.ch [185.70.43.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555BB13E3C
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 17:50:23 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 00:50:12 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.ch;
+        s=protonmail2; t=1650243021;
+        bh=75Tpo+HGOA92D2kzNg7s2ac7IWzgwCC10Y5QV0uZWNk=;
+        h=Date:To:From:Reply-To:Subject:Message-ID:From:To:Cc:Date:Subject:
+         Reply-To:Feedback-ID:Message-ID;
+        b=RD4Pb5wjSIWIItRkRE1ouO5bLorQmlM0mTa6SlLwtiAJdD5PnBC88k38eMI0zrqNb
+         LHo70XDI0YbO54QCT9tHfu+Nnl8Xblgf7IPhZ1t5Lyr4OTZOwlTHx8q03EWoJl9Oqw
+         M9VsrSLqIBEGcMCVzAIdoS6kOptwMF3XeZenvVTNfkOcwB8x8hVMKvnG0RI5l3dAMD
+         gRVq//98cRvDFIg+horcB/XmOSWY4PN1p5gEQoYjPXFfO1vwOCySk8m+8CuO6tpJ1T
+         lv7dTqV17L+mtYCouRVQa6pDheHyX63UPA9UFgWohAuSWLIRAjOqDwvINFtVvsRnYa
+         mkkuIOt13LEWA==
+To:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org
+From:   Solomon Tan <solomonbstoner@protonmail.ch>
+Reply-To: Solomon Tan <solomonbstoner@protonmail.ch>
+Subject: [PATCH] openvswitch: meter: Remove unnecessary int
+Message-ID: <Yly1t/mE6QAGPS0e@ArchDesktop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git queue/5.17
-head:   a0cf6ca05464247e59c4fa08d60effea9b1d3a5b
-commit: 53bce9d19b0a9d245b25cd050b81652ed974a509 [1407/1567] net: openvswitch: fix leak of nested actions
-config: x86_64-randconfig-a001-20220418 (https://download.01.org/0day-ci/archive/20220418/202204180805.B20PtvEM-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=53bce9d19b0a9d245b25cd050b81652ed974a509
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc queue/5.17
-        git checkout 53bce9d19b0a9d245b25cd050b81652ed974a509
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/
+This patch addresses the checkpatch.pl warning that long long is
+preferred over long long int.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Solomon Tan <solomonbstoner@protonmail.ch>
+---
+ net/openvswitch/meter.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-All warnings (new ones prefixed by >>):
+diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
+index 04a060ac7fdf..a790920c11d6 100644
+--- a/net/openvswitch/meter.c
++++ b/net/openvswitch/meter.c
+@@ -592,8 +592,8 @@ static int ovs_meter_cmd_del(struct sk_buff *skb, struc=
+t genl_info *info)
+ bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
+ =09=09       struct sw_flow_key *key, u32 meter_id)
+ {
+-=09long long int now_ms =3D div_u64(ktime_get_ns(), 1000 * 1000);
+-=09long long int long_delta_ms;
++=09long long now_ms =3D div_u64(ktime_get_ns(), 1000 * 1000);
++=09long long long_delta_ms;
+ =09struct dp_meter_band *band;
+ =09struct dp_meter *meter;
+ =09int i, band_exceeded_max =3D -1;
+@@ -622,7 +622,7 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_b=
+uff *skb,
+ =09/* Make sure delta_ms will not be too large, so that bucket will not
+ =09 * wrap around below.
+ =09 */
+-=09delta_ms =3D (long_delta_ms > (long long int)meter->max_delta_t)
++=09delta_ms =3D (long_delta_ms > (long long)meter->max_delta_t)
+ =09=09   ? meter->max_delta_t : (u32)long_delta_ms;
 
->> net/openvswitch/flow_netlink.o: warning: objtool: ovs_nla_free_nested_actions()+0x59: unreachable instruction
+ =09/* Update meter statistics.
+@@ -645,7 +645,7 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_b=
+uff *skb,
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+ =09/* Update all bands and find the one hit with the highest rate. */
+ =09for (i =3D 0; i < meter->n_bands; ++i) {
+-=09=09long long int max_bucket_size;
++=09=09long long max_bucket_size;
+
+ =09=09band =3D &meter->bands[i];
+ =09=09max_bucket_size =3D band->burst_size * 1000LL;
+--
+2.35.3
+
+
