@@ -2,98 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67219C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:51:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED330C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:51:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345825AbiDRPxh (ORCPT
+        id S1345870AbiDRPxm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:53:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42480 "EHLO
+        Mon, 18 Apr 2022 11:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346066AbiDRPwj (ORCPT
+        with ESMTP id S1345774AbiDRPx0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:52:39 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6430A13D22;
-        Mon, 18 Apr 2022 08:33:31 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app3 (Coremail) with SMTP id cC_KCgD3ScrDhF1i+V5vAg--.33517S2;
-        Mon, 18 Apr 2022 23:33:27 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org, shiraz.saleem@intel.com
-Cc:     mustafa.ismail@intel.com, jgg@ziepe.ca, leon@kernel.org,
-        linux-rdma@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH V6] RDMA/irdma: Fix deadlock in irdma_cleanup_cm_core()
-Date:   Mon, 18 Apr 2022 23:33:22 +0800
-Message-Id: <20220418153322.42524-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgD3ScrDhF1i+V5vAg--.33517S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Aw13Ar15Xw1rZryxtF43Jrb_yoW8ArWrpr
-        WDWw1Skryq9F42ka18Xw1kAF9xXw1kXa9Fvryqv395ZFn5XFyUAFnFyr10qFZ8JF9Fgr4f
-        GF1FvryrCasIvr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
-        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
-        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg0EAVZdtZQIiwADsg
+        Mon, 18 Apr 2022 11:53:26 -0400
+Received: from m12-16.163.com (m12-16.163.com [220.181.12.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5FDA86170
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 08:37:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=aP0d/
+        Hf8MbnjKRwf/U/o9tyKg4RaO+xBC7661/QXVMQ=; b=Fk0JcKcJRVeC6/PoUGOF3
+        PY5e2iVyhi9hchKblMKX0QtJyHVMjt/ZfnupXlJQXcAX6ru4/507hu2jJEt+4Kwu
+        O8i5KEl1IWvvxeKFEK9IWeklwftVIvsId9+P4Ews4kO36USUsglgSo7MOfoZ/1q5
+        05UyrzVxtEIFOGHdY35T3Q=
+Received: from localhost (unknown [116.30.192.61])
+        by smtp12 (Coremail) with SMTP id EMCowACH_SmvhV1iUzhcAQ--.2679S2;
+        Mon, 18 Apr 2022 23:37:20 +0800 (CST)
+From:   Junwen Wu <wudaemon@163.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org, Junwen Wu <wudaemon@gmail.com>
+Subject: [PATCH v2] tty/sysrq: change the definition of sysrq_key_table's element to make it more readable
+Date:   Mon, 18 Apr 2022 15:37:03 +0000
+Message-Id: <20220418153703.97705-1-wudaemon@163.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EMCowACH_SmvhV1iUzhcAQ--.2679S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7AFyUury3Kr1xAF45Jr48Crg_yoW8Cryfpa
+        yxuryqyFy5ZF40qw1xCF4jgF4ayr93Ga4a9r15Ca4S9wn8Kr18AFWjyaySgryrJrW8GF12
+        krW0vr15Xw1UJ37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jH6wZUUUUU=
+X-Originating-IP: [116.30.192.61]
+X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/xtbBFBDmbVaEDYMLDwAAsX
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a deadlock in irdma_cleanup_cm_core(), which is shown
-below:
+From: Junwen Wu <wudaemon@gmail.com>
 
-   (Thread 1)              |      (Thread 2)
-                           | irdma_schedule_cm_timer()
-irdma_cleanup_cm_core()    |  add_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | irdma_cm_timer_tick()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+The definition of sysrq_key_table's elements, like sysrq_thaw_op and
+sysrq_showallcpus_op are not consistent with sysrq_ftrace_dump_op,
+Consistency makes code more readable.
 
-We hold cm_core->ht_lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need cm_core->ht_lock in position (2) of thread 2.
-As a result, irdma_cleanup_cm_core() will block forever.
-
-This patch removes the check of timer_pending() in
-irdma_cleanup_cm_core(), because the del_timer_sync()
-function will just return directly if there isn't a
-pending timer. As a result, the lock is redundant,
-because there is no resource it could protect.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: Junwen Wu <wudaemon@gmail.com>
 ---
-Changes in V6:
-  - Change subject line prefixed with "RDMA/irdma: ".
+V1 -> V2: Fix some commit message's error
 
- drivers/infiniband/hw/irdma/cm.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/tty/sysrq.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
-index dedb3b7edd8..4b6b1065f85 100644
---- a/drivers/infiniband/hw/irdma/cm.c
-+++ b/drivers/infiniband/hw/irdma/cm.c
-@@ -3251,10 +3251,7 @@ void irdma_cleanup_cm_core(struct irdma_cm_core *cm_core)
- 	if (!cm_core)
- 		return;
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index bbfd004449b5..9485156bf48b 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -274,6 +274,8 @@ static const struct sysrq_key_op sysrq_showallcpus_op = {
+ 	.action_msg	= "Show backtrace of all active CPUs",
+ 	.enable_mask	= SYSRQ_ENABLE_DUMP,
+ };
++#else
++#define sysrq_showallcpus_op (*(const struct sysrq_key_op *)NULL)
+ #endif
  
--	spin_lock_irqsave(&cm_core->ht_lock, flags);
--	if (timer_pending(&cm_core->tcp_timer))
--		del_timer_sync(&cm_core->tcp_timer);
--	spin_unlock_irqrestore(&cm_core->ht_lock, flags);
-+	del_timer_sync(&cm_core->tcp_timer);
+ static void sysrq_handle_showregs(int key)
+@@ -405,6 +407,7 @@ static const struct sysrq_key_op sysrq_moom_op = {
+ 	.enable_mask	= SYSRQ_ENABLE_SIGNAL,
+ };
  
- 	destroy_workqueue(cm_core->event_wq);
- 	cm_core->dev->ws_reset(&cm_core->iwdev->vsi);
++#ifdef CONFIG_BLOCK
+ static void sysrq_handle_thaw(int key)
+ {
+ 	emergency_thaw_all();
+@@ -415,6 +418,9 @@ static const struct sysrq_key_op sysrq_thaw_op = {
+ 	.action_msg	= "Emergency Thaw of all frozen filesystems",
+ 	.enable_mask	= SYSRQ_ENABLE_SIGNAL,
+ };
++#else
++#define sysrq_thaw_op (*(const struct sysrq_key_op *)NULL)
++#endif
+ 
+ static void sysrq_handle_kill(int key)
+ {
+@@ -468,17 +474,9 @@ static const struct sysrq_key_op *sysrq_key_table[62] = {
+ 	NULL,				/* g */
+ 	NULL,				/* h - reserved for help */
+ 	&sysrq_kill_op,			/* i */
+-#ifdef CONFIG_BLOCK
+ 	&sysrq_thaw_op,			/* j */
+-#else
+-	NULL,				/* j */
+-#endif
+ 	&sysrq_SAK_op,			/* k */
+-#ifdef CONFIG_SMP
+ 	&sysrq_showallcpus_op,		/* l */
+-#else
+-	NULL,				/* l */
+-#endif
+ 	&sysrq_showmem_op,		/* m */
+ 	&sysrq_unrt_op,			/* n */
+ 	/* o: This will often be registered as 'Off' at init time */
 -- 
-2.17.1
+2.25.1
 
