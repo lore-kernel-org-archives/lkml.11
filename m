@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1502C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:12:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95FD6C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:12:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242425AbiDRNN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:13:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59772 "EHLO
+        id S242784AbiDRNOo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242365AbiDRM7u (ORCPT
+        with ESMTP id S240754AbiDRM5r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:50 -0400
+        Mon, 18 Apr 2022 08:57:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6E9201BF;
-        Mon, 18 Apr 2022 05:40:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341561EAE1;
+        Mon, 18 Apr 2022 05:38:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86928611FE;
-        Mon, 18 Apr 2022 12:40:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91101C385A9;
-        Mon, 18 Apr 2022 12:40:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C45F0611C9;
+        Mon, 18 Apr 2022 12:38:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC17FC385A1;
+        Mon, 18 Apr 2022 12:38:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285657;
-        bh=X1NBGVEBB4H5wW2n3F/zW1shQ120PbUXesGnU0MJgW8=;
+        s=korg; t=1650285490;
+        bh=i7p1YOA6p0fYT/6rbcn2SjUD3Aoez1I2BKuR2Y8Sbf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2hvtBPBa6ExS0ndzkGcn7LSHoysc1V4ThGku8s2CpmAnwpDNUmrfsT6q91Gqk30lM
-         GOrAmKgvT5qG8OX0wYDH8Pz1gzjeL4HU3xDVcD8RNvEDwSjV9vcBmZoLjdOKQSaFWA
-         X+YSw3YAWsly0W3++18lSjQco26vhNncrMYK9kyQ=
+        b=gy7Od/FRNmMlYOnPMekhz2LOpNjolo7iQki+gdCbXWlYrjU8Rdg/oITSmv1xNxlLp
+         kjHFTpEWE0x9QqPuVtKaF/0P/GN4tuu9pek1/QONhm3lFdL8yD1antJRiHlEskNIj9
+         0Tu/TgL5N5zJQZ9dPYdn3XYjlPQ5NABnOktY+/Fg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Melissa Wen <mwen@igalia.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Simon Ser <contact@emersion.fr>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.10 086/105] drm/amd/display: dont ignore alpha property on pre-multiplied mode
-Date:   Mon, 18 Apr 2022 14:13:28 +0200
-Message-Id: <20220418121149.076222948@linuxfoundation.org>
+        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 033/105] scsi: iscsi: Fix offload conn cleanup when iscsid restarts
+Date:   Mon, 18 Apr 2022 14:12:35 +0200
+Message-Id: <20220418121147.335723112@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -51,97 +51,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Melissa Wen <mwen@igalia.com>
+From: Mike Christie <michael.christie@oracle.com>
 
-commit e4f1541caf60fcbe5a59e9d25805c0b5865e546a upstream.
+[ Upstream commit cbd2283aaf47fef4ded4b29124b1ef3beb515f3a ]
 
-"Pre-multiplied" is the default pixel blend mode for KMS/DRM, as
-documented in supported_modes of drm_plane_create_blend_mode_property():
-https://cgit.freedesktop.org/drm/drm-misc/tree/drivers/gpu/drm/drm_blend.c
+When userspace restarts during boot or upgrades it won't know about the
+offload driver's endpoint and connection mappings. iscsid will start by
+cleaning up the old session by doing a stop_conn call. Later, if we are
+able to create a new connection, we clean up the old endpoint during the
+binding stage. The problem is that if we do stop_conn before doing the
+ep_disconnect call offload, drivers can still be executing I/O. We then
+might free tasks from the under the card/driver.
 
-In this mode, both 'pixel alpha' and 'plane alpha' participate in the
-calculation, as described by the pixel blend mode formula in KMS/DRM
-documentation:
+This moves the ep_disconnect call to before we do the stop_conn call for
+this case. It will then work and look like a normal recovery/cleanup
+procedure from the driver's point of view.
 
-out.rgb = plane_alpha * fg.rgb +
-          (1 - (plane_alpha * fg.alpha)) * bg.rgb
-
-Considering the blend config mechanisms we have in the driver so far,
-the alpha mode that better fits this blend mode is the
-_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN, where the value for global_gain
-is the plane alpha (global_alpha).
-
-With this change, alpha property stops to be ignored. It also addresses
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1734
-
-v2:
- * keep the 8-bit value for global_alpha_value (Nicholas)
- * correct the logical ordering for combined global gain (Nicholas)
- * apply to dcn10 too (Nicholas)
-
-Signed-off-by: Melissa Wen <mwen@igalia.com>
-Tested-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Tested-by: Simon Ser <contact@emersion.fr>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220408001314.5014-3-michael.christie@oracle.com
+Tested-by: Manish Rangankar <mrangankar@marvell.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Reviewed-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c |   14 +++++++++-----
- drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c        |   14 +++++++++-----
- 2 files changed, 18 insertions(+), 10 deletions(-)
+ drivers/scsi/scsi_transport_iscsi.c | 48 +++++++++++++++++------------
+ 1 file changed, 28 insertions(+), 20 deletions(-)
 
---- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
-@@ -2387,14 +2387,18 @@ void dcn10_update_mpcc(struct dc *dc, st
- 				&blnd_cfg.black_color);
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index 8f6dc391356d..38abc3a15692 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -2258,6 +2258,23 @@ static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
+ 	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
+ }
+ 
++static void iscsi_if_disconnect_bound_ep(struct iscsi_cls_conn *conn,
++					 struct iscsi_endpoint *ep,
++					 bool is_active)
++{
++	/* Check if this was a conn error and the kernel took ownership */
++	if (!test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++		iscsi_ep_disconnect(conn, is_active);
++	} else {
++		ISCSI_DBG_TRANS_CONN(conn, "flush kernel conn cleanup.\n");
++		mutex_unlock(&conn->ep_mutex);
++
++		flush_work(&conn->cleanup_work);
++
++		mutex_lock(&conn->ep_mutex);
++	}
++}
++
+ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 			      struct iscsi_uevent *ev)
+ {
+@@ -2278,6 +2295,16 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 		cancel_work_sync(&conn->cleanup_work);
+ 		iscsi_stop_conn(conn, flag);
+ 	} else {
++		/*
++		 * For offload, when iscsid is restarted it won't know about
++		 * existing endpoints so it can't do a ep_disconnect. We clean
++		 * it up here for userspace.
++		 */
++		mutex_lock(&conn->ep_mutex);
++		if (conn->ep)
++			iscsi_if_disconnect_bound_ep(conn, conn->ep, true);
++		mutex_unlock(&conn->ep_mutex);
++
+ 		/*
+ 		 * Figure out if it was the kernel or userspace initiating this.
+ 		 */
+@@ -3006,16 +3033,7 @@ static int iscsi_if_ep_disconnect(struct iscsi_transport *transport,
  	}
  
--	if (per_pixel_alpha)
--		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
--	else
--		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
+ 	mutex_lock(&conn->ep_mutex);
+-	/* Check if this was a conn error and the kernel took ownership */
+-	if (test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
+-		ISCSI_DBG_TRANS_CONN(conn, "flush kernel conn cleanup.\n");
+-		mutex_unlock(&conn->ep_mutex);
 -
- 	blnd_cfg.overlap_only = false;
- 	blnd_cfg.global_gain = 0xff;
- 
-+	if (per_pixel_alpha && pipe_ctx->plane_state->global_alpha) {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN;
-+		blnd_cfg.global_gain = pipe_ctx->plane_state->global_alpha_value;
-+	} else if (per_pixel_alpha) {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
-+	} else {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
-+	}
-+
- 	if (pipe_ctx->plane_state->global_alpha)
- 		blnd_cfg.global_alpha = pipe_ctx->plane_state->global_alpha_value;
- 	else
---- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
-@@ -2270,14 +2270,18 @@ void dcn20_update_mpcc(struct dc *dc, st
- 				pipe_ctx, &blnd_cfg.black_color);
- 	}
- 
--	if (per_pixel_alpha)
--		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
--	else
--		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
+-		flush_work(&conn->cleanup_work);
+-		goto put_ep;
+-	}
 -
- 	blnd_cfg.overlap_only = false;
- 	blnd_cfg.global_gain = 0xff;
+-	iscsi_ep_disconnect(conn, false);
++	iscsi_if_disconnect_bound_ep(conn, ep, false);
+ 	mutex_unlock(&conn->ep_mutex);
+ put_ep:
+ 	iscsi_put_endpoint(ep);
+@@ -3726,16 +3744,6 @@ static int iscsi_if_transport_conn(struct iscsi_transport *transport,
  
-+	if (per_pixel_alpha && pipe_ctx->plane_state->global_alpha) {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN;
-+		blnd_cfg.global_gain = pipe_ctx->plane_state->global_alpha_value;
-+	} else if (per_pixel_alpha) {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
-+	} else {
-+		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
-+	}
-+
- 	if (pipe_ctx->plane_state->global_alpha)
- 		blnd_cfg.global_alpha = pipe_ctx->plane_state->global_alpha_value;
- 	else
+ 	switch (nlh->nlmsg_type) {
+ 	case ISCSI_UEVENT_BIND_CONN:
+-		if (conn->ep) {
+-			/*
+-			 * For offload boot support where iscsid is restarted
+-			 * during the pivot root stage, the ep will be intact
+-			 * here when the new iscsid instance starts up and
+-			 * reconnects.
+-			 */
+-			iscsi_ep_disconnect(conn, true);
+-		}
+-
+ 		session = iscsi_session_lookup(ev->u.b_conn.sid);
+ 		if (!session) {
+ 			err = -EINVAL;
+-- 
+2.35.1
+
 
 
