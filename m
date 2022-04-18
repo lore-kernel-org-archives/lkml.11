@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 057D0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:14:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C69C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:14:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343798AbiDROQt (ORCPT
+        id S1343535AbiDROQ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52110 "EHLO
+        Mon, 18 Apr 2022 10:16:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244606AbiDRN4y (ORCPT
+        with ESMTP id S244661AbiDRN5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:56:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 493DF2A734;
-        Mon, 18 Apr 2022 06:05:35 -0700 (PDT)
+        Mon, 18 Apr 2022 09:57:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D7C2AE0F;
+        Mon, 18 Apr 2022 06:07:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB71060B42;
-        Mon, 18 Apr 2022 13:05:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC88FC385A7;
-        Mon, 18 Apr 2022 13:05:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1C1760F16;
+        Mon, 18 Apr 2022 13:07:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4B1BC385A7;
+        Mon, 18 Apr 2022 13:07:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287134;
-        bh=3CgcAMqJTWG/rh9tZWq/btmcwy2kL2QhkhYPfFqd/YQ=;
+        s=korg; t=1650287228;
+        bh=YYBpXRePL8X7DjK5YTHKeCMw035l7zTM2kihcEQdxEA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wbfIvT80L1tqFq1qJ1l4FatscWm4vlvmYjICSgdZB2r+NIkR3vNdf67nyVStSfK3E
-         BqpFg0eWisayuPTbVXYo6I97EOyYPv8FeoD8NRzsLGWtZq3AHOgtsikUeLerl9Akuh
-         5jxiRsDp3tHcvP8dFsuuYKninq29xRM+wtyS2/Ao=
+        b=g6zjl4t6BMIKaiRWaSoUx3HmfdK1EyKW7F9z5TtyVivZEjyDNwyVZ913hZ2J/qpnQ
+         Eq8H8gc1DvCcXJ8AZft2fad/oLA9mGh83j7dG5myIiujOalmL7EkxoX85GmooVXv5k
+         kQLat5fezI0Sdl1vTMdlxOfF4IlkFgow0H+hmbQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 066/218] ASoC: atmel_ssc_dai: Handle errors for clk_enable
-Date:   Mon, 18 Apr 2022 14:12:12 +0200
-Message-Id: <20220418121201.500077886@linuxfoundation.org>
+Subject: [PATCH 4.9 097/218] mfd: mc13xxx: Add check for mc13xxx_irq_request
+Date:   Mon, 18 Apr 2022 14:12:43 +0200
+Message-Id: <20220418121202.380669745@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -52,36 +52,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit f9e2ca0640e59d19af0ff285ee5591ed39069b09 ]
+[ Upstream commit e477e51a41cb5d6034f3c5ea85a71ad4613996b9 ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error if fals.
+As the potential failure of the devm_request_threaded_irq(),
+it should be better to check the return value of the
+mc13xxx_irq_request() and return error if fails.
 
-Fixes: cbaadf0f90d6 ("ASoC: atmel_ssc_dai: refactor the startup and shutdown")
+Fixes: 8e00593557c3 ("mfd: Add mc13892 support to mc13xxx")
 Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220301090637.3776558-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20220224022331.3208275-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/atmel/atmel_ssc_dai.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/mfd/mc13xxx-core.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/atmel/atmel_ssc_dai.c b/sound/soc/atmel/atmel_ssc_dai.c
-index 16e459aedffe..5958aafac8eb 100644
---- a/sound/soc/atmel/atmel_ssc_dai.c
-+++ b/sound/soc/atmel/atmel_ssc_dai.c
-@@ -296,7 +296,10 @@ static int atmel_ssc_startup(struct snd_pcm_substream *substream,
+diff --git a/drivers/mfd/mc13xxx-core.c b/drivers/mfd/mc13xxx-core.c
+index 75d52034f89d..5b4faebdcae2 100644
+--- a/drivers/mfd/mc13xxx-core.c
++++ b/drivers/mfd/mc13xxx-core.c
+@@ -313,8 +313,10 @@ int mc13xxx_adc_do_conversion(struct mc13xxx *mc13xxx, unsigned int mode,
+ 		adc1 |= MC13783_ADC1_ATOX;
  
- 	/* Enable PMC peripheral clock for this SSC */
- 	pr_debug("atmel_ssc_dai: Starting clock\n");
--	clk_enable(ssc_p->ssc->clk);
-+	ret = clk_enable(ssc_p->ssc->clk);
+ 	dev_dbg(mc13xxx->dev, "%s: request irq\n", __func__);
+-	mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_ADCDONE,
++	ret = mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_ADCDONE,
+ 			mc13xxx_handler_adcdone, __func__, &adcdone_data);
 +	if (ret)
-+		return ret;
-+
- 	ssc_p->mck_rate = clk_get_rate(ssc_p->ssc->clk);
++		goto out;
  
- 	/* Reset the SSC unless initialized to keep it in a clean state */
+ 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC0, adc0);
+ 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC1, adc1);
 -- 
 2.34.1
 
