@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66920C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3DD4C47082
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241983AbiDRNNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
+        id S242155AbiDRNNZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242285AbiDRM7q (ORCPT
+        with ESMTP id S242313AbiDRM7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D332FFDB;
-        Mon, 18 Apr 2022 05:40:35 -0700 (PDT)
+        Mon, 18 Apr 2022 08:59:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B86F30574;
+        Mon, 18 Apr 2022 05:40:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA3EDB80EDB;
-        Mon, 18 Apr 2022 12:40:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 293ACC385A7;
-        Mon, 18 Apr 2022 12:40:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC4AE60FB6;
+        Mon, 18 Apr 2022 12:40:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F7DBC385A1;
+        Mon, 18 Apr 2022 12:40:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285632;
-        bh=HUvu37Z9AailgtyzSCymtdSt1iU2nxgmgL3q7izu10o=;
+        s=korg; t=1650285642;
+        bh=Mjxt2i/b04vTLzk5hAVoMByvoXozygDZrgJVQY2xCLc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eZ5U2iCovrZGRNJolAmRHpVr5uTlIZTKiOdw2kHgontJTRdWPav+YTDkv8p3pvccU
-         ipfSxc1bQAak/jr7VdIDpIsA/IC3SjciMtFuvqjFq7HvSBuYd6Q863JECGlYX74X+V
-         0VmXwPU9DTTZXpyUn8ru5WYv9gnK4mPXG7g2Bhc0=
+        b=2a3Qd84p+xntYsoiQfWPN2PToiL0lBnRY4d3Srz83tBEkSAgos8oiVAquJj3s+VMx
+         RaEDHA5T8p6T2idPpNZxmzc8bUR53SN1XV+w5f1uvmQJyZnPI9+pbhcsnV5JPhu156
+         qYwbUxrVHO0OxEO/XgseJO9smeBYlRhKzzhfjd0c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.10 079/105] btrfs: fix root ref counts in error handling in btrfs_get_root_ref
-Date:   Mon, 18 Apr 2022 14:13:21 +0200
-Message-Id: <20220418121148.875685525@linuxfoundation.org>
+        stable@vger.kernel.org, Tao Jin <tao-j@outlook.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 082/105] ALSA: hda/realtek: add quirk for Lenovo Thinkpad X12 speakers
+Date:   Mon, 18 Apr 2022 14:13:24 +0200
+Message-Id: <20220418121148.961889761@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -49,46 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Tao Jin <tao-j@outlook.com>
 
-commit 168a2f776b9762f4021421008512dd7ab7474df1 upstream.
+commit 264fb03497ec1c7841bba872571bcd11beed57a7 upstream.
 
-In btrfs_get_root_ref(), when btrfs_insert_fs_root() fails,
-btrfs_put_root() can happen for two reasons:
+For this specific device on Lenovo Thinkpad X12 tablet, the verbs were
+dumped by qemu running a guest OS that init this codec properly.
+After studying the dump, it turns out that
+the same quirk used by the other Lenovo devices can be reused.
 
-- the root already exists in the tree, in that case it returns the
-  reference obtained in btrfs_lookup_fs_root()
+The patch was tested working against the mainline kernel.
 
-- another error so the cleanup is done in the fail label
-
-Calling btrfs_put_root() unconditionally would lead to double decrement
-of the root reference possibly freeing it in the second case.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Fixes: bc44d7c4b2b1 ("btrfs: push btrfs_grab_fs_root into btrfs_get_fs_root")
-CC: stable@vger.kernel.org # 5.10+
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Tao Jin <tao-j@outlook.com>
+Link: https://lore.kernel.org/r/CO6PR03MB6241CD73310B37858FE64C85E1E89@CO6PR03MB6241.namprd03.prod.outlook.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/disk-io.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/btrfs/disk-io.c
-+++ b/fs/btrfs/disk-io.c
-@@ -1596,9 +1596,10 @@ again:
- 
- 	ret = btrfs_insert_fs_root(fs_info, root);
- 	if (ret) {
--		btrfs_put_root(root);
--		if (ret == -EEXIST)
-+		if (ret == -EEXIST) {
-+			btrfs_put_root(root);
- 			goto again;
-+		}
- 		goto fail;
- 	}
- 	return root;
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8995,6 +8995,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x17aa, 0x505d, "Thinkpad", ALC298_FIXUP_TPT470_DOCK),
+ 	SND_PCI_QUIRK(0x17aa, 0x505f, "Thinkpad", ALC298_FIXUP_TPT470_DOCK),
+ 	SND_PCI_QUIRK(0x17aa, 0x5062, "Thinkpad", ALC298_FIXUP_TPT470_DOCK),
++	SND_PCI_QUIRK(0x17aa, 0x508b, "Thinkpad X12 Gen 1", ALC287_FIXUP_LEGION_15IMHG05_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x5109, "Thinkpad", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
+ 	SND_PCI_QUIRK(0x17aa, 0x511e, "Thinkpad", ALC298_FIXUP_TPT470_DOCK),
+ 	SND_PCI_QUIRK(0x17aa, 0x511f, "Thinkpad", ALC298_FIXUP_TPT470_DOCK),
 
 
