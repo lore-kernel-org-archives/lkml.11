@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A406C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED85BC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:21:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242545AbiDRNXZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:23:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32934 "EHLO
+        id S242486AbiDRNXU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:23:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241797AbiDRND2 (ORCPT
+        with ESMTP id S241802AbiDRND2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:03:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3368C2981D;
-        Mon, 18 Apr 2022 05:44:32 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E80933E9B;
+        Mon, 18 Apr 2022 05:44:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE1D8B80E44;
-        Mon, 18 Apr 2022 12:44:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C38BC385A7;
-        Mon, 18 Apr 2022 12:44:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DB9E61243;
+        Mon, 18 Apr 2022 12:44:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 254E9C385A7;
+        Mon, 18 Apr 2022 12:44:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285869;
-        bh=dF7u59bnioUdXxx0vkjT3ZEFR5qopPq+jkW9SmDqsd8=;
+        s=korg; t=1650285872;
+        bh=8aq8etiejXnzTulB0gCT3uDujb/HFTZyXETxFWIJ2lg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m39hBNoJl/M/ZZsiCCtM98b+1eNTbNWj/0l/ObUNqJJ4kQ5m40hSGXaELLeUlkggp
-         iXqVqmdBinNPoO2Xb7OUsr92sLe4YdiVzb3JnOjRwcmRbzHasMTNEVjnFziGCWWnip
-         BF+JKDYpv5ul9Ob+D06THNMJeJJOTaacb5FaRWrA=
+        b=gOcD7vCrxEWm5N9FZyYvHe08Jex2O0AenTBr5vuEwFPwmUuYCnp0E9bcu1E52mVLC
+         hqlO5ZhJTPxEB0cUfnJR85JkY6KQApm6IssbcP7fTvhDn2X/vghRYnwwGMl+35slXo
+         B8X5UQeYjuWDr0QyiI+wxAb2GtKP+ttDJJDvR5s8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.4 50/63] tick/nohz: Use WARN_ON_ONCE() to prevent console saturation
-Date:   Mon, 18 Apr 2022 14:13:47 +0200
-Message-Id: <20220418121137.542388514@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH 5.4 51/63] ARM: davinci: da850-evm: Avoid NULL pointer dereference
+Date:   Mon, 18 Apr 2022 14:13:48 +0200
+Message-Id: <20220418121137.601868213@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -49,43 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit 40e97e42961f8c6cc7bd5fe67cc18417e02d78f1 upstream.
+commit 83a1cde5c74bfb44b49cb2a940d044bb2380f4ea upstream.
 
-While running some testing on code that happened to allow the variable
-tick_nohz_full_running to get set but with no "possible" NOHZ cores to
-back up that setting, this warning triggered:
+With newer versions of GCC, there is a panic in da850_evm_config_emac()
+when booting multi_v5_defconfig in QEMU under the palmetto-bmc machine:
 
-        if (unlikely(tick_do_timer_cpu == TICK_DO_TIMER_NONE))
-                WARN_ON(tick_nohz_full_running);
+Unable to handle kernel NULL pointer dereference at virtual address 00000020
+pgd = (ptrval)
+[00000020] *pgd=00000000
+Internal error: Oops: 5 [#1] PREEMPT ARM
+Modules linked in:
+CPU: 0 PID: 1 Comm: swapper Not tainted 5.15.0 #1
+Hardware name: Generic DT based system
+PC is at da850_evm_config_emac+0x1c/0x120
+LR is at do_one_initcall+0x50/0x1e0
 
-The console was overwhemled with an endless stream of one WARN per tick
-per core and there was no way to even see what was going on w/o using a
-serial console to capture it and then trace it back to this.
+The emac_pdata pointer in soc_info is NULL because davinci_soc_info only
+gets populated on davinci machines but da850_evm_config_emac() is called
+on all machines via device_initcall().
 
-Change it to WARN_ON_ONCE().
+Move the rmii_en assignment below the machine check so that it is only
+dereferenced when running on a supported SoC.
 
-Fixes: 08ae95f4fd3b ("nohz_full: Allow the boot CPU to be nohz_full")
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Fixes: bae105879f2f ("davinci: DA850/OMAP-L138 EVM: implement autodetect of RMII PHY")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20211206145950.10927-3-paul.gortmaker@windriver.com
+Link: https://lore.kernel.org/r/YcS4xVWs6bQlQSPC@archlinux-ax161/
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/time/tick-sched.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-davinci/board-da850-evm.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/kernel/time/tick-sched.c
-+++ b/kernel/time/tick-sched.c
-@@ -131,7 +131,7 @@ static void tick_sched_do_timer(struct t
- 	 */
- 	if (unlikely(tick_do_timer_cpu == TICK_DO_TIMER_NONE)) {
- #ifdef CONFIG_NO_HZ_FULL
--		WARN_ON(tick_nohz_full_running);
-+		WARN_ON_ONCE(tick_nohz_full_running);
- #endif
- 		tick_do_timer_cpu = cpu;
- 	}
+--- a/arch/arm/mach-davinci/board-da850-evm.c
++++ b/arch/arm/mach-davinci/board-da850-evm.c
+@@ -1101,11 +1101,13 @@ static int __init da850_evm_config_emac(
+ 	int ret;
+ 	u32 val;
+ 	struct davinci_soc_info *soc_info = &davinci_soc_info;
+-	u8 rmii_en = soc_info->emac_pdata->rmii_en;
++	u8 rmii_en;
+ 
+ 	if (!machine_is_davinci_da850_evm())
+ 		return 0;
+ 
++	rmii_en = soc_info->emac_pdata->rmii_en;
++
+ 	cfg_chip3_base = DA8XX_SYSCFG0_VIRT(DA8XX_CFGCHIP3_REG);
+ 
+ 	val = __raw_readl(cfg_chip3_base);
 
 
