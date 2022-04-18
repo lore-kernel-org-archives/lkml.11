@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1255CC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6AE2C352A8
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244702AbiDRNpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43934 "EHLO
+        id S244663AbiDRNpP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241595AbiDRNVU (ORCPT
+        with ESMTP id S243464AbiDRNUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:21:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E6D3CA41;
-        Mon, 18 Apr 2022 05:52:39 -0700 (PDT)
+        Mon, 18 Apr 2022 09:20:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23929D67;
+        Mon, 18 Apr 2022 05:52:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FDDAB80D9C;
-        Mon, 18 Apr 2022 12:52:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DA03C385A1;
-        Mon, 18 Apr 2022 12:52:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8BA12B80EC0;
+        Mon, 18 Apr 2022 12:52:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D544AC385A7;
+        Mon, 18 Apr 2022 12:52:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286356;
-        bh=9SmY3vsFLJiywiCwbW8ZphLL+Du/BzQU21k2JG0zFMY=;
+        s=korg; t=1650286325;
+        bh=1hBGvoDUQ8oK2e2NrWc1/JduXPO8/pqmlEm+Me1KFmM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sbA9Rb0UaEtM6Bt7DTCbItYsrQdQrdxF+xRWZyLnw4Mm/H8xB13mV4Oya3e77dEOi
-         tBGH/ZmWHborcN81ETAnXu90IC4IIxDhlj4LntrvNPQVaBddVS+evlKY/ZbLp7oP6e
-         qyGh/CZ79TryeKmxJCBps0VakUJ5sEl7n/OYbPOY=
+        b=VEwhY/DWQeQZUQtY+GLrDEQ9bK0PwAmmXFqDFH4zvQZA1V3ihK8fgkYeggHoKhw1q
+         2MCoCa7WDDYyTafvxDNJPvJLinrW/y3snlAnGLVFya3xCxYiPzRICy7qYBgHeFpsHo
+         vwO2qcSFxeOp/e42RWQ0ZqlicKY2gN6fa7eq2+6w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        James Morris <jmorris@namei.org>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        tomoyo-dev-en@lists.osdn.me, "Serge E. Hallyn" <serge@hallyn.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 109/284] TOMOYO: fix __setup handlers return values
-Date:   Mon, 18 Apr 2022 14:11:30 +0200
-Message-Id: <20220418121214.030053132@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 100/284] ray_cs: Check ioremap return value
+Date:   Mon, 18 Apr 2022 14:11:21 +0200
+Message-Id: <20220418121213.614449852@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -53,70 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 39844b7e3084baecef52d1498b5fa81afa2cefa9 ]
+[ Upstream commit 7e4760713391ee46dc913194b33ae234389a174e ]
 
-__setup() handlers should return 1 if the parameter is handled.
-Returning 0 causes the entire string to be added to init's
-environment strings (limited to 32 strings), unnecessarily polluting it.
+As the possible failure of the ioremap(), the 'local->sram' and other
+two could be NULL.
+Therefore it should be better to check it in order to avoid the later
+dev_dbg.
 
-Using the documented strings "TOMOYO_loader=string1" and
-"TOMOYO_trigger=string2" causes an Unknown parameter message:
-  Unknown kernel command line parameters
-    "BOOT_IMAGE=/boot/bzImage-517rc5 TOMOYO_loader=string1 \
-     TOMOYO_trigger=string2", will be passed to user space.
-
-and these strings are added to init's environment string space:
-  Run /sbin/init as init process
-    with arguments:
-     /sbin/init
-    with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     TOMOYO_loader=string1
-     TOMOYO_trigger=string2
-
-With this change, these __setup handlers act as expected,
-and init's environment is not polluted with these strings.
-
-Fixes: 0e4ae0e0dec63 ("TOMOYO: Make several options configurable.")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: James Morris <jmorris@namei.org>
-Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
-Cc: tomoyo-dev-en@lists.osdn.me
-Cc: "Serge E. Hallyn" <serge@hallyn.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20211230022926.1846757-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/tomoyo/load_policy.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ray_cs.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/security/tomoyo/load_policy.c b/security/tomoyo/load_policy.c
-index 81b951652051..f8baef1f3277 100644
---- a/security/tomoyo/load_policy.c
-+++ b/security/tomoyo/load_policy.c
-@@ -24,7 +24,7 @@ static const char *tomoyo_loader;
- static int __init tomoyo_loader_setup(char *str)
- {
- 	tomoyo_loader = str;
--	return 0;
-+	return 1;
- }
+diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
+index 170cd504e8ff..1ee150563260 100644
+--- a/drivers/net/wireless/ray_cs.c
++++ b/drivers/net/wireless/ray_cs.c
+@@ -395,6 +395,8 @@ static int ray_config(struct pcmcia_device *link)
+ 		goto failed;
+ 	local->sram = ioremap(link->resource[2]->start,
+ 			resource_size(link->resource[2]));
++	if (!local->sram)
++		goto failed;
  
- __setup("TOMOYO_loader=", tomoyo_loader_setup);
-@@ -63,7 +63,7 @@ static const char *tomoyo_trigger;
- static int __init tomoyo_trigger_setup(char *str)
- {
- 	tomoyo_trigger = str;
--	return 0;
-+	return 1;
- }
+ /*** Set up 16k window for shared memory (receive buffer) ***************/
+ 	link->resource[3]->flags |=
+@@ -409,6 +411,8 @@ static int ray_config(struct pcmcia_device *link)
+ 		goto failed;
+ 	local->rmem = ioremap(link->resource[3]->start,
+ 			resource_size(link->resource[3]));
++	if (!local->rmem)
++		goto failed;
  
- __setup("TOMOYO_trigger=", tomoyo_trigger_setup);
+ /*** Set up window for attribute memory ***********************************/
+ 	link->resource[4]->flags |=
+@@ -423,6 +427,8 @@ static int ray_config(struct pcmcia_device *link)
+ 		goto failed;
+ 	local->amem = ioremap(link->resource[4]->start,
+ 			resource_size(link->resource[4]));
++	if (!local->amem)
++		goto failed;
+ 
+ 	dev_dbg(&link->dev, "ray_config sram=%p\n", local->sram);
+ 	dev_dbg(&link->dev, "ray_config rmem=%p\n", local->rmem);
 -- 
 2.34.1
 
