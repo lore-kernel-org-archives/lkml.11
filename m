@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB1CCC38161
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E61C352B6
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345103AbiDRO2t (ORCPT
+        id S1345058AbiDRO2p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
+        Mon, 18 Apr 2022 10:28:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344268AbiDRORz (ORCPT
+        with ESMTP id S1344205AbiDRORw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:17:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E483FBFB;
-        Mon, 18 Apr 2022 06:13:45 -0700 (PDT)
+        Mon, 18 Apr 2022 10:17:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6D93BFBB;
+        Mon, 18 Apr 2022 06:13:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDDFC60AAD;
-        Mon, 18 Apr 2022 13:13:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08BF6C385A7;
-        Mon, 18 Apr 2022 13:13:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B92760F56;
+        Mon, 18 Apr 2022 13:13:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71E50C385A7;
+        Mon, 18 Apr 2022 13:13:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287590;
-        bh=t7Ek2bfIGx3XDB9l3vX26eAquej9L1q8mFbYIgiCgz8=;
+        s=korg; t=1650287621;
+        bh=GEnbYpG+qlLDkKaghPTF8kMswkCQsM5G0G3tZu8Jsos=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UnoRbZ6D/52Zr6Y2TMjZaMH/HbijDlerncx9FcKm/i87me43l9gxmsDtO9WToXFMb
-         0hso9u4gyQ8HgT82fjYn5QWx9PzeLt36Haii4TyUXOVbj5TLcvgv84ZHFW2IK7fdD6
-         7NWTGA95L45/vU6yB7M2tMj5zM6UWyz16kuBXysA=
+        b=mJmm2lkVTw4iN5H+cF4GnjbIKxs4kX9/AabShZHhDEtEwdvjvmsLt/4ewegL1+P5D
+         z4KPQA8PoUOt83hAmLWuRzp7Qz2hmeDJQu1WfO2BbnnE6Vw2n7jI6l8w1w4DnZwBdE
+         G2Jr19JFAU+/5GfsCFvonxvbLrP6MG3pCuHNAzZM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tyrel Datwyler <tyreld@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 207/218] scsi: ibmvscsis: Increase INITIAL_SRP_LIMIT to 1024
-Date:   Mon, 18 Apr 2022 14:14:33 +0200
-Message-Id: <20220418121207.950378846@linuxfoundation.org>
+Subject: [PATCH 4.9 211/218] drivers: net: slip: fix NPD bug in sl_tx_timeout()
+Date:   Mon, 18 Apr 2022 14:14:37 +0200
+Message-Id: <20220418121208.203615584@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,42 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyrel Datwyler <tyreld@linux.ibm.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 0bade8e53279157c7cc9dd95d573b7e82223d78a ]
+[ Upstream commit ec4eb8a86ade4d22633e1da2a7d85a846b7d1798 ]
 
-The adapter request_limit is hardcoded to be INITIAL_SRP_LIMIT which is
-currently an arbitrary value of 800. Increase this value to 1024 which
-better matches the characteristics of the typical IBMi Initiator that
-supports 32 LUNs and a queue depth of 32.
+When a slip driver is detaching, the slip_close() will act to
+cleanup necessary resources and sl->tty is set to NULL in
+slip_close(). Meanwhile, the packet we transmit is blocked,
+sl_tx_timeout() will be called. Although slip_close() and
+sl_tx_timeout() use sl->lock to synchronize, we don`t judge
+whether sl->tty equals to NULL in sl_tx_timeout() and the
+null pointer dereference bug will happen.
 
-This change also has the secondary benefit of being a power of two as
-required by the kfifo API. Since, Commit ab9bb6318b09 ("Partially revert
-"kfifo: fix kfifo_alloc() and kfifo_init()"") the size of IU pool for each
-target has been rounded down to 512 when attempting to kfifo_init() those
-pools with the current request_limit size of 800.
+   (Thread 1)                 |      (Thread 2)
+                              | slip_close()
+                              |   spin_lock_bh(&sl->lock)
+                              |   ...
+...                           |   sl->tty = NULL //(1)
+sl_tx_timeout()               |   spin_unlock_bh(&sl->lock)
+  spin_lock(&sl->lock);       |
+  ...                         |   ...
+  tty_chars_in_buffer(sl->tty)|
+    if (tty->ops->..) //(2)   |
+    ...                       |   synchronize_rcu()
 
-Link: https://lore.kernel.org/r/20220322194443.678433-1-tyreld@linux.ibm.com
-Signed-off-by: Tyrel Datwyler <tyreld@linux.ibm.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+We set NULL to sl->tty in position (1) and dereference sl->tty
+in position (2).
+
+This patch adds check in sl_tx_timeout(). If sl->tty equals to
+NULL, sl_tx_timeout() will goto out.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Link: https://lore.kernel.org/r/20220405132206.55291-1-duoming@zju.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 2 +-
+ drivers/net/slip/slip.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-index 5ed28111c3c3..569b662e19e7 100644
---- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-+++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-@@ -43,7 +43,7 @@
+diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
+index f870396e05e1..ba26fa0ceba8 100644
+--- a/drivers/net/slip/slip.c
++++ b/drivers/net/slip/slip.c
+@@ -471,7 +471,7 @@ static void sl_tx_timeout(struct net_device *dev)
+ 	spin_lock(&sl->lock);
  
- #define IBMVSCSIS_VERSION	"v0.2"
+ 	if (netif_queue_stopped(dev)) {
+-		if (!netif_running(dev))
++		if (!netif_running(dev) || !sl->tty)
+ 			goto out;
  
--#define	INITIAL_SRP_LIMIT	800
-+#define	INITIAL_SRP_LIMIT	1024
- #define	DEFAULT_MAX_SECTORS	256
- #define MAX_TXU			1024 * 1024
- 
+ 		/* May be we must check transmitter timeout here ?
 -- 
 2.35.1
 
