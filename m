@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5E0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:24:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80CEAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241665AbiDRN05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32930 "EHLO
+        id S241802AbiDRN1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:27:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241116AbiDRNCv (ORCPT
+        with ESMTP id S234791AbiDRNE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:02:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51AB32991;
-        Mon, 18 Apr 2022 05:42:39 -0700 (PDT)
+        Mon, 18 Apr 2022 09:04:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C95F312ABD;
+        Mon, 18 Apr 2022 05:45:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A381611E4;
-        Mon, 18 Apr 2022 12:42:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37730C385A1;
-        Mon, 18 Apr 2022 12:42:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B122B80E4E;
+        Mon, 18 Apr 2022 12:45:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5ECDC385A1;
+        Mon, 18 Apr 2022 12:45:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285758;
-        bh=0VdI8qXu19UZJTHRWXu9rUPQhnfK/6Ja+SvEJ2DkiaM=;
+        s=korg; t=1650285920;
+        bh=6h+zenz2aJ/yUi8OPrnbYjt4TWXbywz6dvrupYyuBFg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AreO3Ltxed1Kt2EBVb0dyYAUSGaDoeslr0PbwSlvuClA5GiFheQugpXkrY7ErZGR/
-         1m/GxJ5188HxIcj6v1H/VbTVw1ahxfIQk8SXcB0C4c0S2dpM51rIh9gAoTPqWHFQ43
-         Ld1ORzHhKVbs9ehIPnDfaanV9ZKCrUR3FQxhsdr8=
+        b=0sm0TxLUT6M5jhiMKxfzwx3/wa791bM7sW2sjSDlQ7YRcScPqaM7aE/H4a38/8/l+
+         WQ8nAp7a0t5Ltb9yrDN6WDc0qAo8PUP6gHwIF3xmLjubjt6LWz89hUc+RUu3ZfefTQ
+         217l3FtVDtvQFDyZzfNiXx4PIKrm3AoAfzVX1XDA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 15/63] cifs: potential buffer overflow in handling symlinks
-Date:   Mon, 18 Apr 2022 14:13:12 +0200
-Message-Id: <20220418121135.177447577@linuxfoundation.org>
+        Duoming Zhou <duoming@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.4 61/63] ax25: fix NPD bug in ax25_disconnect
+Date:   Mon, 18 Apr 2022 14:13:58 +0200
+Message-Id: <20220418121138.237593195@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -51,43 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 64c4a37ac04eeb43c42d272f6e6c8c12bfcf4304 ]
+commit 7ec02f5ac8a5be5a3f20611731243dc5e1d9ba10 upstream.
 
-Smatch printed a warning:
-	arch/x86/crypto/poly1305_glue.c:198 poly1305_update_arch() error:
-	__memcpy() 'dctx->buf' too small (16 vs u32max)
+The ax25_disconnect() in ax25_kill_by_device() is not
+protected by any locks, thus there is a race condition
+between ax25_disconnect() and ax25_destroy_socket().
+when ax25->sk is assigned as NULL by ax25_destroy_socket(),
+a NULL pointer dereference bug will occur if site (1) or (2)
+dereferences ax25->sk.
 
-It's caused because Smatch marks 'link_len' as untrusted since it comes
-from sscanf(). Add a check to ensure that 'link_len' is not larger than
-the size of the 'link_str' buffer.
+ax25_kill_by_device()                | ax25_release()
+  ax25_disconnect()                  |   ax25_destroy_socket()
+    ...                              |
+    if(ax25->sk != NULL)             |     ...
+      ...                            |     ax25->sk = NULL;
+      bh_lock_sock(ax25->sk); //(1)  |     ...
+      ...                            |
+      bh_unlock_sock(ax25->sk); //(2)|
 
-Fixes: c69c1b6eaea1 ("cifs: implement CIFSParseMFSymlink()")
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This patch moves ax25_disconnect() into lock_sock(), which can
+synchronize with ax25_destroy_socket() in ax25_release().
+
+Fail log:
+===============================================================
+BUG: kernel NULL pointer dereference, address: 0000000000000088
+...
+RIP: 0010:_raw_spin_lock+0x7e/0xd0
+...
+Call Trace:
+ax25_disconnect+0xf6/0x220
+ax25_device_event+0x187/0x250
+raw_notifier_call_chain+0x5e/0x70
+dev_close_many+0x17d/0x230
+rollback_registered_many+0x1f1/0x950
+unregister_netdevice_queue+0x133/0x200
+unregister_netdev+0x13/0x20
+...
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[OP: backport to 5.4: adjust context]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/link.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/ax25/af_ax25.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/cifs/link.c b/fs/cifs/link.c
-index b736acd3917b..a24bcbbb5033 100644
---- a/fs/cifs/link.c
-+++ b/fs/cifs/link.c
-@@ -97,6 +97,9 @@ parse_mf_symlink(const u8 *buf, unsigned int buf_len, unsigned int *_link_len,
- 	if (rc != 1)
- 		return -EINVAL;
- 
-+	if (link_len > CIFS_MF_SYMLINK_LINK_MAXLEN)
-+		return -EINVAL;
-+
- 	rc = symlink_hash(link_len, link_str, md5_hash);
- 	if (rc) {
- 		cifs_dbg(FYI, "%s: MD5 hash failure: %d\n", __func__, rc);
--- 
-2.35.1
-
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -102,8 +102,8 @@ again:
+ 				dev_put(ax25_dev->dev);
+ 				ax25_dev_put(ax25_dev);
+ 			}
+-			release_sock(sk);
+ 			ax25_disconnect(s, ENETUNREACH);
++			release_sock(sk);
+ 			spin_lock_bh(&ax25_list_lock);
+ 			sock_put(sk);
+ 			/* The entry could have been deleted from the
 
 
