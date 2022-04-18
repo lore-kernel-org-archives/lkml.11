@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1504DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2303C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239441AbiDRMqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:46:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37966 "EHLO
+        id S237127AbiDRMq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239793AbiDRMiH (ORCPT
+        with ESMTP id S239768AbiDRMiF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:38:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E49AF2408A;
-        Mon, 18 Apr 2022 05:28:39 -0700 (PDT)
+        Mon, 18 Apr 2022 08:38:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76C7524082;
+        Mon, 18 Apr 2022 05:28:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8085B60F7C;
-        Mon, 18 Apr 2022 12:28:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E160C385A7;
-        Mon, 18 Apr 2022 12:28:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 342D8B80EC1;
+        Mon, 18 Apr 2022 12:28:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E2D4C385A7;
+        Mon, 18 Apr 2022 12:28:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284918;
-        bh=pYtm2dbmC92LZ/bPGvxlaEV7lY/z9cVqpR60PaMEEqo=;
+        s=korg; t=1650284916;
+        bh=/fqMjCNT4AqAcdcP6P4uwFTsohJL/7wk5xXvhWqKiWg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ewb7/uq0HU0EMa3xa43aXWalGf6qm3Y5Sq2yx8rSAG+xknm9t2pl79vcNzrkGQR9j
-         TD1Et/vpbNBRIY5l9ZJZ8FOrEOTpLCVZ5JsPRfzO0eqATH/6D4pKQtmP8G5tj/JHVz
-         KXN7qqIbtwGySzyRlZXoAqlWKIawt42fLZRryYW4=
+        b=VycgXOu2Z1UjEptJC37B36EfZQskvH8B6W/RJcn1ct6OPy0Lf1C1ubeuUjc4MAOKH
+         HP+CkbXzoFy+mIDttQSpmKMydCnRCJ/K8/b10AwlYFJNFe83D6b1JavUYJUvhBLhtM
+         UC3vG6OgNUPjPrwzfzbnU55lf6ZdIFhQGbdhKgiQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 047/189] ALSA: riptide: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:11:07 +0200
-Message-Id: <20220418121201.848545106@linuxfoundation.org>
+Subject: [PATCH 5.15 046/189] ALSA: oxygen: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:11:06 +0200
+Message-Id: <20220418121201.820639923@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,7 +49,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit 348f08de55b149e41a05111d1a713c4484e5a426 upstream.
+commit 6ebc16e206aa82ddb0450c907865c55bcb7c0f43 upstream.
 
 The previous cleanup with devres may lead to the incorrect release
 orders at the probe error handling due to the devres's nature.  Until
@@ -60,41 +60,45 @@ release the stuff via card->private_free().
 This patch fixes it by calling snd_card_free() on the error from the
 probe callback using a new helper function.
 
-Fixes: 546c201a891e ("ALSA: riptide: Allocate resources with device-managed APIs")
+Fixes: 596ae97ab0ce ("ALSA: oxygen: Allocate resources with device-managed APIs")
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-22-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220412102636.16000-35-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/riptide/riptide.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ sound/pci/oxygen/oxygen_lib.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/sound/pci/riptide/riptide.c b/sound/pci/riptide/riptide.c
-index 5a987c683c41..b37c877c2c16 100644
---- a/sound/pci/riptide/riptide.c
-+++ b/sound/pci/riptide/riptide.c
-@@ -2023,7 +2023,7 @@ static void snd_riptide_joystick_remove(struct pci_dev *pci)
- #endif
- 
- static int
--snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
-+__snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
- {
- 	static int dev;
- 	struct snd_card *card;
-@@ -2124,6 +2124,12 @@ snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
- 	return 0;
+diff --git a/sound/pci/oxygen/oxygen_lib.c b/sound/pci/oxygen/oxygen_lib.c
+index 4fb3f2484fdb..92ffe9dc20c5 100644
+--- a/sound/pci/oxygen/oxygen_lib.c
++++ b/sound/pci/oxygen/oxygen_lib.c
+@@ -576,7 +576,7 @@ static void oxygen_card_free(struct snd_card *card)
+ 	mutex_destroy(&chip->mutex);
  }
  
-+static int
-+snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_card_riptide_probe(pci, pci_id));
-+}
+-int oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
++static int __oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
+ 		     struct module *owner,
+ 		     const struct pci_device_id *ids,
+ 		     int (*get_model)(struct oxygen *chip,
+@@ -701,6 +701,16 @@ int oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
+ 	pci_set_drvdata(pci, card);
+ 	return 0;
+ }
 +
- static struct pci_driver driver = {
- 	.name = KBUILD_MODNAME,
- 	.id_table = snd_riptide_ids,
++int oxygen_pci_probe(struct pci_dev *pci, int index, char *id,
++		     struct module *owner,
++		     const struct pci_device_id *ids,
++		     int (*get_model)(struct oxygen *chip,
++				      const struct pci_device_id *id))
++{
++	return snd_card_free_on_error(&pci->dev,
++				      __oxygen_pci_probe(pci, index, id, owner, ids, get_model));
++}
+ EXPORT_SYMBOL(oxygen_pci_probe);
+ 
+ #ifdef CONFIG_PM_SLEEP
 -- 
 2.35.2
 
