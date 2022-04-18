@@ -2,297 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F326C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 09:09:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4043AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 09:14:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237412AbiDRJMV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 05:12:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36998 "EHLO
+        id S237433AbiDRJQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 05:16:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234812AbiDRJMU (ORCPT
+        with ESMTP id S232095AbiDRJQx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 05:12:20 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4C7DF5B
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 02:09:40 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id d15so11862082pll.10
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 02:09:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4zgIjpV1QpK8SGoNtpBB6Ij+QoqmC5OIdrLktq8hdyA=;
-        b=TpUlhZbGYppVgX7JfA1+9T3+LcztkehRmnRv+QP5CTCwa+NMcwVWIa9Bq/d0HeTqMa
-         UiP0WRii/rHJKd02deVu66UgbWYuM7RhU+t+gBUaUKBLM2Zi8xDGZAfDMHkkOHAMfBGD
-         yBK8M/dU/a9K9imZpThHkQkqY6zp4m1MMNMTwVPKLmW9iSuK04YNAdmCpgqxXyXOrRsy
-         fQRfp0kSPyVDbVG+PrY6tNpeoPKMlaeXpriA++bnzLJtbShvE5N/IirTwVDMsqSJaGK9
-         WikQYXJumcA1D7Umc+IKUDZmMYJs1zCZKVn/4+fK/3nGnC0ymf683EehpvreG8g7cZyo
-         GUiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4zgIjpV1QpK8SGoNtpBB6Ij+QoqmC5OIdrLktq8hdyA=;
-        b=20aXFR0CbgObXLMifNjA2AQCs13PIoCJBZ4/hgeq8rY12ueHl/zgkZQ23XqPGCjgdb
-         Os43lcf2L5QW5wUzGQ8pGaA7m0hQeQSE7hoQ9H3sv9gphDK2g8mAUgRc+PCVWoXbQD2A
-         LVkWyTdY0IGHFHSrIX3g3LJMYMPM6MITN8zSGlwutvCxlOwnee+vGwmMV/fgjdA31KUc
-         C91cxOQZ8eJTCzj63b2i3hP7uw7UFqoBXmEa5A7UH700BS84ArJRoBK9nCHZfNuRJENL
-         TcQlGlwpaaNKbI1eLcoASGpA6UK830J7u3vARB0l8md9lK1fya+GCi3/v++V5qWrPhYn
-         tTMA==
-X-Gm-Message-State: AOAM53157XObPSQvbwZqlgnPCS2hVQF41m8wb+Hfer3TaxfIZi8+BlDF
-        4Y8al42QpjUoUUYu/P0Lj3nEPg==
-X-Google-Smtp-Source: ABdhPJyLyRKMrvmUlnZpvmV+au+kPFkSDdm9JIL4QkYzROzZ5Dy/anBbaJj0AQR/YRdrPiRjQqQn2Q==
-X-Received: by 2002:a17:90a:db08:b0:1c9:7cf3:6363 with SMTP id g8-20020a17090adb0800b001c97cf36363mr12071035pjv.35.1650272980251;
-        Mon, 18 Apr 2022 02:09:40 -0700 (PDT)
-Received: from C02G87K0MD6R.bytedance.net ([139.177.225.244])
-        by smtp.gmail.com with ESMTPSA id p3-20020a056a000b4300b0050a4e73bf89sm8332116pfo.66.2022.04.18.02.09.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 02:09:39 -0700 (PDT)
-From:   Hao Jia <jiahao.os@bytedance.com>
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com
-Cc:     linux-kernel@vger.kernel.org, Hao Jia <jiahao.os@bytedance.com>
-Subject: [PATCH] sched/core: Avoid obvious double update_rq_clock warning
-Date:   Mon, 18 Apr 2022 17:09:29 +0800
-Message-Id: <20220418090929.54005-1-jiahao.os@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+        Mon, 18 Apr 2022 05:16:53 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B100E6444;
+        Mon, 18 Apr 2022 02:14:12 -0700 (PDT)
+Received: from kwepemi100014.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Khh2z45lfzCr8v;
+        Mon, 18 Apr 2022 17:09:47 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ kwepemi100014.china.huawei.com (7.221.188.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 18 Apr 2022 17:14:10 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
+ (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 18 Apr
+ 2022 17:14:10 +0800
+From:   Zhihao Cheng <chengzhihao1@huawei.com>
+To:     <viro@zeniv.linux.org.uk>
+CC:     <hch@lst.de>, <torvalds@linux-foundation.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>
+Subject: [PATCH v2] =?UTF-8?q?fs-writeback:=20writeback=5Fsb=5Finodes?= =?UTF-8?q?=EF=BC=9ARecalculate=20'wrote'=20according=20skipped=20pages?=
+Date:   Mon, 18 Apr 2022 17:28:24 +0800
+Message-ID: <20220418092824.3018714-1-chengzhihao1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When we use raw_spin_rq_lock to acquire the rq lock and have to
-update the rq clock while holding the lock, the kernel may issue
-a WARN_DOUBLE_CLOCK warning.
+Commit 505a666ee3fc ("writeback: plug writeback in wb_writeback() and
+writeback_inodes_wb()") has us holding a plug during wb_writeback, which
+may cause a potential ABBA dead lock:
 
-Since we directly use raw_spin_rq_lock to acquire rq lock instead of
-rq_lock, there is no corresponding change to rq->clock_update_flags.
-In particular, we have obtained the rq lock of other cores,
-the core rq->clock_update_flags may be RQCF_UPDATED at this time, and
-then calling update_rq_clock will trigger the WARN_DOUBLE_CLOCK warning.
-
-Some call trace reports:
-Call Trace 1:
- <IRQ>
- sched_rt_period_timer+0x10f/0x3a0
- ? enqueue_top_rt_rq+0x110/0x110
- __hrtimer_run_queues+0x1a9/0x490
- hrtimer_interrupt+0x10b/0x240
- __sysvec_apic_timer_interrupt+0x8a/0x250
- sysvec_apic_timer_interrupt+0x9a/0xd0
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x12/0x20
-
-Call Trace 2:
- <TASK>
- activate_task+0x8b/0x110
- push_rt_task.part.108+0x241/0x2c0
- push_rt_tasks+0x15/0x30
- finish_task_switch+0xaa/0x2e0
- ? __switch_to+0x134/0x420
- __schedule+0x343/0x8e0
- ? hrtimer_start_range_ns+0x101/0x340
- schedule+0x4e/0xb0
- do_nanosleep+0x8e/0x160
- hrtimer_nanosleep+0x89/0x120
- ? hrtimer_init_sleeper+0x90/0x90
- __x64_sys_nanosleep+0x96/0xd0
- do_syscall_64+0x34/0x90
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Call Trace 3:
- <TASK>
- deactivate_task+0x93/0xe0
- pull_rt_task+0x33e/0x400
- balance_rt+0x7e/0x90
- __schedule+0x62f/0x8e0
- do_task_dead+0x3f/0x50
- do_exit+0x7b8/0xbb0
- do_group_exit+0x2d/0x90
- get_signal+0x9df/0x9e0
- ? preempt_count_add+0x56/0xa0
- ? __remove_hrtimer+0x35/0x70
- arch_do_signal_or_restart+0x36/0x720
- ? nanosleep_copyout+0x39/0x50
- ? do_nanosleep+0x131/0x160
- ? audit_filter_inodes+0xf5/0x120
- exit_to_user_mode_prepare+0x10f/0x1e0
- syscall_exit_to_user_mode+0x17/0x30
- do_syscall_64+0x40/0x90
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Steps to reproduce:
-1. Enable CONFIG_SCHED_DEBUG when compiling the kernel
-2. echo 1 > /sys/kernel/debug/clear_warn_once
-   echo "WARN_DOUBLE_CLOCK" > /sys/kernel/debug/sched_features
-   echo "NO_RT_PUSH_IPI" > /sys/kernel/debug/sched_features
-3. Run some rt tasks that periodically change the priority and sleep, e.g.:
-
-void *ThreadFun(void *arg)
-{
-	int cnt = *(int*)arg;
-	struct sched_param param;
-
-	while (1) {
-		sqrt(MAGIC_NUM);
-		cnt = cnt % 10 + 1;
-		param.sched_priority = cnt;
-		pthread_setschedparam(pthread_self(), SCHED_RR, &param);
-		sqrt(MAGIC_NUM);
-		sqrt(MAGIC_NUM);
-		sleep(cnt);
-	}
-	return NULL;
+    wb_writeback		fat_file_fsync
+blk_start_plug(&plug)
+for (;;) {
+  iter i-1: some reqs have been added into plug->mq_list  // LOCK A
+  iter i:
+    progress = __writeback_inodes_wb(wb, work)
+    . writeback_sb_inodes // fat's bdev
+    .   __writeback_single_inode
+    .   . generic_writepages
+    .   .   __block_write_full_page
+    .   .   . . 	    __generic_file_fsync
+    .   .   . . 	      sync_inode_metadata
+    .   .   . . 	        writeback_single_inode
+    .   .   . . 		  __writeback_single_inode
+    .   .   . . 		    fat_write_inode
+    .   .   . . 		      __fat_write_inode
+    .   .   . . 		        sync_dirty_buffer	// fat's bdev
+    .   .   . . 			  lock_buffer(bh)	// LOCK B
+    .   .   . . 			    submit_bh
+    .   .   . . 			      blk_mq_get_tag	// LOCK A
+    .   .   . trylock_buffer(bh)  // LOCK B
+    .   .   .   redirty_page_for_writepage
+    .   .   .     wbc->pages_skipped++
+    .   .   --wbc->nr_to_write
+    .   wrote += write_chunk - wbc.nr_to_write  // wrote > 0
+    .   requeue_inode
+    .     redirty_tail_locked
+    if (progress)    // progress > 0
+      continue;
+  iter i+1:
+      queue_io
+      // similar process with iter i, infinite for-loop !
 }
+blk_finish_plug(&plug)   // flush plug won't be called
 
-Signed-off-by: Hao Jia <jiahao.os@bytedance.com>
+Above process triggers a hungtask like:
+[  399.044861] INFO: task bb:2607 blocked for more than 30 seconds.
+[  399.046824]       Not tainted 5.18.0-rc1-00005-gefae4d9eb6a2-dirty
+[  399.051539] task:bb              state:D stack:    0 pid: 2607 ppid:
+2426 flags:0x00004000
+[  399.051556] Call Trace:
+[  399.051570]  __schedule+0x480/0x1050
+[  399.051592]  schedule+0x92/0x1a0
+[  399.051602]  io_schedule+0x22/0x50
+[  399.051613]  blk_mq_get_tag+0x1d3/0x3c0
+[  399.051640]  __blk_mq_alloc_requests+0x21d/0x3f0
+[  399.051657]  blk_mq_submit_bio+0x68d/0xca0
+[  399.051674]  __submit_bio+0x1b5/0x2d0
+[  399.051708]  submit_bio_noacct+0x34e/0x720
+[  399.051718]  submit_bio+0x3b/0x150
+[  399.051725]  submit_bh_wbc+0x161/0x230
+[  399.051734]  __sync_dirty_buffer+0xd1/0x420
+[  399.051744]  sync_dirty_buffer+0x17/0x20
+[  399.051750]  __fat_write_inode+0x289/0x310
+[  399.051766]  fat_write_inode+0x2a/0xa0
+[  399.051783]  __writeback_single_inode+0x53c/0x6f0
+[  399.051795]  writeback_single_inode+0x145/0x200
+[  399.051803]  sync_inode_metadata+0x45/0x70
+[  399.051856]  __generic_file_fsync+0xa3/0x150
+[  399.051880]  fat_file_fsync+0x1d/0x80
+[  399.051895]  vfs_fsync_range+0x40/0xb0
+[  399.051929]  __x64_sys_fsync+0x18/0x30
+
+In my test, 'need_resched()' (which is imported by 590dca3a71 "fs-writeback:
+unplug before cond_resched in writeback_sb_inodes") in function
+'writeback_sb_inodes()' seldom comes true, unless cond_resched() is deleted
+from write_cache_pages().
+
+Fix it by correcting wrote number according number of skipped pages
+in writeback_sb_inodes().
+
+Goto Link to find a reproducer.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215837
+Cc: stable@vger.kernel.org # v4.3
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
 ---
- kernel/sched/deadline.c | 18 +++++++++++-------
- kernel/sched/rt.c       | 20 ++++++++++++++++++--
- 2 files changed, 29 insertions(+), 9 deletions(-)
+ fs/fs-writeback.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index fb4255ae0b2c..9207b978cc43 100644
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -2258,6 +2258,7 @@ static int push_dl_task(struct rq *rq)
- {
- 	struct task_struct *next_task;
- 	struct rq *later_rq;
-+	struct rq_flags srf, drf;
- 	int ret = 0;
+diff --git a/fs/fs-writeback.c b/fs/fs-writeback.c
+index 591fe9cf1659..9740c7d346aa 100644
+--- a/fs/fs-writeback.c
++++ b/fs/fs-writeback.c
+@@ -1775,11 +1775,12 @@ static long writeback_sb_inodes(struct super_block *sb,
+ 	};
+ 	unsigned long start_time = jiffies;
+ 	long write_chunk;
+-	long wrote = 0;  /* count both pages and inodes */
++	long total_wrote = 0;  /* count both pages and inodes */
  
- 	if (!rq->dl.overloaded)
-@@ -2317,16 +2318,14 @@ static int push_dl_task(struct rq *rq)
- 		goto retry;
- 	}
+ 	while (!list_empty(&wb->b_io)) {
+ 		struct inode *inode = wb_inode(wb->b_io.prev);
+ 		struct bdi_writeback *tmp_wb;
++		long wrote;
  
-+	rq_pin_lock(rq, &srf);
-+	rq_pin_lock(later_rq, &drf);
- 	deactivate_task(rq, next_task, 0);
- 	set_task_cpu(next_task, later_rq->cpu);
--
--	/*
--	 * Update the later_rq clock here, because the clock is used
--	 * by the cpufreq_update_util() inside __add_running_bw().
--	 */
--	update_rq_clock(later_rq);
--	activate_task(later_rq, next_task, ENQUEUE_NOCLOCK);
-+	activate_task(later_rq, next_task, 0);
- 	ret = 1;
-+	rq_unpin_lock(rq, &srf);
-+	rq_unpin_lock(later_rq, &drf);
+ 		if (inode->i_sb != sb) {
+ 			if (work->sb) {
+@@ -1854,8 +1855,10 @@ static long writeback_sb_inodes(struct super_block *sb,
+ 		__writeback_single_inode(inode, &wbc);
  
- 	resched_curr(later_rq);
+ 		wbc_detach_inode(&wbc);
+-		work->nr_pages -= write_chunk - wbc.nr_to_write;
+-		wrote += write_chunk - wbc.nr_to_write;
++		wrote = write_chunk - wbc.nr_to_write - wbc.pages_skipped;
++		wrote = wrote < 0 ? 0 : wrote;
++		work->nr_pages -= wrote;
++		total_wrote += wrote;
  
-@@ -2351,6 +2350,7 @@ static void pull_dl_task(struct rq *this_rq)
- 	struct task_struct *p, *push_task;
- 	bool resched = false;
- 	struct rq *src_rq;
-+	struct rq_flags this_rf, src_rf;
- 	u64 dmin = LONG_MAX;
- 
- 	if (likely(!dl_overloaded(this_rq)))
-@@ -2413,11 +2413,15 @@ static void pull_dl_task(struct rq *this_rq)
- 			if (is_migration_disabled(p)) {
- 				push_task = get_push_task(src_rq);
- 			} else {
-+				rq_pin_lock(this_rq, &this_rf);
-+				rq_pin_lock(src_rq, &src_rf);
- 				deactivate_task(src_rq, p, 0);
- 				set_task_cpu(p, this_cpu);
- 				activate_task(this_rq, p, 0);
- 				dmin = p->dl.deadline;
- 				resched = true;
-+				rq_unpin_lock(this_rq, &this_rf);
-+				rq_unpin_lock(src_rq, &src_rf);
- 			}
- 
- 			/* Is there any other task even earlier? */
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index a32c46889af8..9305ad87fef0 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -871,6 +871,7 @@ static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun)
- 		int enqueue = 0;
- 		struct rt_rq *rt_rq = sched_rt_period_rt_rq(rt_b, i);
- 		struct rq *rq = rq_of_rt_rq(rt_rq);
-+		struct rq_flags rf;
- 		int skip;
- 
- 		/*
-@@ -885,7 +886,7 @@ static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun)
- 		if (skip)
- 			continue;
- 
--		raw_spin_rq_lock(rq);
-+		rq_lock(rq, &rf);
- 		update_rq_clock(rq);
- 
- 		if (rt_rq->rt_time) {
-@@ -923,7 +924,7 @@ static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun)
- 
- 		if (enqueue)
- 			sched_rt_rq_enqueue(rt_rq);
--		raw_spin_rq_unlock(rq);
-+		rq_unlock(rq, &rf);
- 	}
- 
- 	if (!throttled && (!rt_bandwidth_enabled() || rt_b->rt_runtime == RUNTIME_INF))
-@@ -2001,6 +2002,7 @@ static int push_rt_task(struct rq *rq, bool pull)
- {
- 	struct task_struct *next_task;
- 	struct rq *lowest_rq;
-+	struct rq_flags srf, drf;
- 	int ret = 0;
- 
- 	if (!rq->rt.overloaded)
-@@ -2102,9 +2104,18 @@ static int push_rt_task(struct rq *rq, bool pull)
- 		goto retry;
- 	}
- 
-+	/*
-+	 * We may drop rq'lock in double_lock_balance,
-+	 * so we still need to clean up the RQCF_UPDATED flag
-+	 * to avoid the WARN_DOUBLE_CLOCK warning.
-+	 */
-+	rq_pin_lock(rq, &srf);
-+	rq_pin_lock(lowest_rq, &drf);
- 	deactivate_task(rq, next_task, 0);
- 	set_task_cpu(next_task, lowest_rq->cpu);
- 	activate_task(lowest_rq, next_task, 0);
-+	rq_unpin_lock(rq, &srf);
-+	rq_unpin_lock(lowest_rq, &drf);
- 	resched_curr(lowest_rq);
- 	ret = 1;
- 
-@@ -2299,6 +2310,7 @@ static void pull_rt_task(struct rq *this_rq)
- 	bool resched = false;
- 	struct task_struct *p, *push_task;
- 	struct rq *src_rq;
-+	struct rq_flags src_rf, this_rf;
- 	int rt_overload_count = rt_overloaded(this_rq);
- 
- 	if (likely(!rt_overload_count))
-@@ -2375,10 +2387,14 @@ static void pull_rt_task(struct rq *this_rq)
- 			if (is_migration_disabled(p)) {
- 				push_task = get_push_task(src_rq);
- 			} else {
-+				rq_pin_lock(this_rq, &this_rf);
-+				rq_pin_lock(src_rq, &src_rf);
- 				deactivate_task(src_rq, p, 0);
- 				set_task_cpu(p, this_cpu);
- 				activate_task(this_rq, p, 0);
- 				resched = true;
-+				rq_unpin_lock(this_rq, &this_rf);
-+				rq_unpin_lock(src_rq, &src_rf);
- 			}
+ 		if (need_resched()) {
  			/*
- 			 * We continue with the search, just in
+@@ -1877,7 +1880,7 @@ static long writeback_sb_inodes(struct super_block *sb,
+ 		tmp_wb = inode_to_wb_and_lock_list(inode);
+ 		spin_lock(&inode->i_lock);
+ 		if (!(inode->i_state & I_DIRTY_ALL))
+-			wrote++;
++			total_wrote++;
+ 		requeue_inode(inode, tmp_wb, &wbc);
+ 		inode_sync_complete(inode);
+ 		spin_unlock(&inode->i_lock);
+@@ -1891,14 +1894,14 @@ static long writeback_sb_inodes(struct super_block *sb,
+ 		 * bail out to wb_writeback() often enough to check
+ 		 * background threshold and other termination conditions.
+ 		 */
+-		if (wrote) {
++		if (total_wrote) {
+ 			if (time_is_before_jiffies(start_time + HZ / 10UL))
+ 				break;
+ 			if (work->nr_pages <= 0)
+ 				break;
+ 		}
+ 	}
+-	return wrote;
++	return total_wrote;
+ }
+ 
+ static long __writeback_inodes_wb(struct bdi_writeback *wb,
 -- 
-2.32.0
+2.31.1
 
