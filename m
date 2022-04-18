@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DAE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09C03C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:13:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343914AbiDROPw (ORCPT
+        id S1343925AbiDROQA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45686 "EHLO
+        Mon, 18 Apr 2022 10:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244562AbiDRN5I (ORCPT
+        with ESMTP id S244598AbiDRN5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:57:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1EB521830;
-        Mon, 18 Apr 2022 06:06:00 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9962A732;
+        Mon, 18 Apr 2022 06:05:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F30660EFC;
-        Mon, 18 Apr 2022 13:06:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5093FC385A7;
-        Mon, 18 Apr 2022 13:05:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E434EB80EC4;
+        Mon, 18 Apr 2022 13:05:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D50DC385A7;
+        Mon, 18 Apr 2022 13:05:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287159;
-        bh=f0ejtz1VbQR2ee6gMUcAPGybOxm/7cBJRa+AnVWjD0s=;
+        s=korg; t=1650287156;
+        bh=3X5yPZmDQzoAnMRoFbTlEmaaQNUNd2P8pdHICpsssZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ePZOIfBEifPnOKf0kXh1OrCyK6WcnlgZzHFKZ+3XQX6YNfjxqh9smM12NvEb2xylF
-         3MAk8f4qDl5sxGjFdp+i6k3OaXfP/XM32Y7jcGgBPEOGN/6QmZ0oqg178VvZPt3Ftv
-         b7O1UwQ26q89QMb8TqzDEbeUTM4APLsiIqUDJNls=
+        b=YFxttOvQpjMEW2T8V93/CaGHmi+FlaFAZo5O5Wl273qztakN+eDO5pbUrSueg421U
+         njx0f1RZ9puf9XTFSrpTZxBiSc2yWK6BIrrBR0oOh6QIe43PhOq/G2hFufFYee/8qI
+         65TASP10ZggO/Lje1keiaDJJK5qen/ZxqFE3Y4dY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Hector Martin <marcan@marcan.st>, Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 4.9 038/218] brcmfmac: pcie: Replace brcmf_pcie_copy_mem_todev with memcpy_toio
-Date:   Mon, 18 Apr 2022 14:11:44 +0200
-Message-Id: <20220418121200.598148023@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 073/218] video: fbdev: omapfb: Add missing of_node_put() in dvic_probe_of
+Date:   Mon, 18 Apr 2022 14:12:19 +0200
+Message-Id: <20220418121201.698403402@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -51,108 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 9466987f246758eb7e9071ae58005253f631271e upstream.
+[ Upstream commit a58c22cfbbf62fefca090334bbd35fd132e92a23 ]
 
-The alignment check was wrong (e.g. & 4 instead of & 3), and the logic
-was also inefficient if the length was not a multiple of 4, since it
-would needlessly fall back to copying the entire buffer bytewise.
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-We already have a perfectly good memcpy_toio function, so just call that
-instead of rolling our own copy logic here. brcmf_pcie_init_ringbuffers
-was already using it anyway.
-
-Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220131160713.245637-6-marcan@marcan.st
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f76ee892a99e ("omapfb: copy omapdss & displays for omapfb")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c |   48 +---------------
- 1 file changed, 4 insertions(+), 44 deletions(-)
+ drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -22,6 +22,7 @@
- #include <linux/interrupt.h>
- #include <linux/bcma/bcma.h>
- #include <linux/sched.h>
-+#include <linux/io.h>
- #include <asm/unaligned.h>
- 
- #include <soc.h>
-@@ -407,47 +408,6 @@ brcmf_pcie_write_ram32(struct brcmf_pcie
- 
- 
- static void
--brcmf_pcie_copy_mem_todev(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
--			  void *srcaddr, u32 len)
--{
--	void __iomem *address = devinfo->tcm + mem_offset;
--	__le32 *src32;
--	__le16 *src16;
--	u8 *src8;
--
--	if (((ulong)address & 4) || ((ulong)srcaddr & 4) || (len & 4)) {
--		if (((ulong)address & 2) || ((ulong)srcaddr & 2) || (len & 2)) {
--			src8 = (u8 *)srcaddr;
--			while (len) {
--				iowrite8(*src8, address);
--				address++;
--				src8++;
--				len--;
--			}
--		} else {
--			len = len / 2;
--			src16 = (__le16 *)srcaddr;
--			while (len) {
--				iowrite16(le16_to_cpu(*src16), address);
--				address += 2;
--				src16++;
--				len--;
--			}
--		}
--	} else {
--		len = len / 4;
--		src32 = (__le32 *)srcaddr;
--		while (len) {
--			iowrite32(le32_to_cpu(*src32), address);
--			address += 4;
--			src32++;
--			len--;
--		}
--	}
--}
--
--
--static void
- brcmf_pcie_copy_dev_tomem(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
- 			  void *dstaddr, u32 len)
- {
-@@ -1422,8 +1382,8 @@ static int brcmf_pcie_download_fw_nvram(
- 		return err;
- 
- 	brcmf_dbg(PCIE, "Download FW %s\n", devinfo->fw_name);
--	brcmf_pcie_copy_mem_todev(devinfo, devinfo->ci->rambase,
--				  (void *)fw->data, fw->size);
-+	memcpy_toio(devinfo->tcm + devinfo->ci->rambase,
-+		    (void *)fw->data, fw->size);
- 
- 	resetintr = get_unaligned_le32(fw->data);
- 	release_firmware(fw);
-@@ -1437,7 +1397,7 @@ static int brcmf_pcie_download_fw_nvram(
- 		brcmf_dbg(PCIE, "Download NVRAM %s\n", devinfo->nvram_name);
- 		address = devinfo->ci->rambase + devinfo->ci->ramsize -
- 			  nvram_len;
--		brcmf_pcie_copy_mem_todev(devinfo, address, nvram, nvram_len);
-+		memcpy_toio(devinfo->tcm + address, nvram, nvram_len);
- 		brcmf_fw_nvram_free(nvram);
- 	} else {
- 		brcmf_dbg(PCIE, "No matching NVRAM file found %s\n",
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c b/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
+index 06e1db34541e..41b0db0cc047 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/connector-dvi.c
+@@ -254,6 +254,7 @@ static int dvic_probe_of(struct platform_device *pdev)
+ 	adapter_node = of_parse_phandle(node, "ddc-i2c-bus", 0);
+ 	if (adapter_node) {
+ 		adapter = of_get_i2c_adapter_by_node(adapter_node);
++		of_node_put(adapter_node);
+ 		if (adapter == NULL) {
+ 			dev_err(&pdev->dev, "failed to parse ddc-i2c-bus\n");
+ 			omap_dss_put_device(ddata->in);
+-- 
+2.34.1
+
 
 
