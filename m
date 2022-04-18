@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 446B8C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B3FFC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239789AbiDRMmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54080 "EHLO
+        id S239767AbiDRMml (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:42:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239766AbiDRMdY (ORCPT
+        with ESMTP id S239779AbiDRMd2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32971B781;
-        Mon, 18 Apr 2022 05:25:40 -0700 (PDT)
+        Mon, 18 Apr 2022 08:33:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9313C1B78C;
+        Mon, 18 Apr 2022 05:25:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5F5CB80ED6;
-        Mon, 18 Apr 2022 12:25:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B733C385A1;
-        Mon, 18 Apr 2022 12:25:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31E9C60FB6;
+        Mon, 18 Apr 2022 12:25:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21E64C385A1;
+        Mon, 18 Apr 2022 12:25:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284738;
-        bh=Dw8ApTS/5aAFeYoRxwG0Dkawb7rlxYyR4Csuh9f3TbI=;
+        s=korg; t=1650284758;
+        bh=Axpk3aHDU/KFEP/kw1BzLaJ460vI15II9oA+dh++VWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yf7c+IUJ8dcrWEereXd/qBWT7dlM4F7WrYd4Jb1eBbVE+o+laymccCpB8OMQDIeoD
-         tXOM0SfnlG8SLIanjsoPOnkQXfHfbCtkQir97S1fLZ820CTZlco93DwLnmLW0llto4
-         grkkyOTiNo2tDbkkP9NYPjwT2SguriqqI1FGAeys=
+        b=lXgO8G9FXrA1qp/XzWa230EuomJtMI+5wOXyMpH1RBCzXkOAynrhUOY8dEFEUNi8K
+         8uQPh+WwRAXa8JN1iEjbcCZWA2gOCnSX82ObtVDpwGWrgs0TWRnOTWXqUTpizE7rBe
+         E+aGQR55RAkdq2zU7KECYEdEEZP3lnuCPn6A3gZo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sherry Sun <sherry.sun@nxp.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 5.17 211/219] dt-bindings: memory: snps,ddrc-3.80a compatible also need interrupts
-Date:   Mon, 18 Apr 2022 14:13:00 +0200
-Message-Id: <20220418121212.773799708@linuxfoundation.org>
+        stable@vger.kernel.org, Patrick Wang <patrick.wang.shcn@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.17 178/219] mm: kmemleak: take a full lowmem check in kmemleak_*_phys()
+Date:   Mon, 18 Apr 2022 14:12:27 +0200
+Message-Id: <20220418121211.860028614@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,45 +50,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sherry Sun <sherry.sun@nxp.com>
+From: Patrick Wang <patrick.wang.shcn@gmail.com>
 
-commit 4f9f45d0eb0e7d449bc9294459df79b9c66edfac upstream.
+commit 23c2d497de21f25898fbea70aeb292ab8acc8c94 upstream.
 
-For the snps,ddrc-3.80a compatible, the interrupts property is also
-required, also order the compatibles by name (s goes before x).
+The kmemleak_*_phys() apis do not check the address for lowmem's min
+boundary, while the caller may pass an address below lowmem, which will
+trigger an oops:
 
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-Fixes: a9e6b3819b36 ("dt-bindings: memory: Add entry for version 3.80a")
-Link: https://lore.kernel.org/r/20220321075131.17811-2-sherry.sun@nxp.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+  # echo scan > /sys/kernel/debug/kmemleak
+  Unable to handle kernel paging request at virtual address ff5fffffffe00000
+  Oops [#1]
+  Modules linked in:
+  CPU: 2 PID: 134 Comm: bash Not tainted 5.18.0-rc1-next-20220407 #33
+  Hardware name: riscv-virtio,qemu (DT)
+  epc : scan_block+0x74/0x15c
+   ra : scan_block+0x72/0x15c
+  epc : ffffffff801e5806 ra : ffffffff801e5804 sp : ff200000104abc30
+   gp : ffffffff815cd4e8 tp : ff60000004cfa340 t0 : 0000000000000200
+   t1 : 00aaaaaac23954cc t2 : 00000000000003ff s0 : ff200000104abc90
+   s1 : ffffffff81b0ff28 a0 : 0000000000000000 a1 : ff5fffffffe01000
+   a2 : ffffffff81b0ff28 a3 : 0000000000000002 a4 : 0000000000000001
+   a5 : 0000000000000000 a6 : ff200000104abd7c a7 : 0000000000000005
+   s2 : ff5fffffffe00ff9 s3 : ffffffff815cd998 s4 : ffffffff815d0e90
+   s5 : ffffffff81b0ff28 s6 : 0000000000000020 s7 : ffffffff815d0eb0
+   s8 : ffffffffffffffff s9 : ff5fffffffe00000 s10: ff5fffffffe01000
+   s11: 0000000000000022 t3 : 00ffffffaa17db4c t4 : 000000000000000f
+   t5 : 0000000000000001 t6 : 0000000000000000
+  status: 0000000000000100 badaddr: ff5fffffffe00000 cause: 000000000000000d
+    scan_gray_list+0x12e/0x1a6
+    kmemleak_scan+0x2aa/0x57e
+    kmemleak_write+0x32a/0x40c
+    full_proxy_write+0x56/0x82
+    vfs_write+0xa6/0x2a6
+    ksys_write+0x6c/0xe2
+    sys_write+0x22/0x2a
+    ret_from_syscall+0x0/0x2
+
+The callers may not quite know the actual address they pass(e.g. from
+devicetree).  So the kmemleak_*_phys() apis should guarantee the address
+they finally use is in lowmem range, so check the address for lowmem's
+min boundary.
+
+Link: https://lkml.kernel.org/r/20220413122925.33856-1-patrick.wang.shcn@gmail.com
+Signed-off-by: Patrick Wang <patrick.wang.shcn@gmail.com>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/memory-controllers/synopsys,ddrc-ecc.yaml |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ mm/kmemleak.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/Documentation/devicetree/bindings/memory-controllers/synopsys,ddrc-ecc.yaml
-+++ b/Documentation/devicetree/bindings/memory-controllers/synopsys,ddrc-ecc.yaml
-@@ -24,9 +24,9 @@ description: |
- properties:
-   compatible:
-     enum:
-+      - snps,ddrc-3.80a
-       - xlnx,zynq-ddrc-a05
-       - xlnx,zynqmp-ddrc-2.40a
--      - snps,ddrc-3.80a
- 
-   interrupts:
-     maxItems: 1
-@@ -43,7 +43,9 @@ allOf:
-       properties:
-         compatible:
-           contains:
--            const: xlnx,zynqmp-ddrc-2.40a
-+            enum:
-+              - snps,ddrc-3.80a
-+              - xlnx,zynqmp-ddrc-2.40a
-     then:
-       required:
-         - interrupts
+--- a/mm/kmemleak.c
++++ b/mm/kmemleak.c
+@@ -1132,7 +1132,7 @@ EXPORT_SYMBOL(kmemleak_no_scan);
+ void __ref kmemleak_alloc_phys(phys_addr_t phys, size_t size, int min_count,
+ 			       gfp_t gfp)
+ {
+-	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
++	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
+ 		kmemleak_alloc(__va(phys), size, min_count, gfp);
+ }
+ EXPORT_SYMBOL(kmemleak_alloc_phys);
+@@ -1146,7 +1146,7 @@ EXPORT_SYMBOL(kmemleak_alloc_phys);
+  */
+ void __ref kmemleak_free_part_phys(phys_addr_t phys, size_t size)
+ {
+-	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
++	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
+ 		kmemleak_free_part(__va(phys), size);
+ }
+ EXPORT_SYMBOL(kmemleak_free_part_phys);
+@@ -1158,7 +1158,7 @@ EXPORT_SYMBOL(kmemleak_free_part_phys);
+  */
+ void __ref kmemleak_not_leak_phys(phys_addr_t phys)
+ {
+-	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
++	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
+ 		kmemleak_not_leak(__va(phys));
+ }
+ EXPORT_SYMBOL(kmemleak_not_leak_phys);
+@@ -1170,7 +1170,7 @@ EXPORT_SYMBOL(kmemleak_not_leak_phys);
+  */
+ void __ref kmemleak_ignore_phys(phys_addr_t phys)
+ {
+-	if (!IS_ENABLED(CONFIG_HIGHMEM) || PHYS_PFN(phys) < max_low_pfn)
++	if (PHYS_PFN(phys) >= min_low_pfn && PHYS_PFN(phys) < max_low_pfn)
+ 		kmemleak_ignore(__va(phys));
+ }
+ EXPORT_SYMBOL(kmemleak_ignore_phys);
 
 
