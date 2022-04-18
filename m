@@ -2,97 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A136C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 21:01:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 004C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 21:01:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347898AbiDRVER (ORCPT
+        id S1347918AbiDRVEX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 17:04:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43706 "EHLO
+        Mon, 18 Apr 2022 17:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347856AbiDRVEE (ORCPT
+        with ESMTP id S1347912AbiDRVEN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 17:04:04 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4174329CB5;
-        Mon, 18 Apr 2022 14:01:22 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Khzqx1T40z4xR9;
-        Tue, 19 Apr 2022 07:01:16 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1650315680;
-        bh=J+ThAFs1lwgbJGvGifYpWhoLEGe9lkumqw+eteyhro4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=tAvF/ogKoUmDknKLvd4uc+14DtKaIgRejWw9+SLHfC5Xxz4x7sjq2USPe29238guh
-         it4AzTcB/WWn16uLOCu5lT91jUhxhl4VHQ+SfLpmcOj2X9H5RRNh8TwAd3L6pDf60b
-         7GhnZFRoWMYdOkfSZXO5KMwu9noQOGGlc0eJtCC35uUX8QC0dqefi56/Uyco9+uBJh
-         xjIWIEc2fZk+4Fgo+pY2RrNcXG3rQxoMOKZ75JUXGVcv+4AEtPH0URq0gvNCZIpjnd
-         waOHg/deSqQXGDnAA0POjvtEYend3EqjrPAs2Hct8r0Q25voz/qmd5gk6YtgH3bKIX
-         sPWPSYa9PaBLQ==
-Date:   Tue, 19 Apr 2022 07:01:16 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        Piotr Maziarz <piotrx.maziarz@linux.intel.com>,
-        Lawrence Hileman <larry.hileman@xconn-tech.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Bob Moore <robert.moore@intel.com>
-Subject: linux-next: Signed-off-by missing for commits in the pm tree
-Message-ID: <20220419070116.2974bddb@canb.auug.org.au>
+        Mon, 18 Apr 2022 17:04:13 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5F62A25D
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 14:01:32 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id t4so21044400pgc.1
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 14:01:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PsqaX0mMaHgNt26YkuFONS0WzSqOE6FUG9W4KvOufeg=;
+        b=L/5wlo3XuKXWeDlWiHccl1mrvHuQMGk71l2/UJiNbukNtW8sBFk7L3voXHaL1t1x7c
+         eW1iVPH/smzcAB2Fs+jUjbqUB8Mj4kNYfnfVIZZfxmdUiFjEulFXt8j/x67YiugvzWOW
+         v6JEMH8hXeaeGAZWdVhp+rdshOfKJ9kBZSgeA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PsqaX0mMaHgNt26YkuFONS0WzSqOE6FUG9W4KvOufeg=;
+        b=WqOw1sUj5qOBpAL6lHIyiaMwU6a6jUkWX1879UceXhwsxzhiiLGV4MhHebWkpy/lqw
+         S0D6eKI1abjvdeHix+1UOYqI+rP+PIUPA37sHh0epZp5M3bDwaRO7uk+IdfYJ/hq8t3F
+         G5UmJ6cR6FVr+Di5A1VosYFDFXJ1EQ/tRjoqaOJzdy2IrkTbdCDGS6zIbDc0xmB1aAu7
+         Kum86tlk5ZGl5Jp9q8xZMSR3qGZkDsTEAawBUIVTnbEbkvmxzAOJl1QytIfFIkhRr+M2
+         NP9KER8wB3QyoTRBW7owF5PK8aKw88KLBSOn9wmATBPuqCEaDcF8zophloyT68jnUqC3
+         M+cA==
+X-Gm-Message-State: AOAM532YeC/0fwRarPsYqqtM614iDzd503DxN9j4aSAQocheGgCWei76
+        3aR7OsJYaJ2gbCtr/H7O2fRW2w==
+X-Google-Smtp-Source: ABdhPJwWOGfdHF8dSOAUX+DIhWuMiCqrVT2iOcCFMnP0KBpLaFVSiKpts6tYslAe1hVJ14dNE1ac1w==
+X-Received: by 2002:a05:6a00:2496:b0:50a:6778:b8c1 with SMTP id c22-20020a056a00249600b0050a6778b8c1mr9247086pfv.47.1650315691606;
+        Mon, 18 Apr 2022 14:01:31 -0700 (PDT)
+Received: from evgreen-glaptop.lan ([98.47.98.87])
+        by smtp.gmail.com with ESMTPSA id y15-20020a17090a1f4f00b001c7ecaf9e13sm14047973pjy.35.2022.04.18.14.01.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 14:01:31 -0700 (PDT)
+From:   Evan Green <evgreen@chromium.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Rajat Jain <rajatja@chromium.org>,
+        Evan Green <evgreen@chromium.org>,
+        Razvan Heghedus <heghedus.razvan@gmail.com>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: [PATCH v2 1/2] USB: core: Disable remote wakeup for freeze/quiesce
+Date:   Mon, 18 Apr 2022 14:00:45 -0700
+Message-Id: <20220418135819.v2.1.I2c636c4decc358f5e6c27b810748904cc69beada@changeid>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220418210046.2060937-1-evgreen@chromium.org>
+References: <20220418210046.2060937-1-evgreen@chromium.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/2C6+iNBGJWD6WElNTn+wcKR";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/2C6+iNBGJWD6WElNTn+wcKR
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The PM_EVENT_FREEZE and PM_EVENT_QUIESCE messages should cause the
+device to stop generating interrupts. USB core was previously allowing
+devices that were already runtime suspended to keep remote wakeup
+enabled if they had gone down that way. This violates the contract with
+pm, and can potentially cause MSI interrupts to be lost.
 
-Hi all,
+Change that so that if a device is runtime suspended with remote wakeups
+enabled, it will be resumed to ensure remote wakeup is always disabled
+across a freeze.
 
-Commits
+Signed-off-by: Evan Green <evgreen@chromium.org>
+---
 
-  6eaf08770ee8 ("ACPICA: executer/exsystem: Warn about sleeps greater than =
-10 ms")
-  ace8f1c54a02 ("ACPICA: executer/exsystem: Inform users about ACPI spec vi=
-olation")
-  1838ffe7001b ("ACPICA: executer/exsystem: Add units to time variable name=
-s")
-  8bd24835db17 ("ACPICA: iASL: NHLT: Rename linux specific strucures to dev=
-ice_info")
-  ab1ba87bd71a ("ACPICA: iASL: NHLT: Fix parsing undocumented bytes at the =
-end of Endpoint Descriptor")
-  90037551c68d ("ACPICA: iASL: NHLT: Treat Terminator as specific_config")
-  a95d2fb08538 ("ACPICA: Add the subtable CFMWS to the CEDT table")
-  62b32fd961cf ("ACPICA: Add support for the Windows 11 _OSI string")
+(no changes since v1)
 
-are missing a Signed-off-by from their authors.
+ drivers/usb/core/driver.c | 20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
 
---=20
-Cheers,
-Stephen Rothwell
+diff --git a/drivers/usb/core/driver.c b/drivers/usb/core/driver.c
+index 355ed33a21792b..93c8cf66adccec 100644
+--- a/drivers/usb/core/driver.c
++++ b/drivers/usb/core/driver.c
+@@ -1533,20 +1533,18 @@ static void choose_wakeup(struct usb_device *udev, pm_message_t msg)
+ {
+ 	int	w;
+ 
+-	/* Remote wakeup is needed only when we actually go to sleep.
+-	 * For things like FREEZE and QUIESCE, if the device is already
+-	 * autosuspended then its current wakeup setting is okay.
++	/* For FREEZE/QUIESCE, disable remote wakeups so no interrupts get generated
++	 * by the device.
+ 	 */
+ 	if (msg.event == PM_EVENT_FREEZE || msg.event == PM_EVENT_QUIESCE) {
+-		if (udev->state != USB_STATE_SUSPENDED)
+-			udev->do_remote_wakeup = 0;
+-		return;
+-	}
++		w = 0;
+ 
+-	/* Enable remote wakeup if it is allowed, even if no interface drivers
+-	 * actually want it.
+-	 */
+-	w = device_may_wakeup(&udev->dev);
++	} else {
++		/* Enable remote wakeup if it is allowed, even if no interface drivers
++		 * actually want it.
++		 */
++		w = device_may_wakeup(&udev->dev);
++	}
+ 
+ 	/* If the device is autosuspended with the wrong wakeup setting,
+ 	 * autoresume now so the setting can be changed.
+-- 
+2.31.0
 
---Sig_/2C6+iNBGJWD6WElNTn+wcKR
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJd0ZwACgkQAVBC80lX
-0GxYIwgAm7rJ6fR5Zbs6fcwIZOu3QdHvX9PRfn6keG93eeLJz9eM7P8f0ytnnGCm
-OzUqb20aSCh73N8PtyfzN+6Uw0JZNOg6cuzKYOrPa6nsiOOCGJ2m/GksB8xdH6Gc
-bIjcLa1tDzJRSidN7lFM+//oWeQbVw1EZlhT4+swh8SBcW8CZkw/PzvJy/Zeq/+N
-R79mmPCE2yfqTIawkBvqzTPv+P9pUraeXcYn1vZifZw1iXRX0LvrXfD90UIqeMbV
-U0Z7Qvy2hcupPx79pZ24P8aS9z9nE8rbu0DTVmy+r9QI54yy3sUBCp+XAGTEFpen
-nn9wyIVG0cJDKEJyCjjiwsbv+Ev6GA==
-=4oPa
------END PGP SIGNATURE-----
-
---Sig_/2C6+iNBGJWD6WElNTn+wcKR--
