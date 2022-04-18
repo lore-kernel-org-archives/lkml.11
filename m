@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32ACCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:48:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:48:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244199AbiDRNu5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:50:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41262 "EHLO
+        id S245017AbiDRNvG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:51:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244657AbiDRNaq (ORCPT
+        with ESMTP id S244716AbiDRNat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E4D65AA;
-        Mon, 18 Apr 2022 05:54:58 -0700 (PDT)
+        Mon, 18 Apr 2022 09:30:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF59C12ACD;
+        Mon, 18 Apr 2022 05:55:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83DBFB80EC0;
-        Mon, 18 Apr 2022 12:54:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBFD9C385A1;
-        Mon, 18 Apr 2022 12:54:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A94B60FD9;
+        Mon, 18 Apr 2022 12:55:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61089C385A1;
+        Mon, 18 Apr 2022 12:55:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286496;
-        bh=0U1MH4AX840DC71MLBIHArHoLkvJ7+npJ2kTWvIyvH8=;
+        s=korg; t=1650286505;
+        bh=zZZ8+bt+swbdKgisPUds2B86Lnz7Y1ZXyD/TXnFQ/U8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TgS4OmBTU6mIyvNEm1+j4uWg1zrNP6tg20egnQg1K/NUDGLiXVoR6yJISMQ8xNPpQ
-         1C1phSzjswkAojjs+yy2tZhFd1IinWisS9+DhOC2/ouLaX+f9rZnv0yfQ+nzdeLSU9
-         nfhOHioUfwoBsdwo529WTgEtL8yk4ESs5iTruh80=
+        b=i2Kavqx0ww/l7t1HeOdcBSP7lGrYQoVgfNb0TqxU3GfscpHZ71071hzXi582w9gqH
+         wP3Va7yMX78mDM96YtUu57Yq3p8PBeqS813l0N7CeGlhSTtxLj+yRMPiB9+EYFMRb6
+         7jNu6RxkqwY10QlMb+iihTMwvlRrWUcdU9PWxTEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 153/284] NFSv4/pNFS: Fix another issue with a list iterator pointing to the head
-Date:   Mon, 18 Apr 2022 14:12:14 +0200
-Message-Id: <20220418121216.033306116@linuxfoundation.org>
+Subject: [PATCH 4.14 155/284] selinux: use correct type for context length
+Date:   Mon, 18 Apr 2022 14:12:16 +0200
+Message-Id: <20220418121216.124701381@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,117 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Christian Göttsche <cgzones@googlemail.com>
 
-[ Upstream commit 7c9d845f0612e5bcd23456a2ec43be8ac43458f1 ]
+[ Upstream commit b97df7c098c531010e445da88d02b7bf7bf59ef6 ]
 
-In nfs4_callback_devicenotify(), if we don't find a matching entry for
-the deviceid, we're left with a pointer to 'struct nfs_server' that
-actually points to the list of super blocks associated with our struct
-nfs_client.
-Furthermore, even if we have a valid pointer, nothing pins the super
-block, and so the struct nfs_server could end up getting freed while
-we're using it.
+security_sid_to_context() expects a pointer to an u32 as the address
+where to store the length of the computed context.
 
-Since all we want is a pointer to the struct pnfs_layoutdriver_type,
-let's skip all the iteration over super blocks, and just use APIs to
-find the layout driver directly.
+Reported by sparse:
 
-Reported-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Fixes: 1be5683b03a7 ("pnfs: CB_NOTIFY_DEVICEID")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+    security/selinux/xfrm.c:359:39: warning: incorrect type in arg 4
+                                    (different signedness)
+    security/selinux/xfrm.c:359:39:    expected unsigned int
+                                       [usertype] *scontext_len
+    security/selinux/xfrm.c:359:39:    got int *
+
+Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+[PM: wrapped commit description]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/callback_proc.c | 27 +++++++++------------------
- fs/nfs/pnfs.c          | 11 +++++++++++
- fs/nfs/pnfs.h          |  2 ++
- 3 files changed, 22 insertions(+), 18 deletions(-)
+ security/selinux/xfrm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
-index 3998b432e1b9..825b3166605d 100644
---- a/fs/nfs/callback_proc.c
-+++ b/fs/nfs/callback_proc.c
-@@ -355,12 +355,11 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
- 				  struct cb_process_state *cps)
- {
- 	struct cb_devicenotifyargs *args = argp;
-+	const struct pnfs_layoutdriver_type *ld = NULL;
- 	uint32_t i;
- 	__be32 res = 0;
--	struct nfs_client *clp = cps->clp;
--	struct nfs_server *server = NULL;
+diff --git a/security/selinux/xfrm.c b/security/selinux/xfrm.c
+index 56e354fcdfc6..5304dd49e054 100644
+--- a/security/selinux/xfrm.c
++++ b/security/selinux/xfrm.c
+@@ -344,7 +344,7 @@ int selinux_xfrm_state_alloc_acquire(struct xfrm_state *x,
+ 	int rc;
+ 	struct xfrm_sec_ctx *ctx;
+ 	char *ctx_str = NULL;
+-	int str_len;
++	u32 str_len;
  
--	if (!clp) {
-+	if (!cps->clp) {
- 		res = cpu_to_be32(NFS4ERR_OP_NOT_IN_SESSION);
- 		goto out;
- 	}
-@@ -368,23 +367,15 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
- 	for (i = 0; i < args->ndevs; i++) {
- 		struct cb_devicenotifyitem *dev = &args->devs[i];
- 
--		if (!server ||
--		    server->pnfs_curr_ld->id != dev->cbd_layout_type) {
--			rcu_read_lock();
--			list_for_each_entry_rcu(server, &clp->cl_superblocks, client_link)
--				if (server->pnfs_curr_ld &&
--				    server->pnfs_curr_ld->id == dev->cbd_layout_type) {
--					rcu_read_unlock();
--					goto found;
--				}
--			rcu_read_unlock();
--			continue;
-+		if (!ld || ld->id != dev->cbd_layout_type) {
-+			pnfs_put_layoutdriver(ld);
-+			ld = pnfs_find_layoutdriver(dev->cbd_layout_type);
-+			if (!ld)
-+				continue;
- 		}
--
--	found:
--		nfs4_delete_deviceid(server->pnfs_curr_ld, clp, &dev->cbd_dev_id);
-+		nfs4_delete_deviceid(ld, cps->clp, &dev->cbd_dev_id);
- 	}
--
-+	pnfs_put_layoutdriver(ld);
- out:
- 	kfree(args->devs);
- 	return res;
-diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
-index 619fc5c4c82c..18bbdaefd940 100644
---- a/fs/nfs/pnfs.c
-+++ b/fs/nfs/pnfs.c
-@@ -91,6 +91,17 @@ find_pnfs_driver(u32 id)
- 	return local;
- }
- 
-+const struct pnfs_layoutdriver_type *pnfs_find_layoutdriver(u32 id)
-+{
-+	return find_pnfs_driver(id);
-+}
-+
-+void pnfs_put_layoutdriver(const struct pnfs_layoutdriver_type *ld)
-+{
-+	if (ld)
-+		module_put(ld->owner);
-+}
-+
- void
- unset_pnfs_layoutdriver(struct nfs_server *nfss)
- {
-diff --git a/fs/nfs/pnfs.h b/fs/nfs/pnfs.h
-index 965d657086c8..3504826c1ee7 100644
---- a/fs/nfs/pnfs.h
-+++ b/fs/nfs/pnfs.h
-@@ -219,6 +219,8 @@ struct pnfs_devicelist {
- 
- extern int pnfs_register_layoutdriver(struct pnfs_layoutdriver_type *);
- extern void pnfs_unregister_layoutdriver(struct pnfs_layoutdriver_type *);
-+extern const struct pnfs_layoutdriver_type *pnfs_find_layoutdriver(u32 id);
-+extern void pnfs_put_layoutdriver(const struct pnfs_layoutdriver_type *ld);
- 
- /* nfs4proc.c */
- extern int nfs4_proc_getdeviceinfo(struct nfs_server *server,
+ 	if (!polsec)
+ 		return 0;
 -- 
 2.34.1
 
