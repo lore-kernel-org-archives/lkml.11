@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7509CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E14C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:53:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238483AbiDRNz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41634 "EHLO
+        id S241543AbiDRNzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244880AbiDRNbA (ORCPT
+        with ESMTP id S244877AbiDRNa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:31:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8D32A5;
-        Mon, 18 Apr 2022 05:56:57 -0700 (PDT)
+        Mon, 18 Apr 2022 09:30:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1255198;
+        Mon, 18 Apr 2022 05:56:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87D11612BB;
-        Mon, 18 Apr 2022 12:56:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B388C385A9;
-        Mon, 18 Apr 2022 12:56:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46A5160FE8;
+        Mon, 18 Apr 2022 12:56:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58FB6C385A1;
+        Mon, 18 Apr 2022 12:56:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286617;
-        bh=ASvl4kzOlN2JBFPVcDkp6qC7onoQI+kOPopbQo3QmCk=;
+        s=korg; t=1650286613;
+        bh=Mx8zchDa9SkluUW/ZUzXsfByOdpqXSxIFW/g17wQSzI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lQX+TmUTToZ5sfVUS/vL60b8Cc2mKayvZkYWw+xqjnbTuzIUCR7QtGJ8EKmW3L8HS
-         ZV4r7DgDsGmGWxfS74DiviQRznIV3rWgL8Ng0x5X0qLmtx3Nr6ERHCykg8o7Ix03J3
-         RFPOvV0C6EWXCCq2zYFjJmCa6QCURv7zKaL/fgxQ=
+        b=PWQQiqGbmQM1f4/kg+kZzCYB1aTjV9IrYDXRMq8stis+xQhv51paZ6ZP0xMBlyWuZ
+         Ul9pPZMDfaiPEtEWSsDeZ2YNPCZ/6KcZbNpOGLE0n6oKj3SqljE1+WtaXbALaESBgl
+         m77XnnVxdD46x58w800HZQRJi11D5DCBYMR1Ibas=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Price <anprice@redhat.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>
-Subject: [PATCH 4.14 191/284] gfs2: Make sure FITRIM minlen is rounded up to fs block size
-Date:   Mon, 18 Apr 2022 14:12:52 +0200
-Message-Id: <20220418121217.165187102@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
+Subject: [PATCH 4.14 190/284] can: mcba_usb: properly check endpoint type
+Date:   Mon, 18 Apr 2022 14:12:51 +0200
+Message-Id: <20220418121217.137508291@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -48,42 +50,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrew Price <anprice@redhat.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-commit 27ca8273fda398638ca994a207323a85b6d81190 upstream.
+commit 136bed0bfd3bc9c95c88aafff2d22ecb3a919f23 upstream.
 
-Per fstrim(8) we must round up the minlen argument to the fs block size.
-The current calculation doesn't take into account devices that have a
-discard granularity and requested minlen less than 1 fs block, so the
-value can get shifted away to zero in the translation to fs blocks.
+Syzbot reported warning in usb_submit_urb() which is caused by wrong
+endpoint type. We should check that in endpoint is actually present to
+prevent this warning.
 
-The zero minlen passed to gfs2_rgrp_send_discards() then allows
-sb_issue_discard() to be called with nr_sects == 0 which returns -EINVAL
-and results in gfs2_rgrp_send_discards() returning -EIO.
+Found pipes are now saved to struct mcba_priv and code uses them
+directly instead of making pipes in place.
 
-Make sure minlen is never < 1 fs block by taking the max of the
-requested minlen and the fs block size before comparing to the device's
-discard granularity and shifting to fs blocks.
+Fail log:
 
-Fixes: 076f0faa764ab ("GFS2: Fix FITRIM argument handling")
-Signed-off-by: Andrew Price <anprice@redhat.com>
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+| usb 5-1: BOGUS urb xfer, pipe 3 != type 1
+| WARNING: CPU: 1 PID: 49 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
+| Modules linked in:
+| CPU: 1 PID: 49 Comm: kworker/1:2 Not tainted 5.17.0-rc6-syzkaller-00184-g38f80f42147f #0
+| Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+| Workqueue: usb_hub_wq hub_event
+| RIP: 0010:usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
+| ...
+| Call Trace:
+|  <TASK>
+|  mcba_usb_start drivers/net/can/usb/mcba_usb.c:662 [inline]
+|  mcba_usb_probe+0x8a3/0xc50 drivers/net/can/usb/mcba_usb.c:858
+|  usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
+|  call_driver_probe drivers/base/dd.c:517 [inline]
+
+Fixes: 51f3baad7de9 ("can: mcba_usb: Add support for Microchip CAN BUS Analyzer")
+Link: https://lore.kernel.org/all/20220313100903.10868-1-paskripkin@gmail.com
+Reported-and-tested-by: syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/gfs2/rgrp.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/can/usb/mcba_usb.c |   26 ++++++++++++++++----------
+ 1 file changed, 16 insertions(+), 10 deletions(-)
 
---- a/fs/gfs2/rgrp.c
-+++ b/fs/gfs2/rgrp.c
-@@ -1380,7 +1380,8 @@ int gfs2_fitrim(struct file *filp, void
+--- a/drivers/net/can/usb/mcba_usb.c
++++ b/drivers/net/can/usb/mcba_usb.c
+@@ -44,10 +44,6 @@
+ #define MCBA_USB_RX_BUFF_SIZE 64
+ #define MCBA_USB_TX_BUFF_SIZE (sizeof(struct mcba_usb_msg))
  
- 	start = r.start >> bs_shift;
- 	end = start + (r.len >> bs_shift);
--	minlen = max_t(u64, r.minlen,
-+	minlen = max_t(u64, r.minlen, sdp->sd_sb.sb_bsize);
-+	minlen = max_t(u64, minlen,
- 		       q->limits.discard_granularity) >> bs_shift;
+-/* MCBA endpoint numbers */
+-#define MCBA_USB_EP_IN 1
+-#define MCBA_USB_EP_OUT 1
+-
+ /* Microchip command id */
+ #define MBCA_CMD_RECEIVE_MESSAGE 0xE3
+ #define MBCA_CMD_I_AM_ALIVE_FROM_CAN 0xF5
+@@ -95,6 +91,8 @@ struct mcba_priv {
+ 	atomic_t free_ctx_cnt;
+ 	void *rxbuf[MCBA_MAX_RX_URBS];
+ 	dma_addr_t rxbuf_dma[MCBA_MAX_RX_URBS];
++	int rx_pipe;
++	int tx_pipe;
+ };
  
- 	if (end <= start || minlen > sdp->sd_max_rg_data)
+ /* CAN frame */
+@@ -283,10 +281,8 @@ static netdev_tx_t mcba_usb_xmit(struct
+ 
+ 	memcpy(buf, usb_msg, MCBA_USB_TX_BUFF_SIZE);
+ 
+-	usb_fill_bulk_urb(urb, priv->udev,
+-			  usb_sndbulkpipe(priv->udev, MCBA_USB_EP_OUT), buf,
+-			  MCBA_USB_TX_BUFF_SIZE, mcba_usb_write_bulk_callback,
+-			  ctx);
++	usb_fill_bulk_urb(urb, priv->udev, priv->tx_pipe, buf, MCBA_USB_TX_BUFF_SIZE,
++			  mcba_usb_write_bulk_callback, ctx);
+ 
+ 	urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
+ 	usb_anchor_urb(urb, &priv->tx_submitted);
+@@ -621,7 +617,7 @@ static void mcba_usb_read_bulk_callback(
+ resubmit_urb:
+ 
+ 	usb_fill_bulk_urb(urb, priv->udev,
+-			  usb_rcvbulkpipe(priv->udev, MCBA_USB_EP_OUT),
++			  priv->rx_pipe,
+ 			  urb->transfer_buffer, MCBA_USB_RX_BUFF_SIZE,
+ 			  mcba_usb_read_bulk_callback, priv);
+ 
+@@ -666,7 +662,7 @@ static int mcba_usb_start(struct mcba_pr
+ 		urb->transfer_dma = buf_dma;
+ 
+ 		usb_fill_bulk_urb(urb, priv->udev,
+-				  usb_rcvbulkpipe(priv->udev, MCBA_USB_EP_IN),
++				  priv->rx_pipe,
+ 				  buf, MCBA_USB_RX_BUFF_SIZE,
+ 				  mcba_usb_read_bulk_callback, priv);
+ 		urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
+@@ -820,6 +816,13 @@ static int mcba_usb_probe(struct usb_int
+ 	struct mcba_priv *priv;
+ 	int err = -ENOMEM;
+ 	struct usb_device *usbdev = interface_to_usbdev(intf);
++	struct usb_endpoint_descriptor *in, *out;
++
++	err = usb_find_common_endpoints(intf->cur_altsetting, &in, &out, NULL, NULL);
++	if (err) {
++		dev_err(&intf->dev, "Can't find endpoints\n");
++		return err;
++	}
+ 
+ 	netdev = alloc_candev(sizeof(struct mcba_priv), MCBA_MAX_TX_URBS);
+ 	if (!netdev) {
+@@ -865,6 +868,9 @@ static int mcba_usb_probe(struct usb_int
+ 		goto cleanup_free_candev;
+ 	}
+ 
++	priv->rx_pipe = usb_rcvbulkpipe(priv->udev, in->bEndpointAddress);
++	priv->tx_pipe = usb_sndbulkpipe(priv->udev, out->bEndpointAddress);
++
+ 	devm_can_led_init(netdev);
+ 
+ 	/* Start USB dev only if we have successfully registered CAN device */
 
 
