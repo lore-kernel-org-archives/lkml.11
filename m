@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48B84C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FE0DC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344592AbiDROWp (ORCPT
+        id S1344627AbiDROWv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:22:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41572 "EHLO
+        Mon, 18 Apr 2022 10:22:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343846AbiDROIa (ORCPT
+        with ESMTP id S1343848AbiDROIa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 10:08:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A5E36685;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D866B36687;
         Mon, 18 Apr 2022 06:10:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7C44B80D9C;
-        Mon, 18 Apr 2022 13:09:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F5A6C385A1;
-        Mon, 18 Apr 2022 13:09:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38F6B60F16;
+        Mon, 18 Apr 2022 13:10:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F282C385A7;
+        Mon, 18 Apr 2022 13:10:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287395;
-        bh=CPbEzVn9PNmRYzSrIGO54wh9zgMQsjLRi1foeIemc7s=;
+        s=korg; t=1650287405;
+        bh=6zzab+vG1hj1AoxyJGCAEgwcCW1UYCoYMppPmAT/4hc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iC169d7WZQDZUJUih+Hti37XAr7Yvxs6BijAANnro0fxHyazcgfAAWAeD4NElsS1F
-         RG/MSA4rNRg+Cg2P2TaTSVR8Ag19UhRb223nW0bA0SLGyfVBrK2hKsvmKwo3SYTh2G
-         z08o9ZRKoE1//eTxDeulXQ3hYybOt4nxpxn8b8sA=
+        b=Z4XqKYWuIxxcYmql2a/x1jHcmL2Rv79M6BnDzA+o6JSLidELi21n679XE/0mo2Y4T
+         FMh7A7nCzJ2nNdKPwEUQwyUJ8gXcveOPZb8VnEz4wtXSDh7Vp/gj3yEuHycuVENXtj
+         wB1sz1bRMZtD6HxHHcHVEfgdFKIEkizgU7+iNIRs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.9 148/218] scsi: qla2xxx: Fix incorrect reporting of task management failure
-Date:   Mon, 18 Apr 2022 14:13:34 +0200
-Message-Id: <20220418121203.824023307@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.9 151/218] ubifs: setflags: Make dirtied_ino_d 8 bytes aligned
+Date:   Mon, 18 Apr 2022 14:13:37 +0200
+Message-Id: <20220418121203.955120512@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -52,37 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-commit 58ca5999e0367d131de82a75257fbfd5aed0195d upstream.
+commit 1b83ec057db16b4d0697dc21ef7a9743b6041f72 upstream.
 
-User experienced no task management error while target device is responding
-with error. The RSP_CODE field in the status IOCB is in little endian.
-Driver assumes it's big endian and it picked up erroneous data.
+Make 'ui->data_len' aligned with 8 bytes before it is assigned to
+dirtied_ino_d. Since 8871d84c8f8b0c6b("ubifs: convert to fileattr")
+applied, 'setflags()' only affects regular files and directories, only
+xattr inode, symlink inode and special inode(pipe/char_dev/block_dev)
+have none- zero 'ui->data_len' field, so assertion
+'!(req->dirtied_ino_d & 7)' cannot fail in ubifs_budget_space().
+To avoid assertion fails in future evolution(eg. setflags can operate
+special inodes), it's better to make dirtied_ino_d 8 bytes aligned,
+after all aligned size is still zero for regular files.
 
-Convert the data back to big endian as is on the wire.
-
-Link: https://lore.kernel.org/r/20220310092604.22950-2-njavali@marvell.com
-Fixes: faef62d13463 ("[SCSI] qla2xxx: Fix Task Management command asynchronous handling")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 1e51764a3c2ac05a ("UBIFS: add new flash file system")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/qla2xxx/qla_isr.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/ubifs/ioctl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/qla2xxx/qla_isr.c
-+++ b/drivers/scsi/qla2xxx/qla_isr.c
-@@ -1618,6 +1618,7 @@ qla24xx_tm_iocb_entry(scsi_qla_host_t *v
- 		iocb->u.tmf.data = QLA_FUNCTION_FAILED;
- 	} else if ((le16_to_cpu(sts->scsi_status) &
- 	    SS_RESPONSE_INFO_LEN_VALID)) {
-+		host_to_fcp_swap(sts->data, sizeof(sts->data));
- 		if (le32_to_cpu(sts->rsp_data_len) < 4) {
- 			ql_log(ql_log_warn, fcport->vha, 0x503b,
- 			    "Async-%s error - hdl=%x not enough response(%d).\n",
+--- a/fs/ubifs/ioctl.c
++++ b/fs/ubifs/ioctl.c
+@@ -105,7 +105,7 @@ static int setflags(struct inode *inode,
+ 	struct ubifs_inode *ui = ubifs_inode(inode);
+ 	struct ubifs_info *c = inode->i_sb->s_fs_info;
+ 	struct ubifs_budget_req req = { .dirtied_ino = 1,
+-					.dirtied_ino_d = ui->data_len };
++			.dirtied_ino_d = ALIGN(ui->data_len, 8) };
+ 
+ 	err = ubifs_budget_space(c, &req);
+ 	if (err)
 
 
