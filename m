@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38EE6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:03:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E58FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239494AbiDRNFd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:05:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50980 "EHLO
+        id S238717AbiDRNFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240335AbiDRMzK (ORCPT
+        with ESMTP id S240318AbiDRMzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:55:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9299AE5C;
-        Mon, 18 Apr 2022 05:36:29 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB737644;
+        Mon, 18 Apr 2022 05:36:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BD33B80EDB;
-        Mon, 18 Apr 2022 12:36:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D77AAC385A8;
-        Mon, 18 Apr 2022 12:36:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 173C4B80EC4;
+        Mon, 18 Apr 2022 12:36:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B7F8C385A7;
+        Mon, 18 Apr 2022 12:36:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285387;
-        bh=pNqvtigH1UvR7xszdOOR5JgxaJmqI6f+QEhS7rm9qFk=;
+        s=korg; t=1650285377;
+        bh=4hjNYSm6Wj/1vPSJiNLmluQsl5jfLcqmtgk+7KExBpQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tXizCNydTmbm7zf1XtmwQq6/3Ti75WSXh75mxKvI+n2+lvJoOXmieZ9oAXLYzo92/
-         bE/xmgn8krad5iJ8jf35Rpi932a0Q794Nl4Kj6jzFmhPp9SWem11oK8Ar0m26/jPw2
-         GyPMyy9yOhS6lucdZcsIHvYoYNNNw60j7kAQBLNQ=
+        b=k7XLMQ7bRpItoIdBjAMjZZ6Pak5cRoRZApTWgfrKcUuyq3MTgcfHYsWeNHf1VK27I
+         ywt6VPb685MrD6Qu/r/21mRbAhvDyJArJUBVVFTmgAbDMlr9DDHRKl6/IwMlOVgOzQ
+         HBJU7eQcZgBptGgfc/2KZiQ7VXzgMOuyQf4RC8qA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dongjin Yang <dj76.yang@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 5.15 174/189] dt-bindings: net: snps: remove duplicate name
-Date:   Mon, 18 Apr 2022 14:13:14 +0200
-Message-Id: <20220418121207.801781560@linuxfoundation.org>
+        Duoming Zhou <duoming@zju.edu.cn>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.15 189/189] ax25: Fix UAF bugs in ax25 timers
+Date:   Mon, 18 Apr 2022 14:13:29 +0200
+Message-Id: <20220418121208.834969824@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,47 +49,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongjin Yang <dj76.yang@samsung.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit ce8b3ad1071b764e963d9b08ac34ffddddf12da6 upstream.
+commit 82e31755e55fbcea6a9dfaae5fe4860ade17cbc0 upstream.
 
-snps,dwmac has duplicated name for loongson,ls2k-dwmac and
-loongson,ls7a-dwmac.
+There are race conditions that may lead to UAF bugs in
+ax25_heartbeat_expiry(), ax25_t1timer_expiry(), ax25_t2timer_expiry(),
+ax25_t3timer_expiry() and ax25_idletimer_expiry(), when we call
+ax25_release() to deallocate ax25_dev.
 
-Signed-off-by: Dongjin Yang <dj76.yang@samsung.com>
-Fixes: 68277749a013 ("dt-bindings: dwmac: Add bindings for new Loongson SoC and bridge chip")
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220404022857epcms1p6e6af1a6a86569f339e50c318abde7d3c@epcms1p6
+One of the UAF bugs caused by ax25_release() is shown below:
+
+      (Thread 1)                    |      (Thread 2)
+ax25_dev_device_up() //(1)          |
+...                                 | ax25_kill_by_device()
+ax25_bind()          //(2)          |
+ax25_connect()                      | ...
+ ax25_std_establish_data_link()     |
+  ax25_start_t1timer()              | ax25_dev_device_down() //(3)
+   mod_timer(&ax25->t1timer,..)     |
+                                    | ax25_release()
+   (wait a time)                    |  ...
+                                    |  ax25_dev_put(ax25_dev) //(4)FREE
+   ax25_t1timer_expiry()            |
+    ax25->ax25_dev->values[..] //USE|  ...
+     ...                            |
+
+We increase the refcount of ax25_dev in position (1) and (2), and
+decrease the refcount of ax25_dev in position (3) and (4).
+The ax25_dev will be freed in position (4) and be used in
+ax25_t1timer_expiry().
+
+The fail log is shown below:
+==============================================================
+
+[  106.116942] BUG: KASAN: use-after-free in ax25_t1timer_expiry+0x1c/0x60
+[  106.116942] Read of size 8 at addr ffff88800bda9028 by task swapper/0/0
+[  106.116942] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-06123-g0905eec574
+[  106.116942] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-14
+[  106.116942] Call Trace:
+...
+[  106.116942]  ax25_t1timer_expiry+0x1c/0x60
+[  106.116942]  call_timer_fn+0x122/0x3d0
+[  106.116942]  __run_timers.part.0+0x3f6/0x520
+[  106.116942]  run_timer_softirq+0x4f/0xb0
+[  106.116942]  __do_softirq+0x1c2/0x651
+...
+
+This patch adds del_timer_sync() in ax25_release(), which could ensure
+that all timers stop before we deallocate ax25_dev.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+[OP: backport to 5.15: adjust context]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/net/snps,dwmac.yaml |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ net/ax25/af_ax25.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -53,20 +53,18 @@ properties:
-         - allwinner,sun8i-r40-emac
-         - allwinner,sun8i-v3s-emac
-         - allwinner,sun50i-a64-emac
--        - loongson,ls2k-dwmac
--        - loongson,ls7a-dwmac
-         - amlogic,meson6-dwmac
-         - amlogic,meson8b-dwmac
-         - amlogic,meson8m2-dwmac
-         - amlogic,meson-gxbb-dwmac
-         - amlogic,meson-axg-dwmac
--        - loongson,ls2k-dwmac
--        - loongson,ls7a-dwmac
-         - ingenic,jz4775-mac
-         - ingenic,x1000-mac
-         - ingenic,x1600-mac
-         - ingenic,x1830-mac
-         - ingenic,x2000-mac
-+        - loongson,ls2k-dwmac
-+        - loongson,ls7a-dwmac
-         - rockchip,px30-gmac
-         - rockchip,rk3128-gmac
-         - rockchip,rk3228-gmac
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -1053,6 +1053,11 @@ static int ax25_release(struct socket *s
+ 		ax25_destroy_socket(ax25);
+ 	}
+ 	if (ax25_dev) {
++		del_timer_sync(&ax25->timer);
++		del_timer_sync(&ax25->t1timer);
++		del_timer_sync(&ax25->t2timer);
++		del_timer_sync(&ax25->t3timer);
++		del_timer_sync(&ax25->idletimer);
+ 		dev_put(ax25_dev->dev);
+ 		ax25_dev_put(ax25_dev);
+ 	}
 
 
