@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AD3FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99829C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239978AbiDRMx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38746 "EHLO
+        id S240003AbiDRMyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:54:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239456AbiDRMkX (ORCPT
+        with ESMTP id S240477AbiDRMjQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:40:23 -0400
+        Mon, 18 Apr 2022 08:39:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6C61F601;
-        Mon, 18 Apr 2022 05:31:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C95A286FD;
+        Mon, 18 Apr 2022 05:29:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49D18610F4;
-        Mon, 18 Apr 2022 12:31:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD23FC385D0;
-        Mon, 18 Apr 2022 12:31:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EFE86112C;
+        Mon, 18 Apr 2022 12:29:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1C96C385A7;
+        Mon, 18 Apr 2022 12:29:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285116;
-        bh=Ya7afj+D7KNw3CZW5DvBGMDCxih98osk7a0l9Chxy6M=;
+        s=korg; t=1650284983;
+        bh=kw+P+Q2um2sfgDyO73eLtQasUJ3xATpBMsqOEloUQsg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N1F1ejZ7H1KQfPcKqymBQCyP8Iqs67f8V92jrka3jLprUjwefmVIymype7Z7Qhzbp
-         7+75qmbZEcfivkASgEAhZYyTUWXBCJQMnLRCaNoa6zrx9n5moUuTZHoCbjVVzBiKhZ
-         uLdF7lG+2IwDa2g4YlcBR8vZEIjvJHbyz7EqgeLU=
+        b=LstOI/JXU51y7Nfoz6dEqjR3oO+OayU3WmyP6mY04jT66CAOxObExmQD2SljPH8dX
+         g5AD4O34niya2G/3YofgtDMgQsZUws9dPubmpUxMvKQ503jBWCBWRaAT00xGQAnQSI
+         HVfJ3ddZa11xa3l16M8EBfoL5FX4cjOnNw9SwJsg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guchun Chen <guchun.chen@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 108/189] drm/amdgpu: conduct a proper cleanup of PDB bo
-Date:   Mon, 18 Apr 2022 14:12:08 +0200
-Message-Id: <20220418121203.566541869@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 052/189] ALSA: sonicvibes: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:11:12 +0200
+Message-Id: <20220418121201.989013889@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,38 +47,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guchun Chen <guchun.chen@amd.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 2d505453f38e18d42ba7d5428aaa17aaa7752c65 ]
+commit b087a381d7386ec95803222d0d9b1ac499550713 upstream.
 
-Use amdgpu_bo_free_kernel instead of amdgpu_bo_unref to
-perform a proper cleanup of PDB bo.
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-v2: update subject to be more accurate
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
 
-Signed-off-by: Guchun Chen <guchun.chen@amd.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 2ca6cbde6ad7 ("ALSA: sonicvibes: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-25-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/pci/sonicvibes.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-index c67e21244342..6dc16ccf6c81 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-@@ -1652,7 +1652,7 @@ static int gmc_v9_0_sw_fini(void *handle)
- 	amdgpu_gem_force_release(adev);
- 	amdgpu_vm_manager_fini(adev);
- 	amdgpu_gart_table_vram_free(adev);
--	amdgpu_bo_unref(&adev->gmc.pdb0_bo);
-+	amdgpu_bo_free_kernel(&adev->gmc.pdb0_bo, NULL, &adev->gmc.ptr_pdb0);
- 	amdgpu_bo_fini(adev);
- 
+diff --git a/sound/pci/sonicvibes.c b/sound/pci/sonicvibes.c
+index c8c49881008f..f91cbf6eeca0 100644
+--- a/sound/pci/sonicvibes.c
++++ b/sound/pci/sonicvibes.c
+@@ -1387,8 +1387,8 @@ static int snd_sonicvibes_midi(struct sonicvibes *sonic,
  	return 0;
+ }
+ 
+-static int snd_sonic_probe(struct pci_dev *pci,
+-			   const struct pci_device_id *pci_id)
++static int __snd_sonic_probe(struct pci_dev *pci,
++			     const struct pci_device_id *pci_id)
+ {
+ 	static int dev;
+ 	struct snd_card *card;
+@@ -1459,6 +1459,12 @@ static int snd_sonic_probe(struct pci_dev *pci,
+ 	return 0;
+ }
+ 
++static int snd_sonic_probe(struct pci_dev *pci,
++			   const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_sonic_probe(pci, pci_id));
++}
++
+ static struct pci_driver sonicvibes_driver = {
+ 	.name = KBUILD_MODNAME,
+ 	.id_table = snd_sonic_ids,
 -- 
-2.35.1
+2.35.2
 
 
 
