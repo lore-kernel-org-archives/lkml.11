@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A6FC3527E
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C032C3527A
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345659AbiDROZF (ORCPT
+        id S1346301AbiDROZq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56328 "EHLO
+        Mon, 18 Apr 2022 10:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241321AbiDROMC (ORCPT
+        with ESMTP id S1343628AbiDROMr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:12:02 -0400
+        Mon, 18 Apr 2022 10:12:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879C237BE1;
-        Mon, 18 Apr 2022 06:11:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1525381B3;
+        Mon, 18 Apr 2022 06:11:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30EC2B80E59;
-        Mon, 18 Apr 2022 13:11:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79BDCC385A7;
-        Mon, 18 Apr 2022 13:11:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51BB9B80EC0;
+        Mon, 18 Apr 2022 13:11:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 950F2C385A1;
+        Mon, 18 Apr 2022 13:11:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287491;
-        bh=9NSt4i+sBNQbKYS7zXTtrAXPA6/ea6ptGI3c3CYCrBw=;
+        s=korg; t=1650287517;
+        bh=G1cCzSEmSyEJgD7avDuvFKb78yXZro2e0oLgp9BKbiU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rQbkO/uXw2nygf+oX5PwwRQ4qG9ASGaAXftAf/qDORMH8t1C7IRhn+J8PXqWTnCJu
-         vX1ebyAniXjEZuHuqU4YR2zk5hmQlmoV1FMpeE/xor6r6FXG8xiVN9Goh02EEeqN7w
-         veunJu7lNaB0RjwF6XgZDpxw4IZ8VVdTtUHMG4TA=
+        b=fGvTkVxvVZ/ktyKkYsI3czHVVkvKoE9zM5sJ6HHxDsyaaiRFveRWTb1eG2di04o2Q
+         w1SJyDh/CUCE0YkAKPl8aHA5+THIUAAPP72XISBLOr36OcFTAG0WGfnRUgTayiffV3
+         iwJgXHPjcv3qtqshp7gbXUR2w/1tmox+v3Aw1s1w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
+        stable@vger.kernel.org, TCS Robot <tcs_robot@tencent.com>,
+        Haimin Zhang <tcs_kernel@tencent.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 179/218] xtensa: fix DTC warning unit_address_format
-Date:   Mon, 18 Apr 2022 14:14:05 +0200
-Message-Id: <20220418121205.965233629@linuxfoundation.org>
+Subject: [PATCH 4.9 186/218] jfs: prevent NULL deref in diFree
+Date:   Mon, 18 Apr 2022 14:14:12 +0200
+Message-Id: <20220418121206.448774066@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -49,101 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Max Filippov <jcmvbkbc@gmail.com>
+From: Haimin Zhang <tcs_kernel@tencent.com>
 
-[ Upstream commit e85d29ba4b24f68e7a78cb85c55e754362eeb2de ]
+[ Upstream commit a53046291020ec41e09181396c1e829287b48d47 ]
 
-DTC issues the following warnings when building xtfpga device trees:
+Add validation check for JFS_IP(ipimap)->i_imap to prevent a NULL deref
+in diFree since diFree uses it without do any validations.
+When function jfs_mount calls diMount to initialize fileset inode
+allocation map, it can fail and JFS_IP(ipimap)->i_imap won't be
+initialized. Then it calls diFreeSpecial to close fileset inode allocation
+map inode and it will flow into jfs_evict_inode. Function jfs_evict_inode
+just validates JFS_SBI(inode->i_sb)->ipimap, then calls diFree. diFree use
+JFS_IP(ipimap)->i_imap directly, then it will cause a NULL deref.
 
- /soc/flash@00000000/partition@0x0: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x6000000: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x6800000: unit name should not have leading "0x"
- /soc/flash@00000000/partition@0x7fe0000: unit name should not have leading "0x"
-
-Drop leading 0x from flash partition unit names.
-
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Reported-by: TCS Robot <tcs_robot@tencent.com>
+Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
+Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi | 8 ++++----
- arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi  | 8 ++++----
- arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi   | 4 ++--
- 3 files changed, 10 insertions(+), 10 deletions(-)
+ fs/jfs/inode.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-index d3a88e029873..d9b399b57bcd 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-128m.dtsi
-@@ -7,19 +7,19 @@
- 			reg = <0x00000000 0x08000000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "data";
- 				reg = <0x00000000 0x06000000>;
- 			};
--			partition@0x6000000 {
-+			partition@6000000 {
- 				label = "boot loader area";
- 				reg = <0x06000000 0x00800000>;
- 			};
--			partition@0x6800000 {
-+			partition@6800000 {
- 				label = "kernel image";
- 				reg = <0x06800000 0x017e0000>;
- 			};
--			partition@0x7fe0000 {
-+			partition@7fe0000 {
- 				label = "boot environment";
- 				reg = <0x07fe0000 0x00020000>;
- 			};
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-index 1d97203c18e7..c9d0fc0b6265 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-16m.dtsi
-@@ -7,19 +7,19 @@
- 			reg = <0x08000000 0x01000000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "boot loader area";
- 				reg = <0x00000000 0x00400000>;
- 			};
--			partition@0x400000 {
-+			partition@400000 {
- 				label = "kernel image";
- 				reg = <0x00400000 0x00600000>;
- 			};
--			partition@0xa00000 {
-+			partition@a00000 {
- 				label = "data";
- 				reg = <0x00a00000 0x005e0000>;
- 			};
--			partition@0xfe0000 {
-+			partition@fe0000 {
- 				label = "boot environment";
- 				reg = <0x00fe0000 0x00020000>;
- 			};
-diff --git a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-index d1c621ca8be1..332892315f92 100644
---- a/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-+++ b/arch/xtensa/boot/dts/xtfpga-flash-4m.dtsi
-@@ -7,11 +7,11 @@
- 			reg = <0x08000000 0x00400000>;
- 			bank-width = <2>;
- 			device-width = <2>;
--			partition@0x0 {
-+			partition@0 {
- 				label = "boot loader area";
- 				reg = <0x00000000 0x003f0000>;
- 			};
--			partition@0x3f0000 {
-+			partition@3f0000 {
- 				label = "boot environment";
- 				reg = <0x003f0000 0x00010000>;
- 			};
+diff --git a/fs/jfs/inode.c b/fs/jfs/inode.c
+index 87b41edc800d..68779cc3609a 100644
+--- a/fs/jfs/inode.c
++++ b/fs/jfs/inode.c
+@@ -156,12 +156,13 @@ void jfs_evict_inode(struct inode *inode)
+ 		dquot_initialize(inode);
+ 
+ 		if (JFS_IP(inode)->fileset == FILESYSTEM_I) {
++			struct inode *ipimap = JFS_SBI(inode->i_sb)->ipimap;
+ 			truncate_inode_pages_final(&inode->i_data);
+ 
+ 			if (test_cflag(COMMIT_Freewmap, inode))
+ 				jfs_free_zero_link(inode);
+ 
+-			if (JFS_SBI(inode->i_sb)->ipimap)
++			if (ipimap && JFS_IP(ipimap)->i_imap)
+ 				diFree(inode);
+ 
+ 			/*
 -- 
 2.35.1
 
