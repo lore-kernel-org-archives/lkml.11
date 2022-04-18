@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9EBC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E20FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242847AbiDRN2q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41084 "EHLO
+        id S243465AbiDRN3A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240744AbiDRNFR (ORCPT
+        with ESMTP id S240983AbiDRNFX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:05:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3592340C5;
-        Mon, 18 Apr 2022 05:45:44 -0700 (PDT)
+        Mon, 18 Apr 2022 09:05:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CF4340DA;
+        Mon, 18 Apr 2022 05:45:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6EC61B80D9C;
-        Mon, 18 Apr 2022 12:45:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0B03C385A1;
-        Mon, 18 Apr 2022 12:45:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EA5660FB6;
+        Mon, 18 Apr 2022 12:45:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F97EC385A1;
+        Mon, 18 Apr 2022 12:45:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285942;
-        bh=tmI8DtT+P3Q0cz3cFyD1ov7gqSYR/gsjP5W2IKO1sgc=;
+        s=korg; t=1650285957;
+        bh=Ro/CPlPrB2+4gFbWWaN9lTICA1APWeL2RMTpJRBah8s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=spzAozREkbCEKar7rdk8kRFlBMz3RUFTf8hEL9PBR5nVnE5kD9cM9ncLYcvAvOt8x
-         45+kCl7kDolLotSC8Uyns1HEYrysS1oNapWIq37XwqLKziKnkjV3QjOZtyVT80WD2g
-         0IE5t2hJ62OsWHKXsmOMFGSr7KtnNB+JXu3aRgr0=
+        b=Xn92+hcy9+NTb+DYG857wQHhNWrzJGTb7Nzwz6HFUWdk4m8zv+gOyXOd+6wuskMx7
+         pXcuPgpGjdC+q52iZgOFjuNIrvuZGzeq6nF/W4ieCOlMuhdYiuj+XfQGgpidKkC2ZZ
+         B7pOwLjYIig2Zib6W8kZ/QFn2OKCrV3/nLxpvnGE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, QintaoShen <unSimple1993@163.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 12/32] drm/amdkfd: Check for potential null return of kmalloc_array()
-Date:   Mon, 18 Apr 2022 14:13:52 +0200
-Message-Id: <20220418121127.486269842@linuxfoundation.org>
+Subject: [PATCH 4.19 17/32] ata: libata-core: Disable READ LOG DMA EXT for Samsung 840 EVOs
+Date:   Mon, 18 Apr 2022 14:13:57 +0200
+Message-Id: <20220418121127.630064036@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
 References: <20220418121127.127656835@linuxfoundation.org>
@@ -49,33 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: QintaoShen <unSimple1993@163.com>
+From: Christian Lamparter <chunkeey@gmail.com>
 
-[ Upstream commit ebbb7bb9e80305820dc2328a371c1b35679f2667 ]
+[ Upstream commit 5399752299396a3c9df6617f4b3c907d7aa4ded8 ]
 
-As the kmalloc_array() may return null, the 'event_waiters[i].wait' would lead to null-pointer dereference.
-Therefore, it is better to check the return value of kmalloc_array() to avoid this confusion.
+Samsung' 840 EVO with the latest firmware (EXT0DB6Q) locks up with
+the a message: "READ LOG DMA EXT failed, trying PIO" during boot.
 
-Signed-off-by: QintaoShen <unSimple1993@163.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Initially this was discovered because it caused a crash
+with the sata_dwc_460ex controller on a WD MyBook Live DUO.
+
+The reporter "Tice Rex" which has the unique opportunity that he
+has two Samsung 840 EVO SSD! One with the older firmware "EXT0BB0Q"
+which booted fine and didn't expose "READ LOG DMA EXT". But the
+newer/latest firmware "EXT0DB6Q" caused the headaches.
+
+BugLink: https://github.com/openwrt/openwrt/issues/9505
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_events.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/ata/libata-core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-index e9f0e0a1b41c..892077377339 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-@@ -532,6 +532,8 @@ static struct kfd_event_waiter *alloc_event_waiters(uint32_t num_events)
- 	event_waiters = kmalloc_array(num_events,
- 					sizeof(struct kfd_event_waiter),
- 					GFP_KERNEL);
-+	if (!event_waiters)
-+		return NULL;
- 
- 	for (i = 0; (event_waiters) && (i < num_events) ; i++) {
- 		init_wait(&event_waiters[i].wait);
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 33d3728f3622..0c10d9557754 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -4598,6 +4598,9 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
+ 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
+ 	{ "Crucial_CT*MX100*",		"MU01",	ATA_HORKAGE_NO_NCQ_TRIM |
+ 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
++	{ "Samsung SSD 840 EVO*",	NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
++						ATA_HORKAGE_NO_DMA_LOG |
++						ATA_HORKAGE_ZERO_AFTER_TRIM, },
+ 	{ "Samsung SSD 840*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+ 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
+ 	{ "Samsung SSD 850*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
 -- 
 2.35.1
 
