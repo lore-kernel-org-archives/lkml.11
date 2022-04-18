@@ -2,140 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 906BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:31:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F02CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:31:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240726AbiDRPeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40492 "EHLO
+        id S1345223AbiDRPeh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344955AbiDRPcH (ORCPT
+        with ESMTP id S1345344AbiDRPdr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:32:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4909B1CFCC;
-        Mon, 18 Apr 2022 07:45:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFFABB80EE2;
-        Mon, 18 Apr 2022 14:45:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 685AAC385A1;
-        Mon, 18 Apr 2022 14:45:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650293111;
-        bh=bwDtdOcxFEg3of0+KlnHrcTKor1wUFoYgoCQfH/aBoM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=T58AVRL98CdvNCIg4SIQNxARSuTxoq84rZ9dqodI3o/q/u+13DDV4DGUXg0gA4PX7
-         cxI7JhL4ieRtecI6IdK+UKwhxwAXYSxw5lrDaZv+Nc1GPC9wMGqt6c1r7Cq+HNcU+w
-         bej50tKUC4fKf+EmXCjFzqoBSnr4AiDr0NbDVGE3HxapPEzxL5uXqlbuIzWvBmAERP
-         8X1aTvnWsirrINOqnWdQS1SeTd2apsP4HwHfKBmBrnXyQ6RbzGtq7qLQ8Hfm0uaY9i
-         7ugV/w1EhM3O6xt2FqQbhWs6PVPrNoa024siTNhPdDEnljbc2RtngfAwtXKsmhHi2F
-         PuLj7NSxGLEiQ==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id EF68240407; Mon, 18 Apr 2022 11:45:07 -0300 (-03)
-Date:   Mon, 18 Apr 2022 11:45:07 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Li Huafei <lihuafei1@huawei.com>,
-        Ali Saidi <alisaidi@amazon.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] perf mem: Print memory operation type
-Message-ID: <Yl15c78idxjn3sKb@kernel.org>
-References: <20220417124524.901148-1-leo.yan@linaro.org>
+        Mon, 18 Apr 2022 11:33:47 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42CA82F00B
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 07:49:19 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id z6-20020a17090a398600b001cb9fca3210so14256790pjb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 07:49:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LcpBBaLp7yKm4ePUGPYn7cfXcgSTcSPuiQUdtonyWvw=;
+        b=EBkHmi4d31qbKwVRASQykxgS+ZPLpHRLQCtY505IyEpcYARyykRr+8YwLkgcesbhUo
+         GhmgOmbxINYKVDz8YN6Xtlw1hgcTioANukL3XMsrZhxLsklMAxmrjWluFpN6znmjkHAZ
+         K2524nXKtVEkMlVcN8597Ux9NSgQHkc4El09A=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LcpBBaLp7yKm4ePUGPYn7cfXcgSTcSPuiQUdtonyWvw=;
+        b=OkmwDnn9jY7UJlWT//s9xJ6nSppCCfhVmqLwJWonxZEq8WMbLfIyo80BLcAcNDAC7P
+         WNR/jQjnRCECfQ/KbsNctSzRCF3IbhKBG64NE31Y4Psz3rI23MRN3K/dJlHE++g0+mtz
+         yTgbWAiVswJYlYYlyonwChxiV0jg9rvwCicHhjer5d3W+G16HY5QUTAMJwnGl9BSWUmV
+         6OcyIoB2lpe51r6cxZ5q59utj42dydA3HzikltD5dd4xGcb4Jn8kPDtaDKUlHLJk9a/b
+         QGw/o4bf7fiCBnPUZxW/Yi6/9fT8DQfJd1PYPXZn/Da701frDp5MnlJHPt69tPxqrJKU
+         dB5w==
+X-Gm-Message-State: AOAM532JgWWi3BNTpeoEpr5YUuUZEg3HHIiEfU4/8rxyZxrhxMlbigAB
+        zR0ixniHXzkeI4isOCOgg0iseg==
+X-Google-Smtp-Source: ABdhPJwogBI5AQX9yHFmWqm+C+1uZD+WyRYxauigff0xcpd3hLwGmIJ+DdkM58lJnWX+vEiWRJioTg==
+X-Received: by 2002:a17:903:2291:b0:158:c298:4f7a with SMTP id b17-20020a170903229100b00158c2984f7amr11184374plh.7.1650293358797;
+        Mon, 18 Apr 2022 07:49:18 -0700 (PDT)
+Received: from localhost.localdomain ([183.83.137.38])
+        by smtp.gmail.com with ESMTPSA id d6-20020a056a00244600b004f701135460sm13508532pfj.146.2022.04.18.07.49.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 07:49:18 -0700 (PDT)
+From:   Manoj Sai <abbaraju.manojsai@amarulasolutions.com>
+To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Li Yang <leoyang.li@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Matteo Lisi <matteo.lisi@engicam.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-amarula@amarulasolutions.com,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Rob Herring <robh@kernel.org>,
+        Suniel Mahesh <sunil@amarulasolutions.com>,
+        Michael Nazzareno Trimarchi <michael@amarulasolutions.com>,
+        Manoj Sai <abbaraju.manojsai@amarulasolutions.com>
+Subject: [PATCH v2 1/3] dt-bindings: arm: fsl: Add Engicam i.Core MX8M Plus EDIMM2.2 Starter Kit
+Date:   Mon, 18 Apr 2022 20:19:05 +0530
+Message-Id: <20220418144907.327511-1-abbaraju.manojsai@amarulasolutions.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220330191437.614065-2-abbaraju.manojsai@amarulasolutions.com>
+References: <20220330191437.614065-2-abbaraju.manojsai@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220417124524.901148-1-leo.yan@linaro.org>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Sun, Apr 17, 2022 at 08:45:24PM +0800, Leo Yan escreveu:
-> The memory operation types are not only for load and store, for easier
-> reviewing the memory operation type, this patch prints out it.
-> 
-> Before:
->   ls 14753 [011]  3678.072400:          1      l1d-miss:         88000182 L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
->   ls 14753 [011]  3678.072400:          1    l1d-access:         88000182 L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
->   ls 14753 [011]  3678.072400:          1    tlb-access:         88000182 L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
->   ls 14753 [011]  3678.072400:          1        memory:         88000182 L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
-> 
-> After:
-> 
->   ls 14753 [011]  3678.072400:          1      l1d-miss:         88000182 |OP LOAD|LVL L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
->   ls 14753 [011]  3678.072400:          1    l1d-access:         88000182 |OP LOAD|LVL L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
->   ls 14753 [011]  3678.072400:          1    tlb-access:         88000182 |OP LOAD|LVL L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
->   ls 14753 [011]  3678.072400:          1        memory:         88000182 |OP LOAD|LVL L1 miss|SNP N/A|TLB Walker hit|LCK No|BLK  N/A ffffa7c22b4b2a00 [unknown] ([kernel.kallsyms])
+i.Core MX8M Plus is an EDIMM SoM based on NXP i.MX8M Plus from Engicam.
 
-Thanks, applied to perf/core.
+EDIMM2.2 Starter Kit is an EDIMM 2.2 Form Factor Capacitive Evaluation
+Board from Engicam.
 
-- Arnaldo
+i.Core MX8M Plus needs to mount on top of this Evaluation board for
+creating complete i.Core MX8M Plus EDIMM2.2 Starter Kit.
 
+Add bindings for it.
+
+Signed-off-by: Manoj Sai <abbaraju.manojsai@amarulasolutions.com>
+Reviewed-by: Jagan Teki <jagan@amarulasolutions.com>
+---
+Changes for v2 :
+ -added the device binding of imx8mp as per soc order.
+---
+ Documentation/devicetree/bindings/arm/fsl.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
+index b6cc34115362..3bdc490cfbe2 100644
+--- a/Documentation/devicetree/bindings/arm/fsl.yaml
++++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+@@ -936,6 +936,13 @@ properties:
+           - const: toradex,verdin-imx8mp          # Verdin iMX8M Plus Module
+           - const: fsl,imx8mp
  
-> Signed-off-by: Leo Yan <leo.yan@linaro.org>
-> ---
->  tools/perf/util/mem-events.c | 29 ++++++++++++++++++++++++++++-
->  1 file changed, 28 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/perf/util/mem-events.c b/tools/perf/util/mem-events.c
-> index e5e405185498..f8f234251f92 100644
-> --- a/tools/perf/util/mem-events.c
-> +++ b/tools/perf/util/mem-events.c
-> @@ -314,6 +314,30 @@ static const char * const mem_hops[] = {
->  	"board",
->  };
->  
-> +static int perf_mem__op_scnprintf(char *out, size_t sz, struct mem_info *mem_info)
-> +{
-> +	u64 op = PERF_MEM_LOCK_NA;
-> +	int l;
-> +
-> +	if (mem_info)
-> +		op = mem_info->data_src.mem_op;
-> +
-> +	if (op & PERF_MEM_OP_NA)
-> +		l = scnprintf(out, sz, "N/A");
-> +	else if (op & PERF_MEM_OP_LOAD)
-> +		l = scnprintf(out, sz, "LOAD");
-> +	else if (op & PERF_MEM_OP_STORE)
-> +		l = scnprintf(out, sz, "STORE");
-> +	else if (op & PERF_MEM_OP_PFETCH)
-> +		l = scnprintf(out, sz, "PFETCH");
-> +	else if (op & PERF_MEM_OP_EXEC)
-> +		l = scnprintf(out, sz, "EXEC");
-> +	else
-> +		l = scnprintf(out, sz, "No");
-> +
-> +	return l;
-> +}
-> +
->  int perf_mem__lvl_scnprintf(char *out, size_t sz, struct mem_info *mem_info)
->  {
->  	size_t i, l = 0;
-> @@ -466,7 +490,10 @@ int perf_script__meminfo_scnprintf(char *out, size_t sz, struct mem_info *mem_in
->  {
->  	int i = 0;
->  
-> -	i += perf_mem__lvl_scnprintf(out, sz, mem_info);
-> +	i += scnprintf(out, sz, "|OP ");
-> +	i += perf_mem__op_scnprintf(out + i, sz - i, mem_info);
-> +	i += scnprintf(out + i, sz - i, "|LVL ");
-> +	i += perf_mem__lvl_scnprintf(out + i, sz, mem_info);
->  	i += scnprintf(out + i, sz - i, "|SNP ");
->  	i += perf_mem__snp_scnprintf(out + i, sz - i, mem_info);
->  	i += scnprintf(out + i, sz - i, "|TLB ");
-> -- 
-> 2.25.1
-
++      - description: Engicam i.Core MX8M Plus SoM based boards
++        items:
++          - enum:
++              - engicam,icore-mx8mp-edimm2.2       # i.MX8MP Engicam i.Core MX8M Plus EDIMM2.2 Starter Kit
++          - const: engicam,icore-mx8mp             # i.MX8MP Engicam i.Core MX8M Plus SoM
++          - const: fsl,imx8mp
++
+       - description: i.MX8MQ based Boards
+         items:
+           - enum:
 -- 
+2.25.1
 
-- Arnaldo
