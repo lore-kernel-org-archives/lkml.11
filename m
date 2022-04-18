@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C520EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 187F2C47082
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344463AbiDROKQ (ORCPT
+        id S1344342AbiDROJr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
+        Mon, 18 Apr 2022 10:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343860AbiDRNy2 (ORCPT
+        with ESMTP id S1343918AbiDRNyb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:54:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52ED1488AE;
-        Mon, 18 Apr 2022 06:03:51 -0700 (PDT)
+        Mon, 18 Apr 2022 09:54:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A89D048E69;
+        Mon, 18 Apr 2022 06:03:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DFE3460F07;
-        Mon, 18 Apr 2022 13:03:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBA7EC385B9;
-        Mon, 18 Apr 2022 13:03:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42189B80EDB;
+        Mon, 18 Apr 2022 13:03:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 889CAC385A1;
+        Mon, 18 Apr 2022 13:03:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287030;
-        bh=HAMF7RtDRM16WjkhlhsJXOOYjeQ9pPa38o2jupLn+0U=;
+        s=korg; t=1650287036;
+        bh=5ppsHgyDKbgMLojEYlRjlKNkNdei1Xhk25mzUBtMi80=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BHna+x1uVjkYL3ZL+h/Z6yRqKRE8VijxMtYZ3hGRmrVlKGAmkFKHoe4wFJhMi6bTl
-         HYeoo8HHJYteQymLuqzT6CKwRQ85YAIiGZx9Zz1MNq0bAd7DsEpVeWgmWK7XFRVMBs
-         7Rlv9Dz/MUDQMqsOyn3c5ze6HSy8TI8rUyzRisIw=
+        b=e19oE0loA5AvPNd5b97FWMNDhLpIJPOXK2bo3xuUo/3BIQFYH8m1dSrOYmLaFsc8l
+         g/j0P4FMxn3qsHSv3JxR5p34fpnZcBPqmt81qSIVHArltCfADYdRcQ75hue9voXYJh
+         feTxTyuJskCKTsh8g5sUvnvVW6LWc1tYFIfU3+2o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 005/218] ethernet: sun: Free the coherent when failing in probing
-Date:   Mon, 18 Apr 2022 14:11:11 +0200
-Message-Id: <20220418121158.931196096@linuxfoundation.org>
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        Jens Axboe <axboe@kernel.dk>, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 4.9 007/218] block: Add a helper to validate the block size
+Date:   Mon, 18 Apr 2022 14:11:13 +0200
+Message-Id: <20220418121159.035227558@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -51,47 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-[ Upstream commit bb77bd31c281f70ec77c9c4f584950a779e05cf8 ]
+commit 570b1cac477643cbf01a45fa5d018430a1fddbce upstream.
 
-When the driver fails to register net device, it should free the DMA
-region first, and then do other cleanup.
+There are some duplicated codes to validate the block
+size in block drivers. This limitation actually comes
+from block layer, so this patch tries to add a new block
+layer helper for that.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Link: https://lore.kernel.org/r/20211026144015.188-2-xieyongji@bytedance.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/sun/sunhme.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ include/linux/blkdev.h |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index cf4dcff051d5..b38106a7cb5d 100644
---- a/drivers/net/ethernet/sun/sunhme.c
-+++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -3160,7 +3160,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
- 	if (err) {
- 		printk(KERN_ERR "happymeal(PCI): Cannot register net device, "
- 		       "aborting.\n");
--		goto err_out_iounmap;
-+		goto err_out_free_coherent;
- 	}
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -49,6 +49,14 @@ struct pr_ops;
  
- 	pci_set_drvdata(pdev, hp);
-@@ -3193,6 +3193,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ typedef void (rq_end_io_fn)(struct request *, int);
  
- 	return 0;
- 
-+err_out_free_coherent:
-+	dma_free_coherent(hp->dma_dev, PAGE_SIZE,
-+			  hp->happy_block, hp->hblock_dvma);
++static inline int blk_validate_block_size(unsigned int bsize)
++{
++	if (bsize < 512 || bsize > PAGE_SIZE || !is_power_of_2(bsize))
++		return -EINVAL;
 +
- err_out_iounmap:
- 	iounmap(hp->gregs);
++	return 0;
++}
++
+ #define BLK_RL_SYNCFULL		(1U << 0)
+ #define BLK_RL_ASYNCFULL	(1U << 1)
  
--- 
-2.34.1
-
 
 
