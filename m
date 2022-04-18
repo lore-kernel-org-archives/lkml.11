@@ -2,99 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F0ECC3527D
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADA5C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345826AbiDROZQ (ORCPT
+        id S1345141AbiDROYo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:25:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51742 "EHLO
+        Mon, 18 Apr 2022 10:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245684AbiDROMW (ORCPT
+        with ESMTP id S245534AbiDROLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:12:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D091F38187;
-        Mon, 18 Apr 2022 06:11:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63D3BB80E59;
-        Mon, 18 Apr 2022 13:11:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B35A5C385A1;
-        Mon, 18 Apr 2022 13:11:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287501;
-        bh=wNfFQZ6QEGsJTR5c1mDUoWMnsVxrToTDw+xcONPDXSE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KHXbBe3W8XuZKMLktKtKnoJOhOdDxjHclaK51JAyMUaEl4E9a4KPVC5NjCHpWSBo+
-         t2aPF7feiqSo0+gMh8YhSwNrIeu/Qv2lKI29+Nuh7YIvWvZMpHL27bKSS8lzqeqY8s
-         4i4Q/ge9TbduNl+kD+xDhulcR3P5ewM+g95EMoTg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Denefle <lucas.denefle@converge.io>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 182/218] w1: w1_therm: fixes w1_seq for ds28ea00 sensors
-Date:   Mon, 18 Apr 2022 14:14:08 +0200
-Message-Id: <20220418121206.172019038@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
-References: <20220418121158.636999985@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 18 Apr 2022 10:11:55 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61D22DAB8
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 06:11:10 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id v9-20020a5ed709000000b006530841a32cso5310773iom.21
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 06:11:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to:cc;
+        bh=XiKY5XlBJzJnsKrn4qEIuBaEcYPmHbbc4JYJg2zx2Qk=;
+        b=oY8DhZdT59vjukKqrH9a5yZTnkqaBPc6q/tA33TBQM2D+UoouuoKlofehX6hCkTQog
+         4p1DphRN1xOs4/dNh1MNUiWEDTRD7HrPjMi52pcgrQtpbuBbiis2G5lPGFHj94ZNvjRg
+         V9/Mh6we5i3mwwna6ez71Q3BU+BUQ5D+EUN1DrY80hwUqHiX/t7oatPtwAUsC1AePP24
+         a9QB+Qw7ByrDcYYC0BP6W0NBmFkcCpQIjpSTbkXHO3i+hpAgflHl6HbekMOwu8vMzVyN
+         odA023gzKv17HzmUaMRDEhjQHFdyUBxJJ0d9TESQWBgUHMmxo2R37BGXxt6MGpVve1t1
+         TzMA==
+X-Gm-Message-State: AOAM531ktAbxOOK+tnf99ed+OUvEP7Bj+EY+PEHFlBw+Y/4s1gKtVG4u
+        6XDC6+3EUXcDTN6210xs0W1t1npDwqkh/wHcZ9WdSRG0AFFX
+X-Google-Smtp-Source: ABdhPJyYDglizIMIJcYEE52TbNTkyft71r8Qpf9p3G6TMO7uOciuXkyz4+pVbdyGRJAROpfubl9hb0YKEkIsX5DZy0o1yh4UsYXx
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:1654:b0:323:bcf1:193a with SMTP id
+ a20-20020a056638165400b00323bcf1193amr5367061jat.115.1650287470053; Mon, 18
+ Apr 2022 06:11:10 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 06:11:10 -0700
+In-Reply-To: <20220418121203.336909160@linuxfoundation.org>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006e146a05dced7e67@google.com>
+Subject: Re: [PATCH 4.9 131/218] ext4: dont BUG if someone dirty pages without
+ asking ext4 first
+From:   syzbot 
+        <syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     gregkh@linuxfoundation.org, lee.jones@linaro.org,
+        linux-kernel@vger.kernel.org, sashal@kernel.org,
+        stable@vger.kernel.org, tytso@mit.edu
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Denefle <lucas.denefle@converge.io>
+> From: Theodore Ts'o <tytso@mit.edu>
+>
+> [ Upstream commit cc5095747edfb054ca2068d01af20be3fcc3634f ]
+>
+> [un]pin_user_pages_remote is dirtying pages without properly warning
+> the file system in advance.  A related race was noted by Jan Kara in
+> 2018[1]; however, more recently instead of it being a very hard-to-hit
+> race, it could be reliably triggered by process_vm_writev(2) which was
+> discovered by Syzbot[2].
+>
+> This is technically a bug in mm/gup.c, but arguably ext4 is fragile in
+> that if some other kernel subsystem dirty pages without properly
+> notifying the file system using page_mkwrite(), ext4 will BUG, while
+> other file systems will not BUG (although data will still be lost).
+>
+> So instead of crashing with a BUG, issue a warning (since there may be
+> potential data loss) and just mark the page as clean to avoid
+> unprivileged denial of service attacks until the problem can be
+> properly fixed.  More discussion and background can be found in the
+> thread starting at [2].
+>
+> [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
+> [2] https://lore.kernel.org/r/Yg0m6IjcNmfaSokM@google.com
+>
+> Reported-by: syzbot+d59332e2db681cf18f0318a06e994ebbb529a8db@syzkaller.appspotmail.com
+> Reported-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+> Link: https://lore.kernel.org/r/YiDS9wVfq4mM2jGK@mit.edu
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  fs/ext4/inode.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+>
+> diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+> index 79c067f74253..e66aa8918dee 100644
+> --- a/fs/ext4/inode.c
+> +++ b/fs/ext4/inode.c
+> @@ -2048,6 +2048,15 @@ static int ext4_writepage(struct page *page,
+>  	else
+>  		len = PAGE_SIZE;
+>  
+> +	/* Should never happen but for bugs in other kernel subsystems */
+> +	if (!page_has_buffers(page)) {
+> +		ext4_warning_inode(inode,
+> +		   "page %lu does not have buffers attached", page->index);
+> +		ClearPageDirty(page);
+> +		unlock_page(page);
+> +		return 0;
+> +	}
+> +
+>  	page_bufs = page_buffers(page);
+>  	/*
+>  	 * We cannot do block allocation or other extent handling in this
+> @@ -2608,6 +2617,22 @@ static int mpage_prepare_extent_to_map(struct mpage_da_data *mpd)
+>  			wait_on_page_writeback(page);
+>  			BUG_ON(PageWriteback(page));
+>  
+> +			/*
+> +			 * Should never happen but for buggy code in
+> +			 * other subsystems that call
+> +			 * set_page_dirty() without properly warning
+> +			 * the file system first.  See [1] for more
+> +			 * information.
+> +			 *
+> +			 * [1] https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz
+> +			 */
+> +			if (!page_has_buffers(page)) {
+> +				ext4_warning_inode(mpd->inode, "page %lu does not have buffers attached", page->index);
+> +				ClearPageDirty(page);
+> +				unlock_page(page);
+> +				continue;
+> +			}
+> +
+>  			if (mpd->map.m_len == 0)
+>  				mpd->first_page = page->index;
+>  			mpd->next_page = page->index + 1;
+> -- 
+> 2.34.1
+>
+>
+>
 
-[ Upstream commit 41a92a89eee819298f805c40187ad8b02bb53426 ]
-
-w1_seq was failing due to several devices responding to the
-CHAIN_DONE at the same time. Now properly selects the current
-device in the chain with MATCH_ROM. Also acknowledgment was
-read twice.
-
-Signed-off-by: Lucas Denefle <lucas.denefle@converge.io>
-Link: https://lore.kernel.org/r/20220223113558.232750-1-lucas.denefle@converge.io
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/w1/slaves/w1_therm.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/w1/slaves/w1_therm.c b/drivers/w1/slaves/w1_therm.c
-index 82611f197b0a..7d0e09867bc7 100644
---- a/drivers/w1/slaves/w1_therm.c
-+++ b/drivers/w1/slaves/w1_therm.c
-@@ -589,16 +589,20 @@ static ssize_t w1_seq_show(struct device *device,
- 		if (sl->reg_num.id == reg_num->id)
- 			seq = i;
- 
-+		if (w1_reset_bus(sl->master))
-+			goto error;
-+
-+		/* Put the device into chain DONE state */
-+		w1_write_8(sl->master, W1_MATCH_ROM);
-+		w1_write_block(sl->master, (u8 *)&rn, 8);
- 		w1_write_8(sl->master, W1_42_CHAIN);
- 		w1_write_8(sl->master, W1_42_CHAIN_DONE);
- 		w1_write_8(sl->master, W1_42_CHAIN_DONE_INV);
--		w1_read_block(sl->master, &ack, sizeof(ack));
- 
- 		/* check for acknowledgment */
- 		ack = w1_read_8(sl->master);
- 		if (ack != W1_42_SUCCESS_CONFIRM_BYTE)
- 			goto error;
--
- 	}
- 
- 	/* Exit from CHAIN state */
--- 
-2.35.1
-
-
+I see the command but can't find the corresponding bug.
+The email is sent to  syzbot+HASH@syzkaller.appspotmail.com address
+but the HASH does not correspond to any known bug.
+Please double check the address.
 
