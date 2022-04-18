@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF091C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE0AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:38:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237124AbiDRMkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54188 "EHLO
+        id S239554AbiDRMkl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239485AbiDRMdG (ORCPT
+        with ESMTP id S239451AbiDRMdD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:06 -0400
+        Mon, 18 Apr 2022 08:33:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E599926AD5;
-        Mon, 18 Apr 2022 05:24:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9378326AEE;
+        Mon, 18 Apr 2022 05:24:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44CCA60B40;
-        Mon, 18 Apr 2022 12:24:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E8B8C385A1;
-        Mon, 18 Apr 2022 12:24:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A105560FB0;
+        Mon, 18 Apr 2022 12:24:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1900C385A1;
+        Mon, 18 Apr 2022 12:24:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284682;
-        bh=yleHHuiUouJoSYtfLf/AHcCqc54A63eqmV3ypVAOJuE=;
+        s=korg; t=1650284677;
+        bh=41f3L+KWlQpUhp8T1RZqJOl6hTJ05WVA7/JAMZdnwWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fyAJhtmVLNIxdTm0GczTFDQSBvq0xGKzzFMKlJGCN/V1M5bgsCzkGn7/8SdpXYwAJ
-         6ocnFGVeX+f2zmCfTL2L1ysIILKuNLFfDIGdGbzUH7XdDzA/NQsdOKkNZa86y2TEwO
-         fbcCtFPCZnU8fTrljflP+UHNjh9sG+g+R3PIy06s=
+        b=2lSsysgHCvdDSSGp2xDmUkzPxsC4ONmWZHx6xs4kSs6PpRo/iyI6/uh5oyIv41u2c
+         IkXnT5+IgtRUSaNYPgW+lsPxFUDuPgmZS4aImZnz9YMR5DEM9OIVeCUNZBdSTVfbwr
+         XEi8DhmxbtQzkoBCmelWbc8NvI2rXUS+N6R7+wOw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 194/219] ALSA: hda/realtek: Add quirk for Clevo PD50PNT
-Date:   Mon, 18 Apr 2022 14:12:43 +0200
-Message-Id: <20220418121212.305646685@linuxfoundation.org>
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.17 192/219] btrfs: fix root ref counts in error handling in btrfs_get_root_ref
+Date:   Mon, 18 Apr 2022 14:12:41 +0200
+Message-Id: <20220418121212.249736255@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,30 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Crawford <tcrawford@system76.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-commit 9eb6f5c388060d8cef3c8b616cc31b765e022359 upstream.
+commit 168a2f776b9762f4021421008512dd7ab7474df1 upstream.
 
-Fixes speaker output and headset detection on Clevo PD50PNT.
+In btrfs_get_root_ref(), when btrfs_insert_fs_root() fails,
+btrfs_put_root() can happen for two reasons:
 
-Signed-off-by: Tim Crawford <tcrawford@system76.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220405182029.27431-1-tcrawford@system76.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+- the root already exists in the tree, in that case it returns the
+  reference obtained in btrfs_lookup_fs_root()
+
+- another error so the cleanup is done in the fail label
+
+Calling btrfs_put_root() unconditionally would lead to double decrement
+of the root reference possibly freeing it in the second case.
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Fixes: bc44d7c4b2b1 ("btrfs: push btrfs_grab_fs_root into btrfs_get_fs_root")
+CC: stable@vger.kernel.org # 5.10+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/btrfs/disk-io.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -2619,6 +2619,7 @@ static const struct snd_pci_quirk alc882
- 	SND_PCI_QUIRK(0x1558, 0x65e1, "Clevo PB51[ED][DF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x65e5, "Clevo PC50D[PRS](?:-D|-G)?", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x65f1, "Clevo PC50HS", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
-+	SND_PCI_QUIRK(0x1558, 0x65f5, "Clevo PD50PN[NRT]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x67d1, "Clevo PB71[ER][CDF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x67e1, "Clevo PB71[DE][CDF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x67e5, "Clevo PC70D[PRS](?:-D|-G)?", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -1826,9 +1826,10 @@ again:
+ 
+ 	ret = btrfs_insert_fs_root(fs_info, root);
+ 	if (ret) {
+-		btrfs_put_root(root);
+-		if (ret == -EEXIST)
++		if (ret == -EEXIST) {
++			btrfs_put_root(root);
+ 			goto again;
++		}
+ 		goto fail;
+ 	}
+ 	return root;
 
 
