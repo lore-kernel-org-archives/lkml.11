@@ -2,257 +2,748 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04EFCC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ABD4C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242629AbiDRNJR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:09:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
+        id S242702AbiDRNJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:09:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240582AbiDRM5L (ORCPT
+        with ESMTP id S240701AbiDRM5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:57:11 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 531AB1B7B4;
-        Mon, 18 Apr 2022 05:38:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650285481; x=1681821481;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=G6R3PT+c1qljHd/QwpowpiO0WMYWMpqidUIpPs1bHbY=;
-  b=mAXyFdocJbFUtutJlNwgHKcwvrGC+oQ5y/7DDqQgkurpWHlPP8RgnsYz
-   QIG9S60pHB3cg+ooAqu8O1B+uO4mUfikmJAvy+r75/P9X7Gq6h7CM4qZE
-   OprspUEHQGn4AhQTPrSu9pIHzc0MkhLSjfyRSZjDdpv47vMweuzO92xxe
-   4=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 18 Apr 2022 05:38:00 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 05:38:00 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 18 Apr 2022 05:37:59 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 18 Apr 2022 05:37:53 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, Linus Walleij <linus.walleij@linaro.org>,
-        <linux-gpio@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v13 4/7] pinctrl: qcom: Update lpi pin group custiom functions with framework generic functions
-Date:   Mon, 18 Apr 2022 18:07:04 +0530
-Message-ID: <1650285427-19752-5-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1650285427-19752-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1650285427-19752-1-git-send-email-quic_srivasam@quicinc.com>
+        Mon, 18 Apr 2022 08:57:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA0E1E3FC;
+        Mon, 18 Apr 2022 05:38:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3FDF4B80EDC;
+        Mon, 18 Apr 2022 12:38:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73DE6C385A7;
+        Mon, 18 Apr 2022 12:38:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650285482;
+        bh=oCcJ/VsXPr4+CXYdZcrsW4SDFGXLhft1BwchC4UJdJk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hrIQmHtkrRwjUVbe5i8SgtI2hp1XiRfWUlYgY/BY945qnbwiQ2sSh/6WB68O+0iU5
+         zuJgvoqZ3wrAW3qnMU7/AuAWOWwzRTczVq7XOBvgU81pB2JHBrfn+lcQ5Vaj0cTAfe
+         KpdqYODgmaDnLJmctprCREaaZAEfiox0S5s8gnXw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lee Duncan <lduncan@suse.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 031/105] scsi: iscsi: Fix in-kernel conn failure handling
+Date:   Mon, 18 Apr 2022 14:12:33 +0200
+Message-Id: <20220418121147.246994205@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
+References: <20220418121145.140991388@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update custom pin group structure members with framework generic
-group_desc structure and replace the driver's custom pinctrl_ops
-with framework provided generic pin control group functions to avoid
-redundant code written in lpass lpi driver.
+From: Mike Christie <michael.christie@oracle.com>
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+[ Upstream commit 23d6fefbb3f6b1cc29794427588b470ed06ff64e ]
+
+Commit 0ab710458da1 ("scsi: iscsi: Perform connection failure entirely in
+kernel space") has the following regressions/bugs that this patch fixes:
+
+1. It can return cmds to upper layers like dm-multipath where that can
+retry them. After they are successful the fs/app can send new I/O to the
+same sectors, but we've left the cmds running in FW or in the net layer.
+We need to be calling ep_disconnect if userspace is not up.
+
+This patch only fixes the issue for offload drivers. iscsi_tcp will be
+fixed in separate commit because it doesn't have a ep_disconnect call.
+
+2. The drivers that implement ep_disconnect expect that it's called before
+conn_stop. Besides crashes, if the cleanup_task callout is called before
+ep_disconnect it might free up driver/card resources for session1 then they
+could be allocated for session2. But because the driver's ep_disconnect is
+not called it has not cleaned up the firmware so the card is still using
+the resources for the original cmd.
+
+3. The stop_conn_work_fn can run after userspace has done its recovery and
+we are happily using the session. We will then end up with various bugs
+depending on what is going on at the time.
+
+We may also run stop_conn_work_fn late after userspace has called stop_conn
+and ep_disconnect and is now going to call start/bind conn. If
+stop_conn_work_fn runs after bind but before start, we would leave the conn
+in a unbound but sort of started state where IO might be allowed even
+though the drivers have been set in a state where they no longer expect
+I/O.
+
+4. Returning -EAGAIN in iscsi_if_destroy_conn if we haven't yet run the in
+kernel stop_conn function is breaking userspace. We should have been doing
+this for the caller.
+
+Link: https://lore.kernel.org/r/20210525181821.7617-8-michael.christie@oracle.com
+Fixes: 0ab710458da1 ("scsi: iscsi: Perform connection failure entirely in kernel space")
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/qcom/Kconfig             |   1 +
- drivers/pinctrl/qcom/pinctrl-lpass-lpi.c | 102 +++++++++++++++----------------
- 2 files changed, 52 insertions(+), 51 deletions(-)
+ drivers/scsi/scsi_transport_iscsi.c | 471 ++++++++++++++++------------
+ include/scsi/scsi_transport_iscsi.h |  10 +-
+ 2 files changed, 283 insertions(+), 198 deletions(-)
 
-diff --git a/drivers/pinctrl/qcom/Kconfig b/drivers/pinctrl/qcom/Kconfig
-index c51ef54..d2bcf88 100644
---- a/drivers/pinctrl/qcom/Kconfig
-+++ b/drivers/pinctrl/qcom/Kconfig
-@@ -360,6 +360,7 @@ config PINCTRL_LPASS_LPI
- 	select PINMUX
- 	select PINCONF
- 	select GENERIC_PINCONF
-+	select GENERIC_PINCTRL_GROUPS
- 	depends on GPIOLIB
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
-diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-index 3c15f80..3228c45 100644
---- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-+++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
-@@ -51,11 +51,11 @@
- 
- #define LPI_PINGROUP(id, soff, f1, f2, f3, f4)		\
- 	{						\
--		.name = "gpio" #id,			\
--		.pins = gpio##id##_pins,		\
-+		.group.name = "gpio" #id,			\
-+		.group.pins = gpio##id##_pins,		\
- 		.pin = id,				\
- 		.slew_offset = soff,			\
--		.npins = ARRAY_SIZE(gpio##id##_pins),	\
-+		.group.num_pins = ARRAY_SIZE(gpio##id##_pins),	\
- 		.funcs = (int[]){			\
- 			LPI_MUX_gpio,			\
- 			LPI_MUX_##f1,			\
-@@ -67,9 +67,7 @@
- 	}
- 
- struct lpi_pingroup {
--	const char *name;
--	const unsigned int *pins;
--	unsigned int npins;
-+	struct group_desc group;
- 	unsigned int pin;
- 	/* Bit offset in slew register for SoundWire pins only */
- 	int slew_offset;
-@@ -150,20 +148,20 @@ enum sm8250_lpi_functions {
- 	LPI_MUX__,
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index dea0944ebbfa..7246f7b2ff03 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -86,15 +86,11 @@ struct iscsi_internal {
+ 	struct transport_container session_cont;
  };
  
--static const unsigned int gpio0_pins[] = { 0 };
--static const unsigned int gpio1_pins[] = { 1 };
--static const unsigned int gpio2_pins[] = { 2 };
--static const unsigned int gpio3_pins[] = { 3 };
--static const unsigned int gpio4_pins[] = { 4 };
--static const unsigned int gpio5_pins[] = { 5 };
--static const unsigned int gpio6_pins[] = { 6 };
--static const unsigned int gpio7_pins[] = { 7 };
--static const unsigned int gpio8_pins[] = { 8 };
--static const unsigned int gpio9_pins[] = { 9 };
--static const unsigned int gpio10_pins[] = { 10 };
--static const unsigned int gpio11_pins[] = { 11 };
--static const unsigned int gpio12_pins[] = { 12 };
--static const unsigned int gpio13_pins[] = { 13 };
-+static int gpio0_pins[] = { 0 };
-+static int gpio1_pins[] = { 1 };
-+static int gpio2_pins[] = { 2 };
-+static int gpio3_pins[] = { 3 };
-+static int gpio4_pins[] = { 4 };
-+static int gpio5_pins[] = { 5 };
-+static int gpio6_pins[] = { 6 };
-+static int gpio7_pins[] = { 7 };
-+static int gpio8_pins[] = { 8 };
-+static int gpio9_pins[] = { 9 };
-+static int gpio10_pins[] = { 10 };
-+static int gpio11_pins[] = { 11 };
-+static int gpio12_pins[] = { 12 };
-+static int gpio13_pins[] = { 13 };
- static const char * const swr_tx_clk_groups[] = { "gpio0" };
- static const char * const swr_tx_data_groups[] = { "gpio1", "gpio2", "gpio5" };
- static const char * const swr_rx_clk_groups[] = { "gpio3" };
-@@ -250,38 +248,10 @@ static int lpi_gpio_write(struct lpi_pinctrl *state, unsigned int pin,
- 	return 0;
+-/* Worker to perform connection failure on unresponsive connections
+- * completely in kernel space.
+- */
+-static void stop_conn_work_fn(struct work_struct *work);
+-static DECLARE_WORK(stop_conn_work, stop_conn_work_fn);
+-
+ static atomic_t iscsi_session_nr; /* sysfs session id for next new session */
+ static struct workqueue_struct *iscsi_eh_timer_workq;
+ 
++static struct workqueue_struct *iscsi_conn_cleanup_workq;
++
+ static DEFINE_IDA(iscsi_sess_ida);
+ /*
+  * list of registered transports and lock that must
+@@ -1601,12 +1597,6 @@ static DECLARE_TRANSPORT_CLASS(iscsi_connection_class,
+ static struct sock *nls;
+ static DEFINE_MUTEX(rx_queue_mutex);
+ 
+-/*
+- * conn_mutex protects the {start,bind,stop,destroy}_conn from racing
+- * against the kernel stop_connection recovery mechanism
+- */
+-static DEFINE_MUTEX(conn_mutex);
+-
+ static LIST_HEAD(sesslist);
+ static DEFINE_SPINLOCK(sesslock);
+ static LIST_HEAD(connlist);
+@@ -2228,6 +2218,123 @@ void iscsi_remove_session(struct iscsi_cls_session *session)
  }
+ EXPORT_SYMBOL_GPL(iscsi_remove_session);
  
--static int lpi_gpio_get_groups_count(struct pinctrl_dev *pctldev)
--{
--	struct lpi_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctldev);
--
--	return pctrl->data->ngroups;
--}
--
--static const char *lpi_gpio_get_group_name(struct pinctrl_dev *pctldev,
--					   unsigned int group)
--{
--	struct lpi_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctldev);
--
--	return pctrl->data->groups[group].name;
--}
--
--static int lpi_gpio_get_group_pins(struct pinctrl_dev *pctldev,
--				   unsigned int group,
--				   const unsigned int **pins,
--				   unsigned int *num_pins)
--{
--	struct lpi_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctldev);
--
--	*pins = pctrl->data->groups[group].pins;
--	*num_pins = pctrl->data->groups[group].npins;
--
--	return 0;
--}
--
- static const struct pinctrl_ops lpi_gpio_pinctrl_ops = {
--	.get_groups_count	= lpi_gpio_get_groups_count,
--	.get_group_name		= lpi_gpio_get_group_name,
--	.get_group_pins		= lpi_gpio_get_group_pins,
-+	.get_groups_count	= pinctrl_generic_get_group_count,
-+	.get_group_name		= pinctrl_generic_get_group_name,
-+	.get_group_pins		= pinctrl_generic_get_group_pins,
- 	.dt_node_to_map		= pinconf_generic_dt_node_to_map_group,
- 	.dt_free_map		= pinctrl_utils_free_map,
- };
-@@ -582,6 +552,28 @@ static const struct gpio_chip lpi_gpio_template = {
- 	.dbg_show		= lpi_gpio_dbg_show,
- };
- 
-+static int lpi_build_pin_desc_groups(struct lpi_pinctrl *pctrl)
++static void iscsi_stop_conn(struct iscsi_cls_conn *conn, int flag)
 +{
-+	int i, ret;
++	ISCSI_DBG_TRANS_CONN(conn, "Stopping conn.\n");
 +
-+	for (i = 0; i < pctrl->data->npins; i++) {
-+		const struct pinctrl_pin_desc *pin_info = pctrl->desc.pins + i;
-+
-+		ret = pinctrl_generic_add_group(pctrl->ctrl, pin_info->name,
-+						  (int *)&pin_info->number, 1, NULL);
-+		if (ret < 0)
-+			goto err_pinctrl;
++	switch (flag) {
++	case STOP_CONN_RECOVER:
++		conn->state = ISCSI_CONN_FAILED;
++		break;
++	case STOP_CONN_TERM:
++		conn->state = ISCSI_CONN_DOWN;
++		break;
++	default:
++		iscsi_cls_conn_printk(KERN_ERR, conn, "invalid stop flag %d\n",
++				      flag);
++		return;
 +	}
 +
-+	return 0;
-+
-+err_pinctrl:
-+	for (; i > 0; i--)
-+		pinctrl_generic_remove_group(pctrl->ctrl, i - 1);
-+
-+	return ret;
++	conn->transport->stop_conn(conn, flag);
++	ISCSI_DBG_TRANS_CONN(conn, "Stopping conn done.\n");
 +}
 +
- static int lpi_pinctrl_probe(struct platform_device *pdev)
- {
- 	const struct lpi_pinctrl_variant_data *data;
-@@ -647,6 +639,10 @@ static int lpi_pinctrl_probe(struct platform_device *pdev)
- 		goto err_pinctrl;
- 	}
- 
-+	ret = lpi_build_pin_desc_groups(pctrl);
-+	if (ret)
-+		goto err_pinctrl;
++static int iscsi_if_stop_conn(struct iscsi_transport *transport,
++			      struct iscsi_uevent *ev)
++{
++	int flag = ev->u.stop_conn.flag;
++	struct iscsi_cls_conn *conn;
 +
- 	ret = devm_gpiochip_add_data(dev, &pctrl->chip, pctrl);
- 	if (ret) {
- 		dev_err(pctrl->dev, "can't add gpio chip\n");
-@@ -665,10 +661,14 @@ static int lpi_pinctrl_probe(struct platform_device *pdev)
- static int lpi_pinctrl_remove(struct platform_device *pdev)
- {
- 	struct lpi_pinctrl *pctrl = platform_get_drvdata(pdev);
-+	int i;
- 
- 	mutex_destroy(&pctrl->slew_access_lock);
- 	clk_bulk_disable_unprepare(MAX_LPI_NUM_CLKS, pctrl->clks);
- 
-+	for (i = 0; i < pctrl->data->npins; i++)
-+		pinctrl_generic_remove_group(pctrl->ctrl, i);
++	conn = iscsi_conn_lookup(ev->u.stop_conn.sid, ev->u.stop_conn.cid);
++	if (!conn)
++		return -EINVAL;
 +
++	ISCSI_DBG_TRANS_CONN(conn, "iscsi if conn stop.\n");
++	/*
++	 * If this is a termination we have to call stop_conn with that flag
++	 * so the correct states get set. If we haven't run the work yet try to
++	 * avoid the extra run.
++	 */
++	if (flag == STOP_CONN_TERM) {
++		cancel_work_sync(&conn->cleanup_work);
++		iscsi_stop_conn(conn, flag);
++	} else {
++		/*
++		 * Figure out if it was the kernel or userspace initiating this.
++		 */
++		if (!test_and_set_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++			iscsi_stop_conn(conn, flag);
++		} else {
++			ISCSI_DBG_TRANS_CONN(conn,
++					     "flush kernel conn cleanup.\n");
++			flush_work(&conn->cleanup_work);
++		}
++		/*
++		 * Only clear for recovery to avoid extra cleanup runs during
++		 * termination.
++		 */
++		clear_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags);
++	}
++	ISCSI_DBG_TRANS_CONN(conn, "iscsi if conn stop done.\n");
++	return 0;
++}
++
++static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
++{
++	struct iscsi_cls_session *session = iscsi_conn_to_session(conn);
++	struct iscsi_endpoint *ep;
++
++	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep.\n");
++	conn->state = ISCSI_CONN_FAILED;
++
++	if (!conn->ep || !session->transport->ep_disconnect)
++		return;
++
++	ep = conn->ep;
++	conn->ep = NULL;
++
++	session->transport->unbind_conn(conn, is_active);
++	session->transport->ep_disconnect(ep);
++	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
++}
++
++static void iscsi_cleanup_conn_work_fn(struct work_struct *work)
++{
++	struct iscsi_cls_conn *conn = container_of(work, struct iscsi_cls_conn,
++						   cleanup_work);
++	struct iscsi_cls_session *session = iscsi_conn_to_session(conn);
++
++	mutex_lock(&conn->ep_mutex);
++	/*
++	 * If we are not at least bound there is nothing for us to do. Userspace
++	 * will do a ep_disconnect call if offload is used, but will not be
++	 * doing a stop since there is nothing to clean up, so we have to clear
++	 * the cleanup bit here.
++	 */
++	if (conn->state != ISCSI_CONN_BOUND && conn->state != ISCSI_CONN_UP) {
++		ISCSI_DBG_TRANS_CONN(conn, "Got error while conn is already failed. Ignoring.\n");
++		clear_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags);
++		mutex_unlock(&conn->ep_mutex);
++		return;
++	}
++
++	iscsi_ep_disconnect(conn, false);
++
++	if (system_state != SYSTEM_RUNNING) {
++		/*
++		 * If the user has set up for the session to never timeout
++		 * then hang like they wanted. For all other cases fail right
++		 * away since userspace is not going to relogin.
++		 */
++		if (session->recovery_tmo > 0)
++			session->recovery_tmo = 0;
++	}
++
++	iscsi_stop_conn(conn, STOP_CONN_RECOVER);
++	mutex_unlock(&conn->ep_mutex);
++	ISCSI_DBG_TRANS_CONN(conn, "cleanup done.\n");
++}
++
+ void iscsi_free_session(struct iscsi_cls_session *session)
+ {
+ 	ISCSI_DBG_TRANS_SESSION(session, "Freeing session\n");
+@@ -2267,7 +2374,7 @@ iscsi_create_conn(struct iscsi_cls_session *session, int dd_size, uint32_t cid)
+ 
+ 	mutex_init(&conn->ep_mutex);
+ 	INIT_LIST_HEAD(&conn->conn_list);
+-	INIT_LIST_HEAD(&conn->conn_list_err);
++	INIT_WORK(&conn->cleanup_work, iscsi_cleanup_conn_work_fn);
+ 	conn->transport = transport;
+ 	conn->cid = cid;
+ 	conn->state = ISCSI_CONN_DOWN;
+@@ -2324,7 +2431,6 @@ int iscsi_destroy_conn(struct iscsi_cls_conn *conn)
+ 
+ 	spin_lock_irqsave(&connlock, flags);
+ 	list_del(&conn->conn_list);
+-	list_del(&conn->conn_list_err);
+ 	spin_unlock_irqrestore(&connlock, flags);
+ 
+ 	transport_unregister_device(&conn->dev);
+@@ -2451,83 +2557,6 @@ int iscsi_offload_mesg(struct Scsi_Host *shost,
+ }
+ EXPORT_SYMBOL_GPL(iscsi_offload_mesg);
+ 
+-/*
+- * This can be called without the rx_queue_mutex, if invoked by the kernel
+- * stop work. But, in that case, it is guaranteed not to race with
+- * iscsi_destroy by conn_mutex.
+- */
+-static void iscsi_if_stop_conn(struct iscsi_cls_conn *conn, int flag)
+-{
+-	/*
+-	 * It is important that this path doesn't rely on
+-	 * rx_queue_mutex, otherwise, a thread doing allocation on a
+-	 * start_session/start_connection could sleep waiting on a
+-	 * writeback to a failed iscsi device, that cannot be recovered
+-	 * because the lock is held.  If we don't hold it here, the
+-	 * kernel stop_conn_work_fn has a chance to stop the broken
+-	 * session and resolve the allocation.
+-	 *
+-	 * Still, the user invoked .stop_conn() needs to be serialized
+-	 * with stop_conn_work_fn by a private mutex.  Not pretty, but
+-	 * it works.
+-	 */
+-	mutex_lock(&conn_mutex);
+-	switch (flag) {
+-	case STOP_CONN_RECOVER:
+-		conn->state = ISCSI_CONN_FAILED;
+-		break;
+-	case STOP_CONN_TERM:
+-		conn->state = ISCSI_CONN_DOWN;
+-		break;
+-	default:
+-		iscsi_cls_conn_printk(KERN_ERR, conn,
+-				      "invalid stop flag %d\n", flag);
+-		goto unlock;
+-	}
+-
+-	conn->transport->stop_conn(conn, flag);
+-unlock:
+-	mutex_unlock(&conn_mutex);
+-}
+-
+-static void stop_conn_work_fn(struct work_struct *work)
+-{
+-	struct iscsi_cls_conn *conn, *tmp;
+-	unsigned long flags;
+-	LIST_HEAD(recovery_list);
+-
+-	spin_lock_irqsave(&connlock, flags);
+-	if (list_empty(&connlist_err)) {
+-		spin_unlock_irqrestore(&connlock, flags);
+-		return;
+-	}
+-	list_splice_init(&connlist_err, &recovery_list);
+-	spin_unlock_irqrestore(&connlock, flags);
+-
+-	list_for_each_entry_safe(conn, tmp, &recovery_list, conn_list_err) {
+-		uint32_t sid = iscsi_conn_get_sid(conn);
+-		struct iscsi_cls_session *session;
+-
+-		session = iscsi_session_lookup(sid);
+-		if (session) {
+-			if (system_state != SYSTEM_RUNNING) {
+-				/*
+-				 * If the user has set up for the session to
+-				 * never timeout then hang like they wanted.
+-				 * For all other cases fail right away since
+-				 * userspace is not going to relogin.
+-				 */
+-				if (session->recovery_tmo > 0)
+-					session->recovery_tmo = 0;
+-			}
+-
+-			iscsi_if_stop_conn(conn, STOP_CONN_RECOVER);
+-		}
+-
+-		list_del_init(&conn->conn_list_err);
+-	}
+-}
+-
+ void iscsi_conn_error_event(struct iscsi_cls_conn *conn, enum iscsi_err error)
+ {
+ 	struct nlmsghdr	*nlh;
+@@ -2535,12 +2564,9 @@ void iscsi_conn_error_event(struct iscsi_cls_conn *conn, enum iscsi_err error)
+ 	struct iscsi_uevent *ev;
+ 	struct iscsi_internal *priv;
+ 	int len = nlmsg_total_size(sizeof(*ev));
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&connlock, flags);
+-	list_add(&conn->conn_list_err, &connlist_err);
+-	spin_unlock_irqrestore(&connlock, flags);
+-	queue_work(system_unbound_wq, &stop_conn_work);
++	if (!test_and_set_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags))
++		queue_work(iscsi_conn_cleanup_workq, &conn->cleanup_work);
+ 
+ 	priv = iscsi_if_transport_lookup(conn->transport);
+ 	if (!priv)
+@@ -2870,26 +2896,17 @@ static int
+ iscsi_if_destroy_conn(struct iscsi_transport *transport, struct iscsi_uevent *ev)
+ {
+ 	struct iscsi_cls_conn *conn;
+-	unsigned long flags;
+ 
+ 	conn = iscsi_conn_lookup(ev->u.d_conn.sid, ev->u.d_conn.cid);
+ 	if (!conn)
+ 		return -EINVAL;
+ 
+-	spin_lock_irqsave(&connlock, flags);
+-	if (!list_empty(&conn->conn_list_err)) {
+-		spin_unlock_irqrestore(&connlock, flags);
+-		return -EAGAIN;
+-	}
+-	spin_unlock_irqrestore(&connlock, flags);
+-
++	ISCSI_DBG_TRANS_CONN(conn, "Flushing cleanup during destruction\n");
++	flush_work(&conn->cleanup_work);
+ 	ISCSI_DBG_TRANS_CONN(conn, "Destroying transport conn\n");
+ 
+-	mutex_lock(&conn_mutex);
+ 	if (transport->destroy_conn)
+ 		transport->destroy_conn(conn);
+-	mutex_unlock(&conn_mutex);
+-
  	return 0;
  }
  
+@@ -2966,7 +2983,7 @@ static int iscsi_if_ep_connect(struct iscsi_transport *transport,
+ }
+ 
+ static int iscsi_if_ep_disconnect(struct iscsi_transport *transport,
+-				  u64 ep_handle, bool is_active)
++				  u64 ep_handle)
+ {
+ 	struct iscsi_cls_conn *conn;
+ 	struct iscsi_endpoint *ep;
+@@ -2977,17 +2994,30 @@ static int iscsi_if_ep_disconnect(struct iscsi_transport *transport,
+ 	ep = iscsi_lookup_endpoint(ep_handle);
+ 	if (!ep)
+ 		return -EINVAL;
++
+ 	conn = ep->conn;
+-	if (conn) {
+-		mutex_lock(&conn->ep_mutex);
+-		conn->ep = NULL;
++	if (!conn) {
++		/*
++		 * conn was not even bound yet, so we can't get iscsi conn
++		 * failures yet.
++		 */
++		transport->ep_disconnect(ep);
++		goto put_ep;
++	}
++
++	mutex_lock(&conn->ep_mutex);
++	/* Check if this was a conn error and the kernel took ownership */
++	if (test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++		ISCSI_DBG_TRANS_CONN(conn, "flush kernel conn cleanup.\n");
+ 		mutex_unlock(&conn->ep_mutex);
+-		conn->state = ISCSI_CONN_FAILED;
+ 
+-		transport->unbind_conn(conn, is_active);
++		flush_work(&conn->cleanup_work);
++		goto put_ep;
+ 	}
+ 
+-	transport->ep_disconnect(ep);
++	iscsi_ep_disconnect(conn, false);
++	mutex_unlock(&conn->ep_mutex);
++put_ep:
+ 	iscsi_put_endpoint(ep);
+ 	return 0;
+ }
+@@ -3018,8 +3048,7 @@ iscsi_if_transport_ep(struct iscsi_transport *transport,
+ 		break;
+ 	case ISCSI_UEVENT_TRANSPORT_EP_DISCONNECT:
+ 		rc = iscsi_if_ep_disconnect(transport,
+-					    ev->u.ep_disconnect.ep_handle,
+-					    false);
++					    ev->u.ep_disconnect.ep_handle);
+ 		break;
+ 	}
+ 	return rc;
+@@ -3646,18 +3675,129 @@ iscsi_get_host_stats(struct iscsi_transport *transport, struct nlmsghdr *nlh)
+ 	return err;
+ }
+ 
++static int iscsi_if_transport_conn(struct iscsi_transport *transport,
++				   struct nlmsghdr *nlh)
++{
++	struct iscsi_uevent *ev = nlmsg_data(nlh);
++	struct iscsi_cls_session *session;
++	struct iscsi_cls_conn *conn = NULL;
++	struct iscsi_endpoint *ep;
++	uint32_t pdu_len;
++	int err = 0;
++
++	switch (nlh->nlmsg_type) {
++	case ISCSI_UEVENT_CREATE_CONN:
++		return iscsi_if_create_conn(transport, ev);
++	case ISCSI_UEVENT_DESTROY_CONN:
++		return iscsi_if_destroy_conn(transport, ev);
++	case ISCSI_UEVENT_STOP_CONN:
++		return iscsi_if_stop_conn(transport, ev);
++	}
++
++	/*
++	 * The following cmds need to be run under the ep_mutex so in kernel
++	 * conn cleanup (ep_disconnect + unbind and conn) is not done while
++	 * these are running. They also must not run if we have just run a conn
++	 * cleanup because they would set the state in a way that might allow
++	 * IO or send IO themselves.
++	 */
++	switch (nlh->nlmsg_type) {
++	case ISCSI_UEVENT_START_CONN:
++		conn = iscsi_conn_lookup(ev->u.start_conn.sid,
++					 ev->u.start_conn.cid);
++		break;
++	case ISCSI_UEVENT_BIND_CONN:
++		conn = iscsi_conn_lookup(ev->u.b_conn.sid, ev->u.b_conn.cid);
++		break;
++	case ISCSI_UEVENT_SEND_PDU:
++		conn = iscsi_conn_lookup(ev->u.send_pdu.sid, ev->u.send_pdu.cid);
++		break;
++	}
++
++	if (!conn)
++		return -EINVAL;
++
++	mutex_lock(&conn->ep_mutex);
++	if (test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++		mutex_unlock(&conn->ep_mutex);
++		ev->r.retcode = -ENOTCONN;
++		return 0;
++	}
++
++	switch (nlh->nlmsg_type) {
++	case ISCSI_UEVENT_BIND_CONN:
++		if (conn->ep) {
++			/*
++			 * For offload boot support where iscsid is restarted
++			 * during the pivot root stage, the ep will be intact
++			 * here when the new iscsid instance starts up and
++			 * reconnects.
++			 */
++			iscsi_ep_disconnect(conn, true);
++		}
++
++		session = iscsi_session_lookup(ev->u.b_conn.sid);
++		if (!session) {
++			err = -EINVAL;
++			break;
++		}
++
++		ev->r.retcode =	transport->bind_conn(session, conn,
++						ev->u.b_conn.transport_eph,
++						ev->u.b_conn.is_leading);
++		if (!ev->r.retcode)
++			conn->state = ISCSI_CONN_BOUND;
++
++		if (ev->r.retcode || !transport->ep_connect)
++			break;
++
++		ep = iscsi_lookup_endpoint(ev->u.b_conn.transport_eph);
++		if (ep) {
++			ep->conn = conn;
++			conn->ep = ep;
++			iscsi_put_endpoint(ep);
++		} else {
++			err = -ENOTCONN;
++			iscsi_cls_conn_printk(KERN_ERR, conn,
++					      "Could not set ep conn binding\n");
++		}
++		break;
++	case ISCSI_UEVENT_START_CONN:
++		ev->r.retcode = transport->start_conn(conn);
++		if (!ev->r.retcode)
++			conn->state = ISCSI_CONN_UP;
++		break;
++	case ISCSI_UEVENT_SEND_PDU:
++		pdu_len = nlh->nlmsg_len - sizeof(*nlh) - sizeof(*ev);
++
++		if ((ev->u.send_pdu.hdr_size > pdu_len) ||
++		    (ev->u.send_pdu.data_size > (pdu_len - ev->u.send_pdu.hdr_size))) {
++			err = -EINVAL;
++			break;
++		}
++
++		ev->r.retcode =	transport->send_pdu(conn,
++				(struct iscsi_hdr *)((char *)ev + sizeof(*ev)),
++				(char *)ev + sizeof(*ev) + ev->u.send_pdu.hdr_size,
++				ev->u.send_pdu.data_size);
++		break;
++	default:
++		err = -ENOSYS;
++	}
++
++	mutex_unlock(&conn->ep_mutex);
++	return err;
++}
+ 
+ static int
+ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
+ {
+ 	int err = 0;
+ 	u32 portid;
+-	u32 pdu_len;
+ 	struct iscsi_uevent *ev = nlmsg_data(nlh);
+ 	struct iscsi_transport *transport = NULL;
+ 	struct iscsi_internal *priv;
+ 	struct iscsi_cls_session *session;
+-	struct iscsi_cls_conn *conn;
+ 	struct iscsi_endpoint *ep = NULL;
+ 
+ 	if (!netlink_capable(skb, CAP_SYS_ADMIN))
+@@ -3734,90 +3874,16 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
+ 		else
+ 			err = -EINVAL;
+ 		break;
+-	case ISCSI_UEVENT_CREATE_CONN:
+-		err = iscsi_if_create_conn(transport, ev);
+-		break;
+-	case ISCSI_UEVENT_DESTROY_CONN:
+-		err = iscsi_if_destroy_conn(transport, ev);
+-		break;
+-	case ISCSI_UEVENT_BIND_CONN:
+-		session = iscsi_session_lookup(ev->u.b_conn.sid);
+-		conn = iscsi_conn_lookup(ev->u.b_conn.sid, ev->u.b_conn.cid);
+-
+-		if (conn && conn->ep)
+-			iscsi_if_ep_disconnect(transport, conn->ep->id, true);
+-
+-		if (!session || !conn) {
+-			err = -EINVAL;
+-			break;
+-		}
+-
+-		mutex_lock(&conn_mutex);
+-		ev->r.retcode =	transport->bind_conn(session, conn,
+-						ev->u.b_conn.transport_eph,
+-						ev->u.b_conn.is_leading);
+-		if (!ev->r.retcode)
+-			conn->state = ISCSI_CONN_BOUND;
+-		mutex_unlock(&conn_mutex);
+-
+-		if (ev->r.retcode || !transport->ep_connect)
+-			break;
+-
+-		ep = iscsi_lookup_endpoint(ev->u.b_conn.transport_eph);
+-		if (ep) {
+-			ep->conn = conn;
+-
+-			mutex_lock(&conn->ep_mutex);
+-			conn->ep = ep;
+-			mutex_unlock(&conn->ep_mutex);
+-			iscsi_put_endpoint(ep);
+-		} else
+-			iscsi_cls_conn_printk(KERN_ERR, conn,
+-					      "Could not set ep conn "
+-					      "binding\n");
+-		break;
+ 	case ISCSI_UEVENT_SET_PARAM:
+ 		err = iscsi_set_param(transport, ev);
+ 		break;
+-	case ISCSI_UEVENT_START_CONN:
+-		conn = iscsi_conn_lookup(ev->u.start_conn.sid, ev->u.start_conn.cid);
+-		if (conn) {
+-			mutex_lock(&conn_mutex);
+-			ev->r.retcode = transport->start_conn(conn);
+-			if (!ev->r.retcode)
+-				conn->state = ISCSI_CONN_UP;
+-			mutex_unlock(&conn_mutex);
+-		}
+-		else
+-			err = -EINVAL;
+-		break;
++	case ISCSI_UEVENT_CREATE_CONN:
++	case ISCSI_UEVENT_DESTROY_CONN:
+ 	case ISCSI_UEVENT_STOP_CONN:
+-		conn = iscsi_conn_lookup(ev->u.stop_conn.sid, ev->u.stop_conn.cid);
+-		if (conn)
+-			iscsi_if_stop_conn(conn, ev->u.stop_conn.flag);
+-		else
+-			err = -EINVAL;
+-		break;
++	case ISCSI_UEVENT_START_CONN:
++	case ISCSI_UEVENT_BIND_CONN:
+ 	case ISCSI_UEVENT_SEND_PDU:
+-		pdu_len = nlh->nlmsg_len - sizeof(*nlh) - sizeof(*ev);
+-
+-		if ((ev->u.send_pdu.hdr_size > pdu_len) ||
+-		    (ev->u.send_pdu.data_size > (pdu_len - ev->u.send_pdu.hdr_size))) {
+-			err = -EINVAL;
+-			break;
+-		}
+-
+-		conn = iscsi_conn_lookup(ev->u.send_pdu.sid, ev->u.send_pdu.cid);
+-		if (conn) {
+-			mutex_lock(&conn_mutex);
+-			ev->r.retcode =	transport->send_pdu(conn,
+-				(struct iscsi_hdr*)((char*)ev + sizeof(*ev)),
+-				(char*)ev + sizeof(*ev) + ev->u.send_pdu.hdr_size,
+-				ev->u.send_pdu.data_size);
+-			mutex_unlock(&conn_mutex);
+-		}
+-		else
+-			err = -EINVAL;
++		err = iscsi_if_transport_conn(transport, nlh);
+ 		break;
+ 	case ISCSI_UEVENT_GET_STATS:
+ 		err = iscsi_if_get_stats(transport, nlh);
+@@ -4820,8 +4886,18 @@ static __init int iscsi_transport_init(void)
+ 		goto release_nls;
+ 	}
+ 
++	iscsi_conn_cleanup_workq = alloc_workqueue("%s",
++			WQ_SYSFS | WQ_MEM_RECLAIM | WQ_UNBOUND, 0,
++			"iscsi_conn_cleanup");
++	if (!iscsi_conn_cleanup_workq) {
++		err = -ENOMEM;
++		goto destroy_wq;
++	}
++
+ 	return 0;
+ 
++destroy_wq:
++	destroy_workqueue(iscsi_eh_timer_workq);
+ release_nls:
+ 	netlink_kernel_release(nls);
+ unregister_flashnode_bus:
+@@ -4843,6 +4919,7 @@ static __init int iscsi_transport_init(void)
+ 
+ static void __exit iscsi_transport_exit(void)
+ {
++	destroy_workqueue(iscsi_conn_cleanup_workq);
+ 	destroy_workqueue(iscsi_eh_timer_workq);
+ 	netlink_kernel_release(nls);
+ 	bus_unregister(&iscsi_flashnode_bus);
+diff --git a/include/scsi/scsi_transport_iscsi.h b/include/scsi/scsi_transport_iscsi.h
+index 09992f019dc9..c5d7810fd792 100644
+--- a/include/scsi/scsi_transport_iscsi.h
++++ b/include/scsi/scsi_transport_iscsi.h
+@@ -197,15 +197,23 @@ enum iscsi_connection_state {
+ 	ISCSI_CONN_BOUND,
+ };
+ 
++#define ISCSI_CLS_CONN_BIT_CLEANUP	1
++
+ struct iscsi_cls_conn {
+ 	struct list_head conn_list;	/* item in connlist */
+-	struct list_head conn_list_err;	/* item in connlist_err */
+ 	void *dd_data;			/* LLD private data */
+ 	struct iscsi_transport *transport;
+ 	uint32_t cid;			/* connection id */
++	/*
++	 * This protects the conn startup and binding/unbinding of the ep to
++	 * the conn. Unbinding includes ep_disconnect and stop_conn.
++	 */
+ 	struct mutex ep_mutex;
+ 	struct iscsi_endpoint *ep;
+ 
++	unsigned long flags;
++	struct work_struct cleanup_work;
++
+ 	struct device dev;		/* sysfs transport/container device */
+ 	enum iscsi_connection_state state;
+ };
 -- 
-2.7.4
+2.35.1
+
+
 
