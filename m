@@ -2,109 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7002C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E895C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:16:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345156AbiDRPRT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:17:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50504 "EHLO
+        id S239928AbiDRPSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240101AbiDRPPl (ORCPT
+        with ESMTP id S1345448AbiDRPRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:15:41 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD8D0B89BB
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 07:12:29 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KhpjL273FzFppB;
-        Mon, 18 Apr 2022 22:09:58 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 18 Apr
- 2022 22:12:27 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <vbabka@suse.cz>, <pintu@codeaurora.org>,
-        <charante@codeaurora.org>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH 01/12] mm: compaction: remove unneeded return value of kcompactd_run
-Date:   Mon, 18 Apr 2022 22:12:42 +0800
-Message-ID: <20220418141253.24298-2-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220418141253.24298-1-linmiaohe@huawei.com>
-References: <20220418141253.24298-1-linmiaohe@huawei.com>
+        Mon, 18 Apr 2022 11:17:40 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B99C1C8F;
+        Mon, 18 Apr 2022 07:14:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1650291276; x=1681827276;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=zGrzm7Erpg7Qz52pwRJK66wXHCviCVAJ7e4Nz/nwGzw=;
+  b=XlU2xAGYxF/rzc7JFAQTCILOSbGmWIaH4s2xs2sBFPhQTrlpEKHD8kfe
+   FJ+9bj/+fgUAYHhwQ348lkec8KCMh5KDzwMseAKKLr47cIGDQ3oETVWRo
+   FmpBMyQyKIFWGEDDq1UqeU/Sue/qsYTPMVRzgJTozIXz4pGQihXOOjvMC
+   o=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 18 Apr 2022 07:14:35 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 07:14:35 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 18 Apr 2022 07:14:34 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 18 Apr 2022 07:14:30 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH v8 1/4] arm64: dts: qcom: sc7280: Add nodes for soundwire and va tx rx digital macro codecs
+Date:   Mon, 18 Apr 2022 19:44:09 +0530
+Message-ID: <1650291252-30398-2-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1650291252-30398-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1650291252-30398-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The return value of kcompactd_run() is unused now.  Clean it up.
+SC7280 has VA, TX and RX macros with SoundWire Controllers to attach with
+external codecs using soundwire masters. Add these nodes for sc7280 based
+platforms audio use case.
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 ---
- include/linux/compaction.h | 5 ++---
- mm/compaction.c            | 7 ++-----
- 2 files changed, 4 insertions(+), 8 deletions(-)
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 128 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 128 insertions(+)
 
-diff --git a/include/linux/compaction.h b/include/linux/compaction.h
-index 34bce35c808d..52a9ff65faee 100644
---- a/include/linux/compaction.h
-+++ b/include/linux/compaction.h
-@@ -177,7 +177,7 @@ static inline bool compaction_withdrawn(enum compact_result result)
- bool compaction_zonelist_suitable(struct alloc_context *ac, int order,
- 					int alloc_flags);
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index f428344..23e09fa 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -2035,6 +2035,114 @@
+ 			#clock-cells = <1>;
+ 		};
  
--extern int kcompactd_run(int nid);
-+extern void kcompactd_run(int nid);
- extern void kcompactd_stop(int nid);
- extern void wakeup_kcompactd(pg_data_t *pgdat, int order, int highest_zoneidx);
++		lpass_rx_macro: codec@3200000 {
++			compatible = "qcom,sc7280-lpass-rx-macro";
++			reg = <0 0x03200000 0 0x1000>;
++
++			pinctrl-names = "default";
++			pinctrl-0 = <&lpass_rx_swr>;
++
++			clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>,
++				 <&lpass_aon LPASS_AON_CC_TX_MCLK_2X_CLK>,
++				 <&lpass_va_macro>;
++			clock-names = "mclk", "npl", "fsgen";
++
++			power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
++					<&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
++			power-domain-names = "macro", "dcodec";
++
++			#clock-cells = <0>;
++			#sound-dai-cells = <1>;
++
++			status = "disabled";
++		};
++
++		swr0: soundwire@3210000 {
++			compatible = "qcom,soundwire-v1.6.0";
++			reg = <0 0x03210000 0 0x2000>;
++
++			interrupts = <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&lpass_rx_macro>;
++			clock-names = "iface";
++
++			qcom,din-ports = <0>;
++			qcom,dout-ports = <5>;
++
++			resets = <&lpass_audiocc LPASS_AUDIO_SWR_RX_CGCR>;
++			reset-names = "swr_audio_cgcr";
++
++			qcom,ports-word-length =	/bits/ 8 <0x01 0x07 0x04 0xff 0xff>;
++			qcom,ports-sinterval-low =	/bits/ 8 <0x03 0x3f 0x1f 0x03 0x03>;
++			qcom,ports-offset1 =		/bits/ 8 <0x00 0x00 0x0b 0x01 0x01>;
++			qcom,ports-offset2 =		/bits/ 8 <0x00 0x00 0x0b 0x00 0x00>;
++			qcom,ports-lane-control =	/bits/ 8 <0x01 0x00 0x00 0x00 0x00>;
++			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0x00 0x01 0xff 0xff>;
++			qcom,ports-hstart =		/bits/ 8 <0xff 0x03 0xff 0xff 0xff>;
++			qcom,ports-hstop =		/bits/ 8 <0xff 0x06 0xff 0xff 0xff>;
++			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff 0xff 0x00>;
++
++			#sound-dai-cells = <1>;
++			#address-cells = <2>;
++			#size-cells = <0>;
++
++			status = "disabled";
++		};
++
++		lpass_tx_macro: codec@3220000 {
++			compatible = "qcom,sc7280-lpass-tx-macro";
++			reg = <0 0x03220000 0 0x1000>;
++
++			pinctrl-names = "default";
++			pinctrl-0 = <&lpass_tx_swr>;
++
++			clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>,
++				 <&lpass_aon LPASS_AON_CC_TX_MCLK_2X_CLK>,
++				 <&lpass_va_macro>;
++			clock-names = "mclk", "npl", "fsgen";
++
++			power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
++					<&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
++			power-domain-names = "macro", "dcodec";
++
++			#clock-cells = <0>;
++			#sound-dai-cells = <1>;
++
++			status = "disabled";
++		};
++
++		swr1: soundwire@3230000 {
++			compatible = "qcom,soundwire-v1.6.0";
++			reg = <0 0x03230000 0 0x2000>;
++
++			interrupts-extended = <&intc GIC_SPI 496 IRQ_TYPE_LEVEL_HIGH>,
++					      <&pdc 130 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&lpass_tx_macro>;
++			clock-names = "iface";
++
++			qcom,din-ports = <3>;
++			qcom,dout-ports = <0>;
++
++			resets = <&lpass_audiocc LPASS_AUDIO_SWR_TX_CGCR>;
++			reset-names = "swr_audio_cgcr";
++
++			qcom,ports-sinterval-low =	/bits/ 8 <0x01 0x03 0x03>;
++			qcom,ports-offset1 =		/bits/ 8 <0x01 0x00 0x02>;
++			qcom,ports-offset2 =		/bits/ 8 <0x00 0x00 0x00>;
++			qcom,ports-hstart =		/bits/ 8 <0xff 0xff 0xff>;
++			qcom,ports-hstop =		/bits/ 8 <0xff 0xff 0xff>;
++			qcom,ports-word-length =	/bits/ 8 <0xff 0x00 0xff>;
++			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0xff 0xff>;
++			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff>;
++			qcom,ports-lane-control =	/bits/ 8 <0x00 0x01 0x00>;
++			qcom,port-offset = <1>;
++
++			#sound-dai-cells = <1>;
++			#address-cells = <2>;
++			#size-cells = <0>;
++
++			status = "disabled";
++		};
++
+ 		lpass_audiocc: clock-controller@3300000 {
+ 			compatible = "qcom,sc7280-lpassaudiocc";
+ 			reg = <0 0x03300000 0 0x30000>;
+@@ -2046,6 +2154,26 @@
+ 			#power-domain-cells = <1>;
+ 		};
  
-@@ -212,9 +212,8 @@ static inline bool compaction_withdrawn(enum compact_result result)
- 	return true;
- }
- 
--static inline int kcompactd_run(int nid)
-+static inline void kcompactd_run(int nid)
- {
--	return 0;
- }
- static inline void kcompactd_stop(int nid)
- {
-diff --git a/mm/compaction.c b/mm/compaction.c
-index baf654b5e073..2e838992b324 100644
---- a/mm/compaction.c
-+++ b/mm/compaction.c
-@@ -3016,21 +3016,18 @@ static int kcompactd(void *p)
-  * This kcompactd start function will be called by init and node-hot-add.
-  * On node-hot-add, kcompactd will moved to proper cpus if cpus are hot-added.
-  */
--int kcompactd_run(int nid)
-+void kcompactd_run(int nid)
- {
- 	pg_data_t *pgdat = NODE_DATA(nid);
--	int ret = 0;
- 
- 	if (pgdat->kcompactd)
--		return 0;
-+		return;
- 
- 	pgdat->kcompactd = kthread_run(kcompactd, pgdat, "kcompactd%d", nid);
- 	if (IS_ERR(pgdat->kcompactd)) {
- 		pr_err("Failed to start kcompactd on node %d\n", nid);
--		ret = PTR_ERR(pgdat->kcompactd);
- 		pgdat->kcompactd = NULL;
- 	}
--	return ret;
- }
- 
- /*
++		lpass_va_macro: codec@3370000 {
++			compatible = "qcom,sc7280-lpass-va-macro";
++			reg = <0 0x03370000 0 0x1000>;
++
++			pinctrl-0 = <&lpass_dmic01>;
++			pinctrl-names = "default";
++
++			clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>;
++			clock-names = "mclk";
++
++			power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
++					<&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
++			power-domain-names = "macro", "dcodec";
++
++			#clock-cells = <0>;
++			#sound-dai-cells = <1>;
++
++			status = "disabled";
++		};
++
+ 		lpass_aon: clock-controller@3380000 {
+ 			compatible = "qcom,sc7280-lpassaoncc";
+ 			reg = <0 0x03380000 0 0x30000>;
 -- 
-2.23.0
+2.7.4
 
