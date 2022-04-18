@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B93FBC4707E
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE2FC3527E
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345158AbiDROSw (ORCPT
+        id S1345275AbiDROS6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
+        Mon, 18 Apr 2022 10:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244426AbiDRN5Q (ORCPT
+        with ESMTP id S245068AbiDRN62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:57:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B262AE1F;
-        Mon, 18 Apr 2022 06:07:22 -0700 (PDT)
+        Mon, 18 Apr 2022 09:58:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A3A2AE2E;
+        Mon, 18 Apr 2022 06:08:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D42BB80EDF;
-        Mon, 18 Apr 2022 13:07:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B381C385A1;
-        Mon, 18 Apr 2022 13:07:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B478660F9E;
+        Mon, 18 Apr 2022 13:08:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74576C385B4;
+        Mon, 18 Apr 2022 13:08:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287240;
-        bh=DIc246/X8wYTM5k2axiagUIBH36M/LUB6zhxhna5S8M=;
+        s=korg; t=1650287298;
+        bh=D/YXNBknLSD5FbZhi+bIICAcRornIujXow4ySW5P9AY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=USEWtSjiZR7TFQ1L//tktJy1xldolqjzfpWY3j0jmNcTZ+y5zIQ5CeknZq1IBwapY
-         wDhS1WxqNYOv/TMPlvLVzKN8PzMUFQLZiGEa5Ne47+i/aIsDen5JEL46lIJX8QYtZU
-         2m1B/QJndUiYuy5MILkTrKmF2KqMAkNoZIMvn8Ts=
+        b=fz1f5ZYWygiG2/Zb/GHYhHQOk48jVGZCzQ/hjVox28EykHu1/F25GtReWChZrBR2s
+         cymkMtqWuMosiEXqnNd80iJX1vjeL8aVYrV4gmVgZz4t+8tesB+XcLZV9UD5ebmOGN
+         guL+WoWNsQFuRfLXNb9M0qytvqG4tsJVQXqMo6yU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+        Jason Wessel <jason.wessel@windriver.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 100/218] af_netlink: Fix shift out of bounds in group mask calculation
-Date:   Mon, 18 Apr 2022 14:12:46 +0200
-Message-Id: <20220418121202.465021832@linuxfoundation.org>
+Subject: [PATCH 4.9 117/218] kgdbts: fix return value of __setup handler
+Date:   Mon, 18 Apr 2022 14:13:03 +0200
+Message-Id: <20220418121202.942462560@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -51,60 +55,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 0caf6d9922192dd1afa8dc2131abfb4df1443b9f ]
+[ Upstream commit 96c9e802c64014a7716865332d732cc9c7f24593 ]
 
-When a netlink message is received, netlink_recvmsg() fills in the address
-of the sender. One of the fields is the 32-bit bitfield nl_groups, which
-carries the multicast group on which the message was received. The least
-significant bit corresponds to group 1, and therefore the highest group
-that the field can represent is 32. Above that, the UB sanitizer flags the
-out-of-bounds shift attempts.
+__setup() handlers should return 1 to indicate that the boot option
+has been handled. A return of 0 causes the boot option/value to be
+listed as an Unknown kernel parameter and added to init's (limited)
+environment strings. So return 1 from kgdbts_option_setup().
 
-Which bits end up being set in such case is implementation defined, but
-it's either going to be a wrong non-zero value, or zero, which is at least
-not misleading. Make the latter choice deterministic by always setting to 0
-for higher-numbered multicast groups.
+Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc7
+  kgdboc=kbd kgdbts=", will be passed to user space.
 
-To get information about membership in groups >= 32, userspace is expected
-to use nl_pktinfo control messages[0], which are enabled by NETLINK_PKTINFO
-socket option.
-[0] https://lwn.net/Articles/147608/
+ Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc7
+     kgdboc=kbd
+     kgdbts=
 
-The way to trigger this issue is e.g. through monitoring the BRVLAN group:
-
-	# bridge monitor vlan &
-	# ip link add name br type bridge
-
-Which produces the following citation:
-
-	UBSAN: shift-out-of-bounds in net/netlink/af_netlink.c:162:19
-	shift exponent 32 is too large for 32-bit type 'int'
-
-Fixes: f7fa9b10edbb ("[NETLINK]: Support dynamic number of multicast groups per netlink family")
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Link: https://lore.kernel.org/r/2bef6aabf201d1fc16cca139a744700cff9dcb04.1647527635.git.petrm@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Fixes: e8d31c204e36 ("kgdb: add kgdb internal test suite")
+Cc: kgdb-bugreport@lists.sourceforge.net
+Cc: Jason Wessel <jason.wessel@windriver.com>
+Cc: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Link: https://lore.kernel.org/r/20220308033255.22118-1-rdunlap@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netlink/af_netlink.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/misc/kgdbts.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 13d69cbd14c2..8aef475fef31 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -161,6 +161,8 @@ static const struct rhashtable_params netlink_rhashtable_params;
- 
- static inline u32 netlink_group_mask(u32 group)
+diff --git a/drivers/misc/kgdbts.c b/drivers/misc/kgdbts.c
+index ab2184003c29..d75686c1c6e8 100644
+--- a/drivers/misc/kgdbts.c
++++ b/drivers/misc/kgdbts.c
+@@ -1066,10 +1066,10 @@ static int kgdbts_option_setup(char *opt)
  {
-+	if (group > 32)
-+		return 0;
- 	return group ? 1 << (group - 1) : 0;
+ 	if (strlen(opt) >= MAX_CONFIG_LEN) {
+ 		printk(KERN_ERR "kgdbts: config string too long\n");
+-		return -ENOSPC;
++		return 1;
+ 	}
+ 	strcpy(config, opt);
+-	return 0;
++	return 1;
  }
  
+ __setup("kgdbts=", kgdbts_option_setup);
 -- 
 2.34.1
 
