@@ -2,116 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E96CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 18:41:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2006C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 18:43:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347423AbiDRSnu (ORCPT
+        id S1347429AbiDRSp7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 14:43:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35112 "EHLO
+        Mon, 18 Apr 2022 14:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229900AbiDRSnt (ORCPT
+        with ESMTP id S229900AbiDRSp5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 14:43:49 -0400
+        Mon, 18 Apr 2022 14:45:57 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 610D52E0A6
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 11:41:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 695082E0A9
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 11:43:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650307268;
+        s=mimecast20190719; t=1650307397;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=VuGc/WdeVJI1eBiXvGHukz2whIa4wWjXqnrLuB6HMKY=;
-        b=U9uR7Kza2JFL2DWOti/2ZUcSc6uwtKgzucySpDOUbIwrpzkm1xASGwi6tNqcJP09SjnDBG
-        oipqg8xxkNv2A3qwAebg2H4WHzwbBT3jI7jVy4hTPLt2+LditRldr1ykVLjKVBJ31T1YTj
-        y5Uf2h40b7eov9JEBGYDarwcD7qklTQ=
-Received: from mail-vs1-f71.google.com (mail-vs1-f71.google.com
- [209.85.217.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=7Mu6cyCpF/3BISjDmjITKcopLcMo5pZQG/PaAVYDLr4=;
+        b=IKpvctZKg/o5TTkdQOkMZV+Fz7YdqPFIg845jaZUiD0G9Sarsb/eMELsLSbmkRuQZ7Ngdr
+        lVcY8cd0SGat32GGckh09d7fomSvYIh9rpzbrO4/dv5m1KpGlcvZPvl9V7QVu+Qp+BxOk6
+        6oUejj+Hs39LkEVSsBw8aRhVUxgvmJA=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-611-zfHJ2p90Mi-xQa6qKJYMbg-1; Mon, 18 Apr 2022 14:41:05 -0400
-X-MC-Unique: zfHJ2p90Mi-xQa6qKJYMbg-1
-Received: by mail-vs1-f71.google.com with SMTP id i190-20020a6722c7000000b00320cf551813so1759589vsi.3
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 11:41:05 -0700 (PDT)
+ us-mta-557-d4ODusgeMo6AFSJv_NKnZA-1; Mon, 18 Apr 2022 14:43:16 -0400
+X-MC-Unique: d4ODusgeMo6AFSJv_NKnZA-1
+Received: by mail-qk1-f200.google.com with SMTP id bl27-20020a05620a1a9b00b0069994eeb30cso10920020qkb.11
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 11:43:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:user-agent:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=VuGc/WdeVJI1eBiXvGHukz2whIa4wWjXqnrLuB6HMKY=;
-        b=TeWi/O08g+/od6t0+48dtpMcc4tR2PES0rn8jD9qchgU53kFC9Cg1EGR//TSWcHXHi
-         m2UVDPF20exw/ilACYOPyiL3zpbtbPB1wh5g/gA0gvpJdidK57IIBcRDcL0wGZffNwz2
-         Qu2KI6lCfcu0xYgb7XF6XSRDfYO6yuW1XOQlZO5CRds1EX6e2AqUqGLRW72u3T0Hljla
-         K9BtoY6X3sR4HfFt402uyelFn748Mk2IWfRS1ciHKNXH5cEn7FcsyQBTdHOJIYNeaJgP
-         j91KARE9/C13OgwPA3J5y6ksnRhuHZPuKjnxJC0xRoSKXx5ipA/bVyuBFFdfK4j7mMDX
-         Htvg==
-X-Gm-Message-State: AOAM532jzOU7alSnl9jwEX7ukwY9VnfJpoan+mE85JdlVgpiTT4amQl6
-        GzIR/XUt3fse3tkyIOd1hNU9WJ0tmsnJP8MNdw7qFtF12YPo4TRAR2FoOWNMCAcHlCo1GshMpZB
-        zcUgyp9VGpTAiqJeihYids/6y
-X-Received: by 2002:a1f:14c2:0:b0:345:3e0f:81b1 with SMTP id 185-20020a1f14c2000000b003453e0f81b1mr3190542vku.2.1650307264770;
-        Mon, 18 Apr 2022 11:41:04 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzEjhYF2Aoq1MDzFFiHfewXPAu8UoNo+RuC8SC8/8YCVnNVsfULVrP7+ysF7haG+Vsfh9D7ig==
-X-Received: by 2002:a1f:14c2:0:b0:345:3e0f:81b1 with SMTP id 185-20020a1f14c2000000b003453e0f81b1mr3190533vku.2.1650307264525;
-        Mon, 18 Apr 2022 11:41:04 -0700 (PDT)
-Received: from [192.168.8.138] (pool-71-126-244-162.bstnma.fios.verizon.net. [71.126.244.162])
-        by smtp.gmail.com with ESMTPSA id t66-20020a1f2d45000000b00348da3c51bbsm1605500vkt.13.2022.04.18.11.41.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 11:41:03 -0700 (PDT)
-Message-ID: <bc995a702bfa0c0efa83792a0d5c46bfe1ff0a4b.camel@redhat.com>
-Subject: Re: [PATCH] drm/nouveau: change base917c_format from global to
- static
-From:   Lyude Paul <lyude@redhat.com>
-To:     Tom Rix <trix@redhat.com>, bskeggs@redhat.com, kherbst@redhat.com,
-        airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 18 Apr 2022 14:41:02 -0400
-In-Reply-To: <20220418141842.296386-1-trix@redhat.com>
-References: <20220418141842.296386-1-trix@redhat.com>
-Organization: Red Hat Inc.
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        bh=7Mu6cyCpF/3BISjDmjITKcopLcMo5pZQG/PaAVYDLr4=;
+        b=6DXYBdodlT10r6q9RUTpyN+nEoyzfMNVk/DkMciMj5UBisWoMFRtQvDCed7XeyDiQs
+         1wMdu3rD63RmgH2I6f551hICkngGI2+rqCMjc86s2+GWbWq2899SqPovDWfruWWvREQQ
+         4vZI6QXLpfnOckNMzOW8UM3m4cC+uIMFu0dA37rS2h9OKo8XAd/TR66vnojgQPAWllbC
+         WeZ/NP3XHVmon+PT4RddRuv0MW60xJAMu3X3dshQNZV6DhT1X8++tKKQkYcoTDjDhSoj
+         4Oj/xX3Q1jsb95TNUgAxPUrXoz0eNZESNijIi3sl65TtmKi/kihCO/FvD3KW/vZDmvm+
+         qhfQ==
+X-Gm-Message-State: AOAM53325Sq9LBpBqGSJmE6u71o10zdxj9lOW7ZJAEHqGx4jimNtd8CW
+        qz3t/Td8dEdmVFoYXvX5vgLqw21tLIohGN12Is0wfzrxCDd9lB1hPlG8tUi4Ay/5HHnUvZOUotr
+        DwZJqqZK7YSZbKhIq2cKoRpZZ
+X-Received: by 2002:a05:620a:424b:b0:67d:36cc:5afb with SMTP id w11-20020a05620a424b00b0067d36cc5afbmr7582587qko.598.1650307395844;
+        Mon, 18 Apr 2022 11:43:15 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyfGQkn6dnqMjz7y0axxCwL1U3OsrmH65jMUG4jPmIQ3Nu/EHeBdM6RJfE75Zn/PAHSQMDxfA==
+X-Received: by 2002:a05:620a:424b:b0:67d:36cc:5afb with SMTP id w11-20020a05620a424b00b0067d36cc5afbmr7582583qko.598.1650307395643;
+        Mon, 18 Apr 2022 11:43:15 -0700 (PDT)
+Received: from [192.168.0.188] ([24.48.139.231])
+        by smtp.gmail.com with ESMTPSA id c3-20020ac87d83000000b002e1d1b3df15sm8141117qtd.44.2022.04.18.11.43.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 11:43:15 -0700 (PDT)
+Message-ID: <06087446-c053-7099-b8f1-40a467781186@redhat.com>
+Date:   Mon, 18 Apr 2022 14:43:14 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] lib/Kconfig.debug: change KUnit tests to default to
+ KUNIT_ALL_TESTS
+Content-Language: en-US
+To:     Daniel Latypov <dlatypov@google.com>, brendanhiggins@google.com,
+        davidgow@google.com
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org
+References: <20220405190619.540177-1-dlatypov@google.com>
+From:   Nico Pache <npache@redhat.com>
+In-Reply-To: <20220405190619.540177-1-dlatypov@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Lyude Paul <lyude@redhat.com>
 
-Will push this to the appropriate branch in a little bit
 
-On Mon, 2022-04-18 at 10:18 -0400, Tom Rix wrote:
-> Smatch reports this issue
-> base917c.c:26:1: warning: symbol 'base917c_format'
->   was not declared. Should it be static?
+On 4/5/22 15:06, Daniel Latypov wrote:
+> This is in line with Documentation/dev-tools/kunit/style.rst.
+> Some of these tests predate that so they don't follow this convention.
 > 
-> base917c_format is only used in base917.c.  Single
-> file variables should not be global so change
-> base917c_format's storage-class specifier to static.
+> With this and commit b0841b51cac9 ("kunit: arch/um/configs: Enable
+> KUNIT_ALL_TESTS by default"), kunit.py will now run these tests by
+> default. This hopefully makes it easier to run and maintain the tests.
+> If any of these were to start failing, people would notice much quicker.
 > 
-> Signed-off-by: Tom Rix <trix@redhat.com>
+> Note: this commit doesn't update LINEAR_RANGES_TEST since that would
+> select its dependency (LINEAR_RANGES). We don't want KUNIT_ALL_TESTS
+> to enable anything other than test kconfigs.
+> 
+> Signed-off-by: Daniel Latypov <dlatypov@google.com>
 > ---
->  drivers/gpu/drm/nouveau/dispnv50/base917c.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/nouveau/dispnv50/base917c.c
-> b/drivers/gpu/drm/nouveau/dispnv50/base917c.c
-> index a1baed4fe0e9..ca260509a4f1 100644
-> --- a/drivers/gpu/drm/nouveau/dispnv50/base917c.c
-> +++ b/drivers/gpu/drm/nouveau/dispnv50/base917c.c
-> @@ -22,7 +22,7 @@
->  #include "base.h"
->  #include "atom.h"
->  
-> -const u32
-> +static const u32
->  base917c_format[] = {
->         DRM_FORMAT_C8,
->         DRM_FORMAT_XRGB8888,
+I have tried posting something similar in the past!
+https://lore.kernel.org/lkml/f427ed5cbc08da83086c504fbb3ad1bab50340cd.1618388989.git.npache@redhat.com/
 
--- 
-Cheers,
- Lyude Paul (she/her)
- Software Engineer at Red Hat
+Reviewed-by: Nico Pache <npache@redhat.com>
+Acked-by: Nico Pache <npache@redhat.com>
 
