@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA945C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:58:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D21E8C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240731AbiDRNB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
+        id S240745AbiDRNBd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:01:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240125AbiDRMtz (ORCPT
+        with ESMTP id S240422AbiDRMuB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:49:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570582C660;
-        Mon, 18 Apr 2022 05:34:09 -0700 (PDT)
+        Mon, 18 Apr 2022 08:50:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25A62C670;
+        Mon, 18 Apr 2022 05:34:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3FA3B80EDC;
-        Mon, 18 Apr 2022 12:34:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED3EC385A1;
-        Mon, 18 Apr 2022 12:34:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 328E060F0A;
+        Mon, 18 Apr 2022 12:34:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24622C385A8;
+        Mon, 18 Apr 2022 12:34:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285246;
-        bh=z7UOiugrOpFPJOfNqDzLddMS+hkVT/ffLhBdYJx8buc=;
+        s=korg; t=1650285249;
+        bh=r4KJeC1hq/dLbL0hwHTFO4ZUpTu4Ri7ks3FGBX/69GA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oTbQuFmGDyq98z0LPh5CS9x0p0b1m88zur8njnRQoik9pDgWk6/dGii/U2vVEIlmw
-         W+/MLRp32bvqqNPVM11hpU7r+3I6SilL4dwf+8mtUNiJcWg/dVsdqNxFo9bhy8PZJV
-         WoaxAdv69DrQXazlX2BYAZ8xg3ABkTECBZF1X+FI=
+        b=ZlBkbAksYhcmgw+ejtsNAFG8a9i1axVRFYe+nl+Fb75SUloOBgIeG4IBFNkwN5JV5
+         RM7WcUo13rk4IsIaaKmoJCHz6u7NkeuU9/7CSAOdtGb90JDakyiSBGaBU38iypBBCf
+         ftCdwKyjWpSQi1TO0cLnhpAISNJb1E9K9sxC4Os0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bruno Goncalves <bgoncalv@redhat.com>,
-        Jan Stancek <jstancek@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 148/189] KVM: x86/mmu: Resolve nx_huge_pages when kvm.ko is loaded
-Date:   Mon, 18 Apr 2022 14:12:48 +0200
-Message-Id: <20220418121205.998620443@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Oliver Upton <oupton@google.com>, Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.15 149/189] KVM: Dont create VM debugfs files outside of the VM directory
+Date:   Mon, 18 Apr 2022 14:12:49 +0200
+Message-Id: <20220418121206.062496106@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,156 +48,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Oliver Upton <oupton@google.com>
 
-commit 1d0e84806047f38027d7572adb4702ef7c09b317 upstream.
+commit a44a4cc1c969afec97dbb2aedaf6f38eaa6253bb upstream.
 
-Resolve nx_huge_pages to true/false when kvm.ko is loaded, leaving it as
--1 is technically undefined behavior when its value is read out by
-param_get_bool(), as boolean values are supposed to be '0' or '1'.
+Unfortunately, there is no guarantee that KVM was able to instantiate a
+debugfs directory for a particular VM. To that end, KVM shouldn't even
+attempt to create new debugfs files in this case. If the specified
+parent dentry is NULL, debugfs_create_file() will instantiate files at
+the root of debugfs.
 
-Alternatively, KVM could define a custom getter for the param, but the
-auto value doesn't depend on the vendor module in any way, and printing
-"auto" would be unnecessarily unfriendly to the user.
+For arm64, it is possible to create the vgic-state file outside of a
+VM directory, the file is not cleaned up when a VM is destroyed.
+Nonetheless, the corresponding struct kvm is freed when the VM is
+destroyed.
 
-In addition to fixing the undefined behavior, resolving the auto value
-also fixes the scenario where the auto value resolves to N and no vendor
-module is loaded.  Previously, -1 would result in Y being printed even
-though KVM would ultimately disable the mitigation.
+Nip the problem in the bud for all possible errant debugfs file
+creations by initializing kvm->debugfs_dentry to -ENOENT. In so doing,
+debugfs_create_file() will fail instead of creating the file in the root
+directory.
 
-Rename the existing MMU module init/exit helpers to clarify that they're
-invoked with respect to the vendor module, and add comments to document
-why KVM has two separate "module init" flows.
-
-  =========================================================================
-  UBSAN: invalid-load in kernel/params.c:320:33
-  load of value 255 is not a valid value for type '_Bool'
-  CPU: 6 PID: 892 Comm: tail Not tainted 5.17.0-rc3+ #799
-  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x34/0x44
-   ubsan_epilogue+0x5/0x40
-   __ubsan_handle_load_invalid_value.cold+0x43/0x48
-   param_get_bool.cold+0xf/0x14
-   param_attr_show+0x55/0x80
-   module_attr_show+0x1c/0x30
-   sysfs_kf_seq_show+0x93/0xc0
-   seq_read_iter+0x11c/0x450
-   new_sync_read+0x11b/0x1a0
-   vfs_read+0xf0/0x190
-   ksys_read+0x5f/0xe0
-   do_syscall_64+0x3b/0xc0
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-   </TASK>
-  =========================================================================
-
-Fixes: b8e8c8303ff2 ("kvm: mmu: ITLB_MULTIHIT mitigation")
-Cc: stable@vger.kernel.org
-Reported-by: Bruno Goncalves <bgoncalv@redhat.com>
-Reported-by: Jan Stancek <jstancek@redhat.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220331221359.3912754-1-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Cc: stable@kernel.org
+Fixes: 929f45e32499 ("kvm: no need to check return value of debugfs_create functions")
+Signed-off-by: Oliver Upton <oupton@google.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220406235615.1447180-2-oupton@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/kvm_host.h |    5 +++--
- arch/x86/kvm/mmu/mmu.c          |   20 ++++++++++++++++----
- arch/x86/kvm/x86.c              |   20 ++++++++++++++++++--
- 3 files changed, 37 insertions(+), 8 deletions(-)
+ virt/kvm/kvm_main.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1559,8 +1559,9 @@ static inline int kvm_arch_flush_remote_
- 		return -ENOTSUPP;
- }
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -911,7 +911,7 @@ static void kvm_destroy_vm_debugfs(struc
+ 	int kvm_debugfs_num_entries = kvm_vm_stats_header.num_desc +
+ 				      kvm_vcpu_stats_header.num_desc;
  
--int kvm_mmu_module_init(void);
--void kvm_mmu_module_exit(void);
-+void kvm_mmu_x86_module_init(void);
-+int kvm_mmu_vendor_module_init(void);
-+void kvm_mmu_vendor_module_exit(void);
+-	if (!kvm->debugfs_dentry)
++	if (IS_ERR(kvm->debugfs_dentry))
+ 		return;
  
- void kvm_mmu_destroy(struct kvm_vcpu *vcpu);
- int kvm_mmu_create(struct kvm_vcpu *vcpu);
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -6105,12 +6105,24 @@ static int set_nx_huge_pages(const char
- 	return 0;
- }
+ 	debugfs_remove_recursive(kvm->debugfs_dentry);
+@@ -934,6 +934,12 @@ static int kvm_create_vm_debugfs(struct
+ 	int kvm_debugfs_num_entries = kvm_vm_stats_header.num_desc +
+ 				      kvm_vcpu_stats_header.num_desc;
  
--int kvm_mmu_module_init(void)
-+/*
-+ * nx_huge_pages needs to be resolved to true/false when kvm.ko is loaded, as
-+ * its default value of -1 is technically undefined behavior for a boolean.
-+ */
-+void kvm_mmu_x86_module_init(void)
- {
--	int ret = -ENOMEM;
--
- 	if (nx_huge_pages == -1)
- 		__set_nx_huge_pages(get_nx_auto_mode());
-+}
-+
-+/*
-+ * The bulk of the MMU initialization is deferred until the vendor module is
-+ * loaded as many of the masks/values may be modified by VMX or SVM, i.e. need
-+ * to be reset when a potentially different vendor module is loaded.
-+ */
-+int kvm_mmu_vendor_module_init(void)
-+{
-+	int ret = -ENOMEM;
- 
- 	/*
- 	 * MMU roles use union aliasing which is, generally speaking, an
-@@ -6182,7 +6194,7 @@ void kvm_mmu_destroy(struct kvm_vcpu *vc
- 	mmu_free_memory_caches(vcpu);
- }
- 
--void kvm_mmu_module_exit(void)
-+void kvm_mmu_vendor_module_exit(void)
- {
- 	mmu_destroy_caches();
- 	percpu_counter_destroy(&kvm_total_used_mmu_pages);
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -8562,7 +8562,7 @@ int kvm_arch_init(void *opaque)
- 	}
- 	kvm_nr_uret_msrs = 0;
- 
--	r = kvm_mmu_module_init();
-+	r = kvm_mmu_vendor_module_init();
- 	if (r)
- 		goto out_free_percpu;
- 
-@@ -8612,7 +8612,7 @@ void kvm_arch_exit(void)
- 	cancel_work_sync(&pvclock_gtod_work);
- #endif
- 	kvm_x86_ops.hardware_enable = NULL;
--	kvm_mmu_module_exit();
-+	kvm_mmu_vendor_module_exit();
- 	free_percpu(user_return_msrs);
- 	kmem_cache_destroy(x86_emulator_cache);
- 	kmem_cache_destroy(x86_fpu_cache);
-@@ -12618,3 +12618,19 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_vmgexit
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_vmgexit_exit);
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_vmgexit_msr_protocol_enter);
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_vmgexit_msr_protocol_exit);
-+
-+static int __init kvm_x86_init(void)
-+{
-+	kvm_mmu_x86_module_init();
-+	return 0;
-+}
-+module_init(kvm_x86_init);
-+
-+static void __exit kvm_x86_exit(void)
-+{
 +	/*
-+	 * If module_init() is implemented, module_exit() must also be
-+	 * implemented to allow module unload.
++	 * Force subsequent debugfs file creations to fail if the VM directory
++	 * is not created.
 +	 */
-+}
-+module_exit(kvm_x86_exit);
++	kvm->debugfs_dentry = ERR_PTR(-ENOENT);
++
+ 	if (!debugfs_initialized())
+ 		return 0;
+ 
+@@ -5373,7 +5379,7 @@ static void kvm_uevent_notify_change(uns
+ 	}
+ 	add_uevent_var(env, "PID=%d", kvm->userspace_pid);
+ 
+-	if (kvm->debugfs_dentry) {
++	if (!IS_ERR(kvm->debugfs_dentry)) {
+ 		char *tmp, *p = kmalloc(PATH_MAX, GFP_KERNEL_ACCOUNT);
+ 
+ 		if (p) {
 
 
