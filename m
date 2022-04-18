@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B29DC47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE3CC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243124AbiDRNTp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32982 "EHLO
+        id S243142AbiDRNTr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238720AbiDRNAd (ORCPT
+        with ESMTP id S240587AbiDRNAh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:00:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37153191A;
-        Mon, 18 Apr 2022 05:41:59 -0700 (PDT)
+        Mon, 18 Apr 2022 09:00:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D7B3192A;
+        Mon, 18 Apr 2022 05:42:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3EC46B80EC3;
-        Mon, 18 Apr 2022 12:41:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F6CCC385A1;
-        Mon, 18 Apr 2022 12:41:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9EB561014;
+        Mon, 18 Apr 2022 12:42:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBDA2C385A1;
+        Mon, 18 Apr 2022 12:41:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285716;
-        bh=ssH+O5U6Zc+kQBJr13MbIlhhEg3a9HKg/eM3zo7oJFg=;
+        s=korg; t=1650285720;
+        bh=Bgfz/3+RT7gpooYXFmsclpEyjumlYjpaLsK+AJi+rK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=obCwdtsEz7pC+NOg0TF/9fSK4ckWG0NYXIeh2vSDsiyzEo2HVZWU1v0+2DG6fFfgh
-         r0iw1VoUI+YxvckvtufgFlZJf72w/k/81xzr2afODjDrZ8/ume5icM8OSTrJjGGb4h
-         zynOmeH0q/byEctpW4nCURVB4YA7nZmrve/TNGmE=
+        b=Jzrph/KYPjf7YotaGmvG5s7huyBJ06dtrqrIHlmMBUcT1GkVZVvikjKmuqSzLBlPQ
+         Greezsg/LAh28XnhO7ysdcLnobuuo5uikFAzSbieJZArcuyb3RO+GSpSeZ3/Em3RPt
+         alNtZu49/ZKy/4cPLz/QmYz/z5ffzzCRqo3bJhMY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Osterried <thomas@osterried.de>,
         Duoming Zhou <duoming@zju.edu.cn>,
         "David S. Miller" <davem@davemloft.net>,
         Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.10 100/105] ax25: fix UAF bugs of net_device caused by rebinding operation
-Date:   Mon, 18 Apr 2022 14:13:42 +0200
-Message-Id: <20220418121149.477791070@linuxfoundation.org>
+Subject: [PATCH 5.10 101/105] ax25: Fix refcount leaks caused by ax25_cb_del()
+Date:   Mon, 18 Apr 2022 14:13:43 +0200
+Message-Id: <20220418121149.506042116@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -51,97 +52,98 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit feef318c855a361a1eccd880f33e88c460eb63b4 upstream.
+commit 9fd75b66b8f68498454d685dc4ba13192ae069b0 upstream.
 
-The ax25_kill_by_device() will set s->ax25_dev = NULL and
-call ax25_disconnect() to change states of ax25_cb and
-sock, if we call ax25_bind() before ax25_kill_by_device().
+The previous commit d01ffb9eee4a ("ax25: add refcount in ax25_dev to
+avoid UAF bugs") and commit feef318c855a ("ax25: fix UAF bugs of
+net_device caused by rebinding operation") increase the refcounts of
+ax25_dev and net_device in ax25_bind() and decrease the matching refcounts
+in ax25_kill_by_device() in order to prevent UAF bugs, but there are
+reference count leaks.
 
-However, if we call ax25_bind() again between the window of
-ax25_kill_by_device() and ax25_dev_device_down(), the values
-and states changed by ax25_kill_by_device() will be reassigned.
+The root cause of refcount leaks is shown below:
 
-Finally, ax25_dev_device_down() will deallocate net_device.
-If we dereference net_device in syscall functions such as
-ax25_release(), ax25_sendmsg(), ax25_getsockopt(), ax25_getname()
-and ax25_info_show(), a UAF bug will occur.
+     (Thread 1)                      |      (Thread 2)
+ax25_bind()                          |
+ ...                                 |
+ ax25_addr_ax25dev()                 |
+  ax25_dev_hold()   //(1)            |
+  ...                                |
+ dev_hold_track()   //(2)            |
+ ...                                 | ax25_destroy_socket()
+                                     |  ax25_cb_del()
+                                     |   ...
+                                     |   hlist_del_init() //(3)
+                                     |
+                                     |
+     (Thread 3)                      |
+ax25_kill_by_device()                |
+ ...                                 |
+ ax25_for_each(s, &ax25_list) {      |
+  if (s->ax25_dev == ax25_dev) //(4) |
+   ...                               |
 
-One of the possible race conditions is shown below:
+Firstly, we use ax25_bind() to increase the refcount of ax25_dev in
+position (1) and increase the refcount of net_device in position (2).
+Then, we use ax25_cb_del() invoked by ax25_destroy_socket() to delete
+ax25_cb in hlist in position (3) before calling ax25_kill_by_device().
+Finally, the decrements of refcounts in ax25_kill_by_device() will not
+be executed, because no s->ax25_dev equals to ax25_dev in position (4).
 
-      (USE)                   |      (FREE)
-ax25_bind()                   |
-                              |  ax25_kill_by_device()
-ax25_bind()                   |
-ax25_connect()                |    ...
-                              |  ax25_dev_device_down()
-                              |    ...
-                              |    dev_put_track(dev, ...) //FREE
-ax25_release()                |    ...
-  ax25_send_control()         |
-    alloc_skb()      //USE    |
+This patch adds decrements of refcounts in ax25_release() and use
+lock_sock() to do synchronization. If refcounts decrease in ax25_release(),
+the decrements of refcounts in ax25_kill_by_device() will not be
+executed and vice versa.
 
-the corresponding fail log is shown below:
-===============================================================
-BUG: KASAN: use-after-free in ax25_send_control+0x43/0x210
-...
-Call Trace:
-  ...
-  ax25_send_control+0x43/0x210
-  ax25_release+0x2db/0x3b0
-  __sock_release+0x6d/0x120
-  sock_close+0xf/0x20
-  __fput+0x11f/0x420
-  ...
-Allocated by task 1283:
-  ...
-  __kasan_kmalloc+0x81/0xa0
-  alloc_netdev_mqs+0x5a/0x680
-  mkiss_open+0x6c/0x380
-  tty_ldisc_open+0x55/0x90
-  ...
-Freed by task 1969:
-  ...
-  kfree+0xa3/0x2c0
-  device_release+0x54/0xe0
-  kobject_put+0xa5/0x120
-  tty_ldisc_kill+0x3e/0x80
-  ...
-
-In order to fix these UAF bugs caused by rebinding operation,
-this patch adds dev_hold_track() into ax25_bind() and
-corresponding dev_put_track() into ax25_kill_by_device().
-
+Fixes: d01ffb9eee4a ("ax25: add refcount in ax25_dev to avoid UAF bugs")
+Fixes: 87563a043cef ("ax25: fix reference count leaks of ax25_dev")
+Fixes: feef318c855a ("ax25: fix UAF bugs of net_device caused by rebinding operation")
+Reported-by: Thomas Osterried <thomas@osterried.de>
 Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 Signed-off-by: David S. Miller <davem@davemloft.net>
-[OP: backport to 5.10: adjust dev_put_track()->dev_put() and
-dev_hold_track()->dev_hold()]
+[OP: backport to 5.10: adjust dev_put_track()->dev_put()]
 Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ax25/af_ax25.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/ax25/af_ax25.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
 --- a/net/ax25/af_ax25.c
 +++ b/net/ax25/af_ax25.c
-@@ -98,6 +98,7 @@ again:
+@@ -98,8 +98,10 @@ again:
  			spin_unlock_bh(&ax25_list_lock);
  			lock_sock(sk);
  			s->ax25_dev = NULL;
-+			dev_put(ax25_dev->dev);
- 			ax25_dev_put(ax25_dev);
+-			dev_put(ax25_dev->dev);
+-			ax25_dev_put(ax25_dev);
++			if (sk->sk_socket) {
++				dev_put(ax25_dev->dev);
++				ax25_dev_put(ax25_dev);
++			}
  			release_sock(sk);
  			ax25_disconnect(s, ENETUNREACH);
-@@ -1122,8 +1123,10 @@ static int ax25_bind(struct socket *sock
- 		}
- 	}
+ 			spin_lock_bh(&ax25_list_lock);
+@@ -978,14 +980,20 @@ static int ax25_release(struct socket *s
+ {
+ 	struct sock *sk = sock->sk;
+ 	ax25_cb *ax25;
++	ax25_dev *ax25_dev;
  
--	if (ax25_dev != NULL)
+ 	if (sk == NULL)
+ 		return 0;
+ 
+ 	sock_hold(sk);
+-	sock_orphan(sk);
+ 	lock_sock(sk);
++	sock_orphan(sk);
+ 	ax25 = sk_to_ax25(sk);
++	ax25_dev = ax25->ax25_dev;
 +	if (ax25_dev) {
- 		ax25_fillin_cb(ax25, ax25_dev);
-+		dev_hold(ax25_dev->dev);
++		dev_put(ax25_dev->dev);
++		ax25_dev_put(ax25_dev);
 +	}
  
- done:
- 	ax25_cb_add(ax25);
+ 	if (sk->sk_type == SOCK_SEQPACKET) {
+ 		switch (ax25->state) {
 
 
