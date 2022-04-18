@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97CCEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:11:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 081DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:11:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245413AbiDRON7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46188 "EHLO
+        id S245514AbiDROOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:14:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244564AbiDRN5I (ORCPT
+        with ESMTP id S244633AbiDRN5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:57:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71EFC2AC55;
-        Mon, 18 Apr 2022 06:06:08 -0700 (PDT)
+        Mon, 18 Apr 2022 09:57:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964FE2AE00;
+        Mon, 18 Apr 2022 06:06:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 306ACB80EC3;
-        Mon, 18 Apr 2022 13:06:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B0ADC385A1;
-        Mon, 18 Apr 2022 13:06:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3009960EFC;
+        Mon, 18 Apr 2022 13:06:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23F6BC385A7;
+        Mon, 18 Apr 2022 13:06:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287165;
-        bh=OTVY1QjmywoLY14V7fsJ39W70A4XkppbqaPp9kIumvs=;
+        s=korg; t=1650287215;
+        bh=V6x3mgFpAhOQdQ5rry5hOTG/r7H9GPulgqpOH15EtB4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vwMB0Jz1GTWeIkZm5zal/TkmZ/A+/OM9ojUYp6a5/yn1tD6QSLYRhu8KQ5pNaoscK
-         AyuFejUijjlSVFp7PiDaNHHrqcKbxpf2G1AWrVHDX8A4GWhDxFVgpnjgd194yFi3Pj
-         trYFZy9MtnqPkkMESzdEzPtjTtzr95Kn4KT6yvnc=
+        b=WG6WATQpx65rUzIRfWz5+fs8AeSn6py2vMl1EBc8DIaLG2J5clNnePjca4ADNQIye
+         UsHAGbV7/LE616qot800sDaCoiJwmEPB1iBWhSTFSFYFvl+kxMyWodmmO2C6gLKBP7
+         But4tDoRQyV6y+vwsqcW3/JIgxmvJgkc9OtqcqtI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 075/218] ASoC: mxs: Fix error handling in mxs_sgtl5000_probe
-Date:   Mon, 18 Apr 2022 14:12:21 +0200
-Message-Id: <20220418121201.754341761@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 093/218] i2c: xiic: Make bus names unique
+Date:   Mon, 18 Apr 2022 14:12:39 +0200
+Message-Id: <20220418121202.267295546@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -49,41 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit 6ae0a4d8fec551ec581d620f0eb1fe31f755551c ]
+[ Upstream commit 1d366c2f9df8279df2adbb60471f86fc40a1c39e ]
 
-This function only calls of_node_put() in the regular path.
-And it will cause refcount leak in error paths.
-For example, when codec_np is NULL, saif_np[0] and saif_np[1]
-are not NULL, it will cause leaks.
+This driver is for an FPGA logic core, so there can be arbitrarily many
+instances of the bus on a given system. Previously all of the I2C bus
+names were "xiic-i2c" which caused issues with lm_sensors when trying to
+map human-readable names to sensor inputs because it could not properly
+distinguish the busses, for example. Append the platform device name to
+the I2C bus name so it is unique between different instances.
 
-of_node_put() will check if the node pointer is NULL, so we can
-call it directly to release the refcount of regular pointers.
-
-Fixes: e968194b45c4 ("ASoC: mxs: add device tree support for mxs-sgtl5000")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220308020146.26496-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: e1d5b6598cdc ("i2c: Add support for Xilinx XPS IIC Bus Interface")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Tested-by: Michal Simek <michal.simek@xilinx.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mxs/mxs-sgtl5000.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/i2c/busses/i2c-xiic.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/mxs/mxs-sgtl5000.c b/sound/soc/mxs/mxs-sgtl5000.c
-index 2b23ffbac6b1..e8aa93a654e7 100644
---- a/sound/soc/mxs/mxs-sgtl5000.c
-+++ b/sound/soc/mxs/mxs-sgtl5000.c
-@@ -112,6 +112,9 @@ static int mxs_sgtl5000_probe(struct platform_device *pdev)
- 	codec_np = of_parse_phandle(np, "audio-codec", 0);
- 	if (!saif_np[0] || !saif_np[1] || !codec_np) {
- 		dev_err(&pdev->dev, "phandle missing or invalid\n");
-+		of_node_put(codec_np);
-+		of_node_put(saif_np[0]);
-+		of_node_put(saif_np[1]);
- 		return -EINVAL;
- 	}
+diff --git a/drivers/i2c/busses/i2c-xiic.c b/drivers/i2c/busses/i2c-xiic.c
+index b72cf2f8da5c..c65a5d0af555 100644
+--- a/drivers/i2c/busses/i2c-xiic.c
++++ b/drivers/i2c/busses/i2c-xiic.c
+@@ -727,7 +727,6 @@ static const struct i2c_algorithm xiic_algorithm = {
  
+ static struct i2c_adapter xiic_adapter = {
+ 	.owner = THIS_MODULE,
+-	.name = DRIVER_NAME,
+ 	.class = I2C_CLASS_DEPRECATED,
+ 	.algo = &xiic_algorithm,
+ };
+@@ -763,6 +762,8 @@ static int xiic_i2c_probe(struct platform_device *pdev)
+ 	i2c_set_adapdata(&i2c->adap, i2c);
+ 	i2c->adap.dev.parent = &pdev->dev;
+ 	i2c->adap.dev.of_node = pdev->dev.of_node;
++	snprintf(i2c->adap.name, sizeof(i2c->adap.name),
++		 DRIVER_NAME " %s", pdev->name);
+ 
+ 	mutex_init(&i2c->lock);
+ 	init_waitqueue_head(&i2c->wait);
 -- 
 2.34.1
 
