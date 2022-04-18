@@ -2,197 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4528C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5338FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238729AbiDRMaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38576 "EHLO
+        id S234802AbiDRMbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239056AbiDRM1m (ORCPT
+        with ESMTP id S239066AbiDRM1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:27:42 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B7C1E3F8;
-        Mon, 18 Apr 2022 05:21:11 -0700 (PDT)
-X-UUID: 6b33d04162dd43738323c979e9a14343-20220418
-X-UUID: 6b33d04162dd43738323c979e9a14343-20220418
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <xinlei.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 765837620; Mon, 18 Apr 2022 20:21:05 +0800
-Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 18 Apr 2022 20:21:03 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS34N1.mediatek.inc
- (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 18 Apr
- 2022 20:21:02 +0800
-Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
- MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Mon, 18 Apr 2022 20:21:01 +0800
-From:   <xinlei.lee@mediatek.com>
-To:     <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
-        <lee.jones@linaro.org>, <robh+dt@kernel.org>,
-        <matthias.bgg@gmail.com>
-CC:     <linux-pwm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <rex-bc.chen@mediatek.com>,
-        <jitao.shi@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v6,1/5] dt-bindings: pwm: Convert pwm-mtk-disp.txt to mediatek,pwm-disp.yaml format
-Date:   Mon, 18 Apr 2022 20:20:52 +0800
-Message-ID: <1650284456-16407-2-git-send-email-xinlei.lee@mediatek.com>
-X-Mailer: git-send-email 2.6.4
-In-Reply-To: <1650284456-16407-1-git-send-email-xinlei.lee@mediatek.com>
-References: <1650284456-16407-1-git-send-email-xinlei.lee@mediatek.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E4C1EAF7;
+        Mon, 18 Apr 2022 05:21:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59E0060FBC;
+        Mon, 18 Apr 2022 12:21:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A0B5C385A7;
+        Mon, 18 Apr 2022 12:21:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650284475;
+        bh=fqp40Y9UjZn+SQBAxw+bQ8zFxntrr6A8v5QsewFp2MY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DHHW67GyJc0n4hZ6a5SwZsNN8CAhFhIIlOrOf7DutWfNBVxAg2ycx4WbZZDbRM21k
+         S5tTGCHMMG9EbpazOOhjQ26CKJ501Dg9UmpKPD1p6wiv1cyYyTFEu4kqYI81jJMfpp
+         VQUpC5Jelt6Ub1UtyXYVI6w7F4XLp4C/42l4hUt8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ming Lei <ming.lei@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 127/219] block: null_blk: end timed out poll request
+Date:   Mon, 18 Apr 2022 14:11:36 +0200
+Message-Id: <20220418121210.451529719@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
+References: <20220418121203.462784814@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xinlei Lee <xinlei.lee@mediatek.com>
+From: Ming Lei <ming.lei@redhat.com>
 
-Convert pwm-mtk-disp.txt to mediatek,pwm-disp.yaml format as suggested
-by maintainer.
+[ Upstream commit 3e3876d322aef82416ecc496a4d4a587e0fdf7a3 ]
 
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+When poll request is timed out, it is removed from the poll list,
+but not completed, so the request is leaked, and never get chance
+to complete.
+
+Fix the issue by ending it in timeout handler.
+
+Fixes: 0a593fbbc245 ("null_blk: poll queue support")
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/20220413084836.1571995-1-ming.lei@redhat.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../bindings/pwm/mediatek,pwm-disp.yaml       | 66 +++++++++++++++++++
- .../devicetree/bindings/pwm/pwm-mtk-disp.txt  | 45 -------------
- 2 files changed, 66 insertions(+), 45 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
- delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+ drivers/block/null_blk/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
-new file mode 100644
-index 000000000000..36f877f819fa
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/mediatek,pwm-disp.yaml
-@@ -0,0 +1,66 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/mediatek,pwm-disp.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek DISP_PWM Controller Device Tree Bindings
-+
-+maintainers:
-+  - Jitao Shi <jitao.shi@mediatek.com>
-+  - Xinlei Lee <xinlei.lee@mediatek.com>
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - enum:
-+          - mediatek,mt2701-disp-pwm
-+          - mediatek,mt6595-disp-pwm
-+          - mediatek,mt8173-disp-pwm
-+          - mediatek,mt8183-disp-pwm
-+      - items:
-+          - const: mediatek,mt8167-disp-pwm
-+          - const: mediatek,mt8173-disp-pwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 2
-+
-+  clocks:
-+    items:
-+      - description: Main Clock
-+      - description: Mm Clock
-+
-+  clock-names:
-+    items:
-+      - const: main
-+      - const: mm
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#pwm-cells"
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/mt8173-clk.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    pwm0: pwm@1401e000 {
-+        compatible = "mediatek,mt8173-disp-pwm";
-+        reg = <0x1401e000 0x1000>;
-+        #pwm-cells = <2>;
-+        clocks = <&mmsys CLK_MM_DISP_PWM026M>,
-+                 <&mmsys CLK_MM_DISP_PWM0MM>;
-+        clock-names = "main", "mm";
-+    };
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
-deleted file mode 100644
-index 691e58b6c223..000000000000
---- a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
-+++ /dev/null
-@@ -1,45 +0,0 @@
--MediaTek display PWM controller
--
--Required properties:
-- - compatible: should be "mediatek,<name>-disp-pwm":
--   - "mediatek,mt2701-disp-pwm": found on mt2701 SoC.
--   - "mediatek,mt6595-disp-pwm": found on mt6595 SoC.
--   - "mediatek,mt8167-disp-pwm", "mediatek,mt8173-disp-pwm": found on mt8167 SoC.
--   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
--   - "mediatek,mt8183-disp-pwm": found on mt8183 SoC.$
-- - reg: physical base address and length of the controller's registers.
-- - #pwm-cells: must be 2. See pwm.yaml in this directory for a description of
--   the cell format.
-- - clocks: phandle and clock specifier of the PWM reference clock.
-- - clock-names: must contain the following:
--   - "main": clock used to generate PWM signals.
--   - "mm": sync signals from the modules of mmsys.
-- - pinctrl-names: Must contain a "default" entry.
-- - pinctrl-0: One property must exist for each entry in pinctrl-names.
--   See pinctrl/pinctrl-bindings.txt for details of the property values.
--
--Example:
--	pwm0: pwm@1401e000 {
--		compatible = "mediatek,mt8173-disp-pwm",
--			     "mediatek,mt6595-disp-pwm";
--		reg = <0 0x1401e000 0 0x1000>;
--		#pwm-cells = <2>;
--		clocks = <&mmsys CLK_MM_DISP_PWM026M>,
--			 <&mmsys CLK_MM_DISP_PWM0MM>;
--		clock-names = "main", "mm";
--		pinctrl-names = "default";
--		pinctrl-0 = <&disp_pwm0_pins>;
--	};
--
--	backlight_lcd: backlight_lcd {
--		compatible = "pwm-backlight";
--		pwms = <&pwm0 0 1000000>;
--		brightness-levels = <
--			  0  16  32  48  64  80  96 112
--			128 144 160 176 192 208 224 240
--			255
--		>;
--		default-brightness-level = <9>;
--		power-supply = <&mt6397_vio18_reg>;
--		enable-gpios = <&pio 95 GPIO_ACTIVE_HIGH>;
--	};
+diff --git a/drivers/block/null_blk/main.c b/drivers/block/null_blk/main.c
+index 13004beb48ca..233577b14141 100644
+--- a/drivers/block/null_blk/main.c
++++ b/drivers/block/null_blk/main.c
+@@ -1606,7 +1606,7 @@ static enum blk_eh_timer_return null_timeout_rq(struct request *rq, bool res)
+ 	 * Only fake timeouts need to execute blk_mq_complete_request() here.
+ 	 */
+ 	cmd->error = BLK_STS_TIMEOUT;
+-	if (cmd->fake_timeout)
++	if (cmd->fake_timeout || hctx->type == HCTX_TYPE_POLL)
+ 		blk_mq_complete_request(rq);
+ 	return BLK_EH_DONE;
+ }
 -- 
-2.18.0
+2.35.1
+
+
 
