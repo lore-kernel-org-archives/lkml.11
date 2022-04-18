@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D88C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:50:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88089C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236180AbiDRMx1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:53:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38016 "EHLO
+        id S233247AbiDRMxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:53:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240993AbiDRMjx (ORCPT
+        with ESMTP id S241014AbiDRMjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2551E3EB;
-        Mon, 18 Apr 2022 05:31:45 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458701EAD5;
+        Mon, 18 Apr 2022 05:31:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18817610F4;
-        Mon, 18 Apr 2022 12:31:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BDFFC385AC;
-        Mon, 18 Apr 2022 12:31:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7AF960FB6;
+        Mon, 18 Apr 2022 12:31:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB314C385A1;
+        Mon, 18 Apr 2022 12:31:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285104;
-        bh=5A2iilz+GY/CVqLC/3lEyDwlSG4xio9NDI5nH4Q8VI8=;
+        s=korg; t=1650285107;
+        bh=tGzXzQhqgL+alx1Q6zWeqj7q4zL1AuwH2it+jAec/5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KXf5E7DKbst23Zq/ulRe/7Gyp+PJtPaBG9e/ChHDMZa+ZuN6N6+Hy0XrF6ixN4Kbf
-         xXqs6ozqP6e+x8q2Qx1uGiLn7KRgz77T/fOLKuHxZPzQR1x+pZRX5TVP7JxCh2Ve69
-         MWWX/rvbY6Xqwihe+9sT+9SC6s8UPFh6EXNota3I=
+        b=jShaV9Hj5DCCnrJAZRo/Rmw8XE60D0yWqX7rWIHAwlQfJovSR++o39sjwEMjswT5N
+         no0BZDi6jikpMujHpe8inh9caNZIN4AP/tzSiTI6P80LAB2xuIvVamkPx8LpUtiuI+
+         tD0g5bREoLkvQoYDXNQup5mPXuCkWBDO1IFfyfv8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org,
+        Aurabindo Pillai <aurabindo.pillai@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 087/189] netfilter: nf_tables: nft_parse_register can return a negative value
-Date:   Mon, 18 Apr 2022 14:11:47 +0200
-Message-Id: <20220418121202.977312655@linuxfoundation.org>
+Subject: [PATCH 5.15 105/189] drm/amd: Add USBC connector ID
+Date:   Mon, 18 Apr 2022 14:12:05 +0200
+Message-Id: <20220418121203.482500430@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,34 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antoine Tenart <atenart@kernel.org>
+From: Aurabindo Pillai <aurabindo.pillai@amd.com>
 
-[ Upstream commit 6c6f9f31ecd47dce1d0dafca4bec8805f9bc97cd ]
+[ Upstream commit c5c948aa894a831f96fccd025e47186b1ee41615 ]
 
-Since commit 6e1acfa387b9 ("netfilter: nf_tables: validate registers
-coming from userspace.") nft_parse_register can return a negative value,
-but the function prototype is still returning an unsigned int.
+[Why&How] Add a dedicated AMDGPU specific ID for use with
+newer ASICs that support USB-C output
 
-Fixes: 6e1acfa387b9 ("netfilter: nf_tables: validate registers coming from userspace.")
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/ObjectID.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 3e7f97a70721..2feb88ffcd81 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -9208,7 +9208,7 @@ int nft_parse_u32_check(const struct nlattr *attr, int max, u32 *dest)
- }
- EXPORT_SYMBOL_GPL(nft_parse_u32_check);
+diff --git a/drivers/gpu/drm/amd/amdgpu/ObjectID.h b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
+index 5b393622f592..a0f0a17e224f 100644
+--- a/drivers/gpu/drm/amd/amdgpu/ObjectID.h
++++ b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
+@@ -119,6 +119,7 @@
+ #define CONNECTOR_OBJECT_ID_eDP                   0x14
+ #define CONNECTOR_OBJECT_ID_MXM                   0x15
+ #define CONNECTOR_OBJECT_ID_LVDS_eDP              0x16
++#define CONNECTOR_OBJECT_ID_USBC                  0x17
  
--static unsigned int nft_parse_register(const struct nlattr *attr, u32 *preg)
-+static int nft_parse_register(const struct nlattr *attr, u32 *preg)
- {
- 	unsigned int reg;
+ /* deleted */
  
 -- 
 2.35.1
