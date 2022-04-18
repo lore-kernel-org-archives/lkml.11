@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D7F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:13:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CCF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241500AbiDRNQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:16:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59850 "EHLO
+        id S241727AbiDRNQW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:16:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241474AbiDRM6r (ORCPT
+        with ESMTP id S241559AbiDRM6w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:58:47 -0400
+        Mon, 18 Apr 2022 08:58:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35F3C286FB;
-        Mon, 18 Apr 2022 05:39:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0778A2DD5F;
+        Mon, 18 Apr 2022 05:39:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2421B80EDF;
-        Mon, 18 Apr 2022 12:39:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10DA0C385A7;
-        Mon, 18 Apr 2022 12:39:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82B70B80EDC;
+        Mon, 18 Apr 2022 12:39:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E939FC385A7;
+        Mon, 18 Apr 2022 12:39:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285548;
-        bh=w7aXpuwOrzhppGfZ0NAyhIFazOsTIW/sc7x6w0mpvO4=;
+        s=korg; t=1650285555;
+        bh=v0HGRTeIY/aQdkkcBrv7ONr+/xXqUXqC0m+W9mnTLLo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=efcOvuTwCCX2zfnznnA4Fmq56I3JRA9lK/PJ9MszPf2FxBZPvr7bGGcq/Sp7xYGDj
-         ptHQUERiOREmYcY1nEZEoXDDR7KnfRniymLbZJT1dS8vOrLcFlnzKcboVvjqd6mloE
-         WWwJPAJPVGfReK9Na1amlD52kNIIxN+jqGHrWGYE=
+        b=ubN2p4685ixPHEJMSwpa4tgTzjYfiofBXKyUb2hmddO5qDWEkiAEf0yUcFT/dj9fE
+         3nwGENYRS6gOUwSlFgn6k+A1iI0YMHF1NEZOZYFKLckm/R7pu+nktHx3npz2RdbpaI
+         +eXoZXV4/YVzd4jiyj+AiS/yZlAxmSqDME8Euyxc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anthony Koo <Anthony.Koo@amd.com>,
-        Alex Hung <alex.hung@amd.com>,
-        Chiawen Huang <chiawen.huang@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 046/105] drm/amd/display: FEC check in timing validation
-Date:   Mon, 18 Apr 2022 14:12:48 +0200
-Message-Id: <20220418121147.788986359@linuxfoundation.org>
+Subject: [PATCH 5.10 056/105] ata: libata-core: Disable READ LOG DMA EXT for Samsung 840 EVOs
+Date:   Mon, 18 Apr 2022 14:12:58 +0200
+Message-Id: <20220418121148.077134618@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -52,41 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chiawen Huang <chiawen.huang@amd.com>
+From: Christian Lamparter <chunkeey@gmail.com>
 
-[ Upstream commit 7d56a154e22ffb3613fdebf83ec34d5225a22993 ]
+[ Upstream commit 5399752299396a3c9df6617f4b3c907d7aa4ded8 ]
 
-[Why]
-disable/enable leads FEC mismatch between hw/sw FEC state.
+Samsung' 840 EVO with the latest firmware (EXT0DB6Q) locks up with
+the a message: "READ LOG DMA EXT failed, trying PIO" during boot.
 
-[How]
-check FEC status to fastboot on/off.
+Initially this was discovered because it caused a crash
+with the sata_dwc_460ex controller on a WD MyBook Live DUO.
 
-Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
-Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Chiawen Huang <chiawen.huang@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+The reporter "Tice Rex" which has the unique opportunity that he
+has two Samsung 840 EVO SSD! One with the older firmware "EXT0BB0Q"
+which booted fine and didn't expose "READ LOG DMA EXT". But the
+newer/latest firmware "EXT0DB6Q" caused the headaches.
+
+BugLink: https://github.com/openwrt/openwrt/issues/9505
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/ata/libata-core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
-index 93f5229c303e..ac5323596c65 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
-@@ -1173,6 +1173,10 @@ bool dc_validate_seamless_boot_timing(const struct dc *dc,
- 	if (!link->link_enc->funcs->is_dig_enabled(link->link_enc))
- 		return false;
- 
-+	/* Check for FEC status*/
-+	if (link->link_enc->funcs->fec_is_active(link->link_enc))
-+		return false;
-+
- 	enc_inst = link->link_enc->funcs->get_dig_frontend(link->link_enc);
- 
- 	if (enc_inst == ENGINE_ID_UNKNOWN)
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index d2b544bdc7b5..f963a0a7da46 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -3974,6 +3974,9 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
+ 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
+ 	{ "Crucial_CT*MX100*",		"MU01",	ATA_HORKAGE_NO_NCQ_TRIM |
+ 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
++	{ "Samsung SSD 840 EVO*",	NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
++						ATA_HORKAGE_NO_DMA_LOG |
++						ATA_HORKAGE_ZERO_AFTER_TRIM, },
+ 	{ "Samsung SSD 840*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+ 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
+ 	{ "Samsung SSD 850*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
 -- 
 2.35.1
 
