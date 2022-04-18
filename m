@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91088C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E0CC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240292AbiDRMxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
+        id S240277AbiDRMxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:53:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240711AbiDRMjd (ORCPT
+        with ESMTP id S240754AbiDRMjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB9E613CDC;
-        Mon, 18 Apr 2022 05:30:16 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0613712742;
+        Mon, 18 Apr 2022 05:30:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84C6AB80EC0;
-        Mon, 18 Apr 2022 12:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5AE6C385A1;
-        Mon, 18 Apr 2022 12:30:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB896B80EC0;
+        Mon, 18 Apr 2022 12:30:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0053AC385A8;
+        Mon, 18 Apr 2022 12:30:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285014;
-        bh=kN7kp0z6+3glEndQphRk/Wj1ypFcaAiDQfd9EyAmZxE=;
+        s=korg; t=1650285023;
+        bh=M6RhXLMmz2S6qMvA0PcSqI2yybCtTdtl2N6YoFyDWec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rKqURGodkNCWcZWDEiEp3Rrv/fFvWbSPXg9wAxfMqlWBFFlsvIT3F1R2Xp4JXiBjj
-         makgUEme4dDI2pFV+QcwOuYkZf7VARj3z4/+Lp4gCNp6WQqO6j1Se7z3ocZLHHa1dE
-         P4nVMC3RZF/3BPW/ovaqj+97r+7aEt32GVnyN9ZY=
+        b=lqIBCs1918IjCGdd1GOtHY86TKcHzec+kDJsqO/O0Jzq2sRM/+3Oy+Y33CSS0IJ8z
+         8pMGxJiVwt0te1AbgP9FB2sXQ1Dw9COdxRttOkUQo9gYSCjcub+30RyJ5OW92o9mpD
+         lR1bBIoJpSDwO1+HOLIvHogZGgypDviFBBAeQsbE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Ajish Koshy <Ajish.Koshy@microchip.com>,
-        Viswas G <Viswas.G@microchip.com>,
+        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 079/189] scsi: pm80xx: Mask and unmask upper interrupt vectors 32-63
-Date:   Mon, 18 Apr 2022 14:11:39 +0200
-Message-Id: <20220418121202.751044975@linuxfoundation.org>
+Subject: [PATCH 5.15 081/189] scsi: iscsi: Move iscsi_ep_disconnect()
+Date:   Mon, 18 Apr 2022 14:11:41 +0200
+Message-Id: <20220418121202.807411940@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -52,71 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ajish Koshy <Ajish.Koshy@microchip.com>
+From: Mike Christie <michael.christie@oracle.com>
 
-[ Upstream commit 294080eacf92a0781e6d43663448a55001ec8c64 ]
+[ Upstream commit c34f95e98d8fb750eefd4f3fe58b4f8b5e89253b ]
 
-When upper inbound and outbound queues 32-63 are enabled, we see upper
-vectors 32-63 in interrupt service routine. We need corresponding registers
-to handle masking and unmasking of these upper interrupts.
+This patch moves iscsi_ep_disconnect() so it can be called earlier in the
+next patch.
 
-To achieve this, we use registers MSGU_ODMR_U(0x34) to mask and
-MSGU_ODMR_CLR_U(0x3C) to unmask the interrupts. In these registers bit 0-31
-represents interrupt vectors 32-63.
-
-Link: https://lore.kernel.org/r/20220411064603.668448-2-Ajish.Koshy@microchip.com
-Fixes: 05c6c029a44d ("scsi: pm80xx: Increase number of supported queues")
-Reviewed-by: John Garry <john.garry@huawei.com>
-Acked-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Ajish Koshy <Ajish.Koshy@microchip.com>
-Signed-off-by: Viswas G <Viswas.G@microchip.com>
+Link: https://lore.kernel.org/r/20220408001314.5014-2-michael.christie@oracle.com
+Tested-by: Manish Rangankar <mrangankar@marvell.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Reviewed-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ drivers/scsi/scsi_transport_iscsi.c | 38 ++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 5561057109de..aa6f114be064 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -1733,10 +1733,11 @@ static void
- pm80xx_chip_interrupt_enable(struct pm8001_hba_info *pm8001_ha, u8 vec)
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index 554b6f784223..126f6f23bffa 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -2236,6 +2236,25 @@ static void iscsi_stop_conn(struct iscsi_cls_conn *conn, int flag)
+ 	ISCSI_DBG_TRANS_CONN(conn, "Stopping conn done.\n");
+ }
+ 
++static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
++{
++	struct iscsi_cls_session *session = iscsi_conn_to_session(conn);
++	struct iscsi_endpoint *ep;
++
++	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep.\n");
++	conn->state = ISCSI_CONN_FAILED;
++
++	if (!conn->ep || !session->transport->ep_disconnect)
++		return;
++
++	ep = conn->ep;
++	conn->ep = NULL;
++
++	session->transport->unbind_conn(conn, is_active);
++	session->transport->ep_disconnect(ep);
++	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
++}
++
+ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 			      struct iscsi_uevent *ev)
  {
- #ifdef PM8001_USE_MSIX
--	u32 mask;
--	mask = (u32)(1 << vec);
+@@ -2276,25 +2295,6 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 	return 0;
+ }
+ 
+-static void iscsi_ep_disconnect(struct iscsi_cls_conn *conn, bool is_active)
+-{
+-	struct iscsi_cls_session *session = iscsi_conn_to_session(conn);
+-	struct iscsi_endpoint *ep;
 -
--	pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_CLR, (u32)(mask & 0xFFFFFFFF));
-+	if (vec < 32)
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_CLR, 1U << vec);
-+	else
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_CLR_U,
-+			    1U << (vec - 32));
- 	return;
- #endif
- 	pm80xx_chip_intx_interrupt_enable(pm8001_ha);
-@@ -1752,12 +1753,15 @@ static void
- pm80xx_chip_interrupt_disable(struct pm8001_hba_info *pm8001_ha, u8 vec)
+-	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep.\n");
+-	conn->state = ISCSI_CONN_FAILED;
+-
+-	if (!conn->ep || !session->transport->ep_disconnect)
+-		return;
+-
+-	ep = conn->ep;
+-	conn->ep = NULL;
+-
+-	session->transport->unbind_conn(conn, is_active);
+-	session->transport->ep_disconnect(ep);
+-	ISCSI_DBG_TRANS_CONN(conn, "disconnect ep done.\n");
+-}
+-
+ static void iscsi_cleanup_conn_work_fn(struct work_struct *work)
  {
- #ifdef PM8001_USE_MSIX
--	u32 mask;
--	if (vec == 0xFF)
--		mask = 0xFFFFFFFF;
-+	if (vec == 0xFF) {
-+		/* disable all vectors 0-31, 32-63 */
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR, 0xFFFFFFFF);
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_U, 0xFFFFFFFF);
-+	} else if (vec < 32)
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR, 1U << vec);
- 	else
--		mask = (u32)(1 << vec);
--	pm8001_cw32(pm8001_ha, 0, MSGU_ODMR, (u32)(mask & 0xFFFFFFFF));
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_U,
-+			    1U << (vec - 32));
- 	return;
- #endif
- 	pm80xx_chip_intx_interrupt_disable(pm8001_ha);
+ 	struct iscsi_cls_conn *conn = container_of(work, struct iscsi_cls_conn,
 -- 
 2.35.1
 
