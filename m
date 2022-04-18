@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 233A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2827EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238889AbiDROFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:05:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
+        id S245229AbiDROFU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243596AbiDRNqq (ORCPT
+        with ESMTP id S241766AbiDRNrU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:46:46 -0400
+        Mon, 18 Apr 2022 09:47:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3492F27155;
-        Mon, 18 Apr 2022 06:00:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21BC92980D;
+        Mon, 18 Apr 2022 06:01:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C455960B3A;
-        Mon, 18 Apr 2022 13:00:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3787C385A7;
-        Mon, 18 Apr 2022 13:00:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 983B160929;
+        Mon, 18 Apr 2022 13:01:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89BF0C385A1;
+        Mon, 18 Apr 2022 13:01:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286854;
-        bh=tCcX0Tw/gXLjXPpMFidx0RO8EjYgNpW5KVHTBjTYbEY=;
+        s=korg; t=1650286867;
+        bh=x0vO82PgmsO84hJdKK64ihCc5vTDwaWia8Yej7d8jas=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m+V6mmnd1zDPfVhzIhDrXPXXomsZaLj8GSX/wNx+kZmLqM9lvjojeL8emuuOzX7+L
-         WDd7YzdGLPYlYjqx+5ZNzmKGWPtu5kX+Ijeno2GDiqaQ0OKT31Vu4jd0tESmGuQrpx
-         uZsItvTZjBopvcG+9SRFiWwdrVC/3JTy6CkTpet8=
+        b=g3hVQ8SLd2EM8Gg3vbg+xZG/N/qWIG6Wft3ttX0p2sYIdwndznsEc113vA96uo+tN
+         gzuv750cdWsCl7e59HLT5IrQa7IZFrUbzWNCZDPe7gKMpDJ852ZdzsN+lqsxkHMdXc
+         MAGu5qwzVn+ZWOwuqa06Kj+frVAo7RE3Of2heLrQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Bodo Stroesser <bostroesser@gmail.com>,
+        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 267/284] cifs: potential buffer overflow in handling symlinks
-Date:   Mon, 18 Apr 2022 14:14:08 +0200
-Message-Id: <20220418121220.349297289@linuxfoundation.org>
+Subject: [PATCH 4.14 271/284] scsi: target: tcmu: Fix possible page UAF
+Date:   Mon, 18 Apr 2022 14:14:12 +0200
+Message-Id: <20220418121220.588425893@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -51,41 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+From: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
 
-[ Upstream commit 64c4a37ac04eeb43c42d272f6e6c8c12bfcf4304 ]
+[ Upstream commit a6968f7a367f128d120447360734344d5a3d5336 ]
 
-Smatch printed a warning:
-	arch/x86/crypto/poly1305_glue.c:198 poly1305_update_arch() error:
-	__memcpy() 'dctx->buf' too small (16 vs u32max)
+tcmu_try_get_data_page() looks up pages under cmdr_lock, but it does not
+take refcount properly and just returns page pointer. When
+tcmu_try_get_data_page() returns, the returned page may have been freed by
+tcmu_blocks_release().
 
-It's caused because Smatch marks 'link_len' as untrusted since it comes
-from sscanf(). Add a check to ensure that 'link_len' is not larger than
-the size of the 'link_str' buffer.
+We need to get_page() under cmdr_lock to avoid concurrent
+tcmu_blocks_release().
 
-Fixes: c69c1b6eaea1 ("cifs: implement CIFSParseMFSymlink()")
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Link: https://lore.kernel.org/r/20220311132206.24515-1-xiaoguang.wang@linux.alibaba.com
+Reviewed-by: Bodo Stroesser <bostroesser@gmail.com>
+Signed-off-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/link.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/target/target_core_user.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fs/cifs/link.c b/fs/cifs/link.c
-index 9451a7f6893d..a89b8ff82040 100644
---- a/fs/cifs/link.c
-+++ b/fs/cifs/link.c
-@@ -97,6 +97,9 @@ parse_mf_symlink(const u8 *buf, unsigned int buf_len, unsigned int *_link_len,
- 	if (rc != 1)
- 		return -EINVAL;
+diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
+index 96601fda47b1..f687481ccfdc 100644
+--- a/drivers/target/target_core_user.c
++++ b/drivers/target/target_core_user.c
+@@ -1165,6 +1165,7 @@ static struct page *tcmu_try_get_block_page(struct tcmu_dev *udev, uint32_t dbi)
+ 	mutex_lock(&udev->cmdr_lock);
+ 	page = tcmu_get_block_page(udev, dbi);
+ 	if (likely(page)) {
++		get_page(page);
+ 		mutex_unlock(&udev->cmdr_lock);
+ 		return page;
+ 	}
+@@ -1233,6 +1234,7 @@ static int tcmu_vma_fault(struct vm_fault *vmf)
+ 		/* For the vmalloc()ed cmd area pages */
+ 		addr = (void *)(unsigned long)info->mem[mi].addr + offset;
+ 		page = vmalloc_to_page(addr);
++		get_page(page);
+ 	} else {
+ 		uint32_t dbi;
  
-+	if (link_len > CIFS_MF_SYMLINK_LINK_MAXLEN)
-+		return -EINVAL;
-+
- 	rc = symlink_hash(link_len, link_str, md5_hash);
- 	if (rc) {
- 		cifs_dbg(FYI, "%s: MD5 hash failure: %d\n", __func__, rc);
+@@ -1243,7 +1245,6 @@ static int tcmu_vma_fault(struct vm_fault *vmf)
+ 			return VM_FAULT_NOPAGE;
+ 	}
+ 
+-	get_page(page);
+ 	vmf->page = page;
+ 	return 0;
+ }
 -- 
 2.35.1
 
