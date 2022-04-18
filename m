@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0937C352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60113C35295
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244585AbiDRNpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:45:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
+        id S244508AbiDRNoh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:44:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240373AbiDRNVJ (ORCPT
+        with ESMTP id S243501AbiDRNUk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:21:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1BA13F43;
-        Mon, 18 Apr 2022 05:52:28 -0700 (PDT)
+        Mon, 18 Apr 2022 09:20:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584259FF4;
+        Mon, 18 Apr 2022 05:52:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39B456124E;
-        Mon, 18 Apr 2022 12:52:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F389C385A1;
-        Mon, 18 Apr 2022 12:52:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5D9B6124E;
+        Mon, 18 Apr 2022 12:52:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD833C385A1;
+        Mon, 18 Apr 2022 12:52:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286347;
-        bh=yd/PIrVhYLRbTH3zwdEWESN2Dz9/FjzPd4jm3AGP9OY=;
+        s=korg; t=1650286331;
+        bh=02DSsES2uVeWdw+4MPPxYttCirfYH3j4aoXuU3cDQj8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O6Al30281se7px/9sJdOZl7hcb0rnvRxO8V6j1nWeyPOagk/XPYra1YBF9DhJ5P5k
-         SVDaPoShawU6V9l8mngbvTuAkiDxD72Lc7/wSXp/E5YfomFQCqVeQSxhaKoEllqAzK
-         xNwFm5I0qWWPdWMgQ8tLWDPgccB/M8pHDacceucQ=
+        b=yNpSZX+pb8nJ2+w1HOM6670ZjJninYHYiTU5Xw2mDXY9yoaWn3LnEZ+Gsdamjz9IN
+         HSKROAShgzlXUrSpPSi3N4xyNv97kAnHCHUo3SGABn0V6J9F7U0GqWBgi19uapfLAt
+         oI9SgF8ErUSVxA/sqZBRpGl+b5+Eehy9wM7yaKEk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 106/284] scsi: pm8001: Fix command initialization in pm8001_chip_ssp_tm_req()
-Date:   Mon, 18 Apr 2022 14:11:27 +0200
-Message-Id: <20220418121213.901612832@linuxfoundation.org>
+Subject: [PATCH 4.14 101/284] power: supply: ab8500: Fix memory leak in ab8500_fg_sysfs_init
+Date:   Mon, 18 Apr 2022 14:11:22 +0200
+Message-Id: <20220418121213.688343057@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,41 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit cd2268a180117aa8ebb23e090ba204324b2d0e93 ]
+[ Upstream commit 6a4760463dbc6b603690938c468839985189ce0a ]
 
-The ds_ads_m field of struct ssp_ini_tm_start_req has the type __le32.
-Assigning a value to it should thus use cpu_to_le32(). This fixes the
-sparse warning:
+kobject_init_and_add() takes reference even when it fails.
+According to the doc of kobject_init_and_add()：
 
-warning: incorrect type in assignment (different base types)
-   expected restricted __le32 [addressable] [assigned] [usertype] ds_ads_m
-   got int
+   If this function returns an error, kobject_put() must be called to
+   properly clean up the memory associated with the object.
 
-Link: https://lore.kernel.org/r/20220220031810.738362-7-damien.lemoal@opensource.wdc.com
-Fixes: dbf9bfe61571 ("[SCSI] pm8001: add SAS/SATA HBA driver")
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fix memory leak by calling kobject_put().
+
+Fixes: 8c0984e5a753 ("power: move power supply drivers to power/supply")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/power/supply/ab8500_fg.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 853dba857239..2889717a770e 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -4718,7 +4718,7 @@ int pm8001_chip_ssp_tm_req(struct pm8001_hba_info *pm8001_ha,
- 	memcpy(sspTMCmd.lun, task->ssp_task.LUN, 8);
- 	sspTMCmd.tag = cpu_to_le32(ccb->ccb_tag);
- 	if (pm8001_ha->chip_id != chip_8001)
--		sspTMCmd.ds_ads_m = 0x08;
-+		sspTMCmd.ds_ads_m = cpu_to_le32(0x08);
- 	circularQ = &pm8001_ha->inbnd_q_tbl[0];
- 	ret = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &sspTMCmd, 0);
+diff --git a/drivers/power/supply/ab8500_fg.c b/drivers/power/supply/ab8500_fg.c
+index 2677592ed7af..b00844103a07 100644
+--- a/drivers/power/supply/ab8500_fg.c
++++ b/drivers/power/supply/ab8500_fg.c
+@@ -2545,8 +2545,10 @@ static int ab8500_fg_sysfs_init(struct ab8500_fg *di)
+ 	ret = kobject_init_and_add(&di->fg_kobject,
+ 		&ab8500_fg_ktype,
+ 		NULL, "battery");
+-	if (ret < 0)
++	if (ret < 0) {
++		kobject_put(&di->fg_kobject);
+ 		dev_err(di->dev, "failed to create sysfs entry\n");
++	}
+ 
  	return ret;
+ }
 -- 
 2.34.1
 
