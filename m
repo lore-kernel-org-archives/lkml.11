@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71411C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E1EC3527E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242438AbiDRNJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
+        id S242502AbiDRNJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:09:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240394AbiDRM4m (ORCPT
+        with ESMTP id S238173AbiDRM4n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:56:42 -0400
+        Mon, 18 Apr 2022 08:56:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9355B12755;
-        Mon, 18 Apr 2022 05:37:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B861A816;
+        Mon, 18 Apr 2022 05:37:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CFC2D611CC;
-        Mon, 18 Apr 2022 12:37:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB34AC385B0;
-        Mon, 18 Apr 2022 12:37:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A236D6118A;
+        Mon, 18 Apr 2022 12:37:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE251C385A7;
+        Mon, 18 Apr 2022 12:37:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285473;
-        bh=plLRFRABPQzeHzsPhuHHKYd36CfjqlRb/871J9RPo7c=;
+        s=korg; t=1650285476;
+        bh=x85HsX1QKJi6SwkS29AzK7v1ZonuON6s7Mrr8XxuSHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fNWUWWYSSjCIVBO6l43URLG922pn7pYfgOPpGuBDbjPzqbHQ5h+V31jF0vB4AeeGO
-         C0Wt1Tr5Ar0mHsF5Fd2Z2G5MizZ//OSNJZKnPr4NzGcySuWxxCpFMy2uh49HRFcDBp
-         6syWbWnSljxYUhU7OQh2Aq+MM6CepFi/kOy95/ao=
+        b=yGxymUdEWtZMJqXl7IE+y1WOjQmrutkgK2/n1+2CcwNnBWYEYotaR+GwuwSWi3sQF
+         viz8ynYQRqUk+pYfHRDemxU+7UtsyWcGu7ngzX30criZS3rKGNt1jbeXrZvaHzpuvl
+         ksQcO13zKa+JtmOZelp5av58K3W4G96eWH++rHHM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Lee Duncan <lduncan@suse.com>,
         Mike Christie <michael.christie@oracle.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 028/105] scsi: iscsi: Force immediate failure during shutdown
-Date:   Mon, 18 Apr 2022 14:12:30 +0200
-Message-Id: <20220418121147.114581108@linuxfoundation.org>
+Subject: [PATCH 5.10 029/105] scsi: iscsi: Use system_unbound_wq for destroy_work
+Date:   Mon, 18 Apr 2022 14:12:31 +0200
+Message-Id: <20220418121147.156679890@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -52,55 +52,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mike Christie <michael.christie@oracle.com>
 
-[ Upstream commit 06c203a5566beecebb1f8838d026de8a61c8df71 ]
+[ Upstream commit b25b957d2db1585602c2c70fdf4261a5641fe6b7 ]
 
-If the system is not up, we can just fail immediately since iscsid is not
-going to ever answer our netlink events. We are already setting the
-recovery_tmo to 0, but by passing stop_conn STOP_CONN_TERM we never will
-block the session and start the recovery timer, because for that flag
-userspace will do the unbind and destroy events which would remove the
-devices and wake up and kill the eh.
+Use the system_unbound_wq for async session destruction. We don't need a
+dedicated workqueue for async session destruction because:
 
-Since the conn is dead and the system is going dowm this just has us use
-STOP_CONN_RECOVER with recovery_tmo=0 so we fail immediately. However, if
-the user has set the recovery_tmo=-1 we let the system hang like they
-requested since they might have used that setting for specific reasons
-(one known reason is for buggy cluster software).
+ 1. perf does not seem to be an issue since we only allow 1 active work.
 
-Link: https://lore.kernel.org/r/20210525181821.7617-5-michael.christie@oracle.com
+ 2. it does not have deps with other system works and we can run them in
+    parallel with each other.
+
+Link: https://lore.kernel.org/r/20210525181821.7617-6-michael.christie@oracle.com
+Reviewed-by: Lee Duncan <lduncan@suse.com>
 Signed-off-by: Mike Christie <michael.christie@oracle.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/scsi_transport_iscsi.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/scsi/scsi_transport_iscsi.c | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
 
 diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
-index 6490211b55d2..f93660142e35 100644
+index f93660142e35..ed0c7e812445 100644
 --- a/drivers/scsi/scsi_transport_iscsi.c
 +++ b/drivers/scsi/scsi_transport_iscsi.c
-@@ -2508,11 +2508,17 @@ static void stop_conn_work_fn(struct work_struct *work)
- 		session = iscsi_session_lookup(sid);
- 		if (session) {
- 			if (system_state != SYSTEM_RUNNING) {
--				session->recovery_tmo = 0;
--				iscsi_if_stop_conn(conn, STOP_CONN_TERM);
--			} else {
--				iscsi_if_stop_conn(conn, STOP_CONN_RECOVER);
-+				/*
-+				 * If the user has set up for the session to
-+				 * never timeout then hang like they wanted.
-+				 * For all other cases fail right away since
-+				 * userspace is not going to relogin.
-+				 */
-+				if (session->recovery_tmo > 0)
-+					session->recovery_tmo = 0;
- 			}
-+
-+			iscsi_if_stop_conn(conn, STOP_CONN_RECOVER);
- 		}
+@@ -95,8 +95,6 @@ static DECLARE_WORK(stop_conn_work, stop_conn_work_fn);
+ static atomic_t iscsi_session_nr; /* sysfs session id for next new session */
+ static struct workqueue_struct *iscsi_eh_timer_workq;
  
- 		list_del_init(&conn->conn_list_err);
+-static struct workqueue_struct *iscsi_destroy_workq;
+-
+ static DEFINE_IDA(iscsi_sess_ida);
+ /*
+  * list of registered transports and lock that must
+@@ -3717,7 +3715,7 @@ iscsi_if_recv_msg(struct sk_buff *skb, struct nlmsghdr *nlh, uint32_t *group)
+ 			list_del_init(&session->sess_list);
+ 			spin_unlock_irqrestore(&sesslock, flags);
+ 
+-			queue_work(iscsi_destroy_workq, &session->destroy_work);
++			queue_work(system_unbound_wq, &session->destroy_work);
+ 		}
+ 		break;
+ 	case ISCSI_UEVENT_UNBIND_SESSION:
+@@ -4813,18 +4811,8 @@ static __init int iscsi_transport_init(void)
+ 		goto release_nls;
+ 	}
+ 
+-	iscsi_destroy_workq = alloc_workqueue("%s",
+-			WQ_SYSFS | __WQ_LEGACY | WQ_MEM_RECLAIM | WQ_UNBOUND,
+-			1, "iscsi_destroy");
+-	if (!iscsi_destroy_workq) {
+-		err = -ENOMEM;
+-		goto destroy_wq;
+-	}
+-
+ 	return 0;
+ 
+-destroy_wq:
+-	destroy_workqueue(iscsi_eh_timer_workq);
+ release_nls:
+ 	netlink_kernel_release(nls);
+ unregister_flashnode_bus:
+@@ -4846,7 +4834,6 @@ static __init int iscsi_transport_init(void)
+ 
+ static void __exit iscsi_transport_exit(void)
+ {
+-	destroy_workqueue(iscsi_destroy_workq);
+ 	destroy_workqueue(iscsi_eh_timer_workq);
+ 	netlink_kernel_release(nls);
+ 	bus_unregister(&iscsi_flashnode_bus);
 -- 
 2.35.1
 
