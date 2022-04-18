@@ -2,162 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 05:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63ED8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 05:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236574AbiDRFxA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 01:53:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
+        id S236679AbiDRFxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 01:53:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232773AbiDRFwz (ORCPT
+        with ESMTP id S230510AbiDRFx2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 01:52:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 501C0559D
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 22:50:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650261015;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BQi37t5ImtJGz8dpkcjwi4DmC/UUnyTxDNTmEnfJgZE=;
-        b=TpqDKh7eG59Mk51kVEHVzp3RIPicBwxw/Soi+lvQR7cyZFLnKKaO4JkkqVicuuKP9JRUAM
-        I/1ITfWC89FFsSTwIlq6jTzTODJ7oUGEcPBJDncmTQ2FBsJj4sH9sMRboicQ2PgwXjv5vk
-        DigzxiwnbdSVzBWdxDrJTkKKVmdd424=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-376-N696UJVtMrGIFr5WGpQtLQ-1; Mon, 18 Apr 2022 01:50:13 -0400
-X-MC-Unique: N696UJVtMrGIFr5WGpQtLQ-1
-Received: by mail-pj1-f69.google.com with SMTP id f16-20020a17090a121000b001cbc1895abeso6621363pja.5
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 22:50:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BQi37t5ImtJGz8dpkcjwi4DmC/UUnyTxDNTmEnfJgZE=;
-        b=vOZqwhU57dQ0gNhRX55SB5Xrwz/I8tEE6CRb4WfQtMy62Igzes8lHZetgnaojid9YY
-         yrXk/QeDyBh7599Wh6VEU+ahlqJZpshU3avxv3RWe5MD8BW3DeSD/9upZrMCcSsUqcOq
-         HffW0RjGmsZq4mIw3FFyfWXNZ5f/d1K9Dp1RUPIIakVtn4AQxKSoZc2t5tEXoLbmWvJk
-         1PGopDgVOnqiH2L4gdEY+yCjZuwji0HMOtfktbQtE9qPmTPf9XmNh2DUVA61cX94a2qW
-         YqHUT/oF67aG4UNfXbAX/Ft0g3IdNVpfZb+cDbAcMmx3QtJsyq0dBuHGAJUszXl0sYHG
-         c/Iw==
-X-Gm-Message-State: AOAM5321FXIq92zq1cgmuULinrwlbv+VPODyAefYBbZwgDJ3NtCf0CDJ
-        03Wp68hZx0HHkfV2h3KJZ1VxL28/eaiI25Unv9PXmvEENVIkxRp78R6kk1aRx0vI1nWJA44gXFN
-        KG4bEfmH9R4bwL0x8+kaVTh0Q
-X-Received: by 2002:a17:902:6b4b:b0:158:d86f:b232 with SMTP id g11-20020a1709026b4b00b00158d86fb232mr9562156plt.106.1650261012670;
-        Sun, 17 Apr 2022 22:50:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwoSw0iKfS7lUTSONvN9gfujuFvECmwh9pZuI5ewINby/kFfzo9o5ZOvaHPQ7r4DFG4n6wQNg==
-X-Received: by 2002:a17:902:6b4b:b0:158:d86f:b232 with SMTP id g11-20020a1709026b4b00b00158d86fb232mr9562133plt.106.1650261012447;
-        Sun, 17 Apr 2022 22:50:12 -0700 (PDT)
-Received: from localhost ([240e:3a1:2e1:fc30:496c:36d3:5798:d144])
-        by smtp.gmail.com with ESMTPSA id y16-20020a637d10000000b00381268f2c6fsm11661092pgc.4.2022.04.17.22.50.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Apr 2022 22:50:11 -0700 (PDT)
-Date:   Mon, 18 Apr 2022 13:46:12 +0800
-From:   Coiby Xu <coxu@redhat.com>
-To:     Baoquan He <bhe@redhat.com>
-Cc:     kexec@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
-        Michal Suchanek <msuchanek@suse.de>,
-        Dave Young <dyoung@redhat.com>, Will Deacon <will@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Mimi Zohar <zohar@linux.ibm.com>, Chun-Yi Lee <jlee@suse.com>,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        stable@kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>,
-        AKASHI Takahiro <takahiro.akashi@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 3/4] arm64: kexec_file: use more system keyrings to
- verify kernel image signature
-Message-ID: <20220418054612.54knzv4gqoxbq57a@Rk>
-References: <20220414014344.228523-1-coxu@redhat.com>
- <20220414014344.228523-4-coxu@redhat.com>
- <YlzJh8SE8pV1Et+O@MiWiFi-R3L-srv>
+        Mon, 18 Apr 2022 01:53:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DA46256;
+        Sun, 17 Apr 2022 22:50:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F123E60FCC;
+        Mon, 18 Apr 2022 05:50:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0336C385A7;
+        Mon, 18 Apr 2022 05:50:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650261049;
+        bh=c6lztFL55aAMewYOzrJixc2SsJnt77LZCuf+XTgdsDY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gwp5pedqmew6MW6i/LOGxLnThfNgsmwVJjleBKMWK2ttlaooPkI0JY2uQxwl4Cs1V
+         y//hey03+c4l84gsRy9elzEplh2ZX317czDbbfIXj/PRVoSOy2I2jnOg9Jw4G1K8O4
+         ZBYGhhrdNnzpg/L5jQXPxlYUL8mwlMGpxDu8IG91PLmYYuxxcrHNz5k/oPkV8+u3Gu
+         2u+zlQavm+Af9kx6S4ddd6f9NGCjJKtr7MfU4cmhjpoRie71xwXZy+3DNi2BN+Td1/
+         PG6ouFR/KUwgI0jJvCTf3DK6u7MwCUmoWcbxBjf+iGQaujbikuIHMHNKKPCrlvbbJK
+         3nIt3XGFXgrYg==
+Date:   Mon, 18 Apr 2022 11:20:42 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Jeffrey Hugo <quic_jhugo@quicinc.com>
+Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
+        mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] bus: mhi: host: Use cached values for calculating the
+ shared write pointer
+Message-ID: <20220418055042.GC7431@thinkpad>
+References: <1649868113-18826-1-git-send-email-quic_jhugo@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YlzJh8SE8pV1Et+O@MiWiFi-R3L-srv>
+In-Reply-To: <1649868113-18826-1-git-send-email-quic_jhugo@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 10:14:31AM +0800, Baoquan He wrote:
->On 04/14/22 at 09:43am, Coiby Xu wrote:
->> Currently, a problem faced by arm64 is if a kernel image is signed by a
->> MOK key, loading it via the kexec_file_load() system call would be
->> rejected with the error "Lockdown: kexec: kexec of unsigned images is
->> restricted; see man kernel_lockdown.7".
->>
->> This happens because image_verify_sig uses only the primary keyring that
->> contains only kernel built-in keys to verify the kexec image.
->>
->> This patch allows to verify arm64 kernel image signature using not only
->> .builtin_trusted_keys but also .platform and .secondary_trusted_keys
->> keyring.
->>
->> Fixes: 732b7b93d849 ("arm64: kexec_file: add kernel signature verification support")
->
->Cc stable?
+On Wed, Apr 13, 2022 at 10:41:53AM -0600, Jeffrey Hugo wrote:
+> mhi_recycle_ev_ring() computes the shared write pointer for the ring
+> (ctxt_wp) using a read/modify/write pattern where the ctxt_wp value in the
+> shared memory is read, incremented, and written back.  There are no checks
+> on the read value, it is assumed that it is kept in sync with the locally
+> cached value.  Per the MHI spec, this is correct.  The device should only
+> read ctxt_wp, never write it.
+> 
+> However, there are devices in the wild that violate the spec, and can
+> update the ctxt_wp in a specific scenario.  This can cause corruption, and
+> violate the above assumption that the ctxt_wp is in sync with the cached
+> value.
+> 
+> This can occur when the device has loaded firmware from the host, and is
+> transitioning from the SBL EE to the AMSS EE.  As part of shutting down
+> SBL, the SBL flushes it's local MHI context to the shared memory since
+> the local context will not persist across an EE change.  In the case of
+> the event ring, SBL will flush its entire context, not just the parts that
+> it is allowed to update.  This means SBL will write to ctxt_wp, and
+> possibly corrupt it.
+> 
+> An example:
+> 
+> Host				Device
+> ----				---
+> Update ctxt_wp to 0x1f0
+> 				SBL observes 0x1f0
+> Update ctxt_wp to 0x0
+> 				Starts transition to AMSS EE
+> 				Context flush, writes 0x1f0 to ctxt_wp
+> Update ctxt_wp to 0x200
+> Update ctxt_wp to 0x210
+> 				AMSS observes 0x210
+> 				0x210 exceeds ring size
+> 				AMSS signals syserr
+> 
+> The reason the ctxt_wp goes off the end of the ring is that the rollover
+> check is only performed on the cached wp, which is out of sync with
+> ctxt_wp.
+> 
+> Since the host is the authority of the value of ctxt_wp per the MHI spec,
+> we can fix this issue by not reading ctxt_wp from the shared memory, and
+> instead compute it based on the cached value.  If SBL corrupts ctxt_wp,
+> the host won't observe it, and will correct the value at some point later.
+> 
+> Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+> Reviewed-by: Hemant Kumar <hemantk@codeaurora.org>
+> Reviewed-by: Bhaumik Bhatt <bbhatt@codeaurora.org>
 
-Thanks for the reminder! I've added "Cc stable@kernel.org". But it seems
-I should Cc stable@vger.kernel.org instead.
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
->
->Otherwise, LGTM,
->
->Acked-by: Baoquan He <bhe@redhat.com>
->
->> Cc: kexec@lists.infradead.org
->> Cc: keyrings@vger.kernel.org
->> Cc: linux-security-module@vger.kernel.org
->> Cc: stable@kernel.org
->> Co-developed-by: Michal Suchanek <msuchanek@suse.de>
->> Signed-off-by: Michal Suchanek <msuchanek@suse.de>
->> Acked-by: Will Deacon <will@kernel.org>
->> Signed-off-by: Coiby Xu <coxu@redhat.com>
->> ---
->>  arch/arm64/kernel/kexec_image.c | 11 +----------
->>  1 file changed, 1 insertion(+), 10 deletions(-)
->>
->> diff --git a/arch/arm64/kernel/kexec_image.c b/arch/arm64/kernel/kexec_image.c
->> index 9ec34690e255..5ed6a585f21f 100644
->> --- a/arch/arm64/kernel/kexec_image.c
->> +++ b/arch/arm64/kernel/kexec_image.c
->> @@ -14,7 +14,6 @@
->>  #include <linux/kexec.h>
->>  #include <linux/pe.h>
->>  #include <linux/string.h>
->> -#include <linux/verification.h>
->>  #include <asm/byteorder.h>
->>  #include <asm/cpufeature.h>
->>  #include <asm/image.h>
->> @@ -130,18 +129,10 @@ static void *image_load(struct kimage *image,
->>  	return NULL;
->>  }
->>
->> -#ifdef CONFIG_KEXEC_IMAGE_VERIFY_SIG
->> -static int image_verify_sig(const char *kernel, unsigned long kernel_len)
->> -{
->> -	return verify_pefile_signature(kernel, kernel_len, NULL,
->> -				       VERIFYING_KEXEC_PE_SIGNATURE);
->> -}
->> -#endif
->> -
->>  const struct kexec_file_ops kexec_image_ops = {
->>  	.probe = image_probe,
->>  	.load = image_load,
->>  #ifdef CONFIG_KEXEC_IMAGE_VERIFY_SIG
->> -	.verify_sig = image_verify_sig,
->> +	.verify_sig = kexec_kernel_verify_pe_sig,
->>  #endif
->>  };
->> --
->> 2.34.1
->>
->>
->
+Thanks,
+Mani
 
--- 
-Best regards,
-Coiby
-
+> ---
+> 
+> v3:
+> Rebase to -next
+> 
+> v2:
+> Fix typo on the ring base
+> 
+>  drivers/bus/mhi/host/main.c | 9 ++-------
+>  1 file changed, 2 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/bus/mhi/host/main.c b/drivers/bus/mhi/host/main.c
+> index 142eea1..f3aef77a 100644
+> --- a/drivers/bus/mhi/host/main.c
+> +++ b/drivers/bus/mhi/host/main.c
+> @@ -534,18 +534,13 @@ irqreturn_t mhi_intvec_handler(int irq_number, void *dev)
+>  static void mhi_recycle_ev_ring_element(struct mhi_controller *mhi_cntrl,
+>  					struct mhi_ring *ring)
+>  {
+> -	dma_addr_t ctxt_wp;
+> -
+>  	/* Update the WP */
+>  	ring->wp += ring->el_size;
+> -	ctxt_wp = le64_to_cpu(*ring->ctxt_wp) + ring->el_size;
+>  
+> -	if (ring->wp >= (ring->base + ring->len)) {
+> +	if (ring->wp >= (ring->base + ring->len))
+>  		ring->wp = ring->base;
+> -		ctxt_wp = ring->iommu_base;
+> -	}
+>  
+> -	*ring->ctxt_wp = cpu_to_le64(ctxt_wp);
+> +	*ring->ctxt_wp = cpu_to_le64(ring->iommu_base + (ring->wp - ring->base));
+>  
+>  	/* Update the RP */
+>  	ring->rp += ring->el_size;
+> -- 
+> 2.7.4
+> 
