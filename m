@@ -2,105 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 912B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:24:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A13C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:24:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232416AbiDRM1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33520 "EHLO
+        id S232095AbiDRM1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233937AbiDRM0M (ORCPT
+        with ESMTP id S238714AbiDRM0N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:26:12 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A60766A;
-        Mon, 18 Apr 2022 05:19:56 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id r13so26554340ejd.5;
-        Mon, 18 Apr 2022 05:19:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bPi1M4TpdIF35hZ6pGwoTFeZJUCgotNcWVS0tlq5Gy0=;
-        b=mWBRchCaMLmzqclRE3NU5WjLz7A7l7uKIZbpLiuae6iFeHIgrmuXM7rl1R3GlpYFEM
-         ///hkpMzhtANLw7rxbrSgN08RvqMYAZ3sjLUZInh/y0drfYcYI/Bs9zjbTHtMxa5X+aN
-         1WxXLWR0nhwUayIePh+RunzOtBllTHgbA1IkRq9ME8fQjdqNwte3L8LMCGaPVGwVoMNq
-         +4bxQfbHNz/YyGJ2FZ6c1olp+ainFaMRcC0M2coEUONZJIoujnwZX4jBr2RfWGLt0vrA
-         9gq2+vC+FjaEdsBcUO8VJKz30bX8hU5crDBJ8OjlXg5h4Ko8y3/+MiGFYgL6V6HZuI9c
-         rzdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bPi1M4TpdIF35hZ6pGwoTFeZJUCgotNcWVS0tlq5Gy0=;
-        b=uYUOw6SKlR62m5VDEk5pWyGasyzO+uC8gibSSWVarCujDjpXlyBKciiV/JpPD6MYdN
-         0DUHRH9g1w1dO2BzkhsiZFrK/GYa0KYtGyVb/7cCKFPk70bDJt5jeEF8pYrMvolGgUxY
-         0MOYVHgz5Ae5UQsMTty3n5Mg+bVlPqfPacH6O7EgOtUUMtj93rU+i/Egycpf0HfqA99N
-         uv+9XCSsFy09N/mdABZrKc9Vvi2ABm6S4DVFSXKYx8ufWOZSDfcZbrs9kvRQEE+qS920
-         zOyzjQ7laTANOOcI8ZbgS941p0sDcAl9JStbcM/vis2gb+TFs9EjC89k3CjOC39gBEF9
-         Ny3Q==
-X-Gm-Message-State: AOAM532v4VCKifsuVZhG5WmwQC7ynI0TIECAWWdTQ+ohX52RV4xEU6v5
-        sgz/OItfCd+7hGRbA87bZadezwdhgZVKWsdLIjeo0I5Dc1WH6w==
-X-Google-Smtp-Source: ABdhPJyPD6AIcVEj5ia6EDgEOLP4lzMXX7ielqUjla1STAukjxOqTZDEkgeuUuCFmmwrz2TlQNzd6QJLK/SqD3RDRTQ=
-X-Received: by 2002:a17:906:1cd1:b0:6ec:c59:6a1d with SMTP id
- i17-20020a1709061cd100b006ec0c596a1dmr8086964ejh.77.1650284395249; Mon, 18
- Apr 2022 05:19:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <alpine.DEB.2.21.2204161848030.9383@angie.orcam.me.uk> <alpine.DEB.2.21.2204162156340.9383@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2204162156340.9383@angie.orcam.me.uk>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 18 Apr 2022 15:19:19 +0300
-Message-ID: <CAHp75VccGqH-peGQHnM+guu8KfkGo6-R3wwGUPKRWKqQZid7AA@mail.gmail.com>
-Subject: Re: [PATCH v4 4/5] serial: 8250: Also set sticky MCR bits in console restoration
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
+        Mon, 18 Apr 2022 08:26:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3FE65E5;
+        Mon, 18 Apr 2022 05:19:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B19CB80EC4;
+        Mon, 18 Apr 2022 12:19:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6527C385A1;
+        Mon, 18 Apr 2022 12:19:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650284396;
+        bh=Wx4NCEWlH2dKwa1cDmSNLQyZi3kQ6S5UPpNLcHYn7bk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=b2eJLMrzSBQbNNZO6fHf5Fj+s8Zca0mlYsXuIVSDju07dAzvKTRtvmJfHhxeuSyPB
+         wTl0HSgrjGYfolQPzNW5chh4w+M6ezAu/8GcvlvrXpXUGEOY0dlDr8WWmFYAFXYZSp
+         VeyJR6ejeXVjFj9gL5a2vLzKSrjoawD52O5KAjFk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        stable@vger.kernel.org, Manish Rangankar <mrangankar@marvell.com>,
+        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 101/219] scsi: iscsi: Fix conn cleanup and stop race during iscsid restart
+Date:   Mon, 18 Apr 2022 14:11:10 +0200
+Message-Id: <20220418121209.680843067@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
+References: <20220418121203.462784814@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 2:02 AM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
->
-> Sticky MCR bits are lost in console restoration if console suspending
-> has been disabled.  This currently affects the AFE bit, which works in
-> combination with RTS which we set, so we want to make sure the UART
-> retains control of its FIFO where previously requested.  Also specific
-> drivers may need other bits in the future.
+From: Mike Christie <michael.christie@oracle.com>
 
-Since it's a fix it should be moved to the beginning of the series.
+[ Upstream commit 7c6e99c18167ed89729bf167ccb4a7e3ab3115ba ]
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+If iscsid is doing a stop_conn at the same time the kernel is starting
+error recovery we can hit a race that allows the cleanup work to run on a
+valid connection. In the race, iscsi_if_stop_conn sees the cleanup bit set,
+but it calls flush_work on the clean_work before iscsi_conn_error_event has
+queued it. The flush then returns before the queueing and so the
+cleanup_work can run later and disconnect/stop a conn while it's in a
+connected state.
 
-> Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-> Fixes: 4516d50aabed ("serial: 8250: Use canary to restart console after suspend")
-> Cc: stable@vger.kernel.org # v4.0+
-> ---
-> New change in v4, factored out from 5/5.
-> ---
->  drivers/tty/serial/8250/8250_port.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> linux-serial-8250-mcr-restore.diff
-> Index: linux-macro/drivers/tty/serial/8250/8250_port.c
-> ===================================================================
-> --- linux-macro.orig/drivers/tty/serial/8250/8250_port.c
-> +++ linux-macro/drivers/tty/serial/8250/8250_port.c
-> @@ -3308,7 +3308,7 @@ static void serial8250_console_restore(s
->
->         serial8250_set_divisor(port, baud, quot, frac);
->         serial_port_out(port, UART_LCR, up->lcr);
-> -       serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
-> +       serial8250_out_MCR(up, up->mcr | UART_MCR_DTR | UART_MCR_RTS);
->  }
->
->  /*
+The patch:
 
+Commit 0ab710458da1 ("scsi: iscsi: Perform connection failure entirely in
+kernel space")
 
+added the late stop_conn call bug originally, and the patch:
 
+Commit 23d6fefbb3f6 ("scsi: iscsi: Fix in-kernel conn failure handling")
+
+attempted to fix it but only fixed the normal EH case and left the above
+race for the iscsid restart case. For the normal EH case we don't hit the
+race because we only signal userspace to start recovery after we have done
+the queueing, so the flush will always catch the queued work or see it
+completed.
+
+For iscsid restart cases like boot, we can hit the race because iscsid will
+call down to the kernel before the kernel has signaled any error, so both
+code paths can be running at the same time. This adds a lock around the
+setting of the cleanup bit and queueing so they happen together.
+
+Link: https://lore.kernel.org/r/20220408001314.5014-6-michael.christie@oracle.com
+Fixes: 0ab710458da1 ("scsi: iscsi: Perform connection failure entirely in kernel space")
+Tested-by: Manish Rangankar <mrangankar@marvell.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Reviewed-by: Chris Leech <cleech@redhat.com>
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/scsi/scsi_transport_iscsi.c | 17 +++++++++++++++++
+ include/scsi/scsi_transport_iscsi.h |  2 ++
+ 2 files changed, 19 insertions(+)
+
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index 4fa2fd7f4c72..ed289e1242c9 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -2260,9 +2260,12 @@ static void iscsi_if_disconnect_bound_ep(struct iscsi_cls_conn *conn,
+ 					 bool is_active)
+ {
+ 	/* Check if this was a conn error and the kernel took ownership */
++	spin_lock_irq(&conn->lock);
+ 	if (!test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++		spin_unlock_irq(&conn->lock);
+ 		iscsi_ep_disconnect(conn, is_active);
+ 	} else {
++		spin_unlock_irq(&conn->lock);
+ 		ISCSI_DBG_TRANS_CONN(conn, "flush kernel conn cleanup.\n");
+ 		mutex_unlock(&conn->ep_mutex);
+ 
+@@ -2309,9 +2312,12 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 		/*
+ 		 * Figure out if it was the kernel or userspace initiating this.
+ 		 */
++		spin_lock_irq(&conn->lock);
+ 		if (!test_and_set_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++			spin_unlock_irq(&conn->lock);
+ 			iscsi_stop_conn(conn, flag);
+ 		} else {
++			spin_unlock_irq(&conn->lock);
+ 			ISCSI_DBG_TRANS_CONN(conn,
+ 					     "flush kernel conn cleanup.\n");
+ 			flush_work(&conn->cleanup_work);
+@@ -2320,7 +2326,9 @@ static int iscsi_if_stop_conn(struct iscsi_transport *transport,
+ 		 * Only clear for recovery to avoid extra cleanup runs during
+ 		 * termination.
+ 		 */
++		spin_lock_irq(&conn->lock);
+ 		clear_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags);
++		spin_unlock_irq(&conn->lock);
+ 	}
+ 	ISCSI_DBG_TRANS_CONN(conn, "iscsi if conn stop done.\n");
+ 	return 0;
+@@ -2341,7 +2349,9 @@ static void iscsi_cleanup_conn_work_fn(struct work_struct *work)
+ 	 */
+ 	if (conn->state != ISCSI_CONN_BOUND && conn->state != ISCSI_CONN_UP) {
+ 		ISCSI_DBG_TRANS_CONN(conn, "Got error while conn is already failed. Ignoring.\n");
++		spin_lock_irq(&conn->lock);
+ 		clear_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags);
++		spin_unlock_irq(&conn->lock);
+ 		mutex_unlock(&conn->ep_mutex);
+ 		return;
+ 	}
+@@ -2407,6 +2417,7 @@ iscsi_create_conn(struct iscsi_cls_session *session, int dd_size, uint32_t cid)
+ 		conn->dd_data = &conn[1];
+ 
+ 	mutex_init(&conn->ep_mutex);
++	spin_lock_init(&conn->lock);
+ 	INIT_LIST_HEAD(&conn->conn_list);
+ 	INIT_WORK(&conn->cleanup_work, iscsi_cleanup_conn_work_fn);
+ 	conn->transport = transport;
+@@ -2598,9 +2609,12 @@ void iscsi_conn_error_event(struct iscsi_cls_conn *conn, enum iscsi_err error)
+ 	struct iscsi_uevent *ev;
+ 	struct iscsi_internal *priv;
+ 	int len = nlmsg_total_size(sizeof(*ev));
++	unsigned long flags;
+ 
++	spin_lock_irqsave(&conn->lock, flags);
+ 	if (!test_and_set_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags))
+ 		queue_work(iscsi_conn_cleanup_workq, &conn->cleanup_work);
++	spin_unlock_irqrestore(&conn->lock, flags);
+ 
+ 	priv = iscsi_if_transport_lookup(conn->transport);
+ 	if (!priv)
+@@ -3743,11 +3757,14 @@ static int iscsi_if_transport_conn(struct iscsi_transport *transport,
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&conn->ep_mutex);
++	spin_lock_irq(&conn->lock);
+ 	if (test_bit(ISCSI_CLS_CONN_BIT_CLEANUP, &conn->flags)) {
++		spin_unlock_irq(&conn->lock);
+ 		mutex_unlock(&conn->ep_mutex);
+ 		ev->r.retcode = -ENOTCONN;
+ 		return 0;
+ 	}
++	spin_unlock_irq(&conn->lock);
+ 
+ 	switch (nlh->nlmsg_type) {
+ 	case ISCSI_UEVENT_BIND_CONN:
+diff --git a/include/scsi/scsi_transport_iscsi.h b/include/scsi/scsi_transport_iscsi.h
+index c5d7810fd792..037c77fb5dc5 100644
+--- a/include/scsi/scsi_transport_iscsi.h
++++ b/include/scsi/scsi_transport_iscsi.h
+@@ -211,6 +211,8 @@ struct iscsi_cls_conn {
+ 	struct mutex ep_mutex;
+ 	struct iscsi_endpoint *ep;
+ 
++	/* Used when accessing flags and queueing work. */
++	spinlock_t lock;
+ 	unsigned long flags;
+ 	struct work_struct cleanup_work;
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.1
+
+
+
