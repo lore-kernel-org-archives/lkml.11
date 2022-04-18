@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C25C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61FB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239118AbiDRMfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38582 "EHLO
+        id S239185AbiDRMf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239979AbiDRM3L (ORCPT
+        with ESMTP id S240149AbiDRM3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:29:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFCC201BE;
-        Mon, 18 Apr 2022 05:23:00 -0700 (PDT)
+        Mon, 18 Apr 2022 08:29:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A5A23BC4;
+        Mon, 18 Apr 2022 05:23:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECF33B80EC1;
-        Mon, 18 Apr 2022 12:22:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 487A8C385A7;
-        Mon, 18 Apr 2022 12:22:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6051760FD6;
+        Mon, 18 Apr 2022 12:23:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 529B1C385A1;
+        Mon, 18 Apr 2022 12:23:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284577;
-        bh=Bcm/L4B9jJWb+jV5TvnT5U/PTAjme2W/RGdOOBuZDt8=;
+        s=korg; t=1650284600;
+        bh=TXP33MxQcoGXqH6pSq59ip2G3OXzzhTeruKASjNglEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y3smYUyhasuUWXbEhS+aDzjeD+LDNRozqty4rPrqrzOqsUXvBpWet0iKKBn0g+WtY
-         xMGA7MLYEFlMoQwpDs22RdH8znNuMVHOvDZch/do/cf226Zyy2pcINcW9D1SpBZm20
-         ncingRStMIvohrdnfPaVwhjAONjQIZ0s0eF+MPw8=
+        b=wKtl8zD6V+B9hSW8trAQfLNWpQb3rAC4ROZMjnxxuhS+2fY9kSeT7Ofqg7GZLbVS5
+         5JCazhkyQkXDcWKH2YmeVfPSYrvk6FFqhoZyWwMo8yYrEulVOB6CPY7cjHbDlk/gwj
+         7g2SONt4kx6yQLLML+FjQjfbEO1EJDS1aN0ESTmU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marcin Kozlowski <marcinguy@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 159/219] net: usb: aqc111: Fix out-of-bounds accesses in RX fixup
-Date:   Mon, 18 Apr 2022 14:12:08 +0200
-Message-Id: <20220418121211.334656665@linuxfoundation.org>
+Subject: [PATCH 5.17 166/219] drbd: set QUEUE_FLAG_STABLE_WRITES
+Date:   Mon, 18 Apr 2022 14:12:15 +0200
+Message-Id: <20220418121211.529665024@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,54 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcin Kozlowski <marcinguy@gmail.com>
+From: Christoph Böhmwalder <christoph@boehmwalder.at>
 
-[ Upstream commit afb8e246527536848b9b4025b40e613edf776a9d ]
+[ Upstream commit 286901941fd18a52b2138fddbbf589ad3639eb00 ]
 
-aqc111_rx_fixup() contains several out-of-bounds accesses that can be
-triggered by a malicious (or defective) USB device, in particular:
+We want our pages not to change while they are being written.
 
- - The metadata array (desc_offset..desc_offset+2*pkt_count) can be out of bounds,
-   causing OOB reads and (on big-endian systems) OOB endianness flips.
- - A packet can overlap the metadata array, causing a later OOB
-   endianness flip to corrupt data used by a cloned SKB that has already
-   been handed off into the network stack.
- - A packet SKB can be constructed whose tail is far beyond its end,
-   causing out-of-bounds heap data to be considered part of the SKB's
-   data.
-
-Found doing variant analysis. Tested it with another driver (ax88179_178a), since
-I don't have a aqc111 device to test it, but the code looks very similar.
-
-Signed-off-by: Marcin Kozlowski <marcinguy@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/aqc111.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/block/drbd/drbd_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/usb/aqc111.c b/drivers/net/usb/aqc111.c
-index ea06d10e1c21..ca409d450a29 100644
---- a/drivers/net/usb/aqc111.c
-+++ b/drivers/net/usb/aqc111.c
-@@ -1102,10 +1102,15 @@ static int aqc111_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 	if (start_of_descs != desc_offset)
- 		goto err;
+diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
+index 5d5beeba3ed4..478ba959362c 100644
+--- a/drivers/block/drbd/drbd_main.c
++++ b/drivers/block/drbd/drbd_main.c
+@@ -2739,6 +2739,7 @@ enum drbd_ret_code drbd_create_device(struct drbd_config_context *adm_ctx, unsig
+ 	sprintf(disk->disk_name, "drbd%d", minor);
+ 	disk->private_data = device;
  
--	/* self check desc_offset from header*/
--	if (desc_offset >= skb_len)
-+	/* self check desc_offset from header and make sure that the
-+	 * bounds of the metadata array are inside the SKB
-+	 */
-+	if (pkt_count * 2 + desc_offset >= skb_len)
- 		goto err;
- 
-+	/* Packets must not overlap the metadata array */
-+	skb_trim(skb, desc_offset);
-+
- 	if (pkt_count == 0)
- 		goto err;
- 
++	blk_queue_flag_set(QUEUE_FLAG_STABLE_WRITES, disk->queue);
+ 	blk_queue_write_cache(disk->queue, true, true);
+ 	/* Setting the max_hw_sectors to an odd value of 8kibyte here
+ 	   This triggers a max_bio_size message upon first attach or connect */
 -- 
 2.35.1
 
