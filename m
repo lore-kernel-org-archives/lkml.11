@@ -2,166 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA767C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:29:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A616C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241908AbiDRNbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
+        id S242016AbiDRNcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:32:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240949AbiDRNFj (ORCPT
+        with ESMTP id S239696AbiDRNFs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:05:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CCD529CBB;
-        Mon, 18 Apr 2022 05:46:33 -0700 (PDT)
+        Mon, 18 Apr 2022 09:05:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124F420F73;
+        Mon, 18 Apr 2022 05:46:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2019CB80E44;
-        Mon, 18 Apr 2022 12:46:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EFBCC385A7;
-        Mon, 18 Apr 2022 12:46:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A29D960FB6;
+        Mon, 18 Apr 2022 12:46:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BDC5C385A7;
+        Mon, 18 Apr 2022 12:46:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285990;
-        bh=PIKSrYrmqMtZ8E664NQk1+Mn3l/xkzBH+ARjWDPYrzk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZMJ62DDQsPJztoZ5KpUl5fe/NpDmrqa80Gq8ixXkGRys6PIb/2PSHtfSatb5Bp8dE
-         7EN+Wpm53Jd24ZLX0xmx1UhgVn+0qIGPIufcXWmZD4U/qtxJqykzMZOKsRpnsRdfco
-         o/CESniF7XedclwPkKC7Bgm6NC6vhypwQeK4o9Oc=
+        s=korg; t=1650286003;
+        bh=rdVpADfyBNxl/+AyT3aBrtWFN62gbyQxxv4XkXkKf2U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=G08K/LSWNU3n5tce5NWFz7epoANbraR442LDC48PzQ+iF0kgPAnD2E84xOl/6qLtm
+         7BMqWQdHTzVrf2DRnN4ecEb0Pd0EM8B8AnC+v93NxClb+wDnXspeyW25pdwDXBCBne
+         uIKIb2m8JTGP4GXyABdqOGN3VjIMtRnYpeFexK6Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 06/32] net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link
-Date:   Mon, 18 Apr 2022 14:13:46 +0200
-Message-Id: <20220418121127.313985949@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.19 00/32] 4.19.239-rc1 review
+Date:   Mon, 18 Apr 2022 14:13:40 +0200
+Message-Id: <20220418121127.127656835@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
-References: <20220418121127.127656835@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.239-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.19.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.19.239-rc1
+X-KernelTest-Deadline: 2022-04-20T12:11+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dinh Nguyen <dinguyen@kernel.org>
+This is the start of the stable review cycle for the 4.19.239 release.
+There are 32 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-[ Upstream commit a6aaa00324240967272b451bfa772547bd576ee6 ]
+Responses should be made by Wed, 20 Apr 2022 12:11:14 +0000.
+Anything received after that time might be too late.
 
-When using a fixed-link, the altr_tse_pcs driver crashes
-due to null-pointer dereference as no phy_device is provided to
-tse_pcs_fix_mac_speed function. Fix this by adding a check for
-phy_dev before calling the tse_pcs_fix_mac_speed() function.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.239-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+and the diffstat can be found below.
 
-Also clean up the tse_pcs_fix_mac_speed function a bit. There is
-no need to check for splitter_base and sgmii_adapter_base
-because the driver will fail if these 2 variables are not
-derived from the device tree.
+thanks,
 
-Fixes: fb3bbdb85989 ("net: ethernet: Add TSE PCS support to dwmac-socfpga")
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c  |  8 --------
- drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h  |  4 ++++
- drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c | 13 +++++--------
- 3 files changed, 9 insertions(+), 16 deletions(-)
+greg k-h
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-index 8b50afcdb52d..729df169faa2 100644
---- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-@@ -68,10 +68,6 @@
- #define TSE_PCS_USE_SGMII_ENA				BIT(0)
- #define TSE_PCS_IF_USE_SGMII				0x03
- 
--#define SGMII_ADAPTER_CTRL_REG				0x00
--#define SGMII_ADAPTER_DISABLE				0x0001
--#define SGMII_ADAPTER_ENABLE				0x0000
--
- #define AUTONEGO_LINK_TIMER				20
- 
- static int tse_pcs_reset(void __iomem *base, struct tse_pcs *pcs)
-@@ -213,12 +209,8 @@ void tse_pcs_fix_mac_speed(struct tse_pcs *pcs, struct phy_device *phy_dev,
- 			   unsigned int speed)
- {
- 	void __iomem *tse_pcs_base = pcs->tse_pcs_base;
--	void __iomem *sgmii_adapter_base = pcs->sgmii_adapter_base;
- 	u32 val;
- 
--	writew(SGMII_ADAPTER_ENABLE,
--	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
--
- 	pcs->autoneg = phy_dev->autoneg;
- 
- 	if (phy_dev->autoneg == AUTONEG_ENABLE) {
-diff --git a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-index 2f5882450b06..254199f2efdb 100644
---- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-@@ -21,6 +21,10 @@
- #include <linux/phy.h>
- #include <linux/timer.h>
- 
-+#define SGMII_ADAPTER_CTRL_REG		0x00
-+#define SGMII_ADAPTER_ENABLE		0x0000
-+#define SGMII_ADAPTER_DISABLE		0x0001
-+
- struct tse_pcs {
- 	struct device *dev;
- 	void __iomem *tse_pcs_base;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-index 33407df6bea6..32ead4a4b460 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-@@ -29,9 +29,6 @@
- 
- #include "altr_tse_pcs.h"
- 
--#define SGMII_ADAPTER_CTRL_REG                          0x00
--#define SGMII_ADAPTER_DISABLE                           0x0001
--
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII 0x0
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII 0x1
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII 0x2
-@@ -65,16 +62,14 @@ static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
- {
- 	struct socfpga_dwmac *dwmac = (struct socfpga_dwmac *)priv;
- 	void __iomem *splitter_base = dwmac->splitter_base;
--	void __iomem *tse_pcs_base = dwmac->pcs.tse_pcs_base;
- 	void __iomem *sgmii_adapter_base = dwmac->pcs.sgmii_adapter_base;
- 	struct device *dev = dwmac->dev;
- 	struct net_device *ndev = dev_get_drvdata(dev);
- 	struct phy_device *phy_dev = ndev->phydev;
- 	u32 val;
- 
--	if ((tse_pcs_base) && (sgmii_adapter_base))
--		writew(SGMII_ADAPTER_DISABLE,
--		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
-+	writew(SGMII_ADAPTER_DISABLE,
-+	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
- 
- 	if (splitter_base) {
- 		val = readl(splitter_base + EMAC_SPLITTER_CTRL_REG);
-@@ -96,7 +91,9 @@ static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
- 		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
- 	}
- 
--	if (tse_pcs_base && sgmii_adapter_base)
-+	writew(SGMII_ADAPTER_ENABLE,
-+	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
-+	if (phy_dev)
- 		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
- }
- 
--- 
-2.35.1
+-------------
+Pseudo-Shortlog of commits:
 
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.19.239-rc1
+
+Martin Povišer <povik+lin@cutebit.org>
+    i2c: pasemi: Wait for write xfers to finish
+
+Nadav Amit <namit@vmware.com>
+    smp: Fix offline cpu check in flush_smp_call_function_queue()
+
+Nathan Chancellor <nathan@kernel.org>
+    ARM: davinci: da850-evm: Avoid NULL pointer dereference
+
+Nicolas Dichtel <nicolas.dichtel@6wind.com>
+    ipv6: fix panic when forwarding a pkt with no in6 dev
+
+Fabio M. De Francesco <fmdefrancesco@gmail.com>
+    ALSA: pcm: Test for "silence" field in struct "pcm_format_data"
+
+Tim Crawford <tcrawford@system76.com>
+    ALSA: hda/realtek: Add quirk for Clevo PD50PNT
+
+Jason A. Donenfeld <Jason@zx2c4.com>
+    gcc-plugins: latent_entropy: use /dev/urandom
+
+Oliver Upton <oupton@google.com>
+    KVM: Don't create VM debugfs files outside of the VM directory
+
+Patrick Wang <patrick.wang.shcn@gmail.com>
+    mm: kmemleak: take a full lowmem check in kmemleak_*_phys()
+
+Juergen Gross <jgross@suse.com>
+    mm, page_alloc: fix build_zonerefs_node()
+
+Duoming Zhou <duoming@zju.edu.cn>
+    drivers: net: slip: fix NPD bug in sl_tx_timeout()
+
+Alexey Galakhov <agalakhov@gmail.com>
+    scsi: mvsas: Add PCI ID of RocketRaid 2640
+
+Roman Li <Roman.Li@amd.com>
+    drm/amd/display: Fix allocate_mst_payload assert on resume
+
+Joey Gouly <joey.gouly@arm.com>
+    arm64: alternatives: mark patch_alternative() as `noinstr`
+
+Leo Ruan <tingquan.ruan@cn.bosch.com>
+    gpu: ipu-v3: Fix dev_dbg frequency output
+
+Christian Lamparter <chunkeey@gmail.com>
+    ata: libata-core: Disable READ LOG DMA EXT for Samsung 840 EVOs
+
+Randy Dunlap <rdunlap@infradead.org>
+    net: micrel: fix KS8851_MLL Kconfig
+
+Tyrel Datwyler <tyreld@linux.ibm.com>
+    scsi: ibmvscsis: Increase INITIAL_SRP_LIMIT to 1024
+
+Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+    scsi: target: tcmu: Fix possible page UAF
+
+Michael Kelley <mikelley@microsoft.com>
+    Drivers: hv: vmbus: Prevent load re-ordering when reading ring buffer
+
+QintaoShen <unSimple1993@163.com>
+    drm/amdkfd: Check for potential null return of kmalloc_array()
+
+Aurabindo Pillai <aurabindo.pillai@amd.com>
+    drm/amd: Add USBC connector ID
+
+Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+    cifs: potential buffer overflow in handling symlinks
+
+Lin Ma <linma@zju.edu.cn>
+    nfc: nci: add flush_workqueue to prevent uaf
+
+Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+    testing/selftests/mqueue: Fix mq_perf_tests to free the allocated cpu set
+
+Petr Malat <oss@malat.biz>
+    sctp: Initialize daddr on peeled off socket
+
+Dinh Nguyen <dinguyen@kernel.org>
+    net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link
+
+Vadim Pasternak <vadimp@nvidia.com>
+    mlxsw: i2c: Fix initialization error flow
+
+Linus Torvalds <torvalds@linux-foundation.org>
+    gpiolib: acpi: use correct format characters
+
+Guillaume Nault <gnault@redhat.com>
+    veth: Ensure eth header is in skb's linear part
+
+Vlad Buslov <vladbu@nvidia.com>
+    net/sched: flower: fix parsing of ethertype following VLAN header
+
+Miaoqian Lin <linmq006@gmail.com>
+    memory: atmel-ebi: Fix missing of_node_put in atmel_ebi_probe
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                           |  4 +-
+ arch/arm/mach-davinci/board-da850-evm.c            |  4 +-
+ arch/arm64/kernel/alternative.c                    |  6 +--
+ drivers/ata/libata-core.c                          |  3 ++
+ drivers/gpio/gpiolib-acpi.c                        |  4 +-
+ drivers/gpu/drm/amd/amdgpu/ObjectID.h              |  1 +
+ drivers/gpu/drm/amd/amdkfd/kfd_events.c            |  2 +
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c  |  3 +-
+ drivers/gpu/ipu-v3/ipu-di.c                        |  5 ++-
+ drivers/hv/ring_buffer.c                           | 11 +++++-
+ drivers/i2c/busses/i2c-pasemi.c                    |  6 +++
+ drivers/memory/atmel-ebi.c                         | 23 ++++++++---
+ drivers/net/ethernet/mellanox/mlxsw/i2c.c          |  1 +
+ drivers/net/ethernet/micrel/Kconfig                |  1 +
+ drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c |  8 ----
+ drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h |  4 ++
+ .../net/ethernet/stmicro/stmmac/dwmac-socfpga.c    | 13 +++----
+ drivers/net/slip/slip.c                            |  2 +-
+ drivers/net/veth.c                                 |  2 +-
+ drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c           |  2 +-
+ drivers/scsi/mvsas/mv_init.c                       |  1 +
+ drivers/target/target_core_user.c                  |  3 +-
+ fs/cifs/link.c                                     |  3 ++
+ include/net/flow_dissector.h                       |  2 +
+ kernel/smp.c                                       |  2 +-
+ mm/kmemleak.c                                      |  8 ++--
+ mm/page_alloc.c                                    |  2 +-
+ net/core/flow_dissector.c                          |  1 +
+ net/ipv6/ip6_output.c                              |  2 +-
+ net/nfc/nci/core.c                                 |  4 ++
+ net/sched/cls_flower.c                             | 18 ++++++---
+ net/sctp/socket.c                                  |  2 +-
+ scripts/gcc-plugins/latent_entropy_plugin.c        | 44 +++++++++++++---------
+ sound/core/pcm_misc.c                              |  2 +-
+ sound/pci/hda/patch_realtek.c                      |  1 +
+ tools/testing/selftests/mqueue/mq_perf_tests.c     | 25 ++++++++----
+ virt/kvm/kvm_main.c                                |  8 +++-
+ 37 files changed, 155 insertions(+), 78 deletions(-)
 
 
