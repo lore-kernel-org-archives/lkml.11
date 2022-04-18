@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A7F4C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAAE3C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245135AbiDRNwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55976 "EHLO
+        id S245149AbiDRNwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:52:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243355AbiDRN24 (ORCPT
+        with ESMTP id S243901AbiDRN3O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:28:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89E63F309;
-        Mon, 18 Apr 2022 05:53:31 -0700 (PDT)
+        Mon, 18 Apr 2022 09:29:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809DE403E7;
+        Mon, 18 Apr 2022 05:53:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E259BB80D9C;
-        Mon, 18 Apr 2022 12:53:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DB42C385A1;
-        Mon, 18 Apr 2022 12:53:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3104BB80D9C;
+        Mon, 18 Apr 2022 12:53:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E854C385A8;
+        Mon, 18 Apr 2022 12:53:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286408;
-        bh=uwWUHcocqa18DATC5hnFI4mO2NFYAmc2DXMf4447H+g=;
+        s=korg; t=1650286436;
+        bh=WzYIqXqByWHCrwmyZ4RHJr/fXLMPS+3t8jJ7fa2r+80=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pi/ISS/Dd2aCLujLLobdstcNOLxeMiv6fLn+cZMGJ2KJt0ul0g8j2rG2H4VKGBsWD
-         z4oyfNKrbcyJYH+2jSwYgrK32XPFAuauvah+wuCc+7i7MS6QEnlKaorLVjz2oq0Mp6
-         2+TkdFsy+4TgQJSMhp0esouGNBRR88F/5wfLeqKQ=
+        b=gBzPQTm2GntKVDojf1f6S0mTth0YFFVjndsWuzKVpyTf3h81QRkKED2FpDpUiRArL
+         nvOP4PuPVvfwoQ62pJlCbtYlSnzaa36zQhGULk86bKHI0IxI5OI7tz52VZ8jcNrYqT
+         94m2cjzKOTScqIZJTDbfeGHTOwP5Fe/bbU2VWTRw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Taniya Das <tdas@codeaurora.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 123/284] mtd: rawnand: atmel: fix refcount issue in atmel_nand_controller_init
-Date:   Mon, 18 Apr 2022 14:11:44 +0200
-Message-Id: <20220418121214.658422150@linuxfoundation.org>
+Subject: [PATCH 4.14 135/284] clk: qcom: clk-rcg2: Update the frac table for pixel clock
+Date:   Mon, 18 Apr 2022 14:11:56 +0200
+Message-Id: <20220418121215.214865498@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -52,73 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Taniya Das <tdas@codeaurora.org>
 
-[ Upstream commit fecbd4a317c95d73c849648c406bcf1b6a0ec1cf ]
+[ Upstream commit b527358cb4cd58a8279c9062b0786f1fab628fdc ]
 
-The reference counting issue happens in several error handling paths
-on a refcounted object "nc->dmac". In these paths, the function simply
-returns the error code, forgetting to balance the reference count of
-"nc->dmac", increased earlier by dma_request_channel(), which may
-cause refcount leaks.
+Support the new numerator and denominator for pixel clock on SM8350 and
+support rgb101010, RGB888 use cases on SM8450.
 
-Fix it by decrementing the refcount of specific object in those error
-paths.
-
-Fixes: f88fc122cc34 ("mtd: nand: Cleanup/rework the atmel_nand driver")
-Co-developed-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Co-developed-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220304085330.3610-1-xiongx18@fudan.edu.cn
+Fixes: 99cbd064b059f ("clk: qcom: Support display RCG clocks")
+Signed-off-by: Taniya Das <tdas@codeaurora.org>
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220227175536.3131-2-tdas@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/atmel/nand-controller.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/clk/qcom/clk-rcg2.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/mtd/nand/atmel/nand-controller.c b/drivers/mtd/nand/atmel/nand-controller.c
-index d5a493e8ee08..475c751f2d1e 100644
---- a/drivers/mtd/nand/atmel/nand-controller.c
-+++ b/drivers/mtd/nand/atmel/nand-controller.c
-@@ -1998,13 +1998,15 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
- 	nc->mck = of_clk_get(dev->parent->of_node, 0);
- 	if (IS_ERR(nc->mck)) {
- 		dev_err(dev, "Failed to retrieve MCK clk\n");
--		return PTR_ERR(nc->mck);
-+		ret = PTR_ERR(nc->mck);
-+		goto out_release_dma;
- 	}
+diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+index 6091d9b6a27b..9743af6ae84f 100644
+--- a/drivers/clk/qcom/clk-rcg2.c
++++ b/drivers/clk/qcom/clk-rcg2.c
+@@ -702,6 +702,7 @@ static const struct frac_entry frac_table_pixel[] = {
+ 	{ 2, 9 },
+ 	{ 4, 9 },
+ 	{ 1, 1 },
++	{ 2, 3 },
+ 	{ }
+ };
  
- 	np = of_parse_phandle(dev->parent->of_node, "atmel,smc", 0);
- 	if (!np) {
- 		dev_err(dev, "Missing or invalid atmel,smc property\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto out_release_dma;
- 	}
- 
- 	nc->smc = syscon_node_to_regmap(np);
-@@ -2012,10 +2014,16 @@ static int atmel_nand_controller_init(struct atmel_nand_controller *nc,
- 	if (IS_ERR(nc->smc)) {
- 		ret = PTR_ERR(nc->smc);
- 		dev_err(dev, "Could not get SMC regmap (err = %d)\n", ret);
--		return ret;
-+		goto out_release_dma;
- 	}
- 
- 	return 0;
-+
-+out_release_dma:
-+	if (nc->dmac)
-+		dma_release_channel(nc->dmac);
-+
-+	return ret;
- }
- 
- static int
 -- 
 2.34.1
 
