@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F97C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA4AC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241091AbiDRM6X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:58:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60758 "EHLO
+        id S240967AbiDRM6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240428AbiDRMtg (ORCPT
+        with ESMTP id S240256AbiDRMtT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:49:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11B22B1BD;
-        Mon, 18 Apr 2022 05:33:46 -0700 (PDT)
+        Mon, 18 Apr 2022 08:49:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F5E82AC6F;
+        Mon, 18 Apr 2022 05:33:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57995B80ED6;
-        Mon, 18 Apr 2022 12:33:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D6A8C385A7;
-        Mon, 18 Apr 2022 12:33:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E5DE60F0E;
+        Mon, 18 Apr 2022 12:33:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DCB1C385A1;
+        Mon, 18 Apr 2022 12:33:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285224;
-        bh=g8Q2+7CHiKjILami8t6hn7pMcUNJyhDrXAmITMxT9QM=;
+        s=korg; t=1650285211;
+        bh=Pkl490X0s26AmlLJZZtrREkuiGt6vMu0A9iT6miujAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u1HXsKbKnAHlq26JRJZDOUgjpyH2y3El7GkHPTOvtmMr4yynzNy9b2zOS8qxtvNUW
-         Slev7VFn2PLet6Xd19pPViyZ6HfFpbMhFjdXDLN5ufm/9Gh5DT3cTjJj8qd4UxW2QF
-         wY8y+OjesHUu2jIw+4bIMlb+v7mEVJCaIU6B4ZHg=
+        b=IrIB9JkLqhINnQNq4LGrchsZmzXE11lSpmECOqME+mJhKuVJ/gJqhCMZuDvn55w2R
+         1HVzgyCg7sBOeD+vvDP1m67DYXXAhatKn3HJ0lNaOlvGj1Y9QEWH9sMQfrjYHWs6ED
+         2TQU2RisU0KkvvxLyi5PmaERZa8jDxJi2PDjAgHE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 142/189] io_uring: use nospec annotation for more indexes
-Date:   Mon, 18 Apr 2022 14:12:42 +0200
-Message-Id: <20220418121205.588146582@linuxfoundation.org>
+        stable@vger.kernel.org, Alexey Galakhov <agalakhov@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 138/189] scsi: mvsas: Add PCI ID of RocketRaid 2640
+Date:   Mon, 18 Apr 2022 14:12:38 +0200
+Message-Id: <20220418121205.325617479@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -48,64 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Alexey Galakhov <agalakhov@gmail.com>
 
-[ Upstream commit 4cdd158be9d09223737df83136a1fb65269d809a ]
+[ Upstream commit 5f2bce1e222028dc1c15f130109a17aa654ae6e8 ]
 
-There are still several places that using pre array_index_nospec()
-indexes, fix them up.
+The HighPoint RocketRaid 2640 is a low-cost SAS controller based on Marvell
+chip. The chip in question was already supported by the kernel, just the
+PCI ID of this particular board was missing.
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/b01ef5ee83f72ed35ad525912370b729f5d145f4.1649336342.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Link: https://lore.kernel.org/r/20220309212535.402987-1-agalakhov@gmail.com
+Signed-off-by: Alexey Galakhov <agalakhov@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/scsi/mvsas/mv_init.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index ca207e9a87cd..1bf1ea2cd8b0 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -8489,7 +8489,7 @@ static int io_close_fixed(struct io_kiocb *req, unsigned int issue_flags)
- 	struct io_ring_ctx *ctx = req->ctx;
- 	struct io_fixed_file *file_slot;
- 	struct file *file;
--	int ret, i;
-+	int ret;
- 
- 	io_ring_submit_lock(ctx, !(issue_flags & IO_URING_F_NONBLOCK));
- 	ret = -ENXIO;
-@@ -8502,8 +8502,8 @@ static int io_close_fixed(struct io_kiocb *req, unsigned int issue_flags)
- 	if (ret)
- 		goto out;
- 
--	i = array_index_nospec(offset, ctx->nr_user_files);
--	file_slot = io_fixed_file_slot(&ctx->file_table, i);
-+	offset = array_index_nospec(offset, ctx->nr_user_files);
-+	file_slot = io_fixed_file_slot(&ctx->file_table, offset);
- 	ret = -EBADF;
- 	if (!file_slot->file_ptr)
- 		goto out;
-@@ -8559,8 +8559,7 @@ static int __io_sqe_files_update(struct io_ring_ctx *ctx,
- 
- 		if (file_slot->file_ptr) {
- 			file = (struct file *)(file_slot->file_ptr & FFS_MASK);
--			err = io_queue_rsrc_removal(data, up->offset + done,
--						    ctx->rsrc_node, file);
-+			err = io_queue_rsrc_removal(data, i, ctx->rsrc_node, file);
- 			if (err)
- 				break;
- 			file_slot->file_ptr = 0;
-@@ -9229,7 +9228,7 @@ static int __io_sqe_buffers_update(struct io_ring_ctx *ctx,
- 
- 		i = array_index_nospec(offset, ctx->nr_user_bufs);
- 		if (ctx->user_bufs[i] != ctx->dummy_ubuf) {
--			err = io_queue_rsrc_removal(ctx->buf_data, offset,
-+			err = io_queue_rsrc_removal(ctx->buf_data, i,
- 						    ctx->rsrc_node, ctx->user_bufs[i]);
- 			if (unlikely(err)) {
- 				io_buffer_unmap(ctx, &imu);
+diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
+index 787cf439ba57..f6f8ca3c8c7f 100644
+--- a/drivers/scsi/mvsas/mv_init.c
++++ b/drivers/scsi/mvsas/mv_init.c
+@@ -646,6 +646,7 @@ static struct pci_device_id mvs_pci_table[] = {
+ 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1300), chip_1300 },
+ 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1320), chip_1320 },
+ 	{ PCI_VDEVICE(ADAPTEC2, 0x0450), chip_6440 },
++	{ PCI_VDEVICE(TTI, 0x2640), chip_6440 },
+ 	{ PCI_VDEVICE(TTI, 0x2710), chip_9480 },
+ 	{ PCI_VDEVICE(TTI, 0x2720), chip_9480 },
+ 	{ PCI_VDEVICE(TTI, 0x2721), chip_9480 },
 -- 
 2.35.1
 
