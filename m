@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE8FC3527D
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CED2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343595AbiDRNyJ (ORCPT
+        id S1343899AbiDRNyb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
+        Mon, 18 Apr 2022 09:54:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244840AbiDRNa5 (ORCPT
+        with ESMTP id S244853AbiDRNa6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE7E1EC55;
-        Mon, 18 Apr 2022 05:55:55 -0700 (PDT)
+        Mon, 18 Apr 2022 09:30:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202B31EC6D;
+        Mon, 18 Apr 2022 05:56:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 344B2B80E4B;
-        Mon, 18 Apr 2022 12:55:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E9B4C385A1;
-        Mon, 18 Apr 2022 12:55:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96FA560FD9;
+        Mon, 18 Apr 2022 12:56:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F9F6C385A1;
+        Mon, 18 Apr 2022 12:56:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286553;
-        bh=vrr9yOlm8FE3cGTKPSJUOj69XGFkfbaYIYMtWeMhDG0=;
+        s=korg; t=1650286569;
+        bh=5DhYdPpy5hGpue8wLGlBJX3nNYuxCqm2NqDqAHyvBQI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WvSvpA77wx38oTxOge8yOWm+WKlgHdxub2P0we4Sl9vBDxmJ1zE8ngdqz1hTPOrwh
-         NkGno/oYq1xTyDk/wOFJ4DtfQurtqAKu7L18w9pUoYK5ktkrhhYQjgv0Xry3dtAOD/
-         KJT1RLIzNLcW5TodNSAnH8c8RkxDsRElsgaO+UaU=
+        b=GWwoNpsoZ6j5mQz943jgYwuPTvFKxmBatQMJNRAOzKwaVKpN3A5ofcBYnMAqNdamv
+         XrWiAE+PKTSjUERDyYxdoYPfk9GtptCQ8o/uxYFW7qfq5v9oAT/xporQ5gK+WqVNma
+         qRebzwM8d3r3djWrAHXEbpLi5ggn/NIo9ZmeQ9uI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 130/284] pwm: lpc18xx-sct: Initialize driver data and hardware before pwmchip_add()
-Date:   Mon, 18 Apr 2022 14:11:51 +0200
-Message-Id: <20220418121214.985804074@linuxfoundation.org>
+        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>,
+        LogicalErzor <logicalerzor@gmail.com>
+Subject: [PATCH 4.14 169/284] ARM: dts: qcom: fix gic_irq_domain_translate warnings for msm8960
+Date:   Mon, 18 Apr 2022 14:12:30 +0200
+Message-Id: <20220418121216.549181286@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -52,77 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: David Heidelberg <david@ixit.cz>
 
-[ Upstream commit 0401f24cd238ae200a23a13925f98de3d2c883b8 ]
+[ Upstream commit 6f7e221e7a5cfc3299616543fce42b36e631497b ]
 
-When a driver calls pwmchip_add() it has to be prepared to immediately
-get its callbacks called. So move allocation of driver data and hardware
-initialization before the call to pwmchip_add().
+IRQ types blindly copied from very similar APQ8064.
 
-This fixes a potential NULL pointer exception and a race condition on
-register writes.
+Fixes warnings as:
+WARNING: CPU: 0 PID: 1 at drivers/irqchip/irq-gic.c:1080 gic_irq_domain_translate+0x118/0x120
+...
 
-Fixes: 841e6f90bb78 ("pwm: NXP LPC18xx PWM/SCT driver")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Tested-by: LogicalErzor <logicalerzor@gmail.com> # boot-tested on Samsung S3
+Signed-off-by: David Heidelberg <david@ixit.cz>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220108174229.60384-1-david@ixit.cz
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-lpc18xx-sct.c | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
+ arch/arm/boot/dts/qcom-msm8960.dtsi | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
-index d7f5f7de030d..8b3aad06e236 100644
---- a/drivers/pwm/pwm-lpc18xx-sct.c
-+++ b/drivers/pwm/pwm-lpc18xx-sct.c
-@@ -406,12 +406,6 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_LIMIT,
- 			   BIT(lpc18xx_pwm->period_event));
+diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
+index 1733d8f40ab1..b256fda0f5ea 100644
+--- a/arch/arm/boot/dts/qcom-msm8960.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
+@@ -140,7 +140,9 @@
+ 			reg		= <0x108000 0x1000>;
+ 			qcom,ipc	= <&l2cc 0x8 2>;
  
--	ret = pwmchip_add(&lpc18xx_pwm->chip);
--	if (ret < 0) {
--		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
--		goto disable_pwmclk;
--	}
--
- 	for (i = 0; i < lpc18xx_pwm->chip.npwm; i++) {
- 		struct lpc18xx_pwm_data *data;
+-			interrupts	= <0 19 0>, <0 21 0>, <0 22 0>;
++			interrupts	= <GIC_SPI 19 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 21 IRQ_TYPE_EDGE_RISING>,
++					  <GIC_SPI 22 IRQ_TYPE_EDGE_RISING>;
+ 			interrupt-names	= "ack", "err", "wakeup";
  
-@@ -421,14 +415,12 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 				    GFP_KERNEL);
- 		if (!data) {
- 			ret = -ENOMEM;
--			goto remove_pwmchip;
-+			goto disable_pwmclk;
- 		}
+ 			regulators {
+@@ -186,7 +188,7 @@
+ 				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
+ 				reg = <0x16440000 0x1000>,
+ 				      <0x16400000 0x1000>;
+-				interrupts = <0 154 0x0>;
++				interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&gcc GSBI5_UART_CLK>, <&gcc GSBI5_H_CLK>;
+ 				clock-names = "core", "iface";
+ 				status = "disabled";
+@@ -312,7 +314,7 @@
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+ 				reg = <0x16080000 0x1000>;
+-				interrupts = <0 147 0>;
++				interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
+ 				spi-max-frequency = <24000000>;
+ 				cs-gpios = <&msmgpio 8 0>;
  
- 		pwm_set_chip_data(pwm, data);
- 	}
- 
--	platform_set_drvdata(pdev, lpc18xx_pwm);
--
- 	val = lpc18xx_pwm_readl(lpc18xx_pwm, LPC18XX_PWM_CTRL);
- 	val &= ~LPC18XX_PWM_BIDIR;
- 	val &= ~LPC18XX_PWM_CTRL_HALT;
-@@ -436,10 +428,16 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	val |= LPC18XX_PWM_PRE(0);
- 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_CTRL, val);
- 
-+	ret = pwmchip_add(&lpc18xx_pwm->chip);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
-+		goto disable_pwmclk;
-+	}
-+
-+	platform_set_drvdata(pdev, lpc18xx_pwm);
-+
- 	return 0;
- 
--remove_pwmchip:
--	pwmchip_remove(&lpc18xx_pwm->chip);
- disable_pwmclk:
- 	clk_disable_unprepare(lpc18xx_pwm->pwm_clk);
- 	return ret;
 -- 
 2.34.1
 
