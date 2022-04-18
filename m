@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D17FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:34:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99EF4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:34:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242523AbiDRNhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:37:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54616 "EHLO
+        id S242579AbiDRNhT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243707AbiDRNKY (ORCPT
+        with ESMTP id S243911AbiDRNKf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:10:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07DD26DE;
-        Mon, 18 Apr 2022 05:49:53 -0700 (PDT)
+        Mon, 18 Apr 2022 09:10:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B39C38BCB;
+        Mon, 18 Apr 2022 05:49:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 613F7B80EE1;
-        Mon, 18 Apr 2022 12:49:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3C81C385A8;
-        Mon, 18 Apr 2022 12:49:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CC0161267;
+        Mon, 18 Apr 2022 12:49:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0F89C385A7;
+        Mon, 18 Apr 2022 12:49:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286176;
-        bh=jSmZMcvSkSe1LBly2aT57pfhxF45RhCNh/KbiUBO+tw=;
+        s=korg; t=1650286185;
+        bh=3SRV4St52/FhRN6i2PSM1NQl46JAcRfsEjy14dO9vks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vy4bwrnYISuvWwKwfO7p1TLc1gv9M7OKAucsHyrWPjdwURYO6bFkd0ny7TU8tv6L8
-         Fq9YmyYWaJIm6PVUvtmNwahaUbHIJh0XNKOr8bpTNvyvBK5jUeoVqQb8ag/U7pPRYK
-         NOumCVJUKIeR9vZm+HI8zZhT1yjTEHI/xY9Sdyyo=
+        b=fPUW7bKQJRyUNrU08vcvHC/TRojFwexokC7QpuOPJQcMBbvmBWBN2ydyezFjsG6nJ
+         7DO1q5bldiJlUfCz45iIEutLzmT2MVoHUrffHCmp8yC+JeLr5hRkgvC7mk4kP1A6Ow
+         wLg7K+a4KtKmdhThpUgCYficVu7XzXOxt/H18nEo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, "kernelci.org bot" <bot@kernelci.org>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 053/284] crypto: authenc - Fix sleep in atomic context in decrypt_tail
-Date:   Mon, 18 Apr 2022 14:10:34 +0200
-Message-Id: <20220418121212.204177542@linuxfoundation.org>
+Subject: [PATCH 4.14 056/284] selftests/x86: Add validity check and allow field splitting
+Date:   Mon, 18 Apr 2022 14:10:37 +0200
+Message-Id: <20220418121212.287228499@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,40 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Muhammad Usama Anjum <usama.anjum@collabora.com>
 
-[ Upstream commit 66eae850333d639fc278d6f915c6fc01499ea893 ]
+[ Upstream commit b06e15ebd5bfb670f93c7f11a29b8299c1178bc6 ]
 
-The function crypto_authenc_decrypt_tail discards its flags
-argument and always relies on the flags from the original request
-when starting its sub-request.
+Add check to test if CC has a string. CC can have multiple sub-strings
+like "ccache gcc". Erorr pops up if it is treated as single string and
+double quotes are used around it. This can be fixed by removing the
+quotes and not treating CC as a single string.
 
-This is clearly wrong as it may cause the SLEEPABLE flag to be
-set when it shouldn't.
-
-Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
-Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: e9886ace222e ("selftests, x86: Rework x86 target architecture detection")
+Reported-by: "kernelci.org bot" <bot@kernelci.org>
+Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220214184109.3739179-2-usama.anjum@collabora.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- crypto/authenc.c | 2 +-
+ tools/testing/selftests/x86/check_cc.sh | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/crypto/authenc.c b/crypto/authenc.c
-index 053287dfad65..533e811a0899 100644
---- a/crypto/authenc.c
-+++ b/crypto/authenc.c
-@@ -268,7 +268,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
- 		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
+diff --git a/tools/testing/selftests/x86/check_cc.sh b/tools/testing/selftests/x86/check_cc.sh
+index 172d3293fb7b..356689c56397 100755
+--- a/tools/testing/selftests/x86/check_cc.sh
++++ b/tools/testing/selftests/x86/check_cc.sh
+@@ -7,7 +7,7 @@ CC="$1"
+ TESTPROG="$2"
+ shift 2
  
- 	skcipher_request_set_tfm(skreq, ctx->enc);
--	skcipher_request_set_callback(skreq, aead_request_flags(req),
-+	skcipher_request_set_callback(skreq, flags,
- 				      req->base.complete, req->base.data);
- 	skcipher_request_set_crypt(skreq, src, dst,
- 				   req->cryptlen - authsize, req->iv);
+-if "$CC" -o /dev/null "$TESTPROG" -O0 "$@" 2>/dev/null; then
++if [ -n "$CC" ] && $CC -o /dev/null "$TESTPROG" -O0 "$@" 2>/dev/null; then
+     echo 1
+ else
+     echo 0
 -- 
 2.34.1
 
