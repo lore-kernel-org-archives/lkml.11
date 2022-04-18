@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E28C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72604C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245297AbiDRNxV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:53:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41668 "EHLO
+        id S245449AbiDRNxd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:53:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244713AbiDRNat (ORCPT
+        with ESMTP id S244800AbiDRNaz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA30E0FE;
-        Mon, 18 Apr 2022 05:55:03 -0700 (PDT)
+        Mon, 18 Apr 2022 09:30:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BC01FCF1;
+        Mon, 18 Apr 2022 05:55:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 13ED160FE8;
-        Mon, 18 Apr 2022 12:55:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 192E8C385A7;
-        Mon, 18 Apr 2022 12:55:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1733AB80E4B;
+        Mon, 18 Apr 2022 12:55:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53593C385A7;
+        Mon, 18 Apr 2022 12:55:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286502;
-        bh=ArEFoaSFryx8GdalJQBJX+zoEu1WRX8cLaTmZZD7D+s=;
+        s=korg; t=1650286528;
+        bh=87Dy8mAAeekj4Khq5ieyQ/YtECtV+i9VCgc9SA9o5EY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nRZ8dSVWG2J6chj9ksHThBrsAU6PgejwaobxZOuOfnOWROyqfeSljSOqGDyh5h8ci
-         BDUM6ZcyEHLBNb3SNI10VCeLc5ssqS1fgp8sE9pzeLZmvvz5Cc34Nt23388tUKClMJ
-         rodIoDXPJvfVyQ2v99zLhuQXZYe6ZH4s2oro3CXY=
+        b=q6DwhAbVbY9fKM7n6yLSnICHUZQCpXVRfMyBn47gph0IxYgcaPR7O81U84Vz0WQ9l
+         cP6EktSsE0REaPmqauKZ8j/c7ui5g6HPlbpIqXhNprjWF3lXeENrry2QZrh3t8P3DN
+         xO4Hh2gcf5lpAkPLiCxTXtwYTO1BkOW45DMrMX3Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 154/284] lib/test: use after free in register_test_dev_kmod()
-Date:   Mon, 18 Apr 2022 14:12:15 +0200
-Message-Id: <20220418121216.079476391@linuxfoundation.org>
+Subject: [PATCH 4.14 162/284] spi: tegra20: Use of_device_get_match_data()
+Date:   Mon, 18 Apr 2022 14:12:23 +0200
+Message-Id: <20220418121216.351018227@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,32 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-[ Upstream commit dc0ce6cc4b133f5f2beb8b47dacae13a7d283c2c ]
+[ Upstream commit c9839acfcbe20ce43d363c2a9d0772472d9921c0 ]
 
-The "test_dev" pointer is freed but then returned to the caller.
+Use of_device_get_match_data() to simplify the code.
 
-Fixes: d9c6a72d6fa2 ("kmod: add test driver to stress test the module loader")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Link: https://lore.kernel.org/r/20220315023138.2118293-1-chi.minghao@zte.com.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/test_kmod.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/spi/spi-tegra20-slink.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/lib/test_kmod.c b/lib/test_kmod.c
-index c0ce0156d54b..74f8d386f85e 100644
---- a/lib/test_kmod.c
-+++ b/lib/test_kmod.c
-@@ -1162,6 +1162,7 @@ static struct kmod_test_device *register_test_dev_kmod(void)
- 	if (ret) {
- 		pr_err("could not register misc device: %d\n", ret);
- 		free_test_dev_kmod(test_dev);
-+		test_dev = NULL;
- 		goto out;
- 	}
+diff --git a/drivers/spi/spi-tegra20-slink.c b/drivers/spi/spi-tegra20-slink.c
+index 1548f7b738c1..b520525df246 100644
+--- a/drivers/spi/spi-tegra20-slink.c
++++ b/drivers/spi/spi-tegra20-slink.c
+@@ -1016,14 +1016,8 @@ static int tegra_slink_probe(struct platform_device *pdev)
+ 	struct resource		*r;
+ 	int ret, spi_irq;
+ 	const struct tegra_slink_chip_data *cdata = NULL;
+-	const struct of_device_id *match;
  
+-	match = of_match_device(tegra_slink_of_match, &pdev->dev);
+-	if (!match) {
+-		dev_err(&pdev->dev, "Error: No device match found\n");
+-		return -ENODEV;
+-	}
+-	cdata = match->data;
++	cdata = of_device_get_match_data(&pdev->dev);
+ 
+ 	master = spi_alloc_master(&pdev->dev, sizeof(*tspi));
+ 	if (!master) {
 -- 
 2.34.1
 
