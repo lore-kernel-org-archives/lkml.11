@@ -2,95 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9209C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 09:05:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4CA5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 09:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236179AbiDRJHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 05:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33806 "EHLO
+        id S234928AbiDRJKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 05:10:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237443AbiDRJH3 (ORCPT
+        with ESMTP id S231382AbiDRJKN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 05:07:29 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3536F75
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 02:04:48 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id t13so17797742pgn.8
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 02:04:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ouz4DgKg6HX7//LGRrUD97CctBPhdyzV/9EeFTiygxk=;
-        b=6TWHPFn0LN6u1Gtv/IJ/FZUtIkxZGYRSlYL1xUuSQwz6ytLfUxUHzEhiZogx/oPjrb
-         5IOYrTilRPWoHpCRSg3pD9hxYZzJxQhgFu7oMUXgRdkrpSBD8H8p9b2MjNWFFbRV/0fk
-         JqtHVC/Atk4oTpbgL809sb6GZ48czjib99D2vLy8PKSaX5Q4H53WLL5nFIul/nggKvzB
-         QyCC5TIlf1UwqjmQzzFfYQICmDC+k+WILzeWkCdunjIwypfSFlv0ZFqUS9k7G5oLbxB2
-         6oUiQeUOEd1aB+8ADGQyVZYhbF9eyXJK0CCrBZfsSUMAUUktSQsB/HwqoQFmhdVi8f4r
-         H9mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ouz4DgKg6HX7//LGRrUD97CctBPhdyzV/9EeFTiygxk=;
-        b=wWcTDgn61HpCDnl4VhtD6PX23c+9xsGahBjEDHdRbNK7sYbGuAhIxH3Hhsut2UobgU
-         4QKfmEvop2w1GnT42JPnhTsitQPKkoSBCDtD1FseRTgMRbLQnLPDyj9GOzsV4St17BIp
-         75cuBV1CH9uaWb7MgJpkpvJ98rF2s+S4k07mmxqwnh6T+Mj0aE2PFjvEkD/FytazkfHM
-         gJ+Fl9RRs21Bp0nQ2u9upd9IM16ZKIPQMS7wVusvrwKIyAyl7WKD3SMpjIVemOgCXBzN
-         3MKPBJxuMpnmFeJ6HLi2695WGCCU1kf7gApNhPd2aelRlWiOp/uCIEPGSTk4Fa6ECgJA
-         TXrw==
-X-Gm-Message-State: AOAM532ptoGCOe3XyTE/2slmcfjYBa6Fhz1ThLjZUzC/XKqEvCEc6KPu
-        B1yTsDz8+bQQsFbvVYkK/z3huA==
-X-Google-Smtp-Source: ABdhPJz7+O43bQjw3Qx8+8pHjS0RYIso9TqOCGaesGbw3hn8vk87HPcB2H/bsqdEGcpfWIhWqakxhg==
-X-Received: by 2002:a63:34e:0:b0:39d:8d96:a947 with SMTP id 75-20020a63034e000000b0039d8d96a947mr9503958pgd.105.1650272688180;
-        Mon, 18 Apr 2022 02:04:48 -0700 (PDT)
-Received: from always-x1.bytedance.net ([61.120.150.70])
-        by smtp.gmail.com with ESMTPSA id m21-20020a17090a7f9500b001c97c6bcaf4sm16408071pjl.39.2022.04.18.02.04.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 02:04:47 -0700 (PDT)
-From:   zhenwei pi <pizhenwei@bytedance.com>
-To:     arei.gonglei@huawei.com, mst@redhat.com
-Cc:     jasowang@redhat.com, herbert@gondor.apana.org.au,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-crypto@vger.kernel.org, helei.sig11@bytedance.com,
-        davem@davemloft.net
-Subject: [PATCH v2 4/4] virtio-crypto: enable retry for virtio-crypto-dev
-Date:   Mon, 18 Apr 2022 17:00:51 +0800
-Message-Id: <20220418090051.372803-5-pizhenwei@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220418090051.372803-1-pizhenwei@bytedance.com>
-References: <20220418090051.372803-1-pizhenwei@bytedance.com>
+        Mon, 18 Apr 2022 05:10:13 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 155816472;
+        Mon, 18 Apr 2022 02:07:33 -0700 (PDT)
+X-UUID: 1f199b7dbfda49249de0c3a925becb73-20220418
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:8a168a53-d47d-4dbf-bd84-1b844faa3477,OB:0,LO
+        B:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:100
+X-CID-INFO: VERSION:1.1.4,REQID:8a168a53-d47d-4dbf-bd84-1b844faa3477,OB:0,LOB:
+        10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:100
+X-CID-META: VersionHash:faefae9,CLOUDID:549b3cef-06b0-4305-bfbf-554bfc9d151a,C
+        OID:92f24a434910,Recheck:0,SF:12|15|28|16|19|48,TC:nil,Content:1,EDM:-3,Fi
+        le:nil,QS:0,BEC:nil
+X-UUID: 1f199b7dbfda49249de0c3a925becb73-20220418
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <ping-lei.lin@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 854381594; Mon, 18 Apr 2022 17:07:31 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 18 Apr 2022 17:07:30 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 18 Apr 2022 17:07:29 +0800
+From:   James_Lin <Ping-lei.Lin@mediatek.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        <linux-media@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <ping-lei.lin@mediatek.com>,
+        <sherlock.chang@mediatek.com>, <lecopzer.chen@mediatek.com>,
+        <max.yan@mediatek.com>, <tm.wu@mediatek.com>,
+        James_Lin <Ping-lei.Lin@mediatek.com>
+Subject: [PATCH v3] media: usb: uvc: Add UVC_GUID_FORMAT_H265
+Date:   Mon, 18 Apr 2022 17:06:52 +0800
+Message-ID: <20220418090652.3156-1-Ping-lei.Lin@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: lei he <helei.sig11@bytedance.com>
+This patch aims to add UVC_GUID_FORMAT_H265
+High Efficiency Video Coding (HEVC), also known as H.265 and MPEG-H Part 2.
+They describe the same video encoding method.
+So for handling their behavior is the same.
+However, when external camera device describes this encoding method, 
+some use hevc, some use h265.
+There is no uniform specification to describe this encoding method.
+So if an external camera device use h265 to describe this encoding method,
+driver will not recognize it.
+Therefore, this patch is to enable driver to read HEVC/H265 
+and convert it to V4L2_PIX_FMT_HEVC.
 
-Enable retry for virtio-crypto-dev, so that crypto-engine
-can process cipher-requests parallelly.
-
-Signed-off-by: lei he <helei.sig11@bytedance.com>
+Signed-off-by: James_Lin <Ping-lei.Lin@mediatek.com>
 ---
- drivers/crypto/virtio/virtio_crypto_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/media/usb/uvc/uvc_driver.c | 5 +++++
+ drivers/media/usb/uvc/uvcvideo.h   | 3 +++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/crypto/virtio/virtio_crypto_core.c b/drivers/crypto/virtio/virtio_crypto_core.c
-index d8edefcb966c..5c0d68c9e894 100644
---- a/drivers/crypto/virtio/virtio_crypto_core.c
-+++ b/drivers/crypto/virtio/virtio_crypto_core.c
-@@ -62,7 +62,8 @@ static int virtcrypto_find_vqs(struct virtio_crypto *vi)
- 		spin_lock_init(&vi->data_vq[i].lock);
- 		vi->data_vq[i].vq = vqs[i];
- 		/* Initialize crypto engine */
--		vi->data_vq[i].engine = crypto_engine_alloc_init(dev, 1);
-+		vi->data_vq[i].engine = crypto_engine_alloc_init_and_set(dev, true, NULL, 1,
-+						virtqueue_get_vring_size(vqs[i]));
- 		if (!vi->data_vq[i].engine) {
- 			ret = -ENOMEM;
- 			goto err_engine;
+diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+index dda0f0aa78b8..e437e9f95890 100644
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -154,6 +154,11 @@ static struct uvc_format_desc uvc_fmts[] = {
+ 		.guid		= UVC_GUID_FORMAT_H264,
+ 		.fcc		= V4L2_PIX_FMT_H264,
+ 	},
++	{
++		.name		= "H.265",
++		.guid		= UVC_GUID_FORMAT_H265,
++		.fcc		= V4L2_PIX_FMT_HEVC,
++	},
+ 	{
+ 		.name		= "Greyscale 8 L/R (Y8I)",
+ 		.guid		= UVC_GUID_FORMAT_Y8I,
+diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+index 143230b3275b..41f4d8c33f2a 100644
+--- a/drivers/media/usb/uvc/uvcvideo.h
++++ b/drivers/media/usb/uvc/uvcvideo.h
+@@ -139,6 +139,9 @@
+ #define UVC_GUID_FORMAT_H264 \
+ 	{ 'H',  '2',  '6',  '4', 0x00, 0x00, 0x10, 0x00, \
+ 	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
++#define UVC_GUID_FORMAT_H265 \
++	{ 'H',  '2',  '6',  '5', 0x00, 0x00, 0x10, 0x00, \
++	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+ #define UVC_GUID_FORMAT_Y8I \
+ 	{ 'Y',  '8',  'I',  ' ', 0x00, 0x00, 0x10, 0x00, \
+ 	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
 -- 
-2.20.1
+2.18.0
 
