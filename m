@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 314FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C92CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240220AbiDRNPL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32932 "EHLO
+        id S240355AbiDRNP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:15:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242468AbiDRM76 (ORCPT
+        with ESMTP id S242473AbiDRM77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73573121E;
-        Mon, 18 Apr 2022 05:41:21 -0700 (PDT)
+        Mon, 18 Apr 2022 08:59:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E2431227;
+        Mon, 18 Apr 2022 05:41:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EFAA4B80EC3;
-        Mon, 18 Apr 2022 12:41:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F0A2C385A7;
-        Mon, 18 Apr 2022 12:41:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83D4161239;
+        Mon, 18 Apr 2022 12:41:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76F19C385A7;
+        Mon, 18 Apr 2022 12:41:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285678;
-        bh=xVm6RRwV0iebQzfEjV2PEmWJc2EKFy1OV3lmNHvO7uQ=;
+        s=korg; t=1650285681;
+        bh=9Mi13LQ3ueDfouVHxT/drIOtDkIQ87aRTzNV+mSmQwE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hBnOh1VAq+D8KX7JMaZLUMU5A5jXPxE0gHIRnqjt2P2ZXG9H4xyBGJedhLDScxY9Q
-         3tgJGRTCo/y+okmhStDaMwOXcSi83icOybMawoyVE3NnsGBVxxjYyJOHPa/YkjjLzx
-         5plDFz+grcf40bT+ylV7CZAM4rlTMtTnHCg95o+Q=
+        b=Vm6Xr/Cmet6I1pNX8GRoKIZXTDHsXDdbNyzqkLmHx/5c9BDmi2WDxdjVbOv6mGoYR
+         pqqKVpG54NsIo2RvmgmEpyAo/v8RBpWp7Uog90wJSxieNLwj1RJxdfodLkEW4ke75P
+         e2t9F1RZ7BVqhOpEnlmvcbqwihPWwIHPcijezvns=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alvin Lee <Alvin.Lee2@amd.com>,
-        Aric Cyr <Aric.Cyr@amd.com>, Alex Hung <alex.hung@amd.com>,
-        Charlene Liu <Charlene.Liu@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 045/105] drm/amd/display: fix audio format not updated after edid updated
-Date:   Mon, 18 Apr 2022 14:12:47 +0200
-Message-Id: <20220418121147.759894866@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 5.10 089/105] tick/nohz: Use WARN_ON_ONCE() to prevent console saturation
+Date:   Mon, 18 Apr 2022 14:13:31 +0200
+Message-Id: <20220418121149.161626115@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -52,42 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charlene Liu <Charlene.Liu@amd.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
 
-[ Upstream commit 5e8a71cf13bc9184fee915b2220be71b4c6cac74 ]
+commit 40e97e42961f8c6cc7bd5fe67cc18417e02d78f1 upstream.
 
-[why]
-for the case edid change only changed audio format.
-driver still need to update stream.
+While running some testing on code that happened to allow the variable
+tick_nohz_full_running to get set but with no "possible" NOHZ cores to
+back up that setting, this warning triggered:
 
-Reviewed-by: Alvin Lee <Alvin.Lee2@amd.com>
-Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
-Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Charlene Liu <Charlene.Liu@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+        if (unlikely(tick_do_timer_cpu == TICK_DO_TIMER_NONE))
+                WARN_ON(tick_nohz_full_running);
+
+The console was overwhemled with an endless stream of one WARN per tick
+per core and there was no way to even see what was going on w/o using a
+serial console to capture it and then trace it back to this.
+
+Change it to WARN_ON_ONCE().
+
+Fixes: 08ae95f4fd3b ("nohz_full: Allow the boot CPU to be nohz_full")
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20211206145950.10927-3-paul.gortmaker@windriver.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc_resource.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/time/tick-sched.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-index 5c5ccbad9658..1e47afc4ccc1 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-@@ -1701,8 +1701,8 @@ bool dc_is_stream_unchanged(
- 	if (old_stream->ignore_msa_timing_param != stream->ignore_msa_timing_param)
- 		return false;
- 
--	// Only Have Audio left to check whether it is same or not. This is a corner case for Tiled sinks
--	if (old_stream->audio_info.mode_count != stream->audio_info.mode_count)
-+	/*compare audio info*/
-+	if (memcmp(&old_stream->audio_info, &stream->audio_info, sizeof(stream->audio_info)) != 0)
- 		return false;
- 
- 	return true;
--- 
-2.35.1
-
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -136,7 +136,7 @@ static void tick_sched_do_timer(struct t
+ 	 */
+ 	if (unlikely(tick_do_timer_cpu == TICK_DO_TIMER_NONE)) {
+ #ifdef CONFIG_NO_HZ_FULL
+-		WARN_ON(tick_nohz_full_running);
++		WARN_ON_ONCE(tick_nohz_full_running);
+ #endif
+ 		tick_do_timer_cpu = cpu;
+ 	}
 
 
