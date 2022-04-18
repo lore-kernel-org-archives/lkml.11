@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C1B5C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80FE9C47080
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243771AbiDRNK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:10:27 -0400
+        id S243820AbiDRNK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:10:29 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241769AbiDRM7B (ORCPT
+        with ESMTP id S241329AbiDRM6h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14CDF2E9D0;
-        Mon, 18 Apr 2022 05:39:34 -0700 (PDT)
+        Mon, 18 Apr 2022 08:58:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED762717F;
+        Mon, 18 Apr 2022 05:38:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DBC06101A;
-        Mon, 18 Apr 2022 12:39:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 557F7C385A1;
-        Mon, 18 Apr 2022 12:39:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BE25611C3;
+        Mon, 18 Apr 2022 12:38:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8990BC385A8;
+        Mon, 18 Apr 2022 12:38:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285573;
-        bh=qZSXjs+NYLT5X2fXq/fCtnOcsC+b4SBYHJgC+XXRr28=;
+        s=korg; t=1650285535;
+        bh=//rKemMVblAt+PsCEdWfARJOYe6AsaUC7cFKFbKkEkE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nQX/F+5Yt4an6cF348JyiHsqqNzklxSIPv7vUx9TjADV1JxopwnzxV8pC0rMGK5Wi
-         AyIdZnWtm6ogYO3CB331BsIDW1P58kxxn+gRseN0JSEco4vbjwrrJjx2jRmjrmsEEN
-         W/DjUq/fupmUoPpPycROZpkmiySYGKAhkXuRqqgc=
+        b=P+ch2TAoYt2jRrvDf652aOGAh9TGCZWdgFBnp3P8Swv0PqO2X/LV1DysBQUMptCr9
+         XnspFs7K5TNFkUz+V7s7IO/155xn5N0UcSKwA9ntRJL008Y8HSkO0QTrbONJJwguy0
+         iSJSX8p2SGNWr5tq/FMoLJudh2Mtyuntm2R8uqW0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marcin Kozlowski <marcinguy@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 062/105] net: usb: aqc111: Fix out-of-bounds accesses in RX fixup
-Date:   Mon, 18 Apr 2022 14:13:04 +0200
-Message-Id: <20220418121148.249605680@linuxfoundation.org>
+Subject: [PATCH 5.10 009/105] firmware: arm_scmi: Fix sorting of retrieved clock rates
+Date:   Mon, 18 Apr 2022 14:12:11 +0200
+Message-Id: <20220418121145.823077625@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -49,54 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcin Kozlowski <marcinguy@gmail.com>
+From: Cristian Marussi <cristian.marussi@arm.com>
 
-[ Upstream commit afb8e246527536848b9b4025b40e613edf776a9d ]
+[ Upstream commit 23274739a5b6166f74d8d9cb5243d7bf6b46aab9 ]
 
-aqc111_rx_fixup() contains several out-of-bounds accesses that can be
-triggered by a malicious (or defective) USB device, in particular:
+During SCMI Clock protocol initialization, after having retrieved from the
+SCMI platform all the available discrete rates for a specific clock, the
+clock rates array is sorted, unfortunately using a pointer to its end as
+a base instead of its start, so that sorting does not work.
 
- - The metadata array (desc_offset..desc_offset+2*pkt_count) can be out of bounds,
-   causing OOB reads and (on big-endian systems) OOB endianness flips.
- - A packet can overlap the metadata array, causing a later OOB
-   endianness flip to corrupt data used by a cloned SKB that has already
-   been handed off into the network stack.
- - A packet SKB can be constructed whose tail is far beyond its end,
-   causing out-of-bounds heap data to be considered part of the SKB's
-   data.
+Fix invocation of sort() passing as base a pointer to the start of the
+retrieved clock rates array.
 
-Found doing variant analysis. Tested it with another driver (ax88179_178a), since
-I don't have a aqc111 device to test it, but the code looks very similar.
-
-Signed-off-by: Marcin Kozlowski <marcinguy@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20220318092813.49283-1-cristian.marussi@arm.com
+Fixes: dccec73de91d ("firmware: arm_scmi: Keep the discrete clock rates sorted")
+Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/aqc111.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/firmware/arm_scmi/clock.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/aqc111.c b/drivers/net/usb/aqc111.c
-index 0717c18015c9..c9c409518174 100644
---- a/drivers/net/usb/aqc111.c
-+++ b/drivers/net/usb/aqc111.c
-@@ -1102,10 +1102,15 @@ static int aqc111_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 	if (start_of_descs != desc_offset)
- 		goto err;
+diff --git a/drivers/firmware/arm_scmi/clock.c b/drivers/firmware/arm_scmi/clock.c
+index 4645677d86f1..a45678cd9b74 100644
+--- a/drivers/firmware/arm_scmi/clock.c
++++ b/drivers/firmware/arm_scmi/clock.c
+@@ -202,7 +202,8 @@ scmi_clock_describe_rates_get(const struct scmi_handle *handle, u32 clk_id,
  
--	/* self check desc_offset from header*/
--	if (desc_offset >= skb_len)
-+	/* self check desc_offset from header and make sure that the
-+	 * bounds of the metadata array are inside the SKB
-+	 */
-+	if (pkt_count * 2 + desc_offset >= skb_len)
- 		goto err;
+ 	if (rate_discrete && rate) {
+ 		clk->list.num_rates = tot_rate_cnt;
+-		sort(rate, tot_rate_cnt, sizeof(*rate), rate_cmp_func, NULL);
++		sort(clk->list.rates, tot_rate_cnt, sizeof(*rate),
++		     rate_cmp_func, NULL);
+ 	}
  
-+	/* Packets must not overlap the metadata array */
-+	skb_trim(skb, desc_offset);
-+
- 	if (pkt_count == 0)
- 		goto err;
- 
+ 	clk->rate_discrete = rate_discrete;
 -- 
 2.35.1
 
