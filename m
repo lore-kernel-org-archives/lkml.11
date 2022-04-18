@@ -2,178 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D85C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E15DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:23:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238515AbiDRMZh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:25:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49224 "EHLO
+        id S238743AbiDRMZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238834AbiDRMWx (ORCPT
+        with ESMTP id S238495AbiDRMXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:22:53 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAECB1EEFD
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:18:23 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id k23so26534794ejd.3
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:18:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=304FwvbODPc/e7NTdlGUu0OxXKV91QMvJtVzbIwOzsY=;
-        b=oauAcvfa+/M3D5189r4makzPKYi0gCRiGm46EFxvtnJHKSzGdOdw+IekjUokWg84mc
-         /rr5jvl3u5ivgV3bvm3wQyLnaP5CfC36SOlsJU4Wevk5/RREie3FSqKEDgZS1TmOWAxH
-         aJEwSBcXIiX0WBv/QSZqjCivrgFhZLNODCv9X4f2om5D3JhiJp87qgRGS7DMYfYcTUSQ
-         pcoco8zBK29ToYbxN7NYkAzgTqL/G8njWL3GcEqAKChlRSwyFxORKmBbLMb0wJ42rvSS
-         k5RX1MVZkQ5ZakdB2Tomatx5c2GrMwJubXZQwEVZV9Di+0O3WSTNWPBWRoz+8B+RSpxs
-         +jFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=304FwvbODPc/e7NTdlGUu0OxXKV91QMvJtVzbIwOzsY=;
-        b=Hieznn84v1vf93LXt0pmdJ02A/Rt5IY3ROXaM2WUXvzQPR54pXRiF8yvFuc0HXsIUQ
-         kbg5/BCC7IDeVLz8C5iihTQ1tPNjWdP8rGpjhfbZummmzrs9RXuZ4C0AxCHUxXKh8ZYs
-         8Q5uaYxivcxRC0K8zfM5HRBZ191C5acYlDevO6IOB/8wp/SOVlyDRCpZCvRr7cEXr/ul
-         tA8Wpe3EnWb2P8kF0yvZzbap4jCQbN+SiOfWPtPVYEBy1XPkN3fCJzweGqe6VqL4VeJJ
-         sEIr67ZMVndGUjCKNHJDXZqKx99xMoq5meBRVEg+BUp90MMbgpMjICEPxw6S0XmwQ86L
-         MdnA==
-X-Gm-Message-State: AOAM532hOJmc1x2HSKhDLVEKY2NBXe61rH4DLfvRiSbN+RerF3HPm7XP
-        PugwxByoI0GQWDdaft7YxiLA7g==
-X-Google-Smtp-Source: ABdhPJwitUmBeZrL4/JQi7iDB4R8V82XjKuvEHdTLZYkZ4ZYC6c9hFCwam2fEu49tYxcY++zvLSjng==
-X-Received: by 2002:a17:907:7206:b0:6ef:b47c:e5ec with SMTP id dr6-20020a170907720600b006efb47ce5ecmr3565212ejc.351.1650284301960;
-        Mon, 18 Apr 2022 05:18:21 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id h23-20020a0564020e9700b00420fff23180sm6441720eda.41.2022.04.18.05.18.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 05:18:21 -0700 (PDT)
-Message-ID: <2f8d2f6a-32dc-15cc-321c-f75721edf8a2@linaro.org>
-Date:   Mon, 18 Apr 2022 14:18:20 +0200
+        Mon, 18 Apr 2022 08:23:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2881BE86;
+        Mon, 18 Apr 2022 05:18:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5458C60F01;
+        Mon, 18 Apr 2022 12:18:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65372C385A1;
+        Mon, 18 Apr 2022 12:18:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650284336;
+        bh=BAY7BvL+3ZQxQmWytA/czDFBqyn2lJXnPslvkiwTo7Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pu1QchYxUjHMLHwLYswjeQVdeihVpiGN+G1ofjsSLEEXsTil88hxGxRhqxGJQcO2e
+         S/EsqzdZB0GlqUK5/jGHc0mfFFDgF5jqkLjh7BkiLQ6Bf9LsIYduknU33X9EjHiijr
+         XraP2HEl6Wb4mkCF1kryzt0yBFoNM+VnQyHjFOp0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Dave Wysochanski <dwysocha@redhat.com>,
+        David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 079/219] cachefiles: Fix KASAN slab-out-of-bounds in cachefiles_set_volume_xattr
+Date:   Mon, 18 Apr 2022 14:10:48 +0200
+Message-Id: <20220418121208.383594279@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
+References: <20220418121203.462784814@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 2/5] dt-bindings: clock: Document MA35D1 clock
- controller bindings
-Content-Language: en-US
-To:     Jacky Huang <ychuang3@nuvoton.com>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, ychuang570808@gmail.com
-Cc:     robh+dt@kernel.org, sboyd@kernel.org, krzk+dt@kernel.org,
-        arnd@arndb.de, olof@lixom.net, will@kernel.org, soc@kernel.org,
-        cfli0@nuvoton.com
-References: <20220418082738.11301-1-ychuang3@nuvoton.com>
- <20220418082738.11301-3-ychuang3@nuvoton.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220418082738.11301-3-ychuang3@nuvoton.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/04/2022 10:27, Jacky Huang wrote:
-> Add documentation to describe Nuvoton MA35D1 clock driver bindings.
-> 
+From: Dave Wysochanski <dwysocha@redhat.com>
 
-You skipped the review tag, so I assume because of amount of changes.
-Usually it is nice to mention it...
+[ Upstream commit 7b2f6c306601240635c72caa61f682e74d4591b2 ]
 
-> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
-> ---
->  .../bindings/clock/nuvoton,ma35d1-clk.yaml    | 63 +++++++++++++++++++
->  1 file changed, 63 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
-> new file mode 100644
-> index 000000000000..d0d37c5e84af
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/nuvoton,ma35d1-clk.yaml
-> @@ -0,0 +1,63 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/clock/nuvoton,ma35d1-clk.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Nuvoton MA35D1 Clock Control Module Binding
-> +
-> +maintainers:
-> +  - Chi-Fang Li <cfli0@nuvoton.com>
-> +  - Jacky Huang <ychuang3@nuvoton.com>
-> +
-> +description: |
-> +  The MA35D1 clock controller generates clocks for the whole chip,
-> +  including system clocks and all peripheral clocks.
-> +
-> +  See also:
-> +    include/dt-bindings/clock/ma35d1-clk.h
-> +
-> +properties:
-> +  compatible:
-> +    const: nuvoton,ma35d1-clk
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  "#clock-cells":
-> +    const: 1
-> +
-> +  assigned-clocks:
+Use the actual length of volume coherency data when setting the
+xattr to avoid the following KASAN report.
 
-What about clocks? This depends on clocks. What clocks do you want to
-assign if they are not an input to the device?
+ BUG: KASAN: slab-out-of-bounds in cachefiles_set_volume_xattr+0xa0/0x350 [cachefiles]
+ Write of size 4 at addr ffff888101e02af4 by task kworker/6:0/1347
 
-> +    minItems: 5
-> +    maxItems: 5
+ CPU: 6 PID: 1347 Comm: kworker/6:0 Kdump: loaded Not tainted 5.18.0-rc1-nfs-fscache-netfs+ #13
+ Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-4.fc34 04/01/2014
+ Workqueue: events fscache_create_volume_work [fscache]
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x45/0x5a
+  print_report.cold+0x5e/0x5db
+  ? __lock_text_start+0x8/0x8
+  ? cachefiles_set_volume_xattr+0xa0/0x350 [cachefiles]
+  kasan_report+0xab/0x120
+  ? cachefiles_set_volume_xattr+0xa0/0x350 [cachefiles]
+  kasan_check_range+0xf5/0x1d0
+  memcpy+0x39/0x60
+  cachefiles_set_volume_xattr+0xa0/0x350 [cachefiles]
+  cachefiles_acquire_volume+0x2be/0x500 [cachefiles]
+  ? __cachefiles_free_volume+0x90/0x90 [cachefiles]
+  fscache_create_volume_work+0x68/0x160 [fscache]
+  process_one_work+0x3b7/0x6a0
+  worker_thread+0x2c4/0x650
+  ? process_one_work+0x6a0/0x6a0
+  kthread+0x16c/0x1a0
+  ? kthread_complete_and_exit+0x20/0x20
+  ret_from_fork+0x22/0x30
+  </TASK>
 
-This is different than before. minItems should not be here.
+ Allocated by task 1347:
+  kasan_save_stack+0x1e/0x40
+  __kasan_kmalloc+0x81/0xa0
+  cachefiles_set_volume_xattr+0x76/0x350 [cachefiles]
+  cachefiles_acquire_volume+0x2be/0x500 [cachefiles]
+  fscache_create_volume_work+0x68/0x160 [fscache]
+  process_one_work+0x3b7/0x6a0
+  worker_thread+0x2c4/0x650
+  kthread+0x16c/0x1a0
+  ret_from_fork+0x22/0x30
 
-Why do you need assigned-clocks in the binding at all?
+ The buggy address belongs to the object at ffff888101e02af0
+ which belongs to the cache kmalloc-8 of size 8
+ The buggy address is located 4 bytes inside of
+ 8-byte region [ffff888101e02af0, ffff888101e02af8)
 
-> +
-> +  assigned-clock-rates:
-> +    minItems: 5
-> +    maxItems: 5
-> +
-> +  nuvoton,clk-pll-mode:
-> +    A list of PLL operation mode corresponding to DDRPLL, APLL, EPLL,
-> +    and VPLL in sequential.
+ The buggy address belongs to the physical page:
+ page:00000000a2292d70 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x101e02
+ flags: 0x17ffffc0000200(slab|node=0|zone=2|lastcpupid=0x1fffff)
+ raw: 0017ffffc0000200 0000000000000000 dead000000000001 ffff888100042280
+ raw: 0000000000000000 0000000080660066 00000001ffffffff 0000000000000000
+ page dumped because: kasan: bad access detected
 
-This does not look like a binding which was tested. Read
-"writing-schema" and test your bindings.
+ Memory state around the buggy address:
+ ffff888101e02980: fc 00 fc fc fc fc 00 fc fc fc fc 00 fc fc fc fc
+ ffff888101e02a00: 00 fc fc fc fc 00 fc fc fc fc 00 fc fc fc fc 00
+ >ffff888101e02a80: fc fc fc fc 00 fc fc fc fc 00 fc fc fc fc 04 fc
+                                                            ^
+ ffff888101e02b00: fc fc fc 00 fc fc fc fc 00 fc fc fc fc 00 fc fc
+ ffff888101e02b80: fc fc 00 fc fc fc fc 00 fc fc fc fc 00 fc fc fc
+ ==================================================================
 
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +    minItems: 5
+Fixes: 413a4a6b0b55 "cachefiles: Fix volume coherency attribute"
+Signed-off-by: Dave Wysochanski <dwysocha@redhat.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-cachefs@redhat.com
+Link: https://lore.kernel.org/r/20220405134649.6579-1-dwysocha@redhat.com/ # v1
+Link: https://lore.kernel.org/r/20220405142810.8208-1-dwysocha@redhat.com/ # Incorrect v2
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/cachefiles/xattr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-No need for minItems.
-
-> +    maxItems: 5
-> +    items:
-> +      enum: [ 0, 1, 2 ]
-
-You need to describe the values in description, what's their meaning.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - "#clock-cells"
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
-> +
-> +    clk: clock-controller@40460200 {
-> +        compatible = "nuvoton,ma35d1-clk";
-> +        reg = <0x0 0x40460200 0x0 0x100>;
-> +        #clock-cells = <1>;
-> +    };
-> +...
+diff --git a/fs/cachefiles/xattr.c b/fs/cachefiles/xattr.c
+index 35465109d9c4..00b087c14995 100644
+--- a/fs/cachefiles/xattr.c
++++ b/fs/cachefiles/xattr.c
+@@ -203,7 +203,7 @@ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
+ 	if (!buf)
+ 		return false;
+ 	buf->reserved = cpu_to_be32(0);
+-	memcpy(buf->data, p, len);
++	memcpy(buf->data, p, volume->vcookie->coherency_len);
+ 
+ 	ret = cachefiles_inject_write_error();
+ 	if (ret == 0)
+-- 
+2.35.1
 
 
-Best regards,
-Krzysztof
+
