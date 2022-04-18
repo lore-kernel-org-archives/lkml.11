@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC171C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC7DC3525B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240144AbiDRMin (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:38:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
+        id S240327AbiDRMiy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:38:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239743AbiDRMdW (ORCPT
+        with ESMTP id S239769AbiDRMdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 381F71E3E3;
-        Mon, 18 Apr 2022 05:25:28 -0700 (PDT)
+        Mon, 18 Apr 2022 08:33:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C082A1E3FF;
+        Mon, 18 Apr 2022 05:25:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71832B80ED1;
-        Mon, 18 Apr 2022 12:25:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7198C385A1;
-        Mon, 18 Apr 2022 12:25:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D11860FB0;
+        Mon, 18 Apr 2022 12:25:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 537ACC385A1;
+        Mon, 18 Apr 2022 12:25:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284726;
-        bh=6xnc8GCF0VylzUgLpI+zJ8wz47soPErwv3vp/zZrPmk=;
+        s=korg; t=1650284741;
+        bh=rW1u9K8345+MlZzqAj6h4y9oB8V4Y/VHGKcLCTUIvac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GLIO7cFaT19V7lydSyjiKGYxXtz7X1RSuwJPWE9in3Ai3lo/JmhdjVLVbaBjlml/h
-         S/bxatC1APauobPxVS2WmxSlQ0GsAwgCjMCk+AIjrxVLcxPZvL42VbrxnXPxishYhR
-         XrXkaE2VS70n8s0FEMq3IJv4FdEvjVsDds+hJozU=
+        b=1tJKviRIGfxQnLrXo8w1Gf/DrGoe9x8zZ9muyOUX9fddyjNHlFxnxUdrX3q4NXFiH
+         b49g0BPZE+WqvkAf3d2nFepSc8H2t3JBYg89nP+eHHLdYF4oNrgMxsBMapdylarlwp
+         ihun+HRdFHGBPWIrRnJNZKq3+TP16IGVVlEFVkBU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.17 207/219] dm integrity: fix memory corruption when tag_size is less than digest size
-Date:   Mon, 18 Apr 2022 14:12:56 +0200
-Message-Id: <20220418121212.661717902@linuxfoundation.org>
+        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, Michal Hocko <mhocko@suse.com>,
+        David Hildenbrand <david@redhat.com>,
+        Wei Yang <richard.weiyang@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.17 176/219] mm, page_alloc: fix build_zonerefs_node()
+Date:   Mon, 18 Apr 2022 14:12:25 +0200
+Message-Id: <20220418121211.804040370@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,53 +53,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Juergen Gross <jgross@suse.com>
 
-commit 08c1af8f1c13bbf210f1760132f4df24d0ed46d6 upstream.
+commit e553f62f10d93551eb883eca227ac54d1a4fad84 upstream.
 
-It is possible to set up dm-integrity in such a way that the
-"tag_size" parameter is less than the actual digest size. In this
-situation, a part of the digest beyond tag_size is ignored.
+Since commit 6aa303defb74 ("mm, vmscan: only allocate and reclaim from
+zones with pages managed by the buddy allocator") only zones with free
+memory are included in a built zonelist.  This is problematic when e.g.
+all memory of a zone has been ballooned out when zonelists are being
+rebuilt.
 
-In this case, dm-integrity would write beyond the end of the
-ic->recalc_tags array and corrupt memory. The corruption happened in
-integrity_recalc->integrity_sector_checksum->crypto_shash_final.
+The decision whether to rebuild the zonelists when onlining new memory
+is done based on populated_zone() returning 0 for the zone the memory
+will be added to.  The new zone is added to the zonelists only, if it
+has free memory pages (managed_zone() returns a non-zero value) after
+the memory has been onlined.  This implies, that onlining memory will
+always free the added pages to the allocator immediately, but this is
+not true in all cases: when e.g. running as a Xen guest the onlined new
+memory will be added only to the ballooned memory list, it will be freed
+only when the guest is being ballooned up afterwards.
 
-Fix this corruption by increasing the tags array so that it has enough
-padding at the end to accomodate the loop in integrity_recalc() being
-able to write a full digest size for the last member of the tags
-array.
+Another problem with using managed_zone() for the decision whether a
+zone is being added to the zonelists is, that a zone with all memory
+used will in fact be removed from all zonelists in case the zonelists
+happen to be rebuilt.
 
-Cc: stable@vger.kernel.org # v4.19+
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Use populated_zone() when building a zonelist as it has been done before
+that commit.
+
+There was a report that QubesOS (based on Xen) is hitting this problem.
+Xen has switched to use the zone device functionality in kernel 5.9 and
+QubesOS wants to use memory hotplugging for guests in order to be able
+to start a guest with minimal memory and expand it as needed.  This was
+the report leading to the patch.
+
+Link: https://lkml.kernel.org/r/20220407120637.9035-1-jgross@suse.com
+Fixes: 6aa303defb74 ("mm, vmscan: only allocate and reclaim from zones with pages managed by the buddy allocator")
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Acked-by: David Hildenbrand <david@redhat.com>
+Cc: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Reviewed-by: Wei Yang <richard.weiyang@gmail.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-integrity.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ mm/page_alloc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/md/dm-integrity.c
-+++ b/drivers/md/dm-integrity.c
-@@ -4400,6 +4400,7 @@ try_smaller_buffer:
- 	}
- 
- 	if (ic->internal_hash) {
-+		size_t recalc_tags_size;
- 		ic->recalc_wq = alloc_workqueue("dm-integrity-recalc", WQ_MEM_RECLAIM, 1);
- 		if (!ic->recalc_wq ) {
- 			ti->error = "Cannot allocate workqueue";
-@@ -4413,8 +4414,10 @@ try_smaller_buffer:
- 			r = -ENOMEM;
- 			goto bad;
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -6112,7 +6112,7 @@ static int build_zonerefs_node(pg_data_t
+ 	do {
+ 		zone_type--;
+ 		zone = pgdat->node_zones + zone_type;
+-		if (managed_zone(zone)) {
++		if (populated_zone(zone)) {
+ 			zoneref_set_zone(zone, &zonerefs[nr_zones++]);
+ 			check_highest_zone(zone_type);
  		}
--		ic->recalc_tags = kvmalloc_array(RECALC_SECTORS >> ic->sb->log2_sectors_per_block,
--						 ic->tag_size, GFP_KERNEL);
-+		recalc_tags_size = (RECALC_SECTORS >> ic->sb->log2_sectors_per_block) * ic->tag_size;
-+		if (crypto_shash_digestsize(ic->internal_hash) > ic->tag_size)
-+			recalc_tags_size += crypto_shash_digestsize(ic->internal_hash) - ic->tag_size;
-+		ic->recalc_tags = kvmalloc(recalc_tags_size, GFP_KERNEL);
- 		if (!ic->recalc_tags) {
- 			ti->error = "Cannot allocate tags for recalculating";
- 			r = -ENOMEM;
 
 
