@@ -2,177 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97315C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:19:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1BD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:20:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238404AbiDRMWU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49692 "EHLO
+        id S238471AbiDRMWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237370AbiDRMVb (ORCPT
+        with ESMTP id S238406AbiDRMVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:21:31 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C591E1D0DB;
-        Mon, 18 Apr 2022 05:17:32 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id bj36so10709323ljb.13;
-        Mon, 18 Apr 2022 05:17:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kHnbLPTYEwVnYoF1eArZeQYH5Pj76/3G5SiYikVll9w=;
-        b=jbpqdZoqwR4D4r4fMKzxzhrBt/Wqgr2sbvztY0dWatowOIRCrjg9R3NdU/WmdFuziD
-         EPV8lzAk1E91kiXFQSwW4A/8TaarCt2a7rLv3RRjIQNIjCZRxx0pLMpiRPQ49PYad7Ft
-         vdrzmozuDZNDm4wzbIudn/1Fv//fsqBxwSUezyrXVHyRRtwkT/Jdd7L4ZBqphvkQTFXk
-         qHGfsfnj9nfgqICnTlQwSg0LpVjTnLSciMjKxjOEhARZvQnps2FuOy6Wx91cL07D0sMy
-         lCYDkrLxsSzt4g3tvr8cHW2sATtwaGZYxCtByDEc8vAD0tCq79JWPLgOmeNhJXAks+j1
-         meHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kHnbLPTYEwVnYoF1eArZeQYH5Pj76/3G5SiYikVll9w=;
-        b=KJW8k1QWdgjsq6wwtlon2V+Fhi/yzjdQvRgP+a7YYDrVAnbYq/7bvV+JhbxJW2SeKD
-         lB2ycLi3xPdj4s0SwSwMsAumcswESL7zHBGL3wVv6+dA4I78/XtogQ5OkHXQR5cJfp/1
-         KGOcH6XtmcP5QdC73eSCPAHRJUZaWPKCkYmKKNNKTMO8M+9WrOkMok6neuV4QjhKHsRB
-         42ec0iB1WHBpcnV10+Zh5kju7zR29ChMMVty2+eq2wrL9IG0WfTN1OkaRMBKFp6/IHzR
-         wOZXQdOAu3kbbtYMFigCMz9q2/MgkaheSP9zm+EUu2i7kIs16PgCbpO6AZQ0Hfc5c2Bb
-         d4Hw==
-X-Gm-Message-State: AOAM533W/AcQzeB2lFwyAkINPNza8LJ4Mrenj90RlZo6MggXb6P0j2j9
-        xaFLYvOkhdHG0vIzGt7d9Lk=
-X-Google-Smtp-Source: ABdhPJwFqvtH3vF5qgEO8VCRMK6W6mZpdiK3/Fns3+bt9EuI/0T5o4DWUcvmcWh5lCU6fMV6W8YuIw==
-X-Received: by 2002:a2e:302:0:b0:24a:c997:d34c with SMTP id 2-20020a2e0302000000b0024ac997d34cmr7107060ljd.445.1650284250575;
-        Mon, 18 Apr 2022 05:17:30 -0700 (PDT)
-Received: from mobilestation ([95.79.134.149])
-        by smtp.gmail.com with ESMTPSA id u19-20020a197913000000b00448a1f20261sm1199338lfc.34.2022.04.18.05.17.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 05:17:29 -0700 (PDT)
-Date:   Mon, 18 Apr 2022 15:17:27 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 22/25] dmaengine: dw-edma: Replace chip ID number with
- device name
-Message-ID: <20220418121727.ct6pyx6jdq46uvq7@mobilestation>
-References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
- <20220324014836.19149-23-Sergey.Semin@baikalelectronics.ru>
- <20220325100204.GJ4675@thinkpad>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C591C12C;
+        Mon, 18 Apr 2022 05:17:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8387660F09;
+        Mon, 18 Apr 2022 12:17:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 760F1C385A1;
+        Mon, 18 Apr 2022 12:17:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650284252;
+        bh=B8FQAJw9+VDk757S4dMVCrNEdd5tU9fGX7Vr2Zbfdos=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ySmaY4tWB6JJBskJ//bgoEXKCsCXqyzPfO1oMf5MmeXsLZ96qVK0ZmybIE3+f6noJ
+         Gh8Qp7MsT+GM6xO1m9cHS7m5T249zmYa+vf1oBQ2Cb87uENPbUYQFIEEhP9L6erS4e
+         7m5FoTOYWI9LGHxmOOBoDBEKw33dA0SGlkrc5Bq8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 054/219] ALSA: via82xx: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:10:23 +0200
+Message-Id: <20220418121206.702514665@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
+References: <20220418121203.462784814@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325100204.GJ4675@thinkpad>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 03:32:04PM +0530, Manivannan Sadhasivam wrote:
-> On Thu, Mar 24, 2022 at 04:48:33AM +0300, Serge Semin wrote:
-> > Using some abstract number as the DW eDMA chip identifier isn't really
-> > practical. First of all there can be more than one DW eDMA controller on
-> > the platform some of them can be detected as the PCIe end-points, some of
-> > them can be embedded into the DW PCIe Root Port/End-point controllers.
-> > Seeing some abstract number in for instance IRQ handlers list doesn't give
-> > a notion regarding their reference to the particular DMA controller.
-> > Secondly current DW eDMA chip id implementation doesn't provide the
-> > multi-eDMA platforms support for same reason of possibly having eDMA
-> > detected on different system buses. At the same time re-implementing
-> > something ida-based won't give much benefits especially seeing the DW eDMA
-> > chip ID is only used in the IRQ request procedure. So to speak in order to
-> > preserve the code simplicity and get to have the multi-eDMA platforms
-> > support let's just use the parental device name to create the DW eDMA
-> > controller name.
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > ---
-> >  drivers/dma/dw-edma/dw-edma-core.c | 3 ++-
-> >  drivers/dma/dw-edma/dw-edma-core.h | 2 +-
-> >  drivers/dma/dw-edma/dw-edma-pcie.c | 1 -
-> >  include/linux/dma/edma.h           | 1 -
-> >  4 files changed, 3 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
-> > index dbe1119fd1d2..72a51970bfba 100644
-> > --- a/drivers/dma/dw-edma/dw-edma-core.c
-> > +++ b/drivers/dma/dw-edma/dw-edma-core.c
-> > @@ -970,7 +970,8 @@ int dw_edma_probe(struct dw_edma_chip *chip)
-> >  	if (!dw->chan)
-> >  		return -ENOMEM;
-> >  
-> > -	snprintf(dw->name, sizeof(dw->name), "dw-edma-core:%d", chip->id);
-> > +	snprintf(dw->name, sizeof(dw->name), "dw-edma-core:%s",
-> > +		 dev_name(chip->dev));
-> >  
-> >  	/* Disable eDMA, only to establish the ideal initial conditions */
-> >  	dw_edma_v0_core_off(dw);
-> > diff --git a/drivers/dma/dw-edma/dw-edma-core.h b/drivers/dma/dw-edma/dw-edma-core.h
-> > index 980adb079182..dc25798d4ba9 100644
-> > --- a/drivers/dma/dw-edma/dw-edma-core.h
-> > +++ b/drivers/dma/dw-edma/dw-edma-core.h
-> > @@ -96,7 +96,7 @@ struct dw_edma_irq {
-> >  };
-> >  
-> >  struct dw_edma {
-> > -	char				name[20];
-> > +	char				name[30];
-> 
+From: Takashi Iwai <tiwai@suse.de>
 
-> I'm not sure if this length is sufficient. Other than this,
-> 
-> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+commit 27a0963f9cea5be3c68281f07fe82cdf712ef333 upstream.
 
-My calculations were based on the prefix+pci-device-name length. For
-instance, for the case of the remote eDMA the name length would be
-strlen("dw-edma-core:0000:00:00.0") = 25 + 1 (for '\0'). There's even
-some room left. Seeing the prefix is always used in the string there
-will be at most 16 chars for the unique part of the name. If you
-predict it to be greater than that I'll extend the length as you say.
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
--Sergey
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
 
-> 
-> Thanks,
-> Mani
-> 
-> >  
-> >  	struct dma_device		dma;
-> >  
-> > diff --git a/drivers/dma/dw-edma/dw-edma-pcie.c b/drivers/dma/dw-edma/dw-edma-pcie.c
-> > index f530bacfd716..3f9dadc73854 100644
-> > --- a/drivers/dma/dw-edma/dw-edma-pcie.c
-> > +++ b/drivers/dma/dw-edma/dw-edma-pcie.c
-> > @@ -222,7 +222,6 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
-> >  
-> >  	/* Data structure initialization */
-> >  	chip->dev = dev;
-> > -	chip->id = pdev->devfn;
-> >  
-> >  	chip->mf = vsec_data.mf;
-> >  	chip->nr_irqs = nr_irqs;
-> > diff --git a/include/linux/dma/edma.h b/include/linux/dma/edma.h
-> > index 5cc87cfdd685..241c5a97ddf4 100644
-> > --- a/include/linux/dma/edma.h
-> > +++ b/include/linux/dma/edma.h
-> > @@ -73,7 +73,6 @@ enum dw_edma_map_format {
-> >   */
-> >  struct dw_edma_chip {
-> >  	struct device		*dev;
-> > -	int			id;
-> >  	int			nr_irqs;
-> >  	const struct dw_edma_core_ops   *ops;
-> >  	u32			flags;
-> > -- 
-> > 2.35.1
-> > 
+Fixes: afaf99751d0c ("ALSA: via82xx: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-26-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ sound/pci/via82xx.c       |   10 ++++++++--
+ sound/pci/via82xx_modem.c |   10 ++++++++--
+ 2 files changed, 16 insertions(+), 4 deletions(-)
+
+--- a/sound/pci/via82xx.c
++++ b/sound/pci/via82xx.c
+@@ -2458,8 +2458,8 @@ static int check_dxs_list(struct pci_dev
+ 	return VIA_DXS_48K;
+ };
+ 
+-static int snd_via82xx_probe(struct pci_dev *pci,
+-			     const struct pci_device_id *pci_id)
++static int __snd_via82xx_probe(struct pci_dev *pci,
++			       const struct pci_device_id *pci_id)
+ {
+ 	struct snd_card *card;
+ 	struct via82xx *chip;
+@@ -2569,6 +2569,12 @@ static int snd_via82xx_probe(struct pci_
+ 	return 0;
+ }
+ 
++static int snd_via82xx_probe(struct pci_dev *pci,
++			     const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_via82xx_probe(pci, pci_id));
++}
++
+ static struct pci_driver via82xx_driver = {
+ 	.name = KBUILD_MODNAME,
+ 	.id_table = snd_via82xx_ids,
+--- a/sound/pci/via82xx_modem.c
++++ b/sound/pci/via82xx_modem.c
+@@ -1103,8 +1103,8 @@ static int snd_via82xx_create(struct snd
+ }
+ 
+ 
+-static int snd_via82xx_probe(struct pci_dev *pci,
+-			     const struct pci_device_id *pci_id)
++static int __snd_via82xx_probe(struct pci_dev *pci,
++			       const struct pci_device_id *pci_id)
+ {
+ 	struct snd_card *card;
+ 	struct via82xx_modem *chip;
+@@ -1157,6 +1157,12 @@ static int snd_via82xx_probe(struct pci_
+ 	return 0;
+ }
+ 
++static int snd_via82xx_probe(struct pci_dev *pci,
++			     const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_via82xx_probe(pci, pci_id));
++}
++
+ static struct pci_driver via82xx_modem_driver = {
+ 	.name = KBUILD_MODNAME,
+ 	.id_table = snd_via82xx_modem_ids,
+
+
