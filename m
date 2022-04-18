@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E41C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5ABEC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239197AbiDRMce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:32:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38590 "EHLO
+        id S239381AbiDRMc6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:32:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239689AbiDRM2l (ORCPT
+        with ESMTP id S239750AbiDRM2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:28:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EED7201A6;
-        Mon, 18 Apr 2022 05:22:22 -0700 (PDT)
+        Mon, 18 Apr 2022 08:28:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD015222A7;
+        Mon, 18 Apr 2022 05:22:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C65EEB80EDE;
-        Mon, 18 Apr 2022 12:22:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F948C385A7;
-        Mon, 18 Apr 2022 12:22:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4105760EF4;
+        Mon, 18 Apr 2022 12:22:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40094C385A1;
+        Mon, 18 Apr 2022 12:22:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284539;
-        bh=qQSYxwQ0a1zzq3hdUWO+WEoi8GCOsoUpjcM8TqNU80Q=;
+        s=korg; t=1650284548;
+        bh=GMIEaOIScEtB1Zc9XRUXVseCcFhS/WNAIgGvAF1MJiU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LL7XocXYd4vG563boaAwKIV2w7qnbwd+4pfPxisMcpA4BgzT+qPycpzhB/ZSFqRMY
-         doSavBsDWO4kfcO1A1101DwncCw0AHlTeGbEE+rwUeCQwxQ3UhPFhed98ZfG8Bcm9N
-         nttEN6c2WYqd/0lt7udYxEUEK8jkfLbWjx3EkQBU=
+        b=oA2Ox1QUf9eq9Em/SY5ydBi7IANjje3RY64MwnS5aHRBY2vM/mFxOPAQOaWQQVS4R
+         SbnDaKd1hB6YzmgYvOA1dj6U5hddeSBrPia/KdupgTtyaHQ+qYWukFvItks2v+DxvH
+         FBNnjHGl2eEmEebWCX9pzra9Or6fbbqxGvGfBtEg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org, Christian Lamparter <chunkeey@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 131/219] btrfs: fix fallocate to use file_modified to update permissions consistently
-Date:   Mon, 18 Apr 2022 14:11:40 +0200
-Message-Id: <20220418121210.562765021@linuxfoundation.org>
+Subject: [PATCH 5.17 151/219] ata: libata-core: Disable READ LOG DMA EXT for Samsung 840 EVOs
+Date:   Mon, 18 Apr 2022 14:12:00 +0200
+Message-Id: <20220418121211.113680599@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,75 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darrick J. Wong <djwong@kernel.org>
+From: Christian Lamparter <chunkeey@gmail.com>
 
-[ Upstream commit 05fd9564e9faf0f23b4676385e27d9405cef6637 ]
+[ Upstream commit 5399752299396a3c9df6617f4b3c907d7aa4ded8 ]
 
-Since the initial introduction of (posix) fallocate back at the turn of
-the century, it has been possible to use this syscall to change the
-user-visible contents of files.  This can happen by extending the file
-size during a preallocation, or through any of the newer modes (punch,
-zero range).  Because the call can be used to change file contents, we
-should treat it like we do any other modification to a file -- update
-the mtime, and drop set[ug]id privileges/capabilities.
+Samsung' 840 EVO with the latest firmware (EXT0DB6Q) locks up with
+the a message: "READ LOG DMA EXT failed, trying PIO" during boot.
 
-The VFS function file_modified() does all this for us if pass it a
-locked inode, so let's make fallocate drop permissions correctly.
+Initially this was discovered because it caused a crash
+with the sata_dwc_460ex controller on a WD MyBook Live DUO.
 
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: David Sterba <dsterba@suse.com>
+The reporter "Tice Rex" which has the unique opportunity that he
+has two Samsung 840 EVO SSD! One with the older firmware "EXT0BB0Q"
+which booted fine and didn't expose "READ LOG DMA EXT". But the
+newer/latest firmware "EXT0DB6Q" caused the headaches.
+
+BugLink: https://github.com/openwrt/openwrt/issues/9505
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/file.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ drivers/ata/libata-core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/fs/btrfs/file.c b/fs/btrfs/file.c
-index a0179cc62913..28ddd9cf2069 100644
---- a/fs/btrfs/file.c
-+++ b/fs/btrfs/file.c
-@@ -2918,8 +2918,9 @@ int btrfs_replace_file_extents(struct btrfs_inode *inode,
- 	return ret;
- }
- 
--static int btrfs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
-+static int btrfs_punch_hole(struct file *file, loff_t offset, loff_t len)
- {
-+	struct inode *inode = file_inode(file);
- 	struct btrfs_fs_info *fs_info = btrfs_sb(inode->i_sb);
- 	struct btrfs_root *root = BTRFS_I(inode)->root;
- 	struct extent_state *cached_state = NULL;
-@@ -2951,6 +2952,10 @@ static int btrfs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
- 		goto out_only_mutex;
- 	}
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out_only_mutex;
-+
- 	lockstart = round_up(offset, btrfs_inode_sectorsize(BTRFS_I(inode)));
- 	lockend = round_down(offset + len,
- 			     btrfs_inode_sectorsize(BTRFS_I(inode))) - 1;
-@@ -3391,7 +3396,7 @@ static long btrfs_fallocate(struct file *file, int mode,
- 		return -EOPNOTSUPP;
- 
- 	if (mode & FALLOC_FL_PUNCH_HOLE)
--		return btrfs_punch_hole(inode, offset, len);
-+		return btrfs_punch_hole(file, offset, len);
- 
- 	/*
- 	 * Only trigger disk allocation, don't trigger qgroup reserve
-@@ -3413,6 +3418,10 @@ static long btrfs_fallocate(struct file *file, int mode,
- 			goto out;
- 	}
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out;
-+
- 	/*
- 	 * TODO: Move these two operations after we have checked
- 	 * accurate reserved space, or fallocate can still fail but
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 0c854aebfe0b..760c0d81d148 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -4014,6 +4014,9 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
+ 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
+ 	{ "Crucial_CT*MX100*",		"MU01",	ATA_HORKAGE_NO_NCQ_TRIM |
+ 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
++	{ "Samsung SSD 840 EVO*",	NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
++						ATA_HORKAGE_NO_DMA_LOG |
++						ATA_HORKAGE_ZERO_AFTER_TRIM, },
+ 	{ "Samsung SSD 840*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
+ 						ATA_HORKAGE_ZERO_AFTER_TRIM, },
+ 	{ "Samsung SSD 850*",		NULL,	ATA_HORKAGE_NO_NCQ_TRIM |
 -- 
 2.35.1
 
