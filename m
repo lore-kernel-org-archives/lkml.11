@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BDBFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:33:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45FE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:33:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242901AbiDRNgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
+        id S242449AbiDRNgS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:36:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243422AbiDRNKH (ORCPT
+        with ESMTP id S243516AbiDRNKM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:10:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4745737BDA;
-        Mon, 18 Apr 2022 05:49:36 -0700 (PDT)
+        Mon, 18 Apr 2022 09:10:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2CA838793;
+        Mon, 18 Apr 2022 05:49:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECB9FB80EDB;
-        Mon, 18 Apr 2022 12:49:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23B99C385A1;
-        Mon, 18 Apr 2022 12:49:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1661061254;
+        Mon, 18 Apr 2022 12:49:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A9A6C385A1;
+        Mon, 18 Apr 2022 12:49:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286153;
-        bh=FjNegvRkVwiBOy2n8U5PjkNWCM1IxJIfAj3VatT+cxA=;
+        s=korg; t=1650286166;
+        bh=3ONAA+db7xXX+XCtiELFowQDfk4co1geMc+6o3v+NJ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xx0w9ZDLyasvlHQI+qyvc5U1og+0CSQQJhnQu7rb4FIMyEEbY8rtktXa17Dbp6yCe
-         RQ5LQYVxzyNwarxv9La2ULjlPGdTi3WcTIsa5Yfet7iIvTranIJZN13NQ/P+uxPma9
-         dzQgZb5k8eIqH6ZJdFHeGvsywMl7z1lvez8fppIU=
+        b=SrwmrRWsrkzFoVNM3J7ecedrPdR3W+yc7rK6YX8RQgMDlkuo2AbiHr0YuXzzVsJ4r
+         3Kxm1XPyzByUlha+DWmoI0vuHxJgFDayGJgy3Okd2JlXGqR3u0ZYBs5Y/Jpo2CywY8
+         3XnmtJOsnDIqE9YF1AYdGprCEBWjcu7RbZ+DYdSQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Lin Ma <linma@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 038/284] drivers: hamradio: 6pack: fix UAF bug caused by mod_timer()
-Date:   Mon, 18 Apr 2022 14:10:19 +0200
-Message-Id: <20220418121211.778389648@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Hector Martin <marcan@marcan.st>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 4.14 050/284] brcmfmac: firmware: Allocate space for default boardrev in nvram
+Date:   Mon, 18 Apr 2022 14:10:31 +0200
+Message-Id: <20220418121212.119599509@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,87 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Hector Martin <marcan@marcan.st>
 
-commit efe4186e6a1b54bf38b9e05450d43b0da1fd7739 upstream.
+commit d19d8e3ba256f81ea4a27209dbbd1f0a00ef1903 upstream.
 
-When a 6pack device is detaching, the sixpack_close() will act to cleanup
-necessary resources. Although del_timer_sync() in sixpack_close()
-won't return if there is an active timer, one could use mod_timer() in
-sp_xmit_on_air() to wake up timer again by calling userspace syscall such
-as ax25_sendmsg(), ax25_connect() and ax25_ioctl().
+If boardrev is missing from the NVRAM we add a default one, but this
+might need more space in the output buffer than was allocated. Ensure
+we have enough padding for this in the buffer.
 
-This unexpected waked handler, sp_xmit_on_air(), realizes nothing about
-the undergoing cleanup and may still call pty_write() to use driver layer
-resources that have already been released.
-
-One of the possible race conditions is shown below:
-
-      (USE)                      |      (FREE)
-ax25_sendmsg()                   |
- ax25_queue_xmit()               |
-  ...                            |
-  sp_xmit()                      |
-   sp_encaps()                   | sixpack_close()
-    sp_xmit_on_air()             |  del_timer_sync(&sp->tx_t)
-     mod_timer(&sp->tx_t,...)    |  ...
-                                 |  unregister_netdev()
-                                 |  ...
-     (wait a while)              | tty_release()
-                                 |  tty_release_struct()
-                                 |   release_tty()
-    sp_xmit_on_air()             |    tty_kref_put(tty_struct) //FREE
-     pty_write(tty_struct) //USE |    ...
-
-The corresponding fail log is shown below:
-===============================================================
-BUG: KASAN: use-after-free in __run_timers.part.0+0x170/0x470
-Write of size 8 at addr ffff88800a652ab8 by task swapper/2/0
-...
-Call Trace:
-  ...
-  queue_work_on+0x3f/0x50
-  pty_write+0xcd/0xe0pty_write+0xcd/0xe0
-  sp_xmit_on_air+0xb2/0x1f0
-  call_timer_fn+0x28/0x150
-  __run_timers.part.0+0x3c2/0x470
-  run_timer_softirq+0x3b/0x80
-  __do_softirq+0xf1/0x380
-  ...
-
-This patch reorders the del_timer_sync() after the unregister_netdev()
-to avoid UAF bugs. Because the unregister_netdev() is well synchronized,
-it flushs out any pending queues, waits the refcount of net_device
-decreases to zero and removes net_device from kernel. There is not any
-running routines after executing unregister_netdev(). Therefore, we could
-not arouse timer from userspace again.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Lin Ma <linma@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 46f2b38a91b0 ("brcmfmac: insert default boardrev in nvram data if missing")
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220131160713.245637-3-marcan@marcan.st
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/hamradio/6pack.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -685,14 +685,14 @@ static void sixpack_close(struct tty_str
- 	 */
- 	netif_stop_queue(sp->dev);
- 
-+	unregister_netdev(sp->dev);
-+
- 	del_timer_sync(&sp->tx_t);
- 	del_timer_sync(&sp->resync_t);
- 
- 	/* Free all 6pack frame buffers. */
- 	kfree(sp->rbuff);
- 	kfree(sp->xbuff);
--
--	unregister_netdev(sp->dev);
- }
- 
- /* Perform I/O control on an active 6pack channel. */
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+@@ -216,6 +216,8 @@ static int brcmf_init_nvram_parser(struc
+ 		size = BRCMF_FW_MAX_NVRAM_SIZE;
+ 	else
+ 		size = data_len;
++	/* Add space for properties we may add */
++	size += strlen(BRCMF_FW_DEFAULT_BOARDREV) + 1;
+ 	/* Alloc for extra 0 byte + roundup by 4 + length field */
+ 	size += 1 + 3 + sizeof(u32);
+ 	nvp->nvram = kzalloc(size, GFP_KERNEL);
 
 
