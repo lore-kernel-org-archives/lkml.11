@@ -2,156 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4883DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5904C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:56:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233532AbiDRQ5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 12:57:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57456 "EHLO
+        id S1346748AbiDRQ7W (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 12:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346747AbiDRQ4t (ORCPT
+        with ESMTP id S1346874AbiDRQ7G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 12:56:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E639433EB8;
-        Mon, 18 Apr 2022 09:52:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 18 Apr 2022 12:59:06 -0400
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E3C2DF4
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:54:46 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id C10FD820C0A;
+        Mon, 18 Apr 2022 16:45:08 +0000 (UTC)
+Received: from pdx1-sub0-mail-a254.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id DDF1C820A27;
+        Mon, 18 Apr 2022 16:45:07 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1650300308; a=rsa-sha256;
+        cv=none;
+        b=cyyQ+JSYoXJyjM2Ws0QKaUM1dGyzFqXsSCvkwYc550j2MJ3BkhEWHD7IoIA+Ge+CiH2BOZ
+        ntIiFuwhnuADdPnu9irQldc2Jen0rjhvBNXHyCpG3PEnaX8kVNx2RyS/oaZbPYJ/Jsq1if
+        iul6AVqS+QtOWGLQdWQA73bTBdRxs0NyPaXeZ8OJM1JJnZ2/hI1EB2uehs5aL26sgisTJh
+        y5rlAEFITavdHxb0T60kbmfNwoVleI7np+lUOiHcvVd/94cBmJZuO2UKiCN1FOrzhTwAue
+        iX0Kfrf2a6gT5AziHprtyOT45tIuyI7MuCUcnWPxsy48JyT0rsB9Mimu8utf3g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1650300308;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=BMeE3theriLPeHe7OsqT9QG1VfC7A6W9rVpn1syfKUA=;
+        b=dHwCsVeIZYfExOX0wY9yHnIz3FKYSqPZgzf4hdHQzAGFwIPq2jfzkOIR2tmZOF5YSJtts7
+        g0CE+G7kNVcqLAgul++tllb0ijhTjJYIrjew6gMRjee/FOeI+MuQ8QfLst2yfJIwnvPSQc
+        i/S+2D3wtR8k6IjVhir6Y68JqyT2slLh3UAZFflGjcjBoQU57W5bD6I95WNo4k3S1zTH+O
+        XoRst9PN0oUjUTxKYFbGsTTvDAJvJvpC/gyKOwAlB6INfholvPRKNDEGLqbrOH6n7BW3NI
+        ODshuNFs8UYAw8V6T2OxjDbITE2mZC9xySrfD3D/pQmJGKgjJaMWy0XhxXQGQg==
+ARC-Authentication-Results: i=1;
+        rspamd-6969874869-45jtd;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from pdx1-sub0-mail-a254.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.125.123.25 (trex/6.7.1);
+        Mon, 18 Apr 2022 16:45:08 +0000
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Cooing-Trouble: 2c2a24835007ca77_1650300308401_362394076
+X-MC-Loop-Signature: 1650300308401:1218719460
+X-MC-Ingress-Time: 1650300308400
+Received: from offworld (unknown [104.36.29.107])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A10B3B8104C;
-        Mon, 18 Apr 2022 16:52:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A77EC385AB;
-        Mon, 18 Apr 2022 16:52:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650300747;
-        bh=FqA87CXgaTYslJKT4j5d//cmzCdvUZXSeGEszJTZZjk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=MrkJSukFcEJ1Zk/lIRC80aIrInKZSSpKqmq0u5QlxlZaTrIQD21v5v5gzfcGmCjep
-         ct6C7k7YyDekrWeXPAPWEaTd5TpLHVNFCwo3/NBmqVf5G6baM2QNZCL9pRaK63cHR2
-         X8ZbexAFAFgFgzYYGNrk5TuH1uxiswgGzL02Zre2U2DEAQoRVZ7EdWNC3Rn8n2csaS
-         efFeAva1gSESCMNUSVVhLP7ZbK3dTXPIdrEfFWdHfvYCFc6b5b3WPBvjtHRVvXmYTl
-         5lFEitQ/UCkh4zgieGEr1NVM9/JvlDzpIyvziiZNerRVaEWxLssdJiH1ajii+02gki
-         uwvC9Jg/Oz0iw==
-Message-ID: <4a6dd90c-3f8e-ad18-0136-88b75f4d9cf9@kernel.org>
-Date:   Mon, 18 Apr 2022 18:52:18 +0200
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a254.dreamhost.com (Postfix) with ESMTPSA id 4Kht8L4SLTz1QS;
+        Mon, 18 Apr 2022 09:45:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1650300307;
+        bh=BMeE3theriLPeHe7OsqT9QG1VfC7A6W9rVpn1syfKUA=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=P+8d01HVOoeXDKa157TzKSvtsBjKR7DCshqwRA8ybsl6Hix/9wm7F7nhu7sAWC1MF
+         CJQ/L3xuLnFtOXn440u6xjaVDJVWhy/u9iwZ1zu/8+x1MuSRX5YDMDo3VvtJqBlisI
+         BTywpOC5EOqLwQwpzeBfk75A91cETxE+jkVAUdjnlr1VMyHaFpOeHu3tTGPeUA8fS7
+         b/UE3WwBE531gJTJUfGzrbFg+OIYnFQIuJjXv+KaFvlKuZSaFNmasKR1Pur9T1+8MJ
+         y9qcDSQC/xnPcs+YjGNjMSNpl2Dw4LYBwYkadXtYTfPvu5EbphdCQNzIxVDnBVrwfF
+         RtQCVezcQwghQ==
+Date:   Mon, 18 Apr 2022 09:45:03 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     linux-mm@kvack.org, mhocko@kernel.org, akpm@linux-foundation.org,
+        rientjes@google.com, yosryahmed@google.com, hannes@cmpxchg.org,
+        shakeelb@google.com, dave.hansen@linux.intel.com,
+        tim.c.chen@linux.intel.com, roman.gushchin@linux.dev,
+        gthelen@google.com, a.manzanares@samsung.com,
+        heekwon.p@samsung.com, gim.jongmin@samsung.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 6/6] mm/migrate: export whether or not node is toptier in
+ sysf
+Message-ID: <20220418164503.jfips3aiwhnlfjrq@offworld>
+Mail-Followup-To: Dave Hansen <dave.hansen@intel.com>, linux-mm@kvack.org,
+        mhocko@kernel.org, akpm@linux-foundation.org, rientjes@google.com,
+        yosryahmed@google.com, hannes@cmpxchg.org, shakeelb@google.com,
+        dave.hansen@linux.intel.com, tim.c.chen@linux.intel.com,
+        roman.gushchin@linux.dev, gthelen@google.com,
+        a.manzanares@samsung.com, heekwon.p@samsung.com,
+        gim.jongmin@samsung.com, linux-kernel@vger.kernel.org
+References: <20220416053902.68517-1-dave@stgolabs.net>
+ <20220417034932.jborenmvfbqrfhlj@offworld>
+ <c1475d8e-3ad6-cdab-5cc9-b44fef998636@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 0/5] Add support for Axis, ARTPEC-8 PCIe driver
-Content-Language: en-US
-To:     wangseok.lee@samsung.com, robh+dt <robh+dt@kernel.org>,
-        krzk+dt <krzk+dt@kernel.org>, kishon <kishon@ti.com>,
-        vkoul <vkoul@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "jesper.nilsson" <jesper.nilsson@axis.com>,
-        "lars.persson" <lars.persson@axis.com>
-Cc:     bhelgaas <bhelgaas@google.com>,
-        linux-phy <linux-phy@lists.infradead.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "lorenzo.pieralisi" <lorenzo.pieralisi@arm.com>, kw <kw@linux.com>,
-        linux-arm-kernel <linux-arm-kernel@axis.com>,
-        kernel <kernel@axis.com>, Moon-Ki Jun <moonki.jun@samsung.com>,
-        Dongjin Yang <dj76.yang@samsung.com>
-References: <CGME20220418072049epcms2p463a9f01d8ae3e29f75b746a0dce934f1@epcms2p4>
- <20220418072049epcms2p463a9f01d8ae3e29f75b746a0dce934f1@epcms2p4>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220418072049epcms2p463a9f01d8ae3e29f75b746a0dce934f1@epcms2p4>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <c1475d8e-3ad6-cdab-5cc9-b44fef998636@intel.com>
+User-Agent: NeoMutt/20201120
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/04/2022 09:20, Wangseok Lee wrote:
->>> Also, as you know,
->>> exynos driver is designed according to exynos SoC platform,
->>> so both function and variable names start with exynos.
->>
->> That's hardly a problem...
->>
->>> Compared to the existing exynos driver, 
->>> you can see that the structure and type of function are different.
->>
->> No, I cannot see it. You coded the driver that way, you can code it in
->> other way.
->>
->>> For this reason, it is difficult to use the existing exynos driver 
->>> for artpec.
->>
->> Naming of functions and structures is not making it difficult. That's
->> not the reason.
->>
->>> Our idea is to register a new PCIe driver for artpec-8 SoC platform 
->>> and maintain it in the future.
->>
->> We also want to maintain Exynos PCIe driver in the future.
->>
->> Best regards,
->> Krzysztof
-> 
-> Hi, 
-> Sorry for delay response.
+On Mon, 18 Apr 2022, Dave Hansen wrote:
 
-Sure, happens, but I don't remember the discussion, so replying that
-late will not help your cause.
+>On 4/16/22 20:49, Davidlohr Bueso wrote:
+>> This allows userspace to know if the node is considered fast
+>> memory (with CPUs attached to it). While this can be already
+>> derived without a new file, this helps further encapsulate the
+>> concept.
+>
+>What is userspace supposed to *do* with this, though?
 
-You know that if you (you as Samsung) worked with upstream, e.g. by
-extending the drivers and keeping them in shape, it would be much easier
-for you (again you as Samsung) to actually add new features? It's much
-better/effective approach than the path of pushing every time new driver
-with explanation like "we do not want to maintain older driver, so we
-want a new one"...
+This came as a scratch to my own itch. I wanted to start testing
+more tiering patches overall that I see pop up, and wanted a way
+to differentiate the slow vs the fast memories in order to better
+configure workload(s) working set sizes beyond what is your typical
+grep MemTotal /proc/meminfo. If there is a better way I'm all
+for it.
 
-> I have listed some parts that are different from exynos pcie driver.
-> 
-> PHY driver
-> PHY is different, so register map is also different.
-> Three reference clock options are available in ARTPEC-8.
->   It operates by selecting one clock among XO, IO, and SOC PLL.
->   However, the exynos phy driver sets one ref clk though sysreg.
+>
+>What does "attached" mean?
 
-It usually trivial to code such difference in the driver.
+I'll rephrase.
 
-> The reset method and type of PHY for initialization are different.
-> The overall sysreg configuration is different
+>Isn't it just asking for trouble to add (known) redundancy to the ABI?
+>It seems like a recipe for future inconsistency.
 
-Indeed.
+Perhaps. It was mostly about the fact that the notion of top tier
+could also change as technology evolves.
 
-> Artpec-8 requires a separate sequence for phy tuning,
-> but it does not exist in exynos phy driver.
-> Artpec-8 requires pcs resources, but exynos phy driver does not exist.
-> 
-
-For the phy driver indeed it might require much effort to create one driver.
-
-> Controller driver
-> Sub controller is different, so register map is also different.
-> And it is different handles lane control, link control, PHY clocking,
-> reset, interrupt control. 
-> The number and type of clock resources used are different.
-> The overall sysreg configuration is different
-> 
-> Also artpec-8 is performed in dual mode that supports both RC and EP.
-> As described above, the PHY and sub ontroller are different
-> and the regiser map is different.
-> sysreg is also different. And there are differences such as reset.
-> The driver will be much more complicated if both hardwares should be
-> supported in the same driver.
-
-Maybe, quite probably. The reluctance to extend any existing code makes
-me doubting this, but I admit that there are many differences.
-
-> For these reasons, my opinion is that better to create
-> a phy, controller both driver with a new file.
-> Please let me know your opinion.
-
-At the end it's mostly the decision of PCIe and phy subsystem
-maintainers whether they want to have separate drivers for DWC PCIe
-blocks in ARMv8 Samsung SoCs.
-
-In any case, the driver code looks like copied-pasted from some vendor
-sources, so you need to bring it to shape.
-
-Best regards,
-Krzysztof
+Thanks,
+Davidlohr
