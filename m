@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87934C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241919AbiDRNqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57262 "EHLO
+        id S242684AbiDRNqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:46:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242089AbiDRN0l (ORCPT
+        with ESMTP id S241740AbiDRN06 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:26:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D943E0F2;
+        Mon, 18 Apr 2022 09:26:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C56A3E0E8;
         Mon, 18 Apr 2022 05:53:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24B65B80E4E;
-        Mon, 18 Apr 2022 12:53:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F85FC385A1;
-        Mon, 18 Apr 2022 12:53:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4346BB80EC4;
+        Mon, 18 Apr 2022 12:53:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89FA0C385A1;
+        Mon, 18 Apr 2022 12:53:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286381;
-        bh=3NzfD2UjOx0eI3knVHB5Oq9qjUPNX2f6riZbUbbtJCc=;
+        s=korg; t=1650286385;
+        bh=UzMnFVffMmcsXMlUXyH5IAYvyjZH2koP31kGk3TknZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iQqSdtNmXqkOLoRiOvRWSznNQPwm7mbvZWkTOYzNnEzfFHOFmRGIR/tdmPDxodAmc
-         PwCVrb1O25H/hRyF83NX3fppLZo9V3ZcRyf5uQPAqAFLmQdTgrXc+TBBikJLaWAuI1
-         JyEeR5gtJ/nrYbxYSdfFB62X9Q9MaOTu0dzRMD8w=
+        b=LfCvYRMEQzYL0ra+WYSPa5teUAy9HjFzdRnJpGubeFcXjmYK4yR2s8U2AXfS2B3ga
+         R4xjTw+pzjAKhmHIUFZ0r3ub9FLFU4+4b/IVWXh/CSHSCnNnZ4k6vpCY9t7Jqduw7w
+         4ZoGWaLDVdPhRqJgx2q3AbUEC2fNK2cpjPnxpP50=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Charles Keepax <ckeepax@opensource.cirrus.com>,
         Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 116/284] power: supply: wm8350-power: Handle error for wm8350_register_irq
-Date:   Mon, 18 Apr 2022 14:11:37 +0200
-Message-Id: <20220418121214.339332027@linuxfoundation.org>
+Subject: [PATCH 4.14 117/284] power: supply: wm8350-power: Add missing free in free_charger_irq
+Date:   Mon, 18 Apr 2022 14:11:38 +0200
+Message-Id: <20220418121214.384872915@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -52,11 +52,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit b0b14b5ba11bec56fad344a4a0b2e16449cc8b94 ]
+[ Upstream commit 6dee930f6f6776d1e5a7edf542c6863b47d9f078 ]
 
-As the potential failure of the wm8350_register_irq(),
-it should be better to check it and return error if fails.
-Also, use 'free_' in order to avoid same code.
+In free_charger_irq(), there is no free for 'WM8350_IRQ_CHG_FAST_RDY'.
+Therefore, it should be better to add it in order to avoid the memory leak.
 
 Fixes: 14431aa0c5a4 ("power_supply: Add support for WM8350 PMU")
 Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
@@ -64,140 +63,21 @@ Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/wm8350_power.c | 96 ++++++++++++++++++++++++-----
- 1 file changed, 82 insertions(+), 14 deletions(-)
+ drivers/power/supply/wm8350_power.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/power/supply/wm8350_power.c b/drivers/power/supply/wm8350_power.c
-index a2740cf57ad3..c2a62e6568c6 100644
+index c2a62e6568c6..5d025fcd8f3f 100644
 --- a/drivers/power/supply/wm8350_power.c
 +++ b/drivers/power/supply/wm8350_power.c
-@@ -410,44 +410,112 @@ static const struct power_supply_desc wm8350_usb_desc = {
-  *		Initialisation
-  *********************************************************************/
- 
--static void wm8350_init_charger(struct wm8350 *wm8350)
-+static int wm8350_init_charger(struct wm8350 *wm8350)
- {
-+	int ret;
-+
- 	/* register our interest in charger events */
--	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_HOT,
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_HOT,
- 			    wm8350_charger_handler, 0, "Battery hot", wm8350);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_COLD,
-+	if (ret)
-+		goto err;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_COLD,
- 			    wm8350_charger_handler, 0, "Battery cold", wm8350);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_FAIL,
-+	if (ret)
-+		goto free_chg_bat_hot;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_BAT_FAIL,
- 			    wm8350_charger_handler, 0, "Battery fail", wm8350);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_TO,
-+	if (ret)
-+		goto free_chg_bat_cold;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_TO,
- 			    wm8350_charger_handler, 0,
- 			    "Charger timeout", wm8350);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_END,
-+	if (ret)
-+		goto free_chg_bat_fail;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_END,
- 			    wm8350_charger_handler, 0,
- 			    "Charge end", wm8350);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_START,
-+	if (ret)
-+		goto free_chg_to;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_START,
- 			    wm8350_charger_handler, 0,
- 			    "Charge start", wm8350);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY,
-+	if (ret)
-+		goto free_chg_end;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY,
- 			    wm8350_charger_handler, 0,
- 			    "Fast charge ready", wm8350);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9,
-+	if (ret)
-+		goto free_chg_start;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9,
- 			    wm8350_charger_handler, 0,
- 			    "Battery <3.9V", wm8350);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1,
-+	if (ret)
-+		goto free_chg_fast_rdy;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1,
- 			    wm8350_charger_handler, 0,
- 			    "Battery <3.1V", wm8350);
--	wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85,
-+	if (ret)
-+		goto free_chg_vbatt_lt_3p9;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85,
- 			    wm8350_charger_handler, 0,
- 			    "Battery <2.85V", wm8350);
-+	if (ret)
-+		goto free_chg_vbatt_lt_3p1;
- 
- 	/* and supply change events */
--	wm8350_register_irq(wm8350, WM8350_IRQ_EXT_USB_FB,
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_EXT_USB_FB,
- 			    wm8350_charger_handler, 0, "USB", wm8350);
--	wm8350_register_irq(wm8350, WM8350_IRQ_EXT_WALL_FB,
-+	if (ret)
-+		goto free_chg_vbatt_lt_2p85;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_EXT_WALL_FB,
- 			    wm8350_charger_handler, 0, "Wall", wm8350);
--	wm8350_register_irq(wm8350, WM8350_IRQ_EXT_BAT_FB,
-+	if (ret)
-+		goto free_ext_usb_fb;
-+
-+	ret = wm8350_register_irq(wm8350, WM8350_IRQ_EXT_BAT_FB,
- 			    wm8350_charger_handler, 0, "Battery", wm8350);
-+	if (ret)
-+		goto free_ext_wall_fb;
-+
-+	return 0;
-+
-+free_ext_wall_fb:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_EXT_WALL_FB, wm8350);
-+free_ext_usb_fb:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_EXT_USB_FB, wm8350);
-+free_chg_vbatt_lt_2p85:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85, wm8350);
-+free_chg_vbatt_lt_3p1:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1, wm8350);
-+free_chg_vbatt_lt_3p9:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9, wm8350);
-+free_chg_fast_rdy:
+@@ -526,6 +526,7 @@ static void free_charger_irq(struct wm8350 *wm8350)
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_TO, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_END, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_START, wm8350);
 +	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_FAST_RDY, wm8350);
-+free_chg_start:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_START, wm8350);
-+free_chg_end:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_END, wm8350);
-+free_chg_to:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_TO, wm8350);
-+free_chg_bat_fail:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_BAT_FAIL, wm8350);
-+free_chg_bat_cold:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_BAT_COLD, wm8350);
-+free_chg_bat_hot:
-+	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_BAT_HOT, wm8350);
-+err:
-+	return ret;
- }
- 
- static void free_charger_irq(struct wm8350 *wm8350)
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P9, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_3P1, wm8350);
+ 	wm8350_free_irq(wm8350, WM8350_IRQ_CHG_VBATT_LT_2P85, wm8350);
 -- 
 2.34.1
 
