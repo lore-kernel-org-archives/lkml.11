@@ -2,146 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9BB1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 08:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A122C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 08:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbiDRIdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 04:33:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
+        id S233884AbiDRIeu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 04:34:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237284AbiDRIdP (ORCPT
+        with ESMTP id S229470AbiDRIes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 04:33:15 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4F7919C09;
-        Mon, 18 Apr 2022 01:30:32 -0700 (PDT)
-X-UUID: c7ea50ace2ee4a48918b7dac76757aee-20220418
-X-UUID: c7ea50ace2ee4a48918b7dac76757aee-20220418
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <moudy.ho@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1955828197; Mon, 18 Apr 2022 16:30:22 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 18 Apr 2022 16:30:21 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 18 Apr
- 2022 16:30:20 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 18 Apr 2022 16:30:19 +0800
-From:   Moudy Ho <moudy.ho@mediatek.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Mon, 18 Apr 2022 04:34:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9896167E8;
+        Mon, 18 Apr 2022 01:32:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F0FFB80E54;
+        Mon, 18 Apr 2022 08:32:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E74BEC385A7;
+        Mon, 18 Apr 2022 08:32:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650270727;
+        bh=P2NdWkh7ANLrGntriy9pXp5aAVb9pf2tB9MolKSyazw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bD+4Rnk1eMoVY5LbC9EVp+Mc08r19hgjO2/21zpEAIBFsUsAe1pzMeVmokPs0bl1/
+         clYaZI4kUjm4qPQBKXWtlC8k+9WA6F7FH3Igsl13ljl47+1qPANg4Oq+LsCN66xNe+
+         BBejCgD8dFY51mWHJ0E3t2m6jykGeWOc2fz11OmSkMBVHfd2lvYN8e4WIOrk1eB6Hi
+         G2Bs/57Lhy5E9J1mTjz8ykj80+9J7Fte2B5X7wp5wPpBfIoT0RHSwD5H3Gmn9UZj+S
+         tR5ZoRRvaCo9+e/MqFReUmssrddyi8pIqESgZw2yTz/CxnTmjUY8eEY2uia3wJEQD2
+         zEV0SWgRnvpwg==
+Date:   Mon, 18 Apr 2022 16:32:01 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
         Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Rob Landley <rob@landley.net>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        <tfiga@chromium.org>, <drinkcat@chromium.org>,
-        <pihsun@chromium.org>, <hsinyi@google.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        "daoyuan huang" <daoyuan.huang@mediatek.com>,
-        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
-        <allen-kh.cheng@mediatek.com>, <xiandong.wang@mediatek.com>,
-        <randy.wu@mediatek.com>, <moudy.ho@mediatek.com>,
-        <jason-jh.lin@mediatek.com>, <roy-cw.yeh@mediatek.com>,
-        <river.cheng@mediatek.com>, <srv_heupstream@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v16 2/6] soc: mediatek: mutex: add 8183 MUTEX MOD settings for MDP
-Date:   Mon, 18 Apr 2022 16:30:14 +0800
-Message-ID: <20220418083018.1907-3-moudy.ho@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220418083018.1907-1-moudy.ho@mediatek.com>
-References: <20220418083018.1907-1-moudy.ho@mediatek.com>
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Subject: Re: [PATCH v3] arm64: dts: imx8m{m,n}-venice-*: add missing
+ uart-has-rtscts property to UARTs
+Message-ID: <20220418083201.GG391514@dragon>
+References: <20220411194638.5706-1-tharvey@gateworks.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411194638.5706-1-tharvey@gateworks.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For the purpose of module independence, related settings should be moved
-from MDP to the corresponding driver.
-This patch adds 8183 MUTEX MOD settings for MDP.
+On Mon, Apr 11, 2022 at 12:46:38PM -0700, Tim Harvey wrote:
+> Add the missing 'uart-has-rtscts' property to UART's that have hardware
+> flow control capability.
+> 
+> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
 
-Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
----
- drivers/soc/mediatek/mtk-mutex.c | 33 ++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
-
-diff --git a/drivers/soc/mediatek/mtk-mutex.c b/drivers/soc/mediatek/mtk-mutex.c
-index a62ac1811419..92afdee14d43 100644
---- a/drivers/soc/mediatek/mtk-mutex.c
-+++ b/drivers/soc/mediatek/mtk-mutex.c
-@@ -80,6 +80,15 @@
- #define MT8183_MUTEX_MOD_DISP_GAMMA0		16
- #define MT8183_MUTEX_MOD_DISP_DITHER0		17
- 
-+#define MT8183_MUTEX_MOD_MDP_RDMA0		2
-+#define MT8183_MUTEX_MOD_MDP_RSZ0		4
-+#define MT8183_MUTEX_MOD_MDP_RSZ1		5
-+#define MT8183_MUTEX_MOD_MDP_TDSHP0		6
-+#define MT8183_MUTEX_MOD_MDP_WROT0		7
-+#define MT8183_MUTEX_MOD_MDP_WDMA		8
-+#define MT8183_MUTEX_MOD_MDP_AAL0		23
-+#define MT8183_MUTEX_MOD_MDP_CCORR0		24
-+
- #define MT8173_MUTEX_MOD_DISP_OVL0		11
- #define MT8173_MUTEX_MOD_DISP_OVL1		12
- #define MT8173_MUTEX_MOD_DISP_RDMA0		13
-@@ -245,6 +254,17 @@ static const unsigned int mt8183_mutex_mod[DDP_COMPONENT_ID_MAX] = {
- 	[DDP_COMPONENT_WDMA0] = MT8183_MUTEX_MOD_DISP_WDMA0,
- };
- 
-+static const unsigned int mt8183_mutex_table_mod[MUTEX_TABLE_IDX_MAX] = {
-+	[MUTEX_TABLE_IDX_MDP_RDMA0] = MT8183_MUTEX_MOD_MDP_RDMA0,
-+	[MUTEX_TABLE_IDX_MDP_RSZ0] = MT8183_MUTEX_MOD_MDP_RSZ0,
-+	[MUTEX_TABLE_IDX_MDP_RSZ1] = MT8183_MUTEX_MOD_MDP_RSZ1,
-+	[MUTEX_TABLE_IDX_MDP_TDSHP0] = MT8183_MUTEX_MOD_MDP_TDSHP0,
-+	[MUTEX_TABLE_IDX_MDP_WROT0] = MT8183_MUTEX_MOD_MDP_WROT0,
-+	[MUTEX_TABLE_IDX_MDP_WDMA] = MT8183_MUTEX_MOD_MDP_WDMA,
-+	[MUTEX_TABLE_IDX_MDP_AAL0] = MT8183_MUTEX_MOD_MDP_AAL0,
-+	[MUTEX_TABLE_IDX_MDP_CCORR0] = MT8183_MUTEX_MOD_MDP_CCORR0,
-+};
-+
- static const unsigned int mt8186_mutex_mod[DDP_COMPONENT_ID_MAX] = {
- 	[DDP_COMPONENT_AAL0] = MT8186_MUTEX_MOD_DISP_AAL0,
- 	[DDP_COMPONENT_CCORR] = MT8186_MUTEX_MOD_DISP_CCORR0,
-@@ -296,6 +316,17 @@ static const unsigned int mt8183_mutex_sof[MUTEX_SOF_DSI3 + 1] = {
- 	[MUTEX_SOF_DPI0] = MT8183_MUTEX_SOF_DPI0 | MT8183_MUTEX_EOF_DPI0,
- };
- 
-+static const unsigned int mt8183_mutex_table_sof[MUTEX_TABLE_IDX_MAX] = {
-+	[MUTEX_TABLE_IDX_MDP_RDMA0] = MUTEX_SOF_SINGLE_MODE,
-+	[MUTEX_TABLE_IDX_MDP_RSZ0] = MUTEX_SOF_SINGLE_MODE,
-+	[MUTEX_TABLE_IDX_MDP_RSZ1] = MUTEX_SOF_SINGLE_MODE,
-+	[MUTEX_TABLE_IDX_MDP_TDSHP0] = MUTEX_SOF_SINGLE_MODE,
-+	[MUTEX_TABLE_IDX_MDP_WROT0] = MUTEX_SOF_SINGLE_MODE,
-+	[MUTEX_TABLE_IDX_MDP_WDMA] = MUTEX_SOF_SINGLE_MODE,
-+	[MUTEX_TABLE_IDX_MDP_AAL0] = MUTEX_SOF_SINGLE_MODE,
-+	[MUTEX_TABLE_IDX_MDP_CCORR0] = MUTEX_SOF_SINGLE_MODE,
-+};
-+
- static const unsigned int mt8186_mutex_sof[MUTEX_SOF_DSI3 + 1] = {
- 	[MUTEX_SOF_SINGLE_MODE] = MUTEX_SOF_SINGLE_MODE,
- 	[MUTEX_SOF_DSI0] = MT8186_MUTEX_SOF_DSI0 | MT8186_MUTEX_EOF_DSI0,
-@@ -336,6 +367,8 @@ static const struct mtk_mutex_data mt8183_mutex_driver_data = {
- 	.mutex_sof = mt8183_mutex_sof,
- 	.mutex_mod_reg = MT8183_MUTEX0_MOD0,
- 	.mutex_sof_reg = MT8183_MUTEX0_SOF0,
-+	.mutex_table_mod = mt8183_mutex_table_mod,
-+	.mutex_table_sof = mt8183_mutex_table_sof,
- 	.no_clk = true,
- };
- 
--- 
-2.18.0
-
+Applied, thanks!
