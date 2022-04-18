@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D7F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241680AbiDRNPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:15:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59696 "EHLO
+        id S241500AbiDRNQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241439AbiDRM6p (ORCPT
+        with ESMTP id S241474AbiDRM6r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:58:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929ED1FA46;
-        Mon, 18 Apr 2022 05:39:06 -0700 (PDT)
+        Mon, 18 Apr 2022 08:58:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35F3C286FB;
+        Mon, 18 Apr 2022 05:39:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB3186119B;
-        Mon, 18 Apr 2022 12:39:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE82EC385A1;
-        Mon, 18 Apr 2022 12:39:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2421B80EDF;
+        Mon, 18 Apr 2022 12:39:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10DA0C385A7;
+        Mon, 18 Apr 2022 12:39:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285545;
-        bh=5fViKXH6yIfHBoQAnKXrMdVGEo8QWYU9eBsjCEJYbQg=;
+        s=korg; t=1650285548;
+        bh=w7aXpuwOrzhppGfZ0NAyhIFazOsTIW/sc7x6w0mpvO4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VhAUN8HfCigBnaUwtmLWpQXRp3rsKq+OaU8xLlZm+wHPM8hBxryymZv8IFdr4Igwj
-         GrYYzBKkTllyGH0otPzim5fkMR5e3d7Bld/N0u+BQyi+qaP7nBdpNeUiwwrwQ+sNxb
-         H1W6whzYw3n2k8KoaDsBv/mUEjjgL4oqOo7zNmyc=
+        b=efcOvuTwCCX2zfnznnA4Fmq56I3JRA9lK/PJ9MszPf2FxBZPvr7bGGcq/Sp7xYGDj
+         ptHQUERiOREmYcY1nEZEoXDDR7KnfRniymLbZJT1dS8vOrLcFlnzKcboVvjqd6mloE
+         WWwJPAJPVGfReK9Na1amlD52kNIIxN+jqGHrWGYE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Xu Jia <xujia39@huawei.com>
-Subject: [PATCH 5.10 002/105] hamradio: defer 6pack kfree after unregister_netdev
-Date:   Mon, 18 Apr 2022 14:12:04 +0200
-Message-Id: <20220418121145.301779931@linuxfoundation.org>
+        stable@vger.kernel.org, Anthony Koo <Anthony.Koo@amd.com>,
+        Alex Hung <alex.hung@amd.com>,
+        Chiawen Huang <chiawen.huang@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 046/105] drm/amd/display: FEC check in timing validation
+Date:   Mon, 18 Apr 2022 14:12:48 +0200
+Message-Id: <20220418121147.788986359@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -49,51 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Chiawen Huang <chiawen.huang@amd.com>
 
-commit 0b9111922b1f399aba6ed1e1b8f2079c3da1aed8 upstream.
+[ Upstream commit 7d56a154e22ffb3613fdebf83ec34d5225a22993 ]
 
-There is a possible race condition (use-after-free) like below
+[Why]
+disable/enable leads FEC mismatch between hw/sw FEC state.
 
- (USE)                       |  (FREE)
-  dev_queue_xmit             |
-   __dev_queue_xmit          |
-    __dev_xmit_skb           |
-     sch_direct_xmit         | ...
-      xmit_one               |
-       netdev_start_xmit     | tty_ldisc_kill
-        __netdev_start_xmit  |  6pack_close
-         sp_xmit             |   kfree
-          sp_encaps          |
-                             |
+[How]
+check FEC status to fastboot on/off.
 
-According to the patch "defer ax25 kfree after unregister_netdev", this
-patch reorder the kfree after the unregister_netdev to avoid the possible
-UAF as the unregister_netdev() is well synchronized and won't return if
-there is a running routine.
-
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Xu Jia <xujia39@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Chiawen Huang <chiawen.huang@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/hamradio/6pack.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/core/dc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -679,9 +679,11 @@ static void sixpack_close(struct tty_str
- 	del_timer_sync(&sp->tx_t);
- 	del_timer_sync(&sp->resync_t);
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
+index 93f5229c303e..ac5323596c65 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
+@@ -1173,6 +1173,10 @@ bool dc_validate_seamless_boot_timing(const struct dc *dc,
+ 	if (!link->link_enc->funcs->is_dig_enabled(link->link_enc))
+ 		return false;
  
--	/* Free all 6pack frame buffers. */
-+	/* Free all 6pack frame buffers after unreg. */
- 	kfree(sp->rbuff);
- 	kfree(sp->xbuff);
++	/* Check for FEC status*/
++	if (link->link_enc->funcs->fec_is_active(link->link_enc))
++		return false;
 +
-+	free_netdev(sp->dev);
- }
+ 	enc_inst = link->link_enc->funcs->get_dig_frontend(link->link_enc);
  
- /* Perform I/O control on an active 6pack channel. */
+ 	if (enc_inst == ENGINE_ID_UNKNOWN)
+-- 
+2.35.1
+
 
 
