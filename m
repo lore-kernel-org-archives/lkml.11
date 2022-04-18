@@ -2,81 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E1B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E18EDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:27:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241262AbiDRQaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 12:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
+        id S1346137AbiDRQaf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 12:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234285AbiDRQaT (ORCPT
+        with ESMTP id S234285AbiDRQad (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 12:30:19 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131D82FE70
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:27:40 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id k29so19723021pgm.12
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:27:40 -0700 (PDT)
+        Mon, 18 Apr 2022 12:30:33 -0400
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E792FE74;
+        Mon, 18 Apr 2022 09:27:53 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id e15-20020a9d63cf000000b006054e65aaecso1560930otl.0;
+        Mon, 18 Apr 2022 09:27:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Jg3I++lP3pbQpRoWlcxdvPAkXeaHQxo24ELrvPlKM/E=;
-        b=cH2GtU4LOPOi/+XBRfxwnugAfu0MPMQBxc9Wu2WamMHh0/XU0iB5aWy/x2QibxbdMz
-         jonHhv2fpMfGsFFdksSLpzTUCMwZW3YH/LkQrMxrFq6/o1NgYMv/3a4SpODk1IojLyvY
-         IYHpnEVbqsTZvSEfJSCeZAJMTEcXlse58I9/w5JeWubORPPRGql+zsoMRWU7KaWJXA6r
-         s9zRR7+JN8jVq2cZJfhsYYNiX0z7gs7nWbFIP3tyG5Ic9AGftrDTlerwTY6jj1rfzrVl
-         cueDDFT9gAbj8d2+mXLK15eFIneY7baVO3j+ySLaQ1a+tJIHrQYJZaxyhVKGs6JqoMBr
-         IbZw==
+        bh=ugT6u+C0I3KSL6RCIIwvLGw6SDuB9e9N5NTAuy1X0MU=;
+        b=ZQuoJlv9hb47u9ZXWciB1viIiCqQpcr68faG+EpcdNbTqusJAXVYoHLEaOOQLnlHfU
+         X8fLpDJEhTjtySM6iJo3Qi4XlTd1yqwqlXgCChTWeYr6wFIM0CM3nPjxdN1S3FZwtO1u
+         NVvASt4hSEpCKxO/T0l7NCzC6iAcKJTfQouOSK75MDo7VgoqHBILwXvI/x6Z/oEtFFXK
+         ectdzs9lHFkK7iYREBMywmPdoq8GASpWvBqh1JDOB9LeK1ClxKF6GAM8LzoLrSiMm8OV
+         MhT8Dnvm/+1k3yQaGNXR2iim5IdEvFa1Uf+Df3ynvUxYJxY+ZM+FeebdPQNtF5cbJH6B
+         oHIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Jg3I++lP3pbQpRoWlcxdvPAkXeaHQxo24ELrvPlKM/E=;
-        b=ijuqQ+9g+vvdNMuLoKvFKl4Ylc1DgQ5rD80akG8ZCMp0gGMNraP7reWi20u3mi+4ns
-         YDrePwLN8xbiMI1qCpAc9PTjRqL6DTucji1AsRDtH+RI00JbF6nZchCqUOXfRvGIFP+i
-         VaZiRsJx3McC01PU4RBfnLVTR5UdZHi+rnXhGdq0nM0TztWQBvNIxS+AiRp9yUO583oa
-         alqaC88oXPs6DEihSR7WFVmD+kSU7MFWj0DZn+dAgs8ijoj1oYolQ7e/YGBrjr8h6ehK
-         GnUORf2lJWPtIjD2c9vf8VNViN12RyfBKUJ64FM5TBE4qgPErGEQpwRUcSfPtUCsvHQI
-         6r0w==
-X-Gm-Message-State: AOAM533GopID+Rf+oqm9iqmwrbwmjF8V5zuql3l+5V+ydKV63L55uqRF
-        Ulu6fEOyf3J5IGBJTnhDFwV8FZ1bP8dWlA==
-X-Google-Smtp-Source: ABdhPJy/wZWcx8WwfVMjBPe1HkCVD8WdLwNDNvqg6YytGt/MvW2eDtFq6Wm1AVa01LsHpGX2s6ntKw==
-X-Received: by 2002:a05:6a00:cc4:b0:505:6998:69b8 with SMTP id b4-20020a056a000cc400b00505699869b8mr13078108pfv.19.1650299259424;
-        Mon, 18 Apr 2022 09:27:39 -0700 (PDT)
-Received: from aliyar-HP-Laptop-15-da1xxx.domain.name ([14.139.241.88])
-        by smtp.gmail.com with ESMTPSA id h18-20020a63c012000000b0039cc3c323f7sm13295602pgg.33.2022.04.18.09.27.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 09:27:39 -0700 (PDT)
-From:   Aliya Rahmani <aliyarahmani786@gmail.com>
-To:     clabbe@baylibre.com
-Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        outreachy@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Aliya Rahmani <aliyarahmani786@gmail.com>
-Subject: [PATCH v2 0/3] staging: media: zoran: fix warnings reported by checkpatch
-Date:   Mon, 18 Apr 2022 21:52:42 +0530
-Message-Id: <20220418162244.15346-1-aliyarahmani786@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=ugT6u+C0I3KSL6RCIIwvLGw6SDuB9e9N5NTAuy1X0MU=;
+        b=VMK1k0b7XpRwqGg++hPVqiPUT7xx2dMA8w3w8RiMdmznTJd1KSd8syNBb3pj2el9bL
+         zyhsqTj5RuKK6HgvvPXEBO4oUDf1fUtLNNTNnnZbdw+hkXVJq5jLyXABCjSwdWHVodbc
+         BgdOpSy6bMMYZEN9g3Q565bOgB0uhg8cbc4Clgo65CVkyKS6C75rUdYpMUjTOfpUXqOS
+         cEwIUu1S9rxHG+VKbxpszwoVT2emPtwYkVFC8TQuJ4o9jqD56IZmiLIU1nCnw43w0RyJ
+         9qjSo2PI1WQkXTstDZh4HoNtJfrUSPDSjz301z4k48NrRY8nqkLb70FW1KC24R2GA7cO
+         2yPw==
+X-Gm-Message-State: AOAM532N068PRqTjqNL9WEdGtS/xSNXg4+7x5hrjphsbc8GsbMp8TBPt
+        sf1VI8BaJxtx1aGe+xRj2MI=
+X-Google-Smtp-Source: ABdhPJyHUlDx2nQA/FG4o8wwOtrW0dJqteowz3ZOiJfzrMUcd2O16hTJSzEQE0I7ohzaoiycKAdnBA==
+X-Received: by 2002:a05:6830:19d4:b0:605:4c22:cc82 with SMTP id p20-20020a05683019d400b006054c22cc82mr2281768otp.134.1650299273280;
+        Mon, 18 Apr 2022 09:27:53 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id l14-20020a4ac60e000000b0032993003287sm4395101ooq.38.2022.04.18.09.27.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 09:27:52 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <8d09a73f-acbd-82dc-77f0-540d106b6e67@roeck-us.net>
+Date:   Mon, 18 Apr 2022 09:27:49 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.15 000/189] 5.15.35-rc1 review
+Content-Language: en-US
+To:     =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+References: <20220418121200.312988959@linuxfoundation.org>
+ <ec6408b7-14f4-fc97-3371-3f6cd9a46d24@applied-asynchrony.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <ec6408b7-14f4-fc97-3371-3f6cd9a46d24@applied-asynchrony.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These patches address style issues found by checkpatch in the
-zoran/videocodec.c file.
+On 4/18/22 07:07, Holger Hoffstätte wrote:
+> On 2022-04-18 14:10, Greg Kroah-Hartman wrote:
+>> This is the start of the stable review cycle for the 5.15.35 release.
+>> There are 189 patches in this series, all will be posted as a response
+>> to this one.  If anyone has any issues with these being applied, please
+>> let me know.
+> 
+> drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_hubbub.c: In function hubbub31_verify_allow_pstate_change_high':
+> drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_hubbub.c:994:17: error: implicit declaration of function 'udelay' [-Werror=implicit-function-declaration]
+>    994 |                 udelay(1);
+>        |                 ^~~~~~
+> 
+> Caused by "drm-amd-display-add-pstate-verification-and-recovery-for-dcn31.patch".
+> Explicitly includng <linux/delay.h> in dcn31_hubbub.c fixes it.
+> 
+> Current mainline version of dcn31_hubbub.c does not explicitly include
+> <linux/delay.h>, so there seems to be some general inconsistency wrt.
+> which dcn module includes what.
+> 
+> CC'ing Nicholas Kazlauskas.
+> 
+Should add: The problem is only seen with 32-bit (i386) builds.
 
-changes since v1: Rework commit description and subject.
-
-Aliya Rahmani (3):
- staging: media: zoran: use seq_puts() instead of seq_printf()
- staging: media: zoran: else is not generally useful after a break or return
- staging: media: zoran: avoid macro argument precedence issues
-
-drivers/staging/media/zoran/videocodec.c | 9++++-----
-1 file changed, 4 insertions(+), 5 deletions(-)
-
-
--- 
-2.25.1
-
+Guenter
