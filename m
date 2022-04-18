@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE37CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:16:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9655C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238202AbiDRMSx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48892 "EHLO
+        id S238230AbiDRMTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:19:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238207AbiDRMSj (ORCPT
+        with ESMTP id S238136AbiDRMSi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:18:39 -0400
+        Mon, 18 Apr 2022 08:18:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C03C1B796;
-        Mon, 18 Apr 2022 05:15:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F3641AF21;
+        Mon, 18 Apr 2022 05:15:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EA1360F07;
-        Mon, 18 Apr 2022 12:15:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 582C0C385A1;
-        Mon, 18 Apr 2022 12:15:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E039460F09;
+        Mon, 18 Apr 2022 12:15:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED114C385A1;
+        Mon, 18 Apr 2022 12:15:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284152;
-        bh=sMzXTD1B5eeILshJgd3N2STxC4JoBxgOMpvVeK++w4c=;
+        s=korg; t=1650284145;
+        bh=sCROHJ/hg47ICOANMftKN8vH5mtxayCl4vMQj4oLdOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VvmEfPFd6j1S10cT/yq+U/s0QIepTaOsXKiO0fst0ZZ96wrE2LAkdbvPFpFthHKxi
-         PXkEBrQJAwz2Qdl6oRyEjfP/v+51yq53hO7t+8EhNddlsOQO55EvGFtaJt/FZDOqWg
-         PasXFEDshsF7S19JMXeAQxdF5gHQWbTEB+crrMTM=
+        b=IBnY3PUpTtltktSMRoHZwtwsmaWJqCdAjLmEQ1Ntq3L1mgW+rLII1EPTMxeIIIfCn
+         JfIZHeZSSfQcbuFLyKAfd7Wh+MtGH7B84IoBMQGJF6gsBYUYOp/vBA7KlCTdpKcVcU
+         bIRzdBd00MPI0RSqeHVpLMcyJgkTdN9oLHhTW/NY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 022/219] ALSA: atiixp: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:09:51 +0200
-Message-Id: <20220418121204.579434195@linuxfoundation.org>
+Subject: [PATCH 5.17 020/219] ALSA: als300: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:09:49 +0200
+Message-Id: <20220418121204.458225498@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,7 +49,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit 48e8adde8d1c586c799dab123fc1ebc8b8db620f upstream.
+commit ab8bce9da6102c575c473c053672547589bc4c59 upstream.
 
 The previous cleanup with devres may lead to the incorrect release
 orders at the probe error handling due to the devres's nature.  Until
@@ -57,70 +57,45 @@ we register the card, snd_card_free() has to be called at first for
 releasing the stuff properly when the driver tries to manage and
 release the stuff via card->private_free().
 
-This patch fixes it by calling snd_card_free() on the error from the
-probe callback using a new helper function.
+This patch fixes it by calling snd_card_free() manually on the error
+from the probe callback.
 
-Fixes: 86bde74dbf09 ("ALSA: atiixp: Allocate resources with device-managed APIs")
+Fixes: 21a9314cf93b ("ALSA: als300: Allocate resources with device-managed APIs")
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-7-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220412102636.16000-31-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/atiixp.c       |   10 ++++++++--
- sound/pci/atiixp_modem.c |   10 ++++++++--
- 2 files changed, 16 insertions(+), 4 deletions(-)
+ sound/pci/als300.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/sound/pci/atiixp.c
-+++ b/sound/pci/atiixp.c
-@@ -1572,8 +1572,8 @@ static int snd_atiixp_init(struct snd_ca
- }
+--- a/sound/pci/als300.c
++++ b/sound/pci/als300.c
+@@ -708,7 +708,7 @@ static int snd_als300_probe(struct pci_d
  
+ 	err = snd_als300_create(card, pci, chip_type);
+ 	if (err < 0)
+-		return err;
++		goto error;
  
--static int snd_atiixp_probe(struct pci_dev *pci,
--			    const struct pci_device_id *pci_id)
-+static int __snd_atiixp_probe(struct pci_dev *pci,
-+			      const struct pci_device_id *pci_id)
- {
- 	struct snd_card *card;
- 	struct atiixp *chip;
-@@ -1623,6 +1623,12 @@ static int snd_atiixp_probe(struct pci_d
+ 	strcpy(card->driver, "ALS300");
+ 	if (chip->chip_type == DEVICE_ALS300_PLUS)
+@@ -723,11 +723,15 @@ static int snd_als300_probe(struct pci_d
+ 
+ 	err = snd_card_register(card);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 
+ 	pci_set_drvdata(pci, card);
+ 	dev++;
  	return 0;
- }
- 
-+static int snd_atiixp_probe(struct pci_dev *pci,
-+			    const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_atiixp_probe(pci, pci_id));
-+}
 +
- static struct pci_driver atiixp_driver = {
- 	.name = KBUILD_MODNAME,
- 	.id_table = snd_atiixp_ids,
---- a/sound/pci/atiixp_modem.c
-+++ b/sound/pci/atiixp_modem.c
-@@ -1201,8 +1201,8 @@ static int snd_atiixp_init(struct snd_ca
++ error:
++	snd_card_free(card);
++	return err;
  }
  
- 
--static int snd_atiixp_probe(struct pci_dev *pci,
--			    const struct pci_device_id *pci_id)
-+static int __snd_atiixp_probe(struct pci_dev *pci,
-+			      const struct pci_device_id *pci_id)
- {
- 	struct snd_card *card;
- 	struct atiixp_modem *chip;
-@@ -1247,6 +1247,12 @@ static int snd_atiixp_probe(struct pci_d
- 	return 0;
- }
- 
-+static int snd_atiixp_probe(struct pci_dev *pci,
-+			    const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_atiixp_probe(pci, pci_id));
-+}
-+
- static struct pci_driver atiixp_modem_driver = {
- 	.name = KBUILD_MODNAME,
- 	.id_table = snd_atiixp_ids,
+ static struct pci_driver als300_driver = {
 
 
