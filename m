@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03757C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD090C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239968AbiDRMia (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:38:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54144 "EHLO
+        id S240075AbiDRMij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239576AbiDRMdP (ORCPT
+        with ESMTP id S239718AbiDRMdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:15 -0400
+        Mon, 18 Apr 2022 08:33:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10755CC1;
-        Mon, 18 Apr 2022 05:24:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737B065BD;
+        Mon, 18 Apr 2022 05:25:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BA9C60B40;
-        Mon, 18 Apr 2022 12:24:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DDEAC385A7;
-        Mon, 18 Apr 2022 12:24:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B3BBF60B40;
+        Mon, 18 Apr 2022 12:25:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BACFEC385A7;
+        Mon, 18 Apr 2022 12:25:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284691;
-        bh=uaW8DEnT4sb0/ybCYpcyrSkLQYz8E36Brq7Wd8H8Qlo=;
+        s=korg; t=1650284714;
+        bh=PRKKSlC++3tu0htGySyF7EK6m/IfUhB+bYRdOYfYruw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VQ0mDwiwFejfZ1H25RIcnW6U47aei4FzWq/lX7ml8N6EMrWD0nYDsyRVaGFUai/ms
-         +LILsdku7m7JizyxGt/jD9IbWERcvovup3BJYJgCCBwXVYsDyfm/g5Jup0qm/kR+ul
-         h6QFsXjAkTp8J1QrS2gUC+pyzbZkGY9dvz054Kjw=
+        b=TjogNQiGu4TeiPDMrslnTQyeZHKnXHrACpA1OJi8MM8qQZo4GkXHQZpftAC4pIJXP
+         HtW5bT5GoEWDVVoa9emqZKHOowNMBo4KnDaYBgZfULJiE2PxnlWq4FoIIsPxqEO/NO
+         Xe+flkSB+AZana9Dz+p5DppmiSKn3KNc3YAL3H3k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.17 197/219] nl80211: correctly check NL80211_ATTR_REG_ALPHA2 size
-Date:   Mon, 18 Apr 2022 14:12:46 +0200
-Message-Id: <20220418121212.387687704@linuxfoundation.org>
+        stable@vger.kernel.org, Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ming Lei <ming.lei@redhat.com>
+Subject: [PATCH 5.17 203/219] genirq/affinity: Consider that CPUs on nodes can be unbalanced
+Date:   Mon, 18 Apr 2022 14:12:52 +0200
+Message-Id: <20220418121212.552659088@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,35 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
 
-commit 6624bb34b4eb19f715db9908cca00122748765d7 upstream.
+commit 08d835dff916bfe8f45acc7b92c7af6c4081c8a7 upstream.
 
-We need this to be at least two bytes, so we can access
-alpha2[0] and alpha2[1]. It may be three in case some
-userspace used NUL-termination since it was NLA_STRING
-(and we also push it out with NUL-termination).
+If CPUs on a node are offline at boot time, the number of nodes is
+different when building affinity masks for present cpus and when building
+affinity masks for possible cpus. This causes the following problem:
 
+In the case that the number of vectors is less than the number of nodes
+there are cases where bits of masks for present cpus are overwritten when
+building masks for possible cpus.
+
+Fix this by excluding CPUs, which are not part of the current build mask
+(present/possible).
+
+[ tglx: Massaged changelog and added comment ]
+
+Fixes: b82592199032 ("genirq/affinity: Spread IRQs to all available NUMA nodes")
+Signed-off-by: Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
 Cc: stable@vger.kernel.org
-Reported-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20220411114201.fd4a31f06541.Ie7ff4be2cf348d8cc28ed0d626fc54becf7ea799@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/r/20220331003309.10891-1-yamamoto.rei@jp.fujitsu.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/wireless/nl80211.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/irq/affinity.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -519,7 +519,8 @@ static const struct nla_policy nl80211_p
- 				   .len = IEEE80211_MAX_MESH_ID_LEN },
- 	[NL80211_ATTR_MPATH_NEXT_HOP] = NLA_POLICY_ETH_ADDR_COMPAT,
- 
--	[NL80211_ATTR_REG_ALPHA2] = { .type = NLA_STRING, .len = 2 },
-+	/* allow 3 for NUL-termination, we used to declare this NLA_STRING */
-+	[NL80211_ATTR_REG_ALPHA2] = NLA_POLICY_RANGE(NLA_BINARY, 2, 3),
- 	[NL80211_ATTR_REG_RULES] = { .type = NLA_NESTED },
- 
- 	[NL80211_ATTR_BSS_CTS_PROT] = { .type = NLA_U8 },
+--- a/kernel/irq/affinity.c
++++ b/kernel/irq/affinity.c
+@@ -269,8 +269,9 @@ static int __irq_build_affinity_masks(un
+ 	 */
+ 	if (numvecs <= nodes) {
+ 		for_each_node_mask(n, nodemsk) {
+-			cpumask_or(&masks[curvec].mask, &masks[curvec].mask,
+-				   node_to_cpumask[n]);
++			/* Ensure that only CPUs which are in both masks are set */
++			cpumask_and(nmsk, cpu_mask, node_to_cpumask[n]);
++			cpumask_or(&masks[curvec].mask, &masks[curvec].mask, nmsk);
+ 			if (++curvec == last_affv)
+ 				curvec = firstvec;
+ 		}
 
 
