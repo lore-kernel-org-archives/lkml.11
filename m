@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20D79C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71411C4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242150AbiDRNIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50980 "EHLO
+        id S242438AbiDRNJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:09:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240441AbiDRMzp (ORCPT
+        with ESMTP id S240394AbiDRM4m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:55:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A64E0B1;
-        Mon, 18 Apr 2022 05:37:43 -0700 (PDT)
+        Mon, 18 Apr 2022 08:56:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9355B12755;
+        Mon, 18 Apr 2022 05:37:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A79AE611CC;
-        Mon, 18 Apr 2022 12:37:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE24EC385A1;
-        Mon, 18 Apr 2022 12:37:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFC2D611CC;
+        Mon, 18 Apr 2022 12:37:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB34AC385B0;
+        Mon, 18 Apr 2022 12:37:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285462;
-        bh=RSKVNnoqxfmMZybfBYToySTA/cVvPDlog7YmfbBL73w=;
+        s=korg; t=1650285473;
+        bh=plLRFRABPQzeHzsPhuHHKYd36CfjqlRb/871J9RPo7c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BNVOcS9/x41RTAb1d33uCPZNuvMPTbSkyDA9RHMCxQpMoaOsnY4JFU8CDGCItvZtQ
-         wc0zIsVjPaaBRuxTC3AMA0mYMQY2lnc/jFh4IM5rsD1gCzv5dGqDA6EGqCvT5xhpsA
-         hAACpDlNhsbbB0blaos+AkglEk2sywhzRjHWSOy4=
+        b=fNWUWWYSSjCIVBO6l43URLG922pn7pYfgOPpGuBDbjPzqbHQ5h+V31jF0vB4AeeGO
+         C0Wt1Tr5Ar0mHsF5Fd2Z2G5MizZ//OSNJZKnPr4NzGcySuWxxCpFMy2uh49HRFcDBp
+         6syWbWnSljxYUhU7OQh2Aq+MM6CepFi/kOy95/ao=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Ajish Koshy <Ajish.Koshy@microchip.com>,
-        Viswas G <Viswas.G@microchip.com>,
+        stable@vger.kernel.org,
+        Mike Christie <michael.christie@oracle.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 025/105] scsi: pm80xx: Mask and unmask upper interrupt vectors 32-63
-Date:   Mon, 18 Apr 2022 14:12:27 +0200
-Message-Id: <20220418121146.941739869@linuxfoundation.org>
+Subject: [PATCH 5.10 028/105] scsi: iscsi: Force immediate failure during shutdown
+Date:   Mon, 18 Apr 2022 14:12:30 +0200
+Message-Id: <20220418121147.114581108@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -52,71 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ajish Koshy <Ajish.Koshy@microchip.com>
+From: Mike Christie <michael.christie@oracle.com>
 
-[ Upstream commit 294080eacf92a0781e6d43663448a55001ec8c64 ]
+[ Upstream commit 06c203a5566beecebb1f8838d026de8a61c8df71 ]
 
-When upper inbound and outbound queues 32-63 are enabled, we see upper
-vectors 32-63 in interrupt service routine. We need corresponding registers
-to handle masking and unmasking of these upper interrupts.
+If the system is not up, we can just fail immediately since iscsid is not
+going to ever answer our netlink events. We are already setting the
+recovery_tmo to 0, but by passing stop_conn STOP_CONN_TERM we never will
+block the session and start the recovery timer, because for that flag
+userspace will do the unbind and destroy events which would remove the
+devices and wake up and kill the eh.
 
-To achieve this, we use registers MSGU_ODMR_U(0x34) to mask and
-MSGU_ODMR_CLR_U(0x3C) to unmask the interrupts. In these registers bit 0-31
-represents interrupt vectors 32-63.
+Since the conn is dead and the system is going dowm this just has us use
+STOP_CONN_RECOVER with recovery_tmo=0 so we fail immediately. However, if
+the user has set the recovery_tmo=-1 we let the system hang like they
+requested since they might have used that setting for specific reasons
+(one known reason is for buggy cluster software).
 
-Link: https://lore.kernel.org/r/20220411064603.668448-2-Ajish.Koshy@microchip.com
-Fixes: 05c6c029a44d ("scsi: pm80xx: Increase number of supported queues")
-Reviewed-by: John Garry <john.garry@huawei.com>
-Acked-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Ajish Koshy <Ajish.Koshy@microchip.com>
-Signed-off-by: Viswas G <Viswas.G@microchip.com>
+Link: https://lore.kernel.org/r/20210525181821.7617-5-michael.christie@oracle.com
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm80xx_hwi.c | 22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ drivers/scsi/scsi_transport_iscsi.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index 4c03bf08b543..0543ff3ff1ba 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -1682,10 +1682,11 @@ static void
- pm80xx_chip_interrupt_enable(struct pm8001_hba_info *pm8001_ha, u8 vec)
- {
- #ifdef PM8001_USE_MSIX
--	u32 mask;
--	mask = (u32)(1 << vec);
--
--	pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_CLR, (u32)(mask & 0xFFFFFFFF));
-+	if (vec < 32)
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_CLR, 1U << vec);
-+	else
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_CLR_U,
-+			    1U << (vec - 32));
- 	return;
- #endif
- 	pm80xx_chip_intx_interrupt_enable(pm8001_ha);
-@@ -1701,12 +1702,15 @@ static void
- pm80xx_chip_interrupt_disable(struct pm8001_hba_info *pm8001_ha, u8 vec)
- {
- #ifdef PM8001_USE_MSIX
--	u32 mask;
--	if (vec == 0xFF)
--		mask = 0xFFFFFFFF;
-+	if (vec == 0xFF) {
-+		/* disable all vectors 0-31, 32-63 */
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR, 0xFFFFFFFF);
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_U, 0xFFFFFFFF);
-+	} else if (vec < 32)
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR, 1U << vec);
- 	else
--		mask = (u32)(1 << vec);
--	pm8001_cw32(pm8001_ha, 0, MSGU_ODMR, (u32)(mask & 0xFFFFFFFF));
-+		pm8001_cw32(pm8001_ha, 0, MSGU_ODMR_U,
-+			    1U << (vec - 32));
- 	return;
- #endif
- 	pm80xx_chip_intx_interrupt_disable(pm8001_ha);
+diff --git a/drivers/scsi/scsi_transport_iscsi.c b/drivers/scsi/scsi_transport_iscsi.c
+index 6490211b55d2..f93660142e35 100644
+--- a/drivers/scsi/scsi_transport_iscsi.c
++++ b/drivers/scsi/scsi_transport_iscsi.c
+@@ -2508,11 +2508,17 @@ static void stop_conn_work_fn(struct work_struct *work)
+ 		session = iscsi_session_lookup(sid);
+ 		if (session) {
+ 			if (system_state != SYSTEM_RUNNING) {
+-				session->recovery_tmo = 0;
+-				iscsi_if_stop_conn(conn, STOP_CONN_TERM);
+-			} else {
+-				iscsi_if_stop_conn(conn, STOP_CONN_RECOVER);
++				/*
++				 * If the user has set up for the session to
++				 * never timeout then hang like they wanted.
++				 * For all other cases fail right away since
++				 * userspace is not going to relogin.
++				 */
++				if (session->recovery_tmo > 0)
++					session->recovery_tmo = 0;
+ 			}
++
++			iscsi_if_stop_conn(conn, STOP_CONN_RECOVER);
+ 		}
+ 
+ 		list_del_init(&conn->conn_list_err);
 -- 
 2.35.1
 
