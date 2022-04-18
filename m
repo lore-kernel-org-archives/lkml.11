@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E65AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 295CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:39:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242628AbiDRNlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:41:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60340 "EHLO
+        id S242659AbiDRNls (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242044AbiDRNNS (ORCPT
+        with ESMTP id S241934AbiDRNNH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:13:18 -0400
+        Mon, 18 Apr 2022 09:13:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542362DA9C;
-        Mon, 18 Apr 2022 05:50:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60A9639BB8;
+        Mon, 18 Apr 2022 05:50:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E5B861256;
-        Mon, 18 Apr 2022 12:50:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4184C385A1;
-        Mon, 18 Apr 2022 12:50:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB1D86128D;
+        Mon, 18 Apr 2022 12:50:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3368C385A8;
+        Mon, 18 Apr 2022 12:50:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286258;
-        bh=64WSwsWMU/xKi1MR4L5fR0tWrt3NkgAciY9O3eHCo/U=;
+        s=korg; t=1650286255;
+        bh=wq+2Jo2ycQGQ6rd/zMFPBA3/65ZNrOu88pNHJPRppgI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A122EymkK11CdiN3Vr0/DTGUjvPYbA9gT1J8CCgPuqVMb8DjGyHx3zrmUUbeViiT+
-         QeMyrT9VVDe4l+F56hLou0vuZnmjCSJtaeeDiND2WVHrO1t2wg/Tx3v4+K6+U7Z2Yt
-         IAuT+PXB+CSgBle+YAckHt8krlpclGLCz9igWgFs=
+        b=sIW7wbJ7143pco4oO0+btrxMtnbORnUDJ56IXXYUfUwBxIhXRLhwwXUx1NVzVu15U
+         yOqjQ7YrAnlp+/6dkCh4itCvvlVbQfZxyrMYA+vA6pUdfcLj5JFe1mlKXbzrs2Wkyi
+         fzdJDmntwYmDwUdOwYTrj0lFuVPtBDgKabi3Qcm8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Alexander Dahl <ada@thorsis.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: [PATCH 4.14 041/284] ARM: dts: at91: sama5d2: Fix PMERRLOC resource size
-Date:   Mon, 18 Apr 2022 14:10:22 +0200
-Message-Id: <20220418121211.862607178@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 076/284] media: usb: go7007: s2250-board: fix leak in probe()
+Date:   Mon, 18 Apr 2022 14:10:57 +0200
+Message-Id: <20220418121212.848356319@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,36 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 0fb578a529ac7aca326a9fa475b4a6f58a756fda upstream.
+[ Upstream commit 67e4550ecd6164bfbdff54c169e5bbf9ccfaf14d ]
 
-PMERRLOC resource size was set to 0x100, which resulted in HSMC_ERRLOCx
-register being truncated to offset x = 21, causing error correction to
-fail if more than 22 bit errors and if 24 or 32 bit error correction
-was supported.
+Call i2c_unregister_device(audio) on this error path.
 
-Fixes: d9c41bf30cf8 ("ARM: dts: at91: Declare EBI/NAND controllers")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Cc: <stable@vger.kernel.org> # 4.13.x
-Acked-by: Alexander Dahl <ada@thorsis.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20220111132301.906712-1-tudor.ambarus@microchip.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d3b2ccd9e307 ("[media] s2250: convert to the control framework")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/sama5d2.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/usb/go7007/s2250-board.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
---- a/arch/arm/boot/dts/sama5d2.dtsi
-+++ b/arch/arm/boot/dts/sama5d2.dtsi
-@@ -1121,7 +1121,7 @@
- 				pmecc: ecc-engine@f8014070 {
- 					compatible = "atmel,sama5d2-pmecc";
- 					reg = <0xf8014070 0x490>,
--					      <0xf8014500 0x100>;
-+					      <0xf8014500 0x200>;
- 				};
- 			};
+diff --git a/drivers/media/usb/go7007/s2250-board.c b/drivers/media/usb/go7007/s2250-board.c
+index 1466db150d82..625e77f4dbd2 100644
+--- a/drivers/media/usb/go7007/s2250-board.c
++++ b/drivers/media/usb/go7007/s2250-board.c
+@@ -512,6 +512,7 @@ static int s2250_probe(struct i2c_client *client,
+ 	u8 *data;
+ 	struct go7007 *go = i2c_get_adapdata(adapter);
+ 	struct go7007_usb *usb = go->hpi_context;
++	int err = -EIO;
  
+ 	audio = i2c_new_dummy(adapter, TLV320_ADDRESS >> 1);
+ 	if (audio == NULL)
+@@ -540,11 +541,8 @@ static int s2250_probe(struct i2c_client *client,
+ 		V4L2_CID_HUE, -512, 511, 1, 0);
+ 	sd->ctrl_handler = &state->hdl;
+ 	if (state->hdl.error) {
+-		int err = state->hdl.error;
+-
+-		v4l2_ctrl_handler_free(&state->hdl);
+-		kfree(state);
+-		return err;
++		err = state->hdl.error;
++		goto fail;
+ 	}
+ 
+ 	state->std = V4L2_STD_NTSC;
+@@ -608,7 +606,7 @@ static int s2250_probe(struct i2c_client *client,
+ 	i2c_unregister_device(audio);
+ 	v4l2_ctrl_handler_free(&state->hdl);
+ 	kfree(state);
+-	return -EIO;
++	return err;
+ }
+ 
+ static int s2250_remove(struct i2c_client *client)
+-- 
+2.34.1
+
 
 
