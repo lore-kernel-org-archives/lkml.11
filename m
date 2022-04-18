@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69BB7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:09:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF226C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:09:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245521AbiDROLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43936 "EHLO
+        id S245540AbiDROLz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245492AbiDRNxo (ORCPT
+        with ESMTP id S245169AbiDRNws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:53:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D2B12AA2;
-        Mon, 18 Apr 2022 06:02:50 -0700 (PDT)
+        Mon, 18 Apr 2022 09:52:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D7145524;
+        Mon, 18 Apr 2022 06:02:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76428B80E44;
-        Mon, 18 Apr 2022 13:02:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BB89C385A7;
-        Mon, 18 Apr 2022 13:02:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 832D6B80EBA;
+        Mon, 18 Apr 2022 13:02:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B160EC385A1;
+        Mon, 18 Apr 2022 13:02:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286968;
-        bh=wN7TAixEkP60Xc/Yu2o4rPXQ48aqjkAib6tQySG+lkU=;
+        s=korg; t=1650286946;
+        bh=9h3qWQIunid/b67NFowk2rqFeeunuJL9m4q9QgAi42k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XSALMJkdTlgqV71KbIZIO5XcmDoF5q9OsVOr85tFDYf8p2SiQmrewDomKFHOAgQ7A
-         ei0hI2JWCgkWGSgeE/Zjyx5kJ6Jw58WFtgyKq7kYmZoC4oXfItdSWuZzi4xqc+QsgW
-         4n5QyC4yym51/y7TZdf3KSj/f199Ji5OwVaABUME=
+        b=CkloBIRrQBwjM+tKTXqwaso1tgIzbjlXMCXjIRa01zL6jCq/x0Yl3YT4k4mYNoliX
+         6R1GjZh4Qa76lqG6oDeMoLgY8GQ8OedVyRDXMo7zxDzLkrQS7THdvLnav9GUZoNBYK
+         gNRGbWMU4OJtGwdoq/hS4OYwaeoZxiqmVzHq2gPw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Baokun Li <libaokun1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 4.9 018/218] jffs2: fix use-after-free in jffs2_clear_xattr_subsystem
-Date:   Mon, 18 Apr 2022 14:11:24 +0200
-Message-Id: <20220418121159.638915986@linuxfoundation.org>
+        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
+        Peter Rosin <peda@axentia.se>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 4.9 011/218] iio: inkern: apply consumer scale on IIO_VAL_INT cases
+Date:   Mon, 18 Apr 2022 14:11:17 +0200
+Message-Id: <20220418121159.264718626@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -49,107 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Liam Beguin <liambeguin@gmail.com>
 
-commit 4c7c44ee1650677fbe89d86edbad9497b7679b5c upstream.
+commit 1bca97ff95c732a516ebb68da72814194980e0a5 upstream.
 
-When we mount a jffs2 image, assume that the first few blocks of
-the image are normal and contain at least one xattr-related inode,
-but the next block is abnormal. As a result, an error is returned
-in jffs2_scan_eraseblock(). jffs2_clear_xattr_subsystem() is then
-called in jffs2_build_filesystem() and then again in
-jffs2_do_fill_super().
+When a consumer calls iio_read_channel_processed() and the channel has
+an integer scale, the scale channel scale is applied and the processed
+value is returned as expected.
 
-Finally we can observe the following report:
- ==================================================================
- BUG: KASAN: use-after-free in jffs2_clear_xattr_subsystem+0x95/0x6ac
- Read of size 8 at addr ffff8881243384e0 by task mount/719
+On the other hand, if the consumer calls iio_convert_raw_to_processed()
+the scaling factor requested by the consumer is not applied.
 
- Call Trace:
-  dump_stack+0x115/0x16b
-  jffs2_clear_xattr_subsystem+0x95/0x6ac
-  jffs2_do_fill_super+0x84f/0xc30
-  jffs2_fill_super+0x2ea/0x4c0
-  mtd_get_sb+0x254/0x400
-  mtd_get_sb_by_nr+0x4f/0xd0
-  get_tree_mtd+0x498/0x840
-  jffs2_get_tree+0x25/0x30
-  vfs_get_tree+0x8d/0x2e0
-  path_mount+0x50f/0x1e50
-  do_mount+0x107/0x130
-  __se_sys_mount+0x1c5/0x2f0
-  __x64_sys_mount+0xc7/0x160
-  do_syscall_64+0x45/0x70
-  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+This for example causes the consumer to process mV when expecting uV.
+Make sure to always apply the scaling factor requested by the consumer.
 
- Allocated by task 719:
-  kasan_save_stack+0x23/0x60
-  __kasan_kmalloc.constprop.0+0x10b/0x120
-  kasan_slab_alloc+0x12/0x20
-  kmem_cache_alloc+0x1c0/0x870
-  jffs2_alloc_xattr_ref+0x2f/0xa0
-  jffs2_scan_medium.cold+0x3713/0x4794
-  jffs2_do_mount_fs.cold+0xa7/0x2253
-  jffs2_do_fill_super+0x383/0xc30
-  jffs2_fill_super+0x2ea/0x4c0
- [...]
-
- Freed by task 719:
-  kmem_cache_free+0xcc/0x7b0
-  jffs2_free_xattr_ref+0x78/0x98
-  jffs2_clear_xattr_subsystem+0xa1/0x6ac
-  jffs2_do_mount_fs.cold+0x5e6/0x2253
-  jffs2_do_fill_super+0x383/0xc30
-  jffs2_fill_super+0x2ea/0x4c0
- [...]
-
- The buggy address belongs to the object at ffff8881243384b8
-  which belongs to the cache jffs2_xattr_ref of size 48
- The buggy address is located 40 bytes inside of
-  48-byte region [ffff8881243384b8, ffff8881243384e8)
- [...]
- ==================================================================
-
-The triggering of the BUG is shown in the following stack:
------------------------------------------------------------
-jffs2_fill_super
-  jffs2_do_fill_super
-    jffs2_do_mount_fs
-      jffs2_build_filesystem
-        jffs2_scan_medium
-          jffs2_scan_eraseblock        <--- ERROR
-        jffs2_clear_xattr_subsystem    <--- free
-    jffs2_clear_xattr_subsystem        <--- free again
------------------------------------------------------------
-
-An error is returned in jffs2_do_mount_fs(). If the error is returned
-by jffs2_sum_init(), the jffs2_clear_xattr_subsystem() does not need to
-be executed. If the error is returned by jffs2_build_filesystem(), the
-jffs2_clear_xattr_subsystem() also does not need to be executed again.
-So move jffs2_clear_xattr_subsystem() from 'out_inohash' to 'out_root'
-to fix this UAF problem.
-
-Fixes: aa98d7cf59b5 ("[JFFS2][XATTR] XATTR support on JFFS2 (version. 5)")
-Cc: stable@vger.kernel.org
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Fixes: 48e44ce0f881 ("iio:inkern: Add function to read the processed value")
+Signed-off-by: Liam Beguin <liambeguin@gmail.com>
+Reviewed-by: Peter Rosin <peda@axentia.se>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220108205319.2046348-2-liambeguin@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/jffs2/fs.c |    2 +-
+ drivers/iio/inkern.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/jffs2/fs.c
-+++ b/fs/jffs2/fs.c
-@@ -596,8 +596,8 @@ out_root:
- 	jffs2_free_ino_caches(c);
- 	jffs2_free_raw_node_refs(c);
- 	kvfree(c->blocks);
-- out_inohash:
- 	jffs2_clear_xattr_subsystem(c);
-+ out_inohash:
- 	kfree(c->inocache_list);
-  out_wbuf:
- 	jffs2_flash_cleanup(c);
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -606,7 +606,7 @@ static int iio_convert_raw_to_processed_
+ 
+ 	switch (scale_type) {
+ 	case IIO_VAL_INT:
+-		*processed = raw64 * scale_val;
++		*processed = raw64 * scale_val * scale;
+ 		break;
+ 	case IIO_VAL_INT_PLUS_MICRO:
+ 		if (scale_val2 < 0)
 
 
