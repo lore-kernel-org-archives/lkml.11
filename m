@@ -2,36 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D02AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE35C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344000AbiDRPPy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:15:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52838 "EHLO
+        id S240742AbiDRPP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344960AbiDRPPi (ORCPT
+        with ESMTP id S242180AbiDRPPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:15:38 -0400
+        Mon, 18 Apr 2022 11:15:42 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BDDB89B9
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB035B9181
         for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 07:12:29 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KhplN2TQmzfYx0;
-        Mon, 18 Apr 2022 22:11:44 +0800 (CST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Khpm761BBzhXX5;
+        Mon, 18 Apr 2022 22:12:23 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 18 Apr
- 2022 22:12:26 +0800
+ 2022 22:12:27 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <vbabka@suse.cz>, <pintu@codeaurora.org>,
         <charante@codeaurora.org>, <linux-mm@kvack.org>,
         <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH 00/12] A few cleanup and fixup patches for compaction
-Date:   Mon, 18 Apr 2022 22:12:41 +0800
-Message-ID: <20220418141253.24298-1-linmiaohe@huawei.com>
+Subject: [PATCH 02/12] mm: compaction: remove unneeded pfn update
+Date:   Mon, 18 Apr 2022 22:12:43 +0800
+Message-ID: <20220418141253.24298-3-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220418141253.24298-1-linmiaohe@huawei.com>
+References: <20220418141253.24298-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -43,35 +44,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi everyone,
-This series contains a few patches to clean up some obsolete comment,
-remove unneeded return value and so on. Also we fix the possible NULL
-pointer dereference. More details can be found in the respective
-changelogs. Thanks!
+pfn is unused in this do while loop. Remove the unneeded pfn update.
 
-Miaohe Lin (12):
-  mm: compaction: remove unneeded return value of kcompactd_run
-  mm: compaction: remove unneeded pfn update
-  mm: compaction: remove unneeded assignment to isolate_start_pfn
-  mm: compaction: clean up comment for sched contention
-  mm: compaction: clean up comment about suitable migration target
-    recheck
-  mm: compaction: use COMPACT_CLUSTER_MAX in compaction.c
-  mm: compaction: use helper compound_nr in isolate_migratepages_block
-  mm: compaction: clean up comment about async compaction in
-    isolate_migratepages
-  mm: compaction: avoid possible NULL pointer dereference in
-    kcompactd_cpu_online
-  mm: compaction: make compaction_zonelist_suitable return false when
-    COMPACT_SUCCESS
-  mm: compaction: simplify the code in __compact_finished
-  mm: compaction: make sure highest is above the min_pfn
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ mm/compaction.c | 1 -
+ 1 file changed, 1 deletion(-)
 
- include/linux/compaction.h |  5 +--
- mm/compaction.c            | 87 ++++++++++++++------------------------
- mm/internal.h              |  2 +-
- 3 files changed, 34 insertions(+), 60 deletions(-)
-
+diff --git a/mm/compaction.c b/mm/compaction.c
+index 2e838992b324..f9e628a5306a 100644
+--- a/mm/compaction.c
++++ b/mm/compaction.c
+@@ -317,7 +317,6 @@ __reset_isolation_pfn(struct zone *zone, unsigned long pfn, bool check_source,
+ 		}
+ 
+ 		page += (1 << PAGE_ALLOC_COSTLY_ORDER);
+-		pfn += (1 << PAGE_ALLOC_COSTLY_ORDER);
+ 	} while (page <= end_page);
+ 
+ 	return false;
 -- 
 2.23.0
 
