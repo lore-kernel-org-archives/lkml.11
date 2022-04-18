@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FEE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:19:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4490C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:19:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238413AbiDRMVz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:21:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48742 "EHLO
+        id S231321AbiDRMWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238312AbiDRMVX (ORCPT
+        with ESMTP id S238337AbiDRMV2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:21:23 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C11D1B79F;
-        Mon, 18 Apr 2022 05:17:24 -0700 (PDT)
+        Mon, 18 Apr 2022 08:21:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36A81C107;
+        Mon, 18 Apr 2022 05:17:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BC62ACE106E;
-        Mon, 18 Apr 2022 12:17:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7964C385B6;
-        Mon, 18 Apr 2022 12:17:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7909CB80ED1;
+        Mon, 18 Apr 2022 12:17:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1FAFC385A8;
+        Mon, 18 Apr 2022 12:17:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284241;
-        bh=cdNDqpkNaU9r1wGlZfcKaJ16jhD9Zx0xu+eQ50C2+H4=;
+        s=korg; t=1650284244;
+        bh=mbkGRJei19FeSvQ7nvbV2M3t8MbJ7JywBOUTGXyzuPo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CfERLRylGNUAGVhjvALkps3C67GOqUj42GgnnpbPdpzkce20ZewpeYZIx3WCgJAix
-         bOMGNzltCBcrune5Xf0UOG4w9IBpy/TXvur2w1FBLq5JG2ssU4/VguF8coNh84YHxF
-         Xx48o7lXuPBMHMMxTmDcsaP+aYMeTA8i3tQUMprg=
+        b=B65ZyMGx5WfZ3GNnS69jDy4VEyCTj9WOLTfWwzNfdhMokSfOLXLInLZ5f3KOZd/X5
+         nBCzqt151rm4MkiS2CmaE9EF96XwgP0dq6YdxAlqp35fWqPuLFXJpp+jRa/67UY9oT
+         gMomvZ/BPZRkWK8ZAqgo9i9eWKbMW4RxuTPUGekg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 050/219] ALSA: rme9652: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:10:19 +0200
-Message-Id: <20220418121206.415549437@linuxfoundation.org>
+Subject: [PATCH 5.17 051/219] ALSA: rme96: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:10:20 +0200
+Message-Id: <20220418121206.489897084@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,7 +49,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit b2aa4f80693b7841e5ac4eadbd2d8cec56b10a51 upstream.
+commit 93b884f8d82f08c7af542703a724cc23cd2d5bfc upstream.
 
 The previous cleanup with devres may lead to the incorrect release
 orders at the probe error handling due to the devres's nature.  Until
@@ -57,44 +57,43 @@ we register the card, snd_card_free() has to be called at first for
 releasing the stuff properly when the driver tries to manage and
 release the stuff via card->private_free().
 
-This patch fixes it by calling snd_card_free() manually on the error
-from the probe callback.
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
 
-Fixes: b1002b2d41c5 ("ALSA: rme9652: Allocate resources with device-managed APIs")
+Fixes: df06df7cc997 ("ALSA: rme96: Allocate resources with device-managed APIs")
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-38-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220412102636.16000-24-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/rme9652/rme9652.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ sound/pci/rme96.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/sound/pci/rme9652/rme9652.c
-+++ b/sound/pci/rme9652/rme9652.c
-@@ -2572,7 +2572,7 @@ static int snd_rme9652_probe(struct pci_
- 	rme9652->pci = pci;
- 	err = snd_rme9652_create(card, rme9652, precise_ptr[dev]);
- 	if (err)
--		return err;
-+		goto error;
- 
- 	strcpy(card->shortname, rme9652->card_name);
- 
-@@ -2580,10 +2580,14 @@ static int snd_rme9652_probe(struct pci_
- 		card->shortname, rme9652->port, rme9652->irq);
- 	err = snd_card_register(card);
- 	if (err)
--		return err;
-+		goto error;
- 	pci_set_drvdata(pci, card);
- 	dev++;
- 	return 0;
-+
-+ error:
-+	snd_card_free(card);
-+	return err;
+--- a/sound/pci/rme96.c
++++ b/sound/pci/rme96.c
+@@ -2430,8 +2430,8 @@ static void snd_rme96_card_free(struct s
  }
  
- static struct pci_driver rme9652_driver = {
+ static int
+-snd_rme96_probe(struct pci_dev *pci,
+-		const struct pci_device_id *pci_id)
++__snd_rme96_probe(struct pci_dev *pci,
++		  const struct pci_device_id *pci_id)
+ {
+ 	static int dev;
+ 	struct rme96 *rme96;
+@@ -2498,6 +2498,12 @@ snd_rme96_probe(struct pci_dev *pci,
+ 	return 0;
+ }
+ 
++static int snd_rme96_probe(struct pci_dev *pci,
++			   const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_rme96_probe(pci, pci_id));
++}
++
+ static struct pci_driver rme96_driver = {
+ 	.name = KBUILD_MODNAME,
+ 	.id_table = snd_rme96_ids,
 
 
