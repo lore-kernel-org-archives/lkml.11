@@ -2,69 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F98C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:11:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01435C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238044AbiDRMOM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41550 "EHLO
+        id S236412AbiDRMOW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:14:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238034AbiDRMOJ (ORCPT
+        with ESMTP id S238045AbiDRMOS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:14:09 -0400
-Received: from abedmanico.biharhotel.com (abedmanico.biharhotel.com [194.31.98.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAC21A816
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:11:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=biharhotel.com;
- h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=mar.veg@biharhotel.com;
- bh=dnkE0QHVOCf1aNji21hnkG44FB8=;
- b=cJ9ikhMLEvxAfpDGzdEHJBJROoy8TW3/czW39vQGB7eMJORaFM4fjrpdoVrU57/It+z0FI68eIiX
-   M/bdbGezQQHfNFUbF2vylp+PggXFZsbshjhzyLo4eIB8kNDUUSdvyc2ErBZVUr7dlvW1dCiMXgD1
-   CFyFYNf4+ElRl5lQLxmDkmVF4eS194mVNfLcN31727/IImNmcDa/sLz/OY5SMZTFOiNubTqpwDaO
-   2N36gN9oMY8ht7Q6C35WGxXYyq65famQtio+m3NTUdq7m1ajFGLef4ac4qQmgDQgrHNvygFNAkm/
-   SZ/bkmVylPp8KtdSMXn50ncwMvEqcclucqvskg==
-DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=biharhotel.com;
- b=G0IEJSyzl3dScCnbFZxJ+x1w28Pp6wcDDlZmgFZUuEcoj5sHEMQD/mB54CAbIDtW+zxtZQmO6isu
-   id0g8sfKekkkLyTZriRdF1SMH77kw1eKTLQfA6xe1M+AxYyykz06r7atKqNI0+qtWCASAuHN8W+u
-   b+iZmxLw/BgtFZgBBStEToIFOlAInsl6kAL+RqiweiDvBWUHCVuDOYFt73w+B72dHZTrgBKVbsx3
-   TaSSm9bFsFsnXMsyjB5vxYat32q1tznYvdmMFxqeS/K8wtuo12Z1QiUngg+xQK4bf9bBh8f5lka2
-   C2pFQkt/092qwDWCABnf5CUAksa+8dvt2ctsig==;
-Reply-To: bradleywrubel@scotfoundation.org
-From:   "MACKENZIE SCOTT (Scott Foundation)" <mar.veg@biharhotel.com>
-To:     linux-kernel@vger.kernel.org
-Subject: CONGRATULATIONS...
-Date:   18 Apr 2022 14:03:33 +0200
-Message-ID: <20220418140333.8799D6E5AF9759E0@biharhotel.com>
+        Mon, 18 Apr 2022 08:14:18 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696141A826
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:11:38 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id u15so26447817ejf.11
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:11:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=+Nbh/Prc/5H/cORCat6vWbX6y9/y12F3+R8EiMn4z8U=;
+        b=Dm4XMjPYCtdWA3+pMzuuvBgBW44TWQH3InrfQd1a0hq7Ob49UlvwiCHAN4ZWvJ2y2q
+         +yzvclbmmfLi8ARs9lokw+4HyAR4OfObvE+VJm1/QHMoG8/6c73qAkgTz3aC8v29MHz7
+         qVaiWh5oclYzdnwqFl/v0Kdtyjc33wAKTtZBwPgH+dP75Zei0myGjOASKfxImNlyCHXi
+         x6yFw94J3CaPW2OBnqLltUmOjDHvVj9PyIdhil2JglCu/pso0MDmodEaDLL0QCVnq2AB
+         NZMS5jHhb5h4lNtVobaLz4MrJm3uiX64/3mkg2BeGQG7KiQC50PvFPOt3j1FcgFhI71w
+         ur7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+Nbh/Prc/5H/cORCat6vWbX6y9/y12F3+R8EiMn4z8U=;
+        b=kvoc1UNht4I4jqjE69vbJ4gy7h2EQO3kczAqy6W8WU4xyD4RmAwVP120+j6HCQIM4o
+         s3xrTTcTfYky3l3eQeCTsYaXZ/IQNqMcua9oY3PbA0tGI0Hd0sJRf/tZc26wHsDPBA/J
+         5BOHvRpw/2jzroxtlWv6uUIAnup474FAMZfjBIH2nsm7UVbzsO57kusqkNDu1wCC+IHs
+         zsXITBCNRADN9sQIngea+fcmr60I/X1e5SCjIZSGjOP14a3Fr+QYppYVpT9gVjE5rdBT
+         0i5Jm9NuVbnoE+zFfhq3Rz3KLVIT67fZgzwCjXZlpdizHwkstzbEhzoRNOC9+fhDR/dB
+         +VYA==
+X-Gm-Message-State: AOAM5336erubO/JkadUq1vsQqjNt5zl2LfBFMtHBlkIb/D7JUH594mkz
+        Py3/LiZtzVPV+yY2n/v67zYxaw==
+X-Google-Smtp-Source: ABdhPJxwyW9e6YDW1vaDtAloi25ghlPcrr65ZHDnvPjhycYnJSWeOGX1Kex17Bi6It3cYwT7mCnGZA==
+X-Received: by 2002:a17:907:60c9:b0:6e8:ae9e:d052 with SMTP id hv9-20020a17090760c900b006e8ae9ed052mr8666429ejc.628.1650283896988;
+        Mon, 18 Apr 2022 05:11:36 -0700 (PDT)
+Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id h9-20020aa7c949000000b0041b4d8ae50csm6861903edt.34.2022.04.18.05.11.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 05:11:36 -0700 (PDT)
+Message-ID: <fd9316a6-7df6-e1fa-50dc-ff50934afb5c@linaro.org>
+Date:   Mon, 18 Apr 2022 14:11:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 5/5] dt-bindings: arm: Add initial bindings for Nuvoton
+ Platform
+Content-Language: en-US
+To:     Jacky Huang <ychuang3@nuvoton.com>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, ychuang570808@gmail.com
+Cc:     robh+dt@kernel.org, sboyd@kernel.org, krzk+dt@kernel.org,
+        arnd@arndb.de, olof@lixom.net, will@kernel.org, soc@kernel.org,
+        cfli0@nuvoton.com
+References: <20220418082738.11301-1-ychuang3@nuvoton.com>
+ <20220418082738.11301-6-ychuang3@nuvoton.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220418082738.11301-6-ychuang3@nuvoton.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On 18/04/2022 10:27, Jacky Huang wrote:
+> +properties:
+> +  $nodename:
+> +    const: '/'
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - nuvoton,ma35d1
+> +          - nuvoton,ma35d1-evb
+> +          - nuvoton,ma35d1-iot
+> +          - nuvoton,ma35d1-som512
+> +          - nuvoton,ma35d1-som1g
 
-I'm Mackenzie Scott, Ex-wife to Jeff Bezos (Amazon Founder and=20
-CEO). I'm donating $4 billion to charities, churches, individuals,=20
-colleges and businesses across the Globe from Scott's Foundation to=20
-provide immediate support to people and businesses suffering=20
-economically from the impact of COVID-19 pandemic and the ongoing=20
-war in Ukraine. Your email emerged as one of the lucky winners=20
-after an electronically conducted ballot process.
+This does not match your DTS and does not look reasonable (SoC
+compatible should not be part of this enum). Check some other board
+bindings for examples.
 
-I have a donation grant worth $8,500,000.00 Dollars for you. You=20
-are to contact Mr. BRADLEY WRUBEL for more information if you're=20
-interested.
 
-Mr. BRADLEY WRUBEL
-bradleywrubel@scotfoundation.org
-
-Congratulations.
-
-Yours Sincerely
-Mackenzie Scott
-The Scott Foundation
-P.O. Box 1513
-Los Gatos, CA 95031-1513
-USA.
+Best regards,
+Krzysztof
