@@ -2,143 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4900C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA21C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:06:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234267AbiDRPIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43056 "EHLO
+        id S244073AbiDRPI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345369AbiDRPHk (ORCPT
+        with ESMTP id S236212AbiDRPAv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:07:40 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B8C2CE0A;
-        Mon, 18 Apr 2022 06:59:33 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id D1D5A2161D;
-        Mon, 18 Apr 2022 13:59:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1650290371; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        Mon, 18 Apr 2022 11:00:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB59378070
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 06:48:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650289727;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=dq8YNbXAE834M1QUb2YVyiKzk/PMukhaArBlMLDdUQI=;
-        b=rWsXoUFdmWF9h2C9XaehirIrKSiHsyys3BkFa41aY3eU6+iSH8UAhHCgH1OVBH+WyyrFpn
-        dw/5bsEZFNtpC0fNGp1rhDieaknlnpVdzs52+uRjlgEyVWXNjVkCzIpeHNj8k0kHiFjzpc
-        Yn+RpSOcON+u1e9weLFHkdJLRwPAHew=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1650290371;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=dq8YNbXAE834M1QUb2YVyiKzk/PMukhaArBlMLDdUQI=;
-        b=UXDhCsIm868KMg44CpXYMbAB/ityAQ4j4utoEulTatT+2ciKRW92IyiiqJdSBMmBxfac3M
-        wvLGt5hwSzfWaFBw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5343113A9B;
-        Mon, 18 Apr 2022 13:59:31 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id je1DEcNuXWLiOwAAMHmgww
-        (envelope-from <lhenriques@suse.de>); Mon, 18 Apr 2022 13:59:31 +0000
-Received: from localhost (brahms.olymp [local])
-        by brahms.olymp (OpenSMTPD) with ESMTPA id a8b50ae4;
-        Mon, 18 Apr 2022 13:59:58 +0000 (UTC)
-From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-Subject: [PATCH v5 0/5] ceph: add support for snapshot names encryption
-Date:   Mon, 18 Apr 2022 14:59:52 +0100
-Message-Id: <20220418135957.12056-1-lhenriques@suse.de>
+        bh=tbhR6AfcnCx9wqk3Kzu5GujenphZ3L6As870SyTIgjc=;
+        b=axnsdQYRgObLT70YUso47lEJaj1fk09HK1a/PIe9iBIsCUFTPI4+2xMmgWB7gtuT84uiBv
+        E+yN85awKyYShrSF9Voq5XeT9S1qz2QN+Ph6F4KjGTZP6LVJ6GN4U+NMn6cG8kUDmbjzLE
+        N4fZM9iIqq9JkrnAmd1AxkSuhkFKPSA=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-549-JH2YUNucNXqmSF-E84OT6Q-1; Mon, 18 Apr 2022 09:48:46 -0400
+X-MC-Unique: JH2YUNucNXqmSF-E84OT6Q-1
+Received: by mail-qt1-f197.google.com with SMTP id w18-20020ac857d2000000b002f1fa23a40eso1802301qta.14
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 06:48:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tbhR6AfcnCx9wqk3Kzu5GujenphZ3L6As870SyTIgjc=;
+        b=zccmzdC1STKEF0gZcNs+ikftWMi36Icye+suuyO2vJCPOGe/2oeFBSDKLK8KdYC739
+         VOREq6QW/Um3Mazq7VXg7xas6F6P/B+OlASAS7zi43Dk9c8FemhA/pHdFsBFw9cAsS+E
+         BA+B+f3R2J/uUuRJXxtpT2pCLCfJN+I+zCjpMsQrsWQpoQmigOlgkEfzULsE9E0YpZXY
+         6czeG1P4gbQzHjoyRUI+ooHEjzprzMmsnzOpUU0jGhC5o0I2Sg1kPVwRURpODtuCFTcu
+         +6U5b0+wLvUWSB4NpJHOvEIPE7h1IexxioCtKiU5pb00rMUU41SMB0tFwnPZds4XHsgH
+         8Tvg==
+X-Gm-Message-State: AOAM530PqFT/KQyoi3L/x1uSYNETlYSAgBDlT8RlqsM9V9bos/YG0nQ6
+        Y7NRPa9Vkb/fhQGvsQlRwLADIKV6sIZllawUjYjPK8VFOW9NexXjZDdEfOoMvlj7CAMrO1W/6Ax
+        dnVubaA/V0lr34oF4Z/N8PJcB
+X-Received: by 2002:a05:6214:caa:b0:441:2e8f:f398 with SMTP id s10-20020a0562140caa00b004412e8ff398mr8038940qvs.61.1650289725826;
+        Mon, 18 Apr 2022 06:48:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzj3pRTnuFOdkq/AHZ/+E5RDqX2djhn1Iw2byebM/R10ayUX37I/AG+/4Ru96jninNhWG8FkQ==
+X-Received: by 2002:a05:6214:caa:b0:441:2e8f:f398 with SMTP id s10-20020a0562140caa00b004412e8ff398mr8038923qvs.61.1650289725618;
+        Mon, 18 Apr 2022 06:48:45 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id 22-20020ac85756000000b002e1cabad999sm7854020qtx.89.2022.04.18.06.48.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 06:48:45 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     daniel@zonque.org, haojian.zhuang@gmail.com,
+        robert.jarzmik@free.fr, balbi@kernel.org,
+        gregkh@linuxfoundation.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] usb: gadget: pxa27x_udc: clean up comment
+Date:   Mon, 18 Apr 2022 09:48:38 -0400
+Message-Id: <20220418134838.1236023-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+Spelling replacement
+endpoitn to endpoint
 
-And here's yet another revision.  The main difference from v4 is the
-addition of a patch to prevent the creation of snapshots in directories
-that are encrypted but that are not unlocked (i.e. no key available).
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/usb/gadget/udc/pxa27x_udc.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-As before, the following ceph PRs are required:
-
-  mds: add protection from clients without fscrypt support #45073
-  mds: use the whole string as the snapshot long name #45192
-  mds: support alternate names for snapshots #45224
-  mds: limit the snapshot names to 240 characters #45312
-
-Changes since v4:
-
-- Explicitly added the encoding base for kstrtou64() as we do know that
-  the inode numbers are in decimal.
-
-- New patch to prevent the creation of snapshots in encrypted directories
-  that do not have the key loaded.
-
-Changes since v3:
-
-- Fixed WARN_ON() in ceph_encode_encrypted_dname()
-
-- Updated documentation and copyright notice for the base64
-  encoding/decoding implementaiton which was taken from the fscrypt base.
-
-Changes since v2:
-
-- Use ceph_find_inode() instead of ceph_get_inode() for finding a snapshot
-  parent in function parse_longname().  I've also added a fallback to
-  ceph_get_inode() in case we fail to find the inode.  This may happen if,
-  for example, the mount root doesn't include that inode.  The iput() was
-  also complemented by a discard_new_inode() if the inode is in the I_NEW
-  state. (patch 0002)
-
-- Move the check for '_' snapshots further up in the ceph_fname_to_usr()
-  and ceph_encode_encrypted_dname().  This fixes the case pointed out by
-  Xiubo in v2. (patch 0002)
-
-- Use NAME_MAX for tmp arrays (patch 0002)
-
-- Added an extra patch for replacing the base64url encoding by a different
-  encoding standard, the one used for IMAP mailboxes (which uses '+' and
-  ',' instead of '-' and '_').  This should fix the issue with snapshot
-  names starting with '_'. (patch 0003)
-
-Changes since v1:
-
-- Dropped the dentry->d_flags change in ceph_mkdir().  Thanks to Xiubo
-  suggestion, patch 0001 now skips calling ceph_fscrypt_prepare_context()
-  if we're handling a snapshot.
-
-- Added error handling to ceph_get_snapdir() in patch 0001 (Jeff had
-  already pointed that out but I forgot to include that change in previous
-  revision).
-
-- Rebased patch 0002 to the latest wip-fscrypt branch.
-
-- Added some documentation regarding snapshots naming restrictions.
-
-
-Luís Henriques (5):
-  ceph: add support for encrypted snapshot names
-  ceph: add support for handling encrypted snapshot names
-  ceph: update documentation regarding snapshot naming limitations
-  ceph: replace base64url by the encoding used for mailbox names
-  ceph: prevent snapshots to be created in encrypted locked directories
-
- Documentation/filesystems/ceph.rst |  10 ++
- fs/ceph/crypto.c                   | 252 +++++++++++++++++++++++++----
- fs/ceph/crypto.h                   |  14 +-
- fs/ceph/dir.c                      |   7 +-
- fs/ceph/inode.c                    |  33 +++-
- 5 files changed, 278 insertions(+), 38 deletions(-)
+diff --git a/drivers/usb/gadget/udc/pxa27x_udc.h b/drivers/usb/gadget/udc/pxa27x_udc.h
+index 0a6bc18a1264..31bf79ce931c 100644
+--- a/drivers/usb/gadget/udc/pxa27x_udc.h
++++ b/drivers/usb/gadget/udc/pxa27x_udc.h
+@@ -326,7 +326,7 @@ struct udc_usb_ep {
+  * @addr: usb endpoint number
+  * @config: configuration in which this endpoint is active
+  * @interface: interface in which this endpoint is active
+- * @alternate: altsetting in which this endpoitn is active
++ * @alternate: altsetting in which this endpoint is active
+  * @fifo_size: max packet size in the endpoint fifo
+  * @type: endpoint type (bulk, iso, int, ...)
+  * @udccsr_value: save register of UDCCSR0 for suspend/resume
+-- 
+2.27.0
 
