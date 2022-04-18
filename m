@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E615C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9439C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239606AbiDRMhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:37:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
+        id S239946AbiDRMiU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:38:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238921AbiDRMbk (ORCPT
+        with ESMTP id S239595AbiDRMdP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:31:40 -0400
+        Mon, 18 Apr 2022 08:33:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6475C25585;
-        Mon, 18 Apr 2022 05:24:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5586E114F;
+        Mon, 18 Apr 2022 05:24:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8FD660EF4;
-        Mon, 18 Apr 2022 12:24:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9F91C385A7;
-        Mon, 18 Apr 2022 12:24:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABFFB60FC4;
+        Mon, 18 Apr 2022 12:24:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C5E7C385A7;
+        Mon, 18 Apr 2022 12:24:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284649;
-        bh=DpGwT7U9k6J/dbvxtQEtc6aLI9JWfsI4SIqqDo2n0A4=;
+        s=korg; t=1650284695;
+        bh=vvHpU+KgIweUqNvKAilXjclDlU910lIZwZVqcIdTsFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AUILlO22dKYt6gHSbbIY0J6lUAWvWN2cHYcjKnxMF24dwEtWyZfChJETSOK7CednE
-         xqkmH1CUBshM8gUR9cfkQnMUqV1c6IS7BDSEJavdrtIzwODR+1yOhU2NDpdXdBRSFd
-         Z28136OmiGX24uCwgNvPjiRm7S+pidNy0ODAETCI=
+        b=ll1OIU8R/6L0DEIeVSE/ZfBtFGMUt8Oooq4WNgOIOt3gZ0ZyG5xW+S1ZxZPmhUd5C
+         oArVB+Y6xdl3BmV8msV6uVBGZ4tFc+KLblsNw9abyIiR973cHwR7PtSbz0wZK8/GQD
+         dU7rBLU3QhIyNO9W7eje0bIav191IcHnhPWTSiwY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Trond Myklebust <trondmy@hammerspace.com>,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.17 184/219] SUNRPC: Fix NFSDs request deferral on RDMA transports
-Date:   Mon, 18 Apr 2022 14:12:33 +0200
-Message-Id: <20220418121212.029241377@linuxfoundation.org>
+        stable@vger.kernel.org, kongweibin <kongweibin2@huawei.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.17 198/219] ipv6: fix panic when forwarding a pkt with no in6 dev
+Date:   Mon, 18 Apr 2022 14:12:47 +0200
+Message-Id: <20220418121212.414825641@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,83 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-commit 773f91b2cf3f52df0d7508fdbf60f37567cdaee4 upstream.
+commit e3fa461d8b0e185b7da8a101fe94dfe6dd500ac0 upstream.
 
-Trond Myklebust reports an NFSD crash in svc_rdma_sendto(). Further
-investigation shows that the crash occurred while NFSD was handling
-a deferred request.
+kongweibin reported a kernel panic in ip6_forward() when input interface
+has no in6 dev associated.
 
-This patch addresses two inter-related issues that prevent request
-deferral from working correctly for RPC/RDMA requests:
+The following tc commands were used to reproduce this panic:
+tc qdisc del dev vxlan100 root
+tc qdisc add dev vxlan100 root netem corrupt 5%
 
-1. Prevent the crash by ensuring that the original
-   svc_rqst::rq_xprt_ctxt value is available when the request is
-   revisited. Otherwise svc_rdma_sendto() does not have a Receive
-   context available with which to construct its reply.
-
-2. Possibly since before commit 71641d99ce03 ("svcrdma: Properly
-   compute .len and .buflen for received RPC Calls"),
-   svc_rdma_recvfrom() did not include the transport header in the
-   returned xdr_buf. There should have been no need for svc_defer()
-   and friends to save and restore that header, as of that commit.
-   This issue is addressed in a backport-friendly way by simply
-   having svc_rdma_recvfrom() set rq_xprt_hlen to zero
-   unconditionally, just as svc_tcp_recvfrom() does. This enables
-   svc_deferred_recv() to correctly reconstruct an RPC message
-   received via RPC/RDMA.
-
-Reported-by: Trond Myklebust <trondmy@hammerspace.com>
-Link: https://lore.kernel.org/linux-nfs/82662b7190f26fb304eb0ab1bb04279072439d4e.camel@hammerspace.com/
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Cc: <stable@vger.kernel.org>
+CC: stable@vger.kernel.org
+Fixes: ccd27f05ae7b ("ipv6: fix 'disable_policy' for fwd packets")
+Reported-by: kongweibin <kongweibin2@huawei.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/sunrpc/svc.h              |    1 +
- net/sunrpc/svc_xprt.c                   |    3 +++
- net/sunrpc/xprtrdma/svc_rdma_recvfrom.c |    2 +-
- 3 files changed, 5 insertions(+), 1 deletion(-)
+ net/ipv6/ip6_output.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/linux/sunrpc/svc.h
-+++ b/include/linux/sunrpc/svc.h
-@@ -412,6 +412,7 @@ struct svc_deferred_req {
- 	size_t			addrlen;
- 	struct sockaddr_storage	daddr;	/* where reply must come from */
- 	size_t			daddrlen;
-+	void			*xprt_ctxt;
- 	struct cache_deferred_req handle;
- 	size_t			xprt_hlen;
- 	int			argslen;
---- a/net/sunrpc/svc_xprt.c
-+++ b/net/sunrpc/svc_xprt.c
-@@ -1213,6 +1213,8 @@ static struct cache_deferred_req *svc_de
- 		dr->daddr = rqstp->rq_daddr;
- 		dr->argslen = rqstp->rq_arg.len >> 2;
- 		dr->xprt_hlen = rqstp->rq_xprt_hlen;
-+		dr->xprt_ctxt = rqstp->rq_xprt_ctxt;
-+		rqstp->rq_xprt_ctxt = NULL;
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -485,7 +485,7 @@ int ip6_forward(struct sk_buff *skb)
+ 		goto drop;
  
- 		/* back up head to the start of the buffer and copy */
- 		skip = rqstp->rq_arg.len - rqstp->rq_arg.head[0].iov_len;
-@@ -1251,6 +1253,7 @@ static noinline int svc_deferred_recv(st
- 	rqstp->rq_xprt_hlen   = dr->xprt_hlen;
- 	rqstp->rq_daddr       = dr->daddr;
- 	rqstp->rq_respages    = rqstp->rq_pages;
-+	rqstp->rq_xprt_ctxt   = dr->xprt_ctxt;
- 	svc_xprt_received(rqstp->rq_xprt);
- 	return (dr->argslen<<2) - dr->xprt_hlen;
- }
---- a/net/sunrpc/xprtrdma/svc_rdma_recvfrom.c
-+++ b/net/sunrpc/xprtrdma/svc_rdma_recvfrom.c
-@@ -831,7 +831,7 @@ int svc_rdma_recvfrom(struct svc_rqst *r
- 		goto out_err;
- 	if (ret == 0)
- 		goto out_drop;
--	rqstp->rq_xprt_hlen = ret;
-+	rqstp->rq_xprt_hlen = 0;
- 
- 	if (svc_rdma_is_reverse_direction_reply(xprt, ctxt))
- 		goto out_backchannel;
+ 	if (!net->ipv6.devconf_all->disable_policy &&
+-	    !idev->cnf.disable_policy &&
++	    (!idev || !idev->cnf.disable_policy) &&
+ 	    !xfrm6_policy_check(NULL, XFRM_POLICY_FWD, skb)) {
+ 		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
+ 		goto drop;
 
 
