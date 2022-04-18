@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D5D9C4707F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63130C47084
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243687AbiDRNKX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:10:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
+        id S240289AbiDRNKt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241683AbiDRM66 (ORCPT
+        with ESMTP id S240901AbiDRM6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:58:58 -0400
+        Mon, 18 Apr 2022 08:58:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 327162E686;
-        Mon, 18 Apr 2022 05:39:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FE323BD3;
+        Mon, 18 Apr 2022 05:38:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D716611AD;
-        Mon, 18 Apr 2022 12:39:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E088C385A7;
-        Mon, 18 Apr 2022 12:39:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6442360FB6;
+        Mon, 18 Apr 2022 12:38:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78EEFC385A7;
+        Mon, 18 Apr 2022 12:38:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285567;
-        bh=FxXsQ/0pA/79CvGYTRmab7Da+yVjb4SEgBgD6c/awrc=;
+        s=korg; t=1650285498;
+        bh=xb0hS4BrdUP+xSIwy3hBDuYk5Yqiydpc9Eeeprbd1yE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n23plHYSzx2wu8vW+1Wig0D3BG93EanN7HG1uw7+FzddDGzqS0Uts3v663yQvTqkA
-         TvIWoNbmxeGQx0tA8T82n+Ro6XjKS2T9r8OL5lFxLN1tBnAp61rs3Ey+veHlLsz0dP
-         +z+ZmigWpZvRaF+45n7396Yz2CVtS07HFxKGe3gA=
+        b=wIVLrzkLvTKWC7E8mi4+NWZDzD0hPDvQlNvG0btPhskn7dfJTKFw+TZaGgwW6nYy4
+         iprG7bWJYtYTOToBM7jY9SiL5L77j5Fzv38pVnTQtls0BN7WxaGleDfsYdnByLViD/
+         TEJUrpnAsC/K3R1ehAGiueF0cQ4oOOFwz83WNPLM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steve Capper <steve.capper@arm.com>,
+        stable@vger.kernel.org,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 060/105] tlb: hugetlb: Add more sizes to tlb_remove_huge_tlb_entry
-Date:   Mon, 18 Apr 2022 14:13:02 +0200
-Message-Id: <20220418121148.191339785@linuxfoundation.org>
+Subject: [PATCH 5.10 036/105] testing/selftests/mqueue: Fix mq_perf_tests to free the allocated cpu set
+Date:   Mon, 18 Apr 2022 14:12:38 +0200
+Message-Id: <20220418121147.471586322@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -53,64 +50,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve Capper <steve.capper@arm.com>
+From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 
-[ Upstream commit 697a1d44af8ba0477ee729e632f4ade37999249a ]
+[ Upstream commit ce64763c63854b4079f2e036638aa881a1fb3fbc ]
 
-tlb_remove_huge_tlb_entry only considers PMD_SIZE and PUD_SIZE when
-updating the mmu_gather structure.
+The selftest "mqueue/mq_perf_tests.c" use CPU_ALLOC to allocate
+CPU set. This cpu set is used further in pthread_attr_setaffinity_np
+and by pthread_create in the code. But in current code, allocated
+cpu set is not freed.
 
-Unfortunately on arm64 there are two additional huge page sizes that
-need to be covered: CONT_PTE_SIZE and CONT_PMD_SIZE. Where an end-user
-attempts to employ contiguous huge pages, a VM_BUG_ON can be experienced
-due to the fact that the tlb structure hasn't been correctly updated by
-the relevant tlb_flush_p.._range() call from tlb_remove_huge_tlb_entry.
+Fix this issue by adding CPU_FREE in the "shutdown" function which
+is called in most of the error/exit path for the cleanup. There are
+few error paths which exit without using shutdown. Add a common goto
+error path with CPU_FREE for these cases.
 
-This patch adds inequality logic to the generic implementation of
-tlb_remove_huge_tlb_entry s.t. CONT_PTE_SIZE and CONT_PMD_SIZE are
-effectively covered on arm64. Also, as well as ptes, pmds and puds;
-p4ds are now considered too.
-
-Reported-by: David Hildenbrand <david@redhat.com>
-Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/linux-mm/811c5c8e-b3a2-85d2-049c-717f17c3a03a@redhat.com/
-Signed-off-by: Steve Capper <steve.capper@arm.com>
-Acked-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220330112543.863-1-steve.capper@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Fixes: 7820b0715b6f ("tools/selftests: add mq_perf_tests")
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/asm-generic/tlb.h | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ .../testing/selftests/mqueue/mq_perf_tests.c  | 25 +++++++++++++------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
-diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
-index 6661ee1cff47..a0c4b99d2899 100644
---- a/include/asm-generic/tlb.h
-+++ b/include/asm-generic/tlb.h
-@@ -563,10 +563,14 @@ static inline void tlb_flush_p4d_range(struct mmu_gather *tlb,
- #define tlb_remove_huge_tlb_entry(h, tlb, ptep, address)	\
- 	do {							\
- 		unsigned long _sz = huge_page_size(h);		\
--		if (_sz == PMD_SIZE)				\
--			tlb_flush_pmd_range(tlb, address, _sz);	\
--		else if (_sz == PUD_SIZE)			\
-+		if (_sz >= P4D_SIZE)				\
-+			tlb_flush_p4d_range(tlb, address, _sz);	\
-+		else if (_sz >= PUD_SIZE)			\
- 			tlb_flush_pud_range(tlb, address, _sz);	\
-+		else if (_sz >= PMD_SIZE)			\
-+			tlb_flush_pmd_range(tlb, address, _sz);	\
-+		else						\
-+			tlb_flush_pte_range(tlb, address, _sz);	\
- 		__tlb_remove_tlb_entry(tlb, ptep, address);	\
- 	} while (0)
+diff --git a/tools/testing/selftests/mqueue/mq_perf_tests.c b/tools/testing/selftests/mqueue/mq_perf_tests.c
+index b019e0b8221c..84fda3b49073 100644
+--- a/tools/testing/selftests/mqueue/mq_perf_tests.c
++++ b/tools/testing/selftests/mqueue/mq_perf_tests.c
+@@ -180,6 +180,9 @@ void shutdown(int exit_val, char *err_cause, int line_no)
+ 	if (in_shutdown++)
+ 		return;
  
++	/* Free the cpu_set allocated using CPU_ALLOC in main function */
++	CPU_FREE(cpu_set);
++
+ 	for (i = 0; i < num_cpus_to_pin; i++)
+ 		if (cpu_threads[i]) {
+ 			pthread_kill(cpu_threads[i], SIGUSR1);
+@@ -551,6 +554,12 @@ int main(int argc, char *argv[])
+ 		perror("sysconf(_SC_NPROCESSORS_ONLN)");
+ 		exit(1);
+ 	}
++
++	if (getuid() != 0)
++		ksft_exit_skip("Not running as root, but almost all tests "
++			"require root in order to modify\nsystem settings.  "
++			"Exiting.\n");
++
+ 	cpus_online = min(MAX_CPUS, sysconf(_SC_NPROCESSORS_ONLN));
+ 	cpu_set = CPU_ALLOC(cpus_online);
+ 	if (cpu_set == NULL) {
+@@ -589,7 +598,7 @@ int main(int argc, char *argv[])
+ 						cpu_set)) {
+ 					fprintf(stderr, "Any given CPU may "
+ 						"only be given once.\n");
+-					exit(1);
++					goto err_code;
+ 				} else
+ 					CPU_SET_S(cpus_to_pin[cpu],
+ 						  cpu_set_size, cpu_set);
+@@ -607,7 +616,7 @@ int main(int argc, char *argv[])
+ 				queue_path = malloc(strlen(option) + 2);
+ 				if (!queue_path) {
+ 					perror("malloc()");
+-					exit(1);
++					goto err_code;
+ 				}
+ 				queue_path[0] = '/';
+ 				queue_path[1] = 0;
+@@ -622,17 +631,12 @@ int main(int argc, char *argv[])
+ 		fprintf(stderr, "Must pass at least one CPU to continuous "
+ 			"mode.\n");
+ 		poptPrintUsage(popt_context, stderr, 0);
+-		exit(1);
++		goto err_code;
+ 	} else if (!continuous_mode) {
+ 		num_cpus_to_pin = 1;
+ 		cpus_to_pin[0] = cpus_online - 1;
+ 	}
+ 
+-	if (getuid() != 0)
+-		ksft_exit_skip("Not running as root, but almost all tests "
+-			"require root in order to modify\nsystem settings.  "
+-			"Exiting.\n");
+-
+ 	max_msgs = fopen(MAX_MSGS, "r+");
+ 	max_msgsize = fopen(MAX_MSGSIZE, "r+");
+ 	if (!max_msgs)
+@@ -740,4 +744,9 @@ int main(int argc, char *argv[])
+ 			sleep(1);
+ 	}
+ 	shutdown(0, "", 0);
++
++err_code:
++	CPU_FREE(cpu_set);
++	exit(1);
++
+ }
 -- 
 2.35.1
 
