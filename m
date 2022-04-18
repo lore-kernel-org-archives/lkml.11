@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15239C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7499DC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344460AbiDROWe (ORCPT
+        id S1344658AbiDROW6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:22:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50470 "EHLO
+        Mon, 18 Apr 2022 10:22:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245636AbiDROHh (ORCPT
+        with ESMTP id S1343917AbiDROIm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:07:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6183617F;
-        Mon, 18 Apr 2022 06:10:26 -0700 (PDT)
+        Mon, 18 Apr 2022 10:08:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A54366BD;
+        Mon, 18 Apr 2022 06:10:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEFDEB80EDF;
-        Mon, 18 Apr 2022 13:09:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BEECC385A1;
-        Mon, 18 Apr 2022 13:09:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF5D960F17;
+        Mon, 18 Apr 2022 13:10:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E70B7C385A1;
+        Mon, 18 Apr 2022 13:10:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287392;
-        bh=yOixNhlpZ4hi4nNLQuWNnA+q4rzoDC/5+5Xy90XfWaE=;
+        s=korg; t=1650287433;
+        bh=bNdlVb6yHXEUfQEKq0jfIHSBvLKtFKbQfnGWEEsnNyI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AGOyRE9pPNXkZ8ZQwSkHAIeWBg0RQHPbrmVjKb9NKs4C31M+1kDN3XGsuXUIHbaxu
-         s8bETATpLita2qDE6IlkWJ0A7JG2fwtZVEY+aIOx5UYEdx1rf9h/ubQ67Dmf7pKX5H
-         BuGfppPuNrfNjQpStSS33T/huwMKm3jwXwTIVvf4=
+        b=CatSwEsmayDPEhglfVXU+WeQ7R9iYGcFcrqeu54bUPrMdCl1uFLhy/k0Ak3yMVuQa
+         mj9zlVcsIlTeQ8+N6SIjr7jLes53XHT87poI0myMX0yMJxgeZziQI2lewSNnTjYO/t
+         kLLCbhhpGguGd1/qOgaSyJ4GhP3oXglUe/t24aK8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 147/218] mmc: host: Return an error when ->enable_sdio_irq() ops is missing
-Date:   Mon, 18 Apr 2022 14:13:33 +0200
-Message-Id: <20220418121203.795910282@linuxfoundation.org>
+        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 4.9 159/218] ARM: dts: spear1340: Update serial node properties
+Date:   Mon, 18 Apr 2022 14:13:45 +0200
+Message-Id: <20220418121204.636495226@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -49,55 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
 
-[ Upstream commit d6c9219ca1139b74541b2a98cee47a3426d754a9 ]
+commit 583d6b0062640def86f3265aa1042ecb6672516e upstream.
 
-Even if the current WARN() notifies the user that something is severely
-wrong, we can still end up in a PANIC() when trying to invoke the missing
-->enable_sdio_irq() ops. Therefore, let's also return an error code and
-prevent the host from being added.
+Reorder dma and dma-names property for serial node to make it compliant
+with bindings.
 
-While at it, move the code into a separate function to prepare for
-subsequent changes and for further host caps validations.
-
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Link: https://lore.kernel.org/r/20220303165142.129745-1-ulf.hansson@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6e8887f60f60 ("ARM: SPEAr13xx: Pass generic DW DMAC platform data from DT")
+Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Link: https://lore.kernel.org/r/20220326042313.97862-3-singh.kuldeep87k@gmail.com'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/host.c |   15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/spear1340.dtsi |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/mmc/core/host.c
-+++ b/drivers/mmc/core/host.c
-@@ -403,6 +403,16 @@ again:
+--- a/arch/arm/boot/dts/spear1340.dtsi
++++ b/arch/arm/boot/dts/spear1340.dtsi
+@@ -141,9 +141,9 @@
+ 				reg = <0xb4100000 0x1000>;
+ 				interrupts = <0 105 0x4>;
+ 				status = "disabled";
+-				dmas = <&dwdma0 12 0 1>,
+-					<&dwdma0 13 1 0>;
+-				dma-names = "tx", "rx";
++				dmas = <&dwdma0 13 0 1>,
++					<&dwdma0 12 1 0>;
++				dma-names = "rx", "tx";
+ 			};
  
- EXPORT_SYMBOL(mmc_alloc_host);
- 
-+static int mmc_validate_host_caps(struct mmc_host *host)
-+{
-+	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
-+		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- /**
-  *	mmc_add_host - initialise host hardware
-  *	@host: mmc host
-@@ -415,8 +425,9 @@ int mmc_add_host(struct mmc_host *host)
- {
- 	int err;
- 
--	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
--		!host->ops->enable_sdio_irq);
-+	err = mmc_validate_host_caps(host);
-+	if (err)
-+		return err;
- 
- 	err = device_add(&host->class_dev);
- 	if (err)
+ 			thermal@e07008c4 {
 
 
