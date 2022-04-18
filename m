@@ -2,172 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0EA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:44:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1724AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 15:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244903AbiDRPrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 11:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60962 "EHLO
+        id S1343735AbiDRPsJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 11:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345793AbiDRPqQ (ORCPT
+        with ESMTP id S1345509AbiDRPrO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 11:46:16 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582C15AA46;
-        Mon, 18 Apr 2022 08:13:51 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id v77so25976550ybi.12;
-        Mon, 18 Apr 2022 08:13:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UD05IbcZ2rf5qvJ6A93X+/jr+vU3bRZx5RLWQDEGt1I=;
-        b=Pjj9yRLO9dfTboleo6SJMPQgWC8TvkyB63hnmKy8gYvh0uGqQdx3aGD6CzWSQXEddN
-         tPuhqFSulSxiwq996BZ9ztVVYJZQWGZ+HG7wT3kxTdHO+KCfMeVWxPnKJRPl67IKCggy
-         sE6Ga1oTaw8UdJAxivjX1oDAcpjDoROMAbn+qVzTmEA2j4UIlSmPLr6p4xOHkapm7MDP
-         mBPYUiDkuyOBPnGQqjpa2Vw5GBl/n2f0L6D3Lvn4vQ4G5acCVRe2KsR0uezYt02+MLyg
-         f4SobePJdgLFuZMdRMTKguUTIxzt9zRSJPNx16UVjLkBzjnmkL5AJ6FUpJ1ZlAbdul8c
-         Lp/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UD05IbcZ2rf5qvJ6A93X+/jr+vU3bRZx5RLWQDEGt1I=;
-        b=RMsOy39LlyAq7MqqEB5tMo/rTFleQyhXuU7cVxTqSbTbwtjkV5DzdXzy2Qi4AsLBGd
-         M7nL9ywIsyP69xUWAL7j29j/XNToJdrXlFpzJxeLGvVVxwWW7JSet/bT5uScEzKIzdd8
-         n0u5Qfff3hN86dbjvWzZdPn2+FJwTE+F+6E7q3wwVFRQTaoIm+LCt4aglCOgJiE/j5uZ
-         feTrJU0N3DD/nHUCrmp3rNmmE80CJnDkitMrh5FGR/xIPsp2RC4Pcw6euJILQTM312bu
-         CMaHWuvW/eAsauAnQmPJk0FCOVVTcvnoMbJ9vxqmsF7P+KnD5FOeMjEtuxjcanBPAmsu
-         yYNA==
-X-Gm-Message-State: AOAM53144zXXusUAUeA6CXEHMPKS+YNf4zxCv8paQ95/eoQ8svwUlQ4F
-        OhotdL89KJU2dvwP/E5pJtChDK1S8umGJsnFeSI=
-X-Google-Smtp-Source: ABdhPJyglgnLuoSw1DyURkg6CGKqtEJL4ymjfUewdv/sJ/JuvH0Bue0GwV9LJ769SlOf0P2VWW9+SDrsMuiERFAhTZI=
-X-Received: by 2002:a25:c54b:0:b0:641:cfe9:27e9 with SMTP id
- v72-20020a25c54b000000b00641cfe927e9mr9915958ybe.228.1650294830426; Mon, 18
- Apr 2022 08:13:50 -0700 (PDT)
+        Mon, 18 Apr 2022 11:47:14 -0400
+Received: from sonic311-30.consmr.mail.ne1.yahoo.com (sonic311-30.consmr.mail.ne1.yahoo.com [66.163.188.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 324FF5BE45
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 08:14:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1650294873; bh=69UohOF3eRTLQZh2FjF33Zrm4UgU6zPehXD/dlT5I2I=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=oPVbAjSlM89WvAYoyW62RqgjWWq9lBP3EPNHrTTYNreUeen7rPmgI+LfWY3fYutUqoGiyBvow9EzgyFStP/GJMt3ODF+rPbYK516PILPVvDv3kKkLHc2FCizVKY9DIeYnAvzC7tGBQx/15i/K2ZDihonyJYQHf7ynlPMTtAV0B19idYcI+0hjAkKlJcQ8nGzQuN8LmgsZhNZV8yE/YcGxfiEFwQikTW+6LOMEOvC9CouRJFMlDiPpSW9kHGEsURemIZp1eVNmot7n/R/9qGKRzmi20MXAtFuoBUkuhlO+qaCOpggJaSBjMC6PNq12lbW3fBdOrRWzVqmZEOOOoDy3g==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1650294873; bh=nS8fn6QTXDQjCIFL+o4u3xtJmoD/VojRgAaADHs79/N=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=Bncmwg8/E86xI+dhKQGx8TE1QoDA5TsT7JlDL/j5EeBkMENq9v5feXTGpZZvwzAWamQKnRcOmOBy0D2S3qrHc1nLLZ6yZ1VfBbAPpWwrd8ln/uxN/TCOmeeW033KXPImGdTcZx3ecu3DFtVIcR4gLo5xrGeudSla69NExcDxCI5QTx0QQMRAnAYH5ShIaRT68GhtxzOK1bw3IlzlC3MyAkT1hCne2gKBg15gV9oi3hOfrlNssZTNyRpxcH/H0wYYbcn+dPR/dvFULs37TUg8k3QeyDBiMbUqtJZtYxqy85lP+hgvMthOAyR6HtYLl5XMFPbnFOHSfL1xH+uuB622NA==
+X-YMail-OSG: QUP9NT8VM1kDlX2S3pPL7dScr7DG3GjZ6wegZmh610UDvje.9iESBMDAqFuJ4.f
+ .hr8_548_RU.rtXup7vMN4SfiDHc5kIWFMkX5S3xEhZ2Sxbu5PyrfY5pxESQaHSkHdHna6ogWumK
+ nK0UPC0yktGSpXh9mj.d6dTmi8MlHmVyxaYeOTSzhorVD6epBCgnAExPGFZw7nerAqUwIaWYgkk6
+ jAsYK2togydhUh26HcbpNXMOGfVlJE4LkRNjSaYGl03_j8ZyOLuK9kq60.mlQZCVuhOKnN5C2v1x
+ Vbm.TierF3_FypZAaS6nWxrTqAAx9XG6Yj5CwxcsGj3aoixbpGUKbnT3Bm6qUdopsNVw7CV.JvbC
+ s7LnNw2252ISxbVevHTuEPG.b8jAjhghexCEvSKaMVTBk7J14a5olqgQBUSwhRKvSBVkY1IuUU3c
+ nDLLwd_weFHKgAB5VyFGQCWWOCNGOd9Qm9Q1TTd3FosVBBYF.NOcDzb5SlFbHPxf_yJzClWVmObp
+ A4jQjkhroswUvQruEsqdbYjrTmQG6FfUuCUmR7OH07XKX2xTrDb_BKmHUtubbSHA7Qyt1ma6wiF2
+ lYkaH2ft.fl0LS7QdafM7Ucdf_46IyfFx3kYwaxY8fEe3lDL8d3SXLyAyVXzc7m1BDph9zp7ueaN
+ liL0AJEn9DQcvPcXQqi0whlZ80V1nN4RxjmFds3g1vmoVXQa5.SaEA.yWYzVHAzXhIIsjtYpBVZT
+ TzqLXck18baYqd_UR6je4IAVADlXG51p5Rgr7hCOfK_1Eqf2Vk5UnsC.N7_OclQjtTCLtsWjs5FI
+ AEJlujVIoqqxOn2QuPl4.kT6Vbi.FW7YILV4nKr_ngSa527n23ohM8Bgipvpcq6PpVHf7i4lBhJ6
+ HfXUGtmHsHsk0QtRSlLCcRUEZ6Ceqow_gfAB5SfATrAnYofx9rv6m0UHrDM8Zb3QVEyVv6VMpkdg
+ b3S.yvZEpt3xUek5.vhU8F7Jw0N4OGUL4jEZdSjgU_ByEnuhzu3VuE0i9kKL5UaWwCbKZrNjfXt9
+ CmTZO25.KDtWxpBACluCbYDqUC0DOJIKesFP7Qsx69Pyo50G_Ip.x84I4_uyhfcY4oD2LGWTn.Qa
+ fbKLzZafTUjgsFCfF507lsDsm9kJ_9Fs836pUomgNieFdhdAMZye45b8DAZWavQ1ALdWSXOOhhXg
+ hybqo4ROveJbrRXY6v5caezUdmQ14hFaKl0PXi4jvTXORqgoZEV.rwDVp421PU2ES5X31OaguxKe
+ cYn1IaIM88r3yAeDnzriahqmcWbE.._QQGNZoQSgRvlxE6hCyHJ194Ctr1rhSS.DL9cDU8Mrugju
+ j9m8KPCu.xwCEm95g758rD4_StuyVhLW..GkPBgMAm6RSD9X7YoDlQljTkwSPMPdyVAuUx3WncHh
+ 47ctydbWZqBuSr3pw6Z.vUYq0obBNAQFxPOgh9oxKgGKcGb14ZkrvjawZSzjzjCNzG61q7fKoCKu
+ DIFJw5gnCelDqH_gz7uRBiSnybzkyS_Nf.4O9NpLOuphIMALUBHfQoKpEvjNyGMih3nCJERKncYC
+ ZiZrTV3DkOyj0bgmfreLl6a32uDkQ.D3LdNtNE0.vLoudAwBnz3tiK5r7K7_vVYQYXRZUtHNozjq
+ 0Hk.ovkmTeC3H81rHVTjZo8yC_8X6iXyKKW_ThcNQ.dLz.GL4vr0nsvVmcX3FBR3qUCSkOr1rEln
+ u9.eEDE8ok1jrXlVx51FMzskg0A4vqVLJBlG4._2vdzhE3o_EdQ.x6RZzrXgKUmtHQgTJURWRuAm
+ LwBt_3jlABbP2h.KTxCaQKbP3CSyFPdWwhMFkFQ4p.3TeWJTTsasMwbe9E2xsm7fJ.NhaKEVrlbN
+ eq9Ae_po6x.pISY1elJliiuPWhfKrdaMYL60Dj3XC3mvloQALfQkXqh1yvbkoXkEmmeHGuZpaT3R
+ Iqnp4yQ5qwlT0c2yFB26vKPKNZMeWlcOp18SaGgPe0iASTCRYFZqqHK_qgsOEX9Tx5lUzX_0kXhJ
+ AIrRpqHDnGWJTCp5OnDsiU.2DQT_kUTzL44UFJOuar0_Y5bamnQkfUXgpI8.s8dLn1NvyECThIVf
+ gNJCY408awzB.SpvxKgwRIJOHit4lyILnMkHWQtvyHuLIpYgz5pmK6tVRc4fszqsOiJfIEvW5wvF
+ wPZEcq7WkXevoGfdnHNGXmDV6J4IfQ5NigdBMeLWxPrMiCUtqDULAmZ2rkk8V4rACst8tNRIECEq
+ Ulv3rjP3EctNMxyVygVzW26PTW2BHv6lMBhVmVYYkqNib9sNNWa6Ql8XLWs51vwqhOLatNZU954C
+ 1Ag--
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic311.consmr.mail.ne1.yahoo.com with HTTP; Mon, 18 Apr 2022 15:14:33 +0000
+Received: by hermes--canary-production-bf1-5f49dbcd6-xjccz (VZM Hermes SMTP Server) with ESMTPA ID 311eab809775b4af02ae966c725fa26b;
+          Mon, 18 Apr 2022 15:14:29 +0000 (UTC)
+From:   Casey Schaufler <casey@schaufler-ca.com>
+To:     casey.schaufler@intel.com, jmorris@namei.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
+        keescook@chromium.org, john.johansen@canonical.com,
+        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
+        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org
+Subject: [PATCH v35 29/29] AppArmor: Remove the exclusive flag
+Date:   Mon, 18 Apr 2022 07:59:45 -0700
+Message-Id: <20220418145945.38797-30-casey@schaufler-ca.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220418145945.38797-1-casey@schaufler-ca.com>
+References: <20220418145945.38797-1-casey@schaufler-ca.com>
 MIME-Version: 1.0
-References: <20220416110507.642398-1-pgwipeout@gmail.com> <20220416110507.642398-3-pgwipeout@gmail.com>
- <308e9c47197d4f7ae5a31cfcb5a10886@kernel.org> <CAMdYzYo+YeAgT92baMOoWpra230wro_WynRcajL-__9RNkeE9Q@mail.gmail.com>
- <87zgkk9gtc.wl-maz@kernel.org> <CAMdYzYo_+7rakc=GCTueEZvH_F4Co6+=eKAUztJaafiDXSKKXQ@mail.gmail.com>
- <87sfqaa7uv.wl-maz@kernel.org>
-In-Reply-To: <87sfqaa7uv.wl-maz@kernel.org>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Mon, 18 Apr 2022 11:13:39 -0400
-Message-ID: <CAMdYzYouLoYX89EWjQTRAjd-1bvJEJtfYQa2KrtFH22Kp-4Efw@mail.gmail.com>
-Subject: Re: [PATCH v7 2/4] PCI: dwc: rockchip: add legacy interrupt support
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        PCI <linux-pci@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 18, 2022 at 8:34 AM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Mon, 18 Apr 2022 12:37:00 +0100,
-> Peter Geis <pgwipeout@gmail.com> wrote:
-> >
-> > On Sun, Apr 17, 2022 at 5:53 AM Marc Zyngier <maz@kernel.org> wrote:
-> > >
-> > > On Sat, 16 Apr 2022 14:24:26 +0100,
-> > > Peter Geis <pgwipeout@gmail.com> wrote:
-> > > >
-> > > > Okay, that makes sense. I'm hitting the entire block when it should be
-> > > > the individual IRQ.
-> > > > I also notice some drivers protect this with a spinlock while others
-> > > > do not, how should this be handled?
-> > >
-> > > It obviously depends on how the HW. works. If this is a shared
-> > > register using a RMW sequence, then you need some form of mutual
-> > > exclusion in order to preserve the atomicity of the update.
-> > >
-> > > If the HW supports updating the masks using a set of hot bits (with
-> > > separate clear/set registers), than there is no need for locking.  In
-> > > your case PCIE_CLIENT_INTR_MASK_LEGACY seems to support this odd
-> > > "write-enable" feature which can probably be used to implement a
-> > > lockless access, something like:
-> > >
-> > >         void mask(struct irq_data *d)
-> > >         {
-> > >                 u32 val = BIT(d->hwirq + 16) | BIT(d->hwirq);
-> >
-> > This is what HIWORD_UPDATE_BIT does, it's rather common in Rockchip code.
-> > I believe I can safely drop the spinlock when enabling/disabling
-> > individual interrupts.
->
-> Yes.
->
-> >
-> > >                 writel_relaxed(val, ...);
-> > >         }
-> > >
-> > >         void mask(struct irq_data *d)
-> > >         {
-> > >                 u32 val = BIT(d->hwirq + 16);
-> > >                 writel_relaxed(val, ...);
-> > >         }
-> > >
-> > > Another thing is that it is completely unclear to me what initialises
-> > > these interrupts the first place (INTR_MASK_LEGACY, INTR_EN_LEGACY).
-> > > Are you relying on the firmware to do that for you?
-> >
-> > There is no dedicated mask or enable/disable for the legacy interrupt
-> > line (unless it's undocumented).
->
-> I'm talking about the INTR_MASK_LEGACY and INTR_EN_LEGACY registers,
-> which control the INTx (although the latter seems to default to some
-> reserved values). I don't see where you initialise them to a state
-> where they are enabled and masked, which should be the initial state
-> once this driver has probed. The output interrupt itself is obviously
-> controlled by the GIC driver.
+With the inclusion of the interface LSM process attribute
+mechanism AppArmor no longer needs to be treated as an
+"exclusive" security module. Remove the flag that indicates
+it is exclusive. Remove the stub getpeersec_dgram AppArmor
+hook as it has no effect in the single LSM case and
+interferes in the multiple LSM case.
 
-PCIE_CLIENT_INTR_MASK_LEGACY is the register I use here to mask/unmask
-the interrupts.
-It defaults to all masked on reset.
-The current rk3568 trm v1.1 does not reference an INTR_EN_LEGACY register.
+Acked-by: Stephen Smalley <stephen.smalley.work@gmail.com>
+Acked-by: John Johansen <john.johansen@canonical.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+---
+ security/apparmor/lsm.c | 20 +-------------------
+ 1 file changed, 1 insertion(+), 19 deletions(-)
 
->
-> > It appears to be enabled via an "or" function with the emulated interrupts.
-> > As far as I can tell this is common for dw-pcie, looking at the other drivers.
->
-> I think we're talking past each other. I'm solely concerned with the
-> initialisation of the input control registers, for which I see no code
-> in this patch.
+diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
+index 1ee58c1491ab..388298a15556 100644
+--- a/security/apparmor/lsm.c
++++ b/security/apparmor/lsm.c
+@@ -1145,22 +1145,6 @@ static int apparmor_socket_getpeersec_stream(struct socket *sock,
+ 	return error;
+ }
+ 
+-/**
+- * apparmor_socket_getpeersec_dgram - get security label of packet
+- * @sock: the peer socket
+- * @skb: packet data
+- * @secid: pointer to where to put the secid of the packet
+- *
+- * Sets the netlabel socket state on sk from parent
+- */
+-static int apparmor_socket_getpeersec_dgram(struct socket *sock,
+-					    struct sk_buff *skb, u32 *secid)
+-
+-{
+-	/* TODO: requires secid support */
+-	return -ENOPROTOOPT;
+-}
+-
+ /**
+  * apparmor_sock_graft - Initialize newly created socket
+  * @sk: child sock
+@@ -1264,8 +1248,6 @@ static struct security_hook_list apparmor_hooks[] __lsm_ro_after_init = {
+ #endif
+ 	LSM_HOOK_INIT(socket_getpeersec_stream,
+ 		      apparmor_socket_getpeersec_stream),
+-	LSM_HOOK_INIT(socket_getpeersec_dgram,
+-		      apparmor_socket_getpeersec_dgram),
+ 	LSM_HOOK_INIT(sock_graft, apparmor_sock_graft),
+ #ifdef CONFIG_NETWORK_SECMARK
+ 	LSM_HOOK_INIT(inet_conn_request, apparmor_inet_conn_request),
+@@ -1919,7 +1901,7 @@ static int __init apparmor_init(void)
+ 
+ DEFINE_LSM(apparmor) = {
+ 	.name = "apparmor",
+-	.flags = LSM_FLAG_LEGACY_MAJOR | LSM_FLAG_EXCLUSIVE,
++	.flags = LSM_FLAG_LEGACY_MAJOR,
+ 	.enabled = &apparmor_enabled,
+ 	.blobs = &apparmor_blob_sizes,
+ 	.init = apparmor_init,
+-- 
+2.35.1
 
-Downstream points to the mask/unmask functions for the enable/disable
-functions, which would be superfluous here as mainline defaults to
-that anyways if they are null.
-
-I've double checked and downstream only uses the mask register, enable
-and routing config appears to be left as is from reset.
-I'm rather concerned about the lack of any obvious way to control
-routing, nor an ack mechanism for the irq.
-I see other implementations reference the core registers or vendor
-defined registers for these functions.
-Unfortunately the rk3568 trm does not include the core register
-definitions, and the designware documentation appears to be behind a
-paywall/nda.
-
-I suspect most of the confusion here boils down to a lack of
-documentation, but it's entirely possible I am simply not
-understanding the question.
-I'm already aware of other functions that I need documentation for
-that is currently unavailable.
-
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
-
-Thank you for your time,
-Peter
