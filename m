@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E0FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8840EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243720AbiDRN4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41262 "EHLO
+        id S244149AbiDRN4N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244864AbiDRNa7 (ORCPT
+        with ESMTP id S244863AbiDRNa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:30:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2A91EED6;
-        Mon, 18 Apr 2022 05:56:32 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3961EEE5;
+        Mon, 18 Apr 2022 05:56:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B44060FD9;
-        Mon, 18 Apr 2022 12:56:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EC6FC385A7;
-        Mon, 18 Apr 2022 12:56:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66A01B80E44;
+        Mon, 18 Apr 2022 12:56:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2F5DC385A7;
+        Mon, 18 Apr 2022 12:56:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286592;
-        bh=SGp5aKNkWF7bwgMl1K4wWeG8G9L0uda+KQ4PEeM4IRU=;
+        s=korg; t=1650286598;
+        bh=Ch4wZSjhV/oo/hLKg9DEfBsu9sBf4PX4u2g8wngGSyQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v4Zau8MR497HC33Rkq9n+hC9O39rD4zR0lBmc1A9OjvyXJD6vJ43Rm+b7x73jg2C/
-         /y7c2jtG8MPrhBvTvZ/IoFlnplQwiTaXegrdDPOXjEzfwxSWaAj26dxXHvRuEz0alE
-         hPIuqMSFI87h50bRE3hNaLZCLyOAZPzV7a60GCoc=
+        b=QougPDleAIt8Zs+N4XrpkF2UyY9Ot2+WeHgLGvnxRzM812SnhozDUm2K/HhqBCL7i
+         zbCNX//qD9wH+0iVZSI2XZzPPNMWkFcf/aB/ssybaFDDIZE0P6LCJS5m69zOCAXKQJ
+         3IcvO4H0ZGTlhfBh99aSUiMnJRSiHCkQcH1VASiI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Gardon <bgardon@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 4.14 184/284] KVM: Prevent module exit until all VMs are freed
-Date:   Mon, 18 Apr 2022 14:12:45 +0200
-Message-Id: <20220418121216.970237804@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.14 186/284] ubifs: Add missing iput if do_tmpfile() failed in rename whiteout
+Date:   Mon, 18 Apr 2022 14:12:47 +0200
+Message-Id: <20220418121217.026455608@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,75 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Matlack <dmatlack@google.com>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-commit 5f6de5cbebee925a612856fce6f9182bb3eee0db upstream.
+commit 716b4573026bcbfa7b58ed19fe15554bac66b082 upstream.
 
-Tie the lifetime the KVM module to the lifetime of each VM via
-kvm.users_count. This way anything that grabs a reference to the VM via
-kvm_get_kvm() cannot accidentally outlive the KVM module.
+whiteout inode should be put when do_tmpfile() failed if inode has been
+initialized. Otherwise we will get following warning during umount:
+  UBIFS error (ubi0:0 pid 1494): ubifs_assert_failed [ubifs]: UBIFS
+  assert failed: c->bi.dd_growth == 0, in fs/ubifs/super.c:1930
+  VFS: Busy inodes after unmount of ubifs. Self-destruct in 5 seconds.
 
-Prior to this commit, the lifetime of the KVM module was tied to the
-lifetime of /dev/kvm file descriptors, VM file descriptors, and vCPU
-file descriptors by their respective file_operations "owner" field.
-This approach is insufficient because references grabbed via
-kvm_get_kvm() do not prevent closing any of the aforementioned file
-descriptors.
-
-This fixes a long standing theoretical bug in KVM that at least affects
-async page faults. kvm_setup_async_pf() grabs a reference via
-kvm_get_kvm(), and drops it in an asynchronous work callback. Nothing
-prevents the VM file descriptor from being closed and the KVM module
-from being unloaded before this callback runs.
-
-Fixes: af585b921e5d ("KVM: Halt vcpu if page it tries to access is swapped out")
-Fixes: 3d3aab1b973b ("KVM: set owner of cpu and vm file operations")
-Cc: stable@vger.kernel.org
-Suggested-by: Ben Gardon <bgardon@google.com>
-[ Based on a patch from Ben implemented for Google's kernel. ]
-Signed-off-by: David Matlack <dmatlack@google.com>
-Message-Id: <20220303183328.1499189-2-dmatlack@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Suggested-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- virt/kvm/kvm_main.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ fs/ubifs/dir.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -112,6 +112,8 @@ EXPORT_SYMBOL_GPL(kvm_debugfs_dir);
- static int kvm_debugfs_num_entries;
- static const struct file_operations *stat_fops_per_vm[];
- 
-+static struct file_operations kvm_chardev_ops;
-+
- static long kvm_vcpu_ioctl(struct file *file, unsigned int ioctl,
- 			   unsigned long arg);
- #ifdef CONFIG_KVM_COMPAT
-@@ -716,6 +718,16 @@ static struct kvm *kvm_create_vm(unsigne
- 
- 	preempt_notifier_inc();
- 
-+	/*
-+	 * When the fd passed to this ioctl() is opened it pins the module,
-+	 * but try_module_get() also prevents getting a reference if the module
-+	 * is in MODULE_STATE_GOING (e.g. if someone ran "rmmod --wait").
-+	 */
-+	if (!try_module_get(kvm_chardev_ops.owner)) {
-+		r = -ENODEV;
-+		goto out_err;
-+	}
-+
- 	return kvm;
- 
- out_err:
-@@ -792,6 +804,7 @@ static void kvm_destroy_vm(struct kvm *k
- 	preempt_notifier_dec();
- 	hardware_disable_all();
- 	mmdrop(mm);
-+	module_put(kvm_chardev_ops.owner);
- }
- 
- void kvm_get_kvm(struct kvm *kvm)
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -468,6 +468,8 @@ out_inode:
+ 	make_bad_inode(inode);
+ 	if (!instantiated)
+ 		iput(inode);
++	else if (whiteout)
++		iput(*whiteout);
+ out_budg:
+ 	ubifs_release_budget(c, &req);
+ 	if (!instantiated)
 
 
