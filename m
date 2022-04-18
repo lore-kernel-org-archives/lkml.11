@@ -2,52 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96CB3C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:26:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DDAC352A7
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344573AbiDRO1s (ORCPT
+        id S1344819AbiDRO21 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38024 "EHLO
+        Mon, 18 Apr 2022 10:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344017AbiDROQm (ORCPT
+        with ESMTP id S1344085AbiDRORf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:16:42 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EFCE3969D;
-        Mon, 18 Apr 2022 06:12:58 -0700 (PDT)
+        Mon, 18 Apr 2022 10:17:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF69C3A1AD;
+        Mon, 18 Apr 2022 06:13:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C42F6CE10AC;
-        Mon, 18 Apr 2022 13:12:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B1AAC385A1;
-        Mon, 18 Apr 2022 13:12:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 026DDB80EE5;
+        Mon, 18 Apr 2022 13:12:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50D5CC385A7;
+        Mon, 18 Apr 2022 13:12:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287561;
-        bh=pCaErmXj7GFOWz7crIVchz4vOEgl677KTwnC1rfC6xI=;
+        s=korg; t=1650287577;
+        bh=2X054I721Z00ymUe9y1tZN0FVB/oy5dHB3h/KaeNAGY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HdGiDUeDVqdSI1/YDVC050zsg0SgOWIdg2DploMdCAsJ+3q3KJJd5F0MMUoNl1AAm
-         wymnp9gaKNawFfyjMgjC+7Sj6Yrlxg6jahLi7xhflDd03ZiCX8tYBhKX0Egf3EuWcp
-         wUqmCwGu7v/35oyeCF52hsKSpjI0DOpanijx8vgs=
+        b=nYfaEVgFndxla26PHRK7F2AknF6PQMa7x44mWBsvV63HJ8Xq5lMSpAjVjVkGitZnb
+         jiwjtES9Uttk6STIYVuBrhh/cdBfYJKBdAO96GrpfJcqBpcmUabsrSIwihq7kPXAlZ
+         tGD8mT7Jdoi72ImHeqANELFtRkeF5cLedcJ10fIE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Xu <peterx@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Hugh Dickins <hughd@google.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Yang Shi <shy828301@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.9 199/218] mm: dont skip swap entry even if zap_details specified
-Date:   Mon, 18 Apr 2022 14:14:25 +0200
-Message-Id: <20220418121207.352634543@linuxfoundation.org>
+        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 204/218] nfc: nci: add flush_workqueue to prevent uaf
+Date:   Mon, 18 Apr 2022 14:14:30 +0200
+Message-Id: <20220418121207.737646123@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -59,179 +51,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Xu <peterx@redhat.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-commit 5abfd71d936a8aefd9f9ccd299dea7a164a5d455 upstream.
+[ Upstream commit ef27324e2cb7bb24542d6cb2571740eefe6b00dc ]
 
-Patch series "mm: Rework zap ptes on swap entries", v5.
+Our detector found a concurrent use-after-free bug when detaching an
+NCI device. The main reason for this bug is the unexpected scheduling
+between the used delayed mechanism (timer and workqueue).
 
-Patch 1 should fix a long standing bug for zap_pte_range() on
-zap_details usage.  The risk is we could have some swap entries skipped
-while we should have zapped them.
+The race can be demonstrated below:
 
-Migration entries are not the major concern because file backed memory
-always zap in the pattern that "first time without page lock, then
-re-zap with page lock" hence the 2nd zap will always make sure all
-migration entries are already recovered.
+Thread-1                           Thread-2
+                                 | nci_dev_up()
+                                 |   nci_open_device()
+                                 |     __nci_request(nci_reset_req)
+                                 |       nci_send_cmd
+                                 |         queue_work(cmd_work)
+nci_unregister_device()          |
+  nci_close_device()             | ...
+    del_timer_sync(cmd_timer)[1] |
+...                              | Worker
+nci_free_device()                | nci_cmd_work()
+  kfree(ndev)[3]                 |   mod_timer(cmd_timer)[2]
 
-However there can be issues with real swap entries got skipped
-errornoously.  There's a reproducer provided in commit message of patch
-1 for that.
+In short, the cleanup routine thought that the cmd_timer has already
+been detached by [1] but the mod_timer can re-attach the timer [2], even
+it is already released [3], resulting in UAF.
 
-Patch 2-4 are cleanups that are based on patch 1.  After the whole
-patchset applied, we should have a very clean view of zap_pte_range().
+This UAF is easy to trigger, crash trace by POC is like below
 
-Only patch 1 needs to be backported to stable if necessary.
+[   66.703713] ==================================================================
+[   66.703974] BUG: KASAN: use-after-free in enqueue_timer+0x448/0x490
+[   66.703974] Write of size 8 at addr ffff888009fb7058 by task kworker/u4:1/33
+[   66.703974]
+[   66.703974] CPU: 1 PID: 33 Comm: kworker/u4:1 Not tainted 5.18.0-rc2 #5
+[   66.703974] Workqueue: nfc2_nci_cmd_wq nci_cmd_work
+[   66.703974] Call Trace:
+[   66.703974]  <TASK>
+[   66.703974]  dump_stack_lvl+0x57/0x7d
+[   66.703974]  print_report.cold+0x5e/0x5db
+[   66.703974]  ? enqueue_timer+0x448/0x490
+[   66.703974]  kasan_report+0xbe/0x1c0
+[   66.703974]  ? enqueue_timer+0x448/0x490
+[   66.703974]  enqueue_timer+0x448/0x490
+[   66.703974]  __mod_timer+0x5e6/0xb80
+[   66.703974]  ? mark_held_locks+0x9e/0xe0
+[   66.703974]  ? try_to_del_timer_sync+0xf0/0xf0
+[   66.703974]  ? lockdep_hardirqs_on_prepare+0x17b/0x410
+[   66.703974]  ? queue_work_on+0x61/0x80
+[   66.703974]  ? lockdep_hardirqs_on+0xbf/0x130
+[   66.703974]  process_one_work+0x8bb/0x1510
+[   66.703974]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+[   66.703974]  ? pwq_dec_nr_in_flight+0x230/0x230
+[   66.703974]  ? rwlock_bug.part.0+0x90/0x90
+[   66.703974]  ? _raw_spin_lock_irq+0x41/0x50
+[   66.703974]  worker_thread+0x575/0x1190
+[   66.703974]  ? process_one_work+0x1510/0x1510
+[   66.703974]  kthread+0x2a0/0x340
+[   66.703974]  ? kthread_complete_and_exit+0x20/0x20
+[   66.703974]  ret_from_fork+0x22/0x30
+[   66.703974]  </TASK>
+[   66.703974]
+[   66.703974] Allocated by task 267:
+[   66.703974]  kasan_save_stack+0x1e/0x40
+[   66.703974]  __kasan_kmalloc+0x81/0xa0
+[   66.703974]  nci_allocate_device+0xd3/0x390
+[   66.703974]  nfcmrvl_nci_register_dev+0x183/0x2c0
+[   66.703974]  nfcmrvl_nci_uart_open+0xf2/0x1dd
+[   66.703974]  nci_uart_tty_ioctl+0x2c3/0x4a0
+[   66.703974]  tty_ioctl+0x764/0x1310
+[   66.703974]  __x64_sys_ioctl+0x122/0x190
+[   66.703974]  do_syscall_64+0x3b/0x90
+[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   66.703974]
+[   66.703974] Freed by task 406:
+[   66.703974]  kasan_save_stack+0x1e/0x40
+[   66.703974]  kasan_set_track+0x21/0x30
+[   66.703974]  kasan_set_free_info+0x20/0x30
+[   66.703974]  __kasan_slab_free+0x108/0x170
+[   66.703974]  kfree+0xb0/0x330
+[   66.703974]  nfcmrvl_nci_unregister_dev+0x90/0xd0
+[   66.703974]  nci_uart_tty_close+0xdf/0x180
+[   66.703974]  tty_ldisc_kill+0x73/0x110
+[   66.703974]  tty_ldisc_hangup+0x281/0x5b0
+[   66.703974]  __tty_hangup.part.0+0x431/0x890
+[   66.703974]  tty_release+0x3a8/0xc80
+[   66.703974]  __fput+0x1f0/0x8c0
+[   66.703974]  task_work_run+0xc9/0x170
+[   66.703974]  exit_to_user_mode_prepare+0x194/0x1a0
+[   66.703974]  syscall_exit_to_user_mode+0x19/0x50
+[   66.703974]  do_syscall_64+0x48/0x90
+[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-This patch (of 4):
+To fix the UAF, this patch adds flush_workqueue() to ensure the
+nci_cmd_work is finished before the following del_timer_sync.
+This combination will promise the timer is actually detached.
 
-The "details" pointer shouldn't be the token to decide whether we should
-skip swap entries.
-
-For example, when the callers specified details->zap_mapping==NULL, it
-means the user wants to zap all the pages (including COWed pages), then
-we need to look into swap entries because there can be private COWed
-pages that was swapped out.
-
-Skipping some swap entries when details is non-NULL may lead to wrongly
-leaving some of the swap entries while we should have zapped them.
-
-A reproducer of the problem:
-
-===8<===
-        #define _GNU_SOURCE         /* See feature_test_macros(7) */
-        #include <stdio.h>
-        #include <assert.h>
-        #include <unistd.h>
-        #include <sys/mman.h>
-        #include <sys/types.h>
-
-        int page_size;
-        int shmem_fd;
-        char *buffer;
-
-        void main(void)
-        {
-                int ret;
-                char val;
-
-                page_size = getpagesize();
-                shmem_fd = memfd_create("test", 0);
-                assert(shmem_fd >= 0);
-
-                ret = ftruncate(shmem_fd, page_size * 2);
-                assert(ret == 0);
-
-                buffer = mmap(NULL, page_size * 2, PROT_READ | PROT_WRITE,
-                                MAP_PRIVATE, shmem_fd, 0);
-                assert(buffer != MAP_FAILED);
-
-                /* Write private page, swap it out */
-                buffer[page_size] = 1;
-                madvise(buffer, page_size * 2, MADV_PAGEOUT);
-
-                /* This should drop private buffer[page_size] already */
-                ret = ftruncate(shmem_fd, page_size);
-                assert(ret == 0);
-                /* Recover the size */
-                ret = ftruncate(shmem_fd, page_size * 2);
-                assert(ret == 0);
-
-                /* Re-read the data, it should be all zero */
-                val = buffer[page_size];
-                if (val == 0)
-                        printf("Good\n");
-                else
-                        printf("BUG\n");
-        }
-===8<===
-
-We don't need to touch up the pmd path, because pmd never had a issue with
-swap entries.  For example, shmem pmd migration will always be split into
-pte level, and same to swapping on anonymous.
-
-Add another helper should_zap_cows() so that we can also check whether we
-should zap private mappings when there's no page pointer specified.
-
-This patch drops that trick, so we handle swap ptes coherently.  Meanwhile
-we should do the same check upon migration entry, hwpoison entry and
-genuine swap entries too.
-
-To be explicit, we should still remember to keep the private entries if
-even_cows==false, and always zap them when even_cows==true.
-
-The issue seems to exist starting from the initial commit of git.
-
-[peterx@redhat.com: comment tweaks]
-  Link: https://lkml.kernel.org/r/20220217060746.71256-2-peterx@redhat.com
-
-Link: https://lkml.kernel.org/r/20220217060746.71256-1-peterx@redhat.com
-Link: https://lkml.kernel.org/r/20220216094810.60572-1-peterx@redhat.com
-Link: https://lkml.kernel.org/r/20220216094810.60572-2-peterx@redhat.com
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Peter Xu <peterx@redhat.com>
-Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: Alistair Popple <apopple@nvidia.com>
-Cc: Andrea Arcangeli <aarcange@redhat.com>
-Cc: "Kirill A . Shutemov" <kirill@shutemov.name>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Yang Shi <shy828301@gmail.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 6a2968aaf50c ("NFC: basic NCI protocol implementation")
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/memory.c |   24 +++++++++++++++++++-----
- 1 file changed, 19 insertions(+), 5 deletions(-)
+ net/nfc/nci/core.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -1113,6 +1113,17 @@ int copy_page_range(struct mm_struct *ds
- 	return ret;
- }
+diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
+index 84eedbd5716d..df90872fcf90 100644
+--- a/net/nfc/nci/core.c
++++ b/net/nfc/nci/core.c
+@@ -561,6 +561,10 @@ static int nci_close_device(struct nci_dev *ndev)
+ 	mutex_lock(&ndev->req_lock);
  
-+/* Whether we should zap all COWed (private) pages too */
-+static inline bool should_zap_cows(struct zap_details *details)
-+{
-+	/* By default, zap all pages */
-+	if (!details)
-+		return true;
-+
-+	/* Or, we zap COWed pages only if the caller wants to */
-+	return !details->check_mapping;
-+}
-+
- static unsigned long zap_pte_range(struct mmu_gather *tlb,
- 				struct vm_area_struct *vma, pmd_t *pmd,
- 				unsigned long addr, unsigned long end,
-@@ -1186,17 +1197,20 @@ again:
- 			}
- 			continue;
- 		}
--		/* only check swap_entries if explicitly asked for in details */
--		if (unlikely(details && !details->check_swap_entries))
--			continue;
- 
- 		entry = pte_to_swp_entry(ptent);
--		if (!non_swap_entry(entry))
-+		if (!non_swap_entry(entry)) {
-+			/* Genuine swap entry, hence a private anon page */
-+			if (!should_zap_cows(details))
-+				continue;
- 			rss[MM_SWAPENTS]--;
--		else if (is_migration_entry(entry)) {
-+		} else if (is_migration_entry(entry)) {
- 			struct page *page;
- 
- 			page = migration_entry_to_page(entry);
-+			if (details && details->check_mapping &&
-+			    details->check_mapping != page_rmapping(page))
-+				continue;
- 			rss[mm_counter(page)]--;
- 		}
- 		if (unlikely(!free_swap_and_cache(entry)))
+ 	if (!test_and_clear_bit(NCI_UP, &ndev->flags)) {
++		/* Need to flush the cmd wq in case
++		 * there is a queued/running cmd_work
++		 */
++		flush_workqueue(ndev->cmd_wq);
+ 		del_timer_sync(&ndev->cmd_timer);
+ 		del_timer_sync(&ndev->data_timer);
+ 		mutex_unlock(&ndev->req_lock);
+-- 
+2.35.1
+
 
 
