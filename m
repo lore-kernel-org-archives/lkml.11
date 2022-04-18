@@ -2,100 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 08:16:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E49AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 08:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237159AbiDRIS4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 04:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45400 "EHLO
+        id S237174AbiDRITJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 04:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237149AbiDRISx (ORCPT
+        with ESMTP id S237162AbiDRIS6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 04:18:53 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81836167D5;
-        Mon, 18 Apr 2022 01:16:14 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 530CF22239;
-        Mon, 18 Apr 2022 10:16:11 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1650269772;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9+JeLm6TahuxrZU78uCicymdF3GylKVG8FLqiH1KSU4=;
-        b=X69WuQ9+VFYcZyfZuEWMf2RQTlOHWjqC+9geHKufQpPiB1DuOQxp1h57NTQJMgNV+XBlL5
-        anKm8RfpilE7JjUTjBt5SlPCFc5b4aIDMqVx9QTKEmISOBNFeb8GLhic5k+m/JEZYEQC5l
-        PcZNUXz0Z90dY9rkB4KEVrVrpf8eMHI=
+        Mon, 18 Apr 2022 04:18:58 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF16167D7
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 01:16:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1650269780; x=1681805780;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=HhabDmKUYhR3M9i0ABzglswosSWuM51y/vywBMjtLh8=;
+  b=cWqmFPTETiF5Q1/SbVC/WXYTqUG8+whGUl/1OLAZJG/zgjGEupMLwB1L
+   wadPsSl+CfgxZRhPCnSWPi6KULlrc6WS9a9iMEauU7JCS8riauNyjQ8eB
+   +ksYs4l5hpxIlMqpfUstI/+T8YDxtHr+hsXKUL+99ZBtBfEcFfd7WU/Eb
+   /+P0qojjqloDKQHMEWZQAxagTxO91YWoFFJTFUit5i/HFKibH1EIJbbNZ
+   OG8TqzKBw290qGK6ITRALJJ+UZwV5/zMhsPidTiZ3mkkXjyEq4DOfHV/m
+   6/tZE+uS1n0HIuCpijZiT35qsiptleXFsCJDKv95Js/o57PD0jLzc2c+y
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10320"; a="326378389"
+X-IronPort-AV: E=Sophos;i="5.90,269,1643702400"; 
+   d="scan'208";a="326378389"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 01:16:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,269,1643702400"; 
+   d="scan'208";a="561266990"
+Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 18 Apr 2022 01:16:18 -0700
+Received: from kbuild by 3abc53900bec with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ngMYT-0004TJ-E9;
+        Mon, 18 Apr 2022 08:16:17 +0000
+Date:   Mon, 18 Apr 2022 16:15:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Trond Myklebust <trond.myklebust@hammerspace.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [linux-stable-rc:linux-5.17.y 1421/1518] net/sunrpc/clnt.o: warning:
+ objtool: call_status()+0x1ff: unreachable instruction
+Message-ID: <202204181602.Rg1OlNQX-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 18 Apr 2022 10:16:10 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Paul Burton <paulburton@kernel.org>,
-        Quentin Schulz <quentin.schulz@bootlin.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        UNGLinuxDriver@microchip.com, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org
-Subject: Re: [PATCH v3 6/6] dt-bindings: pinctrl: convert ocelot-pinctrl to
- YAML format
-In-Reply-To: <CACRpkdbrw7Hjt9mB9pr_iNsGi71g_d8BGhpT_ih1RVgKJ5U0qQ@mail.gmail.com>
-References: <20220319204628.1759635-1-michael@walle.cc>
- <20220319204628.1759635-7-michael@walle.cc>
- <CACRpkdbrw7Hjt9mB9pr_iNsGi71g_d8BGhpT_ih1RVgKJ5U0qQ@mail.gmail.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <e11f2eb7af3dc53b98c97b531686162a@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-04-18 01:41, schrieb Linus Walleij:
-> On Sat, Mar 19, 2022 at 9:47 PM Michael Walle <michael@walle.cc> wrote:
-> 
->> Convert the ocelot-pinctrl device tree binding to the new YAML format.
->> 
->> Additionally to the original binding documentation, add interrupt
->> properties which are optional and already used on several SoCs like
->> SparX-5, Luton, Ocelot and LAN966x but were not documented before.
->> 
->> Also, on the sparx5 and the lan966x SoCs there are two items for the
->> reg property.
->> 
->> Signed-off-by: Michael Walle <michael@walle.cc>
-> 
-> So is this single patch something I should apply to the pin control 
-> tree?
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
+head:   77b5472d00d158866e2e1d03c13862b428b65405
+commit: 474acfab325817d190709a03db7df6abfe7972f8 [1421/1518] SUNRPC: Handle ENOMEM in call_transmit_status()
+config: x86_64-randconfig-m031-20220418 (https://download.01.org/0day-ci/archive/20220418/202204181602.Rg1OlNQX-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=474acfab325817d190709a03db7df6abfe7972f8
+        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+        git fetch --no-tags linux-stable-rc linux-5.17.y
+        git checkout 474acfab325817d190709a03db7df6abfe7972f8
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/
 
-The first five patches will fix the validation errrors once the
-binding is converted to the YAML format. So, do they need to go
-through the same tree?
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Also as mentioned, there is this pending series [1] which is the
-reason I've converted the binding to YAML in the first place. So
-at least the first patch of this series will have to go through
-the same tree as the YAML conversion patch.
+All warnings (new ones prefixed by >>):
 
-How can we move forward here? Krzysztof, maybe all of the dt
-bindings patches can go through your tree and I'll reposting
-the second patch of [1] afterwards?
+>> net/sunrpc/clnt.o: warning: objtool: call_status()+0x1ff: unreachable instruction
 
--michael
-
-[1] 
-https://lore.kernel.org/linux-gpio/20220313154640.63813-1-michael@walle.cc/
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
