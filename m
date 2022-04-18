@@ -2,107 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63A4FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D01C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:57:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243923AbiDRN7w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36574 "EHLO
+        id S244374AbiDRN77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:59:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244228AbiDRNjH (ORCPT
+        with ESMTP id S244265AbiDRNjK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:39:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD302E092;
-        Mon, 18 Apr 2022 05:58:50 -0700 (PDT)
+        Mon, 18 Apr 2022 09:39:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC98C28E0A;
+        Mon, 18 Apr 2022 05:58:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4440AB80E44;
-        Mon, 18 Apr 2022 12:58:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94CB2C385A1;
-        Mon, 18 Apr 2022 12:58:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286728;
-        bh=n2/APxxVu8SnrvgFyt22ReHAqukgxGf2AMpAYMKm5Nw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZxGv3QM4jV4F53/ZgJZ4S2p5EnY/EEEyfc5/2yCd4irp9zDx/rPxobgIHEZs5qybL
-         as06ppvw8AS0p3F7rr5eOgGPQgrRP09VgbIHht4Ds8KGZ2brlTX650twzbhWYJmvsU
-         OuZaS8+fxXv2WzL8VAPaXpFVzvy/DEEaD35Vz0bw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 227/284] init/main.c: return 1 from handled __setup() functions
-Date:   Mon, 18 Apr 2022 14:13:28 +0200
-Message-Id: <20220418121218.166038374@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
-References: <20220418121210.689577360@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14397B80E59;
+        Mon, 18 Apr 2022 12:58:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF03C385A9;
+        Mon, 18 Apr 2022 12:58:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650286730;
+        bh=/y6aPwFRVj92zxx7fmjocLx4rsewxwFGQqqv1VcWFBg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=G6wJ9AoUXGFupilLRiI8AiOPumLH4HP1T2wyvciBTwH4/94EOUpLYrwUvIzDXnmpI
+         kd5ebXBK5qDBPD1X3LokSUYanSma7cCO/vk0dSFMYg3dhU/Q+p5E9nRSB2tQ56ztaC
+         foHtDysLn9ijB2Bv9n0YRdgI0SYjcu/P3vz3W1HFN6LifO3sjy4J1OBir8Ug69I7GU
+         1E3w/0rYzekmHPdJ2jGTs+OQeSXrAscGGdtOjIB/lmSE5+WR2SC2bbMZMK9g+cu1bh
+         fmboFJ4q/HXmAAS/uoFISd5ilTTg8pdvuDGaySPAF+bxQVvxMVC9q3oHISrvcngi4h
+         e8Iip/Tu4cFOA==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Manivannan Sadhasivam <mani@kernel.org>
+Subject: [PATCH] arm64: dts: qcom: db845c: Add support for MCP2517FD
+Date:   Mon, 18 Apr 2022 18:28:41 +0530
+Message-Id: <20220418125841.1409738-1-vkoul@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+Add support for onboard MCP2517FD SPI CAN transceiver attached to
+SPI0 of RB3.
 
-[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
-
-initcall_blacklist() should return 1 to indicate that it handled its
-cmdline arguments.
-
-set_debug_rodata() should return 1 to indicate that it handled its
-cmdline arguments.  Print a warning if the option string is invalid.
-
-This prevents these strings from being added to the 'init' program's
-environment as they are not init arguments/parameters.
-
-Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
- init/main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/sdm845-db845c.dts | 23 ++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/init/main.c b/init/main.c
-index f0b2411a5fbf..621cedd9173a 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -749,7 +749,7 @@ static int __init initcall_blacklist(char *str)
- 		}
- 	} while (str_entry);
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
+index 28fe45c5d516..5179f8ddb060 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
+@@ -28,6 +28,13 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
  
--	return 0;
-+	return 1;
- }
++	/* Fixed crystal oscillator dedicated to MCP2517FD */
++	clk40M: can_clock {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <40000000>;
++	};
++
+ 	dc12v: dc12v-regulator {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "DC12V";
+@@ -746,6 +753,22 @@ codec {
+ 	};
+ };
  
- static bool __init_or_module initcall_blacklisted(initcall_t fn)
-@@ -965,7 +965,9 @@ static noinline void __init kernel_init_freeable(void);
- bool rodata_enabled __ro_after_init = true;
- static int __init set_debug_rodata(char *str)
- {
--	return strtobool(str, &rodata_enabled);
-+	if (strtobool(str, &rodata_enabled))
-+		pr_warn("Invalid option string for rodata: '%s'\n", str);
-+	return 1;
- }
- __setup("rodata=", set_debug_rodata);
- #endif
++&spi0 {
++	/* On Low speed expansion */
++	status = "okay";
++
++	can@0 {
++		compatible = "microchip,mcp2517fd";
++		reg = <0>;
++		clocks = <&clk40M>;
++		interrupts-extended = <&tlmm 104 IRQ_TYPE_LEVEL_LOW>;
++		spi-max-frequency = <10000000>;
++		vdd-supply = <&vdc_5v>;
++		xceiver-supply = <&vdc_5v>;
++		status = "okay";
++	};
++};
++
+ &spi2 {
+ 	/* On Low speed expansion */
+ 	label = "LS-SPI0";
 -- 
-2.35.1
-
-
+2.34.1
 
