@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F01C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DED3C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245458AbiDRODC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44898 "EHLO
+        id S245408AbiDROCz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:02:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244479AbiDRNod (ORCPT
+        with ESMTP id S244332AbiDRNn7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:44:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2B13F889;
-        Mon, 18 Apr 2022 06:00:00 -0700 (PDT)
+        Mon, 18 Apr 2022 09:43:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABE43A723;
+        Mon, 18 Apr 2022 05:59:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6898C6097A;
-        Mon, 18 Apr 2022 13:00:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FE27C385A7;
-        Mon, 18 Apr 2022 12:59:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 079B9609FB;
+        Mon, 18 Apr 2022 12:59:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1406FC385A1;
+        Mon, 18 Apr 2022 12:59:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286799;
-        bh=WBZ/+bgpIHKBuhV6mX/mZSkeNZU9jK8K7cpWbpeUv3k=;
+        s=korg; t=1650286793;
+        bh=PEaXFzMkDHYkPb3G0Mpf3R+xyJLmQHdq0HhfbNpRfKY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=whslSOSmIOKY+enzINmn82qWUBb6oQPfaZ8dLOMxUGv2TcI6ZrBXhLvighc/7/8Wr
-         yS2MHkcBCXz7o+OmrboQDm3juMGftkvG29DiOw8g7iVF/gniu2LoV1vC4R7MP9iXr1
-         B07Eeo3P8NvAxZT8Uev3Hpwx7AK9aRrgU/5x1Drk=
+        b=aPyWLjc9yqyDWIetPPkuIu7kTjiOkzq3RWwUO5OGEHPfnFd6WnxBlHjkqsy2xtRi4
+         1d3jCC3qnlSY0GxNjZRdEBnTulzTAt0vbtrDJp7l6eWgGySHSCHT1iHaKrPx0Vv6aa
+         POycbMjHfrLLojKJyGA221dC6YArDDvDTOOy31G0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Neelima Krishnan <neelima.krishnan@intel.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Michal Hocko <mhocko@suse.com>,
+        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.14 248/284] x86/speculation: Restore speculation related MSRs during S3 resume
-Date:   Mon, 18 Apr 2022 14:13:49 +0200
-Message-Id: <20220418121219.232436717@linuxfoundation.org>
+Subject: [PATCH 4.14 246/284] mm/mempolicy: fix mpol_new leak in shared_policy_replace
+Date:   Mon, 18 Apr 2022 14:13:47 +0200
+Message-Id: <20220418121219.122820428@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -52,60 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-commit e2a1256b17b16f9b9adf1b6fea56819e7b68e463 upstream.
+commit 4ad099559b00ac01c3726e5c95dc3108ef47d03e upstream.
 
-After resuming from suspend-to-RAM, the MSRs that control CPU's
-speculative execution behavior are not being restored on the boot CPU.
+If mpol_new is allocated but not used in restart loop, mpol_new will be
+freed via mpol_put before returning to the caller.  But refcnt is not
+initialized yet, so mpol_put could not do the right things and might
+leak the unused mpol_new.  This would happen if mempolicy was updated on
+the shared shmem file while the sp->lock has been dropped during the
+memory allocation.
 
-These MSRs are used to mitigate speculative execution vulnerabilities.
-Not restoring them correctly may leave the CPU vulnerable.  Secondary
-CPU's MSRs are correctly being restored at S3 resume by
-identify_secondary_cpu().
+This issue could be triggered easily with the below code snippet if
+there are many processes doing the below work at the same time:
 
-During S3 resume, restore these MSRs for boot CPU when restoring its
-processor state.
+  shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
+  shm = shmat(shmid, 0, 0);
+  loop many times {
+    mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
+    mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
+          maxnode, 0);
+  }
 
-Fixes: 772439717dbf ("x86/bugs/intel: Set proper CPU features and setup RDS")
-Reported-by: Neelima Krishnan <neelima.krishnan@intel.com>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Tested-by: Neelima Krishnan <neelima.krishnan@intel.com>
-Acked-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20220329111416.27954-1-linmiaohe@huawei.com
+Fixes: 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: <stable@vger.kernel.org>	[3.8]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/power/cpu.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ mm/mempolicy.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/x86/power/cpu.c
-+++ b/arch/x86/power/cpu.c
-@@ -517,10 +517,24 @@ static int pm_cpu_check(const struct x86
- 	return ret;
+--- a/mm/mempolicy.c
++++ b/mm/mempolicy.c
+@@ -2479,6 +2479,7 @@ alloc_new:
+ 	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
+ 	if (!mpol_new)
+ 		goto err_out;
++	atomic_set(&mpol_new->refcnt, 1);
+ 	goto restart;
  }
  
-+static void pm_save_spec_msr(void)
-+{
-+	u32 spec_msr_id[] = {
-+		MSR_IA32_SPEC_CTRL,
-+		MSR_IA32_TSX_CTRL,
-+		MSR_TSX_FORCE_ABORT,
-+		MSR_IA32_MCU_OPT_CTRL,
-+		MSR_AMD64_LS_CFG,
-+	};
-+
-+	msr_build_context(spec_msr_id, ARRAY_SIZE(spec_msr_id));
-+}
-+
- static int pm_check_save_msr(void)
- {
- 	dmi_check_system(msr_save_dmi_table);
- 	pm_cpu_check(msr_save_cpu_table);
-+	pm_save_spec_msr();
- 
- 	return 0;
- }
 
 
