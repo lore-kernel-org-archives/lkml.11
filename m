@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29CFEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:53:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19EE5C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:53:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240287AbiDRMze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37828 "EHLO
+        id S240074AbiDRMzk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:55:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239544AbiDRMhu (ORCPT
+        with ESMTP id S239334AbiDRMhS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:37:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375EE2250D;
-        Mon, 18 Apr 2022 05:28:06 -0700 (PDT)
+        Mon, 18 Apr 2022 08:37:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F04522511;
+        Mon, 18 Apr 2022 05:27:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8FC1B80EC1;
-        Mon, 18 Apr 2022 12:28:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57CDAC385A8;
-        Mon, 18 Apr 2022 12:28:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C96F60FAF;
+        Mon, 18 Apr 2022 12:27:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71369C385AC;
+        Mon, 18 Apr 2022 12:27:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284883;
-        bh=TBsmBKPHR3a2OEluS8nNA6Qk+6JCscmP+qNBniiA2Aw=;
+        s=korg; t=1650284868;
+        bh=sGxXh6LHYvqBDz/i9hHkS8uc4Jl7VuUWJE/b37+LUJQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=exVbdsDN+3akBf+fV4pnhzMQCnkQzcLMQAEDvFA8xcFvG8/IXgDIx6D6Hbktl9GRZ
-         cFN71mQ2Bx5/HBvSlsPgPfAEFkJz7Xt7pCkXvwiNvUUrPJuO62SP9vHMU8meiXoKqB
-         WOo/rmdtSO51Rurjo/VBkF6Xy6uOCQOiya1C5XLU=
+        b=wEDSW+ESwieuEyWXkpm8JcJlS7CjMqTDE+hv5DxXWIMubIr72bkaNtEQ5b494NrdD
+         W5MLLjWEaPKZnRbI5kzOiKxEJYhHGywFiKpNfuhjbYdUekZ1zu6AJpyRPjMr1aBk0J
+         DZhLGDALsw09XyLbmlcxFuvVU/97SN3bU/H++dkc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 037/189] ALSA: hdsp: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:10:57 +0200
-Message-Id: <20220418121201.568085888@linuxfoundation.org>
+Subject: [PATCH 5.15 033/189] ALSA: es1938: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:10:53 +0200
+Message-Id: <20220418121201.454898277@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,7 +49,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit e2263f0bf7443a200a5c1c418baefd92f1674600 upstream.
+commit bc22628591e5913e67edb3c2a89b97849e30a8f8 upstream.
 
 The previous cleanup with devres may lead to the incorrect release
 orders at the probe error handling due to the devres's nature.  Until
@@ -57,46 +57,46 @@ we register the card, snd_card_free() has to be called at first for
 releasing the stuff properly when the driver tries to manage and
 release the stuff via card->private_free().
 
-This patch fixes it by calling snd_card_free() manually on the error
-from the probe callback.
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
 
-Fixes: d136b8e54f92 ("ALSA: hdsp: Allocate resources with device-managed APIs")
+Fixes: 08e9d3ab4cc1 ("ALSA: es1938: Allocate resources with device-managed APIs")
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-36-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220412102636.16000-15-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/rme9652/hdsp.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ sound/pci/es1938.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/sound/pci/rme9652/hdsp.c b/sound/pci/rme9652/hdsp.c
-index 96c12dfb24cf..3db641318d3a 100644
---- a/sound/pci/rme9652/hdsp.c
-+++ b/sound/pci/rme9652/hdsp.c
-@@ -5444,17 +5444,21 @@ static int snd_hdsp_probe(struct pci_dev *pci,
- 	hdsp->pci = pci;
- 	err = snd_hdsp_create(card, hdsp);
- 	if (err)
--		return err;
-+		goto error;
+diff --git a/sound/pci/es1938.c b/sound/pci/es1938.c
+index 00b976f42a3d..e34ec6f89e7e 100644
+--- a/sound/pci/es1938.c
++++ b/sound/pci/es1938.c
+@@ -1716,8 +1716,8 @@ static int snd_es1938_mixer(struct es1938 *chip)
+ }
+        
  
- 	strcpy(card->shortname, "Hammerfall DSP");
- 	sprintf(card->longname, "%s at 0x%lx, irq %d", hdsp->card_name,
- 		hdsp->port, hdsp->irq);
- 	err = snd_card_register(card);
- 	if (err)
--		return err;
-+		goto error;
- 	pci_set_drvdata(pci, card);
- 	dev++;
+-static int snd_es1938_probe(struct pci_dev *pci,
+-			    const struct pci_device_id *pci_id)
++static int __snd_es1938_probe(struct pci_dev *pci,
++			      const struct pci_device_id *pci_id)
+ {
+ 	static int dev;
+ 	struct snd_card *card;
+@@ -1796,6 +1796,12 @@ static int snd_es1938_probe(struct pci_dev *pci,
  	return 0;
-+
-+ error:
-+	snd_card_free(card);
-+	return err;
  }
  
- static struct pci_driver hdsp_driver = {
++static int snd_es1938_probe(struct pci_dev *pci,
++			    const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_es1938_probe(pci, pci_id));
++}
++
+ static struct pci_driver es1938_driver = {
+ 	.name = KBUILD_MODNAME,
+ 	.id_table = snd_es1938_ids,
 -- 
 2.35.2
 
