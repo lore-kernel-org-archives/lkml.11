@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BF3CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3C80C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:04:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241159AbiDRNGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43864 "EHLO
+        id S241140AbiDRNGu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:06:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239765AbiDRMy7 (ORCPT
+        with ESMTP id S240350AbiDRMzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:54:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B9F1581E;
-        Mon, 18 Apr 2022 05:35:20 -0700 (PDT)
+        Mon, 18 Apr 2022 08:55:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE4220BFE;
+        Mon, 18 Apr 2022 05:36:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39DC0B80EC4;
-        Mon, 18 Apr 2022 12:35:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87095C385A1;
-        Mon, 18 Apr 2022 12:35:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A06E60F0E;
+        Mon, 18 Apr 2022 12:36:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3665BC385A7;
+        Mon, 18 Apr 2022 12:36:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285318;
-        bh=1JykyhsvrgAJMNPlqTzg89ghRr1ddfmnxPAANLww/Ho=;
+        s=korg; t=1650285393;
+        bh=h6KgK4UlLuqt00S7/NelzItnrRfUYPhvikAZc4K9Z2M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k/RgXyRf4XNFrLlRSJTnyD8hfXzpEpyYhDx7vKfDatGDqqae75SNlFGxOyqINboen
-         b74U4w3ed7J/ZtrIjM77OP9d/cnKD3ZxX+TmSE5tf/QEi4um6DDX1C2hhh7Wg1qsgU
-         apzoH2TdMWq3XZnG4OHu7opFKpvUnwKxaQTJJ0Jo=
+        b=GtSm1Rwt4DcGG0J3uahZOD+O1ZeNEijqChWejOxCacUZSLT+TFYUM7XIPnRXHd5a3
+         CDIsGuDJVwiDoBTfGa8ZtJkWIXDjc6VkteX2WsXS9Zlab+Xr7zV41QTf1JJW4G/Ibq
+         Y8274t6t8rDrRfPBpnEcSbGX6nBYHuxyIxvKtsOQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.15 168/189] tick/nohz: Use WARN_ON_ONCE() to prevent console saturation
-Date:   Mon, 18 Apr 2022 14:13:08 +0200
-Message-Id: <20220418121207.344781175@linuxfoundation.org>
+        stable@vger.kernel.org, Wang Zhaoyang1 <zhaoyang1.wang@intel.com>,
+        Gao Liang <liang.gao@intel.com>, Chao Gao <chao.gao@intel.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 5.15 176/189] dma-direct: avoid redundant memory sync for swiotlb
+Date:   Mon, 18 Apr 2022 14:13:16 +0200
+Message-Id: <20220418121207.935479247@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,43 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
+From: Chao Gao <chao.gao@intel.com>
 
-commit 40e97e42961f8c6cc7bd5fe67cc18417e02d78f1 upstream.
+commit 9e02977bfad006af328add9434c8bffa40e053bb upstream.
 
-While running some testing on code that happened to allow the variable
-tick_nohz_full_running to get set but with no "possible" NOHZ cores to
-back up that setting, this warning triggered:
+When we looked into FIO performance with swiotlb enabled in VM, we found
+swiotlb_bounce() is always called one more time than expected for each DMA
+read request.
 
-        if (unlikely(tick_do_timer_cpu == TICK_DO_TIMER_NONE))
-                WARN_ON(tick_nohz_full_running);
+It turns out that the bounce buffer is copied to original DMA buffer twice
+after the completion of a DMA request (one is done by in
+dma_direct_sync_single_for_cpu(), the other by swiotlb_tbl_unmap_single()).
+But the content in bounce buffer actually doesn't change between the two
+rounds of copy. So, one round of copy is redundant.
 
-The console was overwhemled with an endless stream of one WARN per tick
-per core and there was no way to even see what was going on w/o using a
-serial console to capture it and then trace it back to this.
+Pass DMA_ATTR_SKIP_CPU_SYNC flag to swiotlb_tbl_unmap_single() to
+skip the memory copy in it.
 
-Change it to WARN_ON_ONCE().
+This fix increases FIO 64KB sequential read throughput in a guest with
+swiotlb=force by 5.6%.
 
-Fixes: 08ae95f4fd3b ("nohz_full: Allow the boot CPU to be nohz_full")
-Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20211206145950.10927-3-paul.gortmaker@windriver.com
+Fixes: 55897af63091 ("dma-direct: merge swiotlb_dma_ops into the dma_direct code")
+Reported-by: Wang Zhaoyang1 <zhaoyang1.wang@intel.com>
+Reported-by: Gao Liang <liang.gao@intel.com>
+Signed-off-by: Chao Gao <chao.gao@intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/time/tick-sched.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/dma/direct.h |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/kernel/time/tick-sched.c
-+++ b/kernel/time/tick-sched.c
-@@ -186,7 +186,7 @@ static void tick_sched_do_timer(struct t
- 	 */
- 	if (unlikely(tick_do_timer_cpu == TICK_DO_TIMER_NONE)) {
- #ifdef CONFIG_NO_HZ_FULL
--		WARN_ON(tick_nohz_full_running);
-+		WARN_ON_ONCE(tick_nohz_full_running);
- #endif
- 		tick_do_timer_cpu = cpu;
- 	}
+--- a/kernel/dma/direct.h
++++ b/kernel/dma/direct.h
+@@ -114,6 +114,7 @@ static inline void dma_direct_unmap_page
+ 		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
+ 
+ 	if (unlikely(is_swiotlb_buffer(dev, phys)))
+-		swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
++		swiotlb_tbl_unmap_single(dev, phys, size, dir,
++					 attrs | DMA_ATTR_SKIP_CPU_SYNC);
+ }
+ #endif /* _KERNEL_DMA_DIRECT_H */
 
 
