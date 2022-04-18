@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B62C38A04
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:32:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11000C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243082AbiDRNdY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:33:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41542 "EHLO
+        id S243327AbiDRNdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:33:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241120AbiDRNGi (ORCPT
+        with ESMTP id S240929AbiDRNGI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:06:38 -0400
+        Mon, 18 Apr 2022 09:06:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C52D21276;
-        Mon, 18 Apr 2022 05:47:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654071FCD8;
+        Mon, 18 Apr 2022 05:46:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A7D7B80E44;
-        Mon, 18 Apr 2022 12:47:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AF4AC385A7;
-        Mon, 18 Apr 2022 12:47:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C9D6B80E44;
+        Mon, 18 Apr 2022 12:46:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B4B7C385A7;
+        Mon, 18 Apr 2022 12:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286027;
-        bh=qt6zVlScKlgp/UWRwAPjnLop5XpVwyg8xY7P3/aVvDE=;
+        s=korg; t=1650286015;
+        bh=nhuYi2qs/CaPg8GzQnbJsdSZjxr490PHpKyhumTNwRA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5e4f/3PnPuE3HfsGsCDaTtydfPYJPUZ43DbRTZpdHFI8BmXOFdZoKEAdTKLuVLyO
-         3d21fe42vHJkWzq1oGF2g9bTiOoKINYP9zE4VeMlk8VvsdLO3J4YGWEXIDnfD1wbKG
-         flmRY9fnRcYF/ob2Pr9UsI/e5WvA41Yl4ZuGvIQY=
+        b=2CRtpQBmnNderTeelGOYHoWqWru2/PzwJU1T7/LDKp8LIPVLqfQePewGKUP/wzh6A
+         o0DJec65GUnBoYK2FfUkRk05U3YlndVFCf6l+56qE2zAY7P9qeyRb/kTSKUlpPhlCg
+         5E95hn3UDhEUp0WdqCmMhuuXbyTxGb8bgNE6Ei9Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Sven Peter <sven@svenpeter.dev>, Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH 4.19 32/32] i2c: pasemi: Wait for write xfers to finish
-Date:   Mon, 18 Apr 2022 14:14:12 +0200
-Message-Id: <20220418121128.061258659@linuxfoundation.org>
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>,
+        syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
+Subject: [PATCH 4.19 28/32] ALSA: pcm: Test for "silence" field in struct "pcm_format_data"
+Date:   Mon, 18 Apr 2022 14:14:08 +0200
+Message-Id: <20220418121127.946751845@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
 References: <20220418121127.127656835@linuxfoundation.org>
@@ -49,50 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Povišer <povik+lin@cutebit.org>
+From: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 
-commit bd8963e602c77adc76dbbbfc3417c3cf14fed76b upstream.
+commit 2f7a26abb8241a0208c68d22815aa247c5ddacab upstream.
 
-Wait for completion of write transfers before returning from the driver.
-At first sight it may seem advantageous to leave write transfers queued
-for the controller to carry out on its own time, but there's a couple of
-issues with it:
+Syzbot reports "KASAN: null-ptr-deref Write in
+snd_pcm_format_set_silence".[1]
 
- * Driver doesn't check for FIFO space.
+It is due to missing validation of the "silence" field of struct
+"pcm_format_data" in "pcm_formats" array.
 
- * The queued writes can complete while the driver is in its I2C read
-   transfer path which means it will get confused by the raising of
-   XEN (the 'transaction ended' signal). This can cause a spurious
-   ENODATA error due to premature reading of the MRXFIFO register.
+Add a test for valid "pat" and, if it is not so, return -EINVAL.
 
-Adding the wait fixes some unreliability issues with the driver. There's
-some efficiency cost to it (especially with pasemi_smb_waitready doing
-its polling), but that will be alleviated once the driver receives
-interrupt support.
+[1] https://lore.kernel.org/lkml/000000000000d188ef05dc2c7279@google.com/
 
-Fixes: beb58aa39e6e ("i2c: PA Semi SMBus driver")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Reviewed-by: Sven Peter <sven@svenpeter.dev>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Reported-and-tested-by: syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220409012655.9399-1-fmdefrancesco@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-pasemi.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ sound/core/pcm_misc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/i2c/busses/i2c-pasemi.c
-+++ b/drivers/i2c/busses/i2c-pasemi.c
-@@ -145,6 +145,12 @@ static int pasemi_i2c_xfer_msg(struct i2
- 
- 		TXFIFO_WR(smbus, msg->buf[msg->len-1] |
- 			  (stop ? MTXFIFO_STOP : 0));
-+
-+		if (stop) {
-+			err = pasemi_smb_waitready(smbus);
-+			if (err)
-+				goto reset_out;
-+		}
- 	}
- 
- 	return 0;
+--- a/sound/core/pcm_misc.c
++++ b/sound/core/pcm_misc.c
+@@ -423,7 +423,7 @@ int snd_pcm_format_set_silence(snd_pcm_f
+ 		return 0;
+ 	width = pcm_formats[(INT)format].phys; /* physical width */
+ 	pat = pcm_formats[(INT)format].silence;
+-	if (! width)
++	if (!width || !pat)
+ 		return -EINVAL;
+ 	/* signed or 1 byte data */
+ 	if (pcm_formats[(INT)format].signd == 1 || width <= 8) {
 
 
