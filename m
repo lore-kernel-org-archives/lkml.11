@@ -2,124 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 565C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 18:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73B8FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 18:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347515AbiDRSx0 (ORCPT
+        id S1344436AbiDRSxU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 14:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40654 "EHLO
+        Mon, 18 Apr 2022 14:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235921AbiDRSxZ (ORCPT
+        with ESMTP id S1347516AbiDRSxJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 14:53:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E62915822;
-        Mon, 18 Apr 2022 11:50:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 055BCB80EC4;
-        Mon, 18 Apr 2022 18:50:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99CACC385A7;
-        Mon, 18 Apr 2022 18:50:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650307842;
-        bh=ZUHtGIbbacXJsaEGrlloH94rXXIROUImW5cXopGA94E=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=pVY/ca2QGYXAxfaiNXrOjXrF/Cv+oANtUPQZ9ftGbux1DdwCCzASQDsVqFQWgihQ+
-         Gg3kkjD8Sw4JoM1y5e+J4AtSxYGoBoMv3uWmo+dlx7m8O3znrWGTfMem0UaOwhFSxf
-         C5pscSLCHlBUPGI76XgyJqn/hHHKn7QnpBZq7iKDPiT5S1ZtTok04581G2Gl0qV1ei
-         cxkdxLeNcGpB9D80JTlVMjsIFSyYXaax8QY6KubCb4a4GOJluOCdyJJXzyM73yc2Yf
-         97v+ZjkEduRsypmZQv2DF7U32Yb4j4Snsgn1gQFsoibpDu7Sl9DMzihfq1D2hOSR93
-         nS95oNm2+AFJg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 3CA755C0848; Mon, 18 Apr 2022 11:50:42 -0700 (PDT)
-Date:   Mon, 18 Apr 2022 11:50:42 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Anna-Maria Behnsen <anna-maria@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, rcu@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Benedikt Spranger <b.spranger@linutronix.de>
-Subject: Re: [PATCH] rcu/torture: Change order of warning and trace dump
-Message-ID: <20220418185042.GA2420391@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220411151903.28167-1-anna-maria@linutronix.de>
- <20220411180915.GY4285@paulmck-ThinkPad-P17-Gen-1>
+        Mon, 18 Apr 2022 14:53:09 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3752722514;
+        Mon, 18 Apr 2022 11:50:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1650307798; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZlyW45e+iUvXF1qLLn4ctjlyJZvRF5CDmcQahzk9/7c=;
+        b=xvUbwuzxpT1C5eNIIh5SuS7eC7kyLp0vD6wa7o0r5T9+0juVMN+RGwSQnN43Cv7DcxTIOR
+        V/BrU3mFoYoWe4k6yGWi5RMcXCUo+HckygFA5zH2eeypi2LEno9dUCBCTZNLYiVgxmCg2K
+        lrmtCZob3rSKMzTsOx1W6cSvhCPxZKU=
+From:   Paul Cercueil <paul@crapouillou.net>
+To:     Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     list@opendingux.net, linux-rtc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH 4/5] rtc: jz4740: Register clock provider for the CLK32K pin
+Date:   Mon, 18 Apr 2022 19:49:32 +0100
+Message-Id: <20220418184933.13172-5-paul@crapouillou.net>
+In-Reply-To: <20220418184933.13172-1-paul@crapouillou.net>
+References: <20220418184933.13172-1-paul@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411180915.GY4285@paulmck-ThinkPad-P17-Gen-1>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 11:09:15AM -0700, Paul E. McKenney wrote:
-> On Mon, Apr 11, 2022 at 05:19:03PM +0200, Anna-Maria Behnsen wrote:
-> > Dumping a big ftrace buffer could lead to a RCU stall. So there is the
-> > ftrace buffer and the stall information which needs to be printed. When
-> > there is additionaly a WARN_ON() which describes the reason for the ftrace
-> > buffer dump and the WARN_ON() is executed _after_ ftrace buffer dump, the
-> > information get lost in the middle of the RCU stall information.
-> > 
-> > Therefore print WARN_ON() message before dumping the ftrace buffer in
-> > rcu_torture_writer().
-> > 
-> > Signed-off-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
-> > Reviewed-by: Benedikt Spranger <b.spranger@linutronix.de>
-> 
-> Hello, Anna-Maria!
-> 
-> Good point, but we get caught out either way.  Either we take the chance
-> of losing the WARN() message as you say, or we take the chance of the
-> activity in the WARN() message overwriting needed information in the
-> trace buffer.
-> 
-> Would it work to shut off tracing, do the WARN(), and only then do the
-> rcu_ftrace_dump()?
+On JZ4770 and JZ4780, the CLK32K pin is configurable. By default, it is
+configured as a GPIO in input mode, and its value can be read through
+GPIO PD14.
 
-For example, as shown the the updated patch below currently queued on -rcu
-for further review and testing?
+With this change, clients can now request the 32 kHz clock on the CLK32K
+pin, through Device Tree. This clock is simply a pass-through of the
+input oscillator's clock with enable/disable operations.
 
-If this is problematic, please let me know!
+This will permit the WiFi/Bluetooth chip to work on the MIPS CI20 board,
+which does source one of its clocks from the CLK32K pin.
 
-							Thanx, Paul
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ drivers/rtc/rtc-jz4740.c | 50 ++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 48 insertions(+), 2 deletions(-)
 
-------------------------------------------------------------------------
+diff --git a/drivers/rtc/rtc-jz4740.c b/drivers/rtc/rtc-jz4740.c
+index aac5f68bf626..f4c9b6058f07 100644
+--- a/drivers/rtc/rtc-jz4740.c
++++ b/drivers/rtc/rtc-jz4740.c
+@@ -6,6 +6,7 @@
+  */
+ 
+ #include <linux/clk.h>
++#include <linux/clk-provider.h>
+ #include <linux/io.h>
+ #include <linux/iopoll.h>
+ #include <linux/kernel.h>
+@@ -26,6 +27,7 @@
+ #define JZ_REG_RTC_WAKEUP_FILTER	0x24
+ #define JZ_REG_RTC_RESET_COUNTER	0x28
+ #define JZ_REG_RTC_SCRATCHPAD	0x34
++#define JZ_REG_RTC_CKPCR	0x40
+ 
+ /* The following are present on the jz4780 */
+ #define JZ_REG_RTC_WENR	0x3C
+@@ -48,10 +50,13 @@
+ #define JZ_RTC_WAKEUP_FILTER_MASK	0x0000FFE0
+ #define JZ_RTC_RESET_COUNTER_MASK	0x00000FE0
+ 
++#define JZ_RTC_CKPCR_CK32PULL_DIS	BIT(4)
++#define JZ_RTC_CKPCR_CK32CTL_EN		(BIT(2) | BIT(1))
++
+ enum jz4740_rtc_type {
+ 	ID_JZ4740,
+ 	ID_JZ4760,
+-	ID_JZ4780,
++	ID_JZ4770,
+ };
+ 
+ struct jz4740_rtc {
+@@ -60,6 +65,8 @@ struct jz4740_rtc {
+ 
+ 	struct rtc_device *rtc;
+ 
++	struct clk_hw clk32k;
++
+ 	spinlock_t lock;
+ };
+ 
+@@ -264,7 +271,8 @@ static void jz4740_rtc_clk_disable(void *data)
+ static const struct of_device_id jz4740_rtc_of_match[] = {
+ 	{ .compatible = "ingenic,jz4740-rtc", .data = (void *)ID_JZ4740 },
+ 	{ .compatible = "ingenic,jz4760-rtc", .data = (void *)ID_JZ4760 },
+-	{ .compatible = "ingenic,jz4780-rtc", .data = (void *)ID_JZ4780 },
++	{ .compatible = "ingenic,jz4770-rtc", .data = (void *)ID_JZ4770 },
++	{ .compatible = "ingenic,jz4780-rtc", .data = (void *)ID_JZ4770 },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, jz4740_rtc_of_match);
+@@ -305,6 +313,27 @@ static void jz4740_rtc_set_wakeup_params(struct jz4740_rtc *rtc,
+ 	jz4740_rtc_reg_write(rtc, JZ_REG_RTC_RESET_COUNTER, reset_ticks);
+ }
+ 
++static int jz4740_rtc_clk32k_enable(struct clk_hw *hw)
++{
++	struct jz4740_rtc *rtc = container_of(hw, struct jz4740_rtc, clk32k);
++
++	return jz4740_rtc_reg_write(rtc, JZ_REG_RTC_CKPCR,
++				    JZ_RTC_CKPCR_CK32PULL_DIS |
++				    JZ_RTC_CKPCR_CK32CTL_EN);
++}
++
++static void jz4740_rtc_clk32k_disable(struct clk_hw *hw)
++{
++	struct jz4740_rtc *rtc = container_of(hw, struct jz4740_rtc, clk32k);
++
++	jz4740_rtc_reg_write(rtc, JZ_REG_RTC_CKPCR, 0);
++}
++
++static const struct clk_ops jz4740_rtc_clk32k_ops = {
++	.enable = jz4740_rtc_clk32k_enable,
++	.disable = jz4740_rtc_clk32k_disable,
++};
++
+ static int jz4740_rtc_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -407,6 +436,23 @@ static int jz4740_rtc_probe(struct platform_device *pdev)
+ 			dev_warn(dev, "Poweroff handler already present!\n");
+ 	}
+ 
++	if (rtc->type == ID_JZ4770) {
++		rtc->clk32k.init = CLK_HW_INIT("clk32k", "rtc",
++					       &jz4740_rtc_clk32k_ops, 0);
++
++		ret = devm_clk_hw_register(dev, &rtc->clk32k);
++		if (ret) {
++			dev_err(dev, "Unable to register clk32k clock: %d\n", ret);
++			return ret;
++		}
++
++		ret = of_clk_add_hw_provider(np, of_clk_hw_simple_get, &rtc->clk32k);
++		if (ret) {
++			dev_err(dev, "Unable to register clk32k clock provider: %d\n", ret);
++			return ret;
++		}
++	}
++
+ 	return 0;
+ }
+ 
+-- 
+2.35.1
 
-commit cdbc93534da1bba3f498783473361b2f26dc65d6
-Author: Anna-Maria Behnsen <anna-maria@linutronix.de>
-Date:   Mon Apr 11 17:19:03 2022 +0200
-
-    rcu/torture: Change order of warning and trace dump
-    
-    Dumping a big ftrace buffer could lead to a RCU stall. So there is the
-    ftrace buffer and the stall information which needs to be printed. When
-    there is additionaly a WARN_ON() which describes the reason for the ftrace
-    buffer dump and the WARN_ON() is executed _after_ ftrace buffer dump, the
-    information get lost in the middle of the RCU stall information.
-    
-    Therefore print WARN_ON() message before dumping the ftrace buffer in
-    rcu_torture_writer().
-    
-    [ paulmck: Add tracing_off() to avoid cruft from WARN(). ]
-    
-    Signed-off-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
-    Reviewed-by: Benedikt Spranger <b.spranger@linutronix.de>
-    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-
-diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
-index 2b40a8f6d2a0..0885a66f9d76 100644
---- a/kernel/rcu/rcutorture.c
-+++ b/kernel/rcu/rcutorture.c
-@@ -1369,8 +1369,9 @@ rcu_torture_writer(void *arg)
- 				if (list_empty(&rcu_tortures[i].rtort_free) &&
- 				    rcu_access_pointer(rcu_torture_current) !=
- 				    &rcu_tortures[i]) {
--					rcu_ftrace_dump(DUMP_ALL);
-+					tracing_off();
- 					WARN(1, "%s: rtort_pipe_count: %d\n", __func__, rcu_tortures[i].rtort_pipe_count);
-+					rcu_ftrace_dump(DUMP_ALL);
- 				}
- 		if (stutter_waited)
- 			sched_set_normal(current, oldnice);
