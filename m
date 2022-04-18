@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C82C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40EB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244873AbiDROEt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:04:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53508 "EHLO
+        id S245221AbiDROE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243846AbiDRNqt (ORCPT
+        with ESMTP id S243885AbiDRNqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:46:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707AE28E1F;
-        Mon, 18 Apr 2022 06:01:03 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198CE29809;
+        Mon, 18 Apr 2022 06:01:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE181B80EE7;
-        Mon, 18 Apr 2022 13:01:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD943C385A1;
-        Mon, 18 Apr 2022 13:00:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EAD160929;
+        Mon, 18 Apr 2022 13:01:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E3C3C385A1;
+        Mon, 18 Apr 2022 13:01:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286860;
-        bh=locvj7Sw4TaJkfgrTFOol/+10RC6ZU07zfP39idlbHQ=;
+        s=korg; t=1650286863;
+        bh=+hLm5oVQl3rCOm+Tv3ZDVA98eqa1DK4EZn9zi/zyyP0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pCDA7zyVBZ80+ReY9R8KVW8wifolzjtF25uBPrV8U0LNsnS90Fdfm3q9wm76A35DV
-         dp6wiFSui+liH6XTKZOSOqTfUXrzDBOX2LkF2MxOTJ/VJNtJ+pBy7d8LSm1PdivtTY
-         Got6qFyH4Rwg/pucNp/PVHGY7QTIAzJQtrAWHY90=
+        b=ASE9RcXQMA/7Jw9AFJjfdZpPcp04Ahgk7s2soNEPEsUv9YLrNl2axB39+pLFz33Ut
+         15xU+kptUK3RiI/pX5mYG4uDEYVUbyYLS9157X0KxIITNa2j+lCv+3zVcA7DH4MUBS
+         EBoLgfpKcgtGi5uclezTXJqnr2Ec8rNbwRPVnPNk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, QintaoShen <unSimple1993@163.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 269/284] drm/amdkfd: Check for potential null return of kmalloc_array()
-Date:   Mon, 18 Apr 2022 14:14:10 +0200
-Message-Id: <20220418121220.462442933@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
+        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 270/284] Drivers: hv: vmbus: Prevent load re-ordering when reading ring buffer
+Date:   Mon, 18 Apr 2022 14:14:11 +0200
+Message-Id: <20220418121220.532174076@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,33 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: QintaoShen <unSimple1993@163.com>
+From: Michael Kelley <mikelley@microsoft.com>
 
-[ Upstream commit ebbb7bb9e80305820dc2328a371c1b35679f2667 ]
+[ Upstream commit b6cae15b5710c8097aad26a2e5e752c323ee5348 ]
 
-As the kmalloc_array() may return null, the 'event_waiters[i].wait' would lead to null-pointer dereference.
-Therefore, it is better to check the return value of kmalloc_array() to avoid this confusion.
+When reading a packet from a host-to-guest ring buffer, there is no
+memory barrier between reading the write index (to see if there is
+a packet to read) and reading the contents of the packet. The Hyper-V
+host uses store-release when updating the write index to ensure that
+writes of the packet data are completed first. On the guest side,
+the processor can reorder and read the packet data before the write
+index, and sometimes get stale packet data. Getting such stale packet
+data has been observed in a reproducible case in a VM on ARM64.
 
-Signed-off-by: QintaoShen <unSimple1993@163.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fix this by using virt_load_acquire() to read the write index,
+ensuring that reads of the packet data cannot be reordered
+before it. Preventing such reordering is logically correct, and
+with this change, getting stale data can no longer be reproduced.
+
+Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+Reviewed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Link: https://lore.kernel.org/r/1648394710-33480-1-git-send-email-mikelley@microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_events.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/hv/ring_buffer.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-index 944abfad39c1..1d8dd81dfc70 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-@@ -607,6 +607,8 @@ static struct kfd_event_waiter *alloc_event_waiters(uint32_t num_events)
- 	event_waiters = kmalloc_array(num_events,
- 					sizeof(struct kfd_event_waiter),
- 					GFP_KERNEL);
-+	if (!event_waiters)
-+		return NULL;
+diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
+index 74c1dfb8183b..6b08e9d9b382 100644
+--- a/drivers/hv/ring_buffer.c
++++ b/drivers/hv/ring_buffer.c
+@@ -340,7 +340,16 @@ int hv_ringbuffer_read(struct vmbus_channel *channel,
+ static u32 hv_pkt_iter_avail(const struct hv_ring_buffer_info *rbi)
+ {
+ 	u32 priv_read_loc = rbi->priv_read_index;
+-	u32 write_loc = READ_ONCE(rbi->ring_buffer->write_index);
++	u32 write_loc;
++
++	/*
++	 * The Hyper-V host writes the packet data, then uses
++	 * store_release() to update the write_index.  Use load_acquire()
++	 * here to prevent loads of the packet data from being re-ordered
++	 * before the read of the write_index and potentially getting
++	 * stale data.
++	 */
++	write_loc = virt_load_acquire(&rbi->ring_buffer->write_index);
  
- 	for (i = 0; (event_waiters) && (i < num_events) ; i++) {
- 		INIT_LIST_HEAD(&event_waiters[i].waiters);
+ 	if (write_loc >= priv_read_loc)
+ 		return write_loc - priv_read_loc;
 -- 
 2.35.1
 
