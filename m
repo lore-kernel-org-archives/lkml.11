@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5259BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:39:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 537E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:39:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235110AbiDRMmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:42:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
+        id S237809AbiDRMmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:42:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239780AbiDRMd2 (ORCPT
+        with ESMTP id S239778AbiDRMd2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:33:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43AE41B791;
-        Mon, 18 Apr 2022 05:26:04 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3281B78F;
+        Mon, 18 Apr 2022 05:26:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3A02B80EC4;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0D3660FB6;
         Mon, 18 Apr 2022 12:26:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CCC8C385AC;
-        Mon, 18 Apr 2022 12:26:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF8F8C385A7;
+        Mon, 18 Apr 2022 12:25:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284761;
-        bh=k6ThlEZYjczdMB9/EZpDeNWEqo0mO1axpTlVDPr7w40=;
+        s=korg; t=1650284732;
+        bh=tBpwUdixRcwh0wUsFNynhdOn/ivLTX5IRZZzK9fsF6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YomlO909fTkxBsXEGFURv73+xDGVTFoBI/zenJMOuveQPiDVKXKV3tLM7Qa4fnwWL
-         +K7YNFpD4utCMeIDFrFyyAyVqCS4j+hyswu1hNsV1SLekUCP+7qNQebid68S/FZwdP
-         pr0y5Vc4GTQD2aqDgI2bOwR4tp+g3ssyz+Tm3r3w=
+        b=0Rgmj8buU2drCi5x/zv2zv5WqJtnaIApK6tJzdOYsscffmnQMy59TXevA9b6pFEoZ
+         L62wRA5iLqdte6qCrwyqASlP4LQH2NmXn5hXdv+3y8AY5Qjz4n28e6yy1Ga+uOaHOu
+         oK8L/hdfsreMjXEMVwcvikc+NKxsQGVTHWS/rTeo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Kravetz <mike.kravetz@oracle.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.17 179/219] hugetlb: do not demote poisoned hugetlb pages
-Date:   Mon, 18 Apr 2022 14:12:28 +0200
-Message-Id: <20220418121211.887283123@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.17 209/219] Revert "net: dsa: setup master before ports"
+Date:   Mon, 18 Apr 2022 14:12:58 +0200
+Message-Id: <20220418121212.717936708@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,71 +48,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Kravetz <mike.kravetz@oracle.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit 5a317412ef884763fdf7aa17f9f3636959d11d8f upstream.
+commit 762c2998c9625f642f0d23da7d3f7e4f90665fdf upstream.
 
-It is possible for poisoned hugetlb pages to reside on the free lists.
-The huge page allocation routines which dequeue entries from the free
-lists make a point of avoiding poisoned pages.  There is no such check
-and avoidance in the demote code path.
+This reverts commit 11fd667dac315ea3f2469961f6d2869271a46cae.
 
-If a hugetlb page on the is on a free list, poison will only be set in
-the head page rather then the page with the actual error.  If such a
-page is demoted, then the poison flag may follow the wrong page.  A page
-without error could have poison set, and a page with poison could not
-have the flag set.
+dsa_slave_change_mtu() updates the MTU of the DSA master and of the
+associated CPU port, but only if it detects a change to the master MTU.
 
-Check for poison before attempting to demote a hugetlb page.  Also,
-return -EBUSY to the caller if only poisoned pages are on the free list.
+The blamed commit in the Fixes: tag below addressed a regression where
+dsa_slave_change_mtu() would return early and not do anything due to
+ds->ops->port_change_mtu() not being implemented.
 
-Link: https://lkml.kernel.org/r/20220307215707.50916-1-mike.kravetz@oracle.com
-Fixes: 8531fc6f52f5 ("hugetlb: add hugetlb demote page support")
-Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
-Reviewed-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+However, that commit also had the effect that the master MTU got set up
+to the correct value by dsa_master_setup(), but the associated CPU port's
+MTU did not get updated. This causes breakage for drivers that rely on
+the ->port_change_mtu() DSA call to account for the tagging overhead on
+the CPU port, and don't set up the initial MTU during the setup phase.
+
+Things actually worked before because they were in a fragile equilibrium
+where dsa_slave_change_mtu() was called before dsa_master_setup() was.
+So dsa_slave_change_mtu() could actually detect a change and update the
+CPU port MTU too.
+
+Restore the code to the way things used to work by reverting the reorder
+of dsa_tree_setup_master() and dsa_tree_setup_ports(). That change did
+not have a concrete motivation going for it anyway, it just looked
+better.
+
+Fixes: 066dfc429040 ("Revert "net: dsa: stop updating master MTU from master.c"")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/hugetlb.c |   17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ net/dsa/dsa2.c |   23 ++++++++++-------------
+ 1 file changed, 10 insertions(+), 13 deletions(-)
 
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -3469,7 +3469,6 @@ static int demote_pool_huge_page(struct
- {
- 	int nr_nodes, node;
- 	struct page *page;
--	int rc = 0;
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -561,7 +561,6 @@ static void dsa_port_teardown(struct dsa
+ 	struct devlink_port *dlp = &dp->devlink_port;
+ 	struct dsa_switch *ds = dp->ds;
+ 	struct dsa_mac_addr *a, *tmp;
+-	struct net_device *slave;
  
- 	lockdep_assert_held(&hugetlb_lock);
- 
-@@ -3480,15 +3479,19 @@ static int demote_pool_huge_page(struct
- 	}
- 
- 	for_each_node_mask_to_free(h, nr_nodes, node, nodes_allowed) {
--		if (!list_empty(&h->hugepage_freelists[node])) {
--			page = list_entry(h->hugepage_freelists[node].next,
--					struct page, lru);
--			rc = demote_free_huge_page(h, page);
--			break;
-+		list_for_each_entry(page, &h->hugepage_freelists[node], lru) {
-+			if (PageHWPoison(page))
-+				continue;
-+
-+			return demote_free_huge_page(h, page);
+ 	if (!dp->setup)
+ 		return;
+@@ -583,11 +582,9 @@ static void dsa_port_teardown(struct dsa
+ 		dsa_port_link_unregister_of(dp);
+ 		break;
+ 	case DSA_PORT_TYPE_USER:
+-		slave = dp->slave;
+-
+-		if (slave) {
++		if (dp->slave) {
++			dsa_slave_destroy(dp->slave);
+ 			dp->slave = NULL;
+-			dsa_slave_destroy(slave);
  		}
+ 		break;
  	}
+@@ -1137,17 +1134,17 @@ static int dsa_tree_setup(struct dsa_swi
+ 	if (err)
+ 		goto teardown_cpu_ports;
  
--	return rc;
-+	/*
-+	 * Only way to get here is if all pages on free lists are poisoned.
-+	 * Return -EBUSY so that caller will not retry.
-+	 */
-+	return -EBUSY;
- }
+-	err = dsa_tree_setup_master(dst);
++	err = dsa_tree_setup_ports(dst);
+ 	if (err)
+ 		goto teardown_switches;
  
- #define HSTATE_ATTR_RO(_name) \
+-	err = dsa_tree_setup_ports(dst);
++	err = dsa_tree_setup_master(dst);
+ 	if (err)
+-		goto teardown_master;
++		goto teardown_ports;
+ 
+ 	err = dsa_tree_setup_lags(dst);
+ 	if (err)
+-		goto teardown_ports;
++		goto teardown_master;
+ 
+ 	dst->setup = true;
+ 
+@@ -1155,10 +1152,10 @@ static int dsa_tree_setup(struct dsa_swi
+ 
+ 	return 0;
+ 
+-teardown_ports:
+-	dsa_tree_teardown_ports(dst);
+ teardown_master:
+ 	dsa_tree_teardown_master(dst);
++teardown_ports:
++	dsa_tree_teardown_ports(dst);
+ teardown_switches:
+ 	dsa_tree_teardown_switches(dst);
+ teardown_cpu_ports:
+@@ -1176,10 +1173,10 @@ static void dsa_tree_teardown(struct dsa
+ 
+ 	dsa_tree_teardown_lags(dst);
+ 
+-	dsa_tree_teardown_ports(dst);
+-
+ 	dsa_tree_teardown_master(dst);
+ 
++	dsa_tree_teardown_ports(dst);
++
+ 	dsa_tree_teardown_switches(dst);
+ 
+ 	dsa_tree_teardown_cpu_ports(dst);
 
 
