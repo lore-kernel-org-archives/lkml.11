@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 376E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:22:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B66CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:22:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238498AbiDRMYz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48808 "EHLO
+        id S238530AbiDRMZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238988AbiDRMXQ (ORCPT
+        with ESMTP id S238970AbiDRMXP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:23:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2A5B1F639;
-        Mon, 18 Apr 2022 05:18:42 -0700 (PDT)
+        Mon, 18 Apr 2022 08:23:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A504D1FA4C;
+        Mon, 18 Apr 2022 05:18:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F93C60F01;
-        Mon, 18 Apr 2022 12:18:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 464D3C385A1;
-        Mon, 18 Apr 2022 12:18:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4371460F0C;
+        Mon, 18 Apr 2022 12:18:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3583DC385A1;
+        Mon, 18 Apr 2022 12:18:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284321;
-        bh=tZywWRlz/GYtnjHuFQ/H2v22JKSJT+kAwSDdH8vOghk=;
+        s=korg; t=1650284318;
+        bh=dpSSTSPDfm32UkoTk+/PGGGWBTktO6DCFMgsrabB63E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rqzy/wWJoVS/j6JbGvLPi+tU+cvqRaSLngkMuw++Ch1wR0D+zjtKOeyW0snvhbZ7S
-         UL3S0c+DqwaXo4hAjjfwH7/wH0uLM6LqzO3YFCeU1mA4JiwiNnYlOYdqAQqgCOkgs9
-         gq2jrsAoDktIci0AS17MGlskMNeDMZQMq+UORsmI=
+        b=ndjk5KfH2m79n4f1ZOri/iYcXm1VcYsaPq/gUj5gZZvBuTV5Pk4dMmKSC+ETZPnr4
+         srTHcRk6SuecxsnMsXCyMcP9rIBPgbqjLJXELP0zNEvREInGIc8ip8oVwWso0CNKn2
+         m2XcwBd7TLDRF9JoFylSXOJjCLmT8lM0oEjTjmHU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 074/219] net: mdio: dont defer probe forever if PHY IRQ provider is missing
-Date:   Mon, 18 Apr 2022 14:10:43 +0200
-Message-Id: <20220418121208.043153639@linuxfoundation.org>
+Subject: [PATCH 5.17 073/219] Revert "iavf: Fix deadlock occurrence during resetting VF interface"
+Date:   Mon, 18 Apr 2022 14:10:42 +0200
+Message-Id: <20220418121207.980484389@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -51,87 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Mateusz Palczewski <mateusz.palczewski@intel.com>
 
-[ Upstream commit 74befa447e6839cdd90ed541159ec783726946f9 ]
+[ Upstream commit 7d59706dbef8de83b3662026766507bc494223d7 ]
 
-When a driver for an interrupt controller is missing, of_irq_get()
-returns -EPROBE_DEFER ad infinitum, causing
-fwnode_mdiobus_phy_device_register(), and ultimately, the entire
-of_mdiobus_register() call, to fail. In turn, any phy_connect() call
-towards a PHY on this MDIO bus will also fail.
+This change caused a regression with resetting while changing network
+namespaces. By clearing the IFF_UP flag, the kernel now thinks it has
+fully closed the device.
 
-This is not what is expected to happen, because the PHY library falls
-back to poll mode when of_irq_get() returns a hard error code, and the
-MDIO bus, PHY and attached Ethernet controller work fine, albeit
-suboptimally, when the PHY library polls for link status. However,
--EPROBE_DEFER has special handling given the assumption that at some
-point probe deferral will stop, and the driver for the supplier will
-kick in and create the IRQ domain.
+This reverts commit 0cc318d2e8408bc0ffb4662a0c3e5e57005ac6ff.
 
-Reasons for which the interrupt controller may be missing:
-
-- It is not yet written. This may happen if a more recent DT blob (with
-  an interrupt-parent for the PHY) is used to boot an old kernel where
-  the driver didn't exist, and that kernel worked with the
-  vintage-correct DT blob using poll mode.
-
-- It is compiled out. Behavior is the same as above.
-
-- It is compiled as a module. The kernel will wait for a number of
-  seconds specified in the "deferred_probe_timeout" boot parameter for
-  user space to load the required module. The current default is 0,
-  which times out at the end of initcalls. It is possible that this
-  might cause regressions unless users adjust this boot parameter.
-
-The proposed solution is to use the driver_deferred_probe_check_state()
-helper function provided by the driver core, which gives up after some
--EPROBE_DEFER attempts, taking "deferred_probe_timeout" into consideration.
-The return code is changed from -EPROBE_DEFER into -ENODEV or
--ETIMEDOUT, depending on whether the kernel is compiled with support for
-modules or not.
-
-Fixes: 66bdede495c7 ("of_mdio: Fix broken PHY IRQ in case of probe deferral")
-Suggested-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220407165538.4084809-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 0cc318d2e840 ("iavf: Fix deadlock occurrence during resetting VF interface")
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/dd.c              | 1 +
- drivers/net/mdio/fwnode_mdio.c | 5 +++++
- 2 files changed, 6 insertions(+)
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 752a11d16e26..7e079fa3795b 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -296,6 +296,7 @@ int driver_deferred_probe_check_state(struct device *dev)
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index d10e9a8e8011..f55ecb672768 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -2817,7 +2817,6 @@ static void iavf_reset_task(struct work_struct *work)
+ 	running = adapter->state == __IAVF_RUNNING;
  
- 	return -EPROBE_DEFER;
+ 	if (running) {
+-		netdev->flags &= ~IFF_UP;
+ 		netif_carrier_off(netdev);
+ 		netif_tx_stop_all_queues(netdev);
+ 		adapter->link_up = false;
+@@ -2934,7 +2933,7 @@ static void iavf_reset_task(struct work_struct *work)
+ 		 * to __IAVF_RUNNING
+ 		 */
+ 		iavf_up_complete(adapter);
+-		netdev->flags |= IFF_UP;
++
+ 		iavf_irq_enable(adapter, true);
+ 	} else {
+ 		iavf_change_state(adapter, __IAVF_DOWN);
+@@ -2950,10 +2949,8 @@ static void iavf_reset_task(struct work_struct *work)
+ reset_err:
+ 	mutex_unlock(&adapter->client_lock);
+ 	mutex_unlock(&adapter->crit_lock);
+-	if (running) {
++	if (running)
+ 		iavf_change_state(adapter, __IAVF_RUNNING);
+-		netdev->flags |= IFF_UP;
+-	}
+ 	dev_err(&adapter->pdev->dev, "failed to allocate resources during reinit\n");
+ 	iavf_close(netdev);
  }
-+EXPORT_SYMBOL_GPL(driver_deferred_probe_check_state);
- 
- static void deferred_probe_timeout_work_func(struct work_struct *work)
- {
-diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index 1becb1a731f6..1c1584fca632 100644
---- a/drivers/net/mdio/fwnode_mdio.c
-+++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -43,6 +43,11 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
- 	int rc;
- 
- 	rc = fwnode_irq_get(child, 0);
-+	/* Don't wait forever if the IRQ provider doesn't become available,
-+	 * just fall back to poll mode
-+	 */
-+	if (rc == -EPROBE_DEFER)
-+		rc = driver_deferred_probe_check_state(&phy->mdio.dev);
- 	if (rc == -EPROBE_DEFER)
- 		return rc;
- 
 -- 
 2.35.1
 
