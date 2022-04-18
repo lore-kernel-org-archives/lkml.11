@@ -2,252 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD6BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B91C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:38:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242800AbiDRNkf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:40:35 -0400
+        id S243087AbiDRNkk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:40:40 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243140AbiDRNJv (ORCPT
+        with ESMTP id S243010AbiDRNJq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:09:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F65377C8;
-        Mon, 18 Apr 2022 05:49:19 -0700 (PDT)
+        Mon, 18 Apr 2022 09:09:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3B0369E7;
+        Mon, 18 Apr 2022 05:49:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01BEB6124A;
-        Mon, 18 Apr 2022 12:49:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE41C385A8;
-        Mon, 18 Apr 2022 12:49:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650286158;
-        bh=lBl8uds7Jfl9k1iKeNXaVIGGGJfONnxxms9Sd0YLPoo=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B3B1B80EC3;
+        Mon, 18 Apr 2022 12:49:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9F5FC385A8;
+        Mon, 18 Apr 2022 12:49:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650286147;
+        bh=z+MJ5BwcFYCOls5GqHWIzpBRgYQfepqqFTN/5M0j8+Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NF63zzSyYP9XW4uApY83MraFba3LZD9+2F5T+tpML1DyFTcjL9dIcO8PB0wjD7p5d
-         JmKifUGp7XxNpv9eMA5sq3ecPlpGySyQDNiKfSL5viOSTAqVBT2F71dA2TARQ2Vux+
-         yGD+20a4Ggd0V7HkOG98Z+yFGf6CwiO8ys5jrsWiMqK7tH5w8ML3dGBpsUhX9shBVZ
-         doXnbLhiZqhoAGgM8sYTqY3bLvK5xYllo4bLj32+6SgOmuxva+7ZE6w4FjmFCfwwYr
-         TIxHtVP0gO2hlfGqM453QCfA+B8lqC3e/OKhM7Z7tjlgBCRfjHx94Muj8GoNKZhu4e
-         AD35I4qdvek9g==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [PATCHv2 bpf-next 4/4] selftests/bpf: Add attach bench test
-Date:   Mon, 18 Apr 2022 14:48:34 +0200
-Message-Id: <20220418124834.829064-5-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220418124834.829064-1-jolsa@kernel.org>
-References: <20220418124834.829064-1-jolsa@kernel.org>
+        b=TQb8FyAGGxhP57sRA4LtmvnxKVfR10mKocN0+fr+dXDypo6iASRN6RfKeHXI1jIWu
+         mmnQjYunUkaVDW8xHo0eMNE3Px0aG1XWR306cH07PTTl+qjJOTkv/jlLwA2pMSRqMH
+         SRGKfnHyRHa9NBV8BHvU1nTFnFs11/DbJpTollXY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Miklos Szeredi <mszeredi@redhat.com>,
+        Zach OKeefe <zokeefe@google.com>
+Subject: [PATCH 4.14 009/284] fuse: fix pipe buffer lifetime for direct_io
+Date:   Mon, 18 Apr 2022 14:09:50 +0200
+Message-Id: <20220418121210.961307913@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
+References: <20220418121210.689577360@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding test that reads all functions from ftrace available_filter_functions
-file and attach them all through kprobe_multi API.
+From: Miklos Szeredi <mszeredi@redhat.com>
 
-It also prints stats info with -v option, like on my setup:
+commit 0c4bcfdecb1ac0967619ee7ff44871d93c08c909 upstream.
 
-  test_bench_attach: found 48712 functions
-  test_bench_attach: attached in   1.069s
-  test_bench_attach: detached in   0.373s
+In FOPEN_DIRECT_IO mode, fuse_file_write_iter() calls
+fuse_direct_write_iter(), which normally calls fuse_direct_io(), which then
+imports the write buffer with fuse_get_user_pages(), which uses
+iov_iter_get_pages() to grab references to userspace pages instead of
+actually copying memory.
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+On the filesystem device side, these pages can then either be read to
+userspace (via fuse_dev_read()), or splice()d over into a pipe using
+fuse_dev_splice_read() as pipe buffers with &nosteal_pipe_buf_ops.
+
+This is wrong because after fuse_dev_do_read() unlocks the FUSE request,
+the userspace filesystem can mark the request as completed, causing write()
+to return. At that point, the userspace filesystem should no longer have
+access to the pipe buffer.
+
+Fix by copying pages coming from the user address space to new pipe
+buffers.
+
+Reported-by: Jann Horn <jannh@google.com>
+Fixes: c3021629a0d8 ("fuse: support splice() reading from fuse device")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Zach O'Keefe <zokeefe@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../bpf/prog_tests/kprobe_multi_test.c        | 136 ++++++++++++++++++
- .../selftests/bpf/progs/kprobe_multi_empty.c  |  12 ++
- 2 files changed, 148 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+ fs/fuse/dev.c    |   12 +++++++++++-
+ fs/fuse/file.c   |    1 +
+ fs/fuse/fuse_i.h |    2 ++
+ 3 files changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-index b9876b55fc0c..05f0fab8af89 100644
---- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-@@ -2,6 +2,9 @@
- #include <test_progs.h>
- #include "kprobe_multi.skel.h"
- #include "trace_helpers.h"
-+#include "kprobe_multi_empty.skel.h"
-+#include "bpf/libbpf_internal.h"
-+#include "bpf/hashmap.h"
+--- a/fs/fuse/dev.c
++++ b/fs/fuse/dev.c
+@@ -991,7 +991,17 @@ static int fuse_copy_page(struct fuse_co
  
- static void kprobe_multi_test_run(struct kprobe_multi *skel, bool test_return)
- {
-@@ -301,6 +304,137 @@ static void test_attach_api_fails(void)
- 	kprobe_multi__destroy(skel);
- }
+ 	while (count) {
+ 		if (cs->write && cs->pipebufs && page) {
+-			return fuse_ref_page(cs, page, offset, count);
++			/*
++			 * Can't control lifetime of pipe buffers, so always
++			 * copy user pages.
++			 */
++			if (cs->req->user_pages) {
++				err = fuse_copy_fill(cs);
++				if (err)
++					return err;
++			} else {
++				return fuse_ref_page(cs, page, offset, count);
++			}
+ 		} else if (!cs->len) {
+ 			if (cs->move_pages && page &&
+ 			    offset == 0 && count == PAGE_SIZE) {
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -1325,6 +1325,7 @@ static int fuse_get_user_pages(struct fu
+ 			(PAGE_SIZE - ret) & (PAGE_SIZE - 1);
+ 	}
  
-+static inline __u64 get_time_ns(void)
-+{
-+	struct timespec t;
++	req->user_pages = true;
+ 	if (write)
+ 		req->in.argpages = 1;
+ 	else
+--- a/fs/fuse/fuse_i.h
++++ b/fs/fuse/fuse_i.h
+@@ -312,6 +312,8 @@ struct fuse_req {
+ 	/** refcount */
+ 	refcount_t count;
+ 
++	bool user_pages;
 +
-+	clock_gettime(CLOCK_MONOTONIC, &t);
-+	return (__u64) t.tv_sec * 1000000000 + t.tv_nsec;
-+}
-+
-+static size_t symbol_hash(const void *key, void *ctx __maybe_unused)
-+{
-+	return str_hash((const char *) key);
-+}
-+
-+static bool symbol_equal(const void *key1, const void *key2, void *ctx __maybe_unused)
-+{
-+	return strcmp((const char *) key1, (const char *) key2) == 0;
-+}
-+
-+#define DEBUGFS "/sys/kernel/debug/tracing/"
-+
-+static int get_syms(char ***symsp, size_t *cntp)
-+{
-+	size_t cap = 0, cnt = 0, i;
-+	char *name, **syms = NULL;
-+	struct hashmap *map;
-+	char buf[256];
-+	FILE *f;
-+	int err;
-+
-+	/*
-+	 * The available_filter_functions contains many duplicates,
-+	 * but other than that all symbols are usable in kprobe multi
-+	 * interface.
-+	 * Filtering out duplicates by using hashmap__add, which won't
-+	 * add existing entry.
-+	 */
-+	f = fopen(DEBUGFS "available_filter_functions", "r");
-+	if (!f)
-+		return -EINVAL;
-+
-+	map = hashmap__new(symbol_hash, symbol_equal, NULL);
-+	err = libbpf_get_error(map);
-+	if (err)
-+		goto error;
-+
-+	while (fgets(buf, sizeof(buf), f)) {
-+		/* skip modules */
-+		if (strchr(buf, '['))
-+			continue;
-+		if (sscanf(buf, "%ms$*[^\n]\n", &name) != 1)
-+			continue;
-+		err = hashmap__add(map, name, NULL);
-+		if (err) {
-+			free(name);
-+			if (err == -EEXIST)
-+				continue;
-+			goto error;
-+		}
-+		err = libbpf_ensure_mem((void **) &syms, &cap,
-+					sizeof(*syms), cnt + 1);
-+		if (err) {
-+			free(name);
-+			goto error;
-+		}
-+		syms[cnt] = name;
-+		cnt++;
-+	}
-+
-+	*symsp = syms;
-+	*cntp = cnt;
-+
-+error:
-+	fclose(f);
-+	hashmap__free(map);
-+	if (err) {
-+		for (i = 0; i < cnt; i++)
-+			free(syms[cnt]);
-+		free(syms);
-+	}
-+	return err;
-+}
-+
-+static void test_bench_attach(void)
-+{
-+	LIBBPF_OPTS(bpf_kprobe_multi_opts, opts);
-+	struct kprobe_multi_empty *skel = NULL;
-+	long attach_start_ns, attach_end_ns;
-+	long detach_start_ns, detach_end_ns;
-+	double attach_delta, detach_delta;
-+	struct bpf_link *link = NULL;
-+	char **syms = NULL;
-+	size_t cnt, i;
-+
-+	if (!ASSERT_OK(get_syms(&syms, &cnt), "get_syms"))
-+		return;
-+
-+	skel = kprobe_multi_empty__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "kprobe_multi_empty__open_and_load"))
-+		goto cleanup;
-+
-+	opts.syms = (const char **) syms;
-+	opts.cnt = cnt;
-+
-+	attach_start_ns = get_time_ns();
-+	link = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kprobe_empty,
-+						     NULL, &opts);
-+	attach_end_ns = get_time_ns();
-+
-+	if (!ASSERT_OK_PTR(link, "bpf_program__attach_kprobe_multi_opts"))
-+		goto cleanup;
-+
-+	detach_start_ns = get_time_ns();
-+	bpf_link__destroy(link);
-+	detach_end_ns = get_time_ns();
-+
-+	attach_delta = (attach_end_ns - attach_start_ns) / 1000000000.0;
-+	detach_delta = (detach_end_ns - detach_start_ns) / 1000000000.0;
-+
-+	fprintf(stderr, "%s: found %lu functions\n", __func__, cnt);
-+	fprintf(stderr, "%s: attached in %7.3lfs\n", __func__, attach_delta);
-+	fprintf(stderr, "%s: detached in %7.3lfs\n", __func__, detach_delta);
-+
-+cleanup:
-+	kprobe_multi_empty__destroy(skel);
-+	if (syms) {
-+		for (i = 0; i < cnt; i++)
-+			free(syms[i]);
-+		free(syms);
-+	}
-+}
-+
- void test_kprobe_multi_test(void)
- {
- 	if (!ASSERT_OK(load_kallsyms(), "load_kallsyms"))
-@@ -320,4 +454,6 @@ void test_kprobe_multi_test(void)
- 		test_attach_api_syms();
- 	if (test__start_subtest("attach_api_fails"))
- 		test_attach_api_fails();
-+	if (test__start_subtest("bench_attach"))
-+		test_bench_attach();
- }
-diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
-new file mode 100644
-index 000000000000..be9e3d891d46
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
-@@ -0,0 +1,12 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+SEC("kprobe.multi/*")
-+int test_kprobe_empty(struct pt_regs *ctx)
-+{
-+	return 0;
-+}
--- 
-2.35.1
+ 	/** Unique ID for the interrupt request */
+ 	u64 intr_unique;
+ 
+
 
