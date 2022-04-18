@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 359D6C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:53:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0F2CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244360AbiDRN4Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:56:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59736 "EHLO
+        id S244414AbiDRN4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244862AbiDRNa7 (ORCPT
+        with ESMTP id S243023AbiDRN2s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:59 -0400
+        Mon, 18 Apr 2022 09:28:48 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F091EEDC;
-        Mon, 18 Apr 2022 05:56:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33DB3E5F4;
+        Mon, 18 Apr 2022 05:53:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55A62B80E4B;
-        Mon, 18 Apr 2022 12:56:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A721AC385A1;
-        Mon, 18 Apr 2022 12:56:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58EF8B80E44;
+        Mon, 18 Apr 2022 12:53:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7189C385A1;
+        Mon, 18 Apr 2022 12:53:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286595;
-        bh=iRQ85mKRYsLY19ccm6GGr38/D0y0r84yIinqT47YiAI=;
+        s=korg; t=1650286398;
+        bh=Uq4rzu+iYVCiYvKLAPyXV0+epEToMfF5Hp3/zPfFeMg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=stWWYssXEL9NMPPHuxBxI1+RtrZ+KDx4x65SPHjVXrv3sDaa0HpSUW1k2zBzXMiSC
-         MEmBXVybZaVYRjqbol2FeTr0wwIBnfcGuDc9yJNo4PgiEjr9hKmWE6WPWHTQ9zkkVV
-         xjUFnBesAi996LFbb6zw84n5WHy2NNR1PvKW3d7I=
+        b=n+1r/6zIB9N7GH/P45KViD7ZPZ5nFmffhsedpfOgqvtyGuzDA2L7kEuoL9Hnu52T3
+         4VjoPOVv3K+FCj6G//Vruac8g2VcbE+WGD4b2sZ9ON1S6f6IRzwcIWldvl7nCqTLMZ
+         2bYrK1DCealn0Epg+trqF+mJ/g7c5XWcj6mlK0/8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 4.14 185/284] ubifs: rename_whiteout: Fix double free for whiteout_ui->data
-Date:   Mon, 18 Apr 2022 14:12:46 +0200
-Message-Id: <20220418121216.997971246@linuxfoundation.org>
+        stable@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 085/284] memory: emif: check the pointer temp in get_device_details()
+Date:   Mon, 18 Apr 2022 14:11:06 +0200
+Message-Id: <20220418121213.102640723@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -48,71 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-commit 40a8f0d5e7b3999f096570edab71c345da812e3e upstream.
+[ Upstream commit 5b5ab1bfa1898c6d52936a57c25c5ceba2cb2f87 ]
 
-'whiteout_ui->data' will be freed twice if space budget fail for
-rename whiteout operation as following process:
+The pointer temp is allocated by devm_kzalloc(), so it should be
+checked for error handling.
 
-rename_whiteout
-  dev = kmalloc
-  whiteout_ui->data = dev
-  kfree(whiteout_ui->data)  // Free first time
-  iput(whiteout)
-    ubifs_free_inode
-      kfree(ui->data)	    // Double free!
-
-KASAN reports:
-==================================================================
-BUG: KASAN: double-free or invalid-free in ubifs_free_inode+0x4f/0x70
-Call Trace:
-  kfree+0x117/0x490
-  ubifs_free_inode+0x4f/0x70 [ubifs]
-  i_callback+0x30/0x60
-  rcu_do_batch+0x366/0xac0
-  __do_softirq+0x133/0x57f
-
-Allocated by task 1506:
-  kmem_cache_alloc_trace+0x3c2/0x7a0
-  do_rename+0x9b7/0x1150 [ubifs]
-  ubifs_rename+0x106/0x1f0 [ubifs]
-  do_syscall_64+0x35/0x80
-
-Freed by task 1506:
-  kfree+0x117/0x490
-  do_rename.cold+0x53/0x8a [ubifs]
-  ubifs_rename+0x106/0x1f0 [ubifs]
-  do_syscall_64+0x35/0x80
-
-The buggy address belongs to the object at ffff88810238bed8 which
-belongs to the cache kmalloc-8 of size 8
-==================================================================
-
-Let ubifs_free_inode() free 'whiteout_ui->data'. BTW, delete unused
-assignment 'whiteout_ui->data_len = 0', process 'ubifs_evict_inode()
--> ubifs_jnl_delete_inode() -> ubifs_jnl_write_inode()' doesn't need it
-(because 'inc_nlink(whiteout)' won't be excuted by 'goto out_release',
- and the nlink of whiteout inode is 0).
-
-Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7ec944538dde ("memory: emif: add basic infrastructure for EMIF driver")
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Link: https://lore.kernel.org/r/20220225132552.27894-1-baijiaju1990@gmail.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ubifs/dir.c |    2 --
- 1 file changed, 2 deletions(-)
+ drivers/memory/emif.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ubifs/dir.c
-+++ b/fs/ubifs/dir.c
-@@ -1496,8 +1496,6 @@ static int do_rename(struct inode *old_d
+diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
+index ed6c5fcb136f..9f293b931144 100644
+--- a/drivers/memory/emif.c
++++ b/drivers/memory/emif.c
+@@ -1425,7 +1425,7 @@ static struct emif_data *__init_or_module get_device_details(
+ 	temp	= devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
+ 	dev_info = devm_kzalloc(dev, sizeof(*dev_info), GFP_KERNEL);
  
- 		err = ubifs_budget_space(c, &wht_req);
- 		if (err) {
--			kfree(whiteout_ui->data);
--			whiteout_ui->data_len = 0;
- 			iput(whiteout);
- 			goto out_release;
- 		}
+-	if (!emif || !pd || !dev_info) {
++	if (!emif || !temp || !dev_info) {
+ 		dev_err(dev, "%s:%d: allocation error\n", __func__, __LINE__);
+ 		goto error;
+ 	}
+-- 
+2.34.1
+
 
 
