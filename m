@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D6AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:16:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF3EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:17:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238279AbiDRMTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48886 "EHLO
+        id S235559AbiDRMTq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:19:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238142AbiDRMSn (ORCPT
+        with ESMTP id S238178AbiDRMSq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:18:43 -0400
+        Mon, 18 Apr 2022 08:18:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E5271ADA1;
-        Mon, 18 Apr 2022 05:16:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD0241ADAC;
+        Mon, 18 Apr 2022 05:16:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D7E0B80ED6;
-        Mon, 18 Apr 2022 12:16:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 870B3C385A7;
-        Mon, 18 Apr 2022 12:16:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B929B80EC1;
+        Mon, 18 Apr 2022 12:16:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86BC9C385A1;
+        Mon, 18 Apr 2022 12:16:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284161;
-        bh=LUJ0kdq4mD4lTynwRVHbn/7vOyhocmAmauLePmXEP50=;
+        s=korg; t=1650284165;
+        bh=41TNFZZlkzsBABIoZsv+QWqEre4HxqtCGuF/NioWhFg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OAwjWYIX6JiyCMl6Zisjf74eKDsYJ+QUH/UpmkLd3QLMOxruNGbHrT2ZFkNDV2n10
-         cRpL4ZmFl9OXwkqdHpmTlfGUl5C5ht74kWAcNCkrVm/eKNhkdfrQ3t21H2C1an1bu6
-         UqH2WqmevDeRqBuXSHx5w8+CldyuT6KjByBkSh5I=
+        b=Sq3YzhO6z6bu+yyuoDMT9IT88DCuZ0k7ik5WxUccjl0LmBwyUVVrw84hOtDt9YrNi
+         m9dnnnxwHbMf/iwhMfLqOEqTUY2RtZaU6/Mzeag6O/H/sZnkvkEJfHc3VFQV1UkG4F
+         plH66CDN8VJpvz4L02+4Bi41GwrtLiBTPTp5GlcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 025/219] ALSA: azt3328: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:09:54 +0200
-Message-Id: <20220418121204.761761563@linuxfoundation.org>
+Subject: [PATCH 5.17 026/219] ALSA: bt87x: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:09:55 +0200
+Message-Id: <20220418121204.826001521@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,7 +49,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit 49fe36e1c02cb06f66689c888e4e767c31cd259d upstream.
+commit f0438155273f057fec9818bc9d1b782ba35cf6a1 upstream.
 
 The previous cleanup with devres may lead to the incorrect release
 orders at the probe error handling due to the devres's nature.  Until
@@ -60,38 +60,40 @@ release the stuff via card->private_free().
 This patch fixes it by calling snd_card_free() on the error from the
 probe callback using a new helper function.
 
-Fixes: 8c5823ef31e1 ("ALSA: azt3328: Allocate resources with device-managed APIs")
+Fixes: 9e80ed64a006 ("ALSA: bt87x: Allocate resources with device-managed APIs")
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-9-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220412102636.16000-29-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/azt3328.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ sound/pci/bt87x.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/sound/pci/azt3328.c
-+++ b/sound/pci/azt3328.c
-@@ -2427,7 +2427,7 @@ snd_azf3328_create(struct snd_card *card
+--- a/sound/pci/bt87x.c
++++ b/sound/pci/bt87x.c
+@@ -805,8 +805,8 @@ static int snd_bt87x_detect_card(struct
+ 	return SND_BT87X_BOARD_UNKNOWN;
  }
  
- static int
--snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
-+__snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+-static int snd_bt87x_probe(struct pci_dev *pci,
+-			   const struct pci_device_id *pci_id)
++static int __snd_bt87x_probe(struct pci_dev *pci,
++			     const struct pci_device_id *pci_id)
  {
  	static int dev;
  	struct snd_card *card;
-@@ -2520,6 +2520,12 @@ snd_azf3328_probe(struct pci_dev *pci, c
+@@ -889,6 +889,12 @@ static int snd_bt87x_probe(struct pci_de
  	return 0;
  }
  
-+static int
-+snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
++static int snd_bt87x_probe(struct pci_dev *pci,
++			   const struct pci_device_id *pci_id)
 +{
-+	return snd_card_free_on_error(&pci->dev, __snd_azf3328_probe(pci, pci_id));
++	return snd_card_free_on_error(&pci->dev, __snd_bt87x_probe(pci, pci_id));
 +}
 +
- #ifdef CONFIG_PM_SLEEP
- static inline void
- snd_azf3328_suspend_regs(const struct snd_azf3328 *chip,
+ /* default entries for all Bt87x cards - it's not exported */
+ /* driver_data is set to 0 to call detection */
+ static const struct pci_device_id snd_bt87x_default_ids[] = {
 
 
