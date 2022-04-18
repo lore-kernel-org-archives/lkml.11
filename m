@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD808C3525B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF02DC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241040AbiDRM6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60482 "EHLO
+        id S240685AbiDRM5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240369AbiDRMtd (ORCPT
+        with ESMTP id S239696AbiDRMqy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:49:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7272AE3E;
-        Mon, 18 Apr 2022 05:33:40 -0700 (PDT)
+        Mon, 18 Apr 2022 08:46:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78BD529CA4;
+        Mon, 18 Apr 2022 05:33:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16A00B80EC0;
-        Mon, 18 Apr 2022 12:33:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C5AEC385A1;
-        Mon, 18 Apr 2022 12:33:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E926060F04;
+        Mon, 18 Apr 2022 12:33:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F34D6C385A8;
+        Mon, 18 Apr 2022 12:33:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285217;
-        bh=wGDd1DgJlG3tYf/4Bdpf9xiaoMr7SoRx3JYSlpBk7xQ=;
+        s=korg; t=1650285188;
+        bh=NKi4soFhU5x/UQqscEyGPgWLirV8S6dbvfcLMOp+MZ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BqchcZ3iR10wjmcmfnDimN0SxNpNepCOvrRpzf61AFhJPQPVBoOGfhjT84YkWYgAy
-         Es3nCxKTLpdEMGmUDYAxgNVfGXJI7/xug4xbmrPhmi7SHuKdKZsiZmR3XWw18+z53a
-         p3qkh0kMKiNh8ruoF6stHV4nueEaZirTwfAcgQlE=
+        b=y6a6Klzu3kya6my1r2EcFRfhhEMYdSAdC8xoPRpJsN7EJKlqRK23mqKWIvGvyZbrQ
+         UC3zPAtGQDjU4VeLygfWdyE8C0mDwhpOuI9dcGfOjIiUYz7S+zswB3uRJ9SKfouerm
+         MBjvdQQo10YGWxEKHe/rTmubTpsQgEcQ3K3B7Yo8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 140/189] drivers: net: slip: fix NPD bug in sl_tx_timeout()
-Date:   Mon, 18 Apr 2022 14:12:40 +0200
-Message-Id: <20220418121205.466467473@linuxfoundation.org>
+        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 092/189] io_uring: verify pad field is 0 in io_get_ext_arg
+Date:   Mon, 18 Apr 2022 14:11:52 +0200
+Message-Id: <20220418121203.117534223@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,58 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Dylan Yudaken <dylany@fb.com>
 
-[ Upstream commit ec4eb8a86ade4d22633e1da2a7d85a846b7d1798 ]
+[ Upstream commit d2347b9695dafe5c388a5f9aeb70e27a7a4d29cf ]
 
-When a slip driver is detaching, the slip_close() will act to
-cleanup necessary resources and sl->tty is set to NULL in
-slip_close(). Meanwhile, the packet we transmit is blocked,
-sl_tx_timeout() will be called. Although slip_close() and
-sl_tx_timeout() use sl->lock to synchronize, we don`t judge
-whether sl->tty equals to NULL in sl_tx_timeout() and the
-null pointer dereference bug will happen.
+Ensure that only 0 is passed for pad here.
 
-   (Thread 1)                 |      (Thread 2)
-                              | slip_close()
-                              |   spin_lock_bh(&sl->lock)
-                              |   ...
-...                           |   sl->tty = NULL //(1)
-sl_tx_timeout()               |   spin_unlock_bh(&sl->lock)
-  spin_lock(&sl->lock);       |
-  ...                         |   ...
-  tty_chars_in_buffer(sl->tty)|
-    if (tty->ops->..) //(2)   |
-    ...                       |   synchronize_rcu()
-
-We set NULL to sl->tty in position (1) and dereference sl->tty
-in position (2).
-
-This patch adds check in sl_tx_timeout(). If sl->tty equals to
-NULL, sl_tx_timeout() will goto out.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Link: https://lore.kernel.org/r/20220405132206.55291-1-duoming@zju.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: c73ebb685fb6 ("io_uring: add timeout support for io_uring_enter()")
+Signed-off-by: Dylan Yudaken <dylany@fb.com>
+Link: https://lore.kernel.org/r/20220412163042.2788062-5-dylany@fb.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/slip/slip.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/io_uring.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
-index 5435b5689ce6..2a3892528ec3 100644
---- a/drivers/net/slip/slip.c
-+++ b/drivers/net/slip/slip.c
-@@ -469,7 +469,7 @@ static void sl_tx_timeout(struct net_device *dev, unsigned int txqueue)
- 	spin_lock(&sl->lock);
- 
- 	if (netif_queue_stopped(dev)) {
--		if (!netif_running(dev))
-+		if (!netif_running(dev) || !sl->tty)
- 			goto out;
- 
- 		/* May be we must check transmitter timeout here ?
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 66671c0bd864..cc0a07a9fe9c 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -9981,6 +9981,8 @@ static int io_get_ext_arg(unsigned flags, const void __user *argp, size_t *argsz
+ 		return -EINVAL;
+ 	if (copy_from_user(&arg, argp, sizeof(arg)))
+ 		return -EFAULT;
++	if (arg.pad)
++		return -EINVAL;
+ 	*sig = u64_to_user_ptr(arg.sigmask);
+ 	*argsz = arg.sigmask_sz;
+ 	*ts = u64_to_user_ptr(arg.ts);
 -- 
 2.35.1
 
