@@ -2,101 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 501A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:13:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D92F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346895AbiDRRPf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 13:15:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60176 "EHLO
+        id S235097AbiDRRPu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 13:15:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346835AbiDRRPL (ORCPT
+        with ESMTP id S235973AbiDRRPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 13:15:11 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12B320F7F
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:12:31 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id n11-20020a17090a73cb00b001d1d3a7116bso341831pjk.0
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:12:31 -0700 (PDT)
+        Mon, 18 Apr 2022 13:15:42 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1542A715
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:12:58 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id 12so12824344pll.12
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:12:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Lh5wkQZbkXRgnC4EjKjmQBHmFIjrKbl6A7v1jfavo8o=;
-        b=is/oplsxgXfd3Ca6GkmGp/PT4EJfLLlwOkdjXIO+h+IRZ/KytNrxvBQ7S7U93JQFP4
-         h0EIGyI3NDzkkojrNsgnru7Wp36kdWkr3t++Lq0G7KWoA2HaQ8azVDY+JmWVcD3TSeuD
-         hCBDHEkv0HsJPCSP7iEz1QT1xMIlq8fpqZ1Tw6W2kiPa/7IE8koX4YVjJ7ObKjiZvwiq
-         boJAkxtbq681aAKCnvFCbm4tr0IrYJAsYzZlVobT77ozxlsIanEvkV0tDo0OswmqmYNi
-         BoOnWh25d4UF2lJ4TRaGMnEf2xZ1pS5y8TRzDsYh0bOcbdFxnIs064KyEXpt1agvzoVw
-         XDUQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dTfclv02OOzOcblj7XsN4Ih/CQalStRiqrtD05ZRe5s=;
+        b=gSYHgZsHWwk2aKf0awq92l919SNMPCc9mEUPi3Jt7IHtTT9437FEJIF0N9Q5Uh9LP9
+         r4y0iVYWEn5oh+o+1so4N6hnjxuY/QrWEQfacIOhvjWPxnbeEY3lCEbbkUpyKRp/3ql4
+         VyoMeFjcQ9pO3dLoM2S2nBFkwnirK/Yj6MX8iP9nGvI2lhxk0EjCIqHs0vQQM1pY5/My
+         8/0Mg+9A7hnVLGQdt4U1r4VwzBRoE5h9vXc+qxQKRXeU14I/qKZhoCPqixtPRsdBGIqC
+         OJ1eUhmG/vLxzP5OJHBZBGdZtr5LBtfJqvSdOfyPKIzgVV+b0ixe5KZKrNW96Fg91rq2
+         Eeaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Lh5wkQZbkXRgnC4EjKjmQBHmFIjrKbl6A7v1jfavo8o=;
-        b=Uw4oj5xBMtQEwnBI0vD15rBZGYRj5ptTJ8mOsn5M8/k2SVHF5eJsFUS8RitArc3FY9
-         uphFHJbl9nyKL0KhKl8SCFkDAvbW2Z3cisi4CahXltxUV2gQ7oASgLOID5lCijUYVrYS
-         hr2YHbhUS06JXg36q+qpzA++tsHov3w19MIek7xy4MYblFdYCACGJzbUBnnIi3W7c6IC
-         v8bd6KsVl590SnfR0kS51gKuuHX4nXT7YBgU9ASBbGklgBX4rjJIf18Efo0KB3PE7095
-         2dmqRx0+8xQGUprzeoeodiVV2yQgLsJmEp3cFhfCiI5EEmqKZ6Hjb8URMtT5yNmEphJ/
-         RXXg==
-X-Gm-Message-State: AOAM530oGTLa1Twv+JsHIoMsWOylFmXt8O0vCKTPvsyP6S9uRXVkyAHg
-        0lymlIpamT9FJRvJY8nfbmw=
-X-Google-Smtp-Source: ABdhPJzGYxA05zBkmyGOb7yOlqsx0I2fv8L9tibsLM/3cNljPB8O80/1ZQdTEI1c4YF4iR6ksa/r3g==
-X-Received: by 2002:a17:90a:d584:b0:1bc:e520:91f2 with SMTP id v4-20020a17090ad58400b001bce52091f2mr19800353pju.192.1650301951534;
-        Mon, 18 Apr 2022 10:12:31 -0700 (PDT)
-Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:3f09:380c:8f11:5a8a])
-        by smtp.gmail.com with ESMTPSA id e16-20020a63ee10000000b0039d1c7e80bcsm13637138pgi.75.2022.04.18.10.12.30
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dTfclv02OOzOcblj7XsN4Ih/CQalStRiqrtD05ZRe5s=;
+        b=iaEM9RP6YTfMunF/LpXXe+VYimnNvEqnstDjM/tMG41Xb2oSkebd5SxzBndSfx56Ee
+         JBYnJaRX9DSY/hXwfDjnh63Hxuz0vm4T/UGmN6FLS0QGuznbyrY3zRkVuo4s6DWq90w5
+         Y69TSOIY5gaIFRr4b+I7EMB1zcWpHIACvGz6FH0eMnk77oBYwxJ9Xg2yof7RiPP+VSWb
+         4+AajRPNq7kXzDCxwK27CfUtWKabOe6vBIolBq5xFgPfWSK1dCV8sWEUXSX1xcR6rnrH
+         eXb6iWm51KzuD6bsgk+bQhd8Ve0DZYABiGcaGtI6tU04YmSYmT9Pt89BxqAAeGGzdJRn
+         hk7Q==
+X-Gm-Message-State: AOAM531QZ6UHJ3vccrAoUqMQ9TxcKlBqrEpyT+mo9ea+hTB9N622xDsj
+        lm1pCciJ3jJH32OtrPgPLWgeMkdacPgAJg==
+X-Google-Smtp-Source: ABdhPJz4DC4B6xU9TuyvStBcxOz4sQXJ6bzv+81lnpHQ9IuZsVmEg2TRquLbZXyBq9GzaDDLEPHvyQ==
+X-Received: by 2002:a17:903:11c7:b0:154:b936:d1d4 with SMTP id q7-20020a17090311c700b00154b936d1d4mr12090065plh.78.1650301977627;
+        Mon, 18 Apr 2022 10:12:57 -0700 (PDT)
+Received: from aliyar-HP-Laptop-15-da1xxx.domain.name ([14.139.241.88])
+        by smtp.gmail.com with ESMTPSA id t63-20020a625f42000000b0050a7eaff8c9sm3636063pfb.189.2022.04.18.10.12.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 10:12:30 -0700 (PDT)
-From:   Max Filippov <jcmvbkbc@gmail.com>
-To:     linux-xtensa@linux-xtensa.org
-Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH 5/5] xtensa: enable HAVE_VIRT_CPU_ACCOUNTING_GEN
-Date:   Mon, 18 Apr 2022 10:12:05 -0700
-Message-Id: <20220418171205.2413168-6-jcmvbkbc@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220418171205.2413168-1-jcmvbkbc@gmail.com>
-References: <20220418171205.2413168-1-jcmvbkbc@gmail.com>
+        Mon, 18 Apr 2022 10:12:57 -0700 (PDT)
+From:   Aliya Rahmani <aliyarahmani786@gmail.com>
+To:     mchehab@kernel.org
+Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
+        outreachy@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Aliya Rahmani <aliyarahmani786@gmail.com>
+Subject: [PATCH] staging: media: av7110: remove redundant space after cast
+Date:   Mon, 18 Apr 2022 22:39:02 +0530
+Message-Id: <20220418170900.16725-1-aliyarahmani786@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There's no direct cputime_t manipulation in the xtensa arch code, so
-generic virt CPU accounting may be enabled.
+Remove the unnecessary space immediately after a cast. Identified by
+checkpatch: CHECK: No space is necessary after a cast.
 
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Aliya Rahmani <aliyarahmani786@gmail.com>
 ---
- Documentation/features/time/virt-cpuacct/arch-support.txt | 2 +-
- arch/xtensa/Kconfig                                       | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/staging/media/av7110/av7110_av.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/features/time/virt-cpuacct/arch-support.txt b/Documentation/features/time/virt-cpuacct/arch-support.txt
-index 5163a60a1c1e..c905aa3c1d81 100644
---- a/Documentation/features/time/virt-cpuacct/arch-support.txt
-+++ b/Documentation/features/time/virt-cpuacct/arch-support.txt
-@@ -27,5 +27,5 @@
-     |       sparc: |  ok  |
-     |          um: | TODO |
-     |         x86: |  ok  |
--    |      xtensa: | TODO |
-+    |      xtensa: |  ok  |
-     -----------------------
-diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-index 6134808a633d..797355c142b3 100644
---- a/arch/xtensa/Kconfig
-+++ b/arch/xtensa/Kconfig
-@@ -43,6 +43,7 @@ config XTENSA
- 	select HAVE_PERF_EVENTS
- 	select HAVE_STACKPROTECTOR
- 	select HAVE_SYSCALL_TRACEPOINTS
-+	select HAVE_VIRT_CPU_ACCOUNTING_GEN
- 	select IRQ_DOMAIN
- 	select MODULES_USE_ELF_RELA
- 	select PERF_USE_VMALLOC
+diff --git a/drivers/staging/media/av7110/av7110_av.c b/drivers/staging/media/av7110/av7110_av.c
+index 91f4866c7e59..df41d2ce1ed7 100644
+--- a/drivers/staging/media/av7110/av7110_av.c
++++ b/drivers/staging/media/av7110/av7110_av.c
+@@ -93,7 +93,7 @@ int av7110_record_cb(struct dvb_filter_pes2ts *p2t, u8 *buf, size_t len)
+ 
+ static int dvb_filter_pes2ts_cb(void *priv, unsigned char *data)
+ {
+-	struct dvb_demux_feed *dvbdmxfeed = (struct dvb_demux_feed *) priv;
++	struct dvb_demux_feed *dvbdmxfeed = (struct dvb_demux_feed *)priv;
+ 
+ 	dvbdmxfeed->cb.ts(data, 188, NULL, 0,
+ 			  &dvbdmxfeed->feed.ts, NULL);
 -- 
-2.30.2
+2.25.1
 
