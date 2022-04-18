@@ -2,67 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA989C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 647F0C3525B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345102AbiDROSs (ORCPT
+        id S1344863AbiDROSb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:18:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56522 "EHLO
+        Mon, 18 Apr 2022 10:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244924AbiDRN6F (ORCPT
+        with ESMTP id S244856AbiDRN6A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:58:05 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C31726D9;
-        Mon, 18 Apr 2022 06:08:15 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Mon, 18 Apr 2022 09:58:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80115E6B;
+        Mon, 18 Apr 2022 06:08:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id D29A81F381;
-        Mon, 18 Apr 2022 13:08:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1650287293; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iBYQm7Rp5LG8jKxerzOsfwWsTzE/H7NffrHSL2IyD+s=;
-        b=TocHSoPX9e5EcicfNhzjUIFR8D2OXV/K3lKZJSWWVrMF+nTO7p7lqWZukGYiNMgRhCcI2S
-        HJTiKL4rTD0OvGEQAOmlFBlwQU9KUgEqfF2NSk75WGi21Uhzu2sWGHOdZf5AjIbAxK3aiV
-        lCTohJTbyaE21PBqte+yxlpTjKOPTik=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1650287293;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iBYQm7Rp5LG8jKxerzOsfwWsTzE/H7NffrHSL2IyD+s=;
-        b=xGtN1dHwZEvL/X5HVK+Vrt3cgkkqhFrdYXZs9AO3qJxgafORU/jLMoBegjJTpsRHqcEzFE
-        xlEstEnrU2eBGDAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 68C5D13ACB;
-        Mon, 18 Apr 2022 13:08:13 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Dj9SFr1iXWLcLwAAMHmgww
-        (envelope-from <lhenriques@suse.de>); Mon, 18 Apr 2022 13:08:13 +0000
-Received: from localhost (brahms.olymp [local])
-        by brahms.olymp (OpenSMTPD) with ESMTPA id 150a3546;
-        Mon, 18 Apr 2022 13:08:40 +0000 (UTC)
-From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-Subject: [PATCH] ceph: prevent snapshots to be created in encrypted locked directories
-Date:   Mon, 18 Apr 2022 14:08:39 +0100
-Message-Id: <20220418130839.9862-1-lhenriques@suse.de>
-In-Reply-To: <20220414135122.26821-1-lhenriques@suse.de>
-References: <20220414135122.26821-1-lhenriques@suse.de>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1602760F24;
+        Mon, 18 Apr 2022 13:08:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C590C385A7;
+        Mon, 18 Apr 2022 13:08:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650287288;
+        bh=TCCHLWZjI2lOSY90qAUVqxi++CpwCH2A11H+mYpGMHw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UDbOR7HMznvD82PdYEy1Lgyaeve3FfM+EA0YCPGtEp8TYYOuZHwhI1kEPZTaUR0lx
+         nf5pkQ4HzZ8zUK7mgCLvCmIQi2QOm8stuhnQc+yPTHh2T8vLqZqeZmIfqXcFybUvKO
+         TFuEz19hhuzoUJ9eSnqmkL7tfuxrGty+e0O2vN3s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 114/218] pinctrl/rockchip: Add missing of_node_put() in rockchip_pinctrl_probe
+Date:   Mon, 18 Apr 2022 14:13:00 +0200
+Message-Id: <20220418121202.857520763@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
+References: <20220418121158.636999985@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -70,27 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With snapshot names encryption we can not allow snapshots to be created in
-locked directories because the names wouldn't be encrypted.  This patch
-forces the directory to be unlocked to allow a snapshot to be created.
+From: Miaoqian Lin <linmq006@gmail.com>
 
-Signed-off-by: Luís Henriques <lhenriques@suse.de>
+[ Upstream commit 89388f8730699c259f8090ec435fb43569efe4ac ]
+
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
+
+Fixes: 1e747e59cc4d ("pinctrl: rockchip: base regmap supplied by a syscon")
+Fixes: 14dee8677e19 ("pinctrl: rockchip: let pmu registers be supplied by a syscon")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220307120234.28657-1-linmq006@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/dir.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/pinctrl/pinctrl-rockchip.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
-index f48f1ff20927..93e2f08102a1 100644
---- a/fs/ceph/dir.c
-+++ b/fs/ceph/dir.c
-@@ -1071,6 +1071,10 @@ static int ceph_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
- 		err = -EDQUOT;
- 		goto out;
+diff --git a/drivers/pinctrl/pinctrl-rockchip.c b/drivers/pinctrl/pinctrl-rockchip.c
+index 17827a88b85e..9bcb238c2e12 100644
+--- a/drivers/pinctrl/pinctrl-rockchip.c
++++ b/drivers/pinctrl/pinctrl-rockchip.c
+@@ -2414,6 +2414,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
+ 	node = of_parse_phandle(np, "rockchip,grf", 0);
+ 	if (node) {
+ 		info->regmap_base = syscon_node_to_regmap(node);
++		of_node_put(node);
+ 		if (IS_ERR(info->regmap_base))
+ 			return PTR_ERR(info->regmap_base);
+ 	} else {
+@@ -2450,6 +2451,7 @@ static int rockchip_pinctrl_probe(struct platform_device *pdev)
+ 	node = of_parse_phandle(np, "rockchip,pmu", 0);
+ 	if (node) {
+ 		info->regmap_pmu = syscon_node_to_regmap(node);
++		of_node_put(node);
+ 		if (IS_ERR(info->regmap_pmu))
+ 			return PTR_ERR(info->regmap_pmu);
  	}
-+	if ((op == CEPH_MDS_OP_MKSNAP) && !fscrypt_has_encryption_key(dir)) {
-+		err = -ENOKEY;
-+		goto out;
-+	}
- 
- 
- 	req = ceph_mdsc_create_request(mdsc, op, USE_AUTH_MDS);
+-- 
+2.34.1
+
+
+
