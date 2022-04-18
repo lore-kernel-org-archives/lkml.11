@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF6D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF022C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245567AbiDRO0G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:26:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34454 "EHLO
+        id S1343801AbiDRO0L (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:26:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343604AbiDROOg (ORCPT
+        with ESMTP id S1343727AbiDROOi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:14:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7299838786;
-        Mon, 18 Apr 2022 06:12:12 -0700 (PDT)
+        Mon, 18 Apr 2022 10:14:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D1439157;
+        Mon, 18 Apr 2022 06:12:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19449B80EC4;
-        Mon, 18 Apr 2022 13:12:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AAA4C385A1;
-        Mon, 18 Apr 2022 13:12:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FE6760F61;
+        Mon, 18 Apr 2022 13:12:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 942E3C385AF;
+        Mon, 18 Apr 2022 13:12:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287529;
-        bh=LpqM6oePim4exxIdXfgoXKwgQgXWjEEDgaXDQZkm/BQ=;
+        s=korg; t=1650287542;
+        bh=D9jDLCe4MqfUvLSNeM+CrpvYnD79pR+M4WZpoFClI+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fvumhso2YawudUuli0cyOfeeLC6QTY/42PdoDp20bdGC5Eo3JxQqMDz+RsnRgB1JN
-         hIgZrd3KyNIgrsQCDzv9ZcfGxWGBqB+u1sCT39nt0yDNIErVCusKBkepxLHfEtz6om
-         xBYNtu7v4HaQh8j1bVkc1RrGbNGeYLV5qOlqpWKo=
+        b=eu1OELzEStTt0dNL5A/Pd4yE4Xgm089glfTHDKoHy1e15h3lQC6hTdlSxr6kleC4u
+         EpZnXNehVgJcvA/ghoGTa1BMN7gdjvlCaIwavHPQsIAd3LB5Tl1jdB9k6J6rYhAaO5
+         fkP6G9L5KfaN34qhA2cIr/DJIR8K6r1uf5HBneHE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 190/218] drm/imx: Fix memory leak in imx_pd_connector_get_modes
-Date:   Mon, 18 Apr 2022 14:14:16 +0200
-Message-Id: <20220418121206.717081148@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.9 194/218] x86/pm: Save the MSR validity status at context setup
+Date:   Mon, 18 Apr 2022 14:14:20 +0200
+Message-Id: <20220418121206.989865358@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,41 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-[ Upstream commit bce81feb03a20fca7bbdd1c4af16b4e9d5c0e1d3 ]
+commit 73924ec4d560257004d5b5116b22a3647661e364 upstream.
 
-Avoid leaking the display mode variable if of_get_drm_display_mode
-fails.
+The mechanism to save/restore MSRs during S3 suspend/resume checks for
+the MSR validity during suspend, and only restores the MSR if its a
+valid MSR.  This is not optimal, as an invalid MSR will unnecessarily
+throw an exception for every suspend cycle.  The more invalid MSRs,
+higher the impact will be.
 
-Fixes: 76ecd9c9fb24 ("drm/imx: parallel-display: check return code from of_get_drm_display_mode()")
-Addresses-Coverity-ID: 1443943 ("Resource leak")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Link: https://lore.kernel.org/r/20220108165230.44610-1-jose.exposito89@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Check and save the MSR validity at setup.  This ensures that only valid
+MSRs that are guaranteed to not throw an exception will be attempted
+during suspend.
+
+Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Acked-by: Borislav Petkov <bp@suse.de>
+Cc: stable@vger.kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/imx/parallel-display.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/x86/power/cpu.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/imx/parallel-display.c b/drivers/gpu/drm/imx/parallel-display.c
-index d796ada2a47a..924a11232b84 100644
---- a/drivers/gpu/drm/imx/parallel-display.c
-+++ b/drivers/gpu/drm/imx/parallel-display.c
-@@ -83,8 +83,10 @@ static int imx_pd_connector_get_modes(struct drm_connector *connector)
- 		ret = of_get_drm_display_mode(np, &imxpd->mode,
- 					      &imxpd->bus_flags,
- 					      OF_USE_NATIVE_MODE);
--		if (ret)
-+		if (ret) {
-+			drm_mode_destroy(connector->dev, mode);
- 			return ret;
-+		}
+--- a/arch/x86/power/cpu.c
++++ b/arch/x86/power/cpu.c
+@@ -41,7 +41,8 @@ static void msr_save_context(struct save
+ 	struct saved_msr *end = msr + ctxt->saved_msrs.num;
  
- 		drm_mode_copy(mode, &imxpd->mode);
- 		mode->type |= DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
--- 
-2.35.1
-
+ 	while (msr < end) {
+-		msr->valid = !rdmsrl_safe(msr->info.msr_no, &msr->info.reg.q);
++		if (msr->valid)
++			rdmsrl(msr->info.msr_no, msr->info.reg.q);
+ 		msr++;
+ 	}
+ }
+@@ -419,8 +420,10 @@ static int msr_build_context(const u32 *
+ 	}
+ 
+ 	for (i = saved_msrs->num, j = 0; i < total_num; i++, j++) {
++		u64 dummy;
++
+ 		msr_array[i].info.msr_no	= msr_id[j];
+-		msr_array[i].valid		= false;
++		msr_array[i].valid		= !rdmsrl_safe(msr_id[j], &dummy);
+ 		msr_array[i].info.reg.q		= 0;
+ 	}
+ 	saved_msrs->num   = total_num;
 
 
