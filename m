@@ -2,92 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78AAFC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:31:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F42CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:32:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346233AbiDRQcp (ORCPT
+        id S1346376AbiDRQeu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 12:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32928 "EHLO
+        Mon, 18 Apr 2022 12:34:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346302AbiDRQc3 (ORCPT
+        with ESMTP id S1346373AbiDRQeK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 12:32:29 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301F53122A
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:29:42 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id s137so19766848pgs.5
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:29:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=NnfylWN7MavTPT553g+jrwdoRsttSRF9ea+q5wroK2g=;
-        b=FmFMoYGTefW+n/xauP+X3a81pJmhujkSpoC6XDS2NTi1wBUImQdjOqEfN6Nay2pmVa
-         Q5fQR2dg3WNuUjHX539UdqZUfSlMEAJNGEhTU9UETcjtbMynbN+EqOJaQ6ENpO9S9hvM
-         9EeFHRcnfd+Q2kjD+POOiV8QX1j+qQZQ0kBMl8FeNh+YuQTqWQ7rL4fi986KE2zwcAnG
-         cJTGUoKsXGVGybL0pnBBKuY+dJknC+2iDSTgixvXEVwb11dHlmP55ra87TkKVbohLZY8
-         CpvSQsgBn1lU/Q7PP91uJCscANYgHSy1AXQpJqUMMXF1I4i0ek6+Vvi5DGDRWh8m2AfF
-         P+FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=NnfylWN7MavTPT553g+jrwdoRsttSRF9ea+q5wroK2g=;
-        b=5ibKL9mc9XsNPmr3G3MxcCW0AwKzV97X59/sVIPEPse0rw3soYaU7SOt/RdetBbdUG
-         66nBVjMaCukR0O4KpB/gncX0AnrpdokakMZP8Wh/MHMPr8g1uzGCrAgo8f91pGJbYog5
-         GzZMMFyYfixtOWGRLcp4PTuT/Xn4pGObM+gwji2xw1P+fUiQDIqYGw15etcCs+hKlQlJ
-         1lsSzOxyStwVkBQ/a6CXicXMT5iZdDHZ3IEIWEVT2VoU/rOrJAQVp7NtCSq7mSqEhmyy
-         f5ZQJkadRXvvTrWzQABUZzCOcpcnrHaAqFVvIIBhuShHM0s40a5hkE2Hi6LPhZOcwJwU
-         QCWA==
-X-Gm-Message-State: AOAM530fiU+SCY+KVCpC8Kci3k9wZokumx2lKCHN0nUjHygsVvEdouVy
-        07Aoe0engEJETQiIPBC4MlI=
-X-Google-Smtp-Source: ABdhPJxA2Go+r6mKW0OHbmQH7KoacX0ohuNjA2Mpy67TbAnVASS2Blt8F6TRSKoAqkCYwryj0oWRMg==
-X-Received: by 2002:a05:6a00:218d:b0:4fd:f7a4:d4ad with SMTP id h13-20020a056a00218d00b004fdf7a4d4admr12930534pfi.83.1650299381585;
-        Mon, 18 Apr 2022 09:29:41 -0700 (PDT)
-Received: from aliyar-HP-Laptop-15-da1xxx.domain.name ([14.139.241.88])
-        by smtp.gmail.com with ESMTPSA id h18-20020a63c012000000b0039cc3c323f7sm13295602pgg.33.2022.04.18.09.29.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 09:29:41 -0700 (PDT)
-From:   Aliya Rahmani <aliyarahmani786@gmail.com>
-To:     clabbe@baylibre.com
-Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        outreachy@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Aliya Rahmani <aliyarahmani786@gmail.com>
-Subject: [PATCH v2 2/3] staging: media: zoran: else is not generally useful after a break or return
-Date:   Mon, 18 Apr 2022 21:52:46 +0530
-Message-Id: <20220418162244.15346-3-aliyarahmani786@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220418162244.15346-1-aliyarahmani786@gmail.com>
-References: <20220418162244.15346-1-aliyarahmani786@gmail.com>
+        Mon, 18 Apr 2022 12:34:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9920A31370
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:31:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB498612B9
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:31:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A2EEC385A1;
+        Mon, 18 Apr 2022 16:31:17 +0000 (UTC)
+Date:   Mon, 18 Apr 2022 12:31:16 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     zgpeng <zgpeng.linux@gmail.com>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] sched/fair: Fix the scene where group's imbalance is
+ set incorrectly
+Message-ID: <20220418123116.2e4f6b1e@gandalf.local.home>
+In-Reply-To: <1649566716-24687-1-git-send-email-zgpeng@tencent.com>
+References: <1649566716-24687-1-git-send-email-zgpeng@tencent.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the else without affecting the logic. Fixes the checkpatch warning: else is not generally useful after a break or return
+On Sun, 10 Apr 2022 12:58:36 +0800
+zgpeng <zgpeng.linux@gmail.com> wrote:
 
-Signed-off-by: Aliya Rahmani <aliyarahmani786@gmail.com>
----
- drivers/staging/media/zoran/videocodec.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> The specific trigger scenarios are as follows. In the
+> load_balance function, the first loop picks out the busiest
+> cpu. During the process of pulling the process from the
+> busiest cpu, it is found that all tasks cannot be run on the
+> DST cpu. At this time, both LBF_SOME_PINNED andLBF_ALL_PINNED
+> of env.flags are set. Because balance fails and LBF_SOME_PINNED
+> is set, the parent group's mbalance flag will be set to 1. At
+> the same time, because LBF_ALL_PINNED is set, it will re-enter
+> the second cycle to select another busiest cpu to pull the process.
+> Because the busiest CPU has changed, the process can be pulled to
+> DST cpu, so it is possible to reach a balance state.
 
-diff --git a/drivers/staging/media/zoran/videocodec.c b/drivers/staging/media/zoran/videocodec.c
-index 16a1f23a7f19..19732a47c8bd 100644
---- a/drivers/staging/media/zoran/videocodec.c
-+++ b/drivers/staging/media/zoran/videocodec.c
-@@ -98,9 +98,8 @@ struct videocodec *videocodec_attach(struct videocodec_master *master)
- 
- 				h->attached += 1;
- 				return codec;
--			} else {
--				kfree(codec);
- 			}
-+			kfree(codec);
- 		}
- 		h = h->next;
- 	}
--- 
-2.25.1
+But is the next cpu selected really the busiest CPU? Or is the original
+still the busiest but doesn't have any tasks that can migrate to the dst
+CPU? Does it really mean the parent is now unbalanced?
 
+-- Steve
+
+
+> 
+> But at this time, the parent group's imbalance flag is not set
+> correctly again. As a result, the load balance is successfully
+> achieved, but the parent group's imbalance flag is incorrectly
+> set to 1. In this case, the upper-layer load balance will
+> erroneously select this domain as the busiest group, thereby
+> breaking the balance.
