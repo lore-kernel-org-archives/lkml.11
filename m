@@ -2,79 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC53C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 156D0C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241976AbiDRNRu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:17:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
+        id S242091AbiDRNSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:18:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242133AbiDRM7i (ORCPT
+        with ESMTP id S242305AbiDRM7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B272F03F;
-        Mon, 18 Apr 2022 05:40:12 -0700 (PDT)
+        Mon, 18 Apr 2022 08:59:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BB430572;
+        Mon, 18 Apr 2022 05:40:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12833611CF;
-        Mon, 18 Apr 2022 12:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 72F6CC385AB;
-        Mon, 18 Apr 2022 12:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650285611;
-        bh=UjHumYdc82wnlGeLD8eIQ3nUM8EQ3vQ7nmLedHMKBXg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YgdYlJ9AqdKVrWfttDHxPsYex/q7y6zIsnrHEBEFu9URRRuVnheH8cfMaF+y77DBh
-         X+PCT7d1zPmNdaSX+AAt2e/wn/U0nuNC34dLHQLjJnXZ2oY1meYMNEvwp2nCx4RtSH
-         YLNwCvomYiBKPbyrrVk11ETL/nvxKGEGIi8mSBtyj1tyvAthzqDZ01cYQFxNfGybc1
-         W51eH+w0DjNIMie4pHX3vCUwLL66ZzGkE8Fu8nJfyXWCOakpCnMpbwtDuEXDwbxVOd
-         NtTC+E9BCRe60UUv9ZrG2prmifxEFKHwp0kn5NFRmf9kGoGUJQkH+qWPB/cZWd7qcw
-         onI1dZs96VQWA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 58A83E8DD13;
-        Mon, 18 Apr 2022 12:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F2C1B80EDE;
+        Mon, 18 Apr 2022 12:40:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53AFAC385A8;
+        Mon, 18 Apr 2022 12:40:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650285635;
+        bh=6NC767/Z/leFqxlxLmfAQXdbf47ApGvrW2i1y2OQ/js=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Rh1uObnc0YNZAiwHwzvWtHyJWJpKbEjFiNBUDB3YsVRqr4WjoePOYhWJ/vflAw/ft
+         vou5sPD5vzuV6gLPSxrMlQ2WCGE4y2APO7AFzCH9h3dy4VPm0jTEx71yR61JJDZr8A
+         88kvbkOal47P4ALGniVINcGZsUy6Ko4733t+IzyU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.10 080/105] btrfs: mark resumed async balance as writing
+Date:   Mon, 18 Apr 2022 14:13:22 +0200
+Message-Id: <20220418121148.904849899@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
+References: <20220418121145.140991388@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: atlantic: invert deep par in pm functions, preventing
- null derefs
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165028561135.26453.17217915183447099984.git-patchwork-notify@kernel.org>
-Date:   Mon, 18 Apr 2022 12:40:11 +0000
-References: <87sfqaa8n5.fsf@posteo.de>
-In-Reply-To: <87sfqaa8n5.fsf@posteo.de>
-To:     Manuel Ullmann <labre@posteo.de>
-Cc:     irusskikh@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, regressions@lists.linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+From: Naohiro Aota <naohiro.aota@wdc.com>
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+commit a690e5f2db4d1dca742ce734aaff9f3112d63764 upstream.
 
-On Mon, 18 Apr 2022 12:17:02 +0000 you wrote:
-> From: Manuel Ullmann <labre@posteo.de>
-> >From 6c4cd8210835489da84bf4ee5049945dc0f2c986 Mon Sep 17 00:00:00 2001
-> Date: Mon, 18 Apr 2022 00:20:01 +0200
-> 
-> This will reset deeply on freeze and thaw instead of suspend and
-> resume and prevent null pointer dereferences of the uninitialized ring
-> 0 buffer while thawing.
-> 
-> [...]
+When btrfs balance is interrupted with umount, the background balance
+resumes on the next mount. There is a potential deadlock with FS freezing
+here like as described in commit 26559780b953 ("btrfs: zoned: mark
+relocation as writing"). Mark the process as sb_writing to avoid it.
 
-Here is the summary with links:
-  - net: atlantic: invert deep par in pm functions, preventing null derefs
-    https://git.kernel.org/netdev/net/c/cbe6c3a8f8f4
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+CC: stable@vger.kernel.org # 4.9+
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/btrfs/volumes.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -4220,10 +4220,12 @@ static int balance_kthread(void *data)
+ 	struct btrfs_fs_info *fs_info = data;
+ 	int ret = 0;
+ 
++	sb_start_write(fs_info->sb);
+ 	mutex_lock(&fs_info->balance_mutex);
+ 	if (fs_info->balance_ctl)
+ 		ret = btrfs_balance(fs_info, fs_info->balance_ctl, NULL);
+ 	mutex_unlock(&fs_info->balance_mutex);
++	sb_end_write(fs_info->sb);
+ 
+ 	return ret;
+ }
 
 
