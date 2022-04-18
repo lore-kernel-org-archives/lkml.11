@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2385C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 105CEC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245171AbiDRN6j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41286 "EHLO
+        id S243905AbiDRN7N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:59:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242681AbiDRNdC (ORCPT
+        with ESMTP id S242045AbiDRNgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:33:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1EB201B7;
-        Mon, 18 Apr 2022 05:57:49 -0700 (PDT)
+        Mon, 18 Apr 2022 09:36:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A581B24F00;
+        Mon, 18 Apr 2022 05:58:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAF9661259;
-        Mon, 18 Apr 2022 12:57:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0491EC385A1;
-        Mon, 18 Apr 2022 12:57:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA42A612D0;
+        Mon, 18 Apr 2022 12:58:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9E75C385A1;
+        Mon, 18 Apr 2022 12:58:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286668;
-        bh=lo7FtlyJVfJXLnY912gcwlLUcCiexeAFG/oWgZWvNmA=;
+        s=korg; t=1650286690;
+        bh=3oTTFOn4x8U2QCSUJl8IaTqxzpbx4bG6EGPFTDb8hoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CoSOLRpCs8zvLJJ2I8VOuwl3x6f62oFzcNvWthJ38owO6YW8EeNVc3GYnssLhKfri
-         huA7q1OhhIPpzLuj12hVx06sqlpL+4xfipBh074GmVoCMe8L7UxEg46e6SEUlVFJX7
-         Ee4YcU4A1N0ONsVldNpQ2iwfEf+kGVUksfvJCEcY=
+        b=a5s50/rtmHq1o5Sur/PJWIN/zJsXtOs3OSz6gfzbZ+TLvlNPBPMP3yQNyt0WFTviS
+         3aME7xlB4GlYyXer1tba01Ifz7dHPWaN+agvYH9MZhI3YrmnJbY53HxqsQIBQm0wqd
+         mKY2BzlxYIVujJg/oTW+XEixwB/jQikC4/OFI0QE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lotus Fenn <lotusf@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Like Xu <likexu@tencent.com>,
-        David Dunn <daviddunn@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Daniel=20Gonz=C3=A1lez=20Cabanelas?= <dgcbueu@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 206/284] KVM: x86/svm: Clear reserved bits written to PerfEvtSeln MSRs
-Date:   Mon, 18 Apr 2022 14:13:07 +0200
-Message-Id: <20220418121217.579718160@linuxfoundation.org>
+Subject: [PATCH 4.14 174/284] media: cx88-mpeg: clear interrupt status register before streaming video
+Date:   Mon, 18 Apr 2022 14:12:35 +0200
+Message-Id: <20220418121216.689136716@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -52,74 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jim Mattson <jmattson@google.com>
+From: Daniel González Cabanelas <dgcbueu@gmail.com>
 
-[ Upstream commit 9b026073db2f1ad0e4d8b61c83316c8497981037 ]
+[ Upstream commit 56cb61f70e547e1b0cdfe6ff5a1f1ce6242e6d96 ]
 
-AMD EPYC CPUs never raise a #GP for a WRMSR to a PerfEvtSeln MSR. Some
-reserved bits are cleared, and some are not. Specifically, on
-Zen3/Milan, bits 19 and 42 are not cleared.
+Some cx88 video cards may have transport stream status interrupts set
+to 1 from cold start, causing errors like this:
 
-When emulating such a WRMSR, KVM should not synthesize a #GP,
-regardless of which bits are set. However, undocumented bits should
-not be passed through to the hardware MSR. So, rather than checking
-for reserved bits and synthesizing a #GP, just clear the reserved
-bits.
+  cx88xx: cx88_print_irqbits: core:irq mpeg  [0x100000] ts_err?*
+  cx8802: cx8802_mpeg_irq: mpeg:general errors: 0x00100000
 
-This may seem pedantic, but since KVM currently does not support the
-"Host/Guest Only" bits (41:40), it is necessary to clear these bits
-rather than synthesizing #GP, because some popular guests (e.g Linux)
-will set the "Host Only" bit even on CPUs that don't support
-EFER.SVME, and they don't expect a #GP.
+According to CX2388x datasheet, the interrupt status register should be
+cleared before enabling IRQs to stream video.
 
-For example,
+Fix it by clearing the Transport Stream Interrupt Status register.
 
-root@Ubuntu1804:~# perf stat -e r26 -a sleep 1
-
- Performance counter stats for 'system wide':
-
-                 0      r26
-
-       1.001070977 seconds time elapsed
-
-Feb 23 03:59:58 Ubuntu1804 kernel: [  405.379957] unchecked MSR access error: WRMSR to 0xc0010200 (tried to write 0x0000020000130026) at rIP: 0xffffffff9b276a28 (native_write_msr+0x8/0x30)
-Feb 23 03:59:58 Ubuntu1804 kernel: [  405.379958] Call Trace:
-Feb 23 03:59:58 Ubuntu1804 kernel: [  405.379963]  amd_pmu_disable_event+0x27/0x90
-
-Fixes: ca724305a2b0 ("KVM: x86/vPMU: Implement AMD vPMU code for KVM")
-Reported-by: Lotus Fenn <lotusf@google.com>
-Signed-off-by: Jim Mattson <jmattson@google.com>
-Reviewed-by: Like Xu <likexu@tencent.com>
-Reviewed-by: David Dunn <daviddunn@google.com>
-Message-Id: <20220226234131.2167175-1-jmattson@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Daniel González Cabanelas <dgcbueu@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/pmu_amd.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/media/pci/cx88/cx88-mpeg.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/x86/kvm/pmu_amd.c b/arch/x86/kvm/pmu_amd.c
-index cd944435dfbd..e0473c72062e 100644
---- a/arch/x86/kvm/pmu_amd.c
-+++ b/arch/x86/kvm/pmu_amd.c
-@@ -139,12 +139,10 @@ static int amd_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	/* MSR_K7_EVNTSELn */
- 	pmc = get_gp_pmc(pmu, msr, MSR_K7_EVNTSEL0);
- 	if (pmc) {
--		if (data == pmc->eventsel)
--			return 0;
--		if (!(data & pmu->reserved_bits)) {
-+		data &= ~pmu->reserved_bits;
-+		if (data != pmc->eventsel)
- 			reprogram_gp_counter(pmc, data);
--			return 0;
--		}
-+		return 0;
- 	}
+diff --git a/drivers/media/pci/cx88/cx88-mpeg.c b/drivers/media/pci/cx88/cx88-mpeg.c
+index 52ff00ebd4bd..281eca525340 100644
+--- a/drivers/media/pci/cx88/cx88-mpeg.c
++++ b/drivers/media/pci/cx88/cx88-mpeg.c
+@@ -171,6 +171,9 @@ int cx8802_start_dma(struct cx8802_dev    *dev,
+ 	cx_write(MO_TS_GPCNTRL, GP_COUNT_CONTROL_RESET);
+ 	q->count = 0;
  
- 	return 1;
++	/* clear interrupt status register */
++	cx_write(MO_TS_INTSTAT,  0x1f1111);
++
+ 	/* enable irqs */
+ 	dprintk(1, "setting the interrupt mask\n");
+ 	cx_set(MO_PCI_INTMSK, core->pci_irqmask | PCI_INT_TSINT);
 -- 
-2.35.1
+2.34.1
 
 
 
