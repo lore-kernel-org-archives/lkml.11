@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBE5C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AEE6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240318AbiDRNFs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:05:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51094 "EHLO
+        id S233814AbiDRNFw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240308AbiDRMzK (ORCPT
+        with ESMTP id S240328AbiDRMzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:55:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D8B764F;
-        Mon, 18 Apr 2022 05:36:21 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4A8B7F5;
+        Mon, 18 Apr 2022 05:36:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74DB461033;
-        Mon, 18 Apr 2022 12:36:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69EC2C385A7;
-        Mon, 18 Apr 2022 12:36:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1913061033;
+        Mon, 18 Apr 2022 12:36:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C889C385A7;
+        Mon, 18 Apr 2022 12:36:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285380;
-        bh=OheKLmfXH/0ETv6AsmLPpvnGotO5nZR5o2vxS0ci7Fg=;
+        s=korg; t=1650285390;
+        bh=bGYkXoPOnvp4MwQT0EEyeTjnTv8wsS679jpaRsBAs/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=STXlt6fljl6e5zLUIR7nH75gYgpMFD51hdTKuvQXLLWEp7NoqwiYUTe9veAC2znKR
-         BUG7JE1JTC/jNM76KiEHZsXZdc78XBC/8pTU10VGINF1gsBw1PsqqXUGClmGwTIwYc
-         x6RtZ5BkoQ+nhgKcK5xfrzNZnv82QCA+ShJH0ueg=
+        b=0CD8BR/CN2w1vNcU6iQRAHFNxYSLFnerDlp3oypZLOvS6dR2L3qjuAmqK9Li2Ix7D
+         0c+fI/DsBx7jDnylJC32n6x4Cx9+EK2wFXoOKU9v2PuRD3ZlMwrwpsM0ZdSGe156Zl
+         7YbGsaZcAIUAXpEmOpR3n0YinM4hThGc+o72k4H0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nadav Amit <namit@vmware.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.15 172/189] smp: Fix offline cpu check in flush_smp_call_function_queue()
-Date:   Mon, 18 Apr 2022 14:13:12 +0200
-Message-Id: <20220418121207.655441253@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes@sipsolutions.net>,
+        Anna-Maria Behnsen <anna-maria@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Frederic Weisbecker <frederic@kernel.org>
+Subject: [PATCH 5.15 175/189] timers: Fix warning condition in __run_timers()
+Date:   Mon, 18 Apr 2022 14:13:15 +0200
+Message-Id: <20220418121207.873707302@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -48,42 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nadav Amit <namit@vmware.com>
+From: Anna-Maria Behnsen <anna-maria@linutronix.de>
 
-commit 9e949a3886356fe9112c6f6f34a6e23d1d35407f upstream.
+commit c54bc0fc84214b203f7a0ebfd1bd308ce2abe920 upstream.
 
-The check in flush_smp_call_function_queue() for callbacks that are sent
-to offline CPUs currently checks whether the queue is empty.
+When the timer base is empty, base::next_expiry is set to base::clk +
+NEXT_TIMER_MAX_DELTA and base::next_expiry_recalc is false. When no timer
+is queued until jiffies reaches base::next_expiry value, the warning for
+not finding any expired timer and base::next_expiry_recalc is false in
+__run_timers() triggers.
 
-However, flush_smp_call_function_queue() has just deleted all the
-callbacks from the queue and moved all the entries into a local list.
-This checks would only be positive if some callbacks were added in the
-short time after llist_del_all() was called. This does not seem to be
-the intention of this check.
+To prevent triggering the warning in this valid scenario
+base::timers_pending needs to be added to the warning condition.
 
-Change the check to look at the local list to which the entries were
-moved instead of the queue from which all the callbacks were just
-removed.
-
-Fixes: 8d056c48e4862 ("CPU hotplug, smp: flush any pending IPI callbacks before CPU offline")
-Signed-off-by: Nadav Amit <namit@vmware.com>
+Fixes: 31cd0e119d50 ("timers: Recalculate next timer interrupt only when necessary")
+Reported-by: Johannes Berg <johannes@sipsolutions.net>
+Signed-off-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/20220319072015.1495036-1-namit@vmware.com
+Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+Link: https://lore.kernel.org/r/20220405191732.7438-3-anna-maria@linutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/smp.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/time/timer.c |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
---- a/kernel/smp.c
-+++ b/kernel/smp.c
-@@ -579,7 +579,7 @@ static void flush_smp_call_function_queu
- 
- 	/* There shouldn't be any pending callbacks on an offline CPU. */
- 	if (unlikely(warn_cpu_offline && !cpu_online(smp_processor_id()) &&
--		     !warned && !llist_empty(head))) {
-+		     !warned && entry != NULL)) {
- 		warned = true;
- 		WARN(1, "IPI on offline CPU %d\n", smp_processor_id());
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -1722,11 +1722,14 @@ static inline void __run_timers(struct t
+ 	       time_after_eq(jiffies, base->next_expiry)) {
+ 		levels = collect_expired_timers(base, heads);
+ 		/*
+-		 * The only possible reason for not finding any expired
+-		 * timer at this clk is that all matching timers have been
+-		 * dequeued.
++		 * The two possible reasons for not finding any expired
++		 * timer at this clk are that all matching timers have been
++		 * dequeued or no timer has been queued since
++		 * base::next_expiry was set to base::clk +
++		 * NEXT_TIMER_MAX_DELTA.
+ 		 */
+-		WARN_ON_ONCE(!levels && !base->next_expiry_recalc);
++		WARN_ON_ONCE(!levels && !base->next_expiry_recalc
++			     && base->timers_pending);
+ 		base->clk++;
+ 		base->next_expiry = __next_timer_interrupt(base);
  
 
 
