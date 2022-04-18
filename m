@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03381C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6176C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240047AbiDRMnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
+        id S240068AbiDRMnj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:43:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240135AbiDRMdv (ORCPT
+        with ESMTP id S239263AbiDRMco (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8202B201A6;
-        Mon, 18 Apr 2022 05:27:14 -0700 (PDT)
+        Mon, 18 Apr 2022 08:32:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B07126112;
+        Mon, 18 Apr 2022 05:24:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E84E61012;
-        Mon, 18 Apr 2022 12:27:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59A54C385A1;
-        Mon, 18 Apr 2022 12:27:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E688860FD7;
+        Mon, 18 Apr 2022 12:24:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA47EC385A7;
+        Mon, 18 Apr 2022 12:24:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284823;
-        bh=IerkZ3grBNTOfrFLSCzoo3e0r4RUyaZwXYa50HoRnMI=;
+        s=korg; t=1650284664;
+        bh=z/Mk8EdyPU3wldlUmqLKlaYC3CgDe+9Ov5RINbFMnyk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XrkEhb0szUH9lhly89WfFwtOaSRsZSSzYqagQF/T8VLmdWWrW3gnhYTj0L/QWZoQJ
-         4aTxTvmQgcClMMmH4OxiDlOG8qTQlUdJpTogkYNW3JfB8ref832KA9Ke4uQfTdbxyU
-         X44xpjPMNDkvsOv7FD7WULGuzfhYV4NgrW/vs+b8=
+        b=llNipg52terkyTnp1ZXNXFq8rmAUPJuCbCg1gaWG5SmcWgoB/9YPzRn1H1gqttN26
+         rJtXVBdlucWCLE7/5OoR4aQVwsWEL4bqw+fplhUeKU8qK3KGMguxd9nLFotG0MK9IH
+         YdPCezhiXgsowTTqUBCmkw18KWsQmrXs3IucC6/w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 020/189] ALSA: als4000: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:10:40 +0200
-Message-Id: <20220418121201.089491317@linuxfoundation.org>
+        stable@vger.kernel.org, Bagas Sanjaya <bagasdotme@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.17 189/219] ath9k: Properly clear TX status area before reporting to mac80211
+Date:   Mon, 18 Apr 2022 14:12:38 +0200
+Message-Id: <20220418121212.166178489@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
-References: <20220418121200.312988959@linuxfoundation.org>
+In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
+References: <20220418121203.462784814@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,53 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Toke Høiland-Jørgensen <toke@toke.dk>
 
-commit d616a0246da88d811f9f4c3aa83003c05efd3af0 upstream.
+commit 037250f0a45cf9ecf5b52d4b9ff8eadeb609c800 upstream.
 
-The previous cleanup with devres may lead to the incorrect release
-orders at the probe error handling due to the devres's nature.  Until
-we register the card, snd_card_free() has to be called at first for
-releasing the stuff properly when the driver tries to manage and
-release the stuff via card->private_free().
+The ath9k driver was not properly clearing the status area in the
+ieee80211_tx_info struct before reporting TX status to mac80211. Instead,
+it was manually filling in fields, which meant that fields introduced later
+were left as-is.
 
-This patch fixes it by calling snd_card_free() on the error from the
-probe callback using a new helper function.
+Conveniently, mac80211 actually provides a helper to zero out the status
+area, so use that to make sure we zero everything.
 
-Fixes: 0e175f665960 ("ALSA: als4000: Allocate resources with device-managed APIs")
+The last commit touching the driver function writing the status information
+seems to have actually been fixing an issue that was also caused by the
+area being uninitialised; but it only added clearing of a single field
+instead of the whole struct. That is now redundant, though, so revert that
+commit and use it as a convenient Fixes tag.
+
+Fixes: cc591d77aba1 ("ath9k: Make sure to zero status.tx_time before reporting TX status")
+Reported-by: Bagas Sanjaya <bagasdotme@gmail.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-6-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220330164409.16645-1-toke@toke.dk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/als4000.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath9k/xmit.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/sound/pci/als4000.c
-+++ b/sound/pci/als4000.c
-@@ -806,8 +806,8 @@ static void snd_card_als4000_free( struc
- 	snd_als4000_free_gameport(acard);
- }
+--- a/drivers/net/wireless/ath/ath9k/xmit.c
++++ b/drivers/net/wireless/ath/ath9k/xmit.c
+@@ -2553,6 +2553,8 @@ static void ath_tx_rc_status(struct ath_
+ 	struct ath_hw *ah = sc->sc_ah;
+ 	u8 i, tx_rateindex;
  
--static int snd_card_als4000_probe(struct pci_dev *pci,
--				  const struct pci_device_id *pci_id)
-+static int __snd_card_als4000_probe(struct pci_dev *pci,
-+				    const struct pci_device_id *pci_id)
- {
- 	static int dev;
- 	struct snd_card *card;
-@@ -930,6 +930,12 @@ static int snd_card_als4000_probe(struct
- 	return 0;
- }
- 
-+static int snd_card_als4000_probe(struct pci_dev *pci,
-+				  const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_card_als4000_probe(pci, pci_id));
-+}
++	ieee80211_tx_info_clear_status(tx_info);
 +
- #ifdef CONFIG_PM_SLEEP
- static int snd_als4000_suspend(struct device *dev)
- {
+ 	if (txok)
+ 		tx_info->status.ack_signal = ts->ts_rssi;
+ 
+@@ -2595,9 +2597,6 @@ static void ath_tx_rc_status(struct ath_
+ 	}
+ 
+ 	tx_info->status.rates[tx_rateindex].count = ts->ts_longretry + 1;
+-
+-	/* we report airtime in ath_tx_count_airtime(), don't report twice */
+-	tx_info->status.tx_time = 0;
+ }
+ 
+ static void ath_tx_processq(struct ath_softc *sc, struct ath_txq *txq)
 
 
