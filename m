@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E864EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:36:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 612FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243047AbiDRNh3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:37:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53914 "EHLO
+        id S243256AbiDRNhd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243939AbiDRNKh (ORCPT
+        with ESMTP id S241867AbiDRNIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:10:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C2F21E02;
-        Mon, 18 Apr 2022 05:50:14 -0700 (PDT)
+        Mon, 18 Apr 2022 09:08:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70E42C655;
+        Mon, 18 Apr 2022 05:48:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 956A3B80E4E;
-        Mon, 18 Apr 2022 12:50:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD736C385A1;
-        Mon, 18 Apr 2022 12:50:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FE3961268;
+        Mon, 18 Apr 2022 12:48:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24C6BC385A7;
+        Mon, 18 Apr 2022 12:48:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286211;
-        bh=OpD1BDYPwMtTDZCSK+H85PSOkBIsB6lrv4Odz2brAJk=;
+        s=korg; t=1650286085;
+        bh=q1vKdk3kHmzjciSUyf4Qz2XI3CxCsuIyWQCjFJhdjUc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jea9xpaH4wHkPLul5G9GWIbjEKme3/6AFcz/ru3vPrV4+DFqC4xNyxhuT9CEMfnng
-         3LCXPh7Oi0b4TL+cx6RS2FyEUaWyRVess4sRSFeJlAzM7a6ITffQSyh6N4CWtXRxfn
-         C/REil9/dSwrniwxMtUAOoWgspdEw0kkjgTBLo8U=
+        b=lRmzWHVxW/MQ+YHgMGIShwiN50PuL8WByPkmhva/w6XNefmJ6TUXAx4Nmgfi///df
+         tR/+yaBp7jeQfQcVG/X8B1GT4rJa4EqXSQg31yFDNwtPz6Pl4Jd3aWeg/LNiypb3r2
+         UcTnppXLx2xCXlpdP17WtqKZfP+pzMrszyGVIbk4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
-        Petr Vorel <pvorel@suse.cz>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 063/284] crypto: vmx - add missing dependencies
-Date:   Mon, 18 Apr 2022 14:10:44 +0200
-Message-Id: <20220418121212.483293177@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Sam Protsenko <semen.protsenko@linaro.org>,
+        Chanho Park <chanho61.park@samsung.com>
+Subject: [PATCH 4.14 024/284] pinctrl: samsung: drop pin banks references on error paths
+Date:   Mon, 18 Apr 2022 14:10:05 +0200
+Message-Id: <20220418121211.384754947@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,62 +50,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Vorel <pvorel@suse.cz>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-[ Upstream commit 647d41d3952d726d4ae49e853a9eff68ebad3b3f ]
+commit 50ebd19e3585b9792e994cfa8cbee8947fe06371 upstream.
 
-vmx-crypto module depends on CRYPTO_AES, CRYPTO_CBC, CRYPTO_CTR or
-CRYPTO_XTS, thus add them.
+The driver iterates over its devicetree children with
+for_each_child_of_node() and stores for later found node pointer.  This
+has to be put in error paths to avoid leak during re-probing.
 
-These dependencies are likely to be enabled, but if
-CRYPTO_DEV_VMX=y && !CRYPTO_MANAGER_DISABLE_TESTS
-and either of CRYPTO_AES, CRYPTO_CBC, CRYPTO_CTR or CRYPTO_XTS is built
-as module or disabled, alg_test() from crypto/testmgr.c complains during
-boot about failing to allocate the generic fallback implementations
-(2 == ENOENT):
-
-[    0.540953] Failed to allocate xts(aes) fallback: -2
-[    0.541014] alg: skcipher: failed to allocate transform for p8_aes_xts: -2
-[    0.541120] alg: self-tests for p8_aes_xts (xts(aes)) failed (rc=-2)
-[    0.544440] Failed to allocate ctr(aes) fallback: -2
-[    0.544497] alg: skcipher: failed to allocate transform for p8_aes_ctr: -2
-[    0.544603] alg: self-tests for p8_aes_ctr (ctr(aes)) failed (rc=-2)
-[    0.547992] Failed to allocate cbc(aes) fallback: -2
-[    0.548052] alg: skcipher: failed to allocate transform for p8_aes_cbc: -2
-[    0.548156] alg: self-tests for p8_aes_cbc (cbc(aes)) failed (rc=-2)
-[    0.550745] Failed to allocate transformation for 'aes': -2
-[    0.550801] alg: cipher: Failed to load transform for p8_aes: -2
-[    0.550892] alg: self-tests for p8_aes (aes) failed (rc=-2)
-
-Fixes: c07f5d3da643 ("crypto: vmx - Adding support for XTS")
-Fixes: d2e3ae6f3aba ("crypto: vmx - Enabling VMX module for PPC64")
-
-Suggested-by: Nicolai Stange <nstange@suse.de>
-Signed-off-by: Petr Vorel <pvorel@suse.cz>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: ab663789d697 ("pinctrl: samsung: Match pin banks with their device nodes")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+Reviewed-by: Chanho Park <chanho61.park@samsung.com>
+Link: https://lore.kernel.org/r/20220111201426.326777-2-krzysztof.kozlowski@canonical.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/vmx/Kconfig | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/pinctrl/samsung/pinctrl-samsung.c |   30 +++++++++++++++++++++++-------
+ 1 file changed, 23 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/crypto/vmx/Kconfig b/drivers/crypto/vmx/Kconfig
-index c3d524ea6998..f39eeca87932 100644
---- a/drivers/crypto/vmx/Kconfig
-+++ b/drivers/crypto/vmx/Kconfig
-@@ -1,7 +1,11 @@
- config CRYPTO_DEV_VMX_ENCRYPT
- 	tristate "Encryption acceleration support on P8 CPU"
- 	depends on CRYPTO_DEV_VMX
-+	select CRYPTO_AES
-+	select CRYPTO_CBC
-+	select CRYPTO_CTR
- 	select CRYPTO_GHASH
-+	select CRYPTO_XTS
- 	default m
- 	help
- 	  Support for VMX cryptographic acceleration instructions on Power8 CPU.
--- 
-2.34.1
-
+--- a/drivers/pinctrl/samsung/pinctrl-samsung.c
++++ b/drivers/pinctrl/samsung/pinctrl-samsung.c
+@@ -975,6 +975,16 @@ samsung_pinctrl_get_soc_data_for_of_alia
+ 	return &(of_data->ctrl[id]);
+ }
+ 
++static void samsung_banks_of_node_put(struct samsung_pinctrl_drv_data *d)
++{
++	struct samsung_pin_bank *bank;
++	unsigned int i;
++
++	bank = d->pin_banks;
++	for (i = 0; i < d->nr_banks; ++i, ++bank)
++		of_node_put(bank->of_node);
++}
++
+ /* retrieve the soc specific data */
+ static const struct samsung_pin_ctrl *
+ samsung_pinctrl_get_soc_data(struct samsung_pinctrl_drv_data *d,
+@@ -1089,19 +1099,19 @@ static int samsung_pinctrl_probe(struct
+ 	if (ctrl->retention_data) {
+ 		drvdata->retention_ctrl = ctrl->retention_data->init(drvdata,
+ 							  ctrl->retention_data);
+-		if (IS_ERR(drvdata->retention_ctrl))
+-			return PTR_ERR(drvdata->retention_ctrl);
++		if (IS_ERR(drvdata->retention_ctrl)) {
++			ret = PTR_ERR(drvdata->retention_ctrl);
++			goto err_put_banks;
++		}
+ 	}
+ 
+ 	ret = samsung_pinctrl_register(pdev, drvdata);
+ 	if (ret)
+-		return ret;
++		goto err_put_banks;
+ 
+ 	ret = samsung_gpiolib_register(pdev, drvdata);
+-	if (ret) {
+-		samsung_pinctrl_unregister(pdev, drvdata);
+-		return ret;
+-	}
++	if (ret)
++		goto err_unregister;
+ 
+ 	if (ctrl->eint_gpio_init)
+ 		ctrl->eint_gpio_init(drvdata);
+@@ -1111,6 +1121,12 @@ static int samsung_pinctrl_probe(struct
+ 	platform_set_drvdata(pdev, drvdata);
+ 
+ 	return 0;
++
++err_unregister:
++	samsung_pinctrl_unregister(pdev, drvdata);
++err_put_banks:
++	samsung_banks_of_node_put(drvdata);
++	return ret;
+ }
+ 
+ /**
 
 
