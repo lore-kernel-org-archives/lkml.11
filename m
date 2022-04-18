@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE84C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:53:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFEFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:54:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240387AbiDRM4c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55574 "EHLO
+        id S240557AbiDRM4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:56:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236618AbiDRMoD (ORCPT
+        with ESMTP id S239244AbiDRMod (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:44:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97F2205DA;
-        Mon, 18 Apr 2022 05:32:30 -0700 (PDT)
+        Mon, 18 Apr 2022 08:44:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB2520BD9;
+        Mon, 18 Apr 2022 05:32:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BE8F61014;
-        Mon, 18 Apr 2022 12:32:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 325F1C385A8;
-        Mon, 18 Apr 2022 12:32:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C627660F0A;
+        Mon, 18 Apr 2022 12:32:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1E00C385A1;
+        Mon, 18 Apr 2022 12:32:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285149;
-        bh=r+v799nWtFiuZKGvekvzbaSWQmR+uO4fCieBqjFyk18=;
+        s=korg; t=1650285156;
+        bh=00QZOWtD55fHKQOKnPxpPpVI9oc8eABGIOsh3pHyJwQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kG2mWXjTFD3anq5Jpv3OjUwXQkmxivmM00KuXnyHuvCU365FT+P4F6sj/MLeMiYi3
-         GQBNW5Opn8Mvc+tCfwjQ5PT3WfqLCwalGg/qRux4UXAE+09y2wVv0fqpZq+ez9/Hw1
-         xTmGYrqrXSfEOz6L04KQFLFw5JPlB0MJKjCYNSss=
+        b=bmf8jw1vfgwGE0g8fntXpupgHuFRX2GEy7JdoVtgHJ0VnqsHvDeK778kFgZXBuquo
+         KKCIPAd7ihryIMyr9pSV2/9gtse9PN7rrqZIyr77PA7tq21dXwzZv55z8ElSPrByzC
+         +WpdyZ7JiWsrUNOIL/ph+UvgxG72zjDDjy26EExc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 117/189] PCI: hv: Propagate coherence from VMbus device to PCI device
-Date:   Mon, 18 Apr 2022 14:12:17 +0200
-Message-Id: <20220418121203.818036092@linuxfoundation.org>
+        stable@vger.kernel.org, Bodo Stroesser <bostroesser@gmail.com>,
+        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 119/189] scsi: target: tcmu: Fix possible page UAF
+Date:   Mon, 18 Apr 2022 14:12:19 +0200
+Message-Id: <20220418121203.880342377@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,52 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Kelley <mikelley@microsoft.com>
+From: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
 
-[ Upstream commit 8d21732475c637c7efcdb91dc927a4c594e97898 ]
+[ Upstream commit a6968f7a367f128d120447360734344d5a3d5336 ]
 
-PCI pass-thru devices in a Hyper-V VM are represented as a VMBus
-device and as a PCI device.  The coherence of the VMbus device is
-set based on the VMbus node in ACPI, but the PCI device has no
-ACPI node and defaults to not hardware coherent.  This results
-in extra software coherence management overhead on ARM64 when
-devices are hardware coherent.
+tcmu_try_get_data_page() looks up pages under cmdr_lock, but it does not
+take refcount properly and just returns page pointer. When
+tcmu_try_get_data_page() returns, the returned page may have been freed by
+tcmu_blocks_release().
 
-Fix this by setting up the PCI host bus so that normal
-PCI mechanisms will propagate the coherence of the VMbus
-device to the PCI device. There's no effect on x86/x64 where
-devices are always hardware coherent.
+We need to get_page() under cmdr_lock to avoid concurrent
+tcmu_blocks_release().
 
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Acked-by: Boqun Feng <boqun.feng@gmail.com>
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/1648138492-2191-3-git-send-email-mikelley@microsoft.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Link: https://lore.kernel.org/r/20220311132206.24515-1-xiaoguang.wang@linux.alibaba.com
+Reviewed-by: Bodo Stroesser <bostroesser@gmail.com>
+Signed-off-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-hyperv.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/target/target_core_user.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index 9dd4502d32a4..5b156c563e3a 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -3148,6 +3148,15 @@ static int hv_pci_probe(struct hv_device *hdev,
- 	hbus->bridge->domain_nr = dom;
- #ifdef CONFIG_X86
- 	hbus->sysdata.domain = dom;
-+#elif defined(CONFIG_ARM64)
-+	/*
-+	 * Set the PCI bus parent to be the corresponding VMbus
-+	 * device. Then the VMbus device will be assigned as the
-+	 * ACPI companion in pcibios_root_bridge_prepare() and
-+	 * pci_dma_configure() will propagate device coherence
-+	 * information to devices created on the bus.
-+	 */
-+	hbus->sysdata.parent = hdev->device.parent;
- #endif
+diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
+index 9f552f48084c..0ca5ec14d3db 100644
+--- a/drivers/target/target_core_user.c
++++ b/drivers/target/target_core_user.c
+@@ -1821,6 +1821,7 @@ static struct page *tcmu_try_get_data_page(struct tcmu_dev *udev, uint32_t dpi)
+ 	mutex_lock(&udev->cmdr_lock);
+ 	page = xa_load(&udev->data_pages, dpi);
+ 	if (likely(page)) {
++		get_page(page);
+ 		mutex_unlock(&udev->cmdr_lock);
+ 		return page;
+ 	}
+@@ -1877,6 +1878,7 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
+ 		/* For the vmalloc()ed cmd area pages */
+ 		addr = (void *)(unsigned long)info->mem[mi].addr + offset;
+ 		page = vmalloc_to_page(addr);
++		get_page(page);
+ 	} else {
+ 		uint32_t dpi;
  
- 	hbus->hdev = hdev;
+@@ -1887,7 +1889,6 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
+ 			return VM_FAULT_SIGBUS;
+ 	}
+ 
+-	get_page(page);
+ 	vmf->page = page;
+ 	return 0;
+ }
 -- 
 2.35.1
 
