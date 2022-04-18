@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DEC7C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEB4C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243702AbiDRNVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
+        id S243654AbiDRNUz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:20:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241423AbiDRNDG (ORCPT
+        with ESMTP id S241370AbiDRNDC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:03:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249F533375;
-        Mon, 18 Apr 2022 05:43:24 -0700 (PDT)
+        Mon, 18 Apr 2022 09:03:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A5AE27147;
+        Mon, 18 Apr 2022 05:43:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9CCDB80E59;
-        Mon, 18 Apr 2022 12:43:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D0E0C385A1;
-        Mon, 18 Apr 2022 12:43:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6387611E4;
+        Mon, 18 Apr 2022 12:43:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5329C385A1;
+        Mon, 18 Apr 2022 12:43:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285801;
-        bh=VyEcuoF2F0p7x6N4J1cOYrfyEqF00/9kbCYzkjxnbf4=;
+        s=korg; t=1650285795;
+        bh=PdqZVzizgk6/NDj9Gpg1f+LUl/smdkF9TxT+ushn/pk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ztc4Mv8CZ4/IKEsJQe9BWwwjeMSbuekdee1K2y5mEIDzzwY0LkIHX3OAo3AloDSb0
-         G2nr5hV9yOSumFVATGmo2tHx/QqQjDJxn1G++MzDbNbtg5ZixciZIA18lLTCwRLVNU
-         dOhaPRgTR2ncDn2xcZ74rfH25UGtV4ZgUizAkiEI=
+        b=Q87MEBpciHbSqSvG8AUKNiKojRypxZjzvNCdvnZIHMlRfAkMeDxTDTlhLfaBilo9n
+         UzEiVGABBjcPASwxHi9KHLwX7hppcWBx9xJDBu4u64CfUkDTDd4XRR4HJ3PG9AqfBz
+         UnwqO3EPGbAofMJaa9364q82SBReEfi1U+yfrDTs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steve Capper <steve.capper@arm.com>,
+        stable@vger.kernel.org, Jonathan Bakker <xc-racer2@live.ca>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 29/63] tlb: hugetlb: Add more sizes to tlb_remove_huge_tlb_entry
-Date:   Mon, 18 Apr 2022 14:13:26 +0200
-Message-Id: <20220418121136.019938470@linuxfoundation.org>
+Subject: [PATCH 5.4 27/63] regulator: wm8994: Add an off-on delay for WM8994 variant
+Date:   Mon, 18 Apr 2022 14:13:24 +0200
+Message-Id: <20220418121135.923353254@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -53,64 +50,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve Capper <steve.capper@arm.com>
+From: Jonathan Bakker <xc-racer2@live.ca>
 
-[ Upstream commit 697a1d44af8ba0477ee729e632f4ade37999249a ]
+[ Upstream commit 92d96b603738ec4f35cde7198c303ae264dd47cb ]
 
-tlb_remove_huge_tlb_entry only considers PMD_SIZE and PUD_SIZE when
-updating the mmu_gather structure.
+As per Table 130 of the wm8994 datasheet at [1], there is an off-on
+delay for LDO1 and LDO2.  In the wm8958 datasheet [2], I could not
+find any reference to it.  I could not find a wm1811 datasheet to
+double-check there, but as no one has complained presumably it works
+without it.
 
-Unfortunately on arm64 there are two additional huge page sizes that
-need to be covered: CONT_PTE_SIZE and CONT_PMD_SIZE. Where an end-user
-attempts to employ contiguous huge pages, a VM_BUG_ON can be experienced
-due to the fact that the tlb structure hasn't been correctly updated by
-the relevant tlb_flush_p.._range() call from tlb_remove_huge_tlb_entry.
+This solves the issue on Samsung Aries boards with a wm8994 where
+register writes fail when the device is powered off and back-on
+quickly.
 
-This patch adds inequality logic to the generic implementation of
-tlb_remove_huge_tlb_entry s.t. CONT_PTE_SIZE and CONT_PMD_SIZE are
-effectively covered on arm64. Also, as well as ptes, pmds and puds;
-p4ds are now considered too.
+[1] https://statics.cirrus.com/pubs/proDatasheet/WM8994_Rev4.6.pdf
+[2] https://statics.cirrus.com/pubs/proDatasheet/WM8958_v3.5.pdf
 
-Reported-by: David Hildenbrand <david@redhat.com>
-Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/linux-mm/811c5c8e-b3a2-85d2-049c-717f17c3a03a@redhat.com/
-Signed-off-by: Steve Capper <steve.capper@arm.com>
-Acked-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220330112543.863-1-steve.capper@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/CY4PR04MB056771CFB80DC447C30D5A31CB1D9@CY4PR04MB0567.namprd04.prod.outlook.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/asm-generic/tlb.h | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/regulator/wm8994-regulator.c | 42 ++++++++++++++++++++++++++--
+ 1 file changed, 39 insertions(+), 3 deletions(-)
 
-diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
-index 46294ef620ff..268674c1d568 100644
---- a/include/asm-generic/tlb.h
-+++ b/include/asm-generic/tlb.h
-@@ -547,10 +547,14 @@ static inline void tlb_flush_p4d_range(struct mmu_gather *tlb,
- #define tlb_remove_huge_tlb_entry(h, tlb, ptep, address)	\
- 	do {							\
- 		unsigned long _sz = huge_page_size(h);		\
--		if (_sz == PMD_SIZE)				\
--			tlb_flush_pmd_range(tlb, address, _sz);	\
--		else if (_sz == PUD_SIZE)			\
-+		if (_sz >= P4D_SIZE)				\
-+			tlb_flush_p4d_range(tlb, address, _sz);	\
-+		else if (_sz >= PUD_SIZE)			\
- 			tlb_flush_pud_range(tlb, address, _sz);	\
-+		else if (_sz >= PMD_SIZE)			\
-+			tlb_flush_pmd_range(tlb, address, _sz);	\
-+		else						\
-+			tlb_flush_pte_range(tlb, address, _sz);	\
- 		__tlb_remove_tlb_entry(tlb, ptep, address);	\
- 	} while (0)
+diff --git a/drivers/regulator/wm8994-regulator.c b/drivers/regulator/wm8994-regulator.c
+index cadea0344486..40befdd9dfa9 100644
+--- a/drivers/regulator/wm8994-regulator.c
++++ b/drivers/regulator/wm8994-regulator.c
+@@ -71,6 +71,35 @@ static const struct regulator_ops wm8994_ldo2_ops = {
+ };
  
+ static const struct regulator_desc wm8994_ldo_desc[] = {
++	{
++		.name = "LDO1",
++		.id = 1,
++		.type = REGULATOR_VOLTAGE,
++		.n_voltages = WM8994_LDO1_MAX_SELECTOR + 1,
++		.vsel_reg = WM8994_LDO_1,
++		.vsel_mask = WM8994_LDO1_VSEL_MASK,
++		.ops = &wm8994_ldo1_ops,
++		.min_uV = 2400000,
++		.uV_step = 100000,
++		.enable_time = 3000,
++		.off_on_delay = 36000,
++		.owner = THIS_MODULE,
++	},
++	{
++		.name = "LDO2",
++		.id = 2,
++		.type = REGULATOR_VOLTAGE,
++		.n_voltages = WM8994_LDO2_MAX_SELECTOR + 1,
++		.vsel_reg = WM8994_LDO_2,
++		.vsel_mask = WM8994_LDO2_VSEL_MASK,
++		.ops = &wm8994_ldo2_ops,
++		.enable_time = 3000,
++		.off_on_delay = 36000,
++		.owner = THIS_MODULE,
++	},
++};
++
++static const struct regulator_desc wm8958_ldo_desc[] = {
+ 	{
+ 		.name = "LDO1",
+ 		.id = 1,
+@@ -172,9 +201,16 @@ static int wm8994_ldo_probe(struct platform_device *pdev)
+ 	 * regulator core and we need not worry about it on the
+ 	 * error path.
+ 	 */
+-	ldo->regulator = devm_regulator_register(&pdev->dev,
+-						 &wm8994_ldo_desc[id],
+-						 &config);
++	if (ldo->wm8994->type == WM8994) {
++		ldo->regulator = devm_regulator_register(&pdev->dev,
++							 &wm8994_ldo_desc[id],
++							 &config);
++	} else {
++		ldo->regulator = devm_regulator_register(&pdev->dev,
++							 &wm8958_ldo_desc[id],
++							 &config);
++	}
++
+ 	if (IS_ERR(ldo->regulator)) {
+ 		ret = PTR_ERR(ldo->regulator);
+ 		dev_err(wm8994->dev, "Failed to register LDO%d: %d\n",
 -- 
 2.35.1
 
