@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D26DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:01:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229491AbiDRNEW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:04:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41918 "EHLO
+        id S241115AbiDRNEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:04:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240221AbiDRMzI (ORCPT
+        with ESMTP id S240250AbiDRMzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:55:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 258EA23155;
-        Mon, 18 Apr 2022 05:35:54 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246C7BBF;
+        Mon, 18 Apr 2022 05:36:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B25F861033;
-        Mon, 18 Apr 2022 12:35:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4C46C385A1;
-        Mon, 18 Apr 2022 12:35:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B526961014;
+        Mon, 18 Apr 2022 12:36:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCC14C385A7;
+        Mon, 18 Apr 2022 12:36:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285353;
-        bh=uF2M9Js3hcGF4nAubJ05ffBYPgCshly3+bI9/5r4Wp8=;
+        s=korg; t=1650285362;
+        bh=gURcnf7TSuxt0H9seM70xDk2GSKmCEgMl/axXl7OuFM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jZGmoVJUUXD7zAjzp68z3nsLdoKtriAX1jDRSBFWthSCs4eRGNTv7SM+cVdx+Bh1W
-         vxbXSMts0vzFct1S/BcaD3la0wxXoL4ImrV1jMAMSNUAJhMGOMo0VR3sRxVsybzCEu
-         60l2mN5rJFcZRRnWepWIs0sDNpiDGDWHAmvxLrUA=
+        b=GFkUbqF0e8Ar3NBqFPs8TEE+BB7pIJPGYYISn+tBPk3VTWI/h4FcPfd60EUMrHk4d
+         vGaxqWwqEQWByO2Y9WXP5TJENOpw6LgEN8WM7yiMYA69Hx3st6w+4ShTI8mcrkSkMH
+         NBwJLEE+D7N9TtdYNHdf+GKvv2Ptfntfdo6IjwdE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Osterried <thomas@osterried.de>,
         Duoming Zhou <duoming@zju.edu.cn>,
         "David S. Miller" <davem@davemloft.net>,
         Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.15 182/189] ax25: add refcount in ax25_dev to avoid UAF bugs
-Date:   Mon, 18 Apr 2022 14:13:22 +0200
-Message-Id: <20220418121208.353118610@linuxfoundation.org>
+Subject: [PATCH 5.15 185/189] ax25: Fix refcount leaks caused by ax25_cb_del()
+Date:   Mon, 18 Apr 2022 14:13:25 +0200
+Message-Id: <20220418121208.555986221@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -51,191 +52,98 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit d01ffb9eee4af165d83b08dd73ebdf9fe94a519b upstream.
+commit 9fd75b66b8f68498454d685dc4ba13192ae069b0 upstream.
 
-If we dereference ax25_dev after we call kfree(ax25_dev) in
-ax25_dev_device_down(), it will lead to concurrency UAF bugs.
-There are eight syscall functions suffer from UAF bugs, include
-ax25_bind(), ax25_release(), ax25_connect(), ax25_ioctl(),
-ax25_getname(), ax25_sendmsg(), ax25_getsockopt() and
-ax25_info_show().
+The previous commit d01ffb9eee4a ("ax25: add refcount in ax25_dev to
+avoid UAF bugs") and commit feef318c855a ("ax25: fix UAF bugs of
+net_device caused by rebinding operation") increase the refcounts of
+ax25_dev and net_device in ax25_bind() and decrease the matching refcounts
+in ax25_kill_by_device() in order to prevent UAF bugs, but there are
+reference count leaks.
 
-One of the concurrency UAF can be shown as below:
+The root cause of refcount leaks is shown below:
 
-  (USE)                       |    (FREE)
-                              |  ax25_device_event
-                              |    ax25_dev_device_down
-ax25_bind                     |    ...
-  ...                         |      kfree(ax25_dev)
-  ax25_fillin_cb()            |    ...
-    ax25_fillin_cb_from_dev() |
-  ...                         |
+     (Thread 1)                      |      (Thread 2)
+ax25_bind()                          |
+ ...                                 |
+ ax25_addr_ax25dev()                 |
+  ax25_dev_hold()   //(1)            |
+  ...                                |
+ dev_hold_track()   //(2)            |
+ ...                                 | ax25_destroy_socket()
+                                     |  ax25_cb_del()
+                                     |   ...
+                                     |   hlist_del_init() //(3)
+                                     |
+                                     |
+     (Thread 3)                      |
+ax25_kill_by_device()                |
+ ...                                 |
+ ax25_for_each(s, &ax25_list) {      |
+  if (s->ax25_dev == ax25_dev) //(4) |
+   ...                               |
 
-The root cause of UAF bugs is that kfree(ax25_dev) in
-ax25_dev_device_down() is not protected by any locks.
-When ax25_dev, which there are still pointers point to,
-is released, the concurrency UAF bug will happen.
+Firstly, we use ax25_bind() to increase the refcount of ax25_dev in
+position (1) and increase the refcount of net_device in position (2).
+Then, we use ax25_cb_del() invoked by ax25_destroy_socket() to delete
+ax25_cb in hlist in position (3) before calling ax25_kill_by_device().
+Finally, the decrements of refcounts in ax25_kill_by_device() will not
+be executed, because no s->ax25_dev equals to ax25_dev in position (4).
 
-This patch introduces refcount into ax25_dev in order to
-guarantee that there are no pointers point to it when ax25_dev
-is released.
+This patch adds decrements of refcounts in ax25_release() and use
+lock_sock() to do synchronization. If refcounts decrease in ax25_release(),
+the decrements of refcounts in ax25_kill_by_device() will not be
+executed and vice versa.
 
+Fixes: d01ffb9eee4a ("ax25: add refcount in ax25_dev to avoid UAF bugs")
+Fixes: 87563a043cef ("ax25: fix reference count leaks of ax25_dev")
+Fixes: feef318c855a ("ax25: fix UAF bugs of net_device caused by rebinding operation")
+Reported-by: Thomas Osterried <thomas@osterried.de>
 Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 Signed-off-by: David S. Miller <davem@davemloft.net>
-[OP: backport to 5.15: adjusted context]
+[OP: backport to 5.15: adjust dev_put_track()->dev_put()]
 Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/ax25.h    |   10 ++++++++++
- net/ax25/af_ax25.c    |    2 ++
- net/ax25/ax25_dev.c   |   12 ++++++++++--
- net/ax25/ax25_route.c |    3 +++
- 4 files changed, 25 insertions(+), 2 deletions(-)
+ net/ax25/af_ax25.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
---- a/include/net/ax25.h
-+++ b/include/net/ax25.h
-@@ -236,6 +236,7 @@ typedef struct ax25_dev {
- #if defined(CONFIG_AX25_DAMA_SLAVE) || defined(CONFIG_AX25_DAMA_MASTER)
- 	ax25_dama_info		dama;
- #endif
-+	refcount_t		refcount;
- } ax25_dev;
- 
- typedef struct ax25_cb {
-@@ -290,6 +291,15 @@ static __inline__ void ax25_cb_put(ax25_
- 	}
- }
- 
-+#define ax25_dev_hold(__ax25_dev) \
-+	refcount_inc(&((__ax25_dev)->refcount))
-+
-+static __inline__ void ax25_dev_put(ax25_dev *ax25_dev)
-+{
-+	if (refcount_dec_and_test(&ax25_dev->refcount)) {
-+		kfree(ax25_dev);
-+	}
-+}
- static inline __be16 ax25_type_trans(struct sk_buff *skb, struct net_device *dev)
- {
- 	skb->dev      = dev;
 --- a/net/ax25/af_ax25.c
 +++ b/net/ax25/af_ax25.c
-@@ -98,6 +98,7 @@ again:
+@@ -98,8 +98,10 @@ again:
  			spin_unlock_bh(&ax25_list_lock);
  			lock_sock(sk);
  			s->ax25_dev = NULL;
-+			ax25_dev_put(ax25_dev);
+-			dev_put(ax25_dev->dev);
+-			ax25_dev_put(ax25_dev);
++			if (sk->sk_socket) {
++				dev_put(ax25_dev->dev);
++				ax25_dev_put(ax25_dev);
++			}
  			release_sock(sk);
  			ax25_disconnect(s, ENETUNREACH);
  			spin_lock_bh(&ax25_list_lock);
-@@ -446,6 +447,7 @@ static int ax25_ctl_ioctl(const unsigned
- 	  }
+@@ -979,14 +981,20 @@ static int ax25_release(struct socket *s
+ {
+ 	struct sock *sk = sock->sk;
+ 	ax25_cb *ax25;
++	ax25_dev *ax25_dev;
  
- out_put:
-+	ax25_dev_put(ax25_dev);
- 	ax25_cb_put(ax25);
- 	return ret;
+ 	if (sk == NULL)
+ 		return 0;
  
---- a/net/ax25/ax25_dev.c
-+++ b/net/ax25/ax25_dev.c
-@@ -37,6 +37,7 @@ ax25_dev *ax25_addr_ax25dev(ax25_address
- 	for (ax25_dev = ax25_dev_list; ax25_dev != NULL; ax25_dev = ax25_dev->next)
- 		if (ax25cmp(addr, (ax25_address *)ax25_dev->dev->dev_addr) == 0) {
- 			res = ax25_dev;
-+			ax25_dev_hold(ax25_dev);
- 		}
- 	spin_unlock_bh(&ax25_dev_lock);
- 
-@@ -56,6 +57,7 @@ void ax25_dev_device_up(struct net_devic
- 		return;
- 	}
- 
-+	refcount_set(&ax25_dev->refcount, 1);
- 	dev->ax25_ptr     = ax25_dev;
- 	ax25_dev->dev     = dev;
- 	dev_hold(dev);
-@@ -83,6 +85,7 @@ void ax25_dev_device_up(struct net_devic
- 	spin_lock_bh(&ax25_dev_lock);
- 	ax25_dev->next = ax25_dev_list;
- 	ax25_dev_list  = ax25_dev;
-+	ax25_dev_hold(ax25_dev);
- 	spin_unlock_bh(&ax25_dev_lock);
- 
- 	ax25_register_dev_sysctl(ax25_dev);
-@@ -112,20 +115,22 @@ void ax25_dev_device_down(struct net_dev
- 
- 	if ((s = ax25_dev_list) == ax25_dev) {
- 		ax25_dev_list = s->next;
+ 	sock_hold(sk);
+-	sock_orphan(sk);
+ 	lock_sock(sk);
++	sock_orphan(sk);
+ 	ax25 = sk_to_ax25(sk);
++	ax25_dev = ax25->ax25_dev;
++	if (ax25_dev) {
++		dev_put(ax25_dev->dev);
 +		ax25_dev_put(ax25_dev);
- 		spin_unlock_bh(&ax25_dev_lock);
- 		dev->ax25_ptr = NULL;
- 		dev_put(dev);
--		kfree(ax25_dev);
-+		ax25_dev_put(ax25_dev);
- 		return;
- 	}
++	}
  
- 	while (s != NULL && s->next != NULL) {
- 		if (s->next == ax25_dev) {
- 			s->next = ax25_dev->next;
-+			ax25_dev_put(ax25_dev);
- 			spin_unlock_bh(&ax25_dev_lock);
- 			dev->ax25_ptr = NULL;
- 			dev_put(dev);
--			kfree(ax25_dev);
-+			ax25_dev_put(ax25_dev);
- 			return;
- 		}
- 
-@@ -133,6 +138,7 @@ void ax25_dev_device_down(struct net_dev
- 	}
- 	spin_unlock_bh(&ax25_dev_lock);
- 	dev->ax25_ptr = NULL;
-+	ax25_dev_put(ax25_dev);
- }
- 
- int ax25_fwd_ioctl(unsigned int cmd, struct ax25_fwd_struct *fwd)
-@@ -149,6 +155,7 @@ int ax25_fwd_ioctl(unsigned int cmd, str
- 		if (ax25_dev->forward != NULL)
- 			return -EINVAL;
- 		ax25_dev->forward = fwd_dev->dev;
-+		ax25_dev_put(fwd_dev);
- 		break;
- 
- 	case SIOCAX25DELFWD:
-@@ -161,6 +168,7 @@ int ax25_fwd_ioctl(unsigned int cmd, str
- 		return -EINVAL;
- 	}
- 
-+	ax25_dev_put(ax25_dev);
- 	return 0;
- }
- 
---- a/net/ax25/ax25_route.c
-+++ b/net/ax25/ax25_route.c
-@@ -116,6 +116,7 @@ static int __must_check ax25_rt_add(stru
- 	ax25_rt->dev          = ax25_dev->dev;
- 	ax25_rt->digipeat     = NULL;
- 	ax25_rt->ip_mode      = ' ';
-+	ax25_dev_put(ax25_dev);
- 	if (route->digi_count != 0) {
- 		if ((ax25_rt->digipeat = kmalloc(sizeof(ax25_digi), GFP_ATOMIC)) == NULL) {
- 			write_unlock_bh(&ax25_route_lock);
-@@ -172,6 +173,7 @@ static int ax25_rt_del(struct ax25_route
- 			}
- 		}
- 	}
-+	ax25_dev_put(ax25_dev);
- 	write_unlock_bh(&ax25_route_lock);
- 
- 	return 0;
-@@ -214,6 +216,7 @@ static int ax25_rt_opt(struct ax25_route
- 	}
- 
- out:
-+	ax25_dev_put(ax25_dev);
- 	write_unlock_bh(&ax25_route_lock);
- 	return err;
- }
+ 	if (sk->sk_type == SOCK_SEQPACKET) {
+ 		switch (ax25->state) {
 
 
