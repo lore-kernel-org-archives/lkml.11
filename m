@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A188C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B36EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238263AbiDRMTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48824 "EHLO
+        id S238270AbiDRMT2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:19:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238223AbiDRMSk (ORCPT
+        with ESMTP id S238225AbiDRMSk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:18:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099331B79D;
-        Mon, 18 Apr 2022 05:15:57 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13191AD92;
+        Mon, 18 Apr 2022 05:15:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 961BF60F07;
-        Mon, 18 Apr 2022 12:15:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA867C385A8;
-        Mon, 18 Apr 2022 12:15:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8084760F09;
+        Mon, 18 Apr 2022 12:15:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F1ECC385A1;
+        Mon, 18 Apr 2022 12:15:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284156;
-        bh=BZX6audibro97uCmaO6HcMI9G8asr2tb6YpClv7yebQ=;
+        s=korg; t=1650284158;
+        bh=RTYJYJslaj/WnB1x3J4ALXHvzU3wR+9bstX5iCVP7jM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QeBLy1GT6Tswic+L59RpK/Birxg5k9JQbX3drh4jHLL7905Ep4rUK8mt4vwrLPCFB
-         c7wywPEBgw5MzHfRKsOecsLDxQ/8wn6huugEVHc2XokPLZDVfs7w+aZFsa7MguqX4a
-         aj2JCWMg2z2wzxPcEGc18Hg46nMwheBCgJhnFvG8=
+        b=kNft6AFMub5H08gwMpt+WGjD+Vjnju88fFV/TTlrzFQ1DSFqZfQeFD9o2a8Cb7hcF
+         xr/jagxcjM0InwCKDg9r0KPHePo2YmlGf4XKzLJUYXSan9ajlujyv3bDgwBSimaV/y
+         +iOvDPsaA5j6mqf7r26PzEpHpztaMMRtslH9VvEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 023/219] ALSA: au88x0: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:09:52 +0200
-Message-Id: <20220418121204.643720303@linuxfoundation.org>
+Subject: [PATCH 5.17 024/219] ALSA: aw2: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:09:53 +0200
+Message-Id: <20220418121204.701764021@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,7 +49,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit b093de145bc8769c6e9207947afad9efe102f4f6 upstream.
+commit bf4067e8a19eae67c45659a956c361d59251ba57 upstream.
 
 The previous cleanup with devres may lead to the incorrect release
 orders at the probe error handling due to the devres's nature.  Until
@@ -57,41 +57,47 @@ we register the card, snd_card_free() has to be called at first for
 releasing the stuff properly when the driver tries to manage and
 release the stuff via card->private_free().
 
-This patch fixes it by calling snd_card_free() on the error from the
-probe callback using a new helper function.
+This patch fixes it by calling snd_card_free() manually on the error
+from the probe callback.
 
-Fixes: e44b5b440609 ("ALSA: au88x0: Allocate resources with device-managed APIs")
+Fixes: 33631012cd06 ("ALSA: aw2: Allocate resources with device-managed APIs")
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-8-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220412102636.16000-32-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/au88x0/au88x0.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ sound/pci/aw2/aw2-alsa.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/sound/pci/au88x0/au88x0.c
-+++ b/sound/pci/au88x0/au88x0.c
-@@ -193,7 +193,7 @@ snd_vortex_create(struct snd_card *card,
+--- a/sound/pci/aw2/aw2-alsa.c
++++ b/sound/pci/aw2/aw2-alsa.c
+@@ -275,7 +275,7 @@ static int snd_aw2_probe(struct pci_dev
+ 	/* (3) Create main component */
+ 	err = snd_aw2_create(card, pci);
+ 	if (err < 0)
+-		return err;
++		goto error;
  
- // constructor -- see "Constructor" sub-section
- static int
--snd_vortex_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
-+__snd_vortex_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
- {
- 	static int dev;
- 	struct snd_card *card;
-@@ -310,6 +310,12 @@ snd_vortex_probe(struct pci_dev *pci, co
+ 	/* initialize mutex */
+ 	mutex_init(&chip->mtx);
+@@ -294,13 +294,17 @@ static int snd_aw2_probe(struct pci_dev
+ 	/* (6) Register card instance */
+ 	err = snd_card_register(card);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 
+ 	/* (7) Set PCI driver data */
+ 	pci_set_drvdata(pci, card);
+ 
+ 	dev++;
  	return 0;
++
++ error:
++	snd_card_free(card);
++	return err;
  }
  
-+static int
-+snd_vortex_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_vortex_probe(pci, pci_id));
-+}
-+
- // pci_driver definition
- static struct pci_driver vortex_driver = {
- 	.name = KBUILD_MODNAME,
+ /* open callback */
 
 
