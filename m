@@ -2,100 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E375C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73362C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239199AbiDRM1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38192 "EHLO
+        id S239230AbiDRM2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238788AbiDRM0W (ORCPT
+        with ESMTP id S238739AbiDRM0W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:26:22 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB10712609
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:20:26 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id lc2so26482055ejb.12
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:20:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=IrspqwoC0i8xWBSDGv/e81WYq/G3Gaial55KaXcpMB4=;
-        b=EROJPtVhkTWMC362VRxsn28ErAWXjxRwSGzBrXd/ILtzWuytV08hvlbx49encLOOqc
-         yeMw9yc7SKrF1+IquHFumnC5nzv8sCjiS/9h3Ie6onCCBYKAmaLf0suDnplCv4q3oEDF
-         knghEFqpRQpYEfE3tDtNwMu2obylGzqhbXAdLhvCLWIQKLnEXd8Sw7hYct4HM0iizOxM
-         KJxVev9k4sh5XJ89IrjxtG8nz5L8AoKnxF88C74xHknJiavH0KHq7Pxu0mOPH9XvZWze
-         PiVvIKdjNyMdM4oEgTDgrWs57aI2jc86pzv2U3KyxgYxeQX5iqZEIrJxIMY3Y4NeUc0Y
-         leDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=IrspqwoC0i8xWBSDGv/e81WYq/G3Gaial55KaXcpMB4=;
-        b=vX67QmYTS7HZWsvw4mSjUK8uqaRzsyKwDUT8WUjVVPPxVIFm+8CzZF3jipVsOdHeCm
-         HABaOQ6hXzDyug1iYn6ALCL983E86Q6QZlCHT3GkpcbywSGPQVvMv/4eE4+ndsXWzmnl
-         xni2pYqGUj+9GxZiHsIREt7APPvIv297CN2aZ3h6BD5/YioU56Ff4hzwNpZELmhBOLfi
-         P65+FrZKVyU1HKsAxIcQjjua7lRGr3OUBYKZk6GmHaconyemCDukWzc0qLq9X+uEAxja
-         5zBrP38KHNB3rNSd7FjKwXPPQy/8Dgzw68XTEN1I0vLPwVhkXeA+tSbExtKTdUkBoyUN
-         nhNA==
-X-Gm-Message-State: AOAM532jqvkRSFdMnp23otN3Xj1lE/9RV0SPCA1+VbyMAURwVB19bGpp
-        bdKzt9I4KvjfmyPmYjrjTmo+Ug==
-X-Google-Smtp-Source: ABdhPJzoDxvcNzmEcyeGaDq97ow/WOeOSzYmXAahpLo2Kg1wrT2tHDDGSBII00dY0Cob+6Pqx4rvHQ==
-X-Received: by 2002:a17:907:7e9f:b0:6e8:92eb:4171 with SMTP id qb31-20020a1709077e9f00b006e892eb4171mr8636712ejc.53.1650284425490;
-        Mon, 18 Apr 2022 05:20:25 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id o14-20020a170906774e00b006d5b915f27dsm4538016ejn.169.2022.04.18.05.20.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Apr 2022 05:20:25 -0700 (PDT)
-Message-ID: <60e50c11-118d-431f-7120-95fcbb53eeb5@linaro.org>
-Date:   Mon, 18 Apr 2022 14:20:24 +0200
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BEF1261E;
+        Mon, 18 Apr 2022 05:20:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E59F60F0A;
+        Mon, 18 Apr 2022 12:20:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EDBEC385A7;
+        Mon, 18 Apr 2022 12:20:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650284426;
+        bh=SRfsMOKuudIG6+hJWDySYLdGJYrbURX3cFpwcDX6Gn8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FyqttEe5vL4BYBRbcozQbTdqZUChjyEbu9MX3UiafG2azJNIUBnZ5G/JGvDhW6Kig
+         y1bcetrDtxSWfzIaAqQGwxbeFoJE9TyUZ8jntTYlNFu/sQGeKcOvksqNaKJN66R4Lz
+         mVTpFY2Jvi0GgW5srbxLziub9beToPMaTZ7Tg00w=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Petr Malat <oss@malat.biz>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 103/219] sctp: Initialize daddr on peeled off socket
+Date:   Mon, 18 Apr 2022 14:11:12 +0200
+Message-Id: <20220418121209.774257674@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
+References: <20220418121203.462784814@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 3/5] arm64: dts: nuvoton: Add initial support for
- MA35D1
-Content-Language: en-US
-To:     Jacky Huang <ychuang3@nuvoton.com>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, ychuang570808@gmail.com
-Cc:     robh+dt@kernel.org, sboyd@kernel.org, krzk+dt@kernel.org,
-        arnd@arndb.de, olof@lixom.net, will@kernel.org, soc@kernel.org,
-        cfli0@nuvoton.com
-References: <20220418082738.11301-1-ychuang3@nuvoton.com>
- <20220418082738.11301-4-ychuang3@nuvoton.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220418082738.11301-4-ychuang3@nuvoton.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/04/2022 10:27, Jacky Huang wrote:
-> Add the initial device tree files for Nuvoton MA35D1 Soc.
-> 
+From: Petr Malat <oss@malat.biz>
 
-(...)
+[ Upstream commit 8467dda0c26583547731e7f3ea73fc3856bae3bf ]
 
-> +	gic: interrupt-controller@50800000 {
+Function sctp_do_peeloff() wrongly initializes daddr of the original
+socket instead of the peeled off socket, which makes getpeername()
+return zeroes instead of the primary address. Initialize the new socket
+instead.
 
-The unit address does not match first reg property. Don't you have
-warnings with this?
+Fixes: d570ee490fb1 ("[SCTP]: Correctly set daddr for IPv6 sockets during peeloff")
+Signed-off-by: Petr Malat <oss@malat.biz>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Link: https://lore.kernel.org/r/20220409063611.673193-1-oss@malat.biz
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/sctp/socket.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +		compatible = "arm,gic-400";
-> +		#interrupt-cells = <3>;
-> +		interrupt-parent = <&gic>;
-> +		interrupt-controller;
-> +		reg = <0x0 0x50801000 0x0 0x1000>,
-> +		      <0x0 0x50802000 0x0 0x2000>,
-> +		      <0x0 0x50804000 0x0 0x2000>,
-> +		      <0x0 0x50806000 0x0 0x2000>;
-> +		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_RAW(0x13) |
-> +			      IRQ_TYPE_LEVEL_HIGH)>;
-> +	};
-> +};
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index 3e1a9600be5e..7b0427658056 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -5636,7 +5636,7 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp)
+ 	 * Set the daddr and initialize id to something more random and also
+ 	 * copy over any ip options.
+ 	 */
+-	sp->pf->to_sk_daddr(&asoc->peer.primary_addr, sk);
++	sp->pf->to_sk_daddr(&asoc->peer.primary_addr, sock->sk);
+ 	sp->pf->copy_ip_options(sk, sock->sk);
+ 
+ 	/* Populate the fields of the newsk from the oldsk and migrate the
+-- 
+2.35.1
 
-Best regards,
-Krzysztof
+
+
