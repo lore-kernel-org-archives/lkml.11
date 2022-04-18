@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54BA3C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D370DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244030AbiDRNnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:43:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
+        id S243944AbiDRNnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:43:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240108AbiDRNPH (ORCPT
+        with ESMTP id S241457AbiDRNH6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:15:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B50243AA51;
-        Mon, 18 Apr 2022 05:51:16 -0700 (PDT)
+        Mon, 18 Apr 2022 09:07:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200402AE29;
+        Mon, 18 Apr 2022 05:47:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 179AEB80E4E;
-        Mon, 18 Apr 2022 12:51:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57C7FC385A7;
-        Mon, 18 Apr 2022 12:51:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3419161253;
+        Mon, 18 Apr 2022 12:47:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43BCCC385A1;
+        Mon, 18 Apr 2022 12:47:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286273;
-        bh=BG6+ol7tstZEZfMzxUu8U5+g5hiNZCpTOjP+NXtT7/A=;
+        s=korg; t=1650286056;
+        bh=7kX7CnvluiWbJU3rkOnN9B/tJ1K7lAW9rQihbi123BI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X1Tl56wCyoMaVMVoaKtUw+1yk/ChNZuLeG/48hX/9fHdgn/y/fpYjlKpi7O0msfsF
-         /5bBEPdLS+LbYOpK38ZzCvbNzGRr6hwo7yXGY+HjtVfJ1VFbW0iwv5Rr/DHbDXEXEZ
-         pODig9Ea/EqFSmUlYhhu2KbFZaYaQEl3fs4gXxm0=
+        b=dz8W+l8AD3iJmvHm2wxnROmgzhrp5J1GXtUochxruuYfnKOUk2Ka+bbLDABqfWTLY
+         sMTfl/JuLnbl3hIrnYjww1rTlfPWnNMYsSO9l42FnAKuAwxJVHsLVybJurwppDoJlF
+         nWdXYUvfa7EREr6h5iutTdxxCoBIh8hNPvfcU34U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Subject: [PATCH 4.14 042/284] ARM: dts: exynos: fix UART3 pins configuration in Exynos5250
-Date:   Mon, 18 Apr 2022 14:10:23 +0200
-Message-Id: <20220418121211.891209440@linuxfoundation.org>
+        stable@vger.kernel.org, Liam Beguin <liambeguin@gmail.com>,
+        Peter Rosin <peda@axentia.se>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 4.14 016/284] iio: inkern: apply consumer scale when no channel scale is available
+Date:   Mon, 18 Apr 2022 14:09:57 +0200
+Message-Id: <20220418121211.159619760@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,34 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Liam Beguin <liambeguin@gmail.com>
 
-commit 372d7027fed43c8570018e124cf78b89523a1f8e upstream.
+commit 14b457fdde38de594a4bc4bd9075019319d978da upstream.
 
-The gpa1-4 pin was put twice in UART3 pin configuration of Exynos5250,
-instead of proper pin gpa1-5.
+When a consumer calls iio_read_channel_processed() and no channel scale
+is available, it's assumed that the scale is one and the raw value is
+returned as expected.
 
-Fixes: f8bfe2b050f3 ("ARM: dts: add pin state information in client nodes for Exynos5 platforms")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Link: https://lore.kernel.org/r/20211230195325.328220-1-krzysztof.kozlowski@canonical.com
+On the other hand, if the consumer calls iio_convert_raw_to_processed()
+the scaling factor requested by the consumer is not applied.
+
+This for example causes the consumer to process mV when expecting uV.
+Make sure to always apply the scaling factor requested by the consumer.
+
+Fixes: adc8ec5ff183 ("iio: inkern: pass through raw values if no scaling")
+Signed-off-by: Liam Beguin <liambeguin@gmail.com>
+Reviewed-by: Peter Rosin <peda@axentia.se>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220108205319.2046348-3-liambeguin@gmail.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/exynos5250-pinctrl.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/inkern.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/arch/arm/boot/dts/exynos5250-pinctrl.dtsi
-+++ b/arch/arm/boot/dts/exynos5250-pinctrl.dtsi
-@@ -257,7 +257,7 @@
- 	};
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -603,10 +603,10 @@ static int iio_convert_raw_to_processed_
+ 					IIO_CHAN_INFO_SCALE);
+ 	if (scale_type < 0) {
+ 		/*
+-		 * Just pass raw values as processed if no scaling is
+-		 * available.
++		 * If no channel scaling is available apply consumer scale to
++		 * raw value and return.
+ 		 */
+-		*processed = raw;
++		*processed = raw * scale;
+ 		return 0;
+ 	}
  
- 	uart3_data: uart3-data {
--		samsung,pins = "gpa1-4", "gpa1-4";
-+		samsung,pins = "gpa1-4", "gpa1-5";
- 		samsung,pin-function = <EXYNOS_PIN_FUNC_2>;
- 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
- 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 
 
