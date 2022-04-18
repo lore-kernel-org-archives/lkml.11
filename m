@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C58C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D74C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240164AbiDRMnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:43:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54138 "EHLO
+        id S235164AbiDRMnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238962AbiDRMdz (ORCPT
+        with ESMTP id S239160AbiDRMem (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:55 -0400
+        Mon, 18 Apr 2022 08:34:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8772120F5B;
-        Mon, 18 Apr 2022 05:27:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE862125E;
+        Mon, 18 Apr 2022 05:27:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D25561009;
-        Mon, 18 Apr 2022 12:27:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C6CFC385A1;
-        Mon, 18 Apr 2022 12:27:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC5EF6100F;
+        Mon, 18 Apr 2022 12:27:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C9F2C385A1;
+        Mon, 18 Apr 2022 12:27:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284832;
-        bh=TonmvN+JcIpROxF13maxx2oGiva/r9GnVhHhVGDmt5w=;
+        s=korg; t=1650284836;
+        bh=z5OIoCU6ZMb0mcg6D4QRRKJ1bUiR8RvMqQREY4apkmU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bot7jGjU/1uSQ/ABOTtjt4Z9X4TBsRRg2MnLGiTVUyMp1I1Of653AO3rQCLwFvITI
-         zEt7R7qNre5ROjMn/g4Jg8pYFFcMn0FDtpSf0fNjp4uFlQ2+I7f9KhMPA2K9p+Mcuf
-         1Xc7HTj6UoSJ+uftVGa2CUjpa9yu58LSFG2c6x4U=
+        b=aZf6HRLUFu0HBS1SFI0ERyfdK9eiP2/bAZKNFitD64ePaNNq3lXCANABNW7153YOT
+         peF/bjuQXS+NoHbfhM8fBxz8P1sduJmIkxYfjoD73amawxFPNRbhRd+GBS9wnmcvyI
+         oBd3pT17vs4fzHfqAgE8A4Awn6ohjZ716MxOG1Wg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 023/189] ALSA: aw2: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:10:43 +0200
-Message-Id: <20220418121201.173965651@linuxfoundation.org>
+Subject: [PATCH 5.15 024/189] ALSA: azt3328: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:10:44 +0200
+Message-Id: <20220418121201.202626008@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,7 +49,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit bf4067e8a19eae67c45659a956c361d59251ba57 upstream.
+commit 49fe36e1c02cb06f66689c888e4e767c31cd259d upstream.
 
 The previous cleanup with devres may lead to the incorrect release
 orders at the probe error handling due to the devres's nature.  Until
@@ -57,50 +57,44 @@ we register the card, snd_card_free() has to be called at first for
 releasing the stuff properly when the driver tries to manage and
 release the stuff via card->private_free().
 
-This patch fixes it by calling snd_card_free() manually on the error
-from the probe callback.
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
 
-Fixes: 33631012cd06 ("ALSA: aw2: Allocate resources with device-managed APIs")
+Fixes: 8c5823ef31e1 ("ALSA: azt3328: Allocate resources with device-managed APIs")
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-32-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220412102636.16000-9-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/aw2/aw2-alsa.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ sound/pci/azt3328.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/sound/pci/aw2/aw2-alsa.c b/sound/pci/aw2/aw2-alsa.c
-index d56f126d6fdd..29a4bcdec237 100644
---- a/sound/pci/aw2/aw2-alsa.c
-+++ b/sound/pci/aw2/aw2-alsa.c
-@@ -275,7 +275,7 @@ static int snd_aw2_probe(struct pci_dev *pci,
- 	/* (3) Create main component */
- 	err = snd_aw2_create(card, pci);
- 	if (err < 0)
--		return err;
-+		goto error;
- 
- 	/* initialize mutex */
- 	mutex_init(&chip->mtx);
-@@ -294,13 +294,17 @@ static int snd_aw2_probe(struct pci_dev *pci,
- 	/* (6) Register card instance */
- 	err = snd_card_register(card);
- 	if (err < 0)
--		return err;
-+		goto error;
- 
- 	/* (7) Set PCI driver data */
- 	pci_set_drvdata(pci, card);
- 
- 	dev++;
- 	return 0;
-+
-+ error:
-+	snd_card_free(card);
-+	return err;
+diff --git a/sound/pci/azt3328.c b/sound/pci/azt3328.c
+index 089050470ff2..7f329dfc5404 100644
+--- a/sound/pci/azt3328.c
++++ b/sound/pci/azt3328.c
+@@ -2427,7 +2427,7 @@ snd_azf3328_create(struct snd_card *card,
  }
  
- /* open callback */
+ static int
+-snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
++__snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+ {
+ 	static int dev;
+ 	struct snd_card *card;
+@@ -2520,6 +2520,12 @@ snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+ 	return 0;
+ }
+ 
++static int
++snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_azf3328_probe(pci, pci_id));
++}
++
+ #ifdef CONFIG_PM_SLEEP
+ static inline void
+ snd_azf3328_suspend_regs(const struct snd_azf3328 *chip,
 -- 
 2.35.2
 
