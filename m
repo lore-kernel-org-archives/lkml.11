@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E02AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAE8CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:27:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238926AbiDRMaV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37730 "EHLO
+        id S238987AbiDRMa0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:30:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238988AbiDRM1g (ORCPT
+        with ESMTP id S238998AbiDRM1h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:27:36 -0400
+        Mon, 18 Apr 2022 08:27:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6241DA66;
-        Mon, 18 Apr 2022 05:21:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63FB1DA6E;
+        Mon, 18 Apr 2022 05:21:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96286B80EDC;
-        Mon, 18 Apr 2022 12:21:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4CD0C385A1;
-        Mon, 18 Apr 2022 12:21:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8CD4BB80EDA;
+        Mon, 18 Apr 2022 12:21:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD0E8C385A1;
+        Mon, 18 Apr 2022 12:21:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284461;
-        bh=9hFyo2su92+GpamV6fwaJ58S8aXAg2cocqtThv6ZSIA=;
+        s=korg; t=1650284464;
+        bh=5hLQUV35+tzlBH6zdxatGjjvCJQpxT0R3ebZCnvvka8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QY5Xq0r0eQ+bIPDbxUT0aNMXFUM8p1qRvC9bIeIYKd4+bZEAMFApYpCgFCRCTyZzn
-         k9avtqAKzWp3/rLcp+w2NAsk4LnZgAfH5Ex210QTxOu808TlRKGq2PVahPx3sFwmTn
-         C2K7mejTkgErtQxjxpixPO1BozVLIsp+h926RnVk=
+        b=g8uV//ZJiWpvEgrAKhn3LqygY/wcVpREwtV0eSwMmuf5UOtVAg9G5L507yBnc7EWx
+         toKsBJlXtbPQ3Ofzu8PRKDqaYkBcv8FHui8suKDA+xffTeAh3aRan5imUkj8HLEiP9
+         Dk7B3MuSvm4gvTjBSKZn/UZt996DpZTVbun7eR/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 122/219] vfio/pci: Fix vf_token mechanism when device-specific VF drivers are used
-Date:   Mon, 18 Apr 2022 14:11:31 +0200
-Message-Id: <20220418121210.313434555@linuxfoundation.org>
+Subject: [PATCH 5.17 123/219] tun: annotate access to queue->trans_start
+Date:   Mon, 18 Apr 2022 14:11:32 +0200
+Message-Id: <20220418121210.340561914@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,276 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Gunthorpe <jgg@nvidia.com>
+From: Antoine Tenart <atenart@kernel.org>
 
-[ Upstream commit 1ef3342a934e235aca72b4bcc0d6854d80a65077 ]
+[ Upstream commit 968a1a5d6541cd24e37dadc1926eab9c10aeb09b ]
 
-get_pf_vdev() tries to check if a PF is a VFIO PF by looking at the driver:
+Commit 5337824f4dc4 ("net: annotate accesses to queue->trans_start")
+introduced a new helper, txq_trans_cond_update, to update
+queue->trans_start using WRITE_ONCE. One snippet in drivers/net/tun.c
+was missed, as it was introduced roughly at the same time.
 
-       if (pci_dev_driver(physfn) != pci_dev_driver(vdev->pdev)) {
-
-However now that we have multiple VF and PF drivers this is no longer
-reliable.
-
-This means that security tests realted to vf_token can be skipped by
-mixing and matching different VFIO PCI drivers.
-
-Instead of trying to use the driver core to find the PF devices maintain a
-linked list of all PF vfio_pci_core_device's that we have called
-pci_enable_sriov() on.
-
-When registering a VF just search the list to see if the PF is present and
-record the match permanently in the struct. PCI core locking prevents a PF
-from passing pci_disable_sriov() while VF drivers are attached so the VFIO
-owned PF becomes a static property of the VF.
-
-In common cases where vfio does not own the PF the global list remains
-empty and the VF's pointer is statically NULL.
-
-This also fixes a lockdep splat from recursive locking of the
-vfio_group::device_lock between vfio_device_get_from_name() and
-vfio_device_get_from_dev(). If the VF and PF share the same group this
-would deadlock.
-
-Fixes: ff53edf6d6ab ("vfio/pci: Split the pci_driver code out of vfio_pci_core.c")
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Link: https://lore.kernel.org/r/0-v3-876570980634+f2e8-vfio_vf_token_jgg@nvidia.com
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+Fixes: 5337824f4dc4 ("net: annotate accesses to queue->trans_start")
+Cc: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220412135852.466386-1-atenart@kernel.org
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vfio/pci/vfio_pci_core.c | 124 ++++++++++++++++++-------------
- include/linux/vfio_pci_core.h    |   2 +
- 2 files changed, 76 insertions(+), 50 deletions(-)
+ drivers/net/tun.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-index 2e6409cc11ad..ef54ef11af55 100644
---- a/drivers/vfio/pci/vfio_pci_core.c
-+++ b/drivers/vfio/pci/vfio_pci_core.c
-@@ -36,6 +36,10 @@ static bool nointxmask;
- static bool disable_vga;
- static bool disable_idle_d3;
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index de999e0fedbc..aa78d7e00289 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -1106,7 +1106,7 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
  
-+/* List of PF's that vfio_pci_core_sriov_configure() has been called on */
-+static DEFINE_MUTEX(vfio_pci_sriov_pfs_mutex);
-+static LIST_HEAD(vfio_pci_sriov_pfs);
-+
- static inline bool vfio_vga_disabled(void)
- {
- #ifdef CONFIG_VFIO_PCI_VGA
-@@ -434,47 +438,17 @@ void vfio_pci_core_disable(struct vfio_pci_core_device *vdev)
- }
- EXPORT_SYMBOL_GPL(vfio_pci_core_disable);
+ 	/* NETIF_F_LLTX requires to do our own update of trans_start */
+ 	queue = netdev_get_tx_queue(dev, txq);
+-	queue->trans_start = jiffies;
++	txq_trans_cond_update(queue);
  
--static struct vfio_pci_core_device *get_pf_vdev(struct vfio_pci_core_device *vdev)
--{
--	struct pci_dev *physfn = pci_physfn(vdev->pdev);
--	struct vfio_device *pf_dev;
--
--	if (!vdev->pdev->is_virtfn)
--		return NULL;
--
--	pf_dev = vfio_device_get_from_dev(&physfn->dev);
--	if (!pf_dev)
--		return NULL;
--
--	if (pci_dev_driver(physfn) != pci_dev_driver(vdev->pdev)) {
--		vfio_device_put(pf_dev);
--		return NULL;
--	}
--
--	return container_of(pf_dev, struct vfio_pci_core_device, vdev);
--}
--
--static void vfio_pci_vf_token_user_add(struct vfio_pci_core_device *vdev, int val)
--{
--	struct vfio_pci_core_device *pf_vdev = get_pf_vdev(vdev);
--
--	if (!pf_vdev)
--		return;
--
--	mutex_lock(&pf_vdev->vf_token->lock);
--	pf_vdev->vf_token->users += val;
--	WARN_ON(pf_vdev->vf_token->users < 0);
--	mutex_unlock(&pf_vdev->vf_token->lock);
--
--	vfio_device_put(&pf_vdev->vdev);
--}
--
- void vfio_pci_core_close_device(struct vfio_device *core_vdev)
- {
- 	struct vfio_pci_core_device *vdev =
- 		container_of(core_vdev, struct vfio_pci_core_device, vdev);
- 
--	vfio_pci_vf_token_user_add(vdev, -1);
-+	if (vdev->sriov_pf_core_dev) {
-+		mutex_lock(&vdev->sriov_pf_core_dev->vf_token->lock);
-+		WARN_ON(!vdev->sriov_pf_core_dev->vf_token->users);
-+		vdev->sriov_pf_core_dev->vf_token->users--;
-+		mutex_unlock(&vdev->sriov_pf_core_dev->vf_token->lock);
-+	}
- 	vfio_spapr_pci_eeh_release(vdev->pdev);
- 	vfio_pci_core_disable(vdev);
- 
-@@ -495,7 +469,12 @@ void vfio_pci_core_finish_enable(struct vfio_pci_core_device *vdev)
- {
- 	vfio_pci_probe_mmaps(vdev);
- 	vfio_spapr_pci_eeh_open(vdev->pdev);
--	vfio_pci_vf_token_user_add(vdev, 1);
-+
-+	if (vdev->sriov_pf_core_dev) {
-+		mutex_lock(&vdev->sriov_pf_core_dev->vf_token->lock);
-+		vdev->sriov_pf_core_dev->vf_token->users++;
-+		mutex_unlock(&vdev->sriov_pf_core_dev->vf_token->lock);
-+	}
- }
- EXPORT_SYMBOL_GPL(vfio_pci_core_finish_enable);
- 
-@@ -1603,11 +1582,8 @@ static int vfio_pci_validate_vf_token(struct vfio_pci_core_device *vdev,
- 	 *
- 	 * If the VF token is provided but unused, an error is generated.
- 	 */
--	if (!vdev->pdev->is_virtfn && !vdev->vf_token && !vf_token)
--		return 0; /* No VF token provided or required */
--
- 	if (vdev->pdev->is_virtfn) {
--		struct vfio_pci_core_device *pf_vdev = get_pf_vdev(vdev);
-+		struct vfio_pci_core_device *pf_vdev = vdev->sriov_pf_core_dev;
- 		bool match;
- 
- 		if (!pf_vdev) {
-@@ -1620,7 +1596,6 @@ static int vfio_pci_validate_vf_token(struct vfio_pci_core_device *vdev,
- 		}
- 
- 		if (!vf_token) {
--			vfio_device_put(&pf_vdev->vdev);
- 			pci_info_ratelimited(vdev->pdev,
- 				"VF token required to access device\n");
- 			return -EACCES;
-@@ -1630,8 +1605,6 @@ static int vfio_pci_validate_vf_token(struct vfio_pci_core_device *vdev,
- 		match = uuid_equal(uuid, &pf_vdev->vf_token->uuid);
- 		mutex_unlock(&pf_vdev->vf_token->lock);
- 
--		vfio_device_put(&pf_vdev->vdev);
--
- 		if (!match) {
- 			pci_info_ratelimited(vdev->pdev,
- 				"Incorrect VF token provided for device\n");
-@@ -1752,8 +1725,30 @@ static int vfio_pci_bus_notifier(struct notifier_block *nb,
- static int vfio_pci_vf_init(struct vfio_pci_core_device *vdev)
- {
- 	struct pci_dev *pdev = vdev->pdev;
-+	struct vfio_pci_core_device *cur;
-+	struct pci_dev *physfn;
- 	int ret;
- 
-+	if (pdev->is_virtfn) {
-+		/*
-+		 * If this VF was created by our vfio_pci_core_sriov_configure()
-+		 * then we can find the PF vfio_pci_core_device now, and due to
-+		 * the locking in pci_disable_sriov() it cannot change until
-+		 * this VF device driver is removed.
-+		 */
-+		physfn = pci_physfn(vdev->pdev);
-+		mutex_lock(&vfio_pci_sriov_pfs_mutex);
-+		list_for_each_entry(cur, &vfio_pci_sriov_pfs, sriov_pfs_item) {
-+			if (cur->pdev == physfn) {
-+				vdev->sriov_pf_core_dev = cur;
-+				break;
-+			}
-+		}
-+		mutex_unlock(&vfio_pci_sriov_pfs_mutex);
-+		return 0;
-+	}
-+
-+	/* Not a SRIOV PF */
- 	if (!pdev->is_physfn)
- 		return 0;
- 
-@@ -1825,6 +1820,7 @@ void vfio_pci_core_init_device(struct vfio_pci_core_device *vdev,
- 	INIT_LIST_HEAD(&vdev->ioeventfds_list);
- 	mutex_init(&vdev->vma_lock);
- 	INIT_LIST_HEAD(&vdev->vma_list);
-+	INIT_LIST_HEAD(&vdev->sriov_pfs_item);
- 	init_rwsem(&vdev->memory_lock);
- }
- EXPORT_SYMBOL_GPL(vfio_pci_core_init_device);
-@@ -1916,7 +1912,7 @@ void vfio_pci_core_unregister_device(struct vfio_pci_core_device *vdev)
- {
- 	struct pci_dev *pdev = vdev->pdev;
- 
--	pci_disable_sriov(pdev);
-+	vfio_pci_core_sriov_configure(pdev, 0);
- 
- 	vfio_unregister_group_dev(&vdev->vdev);
- 
-@@ -1954,21 +1950,49 @@ static pci_ers_result_t vfio_pci_aer_err_detected(struct pci_dev *pdev,
- 
- int vfio_pci_core_sriov_configure(struct pci_dev *pdev, int nr_virtfn)
- {
-+	struct vfio_pci_core_device *vdev;
- 	struct vfio_device *device;
- 	int ret = 0;
- 
-+	device_lock_assert(&pdev->dev);
-+
- 	device = vfio_device_get_from_dev(&pdev->dev);
- 	if (!device)
- 		return -ENODEV;
- 
--	if (nr_virtfn == 0)
--		pci_disable_sriov(pdev);
--	else
-+	vdev = container_of(device, struct vfio_pci_core_device, vdev);
-+
-+	if (nr_virtfn) {
-+		mutex_lock(&vfio_pci_sriov_pfs_mutex);
-+		/*
-+		 * The thread that adds the vdev to the list is the only thread
-+		 * that gets to call pci_enable_sriov() and we will only allow
-+		 * it to be called once without going through
-+		 * pci_disable_sriov()
-+		 */
-+		if (!list_empty(&vdev->sriov_pfs_item)) {
-+			ret = -EINVAL;
-+			goto out_unlock;
-+		}
-+		list_add_tail(&vdev->sriov_pfs_item, &vfio_pci_sriov_pfs);
-+		mutex_unlock(&vfio_pci_sriov_pfs_mutex);
- 		ret = pci_enable_sriov(pdev, nr_virtfn);
-+		if (ret)
-+			goto out_del;
-+		ret = nr_virtfn;
-+		goto out_put;
-+	}
- 
--	vfio_device_put(device);
-+	pci_disable_sriov(pdev);
- 
--	return ret < 0 ? ret : nr_virtfn;
-+out_del:
-+	mutex_lock(&vfio_pci_sriov_pfs_mutex);
-+	list_del_init(&vdev->sriov_pfs_item);
-+out_unlock:
-+	mutex_unlock(&vfio_pci_sriov_pfs_mutex);
-+out_put:
-+	vfio_device_put(device);
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(vfio_pci_core_sriov_configure);
- 
-diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
-index ae6f4838ab75..6e5db4edc335 100644
---- a/include/linux/vfio_pci_core.h
-+++ b/include/linux/vfio_pci_core.h
-@@ -133,6 +133,8 @@ struct vfio_pci_core_device {
- 	struct mutex		ioeventfds_lock;
- 	struct list_head	ioeventfds_list;
- 	struct vfio_pci_vf_token	*vf_token;
-+	struct list_head		sriov_pfs_item;
-+	struct vfio_pci_core_device	*sriov_pf_core_dev;
- 	struct notifier_block	nb;
- 	struct mutex		vma_lock;
- 	struct list_head	vma_list;
+ 	/* Notify and wake up reader process */
+ 	if (tfile->flags & TUN_FASYNC)
 -- 
 2.35.1
 
