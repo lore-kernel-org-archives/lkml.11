@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22EF1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B1ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346689AbiDRQzX (ORCPT
+        id S1346758AbiDRQzb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 12:55:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55756 "EHLO
+        Mon, 18 Apr 2022 12:55:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346503AbiDRQxz (ORCPT
+        with ESMTP id S1346501AbiDRQyK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 12:53:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1CA863388A
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:51:15 -0700 (PDT)
+        Mon, 18 Apr 2022 12:54:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8CF2232EF3
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:51:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1650300674;
+        s=mimecast20190719; t=1650300689;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JBebpsVkjJ1lSSa3e/sJjGT51LMTkXLQURCTyHp5Tag=;
-        b=YxhW9qowef3VrOsmhhk/TUtI36X0oxQWmFoIAakfz1J2/dsIe/ZsAkeBoSj1DVJM3g6kYh
-        V309yypF0zZueXVLoZQrr/mLi0dpbbiNTTJPRBY8NXcFx0Fxsdroip5usEAwuTqGWD5Tux
-        mOVduBEc0kSJBJEiWowpnYWlfBO1AZ0=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=zxjNN+ra2AhCANWxkWyISdn+Fo3V4/vBPneJRjlR5i0=;
+        b=Z1SEElzmm4oAEMzx3yEP4Hz4TnfbiJYezc59JGFm19pcKIz1AYeXbvKehNk2yazaLdwZgJ
+        2mP/tIdqgb2HP/yoCl+FgCBhnxKGKZxPBEInArxdKT0ptPvlQOxhygyqegiEMK7AAnNVdi
+        mfSiz/uV0FSZXCx7jT5lPhqfSPjX3dE=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-53-j7K3T6i4MMOS4KqbY4YEqQ-1; Mon, 18 Apr 2022 12:51:12 -0400
-X-MC-Unique: j7K3T6i4MMOS4KqbY4YEqQ-1
-Received: by mail-qt1-f200.google.com with SMTP id x10-20020ac8700a000000b002c3ef8fc44cso8837700qtm.8
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:51:12 -0700 (PDT)
+ us-mta-628-Bx8aq9S-OfeV2QedTR9epQ-1; Mon, 18 Apr 2022 12:51:28 -0400
+X-MC-Unique: Bx8aq9S-OfeV2QedTR9epQ-1
+Received: by mail-qt1-f197.google.com with SMTP id m3-20020ac86883000000b002ed8d29a300so8827198qtq.11
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:51:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JBebpsVkjJ1lSSa3e/sJjGT51LMTkXLQURCTyHp5Tag=;
-        b=nxI1vAny+DGZvz1FidcaZ/vMy6xUMVlWw8V0RBDQRg0wVjkvgRamnMKyTz7IYl05xM
-         /d3c698WuNNOOJPtjr9K0+mnFas7MA30f0KcP6axWyvonxMIVmdhpZvZb8DQW6t6CAxK
-         DmAZXFnkbOMXE4Gi2JUupW8wOVzEY68S+0p2EL6mDFKGzEPPAspWJGJPsvpvGxnTIEk+
-         JSoYo7whc1+bB7Zm1XlmBdjl5s8goJIFdmfHHp+RCBnoWKf91m5uBRXaQrgCc650pcKQ
-         K6bUfpBEdghasBYD/qhH2BqWRtCbKOT2Hlu0GyME9sURaXael7eRbL0rP7/WjC3qjZgV
-         E6kg==
-X-Gm-Message-State: AOAM531cjEiMPkoTwsyzxkDEZ24Uka8o9hHLjRTW1iDs2tbYR+zLT09X
-        w2HlilKV1Nj4iHq3fxrHWO1njsmFqBuUsQskhUeLtYdRhcfRcZe6a87qlGX7QdleNAFhLDwRfCr
-        DsB8Rufu/vrLerA/Mhr5/kjhG
-X-Received: by 2002:a05:6214:1cc4:b0:431:4cbc:1d91 with SMTP id g4-20020a0562141cc400b004314cbc1d91mr8819870qvd.64.1650300672338;
-        Mon, 18 Apr 2022 09:51:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxdHQjzckS1sAzf8DfFbGiChE/dpSmAb18xOXxE4bOzMjLBlU1ffPU/tvpAO7aja87iutMc5g==
-X-Received: by 2002:a05:6214:1cc4:b0:431:4cbc:1d91 with SMTP id g4-20020a0562141cc400b004314cbc1d91mr8819852qvd.64.1650300672090;
-        Mon, 18 Apr 2022 09:51:12 -0700 (PDT)
+        bh=zxjNN+ra2AhCANWxkWyISdn+Fo3V4/vBPneJRjlR5i0=;
+        b=F/JHv7XN6YpGGQwhTnimKIt9CjC+QNObNzB289zi0lXTFLzX8KqPf72528QZmmpwoD
+         jggDHjFk3OSVDAQyr4KH8nBo2EBpB3q2lIsrINvEjbIFccDfHjjX8vIXtYTxqyTklNwg
+         9bHzTH+7e9/5glIGVzJy5uitmISQubPxunYppsBydX68C5xG5yDJCLEkH22bkiaKgkUL
+         KKqQI1T+a1X4LkX19B1OxaTuVS8oCEgp0bNeKAzvZyrbItM+XhVZKn72EHntMfRoZffE
+         zghct8cUihCPd7k8O+Xp5euoK5SOaUoS0ATSY0p3Chs4L4Ridbaivr60r8ZXxBgS4bOJ
+         g0Jg==
+X-Gm-Message-State: AOAM5307Kursr76GEIbc1JAyzC4ZzYLkQ7AspDp0x8NK0JqFM2UcdZ3V
+        t3Sxg7LEAkGoWbMCYvx/Kny3WTOxJFer7FQ49a4UKeoqAdTDJfS64r7fb0q3qX41XmKOaBHkbDr
+        yUj+a5f8zRQ4rZIuGM3Uh9mrI
+X-Received: by 2002:ac8:7441:0:b0:2f1:d1d4:e4cc with SMTP id h1-20020ac87441000000b002f1d1d4e4ccmr7783520qtr.14.1650300687962;
+        Mon, 18 Apr 2022 09:51:27 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxbMfrsVNOVFQpjjNwLQZ4lN8sU2K+zEnFfnoqBjmhgiVmeevwMGEvg1zKOZ7NvA4Ais+ckJg==
+X-Received: by 2002:ac8:7441:0:b0:2f1:d1d4:e4cc with SMTP id h1-20020ac87441000000b002f1d1d4e4ccmr7783510qtr.14.1650300687764;
+        Mon, 18 Apr 2022 09:51:27 -0700 (PDT)
 Received: from treble.redhat.com ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id e15-20020ac8670f000000b002e22d9c756dsm7277059qtp.30.2022.04.18.09.51.10
+        by smtp.gmail.com with ESMTPSA id e15-20020ac8670f000000b002e22d9c756dsm7277059qtp.30.2022.04.18.09.51.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 09:51:11 -0700 (PDT)
+        Mon, 18 Apr 2022 09:51:27 -0700 (PDT)
 From:   Josh Poimboeuf <jpoimboe@redhat.com>
 To:     x86@kernel.org
 Cc:     Peter Zijlstra <peterz@infradead.org>,
         linux-kernel@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>
-Subject: [PATCH v2 13/25] scripts: Create objdump-func helper script
-Date:   Mon, 18 Apr 2022 09:50:32 -0700
-Message-Id: <ab37c23d28a8b9cf7a6707cc5af5e1aef80ba4a3.1650300597.git.jpoimboe@redhat.com>
+Subject: [PATCH v2 23/25] objtool: Add HAVE_NOINSTR_VALIDATION
+Date:   Mon, 18 Apr 2022 09:50:42 -0700
+Message-Id: <488e94f69db4df154499bc098573d90e5db1c826.1650300597.git.jpoimboe@redhat.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1650300597.git.jpoimboe@redhat.com>
 References: <cover.1650300597.git.jpoimboe@redhat.com>
@@ -73,40 +73,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a simple script which disassembles a single function from an object
-file.  Comes in handy for objtool warnings and kernel stack traces.
+Remove CONFIG_NOINSTR_VALIDATION's dependency on HAVE_OBJTOOL, since
+other arches might want to implement objtool without it.
 
-Originally-by: Peter Zijlstra <peterz@infradead.org>
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 ---
- scripts/objdump-func | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
- create mode 100755 scripts/objdump-func
+ arch/Kconfig      | 3 +++
+ arch/x86/Kconfig  | 1 +
+ lib/Kconfig.debug | 2 +-
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/scripts/objdump-func b/scripts/objdump-func
-new file mode 100755
-index 000000000000..140646c456fc
---- /dev/null
-+++ b/scripts/objdump-func
-@@ -0,0 +1,18 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Disassemble a single function.
-+#
-+# usage: objdump-func <file> <func>
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 6ba6e34db0ea..1e19da774e55 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -1038,6 +1038,9 @@ config HAVE_JUMP_LABEL_HACK
+ config HAVE_NOINSTR_HACK
+ 	bool
+ 
++config HAVE_NOINSTR_VALIDATION
++	bool
 +
-+set -o errexit
-+set -o nounset
-+
-+OBJDUMP="${CROSS_COMPILE:-}objdump"
-+
-+command -v awk >/dev/null 2>&1 || die "awk isn't installed"
-+
-+OBJ=$1; shift
-+FUNC=$1; shift
-+
-+${OBJDUMP} -wdr $@ $OBJ | awk "/^\$/ { P=0; } /$FUNC[^>]*>:\$/ { P=1; O=strtonum(\"0x\" \$1); } { if (P) { o=strtonum(\"0x\" \$1); printf(\"%04x \", o-O); print \$0; } }"
+ config HAVE_STACK_VALIDATION
+ 	bool
+ 	help
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index cc7cca041745..c8f560802bf2 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -233,6 +233,7 @@ config X86
+ 	select HAVE_MOVE_PUD
+ 	select HAVE_NOINSTR_HACK		if HAVE_OBJTOOL
+ 	select HAVE_NMI
++	select HAVE_NOINSTR_VALIDATION		if HAVE_OBJTOOL
+ 	select HAVE_OBJTOOL			if X86_64
+ 	select HAVE_OPTPROBES
+ 	select HAVE_PCSPKR_PLATFORM
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 73359d6cd9a2..55b9acb2f524 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -502,7 +502,7 @@ config STACK_VALIDATION
+ 
+ config NOINSTR_VALIDATION
+ 	bool
+-	depends on HAVE_OBJTOOL && DEBUG_ENTRY
++	depends on HAVE_NOINSTR_VALIDATION && DEBUG_ENTRY
+ 	select OBJTOOL
+ 	default y
+ 
 -- 
 2.34.1
 
