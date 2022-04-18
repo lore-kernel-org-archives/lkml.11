@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11EC0C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28BC7C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243623AbiDRNUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32984 "EHLO
+        id S243680AbiDRNU6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:20:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241326AbiDRNC7 (ORCPT
+        with ESMTP id S241396AbiDRNDE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:02:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30AE26AEF;
-        Mon, 18 Apr 2022 05:43:10 -0700 (PDT)
+        Mon, 18 Apr 2022 09:03:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7B633363;
+        Mon, 18 Apr 2022 05:43:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 247D06101A;
-        Mon, 18 Apr 2022 12:43:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33EA3C385A7;
-        Mon, 18 Apr 2022 12:43:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EDB6160FB6;
+        Mon, 18 Apr 2022 12:43:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A731C385A1;
+        Mon, 18 Apr 2022 12:43:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285789;
-        bh=5//ejySP/m8Za6V1mX4cfBY+Hy8DJlrANs1FjbVt1rg=;
+        s=korg; t=1650285798;
+        bh=brtuF43pM50XqWsrLtaTVNwuTiY5ZTnr6ySqkkguyiw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x7TzXAsP2Pi8M7amluLUEJ51bkoGjHBFpn09XU2boO4B6Vb0SMlHvjes1ubsJP2Gy
-         yb58075lSXrpPBQuZJ4Wuo9vQSXw9j/4rFMh7qSwIfxRBxIP6roakQFf7yZHYPBae6
-         2JiIV3brx4A+RcAvs5ZkZC3NEGI9sbwLaW23ODwU=
+        b=YjCE1YCos1u91ycHibQSmt8ae/+JmSE38UfFK9VDxBucw+eYonumt+dJK+ovQUZr+
+         8UFfC09OkoeeosvnSrB2yZTvdriuhUbUealXyUbhzfmrFBOeKJgXRoTHv1gKXv0nsl
+         1dh1OvJTONrv+JAFxqW0I8jKSIgpTY/z81kHB8mI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alvin Lee <Alvin.Lee2@amd.com>,
-        Aric Cyr <Aric.Cyr@amd.com>, Alex Hung <alex.hung@amd.com>,
-        Charlene Liu <Charlene.Liu@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 17/63] drm/amd/display: fix audio format not updated after edid updated
-Date:   Mon, 18 Apr 2022 14:13:14 +0200
-Message-Id: <20220418121135.320393409@linuxfoundation.org>
+        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 28/63] arm64: alternatives: mark patch_alternative() as `noinstr`
+Date:   Mon, 18 Apr 2022 14:13:25 +0200
+Message-Id: <20220418121135.972319170@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -52,40 +50,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charlene Liu <Charlene.Liu@amd.com>
+From: Joey Gouly <joey.gouly@arm.com>
 
-[ Upstream commit 5e8a71cf13bc9184fee915b2220be71b4c6cac74 ]
+[ Upstream commit a2c0b0fbe01419f8f5d1c0b9c581631f34ffce8b ]
 
-[why]
-for the case edid change only changed audio format.
-driver still need to update stream.
+The alternatives code must be `noinstr` such that it does not patch itself,
+as the cache invalidation is only performed after all the alternatives have
+been applied.
 
-Reviewed-by: Alvin Lee <Alvin.Lee2@amd.com>
-Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
-Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Charlene Liu <Charlene.Liu@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Mark patch_alternative() as `noinstr`. Mark branch_insn_requires_update()
+and get_alt_insn() with `__always_inline` since they are both only called
+through patch_alternative().
+
+Booting a kernel in QEMU TCG with KCSAN=y and ARM64_USE_LSE_ATOMICS=y caused
+a boot hang:
+[    0.241121] CPU: All CPU(s) started at EL2
+
+The alternatives code was patching the atomics in __tsan_read4() from LL/SC
+atomics to LSE atomics.
+
+The following fragment is using LL/SC atomics in the .text section:
+  | <__tsan_unaligned_read4+304>:     ldxr    x6, [x2]
+  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
+  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
+  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
+
+This LL/SC atomic sequence was to be replaced with LSE atomics. However since
+the alternatives code was instrumentable, __tsan_read4() was being called after
+only the first instruction was replaced, which led to the following code in memory:
+  | <__tsan_unaligned_read4+304>:     ldadd   x5, x6, [x2]
+  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
+  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
+  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
+
+This caused an infinite loop as the `stxr` instruction never completed successfully,
+so `w7` was always 0.
+
+Signed-off-by: Joey Gouly <joey.gouly@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220405104733.11476-1-joey.gouly@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc_resource.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/kernel/alternative.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-index 95a5310e9e66..de246e183d6b 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-@@ -1546,8 +1546,8 @@ bool dc_is_stream_unchanged(
- 	if (old_stream->ignore_msa_timing_param != stream->ignore_msa_timing_param)
- 		return false;
+diff --git a/arch/arm64/kernel/alternative.c b/arch/arm64/kernel/alternative.c
+index 73039949b5ce..5f8e4c2df53c 100644
+--- a/arch/arm64/kernel/alternative.c
++++ b/arch/arm64/kernel/alternative.c
+@@ -41,7 +41,7 @@ bool alternative_is_applied(u16 cpufeature)
+ /*
+  * Check if the target PC is within an alternative block.
+  */
+-static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
++static __always_inline bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
+ {
+ 	unsigned long replptr = (unsigned long)ALT_REPL_PTR(alt);
+ 	return !(pc >= replptr && pc <= (replptr + alt->alt_len));
+@@ -49,7 +49,7 @@ static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
  
--	// Only Have Audio left to check whether it is same or not. This is a corner case for Tiled sinks
--	if (old_stream->audio_info.mode_count != stream->audio_info.mode_count)
-+	/*compare audio info*/
-+	if (memcmp(&old_stream->audio_info, &stream->audio_info, sizeof(stream->audio_info)) != 0)
- 		return false;
+ #define align_down(x, a)	((unsigned long)(x) & ~(((unsigned long)(a)) - 1))
  
- 	return true;
+-static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
++static __always_inline u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
+ {
+ 	u32 insn;
+ 
+@@ -94,7 +94,7 @@ static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnp
+ 	return insn;
+ }
+ 
+-static void patch_alternative(struct alt_instr *alt,
++static noinstr void patch_alternative(struct alt_instr *alt,
+ 			      __le32 *origptr, __le32 *updptr, int nr_inst)
+ {
+ 	__le32 *replptr;
 -- 
 2.35.1
 
