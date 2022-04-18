@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10333C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E61CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238418AbiDRMYC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:24:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49122 "EHLO
+        id S238300AbiDRMYG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:24:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238753AbiDRMWr (ORCPT
+        with ESMTP id S238646AbiDRMWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:22:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F791CB11;
-        Mon, 18 Apr 2022 05:18:13 -0700 (PDT)
+        Mon, 18 Apr 2022 08:22:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D231EAE7;
+        Mon, 18 Apr 2022 05:17:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80B6FB80ED6;
-        Mon, 18 Apr 2022 12:18:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D824DC385A7;
-        Mon, 18 Apr 2022 12:18:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 03A5060F39;
+        Mon, 18 Apr 2022 12:17:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D56FBC385A8;
+        Mon, 18 Apr 2022 12:17:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284291;
-        bh=VDtuTGtW9TG1KsudYMu8TsB/oEOwXA+9S2Gy2KFrkQw=;
+        s=korg; t=1650284278;
+        bh=tv4zKBl+I3vxx2xHCn4Ct8zhqbx9Pth5UP2RUme5oVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jNshYoBd8tjwsxCg4soX1d+6icsJuPme5IYeXZnFTPGZxDr8NYbkznqe65IfNS0G0
-         ejhRO+h9itQcK/77sYOHZ/0fPhDNHU5XGf6mqn3vrM0gFG8BMF/KIuGRnC5mMJ3Gnb
-         on+tvQ1YPKWEEa0uHyv0a+hwXGFv/yw+lwH2/YLM=
+        b=gtmM5SB0MyCPXXO7rbSgqhK383kpGlrsaT22nNwSkwp0zGCpNjWT1ZCXWok1e2/GA
+         tcExNSfq0A33TvtYI8MxzSSfxD8Uj3kA4ZEWhn4tThZhT3L3mX20+uqTEmgReV/qgF
+         0Zqf9KR/+zS7bR2mSatj+RVdTZ1zsnXS9k2LkkqY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Oliver Upton <oupton@google.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 065/219] KVM: arm64: Generalise VM features into a set of flags
-Date:   Mon, 18 Apr 2022 14:10:34 +0200
-Message-Id: <20220418121207.461356165@linuxfoundation.org>
+Subject: [PATCH 5.17 061/219] memory: atmel-ebi: Fix missing of_node_put in atmel_ebi_probe
+Date:   Mon, 18 Apr 2022 14:10:30 +0200
+Message-Id: <20220418121207.176081250@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,127 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 06394531b425794dc56f3d525b7994d25b8072f7 ]
+[ Upstream commit 6f296a9665ba5ac68937bf11f96214eb9de81baa ]
 
-We currently deal with a set of booleans for VM features,
-while they could be better represented as set of flags
-contained in an unsigned long, similarily to what we are
-doing on the CPU side.
+The device_node pointer is returned by of_parse_phandle() with refcount
+incremented. We should use of_node_put() on it when done.
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-[Oliver: Flag-ify the 'ran_once' boolean]
-Signed-off-by: Oliver Upton <oupton@google.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220311174001.605719-2-oupton@google.com
+Fixes: 87108dc78eb8 ("memory: atmel-ebi: Enable the SMC clock if specified")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220309110144.22412-1-linmq006@gmail.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/kvm_host.h | 15 +++++++++------
- arch/arm64/kvm/arm.c              |  7 ++++---
- arch/arm64/kvm/mmio.c             |  3 ++-
- arch/arm64/kvm/pmu-emul.c         |  2 +-
- 4 files changed, 16 insertions(+), 11 deletions(-)
+ drivers/memory/atmel-ebi.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
-index 8234626a945a..2619fda42ca2 100644
---- a/arch/arm64/include/asm/kvm_host.h
-+++ b/arch/arm64/include/asm/kvm_host.h
-@@ -122,7 +122,12 @@ struct kvm_arch {
- 	 * should) opt in to this feature if KVM_CAP_ARM_NISV_TO_USER is
- 	 * supported.
- 	 */
--	bool return_nisv_io_abort_to_user;
-+#define KVM_ARCH_FLAG_RETURN_NISV_IO_ABORT_TO_USER	0
-+	/* Memory Tagging Extension enabled for the guest */
-+#define KVM_ARCH_FLAG_MTE_ENABLED			1
-+	/* At least one vCPU has ran in the VM */
-+#define KVM_ARCH_FLAG_HAS_RAN_ONCE			2
-+	unsigned long flags;
+diff --git a/drivers/memory/atmel-ebi.c b/drivers/memory/atmel-ebi.c
+index c267283b01fd..e749dcb3ddea 100644
+--- a/drivers/memory/atmel-ebi.c
++++ b/drivers/memory/atmel-ebi.c
+@@ -544,20 +544,27 @@ static int atmel_ebi_probe(struct platform_device *pdev)
+ 	smc_np = of_parse_phandle(dev->of_node, "atmel,smc", 0);
  
- 	/*
- 	 * VM-wide PMU filter, implemented as a bitmap and big enough for
-@@ -133,10 +138,6 @@ struct kvm_arch {
+ 	ebi->smc.regmap = syscon_node_to_regmap(smc_np);
+-	if (IS_ERR(ebi->smc.regmap))
+-		return PTR_ERR(ebi->smc.regmap);
++	if (IS_ERR(ebi->smc.regmap)) {
++		ret = PTR_ERR(ebi->smc.regmap);
++		goto put_node;
++	}
  
- 	u8 pfr0_csv2;
- 	u8 pfr0_csv3;
--
--	/* Memory Tagging Extension enabled for the guest */
--	bool mte_enabled;
--	bool ran_once;
- };
+ 	ebi->smc.layout = atmel_hsmc_get_reg_layout(smc_np);
+-	if (IS_ERR(ebi->smc.layout))
+-		return PTR_ERR(ebi->smc.layout);
++	if (IS_ERR(ebi->smc.layout)) {
++		ret = PTR_ERR(ebi->smc.layout);
++		goto put_node;
++	}
  
- struct kvm_vcpu_fault_info {
-@@ -792,7 +793,9 @@ bool kvm_arm_vcpu_is_finalized(struct kvm_vcpu *vcpu);
- #define kvm_arm_vcpu_sve_finalized(vcpu) \
- 	((vcpu)->arch.flags & KVM_ARM64_VCPU_SVE_FINALIZED)
+ 	ebi->smc.clk = of_clk_get(smc_np, 0);
+ 	if (IS_ERR(ebi->smc.clk)) {
+-		if (PTR_ERR(ebi->smc.clk) != -ENOENT)
+-			return PTR_ERR(ebi->smc.clk);
++		if (PTR_ERR(ebi->smc.clk) != -ENOENT) {
++			ret = PTR_ERR(ebi->smc.clk);
++			goto put_node;
++		}
  
--#define kvm_has_mte(kvm) (system_supports_mte() && (kvm)->arch.mte_enabled)
-+#define kvm_has_mte(kvm)					\
-+	(system_supports_mte() &&				\
-+	 test_bit(KVM_ARCH_FLAG_MTE_ENABLED, &(kvm)->arch.flags))
- #define kvm_vcpu_has_pmu(vcpu)					\
- 	(test_bit(KVM_ARM_VCPU_PMU_V3, (vcpu)->arch.features))
+ 		ebi->smc.clk = NULL;
+ 	}
++	of_node_put(smc_np);
+ 	ret = clk_prepare_enable(ebi->smc.clk);
+ 	if (ret)
+ 		return ret;
+@@ -608,6 +615,10 @@ static int atmel_ebi_probe(struct platform_device *pdev)
+ 	}
  
-diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-index 85a2a75f4498..25d8aff273a1 100644
---- a/arch/arm64/kvm/arm.c
-+++ b/arch/arm64/kvm/arm.c
-@@ -89,7 +89,8 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
- 	switch (cap->cap) {
- 	case KVM_CAP_ARM_NISV_TO_USER:
- 		r = 0;
--		kvm->arch.return_nisv_io_abort_to_user = true;
-+		set_bit(KVM_ARCH_FLAG_RETURN_NISV_IO_ABORT_TO_USER,
-+			&kvm->arch.flags);
- 		break;
- 	case KVM_CAP_ARM_MTE:
- 		mutex_lock(&kvm->lock);
-@@ -97,7 +98,7 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
- 			r = -EINVAL;
- 		} else {
- 			r = 0;
--			kvm->arch.mte_enabled = true;
-+			set_bit(KVM_ARCH_FLAG_MTE_ENABLED, &kvm->arch.flags);
- 		}
- 		mutex_unlock(&kvm->lock);
- 		break;
-@@ -635,7 +636,7 @@ int kvm_arch_vcpu_run_pid_change(struct kvm_vcpu *vcpu)
- 		kvm_call_hyp_nvhe(__pkvm_vcpu_init_traps, vcpu);
+ 	return of_platform_populate(np, NULL, NULL, dev);
++
++put_node:
++	of_node_put(smc_np);
++	return ret;
+ }
  
- 	mutex_lock(&kvm->lock);
--	kvm->arch.ran_once = true;
-+	set_bit(KVM_ARCH_FLAG_HAS_RAN_ONCE, &kvm->arch.flags);
- 	mutex_unlock(&kvm->lock);
- 
- 	return ret;
-diff --git a/arch/arm64/kvm/mmio.c b/arch/arm64/kvm/mmio.c
-index 3e2d8ba11a02..3dd38a151d2a 100644
---- a/arch/arm64/kvm/mmio.c
-+++ b/arch/arm64/kvm/mmio.c
-@@ -135,7 +135,8 @@ int io_mem_abort(struct kvm_vcpu *vcpu, phys_addr_t fault_ipa)
- 	 * volunteered to do so, and bail out otherwise.
- 	 */
- 	if (!kvm_vcpu_dabt_isvalid(vcpu)) {
--		if (vcpu->kvm->arch.return_nisv_io_abort_to_user) {
-+		if (test_bit(KVM_ARCH_FLAG_RETURN_NISV_IO_ABORT_TO_USER,
-+			     &vcpu->kvm->arch.flags)) {
- 			run->exit_reason = KVM_EXIT_ARM_NISV;
- 			run->arm_nisv.esr_iss = kvm_vcpu_dabt_iss_nisv_sanitized(vcpu);
- 			run->arm_nisv.fault_ipa = fault_ipa;
-diff --git a/arch/arm64/kvm/pmu-emul.c b/arch/arm64/kvm/pmu-emul.c
-index bc771bc1a041..fc6ee6f02fec 100644
---- a/arch/arm64/kvm/pmu-emul.c
-+++ b/arch/arm64/kvm/pmu-emul.c
-@@ -982,7 +982,7 @@ int kvm_arm_pmu_v3_set_attr(struct kvm_vcpu *vcpu, struct kvm_device_attr *attr)
- 
- 		mutex_lock(&kvm->lock);
- 
--		if (kvm->arch.ran_once) {
-+		if (test_bit(KVM_ARCH_FLAG_HAS_RAN_ONCE, &kvm->arch.flags)) {
- 			mutex_unlock(&kvm->lock);
- 			return -EBUSY;
- 		}
+ static __maybe_unused int atmel_ebi_resume(struct device *dev)
 -- 
 2.35.1
 
