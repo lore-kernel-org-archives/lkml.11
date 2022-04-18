@@ -2,94 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 931C3C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9753C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:00:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236612AbiDRNCX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:02:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36386 "EHLO
+        id S240974AbiDRNC2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:02:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240341AbiDRMxS (ORCPT
+        with ESMTP id S240311AbiDRMxM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:53:18 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A47E82DAB6
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:34:39 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id c64so17270188edf.11
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:34:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=6241TLHhdB4xCdwqVq3Y183uScpx6WRBDKMnSlRkT/0=;
-        b=I1q5WowfHGg4AYWPFBJrF0k2Mm0KNHheFaFAZF+qFn44/2/ZU1wcLieZom/0LMJun1
-         wAcnagi3X7LYKywHWjDtD8ofgNCACHohC6j19x17GLa0nvQEt5+OZxFr+fHYxhmLgOw3
-         wdppARxZDbxGEFroC4C2uWG12zG6baWjpcfOFsTFd5Y4RfQ/D7orgYrd+l1bY+++rqHg
-         i8f0G9RRsMNlVDTqFhIKpkiVPJ+W69qcrHWw/sNzmTr+u2T/1k2rYGwhViTIBqWP5LyQ
-         m1wiYXXKl+bjQ3mlReChOdVt8oB1BwQ0d1KsiypiABsQdsA9Eblo7EpDwEus/g8FOWsZ
-         SB/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6241TLHhdB4xCdwqVq3Y183uScpx6WRBDKMnSlRkT/0=;
-        b=fq6kUZi7LUU5gYp9oO2DcsiJ59j5Fbw6e3hOu352RIR8Ugpd9cwfdAw0CYwvLsbAPv
-         PfIy0NMhaKTKCYNDmjwz3Nk4NUGbb3SchL6FEnTmcz903jBskjAiglNCSD4HeF+LHG5f
-         2Txenn5LeZjZ5EfLqN9RiVEQlnaKMi8H4OcI/mWq/PTvyILBguSuKU+RnQjBQTTHdbOH
-         KkAMHZa4JxIa6sXmdtY34Ym/ETY1xKCE+uoHgoILM40ssBvn2VwWICRfvxJtCLv/WE3z
-         wVs64r+yKY00/DpXFHlkE8xRUv2wQOdyhHqVzVSgHhMh31H3FZcczE8P/D0IcYkeEaXa
-         XKuQ==
-X-Gm-Message-State: AOAM530XV32d7KeONYWPOpHmGdm7ztfk/Wb3ceZzZ9EWJEl3oxqQkSVh
-        KqWe7SqaqFpjsHU0cQZc/AwSEA==
-X-Google-Smtp-Source: ABdhPJzaDF4We3SPdcNurLHia3kwHBzGwUL6pZjk9hZZG+CG6zXaVqs/Z3RnbdyrKl2P7P3n9lAMSw==
-X-Received: by 2002:a05:6402:14b:b0:418:d06e:5d38 with SMTP id s11-20020a056402014b00b00418d06e5d38mr11797329edu.90.1650285277781;
-        Mon, 18 Apr 2022 05:34:37 -0700 (PDT)
-Received: from [192.168.0.217] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id a18-20020a170906671200b006e05929e66csm4538082ejp.20.2022.04.18.05.34.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 08:53:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2852DABC;
         Mon, 18 Apr 2022 05:34:36 -0700 (PDT)
-Message-ID: <eeb4218a-e0ec-f439-5161-0433eb6a8599@linaro.org>
-Date:   Mon, 18 Apr 2022 14:34:35 +0200
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A0BB60F0A;
+        Mon, 18 Apr 2022 12:34:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71C70C385A7;
+        Mon, 18 Apr 2022 12:34:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650285275;
+        bh=CLqasHeB3f/9g8TJ+gJn5N0OM8JBTNVFUB299wDmNJw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FlFnuI7PCv1QTz+i1K+7IjqZ+FIebMyKXHf1nVriFmiZqHPV3aOBKcCSNIKF+Zvx8
+         QnuQqzkVVVbG9LOrvbLoxGnp7ILvxVZyg+Fql31dN18JBK5jS5gpB9sADziTDd12cs
+         3ZwewxHoDUE4JjnSKrBTKw0U6QcttA7chWYmFpV4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 156/189] btrfs: fix root ref counts in error handling in btrfs_get_root_ref
+Date:   Mon, 18 Apr 2022 14:12:56 +0200
+Message-Id: <20220418121206.544212252@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
+References: <20220418121200.312988959@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 04/23] ARM: dts: qcom-msm8974*: Fix I2C labels
-Content-Language: en-US
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220415115633.575010-1-konrad.dybcio@somainline.org>
- <20220415115633.575010-5-konrad.dybcio@somainline.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220415115633.575010-5-konrad.dybcio@somainline.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/04/2022 13:56, Konrad Dybcio wrote:
-> Fix up the label names and add missing ones.
-> 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> ---
->  arch/arm/boot/dts/qcom-msm8974.dtsi | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
-> 
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-This might conflict with:
-https://lore.kernel.org/all/20220401201035.189106-7-krzysztof.kozlowski@linaro.org/
+commit 168a2f776b9762f4021421008512dd7ab7474df1 upstream.
 
-Actually all your further patches might.
+In btrfs_get_root_ref(), when btrfs_insert_fs_root() fails,
+btrfs_put_root() can happen for two reasons:
 
-Best regards,
-Krzysztof
+- the root already exists in the tree, in that case it returns the
+  reference obtained in btrfs_lookup_fs_root()
+
+- another error so the cleanup is done in the fail label
+
+Calling btrfs_put_root() unconditionally would lead to double decrement
+of the root reference possibly freeing it in the second case.
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Fixes: bc44d7c4b2b1 ("btrfs: push btrfs_grab_fs_root into btrfs_get_fs_root")
+CC: stable@vger.kernel.org # 5.10+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/btrfs/disk-io.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -1738,9 +1738,10 @@ again:
+ 
+ 	ret = btrfs_insert_fs_root(fs_info, root);
+ 	if (ret) {
+-		btrfs_put_root(root);
+-		if (ret == -EEXIST)
++		if (ret == -EEXIST) {
++			btrfs_put_root(root);
+ 			goto again;
++		}
+ 		goto fail;
+ 	}
+ 	return root;
+
+
