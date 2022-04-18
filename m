@@ -2,68 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 190A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84174C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238053AbiDRMPa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:15:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42534 "EHLO
+        id S238056AbiDRMQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236080AbiDRMP1 (ORCPT
+        with ESMTP id S233086AbiDRMQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:15:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD211A829;
-        Mon, 18 Apr 2022 05:12:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 18 Apr 2022 08:16:08 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E15F1A82E
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:13:30 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 790FF60F07;
-        Mon, 18 Apr 2022 12:12:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5363FC385A7;
-        Mon, 18 Apr 2022 12:12:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650283967;
-        bh=sTDHUW8H0Ju0SV7mP2T0ccSD+m9Wyqkx8gNkRMj7XuA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=E+HI4BvBiOBx8bp1xWUOYDFCgyTltZVUIUBGmnsrzDETzHjyJWg5Ji2+mOuaJ4gXo
-         80R/HdIt1py897GU53mJ+a3spXGgkcdA33nkaLX2cj8Ns2KSMv89sOaKPbAYW7WKD0
-         CPzz9Y97vVBYe88R6rd2XDlbttF33OrlOK06waRoH8XyJLbIwVtKeiCfquqvyP0qvK
-         VnSWyj+x3sx6hWQ9wvHgXaXEbPEFMi2uQEPj/nZMFUMIHZqBYwsDxdhFCEX2wAPmYy
-         Bg+CQr4SFsZa/g9EFsDeJ8ggtgKe52vh8ss6dyHC1ATdHi8MPhmc1jHfDvgf0KuKTb
-         4GIAkbtCDfifA==
-Date:   Mon, 18 Apr 2022 20:12:41 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-Cc:     linux-amarula@amarulasolutions.com,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Li Jun <jun.li@nxp.com>, Richard Zhu <hongxing.zhu@nxp.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] arm64: dts: imx8mm-evk: add pwm1/backlight support
-Message-ID: <20220418121241.GL391514@dragon>
-References: <20220413213313.11511-1-tommaso.merciai@amarulasolutions.com>
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 920A122175;
+        Mon, 18 Apr 2022 14:13:28 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1650284008;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sDTjYlCaBa9GLh++sa/WCQdXuUrcubJCdTwx3SdcA1Q=;
+        b=hzXAChF9N1ILebUw69v7FcCfSE9sAXERxDXW3a/CotuLCpZBsGXKG1XdWjLEjkWmngXnWn
+        gUazAnZpwYWZz0SfXIFiXCWZAbIDjBnh1xOoOE3zQl21SBxUiY9RKR1vj9Sd+tf27qs1U2
+        qgWiIvXubT6htCbhqMTTfZv3JAd4bBc=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220413213313.11511-1-tommaso.merciai@amarulasolutions.com>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 18 Apr 2022 14:13:28 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC v1 2/2] mtd: spi-nor: expose internal parameters via
+ debugfs
+In-Reply-To: <20220418121044.2825448-2-michael@walle.cc>
+References: <20220418121044.2825448-1-michael@walle.cc>
+ <20220418121044.2825448-2-michael@walle.cc>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <fca7f401141caee41f574cdd0339a6e1@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 13, 2022 at 11:33:11PM +0200, Tommaso Merciai wrote:
-> Add pwm1/backlight support nodes for imx8mm_evk board.
-> Align with u-boot dts
-> 
-> References:
->  - https://patchwork.ozlabs.org/project/uboot/patch/20220326111911.13720-9-tommaso.merciai@amarulasolutions.com/
-> 
-> Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+Am 2022-04-18 14:10, schrieb Michael Walle:
+> There is no way to gather all information to verify support for a new
+> flash chip. Also if you want to convert an existing flash chip to the
+> new SFDP parsing, there is not enough information to determine if the
+> flash will work like before. To ease this development, expose internal
+> parameters via the debugfs.
 
-Applied, thanks!
+Here's an example:
+# cat params
+name		w25q32dw
+id		ef6016
+size		4.00 MiB
+write size	1
+page size	256
+address width	3
+flags		HAS_SR_TB|HAS_LOCK|HAS_16BIT_SR|NO_READ_CR|SOFT_RESET
+
+opcodes
+  read		3b
+   dummy cycles	8
+  erase		20
+  program	02
+  8D extension	none
+
+protocols
+  read		1S-1S-2S
+  write		1S-1S-1S
+  register	1S-1S-1S
+
+erase commands
+  20 (4.00 KiB) [1]
+  52 (32.0 KiB) [2]
+  d8 (64.0 KiB) [3]
+  c7 (4.00 MiB)
+
+sector map
+  region              | erase mask | flags
+  --------------------+------------+----------
+  00000000 - 003fffff |     [ 123] |
+
+# cat capabilities
+Supported read modes by the flash
+1S-1S-1S
+   opcode	03
+   mode cycles	00
+   dummy cycles	00
+1S-1S-1S (fast read)
+   opcode	0b
+   mode cycles	00
+   dummy cycles	08
+1S-1S-2S
+   opcode	3b
+   mode cycles	00
+   dummy cycles	08
+1S-2S-2S
+   opcode	bb
+   mode cycles	02
+   dummy cycles	02
+1S-1S-4S
+   opcode	6b
+   mode cycles	00
+   dummy cycles	08
+1S-4S-4S
+   opcode	eb
+   mode cycles	02
+   dummy cycles	04
+4S-4S-4S
+   opcode	eb
+   mode cycles	02
+   dummy cycles	00
+
+Supported page program modes by the flash
+1S-1S-1S
+   opcode	02
