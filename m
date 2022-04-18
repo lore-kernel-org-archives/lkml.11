@@ -2,94 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A55C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1504DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:43:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239569AbiDRMqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38016 "EHLO
+        id S239441AbiDRMqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:46:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239825AbiDRMiJ (ORCPT
+        with ESMTP id S239793AbiDRMiH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:38:09 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 295A72409F;
-        Mon, 18 Apr 2022 05:28:42 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KhmSM06LKzhXYf;
-        Mon, 18 Apr 2022 20:28:35 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 18 Apr 2022 20:28:36 +0800
-Received: from [127.0.0.1] (10.67.108.67) by dggpemm500013.china.huawei.com
- (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 18 Apr
- 2022 20:28:36 +0800
-Message-ID: <0abfa1af-81ec-9048-6f95-cf5dda295139@huawei.com>
-Date:   Mon, 18 Apr 2022 20:28:33 +0800
+        Mon, 18 Apr 2022 08:38:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E49AF2408A;
+        Mon, 18 Apr 2022 05:28:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8085B60F7C;
+        Mon, 18 Apr 2022 12:28:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E160C385A7;
+        Mon, 18 Apr 2022 12:28:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650284918;
+        bh=pYtm2dbmC92LZ/bPGvxlaEV7lY/z9cVqpR60PaMEEqo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ewb7/uq0HU0EMa3xa43aXWalGf6qm3Y5Sq2yx8rSAG+xknm9t2pl79vcNzrkGQR9j
+         TD1Et/vpbNBRIY5l9ZJZ8FOrEOTpLCVZ5JsPRfzO0eqATH/6D4pKQtmP8G5tj/JHVz
+         KXN7qqIbtwGySzyRlZXoAqlWKIawt42fLZRryYW4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 047/189] ALSA: riptide: Fix the missing snd_card_free() call at probe error
+Date:   Mon, 18 Apr 2022 14:11:07 +0200
+Message-Id: <20220418121201.848545106@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
+References: <20220418121200.312988959@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v1 0/9] arm64: livepatch: Use DWARF Call Frame
- Information for frame pointer validation
-Content-Language: en-US
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-CC:     "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        <mark.rutland@arm.com>, <broonie@kernel.org>, <ardb@kernel.org>,
-        <nobuta.keiya@fujitsu.com>, <sjitindarsingh@gmail.com>,
-        <catalin.marinas@arm.com>, <will@kernel.org>, <jmorris@namei.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
- <20220407202518.19780-1-madvenka@linux.microsoft.com>
- <20220408002147.pk7clzruj6sawj7z@treble>
- <15a22f4b-f04a-15e1-8f54-5b3147d8df7d@linux.microsoft.com>
- <35c99466-9024-a7fd-9632-5d21b3e558f7@huawei.com>
- <20220416005609.3znhltjlhpg475ff@treble>
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-In-Reply-To: <20220416005609.3znhltjlhpg475ff@treble>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.108.67]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Josh,
+From: Takashi Iwai <tiwai@suse.de>
 
-IIUC, ORC on x86 can make reliable stack unwind for this scenario
-because objtool validates BP state.
+commit 348f08de55b149e41a05111d1a713c4484e5a426 upstream.
 
-I'm thinking that on arm64 there's no guarantee that LR will be pushed
-onto stack. When we meet similar scenario on arm64, we should recover
-(LR, FP) on pt_regs and continue to unwind the stack. And this is
-reliable only after we validate (LR, FP).
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-So should we track LR on arm64 additionally as track BP on x86? Or can
-we just treat (LR, FP) as a pair? because as I know they are always set
-up together.
+This patch fixes it by calling snd_card_free() on the error from the
+probe callback using a new helper function.
 
-On 2022/4/16 8:56, Josh Poimboeuf wrote:
-> On Tue, Apr 12, 2022 at 04:32:22PM +0800, Chen Zhongjin wrote:
->> By the way, I was thinking about a corner case, because arm64 CALL
->> instruction won't push LR onto stack atomically as x86. Before push LR, FP
->> to save frame there still can be some instructions such as bti, paciasp. If
->> an irq happens here, the stack frame is not constructed so the FP unwinder
->> will omit this function and provides a wrong stack trace to livepatch.
->>
->> It's just a guess and I have not built the test case. But I think it's a
->> defect on arm64 that FP unwinder can't work properly on prologue and
->> epilogue. Do you have any idea about this?
-> 
-> x86 has similar issues with frame pointers, if for example preemption or
-> page fault exception occurs in a leaf function, or in a function
-> prologue or epilogue, before or after the frame pointer setup.
-> 
-> This issue is solved by the "reliable" unwinder which detects
-> irqs/exceptions on the stack and reports the stack as unreliable.
-> 
+Fixes: 546c201a891e ("ALSA: riptide: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220412102636.16000-22-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ sound/pci/riptide/riptide.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/sound/pci/riptide/riptide.c b/sound/pci/riptide/riptide.c
+index 5a987c683c41..b37c877c2c16 100644
+--- a/sound/pci/riptide/riptide.c
++++ b/sound/pci/riptide/riptide.c
+@@ -2023,7 +2023,7 @@ static void snd_riptide_joystick_remove(struct pci_dev *pci)
+ #endif
+ 
+ static int
+-snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
++__snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+ {
+ 	static int dev;
+ 	struct snd_card *card;
+@@ -2124,6 +2124,12 @@ snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+ 	return 0;
+ }
+ 
++static int
++snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
++{
++	return snd_card_free_on_error(&pci->dev, __snd_card_riptide_probe(pci, pci_id));
++}
++
+ static struct pci_driver driver = {
+ 	.name = KBUILD_MODNAME,
+ 	.id_table = snd_riptide_ids,
+-- 
+2.35.2
+
+
 
