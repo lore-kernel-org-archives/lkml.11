@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C95B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239846AbiDRMxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
+        id S239855AbiDRMxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237028AbiDRMkR (ORCPT
+        with ESMTP id S239421AbiDRMkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:40:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34491EC53;
-        Mon, 18 Apr 2022 05:31:52 -0700 (PDT)
+        Mon, 18 Apr 2022 08:40:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335B51EEE9;
+        Mon, 18 Apr 2022 05:31:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89699B80ED6;
-        Mon, 18 Apr 2022 12:31:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8CFEC385A1;
-        Mon, 18 Apr 2022 12:31:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B3F3B80EDE;
+        Mon, 18 Apr 2022 12:31:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8172C385A7;
+        Mon, 18 Apr 2022 12:31:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285110;
-        bh=ogGjmCDq5QrMaH3jBGzB1qxKHkMwVdOZIsCxhf3tPrk=;
+        s=korg; t=1650285113;
+        bh=8nW6a3rDYio70rAaKujXP3Zx0pxGwoqaU63B55HBSO8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P+C3BQCtmfu4DZTinspYQW5HZpeHYTsxZre/XA30BgoB7sqwUjV9+xQhenYDOz1he
-         V9VQ1qWQo5vBkNk1DwLP558Z6wg7zmkfbvb1nAC38yeskhKV111npXFTS9MxhTi1lL
-         jvF7iL0Tb7Bxa2yQ3d/z/FzoaENsyx9v2eWr3BgE=
+        b=0m7rcCveBR/RQL9cqdTp0Op5ljr9p1pj22z8GYm1TJghLQYLGhO91mYgyWG05nQTF
+         rTMShtbZ4gXSv9EvYJUoWluSC6J8DSDeLU2vDQGHKjhxme6IR3D5/3RrAasevNFkJe
+         jXaOJJhJnaQtAqG7pMiPCqlpH++qzSavZrPdYiFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
         David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 106/189] btrfs: fix fallocate to use file_modified to update permissions consistently
-Date:   Mon, 18 Apr 2022 14:12:06 +0200
-Message-Id: <20220418121203.510546204@linuxfoundation.org>
+Subject: [PATCH 5.15 107/189] btrfs: do not warn for free space inode in cow_file_range
+Date:   Mon, 18 Apr 2022 14:12:07 +0200
+Message-Id: <20220418121203.538470775@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,75 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darrick J. Wong <djwong@kernel.org>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit 05fd9564e9faf0f23b4676385e27d9405cef6637 ]
+[ Upstream commit a7d16d9a07bbcb7dcd5214a1bea75c808830bc0d ]
 
-Since the initial introduction of (posix) fallocate back at the turn of
-the century, it has been possible to use this syscall to change the
-user-visible contents of files.  This can happen by extending the file
-size during a preallocation, or through any of the newer modes (punch,
-zero range).  Because the call can be used to change file contents, we
-should treat it like we do any other modification to a file -- update
-the mtime, and drop set[ug]id privileges/capabilities.
+This is a long time leftover from when I originally added the free space
+inode, the point was to catch cases where we weren't honoring the NOCOW
+flag.  However there exists a race with relocation, if we allocate our
+free space inode in a block group that is about to be relocated, we
+could trigger the COW path before the relocation has the opportunity to
+find the extents and delete the free space cache.  In production where
+we have auto-relocation enabled we're seeing this WARN_ON_ONCE() around
+5k times in a 2 week period, so not super common but enough that it's at
+the top of our metrics.
 
-The VFS function file_modified() does all this for us if pass it a
-locked inode, so let's make fallocate drop permissions correctly.
+We're properly handling the error here, and with us phasing out v1 space
+cache anyway just drop the WARN_ON_ONCE.
 
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
 Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/file.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ fs/btrfs/inode.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/fs/btrfs/file.c b/fs/btrfs/file.c
-index a1762363f61f..dc1e4d1b7291 100644
---- a/fs/btrfs/file.c
-+++ b/fs/btrfs/file.c
-@@ -2878,8 +2878,9 @@ int btrfs_replace_file_extents(struct btrfs_inode *inode,
- 	return ret;
- }
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index 7465ef012e22..6266a706bff7 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -1075,7 +1075,6 @@ static noinline int cow_file_range(struct btrfs_inode *inode,
+ 	int ret = 0;
  
--static int btrfs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
-+static int btrfs_punch_hole(struct file *file, loff_t offset, loff_t len)
- {
-+	struct inode *inode = file_inode(file);
- 	struct btrfs_fs_info *fs_info = btrfs_sb(inode->i_sb);
- 	struct btrfs_root *root = BTRFS_I(inode)->root;
- 	struct extent_state *cached_state = NULL;
-@@ -2911,6 +2912,10 @@ static int btrfs_punch_hole(struct inode *inode, loff_t offset, loff_t len)
- 		goto out_only_mutex;
+ 	if (btrfs_is_free_space_inode(inode)) {
+-		WARN_ON_ONCE(1);
+ 		ret = -EINVAL;
+ 		goto out_unlock;
  	}
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out_only_mutex;
-+
- 	lockstart = round_up(offset, btrfs_inode_sectorsize(BTRFS_I(inode)));
- 	lockend = round_down(offset + len,
- 			     btrfs_inode_sectorsize(BTRFS_I(inode))) - 1;
-@@ -3351,7 +3356,7 @@ static long btrfs_fallocate(struct file *file, int mode,
- 		return -EOPNOTSUPP;
- 
- 	if (mode & FALLOC_FL_PUNCH_HOLE)
--		return btrfs_punch_hole(inode, offset, len);
-+		return btrfs_punch_hole(file, offset, len);
- 
- 	/*
- 	 * Only trigger disk allocation, don't trigger qgroup reserve
-@@ -3373,6 +3378,10 @@ static long btrfs_fallocate(struct file *file, int mode,
- 			goto out;
- 	}
- 
-+	ret = file_modified(file);
-+	if (ret)
-+		goto out;
-+
- 	/*
- 	 * TODO: Move these two operations after we have checked
- 	 * accurate reserved space, or fallocate can still fail but
 -- 
 2.35.1
 
