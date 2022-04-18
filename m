@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 156D0C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB56CC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242091AbiDRNSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59782 "EHLO
+        id S242006AbiDRNSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242305AbiDRM7r (ORCPT
+        with ESMTP id S242138AbiDRM7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:59:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BB430572;
-        Mon, 18 Apr 2022 05:40:38 -0700 (PDT)
+        Mon, 18 Apr 2022 08:59:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C681C2F390;
+        Mon, 18 Apr 2022 05:40:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F2C1B80EDE;
-        Mon, 18 Apr 2022 12:40:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53AFAC385A8;
-        Mon, 18 Apr 2022 12:40:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 174F7B80EC0;
+        Mon, 18 Apr 2022 12:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 724CEC385A8;
+        Mon, 18 Apr 2022 12:40:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285635;
-        bh=6NC767/Z/leFqxlxLmfAQXdbf47ApGvrW2i1y2OQ/js=;
+        s=korg; t=1650285610;
+        bh=eFm/z1FzKhlQoFaHivE7WVio1H+d0l+bTcBspXqzQ4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rh1uObnc0YNZAiwHwzvWtHyJWJpKbEjFiNBUDB3YsVRqr4WjoePOYhWJ/vflAw/ft
-         vou5sPD5vzuV6gLPSxrMlQ2WCGE4y2APO7AFzCH9h3dy4VPm0jTEx71yR61JJDZr8A
-         88kvbkOal47P4ALGniVINcGZsUy6Ko4733t+IzyU=
+        b=hpaE+1CWEw5CgFfbq9DW/5O3lTLQg2Z8Oi+UAleI94RD33FrdRh56Wu5jyhrCUw1P
+         us3ap4ruGw8NIsLP9cpjA8bkVY70b4n1dtcAdH1Loc04sbdRVb5vIAhkJNeQizWF6Q
+         dOzyT4YdYpIOUmup1iV5k3+o/JN3UaTzfE2pZ0QA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.10 080/105] btrfs: mark resumed async balance as writing
-Date:   Mon, 18 Apr 2022 14:13:22 +0200
-Message-Id: <20220418121148.904849899@linuxfoundation.org>
+        stable@vger.kernel.org, Bruno Goncalves <bgoncalv@redhat.com>,
+        Jan Stancek <jstancek@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.10 073/105] KVM: x86/mmu: Resolve nx_huge_pages when kvm.ko is loaded
+Date:   Mon, 18 Apr 2022 14:13:15 +0200
+Message-Id: <20220418121148.565894452@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -49,39 +50,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit a690e5f2db4d1dca742ce734aaff9f3112d63764 upstream.
+commit 1d0e84806047f38027d7572adb4702ef7c09b317 upstream.
 
-When btrfs balance is interrupted with umount, the background balance
-resumes on the next mount. There is a potential deadlock with FS freezing
-here like as described in commit 26559780b953 ("btrfs: zoned: mark
-relocation as writing"). Mark the process as sb_writing to avoid it.
+Resolve nx_huge_pages to true/false when kvm.ko is loaded, leaving it as
+-1 is technically undefined behavior when its value is read out by
+param_get_bool(), as boolean values are supposed to be '0' or '1'.
 
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-CC: stable@vger.kernel.org # 4.9+
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Alternatively, KVM could define a custom getter for the param, but the
+auto value doesn't depend on the vendor module in any way, and printing
+"auto" would be unnecessarily unfriendly to the user.
+
+In addition to fixing the undefined behavior, resolving the auto value
+also fixes the scenario where the auto value resolves to N and no vendor
+module is loaded.  Previously, -1 would result in Y being printed even
+though KVM would ultimately disable the mitigation.
+
+Rename the existing MMU module init/exit helpers to clarify that they're
+invoked with respect to the vendor module, and add comments to document
+why KVM has two separate "module init" flows.
+
+  =========================================================================
+  UBSAN: invalid-load in kernel/params.c:320:33
+  load of value 255 is not a valid value for type '_Bool'
+  CPU: 6 PID: 892 Comm: tail Not tainted 5.17.0-rc3+ #799
+  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x34/0x44
+   ubsan_epilogue+0x5/0x40
+   __ubsan_handle_load_invalid_value.cold+0x43/0x48
+   param_get_bool.cold+0xf/0x14
+   param_attr_show+0x55/0x80
+   module_attr_show+0x1c/0x30
+   sysfs_kf_seq_show+0x93/0xc0
+   seq_read_iter+0x11c/0x450
+   new_sync_read+0x11b/0x1a0
+   vfs_read+0xf0/0x190
+   ksys_read+0x5f/0xe0
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+   </TASK>
+  =========================================================================
+
+Fixes: b8e8c8303ff2 ("kvm: mmu: ITLB_MULTIHIT mitigation")
+Cc: stable@vger.kernel.org
+Reported-by: Bruno Goncalves <bgoncalv@redhat.com>
+Reported-by: Jan Stancek <jstancek@redhat.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220331221359.3912754-1-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/volumes.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/include/asm/kvm_host.h |    5 +++--
+ arch/x86/kvm/mmu/mmu.c          |   20 ++++++++++++++++----
+ arch/x86/kvm/x86.c              |   20 ++++++++++++++++++--
+ 3 files changed, 37 insertions(+), 8 deletions(-)
 
---- a/fs/btrfs/volumes.c
-+++ b/fs/btrfs/volumes.c
-@@ -4220,10 +4220,12 @@ static int balance_kthread(void *data)
- 	struct btrfs_fs_info *fs_info = data;
- 	int ret = 0;
- 
-+	sb_start_write(fs_info->sb);
- 	mutex_lock(&fs_info->balance_mutex);
- 	if (fs_info->balance_ctl)
- 		ret = btrfs_balance(fs_info, fs_info->balance_ctl, NULL);
- 	mutex_unlock(&fs_info->balance_mutex);
-+	sb_end_write(fs_info->sb);
- 
- 	return ret;
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1340,8 +1340,9 @@ static inline int kvm_arch_flush_remote_
+ 		return -ENOTSUPP;
  }
+ 
+-int kvm_mmu_module_init(void);
+-void kvm_mmu_module_exit(void);
++void kvm_mmu_x86_module_init(void);
++int kvm_mmu_vendor_module_init(void);
++void kvm_mmu_vendor_module_exit(void);
+ 
+ void kvm_mmu_destroy(struct kvm_vcpu *vcpu);
+ int kvm_mmu_create(struct kvm_vcpu *vcpu);
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -5876,12 +5876,24 @@ static int set_nx_huge_pages(const char
+ 	return 0;
+ }
+ 
+-int kvm_mmu_module_init(void)
++/*
++ * nx_huge_pages needs to be resolved to true/false when kvm.ko is loaded, as
++ * its default value of -1 is technically undefined behavior for a boolean.
++ */
++void kvm_mmu_x86_module_init(void)
+ {
+-	int ret = -ENOMEM;
+-
+ 	if (nx_huge_pages == -1)
+ 		__set_nx_huge_pages(get_nx_auto_mode());
++}
++
++/*
++ * The bulk of the MMU initialization is deferred until the vendor module is
++ * loaded as many of the masks/values may be modified by VMX or SVM, i.e. need
++ * to be reset when a potentially different vendor module is loaded.
++ */
++int kvm_mmu_vendor_module_init(void)
++{
++	int ret = -ENOMEM;
+ 
+ 	/*
+ 	 * MMU roles use union aliasing which is, generally speaking, an
+@@ -5955,7 +5967,7 @@ void kvm_mmu_destroy(struct kvm_vcpu *vc
+ 	mmu_free_memory_caches(vcpu);
+ }
+ 
+-void kvm_mmu_module_exit(void)
++void kvm_mmu_vendor_module_exit(void)
+ {
+ 	mmu_destroy_caches();
+ 	percpu_counter_destroy(&kvm_total_used_mmu_pages);
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8005,7 +8005,7 @@ int kvm_arch_init(void *opaque)
+ 		goto out_free_x86_emulator_cache;
+ 	}
+ 
+-	r = kvm_mmu_module_init();
++	r = kvm_mmu_vendor_module_init();
+ 	if (r)
+ 		goto out_free_percpu;
+ 
+@@ -8065,7 +8065,7 @@ void kvm_arch_exit(void)
+ 	cancel_work_sync(&pvclock_gtod_work);
+ #endif
+ 	kvm_x86_ops.hardware_enable = NULL;
+-	kvm_mmu_module_exit();
++	kvm_mmu_vendor_module_exit();
+ 	free_percpu(user_return_msrs);
+ 	kmem_cache_destroy(x86_emulator_cache);
+ 	kmem_cache_destroy(x86_fpu_cache);
+@@ -11426,3 +11426,19 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_avic_un
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_avic_incomplete_ipi);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_avic_ga_log);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_apicv_update_request);
++
++static int __init kvm_x86_init(void)
++{
++	kvm_mmu_x86_module_init();
++	return 0;
++}
++module_init(kvm_x86_init);
++
++static void __exit kvm_x86_exit(void)
++{
++	/*
++	 * If module_init() is implemented, module_exit() must also be
++	 * implemented to allow module unload.
++	 */
++}
++module_exit(kvm_x86_exit);
 
 
