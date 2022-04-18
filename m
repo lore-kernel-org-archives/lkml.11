@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8AFC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A43A2C352A8
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344538AbiDROKb (ORCPT
+        id S1344600AbiDROKi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:10:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45542 "EHLO
+        Mon, 18 Apr 2022 10:10:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344004AbiDRNyg (ORCPT
+        with ESMTP id S240494AbiDRNyh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:54:36 -0400
+        Mon, 18 Apr 2022 09:54:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA454926A;
-        Mon, 18 Apr 2022 06:04:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6EC340CC;
+        Mon, 18 Apr 2022 06:04:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E7ABB80EDF;
-        Mon, 18 Apr 2022 13:04:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57151C385A7;
-        Mon, 18 Apr 2022 13:04:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF818B80EE3;
+        Mon, 18 Apr 2022 13:04:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40789C385A7;
+        Mon, 18 Apr 2022 13:04:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287049;
-        bh=3SzeC/Gz/Ac+TTZClLIUog0e21eiXA/HtE2IFS8FnkE=;
+        s=korg; t=1650287059;
+        bh=c2nFA8pWcF1wck2porVqACnhPUD/oy8w1AoDwnuG2Nk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RTo/m5Ss9NOqA0N9ZqRyywkaqUaPUbn2LZpps7jxZpoeOwu/4hK0qAoD1Ad2cuvtx
-         wWIZPdvnatBoA8Jqe01TABgI2r1ueuUHgkuvF0I4c8WbzPhINB7Q2qrthprRnyd5ED
-         AkRlKsLM/IRh3wdxui1xCVTEQgF0GYAqCMebNe5M=
+        b=lu7Nwg3AelCkezGRa+hbkNA5tgvvkh0MwDp2KRdn3x5J7VCiJWgpUWcs3hXZFEx8/
+         hxEFB+aO16g0MseBifXxZkN0FmRLw/Tyoighpl3S6Xk/cT+YkKX2/aAjnT4KvkAjDG
+         Bn5D8cxrkKSXnY06IXW0xr+8u7vQm+0cLdep54CU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan-Benedict Glaw <jbglaw@lug-owl.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 4.9 035/218] DEC: Limit PMAX memory probing to R3k systems
-Date:   Mon, 18 Apr 2022 14:11:41 +0200
-Message-Id: <20220418121200.461817767@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 046/218] PM: hibernate: fix __setup handler error handling
+Date:   Mon, 18 Apr 2022 14:11:52 +0200
+Message-Id: <20220418121200.917897300@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -51,70 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 244eae91a94c6dab82b3232967d10eeb9dfa21c6 upstream.
+[ Upstream commit ba7ffcd4c4da374b0f64666354eeeda7d3827131 ]
 
-Recent tightening of the opcode table in binutils so as to consistently
-disallow the assembly or disassembly of CP0 instructions not supported
-by the processor architecture chosen has caused a regression like below:
+If an invalid value is used in "resumedelay=<seconds>", it is
+silently ignored. Add a warning message and then let the __setup
+handler return 1 to indicate that the kernel command line option
+has been handled.
 
-arch/mips/dec/prom/locore.S: Assembler messages:
-arch/mips/dec/prom/locore.S:29: Error: opcode not supported on this processor: r4600 (mips3) `rfe'
-
-in a piece of code used to probe for memory with PMAX DECstation models,
-which have non-REX firmware.  Those computers always have an R2000 CPU
-and consequently the exception handler used in memory probing uses the
-RFE instruction, which those processors use.
-
-While adding 64-bit support this code was correctly excluded for 64-bit
-configurations, however it should have also been excluded for irrelevant
-32-bit configurations.  Do this now then, and only enable PMAX memory
-probing for R3k systems.
-
-Reported-by: Jan-Benedict Glaw <jbglaw@lug-owl.de>
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: stable@vger.kernel.org # v2.6.12+
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 317cf7e5e85e3 ("PM / hibernate: convert simple_strtoul to kstrtoul")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/dec/prom/Makefile      |    2 +-
- arch/mips/include/asm/dec/prom.h |   15 +++++----------
- 2 files changed, 6 insertions(+), 11 deletions(-)
+ kernel/power/hibernate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/mips/dec/prom/Makefile
-+++ b/arch/mips/dec/prom/Makefile
-@@ -5,4 +5,4 @@
+diff --git a/kernel/power/hibernate.c b/kernel/power/hibernate.c
+index e938fd8db056..c17b953f1294 100644
+--- a/kernel/power/hibernate.c
++++ b/kernel/power/hibernate.c
+@@ -1185,7 +1185,7 @@ static int __init resumedelay_setup(char *str)
+ 	int rc = kstrtouint(str, 0, &resume_delay);
  
- lib-y			+= init.o memory.o cmdline.o identify.o console.o
+ 	if (rc)
+-		return rc;
++		pr_warn("resumedelay: bad option string '%s'\n", str);
+ 	return 1;
+ }
  
--lib-$(CONFIG_32BIT)	+= locore.o
-+lib-$(CONFIG_CPU_R3000)	+= locore.o
---- a/arch/mips/include/asm/dec/prom.h
-+++ b/arch/mips/include/asm/dec/prom.h
-@@ -47,16 +47,11 @@
-  */
- #define REX_PROM_MAGIC		0x30464354
- 
--#ifdef CONFIG_64BIT
--
--#define prom_is_rex(magic)	1	/* KN04 and KN05 are REX PROMs.  */
--
--#else /* !CONFIG_64BIT */
--
--#define prom_is_rex(magic)	((magic) == REX_PROM_MAGIC)
--
--#endif /* !CONFIG_64BIT */
--
-+/* KN04 and KN05 are REX PROMs, so only do the check for R3k systems.  */
-+static inline bool prom_is_rex(u32 magic)
-+{
-+	return !IS_ENABLED(CONFIG_CPU_R3000) || magic == REX_PROM_MAGIC;
-+}
- 
- /*
-  * 3MIN/MAXINE PROM entry points for DS5000/1xx's, DS5000/xx's and
+-- 
+2.34.1
+
 
 
