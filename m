@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DC90C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C13C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:29:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238911AbiDRMbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37106 "EHLO
+        id S231260AbiDRMbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239427AbiDRM20 (ORCPT
+        with ESMTP id S239443AbiDRM21 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:28:26 -0400
+        Mon, 18 Apr 2022 08:28:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBAC2127F;
-        Mon, 18 Apr 2022 05:21:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB52D1B7B4;
+        Mon, 18 Apr 2022 05:21:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EEE760FAB;
-        Mon, 18 Apr 2022 12:21:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 435FFC385A9;
-        Mon, 18 Apr 2022 12:21:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F93560FAB;
+        Mon, 18 Apr 2022 12:21:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 578CEC385A1;
+        Mon, 18 Apr 2022 12:21:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284505;
-        bh=tGzXzQhqgL+alx1Q6zWeqj7q4zL1AuwH2it+jAec/5w=;
+        s=korg; t=1650284508;
+        bh=DJ920II90JDTTvdGT4lFJAl3W93J/aXW9hl77wTOwcM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EDJtjoUrmETwlgKTr35UZ/f2C/QJT0eb+S7XrfAEccAQw1OuNv7XFcnUS+FN2uiVy
-         nXxCOcW9/nenxRmh7gdBzC+tkVmetGOpiM1MnfLMEVw5X27+RDYpjr8saa8mVJ+V5O
-         ypAtKMIoSBBqk7lVA9gExPiq6SzMC7tSPztqn6C4=
+        b=se+Zlu0cPVzKPBp89ZFrdYuBdxN0qRavbR+izE2Wx1bdnCrfAPwwsW9u8WTtzHzSj
+         Y2QbclvnjC4nCpPDZNvb162tVtMXz91NbFDy2aee5dphRSP0Mq2iakgFxWFCAaK6P1
+         eW5FcxyJVKcfyX+PW/3+5PmyW1h4XILoWojJpR7U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Aurabindo Pillai <aurabindo.pillai@amd.com>,
+        stable@vger.kernel.org, James Zhu <James.Zhu@amd.com>,
+        Tianci Yin <tianci.yin@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 130/219] drm/amd: Add USBC connector ID
-Date:   Mon, 18 Apr 2022 14:11:39 +0200
-Message-Id: <20220418121210.535248226@linuxfoundation.org>
+Subject: [PATCH 5.17 139/219] drm/amdgpu/vcn: improve vcn dpg stop procedure
+Date:   Mon, 18 Apr 2022 14:11:48 +0200
+Message-Id: <20220418121210.783557314@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,33 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aurabindo Pillai <aurabindo.pillai@amd.com>
+From: Tianci Yin <tianci.yin@amd.com>
 
-[ Upstream commit c5c948aa894a831f96fccd025e47186b1ee41615 ]
+[ Upstream commit 6ea239adc2a712eb318f04f5c29b018ba65ea38a ]
 
-[Why&How] Add a dedicated AMDGPU specific ID for use with
-newer ASICs that support USB-C output
+Prior to disabling dpg, VCN need unpausing dpg mode, or VCN will hang in
+S3 resuming.
 
-Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: James Zhu <James.Zhu@amd.com>
+Signed-off-by: Tianci Yin <tianci.yin@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/ObjectID.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/ObjectID.h b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-index 5b393622f592..a0f0a17e224f 100644
---- a/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-+++ b/drivers/gpu/drm/amd/amdgpu/ObjectID.h
-@@ -119,6 +119,7 @@
- #define CONNECTOR_OBJECT_ID_eDP                   0x14
- #define CONNECTOR_OBJECT_ID_MXM                   0x15
- #define CONNECTOR_OBJECT_ID_LVDS_eDP              0x16
-+#define CONNECTOR_OBJECT_ID_USBC                  0x17
+diff --git a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
+index 0ce2a7aa400b..ad9bfc772bdf 100644
+--- a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
+@@ -1474,8 +1474,11 @@ static int vcn_v3_0_start_sriov(struct amdgpu_device *adev)
  
- /* deleted */
+ static int vcn_v3_0_stop_dpg_mode(struct amdgpu_device *adev, int inst_idx)
+ {
++	struct dpg_pause_state state = {.fw_based = VCN_DPG_STATE__UNPAUSE};
+ 	uint32_t tmp;
  
++	vcn_v3_0_pause_dpg_mode(adev, 0, &state);
++
+ 	/* Wait for power status to be 1 */
+ 	SOC15_WAIT_ON_RREG(VCN, inst_idx, mmUVD_POWER_STATUS, 1,
+ 		UVD_POWER_STATUS__UVD_POWER_STATUS_MASK);
 -- 
 2.35.1
 
