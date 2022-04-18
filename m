@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAAB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 786ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244665AbiDRN5K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:57:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41274 "EHLO
+        id S244267AbiDRN5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244891AbiDRNbA (ORCPT
+        with ESMTP id S244898AbiDRNbA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:31:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4509ACE4;
-        Mon, 18 Apr 2022 05:57:14 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD898E6A;
+        Mon, 18 Apr 2022 05:57:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4310612BB;
-        Mon, 18 Apr 2022 12:57:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A0AC385A7;
-        Mon, 18 Apr 2022 12:57:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97832B80E4B;
+        Mon, 18 Apr 2022 12:57:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E332FC385A1;
+        Mon, 18 Apr 2022 12:57:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286633;
-        bh=CFRDh/5VyK388caysqLX/bAjGN9S5E6mM71EURz4BgM=;
+        s=korg; t=1650286639;
+        bh=d1WhqMnR0SZYGD78p5l5bAJASVYV7v2GXdl4z6axBfQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=um2CiFW9tAI0rZBZmOTaAov5Hre48zlnCtuC/nni/XKE9VB4UsyosXh6KC+oLnUXc
-         F3wFiLWP/58OnZDCKIh6DU/8klRWS/Bu6jfxZoI77hq7LuBvTsy18o2MgptQ7/+JxW
-         cICF/qIYdOxk6QqTGNhQawuKuSS43590QVG/WBHo=
+        b=nkiLQDX2i33nj7//4xxaUKFSzGSEumti3sBiNq5A/npzLnkVLOenKDDXMJfrbD+SG
+         wkB3aKD/vManvGNnYu/O89OEpTekfsVel5hntJ+dr3ckkcCgn7/KKviXYtnrTtrOlC
+         Et85hv2tVs11drIZX0eCAwYBKckUkytEaJCpHdU8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.14 196/284] mm/memcontrol: return 1 from cgroup.memory __setup() handler
-Date:   Mon, 18 Apr 2022 14:12:57 +0200
-Message-Id: <20220418121217.302617191@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Jing Yao <yao.jing2@zte.com.cn>, Helge Deller <deller@gmx.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 171/284] video: fbdev: omapfb: panel-dsi-cm: Use sysfs_emit() instead of snprintf()
+Date:   Mon, 18 Apr 2022 14:12:32 +0200
+Message-Id: <20220418121216.606058063@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -55,55 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Jing Yao <yao.jing2@zte.com.cn>
 
-commit 460a79e18842caca6fa0c415de4a3ac1e671ac50 upstream.
+[ Upstream commit f63658a59c3d439c8ad7b290f8ec270980e0f384 ]
 
-__setup() handlers should return 1 if the command line option is handled
-and 0 if not (or maybe never return 0; it just pollutes init's
-environment).
+Use sysfs_emit instead of scnprintf, snprintf or sprintf.
 
-The only reason that this particular __setup handler does not pollute
-init's environment is that the setup string contains a '.', as in
-"cgroup.memory".  This causes init/main.c::unknown_boottoption() to
-consider it to be an "Unused module parameter" and ignore it.  (This is
-for parsing of loadable module parameters any time after kernel init.)
-Otherwise the string "cgroup.memory=whatever" would be added to init's
-environment strings.
-
-Instead of relying on this '.' quirk, just return 1 to indicate that the
-boot option has been handled.
-
-Note that there is no warning message if someone enters:
-	cgroup.memory=anything_invalid
-
-Link: https://lkml.kernel.org/r/20220222005811.10672-1-rdunlap@infradead.org
-Fixes: f7e1cb6ec51b0 ("mm: memcontrol: account socket memory in unified hierarchy memory controller")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Vladimir Davydov <vdavydov.dev@gmail.com>
-Cc: Roman Gushchin <roman.gushchin@linux.dev>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jing Yao <yao.jing2@zte.com.cn>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/memcontrol.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -5978,7 +5978,7 @@ static int __init cgroup_memory(char *s)
- 		if (!strcmp(token, "nokmem"))
- 			cgroup_memory_nokmem = true;
- 	}
--	return 0;
-+	return 1;
- }
- __setup("cgroup.memory=", cgroup_memory);
+diff --git a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+index bef431530090..25cc0bcdfe19 100644
+--- a/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
++++ b/drivers/video/fbdev/omap2/omapfb/displays/panel-dsi-cm.c
+@@ -413,7 +413,7 @@ static ssize_t dsicm_num_errors_show(struct device *dev,
+ 	if (r)
+ 		return r;
  
+-	return snprintf(buf, PAGE_SIZE, "%d\n", errors);
++	return sysfs_emit(buf, "%d\n", errors);
+ }
+ 
+ static ssize_t dsicm_hw_revision_show(struct device *dev,
+@@ -444,7 +444,7 @@ static ssize_t dsicm_hw_revision_show(struct device *dev,
+ 	if (r)
+ 		return r;
+ 
+-	return snprintf(buf, PAGE_SIZE, "%02x.%02x.%02x\n", id1, id2, id3);
++	return sysfs_emit(buf, "%02x.%02x.%02x\n", id1, id2, id3);
+ }
+ 
+ static ssize_t dsicm_store_ulps(struct device *dev,
+@@ -494,7 +494,7 @@ static ssize_t dsicm_show_ulps(struct device *dev,
+ 	t = ddata->ulps_enabled;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static ssize_t dsicm_store_ulps_timeout(struct device *dev,
+@@ -541,7 +541,7 @@ static ssize_t dsicm_show_ulps_timeout(struct device *dev,
+ 	t = ddata->ulps_timeout;
+ 	mutex_unlock(&ddata->lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%u\n", t);
++	return sysfs_emit(buf, "%u\n", t);
+ }
+ 
+ static DEVICE_ATTR(num_dsi_errors, S_IRUGO, dsicm_num_errors_show, NULL);
+-- 
+2.34.1
+
 
 
