@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D08AFC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B24A1C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:11:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343774AbiDRONR (ORCPT
+        id S1343504AbiDROMe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45936 "EHLO
+        Mon, 18 Apr 2022 10:12:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244580AbiDRN4x (ORCPT
+        with ESMTP id S244636AbiDRNz4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:56:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9B8E49F32;
-        Mon, 18 Apr 2022 06:05:21 -0700 (PDT)
+        Mon, 18 Apr 2022 09:55:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4959D63F7;
+        Mon, 18 Apr 2022 06:04:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D21C60F09;
-        Mon, 18 Apr 2022 13:05:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37099C385A1;
-        Mon, 18 Apr 2022 13:05:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2E9860B3C;
+        Mon, 18 Apr 2022 13:04:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A257EC385A7;
+        Mon, 18 Apr 2022 13:04:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287120;
-        bh=Su2XOz/6uNUdLXlGxtYxG+pWQnN+YPHhgf6T/GlW8dc=;
+        s=korg; t=1650287094;
+        bh=WqEEUibnJyDSWHpSvgPQFIUTBrand5AvG1Pzvk93Tkg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lvzFUj6U8VkkPrzjLf/1iM6epWKw/+SPC5OEynn103m7ztQKULg6r4lHMPNJD3JvL
-         cmCnENymEINpcX9OKjIo1VWJGdBGuxbYniQOTRmGrxlKtFgQ+2TnCvC7i++2UAaVh0
-         be2vfF9IcjAZ4rBO1OOmLcERDTo0y/3Iij7pVbYg=
+        b=RPGwzHD+XoOuq82M5bdU6ivjCgdvNy16I2gIPyZIsiuXZbT+zl3Zu42wvkBLqh1nU
+         CEGQGfAZWmeiZ/ZOGD0M+kUnEt9d2tvU6DwltZRMYmDLo5SM2ATg7aAHX0i1ZuQeiL
+         y8LeUGjLzWw0Kua7Ecgd3BHuJ1h+vJF9v7IhDA9g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Frank Wunderlich <frank-w@public-files.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 063/218] arm64: dts: broadcom: Fix sata nodename
-Date:   Mon, 18 Apr 2022 14:12:09 +0200
-Message-Id: <20220418121201.414868099@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 055/218] video: fbdev: smscufx: Fix null-ptr-deref in ufx_usb_probe()
+Date:   Mon, 18 Apr 2022 14:12:01 +0200
+Message-Id: <20220418121201.187537751@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,39 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit 55927cb44db43a57699fa652e2437a91620385dc ]
+[ Upstream commit 1791f487f877a9e83d81c8677bd3e7b259e7cb27 ]
 
-After converting ahci-platform txt binding to yaml nodename is reported
-as not matching the standard:
+I got a null-ptr-deref report:
 
-arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dt.yaml:
-ahci@663f2000: $nodename:0: 'ahci@663f2000' does not match '^sata(@.*)?$'
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+...
+RIP: 0010:fb_destroy_modelist+0x38/0x100
+...
+Call Trace:
+ ufx_usb_probe.cold+0x2b5/0xac1 [smscufx]
+ usb_probe_interface+0x1aa/0x3c0 [usbcore]
+ really_probe+0x167/0x460
+...
+ ret_from_fork+0x1f/0x30
 
-Fix it to match binding.
+If fb_alloc_cmap() fails in ufx_usb_probe(), fb_destroy_modelist() will
+be called to destroy modelist in the error handling path. But modelist
+has not been initialized yet, so it will result in null-ptr-deref.
 
-Fixes: ac9aae00f0fc ("arm64: dts: Add SATA3 AHCI and SATA3 PHY DT nodes for NS2")
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Initialize modelist before calling fb_alloc_cmap() to fix this bug.
+
+Fixes: 3c8a63e22a08 ("Add support for SMSC UFX6000/7000 USB display adapters")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/broadcom/ns2.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/smscufx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/broadcom/ns2.dtsi b/arch/arm64/boot/dts/broadcom/ns2.dtsi
-index 8a94ec8035d3..83c1718dac29 100644
---- a/arch/arm64/boot/dts/broadcom/ns2.dtsi
-+++ b/arch/arm64/boot/dts/broadcom/ns2.dtsi
-@@ -514,7 +514,7 @@
- 			};
- 		};
+diff --git a/drivers/video/fbdev/smscufx.c b/drivers/video/fbdev/smscufx.c
+index ec2e7e353685..aa387c5188e7 100644
+--- a/drivers/video/fbdev/smscufx.c
++++ b/drivers/video/fbdev/smscufx.c
+@@ -1671,6 +1671,7 @@ static int ufx_usb_probe(struct usb_interface *interface,
+ 	info->par = dev;
+ 	info->pseudo_palette = dev->pseudo_palette;
+ 	info->fbops = &ufx_ops;
++	INIT_LIST_HEAD(&info->modelist);
  
--		sata: ahci@663f2000 {
-+		sata: sata@663f2000 {
- 			compatible = "brcm,iproc-ahci", "generic-ahci";
- 			reg = <0x663f2000 0x1000>;
- 			reg-names = "ahci";
+ 	retval = fb_alloc_cmap(&info->cmap, 256, 0);
+ 	if (retval < 0) {
+@@ -1681,8 +1682,6 @@ static int ufx_usb_probe(struct usb_interface *interface,
+ 	INIT_DELAYED_WORK(&dev->free_framebuffer_work,
+ 			  ufx_free_framebuffer_work);
+ 
+-	INIT_LIST_HEAD(&info->modelist);
+-
+ 	retval = ufx_reg_read(dev, 0x3000, &id_rev);
+ 	check_warn_goto_error(retval, "error %d reading 0x3000 register from device", retval);
+ 	dev_dbg(dev->gdev, "ID_REV register value 0x%08x", id_rev);
 -- 
 2.34.1
 
