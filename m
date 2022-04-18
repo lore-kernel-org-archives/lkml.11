@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 127CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94BAFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344057AbiDROUa (ORCPT
+        id S1344103AbiDROUg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58638 "EHLO
+        Mon, 18 Apr 2022 10:20:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244922AbiDROCV (ORCPT
+        with ESMTP id S245384AbiDROCv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:02:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967D010D;
-        Mon, 18 Apr 2022 06:09:45 -0700 (PDT)
+        Mon, 18 Apr 2022 10:02:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A995194;
+        Mon, 18 Apr 2022 06:09:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D61BB60F5B;
-        Mon, 18 Apr 2022 13:08:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5DDBC385A1;
-        Mon, 18 Apr 2022 13:08:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 964F060EFE;
+        Mon, 18 Apr 2022 13:09:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8810DC385A1;
+        Mon, 18 Apr 2022 13:09:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287334;
-        bh=Gl4CpDpYBSs+GVaD9xzRWE0zGENQQBpLb5YM7JkpmkA=;
+        s=korg; t=1650287370;
+        bh=i4LvtJMYs5t9UOhjaHJspxXRS2kYwM/x4i+LuKPkDHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Ze0nYr9BcriulTIJT+a/sSgOiqm+wdM6ibude07SrmF2fKD0sOKmNgfxu5neVVA+
-         +SNQl4Vtb2DWhQRpuljPHuMubba6IlLkSbA8cIDguUP4PQHMXK5ShwZPvPxHAEowvb
-         mvSsbRXcoDg4wY3Ry+t/K0hz2t4qqyKqWMTpGLg0=
+        b=GbSYX9nHhKN5IjOcD1ItVKkPOYsmguiT5J1KqmYr4G/RQ0nX8xV+fHSD+2RjRgMR9
+         W3+zhvLK9Ns8ZJoZ3wMyC7FAnp167gNERDfKXC67/6oF24wdx8hvNw6z8WFTTny3hS
+         +8Llk1T+9DPMjQzlk/gQnoJjpUWoIEgt5o124sxs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 078/218] drm/edid: Dont clear formats if using deep color
-Date:   Mon, 18 Apr 2022 14:12:24 +0200
-Message-Id: <20220418121201.838745973@linuxfoundation.org>
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 141/218] ASoC: soc-core: skip zero num_dai component in searching dai name
+Date:   Mon, 18 Apr 2022 14:13:27 +0200
+Message-Id: <20220418121203.622609235@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,71 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 75478b3b393bcbdca4e6da76fe3a9f1a4133ec5d ]
+[ Upstream commit f7d344a2bd5ec81fbd1ce76928fd059e57ec9bea ]
 
-The current code, when parsing the EDID Deep Color depths, that the
-YUV422 cannot be used, referring to the HDMI 1.3 Specification.
+In the case like dmaengine which's not a dai but as a component, the
+num_dai is zero, dmaengine component has the same component_of_node
+as cpu dai, when cpu dai component is not ready, but dmaengine component
+is ready, try to get cpu dai name, the snd_soc_get_dai_name() return
+-EINVAL, not -EPROBE_DEFER, that cause below error:
 
-This specification, in its section 6.2.4, indeed states:
+asoc-simple-card <card name>: parse error -22
+asoc-simple-card: probe of <card name> failed with error -22
 
-  For each supported Deep Color mode, RGB 4:4:4 shall be supported and
-  optionally YCBCR 4:4:4 may be supported.
+The sound card failed to probe.
 
-  YCBCR 4:2:2 is not permitted for any Deep Color mode.
+So this patch fixes the issue above by skipping the zero num_dai
+component in searching dai name.
 
-This indeed can be interpreted like the code does, but the HDMI 1.4
-specification further clarifies that statement in its section 6.2.4:
-
-  For each supported Deep Color mode, RGB 4:4:4 shall be supported and
-  optionally YCBCR 4:4:4 may be supported.
-
-  YCBCR 4:2:2 is also 36-bit mode but does not require the further use
-  of the Deep Color modes described in section 6.5.2 and 6.5.3.
-
-This means that, even though YUV422 can be used with 12 bit per color,
-it shouldn't be treated as a deep color mode.
-
-This is also broken with YUV444 if it's supported by the display, but
-DRM_EDID_HDMI_DC_Y444 isn't set. In such a case, the code will clear
-color_formats of the YUV444 support set previously in
-drm_parse_cea_ext(), but will not set it back.
-
-Since the formats supported are already setup properly in
-drm_parse_cea_ext(), let's just remove the code modifying the formats in
-drm_parse_hdmi_deep_color_info()
-
-Fixes: d0c94692e0a3 ("drm/edid: Parse and handle HDMI deep color modes.")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220120151625.594595-3-maxime@cerno.tech
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1644491952-7457-1-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_edid.c | 8 --------
- 1 file changed, 8 deletions(-)
+ sound/soc/soc-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-index b07b32eb0c4b..6f93250518e3 100644
---- a/drivers/gpu/drm/drm_edid.c
-+++ b/drivers/gpu/drm/drm_edid.c
-@@ -3791,16 +3791,8 @@ static void drm_parse_hdmi_deep_color_info(struct drm_connector *connector,
- 		  connector->name, dc_bpc);
- 	info->bpc = dc_bpc;
+diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
+index 0344d4423167..81c3aa167038 100644
+--- a/sound/soc/soc-core.c
++++ b/sound/soc/soc-core.c
+@@ -3799,7 +3799,7 @@ static int snd_soc_get_dai_name(struct of_phandle_args *args,
+ 		if (!component_of_node && pos->dev->parent)
+ 			component_of_node = pos->dev->parent->of_node;
  
--	/*
--	 * Deep color support mandates RGB444 support for all video
--	 * modes and forbids YCRCB422 support for all video modes per
--	 * HDMI 1.3 spec.
--	 */
--	info->color_formats = DRM_COLOR_FORMAT_RGB444;
--
- 	/* YCRCB444 is optional according to spec. */
- 	if (hdmi[6] & DRM_EDID_HDMI_DC_Y444) {
--		info->color_formats |= DRM_COLOR_FORMAT_YCRCB444;
- 		DRM_DEBUG("%s: HDMI sink does YCRCB444 in deep color.\n",
- 			  connector->name);
- 	}
+-		if (component_of_node != args->np)
++		if (component_of_node != args->np || !pos->num_dai)
+ 			continue;
+ 
+ 		if (pos->driver->of_xlate_dai_name) {
 -- 
 2.34.1
 
