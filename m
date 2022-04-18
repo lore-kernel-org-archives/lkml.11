@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A033EC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C26A7C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240316AbiDRMxN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:53:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40502 "EHLO
+        id S240364AbiDRMxU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240689AbiDRMja (ORCPT
+        with ESMTP id S240659AbiDRMj0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1815412AEF;
-        Mon, 18 Apr 2022 05:30:12 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B48312AA3;
+        Mon, 18 Apr 2022 05:30:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB4F760FB6;
-        Mon, 18 Apr 2022 12:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B217FC385A8;
-        Mon, 18 Apr 2022 12:30:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8C1CB80EC0;
+        Mon, 18 Apr 2022 12:30:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A86BC385A7;
+        Mon, 18 Apr 2022 12:30:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285011;
-        bh=qwIOE+fxbtogB1kDF6uX/hsJ/sFljR0FKIcKVrSQsB0=;
+        s=korg; t=1650285001;
+        bh=eVtYDTBmxFuv+Xved2iAQEP6AKTHEepLKoeFsRZqxlI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=od9bJdb8cxdOadKM71PUo6KajvBDmXFkDU+fAz3JTkvJhb0zjn3fL1R5DmZ3wDcA4
-         jak3MPl5paMDEFSAX/Vo0qV5LNhaqoVSENivVfMcnKgdFYBBqDkN5HWyH3IBcSLZ1J
-         B1nRR2B/N1FIF6hSvny3DFSfnlMukERZrMmm2kqY=
+        b=uDKbhBghjvgPdb0IO50PfF1gtvV9FaobGa/71D5bFlFHE2mxPL4XCZX9tlIcPjRaW
+         Mzs3XAgzSsFSuW6xTdT6MDp9dGAqcWeStolfOaiJh5Xb0Kbm4ghlAjfhYuYgtFs4Wo
+         L0oVrL1g091b+IMMpBbzQaGq1zNETQqDH1Wci1KI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+03e3e228510223dabd34@syzkaller.appspotmail.com,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 078/189] net/smc: Fix NULL pointer dereference in smc_pnet_find_ib()
-Date:   Mon, 18 Apr 2022 14:11:38 +0200
-Message-Id: <20220418121202.722855729@linuxfoundation.org>
+Subject: [PATCH 5.15 075/189] drm/msm: Fix range size vs end confusion
+Date:   Mon, 18 Apr 2022 14:11:35 +0200
+Message-Id: <20220418121202.637999742@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -51,39 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Karsten Graul <kgraul@linux.ibm.com>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit d22f4f977236f97e01255a80bca2ea93a8094fc8 ]
+[ Upstream commit 537fef808be5ea56f6fc06932162550819a3b3c3 ]
 
-dev_name() was called with dev.parent as argument but without to
-NULL-check it before.
-Solve this by checking the pointer before the call to dev_name().
+The fourth param is size, rather than range_end.
 
-Fixes: af5f60c7e3d5 ("net/smc: allow PCI IDs as ib device names in the pnet table")
-Reported-by: syzbot+03e3e228510223dabd34@syzkaller.appspotmail.com
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Note that we could increase the address space size if we had a way to
+prevent buffers from spanning a 4G split, mostly just to avoid fw bugs
+with 64b math.
+
+Fixes: 84c31ee16f90 ("drm/msm/a6xx: Add support for per-instance pagetables")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Link: https://lore.kernel.org/r/20220407202836.1211268-1-robdclark@gmail.com
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/smc_pnet.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/smc/smc_pnet.c b/net/smc/smc_pnet.c
-index 707615809e5a..79ee0618d919 100644
---- a/net/smc/smc_pnet.c
-+++ b/net/smc/smc_pnet.c
-@@ -310,8 +310,9 @@ static struct smc_ib_device *smc_pnet_find_ib(char *ib_name)
- 	list_for_each_entry(ibdev, &smc_ib_devices.list, list) {
- 		if (!strncmp(ibdev->ibdev->name, ib_name,
- 			     sizeof(ibdev->ibdev->name)) ||
--		    !strncmp(dev_name(ibdev->ibdev->dev.parent), ib_name,
--			     IB_DEVICE_NAME_MAX - 1)) {
-+		    (ibdev->ibdev->dev.parent &&
-+		     !strncmp(dev_name(ibdev->ibdev->dev.parent), ib_name,
-+			     IB_DEVICE_NAME_MAX - 1))) {
- 			goto out;
- 		}
- 	}
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index f54bfdb1ebff..9b41e2f82fc2 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -1711,7 +1711,7 @@ a6xx_create_private_address_space(struct msm_gpu *gpu)
+ 		return ERR_CAST(mmu);
+ 
+ 	return msm_gem_address_space_create(mmu,
+-		"gpu", 0x100000000ULL, 0x1ffffffffULL);
++		"gpu", 0x100000000ULL, SZ_4G);
+ }
+ 
+ static uint32_t a6xx_get_rptr(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
 -- 
 2.35.1
 
