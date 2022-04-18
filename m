@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C57CCC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D23C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243389AbiDRNUb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:20:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41050 "EHLO
+        id S243433AbiDRNUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:20:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241126AbiDRNCv (ORCPT
+        with ESMTP id S241127AbiDRNCv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:02:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC34C32995;
-        Mon, 18 Apr 2022 05:42:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B5026AC4;
+        Mon, 18 Apr 2022 05:42:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46AD361014;
-        Mon, 18 Apr 2022 12:42:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E5ADC385A7;
-        Mon, 18 Apr 2022 12:42:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93C9D6101A;
+        Mon, 18 Apr 2022 12:42:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 943BEC385A1;
+        Mon, 18 Apr 2022 12:42:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285761;
-        bh=cVRz0cipYmNcykCb4P8YGJfJ8LfaJNccgHJSaUWty8w=;
+        s=korg; t=1650285768;
+        bh=YToBz85raWH3bOY3oZd3oarc05aULhwErBF63mT+3xM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xAsRO9z+D+zzNcZRgBISJI621RwD7qh2zWeq4UXQBDbZrS8rq9aQcdAMrQIr9BY36
-         2MZHx47KxjJDPtRu/BYCoDRoEPpfsCmLsb2nT7OF3FPXoZnPAohv5KBlzblzvz6dm9
-         tuTWm7pz1mbiOygq8YFdU6Oj27arxkABJEyYfWcw=
+        b=M82EkonytlkzFTlAH6e/DYO4qqSuA6+J41oVcnlBOJmYcUDuQQ+7NTQyXYmgkTosT
+         homwjznt1ztRPfmcuL7k6AekShvRz7jC4z7QQIAGugZef+lprpQk4znswQQGcdaUf7
+         i519PuKI6+V76QDY7oAg29en8/eYptVbd0M1AydA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vlad Buslov <vladbu@nvidia.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 02/63] net/sched: flower: fix parsing of ethertype following VLAN header
-Date:   Mon, 18 Apr 2022 14:12:59 +0200
-Message-Id: <20220418121134.315981712@linuxfoundation.org>
+Subject: [PATCH 5.4 04/63] gpiolib: acpi: use correct format characters
+Date:   Mon, 18 Apr 2022 14:13:01 +0200
+Message-Id: <20220418121134.434148411@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -50,130 +50,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vlad Buslov <vladbu@nvidia.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit 2105f700b53c24aa48b65c15652acc386044d26a ]
+[ Upstream commit 213d266ebfb1621aab79cfe63388facc520a1381 ]
 
-A tc flower filter matching TCA_FLOWER_KEY_VLAN_ETH_TYPE is expected to
-match the L2 ethertype following the first VLAN header, as confirmed by
-linked discussion with the maintainer. However, such rule also matches
-packets that have additional second VLAN header, even though filter has
-both eth_type and vlan_ethtype set to "ipv4". Looking at the code this
-seems to be mostly an artifact of the way flower uses flow dissector.
-First, even though looking at the uAPI eth_type and vlan_ethtype appear
-like a distinct fields, in flower they are all mapped to the same
-key->basic.n_proto. Second, flow dissector skips following VLAN header as
-no keys for FLOW_DISSECTOR_KEY_CVLAN are set and eventually assigns the
-value of n_proto to last parsed header. With these, such filters ignore any
-headers present between first VLAN header and first "non magic"
-header (ipv4 in this case) that doesn't result
-FLOW_DISSECT_RET_PROTO_AGAIN.
+When compiling with -Wformat, clang emits the following warning:
 
-Fix the issue by extending flow dissector VLAN key structure with new
-'vlan_eth_type' field that matches first ethertype following previously
-parsed VLAN header. Modify flower classifier to set the new
-flow_dissector_key_vlan->vlan_eth_type with value obtained from
-TCA_FLOWER_KEY_VLAN_ETH_TYPE/TCA_FLOWER_KEY_CVLAN_ETH_TYPE uAPIs.
+  gpiolib-acpi.c:393:4: warning: format specifies type 'unsigned char' but the argument has type 'int' [-Wformat]
+                        pin);
+                        ^~~
 
-Link: https://lore.kernel.org/all/Yjhgi48BpTGh6dig@nanopsycho/
-Fixes: 9399ae9a6cb2 ("net_sched: flower: Add vlan support")
-Fixes: d64efd0926ba ("net/sched: flower: Add supprt for matching on QinQ vlan headers")
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+So warning that '%hhX' is paired with an 'int' is all just completely
+mindless and wrong. Sadly, I can see a different bogus warning reason
+why people would want to use '%02hhX'.
+
+Again, the *sane* thing from a human perspective is to use '%02X. But
+if the compiler doesn't do any range analysis at all, it could decide
+that "Oh, that print format could need up to 8 bytes of space in the
+result". Using '%02hhX' would cut that down to two.
+
+And since we use
+
+        char ev_name[5];
+
+and currently use "_%c%02hhX" as the format string, even a compiler
+that doesn't notice that "pin <= 255" test that guards this all will
+go "OK, that's at most 4 bytes and the final NUL termination, so it's
+fine".
+
+While a compiler - like gcc - that only sees that the original source
+of the 'pin' value is a 'unsigned short' array, and then doesn't take
+the "pin <= 255" into account, will warn like this:
+
+  gpiolib-acpi.c: In function 'acpi_gpiochip_request_interrupt':
+  gpiolib-acpi.c:206:24: warning: '%02X' directive writing between 2 and 4 bytes into a region of size 3 [-Wformat-overflow=]
+       sprintf(ev_name, "_%c%02X",
+                            ^~~~
+  gpiolib-acpi.c:206:20: note: directive argument in the range [0, 65535]
+
+because gcc isn't being very good at that argument range analysis either.
+
+In other words, the original use of 'hhx' was bogus to begin with, and
+due to *another* compiler warning being bad, and we had that bad code
+being written back in 2016 to work around _that_ compiler warning
+(commit e40a3ae1f794: "gpio: acpi: work around false-positive
+-Wstring-overflow warning").
+
+Sadly, two different bad compiler warnings together does not make for
+one good one.
+
+It just makes for even more pain.
+
+End result: I think the simplest and cleanest option is simply the
+proposed change which undoes that '%hhX' change for gcc, and replaces
+it with just using a slightly bigger stack allocation. It's not like
+a 5-byte allocation is in any way likely to have saved any actual stack,
+since all the other variables in that function are 'int' or bigger.
+
+False-positive compiler warnings really do make people write worse
+code, and that's a problem. But on a scale of bad code, I feel that
+extending the buffer trivially is better than adding a pointless cast
+that literally makes no sense.
+
+At least in this case the end result isn't unreadable or buggy. We've
+had several cases of bad compiler warnings that caused changes that
+were actually horrendously wrong.
+
+Fixes: e40a3ae1f794 ("gpio: acpi: work around false-positive -Wstring-overflow warning")
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/flow_dissector.h |  2 ++
- net/core/flow_dissector.c    |  1 +
- net/sched/cls_flower.c       | 18 +++++++++++++-----
- 3 files changed, 16 insertions(+), 5 deletions(-)
+ drivers/gpio/gpiolib-acpi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-index 78f6437cbc3a..02171416c68e 100644
---- a/include/net/flow_dissector.h
-+++ b/include/net/flow_dissector.h
-@@ -51,6 +51,8 @@ struct flow_dissector_key_vlan {
- 		vlan_dei:1,
- 		vlan_priority:3;
- 	__be16	vlan_tpid;
-+	__be16	vlan_eth_type;
-+	u16	padding;
- };
+diff --git a/drivers/gpio/gpiolib-acpi.c b/drivers/gpio/gpiolib-acpi.c
+index 13c6eee481da..d71c7b9b9665 100644
+--- a/drivers/gpio/gpiolib-acpi.c
++++ b/drivers/gpio/gpiolib-acpi.c
+@@ -275,8 +275,8 @@ static acpi_status acpi_gpiochip_alloc_event(struct acpi_resource *ares,
+ 	pin = agpio->pin_table[0];
  
- struct flow_dissector_key_mpls {
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index b740a74f06f2..4dac27c98623 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -1149,6 +1149,7 @@ bool __skb_flow_dissect(const struct net *net,
- 					 VLAN_PRIO_MASK) >> VLAN_PRIO_SHIFT;
- 			}
- 			key_vlan->vlan_tpid = saved_vlan_tpid;
-+			key_vlan->vlan_eth_type = proto;
- 		}
- 
- 		fdret = FLOW_DISSECT_RET_PROTO_AGAIN;
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 26979b4853bd..007fbc199352 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -784,6 +784,7 @@ static int fl_set_key_mpls(struct nlattr **tb,
- static void fl_set_key_vlan(struct nlattr **tb,
- 			    __be16 ethertype,
- 			    int vlan_id_key, int vlan_prio_key,
-+			    int vlan_next_eth_type_key,
- 			    struct flow_dissector_key_vlan *key_val,
- 			    struct flow_dissector_key_vlan *key_mask)
- {
-@@ -802,6 +803,11 @@ static void fl_set_key_vlan(struct nlattr **tb,
- 	}
- 	key_val->vlan_tpid = ethertype;
- 	key_mask->vlan_tpid = cpu_to_be16(~0);
-+	if (tb[vlan_next_eth_type_key]) {
-+		key_val->vlan_eth_type =
-+			nla_get_be16(tb[vlan_next_eth_type_key]);
-+		key_mask->vlan_eth_type = cpu_to_be16(~0);
-+	}
- }
- 
- static void fl_set_key_flag(u32 flower_key, u32 flower_mask,
-@@ -1076,8 +1082,9 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
- 
- 		if (eth_type_vlan(ethertype)) {
- 			fl_set_key_vlan(tb, ethertype, TCA_FLOWER_KEY_VLAN_ID,
--					TCA_FLOWER_KEY_VLAN_PRIO, &key->vlan,
--					&mask->vlan);
-+					TCA_FLOWER_KEY_VLAN_PRIO,
-+					TCA_FLOWER_KEY_VLAN_ETH_TYPE,
-+					&key->vlan, &mask->vlan);
- 
- 			if (tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE]) {
- 				ethertype = nla_get_be16(tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE]);
-@@ -1085,6 +1092,7 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
- 					fl_set_key_vlan(tb, ethertype,
- 							TCA_FLOWER_KEY_CVLAN_ID,
- 							TCA_FLOWER_KEY_CVLAN_PRIO,
-+							TCA_FLOWER_KEY_CVLAN_ETH_TYPE,
- 							&key->cvlan, &mask->cvlan);
- 					fl_set_key_val(tb, &key->basic.n_proto,
- 						       TCA_FLOWER_KEY_CVLAN_ETH_TYPE,
-@@ -2272,13 +2280,13 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
- 		goto nla_put_failure;
- 
- 	if (mask->basic.n_proto) {
--		if (mask->cvlan.vlan_tpid) {
-+		if (mask->cvlan.vlan_eth_type) {
- 			if (nla_put_be16(skb, TCA_FLOWER_KEY_CVLAN_ETH_TYPE,
- 					 key->basic.n_proto))
- 				goto nla_put_failure;
--		} else if (mask->vlan.vlan_tpid) {
-+		} else if (mask->vlan.vlan_eth_type) {
- 			if (nla_put_be16(skb, TCA_FLOWER_KEY_VLAN_ETH_TYPE,
--					 key->basic.n_proto))
-+					 key->vlan.vlan_eth_type))
- 				goto nla_put_failure;
- 		}
- 	}
+ 	if (pin <= 255) {
+-		char ev_name[5];
+-		sprintf(ev_name, "_%c%02hhX",
++		char ev_name[8];
++		sprintf(ev_name, "_%c%02X",
+ 			agpio->triggering == ACPI_EDGE_SENSITIVE ? 'E' : 'L',
+ 			pin);
+ 		if (ACPI_SUCCESS(acpi_get_handle(handle, ev_name, &evt_handle)))
 -- 
 2.35.1
 
