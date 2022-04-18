@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE87C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:56:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B1AC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:56:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238865AbiDRN7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35580 "EHLO
+        id S244535AbiDRN7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243078AbiDRNha (ORCPT
+        with ESMTP id S242707AbiDRNfk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:37:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FC5275EB;
-        Mon, 18 Apr 2022 05:58:14 -0700 (PDT)
+        Mon, 18 Apr 2022 09:35:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC11F252B6;
+        Mon, 18 Apr 2022 05:58:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB7D4612BB;
-        Mon, 18 Apr 2022 12:58:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC8F4C385A1;
-        Mon, 18 Apr 2022 12:58:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8DBF612DB;
+        Mon, 18 Apr 2022 12:58:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ECEAC385A1;
+        Mon, 18 Apr 2022 12:58:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286693;
-        bh=+9tDQgM+/axT2d6rke1s+6yyXgquHpFdu21IBqWpF5k=;
+        s=korg; t=1650286687;
+        bh=KILYHveAm1KA+QDA4KsMbD9x4kEXUusNdRBZBi+Vj3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JsjakfSmvCXTmnQt1BHZNb9QgjBd/6iF5VI94p2hxgrPPTP/ZlNh0jJTEMtJkDPTw
-         YRFCndFFgW2VX0SmlWdr7ssEFfFkkD/bRKyGER705qiBNBoiwrdzrR3+u3/LP3A7QF
-         QjlCKWcGZ0a0326skxkDpqssBDg65vOoT82ATGr0=
+        b=P5rgXukKKlEDX3UDAhRmvwO4zBGlaJly6TETrfCj+Y2geOW3yDE5Tit2/0omke74q
+         9zw7jbn5Q3euL0+2Kfs0pQX0cuk+c11vpaRyOJNj3NkrMpEamI1F/CX3MOY7tIjBnZ
+         tTgRQQEe3lGbtHqvZY/tJUDPBXrjJ97BJyDbZ+DU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Richard Leitner <richard.leitner@skidata.com>,
-        Thierry Reding <treding@nvidia.com>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 175/284] ARM: tegra: tamonten: Fix I2C3 pad setting
-Date:   Mon, 18 Apr 2022 14:12:36 +0200
-Message-Id: <20220418121216.716903978@linuxfoundation.org>
+Subject: [PATCH 4.14 173/284] ASoC: soc-core: skip zero num_dai component in searching dai name
+Date:   Mon, 18 Apr 2022 14:12:34 +0200
+Message-Id: <20220418121216.661379213@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,44 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Leitner <richard.leitner@skidata.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 0092c25b541a5422d7e71892a13c55ee91abc34b ]
+[ Upstream commit f7d344a2bd5ec81fbd1ce76928fd059e57ec9bea ]
 
-This patch fixes the tristate configuration for i2c3 function assigned
-to the dtf pins on the Tamonten Tegra20 SoM.
+In the case like dmaengine which's not a dai but as a component, the
+num_dai is zero, dmaengine component has the same component_of_node
+as cpu dai, when cpu dai component is not ready, but dmaengine component
+is ready, try to get cpu dai name, the snd_soc_get_dai_name() return
+-EINVAL, not -EPROBE_DEFER, that cause below error:
 
-Signed-off-by: Richard Leitner <richard.leitner@skidata.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+asoc-simple-card <card name>: parse error -22
+asoc-simple-card: probe of <card name> failed with error -22
+
+The sound card failed to probe.
+
+So this patch fixes the issue above by skipping the zero num_dai
+component in searching dai name.
+
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1644491952-7457-1-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/tegra20-tamonten.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ sound/soc/soc-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/tegra20-tamonten.dtsi b/arch/arm/boot/dts/tegra20-tamonten.dtsi
-index 4d69d67792d1..b919ca29bb78 100644
---- a/arch/arm/boot/dts/tegra20-tamonten.dtsi
-+++ b/arch/arm/boot/dts/tegra20-tamonten.dtsi
-@@ -183,8 +183,8 @@
- 			};
- 			conf_ata {
- 				nvidia,pins = "ata", "atb", "atc", "atd", "ate",
--					"cdev1", "cdev2", "dap1", "dtb", "gma",
--					"gmb", "gmc", "gmd", "gme", "gpu7",
-+					"cdev1", "cdev2", "dap1", "dtb", "dtf",
-+					"gma", "gmb", "gmc", "gmd", "gme", "gpu7",
- 					"gpv", "i2cp", "irrx", "irtx", "pta",
- 					"rm", "slxa", "slxk", "spia", "spib",
- 					"uac";
-@@ -203,7 +203,7 @@
- 			};
- 			conf_crtp {
- 				nvidia,pins = "crtp", "dap2", "dap3", "dap4",
--					"dtc", "dte", "dtf", "gpu", "sdio1",
-+					"dtc", "dte", "gpu", "sdio1",
- 					"slxc", "slxd", "spdi", "spdo", "spig",
- 					"uda";
- 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
+diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
+index 2a172de37466..febf2b649b96 100644
+--- a/sound/soc/soc-core.c
++++ b/sound/soc/soc-core.c
+@@ -4243,7 +4243,7 @@ int snd_soc_get_dai_name(struct of_phandle_args *args,
+ 		if (!component_of_node && pos->dev->parent)
+ 			component_of_node = pos->dev->parent->of_node;
+ 
+-		if (component_of_node != args->np)
++		if (component_of_node != args->np || !pos->num_dai)
+ 			continue;
+ 
+ 		if (pos->driver->of_xlate_dai_name) {
 -- 
 2.34.1
 
