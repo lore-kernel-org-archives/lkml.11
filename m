@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:34:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC1FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:34:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239303AbiDRMg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53724 "EHLO
+        id S239005AbiDRMhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239042AbiDRMa2 (ORCPT
+        with ESMTP id S239043AbiDRMa2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:30:28 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7020BBF;
-        Mon, 18 Apr 2022 05:23:48 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8091C24BD2;
+        Mon, 18 Apr 2022 05:23:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 16201CE1077;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA3D560EF4;
+        Mon, 18 Apr 2022 12:23:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE7B1C385A7;
         Mon, 18 Apr 2022 12:23:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BAE1C385A1;
-        Mon, 18 Apr 2022 12:23:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284625;
-        bh=kHv6hQD5t7JI2Qskfwudj9tOHcppLAkN/iiMY1xPhck=;
+        s=korg; t=1650284628;
+        bh=fkf5ldK1t7XscBFXOpFzJDYdU3w9kmWDjQui+LrUG/4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=anzIyJEEYmo0ZmydHfhAci23rTNMQl1HSiEDgz8d4JTXetQkHO6MolWAQdD2Qnfkn
-         oo0W00cI6AVkuOKR+ahWtnVf6bZM8tIkjvwnq6XAh1mLgMC8ADXEzhxhttZlqzqBtU
-         DvLcv9uM21z+KbfXYADA9qa8ZTEfciI1ZzP6Tr8A=
+        b=sgDftx2bl+eh3JsACW1Sl5ratK6/phRM+FvDDso6mb+GXZxy1I9ss366yx99He9+n
+         TrfSKz5TjVOsNyVNoB2dtv8PFc4H1VoVzT0rVOB2XFLkKVccOHyM7krSeCiqo6u6l7
+         9unqxL3OwEiAy/wyW/mRAOT3utd5uE7xbg7UWSdg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alvin Lee <Alvin.Lee2@amd.com>,
-        Aric Cyr <Aric.Cyr@amd.com>, Alex Hung <alex.hung@amd.com>,
-        Charlene Liu <Charlene.Liu@amd.com>,
+        stable@vger.kernel.org, Anthony Koo <Anthony.Koo@amd.com>,
+        Alex Hung <alex.hung@amd.com>,
+        Chiawen Huang <chiawen.huang@amd.com>,
         Daniel Wheeler <daniel.wheeler@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 135/219] drm/amd/display: fix audio format not updated after edid updated
-Date:   Mon, 18 Apr 2022 14:11:44 +0200
-Message-Id: <20220418121210.673122656@linuxfoundation.org>
+Subject: [PATCH 5.17 136/219] drm/amd/display: FEC check in timing validation
+Date:   Mon, 18 Apr 2022 14:11:45 +0200
+Message-Id: <20220418121210.700622301@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -52,40 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charlene Liu <Charlene.Liu@amd.com>
+From: Chiawen Huang <chiawen.huang@amd.com>
 
-[ Upstream commit 5e8a71cf13bc9184fee915b2220be71b4c6cac74 ]
+[ Upstream commit 7d56a154e22ffb3613fdebf83ec34d5225a22993 ]
 
-[why]
-for the case edid change only changed audio format.
-driver still need to update stream.
+[Why]
+disable/enable leads FEC mismatch between hw/sw FEC state.
 
-Reviewed-by: Alvin Lee <Alvin.Lee2@amd.com>
-Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
+[How]
+check FEC status to fastboot on/off.
+
+Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
 Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Charlene Liu <Charlene.Liu@amd.com>
+Signed-off-by: Chiawen Huang <chiawen.huang@amd.com>
 Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc_resource.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/dc/core/dc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-index ac3071e38e4a..f0a97b82c33a 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-@@ -1667,8 +1667,8 @@ bool dc_is_stream_unchanged(
- 	if (old_stream->ignore_msa_timing_param != stream->ignore_msa_timing_param)
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
+index 62bc6ce88753..78e17a4af4ab 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
+@@ -1495,6 +1495,10 @@ bool dc_validate_seamless_boot_timing(const struct dc *dc,
+ 	if (!link->link_enc->funcs->is_dig_enabled(link->link_enc))
  		return false;
  
--	// Only Have Audio left to check whether it is same or not. This is a corner case for Tiled sinks
--	if (old_stream->audio_info.mode_count != stream->audio_info.mode_count)
-+	/*compare audio info*/
-+	if (memcmp(&old_stream->audio_info, &stream->audio_info, sizeof(stream->audio_info)) != 0)
- 		return false;
++	/* Check for FEC status*/
++	if (link->link_enc->funcs->fec_is_active(link->link_enc))
++		return false;
++
+ 	enc_inst = link->link_enc->funcs->get_dig_frontend(link->link_enc);
  
- 	return true;
+ 	if (enc_inst == ENGINE_ID_UNKNOWN)
 -- 
 2.35.1
 
