@@ -2,112 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76FEFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 06:14:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ADBEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 06:18:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236723AbiDRGRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 02:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58212 "EHLO
+        id S236733AbiDRGVS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 02:21:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233647AbiDRGRO (ORCPT
+        with ESMTP id S236728AbiDRGVO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 02:17:14 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E5917AB7;
-        Sun, 17 Apr 2022 23:14:36 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so8281450wmn.1;
-        Sun, 17 Apr 2022 23:14:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e8ZuwAsZvFhjWYjd8yTG5wsLv6buaB3HfTucRNG+UqI=;
-        b=WBAxuBJojSU2AxQ868FqVcQ6bk55DcVrjS+gy3jAnt3nvDlRlbljqO97Jz3Cz5AMiT
-         rA4ZZ5BibfwSetqgnPmUrzvxgW5Rr3ceJV5T4gk8DGbjt369zJGMLqsD8d7D8Sc2b1Wt
-         fJPj/M94vOwbducPtV5E9Ih0H1Ei+Oy623kbixxJycErlhhEub46YERI5B0USCLjqV9p
-         pvq4FJxxKKN4YNjvfDQwT6GLNuqnymE6X7+nDqcD2WjR/4u3vAx8degW1ZL9ouFlwHW+
-         t24S0hCJL4SePnhvBYckJXIkD5weNDMB2sTTJwICx+uvdewNGWsguBuV5ZFlwtHGzKlc
-         m02A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e8ZuwAsZvFhjWYjd8yTG5wsLv6buaB3HfTucRNG+UqI=;
-        b=3jRnIFeg/QoWyoTlrtU96AnptlJ0Yi95PyytQr2kusvILxroptBtBuESyHQuYfkG8R
-         3VUUU6vzfQe69Oje38oIsR7P/thjPhaclsJBFGGPrEF9HOMjmXAYrPtUtTSJ0uKJDIYi
-         AMtdolK96ISQ2JBbUIfU79ypqdqcSqHtEBlLRQmnGfq236rLVgaVxT9Fo2DUEhhDDi+k
-         WtmI5tUA3F8I9mmmi20A/FLtVpbdHpi2Oa5XeQPPia350nKi6oLriG+mADXxAbnIN/Jo
-         bV0HFwutmkLLJEQUsPbGzljxN+rKARdu9rw4pkdZNfVBJRXR/tFdyC+8/UCAZy23XYCj
-         3q9Q==
-X-Gm-Message-State: AOAM5319Quq09GsaGhytarfRifs/gbveg8eBnjwyZgnf2lloG26hmC3A
-        FsGOosYCknj+qLaikUDCA/sSWmYj+CXn7A==
-X-Google-Smtp-Source: ABdhPJyPTRA13mBsIiG+RM0ugphkP3LSbXaCVQcb4zssDaNxL91RgVJA7llncwPOS67rRpAbsu7dxw==
-X-Received: by 2002:a05:600c:5114:b0:38e:bd9c:9cb0 with SMTP id o20-20020a05600c511400b0038ebd9c9cb0mr13433157wms.153.1650262474907;
-        Sun, 17 Apr 2022 23:14:34 -0700 (PDT)
-Received: from alaa-emad ([197.57.90.163])
-        by smtp.gmail.com with ESMTPSA id z17-20020adfec91000000b0020a98f5f8a7sm1654811wrn.6.2022.04.17.23.14.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Apr 2022 23:14:34 -0700 (PDT)
-From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
-To:     outreachy@lists.linux.dev
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ira.weiny@intel.com,
-        eng.alaamohamedsoliman.am@gmail.com
-Subject: [PATCH v4] intel: igb: igb_ethtool.c: Convert kmap() to kmap_local_page()
-Date:   Mon, 18 Apr 2022 08:14:30 +0200
-Message-Id: <20220418061430.6605-1-eng.alaamohamedsoliman.am@gmail.com>
-X-Mailer: git-send-email 2.35.2
+        Mon, 18 Apr 2022 02:21:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F29517E23;
+        Sun, 17 Apr 2022 23:18:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 272A0B80D86;
+        Mon, 18 Apr 2022 06:18:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32FCFC385A1;
+        Mon, 18 Apr 2022 06:18:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650262712;
+        bh=9oskifXqIiYjZvZC5tbGoi3TIlLus0DwcumHm6gcSfg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mzVDsw3TrQBkM0ByTgc5Kl02nqK+9z398XeRQjJTr0q+o74gIPN+RpcEwF6jKcsCo
+         V2yPf96oub1Rho5UPg7G4QLHAPtevsKTJaE+5lxkYWnANdNfbKPq0yc7RtBRZ0EInN
+         kKyOFtPaC7k1txPLmeWzGZvRonN3ENVvfXSqRrq+3FdttfY6vkgtTymwCnYQce2Ftv
+         S5aMJFfYk+05xeLaBQSwBFcPo3Isad9gzRos6qdGPD+7Y+pIHFQmgwKVxm29eSnCVd
+         sJImHyPzt3j84VrIGTxUmTX/TxdFmVTH6xrFLChDvlBlBBbjHCISQ13iG2jiaa3uej
+         26oxJNEIHNKLA==
+Date:   Mon, 18 Apr 2022 11:48:24 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     konrad.dybcio@somainline.org
+Cc:     miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_srichara@quicinc.com,
+        stable@vger.kernel.org, quic_mdalam@quicinc.com
+Subject: Re: [PATCH V3] mtd: rawnand: qcom: fix memory corruption that causes
+ panic
+Message-ID: <20220418061824.GG7431@thinkpad>
+References: <1650259141-20923-1-git-send-email-quic_mdalam@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1650259141-20923-1-git-send-email-quic_mdalam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The use of kmap() is being deprecated in favor of kmap_local_page()
-where it is feasible.
+On Mon, Apr 18, 2022 at 10:49:01AM +0530, Md Sadre Alam wrote:
+> This patch fixes a memory corruption that occurred in the
+> nand_scan() path for Hynix nand device.
+> 
+> On boot, for Hynix nand device will panic at a weird place:
+> | Unable to handle kernel NULL pointer dereference at virtual
+>   address 00000070
+> | [00000070] *pgd=00000000
+> | Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+> | Modules linked in:
+> | CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-01473-g13ae1769cfb0
+>   #38
+> | Hardware name: Generic DT based system
+> | PC is at nandc_set_reg+0x8/0x1c
+> | LR is at qcom_nandc_command+0x20c/0x5d0
+> | pc : [<c088b74c>]    lr : [<c088d9c8>]    psr: 00000113
+> | sp : c14adc50  ip : c14ee208  fp : c0cc970c
+> | r10: 000000a3  r9 : 00000000  r8 : 00000040
+> | r7 : c16f6a00  r6 : 00000090  r5 : 00000004  r4 :c14ee040
+> | r3 : 00000000  r2 : 0000000b  r1 : 00000000  r0 :c14ee040
+> | Flags: nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM Segment none
+> | Control: 10c5387d  Table: 8020406a  DAC: 00000051
+> | Register r0 information: slab kmalloc-2k start c14ee000 pointer offset
+>   64 size 2048
+> | Process swapper/0 (pid: 1, stack limit = 0x(ptrval))
+> | nandc_set_reg from qcom_nandc_command+0x20c/0x5d0
+> | qcom_nandc_command from nand_readid_op+0x198/0x1e8
+> | nand_readid_op from hynix_nand_has_valid_jedecid+0x30/0x78
+> | hynix_nand_has_valid_jedecid from hynix_nand_init+0xb8/0x454
+> | hynix_nand_init from nand_scan_with_ids+0xa30/0x14a8
+> | nand_scan_with_ids from qcom_nandc_probe+0x648/0x7b0
+> | qcom_nandc_probe from platform_probe+0x58/0xac
+> 
+> The problem is that the nand_scan()'s qcom_nand_attach_chip callback
+> is updating the nandc->max_cwperpage from 1 to 4.This causes the
+> sg_init_table of clear_bam_transaction() in the driver's
+> qcom_nandc_command() to memset much more than what was initially
+> allocated by alloc_bam_transaction().
+> 
+> This patch will update nandc->max_cwperpage 1 to 4 after nand_scan()
+> returns, and remove updating nandc->max_cwperpage from
+> qcom_nand_attach_chip call back.
+> 
 
-With kmap_local_page(), the mapping is per thread, CPU local and not
-globally visible. Therefore igb_check_lbtest_frame() is a function
-where the use of kmap_local_page() in place of kmap() is correctly
-suited.
+Konrad, can you please verify if this patch fixes the crash on your device?
+Similar crash was seen on SDX65 and this patch fixes the issue.
 
-Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
----
-changes in V2:
-	fix kunmap_local path value to take address of the mapped page.
----
-changes in V3:
-	edit commit message to be clearer
----
-changes in V4:
-	edit the commit message
----
- drivers/net/ethernet/intel/igb/igb_ethtool.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks,
+Mani
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-index 2a5782063f4c..c14fc871dd41 100644
---- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-+++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-@@ -1798,14 +1798,14 @@ static int igb_check_lbtest_frame(struct igb_rx_buffer *rx_buffer,
- 
- 	frame_size >>= 1;
- 
--	data = kmap(rx_buffer->page);
-+	data = kmap_local_page(rx_buffer->page);
- 
- 	if (data[3] != 0xFF ||
- 	    data[frame_size + 10] != 0xBE ||
- 	    data[frame_size + 12] != 0xAF)
- 		match = false;
- 
--	kunmap(rx_buffer->page);
-+	kunmap_local(data);
- 
- 	return match;
- }
--- 
-2.35.2
-
+> Cc: stable@vger.kernel.org
+> Fixes: 6a3cec64f18c ("mtd: rawnand: qcom: convert driver to nand_scan()")
+> Reported-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> Signed-off-by: Md Sadre Alam <quic_mdalam@quicinc.com>
+> Signed-off-by: Sricharan R <quic_srichara@quicinc.com>
+> ---
+> [V3]
+>  * Updated commit message Fixes, Cc, Reported-by
+> 
+>  drivers/mtd/nand/raw/qcom_nandc.c | 24 +++++++++++++-----------
+>  1 file changed, 13 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/mtd/nand/raw/qcom_nandc.c b/drivers/mtd/nand/raw/qcom_nandc.c
+> index 1a77542..048b255 100644
+> --- a/drivers/mtd/nand/raw/qcom_nandc.c
+> +++ b/drivers/mtd/nand/raw/qcom_nandc.c
+> @@ -2651,10 +2651,23 @@ static int qcom_nand_attach_chip(struct nand_chip *chip)
+>  	ecc->engine_type = NAND_ECC_ENGINE_TYPE_ON_HOST;
+>  
+>  	mtd_set_ooblayout(mtd, &qcom_nand_ooblayout_ops);
+> +	/* Free the initially allocated BAM transaction for reading the ONFI params */
+> +	if (nandc->props->is_bam)
+> +		free_bam_transaction(nandc);
+>  
+>  	nandc->max_cwperpage = max_t(unsigned int, nandc->max_cwperpage,
+>  				     cwperpage);
+>  
+> +	/* Now allocate the BAM transaction based on updated max_cwperpage */
+> +	if (nandc->props->is_bam) {
+> +		nandc->bam_txn = alloc_bam_transaction(nandc);
+> +		if (!nandc->bam_txn) {
+> +			dev_err(nandc->dev,
+> +				"failed to allocate bam transaction\n");
+> +			return -ENOMEM;
+> +		}
+> +	}
+> +
+>  	/*
+>  	 * DATA_UD_BYTES varies based on whether the read/write command protects
+>  	 * spare data with ECC too. We protect spare data by default, so we set
+> @@ -2955,17 +2968,6 @@ static int qcom_nand_host_init_and_register(struct qcom_nand_controller *nandc,
+>  	if (ret)
+>  		return ret;
+>  
+> -	if (nandc->props->is_bam) {
+> -		free_bam_transaction(nandc);
+> -		nandc->bam_txn = alloc_bam_transaction(nandc);
+> -		if (!nandc->bam_txn) {
+> -			dev_err(nandc->dev,
+> -				"failed to allocate bam transaction\n");
+> -			nand_cleanup(chip);
+> -			return -ENOMEM;
+> -		}
+> -	}
+> -
+>  	ret = mtd_device_parse_register(mtd, probes, NULL, NULL, 0);
+>  	if (ret)
+>  		nand_cleanup(chip);
+> -- 
+> 2.7.4
+> 
