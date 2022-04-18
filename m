@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 338F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:29:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E646C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:29:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238810AbiDRMbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38502 "EHLO
+        id S233504AbiDRMbl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:31:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239269AbiDRM2O (ORCPT
+        with ESMTP id S239283AbiDRM2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:28:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9803E1EC58;
-        Mon, 18 Apr 2022 05:21:33 -0700 (PDT)
+        Mon, 18 Apr 2022 08:28:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80701EEDC;
+        Mon, 18 Apr 2022 05:21:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03E3CB80EDB;
-        Mon, 18 Apr 2022 12:21:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 520F4C385A8;
-        Mon, 18 Apr 2022 12:21:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3159260F0C;
+        Mon, 18 Apr 2022 12:21:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38C7DC385A1;
+        Mon, 18 Apr 2022 12:21:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284490;
-        bh=szVwhci6wEG2scB742G2j4/7NAzzTzIVcKJbFqCQBr4=;
+        s=korg; t=1650284493;
+        bh=p7NdsMGXXKY2Y4BdmKFIYeZ2BS38rKxgfbm27drUnCI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h61tvhmEZksFoau9u/J4xbBLQ+jWJodtYjvOnRDIuKz6DX/rSFvIGggAKkwQFdr6N
-         Rkop0yCPDYUqyPhik8UkYwzHcEGHtCf/OfQgnw8uYV9IyfWvfnBInJCpfCkBXVmknL
-         bcFC2c27JYRuQ3Ub41wBEVDNeybk8oshrkanj84c=
+        b=C13KDllqz9UFfVKIeYzjIgzs6DI/9qRO4Eagu+HMzBy3I6DW8vcfZvPz38+Xm3ja7
+         0fEq+VB3vQ5DCFNMVASiIxS4lWycqOXn1qnPLtHaG17bLLe4DzJ266d0+6Z4/kVyS/
+         Y6aXHrExXJ/XCctszav3xoAP8rC/kE39zrDaPMx8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 108/219] ALSA: ad1889: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:11:17 +0200
-Message-Id: <20220418121209.921906971@linuxfoundation.org>
+Subject: [PATCH 5.17 109/219] ALSA: mtpav: Dont call card private_free at probe error path
+Date:   Mon, 18 Apr 2022 14:11:18 +0200
+Message-Id: <20220418121209.950400644@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,53 +50,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit a8e84a5da18e6d786540aa4ceb6f969d5f1a441d ]
+[ Upstream commit 4fb27190879b82e48ce89a56e9d6c04437dbc065 ]
 
-The previous cleanup with devres may lead to the incorrect release
-orders at the probe error handling due to the devres's nature.  Until
-we register the card, snd_card_free() has to be called at first for
-releasing the stuff properly when the driver tries to manage and
-release the stuff via card->private_free().
+The card destructor of nm256 driver does merely stopping the running
+timer, and it's superfluous for the probe error handling.  Moreover,
+calling this via the previous devres change would lead to another
+problem due to the reverse call order.
 
-This patch fixes it by calling snd_card_free() on the error from the
-probe callback using a new helper function.
+This patch moves the setup of the private_free callback after the card
+registration, so that it can be used only after fully set up.
 
-Fixes: 567f58754109 ("ALSA: ad1889: Allocate resources with device-managed APIs")
-Link: https://lore.kernel.org/r/20220412102636.16000-4-tiwai@suse.de
+Fixes: aa92050f10f0 ("ALSA: mtpav: Allocate resources with device-managed APIs")
+Link: https://lore.kernel.org/r/20220412102636.16000-39-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/ad1889.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ sound/drivers/mtpav.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/pci/ad1889.c b/sound/pci/ad1889.c
-index bba4dae8dcc7..50e30704bf6f 100644
---- a/sound/pci/ad1889.c
-+++ b/sound/pci/ad1889.c
-@@ -844,8 +844,8 @@ snd_ad1889_create(struct snd_card *card, struct pci_dev *pci)
- }
+diff --git a/sound/drivers/mtpav.c b/sound/drivers/mtpav.c
+index 11235baaf6fa..f212f233ea61 100644
+--- a/sound/drivers/mtpav.c
++++ b/sound/drivers/mtpav.c
+@@ -693,8 +693,6 @@ static int snd_mtpav_probe(struct platform_device *dev)
+ 	mtp_card->outmidihwport = 0xffffffff;
+ 	timer_setup(&mtp_card->timer, snd_mtpav_output_timer, 0);
  
- static int
--snd_ad1889_probe(struct pci_dev *pci,
--		 const struct pci_device_id *pci_id)
-+__snd_ad1889_probe(struct pci_dev *pci,
-+		   const struct pci_device_id *pci_id)
- {
- 	int err;
- 	static int devno;
-@@ -904,6 +904,12 @@ snd_ad1889_probe(struct pci_dev *pci,
- 	return 0;
- }
+-	card->private_free = snd_mtpav_free;
+-
+ 	err = snd_mtpav_get_RAWMIDI(mtp_card);
+ 	if (err < 0)
+ 		return err;
+@@ -716,6 +714,8 @@ static int snd_mtpav_probe(struct platform_device *dev)
+ 	if (err < 0)
+ 		return err;
  
-+static int snd_ad1889_probe(struct pci_dev *pci,
-+			    const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_ad1889_probe(pci, pci_id));
-+}
++	card->private_free = snd_mtpav_free;
 +
- static const struct pci_device_id snd_ad1889_ids[] = {
- 	{ PCI_DEVICE(PCI_VENDOR_ID_ANALOG_DEVICES, PCI_DEVICE_ID_AD1889JS) },
- 	{ 0, },
+ 	platform_set_drvdata(dev, card);
+ 	printk(KERN_INFO "Motu MidiTimePiece on parallel port irq: %d ioport: 0x%lx\n", irq, port);
+ 	return 0;
 -- 
 2.35.1
 
