@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27AD6C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:47:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 615F2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:47:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239791AbiDRMro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38038 "EHLO
+        id S239904AbiDRMrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:47:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240505AbiDRMjS (ORCPT
+        with ESMTP id S240561AbiDRMjU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90654DD3;
-        Mon, 18 Apr 2022 05:29:48 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A60BF38;
+        Mon, 18 Apr 2022 05:29:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F767B80EDE;
-        Mon, 18 Apr 2022 12:29:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3352C385A8;
-        Mon, 18 Apr 2022 12:29:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F0FF60FB6;
+        Mon, 18 Apr 2022 12:29:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CF3CC385A1;
+        Mon, 18 Apr 2022 12:29:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284986;
-        bh=990psWNqzMEthyxJ902dzVHKuK4BQOc2qlF34o1P3pg=;
+        s=korg; t=1650284992;
+        bh=Kv0IKjItVa2Fw66oYuBJz6i1Z1iJBOUuBFSWfwvUODc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CxKzzU7M7gDKXQnGmzH4/WXu1LA/9SNMooyq6RwXXLnu4mqGxXXC1svhYWuv0h0Vk
-         dKxd34k/0Y2jBlzvIc9DtvN5U7HPPvKFN7GrXIZjnqR+4+KFuK2IZE9zOdi0u3Hc3R
-         QMrzlRadtl6qhyuVgl4wRLwayc/jof8D84Cjr1Q0=
+        b=w1GXPavk5wSbbacI5B35WG8uExQ5ZfME/NRrgq8TIds9DXP+lEyONd0xq3OfCtkH4
+         qtIctuttEBTLxPAi2hJKGZtmsyDpmAxjjPxQMuIqgCtCSqr0xb4LmDt/Z8ePKTOJ8f
+         DzhF7UPTNgxB9sKEq93qNpjWi73/bNo2AxmO+mPs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Benedikt Spranger <b.spranger@linutronix.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 070/189] net: dsa: felix: suppress -EPROBE_DEFER errors
-Date:   Mon, 18 Apr 2022 14:11:30 +0200
-Message-Id: <20220418121202.495473719@linuxfoundation.org>
+Subject: [PATCH 5.15 072/189] net/sched: taprio: Check if socket flags are valid
+Date:   Mon, 18 Apr 2022 14:11:32 +0200
+Message-Id: <20220418121202.552012606@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,40 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Benedikt Spranger <b.spranger@linutronix.de>
 
-[ Upstream commit e6934e4048c91502efcb21da92b7ae37cd8fa741 ]
+[ Upstream commit e8a64bbaaad1f6548cec5508297bc6d45e8ab69e ]
 
-The DSA master might not have been probed yet in which case the probe of
-the felix switch fails with -EPROBE_DEFER:
-[    4.435305] mscc_felix 0000:00:00.5: Failed to register DSA switch: -517
+A user may set the SO_TXTIME socket option to ensure a packet is send
+at a given time. The taprio scheduler has to confirm, that it is allowed
+to send a packet at that given time, by a check against the packet time
+schedule. The scheduler drop the packet, if the gates are closed at the
+given send time.
 
-It is not an error. Use dev_err_probe() to demote this particular error
-to a debug message.
+The check, if SO_TXTIME is set, may fail since sk_flags are part of an
+union and the union is used otherwise. This happen, if a socket is not
+a full socket, like a request socket for example.
 
-Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220408101521.281886-1-michael@walle.cc
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Add a check to verify, if the union is used for sk_flags.
+
+Fixes: 4cfd5779bd6e ("taprio: Add support for txtime-assist mode")
+Signed-off-by: Benedikt Spranger <b.spranger@linutronix.de>
+Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
+Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sched/sch_taprio.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index e53ad283e259..a9c7ada890d8 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1455,7 +1455,7 @@ static int felix_pci_probe(struct pci_dev *pdev,
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index a66398fb2d6d..474ba4db5de2 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -417,7 +417,8 @@ static int taprio_enqueue_one(struct sk_buff *skb, struct Qdisc *sch,
+ {
+ 	struct taprio_sched *q = qdisc_priv(sch);
  
- 	err = dsa_register_switch(ds);
- 	if (err) {
--		dev_err(&pdev->dev, "Failed to register DSA switch: %d\n", err);
-+		dev_err_probe(&pdev->dev, err, "Failed to register DSA switch\n");
- 		goto err_register_ds;
- 	}
- 
+-	if (skb->sk && sock_flag(skb->sk, SOCK_TXTIME)) {
++	/* sk_flags are only safe to use on full sockets. */
++	if (skb->sk && sk_fullsock(skb->sk) && sock_flag(skb->sk, SOCK_TXTIME)) {
+ 		if (!is_valid_interval(skb, sch))
+ 			return qdisc_drop(skb, sch, to_free);
+ 	} else if (TXTIME_ASSIST_IS_ENABLED(q->flags)) {
 -- 
 2.35.1
 
