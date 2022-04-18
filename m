@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C90C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AAAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:49:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239943AbiDRMve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
+        id S239956AbiDRMvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240835AbiDRMjk (ORCPT
+        with ESMTP id S240873AbiDRMjn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24BD21BE;
-        Mon, 18 Apr 2022 05:31:17 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:43 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8BD63E3;
+        Mon, 18 Apr 2022 05:31:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59F0060F0A;
-        Mon, 18 Apr 2022 12:31:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62CD1C385A1;
-        Mon, 18 Apr 2022 12:31:16 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B8FADCE109F;
+        Mon, 18 Apr 2022 12:31:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD9F4C385A7;
+        Mon, 18 Apr 2022 12:31:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285076;
-        bh=iZBhekhUh7LMaNsWnbgQLwxjvvfc6NEOh4EKVHUUbho=;
+        s=korg; t=1650285080;
+        bh=l7ywPy9WOxnNXRM84kKMPQxICOfShXRpAX2etMq0YZk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qfxBxxpjy5vjezTmfGg5Kn6VUloSR2lsHukZlsxB48NxqH80DSigUUIMvDMTtyy/3
-         DHQ1vCcNPe2grpYN0D/iA66EWQZReOhcN1wJcSE8AL4gaDHn3cI+EIh+CB0PftGeWa
-         GYnRwvSyTa7fAuDg6JCeC9ZWbH3djLHXVBobJuZE=
+        b=jDjazF3rzrt07txWrZAQORr9kWo8LETz63DjdLgyLgLOA1LrRP4tVJ+yp7XHU6/gJ
+         pa1hltbTeARe4FjaiyNUyOm4x+OMsdk6EUTDyXjhUYLU8ARvQt5LgpZWLobKJixhKP
+         SAONlELFxBBEc2o2UAZ4JIA/p+ARMA2a8ZAxiXio=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Martin Willi <martin@strongswan.org>,
+        stable@vger.kernel.org, Dylan Hung <dylan_hung@aspeedtech.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 097/189] macvlan: Fix leaking skb in source mode with nodst option
-Date:   Mon, 18 Apr 2022 14:11:57 +0200
-Message-Id: <20220418121203.257306150@linuxfoundation.org>
+Subject: [PATCH 5.15 098/189] net: ftgmac100: access hardware register after clock ready
+Date:   Mon, 18 Apr 2022 14:11:58 +0200
+Message-Id: <20220418121203.285740100@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,57 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Willi <martin@strongswan.org>
+From: Dylan Hung <dylan_hung@aspeedtech.com>
 
-[ Upstream commit e16b859872b87650bb55b12cca5a5fcdc49c1442 ]
+[ Upstream commit 3d2504524531990b32a0629cc984db44f399d161 ]
 
-The MACVLAN receive handler clones skbs to all matching source MACVLAN
-interfaces, before it passes the packet along to match on destination
-based MACVLANs.
+AST2600 MAC register 0x58 is writable only when the MAC clock is
+enabled.  Usually, the MAC clock is enabled by the bootloader so
+register 0x58 is set normally when the bootloader is involved.  To make
+ast2600 ftgmac100 work without the bootloader, postpone the register
+write until the clock is ready.
 
-When using the MACVLAN nodst mode, passing the packet to destination based
-MACVLANs is omitted and the handler returns with RX_HANDLER_CONSUMED.
-However, the passed skb is not freed, leaking for any packet processed
-with the nodst option.
-
-Properly free the skb when consuming packets to fix that leak.
-
-Fixes: 427f0c8c194b ("macvlan: Add nodst option to macvlan type source")
-Signed-off-by: Martin Willi <martin@strongswan.org>
+Fixes: 137d23cea1c0 ("net: ftgmac100: Fix Aspeed ast2600 TX hang issue")
+Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macvlan.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/faraday/ftgmac100.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index 35f46ad040b0..a9a515cf5a46 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -460,8 +460,10 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
- 			return RX_HANDLER_CONSUMED;
- 		*pskb = skb;
- 		eth = eth_hdr(skb);
--		if (macvlan_forward_source(skb, port, eth->h_source))
-+		if (macvlan_forward_source(skb, port, eth->h_source)) {
-+			kfree_skb(skb);
- 			return RX_HANDLER_CONSUMED;
-+		}
- 		src = macvlan_hash_lookup(port, eth->h_source);
- 		if (src && src->mode != MACVLAN_MODE_VEPA &&
- 		    src->mode != MACVLAN_MODE_BRIDGE) {
-@@ -480,8 +482,10 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
- 		return RX_HANDLER_PASS;
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+index ff76e401a014..e1df2dc810a2 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.c
++++ b/drivers/net/ethernet/faraday/ftgmac100.c
+@@ -1817,11 +1817,6 @@ static int ftgmac100_probe(struct platform_device *pdev)
+ 		priv->rxdes0_edorr_mask = BIT(30);
+ 		priv->txdes0_edotr_mask = BIT(30);
+ 		priv->is_aspeed = true;
+-		/* Disable ast2600 problematic HW arbitration */
+-		if (of_device_is_compatible(np, "aspeed,ast2600-mac")) {
+-			iowrite32(FTGMAC100_TM_DEFAULT,
+-				  priv->base + FTGMAC100_OFFSET_TM);
+-		}
+ 	} else {
+ 		priv->rxdes0_edorr_mask = BIT(15);
+ 		priv->txdes0_edotr_mask = BIT(15);
+@@ -1893,6 +1888,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
+ 		err = ftgmac100_setup_clk(priv);
+ 		if (err)
+ 			goto err_phy_connect;
++
++		/* Disable ast2600 problematic HW arbitration */
++		if (of_device_is_compatible(np, "aspeed,ast2600-mac"))
++			iowrite32(FTGMAC100_TM_DEFAULT,
++				  priv->base + FTGMAC100_OFFSET_TM);
  	}
  
--	if (macvlan_forward_source(skb, port, eth->h_source))
-+	if (macvlan_forward_source(skb, port, eth->h_source)) {
-+		kfree_skb(skb);
- 		return RX_HANDLER_CONSUMED;
-+	}
- 	if (macvlan_passthru(port))
- 		vlan = list_first_or_null_rcu(&port->vlans,
- 					      struct macvlan_dev, list);
+ 	/* Default ring sizes */
 -- 
 2.35.1
 
