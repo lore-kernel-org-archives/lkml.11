@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E961C352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0358BC35295
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344363AbiDROJw (ORCPT
+        id S1344328AbiDROJn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45946 "EHLO
+        Mon, 18 Apr 2022 10:09:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343931AbiDRNyc (ORCPT
+        with ESMTP id S1343890AbiDRNy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:54:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A4D48E79;
-        Mon, 18 Apr 2022 06:04:01 -0700 (PDT)
+        Mon, 18 Apr 2022 09:54:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE7148E52;
+        Mon, 18 Apr 2022 06:03:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BACE660B76;
-        Mon, 18 Apr 2022 13:04:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B210FC385A7;
-        Mon, 18 Apr 2022 13:03:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C3CCB80EDF;
+        Mon, 18 Apr 2022 13:03:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC4F3C385A1;
+        Mon, 18 Apr 2022 13:03:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287040;
-        bh=z2+6RMqj/8x5KLEcJMzoDwVQJyac0ezUNyMDsuctv20=;
+        s=korg; t=1650287033;
+        bh=ReG+VWBvGcSBsdPVjYVc8wE2DtUbo7m/mh9lr4jEPLs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xnuXa9JlTBpQioOO7QeikjOB/aLjZoc1O0vPaNBubxBHDR+M7Y2dUU4RQ7ztcdEdP
-         KgV16poZR1AILjZYxK6nzxmDbGtA17jYeWEHX/tWAzpIrJcF3DXguVBy1TfY4tlZeM
-         BOYD5aRjpoR72WN+qMiH8kHbbeIB5bkqOlsBMzbs=
+        b=mC+UCpOwtPwXP9HxI7soZJ+CM2Fqtq/SBxxjxQ2EZQJYZbzuWT+UXGy86EyrPUuGI
+         g6LgglzL8iM/ixPmSjp/UHD907czDyfBWwhJxXcvi+emhoEr5ZrCdMdMOIQSU2InJD
+         9/H/BgIYoD0q/3cP+KRpQZGAqx+/pzLdh4VVsktc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 4.9 008/218] virtio-blk: Use blk_validate_block_size() to validate block size
-Date:   Mon, 18 Apr 2022 14:11:14 +0200
-Message-Id: <20220418121159.095621332@linuxfoundation.org>
+        stable@vger.kernel.org, TCS Robot <tcs_robot@tencent.com>,
+        Haimin Zhang <tcs_kernel@tencent.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 006/218] af_key: add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
+Date:   Mon, 18 Apr 2022 14:11:12 +0200
+Message-Id: <20220418121158.984022357@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,72 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Haimin Zhang <tcs_kernel@tencent.com>
 
-commit 57a13a5b8157d9a8606490aaa1b805bafe6c37e1 upstream.
+[ Upstream commit 9a564bccb78a76740ea9d75a259942df8143d02c ]
 
-The block layer can't support a block size larger than
-page size yet. And a block size that's too small or
-not a power of two won't work either. If a misconfigured
-device presents an invalid block size in configuration space,
-it will result in the kernel crash something like below:
+Add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
+to initialize the buffer of supp_skb to fix a kernel-info-leak issue.
+1) Function pfkey_register calls compose_sadb_supported to request
+a sk_buff. 2) compose_sadb_supported calls alloc_sbk to allocate
+a sk_buff, but it doesn't zero it. 3) If auth_len is greater 0, then
+compose_sadb_supported treats the memory as a struct sadb_supported and
+begins to initialize. But it just initializes the field sadb_supported_len
+and field sadb_supported_exttype without field sadb_supported_reserved.
 
-[  506.154324] BUG: kernel NULL pointer dereference, address: 0000000000000008
-[  506.160416] RIP: 0010:create_empty_buffers+0x24/0x100
-[  506.174302] Call Trace:
-[  506.174651]  create_page_buffers+0x4d/0x60
-[  506.175207]  block_read_full_page+0x50/0x380
-[  506.175798]  ? __mod_lruvec_page_state+0x60/0xa0
-[  506.176412]  ? __add_to_page_cache_locked+0x1b2/0x390
-[  506.177085]  ? blkdev_direct_IO+0x4a0/0x4a0
-[  506.177644]  ? scan_shadow_nodes+0x30/0x30
-[  506.178206]  ? lru_cache_add+0x42/0x60
-[  506.178716]  do_read_cache_page+0x695/0x740
-[  506.179278]  ? read_part_sector+0xe0/0xe0
-[  506.179821]  read_part_sector+0x36/0xe0
-[  506.180337]  adfspart_check_ICS+0x32/0x320
-[  506.180890]  ? snprintf+0x45/0x70
-[  506.181350]  ? read_part_sector+0xe0/0xe0
-[  506.181906]  bdev_disk_changed+0x229/0x5c0
-[  506.182483]  blkdev_get_whole+0x6d/0x90
-[  506.183013]  blkdev_get_by_dev+0x122/0x2d0
-[  506.183562]  device_add_disk+0x39e/0x3c0
-[  506.184472]  virtblk_probe+0x3f8/0x79b [virtio_blk]
-[  506.185461]  virtio_dev_probe+0x15e/0x1d0 [virtio]
-
-So let's use a block layer helper to validate the block size.
-
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Link: https://lore.kernel.org/r/20211026144015.188-5-xieyongji@bytedance.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: TCS Robot <tcs_robot@tencent.com>
+Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/virtio_blk.c |   12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ net/key/af_key.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -692,9 +692,17 @@ static int virtblk_probe(struct virtio_d
- 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
- 				   struct virtio_blk_config, blk_size,
- 				   &blk_size);
--	if (!err)
-+	if (!err) {
-+		err = blk_validate_block_size(blk_size);
-+		if (err) {
-+			dev_err(&vdev->dev,
-+				"virtio_blk: invalid block size: 0x%x\n",
-+				blk_size);
-+			goto out_free_tags;
-+		}
-+
- 		blk_queue_logical_block_size(q, blk_size);
--	else
-+	} else
- 		blk_size = queue_logical_block_size(q);
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index adc93329e6aa..3f7e27c1aa83 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -1726,7 +1726,7 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
  
- 	/* Use topology information if available */
+ 	xfrm_probe_algs();
+ 
+-	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL);
++	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
+ 	if (!supp_skb) {
+ 		if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
+ 			pfk->registered &= ~(1<<hdr->sadb_msg_satype);
+-- 
+2.34.1
+
 
 
