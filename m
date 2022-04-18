@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D23C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DEC7C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243433AbiDRNUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41052 "EHLO
+        id S243702AbiDRNVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241127AbiDRNCv (ORCPT
+        with ESMTP id S241423AbiDRNDG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:02:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B5026AC4;
-        Mon, 18 Apr 2022 05:42:49 -0700 (PDT)
+        Mon, 18 Apr 2022 09:03:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249F533375;
+        Mon, 18 Apr 2022 05:43:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 93C9D6101A;
-        Mon, 18 Apr 2022 12:42:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 943BEC385A1;
-        Mon, 18 Apr 2022 12:42:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9CCDB80E59;
+        Mon, 18 Apr 2022 12:43:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D0E0C385A1;
+        Mon, 18 Apr 2022 12:43:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285768;
-        bh=YToBz85raWH3bOY3oZd3oarc05aULhwErBF63mT+3xM=;
+        s=korg; t=1650285801;
+        bh=VyEcuoF2F0p7x6N4J1cOYrfyEqF00/9kbCYzkjxnbf4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M82EkonytlkzFTlAH6e/DYO4qqSuA6+J41oVcnlBOJmYcUDuQQ+7NTQyXYmgkTosT
-         homwjznt1ztRPfmcuL7k6AekShvRz7jC4z7QQIAGugZef+lprpQk4znswQQGcdaUf7
-         i519PuKI6+V76QDY7oAg29en8/eYptVbd0M1AydA=
+        b=Ztc4Mv8CZ4/IKEsJQe9BWwwjeMSbuekdee1K2y5mEIDzzwY0LkIHX3OAo3AloDSb0
+         G2nr5hV9yOSumFVATGmo2tHx/QqQjDJxn1G++MzDbNbtg5ZixciZIA18lLTCwRLVNU
+         dOhaPRgTR2ncDn2xcZ74rfH25UGtV4ZgUizAkiEI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steve Capper <steve.capper@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 04/63] gpiolib: acpi: use correct format characters
-Date:   Mon, 18 Apr 2022 14:13:01 +0200
-Message-Id: <20220418121134.434148411@linuxfoundation.org>
+Subject: [PATCH 5.4 29/63] tlb: hugetlb: Add more sizes to tlb_remove_huge_tlb_entry
+Date:   Mon, 18 Apr 2022 14:13:26 +0200
+Message-Id: <20220418121136.019938470@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -50,95 +53,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Steve Capper <steve.capper@arm.com>
 
-[ Upstream commit 213d266ebfb1621aab79cfe63388facc520a1381 ]
+[ Upstream commit 697a1d44af8ba0477ee729e632f4ade37999249a ]
 
-When compiling with -Wformat, clang emits the following warning:
+tlb_remove_huge_tlb_entry only considers PMD_SIZE and PUD_SIZE when
+updating the mmu_gather structure.
 
-  gpiolib-acpi.c:393:4: warning: format specifies type 'unsigned char' but the argument has type 'int' [-Wformat]
-                        pin);
-                        ^~~
+Unfortunately on arm64 there are two additional huge page sizes that
+need to be covered: CONT_PTE_SIZE and CONT_PMD_SIZE. Where an end-user
+attempts to employ contiguous huge pages, a VM_BUG_ON can be experienced
+due to the fact that the tlb structure hasn't been correctly updated by
+the relevant tlb_flush_p.._range() call from tlb_remove_huge_tlb_entry.
 
-So warning that '%hhX' is paired with an 'int' is all just completely
-mindless and wrong. Sadly, I can see a different bogus warning reason
-why people would want to use '%02hhX'.
+This patch adds inequality logic to the generic implementation of
+tlb_remove_huge_tlb_entry s.t. CONT_PTE_SIZE and CONT_PMD_SIZE are
+effectively covered on arm64. Also, as well as ptes, pmds and puds;
+p4ds are now considered too.
 
-Again, the *sane* thing from a human perspective is to use '%02X. But
-if the compiler doesn't do any range analysis at all, it could decide
-that "Oh, that print format could need up to 8 bytes of space in the
-result". Using '%02hhX' would cut that down to two.
-
-And since we use
-
-        char ev_name[5];
-
-and currently use "_%c%02hhX" as the format string, even a compiler
-that doesn't notice that "pin <= 255" test that guards this all will
-go "OK, that's at most 4 bytes and the final NUL termination, so it's
-fine".
-
-While a compiler - like gcc - that only sees that the original source
-of the 'pin' value is a 'unsigned short' array, and then doesn't take
-the "pin <= 255" into account, will warn like this:
-
-  gpiolib-acpi.c: In function 'acpi_gpiochip_request_interrupt':
-  gpiolib-acpi.c:206:24: warning: '%02X' directive writing between 2 and 4 bytes into a region of size 3 [-Wformat-overflow=]
-       sprintf(ev_name, "_%c%02X",
-                            ^~~~
-  gpiolib-acpi.c:206:20: note: directive argument in the range [0, 65535]
-
-because gcc isn't being very good at that argument range analysis either.
-
-In other words, the original use of 'hhx' was bogus to begin with, and
-due to *another* compiler warning being bad, and we had that bad code
-being written back in 2016 to work around _that_ compiler warning
-(commit e40a3ae1f794: "gpio: acpi: work around false-positive
--Wstring-overflow warning").
-
-Sadly, two different bad compiler warnings together does not make for
-one good one.
-
-It just makes for even more pain.
-
-End result: I think the simplest and cleanest option is simply the
-proposed change which undoes that '%hhX' change for gcc, and replaces
-it with just using a slightly bigger stack allocation. It's not like
-a 5-byte allocation is in any way likely to have saved any actual stack,
-since all the other variables in that function are 'int' or bigger.
-
-False-positive compiler warnings really do make people write worse
-code, and that's a problem. But on a scale of bad code, I feel that
-extending the buffer trivially is better than adding a pointless cast
-that literally makes no sense.
-
-At least in this case the end result isn't unreadable or buggy. We've
-had several cases of bad compiler warnings that caused changes that
-were actually horrendously wrong.
-
-Fixes: e40a3ae1f794 ("gpio: acpi: work around false-positive -Wstring-overflow warning")
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reported-by: David Hildenbrand <david@redhat.com>
+Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/linux-mm/811c5c8e-b3a2-85d2-049c-717f17c3a03a@redhat.com/
+Signed-off-by: Steve Capper <steve.capper@arm.com>
+Acked-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220330112543.863-1-steve.capper@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpiolib-acpi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/asm-generic/tlb.h | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpio/gpiolib-acpi.c b/drivers/gpio/gpiolib-acpi.c
-index 13c6eee481da..d71c7b9b9665 100644
---- a/drivers/gpio/gpiolib-acpi.c
-+++ b/drivers/gpio/gpiolib-acpi.c
-@@ -275,8 +275,8 @@ static acpi_status acpi_gpiochip_alloc_event(struct acpi_resource *ares,
- 	pin = agpio->pin_table[0];
+diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
+index 46294ef620ff..268674c1d568 100644
+--- a/include/asm-generic/tlb.h
++++ b/include/asm-generic/tlb.h
+@@ -547,10 +547,14 @@ static inline void tlb_flush_p4d_range(struct mmu_gather *tlb,
+ #define tlb_remove_huge_tlb_entry(h, tlb, ptep, address)	\
+ 	do {							\
+ 		unsigned long _sz = huge_page_size(h);		\
+-		if (_sz == PMD_SIZE)				\
+-			tlb_flush_pmd_range(tlb, address, _sz);	\
+-		else if (_sz == PUD_SIZE)			\
++		if (_sz >= P4D_SIZE)				\
++			tlb_flush_p4d_range(tlb, address, _sz);	\
++		else if (_sz >= PUD_SIZE)			\
+ 			tlb_flush_pud_range(tlb, address, _sz);	\
++		else if (_sz >= PMD_SIZE)			\
++			tlb_flush_pmd_range(tlb, address, _sz);	\
++		else						\
++			tlb_flush_pte_range(tlb, address, _sz);	\
+ 		__tlb_remove_tlb_entry(tlb, ptep, address);	\
+ 	} while (0)
  
- 	if (pin <= 255) {
--		char ev_name[5];
--		sprintf(ev_name, "_%c%02hhX",
-+		char ev_name[8];
-+		sprintf(ev_name, "_%c%02X",
- 			agpio->triggering == ACPI_EDGE_SENSITIVE ? 'E' : 'L',
- 			pin);
- 		if (ACPI_SUCCESS(acpi_get_handle(handle, ev_name, &evt_handle)))
 -- 
 2.35.1
 
