@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1295CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7895C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236150AbiDRNbU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:31:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41026 "EHLO
+        id S240582AbiDRNb1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241073AbiDRNF2 (ORCPT
+        with ESMTP id S240591AbiDRNFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:05:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C241829CBE;
-        Mon, 18 Apr 2022 05:46:19 -0700 (PDT)
+        Mon, 18 Apr 2022 09:05:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9618629CB9;
+        Mon, 18 Apr 2022 05:46:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D0AF6101A;
-        Mon, 18 Apr 2022 12:46:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EBC3C385A7;
-        Mon, 18 Apr 2022 12:46:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53A13B80E4B;
+        Mon, 18 Apr 2022 12:46:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D19BC385A1;
+        Mon, 18 Apr 2022 12:46:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285978;
-        bh=wsagDQ7SkGETtshHChyp71f71NeF0jC7jKoo5xGRCSs=;
+        s=korg; t=1650285988;
+        bh=YYLuu5NjY4uaMIVTDNevuujgq4FvzW1hDJ2d+Dha7H4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Oyba9eerVku2Ww91i7XvGV0wgSTT22VcNDvPpLxOB2ApwZP09v4LWr0/XSHjXilPP
-         oORyIm+1ukygBp4LS+Da7sF0obFLnRm/X5x8btsgkbSdYIvlX8QIv85uAtFpMgh++W
-         hQWz9h6Q9J+MTw6Z7LSsNJ/i8oWES/1W91Xh8Y10=
+        b=VZHrH9++yFcpQA9lhQRkyDOtDEd/1JhJdHOxv3YGkqVG+62xgWSarTUeyKCEnZYir
+         x64EsL+CunRtSKUzbhhNTGfVRcpCpWee2sWXehI2A82Yu/1yomHawrHmqXVRELvxea
+         IbuDtREPVDIiCatRZmSAtG9Ct3AmIAr9JgDgsnB0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, Michal Hocko <mhocko@suse.com>,
-        David Hildenbrand <david@redhat.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.19 23/32] mm, page_alloc: fix build_zonerefs_node()
-Date:   Mon, 18 Apr 2022 14:14:03 +0200
-Message-Id: <20220418121127.802858339@linuxfoundation.org>
+        stable@vger.kernel.org, Vadim Pasternak <vadimp@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 05/32] mlxsw: i2c: Fix initialization error flow
+Date:   Mon, 18 Apr 2022 14:13:45 +0200
+Message-Id: <20220418121127.284611032@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
 References: <20220418121127.127656835@linuxfoundation.org>
@@ -53,66 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Vadim Pasternak <vadimp@nvidia.com>
 
-commit e553f62f10d93551eb883eca227ac54d1a4fad84 upstream.
+[ Upstream commit d452088cdfd5a4ad9d96d847d2273fe958d6339b ]
 
-Since commit 6aa303defb74 ("mm, vmscan: only allocate and reclaim from
-zones with pages managed by the buddy allocator") only zones with free
-memory are included in a built zonelist.  This is problematic when e.g.
-all memory of a zone has been ballooned out when zonelists are being
-rebuilt.
+Add mutex_destroy() call in driver initialization error flow.
 
-The decision whether to rebuild the zonelists when onlining new memory
-is done based on populated_zone() returning 0 for the zone the memory
-will be added to.  The new zone is added to the zonelists only, if it
-has free memory pages (managed_zone() returns a non-zero value) after
-the memory has been onlined.  This implies, that onlining memory will
-always free the added pages to the allocator immediately, but this is
-not true in all cases: when e.g. running as a Xen guest the onlined new
-memory will be added only to the ballooned memory list, it will be freed
-only when the guest is being ballooned up afterwards.
-
-Another problem with using managed_zone() for the decision whether a
-zone is being added to the zonelists is, that a zone with all memory
-used will in fact be removed from all zonelists in case the zonelists
-happen to be rebuilt.
-
-Use populated_zone() when building a zonelist as it has been done before
-that commit.
-
-There was a report that QubesOS (based on Xen) is hitting this problem.
-Xen has switched to use the zone device functionality in kernel 5.9 and
-QubesOS wants to use memory hotplugging for guests in order to be able
-to start a guest with minimal memory and expand it as needed.  This was
-the report leading to the patch.
-
-Link: https://lkml.kernel.org/r/20220407120637.9035-1-jgross@suse.com
-Fixes: 6aa303defb74 ("mm, vmscan: only allocate and reclaim from zones with pages managed by the buddy allocator")
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Acked-by: David Hildenbrand <david@redhat.com>
-Cc: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Reviewed-by: Wei Yang <richard.weiyang@gmail.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 6882b0aee180f ("mlxsw: Introduce support for I2C bus")
+Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Link: https://lore.kernel.org/r/20220407070703.2421076-1-idosch@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/page_alloc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlxsw/i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5091,7 +5091,7 @@ static int build_zonerefs_node(pg_data_t
- 	do {
- 		zone_type--;
- 		zone = pgdat->node_zones + zone_type;
--		if (managed_zone(zone)) {
-+		if (populated_zone(zone)) {
- 			zoneref_set_zone(zone, &zonerefs[nr_zones++]);
- 			check_highest_zone(zone_type);
- 		}
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/i2c.c b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
+index 798bd5aca384..1d1025fd2d88 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/i2c.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
+@@ -516,6 +516,7 @@ static int mlxsw_i2c_probe(struct i2c_client *client,
+ 	return 0;
+ 
+ errout:
++	mutex_destroy(&mlxsw_i2c->cmd.lock);
+ 	i2c_set_clientdata(client, NULL);
+ 
+ 	return err;
+-- 
+2.35.1
+
 
 
