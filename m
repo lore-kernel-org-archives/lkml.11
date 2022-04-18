@@ -2,223 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A616C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F970C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:29:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242016AbiDRNcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41024 "EHLO
+        id S242082AbiDRNcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:32:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239696AbiDRNFs (ORCPT
+        with ESMTP id S239507AbiDRNFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:05:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124F420F73;
-        Mon, 18 Apr 2022 05:46:44 -0700 (PDT)
+        Mon, 18 Apr 2022 09:05:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3CE729CB5;
+        Mon, 18 Apr 2022 05:46:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A29D960FB6;
-        Mon, 18 Apr 2022 12:46:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BDC5C385A7;
-        Mon, 18 Apr 2022 12:46:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EC9660FB6;
+        Mon, 18 Apr 2022 12:46:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51E01C385A7;
+        Mon, 18 Apr 2022 12:46:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286003;
-        bh=rdVpADfyBNxl/+AyT3aBrtWFN62gbyQxxv4XkXkKf2U=;
-        h=From:To:Cc:Subject:Date:From;
-        b=G08K/LSWNU3n5tce5NWFz7epoANbraR442LDC48PzQ+iF0kgPAnD2E84xOl/6qLtm
-         7BMqWQdHTzVrf2DRnN4ecEb0Pd0EM8B8AnC+v93NxClb+wDnXspeyW25pdwDXBCBne
-         uIKIb2m8JTGP4GXyABdqOGN3VjIMtRnYpeFexK6Q=
+        s=korg; t=1650285999;
+        bh=gEhd9SIx2dQ77qkb2YCf5p7Rcp+rG4I7/rBY2UZDcgA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=icok8PLV7IjmEjwIGAgnBIZwF+QOAwq0EGlUk65BlIjSc/7pQHF0k/anbTr4iWIuG
+         J0PG2x7IwgV8/XFaTiaSxM5Tf5SrZuz0l0uz4ZPBsdcQnnxBUoony5poKwSDKM79MO
+         Uu+3m8DQGEL/9i4oTBXy12w3xYy4NG4OZqU0ZWSs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.19 00/32] 4.19.239-rc1 review
-Date:   Mon, 18 Apr 2022 14:13:40 +0200
-Message-Id: <20220418121127.127656835@linuxfoundation.org>
+        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 09/32] nfc: nci: add flush_workqueue to prevent uaf
+Date:   Mon, 18 Apr 2022 14:13:49 +0200
+Message-Id: <20220418121127.399707232@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
-MIME-Version: 1.0
+In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
+References: <20220418121127.127656835@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.239-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.19.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.19.239-rc1
-X-KernelTest-Deadline: 2022-04-20T12:11+00:00
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.19.239 release.
-There are 32 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Lin Ma <linma@zju.edu.cn>
 
-Responses should be made by Wed, 20 Apr 2022 12:11:14 +0000.
-Anything received after that time might be too late.
+[ Upstream commit ef27324e2cb7bb24542d6cb2571740eefe6b00dc ]
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.239-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-and the diffstat can be found below.
+Our detector found a concurrent use-after-free bug when detaching an
+NCI device. The main reason for this bug is the unexpected scheduling
+between the used delayed mechanism (timer and workqueue).
 
-thanks,
+The race can be demonstrated below:
 
-greg k-h
+Thread-1                           Thread-2
+                                 | nci_dev_up()
+                                 |   nci_open_device()
+                                 |     __nci_request(nci_reset_req)
+                                 |       nci_send_cmd
+                                 |         queue_work(cmd_work)
+nci_unregister_device()          |
+  nci_close_device()             | ...
+    del_timer_sync(cmd_timer)[1] |
+...                              | Worker
+nci_free_device()                | nci_cmd_work()
+  kfree(ndev)[3]                 |   mod_timer(cmd_timer)[2]
 
--------------
-Pseudo-Shortlog of commits:
+In short, the cleanup routine thought that the cmd_timer has already
+been detached by [1] but the mod_timer can re-attach the timer [2], even
+it is already released [3], resulting in UAF.
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.19.239-rc1
+This UAF is easy to trigger, crash trace by POC is like below
 
-Martin Povišer <povik+lin@cutebit.org>
-    i2c: pasemi: Wait for write xfers to finish
+[   66.703713] ==================================================================
+[   66.703974] BUG: KASAN: use-after-free in enqueue_timer+0x448/0x490
+[   66.703974] Write of size 8 at addr ffff888009fb7058 by task kworker/u4:1/33
+[   66.703974]
+[   66.703974] CPU: 1 PID: 33 Comm: kworker/u4:1 Not tainted 5.18.0-rc2 #5
+[   66.703974] Workqueue: nfc2_nci_cmd_wq nci_cmd_work
+[   66.703974] Call Trace:
+[   66.703974]  <TASK>
+[   66.703974]  dump_stack_lvl+0x57/0x7d
+[   66.703974]  print_report.cold+0x5e/0x5db
+[   66.703974]  ? enqueue_timer+0x448/0x490
+[   66.703974]  kasan_report+0xbe/0x1c0
+[   66.703974]  ? enqueue_timer+0x448/0x490
+[   66.703974]  enqueue_timer+0x448/0x490
+[   66.703974]  __mod_timer+0x5e6/0xb80
+[   66.703974]  ? mark_held_locks+0x9e/0xe0
+[   66.703974]  ? try_to_del_timer_sync+0xf0/0xf0
+[   66.703974]  ? lockdep_hardirqs_on_prepare+0x17b/0x410
+[   66.703974]  ? queue_work_on+0x61/0x80
+[   66.703974]  ? lockdep_hardirqs_on+0xbf/0x130
+[   66.703974]  process_one_work+0x8bb/0x1510
+[   66.703974]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+[   66.703974]  ? pwq_dec_nr_in_flight+0x230/0x230
+[   66.703974]  ? rwlock_bug.part.0+0x90/0x90
+[   66.703974]  ? _raw_spin_lock_irq+0x41/0x50
+[   66.703974]  worker_thread+0x575/0x1190
+[   66.703974]  ? process_one_work+0x1510/0x1510
+[   66.703974]  kthread+0x2a0/0x340
+[   66.703974]  ? kthread_complete_and_exit+0x20/0x20
+[   66.703974]  ret_from_fork+0x22/0x30
+[   66.703974]  </TASK>
+[   66.703974]
+[   66.703974] Allocated by task 267:
+[   66.703974]  kasan_save_stack+0x1e/0x40
+[   66.703974]  __kasan_kmalloc+0x81/0xa0
+[   66.703974]  nci_allocate_device+0xd3/0x390
+[   66.703974]  nfcmrvl_nci_register_dev+0x183/0x2c0
+[   66.703974]  nfcmrvl_nci_uart_open+0xf2/0x1dd
+[   66.703974]  nci_uart_tty_ioctl+0x2c3/0x4a0
+[   66.703974]  tty_ioctl+0x764/0x1310
+[   66.703974]  __x64_sys_ioctl+0x122/0x190
+[   66.703974]  do_syscall_64+0x3b/0x90
+[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   66.703974]
+[   66.703974] Freed by task 406:
+[   66.703974]  kasan_save_stack+0x1e/0x40
+[   66.703974]  kasan_set_track+0x21/0x30
+[   66.703974]  kasan_set_free_info+0x20/0x30
+[   66.703974]  __kasan_slab_free+0x108/0x170
+[   66.703974]  kfree+0xb0/0x330
+[   66.703974]  nfcmrvl_nci_unregister_dev+0x90/0xd0
+[   66.703974]  nci_uart_tty_close+0xdf/0x180
+[   66.703974]  tty_ldisc_kill+0x73/0x110
+[   66.703974]  tty_ldisc_hangup+0x281/0x5b0
+[   66.703974]  __tty_hangup.part.0+0x431/0x890
+[   66.703974]  tty_release+0x3a8/0xc80
+[   66.703974]  __fput+0x1f0/0x8c0
+[   66.703974]  task_work_run+0xc9/0x170
+[   66.703974]  exit_to_user_mode_prepare+0x194/0x1a0
+[   66.703974]  syscall_exit_to_user_mode+0x19/0x50
+[   66.703974]  do_syscall_64+0x48/0x90
+[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Nadav Amit <namit@vmware.com>
-    smp: Fix offline cpu check in flush_smp_call_function_queue()
+To fix the UAF, this patch adds flush_workqueue() to ensure the
+nci_cmd_work is finished before the following del_timer_sync.
+This combination will promise the timer is actually detached.
 
-Nathan Chancellor <nathan@kernel.org>
-    ARM: davinci: da850-evm: Avoid NULL pointer dereference
+Fixes: 6a2968aaf50c ("NFC: basic NCI protocol implementation")
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/nfc/nci/core.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Nicolas Dichtel <nicolas.dichtel@6wind.com>
-    ipv6: fix panic when forwarding a pkt with no in6 dev
+diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
+index 0e0dff72a9e4..0580e5326641 100644
+--- a/net/nfc/nci/core.c
++++ b/net/nfc/nci/core.c
+@@ -560,6 +560,10 @@ static int nci_close_device(struct nci_dev *ndev)
+ 	mutex_lock(&ndev->req_lock);
+ 
+ 	if (!test_and_clear_bit(NCI_UP, &ndev->flags)) {
++		/* Need to flush the cmd wq in case
++		 * there is a queued/running cmd_work
++		 */
++		flush_workqueue(ndev->cmd_wq);
+ 		del_timer_sync(&ndev->cmd_timer);
+ 		del_timer_sync(&ndev->data_timer);
+ 		mutex_unlock(&ndev->req_lock);
+-- 
+2.35.1
 
-Fabio M. De Francesco <fmdefrancesco@gmail.com>
-    ALSA: pcm: Test for "silence" field in struct "pcm_format_data"
-
-Tim Crawford <tcrawford@system76.com>
-    ALSA: hda/realtek: Add quirk for Clevo PD50PNT
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    gcc-plugins: latent_entropy: use /dev/urandom
-
-Oliver Upton <oupton@google.com>
-    KVM: Don't create VM debugfs files outside of the VM directory
-
-Patrick Wang <patrick.wang.shcn@gmail.com>
-    mm: kmemleak: take a full lowmem check in kmemleak_*_phys()
-
-Juergen Gross <jgross@suse.com>
-    mm, page_alloc: fix build_zonerefs_node()
-
-Duoming Zhou <duoming@zju.edu.cn>
-    drivers: net: slip: fix NPD bug in sl_tx_timeout()
-
-Alexey Galakhov <agalakhov@gmail.com>
-    scsi: mvsas: Add PCI ID of RocketRaid 2640
-
-Roman Li <Roman.Li@amd.com>
-    drm/amd/display: Fix allocate_mst_payload assert on resume
-
-Joey Gouly <joey.gouly@arm.com>
-    arm64: alternatives: mark patch_alternative() as `noinstr`
-
-Leo Ruan <tingquan.ruan@cn.bosch.com>
-    gpu: ipu-v3: Fix dev_dbg frequency output
-
-Christian Lamparter <chunkeey@gmail.com>
-    ata: libata-core: Disable READ LOG DMA EXT for Samsung 840 EVOs
-
-Randy Dunlap <rdunlap@infradead.org>
-    net: micrel: fix KS8851_MLL Kconfig
-
-Tyrel Datwyler <tyreld@linux.ibm.com>
-    scsi: ibmvscsis: Increase INITIAL_SRP_LIMIT to 1024
-
-Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
-    scsi: target: tcmu: Fix possible page UAF
-
-Michael Kelley <mikelley@microsoft.com>
-    Drivers: hv: vmbus: Prevent load re-ordering when reading ring buffer
-
-QintaoShen <unSimple1993@163.com>
-    drm/amdkfd: Check for potential null return of kmalloc_array()
-
-Aurabindo Pillai <aurabindo.pillai@amd.com>
-    drm/amd: Add USBC connector ID
-
-Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-    cifs: potential buffer overflow in handling symlinks
-
-Lin Ma <linma@zju.edu.cn>
-    nfc: nci: add flush_workqueue to prevent uaf
-
-Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-    testing/selftests/mqueue: Fix mq_perf_tests to free the allocated cpu set
-
-Petr Malat <oss@malat.biz>
-    sctp: Initialize daddr on peeled off socket
-
-Dinh Nguyen <dinguyen@kernel.org>
-    net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link
-
-Vadim Pasternak <vadimp@nvidia.com>
-    mlxsw: i2c: Fix initialization error flow
-
-Linus Torvalds <torvalds@linux-foundation.org>
-    gpiolib: acpi: use correct format characters
-
-Guillaume Nault <gnault@redhat.com>
-    veth: Ensure eth header is in skb's linear part
-
-Vlad Buslov <vladbu@nvidia.com>
-    net/sched: flower: fix parsing of ethertype following VLAN header
-
-Miaoqian Lin <linmq006@gmail.com>
-    memory: atmel-ebi: Fix missing of_node_put in atmel_ebi_probe
-
-
--------------
-
-Diffstat:
-
- Makefile                                           |  4 +-
- arch/arm/mach-davinci/board-da850-evm.c            |  4 +-
- arch/arm64/kernel/alternative.c                    |  6 +--
- drivers/ata/libata-core.c                          |  3 ++
- drivers/gpio/gpiolib-acpi.c                        |  4 +-
- drivers/gpu/drm/amd/amdgpu/ObjectID.h              |  1 +
- drivers/gpu/drm/amd/amdkfd/kfd_events.c            |  2 +
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c  |  3 +-
- drivers/gpu/ipu-v3/ipu-di.c                        |  5 ++-
- drivers/hv/ring_buffer.c                           | 11 +++++-
- drivers/i2c/busses/i2c-pasemi.c                    |  6 +++
- drivers/memory/atmel-ebi.c                         | 23 ++++++++---
- drivers/net/ethernet/mellanox/mlxsw/i2c.c          |  1 +
- drivers/net/ethernet/micrel/Kconfig                |  1 +
- drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c |  8 ----
- drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h |  4 ++
- .../net/ethernet/stmicro/stmmac/dwmac-socfpga.c    | 13 +++----
- drivers/net/slip/slip.c                            |  2 +-
- drivers/net/veth.c                                 |  2 +-
- drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c           |  2 +-
- drivers/scsi/mvsas/mv_init.c                       |  1 +
- drivers/target/target_core_user.c                  |  3 +-
- fs/cifs/link.c                                     |  3 ++
- include/net/flow_dissector.h                       |  2 +
- kernel/smp.c                                       |  2 +-
- mm/kmemleak.c                                      |  8 ++--
- mm/page_alloc.c                                    |  2 +-
- net/core/flow_dissector.c                          |  1 +
- net/ipv6/ip6_output.c                              |  2 +-
- net/nfc/nci/core.c                                 |  4 ++
- net/sched/cls_flower.c                             | 18 ++++++---
- net/sctp/socket.c                                  |  2 +-
- scripts/gcc-plugins/latent_entropy_plugin.c        | 44 +++++++++++++---------
- sound/core/pcm_misc.c                              |  2 +-
- sound/pci/hda/patch_realtek.c                      |  1 +
- tools/testing/selftests/mqueue/mq_perf_tests.c     | 25 ++++++++----
- virt/kvm/kvm_main.c                                |  8 +++-
- 37 files changed, 155 insertions(+), 78 deletions(-)
 
 
