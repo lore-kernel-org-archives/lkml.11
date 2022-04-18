@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E84C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FA5C352A1
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243068AbiDRNTi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59456 "EHLO
+        id S243214AbiDRNUD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240376AbiDRNAR (ORCPT
+        with ESMTP id S240772AbiDRNBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:00:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C012655D;
-        Mon, 18 Apr 2022 05:41:55 -0700 (PDT)
+        Mon, 18 Apr 2022 09:01:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B40D31DF9;
+        Mon, 18 Apr 2022 05:42:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A916160FB6;
-        Mon, 18 Apr 2022 12:41:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C08FC385A7;
-        Mon, 18 Apr 2022 12:41:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97400B80EDC;
+        Mon, 18 Apr 2022 12:42:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1D17C385A7;
+        Mon, 18 Apr 2022 12:42:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285714;
-        bh=8HpcdnZCLo+JrrsX8H3nGWlqqcNPqSwMSCQ4EoYjyw4=;
+        s=korg; t=1650285729;
+        bh=wMhghypNB1I3TPQXVLSPKEVFTYAOHRDPNoEgE+ttDMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gwuRGKOTzG0lfWRIOidbiEmDPIpmd84zLkx30vcB4BlcSNY+zrEwK+zjp0597MCdG
-         2XhW5Dw+UStDVpVA5qWUj0xCqG7kjLid3CMRxmsyOrLjYIoiuasJERSUjA9IBDJXFY
-         8nEZs0gTN96fYUjyYlFQSm6oRk7ve5DUNt8gxN4c=
+        b=VV73LBnZcP0DrX787jjQ0XP9NYnnG8kkW59s3AXkR+QyazXeABeN4il7KZeYux8W5
+         j4y4qSJlEluwy0lY8BqIpO6jmUp54X2nVV013L+h3K0dn+v2A3vgF6g0FENKa8DqL1
+         f9bjhMZajqJy9g4v8bsfe9sleyGQsdOnkMY2IQIQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Duoming Zhou <duoming@zju.edu.cn>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.10 099/105] ax25: fix reference count leaks of ax25_dev
-Date:   Mon, 18 Apr 2022 14:13:41 +0200
-Message-Id: <20220418121149.449852261@linuxfoundation.org>
+Subject: [PATCH 5.10 104/105] ax25: Fix NULL pointer dereferences in ax25 timers
+Date:   Mon, 18 Apr 2022 14:13:46 +0200
+Message-Id: <20220418121149.591140798@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -52,235 +51,119 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 87563a043cef044fed5db7967a75741cc16ad2b1 upstream.
+commit fc6d01ff9ef03b66d4a3a23b46fc3c3d8cf92009 upstream.
 
-The previous commit d01ffb9eee4a ("ax25: add refcount in ax25_dev
-to avoid UAF bugs") introduces refcount into ax25_dev, but there
-are reference leak paths in ax25_ctl_ioctl(), ax25_fwd_ioctl(),
-ax25_rt_add(), ax25_rt_del() and ax25_rt_opt().
+The previous commit 7ec02f5ac8a5 ("ax25: fix NPD bug in ax25_disconnect")
+move ax25_disconnect into lock_sock() in order to prevent NPD bugs. But
+there are race conditions that may lead to null pointer dereferences in
+ax25_heartbeat_expiry(), ax25_t1timer_expiry(), ax25_t2timer_expiry(),
+ax25_t3timer_expiry() and ax25_idletimer_expiry(), when we use
+ax25_kill_by_device() to detach the ax25 device.
 
-This patch uses ax25_dev_put() and adjusts the position of
-ax25_addr_ax25dev() to fix reference cout leaks of ax25_dev.
+One of the race conditions that cause null pointer dereferences can be
+shown as below:
 
-Fixes: d01ffb9eee4a ("ax25: add refcount in ax25_dev to avoid UAF bugs")
+      (Thread 1)                    |      (Thread 2)
+ax25_connect()                      |
+ ax25_std_establish_data_link()     |
+  ax25_start_t1timer()              |
+   mod_timer(&ax25->t1timer,..)     |
+                                    | ax25_kill_by_device()
+   (wait a time)                    |  ...
+                                    |  s->ax25_dev = NULL; //(1)
+   ax25_t1timer_expiry()            |
+    ax25->ax25_dev->values[..] //(2)|  ...
+     ...                            |
+
+We set null to ax25_cb->ax25_dev in position (1) and dereference
+the null pointer in position (2).
+
+The corresponding fail log is shown below:
+===============================================================
+BUG: kernel NULL pointer dereference, address: 0000000000000050
+CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.17.0-rc6-00794-g45690b7d0
+RIP: 0010:ax25_t1timer_expiry+0x12/0x40
+...
+Call Trace:
+ call_timer_fn+0x21/0x120
+ __run_timers.part.0+0x1ca/0x250
+ run_timer_softirq+0x2c/0x60
+ __do_softirq+0xef/0x2f3
+ irq_exit_rcu+0xb6/0x100
+ sysvec_apic_timer_interrupt+0xa2/0xd0
+...
+
+This patch moves ax25_disconnect() before s->ax25_dev = NULL
+and uses del_timer_sync() to delete timers in ax25_disconnect().
+If ax25_disconnect() is called by ax25_kill_by_device() or
+ax25->ax25_dev is NULL, the reason in ax25_disconnect() will be
+equal to ENETUNREACH, it will wait all timers to stop before we
+set null to s->ax25_dev in ax25_kill_by_device().
+
+Fixes: 7ec02f5ac8a5 ("ax25: fix NPD bug in ax25_disconnect")
 Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220203150811.42256-1-duoming@zju.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 [OP: backport to 5.10: adjust context]
 Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/ax25.h    |    8 +++++---
- net/ax25/af_ax25.c    |   12 ++++++++----
- net/ax25/ax25_dev.c   |   24 +++++++++++++++++-------
- net/ax25/ax25_route.c |   16 +++++++++++-----
- 4 files changed, 41 insertions(+), 19 deletions(-)
+ net/ax25/af_ax25.c   |    4 ++--
+ net/ax25/ax25_subr.c |   20 ++++++++++++++------
+ 2 files changed, 16 insertions(+), 8 deletions(-)
 
---- a/include/net/ax25.h
-+++ b/include/net/ax25.h
-@@ -291,10 +291,12 @@ static __inline__ void ax25_cb_put(ax25_
- 	}
- }
- 
--#define ax25_dev_hold(__ax25_dev) \
--	refcount_inc(&((__ax25_dev)->refcount))
-+static inline void ax25_dev_hold(ax25_dev *ax25_dev)
-+{
-+	refcount_inc(&ax25_dev->refcount);
-+}
- 
--static __inline__ void ax25_dev_put(ax25_dev *ax25_dev)
-+static inline void ax25_dev_put(ax25_dev *ax25_dev)
- {
- 	if (refcount_dec_and_test(&ax25_dev->refcount)) {
- 		kfree(ax25_dev);
 --- a/net/ax25/af_ax25.c
 +++ b/net/ax25/af_ax25.c
-@@ -366,21 +366,25 @@ static int ax25_ctl_ioctl(const unsigned
- 	if (copy_from_user(&ax25_ctl, arg, sizeof(ax25_ctl)))
- 		return -EFAULT;
+@@ -89,20 +89,20 @@ again:
+ 			sk = s->sk;
+ 			if (!sk) {
+ 				spin_unlock_bh(&ax25_list_lock);
+-				s->ax25_dev = NULL;
+ 				ax25_disconnect(s, ENETUNREACH);
++				s->ax25_dev = NULL;
+ 				spin_lock_bh(&ax25_list_lock);
+ 				goto again;
+ 			}
+ 			sock_hold(sk);
+ 			spin_unlock_bh(&ax25_list_lock);
+ 			lock_sock(sk);
++			ax25_disconnect(s, ENETUNREACH);
+ 			s->ax25_dev = NULL;
+ 			if (sk->sk_socket) {
+ 				dev_put(ax25_dev->dev);
+ 				ax25_dev_put(ax25_dev);
+ 			}
+-			ax25_disconnect(s, ENETUNREACH);
+ 			release_sock(sk);
+ 			spin_lock_bh(&ax25_list_lock);
+ 			sock_put(sk);
+--- a/net/ax25/ax25_subr.c
++++ b/net/ax25/ax25_subr.c
+@@ -261,12 +261,20 @@ void ax25_disconnect(ax25_cb *ax25, int
+ {
+ 	ax25_clear_queues(ax25);
  
--	if ((ax25_dev = ax25_addr_ax25dev(&ax25_ctl.port_addr)) == NULL)
--		return -ENODEV;
--
- 	if (ax25_ctl.digi_count > AX25_MAX_DIGIS)
- 		return -EINVAL;
- 
- 	if (ax25_ctl.arg > ULONG_MAX / HZ && ax25_ctl.cmd != AX25_KILL)
- 		return -EINVAL;
- 
-+	ax25_dev = ax25_addr_ax25dev(&ax25_ctl.port_addr);
-+	if (!ax25_dev)
-+		return -ENODEV;
-+
- 	digi.ndigi = ax25_ctl.digi_count;
- 	for (k = 0; k < digi.ndigi; k++)
- 		digi.calls[k] = ax25_ctl.digi_addr[k];
- 
--	if ((ax25 = ax25_find_cb(&ax25_ctl.source_addr, &ax25_ctl.dest_addr, &digi, ax25_dev->dev)) == NULL)
-+	ax25 = ax25_find_cb(&ax25_ctl.source_addr, &ax25_ctl.dest_addr, &digi, ax25_dev->dev);
-+	if (!ax25) {
-+		ax25_dev_put(ax25_dev);
- 		return -ENOTCONN;
+-	if (!ax25->sk || !sock_flag(ax25->sk, SOCK_DESTROY))
+-		ax25_stop_heartbeat(ax25);
+-	ax25_stop_t1timer(ax25);
+-	ax25_stop_t2timer(ax25);
+-	ax25_stop_t3timer(ax25);
+-	ax25_stop_idletimer(ax25);
++	if (reason == ENETUNREACH) {
++		del_timer_sync(&ax25->timer);
++		del_timer_sync(&ax25->t1timer);
++		del_timer_sync(&ax25->t2timer);
++		del_timer_sync(&ax25->t3timer);
++		del_timer_sync(&ax25->idletimer);
++	} else {
++		if (!ax25->sk || !sock_flag(ax25->sk, SOCK_DESTROY))
++			ax25_stop_heartbeat(ax25);
++		ax25_stop_t1timer(ax25);
++		ax25_stop_t2timer(ax25);
++		ax25_stop_t3timer(ax25);
++		ax25_stop_idletimer(ax25);
 +	}
  
- 	switch (ax25_ctl.cmd) {
- 	case AX25_KILL:
---- a/net/ax25/ax25_dev.c
-+++ b/net/ax25/ax25_dev.c
-@@ -85,8 +85,8 @@ void ax25_dev_device_up(struct net_devic
- 	spin_lock_bh(&ax25_dev_lock);
- 	ax25_dev->next = ax25_dev_list;
- 	ax25_dev_list  = ax25_dev;
--	ax25_dev_hold(ax25_dev);
- 	spin_unlock_bh(&ax25_dev_lock);
-+	ax25_dev_hold(ax25_dev);
- 
- 	ax25_register_dev_sysctl(ax25_dev);
- }
-@@ -115,8 +115,8 @@ void ax25_dev_device_down(struct net_dev
- 
- 	if ((s = ax25_dev_list) == ax25_dev) {
- 		ax25_dev_list = s->next;
--		ax25_dev_put(ax25_dev);
- 		spin_unlock_bh(&ax25_dev_lock);
-+		ax25_dev_put(ax25_dev);
- 		dev->ax25_ptr = NULL;
- 		dev_put(dev);
- 		ax25_dev_put(ax25_dev);
-@@ -126,8 +126,8 @@ void ax25_dev_device_down(struct net_dev
- 	while (s != NULL && s->next != NULL) {
- 		if (s->next == ax25_dev) {
- 			s->next = ax25_dev->next;
--			ax25_dev_put(ax25_dev);
- 			spin_unlock_bh(&ax25_dev_lock);
-+			ax25_dev_put(ax25_dev);
- 			dev->ax25_ptr = NULL;
- 			dev_put(dev);
- 			ax25_dev_put(ax25_dev);
-@@ -150,25 +150,35 @@ int ax25_fwd_ioctl(unsigned int cmd, str
- 
- 	switch (cmd) {
- 	case SIOCAX25ADDFWD:
--		if ((fwd_dev = ax25_addr_ax25dev(&fwd->port_to)) == NULL)
-+		fwd_dev = ax25_addr_ax25dev(&fwd->port_to);
-+		if (!fwd_dev) {
-+			ax25_dev_put(ax25_dev);
- 			return -EINVAL;
--		if (ax25_dev->forward != NULL)
-+		}
-+		if (ax25_dev->forward) {
-+			ax25_dev_put(fwd_dev);
-+			ax25_dev_put(ax25_dev);
- 			return -EINVAL;
-+		}
- 		ax25_dev->forward = fwd_dev->dev;
- 		ax25_dev_put(fwd_dev);
-+		ax25_dev_put(ax25_dev);
- 		break;
- 
- 	case SIOCAX25DELFWD:
--		if (ax25_dev->forward == NULL)
-+		if (!ax25_dev->forward) {
-+			ax25_dev_put(ax25_dev);
- 			return -EINVAL;
-+		}
- 		ax25_dev->forward = NULL;
-+		ax25_dev_put(ax25_dev);
- 		break;
- 
- 	default:
-+		ax25_dev_put(ax25_dev);
- 		return -EINVAL;
- 	}
- 
--	ax25_dev_put(ax25_dev);
- 	return 0;
- }
- 
---- a/net/ax25/ax25_route.c
-+++ b/net/ax25/ax25_route.c
-@@ -75,11 +75,13 @@ static int __must_check ax25_rt_add(stru
- 	ax25_dev *ax25_dev;
- 	int i;
- 
--	if ((ax25_dev = ax25_addr_ax25dev(&route->port_addr)) == NULL)
--		return -EINVAL;
- 	if (route->digi_count > AX25_MAX_DIGIS)
- 		return -EINVAL;
- 
-+	ax25_dev = ax25_addr_ax25dev(&route->port_addr);
-+	if (!ax25_dev)
-+		return -EINVAL;
-+
- 	write_lock_bh(&ax25_route_lock);
- 
- 	ax25_rt = ax25_route_list;
-@@ -91,6 +93,7 @@ static int __must_check ax25_rt_add(stru
- 			if (route->digi_count != 0) {
- 				if ((ax25_rt->digipeat = kmalloc(sizeof(ax25_digi), GFP_ATOMIC)) == NULL) {
- 					write_unlock_bh(&ax25_route_lock);
-+					ax25_dev_put(ax25_dev);
- 					return -ENOMEM;
- 				}
- 				ax25_rt->digipeat->lastrepeat = -1;
-@@ -101,6 +104,7 @@ static int __must_check ax25_rt_add(stru
- 				}
- 			}
- 			write_unlock_bh(&ax25_route_lock);
-+			ax25_dev_put(ax25_dev);
- 			return 0;
- 		}
- 		ax25_rt = ax25_rt->next;
-@@ -108,6 +112,7 @@ static int __must_check ax25_rt_add(stru
- 
- 	if ((ax25_rt = kmalloc(sizeof(ax25_route), GFP_ATOMIC)) == NULL) {
- 		write_unlock_bh(&ax25_route_lock);
-+		ax25_dev_put(ax25_dev);
- 		return -ENOMEM;
- 	}
- 
-@@ -116,11 +121,11 @@ static int __must_check ax25_rt_add(stru
- 	ax25_rt->dev          = ax25_dev->dev;
- 	ax25_rt->digipeat     = NULL;
- 	ax25_rt->ip_mode      = ' ';
--	ax25_dev_put(ax25_dev);
- 	if (route->digi_count != 0) {
- 		if ((ax25_rt->digipeat = kmalloc(sizeof(ax25_digi), GFP_ATOMIC)) == NULL) {
- 			write_unlock_bh(&ax25_route_lock);
- 			kfree(ax25_rt);
-+			ax25_dev_put(ax25_dev);
- 			return -ENOMEM;
- 		}
- 		ax25_rt->digipeat->lastrepeat = -1;
-@@ -133,6 +138,7 @@ static int __must_check ax25_rt_add(stru
- 	ax25_rt->next   = ax25_route_list;
- 	ax25_route_list = ax25_rt;
- 	write_unlock_bh(&ax25_route_lock);
-+	ax25_dev_put(ax25_dev);
- 
- 	return 0;
- }
-@@ -173,8 +179,8 @@ static int ax25_rt_del(struct ax25_route
- 			}
- 		}
- 	}
--	ax25_dev_put(ax25_dev);
- 	write_unlock_bh(&ax25_route_lock);
-+	ax25_dev_put(ax25_dev);
- 
- 	return 0;
- }
-@@ -216,8 +222,8 @@ static int ax25_rt_opt(struct ax25_route
- 	}
- 
- out:
--	ax25_dev_put(ax25_dev);
- 	write_unlock_bh(&ax25_route_lock);
-+	ax25_dev_put(ax25_dev);
- 	return err;
- }
+ 	ax25->state = AX25_STATE_0;
  
 
 
