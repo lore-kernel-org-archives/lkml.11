@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94BAFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344103AbiDROUg (ORCPT
+        id S1344235AbiDROUl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57254 "EHLO
+        Mon, 18 Apr 2022 10:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245384AbiDROCv (ORCPT
+        with ESMTP id S245679AbiDROD5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:02:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A995194;
-        Mon, 18 Apr 2022 06:09:46 -0700 (PDT)
+        Mon, 18 Apr 2022 10:03:57 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42AC2BD4;
+        Mon, 18 Apr 2022 06:09:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 964F060EFE;
-        Mon, 18 Apr 2022 13:09:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8810DC385A1;
-        Mon, 18 Apr 2022 13:09:29 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 346A1CE10A2;
+        Mon, 18 Apr 2022 13:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B303C385A1;
+        Mon, 18 Apr 2022 13:08:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287370;
-        bh=i4LvtJMYs5t9UOhjaHJspxXRS2kYwM/x4i+LuKPkDHQ=;
+        s=korg; t=1650287340;
+        bh=ingGZxMaEc9r5alfLYbLed9tPRonczPlahQ4UPFgo+s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GbSYX9nHhKN5IjOcD1ItVKkPOYsmguiT5J1KqmYr4G/RQ0nX8xV+fHSD+2RjRgMR9
-         W3+zhvLK9Ns8ZJoZ3wMyC7FAnp167gNERDfKXC67/6oF24wdx8hvNw6z8WFTTny3hS
-         +8Llk1T+9DPMjQzlk/gQnoJjpUWoIEgt5o124sxs=
+        b=swkoQZ9wvvF63t78BCChyqkTPzosfUq+fUNhriMYyc6HmeqWX3bIBUQpjFl5N6tgc
+         vCqthtDfNDkDZ9ZXBpuYDSRcanDMQBoN30i+GgbPFEy0bLTW2QV+hRZ/aTYl1eLGM6
+         PjGyd2ZNfvT9lMTuLYx825yhG4g39lfsOscGGI6M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Anton Altaparmakov <anton@tuxera.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 141/218] ASoC: soc-core: skip zero num_dai component in searching dai name
-Date:   Mon, 18 Apr 2022 14:13:27 +0200
-Message-Id: <20220418121203.622609235@linuxfoundation.org>
+Subject: [PATCH 4.9 132/218] ntfs: add sanity check on allocation size
+Date:   Mon, 18 Apr 2022 14:13:18 +0200
+Message-Id: <20220418121203.365116416@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,45 +54,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit f7d344a2bd5ec81fbd1ce76928fd059e57ec9bea ]
+[ Upstream commit 714fbf2647b1a33d914edd695d4da92029c7e7c0 ]
 
-In the case like dmaengine which's not a dai but as a component, the
-num_dai is zero, dmaengine component has the same component_of_node
-as cpu dai, when cpu dai component is not ready, but dmaengine component
-is ready, try to get cpu dai name, the snd_soc_get_dai_name() return
--EINVAL, not -EPROBE_DEFER, that cause below error:
+ntfs_read_inode_mount invokes ntfs_malloc_nofs with zero allocation
+size.  It triggers one BUG in the __ntfs_malloc function.
 
-asoc-simple-card <card name>: parse error -22
-asoc-simple-card: probe of <card name> failed with error -22
+Fix this by adding sanity check on ni->attr_list_size.
 
-The sound card failed to probe.
-
-So this patch fixes the issue above by skipping the zero num_dai
-component in searching dai name.
-
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1644491952-7457-1-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lkml.kernel.org/r/20220120094914.47736-1-dzm91@hust.edu.cn
+Reported-by: syzbot+3c765c5248797356edaa@syzkaller.appspotmail.com
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Acked-by: Anton Altaparmakov <anton@tuxera.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ntfs/inode.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
-index 0344d4423167..81c3aa167038 100644
---- a/sound/soc/soc-core.c
-+++ b/sound/soc/soc-core.c
-@@ -3799,7 +3799,7 @@ static int snd_soc_get_dai_name(struct of_phandle_args *args,
- 		if (!component_of_node && pos->dev->parent)
- 			component_of_node = pos->dev->parent->of_node;
- 
--		if (component_of_node != args->np)
-+		if (component_of_node != args->np || !pos->num_dai)
- 			continue;
- 
- 		if (pos->driver->of_xlate_dai_name) {
+diff --git a/fs/ntfs/inode.c b/fs/ntfs/inode.c
+index 8cd134750ebb..4150b3633f77 100644
+--- a/fs/ntfs/inode.c
++++ b/fs/ntfs/inode.c
+@@ -1915,6 +1915,10 @@ int ntfs_read_inode_mount(struct inode *vi)
+ 		}
+ 		/* Now allocate memory for the attribute list. */
+ 		ni->attr_list_size = (u32)ntfs_attr_size(a);
++		if (!ni->attr_list_size) {
++			ntfs_error(sb, "Attr_list_size is zero");
++			goto put_err_out;
++		}
+ 		ni->attr_list = ntfs_malloc_nofs(ni->attr_list_size);
+ 		if (!ni->attr_list) {
+ 			ntfs_error(sb, "Not enough memory to allocate buffer "
 -- 
 2.34.1
 
