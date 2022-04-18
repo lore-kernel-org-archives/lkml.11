@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58716C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7996FC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243671AbiDRNiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:38:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53776 "EHLO
+        id S243734AbiDRNiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:38:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243913AbiDRNKg (ORCPT
+        with ESMTP id S243861AbiDRNKa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:10:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE4F21833;
-        Mon, 18 Apr 2022 05:50:09 -0700 (PDT)
+        Mon, 18 Apr 2022 09:10:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2C6387AF;
+        Mon, 18 Apr 2022 05:50:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEC0061257;
-        Mon, 18 Apr 2022 12:50:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C49E6C385A7;
-        Mon, 18 Apr 2022 12:50:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 531A8B80E44;
+        Mon, 18 Apr 2022 12:49:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B40C0C385A1;
+        Mon, 18 Apr 2022 12:49:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286208;
-        bh=5ei0AvfUFz5VyRFx6wipvp0Rm05AiCHILJrtzFpMfyM=;
+        s=korg; t=1650286198;
+        bh=KTN0X4FW5gLMAt9HwX2qa26OsxYjrrPzmMtT5dx7FlQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fmOQD4DDCT4I7oo0x03HPTIhijZKImZ5MYuOWeFARrs22OiOcBuQShh+BWgGyb4O+
-         49zqfPo29Z/TYdd2b1UUN1LAno+BZbqQX7L+4a2cK+fj+cwmniCpxI7NB/v0rLH5EK
-         vgK7HWZUf9Oyt7sKo0FmxwVCb8WGjJ59Lreg1VJs=
+        b=GWeg6El1MwT5lDg7jsoz2BHl1TqDovwdtmC7+jHx+oNCMrsCw2EqAbI3vnwajvJjr
+         mZDRsH1E9ONiK1JqqqKk3Qx41faqgePdqBS0IYgkLni3a9OCnO5fIAmUEG0RfZVpu2
+         IOTtpfXp87X6TqNK7BF1t7utKuK1iGyX+PbxPnPo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Armin Wolf <W_Armin@gmx.de>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 062/284] hwrng: atmel - disable trng on failure path
-Date:   Mon, 18 Apr 2022 14:10:43 +0200
-Message-Id: <20220418121212.455206444@linuxfoundation.org>
+Subject: [PATCH 4.14 059/284] hwmon: (sch56xx-common) Replace WDOG_ACTIVE with WDOG_HW_RUNNING
+Date:   Mon, 18 Apr 2022 14:10:40 +0200
+Message-Id: <20220418121212.371027809@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -50,32 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Armin Wolf <W_Armin@gmx.de>
 
-[ Upstream commit a223ea9f89ab960eb254ba78429efd42eaf845eb ]
+[ Upstream commit 647d6f09bea7dacf4cdb6d4ea7e3051883955297 ]
 
-Call atmel_trng_disable() on failure path of probe.
+If the watchdog was already enabled by the BIOS after booting, the
+watchdog infrastructure needs to regularly send keepalives to
+prevent a unexpected reset.
+WDOG_ACTIVE only serves as an status indicator for userspace,
+we want to use WDOG_HW_RUNNING instead.
 
-Fixes: a1fa98d8116f ("hwrng: atmel - disable TRNG during suspend")
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Since my Fujitsu Esprimo P720 does not support the watchdog,
+this change is compile-tested only.
+
+Suggested-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: fb551405c0f8 (watchdog: sch56xx: Use watchdog core)
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+Link: https://lore.kernel.org/r/20220131211935.3656-5-W_Armin@gmx.de
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/hw_random/atmel-rng.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/hwmon/sch56xx-common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/char/hw_random/atmel-rng.c b/drivers/char/hw_random/atmel-rng.c
-index 661c82cde0f2..92a8960ceba5 100644
---- a/drivers/char/hw_random/atmel-rng.c
-+++ b/drivers/char/hw_random/atmel-rng.c
-@@ -95,6 +95,7 @@ static int atmel_trng_probe(struct platform_device *pdev)
+diff --git a/drivers/hwmon/sch56xx-common.c b/drivers/hwmon/sch56xx-common.c
+index bda3d5285586..e1c4e6937a64 100644
+--- a/drivers/hwmon/sch56xx-common.c
++++ b/drivers/hwmon/sch56xx-common.c
+@@ -437,7 +437,7 @@ struct sch56xx_watchdog_data *sch56xx_watchdog_register(struct device *parent,
+ 	if (nowayout)
+ 		set_bit(WDOG_NO_WAY_OUT, &data->wddev.status);
+ 	if (output_enable & SCH56XX_WDOG_OUTPUT_ENABLE)
+-		set_bit(WDOG_ACTIVE, &data->wddev.status);
++		set_bit(WDOG_HW_RUNNING, &data->wddev.status);
  
- err_register:
- 	clk_disable_unprepare(trng->clk);
-+	atmel_trng_disable(trng);
- 	return ret;
- }
- 
+ 	/* Since the watchdog uses a downcounter there is no register to read
+ 	   the BIOS set timeout from (if any was set at all) ->
 -- 
 2.34.1
 
