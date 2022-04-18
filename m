@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E353AC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3AD9C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:26:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239122AbiDRM1r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:27:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38524 "EHLO
+        id S239351AbiDRM2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:28:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238773AbiDRM0N (ORCPT
+        with ESMTP id S238738AbiDRM0W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:26:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E50CBC35;
-        Mon, 18 Apr 2022 05:20:03 -0700 (PDT)
+        Mon, 18 Apr 2022 08:26:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A348A12600;
+        Mon, 18 Apr 2022 05:20:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A48B60F01;
-        Mon, 18 Apr 2022 12:20:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23EE0C385A7;
-        Mon, 18 Apr 2022 12:20:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 408C460F0A;
+        Mon, 18 Apr 2022 12:20:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 512A8C385A7;
+        Mon, 18 Apr 2022 12:20:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284402;
-        bh=EawFOWZdFf7a32J8RZPjASL5p+3DXEbvcgrIUmEARdU=;
+        s=korg; t=1650284422;
+        bh=mgiNPNrYV+G7zNOVM3b/+0HrK8qaTh+zhMEjYBOPAb0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UsTZti9y0QlFTG+Dp9CLr0ZUSTvqim0JX1aLgH5nzaQgnaQrlPGTljWqqRtCbh4b4
-         eHDcKk64y2tLzSQ4M/trTvv5mUPS89DO2WEPIVKrW0C03kCh7npIwt8+IDzW2J5YJm
-         cPVUUxDvbespssBYaMVFDR7hpgfhjGpyutHSKfns=
+        b=kSusfsMbz9VbkmQOz6aR3ddQ7CMTWdlYR92TkpPgu7vsr6BuFMByT6fUZNYunp8TH
+         kc/nVs0DHsjgpYiB5s2EoKOeOwI/0iwqgvVOEqMNEkTlltl9TizYCkehBcq6ppasHI
+         2js0q1dX9om/CyeqVbERsrXoRReVpxpw0EMWLhBY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benedikt Spranger <b.spranger@linutronix.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>,
+        Anup Patel <anup@brainfault.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 086/219] net/sched: taprio: Check if socket flags are valid
-Date:   Mon, 18 Apr 2022 14:10:55 +0200
-Message-Id: <20220418121208.859257415@linuxfoundation.org>
+Subject: [PATCH 5.17 083/219] RISC-V: KVM: include missing hwcap.h into vcpu_fp
+Date:   Mon, 18 Apr 2022 14:10:52 +0200
+Message-Id: <20220418121208.652849112@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -52,46 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benedikt Spranger <b.spranger@linutronix.de>
+From: Heiko Stuebner <heiko@sntech.de>
 
-[ Upstream commit e8a64bbaaad1f6548cec5508297bc6d45e8ab69e ]
+[ Upstream commit 4054eee9290248bf66c5eacb58879c9aaad37f71 ]
 
-A user may set the SO_TXTIME socket option to ensure a packet is send
-at a given time. The taprio scheduler has to confirm, that it is allowed
-to send a packet at that given time, by a check against the packet time
-schedule. The scheduler drop the packet, if the gates are closed at the
-given send time.
+vcpu_fp uses the riscv_isa_extension mechanism which gets
+defined in hwcap.h but doesn't include that head file.
 
-The check, if SO_TXTIME is set, may fail since sk_flags are part of an
-union and the union is used otherwise. This happen, if a socket is not
-a full socket, like a request socket for example.
+While it seems to work in most cases, in certain conditions
+this can lead to build failures like
 
-Add a check to verify, if the union is used for sk_flags.
+../arch/riscv/kvm/vcpu_fp.c: In function ‘kvm_riscv_vcpu_fp_reset’:
+../arch/riscv/kvm/vcpu_fp.c:22:13: error: implicit declaration of function ‘riscv_isa_extension_available’ [-Werror=implicit-function-declaration]
+   22 |         if (riscv_isa_extension_available(&isa, f) ||
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../arch/riscv/kvm/vcpu_fp.c:22:49: error: ‘f’ undeclared (first use in this function)
+   22 |         if (riscv_isa_extension_available(&isa, f) ||
 
-Fixes: 4cfd5779bd6e ("taprio: Add support for txtime-assist mode")
-Signed-off-by: Benedikt Spranger <b.spranger@linutronix.de>
-Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
-Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix this by simply including the necessary header.
+
+Fixes: 0a86512dc113 ("RISC-V: KVM: Factor-out FP virtualization into separate
+sources")
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Anup Patel <anup@brainfault.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_taprio.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/riscv/kvm/vcpu_fp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 377f896bdedc..b9c71a304d39 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -417,7 +417,8 @@ static int taprio_enqueue_one(struct sk_buff *skb, struct Qdisc *sch,
- {
- 	struct taprio_sched *q = qdisc_priv(sch);
+diff --git a/arch/riscv/kvm/vcpu_fp.c b/arch/riscv/kvm/vcpu_fp.c
+index 4449a976e5a6..d4308c512007 100644
+--- a/arch/riscv/kvm/vcpu_fp.c
++++ b/arch/riscv/kvm/vcpu_fp.c
+@@ -11,6 +11,7 @@
+ #include <linux/err.h>
+ #include <linux/kvm_host.h>
+ #include <linux/uaccess.h>
++#include <asm/hwcap.h>
  
--	if (skb->sk && sock_flag(skb->sk, SOCK_TXTIME)) {
-+	/* sk_flags are only safe to use on full sockets. */
-+	if (skb->sk && sk_fullsock(skb->sk) && sock_flag(skb->sk, SOCK_TXTIME)) {
- 		if (!is_valid_interval(skb, sch))
- 			return qdisc_drop(skb, sch, to_free);
- 	} else if (TXTIME_ASSIST_IS_ENABLED(q->flags)) {
+ #ifdef CONFIG_FPU
+ void kvm_riscv_vcpu_fp_reset(struct kvm_vcpu *vcpu)
 -- 
 2.35.1
 
