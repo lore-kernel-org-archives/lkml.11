@@ -2,88 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D92F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 17:13:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235097AbiDRRPu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 13:15:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
+        id S1346835AbiDRRQC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 13:16:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235973AbiDRRPm (ORCPT
+        with ESMTP id S243486AbiDRRP5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 13:15:42 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1542A715
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:12:58 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id 12so12824344pll.12
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:12:58 -0700 (PDT)
+        Mon, 18 Apr 2022 13:15:57 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593812BB28
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:13:13 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id t184so6981742pgd.4
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 10:13:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dTfclv02OOzOcblj7XsN4Ih/CQalStRiqrtD05ZRe5s=;
-        b=gSYHgZsHWwk2aKf0awq92l919SNMPCc9mEUPi3Jt7IHtTT9437FEJIF0N9Q5Uh9LP9
-         r4y0iVYWEn5oh+o+1so4N6hnjxuY/QrWEQfacIOhvjWPxnbeEY3lCEbbkUpyKRp/3ql4
-         VyoMeFjcQ9pO3dLoM2S2nBFkwnirK/Yj6MX8iP9nGvI2lhxk0EjCIqHs0vQQM1pY5/My
-         8/0Mg+9A7hnVLGQdt4U1r4VwzBRoE5h9vXc+qxQKRXeU14I/qKZhoCPqixtPRsdBGIqC
-         OJ1eUhmG/vLxzP5OJHBZBGdZtr5LBtfJqvSdOfyPKIzgVV+b0ixe5KZKrNW96Fg91rq2
-         Eeaw==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BvtRLSGlIqgoZJw83CHbKmm9w5RaBORQkePsPwp3Jcs=;
+        b=X4HUkGNZmS19IamCaufLPwvkr3VU3muJTy0uqV5g7ZncQwXZXwPRIPzafxazChGNEO
+         ybOPX5th1MG/Yh4Yz1AYYEXYUO1Km9yplsj4dJUgklqGMwCcUAJo+voR9rMmHwE28Lm/
+         TIHSSMmO6CjeQWVmvdyA9zhyPjvF5wnXzN01hFDq8nqhN4iJW+KLB58OFFV91GkgEig8
+         38brj/8xk4X5b7UkhN2nVvDuccfkk7KvvWk+JROL/vggq0uL2noWR2Zxih8fX6AdYzxh
+         Iq4Ye/qp4Z4iCOcRuFSskjr57JNOXttTftidMDZGNvCaK3+CvUxVdqWpFHuQadh2LhUI
+         GWHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dTfclv02OOzOcblj7XsN4Ih/CQalStRiqrtD05ZRe5s=;
-        b=iaEM9RP6YTfMunF/LpXXe+VYimnNvEqnstDjM/tMG41Xb2oSkebd5SxzBndSfx56Ee
-         JBYnJaRX9DSY/hXwfDjnh63Hxuz0vm4T/UGmN6FLS0QGuznbyrY3zRkVuo4s6DWq90w5
-         Y69TSOIY5gaIFRr4b+I7EMB1zcWpHIACvGz6FH0eMnk77oBYwxJ9Xg2yof7RiPP+VSWb
-         4+AajRPNq7kXzDCxwK27CfUtWKabOe6vBIolBq5xFgPfWSK1dCV8sWEUXSX1xcR6rnrH
-         eXb6iWm51KzuD6bsgk+bQhd8Ve0DZYABiGcaGtI6tU04YmSYmT9Pt89BxqAAeGGzdJRn
-         hk7Q==
-X-Gm-Message-State: AOAM531QZ6UHJ3vccrAoUqMQ9TxcKlBqrEpyT+mo9ea+hTB9N622xDsj
-        lm1pCciJ3jJH32OtrPgPLWgeMkdacPgAJg==
-X-Google-Smtp-Source: ABdhPJz4DC4B6xU9TuyvStBcxOz4sQXJ6bzv+81lnpHQ9IuZsVmEg2TRquLbZXyBq9GzaDDLEPHvyQ==
-X-Received: by 2002:a17:903:11c7:b0:154:b936:d1d4 with SMTP id q7-20020a17090311c700b00154b936d1d4mr12090065plh.78.1650301977627;
-        Mon, 18 Apr 2022 10:12:57 -0700 (PDT)
-Received: from aliyar-HP-Laptop-15-da1xxx.domain.name ([14.139.241.88])
-        by smtp.gmail.com with ESMTPSA id t63-20020a625f42000000b0050a7eaff8c9sm3636063pfb.189.2022.04.18.10.12.54
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BvtRLSGlIqgoZJw83CHbKmm9w5RaBORQkePsPwp3Jcs=;
+        b=pwjobDvfaJ/wKpd8OL3WZy7gQl7nGRHLxZKjsglwQSrSdyIhQjAjziHEs5+4Hz2UtI
+         HG3ZVYhJbjFL7GyQ7ppDFdlnq84TTu3umjBN8QDEYGEQ60y7LqTI75Wcc4ahjOZHsbK4
+         ISZ6SESV1+ebmFqMFvvlHctMElD/usTiy9Vmz8BgfE8Lfs7Ptj/9RcGaQSb5aCj5cWYh
+         A0NXnubQgFWNl8z43QMwbqihI4op+Dq3n0VP+oW5v4dU1X0ibbhyYH47+tyf8dIZulhx
+         Gb/vfDSTWnauAgeuq+NhcTGMItIlPKc+CfsmArPYNQZVX/x8+TvacwFLwkWPAp/ahGF+
+         /g8Q==
+X-Gm-Message-State: AOAM533/H+zVoBlSwAInJ3a48+CoHwdfGNV7g4z1rrHyAflWI09LhJDI
+        xS79HAzStZOgtipct52ssdD7nQ==
+X-Google-Smtp-Source: ABdhPJx+xxEgbzOInBcT6iUBxz+NtIWz/XvFoiE0lFt8D8qcoTK1TxWsyQtJDP8JzSBdLixiTYwdjw==
+X-Received: by 2002:a62:1c8d:0:b0:4fa:8dcb:6da2 with SMTP id c135-20020a621c8d000000b004fa8dcb6da2mr13217641pfc.19.1650301992571;
+        Mon, 18 Apr 2022 10:13:12 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id u26-20020a63471a000000b003aa1ad643bdsm1809062pga.47.2022.04.18.10.13.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 10:12:57 -0700 (PDT)
-From:   Aliya Rahmani <aliyarahmani786@gmail.com>
-To:     mchehab@kernel.org
-Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        outreachy@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Aliya Rahmani <aliyarahmani786@gmail.com>
-Subject: [PATCH] staging: media: av7110: remove redundant space after cast
-Date:   Mon, 18 Apr 2022 22:39:02 +0530
-Message-Id: <20220418170900.16725-1-aliyarahmani786@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 18 Apr 2022 10:13:10 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 11:13:08 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     bjorn.andersson@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH V4] remoteproc: imx_rproc: Ignore create mem entry for
+ resource table
+Message-ID: <20220418171308.GA952787@p14s>
+References: <20220415025737.1561976-1-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220415025737.1561976-1-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the unnecessary space immediately after a cast. Identified by
-checkpatch: CHECK: No space is necessary after a cast.
+On Fri, Apr 15, 2022 at 10:57:37AM +0800, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> Resource table is used by Linux to get information published by
+> remote processor. It should be not be used for memory allocation, so
+> not create rproc mem entry.
+> 
+> Fixes: b29b4249f8f0 ("remoteproc: imx_rproc: add i.MX specific parse fw hook")
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+> 
+> V4:
+>  Typo fix
+>  use strcmp, not strncmp
+> 
+> V3:
+>  Update commit log
+>  Update Fixes tag
+> 
+> V2:
+>  Add Fixes tag
+>  Separate the patch from https://patchwork.kernel.org/project/linux-remoteproc/patch/20220111033333.403448-7-peng.fan@oss.nxp.com/
+>  Address typo
+> 
+> 
+>  drivers/remoteproc/imx_rproc.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/remoteproc/imx_rproc.c b/drivers/remoteproc/imx_rproc.c
+> index 7a096f1891e6..91eb037089ef 100644
+> --- a/drivers/remoteproc/imx_rproc.c
+> +++ b/drivers/remoteproc/imx_rproc.c
+> @@ -423,6 +423,9 @@ static int imx_rproc_prepare(struct rproc *rproc)
+>  		if (!strcmp(it.node->name, "vdev0buffer"))
+>  			continue;
+>  
+> +		if (!strcmp(it.node->name, "rsc-table"))
+> +			continue;
+> +
 
-Signed-off-by: Aliya Rahmani <aliyarahmani786@gmail.com>
----
- drivers/staging/media/av7110/av7110_av.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Applied.
 
-diff --git a/drivers/staging/media/av7110/av7110_av.c b/drivers/staging/media/av7110/av7110_av.c
-index 91f4866c7e59..df41d2ce1ed7 100644
---- a/drivers/staging/media/av7110/av7110_av.c
-+++ b/drivers/staging/media/av7110/av7110_av.c
-@@ -93,7 +93,7 @@ int av7110_record_cb(struct dvb_filter_pes2ts *p2t, u8 *buf, size_t len)
- 
- static int dvb_filter_pes2ts_cb(void *priv, unsigned char *data)
- {
--	struct dvb_demux_feed *dvbdmxfeed = (struct dvb_demux_feed *) priv;
-+	struct dvb_demux_feed *dvbdmxfeed = (struct dvb_demux_feed *)priv;
- 
- 	dvbdmxfeed->cb.ts(data, 188, NULL, 0,
- 			  &dvbdmxfeed->feed.ts, NULL);
--- 
-2.25.1
+Thanks,
+Mathieu
 
+>  		rmem = of_reserved_mem_lookup(it.node);
+>  		if (!rmem) {
+>  			dev_err(priv->dev, "unable to acquire memory-region\n");
+> -- 
+> 2.25.1
+> 
