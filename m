@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F0F1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFAAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343937AbiDROV0 (ORCPT
+        id S1344184AbiDROVc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41592 "EHLO
+        Mon, 18 Apr 2022 10:21:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245225AbiDROE5 (ORCPT
+        with ESMTP id S245561AbiDROFk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:04:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C7034B91;
-        Mon, 18 Apr 2022 06:10:02 -0700 (PDT)
+        Mon, 18 Apr 2022 10:05:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAB435272;
+        Mon, 18 Apr 2022 06:10:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B7D4B80EE4;
-        Mon, 18 Apr 2022 13:09:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AE3BC385A1;
-        Mon, 18 Apr 2022 13:09:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24BD560FAD;
+        Mon, 18 Apr 2022 13:09:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A0AFC385AE;
+        Mon, 18 Apr 2022 13:09:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287386;
-        bh=p6PZhmuS33KQHzHXLTrTnixPQcK0r9N2sU4CPLISBHY=;
+        s=korg; t=1650287350;
+        bh=UP9e9gsCvpQLamVYFCRkh0oVzvViqaYxYreqodC0wR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nHPG72yYvaJrhi26TXjoZUUHaZkqYM3dsfEqs9EBE45yMdsUCIA62x8PdzhnKkch0
-         eh7N3D9rxTezfWbrVUNwfQH2TgYYgntoKkfIiwjAQ7aJTDMjpr/pXa+vhZgibuc7Q9
-         lFQ5GPjhWgexJNTZCFUpdqISLip53aDY4Xo4Y440=
+        b=IG6C1KbagUDLyOSXqlg/z68Wgt1DSaWTeRMJcS4/lVct9bllN49hu4wnp0hDlQvIH
+         Px32dWmHVS+DjmB9NV1TzpnMw+GgatNyz/DMfnh7lFkyUeR8orrLE8eGf6X9gh6zAp
+         njxOxMV3TpDhS3SwflZtaEYkpa8tb8Xd9vuAaz6I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        stable@vger.kernel.org, George Kennedy <george.kennedy@oracle.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
         Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 145/218] video: fbdev: sm712fb: Fix crash in smtcfb_write()
-Date:   Mon, 18 Apr 2022 14:13:31 +0200
-Message-Id: <20220418121203.739232285@linuxfoundation.org>
+Subject: [PATCH 4.9 135/218] video: fbdev: cirrusfb: check pixclock to avoid divide by zero
+Date:   Mon, 18 Apr 2022 14:13:21 +0200
+Message-Id: <20220418121203.450582029@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -49,73 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: George Kennedy <george.kennedy@oracle.com>
 
-[ Upstream commit 4f01d09b2bbfbcb47b3eb305560a7f4857a32260 ]
+[ Upstream commit 5c6f402bdcf9e7239c6bc7087eda71ac99b31379 ]
 
-When the sm712fb driver writes three bytes to the framebuffer, the
-driver will crash:
+Do a sanity check on pixclock value to avoid divide by zero.
 
-    BUG: unable to handle page fault for address: ffffc90001ffffff
-    RIP: 0010:smtcfb_write+0x454/0x5b0
-    Call Trace:
-     vfs_write+0x291/0xd60
-     ? do_sys_openat2+0x27d/0x350
-     ? __fget_light+0x54/0x340
-     ksys_write+0xce/0x190
-     do_syscall_64+0x43/0x90
-     entry_SYSCALL_64_after_hwframe+0x44/0xae
+If the pixclock value is zero, the cirrusfb driver will round up
+pixclock to get the derived frequency as close to maxclock as
+possible.
 
-Fix it by removing the open-coded endianness fixup-code.
+Syzkaller reported a divide error in cirrusfb_check_pixclock.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+divide error: 0000 [#1] SMP KASAN PTI
+CPU: 0 PID: 14938 Comm: cirrusfb_test Not tainted 5.15.0-rc6 #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2
+RIP: 0010:cirrusfb_check_var+0x6f1/0x1260
+
+Call Trace:
+ fb_set_var+0x398/0xf90
+ do_fb_ioctl+0x4b8/0x6f0
+ fb_ioctl+0xeb/0x130
+ __x64_sys_ioctl+0x19d/0x220
+ do_syscall_64+0x3a/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Signed-off-by: George Kennedy <george.kennedy@oracle.com>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
 Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/sm712fb.c | 21 ++++-----------------
- 1 file changed, 4 insertions(+), 17 deletions(-)
+ drivers/video/fbdev/cirrusfb.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/video/fbdev/sm712fb.c b/drivers/video/fbdev/sm712fb.c
-index 841fd0c7ce9b..620f3152213a 100644
---- a/drivers/video/fbdev/sm712fb.c
-+++ b/drivers/video/fbdev/sm712fb.c
-@@ -1118,7 +1118,7 @@ static ssize_t smtcfb_write(struct fb_info *info, const char __user *buf,
- 		count = total_size - p;
- 	}
+diff --git a/drivers/video/fbdev/cirrusfb.c b/drivers/video/fbdev/cirrusfb.c
+index d992aa5eb3f0..a8f4967de798 100644
+--- a/drivers/video/fbdev/cirrusfb.c
++++ b/drivers/video/fbdev/cirrusfb.c
+@@ -470,7 +470,7 @@ static int cirrusfb_check_mclk(struct fb_info *info, long freq)
+ 	return 0;
+ }
  
--	buffer = kmalloc((count > PAGE_SIZE) ? PAGE_SIZE : count, GFP_KERNEL);
-+	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
+-static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
++static int cirrusfb_check_pixclock(struct fb_var_screeninfo *var,
+ 				   struct fb_info *info)
+ {
+ 	long freq;
+@@ -479,9 +479,7 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
+ 	unsigned maxclockidx = var->bits_per_pixel >> 3;
  
-@@ -1136,24 +1136,11 @@ static ssize_t smtcfb_write(struct fb_info *info, const char __user *buf,
- 			break;
- 		}
- 
--		for (i = c >> 2; i--;) {
--			fb_writel(big_swap(*src), dst++);
-+		for (i = (c + 3) >> 2; i--;) {
-+			fb_writel(big_swap(*src), dst);
-+			dst++;
- 			src++;
- 		}
--		if (c & 3) {
--			u8 *src8 = (u8 *)src;
--			u8 __iomem *dst8 = (u8 __iomem *)dst;
+ 	/* convert from ps to kHz */
+-	freq = PICOS2KHZ(var->pixclock);
 -
--			for (i = c & 3; i--;) {
--				if (i & 1) {
--					fb_writeb(*src8++, ++dst8);
--				} else {
--					fb_writeb(*src8++, --dst8);
--					dst8 += 2;
--				}
--			}
--			dst = (u32 __iomem *)dst8;
--		}
+-	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
++	freq = PICOS2KHZ(var->pixclock ? : 1);
  
- 		*ppos += c;
- 		buf += c;
+ 	maxclock = cirrusfb_board_info[cinfo->btype].maxclock[maxclockidx];
+ 	cinfo->multiplexing = 0;
+@@ -489,11 +487,13 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
+ 	/* If the frequency is greater than we can support, we might be able
+ 	 * to use multiplexing for the video mode */
+ 	if (freq > maxclock) {
+-		dev_err(info->device,
+-			"Frequency greater than maxclock (%ld kHz)\n",
+-			maxclock);
+-		return -EINVAL;
++		var->pixclock = KHZ2PICOS(maxclock);
++
++		while ((freq = PICOS2KHZ(var->pixclock)) > maxclock)
++			var->pixclock++;
+ 	}
++	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
++
+ 	/*
+ 	 * Additional constraint: 8bpp uses DAC clock doubling to allow maximum
+ 	 * pixel clock
 -- 
 2.34.1
 
