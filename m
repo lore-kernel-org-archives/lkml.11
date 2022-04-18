@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAAB9C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E615C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239895AbiDRMiP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:38:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54196 "EHLO
+        id S239606AbiDRMhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239484AbiDRMdG (ORCPT
+        with ESMTP id S238921AbiDRMbk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCA1427155;
-        Mon, 18 Apr 2022 05:24:42 -0700 (PDT)
+        Mon, 18 Apr 2022 08:31:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6475C25585;
+        Mon, 18 Apr 2022 05:24:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A89AB80EDA;
-        Mon, 18 Apr 2022 12:24:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87886C385A7;
-        Mon, 18 Apr 2022 12:24:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8FD660EF4;
+        Mon, 18 Apr 2022 12:24:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9F91C385A7;
+        Mon, 18 Apr 2022 12:24:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284679;
-        bh=EqglRn5xcFl+tW4PtwzUZdnUb5d1rVO9ltXvhrXeKqw=;
+        s=korg; t=1650284649;
+        bh=DpGwT7U9k6J/dbvxtQEtc6aLI9JWfsI4SIqqDo2n0A4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T7oKNROoD5P/XD7/cGChroTMJQFGimW8zzLD8VGo4OTR85+RDP0rjChlh1fXq6MsT
-         eWqHTHgGoVyXTJFOKzVlOgHcIKTpRoYrEKkkUW7+OugHEsB4S6j1r02udb0BKMPdMQ
-         BMqsU/c5V9fMiDXc0x11Pn4hQO6Y/qO4tRG6JMXI=
+        b=AUILlO22dKYt6gHSbbIY0J6lUAWvWN2cHYcjKnxMF24dwEtWyZfChJETSOK7CednE
+         xqkmH1CUBshM8gUR9cfkQnMUqV1c6IS7BDSEJavdrtIzwODR+1yOhU2NDpdXdBRSFd
+         Z28136OmiGX24uCwgNvPjiRm7S+pidNy0ODAETCI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 193/219] btrfs: mark resumed async balance as writing
-Date:   Mon, 18 Apr 2022 14:12:42 +0200
-Message-Id: <20220418121212.277352250@linuxfoundation.org>
+        stable@vger.kernel.org, Trond Myklebust <trondmy@hammerspace.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.17 184/219] SUNRPC: Fix NFSDs request deferral on RDMA transports
+Date:   Mon, 18 Apr 2022 14:12:33 +0200
+Message-Id: <20220418121212.029241377@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,39 +48,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-commit a690e5f2db4d1dca742ce734aaff9f3112d63764 upstream.
+commit 773f91b2cf3f52df0d7508fdbf60f37567cdaee4 upstream.
 
-When btrfs balance is interrupted with umount, the background balance
-resumes on the next mount. There is a potential deadlock with FS freezing
-here like as described in commit 26559780b953 ("btrfs: zoned: mark
-relocation as writing"). Mark the process as sb_writing to avoid it.
+Trond Myklebust reports an NFSD crash in svc_rdma_sendto(). Further
+investigation shows that the crash occurred while NFSD was handling
+a deferred request.
 
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-CC: stable@vger.kernel.org # 4.9+
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+This patch addresses two inter-related issues that prevent request
+deferral from working correctly for RPC/RDMA requests:
+
+1. Prevent the crash by ensuring that the original
+   svc_rqst::rq_xprt_ctxt value is available when the request is
+   revisited. Otherwise svc_rdma_sendto() does not have a Receive
+   context available with which to construct its reply.
+
+2. Possibly since before commit 71641d99ce03 ("svcrdma: Properly
+   compute .len and .buflen for received RPC Calls"),
+   svc_rdma_recvfrom() did not include the transport header in the
+   returned xdr_buf. There should have been no need for svc_defer()
+   and friends to save and restore that header, as of that commit.
+   This issue is addressed in a backport-friendly way by simply
+   having svc_rdma_recvfrom() set rq_xprt_hlen to zero
+   unconditionally, just as svc_tcp_recvfrom() does. This enables
+   svc_deferred_recv() to correctly reconstruct an RPC message
+   received via RPC/RDMA.
+
+Reported-by: Trond Myklebust <trondmy@hammerspace.com>
+Link: https://lore.kernel.org/linux-nfs/82662b7190f26fb304eb0ab1bb04279072439d4e.camel@hammerspace.com/
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Cc: <stable@vger.kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/volumes.c |    2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/sunrpc/svc.h              |    1 +
+ net/sunrpc/svc_xprt.c                   |    3 +++
+ net/sunrpc/xprtrdma/svc_rdma_recvfrom.c |    2 +-
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
---- a/fs/btrfs/volumes.c
-+++ b/fs/btrfs/volumes.c
-@@ -4467,10 +4467,12 @@ static int balance_kthread(void *data)
- 	struct btrfs_fs_info *fs_info = data;
- 	int ret = 0;
+--- a/include/linux/sunrpc/svc.h
++++ b/include/linux/sunrpc/svc.h
+@@ -412,6 +412,7 @@ struct svc_deferred_req {
+ 	size_t			addrlen;
+ 	struct sockaddr_storage	daddr;	/* where reply must come from */
+ 	size_t			daddrlen;
++	void			*xprt_ctxt;
+ 	struct cache_deferred_req handle;
+ 	size_t			xprt_hlen;
+ 	int			argslen;
+--- a/net/sunrpc/svc_xprt.c
++++ b/net/sunrpc/svc_xprt.c
+@@ -1213,6 +1213,8 @@ static struct cache_deferred_req *svc_de
+ 		dr->daddr = rqstp->rq_daddr;
+ 		dr->argslen = rqstp->rq_arg.len >> 2;
+ 		dr->xprt_hlen = rqstp->rq_xprt_hlen;
++		dr->xprt_ctxt = rqstp->rq_xprt_ctxt;
++		rqstp->rq_xprt_ctxt = NULL;
  
-+	sb_start_write(fs_info->sb);
- 	mutex_lock(&fs_info->balance_mutex);
- 	if (fs_info->balance_ctl)
- 		ret = btrfs_balance(fs_info, fs_info->balance_ctl, NULL);
- 	mutex_unlock(&fs_info->balance_mutex);
-+	sb_end_write(fs_info->sb);
- 
- 	return ret;
+ 		/* back up head to the start of the buffer and copy */
+ 		skip = rqstp->rq_arg.len - rqstp->rq_arg.head[0].iov_len;
+@@ -1251,6 +1253,7 @@ static noinline int svc_deferred_recv(st
+ 	rqstp->rq_xprt_hlen   = dr->xprt_hlen;
+ 	rqstp->rq_daddr       = dr->daddr;
+ 	rqstp->rq_respages    = rqstp->rq_pages;
++	rqstp->rq_xprt_ctxt   = dr->xprt_ctxt;
+ 	svc_xprt_received(rqstp->rq_xprt);
+ 	return (dr->argslen<<2) - dr->xprt_hlen;
  }
+--- a/net/sunrpc/xprtrdma/svc_rdma_recvfrom.c
++++ b/net/sunrpc/xprtrdma/svc_rdma_recvfrom.c
+@@ -831,7 +831,7 @@ int svc_rdma_recvfrom(struct svc_rqst *r
+ 		goto out_err;
+ 	if (ret == 0)
+ 		goto out_drop;
+-	rqstp->rq_xprt_hlen = ret;
++	rqstp->rq_xprt_hlen = 0;
+ 
+ 	if (svc_rdma_is_reverse_direction_reply(xprt, ctxt))
+ 		goto out_backchannel;
 
 
