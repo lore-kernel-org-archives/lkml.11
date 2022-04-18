@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6102C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240026AbiDRMyR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:54:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46490 "EHLO
+        id S240424AbiDRMxW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:53:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239568AbiDRMkm (ORCPT
+        with ESMTP id S240612AbiDRMjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:40:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82CF1F63E;
-        Mon, 18 Apr 2022 05:32:00 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0FCA11A33;
+        Mon, 18 Apr 2022 05:29:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D8ED61033;
-        Mon, 18 Apr 2022 12:32:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35A01C385A7;
-        Mon, 18 Apr 2022 12:31:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31B3660FB6;
+        Mon, 18 Apr 2022 12:29:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27F83C385A7;
+        Mon, 18 Apr 2022 12:29:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285119;
-        bh=RO4VURSzGblH2Wzjw1WVHexM3Ohq0iWaMKap2YwaHcc=;
+        s=korg; t=1650284998;
+        bh=G++U9rtoxfQSlDamiCXkUBLmwjBH2Lkb15OC1vNC2oE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BVqAGQRkqgsgyzBf1Xl1Es8iLbUpxG3VsOxtl/ogiRvoojEAQ7j8WOSsqY4snHdOi
-         JgdQsHohGPlGCRVW4HrHVDsbL8AyPHUqRYsOvJam3LvIPTgPv2V2HCEpgq+cFK9z9h
-         FHDWMZ8eDdMTJsN2tyTv3AZlifscQafR9An8u9Cs=
+        b=x/VvbUXqmhln07+JuWlQWW3LougpKCD7lVGyyrBejKOZ/A3nAkucROovapA8onpyv
+         oS7AP33DJexFZBso4nxBtOeNhc8+dHpMaaDGfE6PI/PRCK9CcEKD/r09Qes/B3won0
+         GRBfQzT6FW7UiIAy7VZ7Aoe4B9O3nkW7hnKREd1c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        =?UTF-8?q?Michel=20D=C3=A4nzer?= <mdaenzer@redhat.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Topi Miettinen <toiwoton@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 109/189] drm/amdgpu/gmc: use PCI BARs for APUs in passthrough
-Date:   Mon, 18 Apr 2022 14:12:09 +0200
-Message-Id: <20220418121203.594746025@linuxfoundation.org>
+Subject: [PATCH 5.15 074/189] netfilter: nft_socket: make cgroup match work in input too
+Date:   Mon, 18 Apr 2022 14:11:34 +0200
+Message-Id: <20220418121202.610066540@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -51,105 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit b818a5d374542ccec73dcfe578a081574029820e ]
+[ Upstream commit 05ae2fba821c4d122ab4ba3e52144e21586c4010 ]
 
-If the GPU is passed through to a guest VM, use the PCI
-BAR for CPU FB access rather than the physical address of
-carve out.  The physical address is not valid in a guest.
+cgroupv2 helper function ignores the already-looked up sk
+and uses skb->sk instead.
 
-v2: Fix HDP handing as suggested by Michel
+Just pass sk from the calling function instead; this will
+make cgroup matching work for udp and tcp in input even when
+edemux did not set skb->sk already.
 
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Michel Dänzer <mdaenzer@redhat.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: e0bb96db96f8 ("netfilter: nft_socket: add support for cgroupsv2")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Tested-by: Topi Miettinen <toiwoton@gmail.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 4 ++--
- drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c     | 2 +-
- drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c      | 5 +++--
- drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c      | 2 +-
- drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c      | 2 +-
- 5 files changed, 8 insertions(+), 7 deletions(-)
+ net/netfilter/nft_socket.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-index 33026b3eafd2..2f2ae26a8068 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-@@ -5625,7 +5625,7 @@ void amdgpu_device_flush_hdp(struct amdgpu_device *adev,
- 		struct amdgpu_ring *ring)
+diff --git a/net/netfilter/nft_socket.c b/net/netfilter/nft_socket.c
+index d601974c9d2e..b8f011145765 100644
+--- a/net/netfilter/nft_socket.c
++++ b/net/netfilter/nft_socket.c
+@@ -36,12 +36,11 @@ static void nft_socket_wildcard(const struct nft_pktinfo *pkt,
+ 
+ #ifdef CONFIG_SOCK_CGROUP_DATA
+ static noinline bool
+-nft_sock_get_eval_cgroupv2(u32 *dest, const struct nft_pktinfo *pkt, u32 level)
++nft_sock_get_eval_cgroupv2(u32 *dest, struct sock *sk, const struct nft_pktinfo *pkt, u32 level)
  {
- #ifdef CONFIG_X86_64
--	if (adev->flags & AMD_IS_APU)
-+	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev))
- 		return;
- #endif
- 	if (adev->gmc.xgmi.connected_to_cpu)
-@@ -5641,7 +5641,7 @@ void amdgpu_device_invalidate_hdp(struct amdgpu_device *adev,
- 		struct amdgpu_ring *ring)
- {
- #ifdef CONFIG_X86_64
--	if (adev->flags & AMD_IS_APU)
-+	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev))
- 		return;
- #endif
- 	if (adev->gmc.xgmi.connected_to_cpu)
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-index 3c01be661014..93a4da4284ed 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-@@ -788,7 +788,7 @@ static int gmc_v10_0_mc_init(struct amdgpu_device *adev)
- 	adev->gmc.aper_size = pci_resource_len(adev->pdev, 0);
+-	struct sock *sk = skb_to_full_sk(pkt->skb);
+ 	struct cgroup *cgrp;
  
- #ifdef CONFIG_X86_64
--	if (adev->flags & AMD_IS_APU) {
-+	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev)) {
- 		adev->gmc.aper_base = adev->gfxhub.funcs->get_mc_fb_offset(adev);
- 		adev->gmc.aper_size = adev->gmc.real_vram_size;
- 	}
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c
-index 0a50fdaced7e..63c47f61d0df 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v7_0.c
-@@ -381,8 +381,9 @@ static int gmc_v7_0_mc_init(struct amdgpu_device *adev)
- 	adev->gmc.aper_size = pci_resource_len(adev->pdev, 0);
+-	if (!sk || !sk_fullsock(sk) || !net_eq(nft_net(pkt), sock_net(sk)))
++	if (!sk_fullsock(sk))
+ 		return false;
  
- #ifdef CONFIG_X86_64
--	if (adev->flags & AMD_IS_APU &&
--	    adev->gmc.real_vram_size > adev->gmc.aper_size) {
-+	if ((adev->flags & AMD_IS_APU) &&
-+	    adev->gmc.real_vram_size > adev->gmc.aper_size &&
-+	    !amdgpu_passthrough(adev)) {
- 		adev->gmc.aper_base = ((u64)RREG32(mmMC_VM_FB_OFFSET)) << 22;
- 		adev->gmc.aper_size = adev->gmc.real_vram_size;
- 	}
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
-index 63b890f1e8af..bef9610084f1 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
-@@ -581,7 +581,7 @@ static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
- 	adev->gmc.aper_size = pci_resource_len(adev->pdev, 0);
- 
- #ifdef CONFIG_X86_64
--	if (adev->flags & AMD_IS_APU) {
-+	if ((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev)) {
- 		adev->gmc.aper_base = ((u64)RREG32(mmMC_VM_FB_OFFSET)) << 22;
- 		adev->gmc.aper_size = adev->gmc.real_vram_size;
- 	}
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-index 6dc16ccf6c81..0e731016921b 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-@@ -1387,7 +1387,7 @@ static int gmc_v9_0_mc_init(struct amdgpu_device *adev)
- 	 */
- 
- 	/* check whether both host-gpu and gpu-gpu xgmi links exist */
--	if ((adev->flags & AMD_IS_APU) ||
-+	if (((adev->flags & AMD_IS_APU) && !amdgpu_passthrough(adev)) ||
- 	    (adev->gmc.xgmi.supported &&
- 	     adev->gmc.xgmi.connected_to_cpu)) {
- 		adev->gmc.aper_base =
+ 	cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
+@@ -108,7 +107,7 @@ static void nft_socket_eval(const struct nft_expr *expr,
+ 		break;
+ #ifdef CONFIG_SOCK_CGROUP_DATA
+ 	case NFT_SOCKET_CGROUPV2:
+-		if (!nft_sock_get_eval_cgroupv2(dest, pkt, priv->level)) {
++		if (!nft_sock_get_eval_cgroupv2(dest, sk, pkt, priv->level)) {
+ 			regs->verdict.code = NFT_BREAK;
+ 			return;
+ 		}
 -- 
 2.35.1
 
