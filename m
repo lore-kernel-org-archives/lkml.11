@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAE8CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:27:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 889E9C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:27:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238987AbiDRMa0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:30:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37726 "EHLO
+        id S238943AbiDRMab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:30:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238998AbiDRM1h (ORCPT
+        with ESMTP id S239005AbiDRM1h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:27:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63FB1DA6E;
-        Mon, 18 Apr 2022 05:21:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13C71E3E7;
+        Mon, 18 Apr 2022 05:21:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8CD4BB80EDA;
-        Mon, 18 Apr 2022 12:21:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD0E8C385A1;
-        Mon, 18 Apr 2022 12:21:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65DF5B80EDC;
+        Mon, 18 Apr 2022 12:21:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A754BC385A7;
+        Mon, 18 Apr 2022 12:21:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284464;
-        bh=5hLQUV35+tzlBH6zdxatGjjvCJQpxT0R3ebZCnvvka8=;
+        s=korg; t=1650284467;
+        bh=aqaM+ASEtCO7ZYIvGnCWXwXUFuLPGL1pjwd3ZapU2y8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g8uV//ZJiWpvEgrAKhn3LqygY/wcVpREwtV0eSwMmuf5UOtVAg9G5L507yBnc7EWx
-         toKsBJlXtbPQ3Ofzu8PRKDqaYkBcv8FHui8suKDA+xffTeAh3aRan5imUkj8HLEiP9
-         Dk7B3MuSvm4gvTjBSKZn/UZt996DpZTVbun7eR/k=
+        b=okdvS+bOVrKPIFvIPtvJMlgez8wrnE9aFfR3mBzML0xwUCphZ1U7H+fYqjkB9o7v7
+         o+EJ/rUf4P3sF/X74XmN3uFxh/sXr5tLLrzE0qn49uHqxBTcb6dfYU0etsYOfFVssH
+         LyFtguSuKaFuIsS0Di3dkwmEUncJEVoA8OGDlPNw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Antoine Tenart <atenart@kernel.org>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 123/219] tun: annotate access to queue->trans_start
-Date:   Mon, 18 Apr 2022 14:11:32 +0200
-Message-Id: <20220418121210.340561914@linuxfoundation.org>
+Subject: [PATCH 5.17 124/219] net: dsa: felix: fix tagging protocol changes with multiple CPU ports
+Date:   Mon, 18 Apr 2022 14:11:33 +0200
+Message-Id: <20220418121210.368426795@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,39 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antoine Tenart <atenart@kernel.org>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 968a1a5d6541cd24e37dadc1926eab9c10aeb09b ]
+[ Upstream commit 00fa91bc9cc2a9d340f963af5e457610ad4b2f9c ]
 
-Commit 5337824f4dc4 ("net: annotate accesses to queue->trans_start")
-introduced a new helper, txq_trans_cond_update, to update
-queue->trans_start using WRITE_ONCE. One snippet in drivers/net/tun.c
-was missed, as it was introduced roughly at the same time.
+When the device tree has 2 CPU ports defined, a single one is active
+(has any dp->cpu_dp pointers point to it). Yet the second one is still a
+CPU port, and DSA still calls ->change_tag_protocol on it.
 
-Fixes: 5337824f4dc4 ("net: annotate accesses to queue->trans_start")
-Cc: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220412135852.466386-1-atenart@kernel.org
+On the NXP LS1028A, the CPU ports are ports 4 and 5. Port 4 is the
+active CPU port and port 5 is inactive.
+
+After the following commands:
+
+ # Initial setting
+ cat /sys/class/net/eno2/dsa/tagging
+ ocelot
+ echo ocelot-8021q > /sys/class/net/eno2/dsa/tagging
+ echo ocelot > /sys/class/net/eno2/dsa/tagging
+
+traffic is now broken, because the driver has moved the NPI port from
+port 4 to port 5, unbeknown to DSA.
+
+The problem can be avoided by detecting that the second CPU port is
+unused, and not doing anything for it. Further rework will be needed
+when proper support for multiple CPU ports is added.
+
+Treat this as a bug and prepare current kernels to work in single-CPU
+mode with multiple-CPU DT blobs.
+
+Fixes: adb3dccf090b ("net: dsa: felix: convert to the new .change_tag_protocol DSA API")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220412172209.2531865-1-vladimir.oltean@nxp.com
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/tun.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/ocelot/felix.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index de999e0fedbc..aa78d7e00289 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1106,7 +1106,7 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 9957772201d5..c414d9e9d7c0 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -599,6 +599,8 @@ static int felix_change_tag_protocol(struct dsa_switch *ds, int cpu,
+ 	struct ocelot *ocelot = ds->priv;
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+ 	enum dsa_tag_protocol old_proto = felix->tag_proto;
++	bool cpu_port_active = false;
++	struct dsa_port *dp;
+ 	int err;
  
- 	/* NETIF_F_LLTX requires to do our own update of trans_start */
- 	queue = netdev_get_tx_queue(dev, txq);
--	queue->trans_start = jiffies;
-+	txq_trans_cond_update(queue);
+ 	if (proto != DSA_TAG_PROTO_SEVILLE &&
+@@ -606,6 +608,27 @@ static int felix_change_tag_protocol(struct dsa_switch *ds, int cpu,
+ 	    proto != DSA_TAG_PROTO_OCELOT_8021Q)
+ 		return -EPROTONOSUPPORT;
  
- 	/* Notify and wake up reader process */
- 	if (tfile->flags & TUN_FASYNC)
++	/* We don't support multiple CPU ports, yet the DT blob may have
++	 * multiple CPU ports defined. The first CPU port is the active one,
++	 * the others are inactive. In this case, DSA will call
++	 * ->change_tag_protocol() multiple times, once per CPU port.
++	 * Since we implement the tagging protocol change towards "ocelot" or
++	 * "seville" as effectively initializing the NPI port, what we are
++	 * doing is effectively changing who the NPI port is to the last @cpu
++	 * argument passed, which is an unused DSA CPU port and not the one
++	 * that should actively pass traffic.
++	 * Suppress DSA's calls on CPU ports that are inactive.
++	 */
++	dsa_switch_for_each_user_port(dp, ds) {
++		if (dp->cpu_dp->index == cpu) {
++			cpu_port_active = true;
++			break;
++		}
++	}
++
++	if (!cpu_port_active)
++		return 0;
++
+ 	felix_del_tag_protocol(ds, cpu, old_proto);
+ 
+ 	err = felix_set_tag_protocol(ds, cpu, proto);
 -- 
 2.35.1
 
