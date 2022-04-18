@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97543C35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FDFFC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345801AbiDROTe (ORCPT
+        id S1345815AbiDROTi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57358 "EHLO
+        Mon, 18 Apr 2022 10:19:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244872AbiDROAz (ORCPT
+        with ESMTP id S245044AbiDROAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:00:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36CA22C666;
+        Mon, 18 Apr 2022 10:00:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15522C66B;
         Mon, 18 Apr 2022 06:09:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D842C60F26;
-        Mon, 18 Apr 2022 13:08:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD985C385A1;
-        Mon, 18 Apr 2022 13:08:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 798DEB80EE4;
+        Mon, 18 Apr 2022 13:08:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD526C385A1;
+        Mon, 18 Apr 2022 13:08:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287317;
-        bh=GCyS8ANYODjcw+cgxacCWSZ+yw/PtNwyyidg03FaWfI=;
+        s=korg; t=1650287314;
+        bh=MQ80TICDoU0k4gTgTnLQ3uHrBBGBTGfzc7zcAeNUXYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xkrUFJtFLfKUO25Tcmt/N+A885iC7DL4LyRa0uQL/VGIJ6lYX3hk0+b2fxrzJiRvk
-         AAd6utpbmnoMRj1hjnZEnCevQCSrNepmqZQBd5tZXqPPJfBrgYw6YsILk0LYfMVuQP
-         9p8SJ6CpKxn0hHgLIiw718FPp+I04+JdFtqiDzf0=
+        b=BeFzdhQcqk/rJr3RE7csAbb8ZrpsTHZo7D8Bub/L+LAAUZkNpC3Hn4EBarp2Bn6o0
+         PnXMbrpvibz0QhhPKyegt9w8gXI3KD0g7ZkacnBiM29zCmZyVnsSbJY7mM9UQq9Row
+         qtbAowGrQxYNG29RP0viruvC+b5Kb35RgQvuEVw4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.king@canonical.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 083/218] iwlwifi: Fix -EIO error code that is never returned
-Date:   Mon, 18 Apr 2022 14:12:29 +0200
-Message-Id: <20220418121201.982597955@linuxfoundation.org>
+Subject: [PATCH 4.9 121/218] qlcnic: dcb: default to returning -EOPNOTSUPP
+Date:   Mon, 18 Apr 2022 14:13:07 +0200
+Message-Id: <20220418121203.054580796@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,37 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+From: Tom Rix <trix@redhat.com>
 
-[ Upstream commit c305c94bdc18e45b5ad1db54da4269f8cbfdff6b ]
+[ Upstream commit 1521db37f0d42334a88e8ff28198a27d1ed5cd7b ]
 
-Currently the error -EIO is being assinged to variable ret when
-the READY_BIT is not set but the function iwlagn_mac_start returns
-0 rather than ret. Fix this by returning ret instead of 0.
+Clang static analysis reports this issue
+qlcnic_dcb.c:382:10: warning: Assigned value is
+  garbage or undefined
+  mbx_out = *val;
+          ^ ~~~~
 
-Addresses-Coverity: ("Unused value")
-Fixes: 7335613ae27a ("iwlwifi: move all mac80211 related functions to one place")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Link: https://lore.kernel.org/r/20210907104658.14706-1-colin.king@canonical.com
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+val is set in the qlcnic_dcb_query_hw_capability() wrapper.
+If there is no query_hw_capability op in dcp, success is
+returned without setting the val.
+
+For this and similar wrappers, return -EOPNOTSUPP.
+
+Fixes: 14d385b99059 ("qlcnic: dcb: Query adapter DCB capabilities.")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
-index 8c0719468d00..6bd2486f617e 100644
---- a/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/dvm/mac80211.c
-@@ -315,7 +315,7 @@ static int iwlagn_mac_start(struct ieee80211_hw *hw)
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
+index f4aa6331b367..0a9d24e86715 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
+@@ -52,7 +52,7 @@ static inline int qlcnic_dcb_get_hw_capability(struct qlcnic_dcb *dcb)
+ 	if (dcb && dcb->ops->get_hw_capability)
+ 		return dcb->ops->get_hw_capability(dcb);
  
- 	priv->is_open = 1;
- 	IWL_DEBUG_MAC80211(priv, "leave\n");
 -	return 0;
-+	return ret;
++	return -EOPNOTSUPP;
  }
  
- static void iwlagn_mac_stop(struct ieee80211_hw *hw)
+ static inline void qlcnic_dcb_free(struct qlcnic_dcb *dcb)
+@@ -66,7 +66,7 @@ static inline int qlcnic_dcb_attach(struct qlcnic_dcb *dcb)
+ 	if (dcb && dcb->ops->attach)
+ 		return dcb->ops->attach(dcb);
+ 
+-	return 0;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline int
+@@ -75,7 +75,7 @@ qlcnic_dcb_query_hw_capability(struct qlcnic_dcb *dcb, char *buf)
+ 	if (dcb && dcb->ops->query_hw_capability)
+ 		return dcb->ops->query_hw_capability(dcb, buf);
+ 
+-	return 0;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline void qlcnic_dcb_get_info(struct qlcnic_dcb *dcb)
+@@ -90,7 +90,7 @@ qlcnic_dcb_query_cee_param(struct qlcnic_dcb *dcb, char *buf, u8 type)
+ 	if (dcb && dcb->ops->query_cee_param)
+ 		return dcb->ops->query_cee_param(dcb, buf, type);
+ 
+-	return 0;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline int qlcnic_dcb_get_cee_cfg(struct qlcnic_dcb *dcb)
+@@ -98,7 +98,7 @@ static inline int qlcnic_dcb_get_cee_cfg(struct qlcnic_dcb *dcb)
+ 	if (dcb && dcb->ops->get_cee_cfg)
+ 		return dcb->ops->get_cee_cfg(dcb);
+ 
+-	return 0;
++	return -EOPNOTSUPP;
+ }
+ 
+ static inline void qlcnic_dcb_aen_handler(struct qlcnic_dcb *dcb, void *msg)
 -- 
 2.34.1
 
