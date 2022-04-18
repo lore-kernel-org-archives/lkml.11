@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 562E2C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E02C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:27:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238843AbiDRM3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:29:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37726 "EHLO
+        id S234799AbiDRM35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237083AbiDRM0c (ORCPT
+        with ESMTP id S238785AbiDRM0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:26:32 -0400
+        Mon, 18 Apr 2022 08:26:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC27D12760;
-        Mon, 18 Apr 2022 05:20:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B29181CB1E;
+        Mon, 18 Apr 2022 05:20:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5561F60F0A;
-        Mon, 18 Apr 2022 12:20:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E62BC385A1;
-        Mon, 18 Apr 2022 12:20:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EB1E60F0A;
+        Mon, 18 Apr 2022 12:20:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88AC3C385A7;
+        Mon, 18 Apr 2022 12:20:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284440;
-        bh=WQwPEHSCem5xKkdX+CUKjM6gepLC47qMUwijbu0hyO8=;
+        s=korg; t=1650284449;
+        bh=26m8QA4+MZJsZD/XBw4SXEq7XeKA/kc2DBTFw4Pw2GQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lnixXNmPhPQo7NDLjQtujQHhWHyDEolAvkJHEINt2ZeYtZbA2QSBT6T8LgPhWmRHt
-         A3AGtVGzlyct0z/kHOS6fNoHx4wsTJILMbWxcTQoYhSHmve7PoXe4I+DajIN/jR+7+
-         NR1RYRX/LVFUsmB31Th45SrjnxNulTH04mvCB81c=
+        b=XEG54gwS9Z3cI6Lm/8CfCjA60fqeXaJRS566ap632VfX1b0OpdcNTfxJjALNOnr75
+         USus2Hnh5Iws1u93d9sET4WDfEYc3m0hOSji3dI34Q+nJIllBYETWuokN98onPprul
+         z0AUaJrNnKyGJVUgOXmjSesF8+r+0z/DjofpYSTY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 116/219] perf tools: Fix misleading add event PMU debug message
-Date:   Mon, 18 Apr 2022 14:11:25 +0200
-Message-Id: <20220418121210.146768167@linuxfoundation.org>
+Subject: [PATCH 5.17 119/219] nfc: nci: add flush_workqueue to prevent uaf
+Date:   Mon, 18 Apr 2022 14:11:28 +0200
+Message-Id: <20220418121210.229713790@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,58 +50,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit f034fc50d3c7d9385c20d505ab4cf56b8fd18ac7 ]
+[ Upstream commit ef27324e2cb7bb24542d6cb2571740eefe6b00dc ]
 
-Fix incorrect debug message:
+Our detector found a concurrent use-after-free bug when detaching an
+NCI device. The main reason for this bug is the unexpected scheduling
+between the used delayed mechanism (timer and workqueue).
 
-   Attempting to add event pmu 'intel_pt' with '' that may result in
-   non-fatal errors
+The race can be demonstrated below:
 
-which always appears with perf record -vv and intel_pt e.g.
+Thread-1                           Thread-2
+                                 | nci_dev_up()
+                                 |   nci_open_device()
+                                 |     __nci_request(nci_reset_req)
+                                 |       nci_send_cmd
+                                 |         queue_work(cmd_work)
+nci_unregister_device()          |
+  nci_close_device()             | ...
+    del_timer_sync(cmd_timer)[1] |
+...                              | Worker
+nci_free_device()                | nci_cmd_work()
+  kfree(ndev)[3]                 |   mod_timer(cmd_timer)[2]
 
-    perf record -vv -e intel_pt//u uname
+In short, the cleanup routine thought that the cmd_timer has already
+been detached by [1] but the mod_timer can re-attach the timer [2], even
+it is already released [3], resulting in UAF.
 
-The message is incorrect because there will never be non-fatal errors.
+This UAF is easy to trigger, crash trace by POC is like below
 
-Suppress the message if the PMU is 'selectable' i.e. meant to be
-selected directly as an event.
+[   66.703713] ==================================================================
+[   66.703974] BUG: KASAN: use-after-free in enqueue_timer+0x448/0x490
+[   66.703974] Write of size 8 at addr ffff888009fb7058 by task kworker/u4:1/33
+[   66.703974]
+[   66.703974] CPU: 1 PID: 33 Comm: kworker/u4:1 Not tainted 5.18.0-rc2 #5
+[   66.703974] Workqueue: nfc2_nci_cmd_wq nci_cmd_work
+[   66.703974] Call Trace:
+[   66.703974]  <TASK>
+[   66.703974]  dump_stack_lvl+0x57/0x7d
+[   66.703974]  print_report.cold+0x5e/0x5db
+[   66.703974]  ? enqueue_timer+0x448/0x490
+[   66.703974]  kasan_report+0xbe/0x1c0
+[   66.703974]  ? enqueue_timer+0x448/0x490
+[   66.703974]  enqueue_timer+0x448/0x490
+[   66.703974]  __mod_timer+0x5e6/0xb80
+[   66.703974]  ? mark_held_locks+0x9e/0xe0
+[   66.703974]  ? try_to_del_timer_sync+0xf0/0xf0
+[   66.703974]  ? lockdep_hardirqs_on_prepare+0x17b/0x410
+[   66.703974]  ? queue_work_on+0x61/0x80
+[   66.703974]  ? lockdep_hardirqs_on+0xbf/0x130
+[   66.703974]  process_one_work+0x8bb/0x1510
+[   66.703974]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+[   66.703974]  ? pwq_dec_nr_in_flight+0x230/0x230
+[   66.703974]  ? rwlock_bug.part.0+0x90/0x90
+[   66.703974]  ? _raw_spin_lock_irq+0x41/0x50
+[   66.703974]  worker_thread+0x575/0x1190
+[   66.703974]  ? process_one_work+0x1510/0x1510
+[   66.703974]  kthread+0x2a0/0x340
+[   66.703974]  ? kthread_complete_and_exit+0x20/0x20
+[   66.703974]  ret_from_fork+0x22/0x30
+[   66.703974]  </TASK>
+[   66.703974]
+[   66.703974] Allocated by task 267:
+[   66.703974]  kasan_save_stack+0x1e/0x40
+[   66.703974]  __kasan_kmalloc+0x81/0xa0
+[   66.703974]  nci_allocate_device+0xd3/0x390
+[   66.703974]  nfcmrvl_nci_register_dev+0x183/0x2c0
+[   66.703974]  nfcmrvl_nci_uart_open+0xf2/0x1dd
+[   66.703974]  nci_uart_tty_ioctl+0x2c3/0x4a0
+[   66.703974]  tty_ioctl+0x764/0x1310
+[   66.703974]  __x64_sys_ioctl+0x122/0x190
+[   66.703974]  do_syscall_64+0x3b/0x90
+[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   66.703974]
+[   66.703974] Freed by task 406:
+[   66.703974]  kasan_save_stack+0x1e/0x40
+[   66.703974]  kasan_set_track+0x21/0x30
+[   66.703974]  kasan_set_free_info+0x20/0x30
+[   66.703974]  __kasan_slab_free+0x108/0x170
+[   66.703974]  kfree+0xb0/0x330
+[   66.703974]  nfcmrvl_nci_unregister_dev+0x90/0xd0
+[   66.703974]  nci_uart_tty_close+0xdf/0x180
+[   66.703974]  tty_ldisc_kill+0x73/0x110
+[   66.703974]  tty_ldisc_hangup+0x281/0x5b0
+[   66.703974]  __tty_hangup.part.0+0x431/0x890
+[   66.703974]  tty_release+0x3a8/0xc80
+[   66.703974]  __fput+0x1f0/0x8c0
+[   66.703974]  task_work_run+0xc9/0x170
+[   66.703974]  exit_to_user_mode_prepare+0x194/0x1a0
+[   66.703974]  syscall_exit_to_user_mode+0x19/0x50
+[   66.703974]  do_syscall_64+0x48/0x90
+[   66.703974]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Fixes: 4ac22b484d4c79e8 ("perf parse-events: Make add PMU verbose output clearer")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Link: http://lore.kernel.org/lkml/20220411061758.2458417-1-adrian.hunter@intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+To fix the UAF, this patch adds flush_workqueue() to ensure the
+nci_cmd_work is finished before the following del_timer_sync.
+This combination will promise the timer is actually detached.
+
+Fixes: 6a2968aaf50c ("NFC: basic NCI protocol implementation")
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/parse-events.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/nfc/nci/core.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index 24997925ae00..dd84fed698a3 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -1523,7 +1523,9 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
- 	bool use_uncore_alias;
- 	LIST_HEAD(config_terms);
+diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
+index d2537383a3e8..6a193cce2a75 100644
+--- a/net/nfc/nci/core.c
++++ b/net/nfc/nci/core.c
+@@ -560,6 +560,10 @@ static int nci_close_device(struct nci_dev *ndev)
+ 	mutex_lock(&ndev->req_lock);
  
--	if (verbose > 1) {
-+	pmu = parse_state->fake_pmu ?: perf_pmu__find(name);
-+
-+	if (verbose > 1 && !(pmu && pmu->selectable)) {
- 		fprintf(stderr, "Attempting to add event pmu '%s' with '",
- 			name);
- 		if (head_config) {
-@@ -1536,7 +1538,6 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
- 		fprintf(stderr, "' that may result in non-fatal errors\n");
- 	}
- 
--	pmu = parse_state->fake_pmu ?: perf_pmu__find(name);
- 	if (!pmu) {
- 		char *err_str;
- 
+ 	if (!test_and_clear_bit(NCI_UP, &ndev->flags)) {
++		/* Need to flush the cmd wq in case
++		 * there is a queued/running cmd_work
++		 */
++		flush_workqueue(ndev->cmd_wq);
+ 		del_timer_sync(&ndev->cmd_timer);
+ 		del_timer_sync(&ndev->data_timer);
+ 		mutex_unlock(&ndev->req_lock);
 -- 
 2.35.1
 
