@@ -2,102 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C70F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 20:40:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D32C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 20:50:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347815AbiDRUnf (ORCPT
+        id S1347813AbiDRUxM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 16:43:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56384 "EHLO
+        Mon, 18 Apr 2022 16:53:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238691AbiDRUne (ORCPT
+        with ESMTP id S231984AbiDRUxK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 16:43:34 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2FEABE021;
-        Mon, 18 Apr 2022 13:40:54 -0700 (PDT)
-Received: from sequoia (162-237-133-238.lightspeed.rcsntx.sbcglobal.net [162.237.133.238])
-        by linux.microsoft.com (Postfix) with ESMTPSA id EFA1820C360D;
-        Mon, 18 Apr 2022 13:40:52 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com EFA1820C360D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1650314453;
-        bh=hPnBPHuEdxt7/RqdefOcSrFj/zJr1c5qyKGbEWwgZto=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NDlStXEMY3e+2PB0wsTLbHO/ghp3MpfX0wZQHagUiBmg8hqzac+IOSEoSa9T8CtGQ
-         OmjLVgjrsS/nEZsSLKC6MvH/zG2/1gnH/HsNt1bmMDheMh6lKAJc9l+Vx+MapQVJE7
-         Du3FPoqmZyXq2vdgYUqhRQkyE9HPEcUK8VCFWwfE=
-Date:   Mon, 18 Apr 2022 15:40:29 -0500
-From:   Tyler Hicks <tyhicks@linux.microsoft.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Lei Wang <lewan@microsoft.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sinan Kaya <okaya@kernel.org>,
-        Shiping Ji <shiping.linux@gmail.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] EDAC/dmc520: Don't print an error for each unconfigured
- interrupt line
-Message-ID: <20220418204029.GA31854@sequoia>
-References: <20220111163800.22362-1-tyhicks@linux.microsoft.com>
- <YeRkGvestiloCAUV@zn.tnic>
- <20220118152816.GA89184@sequoia>
- <Yeb4sK+ZmSHjWPWL@zn.tnic>
- <20220118195401.GB89184@sequoia>
- <YecrXidqecoYI/xg@zn.tnic>
- <YefXQHXNlsxk8yUc@kroah.com>
- <Yefb7zO9p1iPF3Jm@zn.tnic>
- <YefnuCPwMq5V2lgl@kroah.com>
- <20220404215640.GA626436@sequoia>
+        Mon, 18 Apr 2022 16:53:10 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D1E22BCB;
+        Mon, 18 Apr 2022 13:50:30 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KhzbR5Ytqz4xR1;
+        Tue, 19 Apr 2022 06:50:27 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1650315028;
+        bh=SS5Cca4Z8dJ5+9PU174i07hmpYDNtbxInWUQuq4jRLw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=FzVjx1M9Kc9v0WYugrCOQ9SE5n/ZcTM6qRmQBUKrU9OuL9Q+ACFy2VALCSuOY9IZo
+         FutFeC3rEYSWPaoWNR1XRNhjQVt7uVf2SB80JAoWe4xgxvNMzce4Wmzlr/+cS8l4KQ
+         rNkvdJBTDTlIIqH3wnZaB7L0QNfR3FJn4BZGMdVRMXUe2bJ/UCfYoE/n6prZEAGuV7
+         usP070+HumEfguCjnbT8Owuhs5aCuMVoOjellWApn4XswhMoTln+SOSzsjHckXd4Jh
+         kPBQ/8Z+cbJmyyMgEU7xysggj4hAkpSsPcdvEurQgNRNe/FTwOcVswbqXYopjTe/sn
+         nO2v1Di80pRbg==
+Date:   Tue, 19 Apr 2022 06:50:27 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Shawn Guo <shawnguo@kernel.org>
+Cc:     Max Krummenacher <max.krummenacher@toradex.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the imx-mxs tree
+Message-ID: <20220419065027.1046eb04@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220404215640.GA626436@sequoia>
+Content-Type: multipart/signed; boundary="Sig_/2maBIVva9AUfCA74DICl62U";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-04-04 16:56:58, Tyler Hicks wrote:
-> On 2022-01-19 11:28:08, Greg Kroah-Hartman wrote:
-> > On Wed, Jan 19, 2022 at 10:37:51AM +0100, Borislav Petkov wrote:
-> > > On Wed, Jan 19, 2022 at 10:17:52AM +0100, Greg Kroah-Hartman wrote:
-> > > > For this specific change, I do NOT think it should be backported at all,
-> > > > mostly for the reason that people are still arguing over the whole
-> > > > platform_get_*_optional() mess that we currently have.  Let's not go and
-> > > > backport anything right now to stable trees until we have all of that
-> > > > sorted out, as it looks like it all might be changing again.  See:
-> > > > 	https://lore.kernel.org/r/20220110195449.12448-1-s.shtylyov@omp.ru
-> > > > for all of the gory details and the 300+ emails written on the topic so
-> > > > far.
-> > > 
-> > > It sounds to me I should not even take this patch upstream yet,
-> > > considering that's still ongoing...
-> > 
-> > Yes, I would not take that just yet at all.  Let's let the api argument
-> > settle down a bit first.
-> 
-> The API argument seems to have fizzled out in v2:
-> 
->  https://lore.kernel.org/lkml/20220212201631.12648-1-s.shtylyov@omp.ru/
-> 
-> Can this fix be merged since there seem to be no API changes coming
-> soon? Boris, feel free to strip off the cc stable tag.
+--Sig_/2maBIVva9AUfCA74DICl62U
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Hi Boris - I just double checked that this still looks correct and
-applies cleanly to linux-next. Anything I can do on my end to help get
-this little fix merged into the ras.git tree? Thanks!
+Hi all,
 
-Tyler
+In commit
 
-> 
-> Tyler
-> 
-> > 
-> > thanks,
-> > 
-> > greg k-h
-> > 
+  a5b99c8fcd1b ("ARM: dts: imx6dl-colibri: Fix I2C pinmuxing")
+
+Fixes tag
+
+  Fixes: 56f0df6b6b58 ("ARM: dts: imx*(colibri|apalis): add missing
+
+has these problem(s):
+
+  - Subject has leading but no trailing quotes
+
+Please do not split Fixes tags over more than one line.  Also, keep all
+the commit message tags together at the end of the commit message.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/2maBIVva9AUfCA74DICl62U
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJdzxMACgkQAVBC80lX
+0Gzc9Qf/bX/03ka14Qj0a6nVx4MjL8KmlPqz/Rp3Two5G7ETIZUr9t4JioDJTCKb
+VIw5mQWwTiWi6/LfER95AsMMWvczmK3dAJXXxf5wdguA3pexAM8oEZyvyjZA6UGk
+DoAGRRUSLTK/JaVxBmuRIylI77eIwrOsttRnfGT3wg3ZIXNdzCfteLxeiApngzIv
+MRYsK4wu8ayFGr+QaG9u6SpVYWsv40NzIe2qTr++po+YLskvrxrfdY2GnTSP4VPX
+R6COxh+ogJ3oDikczz/Tauqk489BDxDg2cOk5qIk7mFhX2ZUfARB1N9xwF8AnIsx
+D+FzwQAikCxrvHt2Yktkl+/qeMOXsA==
+=M6GS
+-----END PGP SIGNATURE-----
+
+--Sig_/2maBIVva9AUfCA74DICl62U--
