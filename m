@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0C8EC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B284FC3527A
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245683AbiDRNx5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41328 "EHLO
+        id S245618AbiDRNxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244850AbiDRNa6 (ORCPT
+        with ESMTP id S244778AbiDRNay (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4A91EC6B;
-        Mon, 18 Apr 2022 05:56:08 -0700 (PDT)
+        Mon, 18 Apr 2022 09:30:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE2FE42A19;
+        Mon, 18 Apr 2022 05:55:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 233DFB80EBA;
-        Mon, 18 Apr 2022 12:56:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3154CC385A7;
-        Mon, 18 Apr 2022 12:56:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59B1D6115A;
+        Mon, 18 Apr 2022 12:55:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49AE4C385A1;
+        Mon, 18 Apr 2022 12:55:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286565;
-        bh=KAojjrPTDsoo3bVes6j/ZbqGHLIHGoS1H1/f034epoM=;
+        s=korg; t=1650286518;
+        bh=YgEmVX4A3A766D6wWpo2mQbxWZWAWD0HoACV1S8a+Cc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qxHSLZLPyXaaZz6hzIzISNBr82kg9lH5IK676/3xD6cwoaSmQZQAmm3PTsBSZTJ9r
-         u0vexnsbwBLcgfdFRkCjiM2f1Tk+bN+d/r+cScD3Aw8JsDPNxnYlG2ms1kbzshPoME
-         ygDTKx78DiP4sNC/irhzQYy/h7VtV74o+E5f0WMs=
+        b=kOP7U5hZMmLSRVDy6gaNT7moAOMu3r/sWyrK1tOisg0N7Z3LQqPd3ldR8KzxzQj/Q
+         UXf6v//mqq3jNQQiTnFAzFOK+Vdujo5kurL6Z5x00yuJuDjVNTo7G16sVCDZUg8GXg
+         ZtdWW1nPZg1DucMeUIq9S5QdDEOicGxMNTBim/qk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 124/284] USB: storage: ums-realtek: fix error code in rts51x_read_mem()
-Date:   Mon, 18 Apr 2022 14:11:45 +0200
-Message-Id: <20220418121214.707141372@linuxfoundation.org>
+Subject: [PATCH 4.14 159/284] ACPICA: Avoid walking the ACPI Namespace if it is not there
+Date:   Mon, 18 Apr 2022 14:12:20 +0200
+Message-Id: <20220418121216.265246199@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,37 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit b07cabb8361dc692522538205552b1b9dab134be ]
+[ Upstream commit 0c9992315e738e7d6e927ef36839a466b080dba6 ]
 
-The rts51x_read_mem() function should return negative error codes.
-Currently if the kmalloc() fails it returns USB_STOR_TRANSPORT_ERROR (3)
-which is treated as success by the callers.
+ACPICA commit b1c3656ef4950098e530be68d4b589584f06cddc
 
-Fixes: 065e60964e29 ("ums_realtek: do not use stack memory for DMA")
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220304073504.GA26464@kili
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Prevent acpi_ns_walk_namespace() from crashing when called with
+start_node equal to ACPI_ROOT_OBJECT if the Namespace has not been
+instantiated yet and acpi_gbl_root_node is NULL.
+
+For instance, this can happen if the kernel is run with "acpi=off"
+in the command line.
+
+Link: https://github.com/acpica/acpica/commit/b1c3656ef4950098e530be68d4b589584f06cddc
+Link: https://lore.kernel.org/linux-acpi/CAJZ5v0hJWW_vZ3wwajE7xT38aWjY7cZyvqMJpXHzUL98-SiCVQ@mail.gmail.com/
+Reported-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/storage/realtek_cr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/acpica/nswalk.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/usb/storage/realtek_cr.c b/drivers/usb/storage/realtek_cr.c
-index 8e0b12cc084a..0c5f1db24ee8 100644
---- a/drivers/usb/storage/realtek_cr.c
-+++ b/drivers/usb/storage/realtek_cr.c
-@@ -376,7 +376,7 @@ static int rts51x_read_mem(struct us_data *us, u16 addr, u8 *data, u16 len)
+diff --git a/drivers/acpi/acpica/nswalk.c b/drivers/acpi/acpica/nswalk.c
+index 6b6e6f498cff..129fc61f14c4 100644
+--- a/drivers/acpi/acpica/nswalk.c
++++ b/drivers/acpi/acpica/nswalk.c
+@@ -203,6 +203,9 @@ acpi_ns_walk_namespace(acpi_object_type type,
  
- 	buf = kmalloc(len, GFP_NOIO);
- 	if (buf == NULL)
--		return USB_STOR_TRANSPORT_ERROR;
-+		return -ENOMEM;
+ 	if (start_node == ACPI_ROOT_OBJECT) {
+ 		start_node = acpi_gbl_root_node;
++		if (!start_node) {
++			return_ACPI_STATUS(AE_NO_NAMESPACE);
++		}
+ 	}
  
- 	usb_stor_dbg(us, "addr = 0x%x, len = %d\n", addr, len);
- 
+ 	/* Null child means "get first node" */
 -- 
 2.34.1
 
