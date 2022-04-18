@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1898C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5115CC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:02:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245388AbiDROCw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53666 "EHLO
+        id S245480AbiDRODJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244292AbiDRNnz (ORCPT
+        with ESMTP id S244507AbiDRNog (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:43:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0502D31379;
-        Mon, 18 Apr 2022 05:59:51 -0700 (PDT)
+        Mon, 18 Apr 2022 09:44:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6D6842A3B;
+        Mon, 18 Apr 2022 06:00:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C3796097A;
-        Mon, 18 Apr 2022 12:59:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35CE0C385A1;
-        Mon, 18 Apr 2022 12:59:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7841EB80E59;
+        Mon, 18 Apr 2022 13:00:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6016C385A8;
+        Mon, 18 Apr 2022 13:00:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286790;
-        bh=TTlhahfyNOmH+2TfRYslkbd4ok5bbYt18/G8W1qAsQQ=;
+        s=korg; t=1650286803;
+        bh=Vz9F1VXHEvKAznuSrFypgDgfV5pLlBGpncol3CcvjBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HqebSq32msj7SGCV/N/eGo+7Q1ns3AAtgIzU6tKXuKB7HL0h/bzFMUEMcWtqKzpSJ
-         1pETdC+C6VEy8J3A+3p8oKeD8iP/c0ux8NSWjyJX+cvVqlkLf+FqwPjlkLc8gBZdTe
-         zd8WobOuE47XtQgHQ9NbKxdg90rqTJnOMf2/VssI=
+        b=yxR9sMegvSPoQIwRN/ByOSru0xkTOd/kRearDTR4J44opI5dJgZS2+j4VGUx2Gy9W
+         FQu/uCj4D4CMdBZoFsSKWwl39WNjhR1gwPHmg/+HuLIS18yYrHZ1mxvDRP7X44Ga0s
+         +NOX26u9u6TgP7XmXbVQ34ftVqHnyOUhwrw9wP5Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+6bde52d89cfdf9f61425@syzkaller.appspotmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.14 245/284] mmmremap.c: avoid pointless invalidate_range_start/end on mremap(old_size=0)
-Date:   Mon, 18 Apr 2022 14:13:46 +0200
-Message-Id: <20220418121219.068070285@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Ethan Lien <ethanlien@synology.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 4.14 249/284] btrfs: fix qgroup reserve overflow the qgroup limit
+Date:   Mon, 18 Apr 2022 14:13:50 +0200
+Message-Id: <20220418121219.284904302@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -52,45 +49,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Ethan Lien <ethanlien@synology.com>
 
-commit 01e67e04c28170c47700c2c226d732bbfedb1ad0 upstream.
+commit b642b52d0b50f4d398cb4293f64992d0eed2e2ce upstream.
 
-If an mremap() syscall with old_size=0 ends up in move_page_tables(), it
-will call invalidate_range_start()/invalidate_range_end() unnecessarily,
-i.e.  with an empty range.
+We use extent_changeset->bytes_changed in qgroup_reserve_data() to record
+how many bytes we set for EXTENT_QGROUP_RESERVED state. Currently the
+bytes_changed is set as "unsigned int", and it will overflow if we try to
+fallocate a range larger than 4GiB. The result is we reserve less bytes
+and eventually break the qgroup limit.
 
-This causes a WARN in KVM's mmu_notifier.  In the past, empty ranges
-have been diagnosed to be off-by-one bugs, hence the WARNing.  Given the
-low (so far) number of unique reports, the benefits of detecting more
-buggy callers seem to outweigh the cost of having to fix cases such as
-this one, where userspace is doing something silly.  In this particular
-case, an early return from move_page_tables() is enough to fix the
-issue.
+Unlike regular buffered/direct write, which we use one changeset for
+each ordered extent, which can never be larger than 256M.  For
+fallocate, we use one changeset for the whole range, thus it no longer
+respects the 256M per extent limit, and caused the problem.
 
-Link: https://lkml.kernel.org/r/20220329173155.172439-1-pbonzini@redhat.com
-Reported-by: syzbot+6bde52d89cfdf9f61425@syzkaller.appspotmail.com
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Sean Christopherson <seanjc@google.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+The following example test script reproduces the problem:
+
+  $ cat qgroup-overflow.sh
+  #!/bin/bash
+
+  DEV=/dev/sdj
+  MNT=/mnt/sdj
+
+  mkfs.btrfs -f $DEV
+  mount $DEV $MNT
+
+  # Set qgroup limit to 2GiB.
+  btrfs quota enable $MNT
+  btrfs qgroup limit 2G $MNT
+
+  # Try to fallocate a 3GiB file. This should fail.
+  echo
+  echo "Try to fallocate a 3GiB file..."
+  fallocate -l 3G $MNT/3G.file
+
+  # Try to fallocate a 5GiB file.
+  echo
+  echo "Try to fallocate a 5GiB file..."
+  fallocate -l 5G $MNT/5G.file
+
+  # See we break the qgroup limit.
+  echo
+  sync
+  btrfs qgroup show -r $MNT
+
+  umount $MNT
+
+When running the test:
+
+  $ ./qgroup-overflow.sh
+  (...)
+
+  Try to fallocate a 3GiB file...
+  fallocate: fallocate failed: Disk quota exceeded
+
+  Try to fallocate a 5GiB file...
+
+  qgroupid         rfer         excl     max_rfer
+  --------         ----         ----     --------
+  0/5           5.00GiB      5.00GiB      2.00GiB
+
+Since we have no control of how bytes_changed is used, it's better to
+set it to u64.
+
+CC: stable@vger.kernel.org # 4.14+
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: Ethan Lien <ethanlien@synology.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mremap.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/btrfs/extent_io.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/mremap.c
-+++ b/mm/mremap.c
-@@ -203,6 +203,9 @@ unsigned long move_page_tables(struct vm
- 	unsigned long mmun_start;	/* For mmu_notifiers */
- 	unsigned long mmun_end;		/* For mmu_notifiers */
+--- a/fs/btrfs/extent_io.h
++++ b/fs/btrfs/extent_io.h
+@@ -210,7 +210,7 @@ struct extent_buffer {
+  */
+ struct extent_changeset {
+ 	/* How many bytes are set/cleared in this operation */
+-	unsigned int bytes_changed;
++	u64 bytes_changed;
  
-+	if (!len)
-+		return 0;
-+
- 	old_end = old_addr + len;
- 	flush_cache_range(vma, old_addr, old_end);
- 
+ 	/* Changed ranges */
+ 	struct ulist range_changed;
 
 
