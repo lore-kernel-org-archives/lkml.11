@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E845C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF53C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241265AbiDRNC5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:02:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43308 "EHLO
+        id S241348AbiDRNDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239691AbiDRMxh (ORCPT
+        with ESMTP id S240463AbiDRMxY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:53:37 -0400
+        Mon, 18 Apr 2022 08:53:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929309FD1;
-        Mon, 18 Apr 2022 05:34:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAC45F68;
+        Mon, 18 Apr 2022 05:34:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEF276118A;
-        Mon, 18 Apr 2022 12:34:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C97FC385A9;
-        Mon, 18 Apr 2022 12:34:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79A676116E;
+        Mon, 18 Apr 2022 12:34:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73D04C385A9;
+        Mon, 18 Apr 2022 12:34:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285292;
-        bh=ZlGy41XoiYTBPkFIv0KQQckDyWT4rNi+bI44gK5xc2E=;
+        s=korg; t=1650285288;
+        bh=c/3SbLS1EA2AxoaIQFhF0FgLVJKgO8/XqZhIPUJY6TY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WUnzyHBD4wxoH8qH4elEqWeVa4qhNLIfphsV6AUjWoN/kmX9qRIXWniq15XL0Ifxo
-         jMbQPKGds1xHXxRy7ZH1EgcGi5Diw9dDu8kDkcBIWaX3k0vS2nZI1z4yWx0PSZtF5v
-         BysUc+p9etFStuK+lT0SoOI88XeVBxPuFnSSCv30=
+        b=xVZBzUuPlpTJZ3rGN8DEkVu789IK+K3/eK8st0jvbM/bljmR2TlnI35Esc3boJy4c
+         Gq09q/cFdbM0plBhcF/9+q5x+e7NKAEv3k6bx3+i2TE+77Zj4wDIVxc5AN3IOaHKEw
+         hNUmAxmQm+ggFiosmgInhmRzAmyk+m7Ffb51XqlA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.15 161/189] nl80211: correctly check NL80211_ATTR_REG_ALPHA2 size
-Date:   Mon, 18 Apr 2022 14:13:01 +0200
-Message-Id: <20220418121206.889042319@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>,
+        syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
+Subject: [PATCH 5.15 160/189] ALSA: pcm: Test for "silence" field in struct "pcm_format_data"
+Date:   Mon, 18 Apr 2022 14:13:00 +0200
+Message-Id: <20220418121206.822429347@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -48,35 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 
-commit 6624bb34b4eb19f715db9908cca00122748765d7 upstream.
+commit 2f7a26abb8241a0208c68d22815aa247c5ddacab upstream.
 
-We need this to be at least two bytes, so we can access
-alpha2[0] and alpha2[1]. It may be three in case some
-userspace used NUL-termination since it was NLA_STRING
-(and we also push it out with NUL-termination).
+Syzbot reports "KASAN: null-ptr-deref Write in
+snd_pcm_format_set_silence".[1]
 
-Cc: stable@vger.kernel.org
-Reported-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20220411114201.fd4a31f06541.Ie7ff4be2cf348d8cc28ed0d626fc54becf7ea799@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+It is due to missing validation of the "silence" field of struct
+"pcm_format_data" in "pcm_formats" array.
+
+Add a test for valid "pat" and, if it is not so, return -EINVAL.
+
+[1] https://lore.kernel.org/lkml/000000000000d188ef05dc2c7279@google.com/
+
+Reported-and-tested-by: syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220409012655.9399-1-fmdefrancesco@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/wireless/nl80211.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/core/pcm_misc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -509,7 +509,8 @@ static const struct nla_policy nl80211_p
- 				   .len = IEEE80211_MAX_MESH_ID_LEN },
- 	[NL80211_ATTR_MPATH_NEXT_HOP] = NLA_POLICY_ETH_ADDR_COMPAT,
- 
--	[NL80211_ATTR_REG_ALPHA2] = { .type = NLA_STRING, .len = 2 },
-+	/* allow 3 for NUL-termination, we used to declare this NLA_STRING */
-+	[NL80211_ATTR_REG_ALPHA2] = NLA_POLICY_RANGE(NLA_BINARY, 2, 3),
- 	[NL80211_ATTR_REG_RULES] = { .type = NLA_NESTED },
- 
- 	[NL80211_ATTR_BSS_CTS_PROT] = { .type = NLA_U8 },
+--- a/sound/core/pcm_misc.c
++++ b/sound/core/pcm_misc.c
+@@ -433,7 +433,7 @@ int snd_pcm_format_set_silence(snd_pcm_f
+ 		return 0;
+ 	width = pcm_formats[(INT)format].phys; /* physical width */
+ 	pat = pcm_formats[(INT)format].silence;
+-	if (! width)
++	if (!width || !pat)
+ 		return -EINVAL;
+ 	/* signed or 1 byte data */
+ 	if (pcm_formats[(INT)format].signd == 1 || width <= 8) {
 
 
