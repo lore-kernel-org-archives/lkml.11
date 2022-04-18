@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CFEDC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA52CC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241630AbiDRNI1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:08:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45124 "EHLO
+        id S241979AbiDRNIk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:08:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240377AbiDRMzj (ORCPT
+        with ESMTP id S240391AbiDRMzk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:55:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB392BCA;
-        Mon, 18 Apr 2022 05:37:31 -0700 (PDT)
+        Mon, 18 Apr 2022 08:55:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790AC63D7;
+        Mon, 18 Apr 2022 05:37:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4794AB80EDC;
-        Mon, 18 Apr 2022 12:37:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA05CC385A1;
-        Mon, 18 Apr 2022 12:37:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15825611EC;
+        Mon, 18 Apr 2022 12:37:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12561C385B2;
+        Mon, 18 Apr 2022 12:37:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285449;
-        bh=cjgxeclnMlt0Wf4GDnGqD7fbo9ohrM+9rOQvJXfpy14=;
+        s=korg; t=1650285455;
+        bh=A0c8jWrim47aI1vvoqLwuBRVgPZtOLitZHMnc553NXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sFeSgsz7ZCmRbBMqJk2WFDyF3nCVXqmv7yrpWwK9ebDBLL3P71flimB/EM7Vt9Rod
-         YFc1YI4YvBkVUxG2BmSUncEjh0Bf8ntxfOtLnJe9SfMJV8WxCb7dnZ1eDq07Qa1NvJ
-         mZjyjELcbXD145LuRB+XUW4G3v81W+q9sFQpQug4=
+        b=vreiq0qulRR1/uG8Vfj/qUHZKX30JqWzwFofiyhx9+5lPSm431qYviE+jHmhoZAC0
+         3fAISmuZeD/YMbOcs/bYuapkfFJe8cBACq+IvIrYL3cC8WevPLdpwJOehf6/zOnmm3
+         cos96E7z4KLUhWKmSyt1XcNAeSXPU5Xj67BIXwZg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.10 004/105] cpuidle: PSCI: Move the `has_lpi` check to the beginning of the function
-Date:   Mon, 18 Apr 2022 14:12:06 +0200
-Message-Id: <20220418121145.434691010@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 023/105] drm/msm/dsi: Use connector directly in msm_dsi_manager_connector_init()
+Date:   Mon, 18 Apr 2022 14:12:25 +0200
+Message-Id: <20220418121146.817696550@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -49,46 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Stephen Boyd <swboyd@chromium.org>
 
-commit 01f6c7338ce267959975da65d86ba34f44d54220 upstream.
+[ Upstream commit 47b7de6b88b962ef339a2427a023d2a23d161654 ]
 
-Currently the first thing checked is whether the PCSI cpu_suspend function
-has been initialized.
+The member 'msm_dsi->connector' isn't assigned until
+msm_dsi_manager_connector_init() returns (see msm_dsi_modeset_init() and
+how it assigns the return value). Therefore this pointer is going to be
+NULL here. Let's use 'connector' which is what was intended.
 
-Another change will be overloading `acpi_processor_ffh_lpi_probe` and
-calling it sooner.  So make the `has_lpi` check the first thing checked
-to prepare for that change.
-
-Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Sean Paul <seanpaul@chromium.org>
+Fixes: 6d5e78406991 ("drm/msm/dsi: Move dsi panel init into modeset init path")
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/478693/
+Link: https://lore.kernel.org/r/20220318000731.2823718-1-swboyd@chromium.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/cpuidle.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/msm/dsi/dsi_manager.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm64/kernel/cpuidle.c
-+++ b/arch/arm64/kernel/cpuidle.c
-@@ -54,6 +54,9 @@ static int psci_acpi_cpu_init_idle(unsig
- 	struct acpi_lpi_state *lpi;
- 	struct acpi_processor *pr = per_cpu(processors, cpu);
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+index 1d28dfba2c9b..fb421ca56b3d 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+@@ -644,7 +644,7 @@ struct drm_connector *msm_dsi_manager_connector_init(u8 id)
+ 	return connector;
  
-+	if (unlikely(!pr || !pr->flags.has_lpi))
-+		return -EINVAL;
-+
- 	/*
- 	 * If the PSCI cpu_suspend function hook has not been initialized
- 	 * idle states must not be enabled, so bail out
-@@ -61,9 +64,6 @@ static int psci_acpi_cpu_init_idle(unsig
- 	if (!psci_ops.cpu_suspend)
- 		return -EOPNOTSUPP;
+ fail:
+-	connector->funcs->destroy(msm_dsi->connector);
++	connector->funcs->destroy(connector);
+ 	return ERR_PTR(ret);
+ }
  
--	if (unlikely(!pr || !pr->flags.has_lpi))
--		return -EINVAL;
--
- 	count = pr->power.count - 1;
- 	if (count <= 0)
- 		return -ENODEV;
+-- 
+2.35.1
+
 
 
