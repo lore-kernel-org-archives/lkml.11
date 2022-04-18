@@ -2,117 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1497BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 21:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46512C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 21:01:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347852AbiDRVED (ORCPT
+        id S1347877AbiDRVEI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 17:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43662 "EHLO
+        Mon, 18 Apr 2022 17:04:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbiDRVEA (ORCPT
+        with ESMTP id S229722AbiDRVEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 17:04:00 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B7529CAD
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 14:01:20 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id c23so13362686plo.0
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 14:01:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=g9SlBxAEXYzwjMJu7o40O+pCRbCnTB4bqjasZkmIBA0=;
-        b=ByXT3wNKAzy3pU4dREgQ1/iR1Ngw3Bz9HOtrRq/dTlBl3k4nFzga6Tec5mPOBaFhxy
-         d/54ItH6YXWdMSmy0QZNk1HGHgamliJQUT7H+DtnjNSfxNxsLZjNq93ASUyvLfU4ZQfa
-         nNLtwRXtjagwpFitkrywwMGHAgAldsx942WeA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=g9SlBxAEXYzwjMJu7o40O+pCRbCnTB4bqjasZkmIBA0=;
-        b=z0fTCNTK/THHYYdVLLdUdvoJ5q92Cg8zIqv3hwa20fks2tCIdGsjybNGyHyx44DDTH
-         Dum99WN68yScEoqchNnSySNfNBzO3TGOh/wSSaw+C/5KZJX39TINJLo5fiKNpAK5VmST
-         eCBD2kmm3SZy6BOkzopw/cizrceBS2qK7SQSEBQyrdKVwkShYzgRtnFOXEV1Nvl6WRdR
-         bcY9Ae5+/6eG6fFRTVSY2zDl1Xba0iIMYVeCwShYVovdFxYOaG6nxoUdONhT4hNHi/r0
-         IKLbvOp4/nD5gz1xGkG6FlPalGMl4LTSA20LuZXB0tNrPRJMz9ULI3UwDL/DUtBj1F7s
-         y8Dw==
-X-Gm-Message-State: AOAM530Cbpdu4hWAWV5ws3au1u4SQzGjF0h1VbQQsPAgwIc+2c9N5z0A
-        Rn8V/ZfKMp4BPt7nqSGz6KalMA==
-X-Google-Smtp-Source: ABdhPJyTk+256wVTv5JKwXa8bLCDE564IyAH4Nof8tBOM3DOv5axJP7gLoG52I8CiMe57tjHle/w2A==
-X-Received: by 2002:a17:902:7fc5:b0:158:1de9:4646 with SMTP id t5-20020a1709027fc500b001581de94646mr12368232plb.91.1650315680061;
-        Mon, 18 Apr 2022 14:01:20 -0700 (PDT)
-Received: from evgreen-glaptop.lan ([98.47.98.87])
-        by smtp.gmail.com with ESMTPSA id y15-20020a17090a1f4f00b001c7ecaf9e13sm14047973pjy.35.2022.04.18.14.01.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Apr 2022 14:01:18 -0700 (PDT)
-From:   Evan Green <evgreen@chromium.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Rajat Jain <rajatja@chromium.org>,
-        Evan Green <evgreen@chromium.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Razvan Heghedus <heghedus.razvan@gmail.com>,
-        Wei Ming Chen <jj251510319013@gmail.com>,
-        Youngjin Jang <yj84.jang@samsung.com>,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: [PATCH v2 0/2] USB: Quiesce interrupts across pm freeze
-Date:   Mon, 18 Apr 2022 14:00:44 -0700
-Message-Id: <20220418210046.2060937-1-evgreen@chromium.org>
-X-Mailer: git-send-email 2.31.0
+        Mon, 18 Apr 2022 17:04:04 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBC929CAD;
+        Mon, 18 Apr 2022 14:01:21 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b58fe329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:58fe:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 91CC91EC02DD;
+        Mon, 18 Apr 2022 23:01:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1650315676;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=7HCvMEj24aZ0zd1t+d9k0U1kKozNBgur5S9H4AYHe2U=;
+        b=PErpnXqqZQtQgL4AVRKd8/NrioNhTgva7ErctEwxIx5vM9xybZb2H6+Gjqp7SkSq8RbEdk
+        f4cpHg4/T6DzsWWp9iUSG7nFSqmiwTia4j3db9Y5jzRwakr+LkKPnllCzkhxAddT2F+QkN
+        4nErnaZw94C+E3d3rKS/yuXy7UB/I70=
+Date:   Mon, 18 Apr 2022 23:01:12 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv4 3/8] efi/x86: Implement support for unaccepted memory
+Message-ID: <Yl3RmPhdZieSr8W2@zn.tnic>
+References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
+ <20220405234343.74045-4-kirill.shutemov@linux.intel.com>
+ <Ylnwmvygp796+qcA@zn.tnic>
+ <20220418155545.a567xnxa6elglapl@box.shutemov.name>
+ <Yl2UHOQ4iZJ29k0q@zn.tnic>
+ <20220418202431.whvql4w57c7l5vpw@box.shutemov.name>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220418202431.whvql4w57c7l5vpw@box.shutemov.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The documentation for the freeze() method says that it "should quiesce
-the device so that it doesn't generate IRQs or DMA". The unspoken
-consequence of not doing this is that MSIs aimed at non-boot CPUs may
-get fully lost if they're sent during the period where the target CPU is
-offline.
+On Mon, Apr 18, 2022 at 11:24:31PM +0300, Kirill A. Shutemov wrote:
+> <linux/bitmap> doesn't include <linux/kernel.h> or similar things.
+> Is it okay for now?
 
-The current behavior of the USB subsystem still allows interrupts to
-come in after freeze, both in terms of remote wakeups and HC events
-related to things like root plug port activity. This can get controllers
-like XHCI, which is very sensitive to lost interrupts, in a wedged
-state. This series attempts to fully quiesce interrupts coming from USB
-across in a freeze or quiescent state.
+No, it is not ok because those linux/ includes are moving targets. They
+keep changing and then that indirectly influences the decompressor.
 
-These patches are grouped together because they serve a united purpose,
-but are actually independent. They could be merged or reverted
-individually.
+How much functionality from linux/bitmap.h do you actually need?
 
-You may be able to reproduce this issue on your own machine via the
-following:
-1. Disable runtime PM on your XHCI controller
-2. Aim your XHCI IRQ at a non-boot CPU (replace 174): echo 2 >
-   /proc/irq/174/smp_affinity
-3. Attempt to hibernate (no need to actually go all the way down).
+> But the goal of the function is not to accept the memory, but mark it
+> as unaccepted in the bitmap.
 
-I run 2 and 3 in a loop, and can usually hit a hang or dead XHCI
-controller within 1-2 iterations. I happened to notice this on an
-Alderlake system where runtime PM is accidentally disabled for one of
-the XHCI controllers. Some more discussion and debugging can be found at
-[1].
+Really?
 
-[1] https://lore.kernel.org/linux-pci/CAE=gft4a-QL82iFJE_xRQ3JrMmz-KZKWREtz=MghhjFbJeK=8A@mail.gmail.com/T/#u
++	 * Accept small regions that might not be able to be represented
++	 * in the bitmap:
++	 */
++	if (end - start < 2 * PMD_SIZE) {
++		__accept_memory(start, end);
 
-Changes in v2:
- - Added the patch modifying the remote wakeup state
- - Removed the change to freeze_noirq/thaw_noirq
+That looks like it is accepting to me.
 
-Evan Green (2):
-  USB: core: Disable remote wakeup for freeze/quiesce
-  USB: hcd-pci: Fully suspend across freeze/thaw cycle
+> Conceptionally, it is just memory that requires additional action before
+> it can be accessed. Yes, at the moment TDX and SEV are the only users.
+> It is implementation detail that TDX and SEV use memory encryption.
 
- drivers/usb/core/driver.c  | 20 +++++++++-----------
- drivers/usb/core/hcd-pci.c |  4 ++--
- 2 files changed, 11 insertions(+), 13 deletions(-)
+So there *might* be some potential future use. Nothing concrete at the
+moment.
+
+> Because I don't think it is a good fit. Frankly, even <asm/coco.h> fits
+> better, although I'm no a fan either.
+> 
+> Do we have file shortage? I would rather keep it separate.
+
+So I have not read a single argument for why the unaccepted memory gunk
+should be separate.
+
+We have perfectly fine mem_encrypt.[ch] files everywhere which already
+contain code which deals with the kernel running as encrypted guest. The
+unaccepted memory stuff is part of that - not something separate.
+
+If it gets to get used for something different, sure, then it can be
+carved out because it might need to be built separately, without the
+rest of the encryption code. But as it is now, it doesn't have to. So
+please put it in those files.
+
+> Both allocate_e820() and handling unaccepted memory requires access to the
+> efi memory map. We only need the size of memory map for e820, while
+> unaccepted memory requires walking the map. We can serve both by
+> requesting the map from the firmware once. It requires allocation and
+> freeing memory for the map.
+> 
+> Makes sense?
+
+Ok, thanks.
 
 -- 
-2.31.0
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
