@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F25C3527E
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:32:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB0EC352A1
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:32:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242271AbiDRNcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48744 "EHLO
+        id S242480AbiDRNcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240259AbiDRNGG (ORCPT
+        with ESMTP id S240922AbiDRNGI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:06:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BFB12A243;
-        Mon, 18 Apr 2022 05:46:47 -0700 (PDT)
+        Mon, 18 Apr 2022 09:06:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DA422A248;
+        Mon, 18 Apr 2022 05:46:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD06F6101A;
-        Mon, 18 Apr 2022 12:46:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C22A4C385A1;
-        Mon, 18 Apr 2022 12:46:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE028B80E4B;
+        Mon, 18 Apr 2022 12:46:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A80BC385A8;
+        Mon, 18 Apr 2022 12:46:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286006;
-        bh=ObuRGH4U8Y0QJAW/k3Ut0SeeASlOCKV0F3wi0/hb/es=;
+        s=korg; t=1650286012;
+        bh=ebi2poixp33S572jMWkGPuaSEFRwfhtfz+49UaSKZrE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YhbZlUwAgy/XwnrkV/25nDGG4tCqUq/TTRl+qzuHyUfQHsZLCvF6ZS3l8z69uSkCB
-         cQ+WZPiMlRMV03sWyr8GS5L7iei9YT6X8kOz1Ww/DKROC3Yrp3oTN49N5y19XgWFAp
-         VlPvCMKWf68DUphM5x+bf/+syJ/61anekOX/V/Xo=
+        b=ZeL6O/qYKldtuwxo/hx/v5UDG4+0EjapfS0nmcZLyENGqFNJPUad/edzu5hPgOkFo
+         lx0U+FFeiPQU79GljTGJiLOnKq/9/ZTdb9vUg8PR0FvkxMb7UWU8oG1mwySR3lXQV5
+         uDX0chYMjFPB8u6wSyrbzYn+Lqiq1JU+S+fFntks=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Oliver Upton <oupton@google.com>, Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 4.19 25/32] KVM: Dont create VM debugfs files outside of the VM directory
-Date:   Mon, 18 Apr 2022 14:14:05 +0200
-Message-Id: <20220418121127.860908139@linuxfoundation.org>
+        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.19 27/32] ALSA: hda/realtek: Add quirk for Clevo PD50PNT
+Date:   Mon, 18 Apr 2022 14:14:07 +0200
+Message-Id: <20220418121127.917655493@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
 References: <20220418121127.127656835@linuxfoundation.org>
@@ -48,59 +48,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Upton <oupton@google.com>
+From: Tim Crawford <tcrawford@system76.com>
 
-commit a44a4cc1c969afec97dbb2aedaf6f38eaa6253bb upstream.
+commit 9eb6f5c388060d8cef3c8b616cc31b765e022359 upstream.
 
-Unfortunately, there is no guarantee that KVM was able to instantiate a
-debugfs directory for a particular VM. To that end, KVM shouldn't even
-attempt to create new debugfs files in this case. If the specified
-parent dentry is NULL, debugfs_create_file() will instantiate files at
-the root of debugfs.
+Fixes speaker output and headset detection on Clevo PD50PNT.
 
-For arm64, it is possible to create the vgic-state file outside of a
-VM directory, the file is not cleaned up when a VM is destroyed.
-Nonetheless, the corresponding struct kvm is freed when the VM is
-destroyed.
-
-Nip the problem in the bud for all possible errant debugfs file
-creations by initializing kvm->debugfs_dentry to -ENOENT. In so doing,
-debugfs_create_file() will fail instead of creating the file in the root
-directory.
-
-Cc: stable@kernel.org
-Fixes: 929f45e32499 ("kvm: no need to check return value of debugfs_create functions")
-Signed-off-by: Oliver Upton <oupton@google.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220406235615.1447180-2-oupton@google.com
+Signed-off-by: Tim Crawford <tcrawford@system76.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220405182029.27431-1-tcrawford@system76.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- virt/kvm/kvm_main.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -610,7 +610,7 @@ static void kvm_destroy_vm_debugfs(struc
- {
- 	int i;
- 
--	if (!kvm->debugfs_dentry)
-+	if (IS_ERR(kvm->debugfs_dentry))
- 		return;
- 
- 	debugfs_remove_recursive(kvm->debugfs_dentry);
-@@ -628,6 +628,12 @@ static int kvm_create_vm_debugfs(struct
- 	struct kvm_stat_data *stat_data;
- 	struct kvm_stats_debugfs_item *p;
- 
-+	/*
-+	 * Force subsequent debugfs file creations to fail if the VM directory
-+	 * is not created.
-+	 */
-+	kvm->debugfs_dentry = ERR_PTR(-ENOENT);
-+
- 	if (!debugfs_initialized())
- 		return 0;
- 
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -2552,6 +2552,7 @@ static const struct snd_pci_quirk alc882
+ 	SND_PCI_QUIRK(0x1558, 0x65e1, "Clevo PB51[ED][DF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
+ 	SND_PCI_QUIRK(0x1558, 0x65e5, "Clevo PC50D[PRS](?:-D|-G)?", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
+ 	SND_PCI_QUIRK(0x1558, 0x65f1, "Clevo PC50HS", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
++	SND_PCI_QUIRK(0x1558, 0x65f5, "Clevo PD50PN[NRT]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
+ 	SND_PCI_QUIRK(0x1558, 0x67d1, "Clevo PB71[ER][CDF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
+ 	SND_PCI_QUIRK(0x1558, 0x67e1, "Clevo PB71[DE][CDF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
+ 	SND_PCI_QUIRK(0x1558, 0x67e5, "Clevo PC70D[PRS](?:-D|-G)?", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
 
 
