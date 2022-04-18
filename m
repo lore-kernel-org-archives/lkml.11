@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88FF4C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9885BC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:21:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242061AbiDRNWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41070 "EHLO
+        id S242106AbiDRNXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241762AbiDRND1 (ORCPT
+        with ESMTP id S241761AbiDRND1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:03:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C36528E34;
-        Mon, 18 Apr 2022 05:44:17 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E31A28E33;
+        Mon, 18 Apr 2022 05:44:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A75BB80EDB;
-        Mon, 18 Apr 2022 12:44:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF9FEC385A1;
-        Mon, 18 Apr 2022 12:44:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1715A60FB6;
+        Mon, 18 Apr 2022 12:44:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21CE2C385A1;
+        Mon, 18 Apr 2022 12:44:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285854;
-        bh=kqCp4Kd1Dcil/DNJrkrnFjYds6a3mXSl6nnJmBPCzWM=;
+        s=korg; t=1650285851;
+        bh=/MTiFzhPPBzBmRP6KphVyG6z6NjGrTicjIvssdJrpQs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U1tzouWbro0QOdoA0bSePFtJwbi0Sqg9JVcOc6uE3AlcxfYAeuQtlJl0flprXtqLB
-         omhDRpvy3qH8Z0lh/KJnq1nh3ZyYxSAM819tSxvG5321fWfCWHkRYZxg95A7A5N77+
-         lsZmj5GWd7gHjaYLrB1k48SdMtZxzhSZym/dfY5Q=
+        b=rW2v9zG93PzB0reFQZ95GjAANLEhMBcqhzV9lJ5cl+piFYiX2Q1DyxHqsQnvFmm4t
+         ivalAe9VZ10fNejPxmXVGqP6bAySdSSdnBlT8uZXrsuPz8dxM5IWAertGEPujgy+pO
+         p4EogSSEeyZssNHn9EX3n6DlSPtQBkTm6dzlJtok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tushar Patel <tushar.patel@amd.com>,
-        Felix Kuehling <felix.kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 19/63] drm/amdkfd: Fix Incorrect VMIDs passed to HWS
-Date:   Mon, 18 Apr 2022 14:13:16 +0200
-Message-Id: <20220418121135.452428065@linuxfoundation.org>
+        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.4 45/63] ALSA: hda/realtek: Add quirk for Clevo PD50PNT
+Date:   Mon, 18 Apr 2022 14:13:42 +0200
+Message-Id: <20220418121137.243846810@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -50,62 +48,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tushar Patel <tushar.patel@amd.com>
+From: Tim Crawford <tcrawford@system76.com>
 
-[ Upstream commit b7dfbd2e601f3fee545bc158feceba4f340fe7cf ]
+commit 9eb6f5c388060d8cef3c8b616cc31b765e022359 upstream.
 
-Compute-only GPUs have more than 8 VMIDs allocated to KFD. Fix
-this by passing correct number of VMIDs to HWS
+Fixes speaker output and headset detection on Clevo PD50PNT.
 
-v2: squash in warning fix (Alex)
-
-Signed-off-by: Tushar Patel <tushar.patel@amd.com>
-Reviewed-by: Felix Kuehling <felix.kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Tim Crawford <tcrawford@system76.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220405182029.27431-1-tcrawford@system76.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |  2 +-
- drivers/gpu/drm/amd/amdkfd/kfd_device.c | 11 +++--------
- 2 files changed, 4 insertions(+), 9 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-index e8e172010416..ffd754713522 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-@@ -633,7 +633,7 @@ MODULE_PARM_DESC(sched_policy,
-  * Maximum number of processes that HWS can schedule concurrently. The maximum is the
-  * number of VMIDs assigned to the HWS, which is also the default.
-  */
--int hws_max_conc_proc = 8;
-+int hws_max_conc_proc = -1;
- module_param(hws_max_conc_proc, int, 0444);
- MODULE_PARM_DESC(hws_max_conc_proc,
- 	"Max # processes HWS can execute concurrently when sched_policy=0 (0 = no concurrency, #VMIDs for KFD = Maximum(default))");
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_device.c b/drivers/gpu/drm/amd/amdkfd/kfd_device.c
-index ad9483b9eea3..60ee1a832112 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_device.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_device.c
-@@ -609,15 +609,10 @@ bool kgd2kfd_device_init(struct kfd_dev *kfd,
- 			- kfd->vm_info.first_vmid_kfd + 1;
- 
- 	/* Verify module parameters regarding mapped process number*/
--	if ((hws_max_conc_proc < 0)
--			|| (hws_max_conc_proc > kfd->vm_info.vmid_num_kfd)) {
--		dev_err(kfd_device,
--			"hws_max_conc_proc %d must be between 0 and %d, use %d instead\n",
--			hws_max_conc_proc, kfd->vm_info.vmid_num_kfd,
--			kfd->vm_info.vmid_num_kfd);
-+	if (hws_max_conc_proc >= 0)
-+		kfd->max_proc_per_quantum = min((u32)hws_max_conc_proc, kfd->vm_info.vmid_num_kfd);
-+	else
- 		kfd->max_proc_per_quantum = kfd->vm_info.vmid_num_kfd;
--	} else
--		kfd->max_proc_per_quantum = hws_max_conc_proc;
- 
- 	/* Allocate global GWS that is shared by all KFD processes */
- 	if (hws_gws_support && amdgpu_amdkfd_alloc_gws(kfd->kgd,
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -2568,6 +2568,7 @@ static const struct snd_pci_quirk alc882
+ 	SND_PCI_QUIRK(0x1558, 0x65e1, "Clevo PB51[ED][DF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
+ 	SND_PCI_QUIRK(0x1558, 0x65e5, "Clevo PC50D[PRS](?:-D|-G)?", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
+ 	SND_PCI_QUIRK(0x1558, 0x65f1, "Clevo PC50HS", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
++	SND_PCI_QUIRK(0x1558, 0x65f5, "Clevo PD50PN[NRT]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
+ 	SND_PCI_QUIRK(0x1558, 0x67d1, "Clevo PB71[ER][CDF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
+ 	SND_PCI_QUIRK(0x1558, 0x67e1, "Clevo PB71[DE][CDF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
+ 	SND_PCI_QUIRK(0x1558, 0x67e5, "Clevo PC70D[PRS](?:-D|-G)?", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
 
 
