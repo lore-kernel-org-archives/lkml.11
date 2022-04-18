@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BCAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B7AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239347AbiDRMgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38420 "EHLO
+        id S239232AbiDRMgL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:36:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239136AbiDRM1r (ORCPT
+        with ESMTP id S238887AbiDRM1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:27:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0351EC47;
-        Mon, 18 Apr 2022 05:21:22 -0700 (PDT)
+        Mon, 18 Apr 2022 08:27:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E521CFDE;
+        Mon, 18 Apr 2022 05:20:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E58DB60EF4;
-        Mon, 18 Apr 2022 12:21:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2F34C385A7;
-        Mon, 18 Apr 2022 12:21:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 279A760F0C;
+        Mon, 18 Apr 2022 12:20:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3874AC385A7;
+        Mon, 18 Apr 2022 12:20:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284481;
-        bh=rYRFrmduGK9OPApLKSoWYm1uIg6/U0nzJAGC+goYJts=;
+        s=korg; t=1650284452;
+        bh=1ZR11ZiS9Zx+BLT5iJLPGmUOQMhGcjaQF2rDXTOW1JA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qWmTlZyPd/lu4anGFFdtyBqhUjQxRSLKRA+FrVD975Mw+aOElgHPstbuUYYBVThVb
-         VPTutI3+0CjdJG3Wvd4ceXz1KjdjBQFMU8Eypp7CRM+abX0oi9Qw6ea/E1QwuGRBwG
-         yghdled1ZiaurCmVgvwBvDGt3gd02eXbf7GjS66A=
+        b=FeWTPBD9tR+4b2DCoVVIw1ULaQtVXZvDgXU32SBbwdi4tk8+pTlfakmqxbDNiHjBa
+         XGPpNKJsP67pX/7znRIGvjmzu5lPw0hvlnIiBGzGA+pjBAPTrxg7RdzVHxbAHLQjwv
+         kTB95m664XEtAlkPrvhYBgzzbcH0Qw7R0jHjGVXM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 105/219] net: lan966x: Stop processing the MAC entry is port is wrong.
-Date:   Mon, 18 Apr 2022 14:11:14 +0200
-Message-Id: <20220418121209.833152383@linuxfoundation.org>
+Subject: [PATCH 5.17 120/219] cifs: potential buffer overflow in handling symlinks
+Date:   Mon, 18 Apr 2022 14:11:29 +0200
+Message-Id: <20220418121210.257572780@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,48 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
+From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 
-[ Upstream commit 269219321eb7d7645a3122cf40a420c5dc655eb9 ]
+[ Upstream commit 64c4a37ac04eeb43c42d272f6e6c8c12bfcf4304 ]
 
-Currently when getting a new MAC is learn, the HW generates an
-interrupt. So then the SW will check the new entry and checks if it
-arrived on a correct port. If it didn't just generate a warning.
-But this could still crash the system. Therefore stop processing that
-entry when an issue is seen.
+Smatch printed a warning:
+	arch/x86/crypto/poly1305_glue.c:198 poly1305_update_arch() error:
+	__memcpy() 'dctx->buf' too small (16 vs u32max)
 
-Fixes: 5ccd66e01cbef8 ("net: lan966x: add support for interrupts from analyzer")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+It's caused because Smatch marks 'link_len' as untrusted since it comes
+from sscanf(). Add a check to ensure that 'link_len' is not larger than
+the size of the 'link_str' buffer.
+
+Fixes: c69c1b6eaea1 ("cifs: implement CIFSParseMFSymlink()")
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_mac.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ fs/cifs/link.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-index ce5970bdcc6a..2679111ef669 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-@@ -346,7 +346,8 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
+diff --git a/fs/cifs/link.c b/fs/cifs/link.c
+index 852e54ee82c2..bbdf3281559c 100644
+--- a/fs/cifs/link.c
++++ b/fs/cifs/link.c
+@@ -85,6 +85,9 @@ parse_mf_symlink(const u8 *buf, unsigned int buf_len, unsigned int *_link_len,
+ 	if (rc != 1)
+ 		return -EINVAL;
  
- 			lan966x_mac_process_raw_entry(&raw_entries[column],
- 						      mac, &vid, &dest_idx);
--			WARN_ON(dest_idx > lan966x->num_phys_ports);
-+			if (WARN_ON(dest_idx > lan966x->num_phys_ports))
-+				continue;
- 
- 			/* If the entry in SW is found, then there is nothing
- 			 * to do
-@@ -392,7 +393,8 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
- 
- 		lan966x_mac_process_raw_entry(&raw_entries[column],
- 					      mac, &vid, &dest_idx);
--		WARN_ON(dest_idx > lan966x->num_phys_ports);
-+		if (WARN_ON(dest_idx > lan966x->num_phys_ports))
-+			continue;
- 
- 		mac_entry = lan966x_mac_alloc_entry(mac, vid, dest_idx);
- 		if (!mac_entry)
++	if (link_len > CIFS_MF_SYMLINK_LINK_MAXLEN)
++		return -EINVAL;
++
+ 	rc = symlink_hash(link_len, link_str, md5_hash);
+ 	if (rc) {
+ 		cifs_dbg(FYI, "%s: MD5 hash failure: %d\n", __func__, rc);
 -- 
 2.35.1
 
