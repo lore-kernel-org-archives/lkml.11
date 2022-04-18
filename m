@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80BA2C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFCBEC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240504AbiDRNyi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
+        id S1343832AbiDRNy1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:54:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244860AbiDRNa7 (ORCPT
+        with ESMTP id S244855AbiDRNa6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA3B1EED5;
-        Mon, 18 Apr 2022 05:56:29 -0700 (PDT)
+        Mon, 18 Apr 2022 09:30:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755691EC73;
+        Mon, 18 Apr 2022 05:56:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15CB060FE8;
-        Mon, 18 Apr 2022 12:56:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5D07C385A1;
-        Mon, 18 Apr 2022 12:56:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 349F1B80E44;
+        Mon, 18 Apr 2022 12:56:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65ACBC385A7;
+        Mon, 18 Apr 2022 12:56:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286588;
-        bh=Pq05aB3a4QSn6arKxcCMBZcFAjcrNpJ0XkZb+Q1+O+k=;
+        s=korg; t=1650286574;
+        bh=TjnvLi83cOFFJf6NtahCnNbN2EUZK9664M/61JhVXLI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jNLdYFsxGZ91KsK/puFdoDeyXJpjXzH8+moTKgfLNjV2pn0/y0eg6rBgwxEkPtDDS
-         /eVtt0JXxhBc072rVc785VkePdmFrFyCYUwa4omjQuOic/kIfHiAHB9jvws/SB9+4v
-         q5i1cRw9dIC2LclEZOL4Rb7PzAKEX0+PbHBAkkzU=
+        b=IcjOBfFIzBfvrSIxdmx+CnXUvDanq6IsaKIxEaTtBvgvU2BgIeHZPEEzAOfz5Yafs
+         dVQiOgh0GrVDo37e6MjttfBc09PeSdw2kuAXmKoK7FCt3fcRwgcqzwUdFJO3V4qGTe
+         NBi1EiMVtmnzYEJJd4P6VCUxQfU2qaCsd7AlEyAE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Saurav Kashyap <skashyap@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.14 183/284] scsi: qla2xxx: Suppress a kernel complaint in qla_create_qpair()
-Date:   Mon, 18 Apr 2022 14:12:44 +0200
-Message-Id: <20220418121216.941359834@linuxfoundation.org>
+        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 179/284] mmc: host: Return an error when ->enable_sdio_irq() ops is missing
+Date:   Mon, 18 Apr 2022 14:12:40 +0200
+Message-Id: <20220418121216.828086987@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -51,64 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurav Kashyap <skashyap@marvell.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-commit a60447e7d451df42c7bde43af53b34f10f34f469 upstream.
+[ Upstream commit d6c9219ca1139b74541b2a98cee47a3426d754a9 ]
 
-[   12.323788] BUG: using smp_processor_id() in preemptible [00000000] code: systemd-udevd/1020
-[   12.332297] caller is qla2xxx_create_qpair+0x32a/0x5d0 [qla2xxx]
-[   12.338417] CPU: 7 PID: 1020 Comm: systemd-udevd Tainted: G          I      --------- ---  5.14.0-29.el9.x86_64 #1
-[   12.348827] Hardware name: Dell Inc. PowerEdge R610/0F0XJ6, BIOS 6.6.0 05/22/2018
-[   12.356356] Call Trace:
-[   12.358821]  dump_stack_lvl+0x34/0x44
-[   12.362514]  check_preemption_disabled+0xd9/0xe0
-[   12.367164]  qla2xxx_create_qpair+0x32a/0x5d0 [qla2xxx]
-[   12.372481]  qla2x00_probe_one+0xa3a/0x1b80 [qla2xxx]
-[   12.377617]  ? _raw_spin_lock_irqsave+0x19/0x40
-[   12.384284]  local_pci_probe+0x42/0x80
-[   12.390162]  ? pci_match_device+0xd7/0x110
-[   12.396366]  pci_device_probe+0xfd/0x1b0
-[   12.402372]  really_probe+0x1e7/0x3e0
-[   12.408114]  __driver_probe_device+0xfe/0x180
-[   12.414544]  driver_probe_device+0x1e/0x90
-[   12.420685]  __driver_attach+0xc0/0x1c0
-[   12.426536]  ? __device_attach_driver+0xe0/0xe0
-[   12.433061]  ? __device_attach_driver+0xe0/0xe0
-[   12.439538]  bus_for_each_dev+0x78/0xc0
-[   12.445294]  bus_add_driver+0x12b/0x1e0
-[   12.451021]  driver_register+0x8f/0xe0
-[   12.456631]  ? 0xffffffffc07bc000
-[   12.461773]  qla2x00_module_init+0x1be/0x229 [qla2xxx]
-[   12.468776]  do_one_initcall+0x44/0x200
-[   12.474401]  ? load_module+0xad3/0xba0
-[   12.479908]  ? kmem_cache_alloc_trace+0x45/0x410
-[   12.486268]  do_init_module+0x5c/0x280
-[   12.491730]  __do_sys_init_module+0x12e/0x1b0
-[   12.497785]  do_syscall_64+0x3b/0x90
-[   12.503029]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   12.509764] RIP: 0033:0x7f554f73ab2e
+Even if the current WARN() notifies the user that something is severely
+wrong, we can still end up in a PANIC() when trying to invoke the missing
+->enable_sdio_irq() ops. Therefore, let's also return an error code and
+prevent the host from being added.
 
-Link: https://lore.kernel.org/r/20220110050218.3958-15-njavali@marvell.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+While at it, move the code into a separate function to prepare for
+subsequent changes and for further host caps validations.
+
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://lore.kernel.org/r/20220303165142.129745-1-ulf.hansson@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_init.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mmc/core/host.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/qla2xxx/qla_init.c
-+++ b/drivers/scsi/qla2xxx/qla_init.c
-@@ -8037,7 +8037,7 @@ struct qla_qpair *qla2xxx_create_qpair(s
- 		qpair->rsp->req = qpair->req;
- 		qpair->rsp->qpair = qpair;
- 		/* init qpair to this cpu. Will adjust at run time. */
--		qla_cpu_update(qpair, smp_processor_id());
-+		qla_cpu_update(qpair, raw_smp_processor_id());
+diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
+index 3740fb0052a4..4da2bcfd0649 100644
+--- a/drivers/mmc/core/host.c
++++ b/drivers/mmc/core/host.c
+@@ -401,6 +401,16 @@ struct mmc_host *mmc_alloc_host(int extra, struct device *dev)
  
- 		if (IS_T10_PI_CAPABLE(ha) && ql2xenabledif) {
- 			if (ha->fw_attributes & BIT_4)
+ EXPORT_SYMBOL(mmc_alloc_host);
+ 
++static int mmc_validate_host_caps(struct mmc_host *host)
++{
++	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
++		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ /**
+  *	mmc_add_host - initialise host hardware
+  *	@host: mmc host
+@@ -413,8 +423,9 @@ int mmc_add_host(struct mmc_host *host)
+ {
+ 	int err;
+ 
+-	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
+-		!host->ops->enable_sdio_irq);
++	err = mmc_validate_host_caps(host);
++	if (err)
++		return err;
+ 
+ 	err = device_add(&host->class_dev);
+ 	if (err)
+-- 
+2.34.1
+
 
 
