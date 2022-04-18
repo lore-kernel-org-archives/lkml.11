@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11EC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F18A0C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:23:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238747AbiDRM01 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:26:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38532 "EHLO
+        id S238684AbiDRM0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238668AbiDRMZB (ORCPT
+        with ESMTP id S238648AbiDRMZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:25:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A8A205D6;
-        Mon, 18 Apr 2022 05:19:27 -0700 (PDT)
+        Mon, 18 Apr 2022 08:25:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331211BEAE;
+        Mon, 18 Apr 2022 05:19:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AABCD60F0A;
-        Mon, 18 Apr 2022 12:19:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCF5AC385A7;
-        Mon, 18 Apr 2022 12:19:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3AB33B80ED7;
+        Mon, 18 Apr 2022 12:19:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AE22C385A1;
+        Mon, 18 Apr 2022 12:19:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284366;
-        bh=M8KDOl3jNMBBPrA+ysD76RqQfHyggS9opeHrdGWoyVk=;
+        s=korg; t=1650284372;
+        bh=g2PbFRUOzkUxKx6MznAE/X04pbbqErwiMTNr3lEww8I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JzU9QLSdu8IX/pvPNI1TnfOW/uLExtaguXcsAMMTDbIBPVsGcqI83pGNm7npCAFhi
-         VkrIIJvxDvfmEiCtROMUY9ECVQAYF+oAlfTVRIGbLUst6lqoL5YHN0kJyXJ3REe+O7
-         txOb5y5JqzWfd4DgOXadKzuIEsiU9Gp4dqdgnv9c=
+        b=iqhcTPISYhdXpZ+zr4lulM3F8crHY6k7vqpAfWX10lzDotEptQqRMNF7i+UhJVZAx
+         qzonOnk5etVdDmT432Eupd7ttz5+m694NjEnIqnHPZV3hx0d6gD4mx3bD+srywPG1Q
+         WpPkBQXDB4ILpiWfcetIigSLyPeAql3t1e89Ne3Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.17 040/219] ALSA: ice1724: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:10:09 +0200
-Message-Id: <20220418121205.735592842@linuxfoundation.org>
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 093/219] io_uring: stop using io_wq_work as an fd placeholder
+Date:   Mon, 18 Apr 2022 14:11:02 +0200
+Message-Id: <20220418121209.280248121@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -47,53 +48,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit 4a850a0079ce601c0c4016f4edb7d618e811ed7d upstream.
+[ Upstream commit 82733d168cbd3fe9dab603f05894316b99008924 ]
 
-The previous cleanup with devres may lead to the incorrect release
-orders at the probe error handling due to the devres's nature.  Until
-we register the card, snd_card_free() has to be called at first for
-releasing the stuff properly when the driver tries to manage and
-release the stuff via card->private_free().
+There are two reasons why this isn't the best idea:
 
-This patch fixes it by calling snd_card_free() on the error from the
-probe callback using a new helper function.
+- It's an odd area to grab a bit of storage space, hence it's an odd area
+  to grab storage from.
+- It puts the 3rd io_kiocb cacheline into the hot path, where normal hot
+  path just needs the first two.
 
-Fixes: 314f6dbb1f33 ("ALSA: ice1724: Allocate resources with device-managed APIs")
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-18-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Use 'cflags' for joint fd/cflags storage. We only need fd until we
+successfully issue, and we only need cflags once a request is done and is
+completed.
+
+Fixes: 6bf9c47a3989 ("io_uring: defer file assignment")
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/ice1712/ice1724.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ fs/io-wq.h    |  1 -
+ fs/io_uring.c | 12 ++++++++----
+ 2 files changed, 8 insertions(+), 5 deletions(-)
 
---- a/sound/pci/ice1712/ice1724.c
-+++ b/sound/pci/ice1712/ice1724.c
-@@ -2519,8 +2519,8 @@ static int snd_vt1724_create(struct snd_
-  *
-  */
+diff --git a/fs/io-wq.h b/fs/io-wq.h
+index 04d374e65e54..dbecd27656c7 100644
+--- a/fs/io-wq.h
++++ b/fs/io-wq.h
+@@ -155,7 +155,6 @@ struct io_wq_work_node *wq_stack_extract(struct io_wq_work_node *stack)
+ struct io_wq_work {
+ 	struct io_wq_work_node list;
+ 	unsigned flags;
+-	int fd;
+ };
  
--static int snd_vt1724_probe(struct pci_dev *pci,
--			    const struct pci_device_id *pci_id)
-+static int __snd_vt1724_probe(struct pci_dev *pci,
-+			      const struct pci_device_id *pci_id)
- {
- 	static int dev;
- 	struct snd_card *card;
-@@ -2662,6 +2662,12 @@ static int snd_vt1724_probe(struct pci_d
- 	return 0;
- }
+ static inline struct io_wq_work *wq_next_work(struct io_wq_work *work)
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index d13f142793f2..d05394b0c1e6 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -864,7 +864,11 @@ struct io_kiocb {
  
-+static int snd_vt1724_probe(struct pci_dev *pci,
-+			    const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_vt1724_probe(pci, pci_id));
-+}
-+
- #ifdef CONFIG_PM_SLEEP
- static int snd_vt1724_suspend(struct device *dev)
- {
+ 	u64				user_data;
+ 	u32				result;
+-	u32				cflags;
++	/* fd initially, then cflags for completion */
++	union {
++		u32			cflags;
++		int			fd;
++	};
+ 
+ 	struct io_ring_ctx		*ctx;
+ 	struct task_struct		*task;
+@@ -6708,9 +6712,9 @@ static bool io_assign_file(struct io_kiocb *req, unsigned int issue_flags)
+ 		return true;
+ 
+ 	if (req->flags & REQ_F_FIXED_FILE)
+-		req->file = io_file_get_fixed(req, req->work.fd, issue_flags);
++		req->file = io_file_get_fixed(req, req->fd, issue_flags);
+ 	else
+-		req->file = io_file_get_normal(req, req->work.fd);
++		req->file = io_file_get_normal(req, req->fd);
+ 	if (req->file)
+ 		return true;
+ 
+@@ -7243,7 +7247,7 @@ static int io_init_req(struct io_ring_ctx *ctx, struct io_kiocb *req,
+ 	if (io_op_defs[opcode].needs_file) {
+ 		struct io_submit_state *state = &ctx->submit_state;
+ 
+-		req->work.fd = READ_ONCE(sqe->fd);
++		req->fd = READ_ONCE(sqe->fd);
+ 
+ 		/*
+ 		 * Plug now if we have more than 2 IO left after this, and the
+-- 
+2.35.1
+
 
 
