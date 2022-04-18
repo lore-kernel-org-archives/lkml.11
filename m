@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19FF8C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:11:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E060FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343908AbiDRONj (ORCPT
+        id S1343826AbiDRONZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45542 "EHLO
+        Mon, 18 Apr 2022 10:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244333AbiDRN44 (ORCPT
+        with ESMTP id S244603AbiDRN4x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:56:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69EB62A73F;
-        Mon, 18 Apr 2022 06:05:43 -0700 (PDT)
+        Mon, 18 Apr 2022 09:56:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C853A4249D;
+        Mon, 18 Apr 2022 06:05:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26E02B80EC4;
-        Mon, 18 Apr 2022 13:05:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7732BC385A7;
-        Mon, 18 Apr 2022 13:05:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FE20B80E4B;
+        Mon, 18 Apr 2022 13:05:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE691C385A7;
+        Mon, 18 Apr 2022 13:05:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287141;
-        bh=Uq4rzu+iYVCiYvKLAPyXV0+epEToMfF5Hp3/zPfFeMg=;
+        s=korg; t=1650287117;
+        bh=LIsTm19HAZ36hRwtr9vey/b61u+lR3UKkgpEC2ipa7Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aHITx5H0skqUvgHMvvxcw5FOB2TGQVmCGKca41fN2He03VpfTkTcE0NcpBK4fjnjv
-         l9Wl+XY1c43dUxfddQRFPN5LOJQTBQgvlx8fgdEDmJzj2yb7dW1J4XcKA3AZGBHBWT
-         3iZ4KBmCrIxgw0N3HcJqEeSr/6WSZUqf72+T0u0U=
+        b=pJq4T8nVV2zp8K7cvxrTyeROxaWQyg+gk18w8pIcacdcuthSNwaro8M7l3LeUVptq
+         H51wjDtmfcnqnq0awl3kyp/KjLmjECL7o6RoMsqZUYkx3Cp+vpyrGSCwpzsFZ1AbyN
+         UkGdZrHOk0/egdoKd/Vn+DoC//zTnelPnCOZr4w4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        stable@vger.kernel.org, Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 068/218] memory: emif: check the pointer temp in get_device_details()
-Date:   Mon, 18 Apr 2022 14:12:14 +0200
-Message-Id: <20220418121201.557111104@linuxfoundation.org>
+Subject: [PATCH 4.9 062/218] arm64: dts: ns2: Fix spi-cpol and spi-cpha property
+Date:   Mon, 18 Apr 2022 14:12:08 +0200
+Message-Id: <20220418121201.386716402@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,35 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Kuldeep Singh <singh.kuldeep87k@gmail.com>
 
-[ Upstream commit 5b5ab1bfa1898c6d52936a57c25c5ceba2cb2f87 ]
+[ Upstream commit c953c764e505428f59ffe6afb1c73b89b5b1ac35 ]
 
-The pointer temp is allocated by devm_kzalloc(), so it should be
-checked for error handling.
+Broadcom ns2 platform has spi-cpol and spi-cpho properties set
+incorrectly. As per spi-slave-peripheral-prop.yaml, these properties are
+of flag or boolean type and not integer type. Fix the values.
 
-Fixes: 7ec944538dde ("memory: emif: add basic infrastructure for EMIF driver")
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Link: https://lore.kernel.org/r/20220225132552.27894-1-baijiaju1990@gmail.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Fixes: d69dbd9f41a7c (arm64: dts: Add ARM PL022 SPI DT nodes for NS2)
+Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+CC: Ray Jui <rjui@broadcom.com>
+CC: Scott Branden <sbranden@broadcom.com>
+CC: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/emif.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/broadcom/ns2-svk.dts | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
-index ed6c5fcb136f..9f293b931144 100644
---- a/drivers/memory/emif.c
-+++ b/drivers/memory/emif.c
-@@ -1425,7 +1425,7 @@ static struct emif_data *__init_or_module get_device_details(
- 	temp	= devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
- 	dev_info = devm_kzalloc(dev, sizeof(*dev_info), GFP_KERNEL);
- 
--	if (!emif || !pd || !dev_info) {
-+	if (!emif || !temp || !dev_info) {
- 		dev_err(dev, "%s:%d: allocation error\n", __func__, __LINE__);
- 		goto error;
- 	}
+diff --git a/arch/arm64/boot/dts/broadcom/ns2-svk.dts b/arch/arm64/boot/dts/broadcom/ns2-svk.dts
+index b09f3bc5c6c1..58114b842a59 100644
+--- a/arch/arm64/boot/dts/broadcom/ns2-svk.dts
++++ b/arch/arm64/boot/dts/broadcom/ns2-svk.dts
+@@ -103,8 +103,8 @@
+ 		compatible = "silabs,si3226x";
+ 		reg = <0>;
+ 		spi-max-frequency = <5000000>;
+-		spi-cpha = <1>;
+-		spi-cpol = <1>;
++		spi-cpha;
++		spi-cpol;
+ 		pl022,hierarchy = <0>;
+ 		pl022,interface = <0>;
+ 		pl022,slave-tx-disable = <0>;
+@@ -127,8 +127,8 @@
+ 		at25,byte-len = <0x8000>;
+ 		at25,addr-mode = <2>;
+ 		at25,page-size = <64>;
+-		spi-cpha = <1>;
+-		spi-cpol = <1>;
++		spi-cpha;
++		spi-cpol;
+ 		pl022,hierarchy = <0>;
+ 		pl022,interface = <0>;
+ 		pl022,slave-tx-disable = <0>;
 -- 
 2.34.1
 
