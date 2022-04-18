@@ -2,121 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A6EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 917CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242308AbiDRNgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53608 "EHLO
+        id S231223AbiDRNgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:36:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243775AbiDRNK1 (ORCPT
+        with ESMTP id S243770AbiDRNK1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:10:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E7B38BE6;
-        Mon, 18 Apr 2022 05:49:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6B2BB38BC2
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 05:50:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650286173;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kvBGtvq2+A80caQWmYJHxDl/MnDcbsZjkU5C1EhGvl0=;
+        b=J21ss607Bez+jnwYg+LknupRNn+Dy96+GUOsJ2VzKT9r7TWmFtvkZwMCAMbWFHbjHzQloC
+        /PqrsZs9LyCYDyfUPPm7r1eC/yAbHZmTQaekFTMdhm489rDcQNS17HGgFfJh2UX9Ygcr5R
+        G9D3j3uVwLhMeIbXF5no4i2y46uW1jM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-626-sxdqhMqSMDeFCnGNL5GFDg-1; Mon, 18 Apr 2022 08:49:30 -0400
+X-MC-Unique: sxdqhMqSMDeFCnGNL5GFDg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37EA9B80D9C;
-        Mon, 18 Apr 2022 12:49:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A41BFC385A1;
-        Mon, 18 Apr 2022 12:49:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286195;
-        bh=Z+memAqozLRat+c4a6Ee/jBxhRozmCAnZLdoYOh8JHg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UoqpJnaPg7LYlsVS3CfayeQKxLVOyCKvjnpMdHJFRCrlk9Y9ieN4YMkLG/xHyoq3w
-         7TWac5XwGenvi6g6mFz7nNhPwbKfNOYB4lT/BZr/laaR6GPXAlRxMyigqbrwgIgKtE
-         3L/P2uqoYZDHij19qgpi4g0jPIYK7lewvcTubPvc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Patrick Rudolph <patrick.rudolph@9elements.com>,
-        Marcello Sylvester Bauer <sylv@sylv.io>,
-        Alan Tull <atull@opensource.altera.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 058/284] hwmon: (pmbus) Add mutex to regulator ops
-Date:   Mon, 18 Apr 2022 14:10:39 +0200
-Message-Id: <20220418121212.343156460@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
-References: <20220418121210.689577360@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B1EC785A5A8;
+        Mon, 18 Apr 2022 12:49:29 +0000 (UTC)
+Received: from starship (unknown [10.40.194.231])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CED6B112D400;
+        Mon, 18 Apr 2022 12:49:26 +0000 (UTC)
+Message-ID: <227adbe6e8d82ad4c5a803c117d4231808a0e451.camel@redhat.com>
+Subject: Re: [PATCH 2/4] KVM: nVMX: Defer APICv updates while L2 is active
+ until L1 is active
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Gaoning Pan <pgn@zju.edu.cn>,
+        Yongkang Jia <kangel@zju.edu.cn>
+Date:   Mon, 18 Apr 2022 15:49:25 +0300
+In-Reply-To: <20220416034249.2609491-3-seanjc@google.com>
+References: <20220416034249.2609491-1-seanjc@google.com>
+         <20220416034249.2609491-3-seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrick Rudolph <patrick.rudolph@9elements.com>
+On Sat, 2022-04-16 at 03:42 +0000, Sean Christopherson wrote:
+> Defer APICv updates that occur while L2 is active until nested VM-Exit,
+> i.e. until L1 regains control.  vmx_refresh_apicv_exec_ctrl() assumes L1
+> is active and (a) stomps all over vmcs02 and (b) neglects to ever updated
+> vmcs01.  E.g. if vmcs12 doesn't enable the TPR shadow for L2 (and thus no
+> APICv controls), L1 performs nested VM-Enter APICv inhibited, and APICv
+> becomes unhibited while L2 is active, KVM will set various APICv controls
+> in vmcs02 and trigger a failed VM-Entry.  The kicker is that, unless
+> running with nested_early_check=1, KVM blames L1 and chaos ensues.
+> 
+> The obvious elephant in the room is whether or not KVM needs to disallow
+> APICv in L2 if it is inhibited in L1.  Luckily, that's largely a moot
+> point as the only dynamic inhibit conditions that affect VMX are Hyper-V
+> and IRQ blocking.  IRQ blocking is firmly a debug-only feature, and L1
+> probably deserves whatever mess it gets by enabling AutoEOI while running
+> L2 with APICv enabled.
 
-[ Upstream commit 686d303ee6301261b422ea51e64833d7909a2c36 ]
-
-On PMBUS devices with multiple pages, the regulator ops need to be
-protected with the update mutex. This prevents accidentally changing
-the page in a separate thread while operating on the PMBUS_OPERATION
-register.
-
-Tested on Infineon xdpe11280 while a separate thread polls for sensor
-data.
-
-Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
-Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
-Link: https://lore.kernel.org/r/b991506bcbf665f7af185945f70bf9d5cf04637c.1645804976.git.sylv@sylv.io
-Fixes: ddbb4db4ced1b ("hwmon: (pmbus) Add regulator support")
-Cc: Alan Tull <atull@opensource.altera.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/hwmon/pmbus/pmbus_core.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
-index cb9064ac4977..66c72aedde5e 100644
---- a/drivers/hwmon/pmbus/pmbus_core.c
-+++ b/drivers/hwmon/pmbus/pmbus_core.c
-@@ -1861,10 +1861,14 @@ static int pmbus_regulator_is_enabled(struct regulator_dev *rdev)
- {
- 	struct device *dev = rdev_get_dev(rdev);
- 	struct i2c_client *client = to_i2c_client(dev->parent);
-+	struct pmbus_data *data = i2c_get_clientdata(client);
- 	u8 page = rdev_get_id(rdev);
- 	int ret;
+Let me explain:
  
-+	mutex_lock(&data->update_lock);
- 	ret = pmbus_read_byte_data(client, page, PMBUS_OPERATION);
-+	mutex_unlock(&data->update_lock);
-+
- 	if (ret < 0)
- 		return ret;
- 
-@@ -1875,11 +1879,17 @@ static int _pmbus_regulator_on_off(struct regulator_dev *rdev, bool enable)
- {
- 	struct device *dev = rdev_get_dev(rdev);
- 	struct i2c_client *client = to_i2c_client(dev->parent);
-+	struct pmbus_data *data = i2c_get_clientdata(client);
- 	u8 page = rdev_get_id(rdev);
-+	int ret;
- 
--	return pmbus_update_byte_data(client, page, PMBUS_OPERATION,
--				      PB_OPERATION_CONTROL_ON,
--				      enable ? PB_OPERATION_CONTROL_ON : 0);
-+	mutex_lock(&data->update_lock);
-+	ret = pmbus_update_byte_data(client, page, PMBUS_OPERATION,
-+				     PB_OPERATION_CONTROL_ON,
-+				     enable ? PB_OPERATION_CONTROL_ON : 0);
-+	mutex_unlock(&data->update_lock);
-+
-+	return ret;
- }
- 
- static int pmbus_regulator_enable(struct regulator_dev *rdev)
--- 
-2.34.1
+a vCPU either runs L1 or it "sort of" runs both L1 and L2 in regard to
+how it sends/receives interrupts: 
 
+Sending interrupts while nested: 
+   While in guest mode, a vCPU can in theory use both L2's and L1's APIC 
+   (if L2 has access to L1's APIC mmio/msrs). 
+
+Receiving interrupts while nested: 
+ 
+   While in guest mode, a vCPU can receive interrupts that target either L1 or L2 code it "runs".
+   Later request will hopefully cause it to jump to the the interrupt handler without VMexit,
+   while the former will cause VMexit, and let L1 run again.
+ 
+   On AVIC interrupt requests can come from either L1 or L2, while on APICv 
+   they have to come from L1, because APICv doesn't yet support nested IPI virtualization.
+ 
+ 
+Another thing to note is that pretty much, APICv/AVIC inhibition is for 
+L1 use of APICv/AVIC only.
+
+In fact I won't object to rename the inhibition functions to explicitly state this.
+ 
+When L2 uses APICv/AVIC, we just safely passthrough its usage to the real hardware.
+
+If we were to to need to inhibit it, we would have to emulate APICv/AVIC so that L1 would
+still think that it can use it - thankfully there is no need for that.
+
+
+So how it all works together:
+ 
+Sending interrupts while nested:
+ 
+   - only L2's avic/apicv is accelerated because its settings are in vmcb/vmcs02.
+ 
+   - if L1 allows L2 to access its APIC, then it accessed through regular MMIO/msr 
+     interception and should still work.
+     (this reminds me to write a unit test for this)
+ 
+ 
+Receiving interrupts while nested:
+ 
+  - Interrupts that target L2 are received via APICv/AVIC which is active in vmcb/vmcs02
+ 
+    This APICv/AVIC should never be inhibited because it merely works on behalf of L1's hypervisor,
+    which should decide if it wants to inhibit it.
+ 
+    In fact even if L1's APICv/AVIC is always inhibited (e.g when L1 uses x2apic on AMD),
+    L2 should still be able to use APICv/AVIC just fine - and it does work *very fine* with my nested AVIC code.
+ 
+    Another way to say it, is that the whole APICv/AVIC inhibition mechanism is 
+    in fact L1'1 APICv/AVIC inhibition,
+    and there is nothing wrong when L1's APICv/AVIC is inhibited while L2 is running:
+ 
+    That just means that vCPUs which don't run L2, will now stop using AVIC/APICv.
+    It will also update the private memslot, which also only L1 uses, while L2 will continue
+    using its APICv/AVIC as if nothing happened (it doesn't use this private memslot,
+    but should itself map the apic mmio in its own EPT/NPT tables).
+ 
+ 
+ - Interrupts that target L1: here there is a big difference between APICv and AVIC:
+
+   On APICv, despite the fact that vmcs02 uses L2' APICv, we can still receive them
+   as normal interrupts, due to the trick that we use different posted interrupt vectors.
+
+   So for receiving, L1's APICv still "sort of works" while L2 is running,
+   and with help of the interrupt handler will cause L2 to vmexit to L1 when such
+   interrupt is received.
+ 
+   That is why on APICv there is no need to inhibit L1's APICv when entering nested guest,
+   because from peer POV, this vCPU's APICv is running just fine.
+ 
+
+   On AVIC however, there is only one doorbell, and this is why I have to inhibit the AVIC
+   while entering the nested guest, although the update it does to vmcb01 is not really needed,
+
+   but what is needed is to inhibit this vCPU peers from sending it interrupts via AVIC
+   (this includes clearing is_running bit in physid table, in IOMMU, and also clearing
+   per-vcpu avic enabled bit, so that KVM doesn't send IPIs to this vCPU as well).
+ 
+ 
+ 
+Having said all that, delaying L1's APICv inhibition to the next nested VM exit should not
+cause any issues, as vmcs01 is not active at all while running nested,
+and APICv inhibition is all about changing vmcs01 settings.
+
+(That should be revised when IPI virtualization is merged).
+ 
+On AVIC I don't bother with that, as inhibition explicitly updates vmcb01 and 
+L1's physid page and should not have any impact on L2.
+ 
+ 
+So I am not against this patch, but please update the commit message with the fact that it is all right to 
+have L1 APICv inhibited/uninhibited while running nested, even though it is not likely
+to happen with APICv.
+ 
+Best regards,
+	Maxim Levitsky
+ 
+
+
+> 
+> Lack of dynamic toggling is also why this scenario is all but impossible
+> to encounter in KVM's current form.  But a future patch will pend an
+> APICv update request _during_ vCPU creation to plug a race where a vCPU
+> that's being created doesn't get included in the "all vCPUs request"
+> because it's not yet visible to other vCPUs.  If userspaces restores L2
+> after VM creation (hello, KVM selftests), the first KVM_RUN will occur
+> while L2 is active and thus service the APICv update request made during
+> VM creation.
+> 
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  arch/x86/kvm/vmx/nested.c | 5 +++++
+>  arch/x86/kvm/vmx/vmx.c    | 5 +++++
+>  arch/x86/kvm/vmx/vmx.h    | 1 +
+>  3 files changed, 11 insertions(+)
+> 
+> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+> index a6688663da4d..f5cb18e00e78 100644
+> --- a/arch/x86/kvm/vmx/nested.c
+> +++ b/arch/x86/kvm/vmx/nested.c
+> @@ -4640,6 +4640,11 @@ void nested_vmx_vmexit(struct kvm_vcpu *vcpu, u32 vm_exit_reason,
+>  		kvm_make_request(KVM_REQ_APIC_PAGE_RELOAD, vcpu);
+>  	}
+>  
+> +	if (vmx->nested.update_vmcs01_apicv_status) {
+> +		vmx->nested.update_vmcs01_apicv_status = false;
+> +		kvm_make_request(KVM_REQ_APICV_UPDATE, vcpu);
+> +	}
+> +
+>  	if ((vm_exit_reason != -1) &&
+>  	    (enable_shadow_vmcs || evmptr_is_valid(vmx->nested.hv_evmcs_vmptr)))
+>  		vmx->nested.need_vmcs12_to_shadow_sync = true;
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index cf8581978bce..4c407a34b11e 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -4174,6 +4174,11 @@ static void vmx_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
+>  {
+>  	struct vcpu_vmx *vmx = to_vmx(vcpu);
+>  
+> +	if (is_guest_mode(vcpu)) {
+> +		vmx->nested.update_vmcs01_apicv_status = true;
+> +		return;
+> +	}
+> +
+>  	pin_controls_set(vmx, vmx_pin_based_exec_ctrl(vmx));
+>  	if (cpu_has_secondary_exec_ctrls()) {
+>  		if (kvm_vcpu_apicv_active(vcpu))
+> diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+> index 9c6bfcd84008..b98c7e96697a 100644
+> --- a/arch/x86/kvm/vmx/vmx.h
+> +++ b/arch/x86/kvm/vmx/vmx.h
+> @@ -183,6 +183,7 @@ struct nested_vmx {
+>  	bool change_vmcs01_virtual_apic_mode;
+>  	bool reload_vmcs01_apic_access_page;
+>  	bool update_vmcs01_cpu_dirty_logging;
+> +	bool update_vmcs01_apicv_status;
+>  
+>  	/*
+>  	 * Enlightened VMCS has been enabled. It does not mean that L1 has to
 
 
