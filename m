@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FBD8C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91CAAC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239083AbiDRM1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:27:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
+        id S239252AbiDRM2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:28:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238781AbiDRM0O (ORCPT
+        with ESMTP id S238741AbiDRM0W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:26:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A86E089;
-        Mon, 18 Apr 2022 05:20:11 -0700 (PDT)
+        Mon, 18 Apr 2022 08:26:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123B81261C;
+        Mon, 18 Apr 2022 05:20:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 83D0E60F0C;
-        Mon, 18 Apr 2022 12:20:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9400AC385A7;
-        Mon, 18 Apr 2022 12:20:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A22AA60F0A;
+        Mon, 18 Apr 2022 12:20:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C591C385A9;
+        Mon, 18 Apr 2022 12:20:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284410;
-        bh=G++U9rtoxfQSlDamiCXkUBLmwjBH2Lkb15OC1vNC2oE=;
+        s=korg; t=1650284429;
+        bh=X/2BiOYQf0Z+0ANkLJl9DPyLmi79vzg8bV9C5ksUvPc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CeuRRLWBSVLYllrUnpR27u/pllWMc0yLo5FpXFCIw/da3O/OX4RLrq8/XrOYoWgQN
-         rCtoyOzoZZoX50UVPEOnunHlz9w4gdsXgrNciv6b4UWqcxJcG/x/oKSSDOLlGCSnJC
-         M1d/JolXB7hLiwEtpWFbj0EJjqLs7GVJ47SW0u6A=
+        b=rggj/U84T8lDs2trufusEq9lcdtJV1uJiTRHGUOHZs8unlzVAU1DgV2hIvXxGhKWZ
+         h31Cr6mDdFD5xqPhFVn2UOmF1WTsydQBZCv4B4xgyXLOtCFoUhEi9WeVwUfEYZvCJW
+         OB4Q0j3RdOQFRr4KHb2J+wVWLrg6YRHeSaiw7MNc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Topi Miettinen <toiwoton@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 089/219] netfilter: nft_socket: make cgroup match work in input too
-Date:   Mon, 18 Apr 2022 14:10:58 +0200
-Message-Id: <20220418121209.039001224@linuxfoundation.org>
+        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 112/219] io_uring: verify pad field is 0 in io_get_ext_arg
+Date:   Mon, 18 Apr 2022 14:11:21 +0200
+Message-Id: <20220418121210.034580519@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,54 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Dylan Yudaken <dylany@fb.com>
 
-[ Upstream commit 05ae2fba821c4d122ab4ba3e52144e21586c4010 ]
+[ Upstream commit d2347b9695dafe5c388a5f9aeb70e27a7a4d29cf ]
 
-cgroupv2 helper function ignores the already-looked up sk
-and uses skb->sk instead.
+Ensure that only 0 is passed for pad here.
 
-Just pass sk from the calling function instead; this will
-make cgroup matching work for udp and tcp in input even when
-edemux did not set skb->sk already.
-
-Fixes: e0bb96db96f8 ("netfilter: nft_socket: add support for cgroupsv2")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Tested-by: Topi Miettinen <toiwoton@gmail.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: c73ebb685fb6 ("io_uring: add timeout support for io_uring_enter()")
+Signed-off-by: Dylan Yudaken <dylany@fb.com>
+Link: https://lore.kernel.org/r/20220412163042.2788062-5-dylany@fb.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_socket.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ fs/io_uring.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/netfilter/nft_socket.c b/net/netfilter/nft_socket.c
-index d601974c9d2e..b8f011145765 100644
---- a/net/netfilter/nft_socket.c
-+++ b/net/netfilter/nft_socket.c
-@@ -36,12 +36,11 @@ static void nft_socket_wildcard(const struct nft_pktinfo *pkt,
- 
- #ifdef CONFIG_SOCK_CGROUP_DATA
- static noinline bool
--nft_sock_get_eval_cgroupv2(u32 *dest, const struct nft_pktinfo *pkt, u32 level)
-+nft_sock_get_eval_cgroupv2(u32 *dest, struct sock *sk, const struct nft_pktinfo *pkt, u32 level)
- {
--	struct sock *sk = skb_to_full_sk(pkt->skb);
- 	struct cgroup *cgrp;
- 
--	if (!sk || !sk_fullsock(sk) || !net_eq(nft_net(pkt), sock_net(sk)))
-+	if (!sk_fullsock(sk))
- 		return false;
- 
- 	cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-@@ -108,7 +107,7 @@ static void nft_socket_eval(const struct nft_expr *expr,
- 		break;
- #ifdef CONFIG_SOCK_CGROUP_DATA
- 	case NFT_SOCKET_CGROUPV2:
--		if (!nft_sock_get_eval_cgroupv2(dest, pkt, priv->level)) {
-+		if (!nft_sock_get_eval_cgroupv2(dest, sk, pkt, priv->level)) {
- 			regs->verdict.code = NFT_BREAK;
- 			return;
- 		}
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 2838bc6cdbc8..7a652c8eeed2 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -10109,6 +10109,8 @@ static int io_get_ext_arg(unsigned flags, const void __user *argp, size_t *argsz
+ 		return -EINVAL;
+ 	if (copy_from_user(&arg, argp, sizeof(arg)))
+ 		return -EFAULT;
++	if (arg.pad)
++		return -EINVAL;
+ 	*sig = u64_to_user_ptr(arg.sigmask);
+ 	*argsz = arg.sigmask_sz;
+ 	*ts = u64_to_user_ptr(arg.ts);
 -- 
 2.35.1
 
