@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FD6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCFDDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:19:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241620AbiDRNV4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41110 "EHLO
+        id S241733AbiDRNWF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:22:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241621AbiDRNDP (ORCPT
+        with ESMTP id S241714AbiDRNDZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:03:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D2FA33E09;
-        Mon, 18 Apr 2022 05:43:59 -0700 (PDT)
+        Mon, 18 Apr 2022 09:03:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2AD33E3F;
+        Mon, 18 Apr 2022 05:44:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2192AB80E4B;
-        Mon, 18 Apr 2022 12:43:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85BCDC385A1;
-        Mon, 18 Apr 2022 12:43:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC4BBB80E44;
+        Mon, 18 Apr 2022 12:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40EDAC385A7;
+        Mon, 18 Apr 2022 12:44:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285836;
-        bh=dJzCn9cIQspghMBiSeA+o7H9D+g3/toGnQtHulXDBOU=;
+        s=korg; t=1650285845;
+        bh=YGLGlNKPSRLiIJ8DH4C8/86MKO/vsoWNz1NimBChd3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=akVM4UWqFTlLgkML3MVDeaYZX6x/0v5WosEfntwrpG9WmaGuRR9eKXH2LAFiZhqDI
-         Zy+6WwWxUgKAIVrNeXta/0oG3L8bOLGe5NNusoGlLwndne7DXoSgzATAPAG1hwfcL+
-         NfACfWI4H691M0twpIclG9l3W4oN67f3bGxpWxFo=
+        b=ad/u1OWMhMtxskg/iB4iFxSWRQ9bLXxopMTlyDA4PW95eSYY0i61J8fCZwgtz02pl
+         YYnTsl5Vd2rcqsvLXaRbJrs9teQtzyzAcXgrLECN2ZE60nVOHm74HA7uwAsYO4IqWk
+         PuOJ5BxrKCy8cGUzYeMLo6m2tIh+qVknb4TaWR4o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, PaX Team <pageexec@freemail.hu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.4 40/63] gcc-plugins: latent_entropy: use /dev/urandom
-Date:   Mon, 18 Apr 2022 14:13:37 +0200
-Message-Id: <20220418121136.903029339@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.4 43/63] btrfs: remove unused variable in btrfs_{start,write}_dirty_block_groups()
+Date:   Mon, 18 Apr 2022 14:13:40 +0200
+Message-Id: <20220418121137.110669226@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -49,121 +48,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit c40160f2998c897231f8454bf797558d30a20375 upstream.
+commit 6d4a6b515c39f1f8763093e0f828959b2fbc2f45 upstream.
 
-While the latent entropy plugin mostly doesn't derive entropy from
-get_random_const() for measuring the call graph, when __latent_entropy is
-applied to a constant, then it's initialized statically to output from
-get_random_const(). In that case, this data is derived from a 64-bit
-seed, which means a buffer of 512 bits doesn't really have that amount
-of compile-time entropy.
+Clang's version of -Wunused-but-set-variable recently gained support for
+unary operations, which reveals two unused variables:
 
-This patch fixes that shortcoming by just buffering chunks of
-/dev/urandom output and doling it out as requested.
+  fs/btrfs/block-group.c:2949:6: error: variable 'num_started' set but not used [-Werror,-Wunused-but-set-variable]
+          int num_started = 0;
+              ^
+  fs/btrfs/block-group.c:3116:6: error: variable 'num_started' set but not used [-Werror,-Wunused-but-set-variable]
+          int num_started = 0;
+              ^
+  2 errors generated.
 
-At the same time, it's important that we don't break the use of
--frandom-seed, for people who want the runtime benefits of the latent
-entropy plugin, while still having compile-time determinism. In that
-case, we detect whether gcc's set_random_seed() has been called by
-making a call to get_random_seed(noinit=true) in the plugin init
-function, which is called after set_random_seed() is called but before
-anything that calls get_random_seed(noinit=false), and seeing if it's
-zero or not. If it's not zero, we're in deterministic mode, and so we
-just generate numbers with a basic xorshift prng.
+These variables appear to be unused from their introduction, so just
+remove them to silence the warnings.
 
-Note that we don't detect if -frandom-seed is being used using the
-documented local_tick variable, because it's assigned via:
-   local_tick = (unsigned) tv.tv_sec * 1000 + tv.tv_usec / 1000;
-which may well overflow and become -1 on its own, and so isn't
-reliable: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105171
-
-[kees: The 256 byte rnd_buf size was chosen based on average (250),
- median (64), and std deviation (575) bytes of used entropy for a
- defconfig x86_64 build]
-
-Fixes: 38addce8b600 ("gcc-plugins: Add latent_entropy plugin")
-Cc: stable@vger.kernel.org
-Cc: PaX Team <pageexec@freemail.hu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220405222815.21155-1-Jason@zx2c4.com
+Fixes: c9dc4c657850 ("Btrfs: two stage dirty block group writeout")
+Fixes: 1bbc621ef284 ("Btrfs: allow block group cache writeout outside critical section in commit")
+CC: stable@vger.kernel.org # 5.4+
+Link: https://github.com/ClangBuiltLinux/linux/issues/1614
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- scripts/gcc-plugins/latent_entropy_plugin.c |   44 +++++++++++++++++-----------
- 1 file changed, 27 insertions(+), 17 deletions(-)
+ fs/btrfs/block-group.c |    4 ----
+ 1 file changed, 4 deletions(-)
 
---- a/scripts/gcc-plugins/latent_entropy_plugin.c
-+++ b/scripts/gcc-plugins/latent_entropy_plugin.c
-@@ -86,25 +86,31 @@ static struct plugin_info latent_entropy
- 	.help		= "disable\tturn off latent entropy instrumentation\n",
- };
+--- a/fs/btrfs/block-group.c
++++ b/fs/btrfs/block-group.c
+@@ -2388,7 +2388,6 @@ int btrfs_start_dirty_block_groups(struc
+ 	struct btrfs_path *path = NULL;
+ 	LIST_HEAD(dirty);
+ 	struct list_head *io = &cur_trans->io_bgs;
+-	int num_started = 0;
+ 	int loops = 0;
  
--static unsigned HOST_WIDE_INT seed;
--/*
-- * get_random_seed() (this is a GCC function) generates the seed.
-- * This is a simple random generator without any cryptographic security because
-- * the entropy doesn't come from here.
-- */
-+static unsigned HOST_WIDE_INT deterministic_seed;
-+static unsigned HOST_WIDE_INT rnd_buf[32];
-+static size_t rnd_idx = ARRAY_SIZE(rnd_buf);
-+static int urandom_fd = -1;
-+
- static unsigned HOST_WIDE_INT get_random_const(void)
- {
--	unsigned int i;
--	unsigned HOST_WIDE_INT ret = 0;
--
--	for (i = 0; i < 8 * sizeof(ret); i++) {
--		ret = (ret << 1) | (seed & 1);
--		seed >>= 1;
--		if (ret & 1)
--			seed ^= 0xD800000000000000ULL;
-+	if (deterministic_seed) {
-+		unsigned HOST_WIDE_INT w = deterministic_seed;
-+		w ^= w << 13;
-+		w ^= w >> 7;
-+		w ^= w << 17;
-+		deterministic_seed = w;
-+		return deterministic_seed;
- 	}
+ 	spin_lock(&cur_trans->dirty_bgs_lock);
+@@ -2455,7 +2454,6 @@ again:
+ 			cache->io_ctl.inode = NULL;
+ 			ret = btrfs_write_out_cache(trans, cache, path);
+ 			if (ret == 0 && cache->io_ctl.inode) {
+-				num_started++;
+ 				should_put = 0;
  
--	return ret;
-+	if (urandom_fd < 0) {
-+		urandom_fd = open("/dev/urandom", O_RDONLY);
-+		gcc_assert(urandom_fd >= 0);
-+	}
-+	if (rnd_idx >= ARRAY_SIZE(rnd_buf)) {
-+		gcc_assert(read(urandom_fd, rnd_buf, sizeof(rnd_buf)) == sizeof(rnd_buf));
-+		rnd_idx = 0;
-+	}
-+	return rnd_buf[rnd_idx++];
- }
+ 				/*
+@@ -2556,7 +2554,6 @@ int btrfs_write_dirty_block_groups(struc
+ 	int should_put;
+ 	struct btrfs_path *path;
+ 	struct list_head *io = &cur_trans->io_bgs;
+-	int num_started = 0;
  
- static tree tree_get_random_const(tree type)
-@@ -549,8 +555,6 @@ static void latent_entropy_start_unit(vo
- 	tree type, id;
- 	int quals;
- 
--	seed = get_random_seed(false);
--
- 	if (in_lto_p)
- 		return;
- 
-@@ -585,6 +589,12 @@ __visible int plugin_init(struct plugin_
- 	const struct plugin_argument * const argv = plugin_info->argv;
- 	int i;
- 
-+	/*
-+	 * Call get_random_seed() with noinit=true, so that this returns
-+	 * 0 in the case where no seed has been passed via -frandom-seed.
-+	 */
-+	deterministic_seed = get_random_seed(true);
-+
- 	static const struct ggc_root_tab gt_ggc_r_gt_latent_entropy[] = {
- 		{
- 			.base = &latent_entropy_decl,
+ 	path = btrfs_alloc_path();
+ 	if (!path)
+@@ -2614,7 +2611,6 @@ int btrfs_write_dirty_block_groups(struc
+ 			cache->io_ctl.inode = NULL;
+ 			ret = btrfs_write_out_cache(trans, cache, path);
+ 			if (ret == 0 && cache->io_ctl.inode) {
+-				num_started++;
+ 				should_put = 0;
+ 				list_add_tail(&cache->io_list, io);
+ 			} else {
 
 
