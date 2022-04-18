@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F4149C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B763BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:02:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240730AbiDRNFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41820 "EHLO
+        id S241139AbiDRNFR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240419AbiDRMzC (ORCPT
+        with ESMTP id S240281AbiDRMzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:55:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D32D21BE8E;
-        Mon, 18 Apr 2022 05:35:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DCC722BE5;
+        Mon, 18 Apr 2022 05:35:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70549611AD;
-        Mon, 18 Apr 2022 12:35:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 805C0C385A1;
-        Mon, 18 Apr 2022 12:35:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7933E6118A;
+        Mon, 18 Apr 2022 12:35:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89277C385A1;
+        Mon, 18 Apr 2022 12:35:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285333;
-        bh=uiy+onWZJlI1b7zdv8YW06FhqRpBBM8vOy6Sxuf3GMc=;
+        s=korg; t=1650285330;
+        bh=resUGCgfDFyLK6Iu5p0IhwFZLP0ZHosQKFmc2IXJMqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1XFBHwjWejRUlKw9fbpODeydugxSx+zpq38jHkNgCfv1sL40pQLMjYGYFRT7QBA9+
-         xC5ggCtfdT0Pk620F5n0GkUcMhJdHdvxF0ZVKFoG5XK1DEKLemw/BN6cm1YyuHQSdt
-         XnF9cVgoYuA0t3gLY9l/zVDmQp6rvcC4ciI7OEa0=
+        b=hSbh7MHHQ/RqcQCHNBNa9RCBoFR7oUrxmUoyK6QWnYNEPKpvhL9Crle0+LopoM5KG
+         PpIntdWXXO1NLi95P5p4tIbk4QRjAM0mkEbeX8sjXvl0eCDXyWYTuwLZ2rz1I+C3aI
+         twRsPTQEEkhzpMUA1EoHbOiaxWP5N6MOSFK4ZugA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wayne Lin <Wayne.Lin@amd.com>,
-        Alex Hung <alex.hung@amd.com>, Roman Li <Roman.Li@amd.com>,
+        stable@vger.kernel.org, George Shen <George.Shen@amd.com>,
+        Alex Hung <alex.hung@amd.com>,
+        Martin Leung <Martin.Leung@amd.com>,
         Daniel Wheeler <daniel.wheeler@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 135/189] drm/amd/display: Fix allocate_mst_payload assert on resume
-Date:   Mon, 18 Apr 2022 14:12:35 +0200
-Message-Id: <20220418121205.132416669@linuxfoundation.org>
+Subject: [PATCH 5.15 134/189] drm/amd/display: Revert FEC check in validation
+Date:   Mon, 18 Apr 2022 14:12:34 +0200
+Message-Id: <20220418121205.065490608@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -51,44 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roman Li <Roman.Li@amd.com>
+From: Martin Leung <Martin.Leung@amd.com>
 
-[ Upstream commit f4346fb3edf7720db3f7f5e1cab1f667cd024280 ]
+[ Upstream commit b2075fce104b88b789c15ef1ed2b91dc94198e26 ]
 
-[Why]
-On resume we do link detection for all non-MST connectors.
-MST is handled separately. However the condition for telling
-if connector is on mst branch is not enough for mst hub case.
-Link detection for mst branch link leads to mst topology reset.
-That causes assert in dc_link_allocate_mst_payload()
+why and how:
+causes failure on install on certain machines
 
-[How]
-Use link type as indicator for mst link.
-
-Reviewed-by: Wayne Lin <Wayne.Lin@amd.com>
+Reviewed-by: George Shen <George.Shen@amd.com>
 Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Roman Li <Roman.Li@amd.com>
+Signed-off-by: Martin Leung <Martin.Leung@amd.com>
 Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/core/dc.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 7e9e2eb85eca..ec75613618b1 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -2296,7 +2296,8 @@ static int dm_resume(void *handle)
- 		 * this is the case when traversing through already created
- 		 * MST connectors, should be skipped
- 		 */
--		if (aconnector->mst_port)
-+		if (aconnector->dc_link &&
-+		    aconnector->dc_link->type == dc_connection_mst_branch)
- 			continue;
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
+index 35a27fe48f66..b37c4d2e7a1e 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
+@@ -1377,10 +1377,6 @@ bool dc_validate_seamless_boot_timing(const struct dc *dc,
+ 	if (!link->link_enc->funcs->is_dig_enabled(link->link_enc))
+ 		return false;
  
- 		mutex_lock(&aconnector->hpd_lock);
+-	/* Check for FEC status*/
+-	if (link->link_enc->funcs->fec_is_active(link->link_enc))
+-		return false;
+-
+ 	enc_inst = link->link_enc->funcs->get_dig_frontend(link->link_enc);
+ 
+ 	if (enc_inst == ENGINE_ID_UNKNOWN)
 -- 
 2.35.1
 
