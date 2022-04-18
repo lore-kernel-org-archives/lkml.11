@@ -2,94 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2447BC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A31C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240138AbiDRMwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:52:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
+        id S240234AbiDRMw7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:52:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240678AbiDRMj1 (ORCPT
+        with ESMTP id S240755AbiDRMjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A0912AC2;
-        Mon, 18 Apr 2022 05:30:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05483B80EC0;
-        Mon, 18 Apr 2022 12:30:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BE87C385A7;
-        Mon, 18 Apr 2022 12:30:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285004;
-        bh=ed67Mr0skf3NL21hEKATizgyI3mS1e80WUsHbS/+xgU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XpFNQNu7oVTeYY4yOvKtZPRctrpz7IOAEW+GkMLngSRfqfT3qIcJ9cb6J4TwLMCkX
-         RwIHc4zHGyxInFyn3vdH2AuP+JTUsR5Pk1NNo8KRpKnxgGzhQmTwHHIjF/gHpwwLRC
-         88BUBS/Q18LpM5vnB7ptMnjritolWsWTBRlPjg7I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 076/189] drm/msm/dsi: Use connector directly in msm_dsi_manager_connector_init()
-Date:   Mon, 18 Apr 2022 14:11:36 +0200
-Message-Id: <20220418121202.666410963@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
-References: <20220418121200.312988959@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 18 Apr 2022 08:39:36 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083A325C40;
+        Mon, 18 Apr 2022 05:30:23 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23ICUJoo077263;
+        Mon, 18 Apr 2022 07:30:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1650285019;
+        bh=dioqlznUhZ8FwC/kd2gBBFAF1AtsoOMmOZ21zfMtO0w=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=Cv6iF6t5A2GQPwmeq75HGxpHcr1gHHgE/IG2W9LE2crsOBxFyA7oBrSqQnGqSiGa6
+         9cOfiFD95FR2C0B8sdlq4kdxPVSnXr37nMUBAweGTrsZAFwGWQrl7rkfDXC8Q7v6qN
+         zRlK4E0q4ODhxwrk0V9NVvddeRhBAVOScfzxBnDI=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23ICUJPR060857
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 18 Apr 2022 07:30:19 -0500
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 18
+ Apr 2022 07:30:18 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 18 Apr 2022 07:30:18 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23ICUHXa011404;
+        Mon, 18 Apr 2022 07:30:18 -0500
+From:   Puranjay Mohan <p-mohan@ti.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
+        <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
+        <rogerq@kernel.org>, <grygorii.strashko@ti.com>, <vigneshr@ti.com>,
+        <kishon@ti.com>
+Subject: [PATCH v2 5/6] soc: ti: pruss: Add helper function to enable OCP master ports
+Date:   Mon, 18 Apr 2022 18:00:03 +0530
+Message-ID: <20220418123004.9332-6-p-mohan@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220418123004.9332-1-p-mohan@ti.com>
+References: <20220418123004.9332-1-p-mohan@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+From: Suman Anna <s-anna@ti.com>
 
-[ Upstream commit 47b7de6b88b962ef339a2427a023d2a23d161654 ]
+The PRU-ICSS subsystem on OMAP-architecture based SoCS (AM33xx, AM437x
+and AM57xx SoCs) has a control bit STANDBY_INIT in the PRUSS_CFG register
+to initiate a Standby sequence (when set) and trigger a MStandby request
+to the SoC's PRCM module. This same bit is also used to enable the OCP
+master ports (when cleared). The clearing of the STANDBY_INIT bit requires
+an acknowledgment from PRCM and is done through the monitoring of the
+PRUSS_SYSCFG.SUB_MWAIT bit.
 
-The member 'msm_dsi->connector' isn't assigned until
-msm_dsi_manager_connector_init() returns (see msm_dsi_modeset_init() and
-how it assigns the return value). Therefore this pointer is going to be
-NULL here. Let's use 'connector' which is what was intended.
+Add a helper function pruss_cfg_ocp_master_ports() to allow the PRU
+client drivers to control this bit and enable or disable the firmware
+running on PRU cores access to any peripherals or memory to achieve
+desired functionality. The access is disabled by default on power-up
+and on any suspend (context is not maintained).
 
-Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: Sean Paul <seanpaul@chromium.org>
-Fixes: 6d5e78406991 ("drm/msm/dsi: Move dsi panel init into modeset init path")
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/478693/
-Link: https://lore.kernel.org/r/20220318000731.2823718-1-swboyd@chromium.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Suman Anna <s-anna@ti.com>
+Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
 ---
- drivers/gpu/drm/msm/dsi/dsi_manager.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/ti/pruss.c | 81 ++++++++++++++++++++++++++++++++++++++++--
+ include/linux/pruss.h  |  6 ++++
+ 2 files changed, 85 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
-index fa4c396df6a9..6e43672f5807 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
-@@ -643,7 +643,7 @@ struct drm_connector *msm_dsi_manager_connector_init(u8 id)
- 	return connector;
+diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
+index bf5471c4fa33..a2faa672a036 100644
+--- a/drivers/soc/ti/pruss.c
++++ b/drivers/soc/ti/pruss.c
+@@ -22,14 +22,19 @@
+ #include <linux/remoteproc.h>
+ #include <linux/slab.h>
  
- fail:
--	connector->funcs->destroy(msm_dsi->connector);
-+	connector->funcs->destroy(connector);
- 	return ERR_PTR(ret);
++#define SYSCFG_STANDBY_INIT	BIT(4)
++#define SYSCFG_SUB_MWAIT_READY	BIT(5)
++
+ /**
+  * struct pruss_private_data - PRUSS driver private data
+  * @has_no_sharedram: flag to indicate the absence of PRUSS Shared Data RAM
+  * @has_core_mux_clock: flag to indicate the presence of PRUSS core clock
++ * @has_ocp_syscfg: flag to indicate if OCP SYSCFG is present
+  */
+ struct pruss_private_data {
+ 	bool has_no_sharedram;
+ 	bool has_core_mux_clock;
++	bool has_ocp_syscfg;
+ };
+ 
+ /**
+@@ -205,6 +210,72 @@ int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
+ }
+ EXPORT_SYMBOL_GPL(pruss_cfg_update);
+ 
++/**
++ * pruss_cfg_ocp_master_ports() - configure PRUSS OCP master ports
++ * @pruss: the pruss instance handle
++ * @enable: set to true for enabling or false for disabling the OCP master ports
++ *
++ * This function programs the PRUSS_SYSCFG.STANDBY_INIT bit either to enable or
++ * disable the OCP master ports (applicable only on SoCs using OCP interconnect
++ * like the OMAP family). Clearing the bit achieves dual functionalities - one
++ * is to deassert the MStandby signal to the device PRCM, and the other is to
++ * enable OCP master ports to allow accesses outside of the PRU-ICSS. The
++ * function has to wait for the PRCM to acknowledge through the monitoring of
++ * the PRUSS_SYSCFG.SUB_MWAIT bit when enabling master ports. Setting the bit
++ * disables the master access, and also signals the PRCM that the PRUSS is ready
++ * for Standby.
++ *
++ * Return: 0 on success, or an error code otherwise. ETIMEDOUT is returned
++ * when the ready-state fails.
++ */
++int pruss_cfg_ocp_master_ports(struct pruss *pruss, bool enable)
++{
++	int ret;
++	u32 syscfg_val, i;
++	const struct pruss_private_data *data;
++
++	if (IS_ERR_OR_NULL(pruss))
++		return -EINVAL;
++
++	data = of_device_get_match_data(pruss->dev);
++
++	/* nothing to do on non OMAP-SoCs */
++	if (!data || !data->has_ocp_syscfg)
++		return 0;
++
++	/* assert the MStandby signal during disable path */
++	if (!enable)
++		return pruss_cfg_update(pruss, PRUSS_CFG_SYSCFG,
++					SYSCFG_STANDBY_INIT,
++					SYSCFG_STANDBY_INIT);
++
++	/* enable the OCP master ports and disable MStandby */
++	ret = pruss_cfg_update(pruss, PRUSS_CFG_SYSCFG, SYSCFG_STANDBY_INIT, 0);
++	if (ret)
++		return ret;
++
++	/* wait till we are ready for transactions - delay is arbitrary */
++	for (i = 0; i < 10; i++) {
++		ret = pruss_cfg_read(pruss, PRUSS_CFG_SYSCFG, &syscfg_val);
++		if (ret)
++			goto disable;
++
++		if (!(syscfg_val & SYSCFG_SUB_MWAIT_READY))
++			return 0;
++
++		udelay(5);
++	}
++
++	dev_err(pruss->dev, "timeout waiting for SUB_MWAIT_READY\n");
++	ret = -ETIMEDOUT;
++
++disable:
++	pruss_cfg_update(pruss, PRUSS_CFG_SYSCFG, SYSCFG_STANDBY_INIT,
++			 SYSCFG_STANDBY_INIT);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(pruss_cfg_ocp_master_ports);
++
+ static void pruss_of_free_clk_provider(void *data)
+ {
+ 	struct device_node *clk_mux_np = data;
+@@ -495,10 +566,16 @@ static int pruss_remove(struct platform_device *pdev)
+ /* instance-specific driver private data */
+ static const struct pruss_private_data am437x_pruss1_data = {
+ 	.has_no_sharedram = false,
++	.has_ocp_syscfg = true,
+ };
+ 
+ static const struct pruss_private_data am437x_pruss0_data = {
+ 	.has_no_sharedram = true,
++	.has_ocp_syscfg = false,
++};
++
++static const struct pruss_private_data am33xx_am57xx_data = {
++	.has_ocp_syscfg = true,
+ };
+ 
+ static const struct pruss_private_data am65x_j721e_pruss_data = {
+@@ -506,10 +583,10 @@ static const struct pruss_private_data am65x_j721e_pruss_data = {
+ };
+ 
+ static const struct of_device_id pruss_of_match[] = {
+-	{ .compatible = "ti,am3356-pruss" },
++	{ .compatible = "ti,am3356-pruss", .data = &am33xx_am57xx_data },
+ 	{ .compatible = "ti,am4376-pruss0", .data = &am437x_pruss0_data, },
+ 	{ .compatible = "ti,am4376-pruss1", .data = &am437x_pruss1_data, },
+-	{ .compatible = "ti,am5728-pruss" },
++	{ .compatible = "ti,am5728-pruss", .data = &am33xx_am57xx_data },
+ 	{ .compatible = "ti,k2g-pruss" },
+ 	{ .compatible = "ti,am654-icssg", .data = &am65x_j721e_pruss_data, },
+ 	{ .compatible = "ti,j721e-icssg", .data = &am65x_j721e_pruss_data, },
+diff --git a/include/linux/pruss.h b/include/linux/pruss.h
+index 84e95eb884e9..7e5e904521ac 100644
+--- a/include/linux/pruss.h
++++ b/include/linux/pruss.h
+@@ -163,6 +163,7 @@ int pruss_release_mem_region(struct pruss *pruss,
+ int pruss_cfg_read(struct pruss *pruss, unsigned int reg, unsigned int *val);
+ int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
+ 		     unsigned int mask, unsigned int val);
++int pruss_cfg_ocp_master_ports(struct pruss *pruss, bool enable);
+ 
+ #else
+ 
+@@ -198,6 +199,11 @@ static inline int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
+ 	return -EOPNOTSUPP;
  }
  
++static inline int pruss_cfg_ocp_master_ports(struct pruss *pruss, bool enable)
++{
++	return -EOPNOTSUPP;
++}
++
+ #endif /* CONFIG_TI_PRUSS */
+ 
+ #if IS_ENABLED(CONFIG_PRU_REMOTEPROC)
 -- 
-2.35.1
-
-
+2.17.1
 
