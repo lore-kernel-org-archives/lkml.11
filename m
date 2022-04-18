@@ -2,241 +2,498 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B7AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 23:11:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86955C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 23:11:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234446AbiDRXNt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 19:13:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34614 "EHLO
+        id S234462AbiDRXN7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 19:13:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231402AbiDRXNq (ORCPT
+        with ESMTP id S234477AbiDRXNw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 19:13:46 -0400
-X-Greylist: delayed 302 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 18 Apr 2022 16:11:04 PDT
-Received: from us-smtp-delivery-160.mimecast.com (us-smtp-delivery-160.mimecast.com [170.10.129.160])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DACC11FA79
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:11:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qsc.com; s=mimecast20190503;
-        t=1650323463;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jOPJiV67EkGrlw/BDAbXbxHsHhcxdXkIw5TditZBAuo=;
-        b=N9rW5lMYiT+Y4G/nreDKsIBIJocNzE0qkhRfRaLe5igwzLZho7V95hdHAKpLUWsXY7PPDz
-        UAZFXnmSY7DXlKjqpnlixh9eLCnZfejyHZAwz/LSK4tQ1+Ys5EbplfD0+K/DBJG8xfDuzr
-        J2aKCXbnYnPFrSv6Br4JKB9mqacfwaw=
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam12lp2046.outbound.protection.outlook.com [104.47.66.46]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-448-JZUpCIgePpmFjM9x11OUCg-1; Mon, 18 Apr 2022 19:04:04 -0400
-X-MC-Unique: JZUpCIgePpmFjM9x11OUCg-1
-Received: from CY4PR16MB0023.namprd16.prod.outlook.com (2603:10b6:903:da::19)
- by PH7PR16MB4745.namprd16.prod.outlook.com (2603:10b6:510:137::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.20; Mon, 18 Apr
- 2022 23:03:59 +0000
-Received: from CY4PR16MB0023.namprd16.prod.outlook.com
- ([fe80::458a:1620:d220:26b6]) by CY4PR16MB0023.namprd16.prod.outlook.com
- ([fe80::458a:1620:d220:26b6%12]) with mapi id 15.20.5164.025; Mon, 18 Apr
- 2022 23:03:59 +0000
-From:   Jeff Evanson <Jeff.Evanson@qsc.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jeff Evanson <jeff.evanson@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "jeff.evanson@gmail.com" <jeff.evanson@gmail.com>
-Subject: RE: [PATCH 2/2] Trigger proper interrupts in igc_xsk_wakeup
-Thread-Topic: [PATCH 2/2] Trigger proper interrupts in igc_xsk_wakeup
-Thread-Index: AQHYUQybCTI0E92i8ka2vo72M+w346z19daAgABUKUA=
-Date:   Mon, 18 Apr 2022 23:03:59 +0000
-Message-ID: <CY4PR16MB002318405355FB6AC87CA0919BF39@CY4PR16MB0023.namprd16.prod.outlook.com>
-References: <20220415210546.11294-1-jeff.evanson@qsc.com>
- <87v8v6477g.fsf@intel.com>
-In-Reply-To: <87v8v6477g.fsf@intel.com>
-Accept-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 52f3aa96-037d-412f-f82a-08da218fb92c
-x-ms-traffictypediagnostic: PH7PR16MB4745:EE_
-x-microsoft-antispam-prvs: <PH7PR16MB4745F35BC5520EDEFF774A2F9BF39@PH7PR16MB4745.namprd16.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0
-x-microsoft-antispam-message-info: ohTjexFv2f/HU0LQEompOcuRhZdrb4mXPc8Yw74hAyuA49K74Mlu1bEZkGMNWaFscHZ6YJM0jzU03Ff8lpnCK697H7NXhOrn/4mrfLkOVtqke8TzpoK04wDxz05Cf0aevrg6QCTjJiwI+u/3hLpljIcwNGjCzuM7NmRb+QcjUE6E2TOt/4BoOGLFWcGKytq34cEhRzuW/YQzCxBM3fsPwSRmbSCCqj0vCgwfe7/FiWMRORd9SYaWLCjGvhvWntlITDL67i2DInmUgDOUK9/M/ahg+mhZgFcOeIDBLmVfLtjgKv0NgO6Oa1OH+TRIP8yi09+teCOUywDc94zdqpx75NFr31J7utkbp5qScbyhyzaXSFJo9VbXiCAp00ZST8Txe6KfyL5K6uCBIe4heOdsIFONhmRBBlN6qm+COpm+Kacn5Y95MvVIC/9G8R5M83coQy+2w0yzMWb8zpH4fgYvn2d02lX+2ND7e0S4KKIdZglyyY1CWIQYL31GHXCvVVBJGzn27DZUGpIUy9DH6mASrx3VWWklAVStAxYGhteaVImhviGoynopW7xcSq0fduqnW568E3FBn7yXNVITBsceCDktjrCc/vyeVm4Ohy8m1s445T6aX53sRmjIqHRLdh4OK/k+ztsppVUM/nByy8dIxeUpUzI0Va3//mCDb4AWtAvB2e3ywkP7t32Wre4a/+1O/gqQ6GtdconHr9pGd1BzrQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR16MB0023.namprd16.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(122000001)(9686003)(52536014)(33656002)(5660300002)(508600001)(71200400001)(316002)(38070700005)(6506007)(4326008)(8676002)(7696005)(76116006)(66476007)(64756008)(66446008)(66946007)(66556008)(8936002)(86362001)(53546011)(55016003)(2906002)(186003)(26005)(83380400001)(110136005)(38100700002);DIR:OUT;SFP:1102
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?U/mMKE7W06S7AF6kl6zRPJwyuYUEcPqkHJ2qBgL1gFxHQSQxTAwwB573Qj4b?=
- =?us-ascii?Q?LnXsMthwAPaQnvkyt1zA5S2bx4rOWbT+Lk4nBWpR/A9iHZ1Q9NC0lOR/d9Pf?=
- =?us-ascii?Q?T4LkC25abJ0Q+ZpnIZx5w0WAFfqKcr6IJ6Wm63r2THVq6lY3j+j0uDAlickB?=
- =?us-ascii?Q?7r3a/GcgTRvONTFg+wvfFTOe0ACzbCIeqYclpoTUCXbV2yFJGeDlNCAUcdl1?=
- =?us-ascii?Q?JXfPDEO+Xcerb4NVzKmmxFnPWHDM8UgniDcpZcXckIRVX/THz27sioLdMwwC?=
- =?us-ascii?Q?KzvC1vlklyef123fLblFmmWlge2iad44oPVfRMw1KM0ZXonGYpW2tPvFdN8D?=
- =?us-ascii?Q?P0P1dwVzlhWrg96NBnPVnrpUfVFxAcetnXiyOkP2yVN+ccsx3D8VCAmU1H7l?=
- =?us-ascii?Q?TymEiWHWAOMus+LYsvG1NWaRGxnMp1NTGjyN9OE5GJoqTzxgPSwFVCCn2GrH?=
- =?us-ascii?Q?bEHprH1IPq9d3zHTyDhpkkRwH3kbOnHJ55OMsEvjnmxVYZ6mGwmal73Vn2/B?=
- =?us-ascii?Q?r5TxN6vot1EsgVlh0y3qR/NVOkQuM8wB2VqposXSFqDKeZPEVU55/2ZlAmq7?=
- =?us-ascii?Q?HoiX5WiRzZIWi406OiwD071lyHpiMODyGA14ce/X4/LR32eMJUq3XNXW542R?=
- =?us-ascii?Q?yih2kBvgI5HNhiBnIKFOir0vMAph1UUh6gQs61U6Fs+gKYSyK8WUfjQkSlwD?=
- =?us-ascii?Q?FqcziEdc//zDEgnTDCsbtxLts6vp6W4yww6h65maYJwFsju04cF7awrl5QkD?=
- =?us-ascii?Q?mEGjzjAbnBqCsKhEZ48rsZKENVj7Y3N+VZMEaasp/jSX8zPVwabkni384VhT?=
- =?us-ascii?Q?CUtIgUp+S/4egxeKkyuoJPHqjylfa+jJInQ1v+2gA4w3jo8i56jdEt9ccew7?=
- =?us-ascii?Q?Fr78kQsVexo8pdYXwUZkZfaCn/Hnr2aJI3k6HCKYnXF5XuLsbS6ueibIOObZ?=
- =?us-ascii?Q?5mYydY4UU76O2oJQAVROIkpPGgqmRb9V9btKu6UulHNlbPIdfR5rt13HHGJj?=
- =?us-ascii?Q?Mpgv0DXy6sPI5hCGnepEb1wVzaXop9Xuvg8VhbFAfx3I1/ObvONXvWXNCg7y?=
- =?us-ascii?Q?hGrrRt4E6TUwSTdvC2i+n1KiCoY96Stg/rfnD0WzlTQUM/bVJG+aXs9XYMK7?=
- =?us-ascii?Q?+i0tsbGuj113adXRuTsx7SqLN2xuulZ4XZqjpHe9bMakfSkhavuiaFjRVxle?=
- =?us-ascii?Q?OSNacucRERtgmL6+h+UC+G5n31Wj/NiFm8+6tZ07XDPzUDE5BhvIKVPhzIfA?=
- =?us-ascii?Q?BpT79uhC0FDbMNhdvdEeoauaK7uVECb8srb9wBzKcj5HleRolL5IFiMGJI0T?=
- =?us-ascii?Q?hLpd2O+rABeK3kI27BK2sPmx1wBfQJcrr62JGgqFaFwD8lGk/Yu0KZW6PEcf?=
- =?us-ascii?Q?kO0qrTY3CYq23eyDY5p4JYcLo+eMiyD1xVMp7PtZWE1tUORN9eXiCAZ7CMod?=
- =?us-ascii?Q?QP8fbvexUVcAGjZlHx+K5ac0Pfpi5Ayyw0EakUkjc8VT9fxrfxF1NfIojAK8?=
- =?us-ascii?Q?n7i4+f13AIB03kp8RDdeCRMzcSWgZ6gMEogon3RLMC3y8kZR/Pj88T2YKcKA?=
- =?us-ascii?Q?yXVdY59u7d7uNKIoRP4O3/TXzhpDFxbpWtPSdmcPBLOsedOtCncn6qkZBbqF?=
- =?us-ascii?Q?d9E1sQKP+7imngc5whXifubmw2z7NVnwRg4G6RdXF2KDjIGQD3awDLfEAqg9?=
- =?us-ascii?Q?YBTB0q82QGg+CfJhiKZRf3t5TcMsE31FT5yi8x+nHqzxNa+Ct23ni8wnObIL?=
- =?us-ascii?Q?Wnn1T63KNg=3D=3D?=
+        Mon, 18 Apr 2022 19:13:52 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD9831FCD6
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:11:10 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id z12so19138004edl.2
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:11:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JMRDVPzzdy2VtEsvZFC+mN/uQt6YOpKPb2l8bAyzeoE=;
+        b=jCVoz2F192/OpBxELXgLrI9ovvx3jYEcNmqgLpIHzqfD45Ns+p7bSBWfnYIOigYmds
+         hybixW0fQFXDmANrp+NQnbDAEikM84xxZMStkknfAphz2mcVdgidyWsud/bYCB0HlZjr
+         J4Jz7A8LiGm2h22QzDgB7o2Evi5zklOzBa5qU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JMRDVPzzdy2VtEsvZFC+mN/uQt6YOpKPb2l8bAyzeoE=;
+        b=B3KOoyBkF9xU/RMt0ipAmgeUc7iIk03ENPC40eQzA6+JIkIcxchlDINIoJn5UPpL1A
+         nhonkFVVmf4XTSKe/VD5OH2bvw3bmtOao5gkxjT6I3Rl4biXaG3/7Pk4nr4hJ+MlP7qw
+         tqQz6p0qejiLFLy0NgJN7psr2Iq1DEYlQPwL2tXmnDZCQD79DZgs0FEqwW6mmxDRnsQc
+         DOiP9qqz2YPMwVDftYVNVIUdS3kAfm2BnIksbcGR0AAT+YwHi6U1ocfQ5q7XTT6PcS0W
+         DStiCpGMvgaxZ/XqQw5VwEBN9WrPCqwlPiFlf4Z2Zn0z35gkAsU6QmRAlq/Xd67f4bT5
+         /8Wg==
+X-Gm-Message-State: AOAM530ccdxHbtuDYG8pDoWY9CoVO5DLY7rEDZGfU6/gde2UkqbUOFew
+        uCwayFzWh4va2N7Z0YM1xJUpi9CZqKtgeWw3
+X-Google-Smtp-Source: ABdhPJyioNTgUuYuuKNJwEUDdGQwPVUtuXiZGsyairaKErb3/ohJ8/xHNxEMtzCNIufPloPobEZEKg==
+X-Received: by 2002:a05:6402:2741:b0:41f:69dc:9bcd with SMTP id z1-20020a056402274100b0041f69dc9bcdmr14384942edd.239.1650323468762;
+        Mon, 18 Apr 2022 16:11:08 -0700 (PDT)
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com. [209.85.221.46])
+        by smtp.gmail.com with ESMTPSA id ch26-20020a0564021bda00b00422dfcce6e2sm5361832edb.50.2022.04.18.16.11.06
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Apr 2022 16:11:07 -0700 (PDT)
+Received: by mail-wr1-f46.google.com with SMTP id bv16so3047112wrb.9
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:11:06 -0700 (PDT)
+X-Received: by 2002:a5d:4d0e:0:b0:207:a329:24fa with SMTP id
+ z14-20020a5d4d0e000000b00207a32924famr9393978wrt.342.1650323465918; Mon, 18
+ Apr 2022 16:11:05 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: qsc.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR16MB0023.namprd16.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 52f3aa96-037d-412f-f82a-08da218fb92c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Apr 2022 23:03:59.5399
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 23298f55-90ba-49c3-9286-576ec76d1e38
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zhiTxz/XG0w6n/AEmOiC/PR0hUVXTb5y7Qq53bCPlUwnG/J7CTXdzymv677n5FMbRH4+G5WinaMZ1IXDwVHSaQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR16MB4745
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA60A255 smtp.mailfrom=jeff.evanson@qsc.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: qsc.com
-Content-Language: en-US
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+References: <20220409023628.2104952-1-dianders@chromium.org>
+ <20220408193536.RFC.1.I4182ae27e00792842cb86f1433990a0ef9c0a073@changeid>
+ <a9a5dfb7-819b-d3a2-2c47-d5b239d21ad3@linaro.org> <CAD=FV=WKwErpD7iCu+2jFvMutmmmgLUEhAnw8s=27wUxcpF-aQ@mail.gmail.com>
+ <CAA8EJppOVqaAEVeQY7p0EfCObJxfL591kbaYLYfbgOHHtmfhXw@mail.gmail.com>
+ <CAD=FV=UmXzPyVOa-Y0gpY0qcukqW3ge5DBPx6ak88ydEqTsBiQ@mail.gmail.com> <ddb8d8fa-89dc-268b-0505-9ee7df8c272e@linaro.org>
+In-Reply-To: <ddb8d8fa-89dc-268b-0505-9ee7df8c272e@linaro.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 18 Apr 2022 16:10:52 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=Ur3afHhsXe7a3baWEnD=MFKFeKRbhFU+bt3P67G0MVzQ@mail.gmail.com>
+Message-ID: <CAD=FV=Ur3afHhsXe7a3baWEnD=MFKFeKRbhFU+bt3P67G0MVzQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/6] drm/dp: Helpers to make it easier for drivers to
+ use DP AUX bus properly
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        Philip Chen <philipchen@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lyude Paul <lyude@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vinicius. Thank you for the reply.
+Hi,
 
-The scenario only happens when the transmit queue interrupt is mapped to a =
-different interrupt from the receive queue. In the case where XDP_WAKEUP_TX=
- is set in the flags argument, the previous code would only trigger the int=
-errupt for the receive queue, causing the transmit queue's napi_struct to n=
-ever be scheduled.
-
-In the scenario where XDP_WAKEUP_TX and XDP_WAKEUP_RX are both set in flags=
-, the receive interrupt is always triggered and the transmit interrupt is o=
-nly triggered when the transmit q_vector differs from the receive q_vector.
-
-Regards,
-Jeff Evanson
-
------Original Message-----
-From: Vinicius Costa Gomes <vinicius.gomes@intel.com>=20
-Sent: Monday, April 18, 2022 11:45 AM
-To: Jeff Evanson <jeff.evanson@gmail.com>; Jesse Brandeburg <jesse.brandebu=
-rg@intel.com>; Tony Nguyen <anthony.l.nguyen@intel.com>; David S. Miller <d=
-avem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; intel-wired-lan@list=
-s.osuosl.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-Cc: Jeff Evanson <Jeff.Evanson@qsc.com>; jeff.evanson@gmail.com
-Subject: Re: [PATCH 2/2] Trigger proper interrupts in igc_xsk_wakeup
-
--External-
-
-Jeff Evanson <jeff.evanson@gmail.com> writes:
-
-> in igc_xsk_wakeup, trigger the proper interrupt based on whether flags=20
-> contains XDP_WAKEUP_RX and/or XDP_WAKEUP_TX
+On Fri, Apr 15, 2022 at 5:54 PM Dmitry Baryshkov
+<dmitry.baryshkov@linaro.org> wrote:
 >
-> Signed-off-by: Jeff Evanson <jeff.evanson@qsc.com>
-> ---
->  drivers/net/ethernet/intel/igc/igc_main.c | 36=20
-> +++++++++++++++++------
->  1 file changed, 27 insertions(+), 9 deletions(-)
+> >>> * They rely on there being exactly 1 AUX device, or we make it a rule
+> >>> that we wait for all AUX devices to probe (?)
+> >>
+> >> Is the backlight a separate device on an AUX bus? Judging from
+> >> drm_panel_dp_aux_backlight(), it isn't. I assumed that aux bus is just
+> >> a point-to-point bus, so there is always a single client.
+> >
+> > Define "device". ;-)
 >
-> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c=20
-> b/drivers/net/ethernet/intel/igc/igc_main.c
-> index a36a18c84aeb..d706de95dc06 100644
-> --- a/drivers/net/ethernet/intel/igc/igc_main.c
-> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-> @@ -6073,7 +6073,7 @@ static void igc_trigger_rxtxq_interrupt(struct=20
-> igc_adapter *adapter,  int igc_xsk_wakeup(struct net_device *dev, u32=20
-> queue_id, u32 flags)  {
->  =09struct igc_adapter *adapter =3D netdev_priv(dev);
-> -=09struct igc_q_vector *q_vector;
-> +=09struct igc_q_vector *txq_vector =3D 0, *rxq_vector =3D 0;
->  =09struct igc_ring *ring;
-> =20
->  =09if (test_bit(__IGC_DOWN, &adapter->state)) @@ -6082,17 +6082,35 @@=20
-> int igc_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
->  =09if (!igc_xdp_is_enabled(adapter))
->  =09=09return -ENXIO;
-> =20
-> -=09if (queue_id >=3D adapter->num_rx_queues)
-> -=09=09return -EINVAL;
-> +=09if (flags & XDP_WAKEUP_RX) {
-> +=09=09if (queue_id >=3D adapter->num_rx_queues)
-> +=09=09=09return -EINVAL;
-> =20
-> -=09ring =3D adapter->rx_ring[queue_id];
-> +=09=09ring =3D adapter->rx_ring[queue_id];
-> +=09=09if (!ring->xsk_pool)
-> +=09=09=09return -ENXIO;
-> =20
-> -=09if (!ring->xsk_pool)
-> -=09=09return -ENXIO;
-> +=09=09rxq_vector =3D ring->q_vector;
-> +=09}
-> +
-> +=09if (flags & XDP_WAKEUP_TX) {
-> +=09=09if (queue_id >=3D adapter->num_tx_queues)
-> +=09=09=09return -EINVAL;
-> +
-> +=09=09ring =3D adapter->tx_ring[queue_id];
-> +=09=09if (!ring->xsk_pool)
-> +=09=09=09return -ENXIO;
-> +
-> +=09=09txq_vector =3D ring->q_vector;
-> +=09}
-> +
-> +=09if (rxq_vector &&
-> +=09    !napi_if_scheduled_mark_missed(&rxq_vector->napi))
-> +=09=09igc_trigger_rxtxq_interrupt(adapter, rxq_vector);
-> =20
-> -=09q_vector =3D adapter->q_vector[queue_id];
-> -=09if (!napi_if_scheduled_mark_missed(&q_vector->napi))
-> -=09=09igc_trigger_rxtxq_interrupt(adapter, q_vector);
-> +=09if (txq_vector && txq_vector !=3D rxq_vector &&
-> +=09    !napi_if_scheduled_mark_missed(&txq_vector->napi))
-> +=09=09igc_trigger_rxtxq_interrupt(adapter, txq_vector);
+> "a device on the AUX bus" = the device, which lists dp_aux_bus_type as
+> dev->bus_type.
 
-Two things:
- - My imagination was not able to produce a scenario where this commit  wou=
-ld solve any problems. Can you explain better the case where the  current c=
-ode would cause the wrong interrupt to be generated (or miss  generating an=
- interrupt)? (this should be in the commit message)
- - I think that with this patch applied, there would cases (both TX and  RX=
- flags set) that we cause two writes into the EICS register. That  could ca=
-use unnecessary wakeups.
+Right. So I guess I was thinking that we _could_ have modeled the
+backlight as a device which lists dp_aux_bus_type as dev->bus_type.
+AKA:
 
-> =20
->  =09return 0;
->  }
-> --
-> 2.17.1
+1. We could have had a second node in the sc7180-trogdor-homestar
+device tree under the DP controller for the DP AUX backlight.
+
+2. Instead of manually calling drm_panel_dp_aux_backlight() from
+panel-edp.c and panel-samsung-atna33xc20.c the backlight could have
+just probed on its own.
+
+3. In the device tree, the panel could have had a link to the
+backlight's phandle which would have made the existing
+drm_panel_of_backlight() "just work" and we wouldn't have needed the
+manual call to drm_panel_dp_aux_backlight().
+
+Oh. But. Maybe. Not.
+
+We couldn't really have done that because we would have been able to
+do the DP AUX transactions for the backlight without powering on the
+panel. So we couldn't really have probed them separately. OK, you guys
+win this round. ;-)
+
+
+> > It's a seperate "struct device" from a Linux point of view since it's
+> > a backlight class device. Certainly it's highly correlated to the
+> > display, but one can conceptually think of them as different devices,
+> > sorta. ;-)
+> >
+> > I actually dug a tiny bit more into the whole "touchscreen over aux".
+> > I guess DP 1.2 has a standard of "USB over DP AUX". No idea how that
+> > would be modeled, of course.
 >
+> Ugh. Do you have any details of the standard itself? Like how does it
+> looks like from the host point of view. And if the AUX is required to be
+> powered for this USB bus to work?
+>
+> In other words: if we were to model it at this moment, would it be the
+> child of the panel device (like backlight) or a separate device sitting
+> on the same AUX bus?
 
-Cheers,
---=20
-Vinicius
+I spent a bunch of time searching and I couldn't find more than a
+reference, like "hey we came up with this idea and we're gonna write
+down in the spec that you could totally do USB over the AUX channel,
+but ummmm, we haven't actually implemented it yet". ;-) I certainly
+could be wrong, but all of the references I could find were distinctly
+lacking in details or pointers to other docs w/ more info.
 
+...but while searching I _did_ find a lot of details (in the eDP 1.4
+spec) about "Multi-touch over AUX". That looks like something that's
+actually more well thought out and maybe even implemented somewhere.
+
+From what I can tell though, it looks as if it's the same thing as the
+backlight. In other words it's only available when the panel is
+powered.
+
+I don't think we want to do anything so drastic like moving the
+ownership of panel power to the AUX bus or anything, so I guess this
+means that:
+
+a) The panel driver will remain in charge of powering the panel
+(including anything on the DP AUX bus) on and off and getting the
+power sequencing right.
+
+b) That means that we can really think of the panel as the _only_
+thing on the DP AUX bus.
+
+c) Anything else on the DP AUX bus will be underneath the panel driver.
+
+
+> > I guess the summary is that I'm OK w/ changing it to assume one device
+> > for now, but I'm still not sure it's compelling to move to normal
+> > callbacks. The API for callbacks is pretty much the same as the one I
+> > proposed and IMO leaving it the way it is (with an extra struct
+> > device) doesn't really add much complexity and has a few (small) nice
+> > benefits.
+>
+> I think Stephen didn't like too many similarities between
+> dp_aux_ep_client and dp_aux_ep_device. And I'd second him here.
+>
+>
+> >>> * We need to come up with a system for detecting when everything
+> >>> probes or is going to be removed, though that's probably not too hard.
+> >>> I guess the DP AUX bus could just replace the panel's probe function
+> >>> with its own and essentially "tail patch" it. I guess it could "head
+> >>> patch" the remove call? ...or is there some better way you were
+> >>> thinking of knowing when all our children probed?
+> >>>
+> >>> * The callback on the aux bus controller side would not be able to
+> >>> DEFER. In other words trying to acquire a reference to the panel can
+> >>> always be the last thing we do so we know there can be no reasons to
+> >>> defer after. This should be doable, but at least in the ps8640 case it
+> >>> will require changing the code a bit. I notice that today it actually
+> >>> tries to get the panel side _before_ it gets the MIPI side and it
+> >>> potentially can return -EPROBE_DEFER if it can't find the MIPI side. I
+> >>> guess I have a niggling feeling that we'll find some reason in the
+> >>> future that we can't be last, but we can probably ignore that. ;-)
+> >>>
+> >>> I can switch this all to normal callbacks if that's what everyone
+> >>> wants, but it doesn't feel significantly cleaner to me and does seem
+> >>> to have some (small) downsides.
+> >>>
+> >>>
+> >>>> And this
+> >>>> approach would make driver's life easier, since e.g. the bus code can
+> >>>> pm_get the EP device before calling callbacks/notifiers and
+> >>>> pm_put_autosuspend it afterwards.
+> >>>
+> >>> Not sure about doing the pm calls on behalf of the EP device. What's
+> >>> the goal there?
+> >>
+> >> I think any driver can pm_runtime_get another device. The goal is to
+> >> let the 'post_probe' callback to power up the panel, read the EDID,
+> >> etc.
+> >
+> > Right. I was hoping to keep this as a separate discussion since I
+> > think it's largely unrelated to the probe ordering issue, but we can
+> > talk about it here if you want.
+>
+> As for me they are pretty much tired one to another. As reading EDID
+> (even if it is just to read the panel ID) is one of the main issue with
+> panel probe path. I just don't want to end up in a situation when we
+> refactor aux_bus probe to fix the ordering/race issue and then we have
+> to refactor it again for reading EDID.
+>
+> >
+> > There are a lot of open questions here and it's definitely hard to
+> > wrap your head around all of it. Maybe I'll just spam some thoughts
+> > and see if they all make sense together...
+>
+> Thank you for the lengthy explanation. And I should be your pardon for
+> partially ignoring DP/ dp bridges patches earlier.
+>
+> >
+> > 1. At the moment, there's no guarantee that a DP AUX Endpoint (AKA
+> > panel) will use pm_runtime() to power itself up enough to do an AUX
+> > transfer. At the moment the two eDP panels drivers I'm aware of use
+> > pm_runtime, but that's actually a fairly new behavior. I guess we'd
+> > have to codify it as "required" if we were going to rely on it.
+>
+> * document it as a "required"
+>
+> >
+> > 2. In general, panels have powered themselves enough to read the EDID
+> > in their prepare() stage, which is equivalent to the bridge's
+> > pre_enable(). During some of my early patches to try to support EDID
+> > reading in ti-sn65dsi86 I actually relied upon it. It was like that in
+> > v3 [1]. Personally I see this as the "official" interface to power on
+> > the panel from the DP controller. As such I'm not sure we need to add
+> > pm_runtime() as an equivalent option.
+> >
+> > 3. In the cover letter of v4 of my ti-sn65dsi86 EDID patch series I
+> > talked about why I switched to having EDID reading driven by the panel
+> > instead of powering on the panel (via pre_enable) and reading the EDID
+> > in the controller. One reason talked about there is that the "generic"
+> > eDP panel driver actually needs the EDID, or at least enough of it to
+> > get the panel ID, so that it can adjust its power sequence timings. If
+> > the EDID reading is completely handled by the DP driver and the panel
+> > can't do it then we'd need to figure out how to communicate it back.
+>
+> I think with the current drm_bridge_connector-based code this should be
+> handled properly. Anyway, it should be the panel, who reads the EDID,
+> not the DP core. Actually just a random idea that just came to my mind.
+> Maybe (!) we should break ties between msm dp core and the whole
+> EDID/HPD/dp_panel story. In other words, split the whole DP EDID reading
+> to the separate drm_bridge. Maybe I'm overengineering it here.
+
+I had similar inklings before but I never explored it. I have a vague
+recollection of mentioning it to Laurent and him thinking it was a bad
+idea, though. No idea if I just dreamed that, though.
+
+
+> > 4. In general, panels can be pretty persnickety about their power
+> > sequencing. As far as I've been able to tell, the official spec
+> > provides two things you can do:
+> >
+> > 4a) You can power the panel up enough to do AUX transfers and then
+> > power it back off.
+> >
+> > 4b) You can power the panel up enough to do AUX transfers, then finish
+> > powering it all the way up (turn on screen, backlight, etc). When you
+> > turn the screen off, if you follow the spec strictly, you're also
+> > _required_ to fully power the panel off. In other words, remove _all_
+> > power from the display including any power that would be needed to do
+> > AUX transfers.
+>
+> Ugh. It's a pity that we can not leave AUX enabled forever, while doing
+> all kinds of turning the screen off  and on again.
+
+Yeah. I mean, it's possible that the issues with the Samsung panel
+would have been solvable some other way, but definitely when we were
+having problems with it the HW guys who were looking at it were
+claiming that it was a violation and I couldn't find anything to prove
+them wrong. :-( ...and fully power cycling fixed all the problems...
+
+
+> > Now the generic eDP panel code doesn't currently follow the
+> > "strict"ness of the spec and I'm not actually sure if that's how the
+> > spec is intended to be interpreted anyway. There are two timing
+> > diagrams, though. One for "aux transfer only" and the other for
+> > "normal system operation". In the "normal system operation" the
+> > diagram doesn't allow for the backlight to ever go off and on again.
+> >
+> > Now, despite the fact that the generic eDP panel code doesn't follow
+> > the "strict"ness I just described, the _other_ DP panel I worked on
+> > recently (samsung-atna33xc20) does. In testing we found that this
+> > panel would sometimes (like 1 in 20 times?) crash if you ever stopped
+> > outputting data to the display and then started again. You absolutely
+> > needed to fully power cycle the display each time. I tried to document
+> > this to the best of my ability in atana33xc20_unprepare(). There's
+> > also a WARN_ON() in atana33xc20_enable() trying to detect if someone
+> > is doing something the panel driver doesn't expect. I've also been
+> > trying to keep my eyes out to see if we need to do the same thing in
+> > generic eDP panel code, either for everyone or via some type of
+> > per-panel quirk. There's definitely a good reason to avoid the extra
+> > cycling if possible since powering panels off and on again often
+> > requires hundreds of milliseconds of delay in order to meet timing
+> > diagrams. ...and we do this if we ever change panel "modes".
+>
+> Point noted.
+>
+> >
+> > ...OK, so why does this all matter? I guess my point here is I worry a
+> > little bit about saying that the DP controller code can willy nilly
+> > request the panel to be powered whenever it wants. If the DP
+> > controller was trying to hold the panel powered and then we _needed_
+> > to power the panel off then that would be bad. It doesn't mean we
+> > can't be careful about it, of course...
+> >
+> > Said another way, in my mental model these three sequences are allowed:
+> >
+> > s1) prepare, unprepare
+> > s2) prepare, enable, disable, unprepare
+> > s3) prepare, enable, disable, unprepare, prepare, enable, disable, unprepare
+> >
+> > ...and this sequence is _not_ allowed:
+> >
+> > s4) prepare, enable, disable, enable, disable, unprepare
+>
+> A strange random question (for which there is probably an existing
+> obvious answer somwewhere, 4 a.m. here).
+>
+> Is there any reason why can't we drop prepare/unprepare for the eDP
+> panels and use the following sequence;
+>
+> - get_modes() = perform AUX-only transfer the first time we hit the
+> function to read the EDID. return cached copy afterwards.
+
+side note: we already do cache the EDID.
+
+
+> - a sequence of enable()/disable() calls doing a full powerup/powerdown?
+
+Aside from the fact that there's a bunch of code out there that
+assumes that panels are powered on in pre_enable() ? For instance, on
+parade-ps8640 we still support old device trees where the panel isn't
+listed under the DP AUX bus. These devices only support a hardcoded
+panel, not the generic "edp-panel". There you can see that
+ps8640_bridge_get_edid() assumes it can power the panel on with
+drm_bridge_chain_pre_enable()
+
+...but besides that, it still wouldn't work. For reasons I won't get
+into, here's the current order the bridge chains are called for
+prepare and enable:
+
+pre_enable:   start from connector and move to encoder
+enable:       start from encoder and move to connector
+
+So if we stop turning on panel power in pre_enable() then when the DP
+controller's enable() is running the panel won't have any power. I
+don't think that will be so bueno.
+
+
+> > ...and, in my mind, it's up to the panel driver to know whether in
+> > sequence s3) it has to _force_ power off between the unprepare and a
+> > prepare.
+> >
+> > If pm_runtime() officially replaces prepare/unprepare then it's less
+> > obvious (in my mind) that we have to coordinate with enable().
+>
+> I see
+>
+> >
+> > 5. In general I've been asserting that it should be up to the panel to
+> > power things on and drive all AUX transactions. ...but clearly my
+> > model isn't reality. We certainly do AUX transactions from the DP
+> > driver because the DP driver needs to know things about the connected
+> > device, like the number of lanes it has, the version of eDP it
+> > supports, and the available bit rates to name a few. Those things all
+> > work today by relying on the fact that pre-enable powers the panel on.
+> > It's pretty easy to say that reading the EDID (and I guess AUX
+> > backlight) is the odd one out. So right now I guess my model is:
+> >
+> > 5a) If the panel code wants to access the AUX bus it can do so by
+> > powering itself on and then just doing an AUX transaction and assuming
+> > that the provider of the AUX bus can power itself on as needed.
+> >
+> > 5b) If the DP code wants to access the AUX bus it should make sure
+> > that the next bridge's pre_enable() has been called. It can then
+> > assume that the device is powered on until the next bridge's
+> > post_disable() has been called.
+> >
+> > So I guess tl;dr: I'm not really a huge fan of the DP driver powering
+> > the panel on by doing a pm_runtime_get() on it. I'd prefer to keep
+> > with the interface that we have to pre_enable() the panel to turn it
+> > on.
+>
+> Again, thank for the explanation. Your concerns make more sense now.
+> As much as I hate writing docs, maybe we should put at least basic notes
+> (regarding panel requirements) somewhere to the DP/DP AUX documentation?
+
+Sure. I actually don't mind writing docs, but my problem is trying to
+figure out where the heck to put them where someone would actually
+notice them. I could throw a blurb in the kernel doc for `struct
+drm_dp_aux` I guess? How about a deal: if you can tell me where to put
+the above facts (essentially 5a and 5b) then I'm happy to post a patch
+adding them.
+
+Huh, actually, maybe the right place is in the "transfer" function of
+that structure which, as of commit bacbab58f09d ("drm: Mention the
+power state requirement on side-channel operations"), actually has a
+blurb. ...but I don't think the blurb there is totally complete. What
+if I changed it to this:
+
+ * Also note that this callback can be called no matter the
+ * state @dev is in and also no matter what state the panel is
+ * in. It's expected:
+ * - If the @dev providing the AUX bus is currently unpowered then
+ *   it will power itself up for the transfer.
+ * - If the panel is not in a state where it can respond (it's not
+ *   powered or it's in a low power state) then this function will
+ *   fail. Note that if a panel driver is initiating a DP AUX transfer
+ *   it may power itself up however it wants. All other code should
+ *   use the pre_enable() bridge chain (which eventually calls the
+ *   panel prepare function) to power the panel.
+
+
+> > [1] https://lore.kernel.org/r/20210402152701.v3.8.Ied721dc895156046ac523baa55a71da241cd09c7@changeid/
+> > [2] https://lore.kernel.org/r/20210416223950.3586967-1-dianders@chromium.org/
+> >
+> >
+> >> BTW: as I'm slowly diving into DP vs eDP differences. Do we need to
+> >> write the EDID checksum like we do for DP?
+> >
+> > Write the EDID checksum? I don't know what that means. You mean
+> > dp_panel_get_edid_checksum()? I'm not 100% sure, a quick glance seems
+> > to make me feel it has to do with DP compliance testing? I can dig
+> > more if need be. The generic EDID reading code already calculates the
+> > checksum, so unless you're doing some funny business you shouldn't
+> > need to check it again...
+>
+> I was thinking about  dp_link_send_edid_checksum() /
+
+That one seems to be only used for DP_TEST_LINK_EDID_READ. I _think_
+that's for DP compliance testing and I don't think we need compliance
+testing for eDP.
+
+> drm_dp_send_real_edid_checksum().
+
+I don't see calls to this right now for Qualcomm, but it also looks
+related to compliance testing?
+
+
+So I guess where does that leave us? Maybe:
+
+1. I'll add a WARN_ON() in of_dp_aux_populate_ep_devices() if there is
+more than one DP AUX endpoint with a comment explaining why we assume
+one DP AUX endpoint.
+
+2. I'll create this new structure in drm_dp_aux_bus.h:
+
+struct dp_aux_populate_callbacks {
+  int (*done_probing)(struct drm_dp_aux *aux);
+  void (*pre_remove)(struct drm_dp_aux *aux);
+};
+
+3. I'll add a second version of the populate functions that AUX bus
+providers can use if they want callbacks:
+
+int of_dp_aux_populate_ep_devices_cb(struct drm_dp_aux *aux,
+                                     struct dp_aux_populate_callbacks *cb);
+int devm_of_dp_aux_populate_ep_devices_cb(struct drm_dp_aux *aux,
+                                          struct dp_aux_populate_callbacks *cb);
+
+The old functions will just be changed to wrap the above and pass NULL
+for the callbacks. To me, this seems better/simpler than notifiers or
+any other scheme, but yell if you disagree.
+
+4. I'll call the callsbacks in dp_aux_ep_probe() after a successful
+probe. I'll add a second callback and will call it in
+dp_aux_ep_remove() before passing the remove through to the panel.
+
+
+If that sounds peachy then I think it should be pretty doable.
+
+
+-Doug
