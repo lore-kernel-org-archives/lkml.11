@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9885BC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79528C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:21:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242106AbiDRNXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41060 "EHLO
+        id S241938AbiDRNWt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:22:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241761AbiDRND1 (ORCPT
+        with ESMTP id S241785AbiDRND2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:03:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E31A28E33;
-        Mon, 18 Apr 2022 05:44:12 -0700 (PDT)
+        Mon, 18 Apr 2022 09:03:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9417D2980D;
+        Mon, 18 Apr 2022 05:44:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1715A60FB6;
-        Mon, 18 Apr 2022 12:44:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21CE2C385A1;
-        Mon, 18 Apr 2022 12:44:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EF056101A;
+        Mon, 18 Apr 2022 12:44:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24D24C385A1;
+        Mon, 18 Apr 2022 12:44:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285851;
-        bh=/MTiFzhPPBzBmRP6KphVyG6z6NjGrTicjIvssdJrpQs=;
+        s=korg; t=1650285863;
+        bh=N4kUl1m4/k9Jg2FDyVMzcG2XwXjRVFC50zJ6fetJ8/c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rW2v9zG93PzB0reFQZ95GjAANLEhMBcqhzV9lJ5cl+piFYiX2Q1DyxHqsQnvFmm4t
-         ivalAe9VZ10fNejPxmXVGqP6bAySdSSdnBlT8uZXrsuPz8dxM5IWAertGEPujgy+pO
-         p4EogSSEeyZssNHn9EX3n6DlSPtQBkTm6dzlJtok=
+        b=ZKQenHz2KBykkENAuN//iGL0zE4Gejqwq3PHchFYfRc39YPdTW6JloDQroARgs/nj
+         GTSrR+AFm5M6StUBLUW9K+8VEwYNMnXVCZiMlbSLpT314fdX8TirJlb2fznbFtiptd
+         A7XT6ctS8CEH52wFJS3+Lya2mS027mTRw0VgtuH0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Crawford <tcrawford@system76.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.4 45/63] ALSA: hda/realtek: Add quirk for Clevo PD50PNT
-Date:   Mon, 18 Apr 2022 14:13:42 +0200
-Message-Id: <20220418121137.243846810@linuxfoundation.org>
+        stable@vger.kernel.org, Melissa Wen <mwen@igalia.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Simon Ser <contact@emersion.fr>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.4 48/63] drm/amd/display: dont ignore alpha property on pre-multiplied mode
+Date:   Mon, 18 Apr 2022 14:13:45 +0200
+Message-Id: <20220418121137.430721035@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
 References: <20220418121134.149115109@linuxfoundation.org>
@@ -48,30 +51,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Crawford <tcrawford@system76.com>
+From: Melissa Wen <mwen@igalia.com>
 
-commit 9eb6f5c388060d8cef3c8b616cc31b765e022359 upstream.
+commit e4f1541caf60fcbe5a59e9d25805c0b5865e546a upstream.
 
-Fixes speaker output and headset detection on Clevo PD50PNT.
+"Pre-multiplied" is the default pixel blend mode for KMS/DRM, as
+documented in supported_modes of drm_plane_create_blend_mode_property():
+https://cgit.freedesktop.org/drm/drm-misc/tree/drivers/gpu/drm/drm_blend.c
 
-Signed-off-by: Tim Crawford <tcrawford@system76.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220405182029.27431-1-tcrawford@system76.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+In this mode, both 'pixel alpha' and 'plane alpha' participate in the
+calculation, as described by the pixel blend mode formula in KMS/DRM
+documentation:
+
+out.rgb = plane_alpha * fg.rgb +
+          (1 - (plane_alpha * fg.alpha)) * bg.rgb
+
+Considering the blend config mechanisms we have in the driver so far,
+the alpha mode that better fits this blend mode is the
+_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN, where the value for global_gain
+is the plane alpha (global_alpha).
+
+With this change, alpha property stops to be ignored. It also addresses
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1734
+
+v2:
+ * keep the 8-bit value for global_alpha_value (Nicholas)
+ * correct the logical ordering for combined global gain (Nicholas)
+ * apply to dcn10 too (Nicholas)
+
+Signed-off-by: Melissa Wen <mwen@igalia.com>
+Tested-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Tested-by: Simon Ser <contact@emersion.fr>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c |   14 +++++++++-----
+ drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c        |   14 +++++++++-----
+ 2 files changed, 18 insertions(+), 10 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -2568,6 +2568,7 @@ static const struct snd_pci_quirk alc882
- 	SND_PCI_QUIRK(0x1558, 0x65e1, "Clevo PB51[ED][DF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x65e5, "Clevo PC50D[PRS](?:-D|-G)?", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x65f1, "Clevo PC50HS", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
-+	SND_PCI_QUIRK(0x1558, 0x65f5, "Clevo PD50PN[NRT]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x67d1, "Clevo PB71[ER][CDF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x67e1, "Clevo PB71[DE][CDF]", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
- 	SND_PCI_QUIRK(0x1558, 0x67e5, "Clevo PC70D[PRS](?:-D|-G)?", ALC1220_FIXUP_CLEVO_PB51ED_PINS),
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+@@ -2202,14 +2202,18 @@ static void dcn10_update_mpcc(struct dc
+ 				&blnd_cfg.black_color);
+ 	}
+ 
+-	if (per_pixel_alpha)
+-		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
+-	else
+-		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
+-
+ 	blnd_cfg.overlap_only = false;
+ 	blnd_cfg.global_gain = 0xff;
+ 
++	if (per_pixel_alpha && pipe_ctx->plane_state->global_alpha) {
++		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN;
++		blnd_cfg.global_gain = pipe_ctx->plane_state->global_alpha_value;
++	} else if (per_pixel_alpha) {
++		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
++	} else {
++		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
++	}
++
+ 	if (pipe_ctx->plane_state->global_alpha)
+ 		blnd_cfg.global_alpha = pipe_ctx->plane_state->global_alpha_value;
+ 	else
+--- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_hwseq.c
+@@ -1740,14 +1740,18 @@ static void dcn20_update_mpcc(struct dc
+ 				pipe_ctx, &blnd_cfg.black_color);
+ 	}
+ 
+-	if (per_pixel_alpha)
+-		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
+-	else
+-		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
+-
+ 	blnd_cfg.overlap_only = false;
+ 	blnd_cfg.global_gain = 0xff;
+ 
++	if (per_pixel_alpha && pipe_ctx->plane_state->global_alpha) {
++		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN;
++		blnd_cfg.global_gain = pipe_ctx->plane_state->global_alpha_value;
++	} else if (per_pixel_alpha) {
++		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_PER_PIXEL_ALPHA;
++	} else {
++		blnd_cfg.alpha_mode = MPCC_ALPHA_BLEND_MODE_GLOBAL_ALPHA;
++	}
++
+ 	if (pipe_ctx->plane_state->global_alpha)
+ 		blnd_cfg.global_alpha = pipe_ctx->plane_state->global_alpha_value;
+ 	else
 
 
