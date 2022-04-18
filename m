@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32283C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:22:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238621AbiDRMZN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:25:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48836 "EHLO
+        id S238602AbiDRMZT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:25:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238500AbiDRMWa (ORCPT
+        with ESMTP id S238461AbiDRMV4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:22:30 -0400
+        Mon, 18 Apr 2022 08:21:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43F61DA60;
-        Mon, 18 Apr 2022 05:17:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CDC01D302;
+        Mon, 18 Apr 2022 05:17:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4143C60F01;
-        Mon, 18 Apr 2022 12:17:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C576C385A7;
-        Mon, 18 Apr 2022 12:17:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1650B60F0F;
+        Mon, 18 Apr 2022 12:17:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C2CC385A1;
+        Mon, 18 Apr 2022 12:17:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284265;
-        bh=umFTfXUjPTfRuZWvVFLcMfF4nfy/Jnjf1wlhjM1N+Fw=;
+        s=korg; t=1650284259;
+        bh=dz40396YIqXB2jepd5Hjs99vJxDVQBUy5fYJDuU3p38=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EZgIiIjWX8IbD0O626ofbNZByvszfVs62hwh/a+1r60YBVZki4tEossx0WlMlF690
-         Tvmw2bZcA9RRZ44SWFUgzO2gqYnN25ydY2lLUVsM+sYXFvgtzY0DztErSDDlQL3k4m
-         bQ13Qcz+AStzgQ5LzUrWM9gRBjXxpWwUviOhtQzE=
+        b=jzwajjdIzSsaH7NqhHg2LYZKuBF5MXijp7X2MSUa0fdFoXNTDK6HK/enY1cn7RtTx
+         6o0fwpCL3TNWlD3mc3QMe4OCX0CBScUV7GQBI+xDp97M73wFp2kzwq5vjgEQcGAYVt
+         Zc/LVJg0+4aTK2y6EBhveOai8/ACxuZsTcP57dMY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 058/219] drm/msm: Add missing put_task_struct() in debugfs path
-Date:   Mon, 18 Apr 2022 14:10:27 +0200
-Message-Id: <20220418121206.991520017@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 056/219] ALSA: memalloc: Add fallback SG-buffer allocations for x86
+Date:   Mon, 18 Apr 2022 14:10:25 +0200
+Message-Id: <20220418121206.846865273@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,32 +47,210 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit ac3e4f42d5ec459f701743debd9c1ad2f2247402 ]
+commit 925ca893b4a65177394581737b95d03fea2660f2 upstream.
 
-Fixes: 25faf2f2e065 ("drm/msm: Show process names in gem_describe")
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Link: https://lore.kernel.org/r/20220317184550.227991-1-robdclark@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The recent change for memory allocator replaced the SG-buffer handling
+helper for x86 with the standard non-contiguous page handler.  This
+works for most cases, but there is a corner case I obviously
+overlooked, namely, the fallback of non-contiguous handler without
+IOMMU.  When the system runs without IOMMU, the core handler tries to
+use the continuous pages with a single SGL entry.  It works nicely for
+most cases, but when the system memory gets fragmented, the large
+allocation may fail frequently.
+
+Ideally the non-contig handler could deal with the proper SG pages,
+it's cumbersome to extend for now.  As a workaround, here we add new
+types for (minimalistic) SG allocations, instead, so that the
+allocator falls back to those types automatically when the allocation
+with the standard API failed.
+
+BTW, one better (but pretty minor) improvement from the previous
+SG-buffer code is that this provides the proper mmap support without
+the PCM's page fault handling.
+
+Fixes: 2c95b92ecd92 ("ALSA: memalloc: Unify x86 SG-buffer handling (take#3)")
+BugLink: https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/2272
+BugLink: https://bugzilla.suse.com/show_bug.cgi?id=1198248
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220413054808.7547-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/msm_gem.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/sound/memalloc.h |   5 ++
+ sound/core/memalloc.c    | 111 ++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 115 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
-index 02b9ae65a96a..a4f61972667b 100644
---- a/drivers/gpu/drm/msm/msm_gem.c
-+++ b/drivers/gpu/drm/msm/msm_gem.c
-@@ -926,6 +926,7 @@ void msm_gem_describe(struct drm_gem_object *obj, struct seq_file *m,
- 					get_pid_task(aspace->pid, PIDTYPE_PID);
- 				if (task) {
- 					comm = kstrdup(task->comm, GFP_KERNEL);
-+					put_task_struct(task);
- 				} else {
- 					comm = NULL;
- 				}
+diff --git a/include/sound/memalloc.h b/include/sound/memalloc.h
+index 653dfffb3ac8..8d79cebf95f3 100644
+--- a/include/sound/memalloc.h
++++ b/include/sound/memalloc.h
+@@ -51,6 +51,11 @@ struct snd_dma_device {
+ #define SNDRV_DMA_TYPE_DEV_SG	SNDRV_DMA_TYPE_DEV /* no SG-buf support */
+ #define SNDRV_DMA_TYPE_DEV_WC_SG	SNDRV_DMA_TYPE_DEV_WC
+ #endif
++/* fallback types, don't use those directly */
++#ifdef CONFIG_SND_DMA_SGBUF
++#define SNDRV_DMA_TYPE_DEV_SG_FALLBACK		10
++#define SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK	11
++#endif
+ 
+ /*
+  * info for buffer allocation
+diff --git a/sound/core/memalloc.c b/sound/core/memalloc.c
+index 6fd763d4d15b..15dc7160ba34 100644
+--- a/sound/core/memalloc.c
++++ b/sound/core/memalloc.c
+@@ -499,6 +499,10 @@ static const struct snd_malloc_ops snd_dma_wc_ops = {
+ };
+ #endif /* CONFIG_X86 */
+ 
++#ifdef CONFIG_SND_DMA_SGBUF
++static void *snd_dma_sg_fallback_alloc(struct snd_dma_buffer *dmab, size_t size);
++#endif
++
+ /*
+  * Non-contiguous pages allocator
+  */
+@@ -509,8 +513,18 @@ static void *snd_dma_noncontig_alloc(struct snd_dma_buffer *dmab, size_t size)
+ 
+ 	sgt = dma_alloc_noncontiguous(dmab->dev.dev, size, dmab->dev.dir,
+ 				      DEFAULT_GFP, 0);
+-	if (!sgt)
++	if (!sgt) {
++#ifdef CONFIG_SND_DMA_SGBUF
++		if (dmab->dev.type == SNDRV_DMA_TYPE_DEV_WC_SG)
++			dmab->dev.type = SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK;
++		else
++			dmab->dev.type = SNDRV_DMA_TYPE_DEV_SG_FALLBACK;
++		return snd_dma_sg_fallback_alloc(dmab, size);
++#else
+ 		return NULL;
++#endif
++	}
++
+ 	dmab->dev.need_sync = dma_need_sync(dmab->dev.dev,
+ 					    sg_dma_address(sgt->sgl));
+ 	p = dma_vmap_noncontiguous(dmab->dev.dev, size, sgt);
+@@ -633,6 +647,8 @@ static void *snd_dma_sg_wc_alloc(struct snd_dma_buffer *dmab, size_t size)
+ 
+ 	if (!p)
+ 		return NULL;
++	if (dmab->dev.type != SNDRV_DMA_TYPE_DEV_WC_SG)
++		return p;
+ 	for_each_sgtable_page(sgt, &iter, 0)
+ 		set_memory_wc(sg_wc_address(&iter), 1);
+ 	return p;
+@@ -665,6 +681,95 @@ static const struct snd_malloc_ops snd_dma_sg_wc_ops = {
+ 	.get_page = snd_dma_noncontig_get_page,
+ 	.get_chunk_size = snd_dma_noncontig_get_chunk_size,
+ };
++
++/* Fallback SG-buffer allocations for x86 */
++struct snd_dma_sg_fallback {
++	size_t count;
++	struct page **pages;
++	dma_addr_t *addrs;
++};
++
++static void __snd_dma_sg_fallback_free(struct snd_dma_buffer *dmab,
++				       struct snd_dma_sg_fallback *sgbuf)
++{
++	size_t i;
++
++	if (sgbuf->count && dmab->dev.type == SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK)
++		set_pages_array_wb(sgbuf->pages, sgbuf->count);
++	for (i = 0; i < sgbuf->count && sgbuf->pages[i]; i++)
++		dma_free_coherent(dmab->dev.dev, PAGE_SIZE,
++				  page_address(sgbuf->pages[i]),
++				  sgbuf->addrs[i]);
++	kvfree(sgbuf->pages);
++	kvfree(sgbuf->addrs);
++	kfree(sgbuf);
++}
++
++static void *snd_dma_sg_fallback_alloc(struct snd_dma_buffer *dmab, size_t size)
++{
++	struct snd_dma_sg_fallback *sgbuf;
++	struct page **pages;
++	size_t i, count;
++	void *p;
++
++	sgbuf = kzalloc(sizeof(*sgbuf), GFP_KERNEL);
++	if (!sgbuf)
++		return NULL;
++	count = PAGE_ALIGN(size) >> PAGE_SHIFT;
++	pages = kvcalloc(count, sizeof(*pages), GFP_KERNEL);
++	if (!pages)
++		goto error;
++	sgbuf->pages = pages;
++	sgbuf->addrs = kvcalloc(count, sizeof(*sgbuf->addrs), GFP_KERNEL);
++	if (!sgbuf->addrs)
++		goto error;
++
++	for (i = 0; i < count; sgbuf->count++, i++) {
++		p = dma_alloc_coherent(dmab->dev.dev, PAGE_SIZE,
++				       &sgbuf->addrs[i], DEFAULT_GFP);
++		if (!p)
++			goto error;
++		sgbuf->pages[i] = virt_to_page(p);
++	}
++
++	if (dmab->dev.type == SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK)
++		set_pages_array_wc(pages, count);
++	p = vmap(pages, count, VM_MAP, PAGE_KERNEL);
++	if (!p)
++		goto error;
++	dmab->private_data = sgbuf;
++	return p;
++
++ error:
++	__snd_dma_sg_fallback_free(dmab, sgbuf);
++	return NULL;
++}
++
++static void snd_dma_sg_fallback_free(struct snd_dma_buffer *dmab)
++{
++	vunmap(dmab->area);
++	__snd_dma_sg_fallback_free(dmab, dmab->private_data);
++}
++
++static int snd_dma_sg_fallback_mmap(struct snd_dma_buffer *dmab,
++				    struct vm_area_struct *area)
++{
++	struct snd_dma_sg_fallback *sgbuf = dmab->private_data;
++
++	if (dmab->dev.type == SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK)
++		area->vm_page_prot = pgprot_writecombine(area->vm_page_prot);
++	return vm_map_pages(area, sgbuf->pages, sgbuf->count);
++}
++
++static const struct snd_malloc_ops snd_dma_sg_fallback_ops = {
++	.alloc = snd_dma_sg_fallback_alloc,
++	.free = snd_dma_sg_fallback_free,
++	.mmap = snd_dma_sg_fallback_mmap,
++	/* reuse vmalloc helpers */
++	.get_addr = snd_dma_vmalloc_get_addr,
++	.get_page = snd_dma_vmalloc_get_page,
++	.get_chunk_size = snd_dma_vmalloc_get_chunk_size,
++};
+ #endif /* CONFIG_SND_DMA_SGBUF */
+ 
+ /*
+@@ -736,6 +841,10 @@ static const struct snd_malloc_ops *dma_ops[] = {
+ #ifdef CONFIG_GENERIC_ALLOCATOR
+ 	[SNDRV_DMA_TYPE_DEV_IRAM] = &snd_dma_iram_ops,
+ #endif /* CONFIG_GENERIC_ALLOCATOR */
++#ifdef CONFIG_SND_DMA_SGBUF
++	[SNDRV_DMA_TYPE_DEV_SG_FALLBACK] = &snd_dma_sg_fallback_ops,
++	[SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK] = &snd_dma_sg_fallback_ops,
++#endif
+ #endif /* CONFIG_HAS_DMA */
+ };
+ 
 -- 
-2.35.1
+2.35.2
 
 
 
