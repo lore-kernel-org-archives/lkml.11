@@ -2,87 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8927CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 23:39:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C993C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 23:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235622AbiDRXmW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 19:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54776 "EHLO
+        id S235657AbiDRXoY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 19:44:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235517AbiDRXmV (ORCPT
+        with ESMTP id S229666AbiDRXoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 19:42:21 -0400
-Received: from m228-62.mailgun.net (m228-62.mailgun.net [159.135.228.62])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 43FF8286ED
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:39:40 -0700 (PDT)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=codeagain.dev; q=dns/txt;
- s=smtp; t=1650325180; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: Subject: To: To: From: From: Date:
- Sender: Sender; bh=fksJxHBbasPH0E1HIDrtxhBCh0tAufSksTmpcRK4Loo=; b=Kyde/Sz5u2Zw4jYWMg8Il8UnFCuI7RIMP4SCvQ0YqgwDtY2/iZIX/StltHd402DxR6eL9T7D
- Ptob3WCirMeMyjlBzIdGhMSDrlhmn88XCMTiR8yl3xHgmP1o6c4pvFf49IxtzbXo0HaMnRz1
- hSl4Eab2GinbjSWl8Sn3kQg5NcexE2/qq1VOoquksqWvg7bxeRSppv6L3Q+RY4S46AiyzSEP
- ZI5OdPhBnUxGwV18uaSc0ouOzX65Ix+8vaFoqQFYA2ZMbi8gj6+rrXBHyFhNDs67pSqewcFJ
- cAmUXOnW576FEq0MCp40YG2CQ55N+Y/yT8KLUuucTDpT1YPLbYmjqA==
-X-Mailgun-Sending-Ip: 159.135.228.62
-X-Mailgun-Sid: WyJkNDU4NiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWM2ZCJd
-Received: from AN5Bruno (186-250-90-1.mhnet.com.br [186.250.90.1]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 625df6bb225c469082e88b1a (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
- Mon, 18 Apr 2022 23:39:39 GMT
-Sender: codeagain@codeagain.dev
-Date:   Mon, 18 Apr 2022 20:39:29 -0300
-From:   Bruno Moreira-Guedes <codeagain@codeagain.dev>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Martyn Welch <martyn@welchs.me.uk>,
-        Manohar Vanga <manohar.vanga@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev,
-        Bruno's Patch Watchbox <patch-reply@codeagain.dev>
-Subject: Re: [PATCH v2 2/3] staging: vme: Add VME_BUS dependency to Kconfig
-Message-ID: <20220418233929.zz32dil4u6hbwtqv@AN5Bruno>
-References: <cover.1650321310.git.codeagain@codeagain.dev>
- <00de5644d7c2f8c8878eccf86b761e0602732080.1650321310.git.codeagain@codeagain.dev>
+        Mon, 18 Apr 2022 19:44:22 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B98811C24
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:41:42 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id q129so16428158oif.4
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:41:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=nt67AC/fziRCHZ6C/VwJefCx0UfNr2G59yxCRKYFbPc=;
+        b=coV+Xw+7+9GNFz3Ea8saZ3geP/wGaL/zYe71mwbODut3H5PVIvF7edk7idfkOXMCE4
+         xN2byexgTFROxOQqvbsH6AZumeJWGwX+Tr5ZdpeBcVgiqq+AGpe2cV+viL4gKMMu+C4x
+         jRE/fLiqKbMt7X1v9WHPdXbigUAfMEkFVzVF8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=nt67AC/fziRCHZ6C/VwJefCx0UfNr2G59yxCRKYFbPc=;
+        b=Ba7YRK8hD5kuczbHEfRHkhz2QiLDCGsuMiH6Qn9OHR1a6pLJDYtqtVRHQajXNA6jLR
+         vSxAXWVmxTarGRHdMQHeS/Ez+o1CB6Iryz8ddCz6w/H8pjYPpXXR8Mfb1mXV+N1QzEJS
+         Sh3kW32McZ7FFXAFJU4Vn2fn2NR/NSZl4ukpeCcFcviOAWnRx54kzLQI9NFJxj1sqWi3
+         O1V+M6yOZby1xeTljgHqa/iMgrpoDzG3s1+aEoTeSwSDpeq8SZe0zmzmYaaX4pS21zSH
+         rbfDColEA7dXSdK4XGaywk6qhuNqIfqyCRfjM6Rastaa3q2srxzJDiwCgt6JxEdVwdTG
+         r3Sw==
+X-Gm-Message-State: AOAM530aWSbgL0RSG7y9ZN3o0CN2Xftp7xU41o6kbRXw45O/bA3zxwA1
+        rQA7VbWZ6GMcQ/VsRBH3eNYF6GbHz+vIHqCJohpnkw==
+X-Google-Smtp-Source: ABdhPJx+f9x0ppm0dDZ5qHDJlsvPmDghYF7LzT5WM39003dq4Dcv4LSD35Q2evL841DhwiHe+0thBHgV/tswKkbDO78=
+X-Received: by 2002:aca:bd41:0:b0:2ec:ff42:814f with SMTP id
+ n62-20020acabd41000000b002ecff42814fmr6210643oif.63.1650325301373; Mon, 18
+ Apr 2022 16:41:41 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 18 Apr 2022 16:41:40 -0700
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="asozunj7lfs2jxfg"
-Content-Disposition: inline
-In-Reply-To: <00de5644d7c2f8c8878eccf86b761e0602732080.1650321310.git.codeagain@codeagain.dev>
+In-Reply-To: <Yl307fUo09z2/M+w@chromium.org>
+References: <20220415003253.1973106-1-swboyd@chromium.org> <20220415003253.1973106-2-swboyd@chromium.org>
+ <Yl3vd4kfgwJXMs/w@chromium.org> <CAE-0n53N1k_b9vWJ84nBdm9sxpYV3o4-FLJQM1HGqEhQsdr19A@mail.gmail.com>
+ <Yl3ykMvfCaQlQ7t9@chromium.org> <CAE-0n51PX1SgqiB5vgoOLunkrxiWxH2O=jCCM5gNL97O8Ltt4Q@mail.gmail.com>
+ <Yl307fUo09z2/M+w@chromium.org>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 18 Apr 2022 16:41:40 -0700
+Message-ID: <CAE-0n5366tn28yBYXj+7gaKGWqx4pCTrQ-nPWiEvTOERS9R6uw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] platform/chrome: cros_ec_proto: Add peripheral
+ charger count API
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     Benson Leung <bleung@chromium.org>, linux-kernel@vger.kernel.org,
+        patches@lists.linux.dev, Lee Jones <lee.jones@linaro.org>,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        chrome-platform@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Quoting Prashant Malani (2022-04-18 16:31:57)
+> On Apr 18 16:29, Stephen Boyd wrote:
+> > Quoting Prashant Malani (2022-04-18 16:21:52)
+> > > On Apr 18 16:16, Stephen Boyd wrote:
+> > > >
+> > > > Sure. I take it that I can drop this function entirely then?
+> > >
+> > > Yeah, if it's a simple response, should be fine.
+> > >
+> > > > BTW, why is
+> > > > that function name the same as a struct name? It confuses my ctags.
+> > >
+> > > Yeahhh, didn't think about ctags... :/
+> > > Topic for another series: probably can be renamed to cros_ec_cmd() (just to keep ctags happy) ?
+> > >
+> >
+> > But then there'll be two cros_ec_cmd() because there's a
+> > cros-ec-regulator. Fun! :)
+>
+> Ugh :S
+>
+> I think we can get rid of that one; it looks to be the same as this
+> one :)
+>
+>
+> I'll write up a cleanup series if it all looks OK.
+>
 
---asozunj7lfs2jxfg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Please, disregard the following message as there's a typo in the prefix.
-
-On Mon, Apr 18, 2022 at 08:31:09PM -0300, Bruno Moreira-Guedes wrote:
-> The KConfig file for VME_USER ('drivers/staging/vme/devices/Kconfig')
-> sourced at "drivers/vme/boards/KConfig" misses a `depends on` line for
-> VME_BUS, which is unnoticeable for menuconfig users who aren't be able
-> to select it through this interface without setting the CONFIG_VME_BUS
-> option because it's nested on VME_BUS menu entry.
-=2E..
->  	  VME windows in a manner at least semi-compatible with the interface
-> --=20
-> 2.35.3
->=20
-
-It's already sent a new copy with the proper version number. Nothing's
-changed except for the message ID and the v2 typo.
-
---asozunj7lfs2jxfg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQQTUrsHCxGmQ5vyKRAZtd3tyEY2kgUCYl32sQAKCRAZtd3tyEY2
-kiJSAP0WSPiSATXPmE8k1yuJdqmHmM4YrWW22tlqO0FAJedghQD+KLK9QB4+YbN3
-tRPhg1KTwKnyxRsi5+O+2Q4GN/DyOQQ=
-=QUOj
------END PGP SIGNATURE-----
-
---asozunj7lfs2jxfg--
+Cool thanks! Would be useful to change those insize and outsize sizes to
+size_t as well. Please Cc me on the series. I'll resend this series with
+cros_ec_command() shortly.
