@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 115E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12866C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:03:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240810AbiDRNGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41948 "EHLO
+        id S240323AbiDRNG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240323AbiDRMzC (ORCPT
+        with ESMTP id S240380AbiDRMzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:55:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB12523141;
-        Mon, 18 Apr 2022 05:35:37 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D688F22BD7;
+        Mon, 18 Apr 2022 05:35:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC99761033;
-        Mon, 18 Apr 2022 12:35:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C457FC385A8;
-        Mon, 18 Apr 2022 12:35:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B90BB80EDB;
+        Mon, 18 Apr 2022 12:35:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6FF8C385A7;
+        Mon, 18 Apr 2022 12:35:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285337;
-        bh=WX8SUB5uw2THr7n8LMX3BwGIz8LUCa60mm8HUIvICWk=;
+        s=korg; t=1650285340;
+        bh=Z71X9RM4aTXHF7bNVRu/v2JwOKjmtU1VvJC+EzMdg/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IyGRLgIJL4Yims78HFOzk/XRzrrn8mgfhSe386JqUTR11vt7qEviOzIRLdaw4RtB/
-         4i4SR9iK63juLC7Aw+YcrNyL4i+N7p49LAHycWkf1iAq4GWOFIp7cCRwkRP76T+YtK
-         8jGjLFSQ38H1xPVzrcEMnF4t9SQBnuNSDxooQXf4=
+        b=b1Tu6IVcoi1Jen1ftouzwg6AXZuJoSjEDZFULG1wehwatwRema2GAnMvJsxDg+2Bw
+         joKDwi+AWJWrFSpKQpllVF9S0xSr9zbcjgv8ByaVtWgKq2QVNv9SbqGIl2HYxfSPnI
+         F1G4x0jalkx5j/jR9cgSnUGOKoeMOuuKAxDvB600=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 126/189] arm64: alternatives: mark patch_alternative() as `noinstr`
-Date:   Mon, 18 Apr 2022 14:12:26 +0200
-Message-Id: <20220418121204.537741573@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.15 170/189] dm integrity: fix memory corruption when tag_size is less than digest size
+Date:   Mon, 18 Apr 2022 14:13:10 +0200
+Message-Id: <20220418121207.499859966@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,86 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit a2c0b0fbe01419f8f5d1c0b9c581631f34ffce8b ]
+commit 08c1af8f1c13bbf210f1760132f4df24d0ed46d6 upstream.
 
-The alternatives code must be `noinstr` such that it does not patch itself,
-as the cache invalidation is only performed after all the alternatives have
-been applied.
+It is possible to set up dm-integrity in such a way that the
+"tag_size" parameter is less than the actual digest size. In this
+situation, a part of the digest beyond tag_size is ignored.
 
-Mark patch_alternative() as `noinstr`. Mark branch_insn_requires_update()
-and get_alt_insn() with `__always_inline` since they are both only called
-through patch_alternative().
+In this case, dm-integrity would write beyond the end of the
+ic->recalc_tags array and corrupt memory. The corruption happened in
+integrity_recalc->integrity_sector_checksum->crypto_shash_final.
 
-Booting a kernel in QEMU TCG with KCSAN=y and ARM64_USE_LSE_ATOMICS=y caused
-a boot hang:
-[    0.241121] CPU: All CPU(s) started at EL2
+Fix this corruption by increasing the tags array so that it has enough
+padding at the end to accomodate the loop in integrity_recalc() being
+able to write a full digest size for the last member of the tags
+array.
 
-The alternatives code was patching the atomics in __tsan_read4() from LL/SC
-atomics to LSE atomics.
-
-The following fragment is using LL/SC atomics in the .text section:
-  | <__tsan_unaligned_read4+304>:     ldxr    x6, [x2]
-  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
-  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
-  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
-
-This LL/SC atomic sequence was to be replaced with LSE atomics. However since
-the alternatives code was instrumentable, __tsan_read4() was being called after
-only the first instruction was replaced, which led to the following code in memory:
-  | <__tsan_unaligned_read4+304>:     ldadd   x5, x6, [x2]
-  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
-  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
-  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
-
-This caused an infinite loop as the `stxr` instruction never completed successfully,
-so `w7` was always 0.
-
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20220405104733.11476-1-joey.gouly@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org # v4.19+
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/alternative.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/md/dm-integrity.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/kernel/alternative.c b/arch/arm64/kernel/alternative.c
-index 3fb79b76e9d9..7bbf5104b7b7 100644
---- a/arch/arm64/kernel/alternative.c
-+++ b/arch/arm64/kernel/alternative.c
-@@ -42,7 +42,7 @@ bool alternative_is_applied(u16 cpufeature)
- /*
-  * Check if the target PC is within an alternative block.
-  */
--static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
-+static __always_inline bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
- {
- 	unsigned long replptr = (unsigned long)ALT_REPL_PTR(alt);
- 	return !(pc >= replptr && pc <= (replptr + alt->alt_len));
-@@ -50,7 +50,7 @@ static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
+--- a/drivers/md/dm-integrity.c
++++ b/drivers/md/dm-integrity.c
+@@ -4383,6 +4383,7 @@ try_smaller_buffer:
+ 	}
  
- #define align_down(x, a)	((unsigned long)(x) & ~(((unsigned long)(a)) - 1))
- 
--static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
-+static __always_inline u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
- {
- 	u32 insn;
- 
-@@ -95,7 +95,7 @@ static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnp
- 	return insn;
- }
- 
--static void patch_alternative(struct alt_instr *alt,
-+static noinstr void patch_alternative(struct alt_instr *alt,
- 			      __le32 *origptr, __le32 *updptr, int nr_inst)
- {
- 	__le32 *replptr;
--- 
-2.35.1
-
+ 	if (ic->internal_hash) {
++		size_t recalc_tags_size;
+ 		ic->recalc_wq = alloc_workqueue("dm-integrity-recalc", WQ_MEM_RECLAIM, 1);
+ 		if (!ic->recalc_wq ) {
+ 			ti->error = "Cannot allocate workqueue";
+@@ -4396,8 +4397,10 @@ try_smaller_buffer:
+ 			r = -ENOMEM;
+ 			goto bad;
+ 		}
+-		ic->recalc_tags = kvmalloc_array(RECALC_SECTORS >> ic->sb->log2_sectors_per_block,
+-						 ic->tag_size, GFP_KERNEL);
++		recalc_tags_size = (RECALC_SECTORS >> ic->sb->log2_sectors_per_block) * ic->tag_size;
++		if (crypto_shash_digestsize(ic->internal_hash) > ic->tag_size)
++			recalc_tags_size += crypto_shash_digestsize(ic->internal_hash) - ic->tag_size;
++		ic->recalc_tags = kvmalloc(recalc_tags_size, GFP_KERNEL);
+ 		if (!ic->recalc_tags) {
+ 			ti->error = "Cannot allocate tags for recalculating";
+ 			r = -ENOMEM;
 
 
