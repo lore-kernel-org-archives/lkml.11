@@ -2,151 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB822C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8840AC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241881AbiDRNIg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:08:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
+        id S241587AbiDRNIV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:08:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240390AbiDRMzk (ORCPT
+        with ESMTP id S240355AbiDRMzi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:55:40 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41E263B0;
-        Mon, 18 Apr 2022 05:37:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1650285456; x=1681821456;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=1x4VyMPXIHgTtdoHhJRhQIKdvxvswuRWwu2tUv+TvXk=;
-  b=LlHlBdfYmdcViajTDoLFfJvy0Ty7AuzAMndCIn3U+J/Llq5j0lKSZlya
-   jLEzcc9VGEFHlJFXdo7BC0MFau8w9ZB2vkvaALYKFzzHGf0toLd225Vf8
-   fahSg5f2NfGI4A7NzA3/n8VWuYs1qsJHN1Oni27JsR8sbvK7y7yu792PO
-   M=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 18 Apr 2022 05:37:35 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 05:37:34 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 18 Apr 2022 05:37:34 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 18 Apr 2022 05:37:27 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, Linus Walleij <linus.walleij@linaro.org>,
-        <linux-gpio@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH v13 0/7] Add pin control support for lpass sc7280
-Date:   Mon, 18 Apr 2022 18:07:00 +0530
-Message-ID: <1650285427-19752-1-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 18 Apr 2022 08:55:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6DCE85;
+        Mon, 18 Apr 2022 05:37:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B0D4B80EE0;
+        Mon, 18 Apr 2022 12:37:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BBE7C385C7;
+        Mon, 18 Apr 2022 12:37:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650285442;
+        bh=c/sNApAjIfvKZjBOD9lHw5Vy4puycdYaf128XhAsIiU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BXcqdwPKeMwbmVJ13HSb1W5DfCJMFnU89KgDk8ZGFZAMYCqIL6TSZWURBXqhxYac8
+         A6jJa4roUHrGMZjsrOt6NuffvnPD7wJNDEAKMhBgJKKcPKwDF9AxF8a+vD6DFYT4dZ
+         +RyBZW2w6AHUFo3JgIZ9/IxV55ukNM7hGict8d9U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Benedikt Spranger <b.spranger@linutronix.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 020/105] net/sched: taprio: Check if socket flags are valid
+Date:   Mon, 18 Apr 2022 14:12:22 +0200
+Message-Id: <20220418121146.637026720@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
+References: <20220418121145.140991388@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series is to split lpass variant common pin control
-functions and SoC specific functions and to add lpass sc7280 pincontrol support.
-It also Adds dt-bindings for lpass sc7280 lpass lpi pincontrol.
+From: Benedikt Spranger <b.spranger@linutronix.de>
 
-Changes Since V12:
-    -- Remove redundant comments in sc7280 and sm8250 lpass lpi drivers.
-    -- Rebased on top of latest kernel tip.
-Changes Since V11:
-    -- Add pinctrl_generic_remove_group in lpass lpi driver.
-    -- Make proper error handling in lpass lpi driver.
-Changes Since V10:
-    -- Modify driver's custom functions with pin control framework generic functions.
-    -- Update sm8250 and sc7280 pin control depedency list in Kconfig.
-    -- Update commit description of few patches.
-Changes Since V9:
-    -- Add pinctrl groups macro to Kconfig.
-Changes Since V8:
-    -- Remove redundant headers included in v8.
-Changes Since V7:
-    -- Update optional clock voting with conditional check.
-    -- Add const to lpi_pinctrl_variant_data structure.
-    -- Update required headers and remove redundant.
-    -- Change EXPORT_SYMBOL to EXPORT_SYMBOL_GPL
-    -- Fix typo errors.
-Changes Since V6:
-    -- Update conditional clock voting to optional clock voting.
-    -- Update Kconfig depends on field with select.
-    -- Fix typo errors. 
-Changes Since V5:
-    -- Create new patch by updating macro name to lpi specific.
-    -- Create new patch by updating lpi pin group structure with core group_desc structure.
-    -- Fix typo errors.
-    -- Sort macros in the make file and configuration file.
-Changes Since V4:
-    -- Update commit message and description of the chip specific extraction patch.
-    -- Sort macros in kconfig and makefile.
-    -- Update optional clock voting to conditional clock voting.
-    -- Fix typo errors.
-    -- Move to quicinc domain email id's.
-Changes Since V3:
-    -- Update separate Kconfig fields for sm8250 and sc7280.
-    -- Update module license and description.
-    -- Move static variables to corresponding .c files from header file.
+[ Upstream commit e8a64bbaaad1f6548cec5508297bc6d45e8ab69e ]
 
-Changes Since V2:
-    -- Add new dt-bindings for sc7280 lpi driver.
-    -- Make clock voting change as separate patch.
-    -- Split existing pincontrol driver and make common functions 
-       as part of separate file.
-    -- Rename lpass pincontrol lpi dt-bindings to sm8250 specific dt-bindings
-		
-Changes Since V1:
-    -- Make lpi pinctrl variant data structure as constant
-    -- Add appropriate commit message
-    -- Change signedoff by sequence.
+A user may set the SO_TXTIME socket option to ensure a packet is send
+at a given time. The taprio scheduler has to confirm, that it is allowed
+to send a packet at that given time, by a check against the packet time
+schedule. The scheduler drop the packet, if the gates are closed at the
+given send time.
 
-Srinivasa Rao Mandadapu (7):
-  dt-bindings: pinctrl: qcom: Update lpass lpi file name to SoC specific
-  dt-bindings: pinctrl: qcom: Add sc7280 lpass lpi pinctrl bindings
-  pinctrl: qcom: Update macro name to LPI specific
-  pinctrl: qcom: Update lpi pin group custiom functions with framework
-    generic functions
-  pinctrl: qcom: Extract chip specific LPASS LPI code
-  pinctrl: qcom: Add SC7280 lpass pin configuration
-  pinctrl: qcom: Update clock voting as optional
+The check, if SO_TXTIME is set, may fail since sk_flags are part of an
+union and the union is used otherwise. This happen, if a socket is not
+a full socket, like a request socket for example.
 
-Tested this on SM8250 MTP with WSA and WCD codecs.
-Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Add a check to verify, if the union is used for sk_flags.
 
- .../bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml   | 133 ---------
- .../pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml     | 115 ++++++++
- .../pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml     | 133 +++++++++
- drivers/pinctrl/qcom/Kconfig                       |  19 ++
- drivers/pinctrl/qcom/Makefile                      |   2 +
- drivers/pinctrl/qcom/pinctrl-lpass-lpi.c           | 309 +++------------------
- drivers/pinctrl/qcom/pinctrl-lpass-lpi.h           |  86 ++++++
- drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c    | 167 +++++++++++
- drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c    | 163 +++++++++++
- 9 files changed, 730 insertions(+), 397 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml
- create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml
- create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml
- create mode 100644 drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
- create mode 100644 drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
- create mode 100644 drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c
+Fixes: 4cfd5779bd6e ("taprio: Add support for txtime-assist mode")
+Signed-off-by: Benedikt Spranger <b.spranger@linutronix.de>
+Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
+Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/sched/sch_taprio.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index 806babdd838d..eca525791013 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -427,7 +427,8 @@ static int taprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	if (unlikely(!child))
+ 		return qdisc_drop(skb, sch, to_free);
+ 
+-	if (skb->sk && sock_flag(skb->sk, SOCK_TXTIME)) {
++	/* sk_flags are only safe to use on full sockets. */
++	if (skb->sk && sk_fullsock(skb->sk) && sock_flag(skb->sk, SOCK_TXTIME)) {
+ 		if (!is_valid_interval(skb, sch))
+ 			return qdisc_drop(skb, sch, to_free);
+ 	} else if (TXTIME_ASSIST_IS_ENABLED(q->flags)) {
 -- 
-2.7.4
+2.35.1
+
+
 
