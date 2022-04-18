@@ -2,102 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D01C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E002C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244374AbiDRN77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57226 "EHLO
+        id S244777AbiDROAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244265AbiDRNjK (ORCPT
+        with ESMTP id S244252AbiDRNjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:39:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC98C28E0A;
-        Mon, 18 Apr 2022 05:58:54 -0700 (PDT)
+        Mon, 18 Apr 2022 09:39:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5672E0AA;
+        Mon, 18 Apr 2022 05:58:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14397B80E59;
-        Mon, 18 Apr 2022 12:58:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EF03C385A9;
-        Mon, 18 Apr 2022 12:58:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650286730;
-        bh=/y6aPwFRVj92zxx7fmjocLx4rsewxwFGQqqv1VcWFBg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=G6wJ9AoUXGFupilLRiI8AiOPumLH4HP1T2wyvciBTwH4/94EOUpLYrwUvIzDXnmpI
-         kd5ebXBK5qDBPD1X3LokSUYanSma7cCO/vk0dSFMYg3dhU/Q+p5E9nRSB2tQ56ztaC
-         foHtDysLn9ijB2Bv9n0YRdgI0SYjcu/P3vz3W1HFN6LifO3sjy4J1OBir8Ug69I7GU
-         1E3w/0rYzekmHPdJ2jGTs+OQeSXrAscGGdtOjIB/lmSE5+WR2SC2bbMZMK9g+cu1bh
-         fmboFJ4q/HXmAAS/uoFISd5ilTTg8pdvuDGaySPAF+bxQVvxMVC9q3oHISrvcngi4h
-         e8Iip/Tu4cFOA==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Manivannan Sadhasivam <mani@kernel.org>
-Subject: [PATCH] arm64: dts: qcom: db845c: Add support for MCP2517FD
-Date:   Mon, 18 Apr 2022 18:28:41 +0530
-Message-Id: <20220418125841.1409738-1-vkoul@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5937612BB;
+        Mon, 18 Apr 2022 12:58:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6A09C385A7;
+        Mon, 18 Apr 2022 12:58:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1650286731;
+        bh=kLIZvva0TrNPgKx9Y7S4dXw5SpfgmKRbW6Q7tCDj1vM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BgIwHLMhbLu9E1UP10KC9l3xxkMaHg8CBx64jkYao0QbY+5igPP+xXULYoh97PL1/
+         aHM/ErDKbwySTHjuDZLAbA7PYDOnZ6jpt19EVK+UE8GjEqGDnMvaBu7U6A4Kfyv9ud
+         FS9HqBemMFQhzyGLTCSj3ZwHSTut5Pac7QnQ4va8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lucas Denefle <lucas.denefle@converge.io>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 228/284] w1: w1_therm: fixes w1_seq for ds28ea00 sensors
+Date:   Mon, 18 Apr 2022 14:13:29 +0200
+Message-Id: <20220418121218.194117878@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
+References: <20220418121210.689577360@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for onboard MCP2517FD SPI CAN transceiver attached to
-SPI0 of RB3.
+From: Lucas Denefle <lucas.denefle@converge.io>
 
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+[ Upstream commit 41a92a89eee819298f805c40187ad8b02bb53426 ]
+
+w1_seq was failing due to several devices responding to the
+CHAIN_DONE at the same time. Now properly selects the current
+device in the chain with MATCH_ROM. Also acknowledgment was
+read twice.
+
+Signed-off-by: Lucas Denefle <lucas.denefle@converge.io>
+Link: https://lore.kernel.org/r/20220223113558.232750-1-lucas.denefle@converge.io
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sdm845-db845c.dts | 23 ++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/w1/slaves/w1_therm.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-index 28fe45c5d516..5179f8ddb060 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-@@ -28,6 +28,13 @@ chosen {
- 		stdout-path = "serial0:115200n8";
- 	};
+diff --git a/drivers/w1/slaves/w1_therm.c b/drivers/w1/slaves/w1_therm.c
+index 259525c3382a..9b9870ba01cd 100644
+--- a/drivers/w1/slaves/w1_therm.c
++++ b/drivers/w1/slaves/w1_therm.c
+@@ -690,16 +690,20 @@ static ssize_t w1_seq_show(struct device *device,
+ 		if (sl->reg_num.id == reg_num->id)
+ 			seq = i;
  
-+	/* Fixed crystal oscillator dedicated to MCP2517FD */
-+	clk40M: can_clock {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <40000000>;
-+	};
++		if (w1_reset_bus(sl->master))
++			goto error;
 +
- 	dc12v: dc12v-regulator {
- 		compatible = "regulator-fixed";
- 		regulator-name = "DC12V";
-@@ -746,6 +753,22 @@ codec {
- 	};
- };
++		/* Put the device into chain DONE state */
++		w1_write_8(sl->master, W1_MATCH_ROM);
++		w1_write_block(sl->master, (u8 *)&rn, 8);
+ 		w1_write_8(sl->master, W1_42_CHAIN);
+ 		w1_write_8(sl->master, W1_42_CHAIN_DONE);
+ 		w1_write_8(sl->master, W1_42_CHAIN_DONE_INV);
+-		w1_read_block(sl->master, &ack, sizeof(ack));
  
-+&spi0 {
-+	/* On Low speed expansion */
-+	status = "okay";
-+
-+	can@0 {
-+		compatible = "microchip,mcp2517fd";
-+		reg = <0>;
-+		clocks = <&clk40M>;
-+		interrupts-extended = <&tlmm 104 IRQ_TYPE_LEVEL_LOW>;
-+		spi-max-frequency = <10000000>;
-+		vdd-supply = <&vdc_5v>;
-+		xceiver-supply = <&vdc_5v>;
-+		status = "okay";
-+	};
-+};
-+
- &spi2 {
- 	/* On Low speed expansion */
- 	label = "LS-SPI0";
+ 		/* check for acknowledgment */
+ 		ack = w1_read_8(sl->master);
+ 		if (ack != W1_42_SUCCESS_CONFIRM_BYTE)
+ 			goto error;
+-
+ 	}
+ 
+ 	/* Exit from CHAIN state */
 -- 
-2.34.1
+2.35.1
+
+
 
