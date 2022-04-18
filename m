@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51E9EC3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE8FC3527D
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:52:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343698AbiDRNyR (ORCPT
+        id S1343595AbiDRNyJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:54:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41330 "EHLO
+        Mon, 18 Apr 2022 09:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244852AbiDRNa6 (ORCPT
+        with ESMTP id S244840AbiDRNa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:30:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E780E1EC6F;
-        Mon, 18 Apr 2022 05:56:12 -0700 (PDT)
+        Mon, 18 Apr 2022 09:30:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE7E1EC55;
+        Mon, 18 Apr 2022 05:55:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 849B46115A;
-        Mon, 18 Apr 2022 12:56:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93ED2C385A1;
-        Mon, 18 Apr 2022 12:56:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 344B2B80E4B;
+        Mon, 18 Apr 2022 12:55:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E9B4C385A1;
+        Mon, 18 Apr 2022 12:55:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286572;
-        bh=gSOR0VhRFEQOIqboEnoDscB2wnkYJYjrcn2qd10imhI=;
+        s=korg; t=1650286553;
+        bh=vrr9yOlm8FE3cGTKPSJUOj69XGFkfbaYIYMtWeMhDG0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gJDaOMqKC6jXgmmkjbTDcQ4XVTeZQ7Is+tKCDnntE7bwMZWpGPLNQzevDyCGkU5Qp
-         dYx5IJ2qHnYa7kgyhAZxFZUceAsKmyLfVQ7zeDe/dKdYpWwAgvpc5ICOXTrd4yb8Jm
-         7dSaj9sKecl1gjsSBonWgYwgcX5t8ZX5aYndLvgk=
+        b=WvSvpA77wx38oTxOge8yOWm+WKlgHdxub2P0we4Sl9vBDxmJ1zE8ngdqz1hTPOrwh
+         NkGno/oYq1xTyDk/wOFJ4DtfQurtqAKu7L18w9pUoYK5ktkrhhYQjgv0Xry3dtAOD/
+         KJT1RLIzNLcW5TodNSAnH8c8RkxDsRElsgaO+UaU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 178/284] media: hdpvr: initialize dev->worker at hdpvr_register_videodev
-Date:   Mon, 18 Apr 2022 14:12:39 +0200
-Message-Id: <20220418121216.800320945@linuxfoundation.org>
+Subject: [PATCH 4.14 130/284] pwm: lpc18xx-sct: Initialize driver data and hardware before pwmchip_add()
+Date:   Mon, 18 Apr 2022 14:11:51 +0200
+Message-Id: <20220418121214.985804074@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -52,59 +52,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 07922937e9a580825f9965c46fd15e23ba5754b6 ]
+[ Upstream commit 0401f24cd238ae200a23a13925f98de3d2c883b8 ]
 
-hdpvr_register_videodev is responsible to initialize a worker in
-hdpvr_device. However, the worker is only initialized at
-hdpvr_start_streaming other than hdpvr_register_videodev.
-When hdpvr_probe does not initialize its worker, the hdpvr_disconnect
-will encounter one WARN in flush_work.The stack trace is as follows:
+When a driver calls pwmchip_add() it has to be prepared to immediately
+get its callbacks called. So move allocation of driver data and hardware
+initialization before the call to pwmchip_add().
 
- hdpvr_disconnect+0xb8/0xf2 drivers/media/usb/hdpvr/hdpvr-core.c:425
- usb_unbind_interface+0xbf/0x3a0 drivers/usb/core/driver.c:458
- __device_release_driver drivers/base/dd.c:1206 [inline]
- device_release_driver_internal+0x22a/0x230 drivers/base/dd.c:1237
- bus_remove_device+0x108/0x160 drivers/base/bus.c:529
- device_del+0x1fe/0x510 drivers/base/core.c:3592
- usb_disable_device+0xd1/0x1d0 drivers/usb/core/message.c:1419
- usb_disconnect+0x109/0x330 drivers/usb/core/hub.c:2228
+This fixes a potential NULL pointer exception and a race condition on
+register writes.
 
-Fix this by moving the initialization of dev->worker to the starting of
-hdpvr_register_videodev
-
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 841e6f90bb78 ("pwm: NXP LPC18xx PWM/SCT driver")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/hdpvr/hdpvr-video.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-lpc18xx-sct.c | 20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/media/usb/hdpvr/hdpvr-video.c b/drivers/media/usb/hdpvr/hdpvr-video.c
-index 991f820a4530..1cecb37e16d2 100644
---- a/drivers/media/usb/hdpvr/hdpvr-video.c
-+++ b/drivers/media/usb/hdpvr/hdpvr-video.c
-@@ -312,7 +312,6 @@ static int hdpvr_start_streaming(struct hdpvr_device *dev)
+diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
+index d7f5f7de030d..8b3aad06e236 100644
+--- a/drivers/pwm/pwm-lpc18xx-sct.c
++++ b/drivers/pwm/pwm-lpc18xx-sct.c
+@@ -406,12 +406,6 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
+ 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_LIMIT,
+ 			   BIT(lpc18xx_pwm->period_event));
  
- 	dev->status = STATUS_STREAMING;
+-	ret = pwmchip_add(&lpc18xx_pwm->chip);
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
+-		goto disable_pwmclk;
+-	}
+-
+ 	for (i = 0; i < lpc18xx_pwm->chip.npwm; i++) {
+ 		struct lpc18xx_pwm_data *data;
  
--	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
- 	schedule_work(&dev->worker);
+@@ -421,14 +415,12 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
+ 				    GFP_KERNEL);
+ 		if (!data) {
+ 			ret = -ENOMEM;
+-			goto remove_pwmchip;
++			goto disable_pwmclk;
+ 		}
  
- 	v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
-@@ -1175,6 +1174,9 @@ int hdpvr_register_videodev(struct hdpvr_device *dev, struct device *parent,
- 	bool ac3 = dev->flags & HDPVR_FLAG_AC3_CAP;
- 	int res;
+ 		pwm_set_chip_data(pwm, data);
+ 	}
  
-+	// initialize dev->worker
-+	INIT_WORK(&dev->worker, hdpvr_transmit_buffers);
+-	platform_set_drvdata(pdev, lpc18xx_pwm);
+-
+ 	val = lpc18xx_pwm_readl(lpc18xx_pwm, LPC18XX_PWM_CTRL);
+ 	val &= ~LPC18XX_PWM_BIDIR;
+ 	val &= ~LPC18XX_PWM_CTRL_HALT;
+@@ -436,10 +428,16 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
+ 	val |= LPC18XX_PWM_PRE(0);
+ 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_CTRL, val);
+ 
++	ret = pwmchip_add(&lpc18xx_pwm->chip);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
++		goto disable_pwmclk;
++	}
 +
- 	dev->cur_std = V4L2_STD_525_60;
- 	dev->width = 720;
- 	dev->height = 480;
++	platform_set_drvdata(pdev, lpc18xx_pwm);
++
+ 	return 0;
+ 
+-remove_pwmchip:
+-	pwmchip_remove(&lpc18xx_pwm->chip);
+ disable_pwmclk:
+ 	clk_disable_unprepare(lpc18xx_pwm->pwm_clk);
+ 	return ret;
 -- 
 2.34.1
 
