@@ -2,200 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6475C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 23:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEEE6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 23:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235905AbiDRXwv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 19:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35450 "EHLO
+        id S235988AbiDSAAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 20:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235856AbiDRXws (ORCPT
+        with ESMTP id S235925AbiDSAAe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 19:52:48 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE412496F
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:50:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650325807; x=1681861807;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=6RxZzSIjsW4RweQfrvtr93HGHfTde4zYCBJbBjvFDtQ=;
-  b=PsAtvUi6AxKQR9F5u/++6pJUQ0R7P3pOgJU1KLM+RF5y9+6FpYxttSqB
-   fmZcTcMvsT3y27OPFIHwKR8SA4XAyme1w1V/nkRPJr9HJM/5ErF0Y7RzE
-   soxw1/9rD92/XsHM/u5KUvpwI0OT/qUiV5nRnXJUIRg0MA9d4zAlxyT31
-   o3N+ppZCkMsPEO8qJzjdiqS3fqnpvOpB/3ytka6u/G7rzaRC1BKU/kttx
-   wK6nv26MwMLXjzu8s9iu9k4Lu0P3Yjxlf++v7HA/2Sks0/AZEW7iPHonu
-   ATWWQL2l1aP1eeLZ/3VmQEkKxTUq9bjDU3H5ufUZHHb0dRZ6tLXz0ch3G
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="326535356"
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="326535356"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 16:50:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,271,1643702400"; 
-   d="scan'208";a="665580717"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 18 Apr 2022 16:50:06 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngb89-000562-Gl;
-        Mon, 18 Apr 2022 23:50:05 +0000
-Date:   Tue, 19 Apr 2022 07:49:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 1541/2356]
- drivers/hwmon/pmbus/pli1209bc.c:60:14: warning: incompatible integer to
- pointer conversion initializing 'const char *' with an expression of type
- 'int'
-Message-ID: <202204190731.vTjUPdxY-lkp@intel.com>
+        Mon, 18 Apr 2022 20:00:34 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE4629CA7
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:57:54 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id t13so21732149pgn.8
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:57:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6DTfyGY4J+aCud1WtrxDpmeZLZK9HwCoRH/ZKq7p0NY=;
+        b=MpJYZqhS/4wevygKpX5CVGmCIl7fpr/siGQ+44MFb9SHbahqi50UNuu5Rol1xchxjN
+         aNky1Oy1UkUOLUOAKwBTb4JXgAuRru33uEuY9kTeCdLaZUZb+MnwrkYEU8FnELc4oqPm
+         kAB/WHOilbj00EbxBKW+LNOdSwg57Zh+qtJ3480IneLi31Upq7YzBEx6d94gCDrUZYKM
+         KuV0Sw/+ZPbympbXikCSy0hv5RuOsnx68DVBFKiPSTurvh/MZ7m5xiOw3GO1QpG7I+7T
+         vbP4VmXtR027F0y7rPZnFWIR+5ixC0BQktvD6wNpz+rFr+oe2hV2Rxr7LEH2iuZLdkva
+         d5EQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6DTfyGY4J+aCud1WtrxDpmeZLZK9HwCoRH/ZKq7p0NY=;
+        b=6ptKvEtA4EVuRK1zrEJCSIjEHMV/mXD2kcq5zTdbs1Uhfrh+L+jm12g0tmiinl4FvR
+         BeF0Sg2sCejDjTEAFTzV8UF23oHEsAA8Ads0LikrBQ+Y09B0iHNEy2Vs1NLKexzVMbgq
+         G7+fQEYXATliOibt7H6c6TZqTRbH1zNq9Q18/h1EVFb6dmXyX87TtSQqheL7xJ5ZgZ2D
+         +7K2Q0U7gBy6SZvOb2RA3HtWEAz0yeqpL+mInNFw5QLckj6ruylB/GYte1NTtjiZbVso
+         Gkl9IIDbeY8qRa598EY77hVmbcDvzoJEeQzGve0Ok/gopAxrapTvLamybmvLTqTA31FK
+         9pvA==
+X-Gm-Message-State: AOAM531LEZh4hT16sdvKVRn6F1d8uI7N/JOy+gKIVEl9659pO5cN/R3K
+        Q2ZdOb5gKzdlSPdehwvs4dB6pA==
+X-Google-Smtp-Source: ABdhPJwGbAEcmZ3Ri9bRNtcMxJHs0CrJhc9Y8lGnJ3QNwvBq4WwRrkz1+U7Kith1lRipZxV8xB3qEw==
+X-Received: by 2002:a63:6e04:0:b0:398:409:2928 with SMTP id j4-20020a636e04000000b0039804092928mr12229537pgc.250.1650326273031;
+        Mon, 18 Apr 2022 16:57:53 -0700 (PDT)
+Received: from google.com ([2620:15c:211:200:e2b4:e46f:41ee:4499])
+        by smtp.gmail.com with ESMTPSA id bc11-20020a656d8b000000b0039cc4dbb295sm13381698pgb.60.2022.04.18.16.57.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 16:57:52 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 16:57:46 -0700
+From:   Kalesh Singh <kaleshsingh@google.com>
+To:     "Joel Fernandes (Google)" <joel@joelfernandes.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>, rcu@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        rushikesh.s.kadam@intel.com, vineethrp@gmail.com, urezki@gmail.com
+Subject: Re: [PATCH v4] rcu/nocb: Add an option to offload all CPUs on boot
+Message-ID: <Yl36+skjQn26Mg43@google.com>
+References: <20220418175403.2553842-1-joel@joelfernandes.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220418175403.2553842-1-joel@joelfernandes.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   af93551cf39027d176f30b9beafc60a4c130998a
-commit: 63245bf3e0db1d416f39a3ccb1311f94f37697f5 [1541/2356] headers/deps: i2c: Optimize <linux/i2c.h> header dependencies
-config: i386-randconfig-a012-20220418 (https://download.01.org/0day-ci/archive/20220419/202204190731.vTjUPdxY-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 429cbac0390654f90bba18a41799464adf31a5ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=63245bf3e0db1d416f39a3ccb1311f94f37697f5
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 63245bf3e0db1d416f39a3ccb1311f94f37697f5
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/panel/ drivers/hwmon/ drivers/iio/afe/ drivers/iio/proximity/ drivers/input/touchscreen/ drivers/mtd/nand/ drivers/phy/cadence/ drivers/pinctrl/ drivers/platform/chrome/ mm/
+On Mon, Apr 18, 2022 at 05:54:03PM +0000, Joel Fernandes (Google) wrote:
+> From: Joel Fernandes <joel@joelfernandes.org>
+> 
+> On systems with CONFIG_RCU_NOCB_CPU=y, there is no default mask provided
+> which ends up not offloading any CPU. This patch removes a dependency
+> from the bootloader having to know about RCU and about how to provide
+> the mask.
+> 
+> With the new option enabled, all CPUs will be offloaded on boot unless
+> rcu_nocbs= or rcu_nohz_full= kernel parameters provide a CPU list.
+> 
+> Signed-off-by: Joel Fernandes <joel@joelfernandes.org>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Hi Joel,
 
-All warnings (new ones prefixed by >>):
+You can add Reviewed-by: Kalesh Singh <kaleshsingh@google.com>
 
-   drivers/hwmon/pmbus/pli1209bc.c:60:14: error: implicit declaration of function 'of_match_ptr' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-           .of_match = of_match_ptr("vout2"),
-                       ^
->> drivers/hwmon/pmbus/pli1209bc.c:60:14: warning: incompatible integer to pointer conversion initializing 'const char *' with an expression of type 'int' [-Wint-conversion]
-           .of_match = of_match_ptr("vout2"),
-                       ^~~~~~~~~~~~~~~~~~~~~
-   drivers/hwmon/pmbus/pli1209bc.c:61:21: warning: incompatible integer to pointer conversion initializing 'const char *' with an expression of type 'int' [-Wint-conversion]
-           .regulators_node = of_match_ptr("regulators"),
-                              ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/hwmon/pmbus/pli1209bc.c:60:14: error: initializer element is not a compile-time constant
-           .of_match = of_match_ptr("vout2"),
-                       ^~~~~~~~~~~~~~~~~~~~~
->> drivers/hwmon/pmbus/pli1209bc.c:135:24: warning: incompatible integer to pointer conversion initializing 'const struct of_device_id *' with an expression of type 'int' [-Wint-conversion]
-                      .of_match_table = of_match_ptr(pli1209bc_of_match),
-                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/hwmon/pmbus/pli1209bc.c:135:24: error: initializer element is not a compile-time constant
-                      .of_match_table = of_match_ptr(pli1209bc_of_match),
-                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   3 warnings and 3 errors generated.
+Thanks,
+Kalesh
 
-
-vim +60 drivers/hwmon/pmbus/pli1209bc.c
-
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   55  
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21   56  #if IS_ENABLED(CONFIG_SENSORS_PLI1209BC_REGULATOR)
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21   57  static const struct regulator_desc pli1209bc_reg_desc = {
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21   58  	.name = "vout2",
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21   59  	.id = 1,
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21  @60  	.of_match = of_match_ptr("vout2"),
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21   61  	.regulators_node = of_match_ptr("regulators"),
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21   62  	.ops = &pmbus_regulator_ops,
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21   63  	.type = REGULATOR_VOLTAGE,
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21   64  	.owner = THIS_MODULE,
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21   65  };
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21   66  #endif
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21   67  
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   68  static struct pmbus_driver_info pli1209bc_info = {
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   69  	.pages = 2,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   70  	.format[PSC_VOLTAGE_IN] = direct,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   71  	.format[PSC_VOLTAGE_OUT] = direct,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   72  	.format[PSC_CURRENT_IN] = direct,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   73  	.format[PSC_CURRENT_OUT] = direct,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   74  	.format[PSC_POWER] = direct,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   75  	.format[PSC_TEMPERATURE] = direct,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   76  	.m[PSC_VOLTAGE_IN] = 1,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   77  	.b[PSC_VOLTAGE_IN] = 0,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   78  	.R[PSC_VOLTAGE_IN] = 1,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   79  	.m[PSC_VOLTAGE_OUT] = 1,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   80  	.b[PSC_VOLTAGE_OUT] = 0,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   81  	.R[PSC_VOLTAGE_OUT] = 1,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   82  	.m[PSC_CURRENT_IN] = 1,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   83  	.b[PSC_CURRENT_IN] = 0,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   84  	.R[PSC_CURRENT_IN] = 3,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   85  	.m[PSC_CURRENT_OUT] = 1,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   86  	.b[PSC_CURRENT_OUT] = 0,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   87  	.R[PSC_CURRENT_OUT] = 2,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   88  	.m[PSC_POWER] = 1,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   89  	.b[PSC_POWER] = 0,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   90  	.R[PSC_POWER] = 1,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   91  	.m[PSC_TEMPERATURE] = 1,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   92  	.b[PSC_TEMPERATURE] = 0,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   93  	.R[PSC_TEMPERATURE] = 0,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   94  	/*
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   95  	 * Page 0 sums up all attributes except voltage readings.
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   96  	 * The pli1209 digital supervisor only contains a single BCM, making
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   97  	 * page 0 redundant.
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   98  	 */
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21   99  	.func[1] = PMBUS_HAVE_VIN | PMBUS_HAVE_VOUT
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  100  	    | PMBUS_HAVE_IIN | PMBUS_HAVE_IOUT
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  101  	    | PMBUS_HAVE_PIN | PMBUS_HAVE_POUT
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  102  	    | PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  103  	    | PMBUS_HAVE_STATUS_IOUT | PMBUS_HAVE_STATUS_INPUT,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  104  	.read_word_data = pli1209bc_read_word_data,
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21  105  #if IS_ENABLED(CONFIG_SENSORS_PLI1209BC_REGULATOR)
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21  106  	.num_regulators = 1,
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21  107  	.reg_desc = &pli1209bc_reg_desc,
-ba1d263af1c034 Marcello Sylvester Bauer 2022-02-21  108  #endif
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  109  };
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  110  
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  111  static int pli1209bc_probe(struct i2c_client *client)
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  112  {
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  113  	client->dev.platform_data = &pli1209bc_plat_data;
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  114  	return pmbus_do_probe(client, &pli1209bc_info);
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  115  }
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  116  
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  117  static const struct i2c_device_id pli1209bc_id[] = {
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  118  	{"pli1209bc", 0},
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  119  	{}
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  120  };
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  121  
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  122  MODULE_DEVICE_TABLE(i2c, pli1209bc_id);
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  123  
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  124  #ifdef CONFIG_OF
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  125  static const struct of_device_id pli1209bc_of_match[] = {
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  126  	{ .compatible = "vicor,pli1209bc" },
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  127  	{ },
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  128  };
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  129  MODULE_DEVICE_TABLE(of, pli1209bc_of_match);
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  130  #endif
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  131  
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  132  static struct i2c_driver pli1209bc_driver = {
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  133  	.driver = {
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  134  		   .name = "pli1209bc",
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21 @135  		   .of_match_table = of_match_ptr(pli1209bc_of_match),
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  136  		   },
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  137  	.probe_new = pli1209bc_probe,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  138  	.id_table = pli1209bc_id,
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  139  };
-d0cd978513f2e3 Marcello Sylvester Bauer 2022-02-21  140  
-
-:::::: The code at line 60 was first introduced by commit
-:::::: ba1d263af1c034baf479bca14d6f715b713214b1 hwmon: (pmbus/pli1209bc) Add regulator support
-
-:::::: TO: Marcello Sylvester Bauer <sylv@sylv.io>
-:::::: CC: Guenter Roeck <linux@roeck-us.net>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> ---
+> v4: mostly style related fixes.
+> v3 is back to v1 but with a config option defaulting to 'n'.
+> v2 was forcing the option to override no_cbs=
+> 
+>  Documentation/admin-guide/kernel-parameters.txt |  6 ++++++
+>  kernel/rcu/Kconfig                              | 13 +++++++++++++
+>  kernel/rcu/tree_nocb.h                          | 15 ++++++++++++++-
+>  3 files changed, 33 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index f5a27f067db9..4beb15ccac1a 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -3506,6 +3506,9 @@
+>  			just as if they had also been called out in the
+>  			rcu_nocbs= boot parameter.
+>  
+> +			Note that this argument takes precedence over
+> +			the CONFIG_RCU_NOCB_CPU_DEFAULT_ALL option.
+> +
+>  	noiotrap	[SH] Disables trapped I/O port accesses.
+>  
+>  	noirqdebug	[X86-32] Disables the code which attempts to detect and
+> @@ -4398,6 +4401,9 @@
+>  			no-callback mode from boot but the mode may be
+>  			toggled at runtime via cpusets.
+>  
+> +			Note that this argument takes precedence over
+> +			the CONFIG_RCU_NOCB_CPU_DEFAULT_ALL option.
+> +
+>  	rcu_nocb_poll	[KNL]
+>  			Rather than requiring that offloaded CPUs
+>  			(specified by rcu_nocbs= above) explicitly
+> diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
+> index bf8e341e75b4..746a668bf81d 100644
+> --- a/kernel/rcu/Kconfig
+> +++ b/kernel/rcu/Kconfig
+> @@ -223,6 +223,19 @@ config RCU_NOCB_CPU
+>  	  Say Y here if you need reduced OS jitter, despite added overhead.
+>  	  Say N here if you are unsure.
+>  
+> +config RCU_NOCB_CPU_DEFAULT_ALL
+> +	bool "Offload RCU callback processing from all CPUs by default"
+> +	depends on RCU_NOCB_CPU
+> +	default n
+> +	help
+> +	  Use this option to offload callback processing from all CPUs
+> +	  by default, in the absence of the rcu_nocbs or nohz_full boot
+> +	  parameter. This also avoids the need to use any boot parameters
+> +	  to achieve the effect of offloading all CPUs on boot.
+> +
+> +	  Say Y here if you want offload all CPUs by default on boot.
+> +	  Say N here if you are unsure.
+> +
+>  config TASKS_TRACE_RCU_READ_MB
+>  	bool "Tasks Trace RCU readers use memory barriers in user and idle"
+>  	depends on RCU_EXPERT
+> diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+> index eeafb546a7a0..f648f773600a 100644
+> --- a/kernel/rcu/tree_nocb.h
+> +++ b/kernel/rcu/tree_nocb.h
+> @@ -1166,11 +1166,21 @@ void __init rcu_init_nohz(void)
+>  {
+>  	int cpu;
+>  	bool need_rcu_nocb_mask = false;
+> +	bool offload_all = false;
+>  	struct rcu_data *rdp;
+>  
+> +#if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
+> +	if (!rcu_nocb_is_setup) {
+> +		need_rcu_nocb_mask = true;
+> +		offload_all = true;
+> +	}
+> +#endif
+> +
+>  #if defined(CONFIG_NO_HZ_FULL)
+> -	if (tick_nohz_full_running && cpumask_weight(tick_nohz_full_mask))
+> +	if (tick_nohz_full_running && cpumask_weight(tick_nohz_full_mask)) {
+>  		need_rcu_nocb_mask = true;
+> +		offload_all = false; /* NO_HZ_FULL has its own mask. */
+> +	}
+>  #endif /* #if defined(CONFIG_NO_HZ_FULL) */
+>  
+>  	if (need_rcu_nocb_mask) {
+> @@ -1191,6 +1201,9 @@ void __init rcu_init_nohz(void)
+>  		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, tick_nohz_full_mask);
+>  #endif /* #if defined(CONFIG_NO_HZ_FULL) */
+>  
+> +	if (offload_all)
+> +		cpumask_setall(rcu_nocb_mask);
+> +
+>  	if (!cpumask_subset(rcu_nocb_mask, cpu_possible_mask)) {
+>  		pr_info("\tNote: kernel parameter 'rcu_nocbs=', 'nohz_full', or 'isolcpus=' contains nonexistent CPUs.\n");
+>  		cpumask_and(rcu_nocb_mask, cpu_possible_mask,
+> -- 
+> 2.36.0.rc0.470.gd361397f0d-goog
+> 
+> 
