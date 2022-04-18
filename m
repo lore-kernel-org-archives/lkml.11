@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E42C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ACAEC4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244455AbiDRNo3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:44:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36502 "EHLO
+        id S244476AbiDRNod (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242698AbiDRNSx (ORCPT
+        with ESMTP id S243486AbiDRNUi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:18:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 811173BBD0;
-        Mon, 18 Apr 2022 05:51:53 -0700 (PDT)
+        Mon, 18 Apr 2022 09:20:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B4D36550;
+        Mon, 18 Apr 2022 05:52:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2037C612A3;
-        Mon, 18 Apr 2022 12:51:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 108C2C385A1;
-        Mon, 18 Apr 2022 12:51:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D8F6B80EC4;
+        Mon, 18 Apr 2022 12:52:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5065C385A7;
+        Mon, 18 Apr 2022 12:52:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286312;
-        bh=UQMJBEqSEzRA2WC3QzBiQD3uGBerdW8gVgMOUOvXT4U=;
+        s=korg; t=1650286328;
+        bh=yAaKkTHhLhsslnpxdIu4GfyNTjAUVVlVqcS3Dg0yMyU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XUIBuyxcJp/e2NwBGYdOV2lbqOIqg/U4TdtAHQfxjuFj5UF1xisouxRNXw5hQhu/8
-         oMTbJAD8Zy2gu7SnLT6G/DHdQx0gpcVkGDMYHhuvWxPzjbjnNG+NY0pZCSxzcDBRYi
-         eRl+vMMGDhvsxGOREPrF3WseOuGCS+0jDfCtzJxo=
+        b=0WOgiQwgQrlYBjUAnGhgu3mwwUi8xe05EXDo5N2amlBBFqWuik99F6+FyFGHjjltC
+         Qjv8q6brkUh/A+83/e6SH9Q9VgIZ5tGs6m5EJxw1KgZsieanojVg6E0cEb0yCdolug
+         91P8pccZL260uBXerMM2nkQo3qciqUoMCgXy11Rw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 096/284] mtd: onenand: Check for error irq
-Date:   Mon, 18 Apr 2022 14:11:17 +0200
-Message-Id: <20220418121213.415372840@linuxfoundation.org>
+Subject: [PATCH 4.14 083/284] ASoC: atmel_ssc_dai: Handle errors for clk_enable
+Date:   Mon, 18 Apr 2022 14:11:04 +0200
+Message-Id: <20220418121213.045841539@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -51,43 +51,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 3e68f331c8c759c0daa31cc92c3449b23119a215 ]
+[ Upstream commit f9e2ca0640e59d19af0ff285ee5591ed39069b09 ]
 
-For the possible failure of the platform_get_irq(), the returned irq
-could be error number and will finally cause the failure of the
-request_irq().
-Consider that platform_get_irq() can now in certain cases return
--EPROBE_DEFER, and the consequences of letting request_irq() effectively
-convert that into -EINVAL, even at probe time rather than later on.
-So it might be better to check just now.
+As the potential failure of the clk_enable(),
+it should be better to check it and return error if fals.
 
-Fixes: 2c22120fbd01 ("MTD: OneNAND: interrupt based wait support")
+Fixes: cbaadf0f90d6 ("ASoC: atmel_ssc_dai: refactor the startup and shutdown")
 Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220104162658.1988142-1-jiasheng@iscas.ac.cn
+Link: https://lore.kernel.org/r/20220301090637.3776558-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/onenand/generic.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ sound/soc/atmel/atmel_ssc_dai.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/onenand/generic.c b/drivers/mtd/onenand/generic.c
-index 125da34d8ff9..23a878e7974e 100644
---- a/drivers/mtd/onenand/generic.c
-+++ b/drivers/mtd/onenand/generic.c
-@@ -58,7 +58,12 @@ static int generic_onenand_probe(struct platform_device *pdev)
- 	}
+diff --git a/sound/soc/atmel/atmel_ssc_dai.c b/sound/soc/atmel/atmel_ssc_dai.c
+index a1e2c5682dcd..6741ae42b598 100644
+--- a/sound/soc/atmel/atmel_ssc_dai.c
++++ b/sound/soc/atmel/atmel_ssc_dai.c
+@@ -296,7 +296,10 @@ static int atmel_ssc_startup(struct snd_pcm_substream *substream,
  
- 	info->onenand.mmcontrol = pdata ? pdata->mmcontrol : NULL;
--	info->onenand.irq = platform_get_irq(pdev, 0);
+ 	/* Enable PMC peripheral clock for this SSC */
+ 	pr_debug("atmel_ssc_dai: Starting clock\n");
+-	clk_enable(ssc_p->ssc->clk);
++	ret = clk_enable(ssc_p->ssc->clk);
++	if (ret)
++		return ret;
 +
-+	err = platform_get_irq(pdev, 0);
-+	if (err < 0)
-+		goto out_iounmap;
-+
-+	info->onenand.irq = err;
+ 	ssc_p->mck_rate = clk_get_rate(ssc_p->ssc->clk);
  
- 	info->mtd.dev.parent = &pdev->dev;
- 	info->mtd.priv = &info->onenand;
+ 	/* Reset the SSC unless initialized to keep it in a clean state */
 -- 
 2.34.1
 
