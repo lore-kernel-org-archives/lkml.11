@@ -2,73 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F42CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:32:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 16:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346376AbiDRQeu (ORCPT
+        id S1346401AbiDRQey (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 12:34:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34672 "EHLO
+        Mon, 18 Apr 2022 12:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346373AbiDRQeK (ORCPT
+        with ESMTP id S234709AbiDRQeW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 12:34:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9920A31370
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:31:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB498612B9
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 16:31:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A2EEC385A1;
-        Mon, 18 Apr 2022 16:31:17 +0000 (UTC)
-Date:   Mon, 18 Apr 2022 12:31:16 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     zgpeng <zgpeng.linux@gmail.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] sched/fair: Fix the scene where group's imbalance is
- set incorrectly
-Message-ID: <20220418123116.2e4f6b1e@gandalf.local.home>
-In-Reply-To: <1649566716-24687-1-git-send-email-zgpeng@tencent.com>
-References: <1649566716-24687-1-git-send-email-zgpeng@tencent.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Mon, 18 Apr 2022 12:34:22 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F965F50
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:31:42 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id t13so19764416pgn.8
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 09:31:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=J5XRVN0rYoKShdUkWHsZOX7pTFc2v1hH6PY/aOGhz2o=;
+        b=opDlbbLXpfliyT0hxegO0lHHNJUhKN18viHaTHcXInOVtr00j2D8OJFj2gl2cJlr82
+         f29Iyvsxr7+Q9zFvxuyMO9eQsR30Xr7MVxSFP6w3KA9acvyoS+j3brCpMYzkTI2x1lKQ
+         VtEloOT+ljzj32WU7UF+mVHgUTggpIEl9WhX6gBQqLyTCBW5PFTKDwJv53+zsuWPc9Ot
+         Wl2fCmF04oy43KKL6oGBP0xwv7LM1xKPJmKHDrWnNsXnyC4WSeWN3+WMBmUJc+HyV9s6
+         wqtDbUp6BzP6OG0jFXWUEjZa/mgfOw7FBLEeSj0PoaqgIKC38IOmzaIR8fzRjP7v8Vbl
+         cSCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=J5XRVN0rYoKShdUkWHsZOX7pTFc2v1hH6PY/aOGhz2o=;
+        b=TDKBw+G9w2hHsf2l/JjC6lMXkko1gB5a2jojpxublO58cNgr/j99w2IfB5PzUrAehO
+         laQexBOkYQBeObvp/OzYoHJuL/NL4FGhwfSNJEg/1QhrLVe+Qv/e5GDP5VfzrV3Ae6X7
+         RfStZs7aG0LEBsKqB7UZcF14nomo5PLllVWES5rllOkbYb7uBBKpO56LxbrwaYa8Gcv5
+         lAHtcYoeydCcARjZmL2JCiE4sWJ+V2JbN4TOaHQoRkQU6DXwXzNxJF9KGue+8ovgAeyx
+         ttHR/VTK3+7GM+rZqM07SovDqNkKHTIrhZoAE30E05HJ7oqKO0jDTVzMiVMiVLPSrZVT
+         u6Lg==
+X-Gm-Message-State: AOAM531PSo7YxyLNODWbeuxTLdS456rCT1XsJGsRN9HcrMYaWJYErIoq
+        0R2c7FaKzbRDbGZAJIfanoI=
+X-Google-Smtp-Source: ABdhPJxpEjB37dv3sT9B386rQBREHhLwteTv4M1Ps9RbqbppqC2G/I/1zlBh9L5z4QcXHZeRHi4kWA==
+X-Received: by 2002:a65:4c4e:0:b0:39d:21c4:2381 with SMTP id l14-20020a654c4e000000b0039d21c42381mr10912664pgr.566.1650299502320;
+        Mon, 18 Apr 2022 09:31:42 -0700 (PDT)
+Received: from aliyar-HP-Laptop-15-da1xxx.domain.name ([14.139.241.88])
+        by smtp.gmail.com with ESMTPSA id h18-20020a63c012000000b0039cc3c323f7sm13295602pgg.33.2022.04.18.09.31.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 09:31:41 -0700 (PDT)
+From:   Aliya Rahmani <aliyarahmani786@gmail.com>
+To:     clabbe@baylibre.com
+Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
+        outreachy@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Aliya Rahmani <aliyarahmani786@gmail.com>
+Subject: [PATCH v2 3/3] staging: media: zoran: add parentheses on macro parameter
+Date:   Mon, 18 Apr 2022 21:52:50 +0530
+Message-Id: <20220418162244.15346-4-aliyarahmani786@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220418162244.15346-1-aliyarahmani786@gmail.com>
+References: <20220418162244.15346-1-aliyarahmani786@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 10 Apr 2022 12:58:36 +0800
-zgpeng <zgpeng.linux@gmail.com> wrote:
+This patch fixes checkpatch warnings of precedence issues. Add parentheses
+around macro argument 'num'.
 
-> The specific trigger scenarios are as follows. In the
-> load_balance function, the first loop picks out the busiest
-> cpu. During the process of pulling the process from the
-> busiest cpu, it is found that all tasks cannot be run on the
-> DST cpu. At this time, both LBF_SOME_PINNED andLBF_ALL_PINNED
-> of env.flags are set. Because balance fails and LBF_SOME_PINNED
-> is set, the parent group's mbalance flag will be set to 1. At
-> the same time, because LBF_ALL_PINNED is set, it will re-enter
-> the second cycle to select another busiest cpu to pull the process.
-> Because the busiest CPU has changed, the process can be pulled to
-> DST cpu, so it is possible to reach a balance state.
+Signed-off-by: Aliya Rahmani <aliyarahmani786@gmail.com>
+---
+ drivers/staging/media/zoran/videocodec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-But is the next cpu selected really the busiest CPU? Or is the original
-still the busiest but doesn't have any tasks that can migrate to the dst
-CPU? Does it really mean the parent is now unbalanced?
+diff --git a/drivers/staging/media/zoran/videocodec.c b/drivers/staging/media/zoran/videocodec.c
+index 19732a47c8bd..925f90fd5885 100644
+--- a/drivers/staging/media/zoran/videocodec.c
++++ b/drivers/staging/media/zoran/videocodec.c
+@@ -22,7 +22,7 @@ MODULE_PARM_DESC(videocodec_debug, "Debug level (0-4)");
+ 
+ #define dprintk(num, format, args...) \
+ 	do { \
+-		if (videocodec_debug >= num) \
++		if (videocodec_debug >= (num)) \
+ 			printk(format, ##args); \
+ 	} while (0)
+ 
+-- 
+2.25.1
 
--- Steve
-
-
-> 
-> But at this time, the parent group's imbalance flag is not set
-> correctly again. As a result, the load balance is successfully
-> achieved, but the parent group's imbalance flag is incorrectly
-> set to 1. In this case, the upper-layer load balance will
-> erroneously select this domain as the busiest group, thereby
-> breaking the balance.
