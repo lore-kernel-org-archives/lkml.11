@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F95C47088
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2C1C47087
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243918AbiDRNek (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:34:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53836 "EHLO
+        id S243859AbiDRNed (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:34:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242046AbiDRNIm (ORCPT
+        with ESMTP id S241690AbiDRNI3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:08:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FBB34652;
-        Mon, 18 Apr 2022 05:48:17 -0700 (PDT)
+        Mon, 18 Apr 2022 09:08:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3902BB10;
+        Mon, 18 Apr 2022 05:47:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A527B80E44;
-        Mon, 18 Apr 2022 12:48:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59B0BC385A1;
-        Mon, 18 Apr 2022 12:48:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 76BFE6124A;
+        Mon, 18 Apr 2022 12:47:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67303C385A7;
+        Mon, 18 Apr 2022 12:47:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286094;
-        bh=5IqUjJTSOJ5iA71G3v7PMy802c6wfxcw7Yd0aVsWReA=;
+        s=korg; t=1650286075;
+        bh=zhJ5U1YZxDlUhpAyqcBaDDvBQU/WxbXPrdfuwDDlr7c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0O+PPTbAPz2fj6asuXTJbr9UZ7kSkOQrudWDMDSOCG+SPSOkvjJBZ1dHoEAaCSpI0
-         Hgle6NLTbcC+bn4SqVn++YnUgnTdYjtWwjR4hdPb87OaN2dlHsPTPBTx9GYO56Gt4B
-         zpqpvEsvpRQYRe35nzQ49eqzBb4Nic2vhMh84Juw=
+        b=bFKi10us4LI2umGymyFPdfAv4iPpC9obFYtQtokpn00BYEb4iSLxxWVKhk/Y3rcze
+         W5g8wbKo38LD3Xg+BbcnOhmpD3qX48T7F4+5Ypwj3whM6DSyn+1qDXIXBZmIP9jXCe
+         7W6hIAsKbW6fmayK+oV1MlingjGUQcurPCVrcEW4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 4.14 027/284] jffs2: fix memory leak in jffs2_do_mount_fs
-Date:   Mon, 18 Apr 2022 14:10:08 +0200
-Message-Id: <20220418121211.468896417@linuxfoundation.org>
+        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: [PATCH 4.14 021/284] Documentation: update stable tree link
+Date:   Mon, 18 Apr 2022 14:10:02 +0200
+Message-Id: <20220418121211.299972977@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -48,71 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Bagas Sanjaya <bagasdotme@gmail.com>
 
-commit d051cef784de4d54835f6b6836d98a8f6935772c upstream.
+commit 555d44932c67e617d89bc13c81c7efac5b51fcfa upstream.
 
-If jffs2_build_filesystem() in jffs2_do_mount_fs() returns an error,
-we can observe the following kmemleak report:
+The link to stable tree is redirected to
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git. Update
+accordingly.
 
---------------------------------------------
-unreferenced object 0xffff88811b25a640 (size 64):
-  comm "mount", pid 691, jiffies 4294957728 (age 71.952s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffffa493be24>] kmem_cache_alloc_trace+0x584/0x880
-    [<ffffffffa5423a06>] jffs2_sum_init+0x86/0x130
-    [<ffffffffa5400e58>] jffs2_do_mount_fs+0x798/0xac0
-    [<ffffffffa540acf3>] jffs2_do_fill_super+0x383/0xc30
-    [<ffffffffa540c00a>] jffs2_fill_super+0x2ea/0x4c0
-    [...]
-unreferenced object 0xffff88812c760000 (size 65536):
-  comm "mount", pid 691, jiffies 4294957728 (age 71.952s)
-  hex dump (first 32 bytes):
-    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
-    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
-  backtrace:
-    [<ffffffffa493a449>] __kmalloc+0x6b9/0x910
-    [<ffffffffa5423a57>] jffs2_sum_init+0xd7/0x130
-    [<ffffffffa5400e58>] jffs2_do_mount_fs+0x798/0xac0
-    [<ffffffffa540acf3>] jffs2_do_fill_super+0x383/0xc30
-    [<ffffffffa540c00a>] jffs2_fill_super+0x2ea/0x4c0
-    [...]
---------------------------------------------
-
-This is because the resources allocated in jffs2_sum_init() are not
-released. Call jffs2_sum_exit() to release these resources to solve
-the problem.
-
-Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Sasha Levin <sashal@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>
 Cc: stable@vger.kernel.org
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Link: https://lore.kernel.org/r/20220314113329.485372-6-bagasdotme@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/jffs2/build.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ Documentation/process/stable-kernel-rules.rst |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/jffs2/build.c
-+++ b/fs/jffs2/build.c
-@@ -415,13 +415,15 @@ int jffs2_do_mount_fs(struct jffs2_sb_in
- 		jffs2_free_ino_caches(c);
- 		jffs2_free_raw_node_refs(c);
- 		ret = -EIO;
--		goto out_free;
-+		goto out_sum_exit;
- 	}
+--- a/Documentation/process/stable-kernel-rules.rst
++++ b/Documentation/process/stable-kernel-rules.rst
+@@ -171,7 +171,7 @@ Trees
+  - The finalized and tagged releases of all stable kernels can be found
+    in separate branches per version at:
  
- 	jffs2_calc_trigger_levels(c);
+-	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
++	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
  
- 	return 0;
- 
-+ out_sum_exit:
-+	jffs2_sum_exit(c);
-  out_free:
- 	kvfree(c->blocks);
+  - The release candidate of all stable kernel versions can be found at:
  
 
 
