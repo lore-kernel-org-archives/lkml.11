@@ -2,85 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9F85C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:40:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91314C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:40:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242014AbiDROnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:43:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33654 "EHLO
+        id S1344751AbiDROnG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344746AbiDROmc (ORCPT
+        with ESMTP id S1345018AbiDROme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:42:32 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD37026F2
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 06:27:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650288449; x=1681824449;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=NPCmjA3Z2nYHOcj0RRTKEmm/t+LnZAxBuqaqadnU+TM=;
-  b=g3HQh7zxmwoBoia9C0dfHGePJ6MxIjFzyjgGGP3JejfmkFJrimLZPHr+
-   ykstlPTu/k/szk9LWiO3OIvDTEUeLB/2iHNPqINdSorQfBPcHa956V/E6
-   PXFI0IW6k5OcWSTGRzQyOLQM20Klp2hCO6dCMIhIBs5G9252B2f2CfmNt
-   DlMRzq+qEExysYUj39De47r4+d6vv/ibzqhFWGYXBzh9mU3FhUxqFQhGj
-   WsCQM/FzJnX2YWoTySXPKe9Rn2bkWnquAzL3IvFu3dFSlzc9sjEpXI2oh
-   L4FUx9S67QGtnwhe7lw80NuHMFtX8QFgxYXtIA+HrFpfxTd6mccJE5XNy
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10320"; a="243448541"
-X-IronPort-AV: E=Sophos;i="5.90,269,1643702400"; 
-   d="scan'208";a="243448541"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 06:27:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,269,1643702400"; 
-   d="scan'208";a="665180974"
-Received: from lkp-server01.sh.intel.com (HELO 3abc53900bec) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 18 Apr 2022 06:27:28 -0700
-Received: from kbuild by 3abc53900bec with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ngRPb-0004fJ-N0;
-        Mon, 18 Apr 2022 13:27:27 +0000
-Date:   Mon, 18 Apr 2022 21:27:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Max Filippov <jcmvbkbc@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: xtensa-linux-ld: section .Level2InterruptVector.text VMA
- [0000000000000180,0000000000000193] overlaps section .data VMA
- [0000000000000000,000000000019233f]
-Message-ID: <202204182128.PrSavz1o-lkp@intel.com>
+        Mon, 18 Apr 2022 10:42:34 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D254CB867
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 06:28:01 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id t11so26799837eju.13
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 06:28:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=nkYV7T1aixHjHVn90tgTWbE9t0QEJM6StqL3GUrlAlk=;
+        b=LJ5T0cy9J4PoTu2Gd8yp/uT1fnd+pbUuNHOuNNn89UJS8blNpb3NIOyZFbECSoeQcL
+         DcZzQARnZ/5ZPC0G2rwBGsqQfKnsgvJgIpgBoTEYQe8ioKPrrvjKkPVIuA69qqb4g8DY
+         NWg1yC27X17kcs5BKDp57PF9wPy06dijZTrxb4V8xl0/5Evb4zQyPB3o8WFYc99ZXhJv
+         Cb9za5/p+OORSs/5+nxe6YFmjXWDigF9v+v7TG5iAkOYanf+jsB7T48gUxEKlXLn2abz
+         7TG977jkIN85MD0Wzni8o/Dh8UxPcD/ECX13UaffuXbLncB0JHhYlFSgQ6BkfcD0d0IB
+         Ez1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=nkYV7T1aixHjHVn90tgTWbE9t0QEJM6StqL3GUrlAlk=;
+        b=XoK1I1SR1wRmDs46MBpD1mhE7tkHJP1npe74EcVKbolAL5EwmRkEYHjACSdGNsfA8h
+         6pGMg36rEQubFyVeFgwJw6Dj9fBsWyGqfiTs9AKvRcbbPykLMgpB/H82SES+Mm7EeUvr
+         cOS+yVmRwKGHnxiCE/34xZiKQ7kkBvcpylM0GkE0oRrby3ydTrEuwcjP/S5iztnkOeJw
+         2Hc5YJgv+xKGyMIkZCw0xAFCc4M8pQ6ELTMmEekok2+58cb2aQuK4aB7E/xHRHo3bZdL
+         DivoFXhIYN1TGO/T1s9dzwzC9dfIL4LKm2XL5M5CR5Q4zMPlgNrqcRHfEaBln8ZW6+tW
+         bH4w==
+X-Gm-Message-State: AOAM532xeTPqRhbeZjOBuTIFCpPjA8z8Mj90h+OkrSLnMkWziehZ94Dw
+        QXwbAvpD2Yfo7yM/q4KgFy5ymKeeCaUW7A==
+X-Google-Smtp-Source: ABdhPJwWqLeK8fB27393z2QZpt7Z0xPsk0D8WVyrVl7h6EkfMopl9RFZbXWs6a/WiIcQSwI3zXri9g==
+X-Received: by 2002:a17:906:58d2:b0:6da:b635:fbf3 with SMTP id e18-20020a17090658d200b006dab635fbf3mr8830951ejs.40.1650288480437;
+        Mon, 18 Apr 2022 06:28:00 -0700 (PDT)
+Received: from ryzen ([2001:b07:2e3:dacc:d3f3:c3c5:d3a2:5ee7])
+        by smtp.gmail.com with ESMTPSA id g16-20020a170906521000b006d58773e992sm4619829ejm.188.2022.04.18.06.27.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 06:28:00 -0700 (PDT)
+Date:   Mon, 18 Apr 2022 15:27:57 +0200
+From:   Maurizio Avogadro <mavoga@gmail.com>
+To:     alsa-devel@alsa-project.org
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Andrea Fagiani <andfagiani@gmail.com>,
+        Timo Gurr <timo.gurr@gmail.com>, linux-kernel@vger.kernel.org,
+        Maurizio Avogadro <mavoga@gmail.com>
+Subject: [PATCH] ALSA: usb-audio: add mapping for MSI MAG X570S Torpedo MAX.
+Message-ID: <Yl1nXcsAKWrFOMbY@ryzen>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b2d229d4ddb17db541098b83524d901257e93845
-commit: c20e1117d9aa22c558646a1060ddd1dd042fb107 xtensa: add kernel ABI selection to Kconfig
-date:   6 weeks ago
-config: xtensa-randconfig-r001-20220417 (https://download.01.org/0day-ci/archive/20220418/202204182128.PrSavz1o-lkp@intel.com/config)
-compiler: xtensa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c20e1117d9aa22c558646a1060ddd1dd042fb107
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout c20e1117d9aa22c558646a1060ddd1dd042fb107
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=xtensa SHELL=/bin/bash
+The USB audio device 0db0:419c based on the Realtek ALC4080  chipset
+exposes all playback volume controls as "PCM". This makes
+distinguishing the individual functions hard: the mapping already
+adopted for  device 0db0:419c fixes the issue, apply it.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Maurizio Avogadro <mavoga@gmail.com>
+---
+ sound/usb/mixer_maps.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-All errors (new ones prefixed by >>):
-
->> xtensa-linux-ld: section .Level2InterruptVector.text VMA [0000000000000180,0000000000000193] overlaps section .data VMA [0000000000000000,000000000019233f]
-
+diff --git a/sound/usb/mixer_maps.c b/sound/usb/mixer_maps.c
+index 64f5544d0a0a..7ef7a8abcc2b 100644
+--- a/sound/usb/mixer_maps.c
++++ b/sound/usb/mixer_maps.c
+@@ -599,6 +599,10 @@ static const struct usbmix_ctl_map usbmix_ctl_maps[] = {
+ 		.id = USB_ID(0x0db0, 0x419c),
+ 		.map = msi_mpg_x570s_carbon_max_wifi_alc4080_map,
+ 	},
++	{	/* MSI MAG X570S Torpedo Max */
++		.id = USB_ID(0x0db0, 0xa073),
++		.map = msi_mpg_x570s_carbon_max_wifi_alc4080_map,
++	},
+ 	{	/* MSI TRX40 */
+ 		.id = USB_ID(0x0db0, 0x543d),
+ 		.map = trx40_mobo_map,
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
