@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:03:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71AE7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:03:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245280AbiDROFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54142 "EHLO
+        id S244182AbiDROFw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244550AbiDRNrn (ORCPT
+        with ESMTP id S244926AbiDRNsh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:47:43 -0400
+        Mon, 18 Apr 2022 09:48:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F1A23337B;
-        Mon, 18 Apr 2022 06:01:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764CE338B8;
+        Mon, 18 Apr 2022 06:01:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1BFB60AAD;
-        Mon, 18 Apr 2022 13:01:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7FAEC385A7;
-        Mon, 18 Apr 2022 13:01:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D831B603E0;
+        Mon, 18 Apr 2022 13:01:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBCE1C385A7;
+        Mon, 18 Apr 2022 13:01:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286873;
-        bh=cYzXXg1Vy1q7vvQEVY1rET2xsZpGFJS5PCjsVVvLFiQ=;
+        s=korg; t=1650286876;
+        bh=m2wwDRKEUb1FSsfsa8zID9Em893Bo+8xBvdGNWAui70=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lbsprj27z28E0nMTaRm07yqUoF2Ax3O+RmrLLMROL1qMNP48oxDRtxRp2HvqVea6a
-         PgDgdNwdrhjoLv2EAIPc4TTfxqeIKpHJo6lIILtZ9RxUE+fPyVlCUMYXWw9LH38Tap
-         wYz1xWR9DCGntnn34XzpPEiFx+A2XSCRehgOoMwM=
+        b=g1CICoKlpggb6chhetbOUQxXPyCO1P3PTX5P0kzSYKBf+suvVik4iyHvbaAb/a2la
+         iKTm9czw5MWbwIbG85RyHxX5/hNTLlUCDf3Wnyh1CLv2aYlPJ7ZBtqOibVb6WV4IXI
+         4VBlGEG6VxvCR356uUQlsmG1eZVKYhyqEUaKg34Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 273/284] net: micrel: fix KS8851_MLL Kconfig
-Date:   Mon, 18 Apr 2022 14:14:14 +0200
-Message-Id: <20220418121220.707111799@linuxfoundation.org>
+        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
+        Justin Forbes <jforbes@redhat.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Rafael Aquini <aquini@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.14 256/284] mm/sparsemem: fix mem_section will never be NULL gcc 12 warning
+Date:   Mon, 18 Apr 2022 14:13:57 +0200
+Message-Id: <20220418121219.686110669@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -51,50 +53,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Waiman Long <longman@redhat.com>
 
-[ Upstream commit c3efcedd272aa6dd5929e20cf902a52ddaa1197a ]
+commit a431dbbc540532b7465eae4fc8b56a85a9fc7d17 upstream.
 
-KS8851_MLL selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL,
-so make KS8851_MLL also depend on PTP_1588_CLOCK_OPTIONAL since
-'select' does not follow any dependency chains.
+The gcc 12 compiler reports a "'mem_section' will never be NULL" warning
+on the following code:
 
-Fixes kconfig warning and build errors:
+    static inline struct mem_section *__nr_to_section(unsigned long nr)
+    {
+    #ifdef CONFIG_SPARSEMEM_EXTREME
+        if (!mem_section)
+                return NULL;
+    #endif
+        if (!mem_section[SECTION_NR_TO_ROOT(nr)])
+                return NULL;
+       :
 
-WARNING: unmet direct dependencies detected for MICREL_PHY
-  Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
-  Selected by [y]:
-  - KS8851_MLL [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && HAS_IOMEM [=y]
+It happens with CONFIG_SPARSEMEM_EXTREME off.  The mem_section definition
+is
 
-ld: drivers/net/phy/micrel.o: in function `lan8814_ts_info':
-micrel.c:(.text+0xb35): undefined reference to `ptp_clock_index'
-ld: drivers/net/phy/micrel.o: in function `lan8814_probe':
-micrel.c:(.text+0x2586): undefined reference to `ptp_clock_register'
+    #ifdef CONFIG_SPARSEMEM_EXTREME
+    extern struct mem_section **mem_section;
+    #else
+    extern struct mem_section mem_section[NR_SECTION_ROOTS][SECTIONS_PER_ROOT];
+    #endif
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In the !CONFIG_SPARSEMEM_EXTREME case, mem_section is a static
+2-dimensional array and so the check "!mem_section[SECTION_NR_TO_ROOT(nr)]"
+doesn't make sense.
+
+Fix this warning by moving the "!mem_section[SECTION_NR_TO_ROOT(nr)]"
+check up inside the CONFIG_SPARSEMEM_EXTREME block and adding an
+explicit NR_SECTION_ROOTS check to make sure that there is no
+out-of-bound array access.
+
+Link: https://lkml.kernel.org/r/20220331180246.2746210-1-longman@redhat.com
+Fixes: 3e347261a80b ("sparsemem extreme implementation")
+Signed-off-by: Waiman Long <longman@redhat.com>
+Reported-by: Justin Forbes <jforbes@redhat.com>
+Cc: "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Rafael Aquini <aquini@redhat.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/micrel/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/mmzone.h |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
-index b7e2f49696b7..aa12bace8673 100644
---- a/drivers/net/ethernet/micrel/Kconfig
-+++ b/drivers/net/ethernet/micrel/Kconfig
-@@ -45,6 +45,7 @@ config KS8851
- config KS8851_MLL
- 	tristate "Micrel KS8851 MLL"
- 	depends on HAS_IOMEM
-+	depends on PTP_1588_CLOCK_OPTIONAL
- 	select MII
- 	---help---
- 	  This platform driver is for Micrel KS8851 Address/data bus
--- 
-2.35.1
-
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -1160,13 +1160,16 @@ extern struct mem_section mem_section[NR
+ 
+ static inline struct mem_section *__nr_to_section(unsigned long nr)
+ {
++	unsigned long root = SECTION_NR_TO_ROOT(nr);
++
++	if (unlikely(root >= NR_SECTION_ROOTS))
++		return NULL;
++
+ #ifdef CONFIG_SPARSEMEM_EXTREME
+-	if (!mem_section)
++	if (!mem_section || !mem_section[root])
+ 		return NULL;
+ #endif
+-	if (!mem_section[SECTION_NR_TO_ROOT(nr)])
+-		return NULL;
+-	return &mem_section[SECTION_NR_TO_ROOT(nr)][nr & SECTION_ROOT_MASK];
++	return &mem_section[root][nr & SECTION_ROOT_MASK];
+ }
+ extern int __section_nr(struct mem_section* ms);
+ extern unsigned long usemap_size(void);
 
 
