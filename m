@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41611C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:01:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C87F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:01:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234518AbiDRNDy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:03:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
+        id S239102AbiDRNEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240201AbiDRMzI (ORCPT
+        with ESMTP id S240197AbiDRMzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:55:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B45F29E;
-        Mon, 18 Apr 2022 05:36:00 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548C72314E;
+        Mon, 18 Apr 2022 05:35:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC52861033;
-        Mon, 18 Apr 2022 12:35:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7456C385A7;
-        Mon, 18 Apr 2022 12:35:58 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A2F1DCE10A1;
+        Mon, 18 Apr 2022 12:35:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93900C385A1;
+        Mon, 18 Apr 2022 12:35:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285359;
-        bh=Xf/QHX1UXhMNHV9bdkH1kVk3pov/oKkbT7zCMLg6cWQ=;
+        s=korg; t=1650285350;
+        bh=3bXJTGa4nB+rHVKUU1SwJK0AvYctaHMhW1vyeWrlHhg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j4pN0LkLbYuVDobwEcZ6/3JWpMdt1f71TOV5wslad9D/pFQhy6swanpzkio468oC+
-         nlRXfJ1AlJu7BZh6Oi9+lppJ4ePOpZbk4LmgYXudLyZC7Po2ahpAe4hvShKeHBwNN1
-         DPHlrJ+TE2lujOmI+J2KBfrvgAkVlKY+Mt40YYxs=
+        b=SKW1QqGXkvMK2znhZQGp06CbzpjScO4BiZNOBqf7gfFom+59AI/6YzXLflqywlFoK
+         WlYrROs54+Izb3mfKaQv00SC3lPcjbflXf2LvKi6s0rnEyM5G6/74bz4Li5BTDf9Xz
+         OJGhxMAESrKv1UOh5872o5Mjg0pg1CvtvzFkKzuA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.15 184/189] ax25: fix UAF bugs of net_device caused by rebinding operation
-Date:   Mon, 18 Apr 2022 14:13:24 +0200
-Message-Id: <20220418121208.476940479@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Michael Larabel <Michael@MichaelLarabel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Dimitri John Ledkov <dimitri.ledkov@canonical.com>
+Subject: [PATCH 5.15 181/189] cpufreq: intel_pstate: ITMT support for overclocked system
+Date:   Mon, 18 Apr 2022 14:13:21 +0200
+Message-Id: <20220418121208.290534383@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,99 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-commit feef318c855a361a1eccd880f33e88c460eb63b4 upstream.
+commit 03c83982a0278207709143ba78c5a470179febee upstream.
 
-The ax25_kill_by_device() will set s->ax25_dev = NULL and
-call ax25_disconnect() to change states of ax25_cb and
-sock, if we call ax25_bind() before ax25_kill_by_device().
+On systems with overclocking enabled, CPPC Highest Performance can be
+hard coded to 0xff. In this case even if we have cores with different
+highest performance, ITMT can't be enabled as the current implementation
+depends on CPPC Highest Performance.
 
-However, if we call ax25_bind() again between the window of
-ax25_kill_by_device() and ax25_dev_device_down(), the values
-and states changed by ax25_kill_by_device() will be reassigned.
+On such systems we can use MSR_HWP_CAPABILITIES maximum performance field
+when CPPC.Highest Performance is 0xff.
 
-Finally, ax25_dev_device_down() will deallocate net_device.
-If we dereference net_device in syscall functions such as
-ax25_release(), ax25_sendmsg(), ax25_getsockopt(), ax25_getname()
-and ax25_info_show(), a UAF bug will occur.
+Due to legacy reasons, we can't solely depend on MSR_HWP_CAPABILITIES as
+in some older systems CPPC Highest Performance is the only way to identify
+different performing cores.
 
-One of the possible race conditions is shown below:
-
-      (USE)                   |      (FREE)
-ax25_bind()                   |
-                              |  ax25_kill_by_device()
-ax25_bind()                   |
-ax25_connect()                |    ...
-                              |  ax25_dev_device_down()
-                              |    ...
-                              |    dev_put_track(dev, ...) //FREE
-ax25_release()                |    ...
-  ax25_send_control()         |
-    alloc_skb()      //USE    |
-
-the corresponding fail log is shown below:
-===============================================================
-BUG: KASAN: use-after-free in ax25_send_control+0x43/0x210
-...
-Call Trace:
-  ...
-  ax25_send_control+0x43/0x210
-  ax25_release+0x2db/0x3b0
-  __sock_release+0x6d/0x120
-  sock_close+0xf/0x20
-  __fput+0x11f/0x420
-  ...
-Allocated by task 1283:
-  ...
-  __kasan_kmalloc+0x81/0xa0
-  alloc_netdev_mqs+0x5a/0x680
-  mkiss_open+0x6c/0x380
-  tty_ldisc_open+0x55/0x90
-  ...
-Freed by task 1969:
-  ...
-  kfree+0xa3/0x2c0
-  device_release+0x54/0xe0
-  kobject_put+0xa5/0x120
-  tty_ldisc_kill+0x3e/0x80
-  ...
-
-In order to fix these UAF bugs caused by rebinding operation,
-this patch adds dev_hold_track() into ax25_bind() and
-corresponding dev_put_track() into ax25_kill_by_device().
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-[OP: backport to 5.15: adjust dev_put_track()->dev_put() and
-dev_hold_track()->dev_hold()]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Reported-by: Michael Larabel <Michael@MichaelLarabel.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Tested-by: Michael Larabel <Michael@MichaelLarabel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ax25/af_ax25.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/cpufreq/intel_pstate.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -98,6 +98,7 @@ again:
- 			spin_unlock_bh(&ax25_list_lock);
- 			lock_sock(sk);
- 			s->ax25_dev = NULL;
-+			dev_put(ax25_dev->dev);
- 			ax25_dev_put(ax25_dev);
- 			release_sock(sk);
- 			ax25_disconnect(s, ENETUNREACH);
-@@ -1123,8 +1124,10 @@ static int ax25_bind(struct socket *sock
- 		}
- 	}
+--- a/drivers/cpufreq/intel_pstate.c
++++ b/drivers/cpufreq/intel_pstate.c
+@@ -335,6 +335,8 @@ static void intel_pstste_sched_itmt_work
  
--	if (ax25_dev != NULL)
-+	if (ax25_dev) {
- 		ax25_fillin_cb(ax25, ax25_dev);
-+		dev_hold(ax25_dev->dev);
-+	}
+ static DECLARE_WORK(sched_itmt_work, intel_pstste_sched_itmt_work_fn);
  
- done:
- 	ax25_cb_add(ax25);
++#define CPPC_MAX_PERF	U8_MAX
++
+ static void intel_pstate_set_itmt_prio(int cpu)
+ {
+ 	struct cppc_perf_caps cppc_perf;
+@@ -346,6 +348,14 @@ static void intel_pstate_set_itmt_prio(i
+ 		return;
+ 
+ 	/*
++	 * On some systems with overclocking enabled, CPPC.highest_perf is hardcoded to 0xff.
++	 * In this case we can't use CPPC.highest_perf to enable ITMT.
++	 * In this case we can look at MSR_HWP_CAPABILITIES bits [8:0] to decide.
++	 */
++	if (cppc_perf.highest_perf == CPPC_MAX_PERF)
++		cppc_perf.highest_perf = HWP_HIGHEST_PERF(READ_ONCE(all_cpu_data[cpu]->hwp_cap_cached));
++
++	/*
+ 	 * The priorities can be set regardless of whether or not
+ 	 * sched_set_itmt_support(true) has been called and it is valid to
+ 	 * update them at any time after it has been called.
 
 
