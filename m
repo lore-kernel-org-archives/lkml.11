@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D74C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6687EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235164AbiDRMnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
+        id S232676AbiDRMoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:44:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239160AbiDRMem (ORCPT
+        with ESMTP id S239244AbiDRMfL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:34:42 -0400
+        Mon, 18 Apr 2022 08:35:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE862125E;
-        Mon, 18 Apr 2022 05:27:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8688620BDC;
+        Mon, 18 Apr 2022 05:27:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC5EF6100F;
-        Mon, 18 Apr 2022 12:27:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C9F2C385A1;
-        Mon, 18 Apr 2022 12:27:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A114660FB6;
+        Mon, 18 Apr 2022 12:27:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A40E2C385A1;
+        Mon, 18 Apr 2022 12:27:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284836;
-        bh=z5OIoCU6ZMb0mcg6D4QRRKJ1bUiR8RvMqQREY4apkmU=;
+        s=korg; t=1650284842;
+        bh=xoOqNW8QnXGo22oABOGmUCbKg4y5PZ8xL4qAa94Km+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aZf6HRLUFu0HBS1SFI0ERyfdK9eiP2/bAZKNFitD64ePaNNq3lXCANABNW7153YOT
-         peF/bjuQXS+NoHbfhM8fBxz8P1sduJmIkxYfjoD73amawxFPNRbhRd+GBS9wnmcvyI
-         oBd3pT17vs4fzHfqAgE8A4Awn6ohjZ716MxOG1Wg=
+        b=dIpWT/kiS0n65dfSvHSLfVej3QTKbAt1gPk5XdkSNX58pWjDOaslbKU2r6U0dzMlH
+         yWpNiyZPrjOmDRAkq7su3dw6kWXEMFTjk4RG6RcGjk3goePAqtlD1NzoQHakGlFl5i
+         WK+JUHwIXIJlMR695NLx/WZdYiazzJiHiRLis5Os=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 024/189] ALSA: azt3328: Fix the missing snd_card_free() call at probe error
-Date:   Mon, 18 Apr 2022 14:10:44 +0200
-Message-Id: <20220418121201.202626008@linuxfoundation.org>
+        stable@vger.kernel.org, Woody Suwalski <wsuwalski@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.15 008/189] ACPI: processor: idle: fix lockup regression on 32-bit ThinkPad T40
+Date:   Mon, 18 Apr 2022 14:10:28 +0200
+Message-Id: <20220418121200.682225683@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -47,56 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Woody Suwalski <wsuwalski@gmail.com>
 
-commit 49fe36e1c02cb06f66689c888e4e767c31cd259d upstream.
+commit bfe55a1f7fd6bfede16078bf04c6250fbca11588 upstream.
 
-The previous cleanup with devres may lead to the incorrect release
-orders at the probe error handling due to the devres's nature.  Until
-we register the card, snd_card_free() has to be called at first for
-releasing the stuff properly when the driver tries to manage and
-release the stuff via card->private_free().
+Add and ACPI idle power level limit for 32-bit ThinkPad T40.
 
-This patch fixes it by calling snd_card_free() on the error from the
-probe callback using a new helper function.
+There is a regression on T40 introduced by commit d6b88ce2, starting
+with kernel 5.16:
 
-Fixes: 8c5823ef31e1 ("ALSA: azt3328: Allocate resources with device-managed APIs")
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-9-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+commit d6b88ce2eb9d2698eb24451eb92c0a1649b17bb1
+Author: Richard Gong <richard.gong@amd.com>
+Date:   Wed Sep 22 08:31:16 2021 -0500
+
+  ACPI: processor idle: Allow playing dead in C3 state
+
+The above patch is trying to enter C3 state during init, what is causing
+a T40 system freeze. I have not found a similar issue on any other of my
+32-bit machines.
+
+The fix is to add another exception to the processor_power_dmi_table[] list.
+As a result the dmesg shows as expected:
+
+[2.155398] ACPI: IBM ThinkPad T40 detected - limiting to C2 max_cstate. Override with "processor.max_cstate=9"
+[2.155404] ACPI: processor limited to max C-state 2
+
+The fix is trivial and affects only vintage T40 systems.
+
+Fixes: d6b88ce2eb9d ("CPI: processor idle: Allow playing dead in C3 state")
+Signed-off-by: Woody Suwalski <wsuwalski@gmail.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Cc: 5.16+ <stable@vger.kernel.org> # 5.16+
+[ rjw: New subject ]
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Cc: "Limonciello, Mario" <Mario.Limonciello@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/azt3328.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/acpi/processor_idle.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/sound/pci/azt3328.c b/sound/pci/azt3328.c
-index 089050470ff2..7f329dfc5404 100644
---- a/sound/pci/azt3328.c
-+++ b/sound/pci/azt3328.c
-@@ -2427,7 +2427,7 @@ snd_azf3328_create(struct snd_card *card,
- }
+--- a/drivers/acpi/processor_idle.c
++++ b/drivers/acpi/processor_idle.c
+@@ -95,6 +95,11 @@ static const struct dmi_system_id proces
+ 	  DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK Computer Inc."),
+ 	  DMI_MATCH(DMI_PRODUCT_NAME,"L8400B series Notebook PC")},
+ 	 (void *)1},
++	/* T40 can not handle C3 idle state */
++	{ set_max_cstate, "IBM ThinkPad T40", {
++	  DMI_MATCH(DMI_SYS_VENDOR, "IBM"),
++	  DMI_MATCH(DMI_PRODUCT_NAME, "23737CU")},
++	 (void *)2},
+ 	{},
+ };
  
- static int
--snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
-+__snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
- {
- 	static int dev;
- 	struct snd_card *card;
-@@ -2520,6 +2520,12 @@ snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
- 	return 0;
- }
- 
-+static int
-+snd_azf3328_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
-+{
-+	return snd_card_free_on_error(&pci->dev, __snd_azf3328_probe(pci, pci_id));
-+}
-+
- #ifdef CONFIG_PM_SLEEP
- static inline void
- snd_azf3328_suspend_regs(const struct snd_azf3328 *chip,
--- 
-2.35.2
-
 
 
