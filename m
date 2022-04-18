@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16EB0C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C669C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241365AbiDRNHs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42400 "EHLO
+        id S241434AbiDRNH4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240307AbiDRMzf (ORCPT
+        with ESMTP id S240296AbiDRMzf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:55:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00EE827E;
-        Mon, 18 Apr 2022 05:37:16 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA37FB;
+        Mon, 18 Apr 2022 05:37:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C65060F0E;
-        Mon, 18 Apr 2022 12:37:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 682E6C385A1;
-        Mon, 18 Apr 2022 12:37:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98B6BB80EDC;
+        Mon, 18 Apr 2022 12:37:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A180CC385A7;
+        Mon, 18 Apr 2022 12:37:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285436;
-        bh=DaIqp4KOEnuHyjbsNf5zxoE442cHCX9vE9WYiWHfmzo=;
+        s=korg; t=1650285429;
+        bh=lPXSw59v08NPSWuDxS3W0dFUB6XP8tMGUG8g+kBOXB8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b96tF7SppydCDr4HWZ4JB1+EByTdL47YIoNSn73eeEl++odGUhiKXXB2QxBSFWuje
-         Gb3jdpPG3pdKsY8/4T9VC8PrSOmVg3vzxNRK5dpxLeUwa3qhlv1SCsuNbrwhJpCp95
-         Rj5c8B0lkm0aaNyihZkaSf89nlUngixAKE0ryB98=
+        b=yPf8s2OAJUI7XOCFR3bdiK6J3xT5+V8uwszWDbgCl11785z+vl49VckQNfgX+hiFE
+         HOrQk4ZiFRfzW28rbkpNj+2/CrHsEW6okOiqCBUd/iXxOfB++Zx36Iaz2gb4XUPoJa
+         WQbbytQs+/DjgiWn5pv1xgQJfx+FhFL3uuuk+soo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        stable@vger.kernel.org, Vadim Pasternak <vadimp@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 018/105] net: dsa: felix: suppress -EPROBE_DEFER errors
-Date:   Mon, 18 Apr 2022 14:12:20 +0200
-Message-Id: <20220418121146.514628290@linuxfoundation.org>
+Subject: [PATCH 5.10 016/105] mlxsw: i2c: Fix initialization error flow
+Date:   Mon, 18 Apr 2022 14:12:18 +0200
+Message-Id: <20220418121146.386580868@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -50,40 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Vadim Pasternak <vadimp@nvidia.com>
 
-[ Upstream commit e6934e4048c91502efcb21da92b7ae37cd8fa741 ]
+[ Upstream commit d452088cdfd5a4ad9d96d847d2273fe958d6339b ]
 
-The DSA master might not have been probed yet in which case the probe of
-the felix switch fails with -EPROBE_DEFER:
-[    4.435305] mscc_felix 0000:00:00.5: Failed to register DSA switch: -517
+Add mutex_destroy() call in driver initialization error flow.
 
-It is not an error. Use dev_err_probe() to demote this particular error
-to a debug message.
-
-Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220408101521.281886-1-michael@walle.cc
+Fixes: 6882b0aee180f ("mlxsw: Introduce support for I2C bus")
+Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Link: https://lore.kernel.org/r/20220407070703.2421076-1-idosch@nvidia.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlxsw/i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index cd8d9b0e0edb..c96dfc11aa6f 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1466,7 +1466,7 @@ static int felix_pci_probe(struct pci_dev *pdev,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/i2c.c b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
+index 939b692ffc33..ce843ea91464 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/i2c.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
+@@ -650,6 +650,7 @@ static int mlxsw_i2c_probe(struct i2c_client *client,
+ 	return 0;
  
- 	err = dsa_register_switch(ds);
- 	if (err) {
--		dev_err(&pdev->dev, "Failed to register DSA switch: %d\n", err);
-+		dev_err_probe(&pdev->dev, err, "Failed to register DSA switch\n");
- 		goto err_register_ds;
- 	}
+ errout:
++	mutex_destroy(&mlxsw_i2c->cmd.lock);
+ 	i2c_set_clientdata(client, NULL);
  
+ 	return err;
 -- 
 2.35.1
 
