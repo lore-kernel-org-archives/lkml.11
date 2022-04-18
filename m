@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B379C3525B
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E24C3527D
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:32:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240797AbiDRNeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:34:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
+        id S241060AbiDRNev (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:34:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242275AbiDRNIz (ORCPT
+        with ESMTP id S242349AbiDRNJB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:08:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7784A3525B;
-        Mon, 18 Apr 2022 05:48:26 -0700 (PDT)
+        Mon, 18 Apr 2022 09:09:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516713527C;
+        Mon, 18 Apr 2022 05:48:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 076106128A;
-        Mon, 18 Apr 2022 12:48:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3DC3C385A7;
-        Mon, 18 Apr 2022 12:48:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E8B4B80E4E;
+        Mon, 18 Apr 2022 12:48:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2FB5C385A7;
+        Mon, 18 Apr 2022 12:48:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286104;
-        bh=eKsyNOgDgUbv/IxsbppHvlC2vjtNL19xnUQ72S2luC8=;
+        s=korg; t=1650286108;
+        bh=KiSj6vfkh011hVWQtDl5MCnk+5dB9e9ROWDaE3GoJcc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wSKW66Sl02sksyfDJ8are+diEnkMgQVugNkrKpXeX3XktmnDleAhwOqf7doueEEsY
-         5nUDwjZvjOCUOjGtjFbU505GDnK/wwto1ZghA95pzAJR4asEQujIY4lmOMAmXqcUap
-         IRxv6p89417PR+yCQ2yvS5O9lqSGOzoe7SGUPPc4=
+        b=iFslvezeWr7eAF7ZtmjxsDAXkzinNgaNraD0qtYZL5ib5ix1tUHIGBnNK0CECQ58b
+         CC6w4QfsFb0cB2xOPdbpHfMestNjp39RBHJpMUZ/eYbUz6tdkOOYZDU+14VKfrHUxw
+         LQvdv9q+Vfn2ZK6HqH/T0vNUOQsVW5oRGsJBBxIk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pavel Machek <pavel@denx.de>
-Subject: [PATCH 4.14 003/284] netdevice: add the case if dev is NULL
-Date:   Mon, 18 Apr 2022 14:09:44 +0200
-Message-Id: <20220418121210.791317858@linuxfoundation.org>
+        stable@vger.kernel.org, Hugh Dickins <hughd@google.com>,
+        Oleg Nesterov <oleg@redhat.com>,
+        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.14 030/284] mempolicy: mbind_range() set_policy() after vma_merge()
+Date:   Mon, 18 Apr 2022 14:10:11 +0200
+Message-Id: <20220418121211.552381656@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,42 +52,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yajun Deng <yajun.deng@linux.dev>
+From: Hugh Dickins <hughd@google.com>
 
-commit b37a466837393af72fe8bcb8f1436410f3f173f3 upstream.
+commit 4e0906008cdb56381638aa17d9c32734eae6d37a upstream.
 
-Add the case if dev is NULL in dev_{put, hold}, so the caller doesn't
-need to care whether dev is NULL or not.
+v2.6.34 commit 9d8cebd4bcd7 ("mm: fix mbind vma merge problem") introduced
+vma_merge() to mbind_range(); but unlike madvise, mlock and mprotect, it
+put a "continue" to next vma where its precedents go to update flags on
+current vma before advancing: that left vma with the wrong setting in the
+infamous vma_merge() case 8.
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Cc: Pavel Machek <pavel@denx.de>
+v3.10 commit 1444f92c8498 ("mm: merging memory blocks resets mempolicy")
+tried to fix that in vma_adjust(), without fully understanding the issue.
+
+v3.11 commit 3964acd0dbec ("mm: mempolicy: fix mbind_range() &&
+vma_adjust() interaction") reverted that, and went about the fix in the
+right way, but chose to optimize out an unnecessary mpol_dup() with a
+prior mpol_equal() test.  But on tmpfs, that also pessimized out the vital
+call to its ->set_policy(), leaving the new mbind unenforced.
+
+The user visible effect was that the pages got allocated on the local
+node (happened to be 0), after the mbind() caller had specifically
+asked for them to be allocated on node 1.  There was not any page
+migration involved in the case reported: the pages simply got allocated
+on the wrong node.
+
+Just delete that optimization now (though it could be made conditional on
+vma not having a set_policy).  Also remove the "next" variable: it turned
+out to be blameless, but also pointless.
+
+Link: https://lkml.kernel.org/r/319e4db9-64ae-4bca-92f0-ade85d342ff@google.com
+Fixes: 3964acd0dbec ("mm: mempolicy: fix mbind_range() && vma_adjust() interaction")
+Signed-off-by: Hugh Dickins <hughd@google.com>
+Acked-by: Oleg Nesterov <oleg@redhat.com>
+Reviewed-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/netdevice.h |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ mm/mempolicy.c |    8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3378,7 +3378,8 @@ void netdev_run_todo(void);
-  */
- static inline void dev_put(struct net_device *dev)
+--- a/mm/mempolicy.c
++++ b/mm/mempolicy.c
+@@ -727,7 +727,6 @@ static int vma_replace_policy(struct vm_
+ static int mbind_range(struct mm_struct *mm, unsigned long start,
+ 		       unsigned long end, struct mempolicy *new_pol)
  {
--	this_cpu_dec(*dev->pcpu_refcnt);
-+	if (dev)
-+		this_cpu_dec(*dev->pcpu_refcnt);
- }
+-	struct vm_area_struct *next;
+ 	struct vm_area_struct *prev;
+ 	struct vm_area_struct *vma;
+ 	int err = 0;
+@@ -743,8 +742,7 @@ static int mbind_range(struct mm_struct
+ 	if (start > vma->vm_start)
+ 		prev = vma;
  
- /**
-@@ -3389,7 +3390,8 @@ static inline void dev_put(struct net_de
-  */
- static inline void dev_hold(struct net_device *dev)
- {
--	this_cpu_inc(*dev->pcpu_refcnt);
-+	if (dev)
-+		this_cpu_inc(*dev->pcpu_refcnt);
- }
+-	for (; vma && vma->vm_start < end; prev = vma, vma = next) {
+-		next = vma->vm_next;
++	for (; vma && vma->vm_start < end; prev = vma, vma = vma->vm_next) {
+ 		vmstart = max(start, vma->vm_start);
+ 		vmend   = min(end, vma->vm_end);
  
- /* Carrier loss detection, dial on demand. The functions netif_carrier_on
+@@ -758,10 +756,6 @@ static int mbind_range(struct mm_struct
+ 				 new_pol, vma->vm_userfaultfd_ctx);
+ 		if (prev) {
+ 			vma = prev;
+-			next = vma->vm_next;
+-			if (mpol_equal(vma_policy(vma), new_pol))
+-				continue;
+-			/* vma_merge() joined vma && vma->next, case 8 */
+ 			goto replace;
+ 		}
+ 		if (vma->vm_start != vmstart) {
 
 
