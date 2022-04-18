@@ -2,161 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BB9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 01:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A62A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 01:38:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235621AbiDRBkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Apr 2022 21:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
+        id S235632AbiDRBl0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Apr 2022 21:41:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232339AbiDRBka (ORCPT
+        with ESMTP id S232339AbiDRBlZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Apr 2022 21:40:30 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12846B87C;
-        Sun, 17 Apr 2022 18:37:52 -0700 (PDT)
-X-UUID: 1227b60080594bb489291a5e9899a0b5-20220418
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:a9652940-7633-4f59-b913-3764e1a50e25,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:45
-X-CID-INFO: VERSION:1.1.4,REQID:a9652940-7633-4f59-b913-3764e1a50e25,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:45
-X-CID-META: VersionHash:faefae9,CLOUDID:430f2eef-06b0-4305-bfbf-554bfc9d151a,C
-        OID:IGNORED,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,File:ni
-        l,QS:0,BEC:nil
-X-UUID: 1227b60080594bb489291a5e9899a0b5-20220418
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 731530093; Mon, 18 Apr 2022 09:37:46 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 18 Apr 2022 09:37:45 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 18 Apr
- 2022 09:37:45 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 18 Apr 2022 09:37:45 +0800
-Message-ID: <3a1fe42adace3a1355b6a95fbd55abc724c1053d.camel@mediatek.com>
-Subject: Re: [PATCH V3 04/15] cpufreq: mediatek: Record previous target
- vproc value
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, <rafael@kernel.org>,
-        <viresh.kumar@linaro.org>, <robh+dt@kernel.org>,
-        <krzk+dt@kernel.org>, <matthias.bgg@gmail.com>
-CC:     <jia-wei.chang@mediatek.com>, <roger.lu@mediatek.com>,
-        <hsinyi@google.com>, <khilman@baylibre.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
+        Sun, 17 Apr 2022 21:41:25 -0400
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747F8B87C
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Apr 2022 18:38:47 -0700 (PDT)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 23I1QgcW071540;
+        Mon, 18 Apr 2022 09:26:42 +0800 (GMT-8)
+        (envelope-from dylan_hung@aspeedtech.com)
+Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 18 Apr
+ 2022 09:38:41 +0800
+From:   Dylan Hung <dylan_hung@aspeedtech.com>
+To:     <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
+        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <p.zabel@pengutronix.de>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        "Andrew-sh . Cheng" <andrew-sh.cheng@mediatek.com>
-Date:   Mon, 18 Apr 2022 09:37:45 +0800
-In-Reply-To: <9751622e-f969-c025-2a39-efcc9a612392@collabora.com>
-References: <20220415055916.28350-1-rex-bc.chen@mediatek.com>
-         <20220415055916.28350-5-rex-bc.chen@mediatek.com>
-         <9751622e-f969-c025-2a39-efcc9a612392@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <krzk+dt@kernel.org>
+CC:     <BMC-SW@aspeedtech.com>
+Subject: [PATCH net-next RESEND v5 0/3] Add reset deassertion for Aspeed MDIO
+Date:   Mon, 18 Apr 2022 09:40:56 +0800
+Message-ID: <20220418014059.3054-1-dylan_hung@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.2.216]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 23I1QgcW071540
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-04-15 at 14:24 +0200, AngeloGioacchino Del Regno wrote:
-> Il 15/04/22 07:59, Rex-BC Chen ha scritto:
-> > From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-> > 
-> > We found the buck voltage may not be exactly the same with what we
-> > set
-> > because CPU may share the same buck with other module.
-> > Therefore, we need to record the previous desired value instead of
-> > reading
-> > it from regulators.
-> > 
-> > Signed-off-by: Andrew-sh.Cheng <andrew-sh.cheng@mediatek.com>
-> > Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> > ---
-> >   drivers/cpufreq/mediatek-cpufreq.c | 17 +++++++++++++----
-> >   1 file changed, 13 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/cpufreq/mediatek-cpufreq.c
-> > b/drivers/cpufreq/mediatek-cpufreq.c
-> > index ff27f77e8ee6..fa8b193bf27b 100644
-> > --- a/drivers/cpufreq/mediatek-cpufreq.c
-> > +++ b/drivers/cpufreq/mediatek-cpufreq.c
-> > @@ -40,6 +40,7 @@ struct mtk_cpu_dvfs_info {
-> >   	struct list_head list_head;
-> >   	int intermediate_voltage;
-> >   	bool need_voltage_tracking;
-> > +	int pre_vproc;
-> >   };
-> >   
-> >   static LIST_HEAD(dvfs_info_list);
-> > @@ -191,11 +192,17 @@ static int
-> > mtk_cpufreq_voltage_tracking(struct mtk_cpu_dvfs_info *info,
-> >   
-> >   static int mtk_cpufreq_set_voltage(struct mtk_cpu_dvfs_info
-> > *info, int vproc)
-> >   {
-> > +	int ret;
-> > +
-> >   	if (info->need_voltage_tracking)
-> > -		return mtk_cpufreq_voltage_tracking(info, vproc);
-> > +		ret = mtk_cpufreq_voltage_tracking(info, vproc);
-> >   	else
-> > -		return regulator_set_voltage(info->proc_reg, vproc,
-> > -					     vproc + VOLT_TOL);
-> > +		ret = regulator_set_voltage(info->proc_reg, vproc,
-> > +					    MAX_VOLT_LIMIT);
-> > +	if (!ret)
-> > +		info->pre_vproc = vproc;
-> > +
-> > +	return ret;
-> >   }
-> >   
-> >   static int mtk_cpufreq_set_target(struct cpufreq_policy *policy,
-> > @@ -213,7 +220,9 @@ static int mtk_cpufreq_set_target(struct
-> > cpufreq_policy *policy,
-> >   	inter_vproc = info->intermediate_voltage;
-> >   
-> >   	pre_freq_hz = clk_get_rate(cpu_clk);
-> > -	pre_vproc = regulator_get_voltage(info->proc_reg);
-> > +	pre_vproc = info->pre_vproc;
-> > +	if (pre_vproc <= 0)
-> > +		pre_vproc = regulator_get_voltage(info->proc_reg);
-> 
-> I would do it like that, instead:
-> 
-> 	if (unlikely(info->pre_vproc <= 0))
-> 		pre_vproc = regulator_get_voltage(info->proc_reg);
-> 	else
-> 		pre_vproc = info->pre_vproc;
-> 
-> ....as even though it is indeed possible that info->pre_vproc is <=
-> 0, it is
-> very unlikely to happen ;-)
-> This also solves a 'pre_vproc' double assignment issue, by the way.
-> 
-> Cheers,
-> Angelo
-> 
-> 
-> 
+Add missing reset deassertion for Aspeed MDIO bus controller. The reset
+is asserted by the hardware when power-on so the driver only needs to
+deassert it. To be able to work with the old DT blobs, the reset is
+optional since it may be deasserted by the bootloader or the previous
+kernel.
 
-Hello Angelo,
+V5:
+- fix error of dt_binding_check
 
-OK, I will add this in next version.
-Thanks for your suggestion.
+V4:
+- use ASPEED_RESET_MII instead of hardcoding in dt-binding example
 
-BRs,
-Rex
+V3:
+- remove reset property from the required list of the device tree
+  bindings
+- remove "Cc: stable@vger.kernel.org" from the commit messages
+- add more description in the commit message of the dt-binding
+
+V2:
+- add reset property in the device tree bindings
+- add reset assertion in the error path and driver remove
+
+Dylan Hung (3):
+  dt-bindings: net: add reset property for aspeed, ast2600-mdio binding
+  net: mdio: add reset control for Aspeed MDIO
+  ARM: dts: aspeed: add reset properties into MDIO nodes
+
+ .../bindings/net/aspeed,ast2600-mdio.yaml         |  6 ++++++
+ arch/arm/boot/dts/aspeed-g6.dtsi                  |  4 ++++
+ drivers/net/mdio/mdio-aspeed.c                    | 15 ++++++++++++++-
+ 3 files changed, 24 insertions(+), 1 deletion(-)
+
+-- 
+2.25.1
 
