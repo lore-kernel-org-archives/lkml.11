@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7733C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF673C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343622AbiDROVs (ORCPT
+        id S1344312AbiDROVz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37480 "EHLO
+        Mon, 18 Apr 2022 10:21:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245608AbiDROFk (ORCPT
+        with ESMTP id S244194AbiDROFm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:05:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C38135266;
+        Mon, 18 Apr 2022 10:05:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4F53526F;
         Mon, 18 Apr 2022 06:10:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34A0E60F0C;
-        Mon, 18 Apr 2022 13:10:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29532C385A7;
-        Mon, 18 Apr 2022 13:10:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1314260EFE;
+        Mon, 18 Apr 2022 13:10:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09425C385A1;
+        Mon, 18 Apr 2022 13:10:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287408;
-        bh=DKxsw4JmfpR/Bg/dltox9tnnAlydmzRJ553cHujidoY=;
+        s=korg; t=1650287402;
+        bh=YrsqG9VUqMTAoYJeVan1oYXxDdgvs1DLA5731FaekDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2bidyGG/PAr/fV2K8HYJkIOKrubNCEbkwcdufNzLO7XQUG8UtRmlslTihgHXhPau3
-         9UyHRc+yUs5lOoX6lCVanV5iyJzfT/+OGh+4TKoBy+MIL1XQPJJPcnPTFb++yxu2lA
-         HwVbHyzl7+mBa61g7L0BBgcuvVO2+E6stJFio4h0=
+        b=upSm4uY9+jCjKeTa53EG3KfF1sJVu3aeqquG5y0LblB5cdn9mrIOtfp+xvOZo6juv
+         Y6A7cYgiCZAsXWf6BkIBPABtnMYa3/Sqmljb4fOO1vdsEJyz0WClQH83oE5PDege8M
+         8ag3s9j+H8rz+fpfHP1ffBcLGJvkk1yERIwb22gI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 125/218] Fix incorrect type in assignment of ipv6 port for audit
-Date:   Mon, 18 Apr 2022 14:13:11 +0200
-Message-Id: <20220418121203.167819076@linuxfoundation.org>
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.9 150/218] ubifs: Add missing iput if do_tmpfile() failed in rename whiteout
+Date:   Mon, 18 Apr 2022 14:13:36 +0200
+Message-Id: <20220418121203.889812594@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,35 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Casey Schaufler <casey@schaufler-ca.com>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-[ Upstream commit a5cd1ab7ab679d252a6d2f483eee7d45ebf2040c ]
+commit 716b4573026bcbfa7b58ed19fe15554bac66b082 upstream.
 
-Remove inappropriate use of ntohs() and assign the
-port value directly.
+whiteout inode should be put when do_tmpfile() failed if inode has been
+initialized. Otherwise we will get following warning during umount:
+  UBIFS error (ubi0:0 pid 1494): ubifs_assert_failed [ubifs]: UBIFS
+  assert failed: c->bi.dd_growth == 0, in fs/ubifs/super.c:1930
+  VFS: Busy inodes after unmount of ubifs. Self-destruct in 5 seconds.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9e0a1fff8db56ea ("ubifs: Implement RENAME_WHITEOUT")
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Suggested-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/smack/smack_lsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ubifs/dir.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
-index 589c1c2ae6db..84ed47195cdd 100644
---- a/security/smack/smack_lsm.c
-+++ b/security/smack/smack_lsm.c
-@@ -2567,7 +2567,7 @@ static int smk_ipv6_check(struct smack_known *subject,
- #ifdef CONFIG_AUDIT
- 	smk_ad_init_net(&ad, __func__, LSM_AUDIT_DATA_NET, &net);
- 	ad.a.u.net->family = PF_INET6;
--	ad.a.u.net->dport = ntohs(address->sin6_port);
-+	ad.a.u.net->dport = address->sin6_port;
- 	if (act == SMK_RECEIVING)
- 		ad.a.u.net->v6info.saddr = address->sin6_addr;
- 	else
--- 
-2.34.1
-
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -376,6 +376,8 @@ out_inode:
+ 	make_bad_inode(inode);
+ 	if (!instantiated)
+ 		iput(inode);
++	else if (whiteout)
++		iput(*whiteout);
+ out_budg:
+ 	ubifs_release_budget(c, &req);
+ 	if (!instantiated)
 
 
