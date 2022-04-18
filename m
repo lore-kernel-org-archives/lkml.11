@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A44C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58F84C35280
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344138AbiDROJI (ORCPT
+        id S1344198AbiDROJW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:09:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
+        Mon, 18 Apr 2022 10:09:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343657AbiDRNyN (ORCPT
+        with ESMTP id S1343742AbiDRNyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:54:13 -0400
+        Mon, 18 Apr 2022 09:54:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922E047ADF;
-        Mon, 18 Apr 2022 06:03:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2283A13D5C;
+        Mon, 18 Apr 2022 06:03:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB44D609EE;
-        Mon, 18 Apr 2022 13:03:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D29EBC385A1;
-        Mon, 18 Apr 2022 13:03:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E29660B3C;
+        Mon, 18 Apr 2022 13:03:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DBDAC385A1;
+        Mon, 18 Apr 2022 13:03:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287003;
-        bh=i7d4IMjg68LsHEXJVgI+Q2DYKMuVrFSB7ixi9ScfLgg=;
+        s=korg; t=1650287009;
+        bh=v86yU2KzhbAfi1tTJiLt7A+HXLuAH1F0afqfBB61swM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lznvGKm7N+PbdpruS5S8IqbfptTYHfTp+I8ATTu5oM7kid+2K9O0QEZavsqJsGqPl
-         0LG7qCc04DhyhN63CjrLaV7yDMdBgceeR2WTzMvTfNuEyJZWohlO7k/orlWkwBciZ3
-         wTG9Dd8hpLLNE0rTXRSxw1pSBjlVE2PZgEVb79hQ=
+        b=xHoRy5xcJ5MNUYDOh6Vww/OOAnInqpOt2wY9jTzMJ9VNtgc/9BBXNJ5Fznsz1Kvic
+         5BxH9RlXC+II0usVtFtZQqDwKyuu5alDhltQtc+/6vMhgAddwTp6zBxvPVZVMYrHvb
+         IJqj9SDLdSsGVXMTWyGClEVOSjpS8TIpSdALXwZY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michael Schmitz <schmitzmic@gmail.com>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 4.9 028/218] video: fbdev: atari: Atari 2 bpp (STe) palette bugfix
-Date:   Mon, 18 Apr 2022 14:11:34 +0200
-Message-Id: <20220418121200.144995671@linuxfoundation.org>
+        stable@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pavel Machek <pavel@denx.de>
+Subject: [PATCH 4.9 003/218] netdevice: add the case if dev is NULL
+Date:   Mon, 18 Apr 2022 14:11:09 +0200
+Message-Id: <20220418121158.826759816@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,62 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Schmitz <schmitzmic@gmail.com>
+From: Yajun Deng <yajun.deng@linux.dev>
 
-commit c8be5edbd36ceed2ff3d6b8f8e40643c3f396ea3 upstream.
+commit b37a466837393af72fe8bcb8f1436410f3f173f3 upstream.
 
-The code to set the shifter STe palette registers has a long
-standing operator precedence bug, manifesting as colors set
-on a 2 bits per pixel frame buffer coming up with a distinctive
-blue tint.
+Add the case if dev is NULL in dev_{put, hold}, so the caller doesn't
+need to care whether dev is NULL or not.
 
-Add parentheses around the calculation of the per-color palette
-data before shifting those into their respective bit field position.
-
-This bug goes back a long way (2.4 days at the very least) so there
-won't be a Fixes: tag.
-
-Tested on ARAnyM as well on Falcon030 hardware.
-
-Cc: stable@vger.kernel.org
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Link: https://lore.kernel.org/all/CAMuHMdU3ievhXxKR_xi_v3aumnYW7UNUO6qMdhgfyWTyVSsCkQ@mail.gmail.com
-Tested-by: Michael Schmitz <schmitzmic@gmail.com>
-Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Pavel Machek <pavel@denx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/atafb.c |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ include/linux/netdevice.h |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/video/fbdev/atafb.c
-+++ b/drivers/video/fbdev/atafb.c
-@@ -1713,9 +1713,9 @@ static int falcon_setcolreg(unsigned int
- 			   ((blue & 0xfc00) >> 8));
- 	if (regno < 16) {
- 		shifter_tt.color_reg[regno] =
--			(((red & 0xe000) >> 13) | ((red & 0x1000) >> 12) << 8) |
--			(((green & 0xe000) >> 13) | ((green & 0x1000) >> 12) << 4) |
--			((blue & 0xe000) >> 13) | ((blue & 0x1000) >> 12);
-+			((((red & 0xe000) >> 13)   | ((red & 0x1000) >> 12)) << 8)   |
-+			((((green & 0xe000) >> 13) | ((green & 0x1000) >> 12)) << 4) |
-+			   ((blue & 0xe000) >> 13) | ((blue & 0x1000) >> 12);
- 		((u32 *)info->pseudo_palette)[regno] = ((red & 0xf800) |
- 						       ((green & 0xfc00) >> 5) |
- 						       ((blue & 0xf800) >> 11));
-@@ -2001,9 +2001,9 @@ static int stste_setcolreg(unsigned int
- 	green >>= 12;
- 	if (ATARIHW_PRESENT(EXTD_SHIFTER))
- 		shifter_tt.color_reg[regno] =
--			(((red & 0xe) >> 1) | ((red & 1) << 3) << 8) |
--			(((green & 0xe) >> 1) | ((green & 1) << 3) << 4) |
--			((blue & 0xe) >> 1) | ((blue & 1) << 3);
-+			((((red & 0xe)   >> 1) | ((red & 1)   << 3)) << 8) |
-+			((((green & 0xe) >> 1) | ((green & 1) << 3)) << 4) |
-+			  ((blue & 0xe)  >> 1) | ((blue & 1)  << 3);
- 	else
- 		shifter_tt.color_reg[regno] =
- 			((red & 0xe) << 7) |
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3410,7 +3410,8 @@ void netdev_run_todo(void);
+  */
+ static inline void dev_put(struct net_device *dev)
+ {
+-	this_cpu_dec(*dev->pcpu_refcnt);
++	if (dev)
++		this_cpu_dec(*dev->pcpu_refcnt);
+ }
+ 
+ /**
+@@ -3421,7 +3422,8 @@ static inline void dev_put(struct net_de
+  */
+ static inline void dev_hold(struct net_device *dev)
+ {
+-	this_cpu_inc(*dev->pcpu_refcnt);
++	if (dev)
++		this_cpu_inc(*dev->pcpu_refcnt);
+ }
+ 
+ /* Carrier loss detection, dial on demand. The functions netif_carrier_on
 
 
