@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E002C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:57:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9219C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244777AbiDROAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35760 "EHLO
+        id S244850AbiDROAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:00:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244252AbiDRNjJ (ORCPT
+        with ESMTP id S244117AbiDRNi4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:39:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5672E0AA;
-        Mon, 18 Apr 2022 05:58:53 -0700 (PDT)
+        Mon, 18 Apr 2022 09:38:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7032E28998;
+        Mon, 18 Apr 2022 05:58:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5937612BB;
-        Mon, 18 Apr 2022 12:58:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6A09C385A7;
-        Mon, 18 Apr 2022 12:58:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA7C0612CF;
+        Mon, 18 Apr 2022 12:58:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA47FC385A1;
+        Mon, 18 Apr 2022 12:58:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286731;
-        bh=kLIZvva0TrNPgKx9Y7S4dXw5SpfgmKRbW6Q7tCDj1vM=;
+        s=korg; t=1650286715;
+        bh=AWYy8rOKJFVWVVwDVHX+muVJcjQmAIjXRPSJZ4HgY6U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BgIwHLMhbLu9E1UP10KC9l3xxkMaHg8CBx64jkYao0QbY+5igPP+xXULYoh97PL1/
-         aHM/ErDKbwySTHjuDZLAbA7PYDOnZ6jpt19EVK+UE8GjEqGDnMvaBu7U6A4Kfyv9ud
-         FS9HqBemMFQhzyGLTCSj3ZwHSTut5Pac7QnQ4va8=
+        b=WoZ+OlTGB51hbSDn1b2X+TKwO9xwkdc3pSdV5Oz/kELyonKifxBm2qR/iAvUkQzW5
+         XosuOgLBOcweqhwJV+/44Dj0B1vgMvsV81NTqZW8/SMxOl+wkb0tVZFge4j0BEWqrE
+         FftV0OzzaIZ+qgmuFpEKN3+Rz7O+c3CTvvYFs/lg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Denefle <lucas.denefle@converge.io>,
+        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
+        Jianglei Nie <niejianglei2021@163.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 228/284] w1: w1_therm: fixes w1_seq for ds28ea00 sensors
-Date:   Mon, 18 Apr 2022 14:13:29 +0200
-Message-Id: <20220418121218.194117878@linuxfoundation.org>
+Subject: [PATCH 4.14 223/284] scsi: libfc: Fix use after free in fc_exch_abts_resp()
+Date:   Mon, 18 Apr 2022 14:13:24 +0200
+Message-Id: <20220418121218.052827139@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -48,50 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Denefle <lucas.denefle@converge.io>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-[ Upstream commit 41a92a89eee819298f805c40187ad8b02bb53426 ]
+[ Upstream commit 271add11994ba1a334859069367e04d2be2ebdd4 ]
 
-w1_seq was failing due to several devices responding to the
-CHAIN_DONE at the same time. Now properly selects the current
-device in the chain with MATCH_ROM. Also acknowledgment was
-read twice.
+fc_exch_release(ep) will decrease the ep's reference count. When the
+reference count reaches zero, it is freed. But ep is still used in the
+following code, which will lead to a use after free.
 
-Signed-off-by: Lucas Denefle <lucas.denefle@converge.io>
-Link: https://lore.kernel.org/r/20220223113558.232750-1-lucas.denefle@converge.io
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Return after the fc_exch_release() call to avoid use after free.
+
+Link: https://lore.kernel.org/r/20220303015115.459778-1-niejianglei2021@163.com
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/w1/slaves/w1_therm.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/scsi/libfc/fc_exch.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/w1/slaves/w1_therm.c b/drivers/w1/slaves/w1_therm.c
-index 259525c3382a..9b9870ba01cd 100644
---- a/drivers/w1/slaves/w1_therm.c
-+++ b/drivers/w1/slaves/w1_therm.c
-@@ -690,16 +690,20 @@ static ssize_t w1_seq_show(struct device *device,
- 		if (sl->reg_num.id == reg_num->id)
- 			seq = i;
- 
-+		if (w1_reset_bus(sl->master))
-+			goto error;
-+
-+		/* Put the device into chain DONE state */
-+		w1_write_8(sl->master, W1_MATCH_ROM);
-+		w1_write_block(sl->master, (u8 *)&rn, 8);
- 		w1_write_8(sl->master, W1_42_CHAIN);
- 		w1_write_8(sl->master, W1_42_CHAIN_DONE);
- 		w1_write_8(sl->master, W1_42_CHAIN_DONE_INV);
--		w1_read_block(sl->master, &ack, sizeof(ack));
- 
- 		/* check for acknowledgment */
- 		ack = w1_read_8(sl->master);
- 		if (ack != W1_42_SUCCESS_CONFIRM_BYTE)
- 			goto error;
--
+diff --git a/drivers/scsi/libfc/fc_exch.c b/drivers/scsi/libfc/fc_exch.c
+index 384458d1f73c..9fa0aa235cb4 100644
+--- a/drivers/scsi/libfc/fc_exch.c
++++ b/drivers/scsi/libfc/fc_exch.c
+@@ -1709,6 +1709,7 @@ static void fc_exch_abts_resp(struct fc_exch *ep, struct fc_frame *fp)
+ 	if (cancel_delayed_work_sync(&ep->timeout_work)) {
+ 		FC_EXCH_DBG(ep, "Exchange timer canceled due to ABTS response\n");
+ 		fc_exch_release(ep);	/* release from pending timer hold */
++		return;
  	}
  
- 	/* Exit from CHAIN state */
+ 	spin_lock_bh(&ep->ex_lock);
 -- 
 2.35.1
 
