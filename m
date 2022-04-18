@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B7AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03426C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239232AbiDRMgL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38174 "EHLO
+        id S239352AbiDRMgQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238887AbiDRM1I (ORCPT
+        with ESMTP id S229937AbiDRM3n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:27:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E521CFDE;
-        Mon, 18 Apr 2022 05:20:53 -0700 (PDT)
+        Mon, 18 Apr 2022 08:29:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA77240B2;
+        Mon, 18 Apr 2022 05:23:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 279A760F0C;
-        Mon, 18 Apr 2022 12:20:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3874AC385A7;
-        Mon, 18 Apr 2022 12:20:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35386B80ED6;
+        Mon, 18 Apr 2022 12:23:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 757FAC385A1;
+        Mon, 18 Apr 2022 12:23:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284452;
-        bh=1ZR11ZiS9Zx+BLT5iJLPGmUOQMhGcjaQF2rDXTOW1JA=;
+        s=korg; t=1650284606;
+        bh=8p6sHrCNWDb/b9rRZVYP6ujSYlaRGOqUN5v6ThNtLsU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FeWTPBD9tR+4b2DCoVVIw1ULaQtVXZvDgXU32SBbwdi4tk8+pTlfakmqxbDNiHjBa
-         XGPpNKJsP67pX/7znRIGvjmzu5lPw0hvlnIiBGzGA+pjBAPTrxg7RdzVHxbAHLQjwv
-         kTB95m664XEtAlkPrvhYBgzzbcH0Qw7R0jHjGVXM=
+        b=IpC+mhCbnex3Q2nIj+AUgSPRt3MUauFo3JndkSU7v7fnjJ80QQMWRvTVeLon6kJY6
+         8wgdzCpFoKUgOYBMII8sPtdMvzplXp4p4Ej04aHSRntJkqAEo2yCwk1/Oj2PT/vxXm
+         /qziu8lOTGT/oFVNNa7E1L0xb7J/UByiH9FIwQcw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Alexey Galakhov <agalakhov@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 120/219] cifs: potential buffer overflow in handling symlinks
-Date:   Mon, 18 Apr 2022 14:11:29 +0200
-Message-Id: <20220418121210.257572780@linuxfoundation.org>
+Subject: [PATCH 5.17 168/219] scsi: mvsas: Add PCI ID of RocketRaid 2640
+Date:   Mon, 18 Apr 2022 14:12:17 +0200
+Message-Id: <20220418121211.584691472@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -51,41 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+From: Alexey Galakhov <agalakhov@gmail.com>
 
-[ Upstream commit 64c4a37ac04eeb43c42d272f6e6c8c12bfcf4304 ]
+[ Upstream commit 5f2bce1e222028dc1c15f130109a17aa654ae6e8 ]
 
-Smatch printed a warning:
-	arch/x86/crypto/poly1305_glue.c:198 poly1305_update_arch() error:
-	__memcpy() 'dctx->buf' too small (16 vs u32max)
+The HighPoint RocketRaid 2640 is a low-cost SAS controller based on Marvell
+chip. The chip in question was already supported by the kernel, just the
+PCI ID of this particular board was missing.
 
-It's caused because Smatch marks 'link_len' as untrusted since it comes
-from sscanf(). Add a check to ensure that 'link_len' is not larger than
-the size of the 'link_str' buffer.
-
-Fixes: c69c1b6eaea1 ("cifs: implement CIFSParseMFSymlink()")
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Link: https://lore.kernel.org/r/20220309212535.402987-1-agalakhov@gmail.com
+Signed-off-by: Alexey Galakhov <agalakhov@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/link.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/scsi/mvsas/mv_init.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/cifs/link.c b/fs/cifs/link.c
-index 852e54ee82c2..bbdf3281559c 100644
---- a/fs/cifs/link.c
-+++ b/fs/cifs/link.c
-@@ -85,6 +85,9 @@ parse_mf_symlink(const u8 *buf, unsigned int buf_len, unsigned int *_link_len,
- 	if (rc != 1)
- 		return -EINVAL;
- 
-+	if (link_len > CIFS_MF_SYMLINK_LINK_MAXLEN)
-+		return -EINVAL;
-+
- 	rc = symlink_hash(link_len, link_str, md5_hash);
- 	if (rc) {
- 		cifs_dbg(FYI, "%s: MD5 hash failure: %d\n", __func__, rc);
+diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
+index 44df7c03aab8..605a8eb7344a 100644
+--- a/drivers/scsi/mvsas/mv_init.c
++++ b/drivers/scsi/mvsas/mv_init.c
+@@ -646,6 +646,7 @@ static struct pci_device_id mvs_pci_table[] = {
+ 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1300), chip_1300 },
+ 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1320), chip_1320 },
+ 	{ PCI_VDEVICE(ADAPTEC2, 0x0450), chip_6440 },
++	{ PCI_VDEVICE(TTI, 0x2640), chip_6440 },
+ 	{ PCI_VDEVICE(TTI, 0x2710), chip_9480 },
+ 	{ PCI_VDEVICE(TTI, 0x2720), chip_9480 },
+ 	{ PCI_VDEVICE(TTI, 0x2721), chip_9480 },
 -- 
 2.35.1
 
