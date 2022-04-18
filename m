@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A507BC35280
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF48C35294
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:23:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346038AbiDROZc (ORCPT
+        id S1345979AbiDROZa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:25:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51438 "EHLO
+        Mon, 18 Apr 2022 10:25:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245733AbiDROM0 (ORCPT
+        with ESMTP id S245677AbiDROMW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:12:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393B238193;
-        Mon, 18 Apr 2022 06:11:53 -0700 (PDT)
+        Mon, 18 Apr 2022 10:12:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B8137BFA;
+        Mon, 18 Apr 2022 06:11:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED020B80EC0;
-        Mon, 18 Apr 2022 13:11:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 272BCC385A1;
-        Mon, 18 Apr 2022 13:11:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3AB18B80EC0;
+        Mon, 18 Apr 2022 13:11:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89CA7C385A7;
+        Mon, 18 Apr 2022 13:11:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287510;
-        bh=W5fBvdSqQDEqowO+aB+nEbq+V1H3tEME20ZFZ/vXI+I=;
+        s=korg; t=1650287498;
+        bh=rqv0Vr5LimKU/9eqYQ0QCAv+8Rw4GO1OVseBQ2NwuTo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yKeivXp/u1cjsalqzpqU2ZI/dEDM647xc1N/EBqop6/CH0gQbxsOANlpD4QofXK4E
-         SGsFKNyVvRny69ldMvs+aI4LQp+r0jTVfFIjvpaD6R6bekn13TcFLId03IrAaUTcMV
-         zhsdQlgnswxQAQmIJfTfXKTy5OgqH7oRk/8g76XM=
+        b=VzmSwFgiWtFDUGcJlyg0tK6wrDjTfZuLbOXdQisMVMssSzk4TJ8QvhesSrtn8vM0w
+         iL9ioaT13hCh48w7k0Bu8G70uLM6YCTTWF0Tej7fGDcMNcgQKlskELJn1fz/tuqFB3
+         Fv+se6Wxz3Ah7bhEALGJ2CtyFry44hzXVM6DQs6A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Yang Guang <yang.guang5@zte.com.cn>,
-        David Yang <davidcomponentone@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 167/218] ptp: replace snprintf with sysfs_emit
-Date:   Mon, 18 Apr 2022 14:13:53 +0200
-Message-Id: <20220418121205.172538891@linuxfoundation.org>
+Subject: [PATCH 4.9 181/218] init/main.c: return 1 from handled __setup() functions
+Date:   Mon, 18 Apr 2022 14:14:07 +0200
+Message-Id: <20220418121206.106249339@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -53,50 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit e2cf07654efb0fd7bbcb475c6f74be7b5755a8fd ]
+[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
 
-coccinelle report:
-./drivers/ptp/ptp_sysfs.c:17:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/ptp/ptp_sysfs.c:390:8-16:
-WARNING: use scnprintf or sprintf
+initcall_blacklist() should return 1 to indicate that it handled its
+cmdline arguments.
 
-Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+set_debug_rodata() should return 1 to indicate that it handled its
+cmdline arguments.  Print a warning if the option string is invalid.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This prevents these strings from being added to the 'init' program's
+environment as they are not init arguments/parameters.
+
+Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ptp/ptp_sysfs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ init/main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
-index 731d0423c8aa..b690621b4fc8 100644
---- a/drivers/ptp/ptp_sysfs.c
-+++ b/drivers/ptp/ptp_sysfs.c
-@@ -26,7 +26,7 @@ static ssize_t clock_name_show(struct device *dev,
- 			       struct device_attribute *attr, char *page)
+diff --git a/init/main.c b/init/main.c
+index 9e057314a15f..0c01d4e10d2f 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -705,7 +705,7 @@ static int __init initcall_blacklist(char *str)
+ 		}
+ 	} while (str_entry);
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ static bool __init_or_module initcall_blacklisted(initcall_t fn)
+@@ -921,7 +921,9 @@ static noinline void __init kernel_init_freeable(void);
+ bool rodata_enabled __ro_after_init = true;
+ static int __init set_debug_rodata(char *str)
  {
- 	struct ptp_clock *ptp = dev_get_drvdata(dev);
--	return snprintf(page, PAGE_SIZE-1, "%s\n", ptp->info->name);
-+	return sysfs_emit(page, "%s\n", ptp->info->name);
+-	return strtobool(str, &rodata_enabled);
++	if (strtobool(str, &rodata_enabled))
++		pr_warn("Invalid option string for rodata: '%s'\n", str);
++	return 1;
  }
- static DEVICE_ATTR(clock_name, 0444, clock_name_show, NULL);
- 
-@@ -240,7 +240,7 @@ static ssize_t ptp_pin_show(struct device *dev, struct device_attribute *attr,
- 
- 	mutex_unlock(&ptp->pincfg_mux);
- 
--	return snprintf(page, PAGE_SIZE, "%u %u\n", func, chan);
-+	return sysfs_emit(page, "%u %u\n", func, chan);
- }
- 
- static ssize_t ptp_pin_store(struct device *dev, struct device_attribute *attr,
+ __setup("rodata=", set_debug_rodata);
+ #endif
 -- 
 2.35.1
 
