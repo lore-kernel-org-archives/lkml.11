@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 790DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:04:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 088A3C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:04:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241189AbiDRNGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43288 "EHLO
+        id S240763AbiDRNHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:07:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240347AbiDRMzK (ORCPT
+        with ESMTP id S240344AbiDRMzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:55:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE4365E5;
-        Mon, 18 Apr 2022 05:36:39 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA336322;
+        Mon, 18 Apr 2022 05:36:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FE25B80EDC;
-        Mon, 18 Apr 2022 12:36:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60F69C385A7;
-        Mon, 18 Apr 2022 12:36:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4462B6118A;
+        Mon, 18 Apr 2022 12:36:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38611C385A1;
+        Mon, 18 Apr 2022 12:36:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285396;
-        bh=2t0eVLRm9IKXPmEFvKqSsifEG0+7YxKLivElACyLft4=;
+        s=korg; t=1650285406;
+        bh=zH/7jHL6dugySW0mO3c1m2IWKyPePtsE1XQOH3B06Ns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xo1COt12Mov7dETjairRfmsEJYzb9cTstyee8K5MPoEEyCIxCJ1V812QB7RVtXSRX
-         +g381RRUD8DQtD4C8sS9ndOf0TCEZtvzQ0q3djSbVmNLGmwEo6HGRVpB7WinaBRbp7
-         m/GIVNsHg/0qVThxlTcBNuuKP4vlw6OiRz7Q2Sss=
+        b=OfYWN+f3r/HygpbJZONm3VfwgXt8THEDwmxGwgoaz1XnwlJkDqRlUxxiqrhPQwsRl
+         Bk8uqOh3IMOsdjikIXvIosCaOuT3zoCeAaX9eOMjBks6oYuDY2GVu7wdeKXQosrz0u
+         zm44JK2ArF09JZZH4vYIVDNCUZLnAknsxPSHXmo0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Subject: [PATCH 5.15 177/189] drm/i915: Sunset igpu legacy mmap support based on GRAPHICS_VER_FULL
-Date:   Mon, 18 Apr 2022 14:13:17 +0200
-Message-Id: <20220418121208.012928714@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
+        Philip Yang <philip.yang@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 5.10 001/105] drm/amdkfd: Use drm_priv to pass VM from KFD to amdgpu
+Date:   Mon, 18 Apr 2022 14:12:03 +0200
+Message-Id: <20220418121145.230114351@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
-References: <20220418121200.312988959@linuxfoundation.org>
+In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
+References: <20220418121145.140991388@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,43 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matt Roper <matthew.d.roper@intel.com>
+From: Felix Kuehling <Felix.Kuehling@amd.com>
 
-commit 1acb34e7dd7720a1fff00cbd4d000ec3219dc9d6 upstream.
+commit b40a6ab2cf9213923bf8e821ce7fa7f6a0a26990 upstream.
 
-The intent of the version check in the mmap ioctl was to maintain
-support for existing platforms (i.e., ADL/RPL and earlier), but drop
-support on all future igpu platforms.  As we've seen on the dgpu side,
-the hardware teams are using a more fine-grained numbering system for IP
-version numbers these days, so it's possible the version number
-associated with our next igpu could be some form of "12.xx" rather than
-13 or higher.  Comparing against the full ver.release number will ensure
-the intent of the check is maintained no matter what numbering the
-hardware teams settle on.
+amdgpu_amdkfd_gpuvm_alloc_memory_of_gpu needs the drm_priv to allow mmap
+to access the BO through the corresponding file descriptor. The VM can
+also be extracted from drm_priv, so drm_priv can replace the vm parameter
+in the kfd2kgd interface.
 
-Fixes: d3f3baa3562a ("drm/i915: Reinstate the mmap ioctl for some platforms")
-Cc: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Cc: Lucas De Marchi <lucas.demarchi@intel.com>
-Signed-off-by: Matt Roper <matthew.d.roper@intel.com>
-Reviewed-by: Lucas De Marchi <lucas.demarchi@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220407161839.1073443-1-matthew.d.roper@intel.com
-(cherry picked from commit 8e7e5c077cd57ee9a36d58c65f07257dc49a88d5)
-Signed-off-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Reviewed-by: Philip Yang <philip.yang@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+[This is a partial cherry-pick of the upstream commit.]
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_mman.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/i915/gem/i915_gem_mman.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_mman.c
-@@ -66,7 +66,7 @@ i915_gem_mmap_ioctl(struct drm_device *d
- 	 * mmap ioctl is disallowed for all discrete platforms,
- 	 * and for all platforms with GRAPHICS_VER > 12.
- 	 */
--	if (IS_DGFX(i915) || GRAPHICS_VER(i915) > 12)
-+	if (IS_DGFX(i915) || GRAPHICS_VER_FULL(i915) > IP_VER(12, 0))
- 		return -EOPNOTSUPP;
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
+@@ -1024,11 +1024,15 @@ int amdgpu_amdkfd_gpuvm_acquire_process_
+ 					   struct dma_fence **ef)
+ {
+ 	struct amdgpu_device *adev = get_amdgpu_device(kgd);
+-	struct drm_file *drm_priv = filp->private_data;
+-	struct amdgpu_fpriv *drv_priv = drm_priv->driver_priv;
+-	struct amdgpu_vm *avm = &drv_priv->vm;
++	struct amdgpu_fpriv *drv_priv;
++	struct amdgpu_vm *avm;
+ 	int ret;
  
- 	if (args->flags & ~(I915_MMAP_WC))
++	ret = amdgpu_file_to_fpriv(filp, &drv_priv);
++	if (ret)
++		return ret;
++	avm = &drv_priv->vm;
++
+ 	/* Already a compute VM? */
+ 	if (avm->process_info)
+ 		return -EINVAL;
 
 
