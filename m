@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC94C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC171C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:33:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239282AbiDRMfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:35:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51064 "EHLO
+        id S239292AbiDRMfm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:35:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240121AbiDRM3V (ORCPT
+        with ESMTP id S240047AbiDRM3Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:29:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C883237E9;
-        Mon, 18 Apr 2022 05:23:18 -0700 (PDT)
+        Mon, 18 Apr 2022 08:29:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6960E20BDC;
+        Mon, 18 Apr 2022 05:23:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3136E60F01;
-        Mon, 18 Apr 2022 12:23:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 286D4C385A7;
-        Mon, 18 Apr 2022 12:23:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECA4660F0C;
+        Mon, 18 Apr 2022 12:23:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04DAFC385A8;
+        Mon, 18 Apr 2022 12:23:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284597;
-        bh=+ejOrvs9N56pFSmkdeef6otjykKTRwH3KNG1uuMcZYU=;
+        s=korg; t=1650284587;
+        bh=FFtHTLViO7Kk3k4dRDhJk2ARFMqmxQ2ReCqBcHvNwIw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kJtK3qFTYjo9bIioRvdf3jUYHlC8cBfP8ETwx3Kqecn6Xz8ljCGRQtetL29VMZJtM
-         VlOx/hgr8ROa3aQbXTqAiZS9odqP4ow3FBUtuGg9res5uo4z/K2Yb0cNAobNQJoIQr
-         s1Zip1XUv1DIWXR6k5mZfndXvLO7hU1E0XXpHX4A=
+        b=vuR3qDYveLGD9v7nr+gRJD6QtyuJshU2KmvtTXCLF3ZUMYVE1zsiyR+zvZFjpoqhh
+         0f0AHGXERA3m5R0RnOQpOLykXR6Y7IQNtHn2juYQLkbEKMxZbxeLNG+xcqdEo3IpJG
+         kGFDMeylCBAAOMZpiLyezM7kKJEKWY7HGZcQO4ec=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wayne Lin <Wayne.Lin@amd.com>,
-        Alex Hung <alex.hung@amd.com>, Roman Li <Roman.Li@amd.com>,
+        stable@vger.kernel.org, Wenjing Liu <Wenjing.Liu@amd.com>,
+        Alex Hung <alex.hung@amd.com>, Chris Park <Chris.Park@amd.com>,
         Daniel Wheeler <daniel.wheeler@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 165/219] drm/amd/display: Fix allocate_mst_payload assert on resume
-Date:   Mon, 18 Apr 2022 14:12:14 +0200
-Message-Id: <20220418121211.501993388@linuxfoundation.org>
+Subject: [PATCH 5.17 162/219] drm/amd/display: Correct Slice reset calculation
+Date:   Mon, 18 Apr 2022 14:12:11 +0200
+Message-Id: <20220418121211.417970399@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -51,44 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roman Li <Roman.Li@amd.com>
+From: Chris Park <Chris.Park@amd.com>
 
-[ Upstream commit f4346fb3edf7720db3f7f5e1cab1f667cd024280 ]
+[ Upstream commit 862a876c3a6372f2fa9d0c6510f1976ac94fc857 ]
 
 [Why]
-On resume we do link detection for all non-MST connectors.
-MST is handled separately. However the condition for telling
-if connector is on mst branch is not enough for mst hub case.
-Link detection for mst branch link leads to mst topology reset.
-That causes assert in dc_link_allocate_mst_payload()
+Once DSC slice cannot fit pixel clock, we incorrectly
+reset min slices to 0 and allow max slice to operate,
+even when max slice itself cannot fit the pixel clock
+properly.
 
 [How]
-Use link type as indicator for mst link.
+Change the sequence such that we correctly determine
+DSC is not possible when both min slices and max
+slices cannot fit pixel clock per slice.
 
-Reviewed-by: Wayne Lin <Wayne.Lin@amd.com>
+Reviewed-by: Wenjing Liu <Wenjing.Liu@amd.com>
 Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Roman Li <Roman.Li@amd.com>
+Signed-off-by: Chris Park <Chris.Park@amd.com>
 Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/dsc/dc_dsc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 90c017859ad4..24db2297857b 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -2693,7 +2693,8 @@ static int dm_resume(void *handle)
- 		 * this is the case when traversing through already created
- 		 * MST connectors, should be skipped
- 		 */
--		if (aconnector->mst_port)
-+		if (aconnector->dc_link &&
-+		    aconnector->dc_link->type == dc_connection_mst_branch)
- 			continue;
+diff --git a/drivers/gpu/drm/amd/display/dc/dsc/dc_dsc.c b/drivers/gpu/drm/amd/display/dc/dsc/dc_dsc.c
+index 9c74564cbd8d..8973d3a38f9c 100644
+--- a/drivers/gpu/drm/amd/display/dc/dsc/dc_dsc.c
++++ b/drivers/gpu/drm/amd/display/dc/dsc/dc_dsc.c
+@@ -864,11 +864,11 @@ static bool setup_dsc_config(
+ 		min_slices_h = inc_num_slices(dsc_common_caps.slice_caps, min_slices_h);
+ 	}
  
- 		mutex_lock(&aconnector->hpd_lock);
++	is_dsc_possible = (min_slices_h <= max_slices_h);
++
+ 	if (pic_width % min_slices_h != 0)
+ 		min_slices_h = 0; // DSC TODO: Maybe try increasing the number of slices first?
+ 
+-	is_dsc_possible = (min_slices_h <= max_slices_h);
+-
+ 	if (min_slices_h == 0 && max_slices_h == 0)
+ 		is_dsc_possible = false;
+ 
 -- 
 2.35.1
 
