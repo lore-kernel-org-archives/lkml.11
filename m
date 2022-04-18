@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 272DCC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1255CC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244722AbiDRNp0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43872 "EHLO
+        id S244702AbiDRNpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241717AbiDRNWC (ORCPT
+        with ESMTP id S241595AbiDRNVU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:22:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B5B3CFC5;
-        Mon, 18 Apr 2022 05:52:42 -0700 (PDT)
+        Mon, 18 Apr 2022 09:21:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E6D3CA41;
+        Mon, 18 Apr 2022 05:52:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FA50B80E4E;
-        Mon, 18 Apr 2022 12:52:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75107C385A1;
-        Mon, 18 Apr 2022 12:52:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FDDAB80D9C;
+        Mon, 18 Apr 2022 12:52:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DA03C385A1;
+        Mon, 18 Apr 2022 12:52:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286359;
-        bh=X4agHIZC3A5ifOkPB8H4mPYnLiT/PXjzYc8brK2su9w=;
+        s=korg; t=1650286356;
+        bh=9SmY3vsFLJiywiCwbW8ZphLL+Du/BzQU21k2JG0zFMY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=evwgts2va4nuAmcGLyEPAI5notWlDa2OlxqAqt0CVBo5nNV/dqX1rTRE76LG9FF+2
-         Yzav3mQhxyUi22p6+JDj5sHZHQ5Yk1DPGD4cuCczysw9EI7Gob82ARlux6i4PO2Xst
-         eYCvNmHPdbN26/wXTwXbjSQJQVGJZfNtG6Xt8xSg=
+        b=sbA9Rb0UaEtM6Bt7DTCbItYsrQdQrdxF+xRWZyLnw4Mm/H8xB13mV4Oya3e77dEOi
+         tBGH/ZmWHborcN81ETAnXu90IC4IIxDhlj4LntrvNPQVaBddVS+evlKY/ZbLp7oP6e
+         qyGh/CZ79TryeKmxJCBps0VakUJ5sEl7n/OYbPOY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 110/284] ext2: correct max file size computing
-Date:   Mon, 18 Apr 2022 14:11:31 +0200
-Message-Id: <20220418121214.071981508@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        James Morris <jmorris@namei.org>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        tomoyo-dev-en@lists.osdn.me, "Serge E. Hallyn" <serge@hallyn.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 109/284] TOMOYO: fix __setup handlers return values
+Date:   Mon, 18 Apr 2022 14:11:30 +0200
+Message-Id: <20220418121214.030053132@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -48,56 +53,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Yi <yi.zhang@huawei.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 50b3a818991074177a56c87124c7a7bdf5fa4f67 ]
+[ Upstream commit 39844b7e3084baecef52d1498b5fa81afa2cefa9 ]
 
-We need to calculate the max file size accurately if the total blocks
-that can address by block tree exceed the upper_limit. But this check is
-not correct now, it only compute the total data blocks but missing
-metadata blocks are needed. So in the case of "data blocks < upper_limit
-&& total blocks > upper_limit", we will get wrong result. Fortunately,
-this case could not happen in reality, but it's confused and better to
-correct the computing.
+__setup() handlers should return 1 if the parameter is handled.
+Returning 0 causes the entire string to be added to init's
+environment strings (limited to 32 strings), unnecessarily polluting it.
 
-  bits   data blocks   metadatablocks   upper_limit
-  10        16843020            66051    2147483647
-  11       134480396           263171    1073741823
-  12      1074791436          1050627     536870911 (*)
-  13      8594130956          4198403     268435455 (*)
-  14     68736258060         16785411     134217727 (*)
-  15    549822930956         67125251      67108863 (*)
-  16   4398314962956        268468227      33554431 (*)
+Using the documented strings "TOMOYO_loader=string1" and
+"TOMOYO_trigger=string2" causes an Unknown parameter message:
+  Unknown kernel command line parameters
+    "BOOT_IMAGE=/boot/bzImage-517rc5 TOMOYO_loader=string1 \
+     TOMOYO_trigger=string2", will be passed to user space.
 
-  [*] Need to calculate in depth.
+and these strings are added to init's environment string space:
+  Run /sbin/init as init process
+    with arguments:
+     /sbin/init
+    with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc5
+     TOMOYO_loader=string1
+     TOMOYO_trigger=string2
 
-Fixes: 1c2d14212b15 ("ext2: Fix underflow in ext2_max_size()")
-Link: https://lore.kernel.org/r/20220212050532.179055-1-yi.zhang@huawei.com
-Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
+With this change, these __setup handlers act as expected,
+and init's environment is not polluted with these strings.
+
+Fixes: 0e4ae0e0dec63 ("TOMOYO: Make several options configurable.")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: James Morris <jmorris@namei.org>
+Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
+Cc: tomoyo-dev-en@lists.osdn.me
+Cc: "Serge E. Hallyn" <serge@hallyn.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext2/super.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ security/tomoyo/load_policy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ext2/super.c b/fs/ext2/super.c
-index 4a338576ebb1..f3d55f1c0ce4 100644
---- a/fs/ext2/super.c
-+++ b/fs/ext2/super.c
-@@ -773,8 +773,12 @@ static loff_t ext2_max_size(int bits)
- 	res += 1LL << (bits-2);
- 	res += 1LL << (2*(bits-2));
- 	res += 1LL << (3*(bits-2));
-+	/* Compute how many metadata blocks are needed */
-+	meta_blocks = 1;
-+	meta_blocks += 1 + ppb;
-+	meta_blocks += 1 + ppb + ppb * ppb;
- 	/* Does block tree limit file size? */
--	if (res < upper_limit)
-+	if (res + meta_blocks <= upper_limit)
- 		goto check_lfs;
+diff --git a/security/tomoyo/load_policy.c b/security/tomoyo/load_policy.c
+index 81b951652051..f8baef1f3277 100644
+--- a/security/tomoyo/load_policy.c
++++ b/security/tomoyo/load_policy.c
+@@ -24,7 +24,7 @@ static const char *tomoyo_loader;
+ static int __init tomoyo_loader_setup(char *str)
+ {
+ 	tomoyo_loader = str;
+-	return 0;
++	return 1;
+ }
  
- 	res = upper_limit;
+ __setup("TOMOYO_loader=", tomoyo_loader_setup);
+@@ -63,7 +63,7 @@ static const char *tomoyo_trigger;
+ static int __init tomoyo_trigger_setup(char *str)
+ {
+ 	tomoyo_trigger = str;
+-	return 0;
++	return 1;
+ }
+ 
+ __setup("TOMOYO_trigger=", tomoyo_trigger_setup);
 -- 
 2.34.1
 
