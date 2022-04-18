@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60997C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:04:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BF3CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241113AbiDRNGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41052 "EHLO
+        id S241159AbiDRNGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240182AbiDRMzB (ORCPT
+        with ESMTP id S239765AbiDRMy7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:55:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC7B22288;
-        Mon, 18 Apr 2022 05:35:25 -0700 (PDT)
+        Mon, 18 Apr 2022 08:54:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B9F1581E;
+        Mon, 18 Apr 2022 05:35:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10D6B61014;
-        Mon, 18 Apr 2022 12:35:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 010E7C385A1;
-        Mon, 18 Apr 2022 12:35:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39DC0B80EC4;
+        Mon, 18 Apr 2022 12:35:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87095C385A1;
+        Mon, 18 Apr 2022 12:35:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285324;
-        bh=eT3XsyhJrW/hV7OjSBlOwD8UrNHf86QPPrWbSdZ2ZsY=;
+        s=korg; t=1650285318;
+        bh=1JykyhsvrgAJMNPlqTzg89ghRr1ddfmnxPAANLww/Ho=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MrDSBNGnxm7QyVJcmQlVoFdt6sRPB8VwUtL8uDXSpcsgwewo+gknrkvGIjNNkEnvM
-         PuYPqsikdeSI6ue77Un2w2rYh6J/PL71ZoqQKXtf0Zx9AybZMTUm5coAzW5C73YtgR
-         ZY+y58kzDsdoDSxRSWIvtIyhSC7l/ePxUYoIu0U8=
+        b=k/RgXyRf4XNFrLlRSJTnyD8hfXzpEpyYhDx7vKfDatGDqqae75SNlFGxOyqINboen
+         b74U4w3ed7J/ZtrIjM77OP9d/cnKD3ZxX+TmSE5tf/QEi4um6DDX1C2hhh7Wg1qsgU
+         apzoH2TdMWq3XZnG4OHu7opFKpvUnwKxaQTJJ0Jo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 132/189] spi: cadence-quadspi: fix protocol setup for non-1-1-X operations
-Date:   Mon, 18 Apr 2022 14:12:32 +0200
-Message-Id: <20220418121204.931723854@linuxfoundation.org>
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 5.15 168/189] tick/nohz: Use WARN_ON_ONCE() to prevent console saturation
+Date:   Mon, 18 Apr 2022 14:13:08 +0200
+Message-Id: <20220418121207.344781175@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,131 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
 
-[ Upstream commit 97e4827d775faa9a32b5e1a97959c69dd77d17a3 ]
+commit 40e97e42961f8c6cc7bd5fe67cc18417e02d78f1 upstream.
 
-cqspi_set_protocol() only set the data width, but ignored the command
-and address width (except for 8-8-8 DTR ops), leading to corruption of
-all transfers using 1-X-X or X-X-X ops. Fix by setting the other two
-widths as well.
+While running some testing on code that happened to allow the variable
+tick_nohz_full_running to get set but with no "possible" NOHZ cores to
+back up that setting, this warning triggered:
 
-While we're at it, simplify the code a bit by replacing the
-CQSPI_INST_TYPE_* constants with ilog2().
+        if (unlikely(tick_do_timer_cpu == TICK_DO_TIMER_NONE))
+                WARN_ON(tick_nohz_full_running);
 
-Tested on a TI AM64x with a Macronix MX25U51245G QSPI flash with 1-4-4
-read and write operations.
+The console was overwhemled with an endless stream of one WARN per tick
+per core and there was no way to even see what was going on w/o using a
+serial console to capture it and then trace it back to this.
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Link: https://lore.kernel.org/r/20220331110819.133392-1-matthias.schiffer@ew.tq-group.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Change it to WARN_ON_ONCE().
+
+Fixes: 08ae95f4fd3b ("nohz_full: Allow the boot CPU to be nohz_full")
+Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20211206145950.10927-3-paul.gortmaker@windriver.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-cadence-quadspi.c | 46 ++++++++-----------------------
- 1 file changed, 12 insertions(+), 34 deletions(-)
+ kernel/time/tick-sched.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
-index 101cc71bffa7..1a6294a06e72 100644
---- a/drivers/spi/spi-cadence-quadspi.c
-+++ b/drivers/spi/spi-cadence-quadspi.c
-@@ -18,6 +18,7 @@
- #include <linux/iopoll.h>
- #include <linux/jiffies.h>
- #include <linux/kernel.h>
-+#include <linux/log2.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
- #include <linux/of.h>
-@@ -93,12 +94,6 @@ struct cqspi_driver_platdata {
- #define CQSPI_TIMEOUT_MS			500
- #define CQSPI_READ_TIMEOUT_MS			10
- 
--/* Instruction type */
--#define CQSPI_INST_TYPE_SINGLE			0
--#define CQSPI_INST_TYPE_DUAL			1
--#define CQSPI_INST_TYPE_QUAD			2
--#define CQSPI_INST_TYPE_OCTAL			3
--
- #define CQSPI_DUMMY_CLKS_PER_BYTE		8
- #define CQSPI_DUMMY_BYTES_MAX			4
- #define CQSPI_DUMMY_CLKS_MAX			31
-@@ -322,10 +317,6 @@ static unsigned int cqspi_calc_dummy(const struct spi_mem_op *op, bool dtr)
- static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 			      const struct spi_mem_op *op)
- {
--	f_pdata->inst_width = CQSPI_INST_TYPE_SINGLE;
--	f_pdata->addr_width = CQSPI_INST_TYPE_SINGLE;
--	f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
--
- 	/*
- 	 * For an op to be DTR, cmd phase along with every other non-empty
- 	 * phase should have dtr field set to 1. If an op phase has zero
-@@ -335,32 +326,23 @@ static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 		       (!op->addr.nbytes || op->addr.dtr) &&
- 		       (!op->data.nbytes || op->data.dtr);
- 
--	switch (op->data.buswidth) {
--	case 0:
--		break;
--	case 1:
--		f_pdata->data_width = CQSPI_INST_TYPE_SINGLE;
--		break;
--	case 2:
--		f_pdata->data_width = CQSPI_INST_TYPE_DUAL;
--		break;
--	case 4:
--		f_pdata->data_width = CQSPI_INST_TYPE_QUAD;
--		break;
--	case 8:
--		f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
--		break;
--	default:
--		return -EINVAL;
--	}
-+	f_pdata->inst_width = 0;
-+	if (op->cmd.buswidth)
-+		f_pdata->inst_width = ilog2(op->cmd.buswidth);
-+
-+	f_pdata->addr_width = 0;
-+	if (op->addr.buswidth)
-+		f_pdata->addr_width = ilog2(op->addr.buswidth);
-+
-+	f_pdata->data_width = 0;
-+	if (op->data.buswidth)
-+		f_pdata->data_width = ilog2(op->data.buswidth);
- 
- 	/* Right now we only support 8-8-8 DTR mode. */
- 	if (f_pdata->dtr) {
- 		switch (op->cmd.buswidth) {
- 		case 0:
--			break;
- 		case 8:
--			f_pdata->inst_width = CQSPI_INST_TYPE_OCTAL;
- 			break;
- 		default:
- 			return -EINVAL;
-@@ -368,9 +350,7 @@ static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 
- 		switch (op->addr.buswidth) {
- 		case 0:
--			break;
- 		case 8:
--			f_pdata->addr_width = CQSPI_INST_TYPE_OCTAL;
- 			break;
- 		default:
- 			return -EINVAL;
-@@ -378,9 +358,7 @@ static int cqspi_set_protocol(struct cqspi_flash_pdata *f_pdata,
- 
- 		switch (op->data.buswidth) {
- 		case 0:
--			break;
- 		case 8:
--			f_pdata->data_width = CQSPI_INST_TYPE_OCTAL;
- 			break;
- 		default:
- 			return -EINVAL;
--- 
-2.35.1
-
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -186,7 +186,7 @@ static void tick_sched_do_timer(struct t
+ 	 */
+ 	if (unlikely(tick_do_timer_cpu == TICK_DO_TIMER_NONE)) {
+ #ifdef CONFIG_NO_HZ_FULL
+-		WARN_ON(tick_nohz_full_running);
++		WARN_ON_ONCE(tick_nohz_full_running);
+ #endif
+ 		tick_do_timer_cpu = cpu;
+ 	}
 
 
