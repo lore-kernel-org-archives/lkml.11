@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 889E9C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:27:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79CB8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:28:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238943AbiDRMab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38212 "EHLO
+        id S238906AbiDRMaf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239005AbiDRM1h (ORCPT
+        with ESMTP id S239029AbiDRM1k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:27:37 -0400
+        Mon, 18 Apr 2022 08:27:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13C71E3E7;
-        Mon, 18 Apr 2022 05:21:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC481EAC0;
+        Mon, 18 Apr 2022 05:21:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65DF5B80EDC;
-        Mon, 18 Apr 2022 12:21:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A754BC385A7;
-        Mon, 18 Apr 2022 12:21:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28A2BB80EDA;
+        Mon, 18 Apr 2022 12:21:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E8DCC385A8;
+        Mon, 18 Apr 2022 12:21:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284467;
-        bh=aqaM+ASEtCO7ZYIvGnCWXwXUFuLPGL1pjwd3ZapU2y8=;
+        s=korg; t=1650284469;
+        bh=cFl5lG2Pg2Qjf6ZNnxY9+UwfUX2+53t0n2KYI4zhjVM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=okdvS+bOVrKPIFvIPtvJMlgez8wrnE9aFfR3mBzML0xwUCphZ1U7H+fYqjkB9o7v7
-         o+EJ/rUf4P3sF/X74XmN3uFxh/sXr5tLLrzE0qn49uHqxBTcb6dfYU0etsYOfFVssH
-         LyFtguSuKaFuIsS0Di3dkwmEUncJEVoA8OGDlPNw=
+        b=C6Kuo9O6hq9R5GCGrucJi0GwyekRfBD8Y2sHQdo6qQYg8z63dnq5PFQAaRz4GyX8K
+         4olcjdk3DLH34BgIjwKQ1gChas8hDsIe7w7lRQdNqy+7UXO6P3Qe3cfZ/GC/B3mSxl
+         /Ydy3HDHIxhpvCA65cCDPRhscG/dh+2q0W6LjpEA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        stable@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 124/219] net: dsa: felix: fix tagging protocol changes with multiple CPU ports
-Date:   Mon, 18 Apr 2022 14:11:33 +0200
-Message-Id: <20220418121210.368426795@linuxfoundation.org>
+Subject: [PATCH 5.17 125/219] net: bcmgenet: Revert "Use stronger register read/writes to assure ordering"
+Date:   Mon, 18 Apr 2022 14:11:34 +0200
+Message-Id: <20220418121210.396217125@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,85 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Jeremy Linton <jeremy.linton@arm.com>
 
-[ Upstream commit 00fa91bc9cc2a9d340f963af5e457610ad4b2f9c ]
+[ Upstream commit 2df3fc4a84e917a422935cc5bae18f43f9955d31 ]
 
-When the device tree has 2 CPU ports defined, a single one is active
-(has any dp->cpu_dp pointers point to it). Yet the second one is still a
-CPU port, and DSA still calls ->change_tag_protocol on it.
+It turns out after digging deeper into this bug, that it was being
+triggered by GCC12 failing to call the bcmgenet_enable_dma()
+routine. Given that a gcc12 fix has been merged [1] and the genet
+driver now works properly when built with gcc12, this commit should
+be reverted.
 
-On the NXP LS1028A, the CPU ports are ports 4 and 5. Port 4 is the
-active CPU port and port 5 is inactive.
+[1]
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105160
+https://gcc.gnu.org/git/?p=gcc.git;a=commit;h=aabb9a261ef060cf24fd626713f1d7d9df81aa57
 
-After the following commands:
-
- # Initial setting
- cat /sys/class/net/eno2/dsa/tagging
- ocelot
- echo ocelot-8021q > /sys/class/net/eno2/dsa/tagging
- echo ocelot > /sys/class/net/eno2/dsa/tagging
-
-traffic is now broken, because the driver has moved the NPI port from
-port 4 to port 5, unbeknown to DSA.
-
-The problem can be avoided by detecting that the second CPU port is
-unused, and not doing anything for it. Further rework will be needed
-when proper support for multiple CPU ports is added.
-
-Treat this as a bug and prepare current kernels to work in single-CPU
-mode with multiple-CPU DT blobs.
-
-Fixes: adb3dccf090b ("net: dsa: felix: convert to the new .change_tag_protocol DSA API")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220412172209.2531865-1-vladimir.oltean@nxp.com
+Fixes: 8d3ea3d402db ("net: bcmgenet: Use stronger register read/writes to assure ordering")
+Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220412210420.1129430-1-jeremy.linton@arm.com
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/ocelot/felix.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 9957772201d5..c414d9e9d7c0 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -599,6 +599,8 @@ static int felix_change_tag_protocol(struct dsa_switch *ds, int cpu,
- 	struct ocelot *ocelot = ds->priv;
- 	struct felix *felix = ocelot_to_felix(ocelot);
- 	enum dsa_tag_protocol old_proto = felix->tag_proto;
-+	bool cpu_port_active = false;
-+	struct dsa_port *dp;
- 	int err;
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index bd5998012a87..2da804f84b48 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -76,7 +76,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		__raw_writel(value, offset);
+ 	else
+-		writel(value, offset);
++		writel_relaxed(value, offset);
+ }
  
- 	if (proto != DSA_TAG_PROTO_SEVILLE &&
-@@ -606,6 +608,27 @@ static int felix_change_tag_protocol(struct dsa_switch *ds, int cpu,
- 	    proto != DSA_TAG_PROTO_OCELOT_8021Q)
- 		return -EPROTONOSUPPORT;
+ static inline u32 bcmgenet_readl(void __iomem *offset)
+@@ -84,7 +84,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		return __raw_readl(offset);
+ 	else
+-		return readl(offset);
++		return readl_relaxed(offset);
+ }
  
-+	/* We don't support multiple CPU ports, yet the DT blob may have
-+	 * multiple CPU ports defined. The first CPU port is the active one,
-+	 * the others are inactive. In this case, DSA will call
-+	 * ->change_tag_protocol() multiple times, once per CPU port.
-+	 * Since we implement the tagging protocol change towards "ocelot" or
-+	 * "seville" as effectively initializing the NPI port, what we are
-+	 * doing is effectively changing who the NPI port is to the last @cpu
-+	 * argument passed, which is an unused DSA CPU port and not the one
-+	 * that should actively pass traffic.
-+	 * Suppress DSA's calls on CPU ports that are inactive.
-+	 */
-+	dsa_switch_for_each_user_port(dp, ds) {
-+		if (dp->cpu_dp->index == cpu) {
-+			cpu_port_active = true;
-+			break;
-+		}
-+	}
-+
-+	if (!cpu_port_active)
-+		return 0;
-+
- 	felix_del_tag_protocol(ds, cpu, old_proto);
- 
- 	err = felix_set_tag_protocol(ds, cpu, proto);
+ static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
 -- 
 2.35.1
 
