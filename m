@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C8BC3527C
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF995C47084
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242786AbiDRNTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59900 "EHLO
+        id S243190AbiDRNT4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242565AbiDRNAJ (ORCPT
+        with ESMTP id S240747AbiDRNBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:00:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B297B31362;
-        Mon, 18 Apr 2022 05:41:34 -0700 (PDT)
+        Mon, 18 Apr 2022 09:01:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CC03193A;
+        Mon, 18 Apr 2022 05:42:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5CBE8B80EC3;
-        Mon, 18 Apr 2022 12:41:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 976EFC385A1;
-        Mon, 18 Apr 2022 12:41:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6731EB80EDC;
+        Mon, 18 Apr 2022 12:42:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF5C7C385A7;
+        Mon, 18 Apr 2022 12:42:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285692;
-        bh=X5VqiY22ZhhGMKTjPjEHHjQro/Fe7DdjAuffpRjJ934=;
+        s=korg; t=1650285726;
+        bh=C4maaN8DUSZ2vqk38Yqwf+/UKoGzZQnk0kFfPOYAS4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XErRkIWJ5AIWgrBGB4LWoky2wOaXJPmNBkidcvDeNPBv3fH4gTzR/y2320ux05ij0
-         IbCgi9wXME4kj94Ss1g1qriidtXMt4gy/DaXT4zS2Wq51zBE7g8BkBkkQVC33E7+iS
-         SmteZ2SfHwaDMkK7KAIu5i60BRFkRRfwhVqAdQaA=
+        b=RPoOBV2/aDe7BXWdEC05zYbjs5aYDmgUnUp49zTCQ9aqapwG4zqLwwwIIXQvBCp+H
+         QLHXvX2ZSN5fWsEf1Ew46TpwMOD882p5ATTX6zrEXoHCuninX7t2lcoDtJQTqbyc+v
+         DUGHcKCbx655vVLl7xikhbaFSOCzMaSJEMcopmVs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nadav Amit <namit@vmware.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 5.10 092/105] smp: Fix offline cpu check in flush_smp_call_function_queue()
-Date:   Mon, 18 Apr 2022 14:13:34 +0200
-Message-Id: <20220418121149.248407638@linuxfoundation.org>
+        Duoming Zhou <duoming@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.10 103/105] ax25: fix NPD bug in ax25_disconnect
+Date:   Mon, 18 Apr 2022 14:13:45 +0200
+Message-Id: <20220418121149.562408173@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121145.140991388@linuxfoundation.org>
 References: <20220418121145.140991388@linuxfoundation.org>
@@ -48,42 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nadav Amit <namit@vmware.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 9e949a3886356fe9112c6f6f34a6e23d1d35407f upstream.
+commit 7ec02f5ac8a5be5a3f20611731243dc5e1d9ba10 upstream.
 
-The check in flush_smp_call_function_queue() for callbacks that are sent
-to offline CPUs currently checks whether the queue is empty.
+The ax25_disconnect() in ax25_kill_by_device() is not
+protected by any locks, thus there is a race condition
+between ax25_disconnect() and ax25_destroy_socket().
+when ax25->sk is assigned as NULL by ax25_destroy_socket(),
+a NULL pointer dereference bug will occur if site (1) or (2)
+dereferences ax25->sk.
 
-However, flush_smp_call_function_queue() has just deleted all the
-callbacks from the queue and moved all the entries into a local list.
-This checks would only be positive if some callbacks were added in the
-short time after llist_del_all() was called. This does not seem to be
-the intention of this check.
+ax25_kill_by_device()                | ax25_release()
+  ax25_disconnect()                  |   ax25_destroy_socket()
+    ...                              |
+    if(ax25->sk != NULL)             |     ...
+      ...                            |     ax25->sk = NULL;
+      bh_lock_sock(ax25->sk); //(1)  |     ...
+      ...                            |
+      bh_unlock_sock(ax25->sk); //(2)|
 
-Change the check to look at the local list to which the entries were
-moved instead of the queue from which all the callbacks were just
-removed.
+This patch moves ax25_disconnect() into lock_sock(), which can
+synchronize with ax25_destroy_socket() in ax25_release().
 
-Fixes: 8d056c48e4862 ("CPU hotplug, smp: flush any pending IPI callbacks before CPU offline")
-Signed-off-by: Nadav Amit <namit@vmware.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/20220319072015.1495036-1-namit@vmware.com
+Fail log:
+===============================================================
+BUG: kernel NULL pointer dereference, address: 0000000000000088
+...
+RIP: 0010:_raw_spin_lock+0x7e/0xd0
+...
+Call Trace:
+ax25_disconnect+0xf6/0x220
+ax25_device_event+0x187/0x250
+raw_notifier_call_chain+0x5e/0x70
+dev_close_many+0x17d/0x230
+rollback_registered_many+0x1f1/0x950
+unregister_netdevice_queue+0x133/0x200
+unregister_netdev+0x13/0x20
+...
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[OP: backport to 5.10: adjust context]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/smp.c |    2 +-
+ net/ax25/af_ax25.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/smp.c
-+++ b/kernel/smp.c
-@@ -346,7 +346,7 @@ static void flush_smp_call_function_queu
- 
- 	/* There shouldn't be any pending callbacks on an offline CPU. */
- 	if (unlikely(warn_cpu_offline && !cpu_online(smp_processor_id()) &&
--		     !warned && !llist_empty(head))) {
-+		     !warned && entry != NULL)) {
- 		warned = true;
- 		WARN(1, "IPI on offline CPU %d\n", smp_processor_id());
- 
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -102,8 +102,8 @@ again:
+ 				dev_put(ax25_dev->dev);
+ 				ax25_dev_put(ax25_dev);
+ 			}
+-			release_sock(sk);
+ 			ax25_disconnect(s, ENETUNREACH);
++			release_sock(sk);
+ 			spin_lock_bh(&ax25_list_lock);
+ 			sock_put(sk);
+ 			/* The entry could have been deleted from the
 
 
