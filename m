@@ -2,40 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 532DDC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2447BC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240211AbiDRMww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40038 "EHLO
+        id S240138AbiDRMwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240804AbiDRMji (ORCPT
+        with ESMTP id S240678AbiDRMj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:39:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94AD42FD;
-        Mon, 18 Apr 2022 05:30:41 -0700 (PDT)
+        Mon, 18 Apr 2022 08:39:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A0912AC2;
+        Mon, 18 Apr 2022 05:30:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 306D260F04;
-        Mon, 18 Apr 2022 12:30:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 161F7C385A1;
-        Mon, 18 Apr 2022 12:30:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05483B80EC0;
+        Mon, 18 Apr 2022 12:30:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BE87C385A7;
+        Mon, 18 Apr 2022 12:30:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285040;
-        bh=8OKQIQQZsaln7GT2sWzd5OsKT2yNQHkboQCMYcljvFI=;
+        s=korg; t=1650285004;
+        bh=ed67Mr0skf3NL21hEKATizgyI3mS1e80WUsHbS/+xgU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MIaPRZItuzOEIGBC76F0w/XnT9GkUCYG3skFS91IcZWt0e/EYqrf8G9r3rVtHr54h
-         S1SQ3x9d2yw1Hg75fTjvHl4jkfPpGbegXDNkGqVVsAqJGshJaLMUOAa56wE0cBUY9Z
-         xMOs60l6esD8715uvpS3H4HLt714psBC7Ghup3Ik=
+        b=XpFNQNu7oVTeYY4yOvKtZPRctrpz7IOAEW+GkMLngSRfqfT3qIcJ9cb6J4TwLMCkX
+         RwIHc4zHGyxInFyn3vdH2AuP+JTUsR5Pk1NNo8KRpKnxgGzhQmTwHHIjF/gHpwwLRC
+         88BUBS/Q18LpM5vnB7ptMnjritolWsWTBRlPjg7I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 055/189] ALSA: nm256: Dont call card private_free at probe error path
-Date:   Mon, 18 Apr 2022 14:11:15 +0200
-Message-Id: <20220418121202.073042721@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 076/189] drm/msm/dsi: Use connector directly in msm_dsi_manager_connector_init()
+Date:   Mon, 18 Apr 2022 14:11:36 +0200
+Message-Id: <20220418121202.666410963@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -47,49 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Stephen Boyd <swboyd@chromium.org>
 
-commit f20ae5074dfb38f23b0c07c62bdf8e7254a0acf8 upstream.
+[ Upstream commit 47b7de6b88b962ef339a2427a023d2a23d161654 ]
 
-The card destructor of nm256 driver does merely stopping the running
-streams, and it's superfluous for the probe error handling.  Moreover,
-calling this via the previous devres change would lead to another
-problem due to the reverse call order.
+The member 'msm_dsi->connector' isn't assigned until
+msm_dsi_manager_connector_init() returns (see msm_dsi_modeset_init() and
+how it assigns the return value). Therefore this pointer is going to be
+NULL here. Let's use 'connector' which is what was intended.
 
-This patch moves the setup of the private_free callback after the card
-registration, so that it can be used only after fully set up.
-
-Fixes: c19935f04784 ("ALSA: nm256: Allocate resources with device-managed APIs")
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220412102636.16000-40-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Sean Paul <seanpaul@chromium.org>
+Fixes: 6d5e78406991 ("drm/msm/dsi: Move dsi panel init into modeset init path")
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/478693/
+Link: https://lore.kernel.org/r/20220318000731.2823718-1-swboyd@chromium.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/nm256/nm256.c | 2 +-
+ drivers/gpu/drm/msm/dsi/dsi_manager.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/pci/nm256/nm256.c b/sound/pci/nm256/nm256.c
-index c9c178504959..f99a1e96e923 100644
---- a/sound/pci/nm256/nm256.c
-+++ b/sound/pci/nm256/nm256.c
-@@ -1573,7 +1573,6 @@ snd_nm256_create(struct snd_card *card, struct pci_dev *pci)
- 	chip->coeffs_current = 0;
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+index fa4c396df6a9..6e43672f5807 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+@@ -643,7 +643,7 @@ struct drm_connector *msm_dsi_manager_connector_init(u8 id)
+ 	return connector;
  
- 	snd_nm256_init_chip(chip);
--	card->private_free = snd_nm256_free;
+ fail:
+-	connector->funcs->destroy(msm_dsi->connector);
++	connector->funcs->destroy(connector);
+ 	return ERR_PTR(ret);
+ }
  
- 	// pci_set_master(pci); /* needed? */
- 	return 0;
-@@ -1680,6 +1679,7 @@ static int snd_nm256_probe(struct pci_dev *pci,
- 	err = snd_card_register(card);
- 	if (err < 0)
- 		return err;
-+	card->private_free = snd_nm256_free;
- 
- 	pci_set_drvdata(pci, card);
- 	return 0;
 -- 
-2.35.2
+2.35.1
 
 
 
