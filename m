@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D009C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F4149C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241208AbiDRNFG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:05:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
+        id S240730AbiDRNFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240406AbiDRMzC (ORCPT
+        with ESMTP id S240419AbiDRMzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:55:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EC223143;
-        Mon, 18 Apr 2022 05:35:44 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D32D21BE8E;
+        Mon, 18 Apr 2022 05:35:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E7B9611A9;
-        Mon, 18 Apr 2022 12:35:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E33AC385A7;
-        Mon, 18 Apr 2022 12:35:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 70549611AD;
+        Mon, 18 Apr 2022 12:35:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 805C0C385A1;
+        Mon, 18 Apr 2022 12:35:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285343;
-        bh=YPMbbLIAUrOz/F2QyLrf7EQrMAlFpXdWqGq42AxwZwE=;
+        s=korg; t=1650285333;
+        bh=uiy+onWZJlI1b7zdv8YW06FhqRpBBM8vOy6Sxuf3GMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jjSW9deWpf4DQ3Qca74QDiN0d0MXxcW67UGWh61Qe7VPl1+9gr/bruxIM/P7IMo9O
-         JpTfYC+9X24L+SwEVqPchOYVEqiDBRyg4EQ5nexnR80eo54fF1lzmSy5OUxtdaXh6H
-         C5qBcYM1RI7zcarZd+sYoU5uqZq+zzGvgc9hvu/I=
+        b=1XFBHwjWejRUlKw9fbpODeydugxSx+zpq38jHkNgCfv1sL40pQLMjYGYFRT7QBA9+
+         xC5ggCtfdT0Pk620F5n0GkUcMhJdHdvxF0ZVKFoG5XK1DEKLemw/BN6cm1YyuHQSdt
+         XnF9cVgoYuA0t3gLY9l/zVDmQp6rvcC4ciI7OEa0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH 5.15 179/189] soc: qcom: aoss: Fix missing put_device call in qmp_get
-Date:   Mon, 18 Apr 2022 14:13:19 +0200
-Message-Id: <20220418121208.151534900@linuxfoundation.org>
+        stable@vger.kernel.org, Wayne Lin <Wayne.Lin@amd.com>,
+        Alex Hung <alex.hung@amd.com>, Roman Li <Roman.Li@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 135/189] drm/amd/display: Fix allocate_mst_payload assert on resume
+Date:   Mon, 18 Apr 2022 14:12:35 +0200
+Message-Id: <20220418121205.132416669@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -49,38 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Roman Li <Roman.Li@amd.com>
 
-commit 4b41a9d0fe3db5f91078a380f62f0572c3ecf2dd upstream.
+[ Upstream commit f4346fb3edf7720db3f7f5e1cab1f667cd024280 ]
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling paths.
+[Why]
+On resume we do link detection for all non-MST connectors.
+MST is handled separately. However the condition for telling
+if connector is on mst branch is not enough for mst hub case.
+Link detection for mst branch link leads to mst topology reset.
+That causes assert in dc_link_allocate_mst_payload()
 
-Fixes: 8c75d585b931 ("soc: qcom: aoss: Expose send for generic usecase")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220108095931.21527-1-linmq006@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[How]
+Use link type as indicator for mst link.
+
+Reviewed-by: Wayne Lin <Wayne.Lin@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Roman Li <Roman.Li@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/qcom_aoss.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/soc/qcom/qcom_aoss.c
-+++ b/drivers/soc/qcom/qcom_aoss.c
-@@ -551,7 +551,11 @@ struct qmp *qmp_get(struct device *dev)
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 7e9e2eb85eca..ec75613618b1 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -2296,7 +2296,8 @@ static int dm_resume(void *handle)
+ 		 * this is the case when traversing through already created
+ 		 * MST connectors, should be skipped
+ 		 */
+-		if (aconnector->mst_port)
++		if (aconnector->dc_link &&
++		    aconnector->dc_link->type == dc_connection_mst_branch)
+ 			continue;
  
- 	qmp = platform_get_drvdata(pdev);
- 
--	return qmp ? qmp : ERR_PTR(-EPROBE_DEFER);
-+	if (!qmp) {
-+		put_device(&pdev->dev);
-+		return ERR_PTR(-EPROBE_DEFER);
-+	}
-+	return qmp;
- }
- EXPORT_SYMBOL(qmp_get);
- 
+ 		mutex_lock(&aconnector->hpd_lock);
+-- 
+2.35.1
+
 
 
