@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC895C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:48:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F653C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:48:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239812AbiDRMu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:50:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38798 "EHLO
+        id S239828AbiDRMvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240815AbiDRMjj (ORCPT
+        with ESMTP id S240821AbiDRMjj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 08:39:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94929BD6;
-        Mon, 18 Apr 2022 05:30:52 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E55BEC;
+        Mon, 18 Apr 2022 05:30:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4AEC8B80EC0;
-        Mon, 18 Apr 2022 12:30:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9364DC385A9;
-        Mon, 18 Apr 2022 12:30:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04089B80ED6;
+        Mon, 18 Apr 2022 12:30:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AD4AC385A7;
+        Mon, 18 Apr 2022 12:30:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285049;
-        bh=tv4zKBl+I3vxx2xHCn4Ct8zhqbx9Pth5UP2RUme5oVg=;
+        s=korg; t=1650285052;
+        bh=PegEbT3n0i2LdUmAqbH0lGb/v7kofzcUA1BCGaGp0fs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fZUI+x/hZgh57M/lkPD4bcbxT1+EI9rVmUCAhcZtXI5u5y3HOKhTKY+q3C3Rg26Gx
-         ayNrPridAIObJD4bmKsFCKpitSnCRxQ4RZXe4L43RhNkfDQzYIpiN1EVHFT2NUPP22
-         QVzBbtPTZbySoNfw8Aww86qnbijqT+EhG3hgBFyo=
+        b=IttAV4hHuVVIiUL0PeCR8FzemweEL5ZJlYAvuGSHAShNRnVcE01lRM34NZXRLIuR8
+         RQPUfsRonTXPYXY+Q7B4XdOtQR2YVaEzNilknlnvpC+Hsq/IF0DaUPO0chOHTrND1A
+         VqmRC1bEHgMQb4Ag+MF2m0kUpTtZFDUfPtRnH8pg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 058/189] memory: atmel-ebi: Fix missing of_node_put in atmel_ebi_probe
-Date:   Mon, 18 Apr 2022 14:11:18 +0200
-Message-Id: <20220418121202.156879229@linuxfoundation.org>
+        stable@vger.kernel.org, Anilkumar Kolli <quic_akolli@quicinc.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 059/189] Revert "ath11k: mesh: add support for 256 bitmap in blockack frames in 11ax"
+Date:   Mon, 18 Apr 2022 14:11:19 +0200
+Message-Id: <20220418121202.185148438@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,72 +48,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Anilkumar Kolli <quic_akolli@quicinc.com>
 
-[ Upstream commit 6f296a9665ba5ac68937bf11f96214eb9de81baa ]
+[ Upstream commit 10cb21f4ff3f9cb36d1e1c39bf80426f02f4986a ]
 
-The device_node pointer is returned by of_parse_phandle() with refcount
-incremented. We should use of_node_put() on it when done.
+This reverts commit 743b9065fe6348a5f8f5ce04869ce2d701e5e1bc.
 
-Fixes: 87108dc78eb8 ("memory: atmel-ebi: Enable the SMC clock if specified")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220309110144.22412-1-linmq006@gmail.com
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+The original commit breaks the 256 bitmap in blockack frames in AP
+mode. After reverting the commit the feature works again in both AP and
+mesh modes
+
+Tested-on: IPQ8074 hw2.0 PCI WLAN.HK.2.6.0.1-00786-QCAHKSWPL_SILICONZ-1
+
+Fixes: 743b9065fe63 ("ath11k: mesh: add support for 256 bitmap in blockack frames in 11ax")
+Signed-off-by: Anilkumar Kolli <quic_akolli@quicinc.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/1648701477-16367-1-git-send-email-quic_akolli@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/memory/atmel-ebi.c | 23 +++++++++++++++++------
- 1 file changed, 17 insertions(+), 6 deletions(-)
+ drivers/net/wireless/ath/ath11k/mac.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/memory/atmel-ebi.c b/drivers/memory/atmel-ebi.c
-index c267283b01fd..e749dcb3ddea 100644
---- a/drivers/memory/atmel-ebi.c
-+++ b/drivers/memory/atmel-ebi.c
-@@ -544,20 +544,27 @@ static int atmel_ebi_probe(struct platform_device *pdev)
- 	smc_np = of_parse_phandle(dev->of_node, "atmel,smc", 0);
- 
- 	ebi->smc.regmap = syscon_node_to_regmap(smc_np);
--	if (IS_ERR(ebi->smc.regmap))
--		return PTR_ERR(ebi->smc.regmap);
-+	if (IS_ERR(ebi->smc.regmap)) {
-+		ret = PTR_ERR(ebi->smc.regmap);
-+		goto put_node;
-+	}
- 
- 	ebi->smc.layout = atmel_hsmc_get_reg_layout(smc_np);
--	if (IS_ERR(ebi->smc.layout))
--		return PTR_ERR(ebi->smc.layout);
-+	if (IS_ERR(ebi->smc.layout)) {
-+		ret = PTR_ERR(ebi->smc.layout);
-+		goto put_node;
-+	}
- 
- 	ebi->smc.clk = of_clk_get(smc_np, 0);
- 	if (IS_ERR(ebi->smc.clk)) {
--		if (PTR_ERR(ebi->smc.clk) != -ENOENT)
--			return PTR_ERR(ebi->smc.clk);
-+		if (PTR_ERR(ebi->smc.clk) != -ENOENT) {
-+			ret = PTR_ERR(ebi->smc.clk);
-+			goto put_node;
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 3834be158705..07004564a3ec 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -2156,6 +2156,19 @@ static void ath11k_mac_op_bss_info_changed(struct ieee80211_hw *hw,
+ 		if (ret)
+ 			ath11k_warn(ar->ab, "failed to update bcn template: %d\n",
+ 				    ret);
++		if (vif->bss_conf.he_support) {
++			ret = ath11k_wmi_vdev_set_param_cmd(ar, arvif->vdev_id,
++							    WMI_VDEV_PARAM_BA_MODE,
++							    WMI_BA_MODE_BUFFER_SIZE_256);
++			if (ret)
++				ath11k_warn(ar->ab,
++					    "failed to set BA BUFFER SIZE 256 for vdev: %d\n",
++					    arvif->vdev_id);
++			else
++				ath11k_dbg(ar->ab, ATH11K_DBG_MAC,
++					   "Set BA BUFFER SIZE 256 for VDEV: %d\n",
++					   arvif->vdev_id);
 +		}
- 
- 		ebi->smc.clk = NULL;
- 	}
-+	of_node_put(smc_np);
- 	ret = clk_prepare_enable(ebi->smc.clk);
- 	if (ret)
- 		return ret;
-@@ -608,6 +615,10 @@ static int atmel_ebi_probe(struct platform_device *pdev)
  	}
  
- 	return of_platform_populate(np, NULL, NULL, dev);
-+
-+put_node:
-+	of_node_put(smc_np);
-+	return ret;
- }
+ 	if (changed & (BSS_CHANGED_BEACON_INFO | BSS_CHANGED_BEACON)) {
+@@ -2191,14 +2204,6 @@ static void ath11k_mac_op_bss_info_changed(struct ieee80211_hw *hw,
  
- static __maybe_unused int atmel_ebi_resume(struct device *dev)
+ 		if (arvif->is_up && vif->bss_conf.he_support &&
+ 		    vif->bss_conf.he_oper.params) {
+-			ret = ath11k_wmi_vdev_set_param_cmd(ar, arvif->vdev_id,
+-							    WMI_VDEV_PARAM_BA_MODE,
+-							    WMI_BA_MODE_BUFFER_SIZE_256);
+-			if (ret)
+-				ath11k_warn(ar->ab,
+-					    "failed to set BA BUFFER SIZE 256 for vdev: %d\n",
+-					    arvif->vdev_id);
+-
+ 			param_id = WMI_VDEV_PARAM_HEOPS_0_31;
+ 			param_value = vif->bss_conf.he_oper.params;
+ 			ret = ath11k_wmi_vdev_set_param_cmd(ar, arvif->vdev_id,
 -- 
 2.35.1
 
