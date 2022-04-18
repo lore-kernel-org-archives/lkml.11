@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D21C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:12:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F41AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245475AbiDROPL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:15:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45028 "EHLO
+        id S1343805AbiDROPO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:15:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244643AbiDRN5J (ORCPT
+        with ESMTP id S244625AbiDRN5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Apr 2022 09:57:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31BBE2AC70;
-        Mon, 18 Apr 2022 06:06:43 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE7E2AC5F;
+        Mon, 18 Apr 2022 06:06:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C239060F09;
-        Mon, 18 Apr 2022 13:06:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B08DAC385A1;
-        Mon, 18 Apr 2022 13:06:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6393EB80EC0;
+        Mon, 18 Apr 2022 13:06:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EFC9C385A8;
+        Mon, 18 Apr 2022 13:06:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287202;
-        bh=sIlGPuICAm1ZU+WN1JUAVEk1pJn9L2Hov/TGqQ4r7CY=;
+        s=korg; t=1650287179;
+        bh=ciq4+saILnSmTUYpZqah/8kv/Mj2SHY40js+mmtBP7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1GcqsVvAEXrgu/B9kwZdmHaq+StuX0k+CwKU1AaPTzCS8U9X39TJ9app/4BGyYoot
-         /XTd9WJXDFB3YA394iyGvQbGaMI4t8OS6Hh3pwxJHavHj0nhDHFNtpJMAnFH2WsHo4
-         NHWN+ZeRDW3XXHYj/3NnRbTT6MH4k3u4RyFgIKXs=
+        b=VqxtJeQIvh/nvL89TNhPSnYtf380aaf7J6HDtBCkUBI745tFuzSSwdIRS8zv3CXbG
+         SuyB3uzN4RsJMESLM9VoX7NFKSDs2sACmiF3oKdawAzfIQ4RdhF7IgBecfr6qgz4Kv
+         jCCccGr5Zz2dd1PCO+ZptRW1ywDjCCDjDWAIoOtA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 089/218] ext2: correct max file size computing
-Date:   Mon, 18 Apr 2022 14:12:35 +0200
-Message-Id: <20220418121202.154103461@linuxfoundation.org>
+        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 040/218] crypto: authenc - Fix sleep in atomic context in decrypt_tail
+Date:   Mon, 18 Apr 2022 14:11:46 +0200
+Message-Id: <20220418121200.681096033@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -48,56 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Yi <yi.zhang@huawei.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-[ Upstream commit 50b3a818991074177a56c87124c7a7bdf5fa4f67 ]
+[ Upstream commit 66eae850333d639fc278d6f915c6fc01499ea893 ]
 
-We need to calculate the max file size accurately if the total blocks
-that can address by block tree exceed the upper_limit. But this check is
-not correct now, it only compute the total data blocks but missing
-metadata blocks are needed. So in the case of "data blocks < upper_limit
-&& total blocks > upper_limit", we will get wrong result. Fortunately,
-this case could not happen in reality, but it's confused and better to
-correct the computing.
+The function crypto_authenc_decrypt_tail discards its flags
+argument and always relies on the flags from the original request
+when starting its sub-request.
 
-  bits   data blocks   metadatablocks   upper_limit
-  10        16843020            66051    2147483647
-  11       134480396           263171    1073741823
-  12      1074791436          1050627     536870911 (*)
-  13      8594130956          4198403     268435455 (*)
-  14     68736258060         16785411     134217727 (*)
-  15    549822930956         67125251      67108863 (*)
-  16   4398314962956        268468227      33554431 (*)
+This is clearly wrong as it may cause the SLEEPABLE flag to be
+set when it shouldn't.
 
-  [*] Need to calculate in depth.
-
-Fixes: 1c2d14212b15 ("ext2: Fix underflow in ext2_max_size()")
-Link: https://lore.kernel.org/r/20220212050532.179055-1-yi.zhang@huawei.com
-Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
+Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext2/super.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ crypto/authenc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ext2/super.c b/fs/ext2/super.c
-index 186912c9bf56..5ca1f73958b0 100644
---- a/fs/ext2/super.c
-+++ b/fs/ext2/super.c
-@@ -743,8 +743,12 @@ static loff_t ext2_max_size(int bits)
- 	res += 1LL << (bits-2);
- 	res += 1LL << (2*(bits-2));
- 	res += 1LL << (3*(bits-2));
-+	/* Compute how many metadata blocks are needed */
-+	meta_blocks = 1;
-+	meta_blocks += 1 + ppb;
-+	meta_blocks += 1 + ppb + ppb * ppb;
- 	/* Does block tree limit file size? */
--	if (res < upper_limit)
-+	if (res + meta_blocks <= upper_limit)
- 		goto check_lfs;
+diff --git a/crypto/authenc.c b/crypto/authenc.c
+index 6bfec690ca5b..f9ab04aa6dd5 100644
+--- a/crypto/authenc.c
++++ b/crypto/authenc.c
+@@ -268,7 +268,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
+ 		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
  
- 	res = upper_limit;
+ 	skcipher_request_set_tfm(skreq, ctx->enc);
+-	skcipher_request_set_callback(skreq, aead_request_flags(req),
++	skcipher_request_set_callback(skreq, flags,
+ 				      req->base.complete, req->base.data);
+ 	skcipher_request_set_crypt(skreq, src, dst,
+ 				   req->cryptlen - authsize, req->iv);
 -- 
 2.34.1
 
