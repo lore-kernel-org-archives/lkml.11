@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B9DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3941C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239198AbiDRMfE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:35:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38430 "EHLO
+        id S239246AbiDRMfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239584AbiDRM2e (ORCPT
+        with ESMTP id S239901AbiDRM3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:28:34 -0400
+        Mon, 18 Apr 2022 08:29:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C771FCFC;
-        Mon, 18 Apr 2022 05:22:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F30922BC6;
+        Mon, 18 Apr 2022 05:22:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E383D60F0C;
-        Mon, 18 Apr 2022 12:22:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBCA1C385A7;
-        Mon, 18 Apr 2022 12:22:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B49F60F5E;
+        Mon, 18 Apr 2022 12:22:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A40AEC385A1;
+        Mon, 18 Apr 2022 12:22:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284527;
-        bh=Ac1i+RF0ABR8FrSNXf/01Y/H4o1qgHwU85zwiKBQmvw=;
+        s=korg; t=1650284568;
+        bh=XTrLvknlgVp4TlnwSCgBg+A1FlHeQZ95oTe5GNJz45A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H/clvQQ73WMn2pudcLsAvAFoLGiFr6OBStkvmp8zYO1+MnG0tvfx1a0BJRQdKqYIc
-         HDRpfHvVO8u4zqouHgMbbPWA32ILjxD4iXznPj9gDNGdoJiwp8cy9cZIwxVq+BISWs
-         6TlJpwAPX96lLO3hAlJYdvZTzixsxe/TeISy41Lk=
+        b=Gbs8/ZmuIJifBEP/IsaG8eUvUtHFNs4Qarf0pEbfGBC5m75W091lmyzhITSpOsakl
+         RU022U6aQ/0JXQJPlearfUojcfeE/fjm6Gywfo1SuXDWphOce0FFL75SNDqsI1jyr+
+         VK2yBQPVRnqFxn1pETbHMI9EOeifesiqSGNAAA6U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bodo Stroesser <bostroesser@gmail.com>,
-        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Andy Chiu <andy.chiu@sifive.com>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 145/219] scsi: target: tcmu: Fix possible page UAF
-Date:   Mon, 18 Apr 2022 14:11:54 +0200
-Message-Id: <20220418121210.948801997@linuxfoundation.org>
+Subject: [PATCH 5.17 157/219] net: axienet: setup mdio unconditionally
+Date:   Mon, 18 Apr 2022 14:12:06 +0200
+Message-Id: <20220418121211.279923973@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -50,55 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+From: Andy Chiu <andy.chiu@sifive.com>
 
-[ Upstream commit a6968f7a367f128d120447360734344d5a3d5336 ]
+[ Upstream commit d1c4f93e3f0a023024a6f022a61528c06cf1daa9 ]
 
-tcmu_try_get_data_page() looks up pages under cmdr_lock, but it does not
-take refcount properly and just returns page pointer. When
-tcmu_try_get_data_page() returns, the returned page may have been freed by
-tcmu_blocks_release().
+The call to axienet_mdio_setup should not depend on whether "phy-node"
+pressents on the DT. Besides, since `lp->phy_node` is used if PHY is in
+SGMII or 100Base-X modes, move it into the if statement. And the next patch
+will remove `lp->phy_node` from driver's private structure and do an
+of_node_put on it right away after use since it is not used elsewhere.
 
-We need to get_page() under cmdr_lock to avoid concurrent
-tcmu_blocks_release().
-
-Link: https://lore.kernel.org/r/20220311132206.24515-1-xiaoguang.wang@linux.alibaba.com
-Reviewed-by: Bodo Stroesser <bostroesser@gmail.com>
-Signed-off-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
+Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
+Reviewed-by: Robert Hancock <robert.hancock@calian.com>
+Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/target/target_core_user.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
-index 7b2a89a67cdb..06a5c4086551 100644
---- a/drivers/target/target_core_user.c
-+++ b/drivers/target/target_core_user.c
-@@ -1820,6 +1820,7 @@ static struct page *tcmu_try_get_data_page(struct tcmu_dev *udev, uint32_t dpi)
- 	mutex_lock(&udev->cmdr_lock);
- 	page = xa_load(&udev->data_pages, dpi);
- 	if (likely(page)) {
-+		get_page(page);
- 		mutex_unlock(&udev->cmdr_lock);
- 		return page;
- 	}
-@@ -1876,6 +1877,7 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
- 		/* For the vmalloc()ed cmd area pages */
- 		addr = (void *)(unsigned long)info->mem[mi].addr + offset;
- 		page = vmalloc_to_page(addr);
-+		get_page(page);
- 	} else {
- 		uint32_t dpi;
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index 90d96eb79984..a960227f61da 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -2072,15 +2072,14 @@ static int axienet_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto cleanup_clk;
  
-@@ -1886,7 +1888,6 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
- 			return VM_FAULT_SIGBUS;
- 	}
- 
--	get_page(page);
- 	vmf->page = page;
- 	return 0;
- }
+-	lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+-	if (lp->phy_node) {
+-		ret = axienet_mdio_setup(lp);
+-		if (ret)
+-			dev_warn(&pdev->dev,
+-				 "error registering MDIO bus: %d\n", ret);
+-	}
++	ret = axienet_mdio_setup(lp);
++	if (ret)
++		dev_warn(&pdev->dev,
++			 "error registering MDIO bus: %d\n", ret);
++
+ 	if (lp->phy_mode == PHY_INTERFACE_MODE_SGMII ||
+ 	    lp->phy_mode == PHY_INTERFACE_MODE_1000BASEX) {
++		lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+ 		if (!lp->phy_node) {
+ 			dev_err(&pdev->dev, "phy-handle required for 1000BaseX/SGMII\n");
+ 			ret = -EINVAL;
 -- 
 2.35.1
 
