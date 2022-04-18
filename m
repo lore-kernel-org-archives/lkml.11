@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D17EBC4707E
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A189C4707F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:56:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245236AbiDRN6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:58:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49500 "EHLO
+        id S245292AbiDRN7C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:59:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235564AbiDRNfS (ORCPT
+        with ESMTP id S243556AbiDRNeC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:35:18 -0400
+        Mon, 18 Apr 2022 09:34:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B710B24F2C;
-        Mon, 18 Apr 2022 05:58:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A502240AA;
+        Mon, 18 Apr 2022 05:58:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05913B80E44;
-        Mon, 18 Apr 2022 12:58:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57ED2C385A1;
-        Mon, 18 Apr 2022 12:58:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C53A4B80E4B;
+        Mon, 18 Apr 2022 12:57:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F85BC385A8;
+        Mon, 18 Apr 2022 12:57:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286683;
-        bh=gPnvjWXMvsDkv1WzVVj6TOYCjGHLVVnp+XOh8CzuOA0=;
+        s=korg; t=1650286677;
+        bh=4jTFIdE/RLeE76gCMMXu6/RBZIRcmWv8WEiWwMjmKIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uhdu7AmsibOvS7Vx4sWSU51VLnAbVYPE3j942URsAvz8/ZkpDMCk2pwgvL5iHBpTk
-         MoEv2RQZICYlpDxqnvP0/U3cCNTYcFvoHYa0VuMeyYbbYh5Z4tjXjmtC/2QVwzD97H
-         M1tPrN2XF1kIWDP0wVFQQKoKlBdU0gtJ5N+7p4uY=
+        b=JuqKFRykhPqagGT5xnkDmpNnIzAF/XiZOdaZ+8gJbmR7LxYZdBKoz/sHLl5xAeDiP
+         TaUNCQSddWLojtIQqbFt7/xrnOu4NQ2qeAT7y0gNSSmD1O35lCKYYKLAkKeedgS8v3
+         AI8ND+Oqx8V0StFGvwEFrE/PS8vanaUuCu2qfpdA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
         Yang Guang <yang.guang5@zte.com.cn>,
         David Yang <davidcomponentone@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 210/284] scsi: mvsas: Replace snprintf() with sysfs_emit()
-Date:   Mon, 18 Apr 2022 14:13:11 +0200
-Message-Id: <20220418121217.691447364@linuxfoundation.org>
+Subject: [PATCH 4.14 208/284] ptp: replace snprintf with sysfs_emit
+Date:   Mon, 18 Apr 2022 14:13:09 +0200
+Message-Id: <20220418121217.635183809@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -53,48 +54,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit 0ad3867b0f13e45cfee5a1298bfd40eef096116c ]
+[ Upstream commit e2cf07654efb0fd7bbcb475c6f74be7b5755a8fd ]
 
 coccinelle report:
-./drivers/scsi/mvsas/mv_init.c:699:8-16:
+./drivers/ptp/ptp_sysfs.c:17:8-16:
 WARNING: use scnprintf or sprintf
-./drivers/scsi/mvsas/mv_init.c:747:8-16:
+./drivers/ptp/ptp_sysfs.c:390:8-16:
 WARNING: use scnprintf or sprintf
 
-Use sysfs_emit() instead of scnprintf() or sprintf().
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
 
-Link: https://lore.kernel.org/r/c1711f7cf251730a8ceb5bdfc313bf85662b3395.1643182948.git.yang.guang5@zte.com.cn
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
 Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mvsas/mv_init.c | 4 ++--
+ drivers/ptp/ptp_sysfs.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
-index 718c88de328b..f6070b1fe1d8 100644
---- a/drivers/scsi/mvsas/mv_init.c
-+++ b/drivers/scsi/mvsas/mv_init.c
-@@ -729,7 +729,7 @@ static ssize_t
- mvs_show_driver_version(struct device *cdev,
- 		struct device_attribute *attr,  char *buffer)
+diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
+index 48401dfcd999..f97a5eefa2e2 100644
+--- a/drivers/ptp/ptp_sysfs.c
++++ b/drivers/ptp/ptp_sysfs.c
+@@ -26,7 +26,7 @@ static ssize_t clock_name_show(struct device *dev,
+ 			       struct device_attribute *attr, char *page)
  {
--	return snprintf(buffer, PAGE_SIZE, "%s\n", DRV_VERSION);
-+	return sysfs_emit(buffer, "%s\n", DRV_VERSION);
+ 	struct ptp_clock *ptp = dev_get_drvdata(dev);
+-	return snprintf(page, PAGE_SIZE-1, "%s\n", ptp->info->name);
++	return sysfs_emit(page, "%s\n", ptp->info->name);
+ }
+ static DEVICE_ATTR_RO(clock_name);
+ 
+@@ -240,7 +240,7 @@ static ssize_t ptp_pin_show(struct device *dev, struct device_attribute *attr,
+ 
+ 	mutex_unlock(&ptp->pincfg_mux);
+ 
+-	return snprintf(page, PAGE_SIZE, "%u %u\n", func, chan);
++	return sysfs_emit(page, "%u %u\n", func, chan);
  }
  
- static DEVICE_ATTR(driver_version,
-@@ -781,7 +781,7 @@ mvs_store_interrupt_coalescing(struct device *cdev,
- static ssize_t mvs_show_interrupt_coalescing(struct device *cdev,
- 			struct device_attribute *attr, char *buffer)
- {
--	return snprintf(buffer, PAGE_SIZE, "%d\n", interrupt_coalescing);
-+	return sysfs_emit(buffer, "%d\n", interrupt_coalescing);
- }
- 
- static DEVICE_ATTR(interrupt_coalescing,
+ static ssize_t ptp_pin_store(struct device *dev, struct device_attribute *attr,
 -- 
 2.35.1
 
