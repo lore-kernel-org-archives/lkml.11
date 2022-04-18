@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C67C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:04:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A75C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:04:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245678AbiDROHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:07:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54158 "EHLO
+        id S245385AbiDROHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244982AbiDRNuh (ORCPT
+        with ESMTP id S245088AbiDRNuk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:50:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4728043ED9;
-        Mon, 18 Apr 2022 06:01:55 -0700 (PDT)
+        Mon, 18 Apr 2022 09:50:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A507443C6;
+        Mon, 18 Apr 2022 06:02:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 992D160B3C;
-        Mon, 18 Apr 2022 13:01:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FB1EC385A1;
-        Mon, 18 Apr 2022 13:01:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66BD7B80E4B;
+        Mon, 18 Apr 2022 13:01:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7BBAC385A7;
+        Mon, 18 Apr 2022 13:01:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286914;
-        bh=qt6zVlScKlgp/UWRwAPjnLop5XpVwyg8xY7P3/aVvDE=;
+        s=korg; t=1650286917;
+        bh=nnjzcSjkXQkY+cXRR8C6gfM50YpYpyXjcjEUFdjf0e0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yMDhF77/khFo99jstRfZI/L93PJkyoDeuzvTVTKU+P67MKsByE9vF2loQ5CQqWanC
-         la2O0dk+lmv4b15F5S1Tll9l0uAac23WIPA2k99RaG3q0t6nkGl+WRtqaQ6TF8Cv2H
-         sg6aHyg4dwTOti2+qL2jXcVUDZZzQVDPQNJ/o9/o=
+        b=Yd+M4enWfMNJMwpMjWuYb4GePqeKIwgml/CwzL5wvEVnOoLpSjHiNYnfXXq1L1OBg
+         fPCfQvcLelC5LyOpSKt4QeBT4NC7bKrKajwM0+YMnIqaydYWyVuy8/MN3uk2RTkQRt
+         FYDLOFAGkzikldoLSuB0JGC/VmwI9gSySvRo3kfM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Sven Peter <sven@svenpeter.dev>, Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH 4.14 284/284] i2c: pasemi: Wait for write xfers to finish
-Date:   Mon, 18 Apr 2022 14:14:25 +0200
-Message-Id: <20220418121221.361218307@linuxfoundation.org>
+        Tejun Heo <tj@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 4.14 258/284] cgroup: Allocate cgroup_file_ctx for kernfs_open_file->priv
+Date:   Mon, 18 Apr 2022 14:13:59 +0200
+Message-Id: <20220418121219.794680750@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,50 +50,223 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Povišer <povik+lin@cutebit.org>
+From: Tejun Heo <tj@kernel.org>
 
-commit bd8963e602c77adc76dbbbfc3417c3cf14fed76b upstream.
+commit 0d2b5955b36250a9428c832664f2079cbf723bec upstream.
 
-Wait for completion of write transfers before returning from the driver.
-At first sight it may seem advantageous to leave write transfers queued
-for the controller to carry out on its own time, but there's a couple of
-issues with it:
+of->priv is currently used by each interface file implementation to store
+private information. This patch collects the current two private data usages
+into struct cgroup_file_ctx which is allocated and freed by the common path.
+This allows generic private data which applies to multiple files, which will
+be used to in the following patch.
 
- * Driver doesn't check for FIFO space.
+Note that cgroup_procs iterator is now embedded as procs.iter in the new
+cgroup_file_ctx so that it doesn't need to be allocated and freed
+separately.
 
- * The queued writes can complete while the driver is in its I2C read
-   transfer path which means it will get confused by the raising of
-   XEN (the 'transaction ended' signal). This can cause a spurious
-   ENODATA error due to premature reading of the MRXFIFO register.
+v2: union dropped from cgroup_file_ctx and the procs iterator is embedded in
+    cgroup_file_ctx as suggested by Linus.
 
-Adding the wait fixes some unreliability issues with the driver. There's
-some efficiency cost to it (especially with pasemi_smb_waitready doing
-its polling), but that will be alleviated once the driver receives
-interrupt support.
+v3: Michal pointed out that cgroup1's procs pidlist uses of->priv too.
+    Converted. Didn't change to embedded allocation as cgroup1 pidlists get
+    stored for caching.
 
-Fixes: beb58aa39e6e ("i2c: PA Semi SMBus driver")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
-Reviewed-by: Sven Peter <sven@svenpeter.dev>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+[mkoutny: v5.10: modify cgroup.pressure handlers, adjust context]
+Signed-off-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[OP: backport to v4.14: drop changes to cgroup_pressure_*() functions]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-pasemi.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ kernel/cgroup/cgroup-internal.h |   17 ++++++++++++++++
+ kernel/cgroup/cgroup-v1.c       |   26 +++++++++++++-----------
+ kernel/cgroup/cgroup.c          |   42 ++++++++++++++++++++++++----------------
+ 3 files changed, 57 insertions(+), 28 deletions(-)
 
---- a/drivers/i2c/busses/i2c-pasemi.c
-+++ b/drivers/i2c/busses/i2c-pasemi.c
-@@ -145,6 +145,12 @@ static int pasemi_i2c_xfer_msg(struct i2
+--- a/kernel/cgroup/cgroup-internal.h
++++ b/kernel/cgroup/cgroup-internal.h
+@@ -8,6 +8,23 @@
+ #include <linux/list.h>
+ #include <linux/refcount.h>
  
- 		TXFIFO_WR(smbus, msg->buf[msg->len-1] |
- 			  (stop ? MTXFIFO_STOP : 0));
++struct cgroup_pidlist;
 +
-+		if (stop) {
-+			err = pasemi_smb_waitready(smbus);
-+			if (err)
-+				goto reset_out;
-+		}
- 	}
++struct cgroup_file_ctx {
++	struct {
++		void			*trigger;
++	} psi;
++
++	struct {
++		bool			started;
++		struct css_task_iter	iter;
++	} procs;
++
++	struct {
++		struct cgroup_pidlist	*pidlist;
++	} procs1;
++};
++
+ /*
+  * A cgroup can be associated with multiple css_sets as different tasks may
+  * belong to different cgroups on different hierarchies.  In the other
+--- a/kernel/cgroup/cgroup-v1.c
++++ b/kernel/cgroup/cgroup-v1.c
+@@ -426,6 +426,7 @@ static void *cgroup_pidlist_start(struct
+ 	 * next pid to display, if any
+ 	 */
+ 	struct kernfs_open_file *of = s->private;
++	struct cgroup_file_ctx *ctx = of->priv;
+ 	struct cgroup *cgrp = seq_css(s)->cgroup;
+ 	struct cgroup_pidlist *l;
+ 	enum cgroup_filetype type = seq_cft(s)->private;
+@@ -435,25 +436,24 @@ static void *cgroup_pidlist_start(struct
+ 	mutex_lock(&cgrp->pidlist_mutex);
  
- 	return 0;
+ 	/*
+-	 * !NULL @of->priv indicates that this isn't the first start()
+-	 * after open.  If the matching pidlist is around, we can use that.
+-	 * Look for it.  Note that @of->priv can't be used directly.  It
+-	 * could already have been destroyed.
++	 * !NULL @ctx->procs1.pidlist indicates that this isn't the first
++	 * start() after open. If the matching pidlist is around, we can use
++	 * that. Look for it. Note that @ctx->procs1.pidlist can't be used
++	 * directly. It could already have been destroyed.
+ 	 */
+-	if (of->priv)
+-		of->priv = cgroup_pidlist_find(cgrp, type);
++	if (ctx->procs1.pidlist)
++		ctx->procs1.pidlist = cgroup_pidlist_find(cgrp, type);
+ 
+ 	/*
+ 	 * Either this is the first start() after open or the matching
+ 	 * pidlist has been destroyed inbetween.  Create a new one.
+ 	 */
+-	if (!of->priv) {
+-		ret = pidlist_array_load(cgrp, type,
+-					 (struct cgroup_pidlist **)&of->priv);
++	if (!ctx->procs1.pidlist) {
++		ret = pidlist_array_load(cgrp, type, &ctx->procs1.pidlist);
+ 		if (ret)
+ 			return ERR_PTR(ret);
+ 	}
+-	l = of->priv;
++	l = ctx->procs1.pidlist;
+ 
+ 	if (pid) {
+ 		int end = l->length;
+@@ -481,7 +481,8 @@ static void *cgroup_pidlist_start(struct
+ static void cgroup_pidlist_stop(struct seq_file *s, void *v)
+ {
+ 	struct kernfs_open_file *of = s->private;
+-	struct cgroup_pidlist *l = of->priv;
++	struct cgroup_file_ctx *ctx = of->priv;
++	struct cgroup_pidlist *l = ctx->procs1.pidlist;
+ 
+ 	if (l)
+ 		mod_delayed_work(cgroup_pidlist_destroy_wq, &l->destroy_dwork,
+@@ -492,7 +493,8 @@ static void cgroup_pidlist_stop(struct s
+ static void *cgroup_pidlist_next(struct seq_file *s, void *v, loff_t *pos)
+ {
+ 	struct kernfs_open_file *of = s->private;
+-	struct cgroup_pidlist *l = of->priv;
++	struct cgroup_file_ctx *ctx = of->priv;
++	struct cgroup_pidlist *l = ctx->procs1.pidlist;
+ 	pid_t *p = v;
+ 	pid_t *end = l->list + l->length;
+ 	/*
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -3364,18 +3364,31 @@ static int cgroup_stat_show(struct seq_f
+ static int cgroup_file_open(struct kernfs_open_file *of)
+ {
+ 	struct cftype *cft = of->kn->priv;
++	struct cgroup_file_ctx *ctx;
++	int ret;
+ 
+-	if (cft->open)
+-		return cft->open(of);
+-	return 0;
++	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
++	if (!ctx)
++		return -ENOMEM;
++	of->priv = ctx;
++
++	if (!cft->open)
++		return 0;
++
++	ret = cft->open(of);
++	if (ret)
++		kfree(ctx);
++	return ret;
+ }
+ 
+ static void cgroup_file_release(struct kernfs_open_file *of)
+ {
+ 	struct cftype *cft = of->kn->priv;
++	struct cgroup_file_ctx *ctx = of->priv;
+ 
+ 	if (cft->release)
+ 		cft->release(of);
++	kfree(ctx);
+ }
+ 
+ static ssize_t cgroup_file_write(struct kernfs_open_file *of, char *buf,
+@@ -4270,21 +4283,21 @@ void css_task_iter_end(struct css_task_i
+ 
+ static void cgroup_procs_release(struct kernfs_open_file *of)
+ {
+-	if (of->priv) {
+-		css_task_iter_end(of->priv);
+-		kfree(of->priv);
+-	}
++	struct cgroup_file_ctx *ctx = of->priv;
++
++	if (ctx->procs.started)
++		css_task_iter_end(&ctx->procs.iter);
+ }
+ 
+ static void *cgroup_procs_next(struct seq_file *s, void *v, loff_t *pos)
+ {
+ 	struct kernfs_open_file *of = s->private;
+-	struct css_task_iter *it = of->priv;
++	struct cgroup_file_ctx *ctx = of->priv;
+ 
+ 	if (pos)
+ 		(*pos)++;
+ 
+-	return css_task_iter_next(it);
++	return css_task_iter_next(&ctx->procs.iter);
+ }
+ 
+ static void *__cgroup_procs_start(struct seq_file *s, loff_t *pos,
+@@ -4292,21 +4305,18 @@ static void *__cgroup_procs_start(struct
+ {
+ 	struct kernfs_open_file *of = s->private;
+ 	struct cgroup *cgrp = seq_css(s)->cgroup;
+-	struct css_task_iter *it = of->priv;
++	struct cgroup_file_ctx *ctx = of->priv;
++	struct css_task_iter *it = &ctx->procs.iter;
+ 
+ 	/*
+ 	 * When a seq_file is seeked, it's always traversed sequentially
+ 	 * from position 0, so we can simply keep iterating on !0 *pos.
+ 	 */
+-	if (!it) {
++	if (!ctx->procs.started) {
+ 		if (WARN_ON_ONCE((*pos)))
+ 			return ERR_PTR(-EINVAL);
+-
+-		it = kzalloc(sizeof(*it), GFP_KERNEL);
+-		if (!it)
+-			return ERR_PTR(-ENOMEM);
+-		of->priv = it;
+ 		css_task_iter_start(&cgrp->self, iter_flags, it);
++		ctx->procs.started = true;
+ 	} else if (!(*pos)) {
+ 		css_task_iter_end(it);
+ 		css_task_iter_start(&cgrp->self, iter_flags, it);
 
 
