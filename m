@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8596EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFB66C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:59:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240876AbiDRNCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:02:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
+        id S240895AbiDRNCI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:02:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240039AbiDRMwP (ORCPT
+        with ESMTP id S240084AbiDRMw2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:52:15 -0400
+        Mon, 18 Apr 2022 08:52:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C642D1D6;
-        Mon, 18 Apr 2022 05:34:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67ABD2D1FE;
+        Mon, 18 Apr 2022 05:34:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66D9B61014;
-        Mon, 18 Apr 2022 12:34:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5699FC385A8;
-        Mon, 18 Apr 2022 12:34:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F27A7611D1;
+        Mon, 18 Apr 2022 12:34:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0B61C385A1;
+        Mon, 18 Apr 2022 12:34:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285262;
-        bh=m9viVS1D+NUit2asz3mAmwwfeEnNpj04FNw9SDwXsWk=;
+        s=korg; t=1650285266;
+        bh=epETK8RMdi/qHauVcO3oyZYPjLD8fCCYT0QAkxHcJgc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=khA8o2ejGlPjpD9rJww9ILCASCB2/WGkEEGqnZFB4PeZY2RZWX3GbCZ+MBrOwsHBu
-         fWlJh2DM9AzXTY7rrFBQ5+JAqAZui9yLO5x3+ras7OSPPobC3CYjTaonUqgO79NjFk
-         yASba/ZLExQ9oft2irCy08Ld5bRGwNpY2Wydmx34=
+        b=RM7sZPCP+YmyC1ZMsz0/2JpdGU/94X8psuasxV3hid7fFoKFVrTc0y1TjVUshFFEJ
+         FzCFVILrZXHyk1ETxjtx5/DfzzR11Hw2A++134N7bw5YpzgBADDex5nWym95YDgH2m
+         tgDEQ7Q0EGexp2ezdqshHOjDEwJhcClhukfIB/x0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
-        Shyam Prasad N <sprasad@microsoft.com>,
-        Xiaoli Feng <xifeng@redhat.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.15 153/189] cifs: verify that tcon is valid before dereference in cifs_kill_sb
-Date:   Mon, 18 Apr 2022 14:12:53 +0200
-Message-Id: <20220418121206.334508622@linuxfoundation.org>
+        stable@vger.kernel.org, Bagas Sanjaya <bagasdotme@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.15 154/189] ath9k: Properly clear TX status area before reporting to mac80211
+Date:   Mon, 18 Apr 2022 14:12:54 +0200
+Message-Id: <20220418121206.392831461@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121200.312988959@linuxfoundation.org>
 References: <20220418121200.312988959@linuxfoundation.org>
@@ -50,47 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ronnie Sahlberg <lsahlber@redhat.com>
+From: Toke Høiland-Jørgensen <toke@toke.dk>
 
-commit 8b6c58458ee3206dde345fce327a4cb83e69caf9 upstream.
+commit 037250f0a45cf9ecf5b52d4b9ff8eadeb609c800 upstream.
 
-On umount, cifs_sb->tlink_tree might contain entries that do not represent
-a valid tcon.
-Check the tcon for error before we dereference it.
+The ath9k driver was not properly clearing the status area in the
+ieee80211_tx_info struct before reporting TX status to mac80211. Instead,
+it was manually filling in fields, which meant that fields introduced later
+were left as-is.
 
-Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Cc: stable@vger.kernel.org
-Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
-Reported-by: Xiaoli Feng <xifeng@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Conveniently, mac80211 actually provides a helper to zero out the status
+area, so use that to make sure we zero everything.
+
+The last commit touching the driver function writing the status information
+seems to have actually been fixing an issue that was also caused by the
+area being uninitialised; but it only added clearing of a single field
+instead of the whole struct. That is now redundant, though, so revert that
+commit and use it as a convenient Fixes tag.
+
+Fixes: cc591d77aba1 ("ath9k: Make sure to zero status.tx_time before reporting TX status")
+Reported-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220330164409.16645-1-toke@toke.dk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/cifsfs.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath9k/xmit.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -266,10 +266,11 @@ static void cifs_kill_sb(struct super_bl
- 	 * before we kill the sb.
- 	 */
- 	if (cifs_sb->root) {
--		node = rb_first(root);
--		while (node != NULL) {
-+		for (node = rb_first(root); node; node = rb_next(node)) {
- 			tlink = rb_entry(node, struct tcon_link, tl_rbnode);
- 			tcon = tlink_tcon(tlink);
-+			if (IS_ERR(tcon))
-+				continue;
- 			cfid = &tcon->crfid;
- 			mutex_lock(&cfid->fid_mutex);
- 			if (cfid->dentry) {
-@@ -277,7 +278,6 @@ static void cifs_kill_sb(struct super_bl
- 				cfid->dentry = NULL;
- 			}
- 			mutex_unlock(&cfid->fid_mutex);
--			node = rb_next(node);
- 		}
+--- a/drivers/net/wireless/ath/ath9k/xmit.c
++++ b/drivers/net/wireless/ath/ath9k/xmit.c
+@@ -2512,6 +2512,8 @@ static void ath_tx_rc_status(struct ath_
+ 	struct ath_hw *ah = sc->sc_ah;
+ 	u8 i, tx_rateindex;
  
- 		/* finally release root dentry */
++	ieee80211_tx_info_clear_status(tx_info);
++
+ 	if (txok)
+ 		tx_info->status.ack_signal = ts->ts_rssi;
+ 
+@@ -2554,9 +2556,6 @@ static void ath_tx_rc_status(struct ath_
+ 	}
+ 
+ 	tx_info->status.rates[tx_rateindex].count = ts->ts_longretry + 1;
+-
+-	/* we report airtime in ath_tx_count_airtime(), don't report twice */
+-	tx_info->status.tx_time = 0;
+ }
+ 
+ static void ath_tx_processq(struct ath_softc *sc, struct ath_txq *txq)
 
 
