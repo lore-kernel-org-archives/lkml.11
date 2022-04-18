@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22FA5C35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BCEC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240408AbiDRMjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
+        id S240375AbiDRMjC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239734AbiDRMdW (ORCPT
+        with ESMTP id S239765AbiDRMdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:33:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFFC1DA55;
-        Mon, 18 Apr 2022 05:25:26 -0700 (PDT)
+        Mon, 18 Apr 2022 08:33:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1ACB1EACE;
+        Mon, 18 Apr 2022 05:25:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1680CCE106E;
-        Mon, 18 Apr 2022 12:25:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3C6FC385A7;
-        Mon, 18 Apr 2022 12:25:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99B9AB80ED6;
+        Mon, 18 Apr 2022 12:25:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9092C385A1;
+        Mon, 18 Apr 2022 12:25:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284723;
-        bh=ZHMZnOit5c8zTbyxv8NwyQI3YVinWF2OZ+PTUpwGha4=;
+        s=korg; t=1650284735;
+        bh=OheKLmfXH/0ETv6AsmLPpvnGotO5nZR5o2vxS0ci7Fg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1XcLq9jfJMMcTzkAEGyI/I03hxWa/w1edK9f6sAU8Z8eES7sQ7BiDrAKJPNR7N/4X
-         Qfz1rAQiTGeWBIXbTX9haSevrvzcZ+srJdbTJRTTaZz5TLQ5m4K0shShscQ+1nt+AF
-         l4kJtgyqhHfahbh1MGFSUILFmdks7fmJr8E6Oofg=
+        b=AuwHufPjomyMb7lTLMdJDK5W8CyJtiihdnkkgtjTbEH8IS0JYBueWurCvWxCSdsGY
+         A79ZAmkL708y02glhaqlpseGH2PSv1l/GNHmA05mknGcwcQKVQOuxd0C2Fk63NYS23
+         WPtBiYjyqbmLCMAawBTYyIC2nluQHw6umQZLhkE4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.17 206/219] ep93xx: clock: Fix UAF in ep93xx_clk_register_gate()
-Date:   Mon, 18 Apr 2022 14:12:55 +0200
-Message-Id: <20220418121212.634259061@linuxfoundation.org>
+        stable@vger.kernel.org, Nadav Amit <namit@vmware.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 5.17 210/219] smp: Fix offline cpu check in flush_smp_call_function_queue()
+Date:   Mon, 18 Apr 2022 14:12:59 +0200
+Message-Id: <20220418121212.746298475@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -49,45 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+From: Nadav Amit <namit@vmware.com>
 
-commit 3b68b08885217abd9c57ff9b3bb3eb173eee02a9 upstream.
+commit 9e949a3886356fe9112c6f6f34a6e23d1d35407f upstream.
 
-arch/arm/mach-ep93xx/clock.c:154:2: warning: Use of memory after it is freed [clang-analyzer-unix.Malloc]
-arch/arm/mach-ep93xx/clock.c:151:2: note: Taking true branch
-if (IS_ERR(clk))
-^
-arch/arm/mach-ep93xx/clock.c:152:3: note: Memory is released
-kfree(psc);
-^~~~~~~~~~
-arch/arm/mach-ep93xx/clock.c:154:2: note: Use of memory after it is freed
-return &psc->hw;
-^ ~~~~~~~~
+The check in flush_smp_call_function_queue() for callbacks that are sent
+to offline CPUs currently checks whether the queue is empty.
 
-Fixes: 9645ccc7bd7a ("ep93xx: clock: convert in-place to COMMON_CLK")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
-Cc: stable@vger.kernel.org
-Link: https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org/thread/B5YCO2NJEXINCYE26Y255LCVMO55BGWW/
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+However, flush_smp_call_function_queue() has just deleted all the
+callbacks from the queue and moved all the entries into a local list.
+This checks would only be positive if some callbacks were added in the
+short time after llist_del_all() was called. This does not seem to be
+the intention of this check.
+
+Change the check to look at the local list to which the entries were
+moved instead of the queue from which all the callbacks were just
+removed.
+
+Fixes: 8d056c48e4862 ("CPU hotplug, smp: flush any pending IPI callbacks before CPU offline")
+Signed-off-by: Nadav Amit <namit@vmware.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20220319072015.1495036-1-namit@vmware.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-ep93xx/clock.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/smp.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm/mach-ep93xx/clock.c
-+++ b/arch/arm/mach-ep93xx/clock.c
-@@ -148,8 +148,10 @@ static struct clk_hw *ep93xx_clk_registe
- 	psc->lock = &clk_lock;
+--- a/kernel/smp.c
++++ b/kernel/smp.c
+@@ -579,7 +579,7 @@ static void flush_smp_call_function_queu
  
- 	clk = clk_register(NULL, &psc->hw);
--	if (IS_ERR(clk))
-+	if (IS_ERR(clk)) {
- 		kfree(psc);
-+		return ERR_CAST(clk);
-+	}
+ 	/* There shouldn't be any pending callbacks on an offline CPU. */
+ 	if (unlikely(warn_cpu_offline && !cpu_online(smp_processor_id()) &&
+-		     !warned && !llist_empty(head))) {
++		     !warned && entry != NULL)) {
+ 		warned = true;
+ 		WARN(1, "IPI on offline CPU %d\n", smp_processor_id());
  
- 	return &psc->hw;
- }
 
 
