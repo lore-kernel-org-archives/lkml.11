@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 197EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:32:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB85C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 12:32:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233788AbiDRMez (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 08:34:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
+        id S239200AbiDRMfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 08:35:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239332AbiDRM2U (ORCPT
+        with ESMTP id S239564AbiDRM2d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 08:28:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642ED20F76;
-        Mon, 18 Apr 2022 05:21:39 -0700 (PDT)
+        Mon, 18 Apr 2022 08:28:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6541FCC4;
+        Mon, 18 Apr 2022 05:22:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB5DEB80EC4;
-        Mon, 18 Apr 2022 12:21:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F309C385A7;
-        Mon, 18 Apr 2022 12:21:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B14560FAD;
+        Mon, 18 Apr 2022 12:22:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE6F7C385A8;
+        Mon, 18 Apr 2022 12:22:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650284496;
-        bh=+W/EQ3gjZLdXyHVEw5/wH21inEOSDOpQrHskV+1kTUc=;
+        s=korg; t=1650284524;
+        bh=4rQkhM+RJN5qC5mkIJ7o7Iyrqs+aVLeQY8i7Xhtec2o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KLfeR3m44ybmEXbfp+AB8JmcdYDdb6gtrkHFQGuEEG9c6rPZOGWjnuH7RKarnCC6s
-         VDAjQKCzNvv7kGHSYvs8TBBtmCNgZHQItJMNCFky2meILjKvhpaA5ui/KGzwMj5jno
-         gS1XE8hfgsln8DV39AycNoFgC0jLClC82ezZRS2M=
+        b=jWn3ZysGXRkV87rvdTlsE5fPu/zcM8f490pA4NxRgzwdtPzFTjvPzAO14MbubsKRH
+         5gLKM70dDCebo50o0wVJLDr3edqFPpqegzKAp9fOK4eDCZcmhIvOmGGu9NhqWC4wb2
+         p42fxxXCUfJMWE17nse3FsWY1ZVg2Sa9T9E3NzFg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dylan Yudaken <dylany@fb.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 110/219] io_uring: move io_uring_rsrc_update2 validation
-Date:   Mon, 18 Apr 2022 14:11:19 +0200
-Message-Id: <20220418121209.978272346@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
+        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 144/219] Drivers: hv: vmbus: Prevent load re-ordering when reading ring buffer
+Date:   Mon, 18 Apr 2022 14:11:53 +0200
+Message-Id: <20220418121210.921396673@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121203.462784814@linuxfoundation.org>
 References: <20220418121203.462784814@linuxfoundation.org>
@@ -48,44 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dylan Yudaken <dylany@fb.com>
+From: Michael Kelley <mikelley@microsoft.com>
 
-[ Upstream commit 565c5e616e8061b40a2e1d786c418a7ac3503a8d ]
+[ Upstream commit b6cae15b5710c8097aad26a2e5e752c323ee5348 ]
 
-Move validation to be more consistently straight after
-copy_from_user. This is already done in io_register_rsrc_update and so
-this removes that redundant check.
+When reading a packet from a host-to-guest ring buffer, there is no
+memory barrier between reading the write index (to see if there is
+a packet to read) and reading the contents of the packet. The Hyper-V
+host uses store-release when updating the write index to ensure that
+writes of the packet data are completed first. On the guest side,
+the processor can reorder and read the packet data before the write
+index, and sometimes get stale packet data. Getting such stale packet
+data has been observed in a reproducible case in a VM on ARM64.
 
-Signed-off-by: Dylan Yudaken <dylany@fb.com>
-Link: https://lore.kernel.org/r/20220412163042.2788062-2-dylany@fb.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fix this by using virt_load_acquire() to read the write index,
+ensuring that reads of the packet data cannot be reordered
+before it. Preventing such reordering is logically correct, and
+with this change, getting stale data can no longer be reproduced.
+
+Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+Reviewed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Link: https://lore.kernel.org/r/1648394710-33480-1-git-send-email-mikelley@microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/hv/ring_buffer.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index e3d1fc954933..7da6fddaef4d 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -10784,8 +10784,6 @@ static int __io_register_rsrc_update(struct io_ring_ctx *ctx, unsigned type,
- 	__u32 tmp;
- 	int err;
+diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
+index 71efacb90965..3d215d9dec43 100644
+--- a/drivers/hv/ring_buffer.c
++++ b/drivers/hv/ring_buffer.c
+@@ -439,7 +439,16 @@ int hv_ringbuffer_read(struct vmbus_channel *channel,
+ static u32 hv_pkt_iter_avail(const struct hv_ring_buffer_info *rbi)
+ {
+ 	u32 priv_read_loc = rbi->priv_read_index;
+-	u32 write_loc = READ_ONCE(rbi->ring_buffer->write_index);
++	u32 write_loc;
++
++	/*
++	 * The Hyper-V host writes the packet data, then uses
++	 * store_release() to update the write_index.  Use load_acquire()
++	 * here to prevent loads of the packet data from being re-ordered
++	 * before the read of the write_index and potentially getting
++	 * stale data.
++	 */
++	write_loc = virt_load_acquire(&rbi->ring_buffer->write_index);
  
--	if (up->resv)
--		return -EINVAL;
- 	if (check_add_overflow(up->offset, nr_args, &tmp))
- 		return -EOVERFLOW;
- 	err = io_rsrc_node_switch_start(ctx);
-@@ -10811,6 +10809,8 @@ static int io_register_files_update(struct io_ring_ctx *ctx, void __user *arg,
- 	memset(&up, 0, sizeof(up));
- 	if (copy_from_user(&up, arg, sizeof(struct io_uring_rsrc_update)))
- 		return -EFAULT;
-+	if (up.resv)
-+		return -EINVAL;
- 	return __io_register_rsrc_update(ctx, IORING_RSRC_FILE, &up, nr_args);
- }
- 
+ 	if (write_loc >= priv_read_loc)
+ 		return write_loc - priv_read_loc;
 -- 
 2.35.1
 
