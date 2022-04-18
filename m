@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBEC8C3527C
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55EE9C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:08:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240369AbiDROKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45844 "EHLO
+        id S1344500AbiDROKY (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:10:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244515AbiDRNzb (ORCPT
+        with ESMTP id S1343853AbiDRNy2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:55:31 -0400
+        Mon, 18 Apr 2022 09:54:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8441349CB1;
-        Mon, 18 Apr 2022 06:04:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C12488A8;
+        Mon, 18 Apr 2022 06:03:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C789B80D9C;
-        Mon, 18 Apr 2022 13:04:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD519C385A7;
-        Mon, 18 Apr 2022 13:04:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41FBBB80D9C;
+        Mon, 18 Apr 2022 13:03:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E378C385A8;
+        Mon, 18 Apr 2022 13:03:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287077;
-        bh=Laee6Z8kRgfwvSsT2/Degvk8VHCNutJv4DH/bXPpJ8E=;
+        s=korg; t=1650287027;
+        bh=A3BNRBlacHVDYbewZiH+BeNJRgRoXRk4/8nI2tf049M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X08lTcJpxJOXWjddJ14jVaqldhLatwLNLCNe5yxNAxsNPdIbL6/N/Iy3TlBOZ4tJZ
-         m5jZhkNeRUbv7Q0aHuqIQqTYUlQUIYLwRHmvAatL3SdjbK3S1CRX8MMXgHCuqEpuPq
-         W/ddsUn/YDbSct6SznI+Z3hY1z8nVGnZQUhUArGI=
+        b=jVu28YEOfK1MDEjOBd+1/yQRPpPyR73a0jumxCEDzQqpRBSfNB9LwvqS6Xz/Aze1j
+         Q1x6W94NBHYps6X71Gelu6dW/rVghxLkbtideKC0NRhjinGOWx1/qTo+nbW3WzB+YA
+         8N3jRB7ag0MNt+FjedNQbReKnFiBC0VDMuW0quTo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 051/218] clocksource: acpi_pm: fix return value of __setup handler
-Date:   Mon, 18 Apr 2022 14:11:57 +0200
-Message-Id: <20220418121201.072712001@linuxfoundation.org>
+Subject: [PATCH 4.9 004/218] virtio_console: break out of buf poll on remove
+Date:   Mon, 18 Apr 2022 14:11:10 +0200
+Message-Id: <20220418121158.878641130@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,48 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Michael S. Tsirkin <mst@redhat.com>
 
-[ Upstream commit 6a861abceecb68497dd82a324fee45a5332dcece ]
+[ Upstream commit 0e7174b9d5877130fec41fb4a16e0c2ee4958d44 ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) environment strings.
+A common pattern for device reset is currently:
+vdev->config->reset(vdev);
+.. cleanup ..
 
-The __setup() handler interface isn't meant to handle negative return
-values -- they are non-zero, so they mean "handled" (like a return
-value of 1 does), but that's just a quirk. So return 1 from
-parse_pmtmr(). Also print a warning message if kstrtouint() returns
-an error.
+reset prevents new interrupts from arriving and waits for interrupt
+handlers to finish.
 
-Fixes: 6b148507d3d0 ("pmtmr: allow command line override of ioport")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+However if - as is common - the handler queues a work request which is
+flushed during the cleanup stage, we have code adding buffers / trying
+to get buffers while device is reset. Not good.
+
+This was reproduced by running
+	modprobe virtio_console
+	modprobe -r virtio_console
+in a loop.
+
+Fix this up by calling virtio_break_device + flush before reset.
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1786239
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/acpi_pm.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/char/virtio_console.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/clocksource/acpi_pm.c b/drivers/clocksource/acpi_pm.c
-index 28037d0b8dcd..55348e7c1e6f 100644
---- a/drivers/clocksource/acpi_pm.c
-+++ b/drivers/clocksource/acpi_pm.c
-@@ -230,8 +230,10 @@ static int __init parse_pmtmr(char *arg)
- 	int ret;
+diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
+index 2632b0fdb1b5..a6b6dc204c1f 100644
+--- a/drivers/char/virtio_console.c
++++ b/drivers/char/virtio_console.c
+@@ -2004,6 +2004,13 @@ static void virtcons_remove(struct virtio_device *vdev)
+ 	list_del(&portdev->list);
+ 	spin_unlock_irq(&pdrvdata_lock);
  
- 	ret = kstrtouint(arg, 16, &base);
--	if (ret)
--		return ret;
-+	if (ret) {
-+		pr_warn("PMTMR: invalid 'pmtmr=' value: '%s'\n", arg);
-+		return 1;
-+	}
- 
- 	pr_info("PMTMR IOPort override: 0x%04x -> 0x%04x\n", pmtmr_ioport,
- 		base);
++	/* Device is going away, exit any polling for buffers */
++	virtio_break_device(vdev);
++	if (use_multiport(portdev))
++		flush_work(&portdev->control_work);
++	else
++		flush_work(&portdev->config_work);
++
+ 	/* Disable interrupts for vqs */
+ 	vdev->config->reset(vdev);
+ 	/* Finish up work that's lined up */
 -- 
 2.34.1
 
