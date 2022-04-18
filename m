@@ -2,153 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 18:08:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3840AC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 18:08:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347309AbiDRSKn (ORCPT
+        id S1347316AbiDRSLS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 14:10:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
+        Mon, 18 Apr 2022 14:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbiDRSKm (ORCPT
+        with ESMTP id S229651AbiDRSLQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 14:10:42 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E426369E5
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 11:08:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1650305282; x=1681841282;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=dyyMH0xpZtsmvKPKBHxyzRSqFnhpIBPEXWOqpua1DEE=;
-  b=YQj2Wk+wvtCBxdy+uZDZsMmnM0HC+CaZ4JM8XrwDBqAtWtSEEEgzaY9o
-   VtBn5qPE5K0tuAPDvRvBO0JF7BkCeZy2MgeN94ENWwM9ywGbNRdVGvOwv
-   oNZv8rTk8dSt8Y2rFmcWN4sDiBsttCkZGS5IP5UUm/m85RfATpJJhNqb1
-   kY4Uf/Y6EzY4BOwgdIZpmIIS9AcoCSuMfJoYxQNiuBvi7rfDCNOlSja5s
-   zwjYDHwTBg8b/2XCNwzGGrPG+8s/x/fJfw8/GtU61vztofUqVpnD2wWXQ
-   FvORxNpSxfox6zdCiwpNJMST+dFO0PetUx2wdyxdHVHLcJ/+06m1SOV/c
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="262440361"
-X-IronPort-AV: E=Sophos;i="5.90,270,1643702400"; 
-   d="scan'208";a="262440361"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 11:08:01 -0700
-X-IronPort-AV: E=Sophos;i="5.90,270,1643702400"; 
-   d="scan'208";a="529659339"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2022 11:08:01 -0700
-Date:   Mon, 18 Apr 2022 11:11:35 -0700
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     "Tian, Kevin" <kevin.tian@intel.com>
-Cc:     "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>,
-        "Yu, Fenghua" <fenghua.yu@intel.com>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        jean-philippe <jean-philippe@linaro.org>,
-        "Peter Zijlstra" <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "Hansen, Dave" <dave.hansen@intel.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "Poimboe, Josh" <jpoimboe@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Message-ID: <20220418111135.6260d450@jacob-builder>
-In-Reply-To: <BN9PR11MB52765490BFC5F08CD4F7A9208CF39@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
-        <f439dde5-0eaa-52e4-9cf7-2ed1f62ea07f@intel.com>
-        <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
-        <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
-        <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
-        <YlWBkyGeb2ZOGLKl@fyu1.sc.intel.com>
-        <tencent_A9458C6CEBAADD361DA765356477B00E920A@qq.com>
-        <tencent_8B6D7835F62688B4CD069C0EFC41B308B407@qq.com>
-        <YllADL6uMoLllzQo@fyu1.sc.intel.com>
-        <99bcb9f5-4776-9c40-a776-cdecfa9e1010@foxmail.com>
-        <YllN/OmjpYdT1tO9@otcwcpicx3.sc.intel.com>
-        <tencent_CD35B6A6FBB48186B38EF641F088BAED1407@qq.com>
-        <20220415140002.7c12b0d2@jacob-builder>
-        <BN9PR11MB52765490BFC5F08CD4F7A9208CF39@BN9PR11MB5276.namprd11.prod.outlook.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Mon, 18 Apr 2022 14:11:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15B51369F0
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 11:08:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1650305316;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=7Z7LguSSdUkmUDE+Xsl0VnKJAhwrmGBK2tVju8AGU+Q=;
+        b=XaeCjJk7miHr63QLBmLMA6E1qT3212/whcqkFwCUOi8DGa1WS+z3KxW3/Q/PfyWPnKN/8W
+        RuvozIZrC7+Nyqqzj472KQGlevUahM1E5rgaYviTCEea81OtvOCDMUi8/SRhlkJvs2/2GL
+        gnS6k7+qC6wGfyL+4Ov8CeM55yQ6RMQ=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-205-LXWykys_M9izYSpf3You6A-1; Mon, 18 Apr 2022 14:08:35 -0400
+X-MC-Unique: LXWykys_M9izYSpf3You6A-1
+Received: by mail-qt1-f200.google.com with SMTP id o6-20020a05622a138600b002f1ebce54cfso5119506qtk.18
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Apr 2022 11:08:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7Z7LguSSdUkmUDE+Xsl0VnKJAhwrmGBK2tVju8AGU+Q=;
+        b=B6/OVZbBbfJqE3ks6s2Cjjweo64AEMDD80Jt8Ce5r8UuFTeNL/74AvbWacrhaYz3ZT
+         s6h1+buNr/mAmXR0MasLtupGCSqbJNXWipFJT5LNVWvdfDkmqAejNIRAcT0HstFrlOvw
+         jdK+ZEZl3XrqYRCsTWQmIFN3eGs5YGd54YuGYDTmrvmmCrsHkNN9eSLUJcqqThlKF04G
+         uptQMHdFBYFaZJWDWkBRnD7yre8xtwavj+CpLATdAPeFBTUdB5LgFepNmVUPDz+l+sfx
+         hkUJHt/KutEd4Wb3yRRXvlTGFykkbPbrCRLeiz4t6aopCQ0C6muZu2qMVuFIFMzHqvsD
+         MeaA==
+X-Gm-Message-State: AOAM531Gdt9DmGlTKryxWi975+EaKyLP2zw02riQn7k8POczrWUV4qCA
+        bcvmOS1O9KYDx3Xx+6PyE5aZWjTwlBycbDwwI+r3z3vdISipEZ6LpIVVNEEIzdjh5WDdgak26ZQ
+        NYxz4vOtsPxQG5AWsUyxf5hUv
+X-Received: by 2002:a05:622a:178b:b0:2f1:fb71:4456 with SMTP id s11-20020a05622a178b00b002f1fb714456mr4753392qtk.249.1650305314585;
+        Mon, 18 Apr 2022 11:08:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwSTDcKYc8PIPwuPzAzFmUtcKv5J+0wGZ++og45KyvKRBZ8y2tbTYvujBXqPCh5b7ux4jlAng==
+X-Received: by 2002:a05:622a:178b:b0:2f1:fb71:4456 with SMTP id s11-20020a05622a178b00b002f1fb714456mr4753366qtk.249.1650305314308;
+        Mon, 18 Apr 2022 11:08:34 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id j12-20020ae9c20c000000b0067ec380b320sm6927149qkg.64.2022.04.18.11.08.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Apr 2022 11:08:33 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     daniel.lezcano@kernel.org, rafael@kernel.org
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] powercap/dtpm: move dtpm_subsys definition to dtpm.c
+Date:   Mon, 18 Apr 2022 14:08:14 -0400
+Message-Id: <20220418180814.1811136-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kevin,
+Smatch reports this issue
+dtpm_devfreq.c:200:24: warning: symbol 'dtpm_devfreq_ops'
+  was not declared. Should it be static?
 
-On Mon, 18 Apr 2022 06:34:19 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
+dtpm_devfreq_ops is declared in dtpm_subsys.h where it
+is also used
 
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Saturday, April 16, 2022 5:00 AM
-> > 
-> > Hi zhangfei.gao@foxmail.com,
-> > 
-> > On Fri, 15 Apr 2022 19:52:03 +0800, "zhangfei.gao@foxmail.com"
-> > <zhangfei.gao@foxmail.com> wrote:
-> >   
-> > > >>> A PASID might be still used even though it is freed on mm exit.
-> > > >>>
-> > > >>> process A:
-> > > >>> 	sva_bind();
-> > > >>> 	ioasid_alloc() = N; // Get PASID N for the mm
-> > > >>> 	fork(): // spawn process B
-> > > >>> 	exit();
-> > > >>> 	ioasid_free(N);
-> > > >>>
-> > > >>> process B:
-> > > >>> 	device uses PASID N -> failure
-> > > >>> 	sva_unbind();
-> > > >>>
-> > > >>> Dave Hansen suggests to take a refcount on the mm whenever
-> > > >>> binding  
-> > the  
-> > > >>> PASID to a device and drop the refcount on unbinding. The mm
-> > > >>> won't  
-> > be  
-> > > >>> dropped if the PASID is still bound to it.
-> > > >>>
-> > > >>> Fixes: 701fac40384f ("iommu/sva: Assign a PASID to mm on PASID
-> > > >>> allocation and free it on mm exit")
-> > > >>>  
-> > Is process A's mm intended to be used by process B? Or you really should
-> > use PASID N on process B's mm? If the latter, it may work for a while
-> > until B changes mapping.
-> > 
-> > It seems you are just extending the life of a defunct mm?
-> >   
-> 
-> IMHO the intention is not to allow B to access A's mm.
-> 
-> The problem is that PASID N is released on exit() of A and then
-> reallocated to B before iommu driver gets the chance to quiesce
-> the device and clear the PASID entry. According to the discussion
-> the quiesce operation must be done when driver calls unbind()
-> instead of in mm exit. In this case a failure is reported when
-> B tries to call bind() on PASID N due to an already-present entry.
-> 
-> Dave's patch extending the life of A's mm until unbind() is called.
-> With it B either gets a different PASID before A's unbind() is 
-> completed or same PASID N pointing to B's mm after A's unbind().
-> 
-As long as B gets a different PASID, that is fine. It seems PASID N has no
-use then.
+extern struct dtpm_subsys_ops dtpm_devfreq_ops;
+struct dtpm_subsys_ops *dtpm_subsys[] = {
+...
+	&dtpm_devfreq_ops,
 
-> Thanks
-> Kevin
+Global variables should not be defined in header files.
+This only works because dtpm.c is the only includer
+of dtpm_subsys.h and user of dtpm_susys[].
 
+Move the definition of dtpm_subsys[] to dtpm.c and change
+the storage-class specifier to static.
 
-Thanks,
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/powercap/dtpm.c        | 9 +++++++++
+ drivers/powercap/dtpm_subsys.h | 9 ---------
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
-Jacob
+diff --git a/drivers/powercap/dtpm.c b/drivers/powercap/dtpm.c
+index ce920f17f45f..827a2509bec7 100644
+--- a/drivers/powercap/dtpm.c
++++ b/drivers/powercap/dtpm.c
+@@ -29,6 +29,15 @@
+ 
+ #define DTPM_POWER_LIMIT_FLAG 0
+ 
++static struct dtpm_subsys_ops *dtpm_subsys[] = {
++#ifdef CONFIG_DTPM_CPU
++	&dtpm_cpu_ops,
++#endif
++#ifdef CONFIG_DTPM_DEVFREQ
++	&dtpm_devfreq_ops,
++#endif
++};
++
+ static const char *constraint_name[] = {
+ 	"Instantaneous",
+ };
+diff --git a/drivers/powercap/dtpm_subsys.h b/drivers/powercap/dtpm_subsys.h
+index db1712938a96..2db9a3efba93 100644
+--- a/drivers/powercap/dtpm_subsys.h
++++ b/drivers/powercap/dtpm_subsys.h
+@@ -10,13 +10,4 @@
+ extern struct dtpm_subsys_ops dtpm_cpu_ops;
+ extern struct dtpm_subsys_ops dtpm_devfreq_ops;
+ 
+-struct dtpm_subsys_ops *dtpm_subsys[] = {
+-#ifdef CONFIG_DTPM_CPU
+-	&dtpm_cpu_ops,
+-#endif
+-#ifdef CONFIG_DTPM_DEVFREQ
+-	&dtpm_devfreq_ops,
+-#endif
+-};
+-
+ #endif
+-- 
+2.27.0
+
