@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C1EBC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D28BC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244782AbiDRNsD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55992 "EHLO
+        id S244630AbiDRNrx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:47:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243963AbiDRN3a (ORCPT
+        with ESMTP id S243837AbiDRN3I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:29:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A361640916;
-        Mon, 18 Apr 2022 05:54:02 -0700 (PDT)
+        Mon, 18 Apr 2022 09:29:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF09E3FDBF;
+        Mon, 18 Apr 2022 05:53:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2104FB80E59;
-        Mon, 18 Apr 2022 12:54:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87CD8C385A1;
-        Mon, 18 Apr 2022 12:53:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5408C61256;
+        Mon, 18 Apr 2022 12:53:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F1EBC385A1;
+        Mon, 18 Apr 2022 12:53:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650286439;
-        bh=PXwuxQls4lcpJ+LCeJY72pFN8FlRKeiT6Ogjd2vT3l4=;
+        s=korg; t=1650286433;
+        bh=/2x/q4mlIFL9BwYCaIST01f86A6ArGaP8uHZ5o93I1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NyWHBUmW3WSbi857N9pp9pS8mHWDQfyjkKcc/tGs5PcOyPS0Sk4ILf9xTgFKrlT3+
-         yUB2NNwJoHykyzGdhIW5sORlyO6oof9CQ691FfVfeVzZP8gTiEVWYrY+T6tukN7rw9
-         UHYu53k1Uf6IX0zV0uHm8euHpmD+eHhoi2fQJflU=
+        b=na/69LXuqYuvEche5TPOtKghh2NdbAE4MbBdp87un2oSTVauoAAxSb9hD8ssAOiMY
+         c3CSH14QH9qiowR9MGpjSoQ1FiMT60DsIpuXG9pL2FjDwey7PdgYRH1mOfC57BSzRX
+         L/KHcQscFN0wtu8ZpfymBLW9ArajnBEtY6sWj9Qg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 136/284] remoteproc: qcom_wcnss: Add missing of_node_put() in wcnss_alloc_memory_region
-Date:   Mon, 18 Apr 2022 14:11:57 +0200
-Message-Id: <20220418121215.258707966@linuxfoundation.org>
+Subject: [PATCH 4.14 134/284] iio: adc: Add check for devm_request_threaded_irq
+Date:   Mon, 18 Apr 2022 14:11:55 +0200
+Message-Id: <20220418121215.170464131@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121210.689577360@linuxfoundation.org>
 References: <20220418121210.689577360@linuxfoundation.org>
@@ -49,34 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 8f90161a66bc3d6b9fe8dde4d9028d20eae1b62a ]
+[ Upstream commit b30537a4cedcacf0ade2f33ebb7610178ed1e7d7 ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+As the potential failure of the devm_request_threaded_irq(),
+it should be better to check the return value and return
+error if fails.
 
-Fixes: aed361adca9f ("remoteproc: qcom: Introduce WCNSS peripheral image loader")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220308063102.10049-1-linmq006@gmail.com
+Fixes: fa659a40b80b ("iio: adc: twl6030-gpadc: Use devm_* API family")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220224062849.3280966-1-jiasheng@iscas.ac.cn
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/qcom_wcnss.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/adc/twl6030-gpadc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/remoteproc/qcom_wcnss.c b/drivers/remoteproc/qcom_wcnss.c
-index c7686393d505..bc399fb29592 100644
---- a/drivers/remoteproc/qcom_wcnss.c
-+++ b/drivers/remoteproc/qcom_wcnss.c
-@@ -451,6 +451,7 @@ static int wcnss_alloc_memory_region(struct qcom_wcnss *wcnss)
- 	}
+diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
+index bc0e60b9da45..6a4ec58eb9c5 100644
+--- a/drivers/iio/adc/twl6030-gpadc.c
++++ b/drivers/iio/adc/twl6030-gpadc.c
+@@ -927,6 +927,8 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
+ 	ret = devm_request_threaded_irq(dev, irq, NULL,
+ 				twl6030_gpadc_irq_handler,
+ 				IRQF_ONESHOT, "twl6030_gpadc", indio_dev);
++	if (ret)
++		return ret;
  
- 	ret = of_address_to_resource(node, 0, &r);
-+	of_node_put(node);
- 	if (ret)
- 		return ret;
- 
+ 	ret = twl6030_gpadc_enable_irq(TWL6030_GPADC_RT_SW1_EOC_MASK);
+ 	if (ret < 0) {
 -- 
 2.34.1
 
