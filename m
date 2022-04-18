@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFAAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:18:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F87C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 14:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344184AbiDROVc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 10:21:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44442 "EHLO
+        id S239269AbiDROVg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 10:21:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245561AbiDROFk (ORCPT
+        with ESMTP id S245737AbiDROGR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 10:05:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAB435272;
-        Mon, 18 Apr 2022 06:10:08 -0700 (PDT)
+        Mon, 18 Apr 2022 10:06:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A03A35A96;
+        Mon, 18 Apr 2022 06:10:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24BD560FAD;
-        Mon, 18 Apr 2022 13:09:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A0AFC385AE;
-        Mon, 18 Apr 2022 13:09:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C450DB80E4B;
+        Mon, 18 Apr 2022 13:10:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26682C385A1;
+        Mon, 18 Apr 2022 13:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650287350;
-        bh=UP9e9gsCvpQLamVYFCRkh0oVzvViqaYxYreqodC0wR0=;
+        s=korg; t=1650287411;
+        bh=7HJbMF3zmLCagiZkdwJEMsz4drTw9nF5Gup7f1gKG20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IG6C1KbagUDLyOSXqlg/z68Wgt1DSaWTeRMJcS4/lVct9bllN49hu4wnp0hDlQvIH
-         Px32dWmHVS+DjmB9NV1TzpnMw+GgatNyz/DMfnh7lFkyUeR8orrLE8eGf6X9gh6zAp
-         njxOxMV3TpDhS3SwflZtaEYkpa8tb8Xd9vuAaz6I=
+        b=0UjFiWuNgNlQqnn+2/34/TFSgqkMXcy34hr3xIfLMgJ0/lmgYvZDpjI8CBjElSY7E
+         jIBOTjybFv3qXNW1ACGG4w4/5ousocqj4rzj+R06av87P69oH8KB/jELS76RR/iXsQ
+         M7JF0QT9cNUdYwkWKQ4AjievaLzyKfOhwOuFPwxM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, George Kennedy <george.kennedy@oracle.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 135/218] video: fbdev: cirrusfb: check pixclock to avoid divide by zero
-Date:   Mon, 18 Apr 2022 14:13:21 +0200
-Message-Id: <20220418121203.450582029@linuxfoundation.org>
+        stable@vger.kernel.org, Andrew Price <anprice@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>
+Subject: [PATCH 4.9 152/218] gfs2: Make sure FITRIM minlen is rounded up to fs block size
+Date:   Mon, 18 Apr 2022 14:13:38 +0200
+Message-Id: <20220418121204.068608704@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418121158.636999985@linuxfoundation.org>
 References: <20220418121158.636999985@linuxfoundation.org>
@@ -50,83 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: George Kennedy <george.kennedy@oracle.com>
+From: Andrew Price <anprice@redhat.com>
 
-[ Upstream commit 5c6f402bdcf9e7239c6bc7087eda71ac99b31379 ]
+commit 27ca8273fda398638ca994a207323a85b6d81190 upstream.
 
-Do a sanity check on pixclock value to avoid divide by zero.
+Per fstrim(8) we must round up the minlen argument to the fs block size.
+The current calculation doesn't take into account devices that have a
+discard granularity and requested minlen less than 1 fs block, so the
+value can get shifted away to zero in the translation to fs blocks.
 
-If the pixclock value is zero, the cirrusfb driver will round up
-pixclock to get the derived frequency as close to maxclock as
-possible.
+The zero minlen passed to gfs2_rgrp_send_discards() then allows
+sb_issue_discard() to be called with nr_sects == 0 which returns -EINVAL
+and results in gfs2_rgrp_send_discards() returning -EIO.
 
-Syzkaller reported a divide error in cirrusfb_check_pixclock.
+Make sure minlen is never < 1 fs block by taking the max of the
+requested minlen and the fs block size before comparing to the device's
+discard granularity and shifting to fs blocks.
 
-divide error: 0000 [#1] SMP KASAN PTI
-CPU: 0 PID: 14938 Comm: cirrusfb_test Not tainted 5.15.0-rc6 #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2
-RIP: 0010:cirrusfb_check_var+0x6f1/0x1260
-
-Call Trace:
- fb_set_var+0x398/0xf90
- do_fb_ioctl+0x4b8/0x6f0
- fb_ioctl+0xeb/0x130
- __x64_sys_ioctl+0x19d/0x220
- do_syscall_64+0x3a/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Signed-off-by: George Kennedy <george.kennedy@oracle.com>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 076f0faa764ab ("GFS2: Fix FITRIM argument handling")
+Signed-off-by: Andrew Price <anprice@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/cirrusfb.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ fs/gfs2/rgrp.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/cirrusfb.c b/drivers/video/fbdev/cirrusfb.c
-index d992aa5eb3f0..a8f4967de798 100644
---- a/drivers/video/fbdev/cirrusfb.c
-+++ b/drivers/video/fbdev/cirrusfb.c
-@@ -470,7 +470,7 @@ static int cirrusfb_check_mclk(struct fb_info *info, long freq)
- 	return 0;
- }
+--- a/fs/gfs2/rgrp.c
++++ b/fs/gfs2/rgrp.c
+@@ -1390,7 +1390,8 @@ int gfs2_fitrim(struct file *filp, void
  
--static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
-+static int cirrusfb_check_pixclock(struct fb_var_screeninfo *var,
- 				   struct fb_info *info)
- {
- 	long freq;
-@@ -479,9 +479,7 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
- 	unsigned maxclockidx = var->bits_per_pixel >> 3;
+ 	start = r.start >> bs_shift;
+ 	end = start + (r.len >> bs_shift);
+-	minlen = max_t(u64, r.minlen,
++	minlen = max_t(u64, r.minlen, sdp->sd_sb.sb_bsize);
++	minlen = max_t(u64, minlen,
+ 		       q->limits.discard_granularity) >> bs_shift;
  
- 	/* convert from ps to kHz */
--	freq = PICOS2KHZ(var->pixclock);
--
--	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
-+	freq = PICOS2KHZ(var->pixclock ? : 1);
- 
- 	maxclock = cirrusfb_board_info[cinfo->btype].maxclock[maxclockidx];
- 	cinfo->multiplexing = 0;
-@@ -489,11 +487,13 @@ static int cirrusfb_check_pixclock(const struct fb_var_screeninfo *var,
- 	/* If the frequency is greater than we can support, we might be able
- 	 * to use multiplexing for the video mode */
- 	if (freq > maxclock) {
--		dev_err(info->device,
--			"Frequency greater than maxclock (%ld kHz)\n",
--			maxclock);
--		return -EINVAL;
-+		var->pixclock = KHZ2PICOS(maxclock);
-+
-+		while ((freq = PICOS2KHZ(var->pixclock)) > maxclock)
-+			var->pixclock++;
- 	}
-+	dev_dbg(info->device, "desired pixclock: %ld kHz\n", freq);
-+
- 	/*
- 	 * Additional constraint: 8bpp uses DAC clock doubling to allow maximum
- 	 * pixel clock
--- 
-2.34.1
-
+ 	if (end <= start || minlen > sdp->sd_max_rg_data)
 
 
