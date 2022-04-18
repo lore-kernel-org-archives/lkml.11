@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA8AC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8F7C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 18 Apr 2022 13:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242428AbiDRN1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Apr 2022 09:27:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41224 "EHLO
+        id S242632AbiDRN2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Apr 2022 09:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241172AbiDRNEw (ORCPT
+        with ESMTP id S241190AbiDRNFJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Apr 2022 09:04:52 -0400
+        Mon, 18 Apr 2022 09:05:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D8313CEF;
-        Mon, 18 Apr 2022 05:45:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5282913E2E;
+        Mon, 18 Apr 2022 05:45:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2342B80EC0;
-        Mon, 18 Apr 2022 12:45:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 356DEC385A7;
-        Mon, 18 Apr 2022 12:45:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FD10B80D9C;
+        Mon, 18 Apr 2022 12:45:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5946CC385A7;
+        Mon, 18 Apr 2022 12:45:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1650285926;
-        bh=mojVL1QzffXoVVdfe87igzvxcXwQsQdaFZO8jKOu6gc=;
+        s=korg; t=1650285932;
+        bh=1e+kMqmuq0XgPzihm05kZ+rHyIgwe3Ceg9otdTGMBhY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IjPATnPFlOJDeut9xLTj64/n7fmeMz4S6joINKB84HqZNotDK/jJEqQFlQxx6LsWj
-         Uym56wxNl571CgJVLiFdCUUXfAdEJNRl2iSywrYYHJVAAtyKuZjbLo76CIDdMY08D/
-         E2qUwYFRRpS1Wg0iXt88pZ/vhFbLV5AIXPXEpREc=
+        b=PSl/SBRGfFBiSYuqgw53M7ttXamNgQpDeJfDx9Jk1BYeeyF3jmGCH8OEatbmxlsN9
+         jc8lLxlmLDgbs68xNJqErhuYzk8WuIp8Fxdv/KdBP+R9LxKOvwR1S5tD8C+O51VGf2
+         7BwBTAU6v+CU+ccitwB8MCpDSUftoNqSPbIhOkvY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 5.4 63/63] ax25: Fix UAF bugs in ax25 timers
-Date:   Mon, 18 Apr 2022 14:14:00 +0200
-Message-Id: <20220418121138.364771542@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 01/32] memory: atmel-ebi: Fix missing of_node_put in atmel_ebi_probe
+Date:   Mon, 18 Apr 2022 14:13:41 +0200
+Message-Id: <20220418121127.172096762@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418121134.149115109@linuxfoundation.org>
-References: <20220418121134.149115109@linuxfoundation.org>
+In-Reply-To: <20220418121127.127656835@linuxfoundation.org>
+References: <20220418121127.127656835@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,78 +52,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 82e31755e55fbcea6a9dfaae5fe4860ade17cbc0 upstream.
+[ Upstream commit 6f296a9665ba5ac68937bf11f96214eb9de81baa ]
 
-There are race conditions that may lead to UAF bugs in
-ax25_heartbeat_expiry(), ax25_t1timer_expiry(), ax25_t2timer_expiry(),
-ax25_t3timer_expiry() and ax25_idletimer_expiry(), when we call
-ax25_release() to deallocate ax25_dev.
+The device_node pointer is returned by of_parse_phandle() with refcount
+incremented. We should use of_node_put() on it when done.
 
-One of the UAF bugs caused by ax25_release() is shown below:
-
-      (Thread 1)                    |      (Thread 2)
-ax25_dev_device_up() //(1)          |
-...                                 | ax25_kill_by_device()
-ax25_bind()          //(2)          |
-ax25_connect()                      | ...
- ax25_std_establish_data_link()     |
-  ax25_start_t1timer()              | ax25_dev_device_down() //(3)
-   mod_timer(&ax25->t1timer,..)     |
-                                    | ax25_release()
-   (wait a time)                    |  ...
-                                    |  ax25_dev_put(ax25_dev) //(4)FREE
-   ax25_t1timer_expiry()            |
-    ax25->ax25_dev->values[..] //USE|  ...
-     ...                            |
-
-We increase the refcount of ax25_dev in position (1) and (2), and
-decrease the refcount of ax25_dev in position (3) and (4).
-The ax25_dev will be freed in position (4) and be used in
-ax25_t1timer_expiry().
-
-The fail log is shown below:
-==============================================================
-
-[  106.116942] BUG: KASAN: use-after-free in ax25_t1timer_expiry+0x1c/0x60
-[  106.116942] Read of size 8 at addr ffff88800bda9028 by task swapper/0/0
-[  106.116942] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-06123-g0905eec574
-[  106.116942] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-14
-[  106.116942] Call Trace:
-...
-[  106.116942]  ax25_t1timer_expiry+0x1c/0x60
-[  106.116942]  call_timer_fn+0x122/0x3d0
-[  106.116942]  __run_timers.part.0+0x3f6/0x520
-[  106.116942]  run_timer_softirq+0x4f/0xb0
-[  106.116942]  __do_softirq+0x1c2/0x651
-...
-
-This patch adds del_timer_sync() in ax25_release(), which could ensure
-that all timers stop before we deallocate ax25_dev.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-[OP: backport to 5.4: adjust context]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 87108dc78eb8 ("memory: atmel-ebi: Enable the SMC clock if specified")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220309110144.22412-1-linmq006@gmail.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ax25/af_ax25.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/memory/atmel-ebi.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -1052,6 +1052,11 @@ static int ax25_release(struct socket *s
- 		ax25_destroy_socket(ax25);
+diff --git a/drivers/memory/atmel-ebi.c b/drivers/memory/atmel-ebi.c
+index 2b9283d4fcb1..8e7b5a1d2983 100644
+--- a/drivers/memory/atmel-ebi.c
++++ b/drivers/memory/atmel-ebi.c
+@@ -524,20 +524,27 @@ static int atmel_ebi_probe(struct platform_device *pdev)
+ 	smc_np = of_parse_phandle(dev->of_node, "atmel,smc", 0);
+ 
+ 	ebi->smc.regmap = syscon_node_to_regmap(smc_np);
+-	if (IS_ERR(ebi->smc.regmap))
+-		return PTR_ERR(ebi->smc.regmap);
++	if (IS_ERR(ebi->smc.regmap)) {
++		ret = PTR_ERR(ebi->smc.regmap);
++		goto put_node;
++	}
+ 
+ 	ebi->smc.layout = atmel_hsmc_get_reg_layout(smc_np);
+-	if (IS_ERR(ebi->smc.layout))
+-		return PTR_ERR(ebi->smc.layout);
++	if (IS_ERR(ebi->smc.layout)) {
++		ret = PTR_ERR(ebi->smc.layout);
++		goto put_node;
++	}
+ 
+ 	ebi->smc.clk = of_clk_get(smc_np, 0);
+ 	if (IS_ERR(ebi->smc.clk)) {
+-		if (PTR_ERR(ebi->smc.clk) != -ENOENT)
+-			return PTR_ERR(ebi->smc.clk);
++		if (PTR_ERR(ebi->smc.clk) != -ENOENT) {
++			ret = PTR_ERR(ebi->smc.clk);
++			goto put_node;
++		}
+ 
+ 		ebi->smc.clk = NULL;
  	}
- 	if (ax25_dev) {
-+		del_timer_sync(&ax25->timer);
-+		del_timer_sync(&ax25->t1timer);
-+		del_timer_sync(&ax25->t2timer);
-+		del_timer_sync(&ax25->t3timer);
-+		del_timer_sync(&ax25->idletimer);
- 		dev_put(ax25_dev->dev);
- 		ax25_dev_put(ax25_dev);
++	of_node_put(smc_np);
+ 	ret = clk_prepare_enable(ebi->smc.clk);
+ 	if (ret)
+ 		return ret;
+@@ -587,6 +594,10 @@ static int atmel_ebi_probe(struct platform_device *pdev)
  	}
+ 
+ 	return of_platform_populate(np, NULL, NULL, dev);
++
++put_node:
++	of_node_put(smc_np);
++	return ret;
+ }
+ 
+ static __maybe_unused int atmel_ebi_resume(struct device *dev)
+-- 
+2.35.1
+
 
 
